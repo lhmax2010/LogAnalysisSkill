@@ -1,0 +1,5 @@
++ %build
++ g++ -c src/widget.cpp
+src/widget.cpp:44:9: error: no member named 'sizez' in 'Widget'
+make[2]: *** [CMakeFiles/app.dir/src/widget.cpp.o] Error 1
+make[1]: *** [CMakeFiles/app.dir/all] Error 2

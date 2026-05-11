@@ -1,0 +1,5 @@
++ %prep
++ %build
++ gcc -Iinclude -c src/foo.c
+src/foo.c:12:5: error: 'bar' undeclared
+make[1]: *** [src/foo.o] Error 1
