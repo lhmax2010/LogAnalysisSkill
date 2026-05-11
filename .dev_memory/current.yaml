@@ -1,13 +1,12 @@
 current_milestone: m1_scan_and_extract
-current_status: in_progress
+current_status: completed
 last_completed: m0_init
 last_completed_commit: "4778b75"
 session_count: 2
 next_steps:
-  - "Implement tracing/logger.py foundation."
-  - "Implement Layer 0+1 scan_and_extract streaming scanner."
-  - "Add M1 fixtures and scan tests."
-blocked_on: null
+  - "Open M1 PR and wait for review."
+  - "After M1 is merged, start m2_quick_filter from main."
+blocked_on: "waiting_for_m1_review"
 notes: |
-  M0 and its review follow-up were merged. M1 is active on feature/m1-scan-and-extract.
-  Keep commits small and stop after opening the M1 PR.
+  M1 implemented Layer 0+1 scanning and tracing foundation only.
+  Do not start M2 until the M1 PR is reviewed and merged.

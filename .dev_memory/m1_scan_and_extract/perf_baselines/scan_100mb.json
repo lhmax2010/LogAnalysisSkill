@@ -1,0 +1,11 @@
+{
+  "schema_version": "m1_scan_perf/v1",
+  "buildlog_size_bytes": 104857600,
+  "elapsed_seconds": 0.6199,
+  "target_seconds": 8.0,
+  "passed": true,
+  "commands": 1,
+  "events": 1,
+  "failed_phase": "%build",
+  "notes": "Synthetic 100 MB plain-text buildlog with one final compiler error; measured locally with scan_buildlog."
+}

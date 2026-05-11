@@ -10,6 +10,9 @@
 
 ```bash
 .venv/bin/pytest tests/
+.venv/bin/pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80
+.venv/bin/ruff check .
+.venv/bin/mypy gbs_analyzer
 ```
 
 ## Results
@@ -17,15 +20,20 @@
 | Command | Result | Notes |
 | --- | --- | --- |
 | `.venv/bin/pytest tests/` | pass | Initial baseline before M1 implementation, 1 passed. |
+| `.venv/bin/pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80` | pass | 57 passed, 99.35% coverage. |
+| `.venv/bin/ruff check .` | pass | All checks passed. |
+| `.venv/bin/mypy gbs_analyzer` | pass | No issues found in 7 source files. |
 
 ## Coverage
 
-Pending full M1 implementation.
+99.35% total coverage. M1 scanner module coverage: 100%.
 
 ## Performance
 
-Pending 100 MB scan baseline.
+100 MB single-pass scan: 0.6199s, below the 8s M1 target.
+
+Baseline file: `.dev_memory/m1_scan_and_extract/perf_baselines/scan_100mb.json`
 
 ## Known Gaps
 
-- M1 implementation has not been completed yet.
+- No M1-blocking gaps currently open.
