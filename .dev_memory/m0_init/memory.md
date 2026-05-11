@@ -2,7 +2,8 @@
 
 **Status**: completed
 **Start commit**: 69448d3
-**Latest commit**: feature/m0-init HEAD
+**Latest commit**: d2963f3
+**Merged to main**: 864ff5e
 **Start date**: 2026-05-11
 **Completion date**: 2026-05-11
 **Estimated effort**: 0.5 day
