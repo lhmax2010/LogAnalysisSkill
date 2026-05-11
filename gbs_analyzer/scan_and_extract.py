@@ -38,6 +38,21 @@ MAKE_CASCADE_PATTERN = re.compile(
     r"make(?:\[\d+\])?: \*\*\* (?:\[[^\]]+:)?\s*\[(?P<target>[^\]]+)\] Error \d+"
 )
 RPM_PHASE_PATTERN = re.compile(r"error: Bad exit status from .*\((?P<phase>%\w+)\)")
+DIAGNOSTIC_MARKERS = (
+    "error",
+    "fatal",
+    "warning:",
+    "undefined reference",
+    "cannot find -l",
+    "nothing provides",
+    "patch",
+    "hunk",
+    "file not found",
+    "unpackaged",
+    "werror",
+    "make",
+    "spec file",
+)
 
 
 @dataclass(frozen=True)
@@ -306,18 +321,21 @@ class _ScanState:
     def _extract_event(self, line: LogLine) -> DiagnosticEvent | None:
         event_id = f"E{len(self.events) + 1:03d}"
         text = line.text
+        lowered = text.lower()
+        if not _may_contain_diagnostic(lowered):
+            return None
 
-        if "nothing provides" in text:
+        if "nothing provides" in lowered:
             return self._event(event_id, "depsolve", "error", text, line)
 
         patch_details = _match_patch(text)
         if patch_details is not None:
             return self._event(event_id, "patch", "error", text, line, details=patch_details)
 
-        if "File not found:" in text or "Installed (but unpackaged) file(s) found" in text:
+        if "file not found:" in lowered or "installed (but unpackaged) file(s) found" in lowered:
             return self._event(event_id, "install_missing", "error", text, line)
 
-        if "-Werror" in text or "all warnings being treated as errors" in text:
+        if "-werror" in lowered or "all warnings being treated as errors" in lowered:
             return self._event(event_id, "werror", "error", text, line)
 
         linker_missing = LINKER_MISSING_PATTERN.search(text)
@@ -368,10 +386,10 @@ class _ScanState:
                 target=make_cascade.group("target"),
             )
 
-        if "spec file" in text.lower() and "error" in text.lower():
+        if "spec file" in lowered and "error" in lowered:
             return self._event(event_id, "spec_script", "error", text, line)
 
-        if _looks_like_raw_error(text):
+        if _looks_like_raw_error(lowered):
             return self._event(event_id, "raw_error", "error", text, line)
 
         return None
@@ -484,6 +502,9 @@ def _normalize_severity(severity: str) -> str:
     return "error" if severity == "fatal error" else severity
 
 
-def _looks_like_raw_error(text: str) -> bool:
-    lowered = text.lower()
-    return "error:" in lowered or "fatal:" in lowered
+def _may_contain_diagnostic(lowered_text: str) -> bool:
+    return any(marker in lowered_text for marker in DIAGNOSTIC_MARKERS)
+
+
+def _looks_like_raw_error(lowered_text: str) -> bool:
+    return "error:" in lowered_text or "fatal:" in lowered_text
