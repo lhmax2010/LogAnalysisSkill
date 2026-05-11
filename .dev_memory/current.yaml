@@ -1,12 +1,12 @@
-current_milestone: m0_init
-current_status: completed
+current_milestone: m1_scan_and_extract
+current_status: not_started
 last_completed: m0_init
-last_completed_commit: "feature/m0-init HEAD"
+last_completed_commit: "864ff5e"
 session_count: 1
 next_steps:
-  - "Wait for M0 PR review and merge."
-  - "After M0 is merged, start feature/m1-scan-and-extract from main."
-blocked_on: "waiting_for_m0_review"
+  - "Create feature/m1-scan-and-extract from main."
+  - "Read docs/DESIGN.md §3.1 and §10 before implementing."
+  - "Implement M1 only: scan_and_extract plus tracing foundation."
+blocked_on: null
 notes: |
-  M0 initializes repository structure, packaging, CI, templates, and dev_memory only.
-  M1 implementation must not start until the M0 PR has been reviewed and merged.
+  M0 was merged in PR #1. M1 must proceed with small commits and stop after the M1 PR.
