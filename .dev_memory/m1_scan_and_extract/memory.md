@@ -68,7 +68,7 @@ M1 implements only Layer 0+1 scanning and the tracing foundation required by
 | Integration | 0 | 0 | 0 |
 
 Full validation: `.venv/bin/pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80`
-passed with 57 tests and 99.35% coverage.
+passed with 57 tests and 98.93% coverage.
 
 ## Next Stage Entry
 

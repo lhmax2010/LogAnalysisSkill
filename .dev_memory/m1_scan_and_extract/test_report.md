@@ -20,13 +20,13 @@
 | Command | Result | Notes |
 | --- | --- | --- |
 | `.venv/bin/pytest tests/` | pass | Initial baseline before M1 implementation, 1 passed. |
-| `.venv/bin/pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80` | pass | 57 passed, 99.35% coverage. |
+| `.venv/bin/pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80` | pass | 57 passed, 98.93% coverage. |
 | `.venv/bin/ruff check .` | pass | All checks passed. |
 | `.venv/bin/mypy gbs_analyzer` | pass | No issues found in 7 source files. |
 
 ## Coverage
 
-99.35% total coverage. M1 scanner module coverage: 100%.
+98.93% total coverage. M1 scanner module coverage: 99%.
 
 ## Performance
 
