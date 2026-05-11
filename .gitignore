@@ -1,0 +1,39 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Build and packaging outputs
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local analyzer outputs
+.gbs_analysis/
+out/
+perf_report.json
+trace.log
+trace.jsonl
+evidence_packet.json
+evidence_packet.md
+
+# Local editor and OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Temporary dev_memory drafts only; committed milestone memory remains tracked.
+.dev_memory/**/*.tmp
+.dev_memory/**/.DS_Store

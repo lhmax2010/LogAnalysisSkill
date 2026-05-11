@@ -1,0 +1,12 @@
+current_milestone: m0_init
+current_status: completed
+last_completed: m0_init
+last_completed_commit: "feature/m0-init HEAD"
+session_count: 1
+next_steps:
+  - "Wait for M0 PR review and merge."
+  - "After M0 is merged, start feature/m1-scan-and-extract from main."
+blocked_on: "waiting_for_m0_review"
+notes: |
+  M0 initializes repository structure, packaging, CI, templates, and dev_memory only.
+  M1 implementation must not start until the M0 PR has been reviewed and merged.
