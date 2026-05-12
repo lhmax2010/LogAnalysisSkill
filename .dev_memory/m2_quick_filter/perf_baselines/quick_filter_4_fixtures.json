@@ -1,0 +1,17 @@
+{
+  "schema_version": "m2_quick_filter_perf/v1",
+  "fixtures": [
+    "fast_path_depsolve",
+    "fast_path_patch_failed",
+    "fast_path_missing_lib",
+    "fast_path_install_missing"
+  ],
+  "iterations": 200,
+  "evaluations": 800,
+  "hits": 800,
+  "elapsed_seconds": 2.334108,
+  "per_four_fixture_batch_ms": 11.6705,
+  "per_evaluation_ms": 2.9176,
+  "target_ms": 100.0,
+  "passed": true
+}

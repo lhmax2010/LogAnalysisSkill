@@ -1,13 +1,12 @@
 current_milestone: m2_quick_filter
-current_status: in_progress
+current_status: completed
 last_completed: m1_scan_and_extract
 last_completed_commit: "c6dbec9"
 session_count: 3
 next_steps:
-  - "Address M1 review follow-ups for realistic scan perf and edge cases."
-  - "Implement quick_filter.py tier1 fast-path."
-  - "Add pattern library and M2 fast-path fixtures."
-blocked_on: null
+  - "Open M2 PR and wait for review."
+  - "After M2 is merged, start m3_rank_causes from main."
+blocked_on: "waiting_for_m2_review"
 notes: |
-  M1 was merged in PR #3. M2 is active on feature/m2-quick-filter.
-  Keep M2 limited to quick_filter and approved M1 review follow-ups.
+  M2 implemented quick_filter and approved M1 review follow-ups only.
+  Do not start M3 until the M2 PR is reviewed and merged.
