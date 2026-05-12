@@ -1,0 +1,4 @@
++ %prep
++ /usr/bin/patch -p1
+Patch #3 (fix-build.patch) failed
+error: Bad exit status from /var/tmp/rpm-tmp.123 (%prep)

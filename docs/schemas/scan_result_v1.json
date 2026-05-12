@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/lhmax2010/LogAnalysisSkill/docs/schemas/scan_result_v1.json",
+  "title": "scan_result/v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "buildlog_path",
+    "buildlog_size_bytes",
+    "is_gzip",
+    "failed_phase",
+    "phases",
+    "commands",
+    "events",
+    "degraded_reasons"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "scan_result/v1"
+    },
+    "buildlog_path": {
+      "type": "string"
+    },
+    "buildlog_size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "is_gzip": {
+      "type": "boolean"
+    },
+    "failed_phase": {
+      "type": ["string", "null"]
+    },
+    "phases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["phase", "line_no", "raw_offset"],
+        "properties": {
+          "phase": {"type": "string"},
+          "line_no": {"type": "integer", "minimum": 1},
+          "raw_offset": {"type": "integer", "minimum": 0}
+        },
+        "additionalProperties": false
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "line_no",
+          "raw_offset",
+          "phase",
+          "argv_short",
+          "argv_full",
+          "rsp_expanded",
+          "command_degraded"
+        ],
+        "properties": {
+          "id": {"type": "string"},
+          "line_no": {"type": "integer", "minimum": 1},
+          "raw_offset": {"type": "integer", "minimum": 0},
+          "phase": {"type": ["string", "null"]},
+          "argv_short": {"type": "string"},
+          "argv_full": {"type": ["string", "null"]},
+          "rsp_expanded": {"type": "object"},
+          "command_degraded": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "severity",
+          "message",
+          "line_no",
+          "raw_offset",
+          "phase",
+          "command_id",
+          "details"
+        ],
+        "properties": {
+          "id": {"type": "string"},
+          "kind": {
+            "enum": [
+              "compiler",
+              "linker_undef",
+              "linker_missing",
+              "patch",
+              "spec_script",
+              "depsolve",
+              "install_missing",
+              "werror",
+              "make_cascade",
+              "rpm_phase",
+              "raw_error"
+            ]
+          },
+          "severity": {"enum": ["warning", "error"]},
+          "message": {"type": "string"},
+          "line_no": {"type": "integer", "minimum": 1},
+          "raw_offset": {"type": "integer", "minimum": 0},
+          "phase": {"type": ["string", "null"]},
+          "command_id": {"type": ["string", "null"]},
+          "file": {"type": "string"},
+          "line": {"type": "integer", "minimum": 1},
+          "column": {"type": "integer", "minimum": 1},
+          "target": {"type": "string"},
+          "parent": {"type": "string"},
+          "details": {"type": "object"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "degraded_reasons": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  },
+  "additionalProperties": false
+}

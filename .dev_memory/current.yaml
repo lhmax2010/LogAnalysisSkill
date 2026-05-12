@@ -1,12 +1,12 @@
 current_milestone: m1_scan_and_extract
-current_status: not_started
+current_status: completed
 last_completed: m0_init
-last_completed_commit: "864ff5e"
-session_count: 1
+last_completed_commit: "4778b75"
+session_count: 2
 next_steps:
-  - "Create feature/m1-scan-and-extract from main."
-  - "Read docs/DESIGN.md §3.1 and §10 before implementing."
-  - "Implement M1 only: scan_and_extract plus tracing foundation."
-blocked_on: null
+  - "Open M1 PR and wait for review."
+  - "After M1 is merged, start m2_quick_filter from main."
+blocked_on: "waiting_for_m1_review"
 notes: |
-  M0 was merged in PR #1. M1 must proceed with small commits and stop after the M1 PR.
+  M1 implemented Layer 0+1 scanning and tracing foundation only.
+  Do not start M2 until the M1 PR is reviewed and merged.

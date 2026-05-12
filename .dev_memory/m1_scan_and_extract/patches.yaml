@@ -1,0 +1,56 @@
+patches:
+  - id: p001
+    title: "Start M1 dev_memory"
+    commit: "be384b8"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m1_scan_and_extract/*"
+    rationale: "v0.5 §7 — milestone handoff state must be explicit"
+
+  - id: p002
+    title: "Add structured trace logger"
+    commit: "8807987"
+    files_changed:
+      - "gbs_analyzer/tracing/logger.py"
+      - "tests/unit/test_tracing_logger.py"
+    rationale: "v0.5 §10.1 — trace.log and trace.jsonl foundation"
+
+  - id: p003
+    title: "Add command parser helpers"
+    commit: "f73039e"
+    files_changed:
+      - "gbs_analyzer/_utils/command_parser.py"
+      - "tests/unit/test_command_parser.py"
+    rationale: "v0.5 §3.1 — multiline command and rsp parsing"
+
+  - id: p004
+    title: "Add cascade target mapping helpers"
+    commit: "fe66dc6"
+    files_changed:
+      - "gbs_analyzer/_utils/source_to_object.py"
+      - "tests/unit/test_source_to_object.py"
+    rationale: "v0.5 §3.1 — simple source/object suffix matching"
+
+  - id: p005
+    title: "Implement Layer 0+1 scanner"
+    commit: "f726f6c"
+    files_changed:
+      - "gbs_analyzer/scan_and_extract.py"
+      - "docs/schemas/scan_result_v1.json"
+      - "tests/unit/test_scan_and_extract.py"
+    rationale: "v0.5 §3.1 — stream scan, phase/command/events/cascade extraction"
+
+  - id: p006
+    title: "Add scanner fixture coverage"
+    commit: "c62b4fe"
+    files_changed:
+      - "tests/fixtures/scan_*"
+      - "tests/functional/test_scan_fixtures.py"
+    rationale: "v0.5 §9.4 — M1 requires 5 fixtures pass scan"
+
+  - id: p007
+    title: "Optimize non-diagnostic line scanning"
+    commit: "3fd137c"
+    files_changed:
+      - "gbs_analyzer/scan_and_extract.py"
+    rationale: "v0.5 §9.4 / §10.3 — 100 MB scan must complete under 8s"
