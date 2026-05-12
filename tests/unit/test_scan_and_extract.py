@@ -1,6 +1,8 @@
 import gzip
 from pathlib import Path
 
+import pytest
+
 from gbs_analyzer.scan_and_extract import BuildLogScanner, scan_buildlog
 from gbs_analyzer.tracing import TraceLogger
 
@@ -45,6 +47,15 @@ def test_expands_command_rsp(tmp_path: Path) -> None:
     path = write_log(tmp_path, "+ %build\n+ gcc @args.rsp -o app\n")
     result = scan_buildlog(path, cwd=tmp_path)
     assert result.commands[0].rsp_expanded["args.rsp"]["defines"] == ["-DDEBUG"]  # type: ignore[index]
+
+
+def test_expands_rsp_inside_multiline_command(tmp_path: Path) -> None:
+    (tmp_path / "args.rsp").write_text("-Iinc -DDEBUG foo.o", encoding="utf-8")
+    path = write_log(tmp_path, "+ %build\n+ gcc \\\n  @args.rsp \\\n  -o app\n")
+    result = scan_buildlog(path, cwd=tmp_path)
+    command = result.commands[0]
+    assert command.argv_short == "gcc @args.rsp -o app"
+    assert command.rsp_expanded["args.rsp"]["include_paths"] == ["-Iinc"]  # type: ignore[index]
 
 
 def test_missing_rsp_marks_scan_degraded(tmp_path: Path) -> None:
@@ -170,6 +181,14 @@ def test_scan_gzip_log(tmp_path: Path) -> None:
     result = scan_buildlog(path)
     assert result.is_gzip is True
     assert result.events[0].kind == "compiler"
+
+
+def test_corrupt_gzip_raises(tmp_path: Path) -> None:
+    path = tmp_path / "buildlog.gz"
+    path.write_bytes(b"not actually gzip")
+
+    with pytest.raises((gzip.BadGzipFile, EOFError, OSError)):
+        scan_buildlog(path)
 
 
 def test_result_as_dict_contains_commands_and_events(tmp_path: Path) -> None:

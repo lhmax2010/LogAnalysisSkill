@@ -1,0 +1,3 @@
++ %build
++ gcc build/main.o -lmissing -o demo
+/usr/bin/ld: cannot find -lmissing

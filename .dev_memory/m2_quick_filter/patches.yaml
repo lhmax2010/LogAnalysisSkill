@@ -1,0 +1,48 @@
+patches:
+  - id: p001
+    title: "Ignore local temp workspace"
+    commit: "11e6bed"
+    files_changed:
+      - ".gitignore"
+    rationale: "User local temp files must not be uploaded or reviewed"
+
+  - id: p002
+    title: "Start M2 dev_memory"
+    commit: "5482296"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m2_quick_filter/*"
+    rationale: "v0.5 §7 — milestone handoff state must be explicit"
+
+  - id: p003
+    title: "Add M1 review follow-up coverage"
+    commit: "f7d2a64"
+    files_changed:
+      - "tests/unit/test_scan_and_extract.py"
+      - "tests/functional/test_scan_realistic_perf.py"
+    rationale: "M1 review requested densified scan perf and edge-case coverage"
+
+  - id: p004
+    title: "Add tier1 quick filter patterns"
+    commit: "db63f3f"
+    files_changed:
+      - "patterns/schema.json"
+      - "patterns/gbs_errors.yaml"
+    rationale: "v0.5 §3.2 and §4 — pattern library for tier1 fast path"
+
+  - id: p005
+    title: "Implement tier1 matcher"
+    commit: "f5114f0"
+    files_changed:
+      - "gbs_analyzer/quick_filter.py"
+      - "tests/unit/test_quick_filter.py"
+      - "requirements-dev.txt"
+    rationale: "v0.5 §3.2 — evaluate tier1 patterns, context, and warning blocks"
+
+  - id: p006
+    title: "Add fast-path fixtures"
+    commit: "7fd9720"
+    files_changed:
+      - "tests/fixtures/fast_path_*"
+      - "tests/functional/test_quick_filter_fixtures.py"
+    rationale: "v0.5 §9.4 — M2 requires 4 Fast-Path fixtures hit"
