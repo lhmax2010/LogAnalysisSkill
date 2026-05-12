@@ -1,0 +1,118 @@
+schema_version: 2
+
+tier1_allowed_categories:
+  - depsolve_failure
+  - patch_failed
+  - linker_missing_lib
+  - install_file_missing
+
+tier1_forbidden_categories:
+  - undefined_reference
+  - compile_error
+  - werror_triggered
+  - rpm_phase_failure
+  - spec_script_error
+
+patterns:
+  - id: depsolve_nothing_provides
+    category: depsolve_failure
+    tier: tier1
+    event_kinds: [depsolve]
+    match:
+      regex:
+        - "nothing provides (?P<requirement>.+?)(?: needed by|$)"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning only", "info:"]
+    confidence: 0.96
+    terminal: true
+    fix_template: "可能缺少 BuildRequires 或仓库未启用，建议检查依赖提供者与构建 repo 配置；需要更多上下文请运行 expand。"
+
+  - id: patch_failed_standard
+    category: patch_failed
+    tier: tier1
+    event_kinds: [patch]
+    match:
+      regex:
+        - "Patch\\s*#?(?P<num>\\d+)\\s*(?:\\(.*\\))?\\s*failed"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning:", "info:"]
+    confidence: 0.96
+    terminal: true
+    fix_template: "可能是补丁与源码版本不匹配，建议检查对应 Patch 条目和源码上下文；需要更多上下文请运行 expand。"
+
+  - id: patch_failed_hunk
+    category: patch_failed
+    tier: tier1
+    event_kinds: [patch]
+    match:
+      regex:
+        - "Hunk\\s*#?(?P<num>\\d+)\\s*FAILED"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning:", "info:"]
+    confidence: 0.95
+    terminal: true
+    fix_template: "通常是补丁 hunk 无法应用，建议刷新补丁或核对源码版本；需要更多上下文请运行 expand。"
+
+  - id: patch_failed_at_line
+    category: patch_failed
+    tier: tier1
+    event_kinds: [patch]
+    match:
+      regex:
+        - "patch:?\\s*\\*\\*\\*\\*\\s*malformed patch at line (?P<line>\\d+)"
+        - "patch failed:\\s*(?P<file>[^\\s]+):(?P<line>\\d+)"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning:", "info:"]
+    confidence: 0.95
+    terminal: true
+    fix_template: "可能是补丁格式或目标文件上下文不匹配，建议检查失败行附近；需要更多上下文请运行 expand。"
+
+  - id: patch_failed_rpm
+    category: patch_failed
+    tier: tier1
+    event_kinds: [patch]
+    match:
+      regex:
+        - "error: patch failed"
+        - "error:\\s*Patch[\\d:]+\\s*failed"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning:", "info:"]
+    confidence: 0.95
+    terminal: true
+    fix_template: "可能是 RPM 应用补丁失败，建议检查 spec Patch 顺序和补丁状态；需要更多上下文请运行 expand。"
+
+  - id: linker_missing_library
+    category: linker_missing_lib
+    tier: tier1
+    event_kinds: [linker_missing]
+    match:
+      regex:
+        - "cannot find -l(?P<library>[A-Za-z0-9_.+-]+)"
+      required_context:
+        severity: [error]
+        tool_in: [ld, lld, gold, clang, clang++, gcc, g++]
+        not_in_warning_block: true
+      negative_patterns: ["warning:", "info:"]
+    confidence: 0.97
+    terminal: true
+    fix_template: "通常是链接库未安装或 -L 路径缺失，建议检查 BuildRequires 和库名；需要更多上下文请运行 expand。"
+
+  - id: install_file_not_found
+    category: install_file_missing
+    tier: tier1
+    event_kinds: [install_missing]
+    match:
+      regex:
+        - "File not found:\\s*(?P<path>.+)"
+        - "Installed \\(but unpackaged\\) file\\(s\\) found"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning:", "info:"]
+    confidence: 0.96
+    terminal: true
+    fix_template: "可能是 %files 列表与实际安装文件不一致，建议检查安装路径和打包清单；需要更多上下文请运行 expand。"
