@@ -124,7 +124,7 @@ class SpecMinimalParser:
         last_command = ""
         for index, line in enumerate(phase_lines):
             command_match = SHELL_COMMAND_RE.match(line)
-            if not command_match or PHASE_MARKER_RE.match(line):
+            if not command_match or _phase_marker_match(line):
                 continue
             command_index = index
             last_command = command_match.group("command")
@@ -236,7 +236,7 @@ def _is_top_level_section(name: str) -> bool:
 def _phase_window(lines: list[str], phase: str) -> list[str]:
     start = 0
     for index, line in enumerate(lines):
-        match = PHASE_MARKER_RE.match(line)
+        match = _phase_marker_match(line)
         if match and match.group("phase").lower() == phase:
             start = index + 1
             break
@@ -245,7 +245,14 @@ def _phase_window(lines: list[str], phase: str) -> list[str]:
 
     end = len(lines)
     for index in range(start, len(lines)):
-        if PHASE_MARKER_RE.match(lines[index]):
+        if _phase_marker_match(lines[index]):
             end = index
             break
     return lines[start:end]
+
+
+def _phase_marker_match(line: str) -> re.Match[str] | None:
+    match = PHASE_MARKER_RE.match(line)
+    if match and _is_top_level_section(match.group("phase")):
+        return match
+    return None

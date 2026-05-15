@@ -1,0 +1,7 @@
++ %build
++ make
+ok
++ %install
++ mkdir -p /tmp/buildroot/usr/bin
++ install -m 0755 missing /tmp/buildroot/usr/bin/missing
+install: cannot stat 'missing': No such file or directory
