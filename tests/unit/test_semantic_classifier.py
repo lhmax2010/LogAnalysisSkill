@@ -82,6 +82,40 @@ def test_generic_error_does_not_gate_make_cascade() -> None:
     assert sem.base_confidence == 0.45
 
 
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"command_id": None},
+        {"raw_offset": None},
+        {"phase": "%install"},
+        {"kind": "make_cascade"},
+    ],
+)
+def test_generic_error_gate_fails_when_one_required_context_is_missing(
+    overrides: dict[str, object],
+) -> None:
+    sem = classify_event(event("error: generic failure", **overrides), scan_context())
+    assert sem.name == "generic_error"
+    assert sem.base_confidence == 0.45
+    assert sem.context_satisfied is False
+
+
+def test_generic_error_gate_fails_when_all_required_context_is_missing() -> None:
+    sem = classify_event(
+        event(
+            "error: generic failure",
+            command_id=None,
+            raw_offset=None,
+            phase="%install",
+            kind="make_cascade",
+        ),
+        scan_context(),
+    )
+    assert sem.name == "generic_error"
+    assert sem.base_confidence == 0.45
+    assert sem.context_satisfied is False
+
+
 def test_rejects_bad_schema_version(tmp_path: Path) -> None:
     path = tmp_path / "semantics.yaml"
     path.write_text("schema_version: 2\nsemantic_classes: {}\n", encoding="utf-8")

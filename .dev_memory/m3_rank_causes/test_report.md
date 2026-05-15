@@ -37,6 +37,13 @@
 | `gbs_analyzer/_utils/semantic_classifier.py` | 98% |
 | Total | 99.44% |
 
+## Test Count Summary
+
+- Total pytest test functions: 130.
+- Unit test functions: 116.
+- Functional test functions: 14.
+- M3 ranking fixtures: 5 fixture cases asserted inside `tests/functional/test_rank_fixtures.py`; these are a subset of the 14 functional tests, not an additional test-count category.
+
 ## Performance
 
 | Baseline | Result | Target |

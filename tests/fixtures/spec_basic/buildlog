@@ -1,0 +1,6 @@
++ %build
++ cmake .
+-- configured
++ make
+src/demo.c:10:1: error: syntax error
+make: *** [all] Error 2

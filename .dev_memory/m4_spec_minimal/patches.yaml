@@ -1,0 +1,35 @@
+patches:
+  - id: p001
+    title: "Start M4 dev_memory"
+    commit: "0457fae"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m4_spec_minimal/*"
+    rationale: "v0.5 §7 - milestone handoff state must be explicit"
+
+  - id: p002
+    title: "Address M3 review follow-ups"
+    commit: "2fb6370"
+    files_changed:
+      - "README.md"
+      - ".dev_memory/m3_rank_causes/test_report.md"
+      - "tests/unit/test_semantic_classifier.py"
+    rationale: "M3 review requested project-status wording, test-count clarification, and generic_error gate coverage"
+
+  - id: p003
+    title: "Implement minimal spec parser"
+    commit: "0bd67a7"
+    files_changed:
+      - "gbs_analyzer/tizen/__init__.py"
+      - "gbs_analyzer/tizen/spec_minimal.py"
+      - "templates/spec_parse_uncertainty.md"
+      - "tests/unit/test_spec_minimal.py"
+    rationale: "v0.5 §6.1 - implement SpecMinimalParser and parse-status uncertainty markers"
+
+  - id: p004
+    title: "Add minimal spec fixtures"
+    commit: "3db8153"
+    files_changed:
+      - "tests/fixtures/spec_*"
+      - "tests/functional/test_spec_fixtures.py"
+    rationale: "v0.5 §9.4 - M4 requires 5 spec extraction successes and runtime under 200ms"

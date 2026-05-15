@@ -1,12 +1,12 @@
-current_milestone: m3_rank_causes
+current_milestone: m4_spec_minimal
 current_status: completed
-last_completed: m2_quick_filter
-last_completed_commit: "77c7ad5"
-session_count: 5
+last_completed: m3_rank_causes
+last_completed_commit: "b600505"
+session_count: 7
 next_steps:
-  - "Open M3 PR for review."
-  - "After M3 PR is merged, start M4 spec_minimal from updated main."
-blocked_on: "waiting_for_m3_review"
+  - "Open M4 PR for review."
+  - "After M4 PR is merged, start M5 evidence collectors from updated main."
+blocked_on: "waiting_for_m4_review"
 notes: |
-  M3 is complete on feature/m3-rank-causes and must stop at PR review.
-  Do not start M4 until the M3 PR is reviewed and merged.
+  M4 is complete on feature/m4-spec-minimal and must stop at PR review.
+  Do not start M5 until the M4 PR is reviewed and merged.
