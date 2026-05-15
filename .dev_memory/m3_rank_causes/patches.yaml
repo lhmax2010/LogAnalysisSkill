@@ -49,3 +49,10 @@ patches:
     files_changed:
       - "gbs_analyzer/rank_causes.py"
     rationale: "Keep Python source ASCII-only unless the file has a clear reason for non-ASCII text"
+
+  - id: p007
+    title: "Cache semantic classifier config"
+    commit: "4229204"
+    files_changed:
+      - "gbs_analyzer/_utils/semantic_classifier.py"
+    rationale: "M3 CI follow-up - avoid repeated YAML loading in rank runtime checks"

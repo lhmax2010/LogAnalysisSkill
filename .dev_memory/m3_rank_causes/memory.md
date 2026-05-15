@@ -2,7 +2,7 @@
 
 **Status**: completed
 **Start commit**: 77c7ad5
-**Latest implementation commit**: a614863
+**Latest implementation commit**: 4229204
 **Start date**: 2026-05-15
 **Completion date**: 2026-05-15
 **Estimated effort**: 1.5 days
@@ -55,7 +55,13 @@ M3 must not implement M4 `spec_minimal` or M5 evidence collectors.
 - **Files**: `tests/fixtures/rank_*`, `tests/functional/test_rank_fixtures.py`
 - **Reason**: M3 DoD requires Top-1 accuracy >= 80% and runtime under 50ms.
 - **Source**: v0.5 §9.4
-- **Tests**: 5/5 ranking fixtures hit expected Top-1 class; 5-fixture batch mean runtime 6.6671ms.
+- **Tests**: 5/5 ranking fixtures hit expected Top-1 class; cached 5-fixture batch mean runtime 0.1092ms.
+
+### Change 5: cached semantic classifier config
+- **Files**: `gbs_analyzer/_utils/semantic_classifier.py`
+- **Reason**: CI Python 3.11 + coverage made repeated YAML loading push the functional runtime test just above 50ms.
+- **Source**: M3 CI follow-up
+- **Tests**: `tests/functional/test_rank_fixtures.py`, `tests/unit/test_semantic_classifier.py`, `tests/unit/test_rank_causes.py`
 
 ## Test Status
 
@@ -78,8 +84,8 @@ M3-specific unit tests: 23 (`test_semantic_classifier.py` + `test_rank_causes.py
 
 ## Token Performance Baseline
 
-- Ranking 5-fixture batch mean runtime: 6.6671ms (target < 50ms)
-- Ranking per evaluation mean runtime: 1.3334ms
+- Ranking 5-fixture batch mean runtime: 0.1092ms (target < 50ms)
+- Ranking per evaluation mean runtime: 0.0218ms
 - Top-1 accuracy on M3 fixtures: 100% (target >= 80%)
 - Baseline: `.dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures.json`
 

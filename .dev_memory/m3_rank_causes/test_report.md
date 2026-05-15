@@ -42,9 +42,9 @@
 | Baseline | Result | Target |
 | --- | ---: | ---: |
 | Top-1 accuracy on 5 M3 fixtures | 100% | >= 80% |
-| 5-fixture rank batch mean | 6.6671ms | < 50ms |
-| 5-fixture rank batch p95 | 7.8415ms | < 50ms |
-| Per-evaluation mean | 1.3334ms | < 50ms |
+| 5-fixture rank batch mean | 0.1092ms | < 50ms |
+| 5-fixture rank batch p95 | 0.1578ms | < 50ms |
+| Per-evaluation mean | 0.0218ms | < 50ms |
 
 Raw baseline: `.dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures.json`.
 
