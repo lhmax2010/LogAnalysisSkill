@@ -1,0 +1,4 @@
++ %build
++ gcc build/main.o -lmissing -o app
+/usr/bin/ld: cannot find -lmissing
+collect2: error: ld returned 1 exit status
