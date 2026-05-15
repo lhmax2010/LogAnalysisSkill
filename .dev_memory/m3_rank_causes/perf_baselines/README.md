@@ -1,3 +1,5 @@
 # M3 Perf Baselines
 
-M3 must store ranking performance baselines here before the PR is opened.
+Recorded baselines:
+
+- `rank_5_fixtures.json`: 5 M3 rank fixtures, 200 iterations, Top-1 accuracy and runtime.
