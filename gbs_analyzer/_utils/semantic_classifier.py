@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +40,7 @@ class SemanticClassifier:
         self.by_name = {rule.name: rule for rule in rules}
 
     @classmethod
+    @lru_cache(maxsize=4)
     def from_file(cls, path: str | Path = DEFAULT_SEMANTICS_PATH) -> SemanticClassifier:
         raw = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
         if not isinstance(raw, dict) or raw.get("schema_version") != 1:
