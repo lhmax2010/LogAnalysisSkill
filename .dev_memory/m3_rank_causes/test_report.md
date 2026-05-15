@@ -45,8 +45,13 @@
 | 5-fixture rank batch mean | 0.1092ms | < 50ms |
 | 5-fixture rank batch p95 | 0.1578ms | < 50ms |
 | Per-evaluation mean | 0.0218ms | < 50ms |
+| Cold-start 5-fixture rank batch mean | 6.5737ms | < 50ms |
+| Cold-start 5-fixture rank batch p95 | 7.3806ms | < 50ms |
+| Cold-start per-evaluation mean | 1.3147ms | < 50ms |
 
-Raw baseline: `.dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures.json`.
+Raw baselines:
+- `.dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures.json`
+- `.dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures_cold.json`
 
 ## Known Gaps
 

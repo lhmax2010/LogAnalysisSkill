@@ -86,8 +86,12 @@ M3-specific unit tests: 23 (`test_semantic_classifier.py` + `test_rank_causes.py
 
 - Ranking 5-fixture batch mean runtime: 0.1092ms (target < 50ms)
 - Ranking per evaluation mean runtime: 0.0218ms
+- Cold-start 5-fixture batch mean runtime: 6.5737ms (target < 50ms)
+- Cold-start per evaluation mean runtime: 1.3147ms
 - Top-1 accuracy on M3 fixtures: 100% (target >= 80%)
-- Baseline: `.dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures.json`
+- Baselines:
+  - `.dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures.json`
+  - `.dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures_cold.json`
 
 ## Notes for the Next Developer
 

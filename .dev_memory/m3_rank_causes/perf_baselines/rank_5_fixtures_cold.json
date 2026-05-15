@@ -1,0 +1,22 @@
+{
+  "cache_mode": "cold_start_per_evaluation",
+  "date": "2026-05-15",
+  "elapsed_ms_per_evaluation_mean": 1.3147422482725233,
+  "elapsed_ms_total_for_5_fixtures_mean": 6.573711241362616,
+  "elapsed_ms_total_for_5_fixtures_min": 6.212061969563365,
+  "elapsed_ms_total_for_5_fixtures_p95": 7.380620902404189,
+  "evaluations": 1000,
+  "fixtures": [
+    "rank_syntax_error",
+    "rank_no_member",
+    "rank_missing_lib",
+    "rank_undefined_ref",
+    "rank_generic_gated"
+  ],
+  "iterations": 200,
+  "method": "SemanticClassifier.from_file.cache_clear() before every rank_causes call",
+  "passed": true,
+  "target_ms_total_for_5_fixtures": 50.0,
+  "top1_accuracy": 1.0,
+  "top1_hits": 1000
+}

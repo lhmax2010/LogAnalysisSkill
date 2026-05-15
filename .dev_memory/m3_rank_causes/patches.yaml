@@ -56,3 +56,12 @@ patches:
     files_changed:
       - "gbs_analyzer/_utils/semantic_classifier.py"
     rationale: "M3 CI follow-up - avoid repeated YAML loading in rank runtime checks"
+
+  - id: p008
+    title: "Record semantic classifier cache review follow-up"
+    commit: "0af70d5"
+    files_changed:
+      - ".dev_memory/m3_rank_causes/decisions.md"
+      - ".dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures_cold.json"
+      - ".dev_memory/m3_rank_causes/test_report.md"
+    rationale: "M3 review requested explicit cache scope and cold-start performance baseline"
