@@ -1,3 +1,5 @@
 # M4 Perf Baselines
 
-M4 must store spec parsing performance baselines here before the PR is opened.
+Recorded baselines:
+
+- `spec_5_fixtures.json`: 5 M4 spec fixtures, 200 iterations, extraction success rate and runtime.

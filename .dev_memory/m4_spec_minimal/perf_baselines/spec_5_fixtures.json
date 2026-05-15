@@ -1,0 +1,20 @@
+{
+  "date": "2026-05-15",
+  "elapsed_ms_per_evaluation_mean": 0.14407251309603453,
+  "elapsed_ms_total_for_5_fixtures_mean": 0.7203625654801726,
+  "elapsed_ms_total_for_5_fixtures_min": 0.5299559561535716,
+  "elapsed_ms_total_for_5_fixtures_p95": 1.1619108146987855,
+  "evaluations": 1000,
+  "fixtures": [
+    "spec_basic",
+    "spec_macro",
+    "spec_conditionals",
+    "spec_subpackage",
+    "spec_install_failure"
+  ],
+  "iterations": 200,
+  "passed": true,
+  "success_rate": 1.0,
+  "successful_extractions": 1000,
+  "target_ms_total_for_5_fixtures": 200.0
+}
