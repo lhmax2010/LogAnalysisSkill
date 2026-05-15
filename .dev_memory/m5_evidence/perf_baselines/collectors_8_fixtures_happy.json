@@ -1,0 +1,27 @@
+{
+  "date": "2026-05-15",
+  "elapsed_ms_per_evaluation_mean": 0.17451093473937362,
+  "elapsed_ms_total_for_8_fixtures_mean": 1.396087477914989,
+  "elapsed_ms_total_for_8_fixtures_min": 1.07032700907439,
+  "elapsed_ms_total_for_8_fixtures_p95": 2.5716562173329294,
+  "evaluations": 1600,
+  "extraction_methods": {
+    "ctags": 600
+  },
+  "fixtures": [
+    "evidence_compile_no_member",
+    "evidence_compile_window",
+    "evidence_link_undef",
+    "evidence_link_missing",
+    "evidence_spec_build",
+    "evidence_spec_install",
+    "evidence_deps_nothing",
+    "evidence_deps_profile"
+  ],
+  "iterations": 200,
+  "mode": "synthetic_ctags_success",
+  "passed": true,
+  "success_rate": 1.0,
+  "successful_collections": 1600,
+  "target_ms_single_collection": 500.0
+}

@@ -1,3 +1,6 @@
 # M5 Perf Baselines
 
-M5 must store collector performance baselines here before the PR is opened.
+Recorded baselines:
+
+- `collectors_8_fixtures_happy.json`: 8 M5 collector fixtures with synthetic ctags success.
+- `collectors_8_fixtures_ctags_failure.json`: same fixtures with ctags forced to fail.

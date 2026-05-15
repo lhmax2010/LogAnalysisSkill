@@ -1,13 +1,12 @@
 current_milestone: m5_evidence
-current_status: in_progress
+current_status: completed
 last_completed: m4_spec_minimal
 last_completed_commit: "9216996"
-session_count: 8
+session_count: 9
 next_steps:
-  - "Implement EvidenceCollector ABC."
-  - "Implement compile/link/spec/deps collectors with ctags fallback coverage."
-  - "Add M5 fixtures and performance baselines."
-blocked_on: null
+  - "Open M5 PR for review."
+  - "After M5 PR is merged, start M6 full_match from updated main."
+blocked_on: "waiting_for_m5_review"
 notes: |
-  M4 was merged in PR #6. M5 is active on feature/m5-evidence.
-  Keep M5 limited to compile/link/spec/deps evidence collectors and approved M5 infrastructure.
+  M5 is complete on feature/m5-evidence and must stop at PR review.
+  Do not start M6 until the M5 PR is reviewed and merged.
