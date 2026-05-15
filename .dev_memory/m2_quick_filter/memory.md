@@ -61,7 +61,7 @@ M2 must not implement M3 ranking or M5 evidence collectors.
 
 | Test type | Passed | Failed | Skipped |
 | --- | ---: | ---: | ---: |
-| Unit | 76 | 0 | 0 |
+| Unit | 77 | 0 | 0 |
 | Functional scan fixtures | 6 | 0 | 0 |
 | M2 Fast-Path fixtures | 5 | 0 | 0 |
 

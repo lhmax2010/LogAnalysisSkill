@@ -44,7 +44,7 @@ Tizen gbs 编译日志分析 Skill。把 1~100 MB 的 buildlog 压缩成 ≤ 180
 
 ## 项目状态
 
-- **阶段**：M0（Initial setup）
+- **阶段**：M3（rank_causes）
 - **设计版本**：v0.5（已冻结）
 - **MVP 工作量**：16 天，8 个 milestones
 - **仓库**：https://github.com/lhmax2010/LogAnalysisSkill

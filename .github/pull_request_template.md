@@ -23,6 +23,7 @@
 - [ ] `pytest tests/ -v` is green
 - [ ] Relevant milestone test guide has been followed
 - [ ] dev_memory is updated
+- [ ] README project status is updated
 - [ ] Performance data is recorded or marked not applicable
 - [ ] Known issues are documented
 
