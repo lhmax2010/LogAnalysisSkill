@@ -28,6 +28,8 @@
 
 94.54% total coverage. `gbs_analyzer/quick_filter.py` coverage: 85%.
 
+Final test count breakdown: 77 unit tests and 11 functional tests, for 88 total.
+
 ## Performance
 
 Quick-filter 4-fixture batch: 11.6705ms, under the 100ms M2 target.

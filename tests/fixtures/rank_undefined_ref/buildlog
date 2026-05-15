@@ -1,0 +1,4 @@
++ %build
++ g++ build/main.o -o app
+main.o: undefined reference to `demo::run()'
+collect2: error: ld returned 1 exit status

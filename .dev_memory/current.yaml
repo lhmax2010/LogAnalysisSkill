@@ -1,12 +1,12 @@
-current_milestone: m2_quick_filter
+current_milestone: m3_rank_causes
 current_status: completed
-last_completed: m1_scan_and_extract
-last_completed_commit: "c6dbec9"
-session_count: 3
+last_completed: m2_quick_filter
+last_completed_commit: "77c7ad5"
+session_count: 5
 next_steps:
-  - "Open M2 PR and wait for review."
-  - "After M2 is merged, start m3_rank_causes from main."
-blocked_on: "waiting_for_m2_review"
+  - "Open M3 PR for review."
+  - "After M3 PR is merged, start M4 spec_minimal from updated main."
+blocked_on: "waiting_for_m3_review"
 notes: |
-  M2 implemented quick_filter and approved M1 review follow-ups only.
-  Do not start M3 until the M2 PR is reviewed and merged.
+  M3 is complete on feature/m3-rank-causes and must stop at PR review.
+  Do not start M4 until the M3 PR is reviewed and merged.

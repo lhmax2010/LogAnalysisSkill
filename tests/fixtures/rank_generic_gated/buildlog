@@ -1,0 +1,4 @@
++ %build
++ ./configure --prefix=/usr
+error: configure failed because dependency probe returned 2
+make: *** [all] Error 2

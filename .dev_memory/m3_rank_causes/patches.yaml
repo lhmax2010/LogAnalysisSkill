@@ -1,0 +1,67 @@
+patches:
+  - id: p001
+    title: "Start M3 dev_memory"
+    commit: "1f0467d"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m3_rank_causes/*"
+    rationale: "v0.5 §7 - milestone handoff state must be explicit"
+
+  - id: p002
+    title: "Address M2 review follow-ups"
+    commit: "27a0c20"
+    files_changed:
+      - ".dev_memory/m2_quick_filter/*"
+      - "README.md"
+      - ".github/pull_request_template.md"
+      - "tests/unit/test_quick_filter.py"
+    rationale: "M2 review requested schema decisions, README status update, test-count cleanup, and quick_filter coverage above 90%"
+
+  - id: p003
+    title: "Add semantic classifier"
+    commit: "838c196"
+    files_changed:
+      - "patterns/error_semantics.yaml"
+      - "gbs_analyzer/_utils/semantic_classifier.py"
+      - "tests/unit/test_semantic_classifier.py"
+    rationale: "v0.5 §3.3 and §4.3 - ranker needs 8 semantic classes and generic_error gating"
+
+  - id: p004
+    title: "Implement root cause ranking"
+    commit: "214ab00"
+    files_changed:
+      - "gbs_analyzer/rank_causes.py"
+      - "tests/unit/test_rank_causes.py"
+    rationale: "v0.5 §3.3 - score events, suppress cascades, and emit Top-K candidates with confidence_reason"
+    test_commit: "214ab00"
+
+  - id: p005
+    title: "Add ranking accuracy fixtures"
+    commit: "17d5500"
+    files_changed:
+      - "tests/fixtures/rank_*"
+      - "tests/functional/test_rank_fixtures.py"
+    rationale: "v0.5 §9.4 - M3 requires Top-1 accuracy >= 80% and runtime under 50ms"
+
+  - id: p006
+    title: "Use ASCII summary separator"
+    commit: "a614863"
+    files_changed:
+      - "gbs_analyzer/rank_causes.py"
+    rationale: "Keep Python source ASCII-only unless the file has a clear reason for non-ASCII text"
+
+  - id: p007
+    title: "Cache semantic classifier config"
+    commit: "4229204"
+    files_changed:
+      - "gbs_analyzer/_utils/semantic_classifier.py"
+    rationale: "M3 CI follow-up - avoid repeated YAML loading in rank runtime checks"
+
+  - id: p008
+    title: "Record semantic classifier cache review follow-up"
+    commit: "04ac313"
+    files_changed:
+      - ".dev_memory/m3_rank_causes/decisions.md"
+      - ".dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures_cold.json"
+      - ".dev_memory/m3_rank_causes/test_report.md"
+    rationale: "M3 review requested explicit cache scope and cold-start performance baseline"

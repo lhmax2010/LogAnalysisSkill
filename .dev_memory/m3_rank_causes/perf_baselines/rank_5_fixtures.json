@@ -1,0 +1,20 @@
+{
+  "date": "2026-05-15",
+  "elapsed_ms_per_evaluation_mean": 0.02183578279800713,
+  "elapsed_ms_total_for_5_fixtures_mean": 0.10917891399003565,
+  "elapsed_ms_total_for_5_fixtures_min": 0.084639061242342,
+  "elapsed_ms_total_for_5_fixtures_p95": 0.1577501418069005,
+  "evaluations": 1000,
+  "fixtures": [
+    "rank_syntax_error",
+    "rank_no_member",
+    "rank_missing_lib",
+    "rank_undefined_ref",
+    "rank_generic_gated"
+  ],
+  "iterations": 200,
+  "passed": true,
+  "target_ms_total_for_5_fixtures": 50.0,
+  "top1_accuracy": 1.0,
+  "top1_hits": 1000
+}
