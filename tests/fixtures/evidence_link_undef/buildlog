@@ -1,0 +1,3 @@
++ %build
++ gcc build/foo.o -o demo
+/usr/bin/ld: build/foo.o: undefined reference to `missing_symbol'
