@@ -171,7 +171,7 @@ def _summary(event: dict[str, Any], sem: SemanticClass) -> str:
     if event.get("file") and event.get("line"):
         location = f" at {event['file']}:{event['line']}"
     message = str(event.get("message", "")).strip()
-    return f"{event.get('kind')} {sem.name}{location} — {message}"
+    return f"{event.get('kind')} {sem.name}{location} - {message}"
 
 
 def _format_delta(value: float) -> str:
