@@ -301,6 +301,19 @@ def test_spec_collector_level3_adds_spec_metadata(tmp_path: Path) -> None:
     assert evidence.data["sources"][0]["value"] == "demo.tar.gz"
 
 
+def test_spec_collector_does_not_depend_on_ctags_when_ctags_unavailable(
+    tmp_path: Path,
+) -> None:
+    spec = write_spec(tmp_path)
+    evidence = SpecEvidenceCollector(
+        scan_data(),
+        spec_path=spec,
+        ctags_runner=failing_ctags,
+    ).collect(candidate("E004", "spec_script"), 900)
+    assert evidence.degraded is False
+    assert evidence.data["spec_section_text"] == "make"
+
+
 def test_deps_collector_level1_parses_missing_dependency() -> None:
     evidence = DepsEvidenceCollector(scan_data()).collect(candidate("E005", "depsolve"), 300)
     assert evidence.data["missing_dependency"] == {
@@ -326,6 +339,19 @@ def test_deps_collector_missing_spec_is_degraded(tmp_path: Path) -> None:
     )
     assert evidence.degraded is True
     assert evidence.warnings == ["spec_file_unavailable"]
+
+
+def test_deps_collector_does_not_depend_on_ctags_when_ctags_unavailable(
+    tmp_path: Path,
+) -> None:
+    spec = write_spec(tmp_path)
+    evidence = DepsEvidenceCollector(
+        scan_data(),
+        spec_path=spec,
+        ctags_runner=failing_ctags,
+    ).collect(candidate("E005", "depsolve"), 600)
+    assert evidence.degraded is False
+    assert evidence.data["spec_buildrequires"] == ["gcc", "make"]
 
 
 @pytest.mark.parametrize(
