@@ -1,0 +1,8 @@
+patches:
+  - id: p001
+    title: "Start M4 dev_memory"
+    commit: "pending"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m4_spec_minimal/*"
+    rationale: "v0.5 §7 - milestone handoff state must be explicit"

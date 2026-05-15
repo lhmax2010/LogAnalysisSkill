@@ -1,12 +1,13 @@
-current_milestone: m3_rank_causes
-current_status: completed
-last_completed: m2_quick_filter
-last_completed_commit: "77c7ad5"
-session_count: 5
+current_milestone: m4_spec_minimal
+current_status: in_progress
+last_completed: m3_rank_causes
+last_completed_commit: "b600505"
+session_count: 6
 next_steps:
-  - "Open M3 PR for review."
-  - "After M3 PR is merged, start M4 spec_minimal from updated main."
-blocked_on: "waiting_for_m3_review"
+  - "Apply remaining M3 review follow-ups."
+  - "Implement SpecMinimalParser."
+  - "Add M4 spec fixtures and performance baseline."
+blocked_on: null
 notes: |
-  M3 is complete on feature/m3-rank-causes and must stop at PR review.
-  Do not start M4 until the M3 PR is reviewed and merged.
+  M3 was merged in PR #5. M4 is active on feature/m4-spec-minimal.
+  Keep M4 limited to spec_minimal and approved M3 review follow-ups.
