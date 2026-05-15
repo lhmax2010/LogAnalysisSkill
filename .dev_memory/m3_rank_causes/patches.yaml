@@ -59,7 +59,7 @@ patches:
 
   - id: p008
     title: "Record semantic classifier cache review follow-up"
-    commit: "0af70d5"
+    commit: "04ac313"
     files_changed:
       - ".dev_memory/m3_rank_causes/decisions.md"
       - ".dev_memory/m3_rank_causes/perf_baselines/rank_5_fixtures_cold.json"
