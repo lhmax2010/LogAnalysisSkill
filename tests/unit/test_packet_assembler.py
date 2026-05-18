@@ -450,6 +450,142 @@ def test_assemble_packet_uses_fallback_when_evidence_missing(tmp_path: Path) -> 
     assert packet["token_budget"]["conservation_ok"] is True
 
 
+def test_assemble_packet_truncates_to_final_token_budget(tmp_path: Path) -> None:
+    scan = scan_data(tmp_path)
+    buildlog = Path(str(scan["buildlog_path"]))
+    buildlog.write_text(
+        "\n".join(f"log window line {index} " + ("word " * 80) for index in range(1, 90)),
+        encoding="utf-8",
+    )
+    event = scan["events"][0]
+    assert isinstance(event, dict)
+    event["line_no"] = 45
+
+    packet = assemble_packet(
+        scan,
+        candidates(),
+        None,
+        None,
+        estimator=TokenEstimator(use_tiktoken=False),
+        max_tokens=1200,
+    )
+
+    assert packet["token_budget"]["used"] <= 1200
+    assert packet["token_budget"]["limit_with_prompt"] == 1200
+    assert packet["token_budget"]["conservation_ok"] is True
+    assert packet["degraded"] is True
+    assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
+
+
+def test_assemble_packet_truncates_source_snippet_when_needed(tmp_path: Path) -> None:
+    evidence = compile_evidence()
+    evidence.data["source_snippet"]["text"] = "source line " + ("token " * 500)
+
+    packet = assemble_packet(
+        scan_data(tmp_path),
+        candidates(),
+        evidence,
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+        max_tokens=1200,
+    )
+
+    assert packet["token_budget"]["used"] <= 1200
+    assert packet["token_budget"]["conservation_ok"] is True
+    assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
+    assert "[truncated]" in packet["evidence"]["source_snippet"]["text"]
+
+
+def test_final_token_guard_helper_edges() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    packet = {
+        "verdict": "needs_llm",
+        "prompt": None,
+        "evidence": {"fallback_context": {"primary_error_excerpt": "short"}},
+        "root_cause_candidates": [{"rank": 1}, {"rank": 2}],
+        "cascade_summary": "cascade " * 100,
+        "token_budget": {},
+        "degraded_reasons": ["packet_truncated_to_token_budget"],
+    }
+
+    assert packet_assembler._limit_fallback_lines(packet, "missing", max_lines=1) is False
+    assert packet_assembler._clear_fallback_field(packet, "missing") is False
+    assert (
+        packet_assembler._truncate_fallback_text(
+            {"evidence": {}},
+            estimator,
+            max_tokens=10,
+        )
+        is False
+    )
+    assert (
+        packet_assembler._truncate_snippet_texts(
+            {"evidence": "bad"},
+            estimator,
+            max_tokens=10,
+        )
+        is False
+    )
+    assert packet_assembler._clear_cascade_summary(packet, estimator) is True
+    assert packet["cascade_summary"] == ""
+    assert packet_assembler._keep_top_candidate(packet) is True
+    assert packet["root_cause_candidates"] == [{"rank": 1}]
+
+
+def test_final_token_guard_helper_mutation_edges() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    packet = {
+        "evidence": {
+            "fallback_context": {
+                "extra_log_window": "extra",
+                "cascade_summary": "cascade " * 100,
+            }
+        },
+        "root_cause_candidates": [{"rank": 1}],
+    }
+    nested = [{"text": "snippet " * 200}]
+
+    assert packet_assembler._clear_fallback_field(packet, "extra_log_window") is True
+    assert packet["evidence"]["fallback_context"]["extra_log_window"] == ""
+    assert packet_assembler._clear_cascade_summary(packet, estimator) is True
+    assert packet["evidence"]["fallback_context"]["cascade_summary"] == ""
+    assert packet_assembler._truncate_text_fields(
+        nested,
+        estimator,
+        max_tokens=10,
+    )
+    assert "[truncated]" in nested[0]["text"]
+    assert packet_assembler._keep_top_candidate(packet) is False
+
+
+def test_final_token_guard_truncates_extra_log_window() -> None:
+    packet = {
+        "verdict": "needs_llm",
+        "primary_error": {"message": "boom"},
+        "root_cause_candidates": [{"rank": 1}],
+        "evidence": {
+            "fallback_context": {
+                "primary_error_excerpt": "error",
+                "extra_log_window": "\n".join(f"extra {index}" for index in range(60)),
+            }
+        },
+        "cascade_summary": "",
+        "token_budget": {},
+        "degraded_reasons": [],
+    }
+
+    packet_assembler._enforce_final_token_limit(
+        packet,
+        max_tokens=500,
+        estimator=TokenEstimator(use_tiktoken=False),
+        redactor=MinimalRedactor(),
+    )
+
+    assert packet["token_budget"]["used"] <= 500
+    assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
+    assert "[truncated]" in packet["evidence"]["fallback_context"]["extra_log_window"]
+
+
 def test_assemble_packet_marks_degraded_evidence_warning(tmp_path: Path) -> None:
     packet = assemble_packet(
         scan_data(tmp_path),
