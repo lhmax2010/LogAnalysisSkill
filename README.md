@@ -44,7 +44,7 @@ Tizen gbs 编译日志分析 Skill。把 1~100 MB 的 buildlog 压缩成 ≤ 180
 
 ## 项目状态
 
-- **最近已合并阶段**：M5（evidence collectors）
+- **最近已合并阶段**：M6（full_match）
 - **当前开发状态**：以 `.dev_memory/current.yaml` 为准；feature 分支可能领先 `main`
 - **设计版本**：v0.5（已冻结）
 - **MVP 工作量**：16 天，8 个 milestones

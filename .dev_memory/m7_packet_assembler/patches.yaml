@@ -1,0 +1,9 @@
+patches:
+  - id: p001
+    title: "Start M7 dev_memory"
+    commit: "pending"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m7_packet_assembler/*"
+      - "README.md"
+    rationale: "v0.5 §7 - milestone handoff state must be explicit"
