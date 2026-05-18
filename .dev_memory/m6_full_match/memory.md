@@ -27,7 +27,7 @@ or new collector behavior.
 ## Planned Work
 
 - [x] Start M6 dev_memory and branch state.
-- [ ] Apply M5 review follow-ups.
+- [x] Apply M5 review follow-ups.
 - [ ] Add full_match module and pattern compatibility loader.
 - [ ] Extend pattern schema and patterns with tier2 direct-answer fields.
 - [ ] Add unit tests and at least 3 tier2 fixture hits.
@@ -40,6 +40,12 @@ or new collector behavior.
 - **Reason**: M5 was merged and M6 is now the active feature branch.
 - **Source**: v0.5 §7, §8
 - **Tests**: Documentation/state-only.
+
+### Change 2: M5 review follow-up
+- **Files**: `tests/unit/test_evidence_base.py`, `.dev_memory/m5_evidence/decisions.md`
+- **Reason**: M5 review requested 95%+ coverage for `evidence/base.py` and explicit declaration of collector coverage blind spots.
+- **Source**: M5 review feedback, v0.5 §7.3
+- **Tests**: `.venv/bin/pytest tests/unit/test_evidence_base.py --cov=gbs_analyzer.evidence.base --cov-report=term-missing -q` passes with 100% module coverage.
 
 ## Test Status
 
