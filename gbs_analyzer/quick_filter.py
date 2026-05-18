@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 import shlex
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -60,7 +61,11 @@ class QuickFilter:
 
     @classmethod
     def from_file(cls, path: str | Path = DEFAULT_PATTERN_PATH) -> QuickFilter:
-        library = load_pattern_library(path)
+        library = (
+            _load_default_pattern_library()
+            if Path(path) == DEFAULT_PATTERN_PATH
+            else load_pattern_library(path)
+        )
         return cls(library["patterns"])
 
     def evaluate(self, scan_result: ScanResult | dict[str, Any]) -> QuickFilterResult:
@@ -106,6 +111,11 @@ def load_pattern_library(path: str | Path = DEFAULT_PATTERN_PATH) -> dict[str, A
         "tier1_forbidden_categories": tuple(raw.get("tier1_forbidden_categories", [])),
         "patterns": _compile_patterns(raw),
     }
+
+
+@lru_cache(maxsize=1)
+def _load_default_pattern_library() -> dict[str, Any]:
+    return load_pattern_library(DEFAULT_PATTERN_PATH)
 
 
 def _compile_patterns(raw: dict[str, Any]) -> list[QuickPattern]:
