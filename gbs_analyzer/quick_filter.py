@@ -122,6 +122,8 @@ def _compile_patterns(raw: dict[str, Any]) -> list[QuickPattern]:
     for item in patterns:
         if not isinstance(item, dict):
             raise PatternValidationError("each pattern must be a mapping")
+        if item.get("tier") != "tier1":
+            continue
         _validate_tier1_pattern(item, allowed, forbidden)
         match = item["match"]
         compiled.append(

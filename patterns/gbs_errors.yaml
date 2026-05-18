@@ -27,6 +27,10 @@ patterns:
     confidence: 0.96
     terminal: true
     fix_template: "可能缺少 BuildRequires 或仓库未启用，建议检查依赖提供者与构建 repo 配置；需要更多上下文请运行 expand。"
+    direct_answer_tier2:
+      enabled: true
+      evidence_required: [missing_dependency, spec_buildrequires]
+      fix_template: "缺失依赖 {requirement}，并且 spec BuildRequires 上下文已收集；建议补充对应 BuildRequires 或启用提供该依赖的 repo。"
 
   - id: patch_failed_standard
     category: patch_failed
@@ -101,6 +105,10 @@ patterns:
     confidence: 0.97
     terminal: true
     fix_template: "通常是链接库未安装或 -L 路径缺失，建议检查 BuildRequires 和库名；需要更多上下文请运行 expand。"
+    direct_answer_tier2:
+      enabled: true
+      evidence_required: [link_command, spec_buildrequires]
+      fix_template: "链接器找不到 lib{library}，且 link command 与 spec BuildRequires 已收集；建议确认库名、-L 路径和对应 BuildRequires。"
 
   - id: install_file_not_found
     category: install_file_missing
@@ -116,3 +124,89 @@ patterns:
     confidence: 0.96
     terminal: true
     fix_template: "可能是 %files 列表与实际安装文件不一致，建议检查安装路径和打包清单；需要更多上下文请运行 expand。"
+
+  - id: compile_no_member_tier2
+    category: compile_error
+    tier: tier2
+    event_kinds: [compiler]
+    match:
+      regex:
+        - "(?:has no member named|no member named) ['`\"]?(?P<member>[A-Za-z_][A-Za-z0-9_]*)"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning:"]
+    confidence: 0.88
+    terminal: true
+    direct_answer_tier2:
+      enabled: true
+      evidence_required: [primary_error, command_summary, source_snippet]
+      fix_template: "编译失败是访问了不存在的成员 {member}；source snippet 与编译命令已收集，建议核对结构体/类定义或条件编译分支。"
+
+  - id: compile_undeclared_identifier_tier2
+    category: compile_error
+    tier: tier2
+    event_kinds: [compiler]
+    match:
+      regex:
+        - "['`\"]?(?P<identifier>[A-Za-z_][A-Za-z0-9_]*)['`\"]? (?:undeclared|was not declared in this scope)"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning:"]
+    confidence: 0.86
+    terminal: true
+    direct_answer_tier2:
+      enabled: true
+      evidence_required: [primary_error, command_summary, source_snippet]
+      fix_template: "编译失败是标识符 {identifier} 未声明；source snippet 与编译命令已收集，建议检查头文件、宏开关或命名空间。"
+
+  - id: linker_undefined_reference_tier2
+    category: undefined_reference
+    tier: tier2
+    event_kinds: [linker_undef]
+    match:
+      regex:
+        - "undefined reference to [`'\"](?P<symbol>.+?)[`'\"]"
+      required_context:
+        severity: [error]
+        tool_in: [ld, lld, gold, clang, clang++, gcc, g++]
+      negative_patterns: ["warning:"]
+    confidence: 0.87
+    terminal: true
+    direct_answer_tier2:
+      enabled: true
+      evidence_required: [primary_error, link_command, symbol_context]
+      fix_template: "链接失败是未解析符号 {symbol}；link command 与符号上下文已收集，建议检查对象文件是否参与链接或缺少实现库。"
+
+  - id: rpm_phase_failure_tier2
+    category: rpm_phase_failure
+    tier: tier2
+    event_kinds: [rpm_phase]
+    match:
+      regex:
+        - "Bad exit status from .*\\((?P<phase>%\\w+)\\)"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning:"]
+    confidence: 0.86
+    terminal: true
+    direct_answer_tier2:
+      enabled: true
+      evidence_required: [primary_error, spec_section_text, failure_context]
+      fix_template: "{phase} 阶段脚本失败，spec section 与失败前最后一条命令已收集；建议优先检查该命令及其输入路径。"
+
+  - id: spec_script_parse_error_tier2
+    category: spec_script_error
+    tier: tier2
+    event_kinds: [spec_script]
+    match:
+      regex:
+        - "spec file.*error[: ]+(?P<reason>.+)"
+      required_context:
+        severity: [error]
+      negative_patterns: ["warning:"]
+    confidence: 0.86
+    terminal: true
+    direct_answer_tier2:
+      enabled: true
+      evidence_required: [primary_error, spec_section_text, spec_parse_status]
+      fix_template: "spec 解析失败：{reason}；spec section 与 parse status 已收集，建议检查宏、条件块或 section 语法。"
