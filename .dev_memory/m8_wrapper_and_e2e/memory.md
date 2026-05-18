@@ -54,6 +54,12 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - **Source**: v0.5 §10.2, §11.3, §13
 - **Tests**: Smoke-tested `python -m gbs_analyzer analyze` on fast-path and full-path fixtures; ruff and mypy pass for new modules.
 
+### Change 4: wrapper and perf unit tests
+- **Files**: `tests/unit/test_analyze_wrapper.py`, `tests/unit/test_perf_report.py`
+- **Reason**: M8 wrapper contract needs focused coverage before larger E2E fixtures.
+- **Source**: v0.5 §9.4, §10.2, §11.3
+- **Tests**: `.venv/bin/pytest tests/unit/test_analyze_wrapper.py tests/unit/test_perf_report.py -q` passes with 8 tests.
+
 ## Test Status
 
 M7 follow-up targeted test passed:
@@ -63,6 +69,7 @@ M7 follow-up targeted test passed:
 | `.venv/bin/pytest tests/unit/test_packet_assembler.py --cov=gbs_analyzer.packet_assembler --cov-report=term-missing -q` | pass | 33 passed; `packet_assembler.py` coverage 99%. |
 | `.venv/bin/ruff check gbs_analyzer/analyze.py gbs_analyzer/tracing/perf_report.py gbs_analyzer/__main__.py` | pass | New M8 modules lint clean. |
 | `.venv/bin/mypy gbs_analyzer` | pass | No type errors in 26 source files. |
+| `.venv/bin/pytest tests/unit/test_analyze_wrapper.py tests/unit/test_perf_report.py -q` | pass | 8 passed. |
 
 ## Next Stage Entry
 

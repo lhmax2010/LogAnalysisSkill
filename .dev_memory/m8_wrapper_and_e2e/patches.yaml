@@ -20,10 +20,19 @@ patches:
 
   - id: p003
     title: "Add analyze wrapper and perf report"
-    commit: "TBD"
+    commit: "ee1ecb9"
     files_changed:
       - "gbs_analyzer/analyze.py"
       - "gbs_analyzer/__main__.py"
       - "gbs_analyzer/tracing/perf_report.py"
       - ".dev_memory/m8_wrapper_and_e2e/*"
     rationale: "v0.5 §10.2 and §11.3 - M8 requires a single wrapper entrypoint and perf_report.json"
+
+  - id: p004
+    title: "Cover wrapper and perf report contracts"
+    commit: "TBD"
+    files_changed:
+      - "tests/unit/test_analyze_wrapper.py"
+      - "tests/unit/test_perf_report.py"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §9.4, §10.2, and §11.3 - wrapper external behavior needs unit coverage before E2E"
