@@ -14,7 +14,7 @@ This hotfix is split into two reviewable PRs:
 1. `fix/scanner-real-gbs-prefix`: H1/H2 scanner root-cause fixes.
 2. `fix/assembler-diagnostic-and-token-cap`: H3/H6 presentation and budget fixes.
 
-## Current PR
+## PR1 - Scanner Root Cause
 
 `fix/scanner-real-gbs-prefix` implements only H1/H2:
 
@@ -56,4 +56,41 @@ ruff check scan/test files: pass
 mypy gbs_analyzer: pass
 pytest tests/e2e/test_m8_wrapper_e2e.py -q: 21 passed
 pytest tests/ -q --cov=gbs_analyzer --cov-fail-under=96: 308 passed, 96.40%
+```
+
+## PR2 - Assembler Diagnostic And Token Cap
+
+`fix/assembler-diagnostic-and-token-cap` implements H3/H6:
+
+- Reuse `kind: compiler` for assembler diagnostics with uppercase `Error:` / `Warning:`.
+- Add `details.is_assembler` and best-effort `details.tool` from the current command.
+- Support `.s` as a source suffix in source-to-object cascade helpers.
+- Add a final packet token guard in `assemble_packet()`.
+- Record `packet_truncated_to_token_budget` when final truncation is required.
+
+Real ffmpeg smoke after H3/H6:
+
+```text
+commands: 73
+failed_phase: %build
+primary_error: E017 compiler libavcodec/arm/h264cmc_neon.S:43
+primary_details: {"is_assembler": true, "tool": "make"}
+cascade_summary: make cascade: ffbuild/common.mak:93: libavcodec/arm/h264cmc_neon.o -> E018
+packet_tokens: 1674 / 1800
+evidence_collector: compile
+source_snippet.extraction_method: line_window
+```
+
+H4 is not needed because the assembler diagnostic naturally wins Top-1 after H3.
+H5 is not needed because existing suffix mapping links the make cascade to an assembler
+event. The duplicate assembler diagnostic means the cascade links to `E018` while Top-1 is
+`E017`; both point to the same `libavcodec/arm/h264cmc_neon.S:43` root cause.
+
+PR2 regression results:
+
+```text
+ruff check .: pass
+mypy gbs_analyzer: pass
+pytest tests/e2e/test_m8_wrapper_e2e.py -q: 21 passed
+pytest tests/ -q --cov=gbs_analyzer --cov-fail-under=96: 316 passed, 96.25%
 ```

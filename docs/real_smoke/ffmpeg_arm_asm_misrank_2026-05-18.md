@@ -263,6 +263,20 @@ packet_tokens: 3342
 This confirms H1/H2 fixed the root scanner miss. H3 is still needed for structured
 assembler classification and cascade linkage. H6 is still needed for the hard token cap.
 
+After H3/H6 implementation:
+
+```text
+commands: 73
+failed_phase: %build
+Top-1: E017 compiler libavcodec/arm/h264cmc_neon.S:43
+cascade_summary: make cascade: ffbuild/common.mak:93: libavcodec/arm/h264cmc_neon.o -> E018
+packet_tokens: 1674 / 1800
+```
+
+H4/H5 were not implemented. The assembler diagnostic wins Top-1 without pre-build
+downranking, and existing `.S -> .o` suffix mapping links the cascade to the duplicate
+assembler diagnostic at the same source location.
+
 ## Initial Hotfix Questions Captured for Review
 
 ### H1. Normalize real GBS line prefixes in scanner
