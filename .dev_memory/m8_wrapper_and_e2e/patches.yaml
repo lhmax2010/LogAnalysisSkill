@@ -39,8 +39,18 @@ patches:
 
   - id: p005
     title: "Rewrite runtime SKILL"
-    commit: "TBD"
+    commit: "a57be83"
     files_changed:
       - "SKILL.md"
       - ".dev_memory/m8_wrapper_and_e2e/*"
     rationale: "v0.5 §8 and §11.3 - M8 requires a usable skill contract"
+
+  - id: p006
+    title: "Add external integration examples"
+    commit: "TBD"
+    files_changed:
+      - "integrations/README.md"
+      - "integrations/cline/*"
+      - "integrations/compiling_agent/*"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §11 - M8 requires Cline and Compiling Agent example contracts"

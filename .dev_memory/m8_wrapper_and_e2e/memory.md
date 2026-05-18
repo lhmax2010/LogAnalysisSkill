@@ -30,7 +30,7 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - [x] Implement analyze wrapper and module entrypoint.
 - [x] Implement perf_report generation.
 - [x] Rewrite `SKILL.md` for runtime use.
-- [ ] Add integration examples.
+- [x] Add integration examples.
 - [ ] Add 20 E2E fixtures and acceptance tests.
 - [ ] Record final test report, perf baseline, and PR.
 
@@ -66,6 +66,12 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - **Source**: v0.5 §8, §11.3, §13
 - **Tests**: Documentation-only.
 
+### Change 6: integration examples
+- **Files**: `integrations/cline/*`, `integrations/compiling_agent/*`, `integrations/README.md`
+- **Reason**: M8 requires Cline and Compiling Agent example contracts without live deployment.
+- **Source**: v0.5 §11
+- **Tests**: `.venv/bin/ruff check integrations/compiling_agent/log_analysis.py` and `.venv/bin/mypy integrations/compiling_agent/log_analysis.py` pass.
+
 ## Test Status
 
 M7 follow-up targeted test passed:
@@ -76,6 +82,8 @@ M7 follow-up targeted test passed:
 | `.venv/bin/ruff check gbs_analyzer/analyze.py gbs_analyzer/tracing/perf_report.py gbs_analyzer/__main__.py` | pass | New M8 modules lint clean. |
 | `.venv/bin/mypy gbs_analyzer` | pass | No type errors in 26 source files. |
 | `.venv/bin/pytest tests/unit/test_analyze_wrapper.py tests/unit/test_perf_report.py -q` | pass | 8 passed. |
+| `.venv/bin/ruff check integrations/compiling_agent/log_analysis.py` | pass | Example adapter lint clean. |
+| `.venv/bin/mypy integrations/compiling_agent/log_analysis.py` | pass | Example adapter type-checks standalone. |
 
 ## Next Stage Entry
 
