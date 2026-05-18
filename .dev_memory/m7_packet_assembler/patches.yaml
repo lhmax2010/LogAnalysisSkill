@@ -26,3 +26,26 @@ patches:
       - ".dev_memory/m7_packet_assembler/decisions.md"
       - ".dev_memory/m7_packet_assembler/patches.yaml"
     rationale: "M6 review follow-up - verify tier2 hit is stable with ctags success"
+
+  - id: p004
+    title: "Add BudgetPool and packet assembler primitives"
+    commit: "8538765"
+    files_changed:
+      - "gbs_analyzer/packet_assembler.py"
+    rationale: "v0.5 §3.6 and §5 - Layer 5 packet assembly, redaction, fallback, and budget accounting"
+
+  - id: p005
+    title: "Cover BudgetPool and packet assembly"
+    commit: "528ad7f"
+    files_changed:
+      - "tests/unit/test_packet_assembler.py"
+    rationale: "v0.5 §9.4 - M7 requires 20+ tests and BudgetPool conservation 100%"
+
+  - id: p006
+    title: "Complete M7 dev_memory and test guide"
+    commit: "pending"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m7_packet_assembler/*"
+      - "docs/test_guides/m7_packet_assembler.md"
+    rationale: "v0.5 §7.3 and §9.5 - milestone closeout records"
