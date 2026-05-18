@@ -1,0 +1,3 @@
++ %build
++ g++ -c src/template.cpp
+src/template.cpp:12:5: error: template instantiation failed for 'Box<int>'

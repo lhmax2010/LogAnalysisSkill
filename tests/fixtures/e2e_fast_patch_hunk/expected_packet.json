@@ -1,0 +1,9 @@
+{
+  "expected": {
+    "verdict": "direct_answer",
+    "via": "fast_path",
+    "matched_tier": "tier1",
+    "matched_patterns": ["patch_failed_hunk"],
+    "primary_error_kind": "patch"
+  }
+}

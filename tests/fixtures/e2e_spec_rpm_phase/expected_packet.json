@@ -1,0 +1,12 @@
+{
+  "spec_path": "demo.spec",
+  "expected": {
+    "verdict": "direct_answer",
+    "via": "full_path",
+    "matched_tier": "tier2",
+    "matched_patterns": ["rpm_phase_failure_tier2"],
+    "primary_error_kind": "rpm_phase",
+    "semantic_class": "generic_error",
+    "budget_conservation": true
+  }
+}

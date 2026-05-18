@@ -1,0 +1,3 @@
++ %build
++ g++ -c src/types.cpp
+src/types.cpp:5:15: error: cannot convert 'const char*' to 'int'

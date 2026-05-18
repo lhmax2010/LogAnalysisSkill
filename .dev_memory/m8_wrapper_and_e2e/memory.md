@@ -31,7 +31,7 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - [x] Implement perf_report generation.
 - [x] Rewrite `SKILL.md` for runtime use.
 - [x] Add integration examples.
-- [ ] Add 20 E2E fixtures and acceptance tests.
+- [x] Add 20 E2E fixtures and acceptance tests.
 - [ ] Record final test report, perf baseline, and PR.
 
 ## Key Change Details
@@ -72,6 +72,12 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - **Source**: v0.5 §11
 - **Tests**: `.venv/bin/ruff check integrations/compiling_agent/log_analysis.py` and `.venv/bin/mypy integrations/compiling_agent/log_analysis.py` pass.
 
+### Change 7: 20 fixture E2E
+- **Files**: `tests/fixtures/e2e_*/*`, `tests/e2e/test_m8_wrapper_e2e.py`, `gbs_analyzer/analyze.py`
+- **Reason**: M8 is the MVP acceptance milestone; wrapper behavior must be validated end to end across Fast-Path, compile, link, spec, cascade, Clang, Werror, and unknown fallback cases.
+- **Source**: v0.5 §9.3, §10.3, §13
+- **Tests**: `.venv/bin/pytest tests/e2e/test_m8_wrapper_e2e.py -q` passes with 21 tests over 20 fixtures.
+
 ## Test Status
 
 M7 follow-up targeted test passed:
@@ -84,6 +90,8 @@ M7 follow-up targeted test passed:
 | `.venv/bin/pytest tests/unit/test_analyze_wrapper.py tests/unit/test_perf_report.py -q` | pass | 8 passed. |
 | `.venv/bin/ruff check integrations/compiling_agent/log_analysis.py` | pass | Example adapter lint clean. |
 | `.venv/bin/mypy integrations/compiling_agent/log_analysis.py` | pass | Example adapter type-checks standalone. |
+| `.venv/bin/ruff check gbs_analyzer/analyze.py tests/e2e/test_m8_wrapper_e2e.py` | pass | E2E test and wrapper update lint clean. |
+| `.venv/bin/pytest tests/e2e/test_m8_wrapper_e2e.py -q` | pass | 21 passed; 20 fixture contracts plus aggregate MVP metrics. |
 
 ## Next Stage Entry
 

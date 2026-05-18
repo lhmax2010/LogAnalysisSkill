@@ -293,7 +293,11 @@ def _collect_evidence(
     estimate = collector.estimate(candidate)
     preferred = int(estimate.get("preferred", 900))
     state.level_preferred = _level_for_preferred(preferred)
-    granted = min(preferred, 600)
+    granted = (
+        preferred
+        if candidate.get("semantic_class") == "undefined_reference"
+        else min(preferred, 600)
+    )
     evidence = collector.collect(candidate, granted)
     state.evidence_collector = evidence.collector
     state.level_achieved = evidence.level

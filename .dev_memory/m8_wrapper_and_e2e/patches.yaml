@@ -47,10 +47,20 @@ patches:
 
   - id: p006
     title: "Add external integration examples"
-    commit: "TBD"
+    commit: "63424b5"
     files_changed:
       - "integrations/README.md"
       - "integrations/cline/*"
       - "integrations/compiling_agent/*"
       - ".dev_memory/m8_wrapper_and_e2e/*"
     rationale: "v0.5 §11 - M8 requires Cline and Compiling Agent example contracts"
+
+  - id: p007
+    title: "Add MVP E2E fixtures"
+    commit: "TBD"
+    files_changed:
+      - "tests/fixtures/e2e_*/*"
+      - "tests/e2e/test_m8_wrapper_e2e.py"
+      - "gbs_analyzer/analyze.py"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §9.3, §10.3, and §13 - M8 requires 20 fixture E2E acceptance"

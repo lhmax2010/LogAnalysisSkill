@@ -1,0 +1,4 @@
++ %install
++ install -m 0755 missing %{buildroot}/usr/bin/demo
+install: cannot stat 'missing': No such file or directory
+error: Bad exit status from /var/tmp/rpm-tmp.abc (%install)

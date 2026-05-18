@@ -1,0 +1,11 @@
+{
+  "src_root": "src",
+  "expected": {
+    "verdict": "needs_llm",
+    "via": "full_path",
+    "matched_tier": null,
+    "primary_error_kind": "compiler",
+    "semantic_class": "syntax_error",
+    "budget_conservation": true
+  }
+}

@@ -1,0 +1,3 @@
++ %build
++ gcc -c src/member.c
+src/member.c:8:12: error: 'struct demo' has no member named 'missing'
