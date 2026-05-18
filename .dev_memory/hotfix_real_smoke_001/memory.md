@@ -1,5 +1,7 @@
 # Hotfix Real Smoke 001 - ffmpeg ARM assembler mis-rank
 
+Status: completed
+
 ## Scope
 
 Real GBS buildlog smoke testing on `ffmpeg` exposed scanner misses caused by real RPM/GBS line formatting:
@@ -94,3 +96,24 @@ mypy gbs_analyzer: pass
 pytest tests/e2e/test_m8_wrapper_e2e.py -q: 21 passed
 pytest tests/ -q --cov=gbs_analyzer --cov-fail-under=96: 316 passed, 96.25%
 ```
+
+## Closure Summary
+
+`hotfix_real_smoke_001` closed the MVP's first real-environment failure in a small,
+reviewable hotfix cycle. Across PR #11 and PR #12, the analyzer now handles four root
+causes exposed by the real ffmpeg GBS buildlog:
+
+- real GBS timestamp/ANSI prefixes no longer hide commands, phases, or diagnostics;
+- real RPM `Executing(%build):` phase markers set `failed_phase`;
+- assembler diagnostics are classified as `kind: compiler` with source file and line;
+- final packets respect the requested token cap.
+
+The same real ffmpeg buildlog now produces the intended root cause:
+
+```text
+Top-1: E017 compiler libavcodec/arm/h264cmc_neon.S:43
+packet_tokens: 1674 / 1800
+```
+
+No H4/H5/v0.6 scope was added because H3 made Top-1 correct and existing `.S -> .o`
+suffix mapping linked the cascade automatically.
