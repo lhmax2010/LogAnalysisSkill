@@ -1,0 +1,18 @@
+{
+  "schema_version": "perf_report/v1",
+  "milestone": "m6_full_match",
+  "fixture_count": 3,
+  "iterations": 300,
+  "evaluations": 900,
+  "tier2_hits": 900,
+  "hit_rate": 1.0,
+  "elapsed_seconds": 4.99912,
+  "per_evaluation_ms": 5.5546,
+  "target_ms": 50.0,
+  "passed": true,
+  "patterns": [
+    "compile_undeclared_identifier_tier2",
+    "linker_undefined_reference_tier2",
+    "rpm_phase_failure_tier2"
+  ]
+}

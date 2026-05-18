@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 import shlex
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -60,7 +61,11 @@ class QuickFilter:
 
     @classmethod
     def from_file(cls, path: str | Path = DEFAULT_PATTERN_PATH) -> QuickFilter:
-        library = load_pattern_library(path)
+        library = (
+            _load_default_pattern_library()
+            if Path(path) == DEFAULT_PATTERN_PATH
+            else load_pattern_library(path)
+        )
         return cls(library["patterns"])
 
     def evaluate(self, scan_result: ScanResult | dict[str, Any]) -> QuickFilterResult:
@@ -108,6 +113,11 @@ def load_pattern_library(path: str | Path = DEFAULT_PATTERN_PATH) -> dict[str, A
     }
 
 
+@lru_cache(maxsize=1)
+def _load_default_pattern_library() -> dict[str, Any]:
+    return load_pattern_library(DEFAULT_PATTERN_PATH)
+
+
 def _compile_patterns(raw: dict[str, Any]) -> list[QuickPattern]:
     if raw.get("schema_version") != 2:
         raise PatternValidationError("pattern library schema_version must be 2")
@@ -122,6 +132,8 @@ def _compile_patterns(raw: dict[str, Any]) -> list[QuickPattern]:
     for item in patterns:
         if not isinstance(item, dict):
             raise PatternValidationError("each pattern must be a mapping")
+        if item.get("tier") != "tier1":
+            continue
         _validate_tier1_pattern(item, allowed, forbidden)
         match = item["match"]
         compiled.append(

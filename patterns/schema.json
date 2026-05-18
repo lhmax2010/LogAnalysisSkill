@@ -34,13 +34,17 @@
           "event_kinds",
           "match",
           "confidence",
-          "terminal",
-          "fix_template"
+          "terminal"
+        ],
+        "anyOf": [
+          {"required": ["fix_template"]},
+          {"required": ["direct_answer_tier1"]},
+          {"required": ["direct_answer_tier2"]}
         ],
         "properties": {
           "id": {"type": "string"},
           "category": {"type": "string"},
-          "tier": {"enum": ["tier1"]},
+          "tier": {"enum": ["tier1", "tier2"]},
           "event_kinds": {
             "type": "array",
             "items": {"type": "string"},
@@ -90,10 +94,31 @@
           "fix_template": {
             "type": "string",
             "maxLength": 300
-          }
+          },
+          "direct_answer_tier1": {"$ref": "#/$defs/direct_answer"},
+          "direct_answer_tier2": {"$ref": "#/$defs/direct_answer"}
         },
         "additionalProperties": false
       }
+    }
+  },
+  "$defs": {
+    "direct_answer": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "evidence_required": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "fix_template": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false
