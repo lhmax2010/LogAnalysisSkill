@@ -172,6 +172,27 @@ def test_full_match_returns_needs_llm_for_missing_candidate() -> None:
     assert result.reason == "candidate_event_not_found"
 
 
+def test_full_match_renders_tier1_shorthand_direct_answer() -> None:
+    scan = {
+        "events": [
+            {
+                "id": "E001",
+                "kind": "depsolve",
+                "severity": "error",
+                "message": "nothing provides libfoo",
+                "line_no": 1,
+            }
+        ],
+        "commands": [],
+    }
+
+    result = full_match(scan, {"event_id": "E001"}, evidence())
+
+    assert result.verdict is Verdict.DIRECT_TIER1
+    assert result.matched_tier == "tier1"
+    assert result.direct_answer is not None
+
+
 def test_full_match_renders_direct_answer_and_packet_dict() -> None:
     result = full_match(
         {"events": [event()], "commands": [{"id": "C001", "argv_short": "gcc -c foo.c"}]},
@@ -187,6 +208,19 @@ def test_full_match_renders_direct_answer_and_packet_dict() -> None:
     assert packet["matched_tier"] == "tier2"
 
 
+def test_full_match_keeps_first_needs_llm_match() -> None:
+    result = full_match(
+        {"events": [event()], "commands": []},
+        {"event_id": "E001"},
+        evidence({"primary_error"}),
+        patterns=[pattern(), replace(pattern(), event_kinds=("linker_undef",))],
+    )
+
+    assert result.verdict is Verdict.NEEDS_LLM
+    assert result.pattern_id == "compile_undeclared_identifier_tier2"
+    assert result.reason == "matched_pattern_needs_llm"
+
+
 def test_full_match_returns_needs_llm_for_unmatched_patterns() -> None:
     result = full_match(
         {"events": [event(message="different error")], "commands": []},
@@ -197,6 +231,48 @@ def test_full_match_returns_needs_llm_for_unmatched_patterns() -> None:
 
     assert result.verdict is Verdict.NEEDS_LLM
     assert result.reason == "no_pattern_match"
+
+
+def test_context_checks_phase_tool_and_warning_block() -> None:
+    rule = replace(
+        pattern(),
+        required_context={
+            "phase": ["%build"],
+            "severity": ["error"],
+            "tool_in": ["gcc"],
+            "not_in_warning_block": True,
+        },
+    )
+    commands = {"C001": {"id": "C001", "argv_short": "gcc -c foo.c"}}
+    warning_events = [
+        {"id": "E000", "severity": "warning", "message": "warning: earlier", "line_no": 9},
+        event(phase="%build"),
+    ]
+
+    assert match_pattern(rule, event(phase="%install"), commands=commands) is None
+    assert match_pattern(rule, event(phase="%build"), commands={}) is None
+    assert match_pattern(rule, event(phase="%build"), warning_events, commands) is None
+
+    captures = match_pattern(rule, event(phase="%build"), [event(phase="%build")], commands)
+    assert captures == {"identifier": "missing_symbol"}
+
+
+def test_context_tool_handles_bad_or_empty_argv() -> None:
+    rule = replace(pattern(), required_context={"tool_in": ["gcc"]})
+
+    assert match_pattern(rule, event(command_id=None), commands={}) is None
+    assert match_pattern(rule, event(), commands={"C001": {"argv_short": "'unterminated"}}) is None
+    assert match_pattern(rule, event(), commands={"C001": {"argv_short": ""}}) is None
+
+
+def test_explicit_is_terminal_false_blocks_direct_answer() -> None:
+    verdict = determine_verdict(
+        pattern(),
+        event(is_terminal=False),
+        evidence({"primary_error", "source_snippet", "command_summary"}),
+    )
+
+    assert verdict is Verdict.NEEDS_LLM
 
 
 def test_loader_rejects_tier2_without_direct_answer(tmp_path: Path) -> None:
@@ -218,4 +294,71 @@ def test_loader_rejects_tier2_without_direct_answer(tmp_path: Path) -> None:
     path.write_text(yaml.safe_dump(data), encoding="utf-8")
 
     with pytest.raises(PatternValidationError, match="direct_answer"):
+        load_full_match_patterns(path)
+
+
+@pytest.mark.parametrize(
+    ("data", "message"),
+    [
+        ([], "must be a mapping"),
+        ({"schema_version": 1, "patterns": []}, "schema_version"),
+        ({"schema_version": 2, "patterns": {}}, "patterns must be a list"),
+        ({"schema_version": 2, "patterns": ["bad"]}, "each pattern"),
+    ],
+)
+def test_loader_rejects_invalid_library_shapes(
+    tmp_path: Path,
+    data: object,
+    message: str,
+) -> None:
+    path = tmp_path / "patterns.yaml"
+    path.write_text(yaml.safe_dump(data), encoding="utf-8")
+
+    with pytest.raises(PatternValidationError, match=message):
+        load_full_match_patterns(path)
+
+
+@pytest.mark.parametrize(
+    ("mutate", "message"),
+    [
+        (lambda item: item.update({"match": []}), "match must be a mapping"),
+        (lambda item: item.update({"tier": "tier3"}), "tier must be"),
+        (lambda item: item["match"].update({"regex": []}), "match.regex"),
+        (lambda item: item.update({"direct_answer_tier2": "bad"}), "must be a mapping"),
+        (
+            lambda item: item.update(
+                {"direct_answer_tier2": {"enabled": True, "evidence_required": "bad"}}
+            ),
+            "evidence_required",
+        ),
+        (
+            lambda item: item.update({"direct_answer_tier2": {"enabled": True}}),
+            "fix_template",
+        ),
+    ],
+)
+def test_loader_rejects_invalid_pattern_shapes(
+    tmp_path: Path,
+    mutate: object,
+    message: str,
+) -> None:
+    item = {
+        "id": "bad",
+        "category": "compile_error",
+        "tier": "tier2",
+        "event_kinds": ["compiler"],
+        "match": {"regex": ["error"]},
+        "confidence": 0.86,
+        "terminal": True,
+        "direct_answer_tier2": {
+            "enabled": True,
+            "evidence_required": [],
+            "fix_template": "fix",
+        },
+    }
+    mutate(item)  # type: ignore[operator]
+    path = tmp_path / "patterns.yaml"
+    path.write_text(yaml.safe_dump({"schema_version": 2, "patterns": [item]}), encoding="utf-8")
+
+    with pytest.raises(PatternValidationError, match=message):
         load_full_match_patterns(path)
