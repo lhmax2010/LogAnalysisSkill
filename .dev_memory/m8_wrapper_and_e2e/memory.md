@@ -27,8 +27,8 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 
 - [x] Start M8 dev_memory and branch state.
 - [x] Apply M7 review follow-ups.
-- [ ] Implement analyze wrapper and module entrypoint.
-- [ ] Implement perf_report generation.
+- [x] Implement analyze wrapper and module entrypoint.
+- [x] Implement perf_report generation.
 - [ ] Rewrite `SKILL.md` for runtime use.
 - [ ] Add integration examples.
 - [ ] Add 20 E2E fixtures and acceptance tests.
@@ -48,6 +48,12 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - **Source**: M7 review feedback, v0.5 §7.3, §9.4
 - **Tests**: `.venv/bin/pytest tests/unit/test_packet_assembler.py --cov=gbs_analyzer.packet_assembler --cov-report=term-missing -q` passes with 33 tests and 99% targeted coverage.
 
+### Change 3: wrapper and perf report
+- **Files**: `gbs_analyzer/analyze.py`, `gbs_analyzer/__main__.py`, `gbs_analyzer/tracing/perf_report.py`
+- **Reason**: M8 requires a single analyzer entrypoint plus `perf_report.json` for wrapper consumers.
+- **Source**: v0.5 §10.2, §11.3, §13
+- **Tests**: Smoke-tested `python -m gbs_analyzer analyze` on fast-path and full-path fixtures; ruff and mypy pass for new modules.
+
 ## Test Status
 
 M7 follow-up targeted test passed:
@@ -55,6 +61,8 @@ M7 follow-up targeted test passed:
 | Command | Result | Notes |
 | --- | --- | --- |
 | `.venv/bin/pytest tests/unit/test_packet_assembler.py --cov=gbs_analyzer.packet_assembler --cov-report=term-missing -q` | pass | 33 passed; `packet_assembler.py` coverage 99%. |
+| `.venv/bin/ruff check gbs_analyzer/analyze.py gbs_analyzer/tracing/perf_report.py gbs_analyzer/__main__.py` | pass | New M8 modules lint clean. |
+| `.venv/bin/mypy gbs_analyzer` | pass | No type errors in 26 source files. |
 
 ## Next Stage Entry
 

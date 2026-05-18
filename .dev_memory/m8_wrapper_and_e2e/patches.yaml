@@ -10,10 +10,20 @@ patches:
 
   - id: p002
     title: "Apply M7 packet assembler coverage follow-up"
-    commit: "TBD"
+    commit: "788829a"
     files_changed:
       - "gbs_analyzer/packet_assembler.py"
       - "tests/unit/test_packet_assembler.py"
       - ".dev_memory/m7_packet_assembler/decisions.md"
       - ".dev_memory/m8_wrapper_and_e2e/*"
     rationale: "M7 review feedback - raise targeted packet_assembler coverage to 95%+ and record the test-depth reflection"
+
+  - id: p003
+    title: "Add analyze wrapper and perf report"
+    commit: "TBD"
+    files_changed:
+      - "gbs_analyzer/analyze.py"
+      - "gbs_analyzer/__main__.py"
+      - "gbs_analyzer/tracing/perf_report.py"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §10.2 and §11.3 - M8 requires a single wrapper entrypoint and perf_report.json"
