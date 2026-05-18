@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from gbs_analyzer.scan_and_extract import BuildLogScanner, scan_buildlog
+from gbs_analyzer.scan_and_extract import BuildLogScanner, _iter_log_lines, scan_buildlog
 from gbs_analyzer.tracing import TraceLogger
 
 
@@ -27,6 +27,29 @@ def test_detects_phase_marker(tmp_path: Path) -> None:
     assert result.phases == [{"phase": "%build", "line_no": 1, "raw_offset": 0}]
 
 
+def test_normalizes_gbs_timestamp_and_ansi(tmp_path: Path) -> None:
+    raw_text = "[  213s] \x1b[31m+ gcc -c src/foo.c\x1b[0m"
+    path = write_log(tmp_path, f"{raw_text}\n")
+
+    line = next(_iter_log_lines(path))
+
+    assert line.raw_text == raw_text
+    assert line.text == "+ gcc -c src/foo.c"
+    assert line.gbs_seconds == 213
+
+
+@pytest.mark.parametrize("phase", ["%prep", "%build", "%install", "%check"])
+def test_detects_rpm_executing_phase_marker(tmp_path: Path, phase: str) -> None:
+    path = write_log(tmp_path, f"[  194s] Executing({phase}): /bin/sh -e /tmp/rpm\n")
+    result = scan_buildlog(path)
+    assert result.phases == [{"phase": phase, "line_no": 1, "raw_offset": 0}]
+
+
+def test_does_not_generalize_rpm_executing_phase_marker(tmp_path: Path) -> None:
+    path = write_log(tmp_path, "[  194s] Executing(%clean): /bin/sh -e /tmp/rpm\n")
+    assert scan_buildlog(path).phases == []
+
+
 def test_detects_command_boundary(tmp_path: Path) -> None:
     path = write_log(tmp_path, "+ %build\n+ gcc -c src/foo.c\n")
     result = scan_buildlog(path)
@@ -46,7 +69,7 @@ def test_expands_command_rsp(tmp_path: Path) -> None:
     (tmp_path / "args.rsp").write_text("-Iinc -DDEBUG foo.o", encoding="utf-8")
     path = write_log(tmp_path, "+ %build\n+ gcc @args.rsp -o app\n")
     result = scan_buildlog(path, cwd=tmp_path)
-    assert result.commands[0].rsp_expanded["args.rsp"]["defines"] == ["-DDEBUG"]  # type: ignore[index]
+    assert result.commands[0].rsp_expanded["args.rsp"]["defines"] == ["-DDEBUG"]
 
 
 def test_expands_rsp_inside_multiline_command(tmp_path: Path) -> None:
@@ -55,7 +78,7 @@ def test_expands_rsp_inside_multiline_command(tmp_path: Path) -> None:
     result = scan_buildlog(path, cwd=tmp_path)
     command = result.commands[0]
     assert command.argv_short == "gcc @args.rsp -o app"
-    assert command.rsp_expanded["args.rsp"]["include_paths"] == ["-Iinc"]  # type: ignore[index]
+    assert command.rsp_expanded["args.rsp"]["include_paths"] == ["-Iinc"]
 
 
 def test_missing_rsp_marks_scan_degraded(tmp_path: Path) -> None:
@@ -134,6 +157,28 @@ def test_detects_rpm_phase_failure(tmp_path: Path) -> None:
     assert event.details == {"phase": "%build"}
 
 
+def test_real_gbs_prefix_recovers_command_and_failed_phase(tmp_path: Path) -> None:
+    path = write_log(
+        tmp_path,
+        "\n".join(
+            [
+                "[  208s] Executing(%build): /bin/sh -e /var/tmp/rpm-tmp.abc",
+                "[  209s] + /bin/make -j40",
+                "[  213s] libavcodec/arm/h264cmc_neon.S:43: "
+                "Error: bad instruction `sasdd r1,r1,r3'",
+                "[  217s] error: Bad exit status from /var/tmp/rpm-tmp.abc (%build)",
+                "",
+            ]
+        ),
+    )
+
+    result = scan_buildlog(path)
+
+    assert len(result.commands) == 1
+    assert result.commands[0].phase == "%build"
+    assert result.failed_phase == "%build"
+
+
 def test_detects_spec_script_error(tmp_path: Path) -> None:
     path = write_log(tmp_path, "spec file parse error: unexpected %endif\n")
     assert scan_buildlog(path).events[0].kind == "spec_script"
@@ -207,4 +252,6 @@ def test_scanner_emits_trace_events(tmp_path: Path) -> None:
     trace = (tmp_path / "trace" / "trace.jsonl").read_text(encoding="utf-8")
     assert "phase_marker_detected" in trace
     assert "diagnostic_detected" in trace
+    assert "raw_text" in trace
+    assert "text" in trace
     assert "scan_completed" in trace
