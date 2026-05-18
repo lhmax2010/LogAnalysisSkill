@@ -43,7 +43,7 @@ patches:
 
   - id: p006
     title: "Complete M7 dev_memory and test guide"
-    commit: "pending"
+    commit: "1206fb5"
     files_changed:
       - ".dev_memory/current.yaml"
       - ".dev_memory/m7_packet_assembler/*"
