@@ -1,9 +1,60 @@
 patches:
   - id: p001
     title: "Start M6 dev_memory"
-    commit: "pending"
+    commit: "950567a"
     files_changed:
       - ".dev_memory/current.yaml"
       - ".dev_memory/m6_full_match/*"
       - "README.md"
     rationale: "v0.5 §7 - milestone handoff state must be explicit"
+
+  - id: p002
+    title: "Cover evidence base edge cases"
+    commit: "990e9cb"
+    files_changed:
+      - "tests/unit/test_evidence_base.py"
+    rationale: "M5 review follow-up - evidence/base.py should be near 100% covered"
+
+  - id: p003
+    title: "Record M5 collector coverage notes"
+    commit: "73254b4"
+    files_changed:
+      - ".dev_memory/m5_evidence/decisions.md"
+      - ".dev_memory/m6_full_match/memory.md"
+    rationale: "M5 review follow-up - declare known collector coverage blind spots"
+
+  - id: p004
+    title: "Add full_match verdict engine and pattern schema support"
+    commit: "c782d20"
+    files_changed:
+      - "gbs_analyzer/full_match.py"
+      - "gbs_analyzer/quick_filter.py"
+      - "patterns/schema.json"
+      - "patterns/gbs_errors.yaml"
+    rationale: "v0.5 §3.5 and M2 d003 - backward-compatible full pattern matching"
+
+  - id: p005
+    title: "Add tier2 verdict coverage"
+    commit: "c100fb9"
+    files_changed:
+      - "tests/unit/test_full_match.py"
+      - "tests/functional/test_full_match_fixtures.py"
+      - "tests/unit/test_quick_filter.py"
+      - "patterns/gbs_errors.yaml"
+    rationale: "v0.5 §9.4 - tier2 must hit at least 3 fixtures"
+
+  - id: p006
+    title: "Raise full_match module coverage"
+    commit: "15769a6"
+    files_changed:
+      - "tests/unit/test_full_match.py"
+    rationale: "M6 DoD - keep the main milestone module above 85% coverage"
+
+  - id: p007
+    title: "Complete M6 dev_memory and test guide"
+    commit: "pending"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m6_full_match/*"
+      - "docs/test_guides/m6_full_match.md"
+    rationale: "v0.5 §7.3 and §9.5 - milestone closeout records"

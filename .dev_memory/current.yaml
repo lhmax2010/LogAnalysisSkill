@@ -1,14 +1,13 @@
 current_milestone: m6_full_match
-current_status: in_progress
+current_status: completed
 last_completed: m5_evidence
 last_completed_commit: "b134492"
 session_count: 10
 next_steps:
-  - "Record M5 review follow-ups before implementation."
-  - "Implement backward-compatible full_match verdict logic."
-  - "Add tier2 fixtures and performance baseline."
-blocked_on: null
+  - "Open M6 PR for review."
+  - "After M6 PR is merged, start M7 packet_assembler from updated main."
+blocked_on: "waiting_for_m6_review"
 notes: |
   M5 PR #7 was reviewed and merged at b134492.
-  M6 must stay limited to Layer 4b full_match and consume existing M2/M3/M5 outputs.
-  Do not implement M7 packet_assembler, fallback_raw_context, or BudgetPool reclaim.
+  M6 is complete on feature/m6-full-match and must stop at PR review.
+  Do not start M7 until the M6 PR is reviewed and merged.
