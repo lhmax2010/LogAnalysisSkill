@@ -1,12 +1,12 @@
 # Milestone M8: wrapper_and_e2e
 
-**Status**: in_progress
+**Status**: completed
 **Start commit**: 18e4d33
-**Latest implementation commit**: TBD
+**Latest implementation commit**: cdc992f
 **Start date**: 2026-05-18
-**Completion date**: TBD
+**Completion date**: 2026-05-18
 **Estimated effort**: 2 days
-**Actual effort**: TBD
+**Actual effort**: 1 day
 
 ## Scope
 
@@ -32,7 +32,7 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - [x] Rewrite `SKILL.md` for runtime use.
 - [x] Add integration examples.
 - [x] Add 20 E2E fixtures and acceptance tests.
-- [ ] Record final test report and PR.
+- [x] Record final test report and PR.
 
 ## Key Change Details
 
@@ -107,6 +107,17 @@ M7 follow-up targeted test passed:
 | `.venv/bin/mypy integrations/compiling_agent/log_analysis.py` | pass | Example adapter type-checks standalone. |
 | `.venv/bin/ruff check gbs_analyzer/analyze.py tests/e2e/test_m8_wrapper_e2e.py` | pass | E2E test and wrapper update lint clean. |
 | `.venv/bin/pytest tests/e2e/test_m8_wrapper_e2e.py -q` | pass | 21 passed; 20 fixture contracts plus aggregate MVP metrics. |
+| `.venv/bin/pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80` | pass | 301 passed; total coverage 96.39%. |
+
+## Final Test Status
+
+| Test type | Passed | Failed | Skipped |
+| --- | ---: | ---: | ---: |
+| Full suite | 301 | 0 | 0 |
+| M8 E2E fixture contracts | 20 | 0 | 0 |
+| M8 acceptance metrics | 1 | 0 | 0 |
+
+Coverage: 96.39% overall.
 
 ## Next Stage Entry
 
@@ -118,3 +129,4 @@ M7 follow-up targeted test passed:
 1. M8 starts from merge commit `18e4d33`.
 2. M7 review follow-ups must be completed before wrapper implementation.
 3. Treat the 20 E2E fixtures as MVP acceptance data; do not tune expected outputs only to satisfy tests.
+4. M8 is complete and waiting for PR review; do not start post-MVP/full milestones from this branch.

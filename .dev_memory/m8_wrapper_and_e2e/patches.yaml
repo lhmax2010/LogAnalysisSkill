@@ -67,9 +67,17 @@ patches:
 
   - id: p008
     title: "Record E2E perf baseline and test guide"
-    commit: "TBD"
+    commit: "69812b9"
     files_changed:
       - ".dev_memory/m8_wrapper_and_e2e/perf_baselines/e2e_20_fixtures.json"
       - "docs/test_guides/m8_wrapper_and_e2e.md"
       - ".dev_memory/m8_wrapper_and_e2e/*"
     rationale: "v0.5 §9.5 and §10.3 - M8 requires reproducible MVP acceptance data"
+
+  - id: p009
+    title: "Complete M8 dev_memory"
+    commit: "TBD"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §7.3 - milestone closeout records must reflect final tests and review gate"
