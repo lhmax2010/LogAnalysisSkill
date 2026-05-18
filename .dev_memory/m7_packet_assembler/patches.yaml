@@ -19,7 +19,7 @@ patches:
 
   - id: p003
     title: "Add happy-ctags tier2 hit coverage"
-    commit: "pending"
+    commit: "37ad726"
     files_changed:
       - "tests/functional/test_full_match_fixtures.py"
       - ".dev_memory/m7_packet_assembler/memory.md"
