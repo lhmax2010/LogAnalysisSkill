@@ -76,7 +76,7 @@ patches:
 
   - id: p009
     title: "Complete M8 dev_memory"
-    commit: "TBD"
+    commit: "689b4d7"
     files_changed:
       - ".dev_memory/current.yaml"
       - ".dev_memory/m8_wrapper_and_e2e/*"
