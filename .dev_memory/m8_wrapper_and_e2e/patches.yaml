@@ -57,10 +57,19 @@ patches:
 
   - id: p007
     title: "Add MVP E2E fixtures"
-    commit: "TBD"
+    commit: "cdc992f"
     files_changed:
       - "tests/fixtures/e2e_*/*"
       - "tests/e2e/test_m8_wrapper_e2e.py"
       - "gbs_analyzer/analyze.py"
       - ".dev_memory/m8_wrapper_and_e2e/*"
     rationale: "v0.5 §9.3, §10.3, and §13 - M8 requires 20 fixture E2E acceptance"
+
+  - id: p008
+    title: "Record E2E perf baseline and test guide"
+    commit: "TBD"
+    files_changed:
+      - ".dev_memory/m8_wrapper_and_e2e/perf_baselines/e2e_20_fixtures.json"
+      - "docs/test_guides/m8_wrapper_and_e2e.md"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §9.5 and §10.3 - M8 requires reproducible MVP acceptance data"

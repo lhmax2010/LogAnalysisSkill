@@ -32,7 +32,7 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - [x] Rewrite `SKILL.md` for runtime use.
 - [x] Add integration examples.
 - [x] Add 20 E2E fixtures and acceptance tests.
-- [ ] Record final test report, perf baseline, and PR.
+- [ ] Record final test report and PR.
 
 ## Key Change Details
 
@@ -77,6 +77,21 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - **Reason**: M8 is the MVP acceptance milestone; wrapper behavior must be validated end to end across Fast-Path, compile, link, spec, cascade, Clang, Werror, and unknown fallback cases.
 - **Source**: v0.5 §9.3, §10.3, §13
 - **Tests**: `.venv/bin/pytest tests/e2e/test_m8_wrapper_e2e.py -q` passes with 21 tests over 20 fixtures.
+
+### Change 8: E2E perf baseline and guide
+- **Files**: `.dev_memory/m8_wrapper_and_e2e/perf_baselines/e2e_20_fixtures.json`, `docs/test_guides/m8_wrapper_and_e2e.md`
+- **Reason**: M8 is the MVP acceptance point and needs durable reproduction notes plus perf data.
+- **Source**: v0.5 §9.5, §10.3, §13
+- **Tests**: Baseline records 20 fixtures in 1.5928s, Fast-Path 30%, Top-1 100%, BudgetPool conservation 100%.
+
+## MVP Acceptance Baseline
+
+- Fixtures: 20/20 pass.
+- E2E batch runtime: 1.5928s (target < 15s).
+- Fast-Path hit rate: 30% (target >= 25%).
+- Direct-answer rate: 65% (target >= 35%).
+- Top-1 primary error accuracy: 100% (target >= 80%).
+- BudgetPool conservation: 100% on full-path packets.
 
 ## Test Status
 
