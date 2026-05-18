@@ -58,3 +58,10 @@ patches:
       - ".dev_memory/m6_full_match/*"
       - "docs/test_guides/m6_full_match.md"
     rationale: "v0.5 §7.3 and §9.5 - milestone closeout records"
+
+  - id: p008
+    title: "Cache default quick_filter pattern library"
+    commit: "a6eacb4"
+    files_changed:
+      - "gbs_analyzer/quick_filter.py"
+    rationale: "CI follow-up - keep M2 quick_filter fixtures under the 100ms budget after M6 expands patterns"

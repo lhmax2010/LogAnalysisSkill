@@ -18,7 +18,8 @@
 | --- | --- | --- |
 | `.venv/bin/ruff check .` | pass | All checks passed. |
 | `.venv/bin/mypy gbs_analyzer` | pass | No issues in 22 source files. |
-| `.venv/bin/pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80` | pass | 236 passed; total coverage 96.92%. |
+| `.venv/bin/pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80` | pass | 236 passed; total coverage 96.93%. |
+| `.venv/bin/pytest tests/functional/test_quick_filter_fixtures.py::test_quick_filter_fixtures_run_under_100ms -q` | pass | CI follow-up for GitHub Actions 100ms budget failure. |
 | `.venv/bin/pytest tests/unit/test_full_match.py --cov=gbs_analyzer.full_match --cov-report=term-missing -q` | pass | 30 passed; `full_match.py` coverage 96%. |
 
 ## Coverage
@@ -27,7 +28,7 @@
 | --- | ---: |
 | `gbs_analyzer/full_match.py` | 97% in full run; 96% targeted |
 | `gbs_analyzer/evidence/base.py` | 100% |
-| Total | 96.92% |
+| Total | 96.93% |
 
 ## Performance
 

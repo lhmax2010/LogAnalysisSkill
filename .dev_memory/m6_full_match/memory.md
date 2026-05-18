@@ -59,6 +59,12 @@ or new collector behavior.
 - **Source**: v0.5 §9.4
 - **Tests**: 3/3 tier2 fixture cases hit `compile_undeclared_identifier_tier2`, `linker_undefined_reference_tier2`, and `rpm_phase_failure_tier2`.
 
+### Change 5: CI quick_filter performance fix
+- **Files**: `gbs_analyzer/quick_filter.py`
+- **Reason**: GitHub Actions failed `test_quick_filter_fixtures_run_under_100ms` after M6 expanded the shared pattern YAML.
+- **Source**: CI run 26011694001 / 26011701058; v0.5 §9.4
+- **Tests**: `.venv/bin/pytest tests/functional/test_quick_filter_fixtures.py::test_quick_filter_fixtures_run_under_100ms -q` passes; full suite passes locally.
+
 ## Test Status
 
 | Test type | Passed | Failed | Skipped |
@@ -67,7 +73,7 @@ or new collector behavior.
 | Functional | 24 | 0 | 0 |
 | M6 tier2 fixture cases | 3/3 | 0 | 0 |
 
-Coverage: 96.92% overall; `gbs_analyzer/full_match.py` is 97%.
+Coverage: 96.93% overall; `gbs_analyzer/full_match.py` is 97%.
 
 ## Next Stage Entry
 
