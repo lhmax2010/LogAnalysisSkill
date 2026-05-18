@@ -10,7 +10,7 @@ patches:
 
   - id: p002
     title: "Fix M6 test report commit hash"
-    commit: "pending"
+    commit: "2bd03f3"
     files_changed:
       - ".dev_memory/m6_full_match/test_report.md"
       - ".dev_memory/m7_packet_assembler/memory.md"
