@@ -1,0 +1,10 @@
+# Decisions for M5: evidence collectors
+
+| ID | Date | Decision | Source | Rationale | Impact |
+| --- | --- | --- | --- | --- | --- |
+| d001 | 2026-05-15 | Start M5 from merge commit `9216996` after M4 review approval and merge. | v0.5 §7, §8 | Keeps the handoff pointer aligned with reviewed `main`. | M5 branch starts from latest merged baseline. |
+| d002 | 2026-05-15 | Stabilize `EvidenceCollector.estimate(candidate)` and `collect(candidate, granted_budget)` with a plain `Evidence` dataclass. | v0.5 §3.4 | M7 BudgetPool will allocate budget against this interface, so M5 should keep it small and stable. | Collectors can be called without implementing BudgetPool reclaim logic early. |
+| d003 | 2026-05-15 | Route only compiler/werror, linker, spec_script/rpm_phase, and depsolve events in M5. | v0.5 §3.4, §13 | patch/install/generic collectors belong to M9/full or assembler fallback, not M5. | Router returns `None` for patch, install, and raw/generic events. |
+| d004 | 2026-05-15 | Apply ctags fallback to source-context collectors (compile/link), while spec/deps explicitly do not depend on ctags. | v0.5 §3.4, §14.1 | spec/deps collect spec and dependency metadata, not source symbol context. Tests still pass a failing ctags runner to prove they are unaffected. | ctags failure baselines include regex and line-window fallbacks for source collectors plus unaffected spec/deps collectors. |
+| d005 | 2026-05-15 | Select collector level from granted budget thresholds: 300 -> L1, 600 -> L2, 900 -> L3. | v0.5 §3.4 | This mirrors the estimate shape without implementing M7 BudgetPool reclaim. | M5 can test level behavior now and leave budget-pool accounting to M7. |
+| d006 | 2026-05-15 | Use synthetic ctags success and forced ctags failure in perf baselines. | M4 review performance guidance, v0.5 §10.3 | Keeps performance baselines deterministic and separates happy path from fallback path. | Baselines report extraction methods (`ctags`, `regex_brace`, `line_window`) and success rate. |

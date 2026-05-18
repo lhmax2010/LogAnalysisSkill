@@ -1,0 +1,45 @@
+patches:
+  - id: p001
+    title: "Start M5 dev_memory"
+    commit: "c45ee0b"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m5_evidence/*"
+    rationale: "v0.5 §7 - milestone handoff state must be explicit"
+
+  - id: p002
+    title: "Add collector base and ctags fallback"
+    commit: "a9c8a18"
+    files_changed:
+      - "gbs_analyzer/evidence/base.py"
+      - "gbs_analyzer/_utils/ctags_loader.py"
+      - "tests/unit/test_ctags_loader.py"
+      - "tests/unit/test_evidence_base.py"
+    rationale: "v0.5 §3.4 - EvidenceCollector ABC and ctags three-level fallback"
+
+  - id: p003
+    title: "Implement MVP collectors"
+    commit: "eebecaf"
+    files_changed:
+      - "gbs_analyzer/evidence/compile.py"
+      - "gbs_analyzer/evidence/link.py"
+      - "gbs_analyzer/evidence/spec.py"
+      - "gbs_analyzer/evidence/deps.py"
+      - "gbs_analyzer/evidence/router.py"
+      - "tests/unit/test_evidence_collectors.py"
+    rationale: "v0.5 §3.4 - compile/link/spec/deps collectors only"
+
+  - id: p004
+    title: "Add collector fixtures"
+    commit: "eb763fe"
+    files_changed:
+      - "tests/fixtures/evidence_*"
+      - "tests/functional/test_evidence_fixtures.py"
+    rationale: "v0.5 §9.4 - each M5 collector needs at least 2 fixtures"
+
+  - id: p005
+    title: "Cover non-ctags collectors with ctags failure"
+    commit: "36a02e9"
+    files_changed:
+      - "tests/unit/test_evidence_collectors.py"
+    rationale: "M5 review-risk mitigation - spec/deps do not depend on ctags and must stay healthy when ctags fails"
