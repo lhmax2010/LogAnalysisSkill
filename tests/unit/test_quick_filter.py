@@ -249,12 +249,13 @@ def test_validation_rejects_non_mapping_pattern(tmp_path: Path) -> None:
         load_pattern_library(path)
 
 
-def test_validation_rejects_non_tier1_pattern(tmp_path: Path) -> None:
+def test_quick_filter_ignores_non_tier1_patterns(tmp_path: Path) -> None:
     data = valid_library_data()
     data["patterns"][0]["tier"] = "tier2"  # type: ignore[index]
     path = write_library_data(tmp_path, data)
-    with pytest.raises(PatternValidationError, match="only tier1"):
-        load_pattern_library(path)
+
+    library = load_pattern_library(path)
+    assert library["patterns"] == []
 
 
 def test_validation_rejects_category_in_forbidden_list(tmp_path: Path) -> None:

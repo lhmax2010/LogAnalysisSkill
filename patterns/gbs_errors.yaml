@@ -148,7 +148,9 @@ patterns:
     event_kinds: [compiler]
     match:
       regex:
-        - "['`\"]?(?P<identifier>[A-Za-z_][A-Za-z0-9_]*)['`\"]? (?:undeclared|was not declared in this scope)"
+        - "['`\"](?P<identifier>[A-Za-z_][A-Za-z0-9_]*)['`\"] (?:undeclared|was not declared in this scope)"
+        - "\\b(?P<identifier>[A-Za-z_][A-Za-z0-9_]*) was not declared in this scope"
+        - "undeclared identifier ['`\"](?P<identifier>[A-Za-z_][A-Za-z0-9_]*)['`\"]"
       required_context:
         severity: [error]
       negative_patterns: ["warning:"]
