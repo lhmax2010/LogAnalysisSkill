@@ -1,13 +1,14 @@
-current_milestone: m7_packet_assembler
-current_status: completed
-last_completed: m6_full_match
-last_completed_commit: "3159fd1"
-session_count: 11
+current_milestone: m8_wrapper_and_e2e
+current_status: in_progress
+last_completed: m7_packet_assembler
+last_completed_commit: "18e4d33"
+session_count: 12
 next_steps:
-  - "Open M7 PR for review."
-  - "After M7 PR is merged, start M8 wrapper from updated main."
-blocked_on: "waiting_for_m7_review"
+  - "Apply M7 review follow-ups before wrapper work."
+  - "Implement analyze wrapper and perf_report output."
+  - "Add SKILL.md, integration examples, and 20 fixture E2E."
+blocked_on: null
 notes: |
-  M6 PR #8 was reviewed and merged at 3159fd1.
-  M7 is complete on feature/m7-packet-assembler and must stop at PR review.
-  Do not start M8 until the M7 PR is reviewed and merged.
+  M7 PR #9 was reviewed and merged at 18e4d33.
+  M8 is the MVP acceptance milestone and must stop after opening PR for review.
+  Do not start post-MVP/full milestones until M8 is reviewed and merged.

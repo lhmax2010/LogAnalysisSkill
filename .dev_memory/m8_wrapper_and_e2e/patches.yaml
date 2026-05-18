@@ -1,0 +1,9 @@
+patches:
+  - id: p001
+    title: "Start M8 dev_memory"
+    commit: "4eb8674"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+      - "README.md"
+    rationale: "v0.5 §7 and §13 - M8 is the MVP acceptance milestone after M7 merge"
