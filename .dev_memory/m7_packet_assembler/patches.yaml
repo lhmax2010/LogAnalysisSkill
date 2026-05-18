@@ -1,9 +1,18 @@
 patches:
   - id: p001
     title: "Start M7 dev_memory"
-    commit: "pending"
+    commit: "56eef3d"
     files_changed:
       - ".dev_memory/current.yaml"
       - ".dev_memory/m7_packet_assembler/*"
       - "README.md"
     rationale: "v0.5 §7 - milestone handoff state must be explicit"
+
+  - id: p002
+    title: "Fix M6 test report commit hash"
+    commit: "pending"
+    files_changed:
+      - ".dev_memory/m6_full_match/test_report.md"
+      - ".dev_memory/m7_packet_assembler/memory.md"
+      - ".dev_memory/m7_packet_assembler/patches.yaml"
+    rationale: "M6 review follow-up - test_report must reflect the final PR HEAD"

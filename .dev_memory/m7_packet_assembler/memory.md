@@ -25,7 +25,7 @@ M7 must not implement the M8 wrapper, CLI/e2e workflow, or new collectors.
 ## Planned Work
 
 - [x] Start M7 dev_memory and branch state.
-- [ ] Apply M6 review follow-ups.
+- [x] Apply M6 review follow-ups.
 - [ ] Implement BudgetPool.
 - [ ] Implement MinimalRedactor and token estimation.
 - [ ] Implement packet assembler and fallback_raw_context.
@@ -39,6 +39,12 @@ M7 must not implement the M8 wrapper, CLI/e2e workflow, or new collectors.
 - **Reason**: M6 was merged and M7 is now the active feature branch.
 - **Source**: v0.5 §7, §8
 - **Tests**: Documentation/state-only.
+
+### Change 2: M6 review follow-up commit hash
+- **Files**: `.dev_memory/m6_full_match/test_report.md`
+- **Reason**: M6 review noted the report listed the implementation commit instead of the PR final HEAD after CI follow-up.
+- **Source**: M6 review feedback, v0.5 §7.3
+- **Tests**: Documentation-only.
 
 ## Test Status
 
