@@ -16,12 +16,7 @@ def write_source_tree(tmp_path: Path) -> Path:
     (src / "src").mkdir(parents=True)
     (src / "include").mkdir()
     (src / "src" / "foo.c").write_text(
-        "int helper(void) {\n"
-        "  return 0;\n"
-        "}\n"
-        "int main(void) {\n"
-        "  return missing_symbol();\n"
-        "}\n",
+        "int helper(void) {\n  return 0;\n}\nint main(void) {\n  return missing_symbol();\n}\n",
         encoding="utf-8",
     )
     (src / "include" / "foo.h").write_text("int missing_symbol(void);\n", encoding="utf-8")
@@ -38,13 +33,21 @@ def write_plain_source(tmp_path: Path) -> Path:
     return src
 
 
+def write_assembler_source(tmp_path: Path) -> Path:
+    src = tmp_path / "asmroot"
+    (src / "libavcodec" / "arm").mkdir(parents=True)
+    (src / "libavcodec" / "arm" / "h264cmc_neon.S").write_text(
+        "\n".join(f"asm line {index}" for index in range(1, 80)),
+        encoding="utf-8",
+    )
+    return src
+
+
 def write_link_source_tree(tmp_path: Path) -> Path:
     src = tmp_path / "linksrc"
     (src / "src").mkdir(parents=True)
     (src / "src" / "foo.c").write_text(
-        "int missing_symbol(void) {\n"
-        "  return 2;\n"
-        "}\n",
+        "int missing_symbol(void) {\n  return 2;\n}\n",
         encoding="utf-8",
     )
     return src
@@ -88,6 +91,17 @@ def scan_data() -> dict[str, object]:
                 "line": 5,
                 "phase": "%build",
                 "command_id": "C001",
+            },
+            {
+                "id": "E001A",
+                "kind": "compiler",
+                "message": "bad instruction `sasdd r1,r1,r3'",
+                "severity": "error",
+                "file": "libavcodec/arm/h264cmc_neon.S",
+                "line": 43,
+                "phase": "%build",
+                "command_id": "C001",
+                "details": {"is_assembler": True},
             },
             {
                 "id": "E002",
@@ -188,6 +202,21 @@ def test_compile_collector_falls_back_to_window_when_regex_cannot_match(
         ctags_runner=missing_ctags,
     ).collect(candidate("E001", "compiler"), 600)
     assert evidence.data["source_snippet"]["extraction_method"] == "line_window"
+    assert evidence.degraded is True
+
+
+def test_compile_collector_assembler_uses_line_window_fallback(tmp_path: Path) -> None:
+    src = write_assembler_source(tmp_path)
+    evidence = CompileEvidenceCollector(
+        scan_data(),
+        src_root=src,
+        ctags_runner=failing_ctags,
+    ).collect(candidate("E001A", "compiler"), 600)
+    snippet = evidence.data["source_snippet"]
+    assert snippet["path"].endswith("libavcodec/arm/h264cmc_neon.S")
+    assert snippet["extraction_method"] == "line_window"
+    assert snippet["start_line"] == 13
+    assert snippet["end_line"] == 73
     assert evidence.degraded is True
 
 

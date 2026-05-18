@@ -5,6 +5,7 @@ from __future__ import annotations
 import gzip
 import mmap
 import re
+import shlex
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -24,9 +25,10 @@ COMMAND_PATTERN = re.compile(r"^\+\s+(?P<command>.+)")
 ANSI_ESCAPE_PATTERN = re.compile(r"\x1b\[[0-9;]*m")
 GBS_TIMESTAMP_PATTERN = re.compile(r"^\[\s*(?P<seconds>\d+)s\]\s*")
 COMPILER_PATTERN = re.compile(
-    r"(?P<file>[^\s:][^:]*\.(?:c|cc|cpp|cxx|S|cu|h|hh|hpp|hxx)):"
+    r"(?P<file>[^\s:][^:]*\.(?:c|cc|cpp|cxx|S|s|cu|h|hh|hpp|hxx)):"
     r"(?P<line>\d+)(?::(?P<column>\d+))?:\s*"
-    r"(?P<severity>fatal error|error|warning):\s*(?P<message>.*)"
+    r"(?P<severity>fatal error|error|warning):\s*(?P<message>.*)",
+    re.IGNORECASE,
 )
 LINKER_UNDEF_PATTERN = re.compile(r"undefined reference to [`'\"](?P<symbol>.+?)[`'\"]")
 LINKER_MISSING_PATTERN = re.compile(r"cannot find -l(?P<library>[A-Za-z0-9_.+-]+)")
@@ -421,16 +423,30 @@ class _ScanState:
         self, event_id: str, line: LogLine, match: re.Match[str]
     ) -> DiagnosticEvent:
         column = match.group("column")
+        file_path = match.group("file")
+        details: dict[str, Any] = {"is_assembler": _is_assembler_source(file_path)}
+        tool = self._current_command_tool()
+        if tool is not None:
+            details["tool"] = tool
         return self._event(
             event_id,
             "compiler",
             _normalize_severity(match.group("severity")),
             match.group("message"),
             line,
-            file=match.group("file"),
+            file=file_path,
             diagnostic_line=int(match.group("line")),
             column=int(column) if column is not None else None,
+            details=details,
         )
+
+    def _current_command_tool(self) -> str | None:
+        if self.current_command_id is None:
+            return None
+        for command in reversed(self.commands):
+            if command.id == self.current_command_id:
+                return _tool_from_command(command.argv_short)
+        return None
 
     def _event(
         self,
@@ -551,7 +567,22 @@ def _match_patch(text: str) -> dict[str, str] | None:
 
 
 def _normalize_severity(severity: str) -> str:
-    return "error" if severity == "fatal error" else severity
+    normalized = severity.lower()
+    return "error" if normalized == "fatal error" else normalized
+
+
+def _is_assembler_source(path: str) -> bool:
+    return Path(path).suffix.lower() == ".s"
+
+
+def _tool_from_command(command_line: str) -> str | None:
+    try:
+        parts = shlex.split(command_line)
+    except ValueError:
+        parts = command_line.split()
+    if not parts:
+        return None
+    return Path(parts[0]).name
 
 
 def _may_contain_diagnostic(lowered_text: str) -> bool:

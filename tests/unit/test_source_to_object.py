@@ -13,6 +13,7 @@ def test_supported_source_extensions() -> None:
     assert is_supported_source("src/foo.cpp")
     assert is_supported_source("src/foo.cxx")
     assert is_supported_source("src/foo.S")
+    assert is_supported_source("src/foo.s")
     assert is_supported_source("src/foo.cu")
 
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-SOURCE_EXTENSIONS = {".c", ".cc", ".cpp", ".cxx", ".S", ".cu"}
+SOURCE_EXTENSIONS = {".c", ".cc", ".cpp", ".cxx", ".S", ".s", ".cu"}
 
 
 def is_supported_source(path: str) -> bool:

@@ -3,7 +3,12 @@ from pathlib import Path
 
 import pytest
 
-from gbs_analyzer.scan_and_extract import BuildLogScanner, _iter_log_lines, scan_buildlog
+from gbs_analyzer.scan_and_extract import (
+    BuildLogScanner,
+    _iter_log_lines,
+    _tool_from_command,
+    scan_buildlog,
+)
 from gbs_analyzer.tracing import TraceLogger
 
 
@@ -98,6 +103,7 @@ def test_detects_compiler_diagnostic(tmp_path: Path) -> None:
     assert event.column == 5
     assert event.message == "nope"
     assert event.command_id == "C001"
+    assert event.details == {"is_assembler": False, "tool": "gcc"}
 
 
 def test_detects_fatal_compiler_diagnostic_as_error(tmp_path: Path) -> None:
@@ -105,6 +111,37 @@ def test_detects_fatal_compiler_diagnostic_as_error(tmp_path: Path) -> None:
     event = scan_buildlog(path).events[0]
     assert event.kind == "compiler"
     assert event.severity == "error"
+
+
+def test_detects_assembler_diagnostic_as_compiler(tmp_path: Path) -> None:
+    path = write_log(
+        tmp_path,
+        "\n".join(
+            [
+                "+ %build",
+                "+ arm-linux-gnueabihf-as -o libavcodec/arm/h264cmc_neon.o",
+                "libavcodec/arm/h264cmc_neon.S:43: Error: bad instruction `sasdd r1,r1,r3'",
+                "",
+            ]
+        ),
+    )
+
+    event = scan_buildlog(path).events[0]
+
+    assert event.kind == "compiler"
+    assert event.severity == "error"
+    assert event.file == "libavcodec/arm/h264cmc_neon.S"
+    assert event.line == 43
+    assert event.message == "bad instruction `sasdd r1,r1,r3'"
+    assert event.details == {
+        "is_assembler": True,
+        "tool": "arm-linux-gnueabihf-as",
+    }
+
+
+def test_tool_from_command_handles_bad_or_empty_argv() -> None:
+    assert _tool_from_command('"unterminated') == '"unterminated'
+    assert _tool_from_command("") is None
 
 
 def test_detects_linker_undefined_reference(tmp_path: Path) -> None:
