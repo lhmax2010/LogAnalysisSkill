@@ -180,7 +180,10 @@ class TokenEstimator:
         keep = max(1, math.floor(len(text) * ratio))
         truncated = text[:keep].rstrip()
         while truncated and self.estimate_text(truncated) > max_tokens:
-            truncated = truncated[: max(1, len(truncated) - 16)].rstrip()
+            next_length = max(0, len(truncated) - 16)
+            if next_length == len(truncated):
+                next_length -= 1
+            truncated = truncated[:next_length].rstrip()
         return truncated + "\n[truncated]"
 
 

@@ -26,7 +26,7 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 ## Planned Work
 
 - [x] Start M8 dev_memory and branch state.
-- [ ] Apply M7 review follow-ups.
+- [x] Apply M7 review follow-ups.
 - [ ] Implement analyze wrapper and module entrypoint.
 - [ ] Implement perf_report generation.
 - [ ] Rewrite `SKILL.md` for runtime use.
@@ -42,9 +42,19 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - **Source**: v0.5 §7, §8, §13
 - **Tests**: Documentation/state-only.
 
+### Change 2: M7 review follow-ups
+- **Files**: `gbs_analyzer/packet_assembler.py`, `tests/unit/test_packet_assembler.py`, `.dev_memory/m7_packet_assembler/decisions.md`
+- **Reason**: M7 review required `packet_assembler.py` targeted coverage to reach 95%+ and asked for a d006 reflection on the 1-day finish plus 89% module coverage signal.
+- **Source**: M7 review feedback, v0.5 §7.3, §9.4
+- **Tests**: `.venv/bin/pytest tests/unit/test_packet_assembler.py --cov=gbs_analyzer.packet_assembler --cov-report=term-missing -q` passes with 33 tests and 99% targeted coverage.
+
 ## Test Status
 
-Not run for M8 yet.
+M7 follow-up targeted test passed:
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `.venv/bin/pytest tests/unit/test_packet_assembler.py --cov=gbs_analyzer.packet_assembler --cov-report=term-missing -q` | pass | 33 passed; `packet_assembler.py` coverage 99%. |
 
 ## Next Stage Entry
 

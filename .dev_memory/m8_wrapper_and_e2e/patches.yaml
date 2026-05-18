@@ -1,9 +1,19 @@
 patches:
   - id: p001
     title: "Start M8 dev_memory"
-    commit: "4eb8674"
+    commit: "b22c4e5"
     files_changed:
       - ".dev_memory/current.yaml"
       - ".dev_memory/m8_wrapper_and_e2e/*"
       - "README.md"
     rationale: "v0.5 §7 and §13 - M8 is the MVP acceptance milestone after M7 merge"
+
+  - id: p002
+    title: "Apply M7 packet assembler coverage follow-up"
+    commit: "TBD"
+    files_changed:
+      - "gbs_analyzer/packet_assembler.py"
+      - "tests/unit/test_packet_assembler.py"
+      - ".dev_memory/m7_packet_assembler/decisions.md"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "M7 review feedback - raise targeted packet_assembler coverage to 95%+ and record the test-depth reflection"
