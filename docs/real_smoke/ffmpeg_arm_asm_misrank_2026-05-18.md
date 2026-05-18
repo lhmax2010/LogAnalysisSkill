@@ -229,24 +229,49 @@ noise wins over later build-failing diagnostics.
 
 This violates the wrapper contract expectation for `--max-tokens 1800`.
 
-## Proposed Hotfix Plan
+## Design Review Disposition
+
+Claude's design review accepted the five root causes above, but narrowed the hotfix
+scope so real-buildlog adaptation does not become a v0.6 mini-cycle.
+
+Accepted hotfix sequence:
+
+1. H1/H2 first: fix scanner normalization and real RPM `Executing(...)` phase markers.
+2. H3/H6 second: recognize assembler diagnostics as existing `kind: compiler`, then
+   enforce the final packet token cap.
+3. H4/H5 stay deferred unless H1/H2/H3 still fail the ffmpeg acceptance check.
+
+Key accepted constraints:
+
+- Extend existing `LogLine` with `raw_text` and `gbs_seconds`; do not add a new
+  normalization dataclass.
+- Strip only GBS timestamp prefixes and ANSI color escapes.
+- Support only `Executing(%prep|%build|%install|%check):`.
+- Preserve trace/debug fidelity by recording both normalized and raw text in scan traces.
+- Do not update `docs/DESIGN.md` for this hotfix; roll lessons into a future v0.6 design
+  only after more real buildlog data.
+
+After H1/H2 implementation on the user's real ffmpeg log:
+
+```text
+commands: 73
+failed_phase: %build
+primary after full wrapper: assembler line as raw_error in %build
+packet_tokens: 3342
+```
+
+This confirms H1/H2 fixed the root scanner miss. H3 is still needed for structured
+assembler classification and cascade linkage. H6 is still needed for the hard token cap.
+
+## Initial Hotfix Questions Captured for Review
 
 ### H1. Normalize real GBS line prefixes in scanner
 
-Add a line normalization helper that strips ANSI escape codes and extracts an optional
-GBS timestamp prefix while keeping original `raw_offset` and `line_no`.
+Add line normalization that strips ANSI escape codes and extracts an optional GBS
+timestamp prefix while keeping original `raw_offset` and `line_no`.
 
-Suggested internal shape:
-
-```python
-@dataclass(frozen=True)
-class NormalizedLine:
-    line_no: int
-    raw_offset: int
-    raw_text: str
-    text: str
-    gbs_seconds: int | None
-```
+Design review answer: keep both raw and normalized text on existing `LogLine`; do not
+introduce a new dataclass.
 
 Examples:
 
@@ -258,8 +283,8 @@ Examples:
 => info: prepare sources...
 ```
 
-Design question for Claude: should `LogLine.text` be normalized in place, or should
-scanner keep both raw and normalized text fields to preserve trace/debug fidelity?
+Design review answer: keep both fields. `LogLine.text` is normalized matcher input;
+`LogLine.raw_text` preserves the original line for trace/debug fidelity.
 
 ### H2. Detect real RPM phase markers
 
@@ -287,8 +312,7 @@ Alternative design option:
 
 - Add `kind: assembler` and route it to CompileEvidenceCollector.
 
-Design question for Claude: should MVP hotfix reuse `compiler` for assembler diagnostics
-or introduce a new event kind with schema/test updates?
+Design review answer: reuse `kind: compiler`; add `details.is_assembler` during H3.
 
 ### H4. Demote recovered pre-build source-export errors
 
@@ -302,8 +326,7 @@ Possible ranking/scanner rules:
 - For equal-confidence generic errors, prefer later diagnostics inside the failed RPM
   phase over earlier pre-build diagnostics.
 
-Design question for Claude: should this be implemented in scanner as event metadata
-or in ranker as a contextual ranking rule?
+Design review answer: defer H4. If still needed after H1/H2/H3, prefer a ranker rule.
 
 ### H5. Link make cascade to assembler/source event
 
@@ -325,10 +348,9 @@ Short-term hotfix:
 - Recompute token estimate after truncation.
 - Add a warning/degradation reason such as `packet_truncated_to_token_budget`.
 
-Design question for Claude: should token enforcement live in `packet_assembler.py` or
-only in `analyze.py` wrapper?
+Design review answer: enforce in `packet_assembler.py`.
 
-## Suggested Hotfix Acceptance Criteria
+## Final Hotfix Acceptance Criteria
 
 Add a sanitized fixture derived from this case, not the full ffmpeg tree:
 
@@ -340,16 +362,18 @@ tests/fixtures/real_smoke_ffmpeg_arm_asm/
 └── src/libavcodec/arm/h264cmc_neon.S
 ```
 
-Expected assertions:
+Expected core assertions:
 
 - `commands > 0`
 - `failed_phase == "%build"`
 - Top-1 event points to `libavcodec/arm/h264cmc_neon.S:43`
-- Top-1 is not the `pristine-tar` export message
-- assembler error has file/line extracted
-- make cascade parent links to the assembler event
 - final `perf_report.tokens.packet_tokens <= 1800`
-- wrapper still exits `0` and stdout remains empty
+
+Regression gate:
+
+- Existing 20 M8 E2E fixtures have zero regressions.
+- Full suite passes.
+- Overall coverage remains at or above 96%.
 
 ## Non-Goals for This Hotfix
 
@@ -358,4 +382,3 @@ Expected assertions:
 - Do not implement full `expand`.
 - Do not commit the user's local ffmpeg tree, full build output, or generated
   `output/real_smoke_1` artifacts.
-

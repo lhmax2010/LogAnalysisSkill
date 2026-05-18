@@ -1,0 +1,9 @@
+fatal: path 'ffmpeg-8.0.1.tar.gz.delta' does not exist in 'refs/heads/pristine-tar'
+info: ffmpeg-8.0.1.tar.gz does not exist, creating from 'upstream/8.0.1'
+[  194s] Executing(%prep): /bin/sh -e /var/tmp/rpm-tmp.prep
+[  208s] Executing(%build): /bin/sh -e /var/tmp/rpm-tmp.build
+[  209s] + /bin/make -j40
+[  213s] AS	libavcodec/arm/h264cmc_neon.o
+[  213s] libavcodec/arm/h264cmc_neon.S:43: Error: bad instruction `sasdd r1,r1,r3'
+[  213s] make: *** [ffbuild/common.mak:93: libavcodec/arm/h264cmc_neon.o] Error 1
+[  217s] error: Bad exit status from /var/tmp/rpm-tmp.build (%build)
