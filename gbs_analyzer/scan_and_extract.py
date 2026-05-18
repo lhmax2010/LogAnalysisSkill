@@ -19,7 +19,10 @@ from gbs_analyzer._utils.source_to_object import (
 from gbs_analyzer.tracing import TraceLogger
 
 PHASE_PATTERN = re.compile(r"^\+\s+(?P<phase>%(?:prep|build|install|check|clean|files|setup)\b.*)")
+EXECUTING_PHASE_PATTERN = re.compile(r"^Executing\((?P<phase>%(?:prep|build|install|check))\):")
 COMMAND_PATTERN = re.compile(r"^\+\s+(?P<command>.+)")
+ANSI_ESCAPE_PATTERN = re.compile(r"\x1b\[[0-9;]*m")
+GBS_TIMESTAMP_PATTERN = re.compile(r"^\[\s*(?P<seconds>\d+)s\]\s*")
 COMPILER_PATTERN = re.compile(
     r"(?P<file>[^\s:][^:]*\.(?:c|cc|cpp|cxx|S|cu|h|hh|hpp|hxx)):"
     r"(?P<line>\d+)(?::(?P<column>\d+))?:\s*"
@@ -60,6 +63,8 @@ class LogLine:
     line_no: int
     raw_offset: int
     text: str
+    raw_text: str
+    gbs_seconds: int | None = None
 
 
 @dataclass
@@ -197,6 +202,8 @@ class _PendingCommand:
     line_no: int
     raw_offset: int
     lines: list[str]
+    raw_lines: list[str]
+    gbs_seconds: int | None
 
 
 class _ScanState:
@@ -218,10 +225,10 @@ class _ScanState:
             self.trace_logger.emit(level, "L0_scan", event, **fields)
 
     def process(self, line: LogLine) -> None:
-        phase_match = PHASE_PATTERN.match(line.text)
-        if phase_match:
+        phase = _match_phase_marker(line.text)
+        if phase is not None:
             self.finish_pending_command()
-            self.current_phase = phase_match.group("phase").split()[0]
+            self.current_phase = phase
             self.phases.append(
                 {
                     "phase": self.current_phase,
@@ -235,6 +242,9 @@ class _ScanState:
                 phase=self.current_phase,
                 line_no=line.line_no,
                 offset=line.raw_offset,
+                text=line.text,
+                raw_text=line.raw_text,
+                gbs_seconds=line.gbs_seconds,
             )
             return
 
@@ -245,6 +255,8 @@ class _ScanState:
                 line_no=line.line_no,
                 raw_offset=line.raw_offset,
                 lines=[command_match.group("command")],
+                raw_lines=[line.raw_text],
+                gbs_seconds=line.gbs_seconds,
             )
             if not _continues(command_match.group("command")):
                 self.finish_pending_command()
@@ -252,13 +264,14 @@ class _ScanState:
 
         if self._pending_command is not None:
             self._pending_command.lines.append(line.text)
+            self._pending_command.raw_lines.append(line.raw_text)
             if not _continues(line.text):
                 self.finish_pending_command()
             return
 
         event = self._extract_event(line)
         if event is not None:
-            self._add_event(event)
+            self._add_event(event, line)
 
     def finish_pending_command(self) -> None:
         if self._pending_command is None:
@@ -285,12 +298,15 @@ class _ScanState:
             phase=self.current_phase,
             line_no=command.line_no,
             offset=command.raw_offset,
+            text=argv_line,
+            raw_text="\n".join(self._pending_command.raw_lines),
+            gbs_seconds=self._pending_command.gbs_seconds,
         )
         if command.command_degraded:
             self.degraded_reasons.append(f"command_{command_id}_rsp_unavailable")
         self._pending_command = None
 
-    def _add_event(self, event: DiagnosticEvent) -> None:
+    def _add_event(self, event: DiagnosticEvent, line: LogLine | None = None) -> None:
         if event.kind == "make_cascade" and event.target is not None:
             suffix_index = build_suffix_index(self._source_to_event)
             event.parent = match_make_target(event.target, suffix_index)
@@ -308,15 +324,22 @@ class _ScanState:
             self._source_to_event[event.file] = event.id
         if event.kind != "make_cascade":
             self.failed_phase = event.phase or self.failed_phase
-        self.trace(
-            "INFO",
-            "diagnostic_detected",
-            event_id=event.id,
-            kind=event.kind,
-            phase=event.phase,
-            line_no=event.line_no,
-            offset=event.raw_offset,
-        )
+        trace_fields: dict[str, Any] = {
+            "event_id": event.id,
+            "kind": event.kind,
+            "phase": event.phase,
+            "line_no": event.line_no,
+            "offset": event.raw_offset,
+        }
+        if line is not None:
+            trace_fields.update(
+                {
+                    "text": line.text,
+                    "raw_text": line.raw_text,
+                    "gbs_seconds": line.gbs_seconds,
+                }
+            )
+        self.trace("INFO", "diagnostic_detected", **trace_fields)
 
     def _extract_event(self, line: LogLine) -> DiagnosticEvent | None:
         event_id = f"E{len(self.events) + 1:03d}"
@@ -470,10 +493,14 @@ def _iter_mmap_lines(path: Path) -> Iterator[LogLine]:
                 if not raw_line:
                     break
                 line_no += 1
+                raw_text = raw_line.decode("utf-8", errors="replace").rstrip("\r\n")
+                text, gbs_seconds = _normalize_log_text(raw_text)
                 yield LogLine(
                     line_no=line_no,
                     raw_offset=offset,
-                    text=raw_line.decode("utf-8", errors="replace").rstrip("\r\n"),
+                    text=text,
+                    raw_text=raw_text,
+                    gbs_seconds=gbs_seconds,
                 )
 
 
@@ -481,13 +508,38 @@ def _iter_gzip_lines(path: Path) -> Iterator[LogLine]:
     raw_offset = 0
     with gzip.open(path, "rt", encoding="utf-8", errors="replace") as file:
         for line_no, text in enumerate(file, start=1):
-            stripped = text.rstrip("\r\n")
-            yield LogLine(line_no=line_no, raw_offset=raw_offset, text=stripped)
+            raw_text = text.rstrip("\r\n")
+            normalized, gbs_seconds = _normalize_log_text(raw_text)
+            yield LogLine(
+                line_no=line_no,
+                raw_offset=raw_offset,
+                text=normalized,
+                raw_text=raw_text,
+                gbs_seconds=gbs_seconds,
+            )
             raw_offset += len(text.encode("utf-8", errors="replace"))
 
 
 def _continues(command_line: str) -> bool:
     return command_line.rstrip().endswith("\\")
+
+
+def _normalize_log_text(raw_text: str) -> tuple[str, int | None]:
+    text = ANSI_ESCAPE_PATTERN.sub("", raw_text)
+    timestamp = GBS_TIMESTAMP_PATTERN.match(text)
+    if timestamp is None:
+        return text, None
+    return text[timestamp.end() :], int(timestamp.group("seconds"))
+
+
+def _match_phase_marker(text: str) -> str | None:
+    phase_match = PHASE_PATTERN.match(text)
+    if phase_match:
+        return phase_match.group("phase").split()[0]
+    executing_match = EXECUTING_PHASE_PATTERN.match(text)
+    if executing_match:
+        return executing_match.group("phase")
+    return None
 
 
 def _match_patch(text: str) -> dict[str, str] | None:
