@@ -30,9 +30,17 @@ patches:
 
   - id: p004
     title: "Cover wrapper and perf report contracts"
-    commit: "TBD"
+    commit: "2a6b30e"
     files_changed:
       - "tests/unit/test_analyze_wrapper.py"
       - "tests/unit/test_perf_report.py"
       - ".dev_memory/m8_wrapper_and_e2e/*"
     rationale: "v0.5 §9.4, §10.2, and §11.3 - wrapper external behavior needs unit coverage before E2E"
+
+  - id: p005
+    title: "Rewrite runtime SKILL"
+    commit: "TBD"
+    files_changed:
+      - "SKILL.md"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §8 and §11.3 - M8 requires a usable skill contract"

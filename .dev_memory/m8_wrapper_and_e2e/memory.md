@@ -29,7 +29,7 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - [x] Apply M7 review follow-ups.
 - [x] Implement analyze wrapper and module entrypoint.
 - [x] Implement perf_report generation.
-- [ ] Rewrite `SKILL.md` for runtime use.
+- [x] Rewrite `SKILL.md` for runtime use.
 - [ ] Add integration examples.
 - [ ] Add 20 E2E fixtures and acceptance tests.
 - [ ] Record final test report, perf baseline, and PR.
@@ -59,6 +59,12 @@ M8 must not implement post-MVP collectors, expand behavior, full deployment inte
 - **Reason**: M8 wrapper contract needs focused coverage before larger E2E fixtures.
 - **Source**: v0.5 §9.4, §10.2, §11.3
 - **Tests**: `.venv/bin/pytest tests/unit/test_analyze_wrapper.py tests/unit/test_perf_report.py -q` passes with 8 tests.
+
+### Change 5: runtime SKILL.md
+- **Files**: `SKILL.md`
+- **Reason**: M8 turns the repository from setup/runtime placeholder into a usable Anthropic-style skill.
+- **Source**: v0.5 §8, §11.3, §13
+- **Tests**: Documentation-only.
 
 ## Test Status
 
