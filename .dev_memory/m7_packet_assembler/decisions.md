@@ -1,0 +1,9 @@
+# Decisions for M7: packet_assembler
+
+| ID | Date | Decision | Source | Rationale | Impact |
+| --- | --- | --- | --- | --- | --- |
+| d001 | 2026-05-18 | Start M7 from merge commit `3159fd1` after M6 review approval and merge. | v0.5 §7, §8 | Keeps the handoff pointer aligned with reviewed `main`. | M7 branch starts from the latest merged baseline. |
+| d002 | 2026-05-18 | Treat M6 tier2 evidence requirements as extraction-method independent. | M6 review follow-up, v0.5 §3.5 | `Evidence.contains` carries semantic completeness such as `source_snippet` or `symbol_context`; `extraction_methods` records whether ctags/regex/window produced it. Happy ctags and fallback evidence should both satisfy tier2 when not degraded. | Added happy-ctags tier2 fixture coverage in M7 startup; no M6 d007 caveat is needed. |
+| d003 | 2026-05-18 | Keep BudgetPool accounting explicit with hard reserved, soft used/pending, evidence pool, and granted totals. | v0.5 §5.2, §9.4 | Counting reclaimed tokens separately would double-count budget because reclaimed tokens return to `evidence_pool`. | `BudgetPool.conservation_total()` equals 1400 by summing hard + soft used + soft pending + remaining pool + grants. |
+| d004 | 2026-05-18 | Preserve raw paths in storage JSON and redact only prompt/markdown LLM views. | v0.5 §3.6 | Expand/debug flows need exact file paths, while LLM-facing text should avoid user and host leakage. | `assemble_packet()` returns raw storage JSON; `prompt` and `render_packet_markdown()` use `MinimalRedactor`. |
+| d005 | 2026-05-18 | Implement `fallback_raw_context` inside `packet_assembler.py` instead of adding an unknown collector. | v0.5 §3.4, §3.6 | The design explicitly scopes unknown fallback to assembler; adding a generic collector would violate M5/M7 boundaries. | Missing evidence produces `evidence.fallback_context` and marks the packet degraded. |

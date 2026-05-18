@@ -1,0 +1,12 @@
+{
+  "schema_version": "perf_report/v1",
+  "milestone": "m7_packet_assembler",
+  "iterations": 1000,
+  "elapsed_seconds": 0.060807,
+  "per_evaluation_ms": 0.0608,
+  "packet_tokens": 295,
+  "budget_limit": 1800,
+  "budget_conservation_ok": true,
+  "budget_conservation_total": 1400,
+  "passed": true
+}
