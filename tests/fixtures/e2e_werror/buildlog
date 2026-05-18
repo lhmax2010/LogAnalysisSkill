@@ -1,0 +1,3 @@
++ %build
++ gcc -Werror -c src/warn.c
+cc1: all warnings being treated as errors

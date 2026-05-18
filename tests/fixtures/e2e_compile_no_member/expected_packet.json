@@ -1,0 +1,12 @@
+{
+  "src_root": "src",
+  "expected": {
+    "verdict": "direct_answer",
+    "via": "full_path",
+    "matched_tier": "tier2",
+    "matched_patterns": ["compile_no_member_tier2"],
+    "primary_error_kind": "compiler",
+    "semantic_class": "no_member",
+    "budget_conservation": true
+  }
+}

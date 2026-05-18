@@ -1,0 +1,3 @@
++ %build
++ gcc -o demo main.o -lfoo
+/usr/bin/ld: cannot find -lfoo

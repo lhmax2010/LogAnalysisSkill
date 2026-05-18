@@ -1,0 +1,3 @@
++ %build
++ gcc -o app main.o -lbar
+/usr/bin/ld: cannot find -lbar

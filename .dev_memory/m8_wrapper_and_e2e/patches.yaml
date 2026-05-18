@@ -1,0 +1,83 @@
+patches:
+  - id: p001
+    title: "Start M8 dev_memory"
+    commit: "b22c4e5"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+      - "README.md"
+    rationale: "v0.5 §7 and §13 - M8 is the MVP acceptance milestone after M7 merge"
+
+  - id: p002
+    title: "Apply M7 packet assembler coverage follow-up"
+    commit: "788829a"
+    files_changed:
+      - "gbs_analyzer/packet_assembler.py"
+      - "tests/unit/test_packet_assembler.py"
+      - ".dev_memory/m7_packet_assembler/decisions.md"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "M7 review feedback - raise targeted packet_assembler coverage to 95%+ and record the test-depth reflection"
+
+  - id: p003
+    title: "Add analyze wrapper and perf report"
+    commit: "ee1ecb9"
+    files_changed:
+      - "gbs_analyzer/analyze.py"
+      - "gbs_analyzer/__main__.py"
+      - "gbs_analyzer/tracing/perf_report.py"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §10.2 and §11.3 - M8 requires a single wrapper entrypoint and perf_report.json"
+
+  - id: p004
+    title: "Cover wrapper and perf report contracts"
+    commit: "2a6b30e"
+    files_changed:
+      - "tests/unit/test_analyze_wrapper.py"
+      - "tests/unit/test_perf_report.py"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §9.4, §10.2, and §11.3 - wrapper external behavior needs unit coverage before E2E"
+
+  - id: p005
+    title: "Rewrite runtime SKILL"
+    commit: "a57be83"
+    files_changed:
+      - "SKILL.md"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §8 and §11.3 - M8 requires a usable skill contract"
+
+  - id: p006
+    title: "Add external integration examples"
+    commit: "63424b5"
+    files_changed:
+      - "integrations/README.md"
+      - "integrations/cline/*"
+      - "integrations/compiling_agent/*"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §11 - M8 requires Cline and Compiling Agent example contracts"
+
+  - id: p007
+    title: "Add MVP E2E fixtures"
+    commit: "cdc992f"
+    files_changed:
+      - "tests/fixtures/e2e_*/*"
+      - "tests/e2e/test_m8_wrapper_e2e.py"
+      - "gbs_analyzer/analyze.py"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §9.3, §10.3, and §13 - M8 requires 20 fixture E2E acceptance"
+
+  - id: p008
+    title: "Record E2E perf baseline and test guide"
+    commit: "69812b9"
+    files_changed:
+      - ".dev_memory/m8_wrapper_and_e2e/perf_baselines/e2e_20_fixtures.json"
+      - "docs/test_guides/m8_wrapper_and_e2e.md"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §9.5 and §10.3 - M8 requires reproducible MVP acceptance data"
+
+  - id: p009
+    title: "Complete M8 dev_memory"
+    commit: "689b4d7"
+    files_changed:
+      - ".dev_memory/current.yaml"
+      - ".dev_memory/m8_wrapper_and_e2e/*"
+    rationale: "v0.5 §7.3 - milestone closeout records must reflect final tests and review gate"

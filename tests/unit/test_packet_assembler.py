@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+import gbs_analyzer.packet_assembler as packet_assembler
 from gbs_analyzer.evidence import Evidence
 from gbs_analyzer.full_match import FullMatchResult, Verdict
 from gbs_analyzer.packet_assembler import (
@@ -15,6 +16,11 @@ from gbs_analyzer.packet_assembler import (
     render_packet_markdown,
 )
 from gbs_analyzer.rank_causes import RankResult, RootCauseCandidate
+from gbs_analyzer.scan_and_extract import (
+    CommandRecord,
+    DiagnosticEvent,
+    ScanResult,
+)
 from gbs_analyzer.tracing import setup_tracing
 
 
@@ -186,6 +192,11 @@ def test_budget_pool_rejects_bad_usage() -> None:
         pool.request("compile", -1)
 
 
+def test_budget_pool_rejects_over_reserved_total() -> None:
+    with pytest.raises(ValueError, match="reserved budget"):
+        BudgetPool(total=100)
+
+
 def test_budget_pool_rejects_duplicate_soft_report() -> None:
     pool = BudgetPool()
     pool.report_reserve_used("raw_excerpt", 1)
@@ -194,8 +205,45 @@ def test_budget_pool_rejects_duplicate_soft_report() -> None:
         pool.report_reserve_used("raw_excerpt", 1)
 
 
+def test_budget_pool_reclaimed_ignores_non_soft_entries() -> None:
+    pool = BudgetPool()
+    pool.soft_used["primary_error"] = 10
+
+    assert pool.reclaimed == 0
+
+
 def test_fallback_token_estimate_handles_mixed_text() -> None:
     assert fallback_token_estimate("中文 text /tmp/foo.c") > 1
+
+
+def test_token_estimator_uses_tiktoken_when_available(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeEncoder:
+        def encode(self, text: str) -> list[str]:
+            return text.split()
+
+    class FakeTiktoken:
+        @staticmethod
+        def get_encoding(name: str) -> FakeEncoder:
+            assert name == "cl100k_base"
+            return FakeEncoder()
+
+    monkeypatch.setattr(packet_assembler, "tiktoken", FakeTiktoken)
+
+    estimator = TokenEstimator()
+
+    assert estimator.method == "tiktoken"
+    assert estimator.estimate_text("one two three") == 3
+
+
+def test_token_estimator_falls_back_when_tiktoken_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(packet_assembler, "tiktoken", None)
+
+    estimator = TokenEstimator()
+
+    assert estimator.method == "fallback"
+    assert estimator.estimate_text("one two") >= 1
 
 
 def test_token_estimator_fallback_truncates_text() -> None:
@@ -206,6 +254,13 @@ def test_token_estimator_fallback_truncates_text() -> None:
 
     assert "[truncated]" in truncated
     assert len(truncated) < len(text)
+
+
+def test_token_estimator_truncate_handles_tiny_budgets() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+
+    assert estimator.truncate_text("anything", 0) == ""
+    assert "[truncated]" in estimator.truncate_text("word " * 200, 1)
 
 
 def test_token_estimator_estimates_objects() -> None:
@@ -242,6 +297,13 @@ def test_format_cascade_summary() -> None:
     assert format_cascade_summary(scan_data(Path("/tmp"))) == "make cascade: foo.o -> E001"
 
 
+def test_format_cascade_summary_returns_empty_without_cascades(tmp_path: Path) -> None:
+    scan = scan_data(tmp_path)
+    scan["events"] = [scan["events"][0]]
+
+    assert format_cascade_summary(scan) == ""
+
+
 def test_fallback_raw_context_reads_buildlog_window(tmp_path: Path) -> None:
     scan = scan_data(tmp_path)
     event = scan["events"][0]
@@ -253,6 +315,18 @@ def test_fallback_raw_context_reads_buildlog_window(tmp_path: Path) -> None:
     assert context["current_command_summary"]["argv_short"].startswith("gcc")
     assert context["cascade_summary"] == "make cascade: foo.o -> E001"
     assert context["token_estimate"] >= 1
+
+
+def test_fallback_raw_context_handles_missing_line_and_command(tmp_path: Path) -> None:
+    scan = scan_data(tmp_path)
+    event = dict(scan["events"][0])
+    event["line_no"] = "unknown"
+    event["command_id"] = "missing"
+
+    context = fallback_raw_context(event, scan, estimator=TokenEstimator(use_tiktoken=False))
+
+    assert "undeclared identifier" in context["primary_error_excerpt"]
+    assert context["current_command_summary"] is None
 
 
 def test_fallback_raw_context_uses_event_message_when_log_missing() -> None:
@@ -286,6 +360,62 @@ def test_assemble_packet_direct_answer_preserves_storage_paths(tmp_path: Path) -
     assert packet["package"] == "demo"
     assert packet["evidence"]["source_snippet"]["path"] == "/home/linhao/work/src/foo.c"
     assert packet["token_budget"]["conservation_ok"] is True
+
+
+def test_assemble_packet_accepts_scan_rank_evidence_and_legacy_match_dicts(
+    tmp_path: Path,
+) -> None:
+    scan = scan_data(tmp_path)
+    scan_result = ScanResult(
+        schema_version="scan_result/v1",
+        buildlog_path=str(scan["buildlog_path"]),
+        buildlog_size_bytes=int(scan["buildlog_size_bytes"]),
+        is_gzip=False,
+        failed_phase="%build",
+        phases=[{"name": "%build", "line_no": 1}],
+        commands=[
+            CommandRecord(
+                id="C001",
+                line_no=2,
+                raw_offset=10,
+                phase="%build",
+                argv_short="gcc -c /home/linhao/work/src/foo.c",
+                argv_full=None,
+                rsp_expanded={},
+                command_degraded=False,
+            )
+        ],
+        events=[
+            DiagnosticEvent(
+                id="E001",
+                kind="compiler",
+                severity="error",
+                message="use of undeclared identifier 'missing_symbol'",
+                line_no=3,
+                raw_offset=20,
+                phase="%build",
+                command_id="C001",
+                file="/home/linhao/work/src/foo.c",
+                line=5,
+            )
+        ],
+    )
+
+    packet = assemble_packet(
+        scan_result,
+        {"root_cause_candidates": candidates()},
+        compile_evidence().as_dict(),
+        {
+            "full_match_verdict": Verdict.DIRECT_TIER2.value,
+            "pattern_id": "compile_undeclared_identifier_tier2",
+            "matched_tier": "tier2",
+            "direct_answer": "检查 missing_symbol 声明。",
+        },
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    assert packet["verdict"] == "direct_answer"
+    assert packet["matched_patterns"] == ["compile_undeclared_identifier_tier2"]
 
 
 def test_assemble_packet_needs_llm_prompt_is_redacted(tmp_path: Path) -> None:
@@ -363,6 +493,22 @@ def test_assemble_packet_uses_first_scan_event_without_candidates(tmp_path: Path
     assert packet["primary_error"]["id"] == "E001"
 
 
+def test_assemble_packet_uses_empty_primary_error_when_no_events(tmp_path: Path) -> None:
+    scan = scan_data(tmp_path)
+    scan["events"] = []
+
+    packet = assemble_packet(
+        scan,
+        [{"event_id": "missing"}],
+        None,
+        {"full_match_verdict": "unknown"},
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    assert packet["primary_error"] == {}
+    assert packet["verdict"] == "needs_llm"
+
+
 def test_render_packet_markdown_redacts_llm_view(tmp_path: Path) -> None:
     packet = assemble_packet(
         scan_data(tmp_path),
@@ -381,6 +527,20 @@ def test_render_packet_markdown_redacts_llm_view(tmp_path: Path) -> None:
     assert "# GBS Build Failure Analysis" in markdown
     assert "<WORKSPACE>" in markdown
     assert "/home/linhao/work" not in markdown
+
+
+def test_render_packet_markdown_includes_prompt_when_present(tmp_path: Path) -> None:
+    packet = assemble_packet(
+        scan_data(tmp_path),
+        candidates(),
+        compile_evidence(),
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    markdown = render_packet_markdown(packet)
+
+    assert "## Prompt" in markdown
 
 
 def test_assemble_packet_emits_trace(tmp_path: Path) -> None:

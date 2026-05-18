@@ -1,0 +1,198 @@
+{
+  "schema_version": "m8_e2e_perf/v1",
+  "fixtures": 20,
+  "total_elapsed_seconds": 1.5928,
+  "fast_path_hits": 6,
+  "fast_path_rate": 0.3,
+  "direct_answers": 13,
+  "direct_answer_rate": 0.65,
+  "top1_matches": 20,
+  "top1_accuracy": 1.0,
+  "budget_conservation_checked": 14,
+  "budget_conservation_ok": 14,
+  "budget_conservation_rate": 1.0,
+  "target_total_seconds": 15.0,
+  "passed": true,
+  "per_fixture": [
+    {
+      "fixture": "e2e_cascade_parallel",
+      "elapsed_ms": 82.3471,
+      "via": "full_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier2",
+      "primary_error_kind": "compiler",
+      "packet_tokens": 611
+    },
+    {
+      "fixture": "e2e_cascade_unlinked",
+      "elapsed_ms": 80.1949,
+      "via": "full_path",
+      "verdict": "needs_llm",
+      "matched_tier": null,
+      "primary_error_kind": "make_cascade",
+      "packet_tokens": 755
+    },
+    {
+      "fixture": "e2e_clang_compile",
+      "elapsed_ms": 83.4763,
+      "via": "full_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier2",
+      "primary_error_kind": "compiler",
+      "packet_tokens": 530
+    },
+    {
+      "fixture": "e2e_compile_no_member",
+      "elapsed_ms": 85.5377,
+      "via": "full_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier2",
+      "primary_error_kind": "compiler",
+      "packet_tokens": 551
+    },
+    {
+      "fixture": "e2e_compile_syntax",
+      "elapsed_ms": 83.3868,
+      "via": "full_path",
+      "verdict": "needs_llm",
+      "matched_tier": null,
+      "primary_error_kind": "compiler",
+      "packet_tokens": 1117
+    },
+    {
+      "fixture": "e2e_compile_template",
+      "elapsed_ms": 84.7273,
+      "via": "full_path",
+      "verdict": "needs_llm",
+      "matched_tier": null,
+      "primary_error_kind": "compiler",
+      "packet_tokens": 1202
+    },
+    {
+      "fixture": "e2e_compile_type_mismatch",
+      "elapsed_ms": 85.204,
+      "via": "full_path",
+      "verdict": "needs_llm",
+      "matched_tier": null,
+      "primary_error_kind": "compiler",
+      "packet_tokens": 1189
+    },
+    {
+      "fixture": "e2e_compile_undeclared",
+      "elapsed_ms": 82.865,
+      "via": "full_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier2",
+      "primary_error_kind": "compiler",
+      "packet_tokens": 530
+    },
+    {
+      "fixture": "e2e_fast_depsolve",
+      "elapsed_ms": 72.4772,
+      "via": "fast_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier1",
+      "primary_error_kind": "depsolve",
+      "packet_tokens": 248
+    },
+    {
+      "fixture": "e2e_fast_install_missing",
+      "elapsed_ms": 72.7458,
+      "via": "fast_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier1",
+      "primary_error_kind": "install_missing",
+      "packet_tokens": 239
+    },
+    {
+      "fixture": "e2e_fast_missing_lib",
+      "elapsed_ms": 73.5546,
+      "via": "fast_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier1",
+      "primary_error_kind": "linker_missing",
+      "packet_tokens": 241
+    },
+    {
+      "fixture": "e2e_fast_patch_hunk",
+      "elapsed_ms": 72.1127,
+      "via": "fast_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier1",
+      "primary_error_kind": "patch",
+      "packet_tokens": 243
+    },
+    {
+      "fixture": "e2e_fast_patch_standard",
+      "elapsed_ms": 71.4739,
+      "via": "fast_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier1",
+      "primary_error_kind": "patch",
+      "packet_tokens": 244
+    },
+    {
+      "fixture": "e2e_link_collect2_raw",
+      "elapsed_ms": 77.4818,
+      "via": "full_path",
+      "verdict": "needs_llm",
+      "matched_tier": null,
+      "primary_error_kind": "raw_error",
+      "packet_tokens": 906
+    },
+    {
+      "fixture": "e2e_link_missing_library",
+      "elapsed_ms": 68.0509,
+      "via": "fast_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier1",
+      "primary_error_kind": "linker_missing",
+      "packet_tokens": 241
+    },
+    {
+      "fixture": "e2e_link_undefined_reference",
+      "elapsed_ms": 85.9706,
+      "via": "full_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier2",
+      "primary_error_kind": "linker_undef",
+      "packet_tokens": 498
+    },
+    {
+      "fixture": "e2e_spec_rpm_phase",
+      "elapsed_ms": 82.0912,
+      "via": "full_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier2",
+      "primary_error_kind": "rpm_phase",
+      "packet_tokens": 543
+    },
+    {
+      "fixture": "e2e_spec_script_parse",
+      "elapsed_ms": 79.4977,
+      "via": "full_path",
+      "verdict": "direct_answer",
+      "matched_tier": "tier2",
+      "primary_error_kind": "spec_script",
+      "packet_tokens": 484
+    },
+    {
+      "fixture": "e2e_unknown_raw",
+      "elapsed_ms": 76.1332,
+      "via": "full_path",
+      "verdict": "needs_llm",
+      "matched_tier": null,
+      "primary_error_kind": "raw_error",
+      "packet_tokens": 896
+    },
+    {
+      "fixture": "e2e_werror",
+      "elapsed_ms": 80.652,
+      "via": "full_path",
+      "verdict": "needs_llm",
+      "matched_tier": null,
+      "primary_error_kind": "werror",
+      "packet_tokens": 949
+    }
+  ]
+}

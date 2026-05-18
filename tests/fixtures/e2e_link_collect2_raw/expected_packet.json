@@ -1,0 +1,11 @@
+{
+  "expected": {
+    "verdict": "needs_llm",
+    "via": "full_path",
+    "matched_tier": null,
+    "primary_error_kind": "raw_error",
+    "semantic_class": "generic_error",
+    "uses_fallback_raw_context": true,
+    "budget_conservation": true
+  }
+}

@@ -38,3 +38,11 @@
 
 - M7 does not run the full wrapper pipeline; M8 owns CLI/wrapper/e2e wiring.
 - M7 packet token estimate is local and deterministic; M8 should include end-to-end `perf_report.json`.
+
+## M8 Follow-Up
+
+M8 startup addressed the M7 review coverage item before wrapper implementation:
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `.venv/bin/pytest tests/unit/test_packet_assembler.py --cov=gbs_analyzer.packet_assembler --cov-report=term-missing -q` | pass | 33 passed; `packet_assembler.py` coverage 99%; includes tiktoken-unavailable fallback and tiny-budget truncation coverage. |

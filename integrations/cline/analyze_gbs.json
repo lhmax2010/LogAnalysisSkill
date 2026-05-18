@@ -1,0 +1,30 @@
+{
+  "name": "analyze_gbs_buildlog",
+  "description": "Analyze a Tizen gbs buildlog and write an Evidence Packet.",
+  "command": "python",
+  "args": [
+    "-m",
+    "gbs_analyzer",
+    "analyze",
+    "${input:buildlog_path}",
+    "--src-root",
+    "${workspaceFolder}",
+    "--max-tokens",
+    "1800",
+    "--output-format",
+    "both",
+    "--output-dir",
+    "${workspaceFolder}/.gbs_analysis"
+  ],
+  "input_handlers": {
+    "buildlog_path": {
+      "prompt": "Path to gbs buildlog",
+      "default_from_clipboard": true
+    }
+  },
+  "post_process": {
+    "read_file": ".gbs_analysis/evidence_packet.md",
+    "feed_to_llm": true,
+    "system_prompt": "You are a Tizen build expert. Use the Evidence Packet to identify the likely root cause and propose the smallest safe next step."
+  }
+}
