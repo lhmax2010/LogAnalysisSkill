@@ -16,3 +16,13 @@ patches:
       - ".dev_memory/m7_packet_assembler/memory.md"
       - ".dev_memory/m7_packet_assembler/patches.yaml"
     rationale: "M6 review follow-up - test_report must reflect the final PR HEAD"
+
+  - id: p003
+    title: "Add happy-ctags tier2 hit coverage"
+    commit: "pending"
+    files_changed:
+      - "tests/functional/test_full_match_fixtures.py"
+      - ".dev_memory/m7_packet_assembler/memory.md"
+      - ".dev_memory/m7_packet_assembler/decisions.md"
+      - ".dev_memory/m7_packet_assembler/patches.yaml"
+    rationale: "M6 review follow-up - verify tier2 hit is stable with ctags success"

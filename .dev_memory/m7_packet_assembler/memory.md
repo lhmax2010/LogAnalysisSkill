@@ -46,6 +46,12 @@ M7 must not implement the M8 wrapper, CLI/e2e workflow, or new collectors.
 - **Source**: M6 review feedback, v0.5 §7.3
 - **Tests**: Documentation-only.
 
+### Change 3: ctags happy-path tier2 follow-up
+- **Files**: `tests/functional/test_full_match_fixtures.py`
+- **Reason**: M6 review asked whether tier2 hits still hold when ctags succeeds instead of falling back.
+- **Source**: M6 review feedback
+- **Tests**: `tests/functional/test_full_match_fixtures.py::test_tier2_full_match_fixtures_hit_with_happy_ctags` verifies 3/3 tier2 hits and `ctags` extraction for source-context collectors.
+
 ## Test Status
 
 | Test type | Passed | Failed | Skipped |
