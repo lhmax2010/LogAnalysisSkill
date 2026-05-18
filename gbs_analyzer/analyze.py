@@ -151,6 +151,7 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                         estimator=estimator,
                         redactor=redactor,
                         trace_logger=trace_logger,
+                        max_tokens=options.max_tokens,
                     ),
                 )
                 packet["token_budget"]["limit_with_prompt"] = options.max_tokens

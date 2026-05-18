@@ -6,6 +6,7 @@ import json
 import math
 import re
 import socket
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -67,17 +68,13 @@ class BudgetPool:
     @property
     def hard_reserved(self) -> int:
         return sum(
-            reserve.amount
-            for reserve in self.reserved.values()
-            if isinstance(reserve, HardReserve)
+            reserve.amount for reserve in self.reserved.values() if isinstance(reserve, HardReserve)
         )
 
     @property
     def soft_reserved(self) -> int:
         return sum(
-            reserve.amount
-            for reserve in self.reserved.values()
-            if isinstance(reserve, SoftReserve)
+            reserve.amount for reserve in self.reserved.values() if isinstance(reserve, SoftReserve)
         )
 
     @property
@@ -127,11 +124,7 @@ class BudgetPool:
             if isinstance(reserve, SoftReserve) and name not in self.soft_used
         )
         return (
-            self.hard_reserved
-            + soft_used
-            + soft_pending
-            + self.evidence_pool
-            + self.granted_total
+            self.hard_reserved + soft_used + soft_pending + self.evidence_pool + self.granted_total
         )
 
     def conservation_ok(self) -> bool:
@@ -266,6 +259,7 @@ def assemble_packet(
     estimator: TokenEstimator | None = None,
     redactor: MinimalRedactor | None = None,
     trace_logger: TraceLogger | None = None,
+    max_tokens: int = 1800,
 ) -> dict[str, Any]:
     """Assemble the v0.5 Evidence Packet storage JSON."""
 
@@ -312,11 +306,12 @@ def assemble_packet(
     evidence_section = (
         {"fallback_context": fallback_context}
         if fallback_context is not None
-        else evidence_data.get("data", {}) if evidence_data is not None else {}
+        else evidence_data.get("data", {})
+        if evidence_data is not None
+        else {}
     )
     degraded = bool(
-        degraded_reasons
-        or (evidence_data is not None and evidence_data.get("degraded"))
+        degraded_reasons or (evidence_data is not None and evidence_data.get("degraded"))
     )
     if evidence_data is not None and evidence_data.get("warnings"):
         degraded_reasons.extend(str(item) for item in evidence_data["warnings"])
@@ -347,9 +342,14 @@ def assemble_packet(
         packet["prompt"] = active_redactor.redact_for_llm(_render_prompt(packet))
 
     packet["token_budget"]["estimate_method"] = active_estimator.method
-    packet["token_budget"]["used"] = active_estimator.estimate_obj(packet)
-    packet["token_budget"]["limit_with_prompt"] = 1800
+    packet["token_budget"]["limit_with_prompt"] = max_tokens
     packet["token_budget"]["storage_redaction"] = "raw_paths_preserved"
+    _enforce_final_token_limit(
+        packet,
+        max_tokens=max_tokens,
+        estimator=active_estimator,
+        redactor=active_redactor,
+    )
 
     if trace_logger is not None:
         trace_logger.info(
@@ -361,6 +361,186 @@ def assemble_packet(
         )
 
     return active_redactor.redact_for_storage(packet)
+
+
+def _enforce_final_token_limit(
+    packet: dict[str, Any],
+    *,
+    max_tokens: int,
+    estimator: TokenEstimator,
+    redactor: MinimalRedactor,
+) -> None:
+    """Shrink soft packet sections until the final packet respects ``max_tokens``."""
+
+    _refresh_prompt(packet, redactor)
+    used = estimator.estimate_obj(packet)
+    if used <= max_tokens:
+        packet["token_budget"]["used"] = used
+        return
+
+    _mark_packet_truncated(packet)
+    shrink_steps: tuple[Callable[[], bool], ...] = (
+        lambda: _limit_fallback_lines(packet, "extra_log_window", max_lines=30),
+        lambda: _clear_fallback_field(packet, "extra_log_window"),
+        lambda: _limit_fallback_lines(packet, "primary_error_excerpt", max_lines=30),
+        lambda: _clear_cascade_summary(packet, estimator),
+        lambda: _truncate_snippet_texts(packet, estimator, max_tokens=120),
+        lambda: _truncate_fallback_text(packet, estimator, max_tokens=120),
+        lambda: _keep_top_candidate(packet),
+        lambda: _truncate_snippet_texts(packet, estimator, max_tokens=40),
+        lambda: _truncate_fallback_text(packet, estimator, max_tokens=40),
+    )
+
+    for shrink in shrink_steps:
+        changed = shrink()
+        if not changed:
+            continue
+        _refresh_prompt(packet, redactor)
+        used = estimator.estimate_obj(packet)
+        if used <= max_tokens:
+            packet["token_budget"]["used"] = used
+            return
+
+    packet["token_budget"]["used"] = estimator.estimate_obj(packet)
+
+
+def _refresh_prompt(packet: dict[str, Any], redactor: MinimalRedactor) -> None:
+    if packet.get("verdict") == "needs_llm":
+        packet["prompt"] = redactor.redact_for_llm(_render_prompt(packet))
+
+
+def _mark_packet_truncated(packet: dict[str, Any]) -> None:
+    reasons = packet.setdefault("degraded_reasons", [])
+    if isinstance(reasons, list) and "packet_truncated_to_token_budget" not in reasons:
+        reasons.append("packet_truncated_to_token_budget")
+    packet["degraded"] = True
+
+
+def _fallback_context(packet: dict[str, Any]) -> dict[str, Any] | None:
+    evidence = packet.get("evidence")
+    if not isinstance(evidence, dict):
+        return None
+    fallback = evidence.get("fallback_context")
+    return fallback if isinstance(fallback, dict) else None
+
+
+def _limit_fallback_lines(packet: dict[str, Any], field: str, *, max_lines: int) -> bool:
+    fallback = _fallback_context(packet)
+    if fallback is None:
+        return False
+    value = fallback.get(field)
+    if not isinstance(value, str):
+        return False
+    lines = value.splitlines()
+    if len(lines) <= max_lines:
+        return False
+    fallback[field] = "\n".join(lines[-max_lines:]) + "\n[truncated]"
+    return True
+
+
+def _clear_fallback_field(packet: dict[str, Any], field: str) -> bool:
+    fallback = _fallback_context(packet)
+    if fallback is None:
+        return False
+    value = fallback.get(field)
+    if not isinstance(value, str) or not value:
+        return False
+    fallback[field] = ""
+    return True
+
+
+def _clear_cascade_summary(packet: dict[str, Any], estimator: TokenEstimator) -> bool:
+    summary = str(packet.get("cascade_summary") or "")
+    fallback = _fallback_context(packet)
+    fallback_summary = str(fallback.get("cascade_summary") or "") if fallback is not None else ""
+    if estimator.estimate_text(summary + fallback_summary) <= 50:
+        return False
+
+    changed = False
+    if summary:
+        packet["cascade_summary"] = ""
+        changed = True
+    if fallback is not None and fallback_summary:
+        fallback["cascade_summary"] = ""
+        changed = True
+    return changed
+
+
+def _truncate_snippet_texts(
+    packet: dict[str, Any],
+    estimator: TokenEstimator,
+    *,
+    max_tokens: int,
+) -> bool:
+    evidence = packet.get("evidence")
+    if not isinstance(evidence, dict):
+        return False
+    return _truncate_text_fields(evidence, estimator, max_tokens=max_tokens)
+
+
+def _truncate_fallback_text(
+    packet: dict[str, Any],
+    estimator: TokenEstimator,
+    *,
+    max_tokens: int,
+) -> bool:
+    fallback = _fallback_context(packet)
+    if fallback is None:
+        return False
+    changed = False
+    for field_name in ("primary_error_excerpt", "extra_log_window"):
+        value = fallback.get(field_name)
+        if not isinstance(value, str) or not value:
+            continue
+        truncated = estimator.truncate_text(value, max_tokens)
+        if truncated != value:
+            fallback[field_name] = truncated
+            changed = True
+    return changed
+
+
+def _truncate_text_fields(
+    value: Any,
+    estimator: TokenEstimator,
+    *,
+    max_tokens: int,
+) -> bool:
+    changed = False
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key == "text" and isinstance(child, str):
+                truncated = estimator.truncate_text(child, max_tokens)
+                if truncated != child:
+                    value[key] = truncated
+                    changed = True
+            else:
+                changed = (
+                    _truncate_text_fields(
+                        child,
+                        estimator,
+                        max_tokens=max_tokens,
+                    )
+                    or changed
+                )
+    elif isinstance(value, list):
+        for child in value:
+            changed = (
+                _truncate_text_fields(
+                    child,
+                    estimator,
+                    max_tokens=max_tokens,
+                )
+                or changed
+            )
+    return changed
+
+
+def _keep_top_candidate(packet: dict[str, Any]) -> bool:
+    candidates = packet.get("root_cause_candidates")
+    if not isinstance(candidates, list) or len(candidates) <= 1:
+        return False
+    packet["root_cause_candidates"] = candidates[:1]
+    return True
 
 
 def render_packet_markdown(
