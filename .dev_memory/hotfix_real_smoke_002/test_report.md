@@ -137,3 +137,58 @@ Scanner cascade check:
 
 PR2 gates passed. C is fixed as patch fast-path tier1; B and D did not regress.
 PR3 remains responsible for A linker undefined-reference confidence.
+
+---
+
+# Hotfix Real Smoke 002 - PR3 Test Report
+
+Date: 2026-05-19
+Branch: `hotfix/real-smoke-002-pr3`
+
+## Unit / CI Gates
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `.venv/bin/ruff check .` | pass | All checks passed. |
+| `.venv/bin/mypy gbs_analyzer` | pass | 26 source files checked. |
+| `.venv/bin/pytest tests/unit/test_full_match.py tests/unit/test_rank_causes.py tests/unit/test_scan_and_extract.py -q` | pass | 95 focused tests passed. |
+| `.venv/bin/pytest tests/e2e/test_m8_wrapper_e2e.py -q` | pass | 21 passed; M8 20-fixture suite has 0 regression. |
+| `.venv/bin/pytest tests/ -q --cov=gbs_analyzer --cov-fail-under=96` | pass | 346 passed; total coverage 96.01%. |
+
+## PR3 Real-Smoke Validation
+
+Full analyzer outputs were generated locally under
+`.dev_memory/hotfix_real_smoke_002/pr3/perf_baselines/pr3_final_{A,B,C,D}/`.
+The raw JSON/trace files are ignored by repository rules, so the committed baseline is summarized
+below and in `pr3/perf_baselines/pr3_validation_summary.md`.
+
+### A: linker undefined reference
+
+Validation command used ffmpeg branch `real_smoke/A_20260519_144141` for `--src-root`, then restored
+the ffmpeg tree to `tizen`.
+
+| Field | Actual | PR3 Expected | Match |
+| --- | --- | --- | --- |
+| verdict | `direct_answer` | `direct_answer` | yes |
+| via | `full_path` | `full_path` | yes |
+| matched_tier | `tier2` | `tier2` | yes |
+| primary_error.kind | `linker_undef` | `linker_undef` | yes |
+| confidence | `0.90` | about `0.90` | yes |
+| degraded | `false` | `false` | yes |
+| degraded_reasons | `[]` | `[]` | yes |
+| packet_tokens | `1594` | `<= 1800` | yes |
+| matched_patterns | `linker_undefined_reference_tier2` | tier2 linker pattern | yes |
+| failed_phase | `%build` | `%build` | yes |
+
+### B/C/D no-regression gates
+
+| Case | verdict | via | matched_tier | primary_error.kind | degraded | packet_tokens | Match |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| B depsolve | `direct_answer` | `fast_path` | `tier1` | `depsolve` | `false` | `332` | yes |
+| C patch failed | `direct_answer` | `fast_path` | `tier1` | `patch` | `false` | `338` | yes |
+| D `%install` | `direct_answer` | `full_path` | `tier2` | `rpm_phase` | `false` | `1134` | yes |
+
+## PR3 Conclusion
+
+PR3 gates passed. A is now a direct tier2 answer, and B/C/D did not regress. Hotfix_002 is complete
+for the archived A/B/C/D real-smoke buildlogs.

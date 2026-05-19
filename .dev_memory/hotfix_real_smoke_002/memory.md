@@ -1,6 +1,6 @@
 # Hotfix Real Smoke 002 - PR1
 
-Status: pr2_completed
+Status: completed
 
 ## Scope
 
@@ -85,3 +85,29 @@ Real-smoke PR2 validation:
   `degraded=false`, 338/1800 tokens).
 - B depsolve: no regression (`direct_answer`, `fast_path`, `tier1`, `degraded=false`).
 - D `%install`: no regression (`direct_answer`, `full_path`, `tier2`, `degraded=false`).
+
+## PR3 Completion Summary
+
+Implemented Fix 5, Fix 6, and Fix 7 plus the PR2 review follow-up.
+
+- Review follow-up: hunk-ignored canonicalization now avoids wrapping text that is already canonical,
+  and `known_issues.md` records the temporary `id` / `pattern_id` near-match redundancy for v0.6.
+- Fix 5: `linker_undef` ranking no longer receives the generic cascade penalty; confidence for A
+  rises from about `0.84` to `0.90`.
+- Fix 6: tier2 verdict gating now relies on `evidence.contains_all(required)` instead of also
+  requiring `not evidence.degraded`; method-level fallback stays visible without blocking complete
+  tier2 evidence.
+- Fix 7: `undefined_reference` full-match patterns treat `tool_in` as advisory because real
+  make-driven builds report `event.tool=make` while the linker message remains precise.
+
+Final real-smoke validation:
+
+- A linker undef: fixed (`direct_answer`, `full_path`, `tier2`, `primary_error.kind=linker_undef`,
+  `confidence=0.90`, `degraded=false`, 1594/1800 tokens).
+- B depsolve: no regression (`direct_answer`, `fast_path`, `tier1`, `degraded=false`).
+- C patch failed: no regression (`direct_answer`, `fast_path`, `tier1`, `primary_error.kind=patch`,
+  `degraded=false`).
+- D `%install`: no regression (`direct_answer`, `full_path`, `tier2`, `degraded=false`).
+
+Hotfix_002 is complete: four real error classes now produce direct answers under the archived
+A/B/C/D real buildlogs.

@@ -189,6 +189,14 @@ def test_detects_real_patch_context_failure_lines(tmp_path: Path) -> None:
     assert result.events[1].details == {"num": "1", "total": "1"}
 
 
+def test_does_not_double_canonicalize_hunk_ignored_message(tmp_path: Path) -> None:
+    path = write_log(tmp_path, "Hunk #1 FAILED: 1 out of 1 hunk ignored\n")
+    event = scan_buildlog(path).events[0]
+
+    assert event.kind == "patch"
+    assert event.message == "Hunk #1 FAILED: 1 out of 1 hunk ignored"
+
+
 def test_patch_failure_parents_prep_bad_exit_status(tmp_path: Path) -> None:
     path = write_log(
         tmp_path,

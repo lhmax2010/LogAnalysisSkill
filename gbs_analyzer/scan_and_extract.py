@@ -585,7 +585,11 @@ def _match_patch(text: str) -> dict[str, str] | None:
             }
             if "can't find file to patch" in text.lower():
                 details["_message"] = f"error: patch failed: {text}"
-            elif "hunk" in text.lower() and "ignored" in text.lower():
+            elif (
+                "hunk" in text.lower()
+                and "ignored" in text.lower()
+                and not text.lower().startswith("hunk")
+            ):
                 details["_message"] = f"Hunk #{details.get('num', '1')} FAILED: {text}"
             return details
     return None

@@ -66,6 +66,39 @@ def test_rank_score_adds_command_and_location_bonus() -> None:
     assert {"factor": "has_location", "delta": "+0.05"} in reasons
 
 
+def test_linker_undef_skips_generic_cascade_penalty() -> None:
+    event = {
+        "id": "E001",
+        "kind": "linker_undef",
+        "message": "undefined reference to `missing_symbol'",
+        "command_id": "C001",
+    }
+
+    score, reasons = rank_score(event, [event])
+
+    assert score == 0.9
+    assert {"factor": "linker_undef_no_cascade_penalty", "delta": "+0.00"} in reasons
+    assert not any(reason.get("factor") == "cascade_probability" for reason in reasons)
+
+
+def test_non_linker_undef_still_applies_cascade_penalty() -> None:
+    event = {
+        "id": "E001",
+        "kind": "linker_missing",
+        "message": "/usr/bin/ld: cannot find -lfoo",
+        "command_id": "C001",
+    }
+
+    score, reasons = rank_score(event, [event])
+
+    assert score < 1.0
+    assert any(reason.get("factor") == "cascade_probability" for reason in reasons)
+    assert not any(
+        reason.get("factor") == "linker_undef_no_cascade_penalty"
+        for reason in reasons
+    )
+
+
 def test_rank_score_applies_warning_block_penalty() -> None:
     warning = {"id": "E001", "severity": "warning", "message": "warning: note", "line_no": 1}
     event = {
