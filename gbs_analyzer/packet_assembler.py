@@ -50,6 +50,8 @@ class BudgetPool:
     evidence_pool: int = field(init=False)
     soft_used: dict[str, int] = field(default_factory=dict)
     grants: dict[str, int] = field(default_factory=dict)
+    preferred_grants: dict[str, int] = field(default_factory=dict)
+    partial_grants: dict[str, bool] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         self.reserved = {
@@ -106,15 +108,38 @@ class BudgetPool:
         self.evidence_pool += reclaimed
         return reclaimed
 
-    def request(self, collector_name: str, requested: int) -> int:
+    def request(self, collector_name: str, requested: int, *, preferred: int | None = None) -> int:
         """Grant as much of ``requested`` as the current evidence pool allows."""
 
         if requested < 0:
             raise ValueError("requested budget must be non-negative")
+        if preferred is not None and preferred < 0:
+            raise ValueError("preferred budget must be non-negative")
         granted = min(requested, self.evidence_pool)
         self.evidence_pool -= granted
         self.grants[collector_name] = self.grants.get(collector_name, 0) + granted
+        target = requested if preferred is None else preferred
+        if target > 0:
+            self.preferred_grants[collector_name] = max(
+                self.preferred_grants.get(collector_name, 0),
+                target,
+            )
+            self._refresh_partial_grant(collector_name)
         return granted
+
+    def is_partial(self, collector_name: str) -> bool:
+        return bool(self.partial_grants.get(collector_name))
+
+    def clear_partial(self, collector_name: str) -> None:
+        self.partial_grants.pop(collector_name, None)
+
+    def _refresh_partial_grant(self, collector_name: str) -> None:
+        preferred = self.preferred_grants.get(collector_name, 0)
+        granted = self.grants.get(collector_name, 0)
+        if preferred > 0 and granted < preferred:
+            self.partial_grants[collector_name] = True
+        else:
+            self.clear_partial(collector_name)
 
     def conservation_total(self) -> int:
         soft_used = sum(self.soft_used.values())
@@ -139,6 +164,8 @@ class BudgetPool:
             "reclaimed": self.reclaimed,
             "evidence_pool_final": self.evidence_pool,
             "granted": dict(sorted(self.grants.items())),
+            "preferred_grants": dict(sorted(self.preferred_grants.items())),
+            "partial_grants": dict(sorted(self.partial_grants.items())),
             "soft_used": dict(sorted(self.soft_used.items())),
             "conservation_total": self.conservation_total(),
             "conservation_ok": self.conservation_ok(),
@@ -294,8 +321,15 @@ def assemble_packet(
         pool.report_reserve_used("raw_excerpt", 0)
         collector = str(evidence_data.get("collector", "evidence"))
         granted_budget = int(evidence_data.get("granted_budget", 0))
-        granted = pool.request(collector, granted_budget)
-        if granted < granted_budget:
+        granted = pool.request(collector, granted_budget, preferred=granted_budget)
+        achieved_level = _safe_int(evidence_data.get("level"), default=1)
+        preferred_level = _safe_int(
+            evidence_data.get("level_preferred"),
+            default=achieved_level,
+        )
+        if achieved_level >= preferred_level:
+            pool.clear_partial(collector)
+        elif achieved_level < preferred_level:
             degraded_reasons.append("budget_pool_partial")
 
     match_data = _full_match_as_dict(full_match_result)
@@ -541,6 +575,13 @@ def _keep_top_candidate(packet: dict[str, Any]) -> bool:
         return False
     packet["root_cause_candidates"] = candidates[:1]
     return True
+
+
+def _safe_int(value: Any, *, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
 
 def render_packet_markdown(
