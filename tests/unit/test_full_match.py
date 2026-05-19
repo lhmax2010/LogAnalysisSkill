@@ -255,6 +255,72 @@ def test_full_match_records_near_match_when_context_blocks_direct_match() -> Non
     )
 
 
+@pytest.mark.parametrize(
+    ("rule", "event_data", "evidence_data", "expected_reason"),
+    [
+        (pattern(), event(), evidence({"primary_error"}, degraded=True), "evidence_degraded"),
+        (
+            pattern(),
+            event(parent="E000"),
+            evidence({"primary_error", "source_snippet", "command_summary"}),
+            "event_not_terminal",
+        ),
+        (
+            replace(pattern(), terminal=False),
+            event(),
+            evidence({"primary_error", "source_snippet", "command_summary"}),
+            "pattern_not_terminal",
+        ),
+        (pattern(), event(), evidence({"primary_error"}), "missing_required_evidence"),
+    ],
+)
+def test_full_match_records_needs_llm_failure_reasons(
+    rule: FullMatchPattern,
+    event_data: dict[str, object],
+    evidence_data: Evidence,
+    expected_reason: str,
+) -> None:
+    result = full_match(
+        {"events": [event_data], "commands": [{"id": "C001", "argv_short": "gcc -c foo.c"}]},
+        {"event_id": "E001", "confidence": 0.90},
+        evidence_data,
+        patterns=[replace(rule, confidence=0.87)],
+    )
+
+    assert result.verdict is Verdict.NEEDS_LLM
+    assert result.as_dict()["matched_patterns"][0]["failure_reason"] == expected_reason
+
+
+def test_full_match_records_required_context_near_match_with_high_confidence() -> None:
+    result = full_match(
+        {"events": [event()], "commands": [{"id": "C001", "argv_short": "make -j40"}]},
+        {"event_id": "E001", "confidence": 0.90},
+        evidence({"primary_error", "source_snippet", "command_summary"}),
+        patterns=[
+            replace(
+                pattern(),
+                confidence=0.87,
+                required_context={"severity": ["error"], "tool_in": ["gcc"]},
+            )
+        ],
+    )
+
+    assert result.verdict is Verdict.NEEDS_LLM
+    assert result.as_dict()["matched_patterns"][0]["failure_reason"] == "required_context_not_met"
+
+
+def test_full_match_uses_pattern_confidence_when_candidate_confidence_is_invalid() -> None:
+    result = full_match(
+        {"events": [event()], "commands": [{"id": "C001", "argv_short": "gcc -c foo.c"}]},
+        {"event_id": "E001", "confidence": "bad"},
+        evidence({"primary_error", "source_snippet", "command_summary"}),
+        patterns=[replace(pattern(), confidence=0.84)],
+    )
+
+    assert result.verdict is Verdict.NEEDS_LLM
+    assert result.confidence == 0.84
+
+
 def test_full_match_keeps_first_needs_llm_match() -> None:
     result = full_match(
         {"events": [event()], "commands": []},

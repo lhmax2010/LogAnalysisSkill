@@ -210,6 +210,8 @@ def test_budget_pool_rejects_bad_usage() -> None:
         pool.report_reserve_used("primary_error", 1)
     with pytest.raises(ValueError):
         pool.request("compile", -1)
+    with pytest.raises(ValueError):
+        pool.request("compile", 1, preferred=-1)
 
 
 def test_budget_pool_rejects_over_reserved_total() -> None:
@@ -687,6 +689,31 @@ def test_final_token_guard_reestimates_until_under_max_tokens() -> None:
     assert packet["token_budget"]["conservation_ok"] is True
     assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
     assert "packet_could_not_truncate_to_budget" not in packet["degraded_reasons"]
+
+
+def test_final_token_guard_marks_unable_when_safe_fields_exhausted() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    packet = {
+        "verdict": "direct_answer",
+        "primary_error": {"message": "root " * 2000},
+        "root_cause_candidates": [{"rank": 1}],
+        "evidence": {"metadata_only": {"path": "foo.c"}},
+        "cascade_summary": "",
+        "token_budget": {},
+        "degraded": False,
+        "degraded_reasons": [],
+    }
+
+    packet_assembler._enforce_final_token_limit(
+        packet,
+        max_tokens=50,
+        estimator=estimator,
+        redactor=MinimalRedactor(),
+    )
+
+    assert packet["token_budget"]["used"] > 50
+    assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
+    assert "packet_could_not_truncate_to_budget" in packet["degraded_reasons"]
 
 
 def test_assemble_packet_marks_degraded_evidence_warning(tmp_path: Path) -> None:
