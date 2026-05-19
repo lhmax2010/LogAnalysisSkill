@@ -67,6 +67,29 @@ def pattern(**overrides: object) -> FullMatchPattern:
     return FullMatchPattern(**data)  # type: ignore[arg-type]
 
 
+def linker_pattern(**overrides: object) -> FullMatchPattern:
+    rule = next(
+        item
+        for item in load_full_match_patterns()
+        if item.id == "linker_undefined_reference_tier2"
+    )
+    data = {
+        "id": rule.id,
+        "category": rule.category,
+        "tier": rule.tier,
+        "event_kinds": rule.event_kinds,
+        "regex": rule.regex,
+        "required_context": {"severity": ["error"], "tool_in": ["ld"]},
+        "negative_patterns": rule.negative_patterns,
+        "confidence": rule.confidence,
+        "terminal": rule.terminal,
+        "direct_answer_tier1": rule.direct_answer_tier1,
+        "direct_answer_tier2": rule.direct_answer_tier2,
+    }
+    data.update(overrides)
+    return FullMatchPattern(**data)  # type: ignore[arg-type]
+
+
 def test_load_default_patterns_keeps_flat_tier1_and_nested_tier2() -> None:
     patterns = load_full_match_patterns()
     by_id = {item.id: item for item in patterns}
@@ -338,6 +361,60 @@ def test_full_match_records_required_context_near_match_with_high_confidence() -
                 required_context={"severity": ["error"], "tool_in": ["gcc"]},
             )
         ],
+    )
+
+    assert result.verdict is Verdict.NEEDS_LLM
+    assert result.as_dict()["matched_patterns"][0]["failure_reason"] == "required_context_not_met"
+
+
+def test_full_match_allows_linker_undef_tool_context_mismatch() -> None:
+    linker_event = event(
+        kind="linker_undef",
+        message="undefined reference to `nonexistent_helper_xxxyzz'",
+    )
+
+    result = full_match(
+        {"events": [linker_event], "commands": [{"id": "C001", "argv_short": "make -j40"}]},
+        {"event_id": "E001", "confidence": 0.90},
+        evidence({"primary_error", "link_command", "symbol_context"}),
+        patterns=[linker_pattern()],
+    )
+
+    assert result.verdict is Verdict.DIRECT_TIER2
+    assert result.pattern_id == "linker_undefined_reference_tier2"
+    assert result.matched_tier == "tier2"
+
+
+def test_full_match_keeps_compile_tool_context_mismatch_blocking() -> None:
+    result = full_match(
+        {"events": [event()], "commands": [{"id": "C001", "argv_short": "make -j40"}]},
+        {"event_id": "E001", "confidence": 0.90},
+        evidence({"primary_error", "source_snippet", "command_summary"}),
+        patterns=[
+            replace(
+                pattern(),
+                confidence=0.87,
+                required_context={"severity": ["error"], "tool_in": ["gcc"]},
+            )
+        ],
+    )
+
+    assert result.verdict is Verdict.NEEDS_LLM
+    assert result.as_dict()["matched_patterns"][0]["failure_reason"] == "required_context_not_met"
+
+
+def test_full_match_keeps_linker_undef_non_tool_context_blocking() -> None:
+    linker_event = event(
+        kind="linker_undef",
+        severity="warning",
+        message="undefined reference to `nonexistent_helper_xxxyzz'",
+    )
+
+    result = full_match(
+        {"events": [linker_event], "commands": [{"id": "C001", "argv_short": "make -j40"}]},
+        {"event_id": "E001", "confidence": 0.90},
+        evidence({"primary_error", "link_command", "symbol_context"}),
+        patterns=[linker_pattern()],
     )
 
     assert result.verdict is Verdict.NEEDS_LLM
