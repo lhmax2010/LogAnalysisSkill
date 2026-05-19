@@ -716,6 +716,57 @@ def test_final_token_guard_marks_unable_when_safe_fields_exhausted() -> None:
     assert "packet_could_not_truncate_to_budget" in packet["degraded_reasons"]
 
 
+def test_prompt_helpers_keep_prompt_compact_and_path_oriented() -> None:
+    assert packet_assembler._first_prompt_candidate("bad") == {}
+    assert packet_assembler._first_prompt_candidate(["bad"]) == {}
+    assert packet_assembler._first_prompt_candidate(
+        [{"rank": 1, "event_id": "E001", "summary": "long"}]
+    ) == {"rank": 1, "event_id": "E001"}
+
+    evidence = {
+        "source_snippet": {"path": "/home/linhao/work/foo.c", "text": "boom"},
+        "nested": [{"file": "/home/linhao/work/foo.c"}, {"file": "/tmp/bar.c"}],
+    }
+    assert packet_assembler._prompt_evidence_paths(evidence) == [
+        "/home/linhao/work/foo.c",
+        "/tmp/bar.c",
+    ]
+    assert packet_assembler._compact_prompt_mapping(
+        {"message": "boom", "text": "long"},
+        include_message=False,
+    ) == {"text": "[omitted]"}
+    assert packet_assembler._compact_prompt_mapping("raw") == "raw"
+
+
+def test_truncate_prompt_to_fit_handles_empty_and_large_prompt() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    assert (
+        packet_assembler._truncate_prompt_to_fit(
+            {"prompt": None},
+            estimator,
+            max_tokens=50,
+        )
+        is False
+    )
+    packet = {
+        "prompt": "prompt word " * 200,
+        "primary_error": {"message": "boom"},
+        "token_budget": {},
+    }
+    original = estimator.estimate_obj(packet)
+
+    assert (
+        packet_assembler._truncate_prompt_to_fit(
+            packet,
+            estimator,
+            max_tokens=120,
+        )
+        is True
+    )
+    assert estimator.estimate_obj(packet) < original
+    assert "[truncated]" in packet["prompt"]
+
+
 def test_assemble_packet_marks_degraded_evidence_warning(tmp_path: Path) -> None:
     packet = assemble_packet(
         scan_data(tmp_path),
