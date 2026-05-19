@@ -119,6 +119,7 @@ def determine_verdict(
         event,
         events,
         command_map,
+        pattern_category=matched_rule.category,
     )
     event_is_terminal = _is_terminal_event(event)
 
@@ -233,7 +234,13 @@ def match_pattern(
         return None
     events = all_events or [event]
     command_map = commands or {}
-    if not _passes_required_context(pattern.required_context, event, events, command_map):
+    if not _passes_required_context(
+        pattern.required_context,
+        event,
+        events,
+        command_map,
+        pattern_category=pattern.category,
+    ):
         return None
 
     message = str(event.get("message", ""))
@@ -416,7 +423,13 @@ def _failure_reason_for_needs_llm(
         return "missing_required_evidence"
     if pattern.direct_answer_tier1.enabled and evidence.degraded:
         return "evidence_degraded"
-    if not _passes_required_context(pattern.required_context, event, all_events, commands):
+    if not _passes_required_context(
+        pattern.required_context,
+        event,
+        all_events,
+        commands,
+        pattern_category=pattern.category,
+    ):
         return "required_context_not_met"
     return "direct_answer_requirements_not_met"
 
@@ -426,6 +439,8 @@ def _passes_required_context(
     event: dict[str, Any],
     all_events: list[Any],
     commands: dict[str, dict[str, Any]],
+    *,
+    pattern_category: str | None = None,
 ) -> bool:
     phases = context.get("phase")
     if phases is not None and event.get("phase") not in phases:
@@ -437,7 +452,8 @@ def _passes_required_context(
 
     tools = context.get("tool_in")
     if tools is not None and _event_tool(event, commands) not in tools:
-        return False
+        if pattern_category != "undefined_reference":
+            return False
 
     if context.get("not_in_warning_block") and _is_in_warning_block(event, all_events):
         return False
