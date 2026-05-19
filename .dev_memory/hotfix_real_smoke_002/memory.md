@@ -1,6 +1,6 @@
 # Hotfix Real Smoke 002 - PR1
 
-Status: pr1_completed
+Status: pr2_completed
 
 ## Scope
 
@@ -63,3 +63,25 @@ Real-smoke PR1 validation:
 Implementation note: A validation must run with the ffmpeg source tree on
 `real_smoke/A_20260519_144141`; validating against clean `tizen` cannot collect the injected
 symbol context because the injected source line is absent.
+
+## PR2 Completion Summary
+
+Implemented Fix 4 plus the PR1 review follow-up.
+
+- Review follow-up: near-match entries now include both `id` and `pattern_id` so consumers that read
+  `matched_patterns[*].id` see the real pattern id.
+- Scanner: real patch failure lines such as `can't find file to patch at input line 3` and
+  `1 out of 1 hunk ignored` now produce `patch` events. The latter is canonicalized as
+  `Hunk #1 FAILED: ...` so the existing tier1 hunk pattern can match without changing the pattern
+  library.
+- Scanner: a subsequent `%prep` `Bad exit status` rpm-phase event is marked as a cascade child of the
+  latest patch failure event in `%prep`.
+- Ranker: patch events in the failed phase receive a small `patch_failed_phase` boost, while the
+  derived rpm-phase child receives the existing parent penalty.
+
+Real-smoke PR2 validation:
+
+- C patch failed: fixed (`direct_answer`, `fast_path`, `tier1`, `primary_error.kind=patch`,
+  `degraded=false`, 338/1800 tokens).
+- B depsolve: no regression (`direct_answer`, `fast_path`, `tier1`, `degraded=false`).
+- D `%install`: no regression (`direct_answer`, `full_path`, `tier2`, `degraded=false`).

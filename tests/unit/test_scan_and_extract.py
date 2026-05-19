@@ -172,6 +172,48 @@ def test_detects_patch_hunk_failed(tmp_path: Path) -> None:
     assert event.details == {"num": "2"}
 
 
+def test_detects_real_patch_context_failure_lines(tmp_path: Path) -> None:
+    path = write_log(
+        tmp_path,
+        "can't find file to patch at input line 3\n"
+        "1 out of 1 hunk ignored\n",
+    )
+    result = scan_buildlog(path)
+
+    assert [event.kind for event in result.events] == ["patch", "patch"]
+    assert result.events[0].message == (
+        "error: patch failed: can't find file to patch at input line 3"
+    )
+    assert result.events[0].details == {"line": "3"}
+    assert result.events[1].message == "Hunk #1 FAILED: 1 out of 1 hunk ignored"
+    assert result.events[1].details == {"num": "1", "total": "1"}
+
+
+def test_patch_failure_parents_prep_bad_exit_status(tmp_path: Path) -> None:
+    path = write_log(
+        tmp_path,
+        "\n".join(
+            [
+                "Executing(%prep): /bin/sh -e /tmp/rpm",
+                "+ /bin/patch --no-backup-if-mismatch -p1",
+                "can't find file to patch at input line 3",
+                "error: Bad exit status from /var/tmp/rpm-tmp.abc (%prep)",
+                "",
+            ]
+        ),
+    )
+
+    result = scan_buildlog(path)
+
+    assert [event.kind for event in result.events] == ["patch", "rpm_phase"]
+    assert result.events[1].parent == result.events[0].id
+    assert result.events[1].details == {
+        "phase": "%prep",
+        "derived_from": "patch_failed",
+    }
+    assert result.failed_phase == "%prep"
+
+
 def test_detects_depsolve_failure(tmp_path: Path) -> None:
     path = write_log(tmp_path, "nothing provides pkgconfig(foo) needed by bar\n")
     assert scan_buildlog(path).events[0].kind == "depsolve"

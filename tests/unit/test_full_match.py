@@ -223,6 +223,7 @@ def test_full_match_records_near_match_below_tier2_threshold() -> None:
     assert packet["matched_tier"] is None
     assert packet["matched_patterns"] == [
         {
+            "id": "compile_undeclared_identifier_tier2",
             "pattern_id": "compile_undeclared_identifier_tier2",
             "confidence": 0.84,
             "captures": {"identifier": "missing_symbol"},
@@ -247,6 +248,7 @@ def test_full_match_records_near_match_when_context_blocks_direct_match() -> Non
 
     assert result.verdict is Verdict.NEEDS_LLM
     packet = result.as_dict()
+    assert packet["matched_patterns"][0]["id"] == "compile_undeclared_identifier_tier2"
     assert packet["matched_patterns"][0]["pattern_id"] == "compile_undeclared_identifier_tier2"
     assert packet["matched_patterns"][0]["confidence"] == 0.84
     assert (

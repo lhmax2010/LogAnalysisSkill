@@ -87,6 +87,34 @@ def test_rank_score_applies_parent_penalty() -> None:
     assert {"factor": "parent_cascade", "delta": "-0.40"} in reasons
 
 
+def test_rank_boosts_patch_failure_in_failed_phase() -> None:
+    event = {
+        "id": "E001",
+        "kind": "patch",
+        "message": "Hunk #1 FAILED: 1 out of 1 hunk ignored",
+        "phase": "%prep",
+        "command_id": "C001",
+    }
+    score, reasons = rank_score(event, [event], failed_phase="%prep")
+
+    assert score > 0.45
+    assert {"factor": "patch_failed_phase", "delta": "+0.10"} in reasons
+
+
+def test_rank_prefers_patch_over_derived_rpm_phase() -> None:
+    result = rank_causes(
+        scan(
+            "Executing(%prep): /bin/sh -e /tmp/rpm\n"
+            "+ /bin/patch --no-backup-if-mismatch -p1\n"
+            "1 out of 1 hunk ignored\n"
+            "error: Bad exit status from /var/tmp/rpm-tmp.abc (%prep)\n"
+        )
+    )
+
+    assert result.root_cause_candidates[0].kind == "patch"
+    assert result.root_cause_candidates[1].kind == "rpm_phase"
+
+
 def test_generic_gating_reason_is_recorded() -> None:
     result = rank_causes(
         scan("+ %build\n+ ./configure\nerror: configure failed\n")
