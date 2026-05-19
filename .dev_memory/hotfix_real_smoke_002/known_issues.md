@@ -9,6 +9,12 @@
 
 - C patch failure no longer ranks as `rpm_phase`; it now hits fast-path tier1 as `patch`.
 
+## Deferred To v0.6
+
+- `matched_patterns` near-match entries currently carry both `id` and `pattern_id` with the same
+  value. This is intentional PR2 compatibility glue: v0.5 consumers may read `id`, while PR1 already
+  emitted `pattern_id`. v0.6 should decide whether to keep both long term or deprecate one field.
+
 ## Watch Points
 
 - If BudgetPool partial state has multiple sources beyond cumulative collector grants, stop and ask before redesigning the state machine.
