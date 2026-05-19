@@ -423,6 +423,7 @@ def _enforce_final_token_limit(
         lambda: _keep_top_candidate(packet),
         lambda: _truncate_snippet_texts(packet, estimator, max_tokens=40),
         lambda: _truncate_fallback_text(packet, estimator, max_tokens=40),
+        lambda: _truncate_snippet_texts(packet, estimator, max_tokens=0),
     )
 
     for shrink in shrink_steps:
@@ -435,7 +436,10 @@ def _enforce_final_token_limit(
             packet["token_budget"]["used"] = used
             return
 
-    packet["token_budget"]["used"] = estimator.estimate_obj(packet)
+    used = estimator.estimate_obj(packet)
+    packet["token_budget"]["used"] = used
+    if used > max_tokens:
+        _mark_packet_unable_to_truncate(packet)
 
 
 def _refresh_prompt(packet: dict[str, Any], redactor: MinimalRedactor) -> None:
@@ -447,6 +451,13 @@ def _mark_packet_truncated(packet: dict[str, Any]) -> None:
     reasons = packet.setdefault("degraded_reasons", [])
     if isinstance(reasons, list) and "packet_truncated_to_token_budget" not in reasons:
         reasons.append("packet_truncated_to_token_budget")
+    packet["degraded"] = True
+
+
+def _mark_packet_unable_to_truncate(packet: dict[str, Any]) -> None:
+    reasons = packet.setdefault("degraded_reasons", [])
+    if isinstance(reasons, list) and "packet_could_not_truncate_to_budget" not in reasons:
+        reasons.append("packet_could_not_truncate_to_budget")
     packet["degraded"] = True
 
 
