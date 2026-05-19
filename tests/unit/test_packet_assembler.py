@@ -513,11 +513,11 @@ def test_assemble_packet_truncates_to_final_token_budget(tmp_path: Path) -> None
         None,
         None,
         estimator=TokenEstimator(use_tiktoken=False),
-        max_tokens=1200,
+        max_tokens=600,
     )
 
-    assert packet["token_budget"]["used"] <= 1200
-    assert packet["token_budget"]["limit_with_prompt"] == 1200
+    assert packet["token_budget"]["used"] <= 600
+    assert packet["token_budget"]["limit_with_prompt"] == 600
     assert packet["token_budget"]["conservation_ok"] is True
     assert packet["degraded"] is True
     assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
@@ -622,12 +622,12 @@ def test_final_token_guard_truncates_extra_log_window() -> None:
 
     packet_assembler._enforce_final_token_limit(
         packet,
-        max_tokens=500,
+        max_tokens=250,
         estimator=TokenEstimator(use_tiktoken=False),
         redactor=MinimalRedactor(),
     )
 
-    assert packet["token_budget"]["used"] <= 500
+    assert packet["token_budget"]["used"] <= 250
     assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
     assert "[truncated]" in packet["evidence"]["fallback_context"]["extra_log_window"]
 

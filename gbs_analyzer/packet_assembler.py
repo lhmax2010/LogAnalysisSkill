@@ -436,6 +436,12 @@ def _enforce_final_token_limit(
             packet["token_budget"]["used"] = used
             return
 
+    if _truncate_prompt_to_fit(packet, estimator, max_tokens=max_tokens):
+        used = estimator.estimate_obj(packet)
+        if used <= max_tokens:
+            packet["token_budget"]["used"] = used
+            return
+
     used = estimator.estimate_obj(packet)
     packet["token_budget"]["used"] = used
     if used > max_tokens:
@@ -542,6 +548,23 @@ def _truncate_fallback_text(
             fallback[field_name] = truncated
             changed = True
     return changed
+
+
+def _truncate_prompt_to_fit(
+    packet: dict[str, Any],
+    estimator: TokenEstimator,
+    *,
+    max_tokens: int,
+) -> bool:
+    prompt = packet.get("prompt")
+    if not isinstance(prompt, str) or not prompt:
+        return False
+    packet["prompt"] = ""
+    non_prompt_tokens = estimator.estimate_obj(packet)
+    prompt_budget = max(0, max_tokens - non_prompt_tokens)
+    truncated = estimator.truncate_text(prompt, prompt_budget)
+    packet["prompt"] = truncated
+    return truncated != prompt
 
 
 def _truncate_text_fields(
@@ -658,19 +681,73 @@ def _read_log_window(
 
 
 def _render_prompt(packet: dict[str, Any]) -> str:
-    candidates = json.dumps(
-        packet.get("root_cause_candidates", []),
-        ensure_ascii=False,
-        indent=2,
-    )
-    evidence = json.dumps(packet.get("evidence", {}), ensure_ascii=False, indent=2)
+    primary = _compact_prompt_mapping(packet.get("primary_error", {}))
+    top_candidate = _first_prompt_candidate(packet.get("root_cause_candidates", []))
+    evidence_paths = _prompt_evidence_paths(packet.get("evidence", {}))
     return (
-        "请根据以下 GBS 构建失败证据定位根因并给出最小修复建议。\n\n"
+        "请根据 evidence_packet JSON 定位 GBS 构建失败根因并给出最小修复建议。\n"
         f"Failed phase: {packet.get('failed_phase')}\n"
-        f"Primary error: {json.dumps(packet.get('primary_error', {}), ensure_ascii=False)}\n\n"
-        f"Candidates:\n{candidates}\n\n"
-        f"Evidence:\n{evidence}\n"
+        f"Primary error: {json.dumps(primary, ensure_ascii=False, separators=(',', ':'))}\n"
+        f"Top candidate: {json.dumps(top_candidate, ensure_ascii=False, separators=(',', ':'))}\n"
+        f"Evidence paths: {json.dumps(evidence_paths, ensure_ascii=False, separators=(',', ':'))}\n"
+        "Use packet.primary_error, packet.root_cause_candidates, and packet.evidence for details.\n"
     )
+
+
+def _first_prompt_candidate(candidates: Any) -> Any:
+    if not isinstance(candidates, list):
+        return {}
+    for candidate in candidates:
+        if isinstance(candidate, dict):
+            return {
+                key: candidate.get(key)
+                for key in ("rank", "event_id", "kind", "semantic_class", "confidence")
+                if key in candidate
+            }
+    return {}
+
+
+def _prompt_evidence_paths(value: Any) -> list[str]:
+    paths: list[str] = []
+    _collect_prompt_paths(value, paths)
+    return paths[:5]
+
+
+def _collect_prompt_paths(value: Any, paths: list[str]) -> None:
+    if isinstance(value, dict):
+        path = value.get("path") or value.get("file")
+        if isinstance(path, str) and path not in paths:
+            paths.append(path)
+        for child in value.values():
+            _collect_prompt_paths(child, paths)
+    elif isinstance(value, list):
+        for child in value:
+            _collect_prompt_paths(child, paths)
+
+
+def _compact_prompt_mapping(value: Any, *, include_message: bool = True) -> Any:
+    if not isinstance(value, dict):
+        return value
+    keys = [
+        "id",
+        "kind",
+        "severity",
+        "phase",
+        "file",
+        "line",
+        "path",
+        "start_line",
+        "end_line",
+        "argv_short",
+        "extraction_method",
+        "degraded",
+    ]
+    if include_message:
+        keys.insert(3, "message")
+    compact = {key: value[key] for key in keys if key in value and value[key] is not None}
+    if "text" in value and isinstance(value["text"], str):
+        compact["text"] = "[omitted]"
+    return compact
 
 
 def _top_event(candidates: list[dict[str, Any]], scan_data: dict[str, Any]) -> dict[str, Any]:
