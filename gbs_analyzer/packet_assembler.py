@@ -321,7 +321,7 @@ def assemble_packet(
         pool.report_reserve_used("raw_excerpt", 0)
         collector = str(evidence_data.get("collector", "evidence"))
         granted_budget = int(evidence_data.get("granted_budget", 0))
-        granted = pool.request(collector, granted_budget, preferred=granted_budget)
+        pool.request(collector, granted_budget, preferred=granted_budget)
         achieved_level = _safe_int(evidence_data.get("level"), default=1)
         preferred_level = _safe_int(
             evidence_data.get("level_preferred"),

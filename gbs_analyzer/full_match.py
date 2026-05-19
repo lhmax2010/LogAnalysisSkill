@@ -61,7 +61,7 @@ class FullMatchResult:
             if self.verdict in {Verdict.DIRECT_TIER1, Verdict.DIRECT_TIER2}
             else "needs_llm"
         )
-        data = {
+        data: dict[str, Any] = {
             "verdict": packet_verdict,
             "full_match_verdict": self.verdict.value,
             "pattern_id": self.pattern_id,
