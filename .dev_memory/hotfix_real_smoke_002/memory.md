@@ -1,6 +1,6 @@
 # Hotfix Real Smoke 002 - PR1
 
-Status: in_progress
+Status: pr1_completed
 
 ## Scope
 
@@ -45,3 +45,21 @@ A real buildlog after PR1:
 - `matched_tier=null`
 
 B/D must remain non-regressed after every PR.
+
+## PR1 Completion Summary
+
+Implemented Fix 1/Fix 2/Fix 3 only.
+
+- Fix 1: `BudgetPool` now tracks preferred/cumulative grants and clears partial state when the final achieved level reaches the preferred level. Packet-level degradation is now driven by explicit `degraded_reasons`, avoiding reasonless `degraded=true`.
+- Fix 2: final token guard uses `max_tokens`/`limit_with_prompt`, re-estimates after shrink passes, can compact prompt content, and has a final prompt-only truncation fallback before declaring an unshrinkable packet.
+- Fix 3: `full_match` records structured near-match pattern metadata for `needs_llm` packets, including pattern id, captures, candidate confidence, and failure reason.
+
+Real-smoke PR1 validation:
+
+- A linker undef: expected PR1 state reached (`needs_llm`, `matched_tier=null`, `degraded=false`, 1786/1800 tokens, near-match recorded at confidence 0.84).
+- B depsolve: no regression (`direct_answer`, `fast_path`, `tier1`, `degraded=false`).
+- D `%install`: no regression (`direct_answer`, `full_path`, `tier2`, `degraded=false`).
+
+Implementation note: A validation must run with the ffmpeg source tree on
+`real_smoke/A_20260519_144141`; validating against clean `tizen` cannot collect the injected
+symbol context because the injected source line is absent.
