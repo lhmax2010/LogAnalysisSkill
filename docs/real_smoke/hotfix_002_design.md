@@ -214,8 +214,12 @@ Validation:
 - Add focused unit tests for Fix 1, Fix 2, and Fix 3.
 - Re-run A real buildlog and confirm:
   - `degraded=false`
-  - tier2 direct answer triggers after Fix 5 is implemented, or at minimum matched-pattern near-miss is visible before Fix 5
   - `packet_tokens <= 1800`
+  - `matched_patterns` contains a `linker_undefined_reference_tier2` near-match entry with confidence around 0.84 and a failure reason such as `confidence_below_tier2_threshold`
+  - `verdict` remains `needs_llm`, because Fix 5 is not part of PR1
+  - `matched_tier` remains `null`, because Fix 5 is not part of PR1
+
+PR1 does not fix linker confidence. Do not treat A remaining `needs_llm` after PR1 as a PR1 failure.
 
 ### PR2
 
@@ -244,6 +248,70 @@ Validation:
 
 - Re-run A real buildlog and confirm tier2 direct answer.
 - Ensure existing linker fixtures still pass.
+
+## Per-PR Real Validation
+
+### PR1 Validation
+
+PR1 covers Fix 1, Fix 2, and Fix 3 only. It does not change Fix 5 linker confidence.
+
+A's candidate confidence is expected to remain around 0.84, below the 0.85 tier2 threshold.
+
+Expected A result after PR1:
+
+- `degraded=false`
+- `packet_tokens <= 1800`
+- `matched_patterns` contains `linker_undefined_reference_tier2`
+- the matched-pattern entry includes confidence around 0.84
+- the matched-pattern entry records a failure reason such as `confidence_below_tier2_threshold`
+- `verdict=needs_llm`
+- `matched_tier=null`
+
+This is the correct PR1 outcome. PR1 removes abnormal engineering states and improves visibility; it does not make A a tier2 direct answer yet.
+
+### PR2 Validation
+
+PR2 covers Fix 4 patch cascade priority.
+
+Use C to validate:
+
+- `verdict=direct_answer`
+- `via=fast_path`
+- `matched_tier=tier1`
+- `primary_error.kind=patch`
+- `packet_tokens <= 1800`
+- `degraded=false`
+
+### PR3 Validation
+
+PR3 covers Fix 5 linker undefined-reference confidence.
+
+Use A again to validate:
+
+- `verdict=direct_answer`
+- `matched_tier=tier2`
+- `degraded=false`
+- `packet_tokens <= 1800`
+
+### No-regression Gate For Every PR
+
+B and D were clean in the initial real-smoke run and must remain stable after every PR.
+
+B must remain:
+
+- `verdict=direct_answer`
+- `via=fast_path`
+- `matched_tier=tier1`
+- `degraded=false`
+
+D must remain:
+
+- `verdict=direct_answer`
+- `via=full_path`
+- `matched_tier=tier2`
+- `degraded=false`
+
+If any PR regresses B or D, stop and investigate before continuing.
 
 ## Final Acceptance
 
