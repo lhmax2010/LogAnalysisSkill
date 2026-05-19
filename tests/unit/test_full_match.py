@@ -130,9 +130,37 @@ def test_determine_verdict_needs_llm_when_tier2_evidence_missing() -> None:
     assert verdict is Verdict.NEEDS_LLM
 
 
-def test_determine_verdict_needs_llm_when_evidence_degraded() -> None:
+def test_determine_verdict_allows_tier2_when_evidence_degraded_but_complete() -> None:
     verdict = determine_verdict(
         pattern(),
+        event(),
+        evidence({"primary_error", "source_snippet", "command_summary"}, degraded=True),
+    )
+
+    assert verdict is Verdict.DIRECT_TIER2
+
+
+def test_determine_verdict_needs_llm_when_degraded_tier2_evidence_missing() -> None:
+    verdict = determine_verdict(
+        pattern(),
+        event(),
+        evidence({"primary_error"}, degraded=True),
+    )
+
+    assert verdict is Verdict.NEEDS_LLM
+
+
+def test_determine_verdict_keeps_tier1_blocked_when_evidence_degraded() -> None:
+    verdict = determine_verdict(
+        replace(
+            pattern(),
+            confidence=0.96,
+            direct_answer_tier1=DirectAnswer(
+                enabled=True,
+                fix_template="tier1",
+            ),
+            direct_answer_tier2=DirectAnswer(enabled=False),
+        ),
         event(),
         evidence({"primary_error", "source_snippet", "command_summary"}, degraded=True),
     )
@@ -260,7 +288,12 @@ def test_full_match_records_near_match_when_context_blocks_direct_match() -> Non
 @pytest.mark.parametrize(
     ("rule", "event_data", "evidence_data", "expected_reason"),
     [
-        (pattern(), event(), evidence({"primary_error"}, degraded=True), "evidence_degraded"),
+        (
+            pattern(),
+            event(),
+            evidence({"primary_error"}, degraded=True),
+            "missing_required_evidence",
+        ),
         (
             pattern(),
             event(parent="E000"),
