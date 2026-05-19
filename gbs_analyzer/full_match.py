@@ -139,7 +139,6 @@ def determine_verdict(
         and matched_rule.terminal
         and event_is_terminal
         and evidence.contains_all(list(tier2.evidence_required))
-        and not evidence.degraded
     ):
         return Verdict.DIRECT_TIER2
 
@@ -408,8 +407,6 @@ def _failure_reason_for_needs_llm(
         return "confidence_below_tier2_threshold"
     if pattern.direct_answer_tier1.enabled and confidence < 0.95:
         return "confidence_below_tier1_threshold"
-    if evidence.degraded:
-        return "evidence_degraded"
     if not _is_terminal_event(event):
         return "event_not_terminal"
     if not pattern.terminal:
@@ -417,6 +414,8 @@ def _failure_reason_for_needs_llm(
     tier2 = pattern.direct_answer_tier2
     if tier2.enabled and not evidence.contains_all(list(tier2.evidence_required)):
         return "missing_required_evidence"
+    if pattern.direct_answer_tier1.enabled and evidence.degraded:
+        return "evidence_degraded"
     if not _passes_required_context(pattern.required_context, event, all_events, commands):
         return "required_context_not_met"
     return "direct_answer_requirements_not_met"
