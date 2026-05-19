@@ -606,6 +606,65 @@ def test_final_token_guard_truncates_extra_log_window() -> None:
     assert "[truncated]" in packet["evidence"]["fallback_context"]["extra_log_window"]
 
 
+def test_final_token_guard_uses_wrapper_limit_not_evidence_pool() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    packet = {
+        "verdict": "direct_answer",
+        "primary_error": {"message": "boom"},
+        "root_cause_candidates": [{"rank": 1}],
+        "evidence": {"source_snippets": [{"file": "foo.c", "text": ""}]},
+        "cascade_summary": "",
+        "token_budget": {},
+        "degraded": False,
+        "degraded_reasons": [],
+    }
+    while estimator.estimate_obj(packet) <= 1400:
+        packet["evidence"]["source_snippets"][0]["text"] += "context token " * 20
+    assert estimator.estimate_obj(packet) < 1800
+
+    packet_assembler._enforce_final_token_limit(
+        packet,
+        max_tokens=1800,
+        estimator=estimator,
+        redactor=MinimalRedactor(),
+    )
+
+    assert packet["token_budget"]["used"] < 1800
+    assert "packet_truncated_to_token_budget" not in packet["degraded_reasons"]
+    assert packet["degraded"] is False
+
+
+def test_final_token_guard_reestimates_until_under_max_tokens() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    packet = {
+        "verdict": "direct_answer",
+        "primary_error": {"message": "boom"},
+        "root_cause_candidates": [{"rank": 1}],
+        "evidence": {
+            "source_snippets": [
+                {"file": "foo.c", "line_start": 1, "line_end": 999, "text": "line\n" * 5000}
+            ]
+        },
+        "cascade_summary": "make cascade: " + ("foo.o -> E001; " * 200),
+        "token_budget": {"conservation_ok": True},
+        "degraded": False,
+        "degraded_reasons": [],
+    }
+    assert estimator.estimate_obj(packet) > 1800
+
+    packet_assembler._enforce_final_token_limit(
+        packet,
+        max_tokens=1800,
+        estimator=estimator,
+        redactor=MinimalRedactor(),
+    )
+
+    assert packet["token_budget"]["used"] <= 1800
+    assert packet["token_budget"]["conservation_ok"] is True
+    assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
+    assert "packet_could_not_truncate_to_budget" not in packet["degraded_reasons"]
+
+
 def test_assemble_packet_marks_degraded_evidence_warning(tmp_path: Path) -> None:
     packet = assemble_packet(
         scan_data(tmp_path),
