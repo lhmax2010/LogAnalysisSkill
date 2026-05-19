@@ -50,6 +50,8 @@ class BudgetPool:
     evidence_pool: int = field(init=False)
     soft_used: dict[str, int] = field(default_factory=dict)
     grants: dict[str, int] = field(default_factory=dict)
+    preferred_grants: dict[str, int] = field(default_factory=dict)
+    partial_grants: dict[str, bool] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         self.reserved = {
@@ -106,15 +108,38 @@ class BudgetPool:
         self.evidence_pool += reclaimed
         return reclaimed
 
-    def request(self, collector_name: str, requested: int) -> int:
+    def request(self, collector_name: str, requested: int, *, preferred: int | None = None) -> int:
         """Grant as much of ``requested`` as the current evidence pool allows."""
 
         if requested < 0:
             raise ValueError("requested budget must be non-negative")
+        if preferred is not None and preferred < 0:
+            raise ValueError("preferred budget must be non-negative")
         granted = min(requested, self.evidence_pool)
         self.evidence_pool -= granted
         self.grants[collector_name] = self.grants.get(collector_name, 0) + granted
+        target = requested if preferred is None else preferred
+        if target > 0:
+            self.preferred_grants[collector_name] = max(
+                self.preferred_grants.get(collector_name, 0),
+                target,
+            )
+            self._refresh_partial_grant(collector_name)
         return granted
+
+    def is_partial(self, collector_name: str) -> bool:
+        return bool(self.partial_grants.get(collector_name))
+
+    def clear_partial(self, collector_name: str) -> None:
+        self.partial_grants.pop(collector_name, None)
+
+    def _refresh_partial_grant(self, collector_name: str) -> None:
+        preferred = self.preferred_grants.get(collector_name, 0)
+        granted = self.grants.get(collector_name, 0)
+        if preferred > 0 and granted < preferred:
+            self.partial_grants[collector_name] = True
+        else:
+            self.clear_partial(collector_name)
 
     def conservation_total(self) -> int:
         soft_used = sum(self.soft_used.values())
@@ -139,6 +164,8 @@ class BudgetPool:
             "reclaimed": self.reclaimed,
             "evidence_pool_final": self.evidence_pool,
             "granted": dict(sorted(self.grants.items())),
+            "preferred_grants": dict(sorted(self.preferred_grants.items())),
+            "partial_grants": dict(sorted(self.partial_grants.items())),
             "soft_used": dict(sorted(self.soft_used.items())),
             "conservation_total": self.conservation_total(),
             "conservation_ok": self.conservation_ok(),
@@ -294,8 +321,15 @@ def assemble_packet(
         pool.report_reserve_used("raw_excerpt", 0)
         collector = str(evidence_data.get("collector", "evidence"))
         granted_budget = int(evidence_data.get("granted_budget", 0))
-        granted = pool.request(collector, granted_budget)
-        if granted < granted_budget:
+        pool.request(collector, granted_budget, preferred=granted_budget)
+        achieved_level = _safe_int(evidence_data.get("level"), default=1)
+        preferred_level = _safe_int(
+            evidence_data.get("level_preferred"),
+            default=achieved_level,
+        )
+        if achieved_level >= preferred_level:
+            pool.clear_partial(collector)
+        elif achieved_level < preferred_level:
             degraded_reasons.append("budget_pool_partial")
 
     match_data = _full_match_as_dict(full_match_result)
@@ -310,11 +344,9 @@ def assemble_packet(
         if evidence_data is not None
         else {}
     )
-    degraded = bool(
-        degraded_reasons or (evidence_data is not None and evidence_data.get("degraded"))
-    )
     if evidence_data is not None and evidence_data.get("warnings"):
         degraded_reasons.extend(str(item) for item in evidence_data["warnings"])
+    degraded = bool(degraded_reasons)
 
     packet: dict[str, Any] = {
         "schema_version": "evidence_packet/v1",
@@ -328,7 +360,7 @@ def assemble_packet(
         "cascade_summary": cascade_summary,
         "primary_error": top_event,
         "evidence": evidence_section,
-        "matched_patterns": [match_data["pattern_id"]] if match_data.get("pattern_id") else [],
+        "matched_patterns": _matched_patterns_from_match_data(match_data),
         "direct_answer": direct_answer,
         "matched_tier": match_data.get("matched_tier"),
         "prompt": None,
@@ -389,6 +421,7 @@ def _enforce_final_token_limit(
         lambda: _keep_top_candidate(packet),
         lambda: _truncate_snippet_texts(packet, estimator, max_tokens=40),
         lambda: _truncate_fallback_text(packet, estimator, max_tokens=40),
+        lambda: _truncate_snippet_texts(packet, estimator, max_tokens=0),
     )
 
     for shrink in shrink_steps:
@@ -401,7 +434,16 @@ def _enforce_final_token_limit(
             packet["token_budget"]["used"] = used
             return
 
-    packet["token_budget"]["used"] = estimator.estimate_obj(packet)
+    if _truncate_prompt_to_fit(packet, estimator, max_tokens=max_tokens):
+        used = estimator.estimate_obj(packet)
+        if used <= max_tokens:
+            packet["token_budget"]["used"] = used
+            return
+
+    used = estimator.estimate_obj(packet)
+    packet["token_budget"]["used"] = used
+    if used > max_tokens:
+        _mark_packet_unable_to_truncate(packet)
 
 
 def _refresh_prompt(packet: dict[str, Any], redactor: MinimalRedactor) -> None:
@@ -413,6 +455,13 @@ def _mark_packet_truncated(packet: dict[str, Any]) -> None:
     reasons = packet.setdefault("degraded_reasons", [])
     if isinstance(reasons, list) and "packet_truncated_to_token_budget" not in reasons:
         reasons.append("packet_truncated_to_token_budget")
+    packet["degraded"] = True
+
+
+def _mark_packet_unable_to_truncate(packet: dict[str, Any]) -> None:
+    reasons = packet.setdefault("degraded_reasons", [])
+    if isinstance(reasons, list) and "packet_could_not_truncate_to_budget" not in reasons:
+        reasons.append("packet_could_not_truncate_to_budget")
     packet["degraded"] = True
 
 
@@ -499,6 +548,23 @@ def _truncate_fallback_text(
     return changed
 
 
+def _truncate_prompt_to_fit(
+    packet: dict[str, Any],
+    estimator: TokenEstimator,
+    *,
+    max_tokens: int,
+) -> bool:
+    prompt = packet.get("prompt")
+    if not isinstance(prompt, str) or not prompt:
+        return False
+    packet["prompt"] = ""
+    non_prompt_tokens = estimator.estimate_obj(packet)
+    prompt_budget = max(0, max_tokens - non_prompt_tokens)
+    truncated = estimator.truncate_text(prompt, prompt_budget)
+    packet["prompt"] = truncated
+    return truncated != prompt
+
+
 def _truncate_text_fields(
     value: Any,
     estimator: TokenEstimator,
@@ -541,6 +607,13 @@ def _keep_top_candidate(packet: dict[str, Any]) -> bool:
         return False
     packet["root_cause_candidates"] = candidates[:1]
     return True
+
+
+def _safe_int(value: Any, *, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
 
 def render_packet_markdown(
@@ -606,19 +679,73 @@ def _read_log_window(
 
 
 def _render_prompt(packet: dict[str, Any]) -> str:
-    candidates = json.dumps(
-        packet.get("root_cause_candidates", []),
-        ensure_ascii=False,
-        indent=2,
-    )
-    evidence = json.dumps(packet.get("evidence", {}), ensure_ascii=False, indent=2)
+    primary = _compact_prompt_mapping(packet.get("primary_error", {}))
+    top_candidate = _first_prompt_candidate(packet.get("root_cause_candidates", []))
+    evidence_paths = _prompt_evidence_paths(packet.get("evidence", {}))
     return (
-        "请根据以下 GBS 构建失败证据定位根因并给出最小修复建议。\n\n"
+        "请根据 evidence_packet JSON 定位 GBS 构建失败根因并给出最小修复建议。\n"
         f"Failed phase: {packet.get('failed_phase')}\n"
-        f"Primary error: {json.dumps(packet.get('primary_error', {}), ensure_ascii=False)}\n\n"
-        f"Candidates:\n{candidates}\n\n"
-        f"Evidence:\n{evidence}\n"
+        f"Primary error: {json.dumps(primary, ensure_ascii=False, separators=(',', ':'))}\n"
+        f"Top candidate: {json.dumps(top_candidate, ensure_ascii=False, separators=(',', ':'))}\n"
+        f"Evidence paths: {json.dumps(evidence_paths, ensure_ascii=False, separators=(',', ':'))}\n"
+        "Use packet.primary_error, packet.root_cause_candidates, and packet.evidence for details.\n"
     )
+
+
+def _first_prompt_candidate(candidates: Any) -> Any:
+    if not isinstance(candidates, list):
+        return {}
+    for candidate in candidates:
+        if isinstance(candidate, dict):
+            return {
+                key: candidate.get(key)
+                for key in ("rank", "event_id", "kind", "semantic_class", "confidence")
+                if key in candidate
+            }
+    return {}
+
+
+def _prompt_evidence_paths(value: Any) -> list[str]:
+    paths: list[str] = []
+    _collect_prompt_paths(value, paths)
+    return paths[:5]
+
+
+def _collect_prompt_paths(value: Any, paths: list[str]) -> None:
+    if isinstance(value, dict):
+        path = value.get("path") or value.get("file")
+        if isinstance(path, str) and path not in paths:
+            paths.append(path)
+        for child in value.values():
+            _collect_prompt_paths(child, paths)
+    elif isinstance(value, list):
+        for child in value:
+            _collect_prompt_paths(child, paths)
+
+
+def _compact_prompt_mapping(value: Any, *, include_message: bool = True) -> Any:
+    if not isinstance(value, dict):
+        return value
+    keys = [
+        "id",
+        "kind",
+        "severity",
+        "phase",
+        "file",
+        "line",
+        "path",
+        "start_line",
+        "end_line",
+        "argv_short",
+        "extraction_method",
+        "degraded",
+    ]
+    if include_message:
+        keys.insert(3, "message")
+    compact = {key: value[key] for key in keys if key in value and value[key] is not None}
+    if "text" in value and isinstance(value["text"], str):
+        compact["text"] = "[omitted]"
+    return compact
 
 
 def _top_event(candidates: list[dict[str, Any]], scan_data: dict[str, Any]) -> dict[str, Any]:
@@ -681,6 +808,14 @@ def _full_match_as_dict(
     if verdict in {Verdict.DIRECT_TIER1.value, Verdict.DIRECT_TIER2.value}:
         return {**full_match_result, "verdict": "direct_answer"}
     return {**full_match_result, "verdict": "needs_llm"}
+
+
+def _matched_patterns_from_match_data(match_data: dict[str, Any]) -> list[Any]:
+    matched_patterns = match_data.get("matched_patterns")
+    if isinstance(matched_patterns, list):
+        return matched_patterns
+    pattern_id = match_data.get("pattern_id")
+    return [pattern_id] if pattern_id else []
 
 
 def _scan_as_dict(scan_result: ScanResult | dict[str, Any]) -> dict[str, Any]:

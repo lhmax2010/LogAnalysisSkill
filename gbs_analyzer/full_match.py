@@ -53,6 +53,7 @@ class FullMatchResult:
     captures: dict[str, str] | None = None
     reason: str | None = None
     confidence: float | None = None
+    failure_reason: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         packet_verdict = (
@@ -60,7 +61,7 @@ class FullMatchResult:
             if self.verdict in {Verdict.DIRECT_TIER1, Verdict.DIRECT_TIER2}
             else "needs_llm"
         )
-        return {
+        data: dict[str, Any] = {
             "verdict": packet_verdict,
             "full_match_verdict": self.verdict.value,
             "pattern_id": self.pattern_id,
@@ -69,7 +70,18 @@ class FullMatchResult:
             "captures": self.captures or {},
             "reason": self.reason,
             "confidence": self.confidence,
+            "failure_reason": self.failure_reason,
         }
+        if self.verdict is Verdict.NEEDS_LLM and self.pattern_id:
+            data["matched_patterns"] = [
+                {
+                    "pattern_id": self.pattern_id,
+                    "confidence": self.confidence,
+                    "captures": self.captures or {},
+                    "failure_reason": self.failure_reason or self.reason,
+                }
+            ]
+        return data
 
 
 def load_full_match_patterns(
@@ -158,8 +170,25 @@ def full_match(
 
     first_needs_llm: FullMatchResult | None = None
     for pattern in active_patterns:
+        confidence = _candidate_confidence(candidate, default=pattern.confidence)
         captures = match_pattern(pattern, event, all_events, commands)
         if captures is None:
+            near_captures = _near_match_pattern(pattern, event)
+            if near_captures is not None and first_needs_llm is None:
+                first_needs_llm = _result_from_verdict(
+                    Verdict.NEEDS_LLM,
+                    pattern,
+                    near_captures,
+                    confidence=confidence,
+                    failure_reason=_failure_reason_for_needs_llm(
+                        pattern,
+                        event,
+                        evidence,
+                        all_events=all_events,
+                        commands=commands,
+                        confidence=confidence,
+                    ),
+                )
             continue
         verdict = determine_verdict(
             pattern,
@@ -168,7 +197,22 @@ def full_match(
             all_events=all_events,
             commands=commands,
         )
-        result = _result_from_verdict(verdict, pattern, captures)
+        result = _result_from_verdict(
+            verdict,
+            pattern,
+            captures,
+            confidence=confidence,
+            failure_reason=_failure_reason_for_needs_llm(
+                pattern,
+                event,
+                evidence,
+                all_events=all_events,
+                commands=commands,
+                confidence=confidence,
+            )
+            if verdict is Verdict.NEEDS_LLM
+            else None,
+        )
         if verdict in {Verdict.DIRECT_TIER1, Verdict.DIRECT_TIER2}:
             return result
         if first_needs_llm is None:
@@ -196,6 +240,28 @@ def match_pattern(
     if any(negative.search(message) for negative in pattern.negative_patterns):
         return None
 
+    for regex in pattern.regex:
+        match = regex.search(message)
+        if match:
+            return {
+                key: value
+                for key, value in match.groupdict().items()
+                if value is not None
+            }
+    return None
+
+
+def _near_match_pattern(
+    pattern: FullMatchPattern,
+    event: dict[str, Any],
+) -> dict[str, str] | None:
+    """Return regex captures for same-kind semantic matches blocked by context gates."""
+
+    if event.get("kind") not in pattern.event_kinds:
+        return None
+    message = str(event.get("message", ""))
+    if any(negative.search(message) for negative in pattern.negative_patterns):
+        return None
     for regex in pattern.regex:
         match = regex.search(message)
         if match:
@@ -286,7 +352,11 @@ def _result_from_verdict(
     verdict: Verdict,
     pattern: FullMatchPattern,
     captures: dict[str, str],
+    *,
+    confidence: float | None = None,
+    failure_reason: str | None = None,
 ) -> FullMatchResult:
+    actual_confidence = pattern.confidence if confidence is None else confidence
     if verdict == Verdict.DIRECT_TIER1:
         direct = _render_fix(pattern.direct_answer_tier1.fix_template, captures)
         return FullMatchResult(
@@ -295,7 +365,7 @@ def _result_from_verdict(
             matched_tier="tier1",
             direct_answer=direct,
             captures=captures,
-            confidence=pattern.confidence,
+            confidence=actual_confidence,
         )
     if verdict == Verdict.DIRECT_TIER2:
         direct = _render_fix(pattern.direct_answer_tier2.fix_template, captures)
@@ -305,15 +375,50 @@ def _result_from_verdict(
             matched_tier="tier2",
             direct_answer=direct,
             captures=captures,
-            confidence=pattern.confidence,
+            confidence=actual_confidence,
         )
     return FullMatchResult(
         verdict,
         pattern_id=pattern.id,
         captures=captures,
         reason="matched_pattern_needs_llm",
-        confidence=pattern.confidence,
+        confidence=actual_confidence,
+        failure_reason=failure_reason,
     )
+
+
+def _candidate_confidence(candidate: dict[str, Any], *, default: float) -> float:
+    try:
+        return float(candidate.get("confidence", default))
+    except (TypeError, ValueError):
+        return default
+
+
+def _failure_reason_for_needs_llm(
+    pattern: FullMatchPattern,
+    event: dict[str, Any],
+    evidence: Evidence,
+    *,
+    all_events: list[Any],
+    commands: dict[str, dict[str, Any]],
+    confidence: float,
+) -> str:
+    if pattern.direct_answer_tier2.enabled and confidence < 0.85:
+        return "confidence_below_tier2_threshold"
+    if pattern.direct_answer_tier1.enabled and confidence < 0.95:
+        return "confidence_below_tier1_threshold"
+    if evidence.degraded:
+        return "evidence_degraded"
+    if not _is_terminal_event(event):
+        return "event_not_terminal"
+    if not pattern.terminal:
+        return "pattern_not_terminal"
+    tier2 = pattern.direct_answer_tier2
+    if tier2.enabled and not evidence.contains_all(list(tier2.evidence_required)):
+        return "missing_required_evidence"
+    if not _passes_required_context(pattern.required_context, event, all_events, commands):
+        return "required_context_not_met"
+    return "direct_answer_requirements_not_met"
 
 
 def _passes_required_context(

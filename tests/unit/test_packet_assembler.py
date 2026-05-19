@@ -181,6 +181,26 @@ def test_budget_pool_request_grants_available_budget() -> None:
     assert pool.conservation_ok()
 
 
+def test_budget_pool_clears_partial_after_cumulative_grants() -> None:
+    pool = BudgetPool()
+
+    first_grant = pool.request("link", 650, preferred=900)
+
+    assert first_grant == 650
+    assert pool.is_partial("link") is True
+
+    pool.report_reserve_used("raw_excerpt", 0)
+    pool.report_reserve_used("cascade_summary", 0)
+    pool.report_reserve_used("top_k_text_summaries", 0)
+    second_grant = pool.request("link", 250, preferred=900)
+
+    assert second_grant == 250
+    assert pool.grants["link"] == 900
+    assert pool.is_partial("link") is False
+    assert "link" not in pool.as_dict()["partial_grants"]
+    assert pool.conservation_ok()
+
+
 def test_budget_pool_rejects_bad_usage() -> None:
     pool = BudgetPool()
 
@@ -190,6 +210,8 @@ def test_budget_pool_rejects_bad_usage() -> None:
         pool.report_reserve_used("primary_error", 1)
     with pytest.raises(ValueError):
         pool.request("compile", -1)
+    with pytest.raises(ValueError):
+        pool.request("compile", 1, preferred=-1)
 
 
 def test_budget_pool_rejects_over_reserved_total() -> None:
@@ -418,6 +440,30 @@ def test_assemble_packet_accepts_scan_rank_evidence_and_legacy_match_dicts(
     assert packet["matched_patterns"] == ["compile_undeclared_identifier_tier2"]
 
 
+def test_assemble_packet_preserves_near_matched_pattern_details(tmp_path: Path) -> None:
+    near_match = {
+        "pattern_id": "linker_undefined_reference_tier2",
+        "confidence": 0.84,
+        "captures": {"symbol": "missing_helper"},
+        "failure_reason": "confidence_below_tier2_threshold",
+    }
+
+    packet = assemble_packet(
+        scan_data(tmp_path),
+        candidates(),
+        compile_evidence().as_dict(),
+        {
+            "verdict": "needs_llm",
+            "matched_patterns": [near_match],
+            "pattern_id": "linker_undefined_reference_tier2",
+        },
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    assert packet["verdict"] == "needs_llm"
+    assert packet["matched_patterns"] == [near_match]
+
+
 def test_assemble_packet_needs_llm_prompt_is_redacted(tmp_path: Path) -> None:
     packet = assemble_packet(
         scan_data(tmp_path),
@@ -467,11 +513,11 @@ def test_assemble_packet_truncates_to_final_token_budget(tmp_path: Path) -> None
         None,
         None,
         estimator=TokenEstimator(use_tiktoken=False),
-        max_tokens=1200,
+        max_tokens=600,
     )
 
-    assert packet["token_budget"]["used"] <= 1200
-    assert packet["token_budget"]["limit_with_prompt"] == 1200
+    assert packet["token_budget"]["used"] <= 600
+    assert packet["token_budget"]["limit_with_prompt"] == 600
     assert packet["token_budget"]["conservation_ok"] is True
     assert packet["degraded"] is True
     assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
@@ -576,14 +622,149 @@ def test_final_token_guard_truncates_extra_log_window() -> None:
 
     packet_assembler._enforce_final_token_limit(
         packet,
-        max_tokens=500,
+        max_tokens=250,
         estimator=TokenEstimator(use_tiktoken=False),
         redactor=MinimalRedactor(),
     )
 
-    assert packet["token_budget"]["used"] <= 500
+    assert packet["token_budget"]["used"] <= 250
     assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
     assert "[truncated]" in packet["evidence"]["fallback_context"]["extra_log_window"]
+
+
+def test_final_token_guard_uses_wrapper_limit_not_evidence_pool() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    packet = {
+        "verdict": "direct_answer",
+        "primary_error": {"message": "boom"},
+        "root_cause_candidates": [{"rank": 1}],
+        "evidence": {"source_snippets": [{"file": "foo.c", "text": ""}]},
+        "cascade_summary": "",
+        "token_budget": {},
+        "degraded": False,
+        "degraded_reasons": [],
+    }
+    while estimator.estimate_obj(packet) <= 1400:
+        packet["evidence"]["source_snippets"][0]["text"] += "context token " * 20
+    assert estimator.estimate_obj(packet) < 1800
+
+    packet_assembler._enforce_final_token_limit(
+        packet,
+        max_tokens=1800,
+        estimator=estimator,
+        redactor=MinimalRedactor(),
+    )
+
+    assert packet["token_budget"]["used"] < 1800
+    assert "packet_truncated_to_token_budget" not in packet["degraded_reasons"]
+    assert packet["degraded"] is False
+
+
+def test_final_token_guard_reestimates_until_under_max_tokens() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    packet = {
+        "verdict": "direct_answer",
+        "primary_error": {"message": "boom"},
+        "root_cause_candidates": [{"rank": 1}],
+        "evidence": {
+            "source_snippets": [
+                {"file": "foo.c", "line_start": 1, "line_end": 999, "text": "line\n" * 5000}
+            ]
+        },
+        "cascade_summary": "make cascade: " + ("foo.o -> E001; " * 200),
+        "token_budget": {"conservation_ok": True},
+        "degraded": False,
+        "degraded_reasons": [],
+    }
+    assert estimator.estimate_obj(packet) > 1800
+
+    packet_assembler._enforce_final_token_limit(
+        packet,
+        max_tokens=1800,
+        estimator=estimator,
+        redactor=MinimalRedactor(),
+    )
+
+    assert packet["token_budget"]["used"] <= 1800
+    assert packet["token_budget"]["conservation_ok"] is True
+    assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
+    assert "packet_could_not_truncate_to_budget" not in packet["degraded_reasons"]
+
+
+def test_final_token_guard_marks_unable_when_safe_fields_exhausted() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    packet = {
+        "verdict": "direct_answer",
+        "primary_error": {"message": "root " * 2000},
+        "root_cause_candidates": [{"rank": 1}],
+        "evidence": {"metadata_only": {"path": "foo.c"}},
+        "cascade_summary": "",
+        "token_budget": {},
+        "degraded": False,
+        "degraded_reasons": [],
+    }
+
+    packet_assembler._enforce_final_token_limit(
+        packet,
+        max_tokens=50,
+        estimator=estimator,
+        redactor=MinimalRedactor(),
+    )
+
+    assert packet["token_budget"]["used"] > 50
+    assert "packet_truncated_to_token_budget" in packet["degraded_reasons"]
+    assert "packet_could_not_truncate_to_budget" in packet["degraded_reasons"]
+
+
+def test_prompt_helpers_keep_prompt_compact_and_path_oriented() -> None:
+    assert packet_assembler._first_prompt_candidate("bad") == {}
+    assert packet_assembler._first_prompt_candidate(["bad"]) == {}
+    assert packet_assembler._first_prompt_candidate(
+        [{"rank": 1, "event_id": "E001", "summary": "long"}]
+    ) == {"rank": 1, "event_id": "E001"}
+
+    evidence = {
+        "source_snippet": {"path": "/home/linhao/work/foo.c", "text": "boom"},
+        "nested": [{"file": "/home/linhao/work/foo.c"}, {"file": "/tmp/bar.c"}],
+    }
+    assert packet_assembler._prompt_evidence_paths(evidence) == [
+        "/home/linhao/work/foo.c",
+        "/tmp/bar.c",
+    ]
+    assert packet_assembler._compact_prompt_mapping(
+        {"message": "boom", "text": "long"},
+        include_message=False,
+    ) == {"text": "[omitted]"}
+    assert packet_assembler._compact_prompt_mapping("raw") == "raw"
+
+
+def test_truncate_prompt_to_fit_handles_empty_and_large_prompt() -> None:
+    estimator = TokenEstimator(use_tiktoken=False)
+    assert (
+        packet_assembler._truncate_prompt_to_fit(
+            {"prompt": None},
+            estimator,
+            max_tokens=50,
+        )
+        is False
+    )
+    packet = {
+        "prompt": "prompt word " * 200,
+        "primary_error": {"message": "boom"},
+        "token_budget": {},
+    }
+    original = estimator.estimate_obj(packet)
+
+    assert (
+        packet_assembler._truncate_prompt_to_fit(
+            packet,
+            estimator,
+            max_tokens=120,
+        )
+        is True
+    )
+    assert estimator.estimate_obj(packet) < original
+    assert "[truncated]" in packet["prompt"]
 
 
 def test_assemble_packet_marks_degraded_evidence_warning(tmp_path: Path) -> None:
@@ -599,22 +780,66 @@ def test_assemble_packet_marks_degraded_evidence_warning(tmp_path: Path) -> None
     assert "source_file_unavailable" in packet["degraded_reasons"]
 
 
-def test_assemble_packet_marks_budget_partial(tmp_path: Path) -> None:
+def test_assemble_packet_does_not_promote_reasonless_evidence_degraded(
+    tmp_path: Path,
+) -> None:
+    evidence_data = compile_evidence(degraded=True).as_dict()
+    evidence_data["warnings"] = []
+
     packet = assemble_packet(
         scan_data(tmp_path),
         candidates(),
-        Evidence(
-            collector="compile",
-            level=3,
-            granted_budget=2000,
-            data={},
-            contains=set(),
-        ),
+        evidence_data,
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    assert packet["degraded"] is False
+    assert packet["degraded_reasons"] == []
+
+
+def test_assemble_packet_marks_budget_partial(tmp_path: Path) -> None:
+    evidence_data = Evidence(
+        collector="compile",
+        level=2,
+        granted_budget=600,
+        data={},
+        contains=set(),
+    ).as_dict()
+    evidence_data["level_preferred"] = 3
+
+    packet = assemble_packet(
+        scan_data(tmp_path),
+        candidates(),
+        evidence_data,
         {"verdict": "needs_llm"},
         estimator=TokenEstimator(use_tiktoken=False),
     )
 
     assert "budget_pool_partial" in packet["degraded_reasons"]
+
+
+def test_assemble_packet_does_not_mark_partial_when_level_reaches_preferred(
+    tmp_path: Path,
+) -> None:
+    evidence_data = Evidence(
+        collector="compile",
+        level=3,
+        granted_budget=2000,
+        data={},
+        contains=set(),
+    ).as_dict()
+    evidence_data["level_preferred"] = 3
+
+    packet = assemble_packet(
+        scan_data(tmp_path),
+        candidates(),
+        evidence_data,
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    assert "budget_pool_partial" not in packet["degraded_reasons"]
 
 
 def test_assemble_packet_uses_first_scan_event_without_candidates(tmp_path: Path) -> None:
