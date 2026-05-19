@@ -344,11 +344,9 @@ def assemble_packet(
         if evidence_data is not None
         else {}
     )
-    degraded = bool(
-        degraded_reasons or (evidence_data is not None and evidence_data.get("degraded"))
-    )
     if evidence_data is not None and evidence_data.get("warnings"):
         degraded_reasons.extend(str(item) for item in evidence_data["warnings"])
+    degraded = bool(degraded_reasons)
 
     packet: dict[str, Any] = {
         "schema_version": "evidence_packet/v1",

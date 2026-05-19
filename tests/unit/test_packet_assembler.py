@@ -729,6 +729,24 @@ def test_assemble_packet_marks_degraded_evidence_warning(tmp_path: Path) -> None
     assert "source_file_unavailable" in packet["degraded_reasons"]
 
 
+def test_assemble_packet_does_not_promote_reasonless_evidence_degraded(
+    tmp_path: Path,
+) -> None:
+    evidence_data = compile_evidence(degraded=True).as_dict()
+    evidence_data["warnings"] = []
+
+    packet = assemble_packet(
+        scan_data(tmp_path),
+        candidates(),
+        evidence_data,
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    assert packet["degraded"] is False
+    assert packet["degraded_reasons"] == []
+
+
 def test_assemble_packet_marks_budget_partial(tmp_path: Path) -> None:
     evidence_data = Evidence(
         collector="compile",
