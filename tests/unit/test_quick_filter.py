@@ -108,6 +108,15 @@ def test_patch_hunk_fast_path_hits(tmp_path: Path) -> None:
     assert quick_filter(scan).match.pattern_id == "patch_failed_hunk"  # type: ignore[union-attr]
 
 
+def test_real_patch_hunk_ignored_fast_path_hits(tmp_path: Path) -> None:
+    scan = scan_buildlog(write_log(tmp_path, "1 out of 1 hunk ignored\n"))
+    match = quick_filter(scan).match
+
+    assert match is not None
+    assert match.pattern_id == "patch_failed_hunk"
+    assert match.event_id == "E001"
+
+
 def test_patch_at_line_fast_path_hits(tmp_path: Path) -> None:
     scan = scan_buildlog(write_log(tmp_path, "patch failed: src/foo.c:12\n"))
     assert quick_filter(scan).match.pattern_id == "patch_failed_at_line"  # type: ignore[union-attr]

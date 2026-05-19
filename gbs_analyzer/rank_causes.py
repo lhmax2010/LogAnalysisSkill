@@ -63,7 +63,12 @@ def rank_causes(
     scored: list[tuple[float, dict[str, Any], SemanticClass, list[dict[str, Any]]]] = []
     for event in events:
         sem = active_classifier.classify(event, scan_data)
-        score, reasons = rank_score(event, events, sem)
+        score, reasons = rank_score(
+            event,
+            events,
+            sem,
+            failed_phase=scan_data.get("failed_phase"),
+        )
         scored.append((score, event, sem, reasons))
 
     scored.sort(key=lambda item: (-item[0], int(item[1].get("line_no", 0))))
@@ -78,6 +83,8 @@ def rank_score(
     event: dict[str, Any],
     all_events: list[Any],
     semantic: SemanticClass | None = None,
+    *,
+    failed_phase: str | None = None,
 ) -> tuple[float, list[dict[str, Any]]]:
     """Return the v0.5 ranking score and structured confidence reasons."""
 
@@ -109,6 +116,10 @@ def rank_score(
     if event.get("file") and event.get("line"):
         score += 0.05
         reasons.append({"factor": "has_location", "delta": "+0.05"})
+
+    if event.get("kind") == "patch" and event.get("phase") == failed_phase:
+        score += 0.1
+        reasons.append({"factor": "patch_failed_phase", "delta": "+0.10"})
 
     if is_in_warning_block(event, all_events):
         score -= 0.3

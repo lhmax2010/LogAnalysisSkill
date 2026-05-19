@@ -35,6 +35,11 @@ LINKER_MISSING_PATTERN = re.compile(r"cannot find -l(?P<library>[A-Za-z0-9_.+-]+
 PATCH_PATTERNS = [
     re.compile(r"Patch\s*#?(?P<num>\d+)\s*(?:\(.*\))?\s*failed", re.IGNORECASE),
     re.compile(r"Hunk\s*#?(?P<num>\d+)\s*FAILED", re.IGNORECASE),
+    re.compile(r"can't find file to patch(?: at input line (?P<line>\d+))?", re.IGNORECASE),
+    re.compile(
+        r"(?P<num>\d+)\s+out of\s+(?P<total>\d+)\s+hunks?\s+ignored",
+        re.IGNORECASE,
+    ),
     re.compile(r"patch:?\s*\*{4}\s*malformed patch at line (?P<line>\d+)", re.IGNORECASE),
     re.compile(r"patch failed:\s*(?P<file>[^\s]+):(?P<line>\d+)", re.IGNORECASE),
     re.compile(r"error:\s*patch(?:[\d:]+)?\s*failed", re.IGNORECASE),
@@ -221,6 +226,7 @@ class _ScanState:
         self.degraded_reasons: list[str] = []
         self._pending_command: _PendingCommand | None = None
         self._source_to_event: dict[str, str] = {}
+        self._last_patch_event_by_phase: dict[str, str] = {}
 
     def trace(self, level: str, event: str, **fields: Any) -> None:
         if self.trace_logger is not None:
@@ -309,6 +315,13 @@ class _ScanState:
         self._pending_command = None
 
     def _add_event(self, event: DiagnosticEvent, line: LogLine | None = None) -> None:
+        if event.kind == "rpm_phase":
+            phase = str(event.details.get("phase") or event.phase or "")
+            patch_parent = self._last_patch_event_by_phase.get(phase)
+            if phase == "%prep" and patch_parent is not None:
+                event.parent = patch_parent
+                event.details["derived_from"] = "patch_failed"
+
         if event.kind == "make_cascade" and event.target is not None:
             suffix_index = build_suffix_index(self._source_to_event)
             event.parent = match_make_target(event.target, suffix_index)
@@ -322,6 +335,8 @@ class _ScanState:
                 )
 
         self.events.append(event)
+        if event.kind == "patch" and event.phase is not None:
+            self._last_patch_event_by_phase[event.phase] = event.id
         if event.file is not None and is_supported_source(event.file):
             self._source_to_event[event.file] = event.id
         if event.kind != "make_cascade":
@@ -355,7 +370,8 @@ class _ScanState:
 
         patch_details = _match_patch(text)
         if patch_details is not None:
-            return self._event(event_id, "patch", "error", text, line, details=patch_details)
+            message = str(patch_details.pop("_message", text))
+            return self._event(event_id, "patch", "error", message, line, details=patch_details)
 
         if "file not found:" in lowered or "installed (but unpackaged) file(s) found" in lowered:
             return self._event(event_id, "install_missing", "error", text, line)
@@ -562,7 +578,16 @@ def _match_patch(text: str) -> dict[str, str] | None:
     for pattern in PATCH_PATTERNS:
         match = pattern.search(text)
         if match:
-            return {key: value for key, value in match.groupdict().items() if value is not None}
+            details = {
+                key: value
+                for key, value in match.groupdict().items()
+                if value is not None
+            }
+            if "can't find file to patch" in text.lower():
+                details["_message"] = f"error: patch failed: {text}"
+            elif "hunk" in text.lower() and "ignored" in text.lower():
+                details["_message"] = f"Hunk #{details.get('num', '1')} FAILED: {text}"
+            return details
     return None
 
 
