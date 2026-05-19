@@ -53,6 +53,7 @@ class FullMatchResult:
     captures: dict[str, str] | None = None
     reason: str | None = None
     confidence: float | None = None
+    failure_reason: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         packet_verdict = (
@@ -60,7 +61,7 @@ class FullMatchResult:
             if self.verdict in {Verdict.DIRECT_TIER1, Verdict.DIRECT_TIER2}
             else "needs_llm"
         )
-        return {
+        data = {
             "verdict": packet_verdict,
             "full_match_verdict": self.verdict.value,
             "pattern_id": self.pattern_id,
@@ -69,7 +70,18 @@ class FullMatchResult:
             "captures": self.captures or {},
             "reason": self.reason,
             "confidence": self.confidence,
+            "failure_reason": self.failure_reason,
         }
+        if self.verdict is Verdict.NEEDS_LLM and self.pattern_id:
+            data["matched_patterns"] = [
+                {
+                    "pattern_id": self.pattern_id,
+                    "confidence": self.confidence,
+                    "captures": self.captures or {},
+                    "failure_reason": self.failure_reason or self.reason,
+                }
+            ]
+        return data
 
 
 def load_full_match_patterns(
@@ -96,11 +108,13 @@ def determine_verdict(
     *,
     all_events: list[Any] | None = None,
     commands: dict[str, dict[str, Any]] | None = None,
+    confidence: float | None = None,
 ) -> Verdict:
     """Return v0.5 §3.5 direct-answer verdict for a matched rule."""
 
     events = all_events or [event]
     command_map = commands or {}
+    actual_confidence = matched_rule.confidence if confidence is None else confidence
     passes_required_context = _passes_required_context(
         matched_rule.required_context,
         event,
@@ -111,7 +125,7 @@ def determine_verdict(
 
     if (
         matched_rule.direct_answer_tier1.enabled
-        and matched_rule.confidence >= 0.95
+        and actual_confidence >= 0.95
         and matched_rule.terminal
         and event_is_terminal
         and not evidence.degraded
@@ -122,7 +136,7 @@ def determine_verdict(
     tier2 = matched_rule.direct_answer_tier2
     if (
         tier2.enabled
-        and matched_rule.confidence >= 0.85
+        and actual_confidence >= 0.85
         and matched_rule.terminal
         and event_is_terminal
         and evidence.contains_all(list(tier2.evidence_required))
@@ -161,14 +175,31 @@ def full_match(
         captures = match_pattern(pattern, event, all_events, commands)
         if captures is None:
             continue
+        confidence = _candidate_confidence(candidate, default=pattern.confidence)
         verdict = determine_verdict(
             pattern,
             event,
             evidence,
             all_events=all_events,
             commands=commands,
+            confidence=confidence,
         )
-        result = _result_from_verdict(verdict, pattern, captures)
+        result = _result_from_verdict(
+            verdict,
+            pattern,
+            captures,
+            confidence=confidence,
+            failure_reason=_failure_reason_for_needs_llm(
+                pattern,
+                event,
+                evidence,
+                all_events=all_events,
+                commands=commands,
+                confidence=confidence,
+            )
+            if verdict is Verdict.NEEDS_LLM
+            else None,
+        )
         if verdict in {Verdict.DIRECT_TIER1, Verdict.DIRECT_TIER2}:
             return result
         if first_needs_llm is None:
@@ -286,7 +317,11 @@ def _result_from_verdict(
     verdict: Verdict,
     pattern: FullMatchPattern,
     captures: dict[str, str],
+    *,
+    confidence: float | None = None,
+    failure_reason: str | None = None,
 ) -> FullMatchResult:
+    actual_confidence = pattern.confidence if confidence is None else confidence
     if verdict == Verdict.DIRECT_TIER1:
         direct = _render_fix(pattern.direct_answer_tier1.fix_template, captures)
         return FullMatchResult(
@@ -295,7 +330,7 @@ def _result_from_verdict(
             matched_tier="tier1",
             direct_answer=direct,
             captures=captures,
-            confidence=pattern.confidence,
+            confidence=actual_confidence,
         )
     if verdict == Verdict.DIRECT_TIER2:
         direct = _render_fix(pattern.direct_answer_tier2.fix_template, captures)
@@ -305,15 +340,50 @@ def _result_from_verdict(
             matched_tier="tier2",
             direct_answer=direct,
             captures=captures,
-            confidence=pattern.confidence,
+            confidence=actual_confidence,
         )
     return FullMatchResult(
         verdict,
         pattern_id=pattern.id,
         captures=captures,
         reason="matched_pattern_needs_llm",
-        confidence=pattern.confidence,
+        confidence=actual_confidence,
+        failure_reason=failure_reason,
     )
+
+
+def _candidate_confidence(candidate: dict[str, Any], *, default: float) -> float:
+    try:
+        return float(candidate.get("confidence", default))
+    except (TypeError, ValueError):
+        return default
+
+
+def _failure_reason_for_needs_llm(
+    pattern: FullMatchPattern,
+    event: dict[str, Any],
+    evidence: Evidence,
+    *,
+    all_events: list[Any],
+    commands: dict[str, dict[str, Any]],
+    confidence: float,
+) -> str:
+    if pattern.direct_answer_tier2.enabled and confidence < 0.85:
+        return "confidence_below_tier2_threshold"
+    if pattern.direct_answer_tier1.enabled and confidence < 0.95:
+        return "confidence_below_tier1_threshold"
+    if evidence.degraded:
+        return "evidence_degraded"
+    if not _is_terminal_event(event):
+        return "event_not_terminal"
+    if not pattern.terminal:
+        return "pattern_not_terminal"
+    tier2 = pattern.direct_answer_tier2
+    if tier2.enabled and not evidence.contains_all(list(tier2.evidence_required)):
+        return "missing_required_evidence"
+    if not _passes_required_context(pattern.required_context, event, all_events, commands):
+        return "required_context_not_met"
+    return "direct_answer_requirements_not_met"
 
 
 def _passes_required_context(

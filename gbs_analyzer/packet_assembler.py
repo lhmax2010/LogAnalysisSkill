@@ -362,7 +362,7 @@ def assemble_packet(
         "cascade_summary": cascade_summary,
         "primary_error": top_event,
         "evidence": evidence_section,
-        "matched_patterns": [match_data["pattern_id"]] if match_data.get("pattern_id") else [],
+        "matched_patterns": _matched_patterns_from_match_data(match_data),
         "direct_answer": direct_answer,
         "matched_tier": match_data.get("matched_tier"),
         "prompt": None,
@@ -733,6 +733,14 @@ def _full_match_as_dict(
     if verdict in {Verdict.DIRECT_TIER1.value, Verdict.DIRECT_TIER2.value}:
         return {**full_match_result, "verdict": "direct_answer"}
     return {**full_match_result, "verdict": "needs_llm"}
+
+
+def _matched_patterns_from_match_data(match_data: dict[str, Any]) -> list[Any]:
+    matched_patterns = match_data.get("matched_patterns")
+    if isinstance(matched_patterns, list):
+        return matched_patterns
+    pattern_id = match_data.get("pattern_id")
+    return [pattern_id] if pattern_id else []
 
 
 def _scan_as_dict(scan_result: ScanResult | dict[str, Any]) -> dict[str, Any]:
