@@ -75,6 +75,7 @@ class FullMatchResult:
         if self.verdict is Verdict.NEEDS_LLM and self.pattern_id:
             data["matched_patterns"] = [
                 {
+                    "id": self.pattern_id,
                     "pattern_id": self.pattern_id,
                     "confidence": self.confidence,
                     "captures": self.captures or {},
