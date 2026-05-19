@@ -108,13 +108,11 @@ def determine_verdict(
     *,
     all_events: list[Any] | None = None,
     commands: dict[str, dict[str, Any]] | None = None,
-    confidence: float | None = None,
 ) -> Verdict:
     """Return v0.5 §3.5 direct-answer verdict for a matched rule."""
 
     events = all_events or [event]
     command_map = commands or {}
-    actual_confidence = matched_rule.confidence if confidence is None else confidence
     passes_required_context = _passes_required_context(
         matched_rule.required_context,
         event,
@@ -125,7 +123,7 @@ def determine_verdict(
 
     if (
         matched_rule.direct_answer_tier1.enabled
-        and actual_confidence >= 0.95
+        and matched_rule.confidence >= 0.95
         and matched_rule.terminal
         and event_is_terminal
         and not evidence.degraded
@@ -136,7 +134,7 @@ def determine_verdict(
     tier2 = matched_rule.direct_answer_tier2
     if (
         tier2.enabled
-        and actual_confidence >= 0.85
+        and matched_rule.confidence >= 0.85
         and matched_rule.terminal
         and event_is_terminal
         and evidence.contains_all(list(tier2.evidence_required))
@@ -172,17 +170,32 @@ def full_match(
 
     first_needs_llm: FullMatchResult | None = None
     for pattern in active_patterns:
+        confidence = _candidate_confidence(candidate, default=pattern.confidence)
         captures = match_pattern(pattern, event, all_events, commands)
         if captures is None:
+            near_captures = _near_match_pattern(pattern, event)
+            if near_captures is not None and first_needs_llm is None:
+                first_needs_llm = _result_from_verdict(
+                    Verdict.NEEDS_LLM,
+                    pattern,
+                    near_captures,
+                    confidence=confidence,
+                    failure_reason=_failure_reason_for_needs_llm(
+                        pattern,
+                        event,
+                        evidence,
+                        all_events=all_events,
+                        commands=commands,
+                        confidence=confidence,
+                    ),
+                )
             continue
-        confidence = _candidate_confidence(candidate, default=pattern.confidence)
         verdict = determine_verdict(
             pattern,
             event,
             evidence,
             all_events=all_events,
             commands=commands,
-            confidence=confidence,
         )
         result = _result_from_verdict(
             verdict,
@@ -227,6 +240,28 @@ def match_pattern(
     if any(negative.search(message) for negative in pattern.negative_patterns):
         return None
 
+    for regex in pattern.regex:
+        match = regex.search(message)
+        if match:
+            return {
+                key: value
+                for key, value in match.groupdict().items()
+                if value is not None
+            }
+    return None
+
+
+def _near_match_pattern(
+    pattern: FullMatchPattern,
+    event: dict[str, Any],
+) -> dict[str, str] | None:
+    """Return regex captures for same-kind semantic matches blocked by context gates."""
+
+    if event.get("kind") not in pattern.event_kinds:
+        return None
+    message = str(event.get("message", ""))
+    if any(negative.search(message) for negative in pattern.negative_patterns):
+        return None
     for regex in pattern.regex:
         match = regex.search(message)
         if match:

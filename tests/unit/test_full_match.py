@@ -213,7 +213,7 @@ def test_full_match_records_near_match_below_tier2_threshold() -> None:
         {"events": [event()], "commands": [{"id": "C001", "argv_short": "gcc -c foo.c"}]},
         {"event_id": "E001", "confidence": 0.84},
         evidence({"primary_error", "source_snippet", "command_summary"}),
-        patterns=[replace(pattern(), confidence=0.87)],
+        patterns=[replace(pattern(), confidence=0.84)],
     )
 
     assert result.verdict is Verdict.NEEDS_LLM
@@ -229,6 +229,30 @@ def test_full_match_records_near_match_below_tier2_threshold() -> None:
             "failure_reason": "confidence_below_tier2_threshold",
         }
     ]
+
+
+def test_full_match_records_near_match_when_context_blocks_direct_match() -> None:
+    result = full_match(
+        {"events": [event()], "commands": [{"id": "C001", "argv_short": "make -j40"}]},
+        {"event_id": "E001", "confidence": 0.84},
+        evidence({"primary_error", "source_snippet", "command_summary"}),
+        patterns=[
+            replace(
+                pattern(),
+                confidence=0.87,
+                required_context={"severity": ["error"], "tool_in": ["gcc"]},
+            )
+        ],
+    )
+
+    assert result.verdict is Verdict.NEEDS_LLM
+    packet = result.as_dict()
+    assert packet["matched_patterns"][0]["pattern_id"] == "compile_undeclared_identifier_tier2"
+    assert packet["matched_patterns"][0]["confidence"] == 0.84
+    assert (
+        packet["matched_patterns"][0]["failure_reason"]
+        == "confidence_below_tier2_threshold"
+    )
 
 
 def test_full_match_keeps_first_needs_llm_match() -> None:
