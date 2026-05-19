@@ -181,6 +181,26 @@ def test_budget_pool_request_grants_available_budget() -> None:
     assert pool.conservation_ok()
 
 
+def test_budget_pool_clears_partial_after_cumulative_grants() -> None:
+    pool = BudgetPool()
+
+    first_grant = pool.request("link", 650, preferred=900)
+
+    assert first_grant == 650
+    assert pool.is_partial("link") is True
+
+    pool.report_reserve_used("raw_excerpt", 0)
+    pool.report_reserve_used("cascade_summary", 0)
+    pool.report_reserve_used("top_k_text_summaries", 0)
+    second_grant = pool.request("link", 250, preferred=900)
+
+    assert second_grant == 250
+    assert pool.grants["link"] == 900
+    assert pool.is_partial("link") is False
+    assert "link" not in pool.as_dict()["partial_grants"]
+    assert pool.conservation_ok()
+
+
 def test_budget_pool_rejects_bad_usage() -> None:
     pool = BudgetPool()
 
@@ -600,21 +620,47 @@ def test_assemble_packet_marks_degraded_evidence_warning(tmp_path: Path) -> None
 
 
 def test_assemble_packet_marks_budget_partial(tmp_path: Path) -> None:
+    evidence_data = Evidence(
+        collector="compile",
+        level=2,
+        granted_budget=600,
+        data={},
+        contains=set(),
+    ).as_dict()
+    evidence_data["level_preferred"] = 3
+
     packet = assemble_packet(
         scan_data(tmp_path),
         candidates(),
-        Evidence(
-            collector="compile",
-            level=3,
-            granted_budget=2000,
-            data={},
-            contains=set(),
-        ),
+        evidence_data,
         {"verdict": "needs_llm"},
         estimator=TokenEstimator(use_tiktoken=False),
     )
 
     assert "budget_pool_partial" in packet["degraded_reasons"]
+
+
+def test_assemble_packet_does_not_mark_partial_when_level_reaches_preferred(
+    tmp_path: Path,
+) -> None:
+    evidence_data = Evidence(
+        collector="compile",
+        level=3,
+        granted_budget=2000,
+        data={},
+        contains=set(),
+    ).as_dict()
+    evidence_data["level_preferred"] = 3
+
+    packet = assemble_packet(
+        scan_data(tmp_path),
+        candidates(),
+        evidence_data,
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    assert "budget_pool_partial" not in packet["degraded_reasons"]
 
 
 def test_assemble_packet_uses_first_scan_event_without_candidates(tmp_path: Path) -> None:
