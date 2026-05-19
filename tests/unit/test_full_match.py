@@ -208,6 +208,29 @@ def test_full_match_renders_direct_answer_and_packet_dict() -> None:
     assert packet["matched_tier"] == "tier2"
 
 
+def test_full_match_records_near_match_below_tier2_threshold() -> None:
+    result = full_match(
+        {"events": [event()], "commands": [{"id": "C001", "argv_short": "gcc -c foo.c"}]},
+        {"event_id": "E001", "confidence": 0.84},
+        evidence({"primary_error", "source_snippet", "command_summary"}),
+        patterns=[replace(pattern(), confidence=0.87)],
+    )
+
+    assert result.verdict is Verdict.NEEDS_LLM
+    assert result.pattern_id == "compile_undeclared_identifier_tier2"
+    assert result.confidence == 0.84
+    packet = result.as_dict()
+    assert packet["matched_tier"] is None
+    assert packet["matched_patterns"] == [
+        {
+            "pattern_id": "compile_undeclared_identifier_tier2",
+            "confidence": 0.84,
+            "captures": {"identifier": "missing_symbol"},
+            "failure_reason": "confidence_below_tier2_threshold",
+        }
+    ]
+
+
 def test_full_match_keeps_first_needs_llm_match() -> None:
     result = full_match(
         {"events": [event()], "commands": []},

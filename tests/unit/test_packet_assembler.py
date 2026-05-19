@@ -438,6 +438,30 @@ def test_assemble_packet_accepts_scan_rank_evidence_and_legacy_match_dicts(
     assert packet["matched_patterns"] == ["compile_undeclared_identifier_tier2"]
 
 
+def test_assemble_packet_preserves_near_matched_pattern_details(tmp_path: Path) -> None:
+    near_match = {
+        "pattern_id": "linker_undefined_reference_tier2",
+        "confidence": 0.84,
+        "captures": {"symbol": "missing_helper"},
+        "failure_reason": "confidence_below_tier2_threshold",
+    }
+
+    packet = assemble_packet(
+        scan_data(tmp_path),
+        candidates(),
+        compile_evidence().as_dict(),
+        {
+            "verdict": "needs_llm",
+            "matched_patterns": [near_match],
+            "pattern_id": "linker_undefined_reference_tier2",
+        },
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    assert packet["verdict"] == "needs_llm"
+    assert packet["matched_patterns"] == [near_match]
+
+
 def test_assemble_packet_needs_llm_prompt_is_redacted(tmp_path: Path) -> None:
     packet = assemble_packet(
         scan_data(tmp_path),
