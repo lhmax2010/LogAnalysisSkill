@@ -99,15 +99,18 @@ def rank_score(
     ]
     score = sem.base_confidence
 
-    cascade_delta = -(sem.cascade_probability * 0.3)
-    score += cascade_delta
-    reasons.append(
-        {
-            "factor": "cascade_probability",
-            "probability": sem.cascade_probability,
-            "delta": _format_delta(cascade_delta),
-        }
-    )
+    if event.get("kind") == "linker_undef":
+        reasons.append({"factor": "linker_undef_no_cascade_penalty", "delta": "+0.00"})
+    else:
+        cascade_delta = -(sem.cascade_probability * 0.3)
+        score += cascade_delta
+        reasons.append(
+            {
+                "factor": "cascade_probability",
+                "probability": sem.cascade_probability,
+                "delta": _format_delta(cascade_delta),
+            }
+        )
 
     if event.get("command_id"):
         score += 0.05
