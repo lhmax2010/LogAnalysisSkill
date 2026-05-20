@@ -10,6 +10,7 @@ from gbs_workflow.workflow import (
     collect_suggestions,
     main,
     run_workflow,
+    select_analysis_log,
     slugify,
     write_suggestions,
 )
@@ -96,10 +97,16 @@ def test_workflow_success_short_circuits_without_analyzer(tmp_path: Path) -> Non
 
 
 def test_workflow_failure_runs_analyzer_and_writes_depsolve_suggestion(tmp_path: Path) -> None:
+    analyzer_input: list[str] = []
+
+    def analyzer(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        analyzer_input.append(command[command.index("analyze") + 1])
+        return fake_analyzer(depsolve_packet())(command, **kwargs)
+
     result = run_workflow(
         workflow_options(tmp_path),
         build_runner=fake_build(1),
-        subprocess_runner=fake_analyzer(depsolve_packet()),
+        subprocess_runner=analyzer,
         python_executable="/test/python",
     )
 
@@ -115,9 +122,55 @@ def test_workflow_failure_runs_analyzer_and_writes_depsolve_suggestion(tmp_path:
     assert "BuildRequires:  pkgconfig(nonexistent-pkg-xxxyzz)" in patch_files[0].read_text(
         encoding="utf-8"
     )
+    assert analyzer_input == [str(result.compiler_log_path)]
     summary = result.summary_path.read_text(encoding="utf-8")
     assert "depsolve" in summary
     assert "Yes" in summary
+
+
+def test_workflow_prefers_structured_gbs_failure_log(tmp_path: Path) -> None:
+    options = workflow_options(tmp_path)
+    structured_log = tmp_path / "gbs" / "logs" / "fail" / "ffmpeg" / "log.txt"
+    structured_log.parent.mkdir(parents=True)
+    structured_log.write_text("inner rpm log\n", encoding="utf-8")
+    analyzer_input: list[str] = []
+
+    def build_runner(build_options: BuildOptions) -> BuildResult:
+        build_options.output_log.parent.mkdir(parents=True, exist_ok=True)
+        build_options.output_log.write_text(
+            f"warning: build failed, Leaving the logs in {structured_log}\n",
+            encoding="utf-8",
+        )
+        return BuildResult(
+            exit_code=1,
+            log_path=build_options.output_log,
+            command=("gbs", "build"),
+            duration_seconds=0.1,
+        )
+
+    def analyzer(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        analyzer_input.append(command[command.index("analyze") + 1])
+        return fake_analyzer(depsolve_packet())(command, **kwargs)
+
+    result = run_workflow(
+        options,
+        build_runner=build_runner,
+        subprocess_runner=analyzer,
+        python_executable="/test/python",
+    )
+
+    assert result.analysis_log_path == structured_log
+    assert analyzer_input == [str(structured_log)]
+
+
+def test_select_analysis_log_falls_back_when_referenced_log_missing(tmp_path: Path) -> None:
+    compiler_log = tmp_path / "compiler.log"
+    compiler_log.write_text(
+        "warning: build failed, Leaving the logs in /tmp/missing/logs/fail/pkg/log.txt\n",
+        encoding="utf-8",
+    )
+
+    assert select_analysis_log(compiler_log) == compiler_log
 
 
 def test_workflow_returns_error_when_packet_is_missing(tmp_path: Path) -> None:

@@ -20,6 +20,7 @@ DEFAULT_MAX_TOKENS = 1800
 EXIT_WORKFLOW_ERROR = 1
 EXIT_ARGS = 2
 EXIT_PACKET_UNREADABLE = 3
+GBS_FAILURE_LOG_PATTERN = re.compile(r"(?P<path>/\S+/logs/fail/\S+/log\.txt)")
 
 BuildRunner = Callable[[BuildOptions], BuildResult]
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
@@ -48,6 +49,7 @@ class WorkflowResult:
     output_dir: Path
     summary_path: Path
     compiler_log_path: Path
+    analysis_log_path: Path | None = None
     analyzer_output_dir: Path | None = None
     evidence_packet_path: Path | None = None
     evidence_markdown_path: Path | None = None
@@ -101,6 +103,7 @@ def run_workflow(
             compiler_log_path=compiler_log,
         )
 
+    analysis_log = select_analysis_log(compiler_log)
     analyzer_dir = options.output_dir / "analyzer_output"
     analyzer_dir.mkdir(parents=True, exist_ok=True)
     analyzer_command = [
@@ -108,7 +111,7 @@ def run_workflow(
         "-m",
         "gbs_analyzer",
         "analyze",
-        str(compiler_log),
+        str(analysis_log),
         "--src-root",
         str(options.src_root),
         "--max-tokens",
@@ -137,6 +140,7 @@ def run_workflow(
             output_dir=options.output_dir,
             summary_path=summary_path,
             compiler_log_path=compiler_log,
+            analysis_log_path=analysis_log,
             analyzer_output_dir=analyzer_dir,
             error=f"gbs_analyzer exited with {exc.returncode}",
         )
@@ -164,6 +168,7 @@ def run_workflow(
             output_dir=options.output_dir,
             summary_path=summary_path,
             compiler_log_path=compiler_log,
+            analysis_log_path=analysis_log,
             analyzer_output_dir=analyzer_dir,
             evidence_packet_path=packet_path,
             evidence_markdown_path=markdown_path,
@@ -189,6 +194,7 @@ def run_workflow(
         output_dir=options.output_dir,
         summary_path=summary_path,
         compiler_log_path=compiler_log,
+        analysis_log_path=analysis_log,
         analyzer_output_dir=analyzer_dir,
         evidence_packet_path=packet_path,
         evidence_markdown_path=markdown_path,
@@ -208,6 +214,20 @@ def collect_suggestions(
         if suggester.matches(packet):
             suggestions.extend(suggester.generate(packet, src_root))
     return suggestions
+
+
+def select_analysis_log(compiler_log: Path) -> Path:
+    """Prefer GBS's structured failure log when the wrapper output points to it."""
+
+    try:
+        text = compiler_log.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return compiler_log
+    for match in GBS_FAILURE_LOG_PATTERN.finditer(text):
+        candidate = Path(match.group("path"))
+        if candidate.is_file():
+            return candidate
+    return compiler_log
 
 
 def write_suggestions(suggestions: Sequence[Suggestion], suggestions_dir: Path) -> list[Path]:
