@@ -35,8 +35,16 @@ def test_suggester_base_contract_cannot_be_instantiated() -> None:
         SuggesterBase()  # type: ignore[abstract]
 
 
-def test_registry_only_registers_depsolve_in_bw_m2() -> None:
-    assert [item.__class__.__name__ for item in DEFAULT_SUGGESTERS] == ["DepsolveSuggester"]
+def test_registry_registers_all_bw_m3_suggesters() -> None:
+    assert [item.__class__.__name__ for item in DEFAULT_SUGGESTERS] == [
+        "DepsolveSuggester",
+        "LinkerMissingSuggester",
+        "LinkerUndefSuggester",
+        "PatchFailedSuggester",
+        "SpecScriptSuggester",
+        "CompileErrorSuggester",
+        "FallbackSuggester",
+    ]
 
 
 @pytest.mark.parametrize(

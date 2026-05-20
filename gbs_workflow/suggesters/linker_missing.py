@@ -71,7 +71,7 @@ def parse_missing_library(packet: dict[str, Any]) -> str | None:
     return first_regex_group(
         [
             r"cannot find\s+-l([A-Za-z0-9_+.-]+)",
-            r"cannot find\s+(lib[A-Za-z0-9_+.-]+)(?:\.so)?",
+            r"cannot find\s+(lib[A-Za-z0-9_+-]+)(?:\.so)?",
             r"library not found for\s+-l([A-Za-z0-9_+.-]+)",
         ],
         primary_message(packet),
