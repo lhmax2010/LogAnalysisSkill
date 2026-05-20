@@ -18,7 +18,7 @@ Pattern authoring follows `docs/DESIGN.md` v0.5, especially §3.2, §3.5, and §
 ## Lifecycle
 
 1. Add a fixture that demonstrates the pattern.
-2. Add the pattern to `patterns/gbs_errors.yaml`.
+2. Add the pattern to `gbs_analyzer/patterns/gbs_errors.yaml`.
 3. Add or update pattern-library tests.
 4. Record the decision in the active milestone dev_memory.
 
