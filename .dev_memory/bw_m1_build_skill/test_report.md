@@ -13,8 +13,8 @@ Completed.
 | --- | --- | --- |
 | `.venv/bin/ruff check .` | pass | All checks passed. |
 | `.venv/bin/mypy gbs_analyzer gbs_build_skill` | pass | 29 source files checked. |
-| `.venv/bin/pytest tests/unit/test_build_runner.py --cov=gbs_build_skill --cov-report=term-missing -q` | pass | 6 passed; `gbs_build_skill` coverage 90%. |
-| `.venv/bin/pytest tests/ -q --cov=gbs_analyzer --cov-fail-under=96` | pass | 352 passed; existing analyzer coverage 96.01%. |
+| `.venv/bin/pytest tests/unit/test_build_runner.py --cov=gbs_build_skill --cov-report=term-missing -q` | pass | 7 passed; `gbs_build_skill` coverage 90%. |
+| `.venv/bin/pytest tests/ -q --cov=gbs_analyzer --cov-fail-under=96` | pass | 353 passed; existing analyzer coverage 96.01%. |
 
 ## Real gbs Validation
 

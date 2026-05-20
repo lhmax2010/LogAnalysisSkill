@@ -25,7 +25,7 @@ stdout/stderr into one buildlog, and returns the original gbs exit code.
 
 - [x] Implement `gbs_build_skill.runner` with streamed log writing and timeout handling.
 - [x] Implement `python -m gbs_build_skill` CLI.
-- [x] Add unit tests for command construction, log streaming, timeout handling, and exit passthrough.
+- [x] Add unit tests for command construction, log streaming, timeout handling, exit passthrough, and module invocation.
 - [x] Include `gbs_build_skill*` in package discovery so console-script pytest can import it after editable install.
 - [x] Run existing analyzer regression tests to prove zero regression.
 - [x] Run real ffmpeg gbs validation for one successful build and one depsolve failure.
@@ -67,8 +67,8 @@ Validation logs were written locally under `/tmp/loganalysis_bw_m1/` and are not
 
 | Test type | Passed | Failed | Skipped |
 | --- | ---: | ---: | ---: |
-| Unit | 6 | 0 | 0 |
-| Regression | 352 | 0 | 0 |
+| Unit | 7 | 0 | 0 |
+| Regression | 353 | 0 | 0 |
 | Real gbs validation | 2 | 0 | 0 |
 
 Coverage:
