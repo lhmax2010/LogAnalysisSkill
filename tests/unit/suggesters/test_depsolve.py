@@ -7,6 +7,7 @@ from gbs_workflow.suggesters.base import SuggesterBase
 from gbs_workflow.suggesters.depsolve import (
     DepsolveSuggester,
     add_buildrequires_line,
+    has_buildrequires_dependency,
     parse_missing_dependency,
 )
 from gbs_workflow.suggesters.registry import DEFAULT_SUGGESTERS
@@ -34,8 +35,16 @@ def test_suggester_base_contract_cannot_be_instantiated() -> None:
         SuggesterBase()  # type: ignore[abstract]
 
 
-def test_registry_only_registers_depsolve_in_bw_m2() -> None:
-    assert [item.__class__.__name__ for item in DEFAULT_SUGGESTERS] == ["DepsolveSuggester"]
+def test_registry_registers_all_bw_m3_suggesters() -> None:
+    assert [item.__class__.__name__ for item in DEFAULT_SUGGESTERS] == [
+        "DepsolveSuggester",
+        "LinkerMissingSuggester",
+        "LinkerUndefSuggester",
+        "PatchFailedSuggester",
+        "SpecScriptSuggester",
+        "CompileErrorSuggester",
+        "FallbackSuggester",
+    ]
 
 
 @pytest.mark.parametrize(
@@ -106,3 +115,30 @@ def test_depsolve_generate_writes_git_apply_compatible_patch(tmp_path: Path) -> 
     patch_path = tmp_path / "suggestion.patch"
     patch_path.write_text(suggestion.patch_content, encoding="utf-8")
     subprocess.run(["git", "apply", "--check", patch_path], cwd=tmp_path, check=True)
+
+
+def test_has_buildrequires_dependency_matches_spacing_and_case() -> None:
+    spec_text = "Name: ffmpeg\nBuildRequires:\tPkgConfig(LIBSSL)\n%prep\n"
+
+    assert has_buildrequires_dependency(spec_text, "pkgconfig(libssl)") is True
+    assert has_buildrequires_dependency(spec_text, "pkgconfig(zlib)") is False
+
+
+def test_depsolve_generate_returns_advisory_when_buildrequires_exists(tmp_path: Path) -> None:
+    write_spec(
+        tmp_path,
+        "Name: ffmpeg\nBuildRequires:\tpkgconfig(nonexistent-pkg-xxxyzz)\n%prep\n",
+    )
+
+    suggestions = DepsolveSuggester().generate(
+        packet("nothing provides pkgconfig(nonexistent-pkg-xxxyzz)"),
+        tmp_path,
+    )
+
+    assert len(suggestions) == 1
+    suggestion = suggestions[0]
+    assert suggestion.patch_content is None
+    assert suggestion.confidence == "advisory"
+    assert suggestion.target_files == ["packaging/ffmpeg.spec"]
+    assert "already declares" in suggestion.description
+    assert "repository/profile" in suggestion.manual_steps[1]
