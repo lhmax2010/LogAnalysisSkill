@@ -1,0 +1,25 @@
+{
+  "name": "gbs_build_with_analysis",
+  "description": "Run gbs build, analyze failures, and write workflow suggestions.",
+  "command": "python",
+  "args": [
+    "-m",
+    "gbs_workflow",
+    "--conf",
+    "gbs.conf",
+    "--arch",
+    "armv7l",
+    "--include-all",
+    "--src-root",
+    "${workspaceFolder}",
+    "--output-dir",
+    "${workspaceFolder}/.gbs_workflow",
+    "--timeout",
+    "1800"
+  ],
+  "post_process": {
+    "read_file": ".gbs_workflow/workflow_summary.md",
+    "feed_to_llm": true,
+    "system_prompt": "You are a Tizen build expert. The workflow has run gbs, analyzed any failure, and generated suggestions. Help the user decide which suggestion to review or apply manually. Do not auto-apply patches."
+  }
+}

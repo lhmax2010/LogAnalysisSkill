@@ -1,13 +1,13 @@
-current_milestone: bw_m3_suggesters
+current_milestone: bw_m4_e2e
 current_status: completed
-last_completed: bw_m2_workflow
-last_completed_commit: "461850e"
-session_count: 15
+last_completed: bw_m3_suggesters
+last_completed_commit: "1740233"
+session_count: 16
 next_steps:
-  - "Open BW-M3 PR and wait for review."
-  - "Do not start BW-M4 until review approval."
-blocked_on: "waiting_for_bw_m3_review"
+  - "Open BW-M4 PR and wait for review."
+  - "Do not start v0.2 or post-MVP workflow work until review approval."
+blocked_on: "waiting_for_bw_m4_review"
 notes: |
-  BW-M3 implementation completed on feature/bw-m3-suggesters. Scope stayed limited to Suggesters:
-  Depsolve duplicate guard plus LinkerMissing, LinkerUndef, PatchFailed, SpecScript, CompileError,
-  and Fallback. No analyzer/build-skill/design-baseline changes.
+  BW-M4 implementation completed on feature/bw-m4-e2e. Scope covered workflow E2E,
+  real A/B/C/D validation, unknown fallback validation, Cline build workflow example,
+  and structured GBS failure log selection. No analyzer/build-skill behavior changes.
