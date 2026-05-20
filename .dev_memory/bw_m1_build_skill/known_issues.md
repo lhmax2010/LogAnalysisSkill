@@ -2,12 +2,11 @@
 
 ## Watch Points
 
-- `pyproject.toml` currently discovers only `gbs_analyzer*`. BW-M1 will not change root packaging
-  unless explicitly authorized; `python -m gbs_build_skill` works from the repository root during
-  this milestone.
-- Real gbs validation may be environment-dependent. If `gbs` behaves differently than expected
-  regarding exit codes, output encoding, or timeout behavior, stop and ask before designing a
-  compatibility layer.
+- Real gbs validation is environment-dependent. BW-M1 verified the local ffmpeg success and B
+  depsolve failure paths with `gbs 2.0.6` and `/home/linhao/Toolchain/gbs.conf`.
+- Running `python3 -m gbs_build_skill` from outside the repository with the system Python fails unless
+  the package is installed into that interpreter. The validated command uses the repository `.venv`
+  Python. Fresh CI installs via `pip install -e .`, so this is expected.
 
 ## Out of Scope
 
