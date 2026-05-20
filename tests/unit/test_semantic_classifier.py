@@ -2,7 +2,11 @@ from pathlib import Path
 
 import pytest
 
-from gbs_analyzer._utils.semantic_classifier import SemanticClassifier, classify_event
+from gbs_analyzer._utils.semantic_classifier import (
+    DEFAULT_SEMANTICS_PATH,
+    SemanticClassifier,
+    classify_event,
+)
 
 
 def scan_context(failed_phase: str | None = "%build") -> dict[str, object]:
@@ -34,6 +38,23 @@ def test_load_semantic_classifier() -> None:
         "missing_lib",
         "generic_error",
     }
+    assert DEFAULT_SEMANTICS_PATH.is_absolute()
+    assert DEFAULT_SEMANTICS_PATH.parts[-3:] == (
+        "gbs_analyzer",
+        "patterns",
+        "error_semantics.yaml",
+    )
+
+
+def test_load_semantic_classifier_from_non_repo_cwd(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    SemanticClassifier.from_file.cache_clear()
+
+    classifier = SemanticClassifier.from_file()
+
+    assert "generic_error" in classifier.by_name
 
 
 @pytest.mark.parametrize(
