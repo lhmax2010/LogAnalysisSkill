@@ -1,13 +1,13 @@
 current_milestone: hotfix_real_smoke_003
-current_status: in_progress
+current_status: completed
 last_completed: bw_m4_e2e
 last_completed_commit: "5baa07f"
 session_count: 17
 next_steps:
-  - "Move pattern data into gbs_analyzer package."
-  - "Anchor runtime pattern paths with Path(__file__)."
-  - "Validate arbitrary-cwd and pip-installed analyzer execution."
-blocked_on: null
+  - "Open hotfix_003 PR and wait for review."
+  - "Do not start v0.2 or unrelated cleanup."
+blocked_on: "waiting_for_hotfix_003_review"
 notes: |
-  Hotfix 003 fixes analyzer runtime data loading when invoked outside the repo root.
-  Scope is package-data/path handling only. Do not change pattern contents, analyzer logic, or templates.
+  Hotfix 003 completed on hotfix/real-smoke-003-package-data. Pattern data moved into
+  gbs_analyzer/patterns, runtime defaults are __file__-anchored, and package-data validation
+  passed from /tmp after pip-style install. Pattern contents, analyzer logic, and templates unchanged.
