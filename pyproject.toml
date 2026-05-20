@@ -18,6 +18,9 @@ dependencies = [
 where = ["."]
 include = ["gbs_analyzer*", "gbs_build_skill*", "gbs_workflow*"]
 
+[tool.setuptools.package-data]
+gbs_analyzer = ["patterns/*.yaml", "patterns/*.json", "patterns/*.md"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
