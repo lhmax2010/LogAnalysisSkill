@@ -1,12 +1,14 @@
-current_milestone: bw_m2_workflow
-current_status: completed
-last_completed: bw_m1_build_skill
-last_completed_commit: "42cee36"
-session_count: 14
+current_milestone: bw_m3_suggesters
+current_status: in_progress
+last_completed: bw_m2_workflow
+last_completed_commit: "461850e"
+session_count: 15
 next_steps:
-  - "Open BW-M2 PR and wait for review."
-  - "Do not start BW-M3 until review approval."
-blocked_on: "waiting_for_bw_m2_review"
+  - "Add DepsolveSuggester existing BuildRequires guard."
+  - "Implement BW-M3 advisory Suggesters and FallbackSuggester."
+  - "Validate workflow suggestion routing without analyzer/build-skill changes."
+blocked_on: null
 notes: |
-  BW-M2 implementation completed on feature/bw-m2-workflow. Scope stayed limited to workflow
-  orchestration, Suggester ABC/registry, and DepsolveSuggester. No analyzer/build-skill changes.
+  BW-M3 starts after PR #17 merge. Scope is Suggesters only: improve Depsolve guard and add
+  LinkerMissing, LinkerUndef, PatchFailed, SpecScript, CompileError, and Fallback Suggesters.
+  Do not implement BW-M4 E2E/Cline integration, auto-apply, auto-retry, or analyzer/build-skill changes.
