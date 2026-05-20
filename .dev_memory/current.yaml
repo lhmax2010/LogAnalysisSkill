@@ -1,13 +1,12 @@
 current_milestone: bw_m2_workflow
-current_status: in_progress
+current_status: completed
 last_completed: bw_m1_build_skill
 last_completed_commit: "42cee36"
 session_count: 14
 next_steps:
-  - "Implement gbs_workflow main flow and CLI."
-  - "Implement Suggester ABC, registry, and DepsolveSuggester."
-  - "Validate real ffmpeg B depsolve workflow and generated patch."
-blocked_on: null
+  - "Open BW-M2 PR and wait for review."
+  - "Do not start BW-M3 until review approval."
+blocked_on: "waiting_for_bw_m2_review"
 notes: |
-  BW-M2 starts after BW-M1 merge. Scope is workflow orchestration plus only DepsolveSuggester.
-  Do not implement the other six Suggesters, E2E, Cline integration, or modify analyzer/build_skill.
+  BW-M2 implementation completed on feature/bw-m2-workflow. Scope stayed limited to workflow
+  orchestration, Suggester ABC/registry, and DepsolveSuggester. No analyzer/build-skill changes.
