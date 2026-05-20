@@ -1,13 +1,13 @@
-current_milestone: m8_wrapper_and_e2e
-current_status: completed
-last_completed: m7_packet_assembler
-last_completed_commit: "18e4d33"
-session_count: 12
+current_milestone: bw_m1_build_skill
+current_status: in_progress
+last_completed: hotfix_real_smoke_002
+last_completed_commit: "1b1e64d"
+session_count: 13
 next_steps:
-  - "Open M8 PR for MVP review."
-  - "After M8 is reviewed and merged, stop for user direction before post-MVP work."
-blocked_on: "waiting_for_m8_review"
+  - "Implement gbs_build_skill runner and CLI."
+  - "Add unit tests for streaming log writes, timeout handling, and exit passthrough."
+  - "Run real ffmpeg gbs success/failure validation."
+blocked_on: null
 notes: |
-  M7 PR #9 was reviewed and merged at 18e4d33.
-  M8 is complete on feature/m8-wrapper-e2e and must stop at PR review.
-  Do not start post-MVP/full milestones until M8 is reviewed and merged.
+  GbsBuildWorkflow v0.1 has started. BW-M1 is limited to gbs_build_skill plus tests/dev_memory.
+  Do not modify gbs_analyzer, patterns, templates, docs/DESIGN.md, or docs/CODEX_PROMPT.md.
