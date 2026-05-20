@@ -1,12 +1,12 @@
-current_milestone: bw_m1_build_skill
+current_milestone: bw_m2_workflow
 current_status: completed
-last_completed: hotfix_real_smoke_002
-last_completed_commit: "1b1e64d"
-session_count: 13
+last_completed: bw_m1_build_skill
+last_completed_commit: "42cee36"
+session_count: 14
 next_steps:
-  - "Open BW-M1 PR for review."
-  - "After BW-M1 is reviewed and merged, start BW-M2 gbs_workflow + DepsolveSuggester."
-blocked_on: "waiting_for_bw_m1_review"
+  - "Open BW-M2 PR and wait for review."
+  - "Do not start BW-M3 until review approval."
+blocked_on: "waiting_for_bw_m2_review"
 notes: |
-  BW-M1 implemented gbs_build_skill runner + CLI and passed unit/regression/real gbs validation.
-  Do not start BW-M2 until the BW-M1 PR is reviewed and merged.
+  BW-M2 implementation completed on feature/bw-m2-workflow. Scope stayed limited to workflow
+  orchestration, Suggester ABC/registry, and DepsolveSuggester. No analyzer/build-skill changes.
