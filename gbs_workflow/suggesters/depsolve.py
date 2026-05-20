@@ -38,6 +38,38 @@ class DepsolveSuggester(SuggesterBase):
         spec_path = SpecMinimalParser.find_spec_file(package, src_root)
         relative_spec = spec_path.relative_to(src_root)
         original_text = spec_path.read_text(encoding="utf-8")
+        if has_buildrequires_dependency(original_text, dependency):
+            return [
+                Suggestion(
+                    suggester=self.name,
+                    title=f"Verify repository provider for {dependency}",
+                    description=(
+                        f"The spec already declares `BuildRequires: {dependency}`, but the "
+                        "depsolver still reports that nothing provides it. This usually means "
+                        "the dependency name is wrong for the enabled repositories, or the "
+                        "repository/profile that provides it is not enabled."
+                    ),
+                    patch_content=None,
+                    target_files=[str(relative_spec)],
+                    confidence="advisory",
+                    risks=[
+                        "Adding another identical BuildRequires line will not fix this failure.",
+                        (
+                            "The correct provider may use a different package name in this "
+                            "Tizen profile."
+                        ),
+                    ],
+                    manual_steps=[
+                        "Check whether the package exists in the enabled Tizen repositories.",
+                        "Verify the repository/profile configuration used by gbs.",
+                        (
+                            "If the provider name differs, replace the existing BuildRequires "
+                            "entry manually."
+                        ),
+                    ],
+                )
+            ]
+
         updated_text = add_buildrequires_line(original_text, dependency)
         patch = make_git_diff(relative_spec, original_text, updated_text)
 
@@ -107,6 +139,17 @@ def add_buildrequires_line(spec_text: str, dependency: str) -> str:
     return "".join(updated)
 
 
+def has_buildrequires_dependency(spec_text: str, dependency: str) -> bool:
+    """Return true when the spec already declares the dependency."""
+
+    normalized_dependency = _normalize_dependency(dependency)
+    for line in _buildrequires_lines(spec_text):
+        value = line.split(":", 1)[1] if ":" in line else line
+        if _normalize_dependency(value) == normalized_dependency:
+            return True
+    return False
+
+
 def make_git_diff(relative_path: Path, original_text: str, updated_text: str) -> str:
     """Return a git-apply compatible unified diff for a spec change."""
 
@@ -131,3 +174,15 @@ def _first_section_index(lines: list[str]) -> int:
         if re.match(r"^\s*%[A-Za-z]", line):
             return index
     return len(lines)
+
+
+def _buildrequires_lines(spec_text: str) -> list[str]:
+    return [
+        line
+        for line in spec_text.splitlines()
+        if re.match(r"^\s*BuildRequires\s*:", line, re.IGNORECASE)
+    ]
+
+
+def _normalize_dependency(value: str) -> str:
+    return re.sub(r"\s+", "", value.strip()).lower()
