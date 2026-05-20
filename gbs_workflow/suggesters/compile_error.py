@@ -20,9 +20,8 @@ class CompileErrorSuggester(SuggesterBase):
 
     def generate(self, packet: dict[str, Any], src_root: Path) -> list[Suggestion]:
         del src_root
-        error = primary_error(packet)
         location = primary_file_line(packet)
-        semantic_class = error.get("semantic_class") or error.get("category") or "unknown"
+        semantic_class = compile_semantic_class(packet)
         message = primary_message(packet) or "compiler diagnostic"
         return [
             Suggestion(
@@ -49,3 +48,18 @@ class CompileErrorSuggester(SuggesterBase):
                 ],
             )
         ]
+
+
+def compile_semantic_class(packet: dict[str, Any]) -> str:
+    """Return the analyzer semantic class for a compiler packet."""
+
+    error = primary_error(packet)
+    direct = error.get("semantic_class") or error.get("category")
+    if direct:
+        return str(direct)
+    candidates = packet.get("root_cause_candidates")
+    if isinstance(candidates, list) and candidates:
+        first = candidates[0]
+        if isinstance(first, dict) and first.get("semantic_class"):
+            return str(first["semantic_class"])
+    return "unknown"
