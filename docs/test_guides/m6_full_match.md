@@ -56,7 +56,7 @@ PY
 ## Expected M6 Signals
 
 - `quick_filter` still loads only the 7 tier1 fast-path patterns.
-- `full_match` loads all 12 patterns from `patterns/gbs_errors.yaml`.
+- `full_match` loads all 12 patterns from `gbs_analyzer/patterns/gbs_errors.yaml`.
 - Flat `tier: tier1` + `fix_template` remains valid shorthand for `direct_answer_tier1`.
 - Tier2 direct answers require `Evidence.contains_all(evidence_required)`.
 - Degraded evidence always returns `NEEDS_LLM`.

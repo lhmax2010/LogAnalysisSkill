@@ -1,6 +1,7 @@
 # Tizen gbs 编译日志分析 Skill 设计文档 v0.5
 
 **版本**：v0.5（实施冻结版，整合 v0.1~v0.4.1 全部 review 意见 + 工程化要求）
+**Hotfix 003（2026-05-20）**：运行时 pattern 数据移入 `gbs_analyzer/patterns/`，通过 package data 分发；pattern schema 和内容不变。
 **目标读者**：实施者（Codex）、Review 协作 AI（ChatGPT / Kimi / Claude）、最终用户
 **仓库**：https://github.com/lhmax2010/LogAnalysisSkill
 
@@ -289,7 +290,7 @@ def is_in_warning_block(event, all_events):
 
 ### §3.3 Layer 2：根因排序（rank_causes.py）
 
-**8 类语义置信度**（`patterns/error_semantics.yaml`）：
+**8 类语义置信度**（`gbs_analyzer/patterns/error_semantics.yaml`）：
 
 | semantic_class | base_confidence | cascade_probability | 默认申请 Level |
 |---------------|-----------------|--------------------|----------------|
@@ -451,7 +452,7 @@ def determine_verdict(matched_rule, event, evidence):
     return Verdict.NEEDS_LLM
 ```
 
-**Pattern Schema 完整版**：见 `patterns/schema.json`。
+**Pattern Schema 完整版**：见 `gbs_analyzer/patterns/schema.json`。
 
 ---
 
@@ -484,7 +485,7 @@ class MinimalRedactor:
 
 ## §4 Pattern 库与 Fast-Path
 
-详细 schema 见 `patterns/schema.json`。Pattern 编写指南见 `docs/pattern_authoring.md`。
+详细 schema 见 `gbs_analyzer/patterns/schema.json`。Pattern 编写指南见 `docs/pattern_authoring.md`。
 
 **MVP 必含 pattern 数量**：≥ 15 条（覆盖 4 类 tier1 + 5 类 tier2 + 至少 6 个变体）。
 
@@ -718,7 +719,7 @@ last_completed_commit: xyz789abc
 session_count: 3
 next_steps:
   - "实现 quick_filter.py 主流程"
-  - "加载 patterns/gbs_errors.yaml"
+  - "加载 gbs_analyzer/patterns/gbs_errors.yaml"
   - "实现 tier1 白名单校验"
 blocked_on: null
 notes: |
@@ -1259,11 +1260,11 @@ LogAnalysisSkill/                              # GitHub repo root
 │       ├── source_to_object.py
 │       ├── semantic_classifier.py
 │       └── privacy.py                          # 双层脱敏（§3.6）
-├── patterns/
-│   ├── gbs_errors.yaml                         # 主库
-│   ├── error_semantics.yaml                    # 8 类语义
-│   ├── _pending.yaml                           # LLM 候选
-│   └── schema.json                             # JSON Schema 校验
+│   └── patterns/                               # runtime package data
+│       ├── gbs_errors.yaml                     # 主库
+│       ├── error_semantics.yaml                # 8 类语义
+│       ├── README.md
+│       └── schema.json                         # JSON Schema 校验
 ├── templates/
 │   ├── evidence_packet.md.j2
 │   └── llm_prompt.md.j2

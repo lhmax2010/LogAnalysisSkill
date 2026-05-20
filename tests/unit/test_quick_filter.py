@@ -4,6 +4,7 @@ import pytest
 import yaml
 
 from gbs_analyzer.quick_filter import (
+    DEFAULT_PATTERN_PATH,
     PatternValidationError,
     QuickFilter,
     QuickPattern,
@@ -86,6 +87,19 @@ def context_pattern(context: dict[str, object]) -> QuickPattern:
 
 def test_load_default_pattern_library() -> None:
     library = load_pattern_library()
+    assert library["schema_version"] == 2
+    assert len(library["patterns"]) == 7
+    assert DEFAULT_PATTERN_PATH.is_absolute()
+    assert DEFAULT_PATTERN_PATH.parts[-3:] == ("gbs_analyzer", "patterns", "gbs_errors.yaml")
+
+
+def test_load_default_pattern_library_from_non_repo_cwd(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    library = load_pattern_library()
+
     assert library["schema_version"] == 2
     assert len(library["patterns"]) == 7
 

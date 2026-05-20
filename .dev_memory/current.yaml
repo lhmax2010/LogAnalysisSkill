@@ -1,13 +1,13 @@
-current_milestone: bw_m4_e2e
+current_milestone: hotfix_real_smoke_003
 current_status: completed
-last_completed: bw_m3_suggesters
-last_completed_commit: "1740233"
-session_count: 16
+last_completed: bw_m4_e2e
+last_completed_commit: "5baa07f"
+session_count: 17
 next_steps:
-  - "Open BW-M4 PR and wait for review."
-  - "Do not start v0.2 or post-MVP workflow work until review approval."
-blocked_on: "waiting_for_bw_m4_review"
+  - "Open hotfix_003 PR and wait for review."
+  - "Do not start v0.2 or unrelated cleanup."
+blocked_on: "waiting_for_hotfix_003_review"
 notes: |
-  BW-M4 implementation completed on feature/bw-m4-e2e. Scope covered workflow E2E,
-  real A/B/C/D validation, unknown fallback validation, Cline build workflow example,
-  and structured GBS failure log selection. No analyzer/build-skill behavior changes.
+  Hotfix 003 completed on hotfix/real-smoke-003-package-data. Pattern data moved into
+  gbs_analyzer/patterns, runtime defaults are __file__-anchored, and package-data validation
+  passed from /tmp after pip-style install. Pattern contents, analyzer logic, and templates unchanged.

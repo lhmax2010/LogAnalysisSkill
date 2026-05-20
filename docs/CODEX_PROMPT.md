@@ -236,10 +236,10 @@ LogAnalysisSkill/
 │   └── archive/                   # 放历史设计文档
 ├── gbs_analyzer/
 │   ├── __init__.py                # __version__ = "0.5.0-dev"
+│   ├── patterns/                  # runtime package data
+│   │   └── README.md              # 占位
 │   └── tracing/                   # M1 才写实际代码，但目录先建好
 │       └── __init__.py
-├── patterns/
-│   └── README.md                  # 占位
 ├── templates/
 │   └── README.md                  # 占位
 ├── tests/
