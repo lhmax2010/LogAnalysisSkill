@@ -1,13 +1,13 @@
-current_milestone: hotfix_real_smoke_003
-current_status: completed
-last_completed: bw_m4_e2e
-last_completed_commit: "5baa07f"
-session_count: 17
+current_milestone: standby
+current_status: standby
+last_completed: hotfix_real_smoke_003
+last_completed_commit: "0ca954c"
+session_count: 18
 next_steps:
-  - "Open hotfix_003 PR and wait for review."
-  - "Do not start v0.2 or unrelated cleanup."
-blocked_on: "waiting_for_hotfix_003_review"
+  - "Stand by for real workflow usage feedback."
+  - "Do not start v0.2, new hotfixes, or unrelated cleanup without user direction."
+blocked_on: null
 notes: |
-  Hotfix 003 completed on hotfix/real-smoke-003-package-data. Pattern data moved into
-  gbs_analyzer/patterns, runtime defaults are __file__-anchored, and package-data validation
-  passed from /tmp after pip-style install. Pattern contents, analyzer logic, and templates unchanged.
+  Hotfix 003 merged via PR #20. Pattern data moved into gbs_analyzer/patterns, runtime
+  defaults are __file__-anchored, and package-data validation passed from /tmp after
+  pip-style install. Pattern contents, analyzer logic, and templates unchanged.

@@ -7,9 +7,10 @@
 - The system `python3 -m venv` command is unavailable on this machine because
   `python3.12-venv` / `ensurepip` is missing. Clean install validation used
   `uv venv` plus `uv pip install --python ...` instead.
-- PR #19 is still open and not merged into `main`; this hotfix branch was created
-  from current `main`, so full regression is 389 tests after adding two hotfix tests,
-  not the 397-test BW-M4 branch count.
+- `.dev_memory/current.yaml` is a single shared status file, so parallel feature
+  and hotfix branches inevitably conflict when both update milestone state. This
+  was resolved manually during the PR #20 rebase onto BW-M4. Consider per-milestone
+  status files in v0.6 workflow improvements if this pattern continues.
 
 ## Out of Scope
 
