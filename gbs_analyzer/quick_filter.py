@@ -13,7 +13,7 @@ import yaml
 
 from gbs_analyzer.scan_and_extract import ScanResult
 
-DEFAULT_PATTERN_PATH = Path("patterns/gbs_errors.yaml")
+DEFAULT_PATTERN_PATH = Path(__file__).resolve().parent / "patterns" / "gbs_errors.yaml"
 UNCERTAIN_WORDS = ("可能", "通常", "建议", "检查", "may", "usually", "check")
 
 

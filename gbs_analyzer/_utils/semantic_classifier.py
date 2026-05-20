@@ -10,7 +10,9 @@ from typing import Any
 
 import yaml
 
-DEFAULT_SEMANTICS_PATH = Path("patterns/error_semantics.yaml")
+DEFAULT_SEMANTICS_PATH = (
+    Path(__file__).resolve().parent.parent / "patterns" / "error_semantics.yaml"
+)
 
 
 @dataclass(frozen=True)
