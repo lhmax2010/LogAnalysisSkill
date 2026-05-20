@@ -173,6 +173,12 @@ def test_select_analysis_log_falls_back_when_referenced_log_missing(tmp_path: Pa
     assert select_analysis_log(compiler_log) == compiler_log
 
 
+def test_select_analysis_log_falls_back_when_wrapper_log_missing(tmp_path: Path) -> None:
+    missing_log = tmp_path / "missing.log"
+
+    assert select_analysis_log(missing_log) == missing_log
+
+
 def test_workflow_returns_error_when_packet_is_missing(tmp_path: Path) -> None:
     def analyzer_without_packet(
         command: list[str], **kwargs: object

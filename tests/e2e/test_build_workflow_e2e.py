@@ -157,3 +157,18 @@ def test_compile_error_suggester_reads_candidate_semantic_class(tmp_path: Path) 
     md_file = next((result.output_dir / "suggestions").glob("*.md"))
     assert "compile_error" in md_file.name
     assert "undeclared_identifier" in md_file.read_text(encoding="utf-8")
+
+
+def test_compile_error_suggester_falls_back_to_unknown_semantic_class(tmp_path: Path) -> None:
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build,
+        subprocess_runner=fake_analyzer(
+            packet("compiler", "error: syntax problem", file="libavcodec/foo.c", line=9)
+        ),
+        python_executable="/test/python",
+    )
+
+    md_file = next((result.output_dir / "suggestions").glob("*.md"))
+    assert "compile_error" in md_file.name
+    assert "Analyzer semantic class: `unknown`" in md_file.read_text(encoding="utf-8")
