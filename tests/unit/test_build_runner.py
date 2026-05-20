@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -154,3 +155,39 @@ sys.exit(3)
 
     assert exit_code == 3
     assert output_log.read_text(encoding="utf-8") == "cli output\n"
+
+
+def test_python_module_invocation_runs_fake_gbs(tmp_path: Path) -> None:
+    write_executable(
+        tmp_path / "gbs",
+        """
+print("module invocation output")
+""",
+    )
+    output_log = tmp_path / "module.log"
+    env = os.environ.copy()
+    env["PATH"] = f"{tmp_path}:{env.get('PATH', '')}"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "gbs_build_skill",
+            "--conf",
+            str(tmp_path / "gbs.conf"),
+            "--arch",
+            "armv7l",
+            "--output-log",
+            str(output_log),
+        ],
+        capture_output=True,
+        cwd=tmp_path,
+        env=env,
+        text=True,
+        timeout=10,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "log written to" in result.stderr
+    assert output_log.read_text(encoding="utf-8") == "module invocation output\n"
