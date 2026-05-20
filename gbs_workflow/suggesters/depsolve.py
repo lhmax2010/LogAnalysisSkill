@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from gbs_analyzer.tizen.spec_minimal import SpecMinimalParser
-from gbs_workflow.suggesters.base import Suggestion, SuggesterBase
+from gbs_workflow.suggesters.base import SuggesterBase, Suggestion
 
 MISSING_DEP_RE = re.compile(
     r"\bnothing provides\s+(?P<dependency>.+?)(?:\s+needed by\b|$)",
@@ -55,7 +55,10 @@ class DepsolveSuggester(SuggesterBase):
                 confidence="medium",
                 risks=[
                     "The dependency name may differ in the enabled Tizen repositories.",
-                    "Adding the BuildRequires is reversible, but the package may still be unavailable.",
+                    (
+                        "Adding the BuildRequires is reversible, but the package may still "
+                        "be unavailable."
+                    ),
                 ],
                 manual_steps=[
                     "Review the generated patch.",

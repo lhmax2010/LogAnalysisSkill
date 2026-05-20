@@ -16,7 +16,7 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["gbs_analyzer*", "gbs_build_skill*"]
+include = ["gbs_analyzer*", "gbs_build_skill*", "gbs_workflow*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -39,4 +39,4 @@ select = ["B", "E", "F", "I", "UP"]
 [tool.mypy]
 python_version = "3.10"
 strict = true
-packages = ["gbs_analyzer"]
+packages = ["gbs_analyzer", "gbs_build_skill", "gbs_workflow"]
