@@ -16,7 +16,7 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["gbs_analyzer*"]
+include = ["gbs_analyzer*", "gbs_build_skill*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
