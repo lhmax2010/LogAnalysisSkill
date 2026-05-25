@@ -89,8 +89,8 @@ The workflow writes a `.gbs_workflow/` directory:
 │   ├── perf_report.json
 │   └── trace.jsonl
 ├── suggestions/
-│   ├── 001_<suggester>_<id>.patch
-│   ├── 001_<suggester>_<id>.md
+│   ├── 001_{suggester}_{id}.patch
+│   ├── 001_{suggester}_{id}.md
 │   └── ...
 └── workflow_summary.md
 ```
