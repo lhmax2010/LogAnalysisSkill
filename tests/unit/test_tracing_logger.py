@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 
 import pytest
-
 from gbs_analyzer.tracing import TraceLogger, setup_tracing
 
 

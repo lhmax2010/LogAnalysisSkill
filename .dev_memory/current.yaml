@@ -1,13 +1,14 @@
-current_milestone: restructure_phase1_build
+current_milestone: restructure_phase2_analyzer
 current_status: completed
-last_completed: hotfix_real_smoke_003
-last_completed_commit: "0ca954c"
-session_count: 19
+last_completed: restructure_phase1_build
+last_completed_commit: "4bae737"
+session_count: 20
 next_steps:
-  - "Open PR for restructure Phase 1 build skill publish layout."
-  - "Wait for user review before starting Phase 2 analyzer relocation."
-blocked_on: "waiting_for_restructure_phase1_review"
+  - "Open PR for restructure Phase 2 analyzer publish layout."
+  - "Wait for user review before starting Phase 3 workflow relocation."
+blocked_on: "waiting_for_restructure_phase2_review"
 notes: |
-  Restructure Phase 1 moves only the build skill into tizen-gbs-build/ with a
-  dual-mode launcher. Analyzer, workflow, pattern data, and runtime logic are
-  unchanged. Phase 2 must not start until this PR is reviewed and merged.
+  Restructure Phase 2 moves only the analyzer skill into tizen-gbs-log-analysis/
+  with a dual-mode launcher. Pattern contents and analyzer logic must remain
+  unchanged; workflow relocation is deferred to Phase 3. Installed mode and
+  direct skill-folder mode both validated against the av_temp_lss real buildlog.

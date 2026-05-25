@@ -3,7 +3,6 @@ from pathlib import Path
 from subprocess import CalledProcessError
 
 import pytest
-
 from gbs_analyzer.evidence.compile import CompileEvidenceCollector
 from gbs_analyzer.evidence.deps import DepsEvidenceCollector
 from gbs_analyzer.evidence.link import LinkEvidenceCollector

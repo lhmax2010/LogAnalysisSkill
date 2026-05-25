@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-
 from gbs_analyzer._utils.semantic_classifier import (
     DEFAULT_SEMANTICS_PATH,
     SemanticClassifier,

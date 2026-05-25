@@ -1,8 +1,7 @@
 from pathlib import Path
 
-import pytest
-
 import gbs_analyzer.packet_assembler as packet_assembler
+import pytest
 from gbs_analyzer.evidence import Evidence
 from gbs_analyzer.full_match import FullMatchResult, Verdict
 from gbs_analyzer.packet_assembler import (

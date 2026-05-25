@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest
 import yaml
-
 from gbs_analyzer.quick_filter import (
     DEFAULT_PATTERN_PATH,
     PatternValidationError,
