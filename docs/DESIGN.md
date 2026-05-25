@@ -1103,7 +1103,7 @@ python -m gbs_analyzer analyze /path/to/your/buildlog \\
 }
 ```
 
-**SKILL.md 兼容性**：本 skill 的 SKILL.md 遵循 Anthropic skill 格式，Cline 可直接读取（如果 Cline 未来支持 skill 生态，无需改造）。
+**SKILL.md 兼容性**：`gbs_analyzer/SKILL.md` 遵循 Anthropic skill 格式，Cline 可直接读取（如果 Cline 未来支持 skill 生态，无需改造）。
 
 ### 11.2 Compiling Agent 接入
 
@@ -1308,7 +1308,8 @@ LogAnalysisSkill/                              # GitHub repo root
 │   └── compiling_agent/
 │       ├── README.md
 │       └── log_analysis.py
-└── SKILL.md                                    # Anthropic skill 格式
+└── gbs_analyzer/
+    └── SKILL.md                               # Anthropic skill 格式
 ```
 
 ---

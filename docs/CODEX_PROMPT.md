@@ -238,8 +238,9 @@ LogAnalysisSkill/
 │   ├── __init__.py                # __version__ = "0.5.0-dev"
 │   ├── patterns/                  # runtime package data
 │   │   └── README.md              # 占位
-│   └── tracing/                   # M1 才写实际代码，但目录先建好
-│       └── __init__.py
+│   ├── tracing/                   # M1 才写实际代码，但目录先建好
+│   │   └── __init__.py
+│   └── SKILL.md                   # analyzer skill metadata
 ├── templates/
 │   └── README.md                  # 占位
 ├── tests/
@@ -248,7 +249,6 @@ LogAnalysisSkill/
 │   ├── integration/
 │   ├── e2e/
 │   └── fixtures/
-└── SKILL.md                       # 从 v0.5 §7 复制
 ```
 
 ### M0 验收
