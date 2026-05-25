@@ -1,6 +1,7 @@
 ---
 name: tizen-gbs-log-analysis
-description: Analyze Tizen gbs build logs and produce compact Evidence Packets for LLM root-cause diagnosis.
+description: Analyzes Tizen gbs build logs and produces compact Evidence Packets for LLM root-cause diagnosis. Use when the user provides or references a Tizen gbs build log, mentions "gbs", "buildlog", or RPM spec build phases, or asks to find the root cause of a Tizen build failure (compiler, linker, dependency-resolution, patch, install, or RPM script errors), or to compact a large build log before passing it to an LLM.
+compatibility: Requires a local environment with the gbs command, the gbs_analyzer Python package installed, and access to the Tizen package source tree. Built for local AI assistants such as Claude Code or Cline.
 ---
 
 # Tizen gbs Log Analysis
@@ -17,6 +18,23 @@ Invoke the analyzer when any of these are true:
 - The input contains compiler, linker, dependency-resolution, patch, install, or RPM
   script failure output from a Tizen build.
 - The user asks to compact a large build log before feeding it to an LLM.
+
+## Examples
+
+### Example 1: User has a failed gbs build
+User says: "My ffmpeg gbs build failed, can you find out why?"
+Actions:
+1. Ask for the build log path if it is not provided.
+2. Run the analyzer wrapper (see Required Workflow).
+3. Read `evidence_packet.json`; if `verdict` is `direct_answer`, report the root cause and cite the matched tier.
+Result: Root cause identified, e.g. "linker_undef: undefined reference to `X` at `libavcodec/utils.c:109`", with a minimal fix direction.
+
+### Example 2: User wants to compact a log for another LLM
+User says: "This buildlog is huge, give me something I can paste into another model."
+Actions:
+1. Run the analyzer with `--max-tokens 1800`.
+2. Return `evidence_packet.md` (the LLM-facing, redacted markdown).
+Result: A compact, redacted Evidence Packet within the token budget.
 
 ## Required Workflow
 
