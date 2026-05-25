@@ -24,6 +24,7 @@ Status: passed
 | Full regression | `.venv/bin/pytest tests/ -q --cov=gbs_analyzer --cov-fail-under=95` | `399 passed`, coverage `96.01%` |
 | CI import-order follow-up | `.venv/bin/ruff check . && .venv/bin/ruff check . --select I --preview` | pass |
 | Full regression after CI import-order follow-up | `.venv/bin/pytest tests/ -q` | `399 passed` |
+| CI type-check path follow-up | `.venv/bin/mypy tizen-gbs-log-analysis/scripts/gbs_analyzer` | pass |
 
 ## Mode 2 Isolation
 
@@ -38,3 +39,6 @@ After package discovery started treating `gbs_analyzer` as a first-party package
 `tizen-gbs-log-analysis/scripts/`, GitHub ruff required import block spacing in workflow
 suggesters and analyzer-focused tests. This was a formatting-only follow-up; runtime
 behavior is unchanged.
+
+CI also needed its hard-coded `mypy gbs_analyzer` path updated to the new analyzer source
+location. Coverage remains package-based with `--cov=gbs_analyzer`.
