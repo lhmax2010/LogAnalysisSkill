@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = [".", "tizen-gbs-build/scripts"]
 include = ["gbs_analyzer*", "gbs_build_skill*", "gbs_workflow*"]
 
 [tool.setuptools.package-data]

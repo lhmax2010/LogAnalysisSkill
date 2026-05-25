@@ -7,8 +7,21 @@ and return the original gbs exit code.
 
 ## Usage
 
+Installed package mode:
+
 ```bash
 python -m gbs_build_skill \
+  --conf ~/Toolchain/gbs.conf \
+  --arch armv7l \
+  --include-all \
+  --output-log ./.gbs_workflow/compiler.log \
+  --timeout 1800
+```
+
+Direct skill-folder mode:
+
+```bash
+python /path/to/tizen-gbs-build/scripts/run_build.py \
   --conf ~/Toolchain/gbs.conf \
   --arch armv7l \
   --include-all \
