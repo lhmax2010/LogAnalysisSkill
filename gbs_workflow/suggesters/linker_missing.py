@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from gbs_analyzer.tizen.spec_minimal import SpecMinimalParser
+
 from gbs_workflow.suggesters._common import first_regex_group, primary_message, relative_path
 from gbs_workflow.suggesters.base import SuggesterBase, Suggestion
 from gbs_workflow.suggesters.depsolve import add_buildrequires_line, make_git_diff

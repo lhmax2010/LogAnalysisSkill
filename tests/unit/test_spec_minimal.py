@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-
 from gbs_analyzer.tizen.spec_minimal import SpecMinimalParser
 
 

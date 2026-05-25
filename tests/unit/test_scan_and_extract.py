@@ -2,7 +2,6 @@ import gzip
 from pathlib import Path
 
 import pytest
-
 from gbs_analyzer.scan_and_extract import (
     BuildLogScanner,
     _iter_log_lines,

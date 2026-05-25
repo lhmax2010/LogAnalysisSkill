@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from gbs_analyzer.tizen.spec_minimal import SpecMinimalParser
+
 from gbs_workflow.suggesters.base import SuggesterBase, Suggestion
 
 MISSING_DEP_RE = re.compile(

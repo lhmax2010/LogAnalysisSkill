@@ -2,7 +2,6 @@ from pathlib import Path
 from subprocess import CalledProcessError
 
 import pytest
-
 from gbs_analyzer.evidence.router import collector_for_candidate
 from gbs_analyzer.scan_and_extract import scan_buildlog
 

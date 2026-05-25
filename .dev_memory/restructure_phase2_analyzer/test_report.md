@@ -22,6 +22,8 @@ Status: passed
 | Lint | `.venv/bin/ruff check .` | pass |
 | Type check | `.venv/bin/mypy tizen-gbs-log-analysis/scripts/gbs_analyzer tizen-gbs-log-analysis/scripts/run_analyzer.py` | pass |
 | Full regression | `.venv/bin/pytest tests/ -q --cov=gbs_analyzer --cov-fail-under=95` | `399 passed`, coverage `96.01%` |
+| CI import-order follow-up | `.venv/bin/ruff check . && .venv/bin/ruff check . --select I --preview` | pass |
+| Full regression after CI import-order follow-up | `.venv/bin/pytest tests/ -q` | `399 passed` |
 
 ## Mode 2 Isolation
 
@@ -29,3 +31,10 @@ The direct folder check copied only `tizen-gbs-log-analysis/` into `/tmp/phase2_
 and ran with `PYTHONPATH=` from `/tmp`. A separate system Python import check confirmed
 `gbs_analyzer` was not installed in that interpreter, so `scripts/run_analyzer.py` exercised
 its local `scripts/` path insertion.
+
+## CI Follow-up
+
+After package discovery started treating `gbs_analyzer` as a first-party package from
+`tizen-gbs-log-analysis/scripts/`, GitHub ruff required import block spacing in workflow
+suggesters and analyzer-focused tests. This was a formatting-only follow-up; runtime
+behavior is unchanged.

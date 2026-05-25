@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 import yaml
-
 from gbs_analyzer.evidence import Evidence
 from gbs_analyzer.full_match import (
     DirectAnswer,
