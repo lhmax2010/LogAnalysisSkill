@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from gbs_build_skill.runner import BuildOptions, BuildResult
+
 from gbs_workflow.workflow import (
     WorkflowOptions,
     WorkflowResult,

@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from gbs_build_skill.runner import BuildOptions, BuildResult, run_gbs_build
+
 from gbs_workflow.suggesters import DEFAULT_SUGGESTERS, SuggesterBase, Suggestion
 
 DEFAULT_TIMEOUT_SECONDS = 1800
