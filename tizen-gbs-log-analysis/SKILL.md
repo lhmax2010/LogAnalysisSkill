@@ -39,10 +39,22 @@ Result: A compact, redacted Evidence Packet within the token budget.
 ## Required Workflow
 
 1. Identify the build log path. If the path is unknown, ask for it.
-2. Run the wrapper through the stable entry point:
+2. Run the wrapper through one of the stable entry points.
+
+   If `gbs_analyzer` is installed in the current Python environment:
 
    ```bash
    python -m gbs_analyzer analyze /path/to/buildlog \
+       --src-root /path/to/source \
+       --max-tokens 1800 \
+       --output-format both \
+       --output-dir .gbs_analysis
+   ```
+
+   If using the skill folder directly without installing the Python package:
+
+   ```bash
+   python /path/to/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze /path/to/buildlog \
        --src-root /path/to/source \
        --max-tokens 1800 \
        --output-format both \
