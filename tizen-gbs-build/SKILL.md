@@ -28,7 +28,8 @@ User says: "Run a gbs build for this package and save the log."
 Actions:
 
 1. Confirm the source tree, `gbs.conf`, architecture, and output log path.
-2. Run `python -m gbs_build_skill` with the required arguments.
+2. Run `python -m gbs_build_skill` if the package is installed, or
+   `scripts/run_build.py` when using the skill folder directly.
 3. Report the exit code and log path.
 
 Result: A build log exists on disk and the original GBS exit code is preserved.
@@ -50,10 +51,23 @@ Result: The user receives a buildlog that can later be analyzed separately.
 1. Identify the Tizen package source tree. Run the command from that tree unless the
    user gives a different working directory.
 2. Identify the `gbs.conf` path, target architecture, output log path, and timeout.
-3. Run the build runner through the stable entry point:
+3. Run the build runner through one of the stable entry points.
+
+   If `gbs_build_skill` is installed in the current Python environment:
 
    ```bash
    python -m gbs_build_skill \
+       --conf /path/to/gbs.conf \
+       --arch armv7l \
+       --include-all \
+       --output-log ./out/compiler.log \
+       --timeout 1800
+   ```
+
+   If using the skill folder directly without installing the Python package:
+
+   ```bash
+   python /path/to/tizen-gbs-build/scripts/run_build.py \
        --conf /path/to/gbs.conf \
        --arch armv7l \
        --include-all \

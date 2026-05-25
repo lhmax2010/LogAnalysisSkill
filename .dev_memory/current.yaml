@@ -1,13 +1,13 @@
-current_milestone: standby
-current_status: standby
+current_milestone: restructure_phase1_build
+current_status: completed
 last_completed: hotfix_real_smoke_003
 last_completed_commit: "0ca954c"
-session_count: 18
+session_count: 19
 next_steps:
-  - "Stand by for real workflow usage feedback."
-  - "Do not start v0.2, new hotfixes, or unrelated cleanup without user direction."
-blocked_on: null
+  - "Open PR for restructure Phase 1 build skill publish layout."
+  - "Wait for user review before starting Phase 2 analyzer relocation."
+blocked_on: "waiting_for_restructure_phase1_review"
 notes: |
-  Hotfix 003 merged via PR #20. Pattern data moved into gbs_analyzer/patterns, runtime
-  defaults are __file__-anchored, and package-data validation passed from /tmp after
-  pip-style install. Pattern contents, analyzer logic, and templates unchanged.
+  Restructure Phase 1 moves only the build skill into tizen-gbs-build/ with a
+  dual-mode launcher. Analyzer, workflow, pattern data, and runtime logic are
+  unchanged. Phase 2 must not start until this PR is reviewed and merged.

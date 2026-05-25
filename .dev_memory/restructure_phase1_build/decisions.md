@@ -1,0 +1,7 @@
+# Decisions for restructure_phase1_build
+
+| ID | Date | Decision | Source | Rationale | Impact |
+| --- | --- | --- | --- | --- | --- |
+| d001 | 2026-05-25 | Move `gbs_build_skill` under `tizen-gbs-build/scripts/` while preserving the import package name. | User-approved repository-as-published-skill structure. | The skill hub should show a clean kebab-case skill folder, but existing workflow/tests import `gbs_build_skill.runner`. Preserving the package name avoids unnecessary runtime churn. | `tizen-gbs-build/` becomes the build skill publish folder; package discovery is updated to find `gbs_build_skill` below `scripts/`. |
+| d002 | 2026-05-25 | Add `scripts/run_build.py` as a dual-mode launcher. | User requirement for both pip-installed and direct sibling-folder modes. | In installed mode, direct import should work. In folder mode, the launcher adds its own `scripts/` directory to `sys.path`. | Users can run either `python -m gbs_build_skill` after install or `python tizen-gbs-build/scripts/run_build.py` from a local skill checkout. |
+| d003 | 2026-05-25 | Move the old build README to `docs/build_workflow/build_skill.md`. | User preference for a clean skill folder containing only `SKILL.md` and `scripts/`. | The README contains useful developer-facing usage and boundary notes, but the publish folder should stay minimal. | Documentation is retained outside the skill folder; no runtime behavior changes. |
