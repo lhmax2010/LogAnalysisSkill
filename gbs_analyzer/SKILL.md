@@ -83,6 +83,13 @@ Exit codes:
 - `3`: build log unreadable.
 - `124`: timeout convention for external callers.
 
+## Relationship to Other Skills
+
+Use this skill when a build log already exists and the task is to analyze or compact
+that log. If the user only wants to run a Tizen `gbs build` and capture the log, use
+`tizen-gbs-build`. If the user wants the full loop of build, failure analysis, and
+suggestion generation, use `tizen-gbs-build-workflow`.
+
 ## Disclaimer
 
 This skill produces evidence and likely root-cause guidance from build logs. It does
