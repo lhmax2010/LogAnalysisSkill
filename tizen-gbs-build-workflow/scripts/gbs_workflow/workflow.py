@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -65,6 +66,7 @@ def run_workflow(
     build_runner: BuildRunner = run_gbs_build,
     subprocess_runner: SubprocessRunner = subprocess.run,
     python_executable: str = sys.executable,
+    analyzer_extra_pythonpath: Sequence[str | Path] = (),
 ) -> WorkflowResult:
     """Run build, analyze failures, and write suggestion artifacts."""
 
@@ -120,8 +122,12 @@ def run_workflow(
         "--output-dir",
         str(analyzer_dir),
     ]
+    subprocess_kwargs: dict[str, object] = {"check": True, "text": True}
+    analyzer_env = build_analyzer_subprocess_env(analyzer_extra_pythonpath)
+    if analyzer_env is not None:
+        subprocess_kwargs["env"] = analyzer_env
     try:
-        subprocess_runner(analyzer_command, check=True, text=True)
+        subprocess_runner(analyzer_command, **subprocess_kwargs)
     except subprocess.CalledProcessError as exc:
         summary_path.write_text(
             render_workflow_summary(
@@ -215,6 +221,20 @@ def collect_suggestions(
         if suggester.matches(packet):
             suggestions.extend(suggester.generate(packet, src_root))
     return suggestions
+
+
+def build_analyzer_subprocess_env(extra_pythonpath: Sequence[str | Path]) -> dict[str, str] | None:
+    """Return a subprocess env with extra Python paths prepended for analyzer calls."""
+
+    if not extra_pythonpath:
+        return None
+    env = os.environ.copy()
+    entries = [str(Path(path)) for path in extra_pythonpath]
+    existing = env.get("PYTHONPATH")
+    if existing:
+        entries.append(existing)
+    env["PYTHONPATH"] = os.pathsep.join(entries)
+    return env
 
 
 def select_analysis_log(compiler_log: Path) -> Path:
@@ -349,7 +369,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(
+    argv: list[str] | None = None,
+    *,
+    analyzer_extra_pythonpath: Sequence[str | Path] = (),
+) -> int:
     """CLI entrypoint for `python -m gbs_workflow`."""
 
     parser = build_arg_parser()
@@ -365,7 +389,8 @@ def main(argv: list[str] | None = None) -> int:
             src_root=args.src_root,
             output_dir=args.output_dir,
             timeout=args.timeout,
-        )
+        ),
+        analyzer_extra_pythonpath=analyzer_extra_pythonpath,
     )
     print(f"workflow summary: {result.summary_path}", file=sys.stderr)
     return result.exit_code

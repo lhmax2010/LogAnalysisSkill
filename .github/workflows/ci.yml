@@ -31,7 +31,9 @@ jobs:
         run: ruff check .
 
       - name: Type check
-        run: mypy tizen-gbs-log-analysis/scripts/gbs_analyzer
+        run: |
+          mypy tizen-gbs-log-analysis/scripts/gbs_analyzer
+          mypy tizen-gbs-build-workflow/scripts/gbs_workflow
 
       - name: Tests
         run: pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80
