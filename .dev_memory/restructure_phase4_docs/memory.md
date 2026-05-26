@@ -2,7 +2,7 @@
 
 ## Status
 
-Completed; waiting for review.
+Completed and merged.
 
 ## Scope
 
@@ -20,6 +20,7 @@ No Python behavior changes are in scope.
 - Starting branch: `main`
 - Starting commit: `51800c9` (`Merge pull request #25`)
 - Branch: `feature/restructure-phase4-docs`
+- Merge commit: `e8e06a2` (`Merge pull request #26`)
 
 ## Completed Changes
 

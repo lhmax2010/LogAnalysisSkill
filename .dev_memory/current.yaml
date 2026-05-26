@@ -1,14 +1,14 @@
-current_milestone: restructure_phase4_docs
-current_status: completed
-last_completed: restructure_phase3_workflow
-last_completed_commit: "51800c9"
+current_milestone: null
+current_status: standby
+last_completed: restructure_phase4_docs
+last_completed_commit: "e8e06a2"
 session_count: 22
 next_steps:
-  - "Open PR for restructure Phase 4 docs/integration cleanup."
-  - "Wait for user review before any post-restructure work."
-blocked_on: "waiting_for_restructure_phase4_review"
+  - "Stand by for the user's next instruction."
+  - "Do not start v0.2, new hotfixes, or further restructuring without explicit direction."
+blocked_on: null
 notes: |
-  Restructure Phase 4 is docs/integration/packaging cleanup only. Active docs and
-  integration examples should reflect the repository-as-published-skills layout.
-  Historical dev_memory, archive, real_smoke, and report snapshots must not be
-  bulk rewritten because they preserve past state.
+  Repository-as-published-skills restructure Phase 1-4 is complete. Runtime code
+  now lives under the three skill folders: tizen-gbs-build, tizen-gbs-log-analysis,
+  and tizen-gbs-build-workflow. Keep standby until the user requests a hotfix,
+  deployment work, or a new design phase.
