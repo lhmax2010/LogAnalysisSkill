@@ -3,7 +3,7 @@
 `log_analysis.py` is a small example adapter for build-monitoring agents that call
 the analyzer through `subprocess`.
 
-The adapter expects the M8 wrapper contract:
+The adapter expects the M8 wrapper contract in installed mode:
 
 ```bash
 python -m gbs_analyzer analyze <buildlog_path> \
@@ -11,6 +11,12 @@ python -m gbs_analyzer analyze <buildlog_path> \
     --max-tokens 1800 \
     --output-format json \
     --output-dir /tmp/gbs_analysis_agent
+```
+
+For direct skill-folder mode, set the adapter's `analyzer_path` to:
+
+```bash
+python /path/to/tizen-gbs-log-analysis/scripts/run_analyzer.py
 ```
 
 The analyzer writes `evidence_packet.json`; the adapter returns that JSON to the

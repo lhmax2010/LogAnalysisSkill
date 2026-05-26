@@ -1,101 +1,161 @@
 # LogAnalysisSkill
 
-Tizen gbs 编译日志分析 Skill。把 1~100 MB 的 buildlog 压缩成 ≤ 1800 token 的 Evidence Packet，让 LLM 准确定位构建失败根因。
+Tizen `gbs` build assistance skills for local AI assistants. The repository is
+organized in the same shape as the publishable skills: three independent skill
+folders, each with its own `SKILL.md` and `scripts/` runtime.
 
----
+## Skill Layout
 
-## ⚠️ 给 AI 助手（Codex / Claude / ChatGPT / 其他）：必读
+```text
+LogAnalysisSkill/
+├── tizen-gbs-build/
+│   ├── SKILL.md
+│   └── scripts/
+│       └── gbs_build_skill/
+├── tizen-gbs-log-analysis/
+│   ├── SKILL.md
+│   └── scripts/
+│       └── gbs_analyzer/
+│           └── patterns/
+├── tizen-gbs-build-workflow/
+│   ├── SKILL.md
+│   └── scripts/
+│       └── gbs_workflow/
+├── tests/
+├── integrations/
+└── docs/
+```
 
-**如果你是被分配到这个项目的 AI 助手，按以下顺序操作，不要跳步**：
+## What Each Skill Does
 
-### 首次进入项目
+| Skill | Use It When | Entry Point |
+| --- | --- | --- |
+| `tizen-gbs-build` | You only want to run `gbs build` and capture a log plus exit code. | `python -m gbs_build_skill` or `tizen-gbs-build/scripts/run_build.py` |
+| `tizen-gbs-log-analysis` | You already have a buildlog and want a compact root-cause Evidence Packet. | `python -m gbs_analyzer analyze` or `tizen-gbs-log-analysis/scripts/run_analyzer.py analyze` |
+| `tizen-gbs-build-workflow` | You want the full local flow: build, analyze failures, and generate suggestion files. | `python -m gbs_workflow` or `tizen-gbs-build-workflow/scripts/run_workflow.py` |
 
-1. **先读 `docs/CODEX_PROMPT.md`** —— 工作规则、强制约束、何时停下来等用户
-2. **再读 `docs/DESIGN.md`** —— 设计基线（v0.5，已冻结，不允许修改）
-3. **在读完上述两份文档前，不要写任何代码**
+The workflow skill depends on the build and log-analysis skills. Install all
+three into the same Python environment, or keep the three skill folders next to
+each other and use the direct launchers.
 
-### 接手现有进度
+## Install Mode
 
-1. `cat .dev_memory/current.yaml` —— 查看当前 milestone 状态
-2. 读 `docs/CODEX_PROMPT.md` 末尾"接手现有项目"章节
-3. 读最新 milestone 的 `.dev_memory/m{N}_{name}/memory.md`
-4. 跑 `pytest tests/` 确认基线绿
-5. 看 `git log --oneline -30`
-6. **报告状态 + 下一步计划，等用户确认后再继续**
-
-### 不允许的行为
-
-- ❌ 跳过 milestone 顺序
-- ❌ 自由发挥写"应该这样设计"的代码
-- ❌ 修改 `docs/DESIGN.md`（任何设计变动必须通过用户出 patch）
-- ❌ 一次实现多个 milestone
-- ❌ 不写 dev_memory 就提交 PR
-
----
-
-## 给人类用户
-
-- 项目使用指南：[`docs/README_FOR_USER.md`](docs/README_FOR_USER.md)
-- 设计文档：[`docs/DESIGN.md`](docs/DESIGN.md)
-- Codex 开发规则：[`docs/CODEX_PROMPT.md`](docs/CODEX_PROMPT.md)
-- 历史决策追溯：[`docs/archive/`](docs/archive/)
-
----
-
-## 项目状态
-
-- **最近已合并阶段**：M7（packet_assembler）
-- **当前开发状态**：以 `.dev_memory/current.yaml` 为准；feature 分支可能领先 `main`
-- **设计版本**：v0.5（已冻结）
-- **MVP 工作量**：16 天，8 个 milestones
-- **仓库**：https://github.com/lhmax2010/LogAnalysisSkill
-
----
-
-## 快速链接
-
-| 想做什么 | 看哪里 |
-|---------|--------|
-| 启动 Codex 开发 | `docs/CODEX_PROMPT.md` "启动指令" 章节 |
-| 理解设计 | `docs/DESIGN.md` |
-| Review 当前进度 | `.dev_memory/current.yaml` + 最新 milestone 的 dev_memory |
-| 接入 Cline | `integrations/cline/README.md`（M14 后可用）|
-| 接入 Compiling Agent | `integrations/compiling_agent/README.md`（M14 后可用）|
-| 在真实环境测试 | `docs/test_guides/m{N}_{name}.md` |
-| 提报 Bug | GitHub Issue（使用 bug_report 模板） |
-| 提议新 Pattern | GitHub Issue（使用 pattern_proposal 模板） |
-
----
-
-## 安装
+Use this mode when developing or when you want the normal `python -m ...`
+commands.
 
 ```bash
 git clone https://github.com/lhmax2010/LogAnalysisSkill.git
 cd LogAnalysisSkill
-pip install -e .
+python -m pip install -e .
 ```
 
-**系统依赖**：`universal-ctags`（Ubuntu: `sudo apt install universal-ctags`）
-
----
-
-## 使用（M8 完成后可用）
+System dependency:
 
 ```bash
+sudo apt install universal-ctags
+```
+
+Examples:
+
+```bash
+python -m gbs_build_skill \
+    --conf gbs.conf \
+    --arch armv7l \
+    --include-all \
+    --output-log .gbs_workflow/compiler.log
+
 python -m gbs_analyzer analyze /path/to/buildlog \
     --src-root /path/to/source \
     --max-tokens 1800 \
     --output-dir ./out
 
-# 输出：
-# - out/evidence_packet.json    程序消费
-# - out/evidence_packet.md      LLM 直读
-# - out/perf_report.json        性能评估
-# - out/trace.jsonl             debugging
+python -m gbs_workflow \
+    --conf gbs.conf \
+    --arch armv7l \
+    --include-all \
+    --src-root . \
+    --output-dir .gbs_workflow
 ```
 
----
+## Direct Folder Mode
+
+Use this mode when a skill hub checks out or copies the skill folders directly.
+Keep the three folders side by side:
+
+```text
+skills/
+├── tizen-gbs-build/
+├── tizen-gbs-log-analysis/
+└── tizen-gbs-build-workflow/
+```
+
+Run the launchers from any working directory:
+
+```bash
+python /path/to/skills/tizen-gbs-build/scripts/run_build.py \
+    --conf gbs.conf \
+    --arch armv7l \
+    --include-all \
+    --output-log .gbs_workflow/compiler.log
+
+python /path/to/skills/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze /path/to/buildlog \
+    --src-root /path/to/source \
+    --max-tokens 1800 \
+    --output-dir ./out
+
+python /path/to/skills/tizen-gbs-build-workflow/scripts/run_workflow.py \
+    --conf gbs.conf \
+    --arch armv7l \
+    --include-all \
+    --src-root . \
+    --output-dir .gbs_workflow
+```
+
+If the workflow skill is not next to the other two folders, set:
+
+```bash
+export TIZEN_GBS_BUILD_SKILL_DIR=/path/to/tizen-gbs-build
+export TIZEN_GBS_LOG_ANALYSIS_SKILL_DIR=/path/to/tizen-gbs-log-analysis
+```
+
+## Outputs
+
+Analyzer output:
+
+- `evidence_packet.json`: machine-readable root-cause packet
+- `evidence_packet.md`: compact LLM-facing packet
+- `perf_report.json`: runtime and token metrics
+- `trace.jsonl`: structured debug trace
+
+Workflow output:
+
+```text
+.gbs_workflow/
+├── compiler.log
+├── analyzer_output/
+├── suggestions/
+└── workflow_summary.md
+```
+
+Workflow suggestions are advisory. The workflow never applies patches and never
+retries builds automatically.
+
+## Development
+
+Read these first before making code changes:
+
+1. `docs/CODEX_PROMPT.md`
+2. `docs/DESIGN.md`
+3. `.dev_memory/current.yaml`
+
+Useful links:
+
+- User guide: `docs/README_FOR_USER.md`
+- Analyzer design baseline: `docs/DESIGN.md`
+- Build workflow design: `docs/build_workflow/DESIGN.md`
+- Cline examples: `integrations/cline/README.md`
+- Historical decisions: `.dev_memory/`
 
 ## License
 
-待定
+TBD

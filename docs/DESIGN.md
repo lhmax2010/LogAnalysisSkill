@@ -1,7 +1,7 @@
 # Tizen gbs 编译日志分析 Skill 设计文档 v0.5
 
 **版本**：v0.5（实施冻结版，整合 v0.1~v0.4.1 全部 review 意见 + 工程化要求）
-**Hotfix 003（2026-05-20）**：运行时 pattern 数据移入 `gbs_analyzer/patterns/`，通过 package data 分发；pattern schema 和内容不变。
+**Hotfix 003（2026-05-20）**：运行时 pattern 数据移入 `tizen-gbs-log-analysis/scripts/gbs_analyzer/patterns/`，通过 package data 分发；pattern schema 和内容不变。
 **目标读者**：实施者（Codex）、Review 协作 AI（ChatGPT / Kimi / Claude）、最终用户
 **仓库**：https://github.com/lhmax2010/LogAnalysisSkill
 
@@ -290,7 +290,7 @@ def is_in_warning_block(event, all_events):
 
 ### §3.3 Layer 2：根因排序（rank_causes.py）
 
-**8 类语义置信度**（`gbs_analyzer/patterns/error_semantics.yaml`）：
+**8 类语义置信度**（`tizen-gbs-log-analysis/scripts/gbs_analyzer/patterns/error_semantics.yaml`）：
 
 | semantic_class | base_confidence | cascade_probability | 默认申请 Level |
 |---------------|-----------------|--------------------|----------------|
@@ -452,7 +452,7 @@ def determine_verdict(matched_rule, event, evidence):
     return Verdict.NEEDS_LLM
 ```
 
-**Pattern Schema 完整版**：见 `gbs_analyzer/patterns/schema.json`。
+**Pattern Schema 完整版**：见 `tizen-gbs-log-analysis/scripts/gbs_analyzer/patterns/schema.json`。
 
 ---
 
@@ -485,7 +485,7 @@ class MinimalRedactor:
 
 ## §4 Pattern 库与 Fast-Path
 
-详细 schema 见 `gbs_analyzer/patterns/schema.json`。Pattern 编写指南见 `docs/pattern_authoring.md`。
+详细 schema 见 `tizen-gbs-log-analysis/scripts/gbs_analyzer/patterns/schema.json`。Pattern 编写指南见 `docs/pattern_authoring.md`。
 
 **MVP 必含 pattern 数量**：≥ 15 条（覆盖 4 类 tier1 + 5 类 tier2 + 至少 6 个变体）。
 
@@ -635,7 +635,7 @@ class SpecMinimalParser:
 
 ## 已完成内容
 
-- [x] 实现 `gbs_analyzer/scan_and_extract.py`
+- [x] 实现 `tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py`
 - [x] 状态机识别 phase 切换
 - [x] 命令边界识别（含 multiline + rsp）
 - [x] Cascade 文件名映射（.c/.cc/.cpp/.cxx/.S/.cu）
@@ -645,13 +645,13 @@ class SpecMinimalParser:
 ## 关键改动详情
 
 ### 改动 1：rsp 文件路径 isabs 处理
-- **改动文件**：`gbs_analyzer/_utils/command_parser.py:42-48`
+- **改动文件**：`tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/command_parser.py:42-48`
 - **改动原因**：CMake 某些版本生成绝对路径 rsp，原 `os.path.join(cwd, rsp_path)` 会错误拼接
 - **改动来源**：v0.4.1 patch P0-4（Kimi 修正）
 - **测试**：`tests/test_command_parser.py::test_absolute_path_rsp` 验证
 
 ### 改动 2：cascade 文件名映射
-- **改动文件**：`gbs_analyzer/_utils/source_to_object.py`
+- **改动文件**：`tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/source_to_object.py`
 - **改动原因**：v0.4 决策——简单后缀匹配，多 candidate 不关联
 - **改动来源**：v0.5 §3.1
 - **歧义率监控**：当前 fixture 0% 歧义
@@ -668,7 +668,7 @@ UT 覆盖率：87%（要求 ≥ 80%）
 
 ## 下一阶段入口
 
-- 入口模块：`gbs_analyzer/quick_filter.py`
+- 入口模块：`tizen-gbs-log-analysis/scripts/gbs_analyzer/quick_filter.py`
 - 依赖本阶段：scan_result 输出 schema 已稳定
 - 预期工作量：2 天
 
@@ -694,7 +694,7 @@ patches:
   - id: p001
     title: "Implement BuildLogScanner state machine"
     commit: "abc123de"
-    files_changed: ["gbs_analyzer/scan_and_extract.py"]
+    files_changed: ["tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py"]
     lines_added: 234
     lines_removed: 0
     rationale: "v0.5 §3.1 — 状态机驱动单趟扫描"
@@ -703,7 +703,7 @@ patches:
   - id: p002
     title: "Handle absolute path rsp files"
     commit: "ijk789lm"
-    files_changed: ["gbs_analyzer/_utils/command_parser.py"]
+    files_changed: ["tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/command_parser.py"]
     lines_added: 8
     lines_removed: 2
     rationale: "Kimi v0.4.1 review 修正：CMake 某些版本生成绝对路径"
@@ -719,7 +719,7 @@ last_completed_commit: xyz789abc
 session_count: 3
 next_steps:
   - "实现 quick_filter.py 主流程"
-  - "加载 gbs_analyzer/patterns/gbs_errors.yaml"
+  - "加载 tizen-gbs-log-analysis/scripts/gbs_analyzer/patterns/gbs_errors.yaml"
   - "实现 tier1 白名单校验"
 blocked_on: null
 notes: |
@@ -834,8 +834,8 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Lint
         run: |
-          ruff check gbs_analyzer/
-          mypy gbs_analyzer/
+          ruff check tizen-gbs-log-analysis/scripts/gbs_analyzer/
+          mypy tizen-gbs-log-analysis/scripts/gbs_analyzer/
       - name: Unit tests
         run: pytest tests/unit/ -v --cov=gbs_analyzer --cov-report=xml
       - name: Pattern tests
@@ -1103,7 +1103,7 @@ python -m gbs_analyzer analyze /path/to/your/buildlog \\
 }
 ```
 
-**SKILL.md 兼容性**：`gbs_analyzer/SKILL.md` 遵循 Anthropic skill 格式，Cline 可直接读取（如果 Cline 未来支持 skill 生态，无需改造）。
+**SKILL.md 兼容性**：`tizen-gbs-log-analysis/SKILL.md` 遵循 Anthropic skill 格式，Cline 可直接读取（如果 Cline 未来支持 skill 生态，无需改造）。
 
 ### 11.2 Compiling Agent 接入
 
@@ -1221,50 +1221,29 @@ LogAnalysisSkill/                              # GitHub repo root
 │       ├── v0.1.md
 │       ├── ...
 │       └── v0.4.1-patch.md
-├── gbs_analyzer/                               # 核心代码
-│   ├── __init__.py
-│   ├── __main__.py
-│   ├── analyze.py                              # 主入口
-│   ├── scan_and_extract.py                     # Layer 0+1
-│   ├── quick_filter.py                         # Layer 4a
-│   ├── rank_causes.py                          # Layer 2
-│   ├── full_match.py                           # Layer 4b
-│   ├── packet_assembler.py                     # Layer 5
-│   ├── budget_pool.py                          # §5.2
-│   ├── evidence/
-│   │   ├── __init__.py
-│   │   ├── base.py                             # EvidenceCollector ABC
-│   │   ├── router.py
-│   │   ├── compile.py                          # MVP
-│   │   ├── link.py                             # MVP
-│   │   ├── spec.py                             # MVP
-│   │   ├── deps.py                             # MVP
-│   │   ├── patch.py                            # full
-│   │   ├── install.py                          # full
-│   │   └── generic.py                          # full（fallback_raw_context 在 assembler）
-│   ├── tizen/
-│   │   ├── __init__.py
-│   │   ├── spec_minimal.py                     # MVP
-│   │   ├── toolchain_detector.py               # full
-│   │   └── werror_analyzer.py                  # full
-│   ├── tracing/                                # §10 v0.5 新增
-│   │   ├── __init__.py
-│   │   ├── logger.py
-│   │   ├── perf_report.py
-│   │   └── token_counter.py
-│   └── _utils/
-│       ├── gbs_paths.py
-│       ├── token_estimate.py
-│       ├── ctags_loader.py
-│       ├── command_parser.py                   # 含 rsp + multiline
-│       ├── source_to_object.py
-│       ├── semantic_classifier.py
-│       └── privacy.py                          # 双层脱敏（§3.6）
-│   └── patterns/                               # runtime package data
-│       ├── gbs_errors.yaml                     # 主库
-│       ├── error_semantics.yaml                # 8 类语义
-│       ├── README.md
-│       └── schema.json                         # JSON Schema 校验
+├── tizen-gbs-log-analysis/
+│   ├── SKILL.md                                # Anthropic skill 格式
+│   └── scripts/
+│       ├── run_analyzer.py                     # direct folder launcher
+│       └── gbs_analyzer/                       # 核心代码
+│           ├── __init__.py
+│           ├── __main__.py
+│           ├── analyze.py                      # 主入口
+│           ├── scan_and_extract.py             # Layer 0+1
+│           ├── quick_filter.py                 # Layer 4a
+│           ├── rank_causes.py                  # Layer 2
+│           ├── full_match.py                   # Layer 4b
+│           ├── packet_assembler.py             # Layer 5
+│           ├── budget_pool.py                  # §5.2
+│           ├── evidence/
+│           ├── tizen/
+│           ├── tracing/                        # §10 v0.5 新增
+│           ├── _utils/
+│           └── patterns/                       # runtime package data
+│               ├── gbs_errors.yaml             # 主库
+│               ├── error_semantics.yaml        # 8 类语义
+│               ├── README.md
+│               └── schema.json                 # JSON Schema 校验
 ├── templates/
 │   ├── evidence_packet.md.j2
 │   └── llm_prompt.md.j2
@@ -1308,7 +1287,7 @@ LogAnalysisSkill/                              # GitHub repo root
 │   └── compiling_agent/
 │       ├── README.md
 │       └── log_analysis.py
-└── gbs_analyzer/
+└── tizen-gbs-log-analysis/
     └── SKILL.md                               # Anthropic skill 格式
 ```
 

@@ -1,7 +1,7 @@
 # GbsBuildWorkflow v0.1 设计文档
 
 **版本**: v0.1（首版，与 LogAnalysisSkill v0.5 集成）
-**仓库**: https://github.com/lhmax2010/LogAnalysisSkill（Monorepo + 子目录）
+**仓库**: https://github.com/lhmax2010/LogAnalysisSkill（仓库即发布形态，三个 skill 子目录）
 **目标**: AI 助手能一键完成"gbs 编译 → 失败时分析 → 输出修复建议"流程
 **文档状态**: 修订版（基于 BW-M1 完成 + 范围扩展）
 
@@ -21,29 +21,23 @@
 ## 2. 仓库结构
 
 ```
-LogAnalysisSkill/                          # Monorepo
-├── gbs_analyzer/                          # v0.5 MVP（不动）
-├── gbs_build_skill/                       # ✅ BW-M1 已完成
-│   ├── __init__.py
-│   ├── __main__.py
-│   ├── runner.py
-│   └── README.md
-├── gbs_workflow/                          # BW-M2 / M3 待实现
-│   ├── __init__.py
-│   ├── __main__.py
-│   ├── workflow.py
-│   ├── suggesters/
-│   │   ├── __init__.py
-│   │   ├── base.py                        # SuggesterBase ABC
-│   │   ├── registry.py
-│   │   ├── depsolve.py
-│   │   ├── linker_missing.py
-│   │   ├── linker_undef.py
-│   │   ├── patch_failed.py
-│   │   ├── spec_script.py
-│   │   ├── compile_error.py
-│   │   └── fallback.py
-│   └── README.md
+LogAnalysisSkill/                          # repository-as-published-skills
+├── tizen-gbs-log-analysis/
+│   ├── SKILL.md
+│   └── scripts/
+│       └── gbs_analyzer/                  # v0.5 MVP analyzer package
+│           └── patterns/                  # runtime package data
+├── tizen-gbs-build/                       # ✅ BW-M1 已完成
+│   ├── SKILL.md
+│   └── scripts/
+│       ├── run_build.py
+│       └── gbs_build_skill/
+├── tizen-gbs-build-workflow/              # ✅ BW-M2/M3/M4 已完成
+│   ├── SKILL.md
+│   └── scripts/
+│       ├── run_workflow.py
+│       └── gbs_workflow/
+│           └── suggesters/
 ├── tests/
 │   ├── unit/
 │   │   ├── test_build_runner.py           # ✅ BW-M1
@@ -110,7 +104,7 @@ result = run_gbs_build(BuildOptions(
 - 真实验证：ffmpeg `tizen` (build success) + `real_smoke/B_*` (depsolve failure)
 - 详细：见 `.dev_memory/bw_m1_build_skill/`
 
-## 4. gbs_workflow（编排器）— BW-M2 / M3 待实现
+## 4. gbs_workflow（编排器）✅ BW-M2 / M3 / M4 已完成
 
 ### 4.1 职责
 
@@ -264,9 +258,9 @@ class SuggesterBase(ABC):
 | Milestone | 内容 | 工作量 | 状态 |
 |-----------|------|--------|------|
 | **BW-M1** | gbs_build_skill 实现 + UT + 真实 gbs smoke | 1 day | ✅ 已完成（merge `42cee36`）|
-| **BW-M2** | gbs_workflow 主流程 + Suggester ABC + DepsolveSuggester | 1 day | 待启动 |
-| **BW-M3** | 其余 6 个 Suggester + FallbackSuggester + workflow_summary.md | 1.5 days | 待启动 |
-| **BW-M4** | E2E 测试（用 hotfix_002 的 A/B/C/D fixture）+ Cline 接入示例 + 文档 | 1 day | 待启动 |
+| **BW-M2** | gbs_workflow 主流程 + Suggester ABC + DepsolveSuggester | 1 day | ✅ 已完成 |
+| **BW-M3** | 其余 6 个 Suggester + FallbackSuggester + workflow_summary.md | 1.5 days | ✅ 已完成 |
+| **BW-M4** | E2E 测试（用 hotfix_002 的 A/B/C/D fixture）+ Cline 接入示例 + 文档 | 1 day | ✅ 已完成 |
 
 每个 milestone：feature 分支 + dev_memory + PR + review，按 v0.5 hotfix 周期模式。
 

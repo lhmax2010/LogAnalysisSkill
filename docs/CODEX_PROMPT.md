@@ -106,7 +106,7 @@ pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing
 
 ### 规则 5：tracing + perf_report 是一等公民，不是事后补丁
 
-v0.5 §10 定义的 tracing / token / perf_report 必须在 **M1 实施时就建立基础**（`gbs_analyzer/tracing/logger.py`），后续 milestone 在自己代码里调用它。
+v0.5 §10 定义的 tracing / token / perf_report 必须在 **M1 实施时就建立基础**（`tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py`），后续 milestone 在自己代码里调用它。
 
 **禁止**：先把功能写完，最后再加 tracing。
 
@@ -234,13 +234,16 @@ LogAnalysisSkill/
 │   ├── integration_guide.md
 │   ├── test_guides/               # 空目录，每 milestone 填充
 │   └── archive/                   # 放历史设计文档
-├── gbs_analyzer/
-│   ├── __init__.py                # __version__ = "0.5.0-dev"
-│   ├── patterns/                  # runtime package data
-│   │   └── README.md              # 占位
-│   ├── tracing/                   # M1 才写实际代码，但目录先建好
-│   │   └── __init__.py
-│   └── SKILL.md                   # analyzer skill metadata
+├── tizen-gbs-log-analysis/
+│   ├── SKILL.md                   # analyzer skill metadata
+│   └── scripts/
+│       ├── run_analyzer.py        # direct folder launcher
+│       └── gbs_analyzer/
+│           ├── __init__.py        # __version__ = "0.5.0-dev"
+│           ├── patterns/          # runtime package data
+│           │   └── README.md      # 占位
+│           └── tracing/           # M1 才写实际代码，但目录先建好
+│               └── __init__.py
 ├── templates/
 │   └── README.md                  # 占位
 ├── tests/

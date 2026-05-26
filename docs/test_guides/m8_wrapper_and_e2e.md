@@ -9,7 +9,7 @@ examples, and 20 fixture E2E acceptance set.
 
 ```bash
 .venv/bin/ruff check .
-.venv/bin/mypy gbs_analyzer
+.venv/bin/mypy tizen-gbs-log-analysis/scripts/gbs_analyzer
 .venv/bin/pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80
 .venv/bin/pytest tests/e2e/test_m8_wrapper_e2e.py -q
 ```

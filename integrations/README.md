@@ -10,3 +10,6 @@ This repository provides example contracts for external callers:
 
 These examples are not live integrations and are not deployed by this repository.
 Workflow examples never auto-apply patches or auto-retry builds.
+
+The JSON examples use installed mode (`python -m ...`). Their README also shows
+direct skill-folder mode using the `scripts/run_*.py` launchers.
