@@ -1,13 +1,15 @@
 import json
+import os
 import subprocess
 from pathlib import Path
 from typing import Any
 
+import pytest
 from gbs_build_skill.runner import BuildOptions, BuildResult
-
 from gbs_workflow.workflow import (
     WorkflowOptions,
     WorkflowResult,
+    build_analyzer_subprocess_env,
     collect_suggestions,
     main,
     run_workflow,
@@ -127,6 +129,40 @@ def test_workflow_failure_runs_analyzer_and_writes_depsolve_suggestion(tmp_path:
     summary = result.summary_path.read_text(encoding="utf-8")
     assert "depsolve" in summary
     assert "Yes" in summary
+
+
+def test_workflow_passes_extra_pythonpath_to_analyzer(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("PYTHONPATH", "/existing/path")
+    captured_env: dict[str, str] = {}
+
+    def analyzer(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        env = kwargs.get("env")
+        assert isinstance(env, dict)
+        captured_env.update(env)
+        return fake_analyzer(depsolve_packet())(command, **kwargs)
+
+    extra_paths = (tmp_path / "workflow_scripts", tmp_path / "analyzer_scripts")
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build(1),
+        subprocess_runner=analyzer,
+        python_executable="/test/python",
+        analyzer_extra_pythonpath=extra_paths,
+    )
+
+    assert result.exit_code == 1
+    assert captured_env is not os.environ
+    assert captured_env["PYTHONPATH"].split(os.pathsep)[:3] == [
+        str(extra_paths[0]),
+        str(extra_paths[1]),
+        "/existing/path",
+    ]
+
+
+def test_analyzer_subprocess_env_returns_none_without_extra_pythonpath() -> None:
+    assert build_analyzer_subprocess_env(()) is None
 
 
 def test_workflow_prefers_structured_gbs_failure_log(tmp_path: Path) -> None:
@@ -257,7 +293,8 @@ def test_slugify_keeps_short_safe_file_name() -> None:
 
 
 def test_cli_main_returns_workflow_exit_code(tmp_path: Path, monkeypatch: object) -> None:
-    def fake_run(options: WorkflowOptions) -> WorkflowResult:
+    def fake_run(options: WorkflowOptions, **kwargs: object) -> WorkflowResult:
+        del kwargs
         summary = options.output_dir / "workflow_summary.md"
         summary.parent.mkdir(parents=True)
         summary.write_text("# Summary\n", encoding="utf-8")

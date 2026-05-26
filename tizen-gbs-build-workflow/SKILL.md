@@ -1,7 +1,7 @@
 ---
 name: tizen-gbs-build-workflow
 description: "Runs the full local Tizen GBS build workflow: build the package, analyze failures, and generate suggestion patches or advisory markdown. Use when the user asks to build and diagnose a Tizen package, run the complete gbs workflow, find the root cause after building, or produce fix suggestions after a failed gbs build."
-compatibility: Requires a local environment with the gbs command, valid gbs.conf, access to the Tizen package source tree, and installed gbs_build_skill and gbs_analyzer Python packages. Built for local AI assistants such as Claude Code or Cline.
+compatibility: Requires a local environment with the gbs command, valid gbs.conf, access to the Tizen package source tree, and either installed gbs_build_skill and gbs_analyzer Python packages or sibling tizen-gbs-build and tizen-gbs-log-analysis skill folders. Built for local AI assistants such as Claude Code or Cline.
 ---
 
 # Tizen gbs Build Workflow
@@ -31,8 +31,9 @@ User says: "Run the GBS workflow for ffmpeg and tell me what to fix if it fails.
 
 Actions:
 
-1. Run `python -m gbs_workflow` with the source root, `gbs.conf`, architecture, and
-   output directory.
+1. Run `python -m gbs_workflow` if installed, or `scripts/run_workflow.py` when using
+   sibling skill folders, with the source root, `gbs.conf`, architecture, and output
+   directory.
 2. Read `.gbs_workflow/workflow_summary.md`.
 3. Report the Top-1 root cause and point the user to generated suggestions.
 
@@ -57,7 +58,10 @@ changes.
 
 1. Identify the source tree, `gbs.conf`, target architecture, output directory, and
    timeout.
-2. Run the workflow through the stable entry point:
+2. Run the workflow through one of the stable entry points.
+
+   If `gbs_workflow`, `gbs_build_skill`, and `gbs_analyzer` are installed in the
+   current Python environment:
 
    ```bash
    python -m gbs_workflow \
@@ -68,6 +72,24 @@ changes.
        --output-dir .gbs_workflow \
        --timeout 1800
    ```
+
+   If using the three skill folders directly without installing the Python packages,
+   place `tizen-gbs-build`, `tizen-gbs-log-analysis`, and
+   `tizen-gbs-build-workflow` next to each other and run:
+
+   ```bash
+   python /path/to/tizen-gbs-build-workflow/scripts/run_workflow.py \
+       --conf /path/to/gbs.conf \
+       --arch armv7l \
+       --include-all \
+       --src-root /path/to/source \
+       --output-dir .gbs_workflow \
+       --timeout 1800
+   ```
+
+   If the sibling folders are not next to each other, set
+   `TIZEN_GBS_BUILD_SKILL_DIR` and `TIZEN_GBS_LOG_ANALYSIS_SKILL_DIR` to the build
+   and analyzer skill roots.
 
 3. Read `.gbs_workflow/workflow_summary.md`.
 4. If the build succeeded, report success and stop.
@@ -116,6 +138,9 @@ Use this skill when the task is the full loop of build, failure analysis, and su
 generation. If the user only wants to run `gbs build` and capture a log, use
 `tizen-gbs-build`. If the user already has a build log and only wants analysis or a
 compact Evidence Packet, use `tizen-gbs-log-analysis`.
+
+Direct folder usage requires `tizen-gbs-build` and `tizen-gbs-log-analysis` to be
+installed in the same Python environment or discoverable as sibling skill folders.
 
 ## Disclaimer
 

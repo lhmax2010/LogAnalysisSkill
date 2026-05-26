@@ -15,7 +15,12 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-where = [".", "tizen-gbs-build/scripts", "tizen-gbs-log-analysis/scripts"]
+where = [
+    ".",
+    "tizen-gbs-build/scripts",
+    "tizen-gbs-log-analysis/scripts",
+    "tizen-gbs-build-workflow/scripts",
+]
 include = ["gbs_analyzer*", "gbs_build_skill*", "gbs_workflow*"]
 
 [tool.setuptools.package-data]
@@ -42,4 +47,9 @@ select = ["B", "E", "F", "I", "UP"]
 [tool.mypy]
 python_version = "3.10"
 strict = true
+mypy_path = [
+    "tizen-gbs-build/scripts",
+    "tizen-gbs-log-analysis/scripts",
+    "tizen-gbs-build-workflow/scripts",
+]
 packages = ["gbs_analyzer", "gbs_build_skill", "gbs_workflow"]
