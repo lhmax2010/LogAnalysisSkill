@@ -56,7 +56,7 @@ PY
 ## Expected M6 Signals
 
 - `quick_filter` still loads only the 7 tier1 fast-path patterns.
-- `full_match` loads all 12 patterns from `gbs_analyzer/patterns/gbs_errors.yaml`.
+- `full_match` loads all 12 patterns from `tizen-gbs-log-analysis/scripts/gbs_analyzer/patterns/gbs_errors.yaml`.
 - Flat `tier: tier1` + `fix_template` remains valid shorthand for `direct_answer_tier1`.
 - Tier2 direct answers require `Evidence.contains_all(evidence_required)`.
 - Degraded evidence always returns `NEEDS_LLM`.
@@ -65,6 +65,6 @@ PY
 
 - [ ] 10+ M6 unit tests pass.
 - [ ] At least 3 tier2 fixture cases hit.
-- [ ] `gbs_analyzer/full_match.py` coverage is above 85%.
+- [ ] `tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py` coverage is above 85%.
 - [ ] Full-match runtime is under 50ms per evaluation.
 - [ ] M6 dev_memory and performance baselines are updated.

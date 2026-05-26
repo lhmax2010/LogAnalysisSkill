@@ -16,7 +16,6 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = [
-    ".",
     "tizen-gbs-build/scripts",
     "tizen-gbs-log-analysis/scripts",
     "tizen-gbs-build-workflow/scripts",

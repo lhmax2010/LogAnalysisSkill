@@ -5,8 +5,19 @@ implemented during M0.
 
 ## Invocation Contract
 
+Installed mode:
+
 ```bash
 python -m gbs_analyzer analyze /path/to/buildlog \
+    --src-root /path/to/source \
+    --max-tokens 1800 \
+    --output-dir /tmp/gbs_analysis
+```
+
+Direct skill-folder mode:
+
+```bash
+python /path/to/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze /path/to/buildlog \
     --src-root /path/to/source \
     --max-tokens 1800 \
     --output-dir /tmp/gbs_analysis

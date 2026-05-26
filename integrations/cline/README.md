@@ -6,10 +6,20 @@ validate a live Cline extension environment.
 
 ## Analyze An Existing Buildlog
 
-`analyze_gbs.json` runs:
+`analyze_gbs.json` uses installed mode and runs:
 
 ```bash
 python -m gbs_analyzer analyze <buildlog_path> \
+    --src-root <workspace> \
+    --max-tokens 1800 \
+    --output-format both \
+    --output-dir <workspace>/.gbs_analysis
+```
+
+Direct skill-folder mode uses the same arguments with the launcher:
+
+```bash
+python /path/to/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze <buildlog_path> \
     --src-root <workspace> \
     --max-tokens 1800 \
     --output-format both \
@@ -25,10 +35,31 @@ Expected outputs:
 
 ## Run Build Workflow
 
-`build_workflow.json` runs:
+`build_workflow.json` uses installed mode and runs:
 
 ```bash
 python -m gbs_workflow \
+    --conf gbs.conf \
+    --arch armv7l \
+    --include-all \
+    --src-root <workspace> \
+    --output-dir <workspace>/.gbs_workflow \
+    --timeout 1800
+```
+
+Direct skill-folder mode requires the three skill folders side by side:
+
+```text
+skills/
+├── tizen-gbs-build/
+├── tizen-gbs-log-analysis/
+└── tizen-gbs-build-workflow/
+```
+
+Then run:
+
+```bash
+python /path/to/skills/tizen-gbs-build-workflow/scripts/run_workflow.py \
     --conf gbs.conf \
     --arch armv7l \
     --include-all \
