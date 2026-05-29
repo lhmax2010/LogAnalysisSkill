@@ -22,7 +22,6 @@ DEFAULT_MAX_TOKENS = 1800
 EXIT_WORKFLOW_ERROR = 1
 EXIT_ARGS = 2
 EXIT_PACKET_UNREADABLE = 3
-GBS_FAILURE_LOG_PATTERN = re.compile(r"(?P<path>/\S+/logs/fail/\S+/log\.txt)")
 
 BuildRunner = Callable[[BuildOptions], BuildResult]
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
@@ -106,7 +105,7 @@ def run_workflow(
             compiler_log_path=compiler_log,
         )
 
-    analysis_log = select_analysis_log(compiler_log)
+    analysis_log = build_result.analysis_log_path or build_result.log_path
     analyzer_dir = options.output_dir / "analyzer_output"
     analyzer_dir.mkdir(parents=True, exist_ok=True)
     analyzer_command = [
@@ -235,20 +234,6 @@ def build_analyzer_subprocess_env(extra_pythonpath: Sequence[str | Path]) -> dic
         entries.append(existing)
     env["PYTHONPATH"] = os.pathsep.join(entries)
     return env
-
-
-def select_analysis_log(compiler_log: Path) -> Path:
-    """Prefer GBS's structured failure log when the wrapper output points to it."""
-
-    try:
-        text = compiler_log.read_text(encoding="utf-8", errors="replace")
-    except OSError:
-        return compiler_log
-    for match in GBS_FAILURE_LOG_PATTERN.finditer(text):
-        candidate = Path(match.group("path"))
-        if candidate.is_file():
-            return candidate
-    return compiler_log
 
 
 def write_suggestions(suggestions: Sequence[Suggestion], suggestions_dir: Path) -> list[Path]:
