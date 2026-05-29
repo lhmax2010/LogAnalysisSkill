@@ -13,7 +13,6 @@ from gbs_workflow.workflow import (
     collect_suggestions,
     main,
     run_workflow,
-    select_analysis_log,
     slugify,
     write_suggestions,
 )
@@ -174,15 +173,15 @@ def test_workflow_prefers_structured_gbs_failure_log(tmp_path: Path) -> None:
 
     def build_runner(build_options: BuildOptions) -> BuildResult:
         build_options.output_log.parent.mkdir(parents=True, exist_ok=True)
-        build_options.output_log.write_text(
-            f"warning: build failed, Leaving the logs in {structured_log}\n",
-            encoding="utf-8",
-        )
+        build_options.output_log.write_text("wrapper output\n", encoding="utf-8")
         return BuildResult(
             exit_code=1,
             log_path=build_options.output_log,
             command=("gbs", "build"),
             duration_seconds=0.1,
+            failure_log_path=structured_log,
+            analysis_log_path=structured_log,
+            package_name="ffmpeg",
         )
 
     def analyzer(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
@@ -200,20 +199,22 @@ def test_workflow_prefers_structured_gbs_failure_log(tmp_path: Path) -> None:
     assert analyzer_input == [str(structured_log)]
 
 
-def test_select_analysis_log_falls_back_when_referenced_log_missing(tmp_path: Path) -> None:
-    compiler_log = tmp_path / "compiler.log"
-    compiler_log.write_text(
-        "warning: build failed, Leaving the logs in /tmp/missing/logs/fail/pkg/log.txt\n",
-        encoding="utf-8",
+def test_workflow_falls_back_to_build_log_when_analysis_log_is_missing(tmp_path: Path) -> None:
+    analyzer_input: list[str] = []
+
+    def analyzer(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        analyzer_input.append(command[command.index("analyze") + 1])
+        return fake_analyzer(depsolve_packet())(command, **kwargs)
+
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build(1),
+        subprocess_runner=analyzer,
+        python_executable="/test/python",
     )
 
-    assert select_analysis_log(compiler_log) == compiler_log
-
-
-def test_select_analysis_log_falls_back_when_wrapper_log_missing(tmp_path: Path) -> None:
-    missing_log = tmp_path / "missing.log"
-
-    assert select_analysis_log(missing_log) == missing_log
+    assert result.analysis_log_path == result.compiler_log_path
+    assert analyzer_input == [str(result.compiler_log_path)]
 
 
 def test_workflow_returns_error_when_packet_is_missing(tmp_path: Path) -> None:
@@ -237,17 +238,35 @@ def test_workflow_returns_error_when_packet_is_missing(tmp_path: Path) -> None:
 
 
 def test_workflow_returns_error_when_analyzer_subprocess_fails(tmp_path: Path) -> None:
+    options = workflow_options(tmp_path)
+    analysis_log = tmp_path / "gbs" / "logs" / "fail" / "ffmpeg" / "log.txt"
+    analysis_log.parent.mkdir(parents=True)
+    analysis_log.write_text("inner rpm log\n", encoding="utf-8")
+
+    def build_runner(build_options: BuildOptions) -> BuildResult:
+        build_options.output_log.parent.mkdir(parents=True, exist_ok=True)
+        build_options.output_log.write_text("wrapper output\n", encoding="utf-8")
+        return BuildResult(
+            exit_code=1,
+            log_path=build_options.output_log,
+            command=("gbs", "build"),
+            duration_seconds=0.1,
+            analysis_log_path=analysis_log,
+        )
+
     def failing_analyzer(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
         del kwargs
+        assert command[command.index("analyze") + 1] == str(analysis_log)
         raise subprocess.CalledProcessError(9, command)
 
     result = run_workflow(
-        workflow_options(tmp_path),
-        build_runner=fake_build(1),
+        options,
+        build_runner=build_runner,
         subprocess_runner=failing_analyzer,
     )
 
     assert result.exit_code == 1
+    assert result.analysis_log_path == analysis_log
     assert result.error == "gbs_analyzer exited with 9"
     assert "gbs_analyzer exited with 9" in result.summary_path.read_text(encoding="utf-8")
 
