@@ -1,14 +1,13 @@
-current_milestone: null
-current_status: standby
-last_completed: restructure_phase4_docs
-last_completed_commit: "e8e06a2"
-session_count: 22
+current_milestone: build_skill_v0.2_phase_a
+current_status: completed
+last_completed: build_skill_v0.2_design
+last_completed_commit: "47bb5b2"
+session_count: 23
 next_steps:
-  - "Stand by for the user's next instruction."
-  - "Do not start v0.2, new hotfixes, or further restructuring without explicit direction."
-blocked_on: null
+  - "Open PR for build skill v0.2 Phase A."
+  - "Wait for review before starting Phase B workflow switch."
+blocked_on: "waiting_for_build_skill_v0.2_phase_a_review"
 notes: |
-  Repository-as-published-skills restructure Phase 1-4 is complete. Runtime code
-  now lives under the three skill folders: tizen-gbs-build, tizen-gbs-log-analysis,
-  and tizen-gbs-build-workflow. Keep standby until the user requests a hotfix,
-  deployment work, or a new design phase.
+  Phase A upgrades only tizen-gbs-build. Preserve v0.1 BuildResult fields, keep
+  BuildOptions unchanged, and do not modify workflow/analyzer/patterns. Phase B
+  will switch workflow to BuildResult.analysis_log_path later.
