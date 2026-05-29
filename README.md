@@ -118,6 +118,34 @@ export TIZEN_GBS_BUILD_SKILL_DIR=/path/to/tizen-gbs-build
 export TIZEN_GBS_LOG_ANALYSIS_SKILL_DIR=/path/to/tizen-gbs-log-analysis
 ```
 
+## Company Hub Deployment & Cline Integration
+
+For company-machine deployment, clone the stable release branch and publish the
+three skill folders as the reviewable artifacts:
+
+```bash
+git clone --branch release/v1.0 https://github.com/lhmax2010/LogAnalysisSkill.git
+```
+
+Upload `tizen-gbs-build/`, `tizen-gbs-log-analysis/`, and
+`tizen-gbs-build-workflow/` to the company skill hub as separate skills. Each
+folder is self-contained for skill review because it includes its own
+`SKILL.md` and `scripts/` runtime. If the hub expects archives, zip each skill
+folder independently rather than uploading the whole repository as one skill.
+
+For Cline or another local assistant, point the tool at the three `SKILL.md`
+files directly, or install them through the company hub if that is how your
+environment exposes skills. The workflow skill depends on the build and
+log-analysis skills, so make all three available when users want the full
+build -> analyze -> suggestions flow.
+
+After installation, verify routing with three simple prompts:
+
+- Build only: "Run a Tizen gbs build and capture the compiler log."
+- Analyze only: "Analyze this gbs buildlog and find the root cause."
+- Full workflow: "Run the gbs build, analyze it if it fails, and generate
+  suggestion files."
+
 ## Outputs
 
 Analyzer output:
