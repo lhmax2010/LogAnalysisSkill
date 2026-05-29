@@ -1,6 +1,6 @@
 ---
 name: tizen-gbs-build
-description: Runs local Tizen gbs builds and streams stdout and stderr into a build log while preserving the real exit code. Use when the user asks to build or compile a Tizen package, run "gbs build", capture a buildlog, verify whether a package builds, or produce a compiler.log without analyzing the failure.
+description: Runs local Tizen gbs builds, streams stdout and stderr into a build log, preserves the real exit code, and locates the structured failure log when GBS reports one. Use when the user asks to build or compile a Tizen package, run "gbs build", capture a buildlog, get the failure log or structured failure log, verify whether a package builds, or produce compiler.log without analyzing the failure.
 compatibility: Requires a local environment with the gbs command, a valid gbs.conf, and access to the Tizen package source tree. Built for local AI assistants such as Claude Code or Cline.
 ---
 
@@ -46,11 +46,25 @@ Actions:
 
 Result: The user receives a buildlog that can later be analyzed separately.
 
+### Example 3: User wants the GBS failure log path
+
+User says: "Run the ffmpeg build and tell me which log should be analyzed if it fails."
+
+Actions:
+
+1. Run the build skill from any directory with `--src-dir /path/to/ffmpeg`.
+2. Read the stderr summary after the command exits.
+3. If the build failed and GBS printed a structured failure log path, report that
+   `analysis_log_path` points to the structured `logs/fail/<package>/log.txt` file.
+
+Result: The user gets both the compiler log path and the recommended analysis log path.
+
 ## Required Workflow
 
 1. Identify the Tizen package source tree. Run the command from that tree unless the
    user gives a different working directory.
-2. Identify the `gbs.conf` path, target architecture, output log path, and timeout.
+2. Identify the `gbs.conf` path, target architecture, output log path, optional
+   `--src-dir`, and timeout.
 3. Run the build runner through one of the stable entry points.
 
    If `gbs_build_skill` is installed in the current Python environment:
@@ -60,6 +74,7 @@ Result: The user receives a buildlog that can later be analyzed separately.
        --conf /path/to/gbs.conf \
        --arch armv7l \
        --include-all \
+       --src-dir /path/to/source \
        --output-log ./out/compiler.log \
        --timeout 1800
    ```
@@ -71,6 +86,7 @@ Result: The user receives a buildlog that can later be analyzed separately.
        --conf /path/to/gbs.conf \
        --arch armv7l \
        --include-all \
+       --src-dir /path/to/source \
        --output-log ./out/compiler.log \
        --timeout 1800
    ```
@@ -81,12 +97,19 @@ Result: The user receives a buildlog that can later be analyzed separately.
 
 ## Output Contract
 
-The build runner writes one combined log file:
+The build runner writes one combined log file and returns path metadata:
 
 - `--output-log`: combined `gbs build` stdout and stderr, streamed while the build runs.
+- `failure_log_path`: structured GBS failure log path when the build failed and the
+  `Leaving the logs in .../logs/fail/<package>/log.txt` line points to an existing file.
+- `analysis_log_path`: recommended log for later analysis. Successful builds use
+  `--output-log`; failed builds use `failure_log_path` when available, otherwise
+  `--output-log`.
+- `package_name`: package name parsed from `failure_log_path`, when available.
 
-The runner prints a short status line to stderr with the log path. The returned exit
-code is the build result contract for callers.
+The runner prints a short status summary to stderr with the compiler log, failure
+log when found, and recommended analysis log. The returned exit code is the build
+result contract for callers.
 
 Exit codes:
 
