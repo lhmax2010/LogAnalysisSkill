@@ -1,13 +1,12 @@
-current_milestone: build_skill_v0.2_phase_a
+current_milestone: build_skill_v0.2_phase_b
 current_status: completed
-last_completed: build_skill_v0.2_design
-last_completed_commit: "47bb5b2"
-session_count: 23
+last_completed: build_skill_v0.2_phase_a
+last_completed_commit: "4e9ef15"
+session_count: 24
 next_steps:
-  - "Open PR for build skill v0.2 Phase A."
-  - "Wait for review before starting Phase B workflow switch."
-blocked_on: "waiting_for_build_skill_v0.2_phase_a_review"
+  - "Open PR for build skill v0.2 Phase B."
+  - "Wait for review before any further workflow changes."
+blocked_on: "waiting_for_build_skill_v0.2_phase_b_review"
 notes: |
-  Phase A upgrades only tizen-gbs-build. Preserve v0.1 BuildResult fields, keep
-  BuildOptions unchanged, and do not modify workflow/analyzer/patterns. Phase B
-  will switch workflow to BuildResult.analysis_log_path later.
+  Phase B consumes the Phase A build-skill API from workflow. Do not modify
+  build skill, analyzer, patterns, or suggesters.
