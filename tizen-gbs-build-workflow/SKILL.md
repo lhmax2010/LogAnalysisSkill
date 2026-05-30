@@ -31,11 +31,13 @@ User says: "Run the GBS workflow for ffmpeg and tell me what to fix if it fails.
 
 Actions:
 
-1. Run `python -m gbs_workflow` if installed, or `scripts/run_workflow.py` when using
-   sibling skill folders, with the source root, `gbs.conf`, architecture, and output
-   directory.
-2. Read `.gbs_workflow/workflow_summary.md`.
-3. Report the Top-1 root cause and point the user to generated suggestions.
+1. Ask for the `gbs.conf` path and target architecture if either is missing.
+2. If the user did not specify a source root, use the current working directory.
+3. If the user did not specify an output directory, use `./.gbs_workflow`.
+4. Run `python -m gbs_workflow` if installed, or `scripts/run_workflow.py` when
+   using sibling skill folders.
+5. Read `.gbs_workflow/workflow_summary.md`.
+6. Report the Top-1 root cause and point the user to generated suggestions.
 
 Result: The build was run, the failure was analyzed, and suggestions were written for
 manual review.
@@ -56,9 +58,19 @@ changes.
 
 ## Required Workflow
 
-1. Identify the source tree, `gbs.conf`, target architecture, output directory, and
-   timeout.
-2. Run the workflow through one of the stable entry points.
+1. Identify the `gbs.conf` path. If the user did not provide it, ask:
+   "Where is your gbs.conf file?" Do not guess, search blindly, or invent a
+   configuration path.
+2. Identify the target architecture. If the user did not provide it, ask:
+   "Which target architecture? (e.g. armv7l, aarch64)"
+3. Identify the source root, output directory, and timeout. If the user did not
+   specify `--src-root`, use the current working directory. If the user did not
+   specify `--output-dir`, use `./.gbs_workflow` without asking.
+4. Run the workflow through one of the stable entry points. The CLI still
+   requires `--conf`, `--arch`, `--src-root`, and `--output-dir`; Claude should
+   ask for `--conf` and `--arch` when missing and fill the source root and output
+   directory defaults when the user omitted them. Do not add analyzer-only CLI
+   options; the workflow CLI does not expose token-budget flags.
 
    If `gbs_workflow`, `gbs_build_skill`, and `gbs_analyzer` are installed in the
    current Python environment:
@@ -91,11 +103,11 @@ changes.
    `TIZEN_GBS_BUILD_SKILL_DIR` and `TIZEN_GBS_LOG_ANALYSIS_SKILL_DIR` to the build
    and analyzer skill roots.
 
-3. Read `.gbs_workflow/workflow_summary.md`.
-4. If the build succeeded, report success and stop.
-5. If the build failed, read `.gbs_workflow/analyzer_output/evidence_packet.md` for the
+5. Read `.gbs_workflow/workflow_summary.md`.
+6. If the build succeeded, report success and stop.
+7. If the build failed, read `.gbs_workflow/analyzer_output/evidence_packet.md` for the
    diagnosis and read `.gbs_workflow/suggestions/*.md` for suggested follow-up.
-6. If a suggestion includes a `.patch` file, explain that it is not auto-applied and
+8. If a suggestion includes a `.patch` file, explain that it is not auto-applied and
    the user must review it before running `git apply`.
 
 ## Output Contract
