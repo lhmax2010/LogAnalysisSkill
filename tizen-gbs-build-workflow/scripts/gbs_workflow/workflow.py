@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from gbs_analyzer.packet_assembler import TokenEstimator
 from gbs_build_skill.runner import BuildOptions, BuildResult, run_gbs_build
 
 from gbs_workflow.suggesters import DEFAULT_SUGGESTERS, SuggesterBase, Suggestion
@@ -55,6 +56,7 @@ class WorkflowResult:
     evidence_packet_path: Path | None = None
     evidence_markdown_path: Path | None = None
     suggestion_paths: list[Path] = field(default_factory=list)
+    downstream_token_estimate: dict[str, Any] | None = None
     error: str | None = None
 
 
@@ -86,16 +88,15 @@ def run_workflow(
         )
     )
     if build_result.exit_code == 0:
-        summary_path.write_text(
-            render_workflow_summary(
-                build_status="success",
-                build_exit_code=0,
-                packet=None,
-                suggestions=[],
-                suggestion_files=[],
-            ),
-            encoding="utf-8",
+        summary_text, downstream_tokens = render_workflow_summary_with_tokens(
+            summary_path=summary_path,
+            build_status="success",
+            build_exit_code=0,
+            packet=None,
+            suggestions=[],
+            suggestion_files=[],
         )
+        summary_path.write_text(summary_text, encoding="utf-8")
         return WorkflowResult(
             exit_code=0,
             build_exit_code=0,
@@ -103,6 +104,7 @@ def run_workflow(
             output_dir=options.output_dir,
             summary_path=summary_path,
             compiler_log_path=compiler_log,
+            downstream_token_estimate=downstream_tokens,
         )
 
     analysis_log = build_result.analysis_log_path or build_result.log_path
@@ -128,17 +130,16 @@ def run_workflow(
     try:
         subprocess_runner(analyzer_command, **subprocess_kwargs)
     except subprocess.CalledProcessError as exc:
-        summary_path.write_text(
-            render_workflow_summary(
-                build_status=f"failed (exit {build_result.exit_code})",
-                build_exit_code=build_result.exit_code,
-                packet=None,
-                suggestions=[],
-                suggestion_files=[],
-                error=f"gbs_analyzer exited with {exc.returncode}",
-            ),
-            encoding="utf-8",
+        summary_text, downstream_tokens = render_workflow_summary_with_tokens(
+            summary_path=summary_path,
+            build_status=f"failed (exit {build_result.exit_code})",
+            build_exit_code=build_result.exit_code,
+            packet=None,
+            suggestions=[],
+            suggestion_files=[],
+            error=f"gbs_analyzer exited with {exc.returncode}",
         )
+        summary_path.write_text(summary_text, encoding="utf-8")
         return WorkflowResult(
             exit_code=EXIT_WORKFLOW_ERROR,
             build_exit_code=build_result.exit_code,
@@ -148,6 +149,7 @@ def run_workflow(
             compiler_log_path=compiler_log,
             analysis_log_path=analysis_log,
             analyzer_output_dir=analyzer_dir,
+            downstream_token_estimate=downstream_tokens,
             error=f"gbs_analyzer exited with {exc.returncode}",
         )
 
@@ -156,17 +158,16 @@ def run_workflow(
     try:
         packet = json.loads(packet_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        summary_path.write_text(
-            render_workflow_summary(
-                build_status=f"failed (exit {build_result.exit_code})",
-                build_exit_code=build_result.exit_code,
-                packet=None,
-                suggestions=[],
-                suggestion_files=[],
-                error=f"cannot read evidence_packet.json: {exc}",
-            ),
-            encoding="utf-8",
+        summary_text, downstream_tokens = render_workflow_summary_with_tokens(
+            summary_path=summary_path,
+            build_status=f"failed (exit {build_result.exit_code})",
+            build_exit_code=build_result.exit_code,
+            packet=None,
+            suggestions=[],
+            suggestion_files=[],
+            error=f"cannot read evidence_packet.json: {exc}",
         )
+        summary_path.write_text(summary_text, encoding="utf-8")
         return WorkflowResult(
             exit_code=EXIT_PACKET_UNREADABLE,
             build_exit_code=build_result.exit_code,
@@ -178,21 +179,23 @@ def run_workflow(
             analyzer_output_dir=analyzer_dir,
             evidence_packet_path=packet_path,
             evidence_markdown_path=markdown_path,
+            downstream_token_estimate=downstream_tokens,
             error=f"cannot read evidence_packet.json: {exc}",
         )
 
     suggestions = collect_suggestions(packet, options.src_root, suggesters)
     suggestion_files = write_suggestions(suggestions, suggestions_dir)
-    summary_path.write_text(
-        render_workflow_summary(
-            build_status=f"failed (exit {build_result.exit_code})",
-            build_exit_code=build_result.exit_code,
-            packet=packet,
-            suggestions=suggestions,
-            suggestion_files=suggestion_files,
-        ),
-        encoding="utf-8",
+    summary_text, downstream_tokens = render_workflow_summary_with_tokens(
+        summary_path=summary_path,
+        evidence_markdown_path=markdown_path,
+        analyzer_output_dir=analyzer_dir,
+        build_status=f"failed (exit {build_result.exit_code})",
+        build_exit_code=build_result.exit_code,
+        packet=packet,
+        suggestions=suggestions,
+        suggestion_files=suggestion_files,
     )
+    summary_path.write_text(summary_text, encoding="utf-8")
     return WorkflowResult(
         exit_code=build_result.exit_code,
         build_exit_code=build_result.exit_code,
@@ -205,6 +208,7 @@ def run_workflow(
         evidence_packet_path=packet_path,
         evidence_markdown_path=markdown_path,
         suggestion_paths=suggestion_files,
+        downstream_token_estimate=downstream_tokens,
     )
 
 
@@ -331,6 +335,152 @@ def render_workflow_summary(
     )
 
 
+def render_workflow_summary_with_tokens(
+    *,
+    summary_path: Path,
+    evidence_markdown_path: Path | None = None,
+    suggestion_files: Sequence[Path] = (),
+    analyzer_output_dir: Path | None = None,
+    estimator: TokenEstimator | None = None,
+    **summary_kwargs: Any,
+) -> tuple[str, dict[str, Any]]:
+    """Render the workflow summary plus Claude-facing downstream token estimates."""
+
+    active_estimator = estimator or TokenEstimator()
+    base_summary = render_workflow_summary(suggestion_files=suggestion_files, **summary_kwargs)
+    section = ""
+    estimate = estimate_workflow_downstream_tokens(
+        summary_text=base_summary,
+        summary_path=summary_path,
+        evidence_markdown_path=evidence_markdown_path,
+        suggestion_files=suggestion_files,
+        analyzer_output_dir=analyzer_output_dir,
+        estimator=active_estimator,
+    )
+    for _ in range(3):
+        section = render_downstream_token_section(estimate)
+        rendered = base_summary + section
+        estimate = estimate_workflow_downstream_tokens(
+            summary_text=rendered,
+            summary_path=summary_path,
+            evidence_markdown_path=evidence_markdown_path,
+            suggestion_files=suggestion_files,
+            analyzer_output_dir=analyzer_output_dir,
+            estimator=active_estimator,
+        )
+    return base_summary + render_downstream_token_section(estimate), estimate
+
+
+def estimate_workflow_downstream_tokens(
+    *,
+    summary_text: str,
+    summary_path: Path,
+    evidence_markdown_path: Path | None,
+    suggestion_files: Sequence[Path],
+    analyzer_output_dir: Path | None,
+    estimator: TokenEstimator,
+) -> dict[str, Any]:
+    """Estimate markdown material that workflow recommends Claude read."""
+
+    files: list[dict[str, Any]] = [
+        {
+            "path": str(summary_path),
+            "role": "workflow_summary",
+            "tokens": estimator.estimate_text(summary_text),
+            "included_in_total": True,
+        }
+    ]
+    if evidence_markdown_path is not None and evidence_markdown_path.is_file():
+        files.append(
+            {
+                "path": str(evidence_markdown_path),
+                "role": "evidence_packet_md",
+                "tokens": _estimate_file_tokens(evidence_markdown_path, estimator),
+                "included_in_total": True,
+            }
+        )
+    for path in sorted(suggestion_files):
+        if path.suffix == ".md" and path.is_file():
+            files.append(
+                {
+                    "path": str(path),
+                    "role": "suggestion_md",
+                    "tokens": _estimate_file_tokens(path, estimator),
+                    "included_in_total": True,
+                }
+            )
+
+    total = sum(int(file["tokens"]) for file in files if file["included_in_total"])
+    return {
+        "scope": (
+            "Estimated tokens of material this workflow feeds to Claude "
+            "(recommended reading). Actual Claude consumption also includes any "
+            "source files Claude reads on its own."
+        ),
+        "usage_note": (
+            "Compare this baseline with Cline/client actual token usage; the "
+            "difference approximates extra material Claude read outside workflow outputs."
+        ),
+        "estimate_method": estimator.method,
+        "total_claude_facing_tokens": total,
+        "source_snippets_tokens": _read_source_snippets_tokens(analyzer_output_dir),
+        "files": files,
+    }
+
+
+def render_downstream_token_section(estimate: dict[str, Any]) -> str:
+    """Render workflow downstream token estimates as a markdown section."""
+
+    rows = [
+        f"| `{file['path']}` | {file['role']} | {file['tokens']} |"
+        for file in estimate.get("files", [])
+    ]
+    if not rows:
+        rows.append("| - | - | 0 |")
+    source_snippets = estimate.get("source_snippets_tokens")
+    source_line = (
+        f"\nSource snippets subset from analyzer perf_report: {source_snippets} tokens "
+        "(already included in evidence packet estimate).\n"
+        if source_snippets is not None
+        else ""
+    )
+    return (
+        "\n## Downstream Token Estimate\n\n"
+        f"{estimate['scope']}\n\n"
+        f"{estimate['usage_note']}\n\n"
+        f"**Estimate method**: {estimate['estimate_method']}\n"
+        f"**Total Claude-facing tokens**: {estimate['total_claude_facing_tokens']}\n"
+        f"{source_line}\n"
+        "| File | Role | Estimated Tokens |\n"
+        "|------|------|------------------|\n"
+        + "\n".join(rows)
+        + "\n"
+    )
+
+
+def _estimate_file_tokens(path: Path, estimator: TokenEstimator) -> int:
+    try:
+        return estimator.estimate_text(path.read_text(encoding="utf-8", errors="replace"))
+    except OSError:
+        return 0
+
+
+def _read_source_snippets_tokens(analyzer_output_dir: Path | None) -> int | None:
+    if analyzer_output_dir is None:
+        return None
+    perf_path = analyzer_output_dir / "perf_report.json"
+    try:
+        report = json.loads(perf_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    value = (
+        report.get("tokens", {})
+        .get("by_section", {})
+        .get("source_snippets")
+    )
+    return int(value) if isinstance(value, int) else None
+
+
 def slugify(value: str) -> str:
     """Return a short lowercase slug for file names."""
 
@@ -378,4 +528,7 @@ def main(
         analyzer_extra_pythonpath=analyzer_extra_pythonpath,
     )
     print(f"workflow summary: {result.summary_path}", file=sys.stderr)
+    if result.downstream_token_estimate is not None:
+        total = result.downstream_token_estimate.get("total_claude_facing_tokens")
+        print(f"workflow downstream tokens: {total} estimated", file=sys.stderr)
     return result.exit_code

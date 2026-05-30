@@ -34,6 +34,11 @@ def test_analyze_buildlog_fast_path_writes_outputs(tmp_path: Path) -> None:
     assert result.perf_report is not None
     assert result.perf_report["schema_version"] == "perf_report/v1"
     assert result.perf_report["execution"]["fast_path_hit"] is True
+    downstream = result.perf_report["tokens"]["downstream_outputs"]
+    assert downstream["evidence_packet_md_tokens"] >= 1
+    assert downstream["evidence_packet_json_tokens"] >= 1
+    assert downstream["total_claude_facing_tokens"] == downstream["evidence_packet_md_tokens"]
+    assert "Actual Claude consumption" in downstream["scope"]
 
 
 def test_analyze_buildlog_full_path_tier2(tmp_path: Path) -> None:
@@ -59,6 +64,10 @@ def test_analyze_buildlog_full_path_tier2(tmp_path: Path) -> None:
     assert result.perf_report is not None
     assert result.perf_report["decisions"]["evidence_collector"] == "compile"
     assert result.perf_report["decisions"]["level_achieved"] == 2
+    downstream = result.perf_report["tokens"]["downstream_outputs"]
+    assert downstream["evidence_packet_md_tokens"] is None
+    assert downstream["evidence_packet_json_tokens"] >= 1
+    assert downstream["total_claude_facing_tokens"] == 0
 
 
 def test_analyze_buildlog_returns_unreadable_exit(tmp_path: Path) -> None:
