@@ -59,6 +59,10 @@ def fake_analyzer(packet: dict[str, object]) -> Any:
             encoding="utf-8",
         )
         (output_dir / "evidence_packet.md").write_text("# Evidence\n", encoding="utf-8")
+        (output_dir / "perf_report.json").write_text(
+            json.dumps({"tokens": {"by_section": {"source_snippets": 17}}}),
+            encoding="utf-8",
+        )
         return subprocess.CompletedProcess(command, 0)
 
     return _runner
@@ -128,6 +132,13 @@ def test_workflow_failure_runs_analyzer_and_writes_depsolve_suggestion(tmp_path:
     summary = result.summary_path.read_text(encoding="utf-8")
     assert "depsolve" in summary
     assert "Yes" in summary
+    assert "Downstream Token Estimate" in summary
+    assert "Actual Claude consumption" in summary
+    assert "Source snippets subset from analyzer perf_report: 17 tokens" in summary
+    assert result.downstream_token_estimate is not None
+    assert result.downstream_token_estimate["total_claude_facing_tokens"] >= 1
+    roles = {file["role"] for file in result.downstream_token_estimate["files"]}
+    assert roles == {"workflow_summary", "evidence_packet_md", "suggestion_md"}
 
 
 def test_workflow_passes_extra_pythonpath_to_analyzer(
@@ -311,7 +322,11 @@ def test_slugify_keeps_short_safe_file_name() -> None:
     )
 
 
-def test_cli_main_returns_workflow_exit_code(tmp_path: Path, monkeypatch: object) -> None:
+def test_cli_main_returns_workflow_exit_code(
+    tmp_path: Path,
+    monkeypatch: object,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     def fake_run(options: WorkflowOptions, **kwargs: object) -> WorkflowResult:
         del kwargs
         summary = options.output_dir / "workflow_summary.md"
@@ -324,6 +339,7 @@ def test_cli_main_returns_workflow_exit_code(tmp_path: Path, monkeypatch: object
             output_dir=options.output_dir,
             summary_path=summary,
             compiler_log_path=options.output_dir / "compiler.log",
+            downstream_token_estimate={"total_claude_facing_tokens": 123},
         )
 
     monkeypatch.setattr("gbs_workflow.workflow.run_workflow", fake_run)
@@ -340,3 +356,5 @@ def test_cli_main_returns_workflow_exit_code(tmp_path: Path, monkeypatch: object
             str(tmp_path / ".gbs_workflow"),
         ]
     ) == 7
+    captured = capsys.readouterr()
+    assert "workflow downstream tokens: 123 estimated" in captured.err
