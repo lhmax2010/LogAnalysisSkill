@@ -171,6 +171,7 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                 perf,
                 options=options,
                 redactor=redactor,
+                estimator=estimator,
             )
             trace_logger.info(
                 "wrapper",
@@ -194,25 +195,32 @@ def write_outputs(
     *,
     options: AnalyzeOptions,
     redactor: MinimalRedactor,
+    estimator: TokenEstimator,
 ) -> dict[str, str]:
     """Write wrapper artifacts without printing to stdout."""
 
     output_paths: dict[str, str] = {}
+    packet_json_tokens: int | None = None
+    packet_markdown_tokens: int | None = None
     if options.output_format in {"json", "both"}:
         packet_path = options.output_dir / "evidence_packet.json"
-        packet_path.write_text(
-            json.dumps(packet, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
+        packet_json_text = json.dumps(packet, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+        packet_path.write_text(packet_json_text, encoding="utf-8")
+        packet_json_tokens = estimator.estimate_text(packet_json_text)
         output_paths["evidence_packet_json"] = str(packet_path)
     if options.output_format in {"md", "both"}:
         markdown_path = options.output_dir / "evidence_packet.md"
-        markdown_path.write_text(
-            render_packet_markdown(packet, redactor=redactor) + "\n",
-            encoding="utf-8",
-        )
+        markdown_text = render_packet_markdown(packet, redactor=redactor) + "\n"
+        markdown_path.write_text(markdown_text, encoding="utf-8")
+        packet_markdown_tokens = estimator.estimate_text(markdown_text)
         output_paths["evidence_packet_md"] = str(markdown_path)
 
+    _attach_downstream_output_tokens(
+        perf_report,
+        estimator=estimator,
+        evidence_packet_md_tokens=packet_markdown_tokens,
+        evidence_packet_json_tokens=packet_json_tokens,
+    )
     perf_path = options.output_dir / "perf_report.json"
     perf_path.write_text(
         json.dumps(perf_report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
@@ -220,6 +228,41 @@ def write_outputs(
     )
     output_paths["perf_report_json"] = str(perf_path)
     return output_paths
+
+
+def _attach_downstream_output_tokens(
+    perf_report: dict[str, Any],
+    *,
+    estimator: TokenEstimator,
+    evidence_packet_md_tokens: int | None,
+    evidence_packet_json_tokens: int | None,
+) -> None:
+    """Add estimates for analyzer outputs that an outer Claude may read."""
+
+    by_section = perf_report.get("tokens", {}).get("by_section", {})
+    source_snippets_tokens = (
+        by_section.get("source_snippets") if isinstance(by_section, dict) else None
+    )
+    total_claude_facing = evidence_packet_md_tokens or 0
+    tokens = perf_report.setdefault("tokens", {})
+    if not isinstance(tokens, dict):
+        return
+    tokens["downstream_outputs"] = {
+        "scope": (
+            "Estimated tokens of analyzer material intended for outer Claude "
+            "recommended reading. Actual Claude consumption also includes any "
+            "source files Claude reads on its own."
+        ),
+        "usage_note": (
+            "Compare this baseline with Cline/client actual token usage; the "
+            "difference approximates extra material Claude read outside analyzer outputs."
+        ),
+        "estimate_method": estimator.method,
+        "total_claude_facing_tokens": total_claude_facing,
+        "evidence_packet_md_tokens": evidence_packet_md_tokens,
+        "evidence_packet_json_tokens": evidence_packet_json_tokens,
+        "source_snippets_tokens": source_snippets_tokens,
+    }
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
