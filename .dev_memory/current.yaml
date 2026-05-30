@@ -1,12 +1,12 @@
-current_milestone: build_skill_v0.2_phase_b
+current_milestone: build_skill_broken_root_retry
 current_status: completed
-last_completed: build_skill_v0.2_phase_a
-last_completed_commit: "4e9ef15"
-session_count: 24
+last_completed: build_skill_v0.2_phase_b
+last_completed_commit: "31d909f"
+session_count: 25
 next_steps:
-  - "Open PR for build skill v0.2 Phase B."
-  - "Wait for review before any further workflow changes."
-blocked_on: "waiting_for_build_skill_v0.2_phase_b_review"
+  - "Open PR for broken-root clean retry."
+  - "Wait for review before any further build skill changes."
+blocked_on: "waiting_for_broken_root_retry_review"
 notes: |
-  Phase B consumes the Phase A build-skill API from workflow. Do not modify
-  build skill, analyzer, patterns, or suggesters.
+  This scoped fix belongs only to tizen-gbs-build. Do not modify workflow,
+  analyzer, patterns, or existing BuildResult/BuildOptions fields.
