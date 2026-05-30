@@ -16,6 +16,7 @@ DEFAULT_TIMEOUT_SECONDS = 1800
 EXIT_TIMEOUT = 124
 EXIT_COMMAND_NOT_FOUND = 127
 EXIT_ARGS = 2
+BROKEN_BUILD_ROOT_MARKER = "Your build system is broken"
 GBS_FAILURE_LOG_PATTERN = re.compile(
     r"Leaving the logs in (?P<path>/\S+/logs/fail/(?P<pkg>[^/]+)/log\.txt)"
 )
@@ -48,7 +49,7 @@ class BuildResult:
     package_name: str | None = None
 
 
-def build_command(options: BuildOptions) -> list[str]:
+def build_command(options: BuildOptions, *, clean: bool = False) -> list[str]:
     """Build the argv list for `gbs build` from runner options."""
 
     command = [
@@ -61,7 +62,19 @@ def build_command(options: BuildOptions) -> list[str]:
     ]
     if options.include_all:
         command.append("--include-all")
+    if clean:
+        command.append("--clean")
     return command
+
+
+def _has_broken_build_root(compiler_log: Path) -> bool:
+    """Return whether `compiler_log` contains GBS's broken build-root marker."""
+
+    try:
+        text = compiler_log.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    return BROKEN_BUILD_ROOT_MARKER in text
 
 
 def _extract_failure_log_path(compiler_log: Path) -> tuple[Path | None, str | None]:
@@ -122,11 +135,30 @@ def run_gbs_build(options: BuildOptions) -> BuildResult:
     options.output_log.parent.mkdir(parents=True, exist_ok=True)
     start = time.monotonic()
 
+    exit_code, timed_out = _run_gbs_once(options=options, command=command)
+    final_command = command
+    if exit_code != 0 and not timed_out and _has_broken_build_root(options.output_log):
+        final_command = build_command(options, clean=True)
+        exit_code, timed_out = _run_gbs_once(options=options, command=final_command)
+
+    return _build_result(
+        exit_code=exit_code,
+        log_path=options.output_log,
+        command=tuple(final_command),
+        duration_seconds=time.monotonic() - start,
+        timed_out=timed_out,
+    )
+
+
+def _run_gbs_once(*, options: BuildOptions, command: list[str]) -> tuple[int, bool]:
+    """Run one GBS invocation and stream its combined output to `output_log`."""
+
     with options.output_log.open("w", encoding="utf-8", errors="replace") as log_file:
         try:
             process = subprocess.Popen(
                 command,
                 cwd=options.cwd,
+                stdin=subprocess.DEVNULL,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
@@ -137,12 +169,7 @@ def run_gbs_build(options: BuildOptions) -> BuildResult:
         except FileNotFoundError:
             log_file.write(f"{options.gbs_binary}: command not found\n")
             log_file.flush()
-            return _build_result(
-                exit_code=EXIT_COMMAND_NOT_FOUND,
-                log_path=options.output_log,
-                command=tuple(command),
-                duration_seconds=time.monotonic() - start,
-            )
+            return EXIT_COMMAND_NOT_FOUND, False
 
         reader = threading.Thread(
             target=_stream_process_output,
@@ -164,13 +191,7 @@ def run_gbs_build(options: BuildOptions) -> BuildResult:
         finally:
             reader.join(timeout=5)
 
-    return _build_result(
-        exit_code=exit_code,
-        log_path=options.output_log,
-        command=tuple(command),
-        duration_seconds=time.monotonic() - start,
-        timed_out=timed_out,
-    )
+    return exit_code, timed_out
 
 
 def main(argv: list[str] | None = None) -> int:
