@@ -27,14 +27,33 @@ User says: "Run a gbs build for this package and save the log."
 
 Actions:
 
-1. Confirm the source tree, `gbs.conf`, architecture, and output log path.
-2. Run `python -m gbs_build_skill` if the package is installed, or
+1. Confirm the source tree and architecture. If the user did not provide a
+   `gbs.conf` path, ask: "Where is your gbs.conf file?"
+2. If the user did not specify an output log path, use `./compiler.log`.
+3. Run `python -m gbs_build_skill` if the package is installed, or
    `scripts/run_build.py` when using the skill folder directly.
-3. Report the exit code and log path.
+4. Report the exit code and log path.
 
 Result: A build log exists on disk and the original GBS exit code is preserved.
 
-### Example 2: User only needs a buildlog
+### Example 2: User omits gbs.conf
+
+User says: "Run a gbs build for this package."
+
+Actions:
+
+1. Ask the user for the `gbs.conf` path before running any command; do not guess
+   or invent one.
+2. Use `./compiler.log` as the output log path unless the user asks for a
+   different path.
+3. Run `python -m gbs_build_skill` if the package is installed, or
+   `scripts/run_build.py` when using the skill folder directly.
+4. Report the exit code and log path.
+
+Result: The build runs only after the required `gbs.conf` path is known, while
+the log path defaults to `./compiler.log`.
+
+### Example 3: User only needs a buildlog
 
 User says: "Just compile it and give me the compiler.log; do not analyze it yet."
 
@@ -46,16 +65,17 @@ Actions:
 
 Result: The user receives a buildlog that can later be analyzed separately.
 
-### Example 3: User wants the GBS failure log path
+### Example 4: User wants the GBS failure log path
 
 User says: "Run the ffmpeg build and tell me which log should be analyzed if it fails."
 
 Actions:
 
-1. Run the build skill from any directory with `--src-dir /path/to/ffmpeg`.
+1. After the required `gbs.conf` path is known, run the build skill from any
+   directory with `--src-dir /path/to/ffmpeg`.
 2. Read the stderr summary after the command exits.
 3. If the build failed and GBS printed a structured failure log path, report that
-   `analysis_log_path` points to the structured `logs/fail/<package>/log.txt` file.
+   `analysis_log_path` points to the structured `logs/fail/{package}/log.txt` file.
 
 Result: The user gets both the compiler log path and the recommended analysis log path.
 
@@ -63,9 +83,14 @@ Result: The user gets both the compiler log path and the recommended analysis lo
 
 1. Identify the Tizen package source tree. Run the command from that tree unless the
    user gives a different working directory.
-2. Identify the `gbs.conf` path, target architecture, output log path, optional
-   `--src-dir`, and timeout.
-3. Run the build runner through one of the stable entry points.
+2. Identify the `gbs.conf` path. If the user did not provide it, ask:
+   "Where is your gbs.conf file?" Do not guess, search blindly, or invent a
+   configuration path.
+3. Identify the target architecture, optional `--src-dir`, and timeout. If the user
+   did not specify an output log path, use `./compiler.log` without asking.
+4. Run the build runner through one of the stable entry points. The CLI still
+   requires `--conf` and `--output-log`; Claude should ask for `--conf` when
+   missing and fill `--output-log ./compiler.log` when the user omitted it.
 
    If `gbs_build_skill` is installed in the current Python environment:
 
@@ -91,8 +116,8 @@ Result: The user gets both the compiler log path and the recommended analysis lo
        --timeout 1800
    ```
 
-4. Read the process exit code.
-5. Report the exit code and the output log path. If the build failed, do not infer the
+5. Read the process exit code.
+6. Report the exit code and the output log path. If the build failed, do not infer the
    root cause unless the user asks to analyze the log.
 
 ## Output Contract
@@ -101,7 +126,7 @@ The build runner writes one combined log file and returns path metadata:
 
 - `--output-log`: combined `gbs build` stdout and stderr, streamed while the build runs.
 - `failure_log_path`: structured GBS failure log path when the build failed and the
-  `Leaving the logs in .../logs/fail/<package>/log.txt` line points to an existing file.
+  `Leaving the logs in .../logs/fail/{package}/log.txt` line points to an existing file.
 - `analysis_log_path`: recommended log for later analysis. Successful builds use
   `--output-log`; failed builds use `failure_log_path` when available, otherwise
   `--output-log`.
