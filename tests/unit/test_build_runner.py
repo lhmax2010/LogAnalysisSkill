@@ -4,12 +4,14 @@ import sys
 from pathlib import Path
 
 from gbs_build_skill.runner import (
+    BROKEN_BUILD_ROOT_MARKER,
     DEFAULT_TIMEOUT_SECONDS,
     EXIT_ARGS,
     EXIT_COMMAND_NOT_FOUND,
     EXIT_TIMEOUT,
     BuildOptions,
     _extract_failure_log_path,
+    _has_broken_build_root,
     build_command,
     main,
     run_gbs_build,
@@ -51,6 +53,26 @@ def test_build_command_omits_include_all_when_disabled(tmp_path: Path) -> None:
     assert "--include-all" not in build_command(options)
 
 
+def test_build_command_includes_clean_when_requested(tmp_path: Path) -> None:
+    options = BuildOptions(
+        conf=tmp_path / "gbs.conf",
+        arch="armv7l",
+        output_log=tmp_path / "build.log",
+        include_all=True,
+    )
+
+    assert build_command(options, clean=True) == [
+        "gbs",
+        "-c",
+        str(tmp_path / "gbs.conf"),
+        "build",
+        "-A",
+        "armv7l",
+        "--include-all",
+        "--clean",
+    ]
+
+
 def test_run_gbs_build_streams_stdout_and_stderr_and_passthrough_exit(
     tmp_path: Path,
 ) -> None:
@@ -87,6 +109,144 @@ sys.exit(7)
     assert "stderr line" in output_log.read_text(encoding="utf-8")
 
 
+def test_run_gbs_build_uses_devnull_stdin(tmp_path: Path) -> None:
+    fake_gbs = write_executable(
+        tmp_path / "fake_gbs.py",
+        """
+import sys
+data = sys.stdin.read()
+print("stdin eof" if data == "" else f"stdin data: {data!r}")
+""",
+    )
+    output_log = tmp_path / "compiler.log"
+
+    result = run_gbs_build(
+        BuildOptions(
+            conf=tmp_path / "gbs.conf",
+            arch="armv7l",
+            output_log=output_log,
+            gbs_binary=str(fake_gbs),
+        )
+    )
+
+    assert result.exit_code == 0
+    assert "stdin eof" in output_log.read_text(encoding="utf-8")
+
+
+def test_run_gbs_build_retries_once_with_clean_for_broken_build_root(
+    tmp_path: Path,
+) -> None:
+    state = tmp_path / "count.txt"
+    fake_gbs = write_executable(
+        tmp_path / "fake_gbs.py",
+        f"""
+import sys
+from pathlib import Path
+
+state = Path({str(state)!r})
+count = int(state.read_text(encoding="utf-8")) if state.exists() else 0
+state.write_text(str(count + 1), encoding="utf-8")
+if count == 0:
+    print("{BROKEN_BUILD_ROOT_MARKER}!! Shall I execute rm -rf ...")
+    sys.exit(1)
+if "--clean" not in sys.argv:
+    print("missing --clean")
+    sys.exit(9)
+print("clean retry succeeded")
+sys.exit(0)
+""",
+    )
+    output_log = tmp_path / "compiler.log"
+
+    result = run_gbs_build(
+        BuildOptions(
+            conf=tmp_path / "gbs.conf",
+            arch="armv7l",
+            output_log=output_log,
+            gbs_binary=str(fake_gbs),
+        )
+    )
+
+    assert result.exit_code == 0
+    assert result.command[-1] == "--clean"
+    assert state.read_text(encoding="utf-8") == "2"
+    assert output_log.read_text(encoding="utf-8") == "clean retry succeeded\n"
+
+
+def test_run_gbs_build_does_not_retry_regular_failure(tmp_path: Path) -> None:
+    state = tmp_path / "count.txt"
+    fake_gbs = write_executable(
+        tmp_path / "fake_gbs.py",
+        f"""
+import sys
+from pathlib import Path
+
+state = Path({str(state)!r})
+count = int(state.read_text(encoding="utf-8")) if state.exists() else 0
+state.write_text(str(count + 1), encoding="utf-8")
+print("ordinary build failure")
+sys.exit(5)
+""",
+    )
+
+    result = run_gbs_build(
+        BuildOptions(
+            conf=tmp_path / "gbs.conf",
+            arch="armv7l",
+            output_log=tmp_path / "compiler.log",
+            gbs_binary=str(fake_gbs),
+        )
+    )
+
+    assert result.exit_code == 5
+    assert "--clean" not in result.command
+    assert state.read_text(encoding="utf-8") == "1"
+
+
+def test_run_gbs_build_retries_broken_root_only_once_and_extracts_failure_log(
+    tmp_path: Path,
+) -> None:
+    state = tmp_path / "count.txt"
+    failure_log = tmp_path / "root/local/repos/tizen/armv7l/logs/fail/pkg-1/log.txt"
+    failure_log.parent.mkdir(parents=True)
+    failure_log.write_text("clean retry failure detail\n", encoding="utf-8")
+    fake_gbs = write_executable(
+        tmp_path / "fake_gbs.py",
+        f"""
+import sys
+from pathlib import Path
+
+state = Path({str(state)!r})
+count = int(state.read_text(encoding="utf-8")) if state.exists() else 0
+state.write_text(str(count + 1), encoding="utf-8")
+if count == 0:
+    print("{BROKEN_BUILD_ROOT_MARKER}!! Shall I execute rm -rf ...")
+    sys.exit(1)
+if "--clean" not in sys.argv:
+    print("missing --clean")
+    sys.exit(9)
+print("warning: build failed, Leaving the logs in {failure_log}")
+sys.exit(2)
+""",
+    )
+
+    result = run_gbs_build(
+        BuildOptions(
+            conf=tmp_path / "gbs.conf",
+            arch="armv7l",
+            output_log=tmp_path / "compiler.log",
+            gbs_binary=str(fake_gbs),
+        )
+    )
+
+    assert result.exit_code == 2
+    assert result.command[-1] == "--clean"
+    assert state.read_text(encoding="utf-8") == "2"
+    assert result.failure_log_path == failure_log
+    assert result.analysis_log_path == failure_log
+    assert result.package_name == "pkg-1"
+
+
 def test_run_gbs_build_returns_124_on_timeout(tmp_path: Path) -> None:
     fake_gbs = write_executable(
         tmp_path / "slow_gbs.py",
@@ -112,6 +272,41 @@ time.sleep(10)
     assert result.timed_out is True
     assert result.analysis_log_path == output_log
     assert "timeout after 0s" in output_log.read_text(encoding="utf-8")
+
+
+def test_run_gbs_build_does_not_retry_broken_root_marker_after_timeout(
+    tmp_path: Path,
+) -> None:
+    state = tmp_path / "count.txt"
+    fake_gbs = write_executable(
+        tmp_path / "slow_broken_gbs.py",
+        f"""
+import sys
+import time
+from pathlib import Path
+
+state = Path({str(state)!r})
+count = int(state.read_text(encoding="utf-8")) if state.exists() else 0
+state.write_text(str(count + 1), encoding="utf-8")
+print("{BROKEN_BUILD_ROOT_MARKER}!! Shall I execute rm -rf ...", flush=True)
+time.sleep(10)
+""",
+    )
+
+    result = run_gbs_build(
+        BuildOptions(
+            conf=tmp_path / "gbs.conf",
+            arch="armv7l",
+            output_log=tmp_path / "compiler.log",
+            timeout=1,
+            gbs_binary=str(fake_gbs),
+        )
+    )
+
+    assert result.exit_code == EXIT_TIMEOUT
+    assert result.timed_out is True
+    assert "--clean" not in result.command
+    assert state.read_text(encoding="utf-8") == "1"
 
 
 def test_run_gbs_build_returns_127_when_gbs_binary_missing(tmp_path: Path) -> None:
@@ -254,6 +449,27 @@ def test_extract_failure_log_path_returns_none_when_file_missing(tmp_path: Path)
     compiler_log.write_text(f"Leaving the logs in {missing_log}\n", encoding="utf-8")
 
     assert _extract_failure_log_path(compiler_log) == (None, None)
+
+
+def test_has_broken_build_root_detects_marker(tmp_path: Path) -> None:
+    compiler_log = tmp_path / "compiler.log"
+    compiler_log.write_text(
+        f"It seems incomplete\n{BROKEN_BUILD_ROOT_MARKER}!! Shall I execute rm -rf ...\n",
+        encoding="utf-8",
+    )
+
+    assert _has_broken_build_root(compiler_log) is True
+
+
+def test_has_broken_build_root_returns_false_without_marker(tmp_path: Path) -> None:
+    compiler_log = tmp_path / "compiler.log"
+    compiler_log.write_text("ordinary failure\n", encoding="utf-8")
+
+    assert _has_broken_build_root(compiler_log) is False
+
+
+def test_has_broken_build_root_returns_false_for_missing_log(tmp_path: Path) -> None:
+    assert _has_broken_build_root(tmp_path / "missing.log") is False
 
 
 def test_run_gbs_build_sets_failure_and_analysis_log_when_failure_log_exists(
