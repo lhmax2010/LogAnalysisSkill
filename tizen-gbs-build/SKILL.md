@@ -29,14 +29,16 @@ Actions:
 
 1. Confirm the source tree and architecture. If the user did not provide a
    `gbs.conf` path, ask: "Where is your gbs.conf file?"
-2. If the user did not specify an output log path, use `./compiler.log`.
-3. Run `python -m gbs_build_skill` if the package is installed, or
+2. If the user did not provide the target architecture, ask:
+   "Which target architecture? (e.g. armv7l, aarch64)"
+3. If the user did not specify an output log path, use `./compiler.log`.
+4. Run `python -m gbs_build_skill` if the package is installed, or
    `scripts/run_build.py` when using the skill folder directly.
-4. Report the exit code and log path.
+5. Report the exit code and log path.
 
 Result: A build log exists on disk and the original GBS exit code is preserved.
 
-### Example 2: User omits gbs.conf
+### Example 2: User omits required build parameters
 
 User says: "Run a gbs build for this package."
 
@@ -44,14 +46,15 @@ Actions:
 
 1. Ask the user for the `gbs.conf` path before running any command; do not guess
    or invent one.
-2. Use `./compiler.log` as the output log path unless the user asks for a
+2. Ask for the target architecture if it is not provided.
+3. Use `./compiler.log` as the output log path unless the user asks for a
    different path.
-3. Run `python -m gbs_build_skill` if the package is installed, or
+4. Run `python -m gbs_build_skill` if the package is installed, or
    `scripts/run_build.py` when using the skill folder directly.
-4. Report the exit code and log path.
+5. Report the exit code and log path.
 
-Result: The build runs only after the required `gbs.conf` path is known, while
-the log path defaults to `./compiler.log`.
+Result: The build runs only after the required `gbs.conf` path and architecture
+are known, while the log path defaults to `./compiler.log`.
 
 ### Example 3: User only needs a buildlog
 
@@ -59,9 +62,11 @@ User says: "Just compile it and give me the compiler.log; do not analyze it yet.
 
 Actions:
 
-1. Run the build skill with `--output-log`.
-2. Do not call `gbs_analyzer`.
-3. Tell the user whether the build passed and where the log was written.
+1. Ask for `gbs.conf` and target architecture if either is missing.
+2. Use `./compiler.log` if the user did not specify a log path.
+3. Run the build skill.
+4. Do not call `gbs_analyzer`.
+5. Tell the user whether the build passed and where the log was written.
 
 Result: The user receives a buildlog that can later be analyzed separately.
 
@@ -71,8 +76,8 @@ User says: "Run the ffmpeg build and tell me which log should be analyzed if it 
 
 Actions:
 
-1. After the required `gbs.conf` path is known, run the build skill from any
-   directory with `--src-dir /path/to/ffmpeg`.
+1. After the required `gbs.conf` path and target architecture are known, run the
+   build skill from any directory with `--src-dir /path/to/ffmpeg`.
 2. Read the stderr summary after the command exits.
 3. If the build failed and GBS printed a structured failure log path, report that
    `analysis_log_path` points to the structured `logs/fail/{package}/log.txt` file.
@@ -86,11 +91,16 @@ Result: The user gets both the compiler log path and the recommended analysis lo
 2. Identify the `gbs.conf` path. If the user did not provide it, ask:
    "Where is your gbs.conf file?" Do not guess, search blindly, or invent a
    configuration path.
-3. Identify the target architecture, optional `--src-dir`, and timeout. If the user
-   did not specify an output log path, use `./compiler.log` without asking.
-4. Run the build runner through one of the stable entry points. The CLI still
-   requires `--conf` and `--output-log`; Claude should ask for `--conf` when
-   missing and fill `--output-log ./compiler.log` when the user omitted it.
+3. Identify the target architecture. If the user did not provide it, ask:
+   "Which target architecture? (e.g. armv7l, aarch64)"
+4. Identify optional `--src-dir` and timeout. If the user did not specify
+   `--src-dir`, omit it and run from the current working directory.
+5. If the user did not specify an output log path, use `./compiler.log` without
+   asking.
+6. Run the build runner through one of the stable entry points. The CLI still
+   requires `--conf`, `--arch`, and `--output-log`; Claude should ask for
+   `--conf` and `--arch` when missing and fill `--output-log ./compiler.log`
+   when the user omitted it.
 
    If `gbs_build_skill` is installed in the current Python environment:
 
@@ -116,8 +126,8 @@ Result: The user gets both the compiler log path and the recommended analysis lo
        --timeout 1800
    ```
 
-5. Read the process exit code.
-6. Report the exit code and the output log path. If the build failed, do not infer the
+7. Read the process exit code.
+8. Report the exit code and the output log path. If the build failed, do not infer the
    root cause unless the user asks to analyze the log.
 
 ## Output Contract

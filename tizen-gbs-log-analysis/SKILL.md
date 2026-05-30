@@ -24,22 +24,35 @@ Invoke the analyzer when any of these are true:
 ### Example 1: User has a failed gbs build
 User says: "My ffmpeg gbs build failed, can you find out why?"
 Actions:
-1. Ask for the build log path if it is not provided.
-2. Run the analyzer wrapper (see Required Workflow).
-3. Read `evidence_packet.json`; if `verdict` is `direct_answer`, report the root cause and cite the matched tier.
+1. Ask: "Which build log should I analyze? (path to the log file)" if the log
+   path is not provided.
+2. If the user did not specify `--src-root`, omit it; the analyzer defaults to
+   the build log's parent directory.
+3. If the user did not specify `--output-dir`, use `./.gbs_analysis`.
+4. Run the analyzer wrapper (see Required Workflow).
+5. Read `evidence_packet.json`; if `verdict` is `direct_answer`, report the root cause and cite the matched tier.
 Result: Root cause identified, e.g. "linker_undef: undefined reference to `X` at `libavcodec/utils.c:109`", with a minimal fix direction.
 
 ### Example 2: User wants to compact a log for another LLM
 User says: "This buildlog is huge, give me something I can paste into another model."
 Actions:
-1. Run the analyzer with `--max-tokens 1800`.
-2. Return `evidence_packet.md` (the LLM-facing, redacted markdown).
+1. Ask for the build log path if it is not provided.
+2. Run the analyzer with `--max-tokens 1800`.
+3. Use `./.gbs_analysis` as the output directory unless the user asks for a
+   different path.
+4. Return `evidence_packet.md` (the LLM-facing, redacted markdown).
 Result: A compact, redacted Evidence Packet within the token budget.
 
 ## Required Workflow
 
-1. Identify the build log path. If the path is unknown, ask for it.
-2. Run the wrapper through one of the stable entry points.
+1. Identify the build log path. If the user did not provide it, ask:
+   "Which build log should I analyze? (path to the log file)"
+2. Identify optional source root, output directory, and token budget. If the user
+   did not specify `--src-root`, omit it; the analyzer defaults to the build
+   log's parent directory. If the user did not specify `--output-dir`, use
+   `./.gbs_analysis` without asking. If the user did not specify `--max-tokens`,
+   use `1800`.
+3. Run the wrapper through one of the stable entry points.
 
    If `gbs_analyzer` is installed in the current Python environment:
 
@@ -61,13 +74,13 @@ Result: A compact, redacted Evidence Packet within the token budget.
        --output-dir .gbs_analysis
    ```
 
-3. Read `.gbs_analysis/evidence_packet.json` for machine decisions.
-4. Read `.gbs_analysis/evidence_packet.md` when preparing a human-facing explanation.
-5. Read `.gbs_analysis/perf_report.json` when reporting runtime, token use, fast-path
+4. Read `.gbs_analysis/evidence_packet.json` for machine decisions.
+5. Read `.gbs_analysis/evidence_packet.md` when preparing a human-facing explanation.
+6. Read `.gbs_analysis/perf_report.json` when reporting runtime, token use, fast-path
    status, or BudgetPool conservation.
-6. If the packet says `verdict: direct_answer`, return the direct answer and cite the
+7. If the packet says `verdict: direct_answer`, return the direct answer and cite the
    matched tier.
-7. If the packet says `verdict: needs_llm`, use the packet `prompt` or markdown as the
+8. If the packet says `verdict: needs_llm`, use the packet `prompt` or markdown as the
    only analysis context unless the user explicitly asks to expand.
 
 ## Expand Contract
