@@ -236,3 +236,41 @@ skill 按"能拿到多少源码"分三级,每级都正常成功产出 context(�
 
 [D14] **这两条是 context.md 的固定尾部,不可省略**。PS-M3(输出契约)实现 context.md 时,
 此"Instructions — MUST follow"块作为模板的强制组成部分,任何级别都附上。
+
+---
+
+## 9quater. PS-M2 源码上下文收集(后缀搜索 + 消歧 + 降级)
+
+> 触发: 真实路径摸底发现 analyzer evidence 里的 `file` 常是子模块相对路径
+> (如 `libavcodec/utils.c`),而用户项目根下真实路径可能是
+> `gst-libs/ext/ffmpeg/libavcodec/utils.c`。直接 `src_root / file` 必然 miss。
+
+[D15] **PS-M2 重新引入显式 `--src-root`,但不做 auto 默认**。
+  `--evidence` 模式没有 buildlog path,不能复用 analyzer 的 `auto -> buildlog parent`。
+  用户未提供 `--src-root` 时,skill 不搜索源码,继续走 Level B advisory。
+
+[D16] **源码搜索使用 src-root 内的路径段后缀精确匹配**。
+  先用 basename 预筛,再比较路径段:
+
+```
+candidate.relative_to(src_root).parts[-len(evidence_parts):] == evidence_parts
+```
+
+  不用纯字符串 `endswith`,避免把 `mylibavcodec/utils.c` 误认为
+  `libavcodec/utils.c`。
+
+[D17] **搜索范围严格限制在 src-root 内,并跳过重型/无关目录**。
+  跳过 `.git`, `GBS-ROOT*`, `build`, `.gbs_workflow`,
+  `.gbs_patch_suggest`, `node_modules`。不跨出 src-root。
+
+[D18] **唯一命中才升级 Level A;零匹配/多匹配都保持 Level B**。
+  - 唯一命中: 读取该文件窗口(默认 ±30 行),`origin="src_root_suffix_search"`。
+  - 零匹配: Level B advisory,提示源码未定位。
+  - 多匹配: Level B advisory,列出候选,不硬猜。
+
+[D19] **绝对路径也不跨 src-root**。
+  - evidence.file 是绝对路径,且存在并位于 src-root 内 → 可直接读,升级 Level A。
+  - 存在但位于 src-root 外 → 不读,保持 Level B。
+  - 不存在 → 保持 Level B。
+
+PS-M2 仍不做 `--buildlog`(PS-M4)、不写正式 `SKILL.md`(PS-M5)、不接 workflow(PS-M6)。
