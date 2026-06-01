@@ -19,8 +19,9 @@ where = [
     "tizen-gbs-build/scripts",
     "tizen-gbs-log-analysis/scripts",
     "tizen-gbs-build-workflow/scripts",
+    "tizen-gbs-patch-suggest/scripts",
 ]
-include = ["gbs_analyzer*", "gbs_build_skill*", "gbs_workflow*"]
+include = ["gbs_analyzer*", "gbs_build_skill*", "gbs_workflow*", "gbs_patch_suggest*"]
 
 [tool.setuptools.package-data]
 gbs_analyzer = ["patterns/*.yaml", "patterns/*.json", "patterns/*.md"]
@@ -50,5 +51,6 @@ mypy_path = [
     "tizen-gbs-build/scripts",
     "tizen-gbs-log-analysis/scripts",
     "tizen-gbs-build-workflow/scripts",
+    "tizen-gbs-patch-suggest/scripts",
 ]
-packages = ["gbs_analyzer", "gbs_build_skill", "gbs_workflow"]
+packages = ["gbs_analyzer", "gbs_build_skill", "gbs_workflow", "gbs_patch_suggest"]

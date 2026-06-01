@@ -1,12 +1,12 @@
-current_milestone: build_skill_broken_root_retry
+current_milestone: ps_m1_patch_suggest
 current_status: completed
-last_completed: build_skill_v0.2_phase_b
-last_completed_commit: "31d909f"
-session_count: 25
+last_completed: downstream_token_metrics
+last_completed_commit: "bcf2b7f"
+session_count: 26
 next_steps:
-  - "Open PR for broken-root clean retry."
-  - "Wait for review before any further build skill changes."
-blocked_on: "waiting_for_broken_root_retry_review"
+  - "Open PR for PS-M1 patch-suggest review."
+  - "Wait for review before PS-M2."
+blocked_on: "waiting_for_ps_m1_review"
 notes: |
-  This scoped fix belongs only to tizen-gbs-build. Do not modify workflow,
-  analyzer, patterns, or existing BuildResult/BuildOptions fields.
+  PS-M1 adds a new independent patch context preparation skill. Do not modify
+  existing build/analyzer/workflow behavior, Suggester logic, or patterns.
