@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.1.0] - 2026-06-01
+
+### Added
+
+- `tizen-gbs-build`: auto-recovery from broken build root by detecting the GBS
+  broken-root marker and retrying once with `--clean`.
+- Downstream token estimation in analyzer `perf_report.json` and workflow
+  `workflow_summary.md`, reporting Claude-facing output token estimates.
+
+### Changed
+
+- Unified missing-parameter guidance across the three skills: ask for required
+  `gbs.conf` / target architecture when missing, and use sensible defaults for
+  output paths where appropriate.
+
 ## [1.0.0] - 2026-05-29
 
 First stable release of LogAnalysisSkill: three independent local skills plus
