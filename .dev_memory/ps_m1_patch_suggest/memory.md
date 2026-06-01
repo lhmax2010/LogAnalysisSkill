@@ -29,6 +29,8 @@ source tree.
 ## Implementation Notes
 
 - PS-M1 intentionally supports `--evidence` only. `--buildlog` is PS-M4.
+- PS-M1 intentionally does not accept `--src-root` or read source files. Source
+  lookup is PS-M2.
 - `SKILL.md` is a placeholder only. Full Anthropic Skill instructions are PS-M5.
 - `README.md` output is deferred to PS-M3; PS-M1 writes `context.md` and
   `meta.json` per the PS-M1 acceptance scope.
@@ -39,5 +41,5 @@ source tree.
 - `ruff check .` passed.
 - `mypy tizen-gbs-log-analysis/scripts/gbs_analyzer tizen-gbs-build-workflow/scripts/gbs_workflow tizen-gbs-patch-suggest/scripts/gbs_patch_suggest` passed.
 - `python tizen-gbs-patch-suggest/scripts/run_patch_suggest.py --help` passed.
-- `pytest tests/unit/test_patch_suggest.py -q` passed: `8 passed`.
-- Full regression passed: `425 passed`, coverage `95.97%`.
+- `pytest tests/unit/test_patch_suggest.py -q` passed: `6 passed`.
+- Full regression passed: `423 passed`, coverage `95.97%`.

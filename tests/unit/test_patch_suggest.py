@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 
 from gbs_patch_suggest.cli import (
-    EXIT_ARGS,
     EXIT_EVIDENCE_UNREADABLE,
     PatchSuggestOptions,
     main,
@@ -89,27 +88,6 @@ def test_level_a_uses_evidence_source_snippet(tmp_path: Path) -> None:
     assert not list(output_dir.glob("*.patch"))
 
 
-def test_level_a_reads_source_from_src_root_when_evidence_has_no_snippet(tmp_path: Path) -> None:
-    src_root = tmp_path / "srcroot"
-    source = src_root / "src" / "demo.c"
-    source.parent.mkdir(parents=True)
-    source.write_text("\n".join(f"line {index}" for index in range(1, 20)), encoding="utf-8")
-    evidence_path = write_packet(tmp_path, compiler_packet(line=12))
-    output_dir = tmp_path / "out"
-
-    result = run_patch_suggest(
-        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
-    )
-
-    assert result.exit_code == 0
-    meta = read_meta(output_dir)
-    assert meta["status"] == "source_context_available"
-    assert meta["source_context"]["origin"] == "src_root"  # type: ignore[index]
-    context = (output_dir / "context.md").read_text(encoding="utf-8")
-    assert "line 12" in context
-    assert MANDATORY_INSTRUCTIONS.strip() in context
-
-
 def test_level_b_reports_file_line_without_source_context(tmp_path: Path) -> None:
     evidence_path = write_packet(tmp_path, compiler_packet())
     output_dir = tmp_path / "out"
@@ -169,17 +147,3 @@ def test_cli_rejects_missing_evidence(tmp_path: Path) -> None:
     code = main(["--evidence", str(tmp_path / "missing.json"), "--output-dir", str(tmp_path)])
 
     assert code == EXIT_EVIDENCE_UNREADABLE
-
-
-def test_cli_rejects_invalid_src_root(tmp_path: Path) -> None:
-    evidence_path = write_packet(tmp_path, compiler_packet())
-    code = main(
-        [
-            "--evidence",
-            str(evidence_path),
-            "--src-root",
-            str(tmp_path / "missing-src"),
-        ]
-    )
-
-    assert code == EXIT_ARGS

@@ -14,7 +14,6 @@ from gbs_patch_suggest.resolver import resolve_context
 
 EXIT_SUCCESS = 0
 EXIT_FATAL = 1
-EXIT_ARGS = 2
 EXIT_EVIDENCE_UNREADABLE = 3
 DEFAULT_OUTPUT_DIR = Path(".gbs_patch_suggest")
 
@@ -23,7 +22,6 @@ DEFAULT_OUTPUT_DIR = Path(".gbs_patch_suggest")
 class PatchSuggestOptions:
     evidence_path: Path
     output_dir: Path = DEFAULT_OUTPUT_DIR
-    src_root: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -49,7 +47,7 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
     try:
         packet = load_evidence_packet(options.evidence_path)
         diagnostic = extract_first_diagnostic(packet)
-        resolved = resolve_context(diagnostic, src_root=options.src_root)
+        resolved = resolve_context(diagnostic)
         outputs = write_outputs(resolved, options.output_dir)
     except (OSError, ValueError) as exc:
         return PatchSuggestResult(
@@ -79,12 +77,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to analyzer evidence_packet.json. PS-M1 supports evidence input only.",
     )
     parser.add_argument(
-        "--src-root",
-        type=Path,
-        default=None,
-        help="Optional source root used to read file:line context when evidence lacks a snippet.",
-    )
-    parser.add_argument(
         "--output-dir",
         type=Path,
         default=DEFAULT_OUTPUT_DIR,
@@ -96,16 +88,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None, *, stderr: TextIO = sys.stderr) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    src_root = args.src_root.resolve() if args.src_root is not None else None
-    if src_root is not None and not src_root.is_dir():
-        print(f"gbs_patch_suggest: src root is not a directory: {src_root}", file=stderr)
-        return EXIT_ARGS
 
     result = run_patch_suggest(
         PatchSuggestOptions(
             evidence_path=args.evidence,
             output_dir=args.output_dir,
-            src_root=src_root,
         )
     )
     if result.error:
