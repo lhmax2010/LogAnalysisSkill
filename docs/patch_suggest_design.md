@@ -85,7 +85,7 @@ skill 不重新分析日志 —— 消费 analyzer 已产出的结构化证据(�
 
 输出到 `--output-dir`(默认 `./.gbs_patch_suggest`):
 
-```text
+```
 .gbs_patch_suggest/
 ├── README.md      # 处理了哪个错误、context 在哪、给外层 Claude 的明确指引
 ├── context.md     # 核心产物: 错误信息 + 源码上下文 + 给 Claude 的 patch 生成指令
@@ -106,7 +106,7 @@ workflow_summary.md 指向它,提示"如需 patch 建议,见 patch_context/conte
 
 ## 5. 与现有架构的关系
 
-```text
+```
 现有(全不动):
   tizen-gbs-build        → compiler.log + B 日志
   tizen-gbs-log-analysis → Evidence Packet
@@ -127,8 +127,6 @@ workflow 接入(D5 路 1):
 
 ## 6. 分阶段实施(草案,每阶段独立 PR + 停下 review)
 
-遵循项目既有节奏: frozen design → Codex 复述 → 分阶段 PR → 真实验证。
-
 - **PS-M1** 包骨架 + CLI + 读 Evidence(`--evidence`)+ 解析出第 1 个编译错误。⚠️以 analyzer 实际 JSON 为准。
 - **PS-M2** fault class 判断(D6: 非 compile 类提示不适用)+ 源码上下文收集(D3,含降级)。
 - **PS-M3** 输出契约: context.md / README.md / meta.json。context.md 含 D7 全部约束指令。
@@ -138,8 +136,6 @@ workflow 接入(D5 路 1):
 - **PS-M6** workflow 接入(D5 路 1): workflow 加可选阶段产 context.md。⚠️不在子进程调 LLM。
 - **PS-M7** 真实验证: 用真实 E 场景(implicit declaration 那类)在 Cline 跑,确认:
   context.md 信息充分、外层 Claude 据此能生成合理 patch、skill 全程没碰源码、非 compile 类正确跳过。
-
-每个 milestone 独立 PR + 停下 review,和你一贯流程一致。
 
 ---
 
@@ -180,10 +176,10 @@ skill 按"能拿到多少源码"分三级,每级都正常成功产出 context(�
 
 - **级别 A(有源码上下文)**: evidence.source_snippet 存在,或 patch-suggest 用 src-root 读到。
   → context.md 含源码窗口,Claude 能生成具体候选 patch。
-- **级别 B(有 file:line,读不到源码)**:
+- **级别 B(有 file:line,读不到源码)**: 
   → context.md 标明"错误在 file:line,源码不可用",指引外层 Claude 自己打开该文件读上下文。
   → 不在 context 里硬塞猜测的源码; status=source_context_unavailable。
-- **级别 C(连 file:line 都没有)**:
+- **级别 C(连 file:line 都没有)**: 
   → 只产 diagnostic context(错误信息 + 语义分类),不涉及源码定位。
 
 [D10] **源码读取的责任重心 —— 待真实 A/B 分布验证后定,PS-M1 不焊死**。
@@ -210,3 +206,33 @@ skill 按"能拿到多少源码"分三级,每级都正常成功产出 context(�
 [D12] PS-M1 一开始就实现三级降级骨架,不许只做"有 source_snippet 才工作"的 happy path。
   Codex 警告: 只做 happy path 的 patch-suggest 只能在 fixture 跑,真实环境立刻撞墙。
   PS-M1 DoD 含: evidence ingest + fault class 判断 + 源码三级 resolver + 级别 B/C 的 advisory 输出。
+
+---
+
+## 9ter. context.md 对 LLM 的强制指令(用户明确要求)
+
+> 用户要求: context.md 必须显著提醒外层 Claude (1) 按 context.md 的规则生成最终 patch;
+> (2) 生成的 patch 绝不合进文件(不 apply)。这是 D7/D11 的强化,确保 Claude 不忽略。
+
+[D13] **每个级别的 context.md 末尾都带一个固定的、醒目的"Instructions for the assistant"块**,
+包含两条强制指令(措辞要显眼,放在 Claude 最后读到的位置):
+
+```
+## ⚠️ Instructions — MUST follow
+
+1. Generate the patch strictly according to the rules in this document:
+   provide candidate(s) as unified diff, each with its approach, explicit
+   assumption, and confidence; do NOT fabricate functions/headers; if uncertain,
+   say so rather than guessing.
+
+2. This patch is a SUGGESTION DRAFT ONLY. Do NOT apply it to any file.
+   Do NOT run `git apply` / `patch`. Do NOT modify the source tree.
+   Present the patch to the user for review; the user decides whether to apply.
+```
+
+适用所有级别(A/B/C):
+- 级别 A/B: 两条都给(要生成 patch + 不准 apply)
+- 级别 C: 第 2 条仍给(即使信息不足不生成 patch,也强调任何后续修复不准自动 apply)
+
+[D14] **这两条是 context.md 的固定尾部,不可省略**。PS-M3(输出契约)实现 context.md 时,
+此"Instructions — MUST follow"块作为模板的强制组成部分,任何级别都附上。
