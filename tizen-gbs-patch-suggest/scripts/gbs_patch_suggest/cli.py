@@ -22,6 +22,7 @@ DEFAULT_OUTPUT_DIR = Path(".gbs_patch_suggest")
 class PatchSuggestOptions:
     evidence_path: Path
     output_dir: Path = DEFAULT_OUTPUT_DIR
+    src_root: Path | None = None
 
 
 @dataclass(frozen=True)
@@ -47,7 +48,7 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
     try:
         packet = load_evidence_packet(options.evidence_path)
         diagnostic = extract_first_diagnostic(packet)
-        resolved = resolve_context(diagnostic)
+        resolved = resolve_context(diagnostic, src_root=options.src_root)
         outputs = write_outputs(resolved, options.output_dir)
     except (OSError, ValueError) as exc:
         return PatchSuggestResult(
@@ -82,17 +83,25 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_OUTPUT_DIR,
         help="Output directory for context.md and meta.json. Defaults to ./.gbs_patch_suggest.",
     )
+    parser.add_argument(
+        "--src-root",
+        type=Path,
+        default=None,
+        help="Optional source root for suffix-based source context search.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None, *, stderr: TextIO = sys.stderr) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    src_root = args.src_root.resolve() if args.src_root is not None else None
 
     result = run_patch_suggest(
         PatchSuggestOptions(
             evidence_path=args.evidence,
             output_dir=args.output_dir,
+            src_root=src_root,
         )
     )
     if result.error:

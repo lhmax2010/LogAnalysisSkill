@@ -83,11 +83,20 @@ def render_context(resolved: ResolvedContext) -> str:
             ]
         )
     else:
+        candidate_lines = []
+        if resolved.candidates:
+            candidate_lines = [
+                "",
+                "Candidate matches found under the source root:",
+                *[f"- `{candidate}`" for candidate in resolved.candidates],
+                "",
+            ]
         parts.extend(
             [
                 "## Source Context Advisory",
                 "",
                 resolved.advisory or "Source context is unavailable.",
+                *candidate_lines,
                 "",
                 "Do not invent source content. If a patch is needed, inspect the referenced "
                 "file first or explain why the available diagnostic is insufficient.",
@@ -127,6 +136,7 @@ def render_meta(resolved: ResolvedContext, *, context_path: Path) -> dict[str, A
             "end_line": source.end_line,
             "origin": source.origin,
         },
+        "candidate_paths": list(resolved.candidates),
         "advisory": resolved.advisory,
         "outputs": {"context_md": str(context_path)},
     }
