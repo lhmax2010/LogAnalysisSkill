@@ -1,0 +1,8 @@
+# Decisions for PS-M1 Patch Suggest
+
+| ID | Decision | Source | Rationale | Impact |
+| --- | --- | --- | --- | --- |
+| d001 | Use `primary_error.kind == "compiler"` as the compile fault-class gate. | Frozen design D6 and code audit of analyzer packet structure. | Analyzer packets do not have a separate `fault_class` field; existing `CompileErrorSuggester` uses the same gate. | Non-compiler packets produce a not-applicable context instead of failing. |
+| d002 | Resolve source context through levels A/B/C from the first milestone. | Frozen design D9-D12 and real `source_file_unavailable` observations. | Source availability is unreliable in real GBS environments; treating missing source as a normal path avoids fixture-only behavior. | PS-M1 tests cover source snippet, src-root read, file-line without source, no file-line, and non-compiler paths. |
+| d003 | Append the fixed D13/D14 instruction block to every `context.md`. | User 9ter update to frozen design. | The outer assistant must see the patch-generation and never-apply constraints at the end of the context. | Even minimal PS-M1 contexts carry the mandatory instruction tail. |
+| d004 | Keep `SKILL.md` as a placeholder until PS-M5. | Frozen design PS-M5 scope. | Full skill triggering and parameter behavior should be written after CLI shape stabilizes. | PS-M1 has a publish-layout folder but does not claim final Anthropic Skill behavior. |
