@@ -1,13 +1,12 @@
-current_milestone: ps_m2_source_context
+current_milestone: ps_m3_output_contract
 current_status: completed
-last_completed: ps_m1_patch_suggest
-last_completed_commit: "2c554bc"
+last_completed: ps_m2_source_context
+last_completed_commit: "543dc8d"
 session_count: 27
 next_steps:
-  - "Open PR for PS-M2 source context review."
-  - "Wait for review before PS-M3."
-blocked_on: "waiting_for_ps_m2_review"
+  - "Open PR for PS-M3 output contract review."
+  - "Wait for review before PS-M4."
+blocked_on: "waiting_for_ps_m3_review"
 notes: |
-  PS-M2 adds explicit --src-root source context collection to patch-suggest.
-  It must not change existing build/analyzer/workflow behavior, Suggester logic,
-  or patterns.
+  PS-M3 completes the patch-suggest output contract. It must not change resolver
+  behavior, add buildlog mode, write SKILL.md content, or integrate workflow.
