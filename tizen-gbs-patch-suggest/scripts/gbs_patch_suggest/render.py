@@ -22,18 +22,67 @@ MANDATORY_INSTRUCTIONS = """## ⚠️ Instructions — MUST follow
 
 
 def write_outputs(resolved: ResolvedContext, output_dir: Path) -> dict[str, Path]:
-    """Write PS-M1 context and metadata outputs."""
+    """Write patch-suggest context, README, and metadata outputs."""
 
     output_dir.mkdir(parents=True, exist_ok=True)
+    readme_path = output_dir / "README.md"
     context_path = output_dir / "context.md"
     meta_path = output_dir / "meta.json"
+    readme_path.write_text(
+        render_readme(resolved, context_path=context_path, meta_path=meta_path),
+        encoding="utf-8",
+    )
     context_path.write_text(render_context(resolved), encoding="utf-8")
     meta_path.write_text(
-        json.dumps(render_meta(resolved, context_path=context_path), indent=2, sort_keys=True)
+        json.dumps(
+            render_meta(
+                resolved,
+                readme_path=readme_path,
+                context_path=context_path,
+                meta_path=meta_path,
+            ),
+            indent=2,
+            sort_keys=True,
+        )
         + "\n",
         encoding="utf-8",
     )
-    return {"context_md": context_path, "meta_json": meta_path}
+    return {"readme_md": readme_path, "context_md": context_path, "meta_json": meta_path}
+
+
+def render_readme(resolved: ResolvedContext, *, context_path: Path, meta_path: Path) -> str:
+    """Render a short README for the patch-suggest output directory."""
+
+    evidence = resolved.evidence
+    parts = [
+        "# Patch Suggestion Output",
+        "",
+        "This directory contains patch-generation context prepared from one analyzer diagnostic.",
+        "",
+        "## Selected Diagnostic",
+        "",
+        f"- Fault class: `{evidence.kind}`",
+        f"- Semantic class: `{evidence.semantic_class}`",
+        f"- Location: `{_location(evidence.file, evidence.line, evidence.column)}`",
+        f"- Message: `{evidence.message or 'n/a'}`",
+        f"- Status: `{resolved.status}`",
+        f"- Context level: `{resolved.level}`",
+        "",
+        "## Files",
+        "",
+        f"- `{context_path.name}`: primary file for the outer assistant to read.",
+        f"- `{meta_path.name}`: machine-readable metadata for this run.",
+        "",
+        "## Guidance",
+        "",
+        "Read `context.md` first. It contains the diagnostic, available source context or "
+        "advisory, and the patch-generation rules for the outer assistant.",
+        "",
+        "This skill did not generate a patch, did not apply a patch, and did not modify the "
+        "source tree.",
+        "",
+    ]
+    return "\n".join(parts)
 
 
 def render_context(resolved: ResolvedContext) -> str:
@@ -64,6 +113,8 @@ def render_context(resolved: ResolvedContext) -> str:
                 "",
                 resolved.advisory or "This diagnostic is not a compiler error.",
                 "",
+                _patch_guidance_not_applicable(),
+                "",
             ]
         )
     elif resolved.source_context is not None:
@@ -79,6 +130,8 @@ def render_context(resolved: ResolvedContext) -> str:
                 "```",
                 source.text,
                 "```",
+                "",
+                _patch_guidance_level_a(evidence.semantic_class),
                 "",
             ]
         )
@@ -101,6 +154,8 @@ def render_context(resolved: ResolvedContext) -> str:
                 "Do not invent source content. If a patch is needed, inspect the referenced "
                 "file first or explain why the available diagnostic is insufficient.",
                 "",
+                _patch_guidance_without_source(resolved),
+                "",
             ]
         )
 
@@ -108,8 +163,14 @@ def render_context(resolved: ResolvedContext) -> str:
     return "\n".join(parts)
 
 
-def render_meta(resolved: ResolvedContext, *, context_path: Path) -> dict[str, Any]:
-    """Render machine-readable PS-M1 metadata."""
+def render_meta(
+    resolved: ResolvedContext,
+    *,
+    readme_path: Path,
+    context_path: Path,
+    meta_path: Path,
+) -> dict[str, Any]:
+    """Render machine-readable patch-suggest metadata."""
 
     evidence = resolved.evidence
     source = resolved.source_context
@@ -138,7 +199,11 @@ def render_meta(resolved: ResolvedContext, *, context_path: Path) -> dict[str, A
         },
         "candidate_paths": list(resolved.candidates),
         "advisory": resolved.advisory,
-        "outputs": {"context_md": str(context_path)},
+        "outputs": {
+            "readme_md": str(readme_path),
+            "context_md": str(context_path),
+            "meta_json": str(meta_path),
+        },
     }
 
 
@@ -150,3 +215,72 @@ def _location(file: str | None, line: int | None, column: int | None) -> str:
     if column is None:
         return f"{file}:{line}"
     return f"{file}:{line}:{column}"
+
+
+def _patch_guidance_level_a(semantic_class: str) -> str:
+    return "\n".join(
+        [
+            "## How to generate the patch",
+            "",
+            "Use the diagnostic and source context above to prepare patch suggestion(s) "
+            "for the user:",
+            "",
+            "1. Generate 1-3 candidate fixes as unified diff blocks.",
+            "2. For each candidate, include its approach, explicit assumption, and confidence.",
+            "3. Prefer the smallest patch that addresses the root cause; avoid broad refactors.",
+            "4. Treat the semantic class as a hint, not as proof.",
+            f"   Current semantic class: `{semantic_class}`.",
+            "5. If the source context is insufficient, say what is missing instead of guessing.",
+        ]
+    )
+
+
+def _patch_guidance_without_source(resolved: ResolvedContext) -> str:
+    if resolved.status == "source_context_ambiguous":
+        return "\n".join(
+            [
+                "## How to generate the patch",
+                "",
+                "Do not choose a source file blindly. First inspect the candidate path list above, "
+                "decide which file matches the diagnostic, and read that file around the reported "
+                "line before writing any patch.",
+                "",
+                "After confirming the correct file and context, generate 1-3 candidate "
+                "unified diffs. "
+                "For each candidate, include its approach, explicit assumption, and confidence. "
+                "Prefer a minimal patch and treat the semantic class as a hint, not as proof.",
+            ]
+        )
+    if resolved.level == "C":
+        return "\n".join(
+            [
+                "## How to generate the patch",
+                "",
+                "Do not generate a patch from this diagnostic alone. There is no usable file and "
+                "line number, so first obtain source location or additional build context. If that "
+                "is not possible, explain that the available diagnostic is insufficient.",
+            ]
+        )
+    return "\n".join(
+        [
+            "## How to generate the patch",
+            "",
+            "First open the reported file and inspect the source around the reported line. Do not "
+            "generate a patch until that source context has been checked.",
+            "",
+            "After reading the file, generate 1-3 candidate unified diffs. For each candidate, "
+            "include its approach, explicit assumption, and confidence. Prefer a minimal patch "
+            "and treat the semantic class as a hint, not as proof.",
+        ]
+    )
+
+
+def _patch_guidance_not_applicable() -> str:
+    return "\n".join(
+        [
+            "## How to proceed",
+            "",
+            "This skill only prepares patch context for compiler diagnostics. Use the workflow "
+            "suggester for this fault class instead of generating a source patch here.",
+        ]
+    )

@@ -51,6 +51,14 @@ def read_meta(output_dir: Path) -> dict[str, object]:
     return json.loads((output_dir / "meta.json").read_text(encoding="utf-8"))
 
 
+def read_context(output_dir: Path) -> str:
+    return (output_dir / "context.md").read_text(encoding="utf-8")
+
+
+def read_readme(output_dir: Path) -> str:
+    return (output_dir / "README.md").read_text(encoding="utf-8")
+
+
 def write_source(root: Path, relative: str, *, lines: int = 20) -> Path:
     path = root / relative
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -89,10 +97,34 @@ def test_level_a_uses_evidence_source_snippet(tmp_path: Path) -> None:
     assert meta["status"] == "source_context_available"
     assert meta["level"] == "A"
     assert meta["has_source_context"] is True
-    context = (output_dir / "context.md").read_text(encoding="utf-8")
+    context = read_context(output_dir)
     assert "int value = av_temp_lss();" in context
+    assert "Generate 1-3 candidate fixes as unified diff blocks" in context
+    assert "approach, explicit assumption, and confidence" in context
+    assert "Treat the semantic class as a hint, not as proof" in context
     assert MANDATORY_INSTRUCTIONS.strip() in context
+    assert context.rstrip().endswith(MANDATORY_INSTRUCTIONS.strip())
     assert not list(output_dir.glob("*.patch"))
+
+
+def test_outputs_include_readme_and_meta_paths(tmp_path: Path) -> None:
+    evidence_path = write_packet(tmp_path, compiler_packet())
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(PatchSuggestOptions(evidence_path, output_dir=output_dir))
+
+    assert result.exit_code == 0
+    readme = read_readme(output_dir)
+    assert "Patch Suggestion Output" in readme
+    assert "Read `context.md` first" in readme
+    assert "did not generate a patch" in readme
+    assert "did not modify the source tree" in readme
+    meta = read_meta(output_dir)
+    assert meta["outputs"] == {
+        "readme_md": str(output_dir / "README.md"),
+        "context_md": str(output_dir / "context.md"),
+        "meta_json": str(output_dir / "meta.json"),
+    }
 
 
 def test_level_b_reports_file_line_without_source_context(tmp_path: Path) -> None:
@@ -106,8 +138,10 @@ def test_level_b_reports_file_line_without_source_context(tmp_path: Path) -> Non
     assert meta["status"] == "source_context_unavailable"
     assert meta["level"] == "B"
     assert meta["has_source_context"] is False
-    context = (output_dir / "context.md").read_text(encoding="utf-8")
+    context = read_context(output_dir)
     assert "Source context for `src/demo.c:12` is unavailable" in context
+    assert "First open the reported file and inspect the source around the reported line" in context
+    assert "generate 1-3 candidate unified diffs" in context
     assert "Do NOT run `git apply` / `patch`" in context
     assert not list(output_dir.glob("*.patch"))
 
@@ -130,7 +164,7 @@ def test_suffix_search_unique_match_upgrades_to_level_a(tmp_path: Path) -> None:
     assert meta["status"] == "source_context_available"
     assert meta["level"] == "A"
     assert meta["source_context"]["origin"] == "src_root_suffix_search"  # type: ignore[index]
-    context = (output_dir / "context.md").read_text(encoding="utf-8")
+    context = read_context(output_dir)
     assert "gst-libs/ext/ffmpeg/libavcodec/utils.c line 12" in context
 
 
@@ -173,8 +207,10 @@ def test_suffix_search_multiple_matches_stays_level_b_with_candidates(tmp_path: 
     assert meta["status"] == "source_context_ambiguous"
     assert meta["level"] == "B"
     assert set(meta["candidate_paths"]) == {str(first), str(second)}
-    context = (output_dir / "context.md").read_text(encoding="utf-8")
+    context = read_context(output_dir)
     assert "Candidate matches found" in context
+    assert "Do not choose a source file blindly" in context
+    assert "decide which file matches the diagnostic" in context
 
 
 def test_suffix_search_uses_path_segment_alignment(tmp_path: Path) -> None:
@@ -286,8 +322,9 @@ def test_level_c_reports_diagnostic_only_without_file_line(tmp_path: Path) -> No
     meta = read_meta(output_dir)
     assert meta["status"] == "diagnostic_only"
     assert meta["level"] == "C"
-    context = (output_dir / "context.md").read_text(encoding="utf-8")
+    context = read_context(output_dir)
     assert "has no usable file and line number" in context
+    assert "Do not generate a patch from this diagnostic alone" in context
     assert MANDATORY_INSTRUCTIONS.strip() in context
     assert not list(output_dir.glob("*.patch"))
 
@@ -309,8 +346,9 @@ def test_non_compiler_packet_is_not_applicable(tmp_path: Path) -> None:
     meta = read_meta(output_dir)
     assert meta["status"] == "not_applicable"
     assert meta["applicable"] is False
-    context = (output_dir / "context.md").read_text(encoding="utf-8")
+    context = read_context(output_dir)
     assert "this skill is not applicable" in context
+    assert "Use the workflow suggester for this fault class" in context
     assert not list(output_dir.glob("*.patch"))
 
 
