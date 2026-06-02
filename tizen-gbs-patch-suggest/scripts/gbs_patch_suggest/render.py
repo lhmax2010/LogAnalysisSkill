@@ -121,7 +121,8 @@ def render_context(resolved: ResolvedContext) -> str:
             [
                 "## Not Applicable",
                 "",
-                resolved.advisory or "This diagnostic is not a compiler error.",
+                resolved.advisory
+                or "This diagnostic is not a compiler or Werror source diagnostic.",
                 "",
                 _patch_guidance_not_applicable(),
                 "",
@@ -190,7 +191,7 @@ def render_meta(
         "schema_version": "gbs_patch_suggest/meta/v1",
         "status": resolved.status,
         "level": resolved.level,
-        "applicable": evidence.is_compiler,
+        "applicable": evidence.is_source_diagnostic,
         "fault_class": evidence.kind,
         "semantic_class": evidence.semantic_class,
         "primary_error": {
@@ -307,8 +308,9 @@ def _patch_guidance_not_applicable() -> str:
         [
             "## How to proceed",
             "",
-            "This skill only prepares patch context for compiler diagnostics. Use the workflow "
-            "suggester for this fault class instead of generating a source patch here.",
+            "This skill only prepares patch context for compiler and Werror source "
+            "diagnostics. Use the workflow suggester for this fault class instead of "
+            "generating a source patch here.",
         ]
     )
 

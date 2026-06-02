@@ -103,6 +103,22 @@ def compiler_packet() -> dict[str, object]:
     }
 
 
+def werror_packet() -> dict[str, object]:
+    return {
+        "package": "ffmpeg",
+        "failed_phase": "%build",
+        "primary_error": {
+            "kind": "werror",
+            "file": "libavcodec/utils.c",
+            "line": 109,
+            "message": (
+                "error: address of array will always evaluate to true "
+                "[-Werror,-Wpointer-bool-conversion]"
+            ),
+        },
+    }
+
+
 def subprocess_module(command: list[str]) -> str:
     return command[command.index("-m") + 1]
 
@@ -281,7 +297,37 @@ def test_workflow_compile_failure_writes_optional_patch_context(tmp_path: Path) 
     assert "patch_context_md" in roles
 
 
-def test_workflow_non_compile_failure_does_not_run_patch_suggest(tmp_path: Path) -> None:
+def test_workflow_werror_failure_writes_optional_patch_context(tmp_path: Path) -> None:
+    patch_commands: list[list[str]] = []
+
+    def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        module = subprocess_module(command)
+        if module == "gbs_analyzer":
+            return fake_analyzer(werror_packet())(command, **kwargs)
+        if module == "gbs_patch_suggest":
+            patch_commands.append(command)
+            output_dir = Path(command[command.index("--output-dir") + 1])
+            output_dir.mkdir(parents=True, exist_ok=True)
+            (output_dir / "context.md").write_text("# Patch Context\n", encoding="utf-8")
+            return subprocess.CompletedProcess(command, 0)
+        raise AssertionError(f"unexpected subprocess module: {module}")
+
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build(1),
+        subprocess_runner=runner,
+        python_executable="/test/python",
+    )
+
+    assert result.exit_code == 1
+    assert result.patch_context_path == result.output_dir / "patch_context" / "context.md"
+    assert result.patch_context_error is None
+    assert len(patch_commands) == 1
+
+
+def test_workflow_non_source_diagnostic_failure_does_not_run_patch_suggest(
+    tmp_path: Path,
+) -> None:
     modules: list[str] = []
 
     def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:

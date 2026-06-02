@@ -24,13 +24,15 @@ from gbs_patch_suggest.render import MANDATORY_INSTRUCTIONS
 
 def compiler_packet(
     *,
+    kind: str = "compiler",
+    message: str = "implicit declaration of function 'av_temp_lss'",
     file: str | None = "src/demo.c",
     line: int | None = 12,
     source_snippet: dict[str, object] | None = None,
 ) -> dict[str, object]:
     primary_error: dict[str, object] = {
-        "kind": "compiler",
-        "message": "implicit declaration of function 'av_temp_lss'",
+        "kind": kind,
+        "message": message,
     }
     if file is not None:
         primary_error["file"] = file
@@ -40,7 +42,7 @@ def compiler_packet(
         "primary_error": primary_error,
         "root_cause_candidates": [
             {
-                "kind": "compiler",
+                "kind": kind,
                 "semantic_class": "undeclared_identifier",
                 "confidence": 0.8,
             }
@@ -124,6 +126,39 @@ def test_level_a_uses_evidence_source_snippet(tmp_path: Path) -> None:
     assert MANDATORY_INSTRUCTIONS.strip() in context
     assert context.rstrip().endswith(MANDATORY_INSTRUCTIONS.strip())
     assert not list(output_dir.glob("*.patch"))
+
+
+def test_werror_uses_same_source_diagnostic_flow(tmp_path: Path) -> None:
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(
+            kind="werror",
+            message=(
+                "error: address of array will always evaluate to true "
+                "[-Werror,-Wpointer-bool-conversion]"
+            ),
+            source_snippet={
+                "path": "src/demo.c",
+                "start_line": 7,
+                "end_line": 9,
+                "text": "if (array_field) {\n    return 1;\n}",
+            },
+        ),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(PatchSuggestOptions(evidence_path, output_dir=output_dir))
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_available"
+    assert meta["level"] == "A"
+    assert meta["applicable"] is True
+    assert meta["fault_class"] == "werror"
+    context = read_context(output_dir)
+    assert "Fault class: `werror`" in context
+    assert "address of array" in context
+    assert "if (array_field)" in context
 
 
 def test_outputs_include_readme_and_meta_paths(tmp_path: Path) -> None:
@@ -426,11 +461,12 @@ def test_level_c_reports_diagnostic_only_without_file_line(tmp_path: Path) -> No
     assert not list(output_dir.glob("*.patch"))
 
 
-def test_non_compiler_packet_is_not_applicable(tmp_path: Path) -> None:
+@pytest.mark.parametrize("kind", ["depsolve", "linker_undef", "patch", "rpm_phase"])
+def test_non_source_diagnostic_packet_is_not_applicable(tmp_path: Path, kind: str) -> None:
     evidence_path = write_packet(
         tmp_path,
         {
-            "primary_error": {"kind": "depsolve", "message": "nothing provides foo"},
+            "primary_error": {"kind": kind, "message": "not source-fixable here"},
             "root_cause_candidates": [],
             "evidence": {},
         },
@@ -445,6 +481,7 @@ def test_non_compiler_packet_is_not_applicable(tmp_path: Path) -> None:
     assert meta["applicable"] is False
     context = read_context(output_dir)
     assert "this skill is not applicable" in context
+    assert "compiler and Werror source diagnostics" in context
     assert "Use the workflow suggester for this fault class" in context
     assert not list(output_dir.glob("*.patch"))
 

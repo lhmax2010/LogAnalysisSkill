@@ -1,13 +1,13 @@
 ---
 name: tizen-gbs-patch-suggest
-description: Prepares LLM-ready patch-generation context from analyzer Evidence Packet JSON or a Tizen gbs build log for compiler errors. Use when the user wants help generating a source fix patch, candidate unified diff, or repair strategy for a compiler error and has an Evidence Packet, analyzer output directory, or buildlog. This skill writes context.md for Claude to read; it is not a patch generator and never applies changes.
+description: Prepares LLM-ready patch-generation context from analyzer Evidence Packet JSON or a Tizen gbs build log for compiler or Werror source diagnostics. Use when the user wants help generating a source fix patch, candidate unified diff, or repair strategy for a compiler error, -Werror failure, warnings-as-errors diagnostic, and has an Evidence Packet, analyzer output directory, or buildlog. This skill writes context.md for Claude to read; it is not a patch generator and never applies changes.
 compatibility: Requires local access to analyzer Evidence Packet JSON or a Tizen gbs build log and the gbs_patch_suggest Python package or this skill folder. Buildlog mode also requires gbs_analyzer installed or a sibling tizen-gbs-log-analysis skill folder. Optional source context collection requires access to the Tizen package source tree. Built for local AI assistants such as Claude Code or Cline.
 ---
 
 # Tizen gbs Patch Suggest Context
 
 Use this skill when the user wants a source patch suggestion for a Tizen `gbs`
-compiler error and analyzer evidence or a build log is available.
+compiler or Werror source diagnostic and analyzer evidence or a build log is available.
 
 This skill is a context preparer, not a patch generator. It reads analyzer
 `evidence_packet.json`, or runs analyzer on a build log to create that evidence,
@@ -23,13 +23,14 @@ not apply patches, and does not modify the source tree.
 Invoke patch-suggest when any of these are true:
 
 - The user has analyzer output and asks for a source patch or candidate fix for a
-  compiler error.
+  compiler or Werror source diagnostic.
 - The user mentions `evidence_packet.json`, a Tizen `gbs` build log, `context.md`,
-  patch context, or generating a unified diff from a compiler failure.
-- The user asks Claude or Cline to prepare enough context to fix a compiler
-  diagnostic without applying changes.
-- The analyzer primary error is a compiler diagnostic and the next step is
-  patch drafting rather than more log analysis.
+  patch context, `-Werror`, warnings treated as errors, or generating a unified
+  diff from a compiler failure.
+- The user asks Claude or Cline to prepare enough context to fix a compiler or
+  Werror diagnostic without applying changes.
+- The analyzer primary error is `compiler` or `werror` and the next step is patch
+  drafting rather than more log analysis.
 
 Do not use this skill for linker, dependency-resolution, patch-application,
 spec-script, or install failures. Use the workflow suggesters for those fault
@@ -39,8 +40,8 @@ classes.
 
 ### Example 1: User has analyzer evidence and wants a patch suggestion
 
-User says: "Use this evidence packet to suggest a fix patch for the compile
-error."
+User says: "Use this evidence packet to suggest a fix patch for this source
+diagnostic."
 
 Actions:
 
@@ -64,8 +65,8 @@ changing the source tree.
 
 ### Example 2: User only points to an analyzer output directory
 
-User says: "The analyzer output is in .gbs_analysis. Help me patch the compiler
-error."
+User says: "The analyzer output is in .gbs_analysis. Help me patch this source
+diagnostic."
 
 Actions:
 
@@ -86,7 +87,7 @@ including Level B fallback when the skill could not read source context.
 
 ### Example 3: User has a build log but no Evidence Packet
 
-User says: "Here is the failed buildlog. Prepare patch context for the compiler error."
+User says: "Here is the failed buildlog. Prepare patch context for the -Werror failure."
 
 Actions:
 
@@ -99,7 +100,7 @@ Actions:
 
 Result: One command turns a build log into patch-generation context.
 
-### Example 4: Evidence is not a compiler error
+### Example 4: Evidence is not a compiler or Werror source diagnostic
 
 User says: "Generate a source patch from this depsolve evidence."
 
@@ -112,7 +113,7 @@ Actions:
 3. Use `tizen-gbs-build-workflow` suggestion files or the relevant workflow
    suggester instead.
 
-Result: Non-compiler failures are routed away from patch-suggest.
+Result: Non-source-diagnostic failures are routed away from patch-suggest.
 
 ## Required Workflow
 
@@ -233,8 +234,8 @@ Statuses:
   context was not read by the skill.
 - `source_context_ambiguous`: Level B. Multiple source candidates were found.
 - `diagnostic_only`: Level C. No usable file and line were available.
-- `not_applicable`: the Evidence Packet primary error is not a compiler
-  diagnostic.
+- `not_applicable`: the Evidence Packet primary error is not a compiler or Werror
+  source diagnostic.
 
 Exit codes:
 
@@ -250,7 +251,7 @@ analyzer as a subprocess and consumes the generated evidence.
 
 Patch-suggest can also be used after `tizen-gbs-build-workflow` by reading
 `.gbs_workflow/analyzer_output/evidence_packet.json`. It does not replace the
-workflow suggesters and does not handle non-compiler fault classes.
+workflow suggesters and does not handle non-source-diagnostic fault classes.
 
 Patch-suggest has no direct relationship to `tizen-gbs-build` except that build
 or workflow runs may produce the logs that analyzer later converts into evidence.

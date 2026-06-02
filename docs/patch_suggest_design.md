@@ -195,11 +195,12 @@ skill 按"能拿到多少源码"分三级,每级都正常成功产出 context(�
   无源码时(级别 B/C)产 advisory/context,不产 .patch。
   宁可"让 Claude 自己读了再生成",不可"猜个源码编个 patch"。
 
-### fault class 判断(核对确认)
+### fault class 判断(核对确认 + 真实 werror 修正)
 
-无 fault_class 字段。用: primary_error.kind == "compiler" 筛 compile 类;
+无 fault_class 字段。用: primary_error.kind in {"compiler", "werror"} 筛源码级编译诊断;
 语义用 root_cause_candidates[0].semantic_class(undeclared_identifier/syntax_error/type_mismatch...)。
-与现有 CompileErrorSuggester 一致。非 compiler kind → D6 提示不适用。
+这与 analyzer evidence router 一致: analyzer 已经把 compiler/werror 都交给 CompileEvidenceCollector。
+非 compiler/werror kind → D6 提示不适用。
 
 ### PS-M1 必须包含降级(不许只做 happy path)
 
