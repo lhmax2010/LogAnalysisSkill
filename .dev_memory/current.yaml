@@ -1,12 +1,12 @@
-current_milestone: ps_m5_skill_md
+current_milestone: ps_m4_buildlog_mode
 current_status: completed
-last_completed: ps_m3_output_contract
-last_completed_commit: "6864a5f"
+last_completed: ps_m5_skill_md
+last_completed_commit: "3d7eeae"
 session_count: 27
 next_steps:
-  - "Open PR for PS-M5 SKILL.md review."
-  - "Wait for review before PS-M4 or PS-M6."
-blocked_on: "waiting_for_ps_m5_review"
+  - "Open PR for PS-M4 buildlog mode review."
+  - "Wait for review before PS-M6."
+blocked_on: "waiting_for_ps_m4_review"
 notes: |
-  PS-M5 writes formal Anthropic Skill instructions for patch-suggest. It must not
-  change code, add buildlog mode, or integrate workflow.
+  PS-M4 adds --buildlog convenience mode to patch-suggest. It must not change
+  analyzer/workflow/build skill code or integrate workflow.
