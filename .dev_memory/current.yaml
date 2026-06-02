@@ -1,12 +1,13 @@
-current_milestone: ps_m4_buildlog_mode
+current_milestone: ps_m6_workflow_patch_context
 current_status: completed
-last_completed: ps_m5_skill_md
-last_completed_commit: "3d7eeae"
-session_count: 27
+last_completed: ps_m4_buildlog_mode
+last_completed_commit: "834e371"
+session_count: 28
 next_steps:
-  - "Open PR for PS-M4 buildlog mode review."
-  - "Wait for review before PS-M6."
-blocked_on: "waiting_for_ps_m4_review"
+  - "Open PR for PS-M6 workflow patch context review."
+  - "Wait for review before PS-M7."
+blocked_on: "waiting_for_ps_m6_review"
 notes: |
-  PS-M4 adds --buildlog convenience mode to patch-suggest. It must not change
-  analyzer/workflow/build skill code or integrate workflow.
+  PS-M6 integrates patch-suggest as an optional workflow stage for compile
+  failures. It must not change build/analyze/suggest verdict or exit-code
+  behavior; workflow only writes patch context and never calls an LLM.
