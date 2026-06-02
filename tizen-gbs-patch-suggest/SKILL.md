@@ -91,12 +91,14 @@ User says: "Here is the failed buildlog. Prepare patch context for the -Werror f
 
 Actions:
 
-1. Use `--buildlog /path/to/buildlog` instead of `--evidence`.
+1. Use `--buildlog /path/to/buildlog` instead of `--evidence`; do not open,
+   read, or summarize the raw build log yourself.
 2. If the user provides the package source root, pass it with `--src-root`.
 3. The skill runs analyzer internally and writes analyzer evidence under
    `.gbs_patch_suggest/analyzer_output/`.
-4. Read `.gbs_patch_suggest/context.md`, then generate candidate patch files as
-   the outer assistant. Do not apply them.
+4. Read `.gbs_patch_suggest/context.md` as the main compressed patch-generation
+   prompt, then generate candidate patch files as the outer assistant. Do not
+   apply them.
 
 Result: One command turns a build log into patch-generation context.
 
@@ -118,6 +120,18 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
 ## Required Workflow
 
 ### Run the skill
+
+> **Token rule: do not read raw logs yourself.**
+>
+> Treat patch-suggest like the log-analysis skill: give it the Evidence Packet
+> path or build-log path, then read the skill output. Do **not** open, read,
+> summarize, or scan the raw build log yourself in either `--evidence` or
+> `--buildlog` mode. In `--buildlog` mode, patch-suggest runs analyzer
+> internally and compresses the raw log into evidence plus `context.md`
+> (for example, a large log can become roughly 1k tokens of Claude-facing
+> context). Reading the raw log yourself defeats that compression and can waste
+> around 10k tokens. After running the skill, read only its generated
+> `context.md`, `README.md`, and `meta.json`.
 
 1. Identify the input. Use exactly one of:
    - `--evidence /path/to/evidence_packet.json`
@@ -178,25 +192,31 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
 2. Read `.gbs_patch_suggest/context.md` as the primary patch-generation prompt.
 3. Read `.gbs_patch_suggest/meta.json` if machine-readable status, level,
    source-context availability, or candidate paths are needed.
-4. If `context.md` says source context is unavailable or ambiguous, Claude must
+4. If `context.md` already contains Level A source context, do not re-read the
+   whole source file or large source areas. The context window is the primary
+   source material for patch drafting.
+5. Targeted root-cause verification is still allowed and expected: search or
+   grep for a specific referenced function or symbol before preserving it. This
+   focused check is different from reading a whole log or broad source tree.
+6. If `context.md` says source context is unavailable or ambiguous, Claude must
    inspect the reported file or candidate paths before generating any patch.
-5. Generate candidate patches yourself as the outer assistant, following
+7. Generate candidate patches yourself as the outer assistant, following
    `context.md` exactly:
    - produce unified diff candidate(s)
    - include approach, explicit assumption, and confidence
    - question whether the reported error is only a symptom
    - verify referenced functions or symbols exist before preserving them
    - do not fabricate functions or headers
-6. When you generate a patch candidate, write it to
+8. When you generate a patch candidate, write it to
    `.gbs_patch_suggest/candidate_N.patch` as a standard unified diff. Use paths
    relative to the project root with `a/...` and `b/...` prefixes when possible,
    so the user can run `git apply` from the project root.
-7. Tell the user where each `candidate_N.patch` file was written and recommend
+9. Tell the user where each `candidate_N.patch` file was written and recommend
    `git apply --check <path>` as a verification step before applying.
-8. Writing a `.patch` file only saves the suggestion to disk for review. It does
+10. Writing a `.patch` file only saves the suggestion to disk for review. It does
    not mean the patch should be applied. Writing the file and applying it are
    completely separate actions.
-9. Do not apply patches. Do not run `git apply` or `patch`. Do not modify the
+11. Do not apply patches. Do not run `git apply` or `patch`. Do not modify the
    source tree. The user reviews the patch file and decides whether to apply it.
 
 ## Output Contract
