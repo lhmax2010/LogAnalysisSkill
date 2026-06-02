@@ -1,4 +1,4 @@
-"""CLI for tizen-gbs-patch-suggest PS-M1."""
+"""CLI for tizen-gbs-patch-suggest."""
 
 from __future__ import annotations
 
@@ -8,6 +8,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TextIO
 
+from gbs_patch_suggest.analyzer_runner import (
+    discover_analyzer_pythonpath,
+    run_analyzer_for_buildlog,
+)
 from gbs_patch_suggest.ingest import extract_first_diagnostic, load_evidence_packet
 from gbs_patch_suggest.render import write_outputs
 from gbs_patch_suggest.resolver import resolve_context
@@ -20,9 +24,11 @@ DEFAULT_OUTPUT_DIR = Path(".gbs_patch_suggest")
 
 @dataclass(frozen=True)
 class PatchSuggestOptions:
-    evidence_path: Path
+    evidence_path: Path | None = None
+    buildlog_path: Path | None = None
     output_dir: Path = DEFAULT_OUTPUT_DIR
     src_root: Path | None = None
+    analyzer_extra_pythonpath: tuple[Path, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -38,18 +44,45 @@ class PatchSuggestResult:
 def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
     """Generate patch context from an analyzer Evidence Packet."""
 
-    if not options.evidence_path.is_file():
+    evidence_path = options.evidence_path
+    if evidence_path is None:
+        if options.buildlog_path is None:
+            return PatchSuggestResult(
+                exit_code=EXIT_EVIDENCE_UNREADABLE,
+                output_dir=options.output_dir,
+                error="one of --evidence or --buildlog is required",
+            )
+        analyzer_result = run_analyzer_for_buildlog(
+            options.buildlog_path,
+            output_dir=options.output_dir / "analyzer_output",
+            src_root=options.src_root,
+            extra_pythonpath=options.analyzer_extra_pythonpath,
+        )
+        if analyzer_result.error:
+            return PatchSuggestResult(
+                exit_code=analyzer_result.exit_code,
+                output_dir=options.output_dir,
+                error=analyzer_result.error,
+            )
+        evidence_path = analyzer_result.evidence_path
+
+    if not evidence_path.is_file():
         return PatchSuggestResult(
             exit_code=EXIT_EVIDENCE_UNREADABLE,
             output_dir=options.output_dir,
-            error=f"evidence is not readable: {options.evidence_path}",
+            error=f"evidence is not readable: {evidence_path}",
         )
 
     try:
-        packet = load_evidence_packet(options.evidence_path)
+        packet = load_evidence_packet(evidence_path)
         diagnostic = extract_first_diagnostic(packet)
         resolved = resolve_context(diagnostic, src_root=options.src_root)
-        outputs = write_outputs(resolved, options.output_dir)
+        outputs = write_outputs(
+            resolved,
+            options.output_dir,
+            evidence_path=evidence_path,
+            buildlog_path=options.buildlog_path,
+        )
     except (OSError, ValueError) as exc:
         return PatchSuggestResult(
             exit_code=EXIT_FATAL,
@@ -71,11 +104,16 @@ def build_parser() -> argparse.ArgumentParser:
         prog="gbs_patch_suggest",
         description="Prepare LLM-ready patch context from analyzer Evidence Packet JSON.",
     )
-    parser.add_argument(
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument(
         "--evidence",
-        required=True,
         type=Path,
-        help="Path to analyzer evidence_packet.json. PS-M1 supports evidence input only.",
+        help="Path to analyzer evidence_packet.json.",
+    )
+    source.add_argument(
+        "--buildlog",
+        type=Path,
+        help="Path to buildlog. Runs gbs_analyzer first and consumes its evidence output.",
     )
     parser.add_argument(
         "--output-dir",
@@ -92,16 +130,30 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None, *, stderr: TextIO = sys.stderr) -> int:
+def main(
+    argv: list[str] | None = None,
+    *,
+    stderr: TextIO = sys.stderr,
+    analyzer_extra_pythonpath: tuple[Path, ...] = (),
+) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     src_root = args.src_root.resolve() if args.src_root is not None else None
+    extra_pythonpath = analyzer_extra_pythonpath
+    if args.buildlog is not None and not extra_pythonpath:
+        try:
+            extra_pythonpath = discover_analyzer_pythonpath()
+        except RuntimeError as exc:
+            print(f"gbs_patch_suggest: {exc}", file=stderr)
+            return EXIT_FATAL
 
     result = run_patch_suggest(
         PatchSuggestOptions(
             evidence_path=args.evidence,
+            buildlog_path=args.buildlog,
             output_dir=args.output_dir,
             src_root=src_root,
+            analyzer_extra_pythonpath=extra_pythonpath,
         )
     )
     if result.error:
