@@ -55,8 +55,21 @@ class WorkflowResult:
     analyzer_output_dir: Path | None = None
     evidence_packet_path: Path | None = None
     evidence_markdown_path: Path | None = None
+    patch_context_dir: Path | None = None
+    patch_context_path: Path | None = None
+    patch_context_error: str | None = None
     suggestion_paths: list[Path] = field(default_factory=list)
     downstream_token_estimate: dict[str, Any] | None = None
+    error: str | None = None
+
+
+@dataclass(frozen=True)
+class PatchContextResult:
+    """Result of the optional patch-suggest context stage."""
+
+    triggered: bool
+    output_dir: Path | None = None
+    context_path: Path | None = None
     error: str | None = None
 
 
@@ -68,6 +81,7 @@ def run_workflow(
     subprocess_runner: SubprocessRunner = subprocess.run,
     python_executable: str = sys.executable,
     analyzer_extra_pythonpath: Sequence[str | Path] = (),
+    patch_suggest_extra_pythonpath: Sequence[str | Path] = (),
 ) -> WorkflowResult:
     """Run build, analyze failures, and write suggestion artifacts."""
 
@@ -185,6 +199,15 @@ def run_workflow(
 
     suggestions = collect_suggestions(packet, options.src_root, suggesters)
     suggestion_files = write_suggestions(suggestions, suggestions_dir)
+    patch_context = maybe_write_patch_context(
+        packet=packet,
+        evidence_packet_path=packet_path,
+        src_root=options.src_root,
+        output_dir=options.output_dir / "patch_context",
+        subprocess_runner=subprocess_runner,
+        python_executable=python_executable,
+        extra_pythonpath=patch_suggest_extra_pythonpath,
+    )
     summary_text, downstream_tokens = render_workflow_summary_with_tokens(
         summary_path=summary_path,
         evidence_markdown_path=markdown_path,
@@ -194,6 +217,8 @@ def run_workflow(
         packet=packet,
         suggestions=suggestions,
         suggestion_files=suggestion_files,
+        patch_context_path=patch_context.context_path,
+        patch_context_error=patch_context.error,
     )
     summary_path.write_text(summary_text, encoding="utf-8")
     return WorkflowResult(
@@ -207,6 +232,9 @@ def run_workflow(
         analyzer_output_dir=analyzer_dir,
         evidence_packet_path=packet_path,
         evidence_markdown_path=markdown_path,
+        patch_context_dir=patch_context.output_dir if patch_context.triggered else None,
+        patch_context_path=patch_context.context_path,
+        patch_context_error=patch_context.error,
         suggestion_paths=suggestion_files,
         downstream_token_estimate=downstream_tokens,
     )
@@ -226,8 +254,74 @@ def collect_suggestions(
     return suggestions
 
 
+def maybe_write_patch_context(
+    *,
+    packet: dict[str, Any],
+    evidence_packet_path: Path,
+    src_root: Path,
+    output_dir: Path,
+    subprocess_runner: SubprocessRunner,
+    python_executable: str,
+    extra_pythonpath: Sequence[str | Path],
+) -> PatchContextResult:
+    """Run patch-suggest for compiler packets as a non-fatal optional stage."""
+
+    if primary_error_kind(packet) != "compiler":
+        return PatchContextResult(triggered=False)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    command = [
+        python_executable,
+        "-m",
+        "gbs_patch_suggest",
+        "--evidence",
+        str(evidence_packet_path),
+        "--src-root",
+        str(src_root),
+        "--output-dir",
+        str(output_dir),
+    ]
+    subprocess_kwargs: dict[str, object] = {"check": True, "text": True}
+    patch_env = build_extra_pythonpath_env(extra_pythonpath)
+    if patch_env is not None:
+        subprocess_kwargs["env"] = patch_env
+
+    try:
+        subprocess_runner(command, **subprocess_kwargs)
+    except subprocess.CalledProcessError as exc:
+        return PatchContextResult(
+            triggered=True,
+            output_dir=output_dir,
+            error=f"gbs_patch_suggest exited with {exc.returncode}",
+        )
+
+    context_path = output_dir / "context.md"
+    if not context_path.is_file():
+        return PatchContextResult(
+            triggered=True,
+            output_dir=output_dir,
+            error="gbs_patch_suggest did not write patch_context/context.md",
+        )
+    return PatchContextResult(triggered=True, output_dir=output_dir, context_path=context_path)
+
+
+def primary_error_kind(packet: dict[str, Any]) -> str:
+    """Return the primary error kind from an analyzer packet."""
+
+    value = packet.get("primary_error")
+    if not isinstance(value, dict):
+        return ""
+    return str(value.get("kind") or "")
+
+
 def build_analyzer_subprocess_env(extra_pythonpath: Sequence[str | Path]) -> dict[str, str] | None:
     """Return a subprocess env with extra Python paths prepended for analyzer calls."""
+
+    return build_extra_pythonpath_env(extra_pythonpath)
+
+
+def build_extra_pythonpath_env(extra_pythonpath: Sequence[str | Path]) -> dict[str, str] | None:
+    """Return a subprocess env with extra Python paths prepended."""
 
     if not extra_pythonpath:
         return None
@@ -292,6 +386,8 @@ def render_workflow_summary(
     suggestions: Sequence[Suggestion],
     suggestion_files: Sequence[Path],
     error: str | None = None,
+    patch_context_path: Path | None = None,
+    patch_context_error: str | None = None,
 ) -> str:
     """Render the workflow summary markdown."""
 
@@ -312,6 +408,10 @@ def render_workflow_summary(
 
     files = "\n".join(f"- `{path}`" for path in suggestion_files) or "- None"
     error_block = f"\n**Workflow error**: {error}\n" if error else ""
+    patch_context_block = render_patch_context_summary(
+        patch_context_path=patch_context_path,
+        patch_context_error=patch_context_error,
+    )
     return (
         "# Workflow Summary\n\n"
         f"**Build status**: {build_status}\n"
@@ -326,13 +426,43 @@ def render_workflow_summary(
         + "\n\n"
         "## Files Written\n\n"
         f"{files}\n\n"
+        f"{patch_context_block}"
         "## What to do next\n\n"
         "1. Read `analyzer_output/evidence_packet.md` for full diagnosis.\n"
         "2. Read each `suggestions/*.md` for proposed fixes.\n"
-        "3. For patch suggestions: run `git apply suggestions/<file>.patch` if you accept.\n"
-        "4. For advisory suggestions: follow manual_steps in the .md.\n"
-        "5. Re-run `python -m gbs_workflow` after applying changes.\n"
+        "3. If `patch_context/context.md` exists, read it and generate candidate "
+        "patch files as the outer assistant. Do not apply them automatically.\n"
+        "4. For patch suggestions: run `git apply suggestions/<file>.patch` if you accept.\n"
+        "5. For advisory suggestions: follow manual_steps in the .md.\n"
+        "6. Re-run `python -m gbs_workflow` after applying changes.\n"
     )
+
+
+def render_patch_context_summary(
+    *,
+    patch_context_path: Path | None,
+    patch_context_error: str | None,
+) -> str:
+    """Render the optional patch-suggest context status."""
+
+    if patch_context_path is not None:
+        return (
+            "## Patch Context\n\n"
+            f"Patch generation context was written to `{patch_context_path}`.\n\n"
+            "The workflow only generated context. It did not generate a final patch, "
+            "did not apply any patch, and did not modify the source tree. The outer "
+            "Claude/Cline assistant should read this context and prepare candidate "
+            "patch files for user review.\n\n"
+        )
+    if patch_context_error:
+        return (
+            "## Patch Context\n\n"
+            "Patch context generation was skipped or unavailable.\n\n"
+            f"Reason: {patch_context_error}\n\n"
+            "This is non-fatal: the build analysis and workflow suggestions above are "
+            "still valid.\n\n"
+        )
+    return ""
 
 
 def render_workflow_summary_with_tokens(
@@ -340,6 +470,7 @@ def render_workflow_summary_with_tokens(
     summary_path: Path,
     evidence_markdown_path: Path | None = None,
     suggestion_files: Sequence[Path] = (),
+    patch_context_path: Path | None = None,
     analyzer_output_dir: Path | None = None,
     estimator: TokenEstimator | None = None,
     **summary_kwargs: Any,
@@ -347,13 +478,18 @@ def render_workflow_summary_with_tokens(
     """Render the workflow summary plus Claude-facing downstream token estimates."""
 
     active_estimator = estimator or TokenEstimator()
-    base_summary = render_workflow_summary(suggestion_files=suggestion_files, **summary_kwargs)
+    base_summary = render_workflow_summary(
+        suggestion_files=suggestion_files,
+        patch_context_path=patch_context_path,
+        **summary_kwargs,
+    )
     section = ""
     estimate = estimate_workflow_downstream_tokens(
         summary_text=base_summary,
         summary_path=summary_path,
         evidence_markdown_path=evidence_markdown_path,
         suggestion_files=suggestion_files,
+        patch_context_path=patch_context_path,
         analyzer_output_dir=analyzer_output_dir,
         estimator=active_estimator,
     )
@@ -365,6 +501,7 @@ def render_workflow_summary_with_tokens(
             summary_path=summary_path,
             evidence_markdown_path=evidence_markdown_path,
             suggestion_files=suggestion_files,
+            patch_context_path=patch_context_path,
             analyzer_output_dir=analyzer_output_dir,
             estimator=active_estimator,
         )
@@ -377,6 +514,7 @@ def estimate_workflow_downstream_tokens(
     summary_path: Path,
     evidence_markdown_path: Path | None,
     suggestion_files: Sequence[Path],
+    patch_context_path: Path | None,
     analyzer_output_dir: Path | None,
     estimator: TokenEstimator,
 ) -> dict[str, Any]:
@@ -409,6 +547,15 @@ def estimate_workflow_downstream_tokens(
                     "included_in_total": True,
                 }
             )
+    if patch_context_path is not None and patch_context_path.is_file():
+        files.append(
+            {
+                "path": str(patch_context_path),
+                "role": "patch_context_md",
+                "tokens": _estimate_file_tokens(patch_context_path, estimator),
+                "included_in_total": True,
+            }
+        )
 
     total = sum(int(file["tokens"]) for file in files if file["included_in_total"])
     return {
@@ -508,6 +655,7 @@ def main(
     argv: list[str] | None = None,
     *,
     analyzer_extra_pythonpath: Sequence[str | Path] = (),
+    patch_suggest_extra_pythonpath: Sequence[str | Path] = (),
 ) -> int:
     """CLI entrypoint for `python -m gbs_workflow`."""
 
@@ -526,6 +674,7 @@ def main(
             timeout=args.timeout,
         ),
         analyzer_extra_pythonpath=analyzer_extra_pythonpath,
+        patch_suggest_extra_pythonpath=patch_suggest_extra_pythonpath,
     )
     print(f"workflow summary: {result.summary_path}", file=sys.stderr)
     if result.downstream_token_estimate is not None:

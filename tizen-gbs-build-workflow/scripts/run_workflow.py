@@ -8,6 +8,7 @@ from pathlib import Path
 
 BUILD_SKILL_ENV = "TIZEN_GBS_BUILD_SKILL_DIR"
 ANALYZER_SKILL_ENV = "TIZEN_GBS_LOG_ANALYSIS_SKILL_DIR"
+PATCH_SUGGEST_SKILL_ENV = "TIZEN_GBS_PATCH_SUGGEST_SKILL_DIR"
 MISSING_DEPENDENCY_MESSAGE = (
     "Install tizen-gbs-build and tizen-gbs-log-analysis next to this skill, "
     "or set TIZEN_GBS_BUILD_SKILL_DIR and TIZEN_GBS_LOG_ANALYSIS_SKILL_DIR."
@@ -60,6 +61,21 @@ def _dependency_scripts(
     raise RuntimeError(MISSING_DEPENDENCY_MESSAGE)
 
 
+def _optional_dependency_scripts(
+    *,
+    env_name: str,
+    skill_name: str,
+    package_dir: str,
+) -> Path | None:
+    try:
+        env_path = _env_skill_scripts(env_name, package_dir)
+    except RuntimeError:
+        env_path = None
+    if env_path is not None:
+        return env_path
+    return _sibling_skill_scripts(skill_name, package_dir)
+
+
 def _load_main() -> tuple[Callable[..., int], tuple[Path, ...]]:
     added_paths: list[Path] = []
     own_scripts = Path(__file__).resolve().parent
@@ -102,4 +118,16 @@ if __name__ == "__main__":
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(1) from exc
-    raise SystemExit(workflow_main(None, analyzer_extra_pythonpath=pythonpath))
+    patch_suggest_path = _optional_dependency_scripts(
+        env_name=PATCH_SUGGEST_SKILL_ENV,
+        skill_name="tizen-gbs-patch-suggest",
+        package_dir="gbs_patch_suggest",
+    )
+    patch_pythonpath = (patch_suggest_path,) if patch_suggest_path is not None else ()
+    raise SystemExit(
+        workflow_main(
+            None,
+            analyzer_extra_pythonpath=pythonpath,
+            patch_suggest_extra_pythonpath=patch_pythonpath,
+        )
+    )
