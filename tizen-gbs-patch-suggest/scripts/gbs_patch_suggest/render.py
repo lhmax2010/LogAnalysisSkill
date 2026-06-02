@@ -16,8 +16,10 @@ MANDATORY_INSTRUCTIONS = """## ⚠️ Instructions — MUST follow
    say so rather than guessing.
 
 2. This patch is a SUGGESTION DRAFT ONLY. Do NOT apply it to any file.
+   You may write candidate `.patch` files to disk as suggestion artifacts for
+   review, but writing a `.patch` file is NOT applying it.
    Do NOT run `git apply` / `patch`. Do NOT modify the source tree.
-   Present the patch to the user for review; the user decides whether to apply.
+   The user reviews the patch file and decides whether to run `git apply`.
 """
 
 
@@ -232,6 +234,8 @@ def _patch_guidance_level_a(semantic_class: str) -> str:
             "6. Treat the semantic class as a hint, not as proof.",
             f"   Current semantic class: `{semantic_class}`.",
             "7. If the source context is insufficient, say what is missing instead of guessing.",
+            "",
+            *_patch_file_guidance(),
         ]
     )
 
@@ -252,6 +256,8 @@ def _patch_guidance_without_source(resolved: ResolvedContext) -> str:
                 "Prefer a minimal patch and treat the semantic class as a hint, not as proof.",
                 "",
                 *_root_cause_verification_guidance(),
+                "",
+                *_patch_file_guidance(),
             ]
         )
     if resolved.level == "C":
@@ -276,6 +282,8 @@ def _patch_guidance_without_source(resolved: ResolvedContext) -> str:
             "and treat the semantic class as a hint, not as proof.",
             "",
             *_root_cause_verification_guidance(),
+            "",
+            *_patch_file_guidance(),
         ]
     )
 
@@ -309,4 +317,23 @@ def _root_cause_verification_guidance(*, start_index: int | None = None) -> list
             "the fix is to remove or correct the offending code rather than preserve it. "
             "Do not silently keep an unverified symbol."
         ),
+    ]
+
+
+def _patch_file_guidance() -> list[str]:
+    return [
+        "Patch file output:",
+        "",
+        "- After generating candidate patch content, write each candidate to the output "
+        "directory as `candidate_N.patch`, for example `candidate_1.patch`.",
+        "- Each `.patch` file must be standard unified diff format that `git apply` can "
+        "recognize.",
+        "- Use paths relative to the project root with `a/...` and `b/...` prefixes when "
+        "possible, so the user can run `git apply` from the project root. Be careful: "
+        "the correct project-root-relative path depends on this package layout.",
+        "- Tell the user where each `candidate_N.patch` file was written. Recommend that "
+        "the user reviews the file and runs `git apply --check <path>` before applying it.",
+        "- Writing the `.patch` file only saves the suggestion to disk for review. It does "
+        "NOT mean the patch should be applied. The user, not you, runs `git apply` after "
+        "reviewing. Writing the file and applying are completely separate actions.",
     ]

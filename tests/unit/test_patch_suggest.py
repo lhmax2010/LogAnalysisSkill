@@ -105,6 +105,11 @@ def test_level_a_uses_evidence_source_snippet(tmp_path: Path) -> None:
     assert "reported error may be a symptom, not the root cause" in context
     assert "verify that functions or symbols referenced near the error actually exist" in context
     assert "Do not silently keep an unverified symbol" in context
+    assert "candidate_N.patch" in context
+    assert "a/..." in context
+    assert "b/..." in context
+    assert "git apply --check <path>" in context
+    assert "Writing the `.patch` file only saves the suggestion to disk for review" in context
     assert MANDATORY_INSTRUCTIONS.strip() in context
     assert context.rstrip().endswith(MANDATORY_INSTRUCTIONS.strip())
     assert not list(output_dir.glob("*.patch"))
@@ -147,6 +152,8 @@ def test_level_b_reports_file_line_without_source_context(tmp_path: Path) -> Non
     assert "generate 1-3 candidate unified diffs" in context
     assert "reported error may be a symptom, not the root cause" in context
     assert "Search the source tree" in context
+    assert "candidate_N.patch" in context
+    assert "Writing the file and applying are completely separate actions" in context
     assert "Do NOT run `git apply` / `patch`" in context
     assert not list(output_dir.glob("*.patch"))
 
