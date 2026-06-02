@@ -20,6 +20,8 @@ PS-M3 validation passed.
 - Level A context includes unified-diff candidate guidance and semantic-class-as-hint wording.
 - Level B unavailable context asks the outer assistant to read `file:line` first.
 - Level B ambiguous context lists candidates and asks the outer assistant to choose before patching.
+- Level A/B context asks the outer assistant to treat the reported error as a possible symptom
+  and verify nearby function/symbol definitions before preserving them.
 - Level C context says not to generate a patch from diagnostic-only information.
 - Not-applicable context points back to workflow suggesters.
 - The D13/D14 `Instructions — MUST follow` block remains the final context block.

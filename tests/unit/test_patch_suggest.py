@@ -102,6 +102,9 @@ def test_level_a_uses_evidence_source_snippet(tmp_path: Path) -> None:
     assert "Generate 1-3 candidate fixes as unified diff blocks" in context
     assert "approach, explicit assumption, and confidence" in context
     assert "Treat the semantic class as a hint, not as proof" in context
+    assert "reported error may be a symptom, not the root cause" in context
+    assert "verify that functions or symbols referenced near the error actually exist" in context
+    assert "Do not silently keep an unverified symbol" in context
     assert MANDATORY_INSTRUCTIONS.strip() in context
     assert context.rstrip().endswith(MANDATORY_INSTRUCTIONS.strip())
     assert not list(output_dir.glob("*.patch"))
@@ -142,6 +145,8 @@ def test_level_b_reports_file_line_without_source_context(tmp_path: Path) -> Non
     assert "Source context for `src/demo.c:12` is unavailable" in context
     assert "First open the reported file and inspect the source around the reported line" in context
     assert "generate 1-3 candidate unified diffs" in context
+    assert "reported error may be a symptom, not the root cause" in context
+    assert "Search the source tree" in context
     assert "Do NOT run `git apply` / `patch`" in context
     assert not list(output_dir.glob("*.patch"))
 
@@ -211,6 +216,7 @@ def test_suffix_search_multiple_matches_stays_level_b_with_candidates(tmp_path: 
     assert "Candidate matches found" in context
     assert "Do not choose a source file blindly" in context
     assert "decide which file matches the diagnostic" in context
+    assert "Do not silently keep an unverified symbol" in context
 
 
 def test_suffix_search_uses_path_segment_alignment(tmp_path: Path) -> None:

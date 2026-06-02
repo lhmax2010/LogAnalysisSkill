@@ -228,9 +228,10 @@ def _patch_guidance_level_a(semantic_class: str) -> str:
             "1. Generate 1-3 candidate fixes as unified diff blocks.",
             "2. For each candidate, include its approach, explicit assumption, and confidence.",
             "3. Prefer the smallest patch that addresses the root cause; avoid broad refactors.",
-            "4. Treat the semantic class as a hint, not as proof.",
+            *_root_cause_verification_guidance(start_index=4),
+            "6. Treat the semantic class as a hint, not as proof.",
             f"   Current semantic class: `{semantic_class}`.",
-            "5. If the source context is insufficient, say what is missing instead of guessing.",
+            "7. If the source context is insufficient, say what is missing instead of guessing.",
         ]
     )
 
@@ -249,6 +250,8 @@ def _patch_guidance_without_source(resolved: ResolvedContext) -> str:
                 "unified diffs. "
                 "For each candidate, include its approach, explicit assumption, and confidence. "
                 "Prefer a minimal patch and treat the semantic class as a hint, not as proof.",
+                "",
+                *_root_cause_verification_guidance(),
             ]
         )
     if resolved.level == "C":
@@ -271,6 +274,8 @@ def _patch_guidance_without_source(resolved: ResolvedContext) -> str:
             "After reading the file, generate 1-3 candidate unified diffs. For each candidate, "
             "include its approach, explicit assumption, and confidence. Prefer a minimal patch "
             "and treat the semantic class as a hint, not as proof.",
+            "",
+            *_root_cause_verification_guidance(),
         ]
     )
 
@@ -284,3 +289,24 @@ def _patch_guidance_not_applicable() -> str:
             "suggester for this fault class instead of generating a source patch here.",
         ]
     )
+
+
+def _root_cause_verification_guidance(*, start_index: int | None = None) -> list[str]:
+    prefix_a = f"{start_index}. " if start_index is not None else "- "
+    prefix_b = f"{start_index + 1}. " if start_index is not None else "- "
+    return [
+        (
+            f"{prefix_a}The reported error may be a symptom, not the root cause. Before "
+            "assuming a minimal syntactic fix, consider whether the offending line or symbol "
+            "should exist at all, such as a call to an undefined function, a stray token, or "
+            "leftover/incomplete code."
+        ),
+        (
+            f"{prefix_b}Before finalizing the patch, verify that functions or symbols "
+            "referenced near the error actually exist. Search the source tree, for example "
+            "with grep, for their definition. If a referenced symbol is not defined anywhere "
+            "and you cannot verify it should exist, flag it explicitly and consider whether "
+            "the fix is to remove or correct the offending code rather than preserve it. "
+            "Do not silently keep an unverified symbol."
+        ),
+    ]
