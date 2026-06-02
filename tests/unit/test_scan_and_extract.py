@@ -233,7 +233,40 @@ def test_detects_install_missing(tmp_path: Path) -> None:
 
 def test_detects_werror(tmp_path: Path) -> None:
     path = write_log(tmp_path, "cc1: all warnings being treated as errors\n")
-    assert scan_buildlog(path).events[0].kind == "werror"
+    event = scan_buildlog(path).events[0]
+    assert event.kind == "werror"
+    assert event.file is None
+    assert event.line is None
+    assert event.column is None
+
+
+def test_detects_werror_diagnostic_location(tmp_path: Path) -> None:
+    path = write_log(
+        tmp_path,
+        "\n".join(
+            [
+                "+ %build",
+                "+ clang -c tdm_meson_hwc.c",
+                (
+                    "tdm_meson_hwc.c:515:23: error: address of array "
+                    "will always evaluate to true [-Werror,-Wpointer-bool-conversion]"
+                ),
+                "",
+            ]
+        ),
+    )
+
+    event = scan_buildlog(path).events[0]
+
+    assert event.kind == "werror"
+    assert event.file == "tdm_meson_hwc.c"
+    assert event.line == 515
+    assert event.column == 23
+    assert event.message == (
+        "address of array will always evaluate to true [-Werror,-Wpointer-bool-conversion]"
+    )
+    assert event.command_id == "C001"
+    assert event.details == {"is_assembler": False, "tool": "clang"}
 
 
 def test_detects_rpm_phase_failure(tmp_path: Path) -> None:

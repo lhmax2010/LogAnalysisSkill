@@ -377,6 +377,9 @@ class _ScanState:
             return self._event(event_id, "install_missing", "error", text, line)
 
         if "-werror" in lowered or "all warnings being treated as errors" in lowered:
+            compiler_match = COMPILER_PATTERN.search(text)
+            if compiler_match:
+                return self._werror_event(event_id, line, compiler_match)
             return self._event(event_id, "werror", "error", text, line)
 
         linker_missing = LINKER_MISSING_PATTERN.search(text)
@@ -447,6 +450,25 @@ class _ScanState:
         return self._event(
             event_id,
             "compiler",
+            _normalize_severity(match.group("severity")),
+            match.group("message"),
+            line,
+            file=file_path,
+            diagnostic_line=int(match.group("line")),
+            column=int(column) if column is not None else None,
+            details=details,
+        )
+
+    def _werror_event(self, event_id: str, line: LogLine, match: re.Match[str]) -> DiagnosticEvent:
+        column = match.group("column")
+        file_path = match.group("file")
+        details: dict[str, Any] = {"is_assembler": _is_assembler_source(file_path)}
+        tool = self._current_command_tool()
+        if tool is not None:
+            details["tool"] = tool
+        return self._event(
+            event_id,
+            "werror",
             _normalize_severity(match.group("severity")),
             match.group("message"),
             line,
