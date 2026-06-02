@@ -20,7 +20,7 @@ SKIPPED_DIR_NAMES = {
 
 @dataclass(frozen=True)
 class SourceContext:
-    """Source snippet context for the selected compiler diagnostic."""
+    """Source snippet context for the selected source diagnostic."""
 
     path: str
     start_line: int
@@ -53,14 +53,15 @@ def resolve_context(
 ) -> ResolvedContext:
     """Resolve A/B/C source context levels without failing on missing source."""
 
-    if not evidence.is_compiler:
+    if not evidence.is_source_diagnostic:
         return ResolvedContext(
             status="not_applicable",
             level="not_applicable",
             evidence=evidence,
             advisory=(
                 f"primary_error.kind is `{evidence.kind}`, so this skill is not applicable. "
-                "Use the workflow suggester for this fault class."
+                "This skill only prepares patch context for compiler and Werror source "
+                "diagnostics. Use the workflow suggester for this fault class."
             ),
         )
 
@@ -113,7 +114,7 @@ def resolve_context(
         level="C",
         evidence=evidence,
         advisory=(
-            "The compiler diagnostic has no usable file and line number. Provide only "
+            "The source diagnostic has no usable file and line number. Provide only "
             "diagnostic context; do not guess a source patch without inspecting the tree."
         ),
     )

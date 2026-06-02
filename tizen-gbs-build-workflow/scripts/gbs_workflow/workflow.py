@@ -23,6 +23,7 @@ DEFAULT_MAX_TOKENS = 1800
 EXIT_WORKFLOW_ERROR = 1
 EXIT_ARGS = 2
 EXIT_PACKET_UNREADABLE = 3
+PATCH_CONTEXT_KINDS = frozenset({"compiler", "werror"})
 
 BuildRunner = Callable[[BuildOptions], BuildResult]
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
@@ -264,9 +265,9 @@ def maybe_write_patch_context(
     python_executable: str,
     extra_pythonpath: Sequence[str | Path],
 ) -> PatchContextResult:
-    """Run patch-suggest for compiler packets as a non-fatal optional stage."""
+    """Run patch-suggest for source diagnostic packets as a non-fatal optional stage."""
 
-    if primary_error_kind(packet) != "compiler":
+    if primary_error_kind(packet) not in PATCH_CONTEXT_KINDS:
         return PatchContextResult(triggered=False)
 
     output_dir.mkdir(parents=True, exist_ok=True)

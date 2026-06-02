@@ -5,7 +5,6 @@ from typing import Any
 
 import pytest
 from gbs_build_skill.runner import BuildOptions, BuildResult
-
 from gbs_workflow.workflow import WorkflowOptions, run_workflow
 
 

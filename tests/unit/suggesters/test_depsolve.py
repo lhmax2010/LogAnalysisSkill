@@ -2,7 +2,6 @@ import subprocess
 from pathlib import Path
 
 import pytest
-
 from gbs_workflow.suggesters.base import SuggesterBase
 from gbs_workflow.suggesters.depsolve import (
     DepsolveSuggester,

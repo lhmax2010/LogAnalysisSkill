@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+SOURCE_DIAGNOSTIC_KINDS = frozenset({"compiler", "werror"})
+
 
 @dataclass(frozen=True)
 class CompileErrorEvidence:
@@ -22,8 +24,8 @@ class CompileErrorEvidence:
     raw_primary_error: dict[str, Any] | None = None
 
     @property
-    def is_compiler(self) -> bool:
-        return self.kind == "compiler"
+    def is_source_diagnostic(self) -> bool:
+        return self.kind in SOURCE_DIAGNOSTIC_KINDS
 
 
 def load_evidence_packet(path: Path) -> dict[str, Any]:
