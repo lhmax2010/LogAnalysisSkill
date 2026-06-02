@@ -1,3 +1,4 @@
+import importlib.util
 import json
 import os
 import subprocess
@@ -16,6 +17,16 @@ from gbs_workflow.workflow import (
     slugify,
     write_suggestions,
 )
+
+
+def load_workflow_launcher() -> Any:
+    path = Path("tizen-gbs-build-workflow/scripts/run_workflow.py")
+    spec = importlib.util.spec_from_file_location("workflow_launcher_for_test", path)
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def workflow_options(tmp_path: Path) -> WorkflowOptions:
@@ -79,6 +90,23 @@ def depsolve_packet() -> dict[str, object]:
     }
 
 
+def compiler_packet() -> dict[str, object]:
+    return {
+        "package": "ffmpeg",
+        "failed_phase": "%build",
+        "primary_error": {
+            "kind": "compiler",
+            "file": "libavcodec/utils.c",
+            "line": 109,
+            "message": "implicit declaration of function 'av_temp_lss'",
+        },
+    }
+
+
+def subprocess_module(command: list[str]) -> str:
+    return command[command.index("-m") + 1]
+
+
 def test_workflow_success_short_circuits_without_analyzer(tmp_path: Path) -> None:
     called = False
 
@@ -98,6 +126,8 @@ def test_workflow_success_short_circuits_without_analyzer(tmp_path: Path) -> Non
     assert result.exit_code == 0
     assert result.build_succeeded is True
     assert called is False
+    assert result.patch_context_path is None
+    assert result.patch_context_error is None
     assert "Build status**: success" in result.summary_path.read_text(encoding="utf-8")
     assert not (result.output_dir / "analyzer_output").exists()
 
@@ -173,6 +203,167 @@ def test_workflow_passes_extra_pythonpath_to_analyzer(
 
 def test_analyzer_subprocess_env_returns_none_without_extra_pythonpath() -> None:
     assert build_analyzer_subprocess_env(()) is None
+
+
+def test_workflow_launcher_discovers_patch_suggest_from_env(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    launcher = load_workflow_launcher()
+    skill_root = tmp_path / "tizen-gbs-patch-suggest"
+    scripts = skill_root / "scripts"
+    (scripts / "gbs_patch_suggest").mkdir(parents=True)
+
+    monkeypatch.setenv("TIZEN_GBS_PATCH_SUGGEST_SKILL_DIR", str(skill_root))
+
+    assert launcher._optional_dependency_scripts(
+        env_name="TIZEN_GBS_PATCH_SUGGEST_SKILL_DIR",
+        skill_name="tizen-gbs-patch-suggest",
+        package_dir="gbs_patch_suggest",
+    ) == scripts.resolve()
+
+
+def test_workflow_launcher_discovers_patch_suggest_sibling_without_blocking(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    launcher = load_workflow_launcher()
+    workflow_script = tmp_path / "tizen-gbs-build-workflow" / "scripts" / "run_workflow.py"
+    patch_scripts = tmp_path / "tizen-gbs-patch-suggest" / "scripts"
+    workflow_script.parent.mkdir(parents=True)
+    (patch_scripts / "gbs_patch_suggest").mkdir(parents=True)
+
+    monkeypatch.setattr(launcher, "__file__", str(workflow_script))
+    monkeypatch.setenv("TIZEN_GBS_PATCH_SUGGEST_SKILL_DIR", str(tmp_path / "missing"))
+
+    assert launcher._optional_dependency_scripts(
+        env_name="TIZEN_GBS_PATCH_SUGGEST_SKILL_DIR",
+        skill_name="tizen-gbs-patch-suggest",
+        package_dir="gbs_patch_suggest",
+    ) == patch_scripts
+
+
+def test_workflow_compile_failure_writes_optional_patch_context(tmp_path: Path) -> None:
+    patch_commands: list[list[str]] = []
+
+    def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        module = subprocess_module(command)
+        if module == "gbs_analyzer":
+            return fake_analyzer(compiler_packet())(command, **kwargs)
+        if module == "gbs_patch_suggest":
+            patch_commands.append(command)
+            evidence_path = Path(command[command.index("--evidence") + 1])
+            output_dir = Path(command[command.index("--output-dir") + 1])
+            output_dir.mkdir(parents=True, exist_ok=True)
+            (output_dir / "context.md").write_text("# Patch Context\n", encoding="utf-8")
+            (output_dir / "README.md").write_text("# README\n", encoding="utf-8")
+            (output_dir / "meta.json").write_text("{}", encoding="utf-8")
+            assert evidence_path == tmp_path / ".gbs_workflow/analyzer_output/evidence_packet.json"
+            assert command[command.index("--src-root") + 1] == str(tmp_path / "src")
+            return subprocess.CompletedProcess(command, 0)
+        raise AssertionError(f"unexpected subprocess module: {module}")
+
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build(1),
+        subprocess_runner=runner,
+        python_executable="/test/python",
+    )
+
+    assert result.exit_code == 1
+    assert result.patch_context_path == result.output_dir / "patch_context" / "context.md"
+    assert result.patch_context_error is None
+    assert len(patch_commands) == 1
+    summary = result.summary_path.read_text(encoding="utf-8")
+    assert "## Patch Context" in summary
+    assert "did not generate a final patch" in summary
+    assert "patch_context/context.md" in summary
+    assert result.downstream_token_estimate is not None
+    roles = {file["role"] for file in result.downstream_token_estimate["files"]}
+    assert "patch_context_md" in roles
+
+
+def test_workflow_non_compile_failure_does_not_run_patch_suggest(tmp_path: Path) -> None:
+    modules: list[str] = []
+
+    def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        module = subprocess_module(command)
+        modules.append(module)
+        assert module == "gbs_analyzer"
+        return fake_analyzer(depsolve_packet())(command, **kwargs)
+
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build(1),
+        subprocess_runner=runner,
+        python_executable="/test/python",
+    )
+
+    assert result.exit_code == 1
+    assert modules == ["gbs_analyzer"]
+    assert result.patch_context_path is None
+    assert result.patch_context_error is None
+    assert "## Patch Context" not in result.summary_path.read_text(encoding="utf-8")
+
+
+def test_workflow_patch_context_failure_is_non_fatal(tmp_path: Path) -> None:
+    def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        module = subprocess_module(command)
+        if module == "gbs_analyzer":
+            return fake_analyzer(compiler_packet())(command, **kwargs)
+        if module == "gbs_patch_suggest":
+            raise subprocess.CalledProcessError(9, command)
+        raise AssertionError(f"unexpected subprocess module: {module}")
+
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build(1),
+        subprocess_runner=runner,
+        python_executable="/test/python",
+    )
+
+    assert result.exit_code == 1
+    assert result.patch_context_path is None
+    assert result.patch_context_error == "gbs_patch_suggest exited with 9"
+    summary = result.summary_path.read_text(encoding="utf-8")
+    assert "Patch context generation was skipped or unavailable" in summary
+    assert "This is non-fatal" in summary
+
+
+def test_workflow_passes_extra_pythonpath_to_patch_suggest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("PYTHONPATH", "/existing/path")
+    captured_env: dict[str, str] = {}
+    patch_scripts = tmp_path / "patch_scripts"
+
+    def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        module = subprocess_module(command)
+        if module == "gbs_analyzer":
+            return fake_analyzer(compiler_packet())(command, **kwargs)
+        if module == "gbs_patch_suggest":
+            env = kwargs.get("env")
+            assert isinstance(env, dict)
+            captured_env.update(env)
+            output_dir = Path(command[command.index("--output-dir") + 1])
+            output_dir.mkdir(parents=True, exist_ok=True)
+            (output_dir / "context.md").write_text("# Patch Context\n", encoding="utf-8")
+            return subprocess.CompletedProcess(command, 0)
+        raise AssertionError(f"unexpected subprocess module: {module}")
+
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build(1),
+        subprocess_runner=runner,
+        python_executable="/test/python",
+        patch_suggest_extra_pythonpath=(patch_scripts,),
+    )
+
+    assert result.exit_code == 1
+    assert captured_env is not os.environ
+    assert captured_env["PYTHONPATH"].split(os.pathsep)[:2] == [
+        str(patch_scripts),
+        "/existing/path",
+    ]
+    assert os.environ["PYTHONPATH"] == "/existing/path"
 
 
 def test_workflow_prefers_structured_gbs_failure_log(tmp_path: Path) -> None:
