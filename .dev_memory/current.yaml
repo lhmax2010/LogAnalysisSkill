@@ -1,12 +1,12 @@
-current_milestone: ps_m3_output_contract
+current_milestone: ps_m5_skill_md
 current_status: completed
-last_completed: ps_m2_source_context
-last_completed_commit: "543dc8d"
+last_completed: ps_m3_output_contract
+last_completed_commit: "6864a5f"
 session_count: 27
 next_steps:
-  - "Open PR for PS-M3 output contract review."
-  - "Wait for review before PS-M4."
-blocked_on: "waiting_for_ps_m3_review"
+  - "Open PR for PS-M5 SKILL.md review."
+  - "Wait for review before PS-M4 or PS-M6."
+blocked_on: "waiting_for_ps_m5_review"
 notes: |
-  PS-M3 completes the patch-suggest output contract. It must not change resolver
-  behavior, add buildlog mode, write SKILL.md content, or integrate workflow.
+  PS-M5 writes formal Anthropic Skill instructions for patch-suggest. It must not
+  change code, add buildlog mode, or integrate workflow.
