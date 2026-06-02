@@ -18,5 +18,6 @@ PS-M5 validation passed.
   and output-dir defaulting.
 - The two-stage workflow is explicit: run patch-suggest, then read `context.md` and
   generate patch candidates as the outer assistant.
+- Patch file guidance distinguishes saving `candidate_N.patch` suggestion files from
+  applying them; `git apply --check` is recommended for user-side verification.
 - No code behavior changed.
-
