@@ -347,8 +347,20 @@ def _patch_file_guidance() -> list[str]:
         "- Use paths relative to the project root with `a/...` and `b/...` prefixes when "
         "possible, so the user can run `git apply` from the project root. Be careful: "
         "the correct project-root-relative path depends on this package layout.",
+        "- Preserve indentation exactly. Unified diff context lines and the original "
+        "side of changed lines must match the source file byte-for-byte, including "
+        "tabs versus spaces.",
+        "- Copy each context line and the original version of each changed line "
+        "VERBATIM from the source window in this `context.md`; do not retype them. "
+        "The source window preserves exact tabs, and retyping risks converting tabs "
+        "to spaces.",
         "- Tell the user where each `candidate_N.patch` file was written. Recommend that "
         "the user reviews the file and runs `git apply --check <path>` before applying it.",
+        "- If `git apply --check` fails, first suspect whitespace or context-line "
+        "mismatch rather than changing the fix logic. Recopy the relevant context "
+        "lines character-for-character from the source window, especially checking "
+        "tabs, because mismatched context lines make `git apply` fail even when the "
+        "repair idea is correct.",
         "- Writing the `.patch` file only saves the suggestion to disk for review. It does "
         "NOT mean the patch should be applied. The user, not you, runs `git apply` after "
         "reviewing. Writing the file and applying are completely separate actions.",

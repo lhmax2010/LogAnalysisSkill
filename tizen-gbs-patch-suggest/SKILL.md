@@ -211,12 +211,15 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
    `.gbs_patch_suggest/candidate_N.patch` as a standard unified diff. Use paths
    relative to the project root with `a/...` and `b/...` prefixes when possible,
    so the user can run `git apply` from the project root.
-9. Tell the user where each `candidate_N.patch` file was written and recommend
+9. Preserve the exact tabs and spaces from the `context.md` source window when
+   writing unified diff context lines. Do not retype or reformat those lines;
+   copy them exactly. The detailed whitespace rules are in `context.md`.
+10. Tell the user where each `candidate_N.patch` file was written and recommend
    `git apply --check <path>` as a verification step before applying.
-10. Writing a `.patch` file only saves the suggestion to disk for review. It does
+11. Writing a `.patch` file only saves the suggestion to disk for review. It does
    not mean the patch should be applied. Writing the file and applying it are
    completely separate actions.
-11. Do not apply patches. Do not run `git apply` or `patch`. Do not modify the
+12. Do not apply patches. Do not run `git apply` or `patch`. Do not modify the
    source tree. The user reviews the patch file and decides whether to apply it.
 
 ## Output Contract
