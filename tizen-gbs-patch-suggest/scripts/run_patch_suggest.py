@@ -7,7 +7,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 
-def _load_main() -> Callable[[list[str] | None], int]:
+def _load_main() -> Callable[..., int]:
     try:
         from gbs_patch_suggest.cli import main
 
@@ -24,4 +24,22 @@ def _load_main() -> Callable[[list[str] | None], int]:
 
 
 if __name__ == "__main__":
-    raise SystemExit(_load_main()(None))
+    from gbs_patch_suggest.analyzer_runner import discover_analyzer_pythonpath
+
+    needs_analyzer = any(
+        arg == "--buildlog" or arg.startswith("--buildlog=") for arg in sys.argv[1:]
+    )
+    try:
+        analyzer_pythonpath = (
+            discover_analyzer_pythonpath(launcher_path=Path(__file__)) if needs_analyzer else ()
+        )
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr)
+        raise SystemExit(1) from exc
+
+    raise SystemExit(
+        _load_main()(
+            None,
+            analyzer_extra_pythonpath=analyzer_pythonpath,
+        )
+    )

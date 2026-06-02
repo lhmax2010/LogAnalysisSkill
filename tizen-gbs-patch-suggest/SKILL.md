@@ -1,18 +1,19 @@
 ---
 name: tizen-gbs-patch-suggest
-description: Prepares LLM-ready patch-generation context from analyzer Evidence Packet JSON for Tizen gbs compiler errors. Use when the user wants help generating a source fix patch, candidate unified diff, or repair strategy for a compiler error and has an Evidence Packet or analyzer output directory. This skill writes context.md for Claude to read; it is not a patch generator and never applies changes.
-compatibility: Requires local access to analyzer Evidence Packet JSON and the gbs_patch_suggest Python package or this skill folder. Optional source context collection requires access to the Tizen package source tree. Built for local AI assistants such as Claude Code or Cline.
+description: Prepares LLM-ready patch-generation context from analyzer Evidence Packet JSON or a Tizen gbs build log for compiler errors. Use when the user wants help generating a source fix patch, candidate unified diff, or repair strategy for a compiler error and has an Evidence Packet, analyzer output directory, or buildlog. This skill writes context.md for Claude to read; it is not a patch generator and never applies changes.
+compatibility: Requires local access to analyzer Evidence Packet JSON or a Tizen gbs build log and the gbs_patch_suggest Python package or this skill folder. Buildlog mode also requires gbs_analyzer installed or a sibling tizen-gbs-log-analysis skill folder. Optional source context collection requires access to the Tizen package source tree. Built for local AI assistants such as Claude Code or Cline.
 ---
 
 # Tizen gbs Patch Suggest Context
 
 Use this skill when the user wants a source patch suggestion for a Tizen `gbs`
-compiler error and analyzer evidence is already available.
+compiler error and analyzer evidence or a build log is available.
 
 This skill is a context preparer, not a patch generator. It reads analyzer
-`evidence_packet.json`, writes `context.md`, `README.md`, and `meta.json`, then
-stops. The outer Claude or Cline assistant reads `context.md` and generates
-candidate patches manually from that context.
+`evidence_packet.json`, or runs analyzer on a build log to create that evidence,
+writes `context.md`, `README.md`, and `meta.json`, then stops. The outer Claude
+or Cline assistant reads `context.md` and generates candidate patches manually
+from that context.
 
 This skill does not call an LLM, does not generate the final patch itself, does
 not apply patches, and does not modify the source tree.
@@ -23,8 +24,8 @@ Invoke patch-suggest when any of these are true:
 
 - The user has analyzer output and asks for a source patch or candidate fix for a
   compiler error.
-- The user mentions `evidence_packet.json`, `context.md`, patch context, or
-  generating a unified diff from a Tizen `gbs` compiler failure.
+- The user mentions `evidence_packet.json`, a Tizen `gbs` build log, `context.md`,
+  patch context, or generating a unified diff from a compiler failure.
 - The user asks Claude or Cline to prepare enough context to fix a compiler
   diagnostic without applying changes.
 - The analyzer primary error is a compiler diagnostic and the next step is
@@ -83,7 +84,22 @@ Actions:
 Result: Claude uses the context package as a disciplined patch-generation prompt,
 including Level B fallback when the skill could not read source context.
 
-### Example 3: Evidence is not a compiler error
+### Example 3: User has a build log but no Evidence Packet
+
+User says: "Here is the failed buildlog. Prepare patch context for the compiler error."
+
+Actions:
+
+1. Use `--buildlog /path/to/buildlog` instead of `--evidence`.
+2. If the user provides the package source root, pass it with `--src-root`.
+3. The skill runs analyzer internally and writes analyzer evidence under
+   `.gbs_patch_suggest/analyzer_output/`.
+4. Read `.gbs_patch_suggest/context.md`, then generate candidate patch files as
+   the outer assistant. Do not apply them.
+
+Result: One command turns a build log into patch-generation context.
+
+### Example 4: Evidence is not a compiler error
 
 User says: "Generate a source patch from this depsolve evidence."
 
@@ -102,25 +118,37 @@ Result: Non-compiler failures are routed away from patch-suggest.
 
 ### Run the skill
 
-1. Identify the analyzer Evidence Packet path. If the user did not provide it,
-   ask: "Which evidence_packet.json should I use?" Do not guess; the skill cannot
-   run without evidence.
-2. Identify optional source root. If the user provided a package source root,
+1. Identify the input. Use exactly one of:
+   - `--evidence /path/to/evidence_packet.json`
+   - `--buildlog /path/to/buildlog`
+2. If the user provided neither evidence nor build log, ask:
+   "Which evidence_packet.json or build log should I use?" Do not guess; the
+   skill cannot run without one of these inputs.
+3. Identify optional source root. If the user provided a package source root,
    pass it with `--src-root`.
-3. If the user did not provide a source root, do not ask and do not guess. Omit
+4. If the user did not provide a source root, do not ask and do not guess. Omit
    `--src-root`. This is intentional: the skill can produce a Level B advisory,
    and Claude can then open the reported `file:line` itself to read source before
    generating the patch.
-4. Identify output directory. If the user did not specify one, use
+5. Identify output directory. If the user did not specify one, use
    `./.gbs_patch_suggest` without asking.
-5. Run patch-suggest through one of the stable entry points. The CLI currently
-   supports evidence input only; do not invent a `--buildlog` command.
+6. Run patch-suggest through one of the stable entry points. `--evidence` and
+   `--buildlog` are mutually exclusive; do not pass both.
 
    If `gbs_patch_suggest` is installed in the current Python environment:
 
    ```bash
    python -m gbs_patch_suggest \
        --evidence /path/to/evidence_packet.json \
+       --src-root /path/to/source \
+       --output-dir .gbs_patch_suggest
+   ```
+
+   To start from a build log, let patch-suggest run analyzer internally:
+
+   ```bash
+   python -m gbs_patch_suggest \
+       --buildlog /path/to/buildlog \
        --src-root /path/to/source \
        --output-dir .gbs_patch_suggest
    ```
@@ -137,7 +165,7 @@ Result: Non-compiler failures are routed away from patch-suggest.
 
    ```bash
    python /path/to/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py \
-       --evidence /path/to/evidence_packet.json \
+       --buildlog /path/to/buildlog \
        --src-root /path/to/source \
        --output-dir .gbs_patch_suggest
    ```
@@ -176,6 +204,8 @@ The skill writes a `.gbs_patch_suggest/` directory:
 
 ```text
 .gbs_patch_suggest/
+├── analyzer_output/
+│   └── evidence_packet.json
 ├── README.md
 ├── context.md
 └── meta.json
@@ -184,6 +214,8 @@ The skill writes a `.gbs_patch_suggest/` directory:
 Files:
 
 - `README.md`: short summary of the selected diagnostic and which file to read.
+- `analyzer_output/`: present when `--buildlog` was used; contains analyzer output
+  including `evidence_packet.json`.
 - `context.md`: the primary LLM-facing patch-generation context. It includes the
   diagnostic, source context or fallback advisory, `How to generate the patch`,
   and final `Instructions — MUST follow`.
@@ -212,9 +244,9 @@ Exit codes:
 
 ## Relationship to Other Skills
 
-Patch-suggest consumes `tizen-gbs-log-analysis` output. Use analyzer first to
-produce `evidence_packet.json`, then use this skill to prepare patch-generation
-context for compiler diagnostics.
+Patch-suggest consumes `tizen-gbs-log-analysis` output. You can provide an
+existing `evidence_packet.json`, or use `--buildlog` so patch-suggest runs
+analyzer as a subprocess and consumes the generated evidence.
 
 Patch-suggest can also be used after `tizen-gbs-build-workflow` by reading
 `.gbs_workflow/analyzer_output/evidence_packet.json`. It does not replace the

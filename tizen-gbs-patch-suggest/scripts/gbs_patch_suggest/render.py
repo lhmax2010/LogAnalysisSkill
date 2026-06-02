@@ -23,7 +23,13 @@ MANDATORY_INSTRUCTIONS = """## ⚠️ Instructions — MUST follow
 """
 
 
-def write_outputs(resolved: ResolvedContext, output_dir: Path) -> dict[str, Path]:
+def write_outputs(
+    resolved: ResolvedContext,
+    output_dir: Path,
+    *,
+    evidence_path: Path | None = None,
+    buildlog_path: Path | None = None,
+) -> dict[str, Path]:
     """Write patch-suggest context, README, and metadata outputs."""
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -42,6 +48,8 @@ def write_outputs(resolved: ResolvedContext, output_dir: Path) -> dict[str, Path
                 readme_path=readme_path,
                 context_path=context_path,
                 meta_path=meta_path,
+                evidence_path=evidence_path,
+                buildlog_path=buildlog_path,
             ),
             indent=2,
             sort_keys=True,
@@ -171,6 +179,8 @@ def render_meta(
     readme_path: Path,
     context_path: Path,
     meta_path: Path,
+    evidence_path: Path | None = None,
+    buildlog_path: Path | None = None,
 ) -> dict[str, Any]:
     """Render machine-readable patch-suggest metadata."""
 
@@ -201,6 +211,10 @@ def render_meta(
         },
         "candidate_paths": list(resolved.candidates),
         "advisory": resolved.advisory,
+        "inputs": {
+            "evidence_json": None if evidence_path is None else str(evidence_path),
+            "buildlog": None if buildlog_path is None else str(buildlog_path),
+        },
         "outputs": {
             "readme_md": str(readme_path),
             "context_md": str(context_path),

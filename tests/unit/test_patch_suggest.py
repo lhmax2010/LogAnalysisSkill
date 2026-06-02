@@ -1,8 +1,19 @@
 import json
+import os
+import subprocess
 from pathlib import Path
 
+import pytest
+from gbs_patch_suggest.analyzer_runner import (
+    ANALYZER_SKILL_ENV,
+    AnalyzerRunResult,
+    build_analyzer_subprocess_env,
+    discover_analyzer_pythonpath,
+    run_analyzer_for_buildlog,
+)
 from gbs_patch_suggest.cli import (
     EXIT_EVIDENCE_UNREADABLE,
+    EXIT_FATAL,
     PatchSuggestOptions,
     main,
     run_patch_suggest,
@@ -133,6 +144,79 @@ def test_outputs_include_readme_and_meta_paths(tmp_path: Path) -> None:
         "context_md": str(output_dir / "context.md"),
         "meta_json": str(output_dir / "meta.json"),
     }
+    assert meta["inputs"]["evidence_json"] == str(evidence_path)  # type: ignore[index]
+    assert meta["inputs"]["buildlog"] is None  # type: ignore[index]
+
+
+def test_buildlog_mode_runs_analyzer_then_generates_context(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    buildlog = tmp_path / "build.log"
+    buildlog.write_text("compiler error", encoding="utf-8")
+    output_dir = tmp_path / "out"
+    expected_src_root = tmp_path / "src"
+    expected_src_root.mkdir()
+    extra_path = tmp_path / "analyzer_scripts"
+
+    def fake_run_analyzer(
+        buildlog_path: Path,
+        *,
+        output_dir: Path,
+        src_root: Path | None = None,
+        extra_pythonpath: tuple[Path, ...] = (),
+        **_: object,
+    ) -> AnalyzerRunResult:
+        assert buildlog_path == buildlog
+        assert src_root == expected_src_root
+        assert extra_pythonpath == (extra_path,)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        evidence_path = output_dir / "evidence_packet.json"
+        evidence_path.write_text(json.dumps(compiler_packet()), encoding="utf-8")
+        return AnalyzerRunResult(exit_code=0, output_dir=output_dir, evidence_path=evidence_path)
+
+    monkeypatch.setattr("gbs_patch_suggest.cli.run_analyzer_for_buildlog", fake_run_analyzer)
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(
+            buildlog_path=buildlog,
+            output_dir=output_dir,
+            src_root=expected_src_root,
+            analyzer_extra_pythonpath=(extra_path,),
+        )
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["inputs"]["buildlog"] == str(buildlog)  # type: ignore[index]
+    assert meta["inputs"]["evidence_json"] == str(  # type: ignore[index]
+        output_dir / "analyzer_output" / "evidence_packet.json"
+    )
+
+
+def test_buildlog_mode_reports_analyzer_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    buildlog = tmp_path / "build.log"
+    buildlog.write_text("compiler error", encoding="utf-8")
+
+    def fake_run_analyzer(*_: object, **__: object) -> AnalyzerRunResult:
+        return AnalyzerRunResult(
+            exit_code=EXIT_FATAL,
+            output_dir=tmp_path / "out" / "analyzer_output",
+            evidence_path=tmp_path / "out" / "analyzer_output" / "evidence_packet.json",
+            error="gbs_analyzer exited with 7",
+        )
+
+    monkeypatch.setattr("gbs_patch_suggest.cli.run_analyzer_for_buildlog", fake_run_analyzer)
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(buildlog_path=buildlog, output_dir=tmp_path / "out")
+    )
+
+    assert result.exit_code == EXIT_FATAL
+    assert result.error == "gbs_analyzer exited with 7"
 
 
 def test_level_b_reports_file_line_without_source_context(tmp_path: Path) -> None:
@@ -369,3 +453,153 @@ def test_cli_rejects_missing_evidence(tmp_path: Path) -> None:
     code = main(["--evidence", str(tmp_path / "missing.json"), "--output-dir", str(tmp_path)])
 
     assert code == EXIT_EVIDENCE_UNREADABLE
+
+
+def test_cli_requires_exactly_one_input(tmp_path: Path) -> None:
+    evidence = tmp_path / "evidence_packet.json"
+    buildlog = tmp_path / "build.log"
+    with pytest.raises(SystemExit) as missing:
+        main(["--output-dir", str(tmp_path)])
+    assert missing.value.code == 2
+
+    with pytest.raises(SystemExit) as both:
+        main(["--evidence", str(evidence), "--buildlog", str(buildlog)])
+    assert both.value.code == 2
+
+
+def test_run_analyzer_for_buildlog_command_and_output(tmp_path: Path) -> None:
+    buildlog = tmp_path / "build.log"
+    buildlog.write_text("compiler error", encoding="utf-8")
+    output_dir = tmp_path / "analyzer"
+    commands: list[list[str]] = []
+
+    def fake_runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        commands.append(command)
+        assert kwargs["check"] is True
+        assert kwargs["text"] is True
+        output_dir.mkdir(parents=True, exist_ok=True)
+        (output_dir / "evidence_packet.json").write_text(
+            json.dumps(compiler_packet()),
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(command, 0)
+
+    result = run_analyzer_for_buildlog(
+        buildlog,
+        output_dir=output_dir,
+        python_executable="python-test",
+        subprocess_runner=fake_runner,
+    )
+
+    assert result.exit_code == 0
+    assert result.evidence_path == output_dir / "evidence_packet.json"
+    assert commands == [
+        [
+            "python-test",
+            "-m",
+            "gbs_analyzer",
+            "analyze",
+            str(buildlog),
+            "--output-dir",
+            str(output_dir),
+        ]
+    ]
+
+
+def test_run_analyzer_for_buildlog_passes_src_root_and_extra_pythonpath(tmp_path: Path) -> None:
+    buildlog = tmp_path / "build.log"
+    buildlog.write_text("compiler error", encoding="utf-8")
+    output_dir = tmp_path / "analyzer"
+    src_root = tmp_path / "src"
+    src_root.mkdir()
+    extra = tmp_path / "scripts"
+
+    def fake_runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        assert command[-2:] == ["--src-root", str(src_root)]
+        env = kwargs["env"]
+        assert isinstance(env, dict)
+        assert env["PYTHONPATH"].split(os.pathsep)[0] == str(extra)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        (output_dir / "evidence_packet.json").write_text(
+            json.dumps(compiler_packet()),
+            encoding="utf-8",
+        )
+        return subprocess.CompletedProcess(command, 0)
+
+    result = run_analyzer_for_buildlog(
+        buildlog,
+        output_dir=output_dir,
+        src_root=src_root,
+        subprocess_runner=fake_runner,
+        extra_pythonpath=(extra,),
+    )
+
+    assert result.exit_code == 0
+
+
+def test_run_analyzer_for_buildlog_reports_failure_and_missing_evidence(tmp_path: Path) -> None:
+    buildlog = tmp_path / "build.log"
+    buildlog.write_text("compiler error", encoding="utf-8")
+    output_dir = tmp_path / "analyzer"
+
+    def failing_runner(command: list[str], **_: object) -> subprocess.CompletedProcess[str]:
+        raise subprocess.CalledProcessError(9, command)
+
+    failed = run_analyzer_for_buildlog(
+        buildlog,
+        output_dir=output_dir,
+        subprocess_runner=failing_runner,
+    )
+    assert failed.exit_code == EXIT_FATAL
+    assert failed.error == "gbs_analyzer exited with 9"
+
+    def missing_evidence_runner(
+        command: list[str],
+        **_: object,
+    ) -> subprocess.CompletedProcess[str]:
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return subprocess.CompletedProcess(command, 0)
+
+    missing = run_analyzer_for_buildlog(
+        buildlog,
+        output_dir=output_dir,
+        subprocess_runner=missing_evidence_runner,
+    )
+    assert missing.exit_code == EXIT_EVIDENCE_UNREADABLE
+    assert "did not write evidence_packet.json" in (missing.error or "")
+
+
+def test_analyzer_subprocess_env_prepends_without_polluting(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    extra = tmp_path / "extra"
+    monkeypatch.setenv("PYTHONPATH", "existing")
+
+    env = build_analyzer_subprocess_env((extra,))
+
+    assert env is not None
+    assert env["PYTHONPATH"] == f"{extra}{os.pathsep}existing"
+    assert os.environ["PYTHONPATH"] == "existing"
+
+
+def test_discover_analyzer_pythonpath_from_env_and_sibling(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    analyzer_root = tmp_path / "custom-analyzer"
+    analyzer_scripts = analyzer_root / "scripts"
+    (analyzer_scripts / "gbs_analyzer").mkdir(parents=True)
+    monkeypatch.setenv(ANALYZER_SKILL_ENV, str(analyzer_root))
+
+    assert discover_analyzer_pythonpath() == (analyzer_scripts.resolve(),)
+
+    monkeypatch.delenv(ANALYZER_SKILL_ENV)
+    patch_scripts = tmp_path / "tizen-gbs-patch-suggest" / "scripts"
+    patch_scripts.mkdir(parents=True)
+    launcher = patch_scripts / "run_patch_suggest.py"
+    launcher.write_text("", encoding="utf-8")
+    sibling_scripts = tmp_path / "tizen-gbs-log-analysis" / "scripts"
+    (sibling_scripts / "gbs_analyzer").mkdir(parents=True)
+
+    assert discover_analyzer_pythonpath(launcher_path=launcher) == (sibling_scripts,)
