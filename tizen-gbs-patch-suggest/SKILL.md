@@ -148,7 +148,12 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
 5. Identify output directory. If the user did not specify one, use
    `./.gbs_patch_suggest` without asking.
 6. Run patch-suggest through one of the stable entry points. `--evidence` and
-   `--buildlog` are mutually exclusive; do not pass both.
+   `--buildlog` are mutually exclusive; do not pass both. Prefer
+   `python -m gbs_patch_suggest` first; when it works, no launcher path is
+   needed. If `python -m` is unavailable, use the direct-folder launcher at the
+   fixed relative path `scripts/run_patch_suggest.py` next to this `SKILL.md`.
+   Do not list or scan the skill directory to discover the launcher; you already
+   know this `SKILL.md` location, and the launcher is beside it under `scripts/`.
 
    If `gbs_patch_suggest` is installed in the current Python environment:
 
@@ -176,10 +181,11 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
        --output-dir .gbs_patch_suggest
    ```
 
-   If using the skill folder directly without installing the Python package:
+   If using the skill folder directly without installing the Python package,
+   run this from the `tizen-gbs-patch-suggest` skill directory:
 
    ```bash
-   python /path/to/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py \
+   python scripts/run_patch_suggest.py \
        --buildlog /path/to/buildlog \
        --src-root /path/to/source \
        --output-dir .gbs_patch_suggest
