@@ -226,6 +226,9 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
    - question whether the reported error is only a symptom
    - verify referenced functions or symbols exist before preserving them
    - do not fabricate functions or headers
+   - if the same `old` text appears in multiple places, write multiple edits
+     with their own `line` values instead of making `old` a giant multi-line
+     block
 8. For each candidate, run the deterministic formatter to create the patch file:
 
    ```bash
@@ -247,7 +250,11 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
        --check
    ```
 9. If the formatter fails, revise `edit_spec_N.json` and rerun the formatter.
-   Do not hand-write a unified diff as a fallback.
+   Do not hand-write a unified diff as a fallback. If the formatter reports
+   `old_not_unique` or `context_not_unique`, use the error code and candidate
+   line numbers to add `line`, `before`, or `after`. Do not read the formatter
+   source code to infer rules, and do not make `old` huge just to force
+   uniqueness.
 10. Tell the user where each `candidate_N.patch` file was written.
 11. Writing a `.patch` file only saves the suggestion to disk for review. It does
    not mean the patch should be applied. Writing the file and applying it are

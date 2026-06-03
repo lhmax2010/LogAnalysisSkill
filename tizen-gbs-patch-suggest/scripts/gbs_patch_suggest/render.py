@@ -346,6 +346,35 @@ def _patch_file_guidance() -> list[str]:
         "- For each semantic candidate, write an `edit_spec_N.json` file in the output "
         "directory. The edit spec contains explicit `file`, `old`, and `new` values; "
         "include `line`, `before`, or `after` when needed to disambiguate repeated old text.",
+        "- If the same `old` text appears in multiple places, do NOT make `old` huge by "
+        "copying many surrounding lines just to force uniqueness. Keep `old` to the "
+        "smallest text that should change, and write one edit per occurrence with its "
+        "own `line` value. If line is still not enough, add short `before` or `after` "
+        "anchors.",
+        "",
+        "  Example for two identical old snippets at lines 515 and 525:",
+        "",
+        "  ```json",
+        '  {',
+        '    "schema_version": "gbs_patch_suggest/edit-spec/v1",',
+        '    "patch_name": "candidate_1.patch",',
+        '    "edits": [',
+        '      {',
+        '        "file": "src/tdm_meson_hwc.c",',
+        '        "line": 515,',
+        '        "old": "hwc_window_data->name ? hwc_window_data->name : \\"\\"",',
+        '        "new": "name"',
+        '      },',
+        '      {',
+        '        "file": "src/tdm_meson_hwc.c",',
+        '        "line": 525,',
+        '        "old": "hwc_window_data->name ? hwc_window_data->name : \\"\\"",',
+        '        "new": "name"',
+        '      }',
+        '    ]',
+        '  }',
+        "  ```",
+        "",
         "- Run the deterministic formatter to produce the patch file instead of "
         "hand-writing unified diff text:",
         "",
@@ -363,6 +392,10 @@ def _patch_file_guidance() -> list[str]:
         "- If the formatter fails because `old` is missing, ambiguous, or does not pass "
         "`git apply --check`, revise `edit_spec_N.json` and rerun the formatter. Do NOT "
         "fall back to hand-writing a unified diff.",
+        "- If the formatter reports `old_not_unique` or `context_not_unique`, use the "
+        "reported error code and candidate line numbers to add `line`, `before`, or "
+        "`after`. Do NOT read the formatter source code to infer rules, and do NOT "
+        "make `old` a giant multi-line block as a workaround.",
         "- Tell the user where each `candidate_N.patch` file was written.",
         "- Writing the `.patch` file only saves the suggestion to disk for review. It does "
         "NOT mean the patch should be applied. The user, not you, runs `git apply` after "
