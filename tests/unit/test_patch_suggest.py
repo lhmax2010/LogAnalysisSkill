@@ -122,6 +122,12 @@ def test_level_a_uses_evidence_source_snippet(tmp_path: Path) -> None:
     assert "candidate_N.patch" in context
     assert "python3 -m gbs_patch_suggest format-patch" in context
     assert "git diff --no-index" in context
+    assert '"schema_version": "gbs_patch_suggest/edit-spec/v1"' in context
+    assert "If the same `old` text appears in multiple places" in context
+    assert "one edit per occurrence with its own `line` value" in context
+    assert "`old_not_unique` or `context_not_unique`" in context
+    assert "Do NOT read the formatter source code" in context
+    assert "do NOT make `old` a giant multi-line block" in context
     assert "never modifies the source tree" in context
     assert "Do NOT fall back to hand-writing a unified diff" in context
     assert "Writing the `.patch` file only saves the suggestion to disk for review" in context
