@@ -1,6 +1,7 @@
 import tempfile
 from pathlib import Path
 
+from gbs_analyzer._utils.semantic_classifier import SemanticClass
 from gbs_analyzer.rank_causes import clamp, confidence_band, rank_causes, rank_score
 from gbs_analyzer.scan_and_extract import scan_buildlog
 
@@ -9,6 +10,11 @@ def scan(text: str):
     path = Path(tempfile.mkdtemp()) / "buildlog"
     path.write_text(text, encoding="utf-8")
     return scan_buildlog(path)
+
+
+def event_for_candidate(scan_result, candidate):
+    events = scan_result.as_dict()["events"]
+    return next(event for event in events if event["id"] == candidate.event_id)
 
 
 def test_rank_prefers_missing_library_over_raw_error() -> None:
@@ -26,6 +32,7 @@ def test_rank_folds_parented_make_cascade_low() -> None:
             "make: *** [src/foo.o] Error 1\n"
         )
     )
+    assert result.root_cause_candidates[0].kind == "compiler"
     assert result.root_cause_candidates[-1].kind == "make_cascade"
     assert result.root_cause_candidates[-1].confidence == 0.1
 
@@ -49,6 +56,138 @@ def test_rank_result_as_dict() -> None:
     data = rank_causes(scan("src/foo.c:1:1: error: syntax error\n")).as_dict()
     assert data["root_cause_candidates"][0]["rank"] == 1
     assert data["root_cause_candidates"][0]["semantic_class"] == "syntax_error"
+    assert data["root_cause_candidates"][0]["severity"] == "error"
+
+
+def test_rank_prefers_werror_error_over_earlier_exempted_warning() -> None:
+    scan_result = scan(
+        "\n".join(
+            [
+                "+ %build",
+                "+ clang++ -Werror -Wno-error=unused-but-set-variable -c libscl-ui.cpp",
+                (
+                    "libscl-ui.cpp:100:9: warning: variable 'unused' set but "
+                    "not used [-Wunused-but-set-variable]"
+                ),
+                (
+                    "libscl-ui.cpp:515:23: error: method overrides but is not "
+                    "marked 'override' [-Werror,-Winconsistent-missing-override]"
+                ),
+                (
+                    "libscl-ui.cpp:525:23: error: method overrides but is not "
+                    "marked 'override' [-Werror,-Winconsistent-missing-override]"
+                ),
+                "",
+            ]
+        )
+    )
+
+    result = rank_causes(scan_result)
+    top = result.root_cause_candidates[0]
+    top_event = event_for_candidate(scan_result, top)
+
+    assert top.kind == "werror"
+    assert top.severity == "error"
+    assert top_event["line"] == 515
+    assert "Winconsistent-missing-override" in top.summary
+    assert result.root_cause_candidates[1].kind == "werror"
+    assert result.root_cause_candidates[2].kind == "compiler"
+    assert result.root_cause_candidates[2].severity == "warning"
+    assert any(
+        reason == {"factor": "severity_priority", "value": "error", "priority": 2}
+        for reason in top.confidence_reason
+    )
+
+
+def test_rank_severity_breaks_close_score_near_tie_before_line_order() -> None:
+    class CloseScoreClassifier:
+        def classify(self, event, scan_result):
+            return SemanticClass(
+                name="generic_error",
+                base_confidence=event["base_confidence"],
+                cascade_probability=0.0,
+                default_level=2,
+                context_satisfied=True,
+            )
+
+    result = rank_causes(
+        {
+            "failed_phase": "%build",
+            "events": [
+                {
+                    "id": "E001",
+                    "kind": "compiler",
+                    "severity": "warning",
+                    "message": "warning first",
+                    "line_no": 10,
+                    "base_confidence": 0.70,
+                },
+                {
+                    "id": "E002",
+                    "kind": "compiler",
+                    "severity": "error",
+                    "message": "error second",
+                    "line_no": 20,
+                    "base_confidence": 0.68,
+                },
+            ],
+        },
+        classifier=CloseScoreClassifier(),
+    )
+
+    assert result.root_cause_candidates[0].event_id == "E002"
+    assert result.root_cause_candidates[0].severity == "error"
+    assert result.root_cause_candidates[1].event_id == "E001"
+
+
+def test_rank_preserves_515_525_werror_primary() -> None:
+    scan_result = scan(
+        "\n".join(
+            [
+                "+ %build",
+                "+ clang -Werror -c tdm_meson_hwc.c",
+                (
+                    "tdm_meson_hwc.c:515:23: error: address of array will "
+                    "always evaluate to true [-Werror,-Wpointer-bool-conversion]"
+                ),
+                (
+                    "tdm_meson_hwc.c:525:23: error: address of array will "
+                    "always evaluate to true [-Werror,-Wpointer-bool-conversion]"
+                ),
+                "make: *** [tdm_meson_hwc.o] Error 1",
+                "",
+            ]
+        )
+    )
+
+    result = rank_causes(scan_result)
+    top = result.root_cause_candidates[0]
+    top_event = event_for_candidate(scan_result, top)
+
+    assert top.kind == "werror"
+    assert top.severity == "error"
+    assert top_event["line"] == 515
+
+
+def test_rank_preserves_get_lss_compiler_primary() -> None:
+    scan_result = scan(
+        "\n".join(
+            [
+                "+ %build",
+                "+ gcc -Werror -c src/storage.c",
+                "src/storage.c:42:12: error: use of undeclared identifier 'get_lss'",
+                "make: *** [storage.o] Error 1",
+                "",
+            ]
+        )
+    )
+
+    result = rank_causes(scan_result)
+    top = result.root_cause_candidates[0]
+
+    assert top.kind == "compiler"
+    assert top.severity == "error"
+    assert "get_lss" in top.summary
 
 
 def test_rank_score_adds_command_and_location_bonus() -> None:

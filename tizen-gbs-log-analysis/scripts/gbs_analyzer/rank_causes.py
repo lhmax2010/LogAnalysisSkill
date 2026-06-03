@@ -9,6 +9,13 @@ from gbs_analyzer._utils.semantic_classifier import SemanticClass, SemanticClass
 from gbs_analyzer.quick_filter import is_in_warning_block
 from gbs_analyzer.scan_and_extract import ScanResult
 
+_SCORE_BUCKET_SIZE = 0.05
+_SEVERITY_PRIORITY = {
+    "fatal error": 3,
+    "error": 2,
+    "warning": 1,
+}
+
 
 @dataclass(frozen=True)
 class RootCauseCandidate:
@@ -21,6 +28,7 @@ class RootCauseCandidate:
     confidence_reason: list[dict[str, Any]]
     is_terminal: bool
     summary: str
+    severity: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -33,6 +41,7 @@ class RootCauseCandidate:
             "confidence_reason": self.confidence_reason,
             "is_terminal": self.is_terminal,
             "summary": self.summary,
+            "severity": self.severity,
         }
 
 
@@ -60,7 +69,9 @@ def rank_causes(
     events = [event for event in scan_data.get("events", []) if isinstance(event, dict)]
     active_classifier = classifier or SemanticClassifier.from_file()
 
-    scored: list[tuple[float, dict[str, Any], SemanticClass, list[dict[str, Any]]]] = []
+    scored: list[
+        tuple[float, int, dict[str, Any], SemanticClass, list[dict[str, Any]]]
+    ] = []
     for event in events:
         sem = active_classifier.classify(event, scan_data)
         score, reasons = rank_score(
@@ -69,12 +80,38 @@ def rank_causes(
             sem,
             failed_phase=scan_data.get("failed_phase"),
         )
-        scored.append((score, event, sem, reasons))
+        severity = _candidate_severity(event)
+        severity_priority = _severity_priority(severity)
+        scored.append(
+            (
+                score,
+                severity_priority,
+                event,
+                sem,
+                reasons
+                + [
+                    {
+                        "factor": "severity_priority",
+                        "value": severity,
+                        "priority": severity_priority,
+                    }
+                ],
+            )
+        )
 
-    scored.sort(key=lambda item: (-item[0], int(item[1].get("line_no", 0))))
+    scored.sort(
+        key=lambda item: (
+            -_score_bucket(item[0]),
+            -item[1],
+            -item[0],
+            _line_no(item[2]),
+        )
+    )
     candidates = [
         _candidate(rank=index + 1, score=score, event=event, sem=sem, reasons=reasons)
-        for index, (score, event, sem, reasons) in enumerate(scored[:top_k])
+        for index, (score, _severity_priority, event, sem, reasons) in enumerate(
+            scored[:top_k]
+        )
     ]
     return RankResult(root_cause_candidates=candidates)
 
@@ -167,6 +204,7 @@ def _candidate(
         confidence_reason=reasons,
         is_terminal=not bool(event.get("parent")),
         summary=_summary(event, sem),
+        severity=_candidate_severity(event),
     )
 
 
@@ -190,6 +228,31 @@ def _summary(event: dict[str, Any], sem: SemanticClass) -> str:
 
 def _format_delta(value: float) -> str:
     return f"{value:+.2f}"
+
+
+def _candidate_severity(event: dict[str, Any]) -> str | None:
+    severity = event.get("severity")
+    if severity is None:
+        return None
+    normalized = str(severity).strip().lower()
+    return normalized or None
+
+
+def _severity_priority(severity: str | None) -> int:
+    return _SEVERITY_PRIORITY.get(severity or "", 0)
+
+
+def _score_bucket(score: float) -> int:
+    """Bucket close scores so severity can break near-ties without lifting cascades."""
+
+    return int((score + (_SCORE_BUCKET_SIZE / 2)) / _SCORE_BUCKET_SIZE)
+
+
+def _line_no(event: dict[str, Any]) -> int:
+    try:
+        return int(event.get("line_no", 0))
+    except (TypeError, ValueError):
+        return 0
 
 
 def _scan_as_dict(scan_result: ScanResult | dict[str, Any]) -> dict[str, Any]:
