@@ -11,9 +11,11 @@ from gbs_patch_suggest.resolver import ResolvedContext
 MANDATORY_INSTRUCTIONS = """## ⚠️ Instructions — MUST follow
 
 1. Generate the patch strictly according to the rules in this document:
-   provide candidate(s) as unified diff, each with its approach, explicit
-   assumption, and confidence; do NOT fabricate functions/headers; if uncertain,
-   say so rather than guessing.
+   decide candidate edit spec(s), each with its approach, explicit assumption,
+   and confidence; use `format-patch` to produce unified diff patch files; do
+   NOT fabricate functions/headers; if uncertain, say so rather than guessing.
+   Do NOT hand-write unified diffs. If the formatter fails, revise the edit spec
+   and rerun the formatter.
 
 2. This patch is a SUGGESTION DRAFT ONLY. Do NOT apply it to any file.
    You may write candidate `.patch` files to disk as suggestion artifacts for
@@ -242,7 +244,7 @@ def _patch_guidance_level_a(semantic_class: str) -> str:
             "Use the diagnostic and source context above to prepare patch suggestion(s) "
             "for the user:",
             "",
-            "1. Generate 1-3 candidate fixes as unified diff blocks.",
+            "1. Decide 1-3 candidate fixes and write each one as an edit spec.",
             "2. For each candidate, include its approach, explicit assumption, and confidence.",
             "3. Prefer the smallest patch that addresses the root cause; avoid broad refactors.",
             *_root_cause_verification_guidance(start_index=4),
@@ -265,8 +267,8 @@ def _patch_guidance_without_source(resolved: ResolvedContext) -> str:
                 "decide which file matches the diagnostic, and read that file around the reported "
                 "line before writing any patch.",
                 "",
-                "After confirming the correct file and context, generate 1-3 candidate "
-                "unified diffs. "
+                "After confirming the correct file and context, decide 1-3 candidate fixes "
+                "and write each one as an edit spec. "
                 "For each candidate, include its approach, explicit assumption, and confidence. "
                 "Prefer a minimal patch and treat the semantic class as a hint, not as proof.",
                 "",
@@ -292,7 +294,8 @@ def _patch_guidance_without_source(resolved: ResolvedContext) -> str:
             "First open the reported file and inspect the source around the reported line. Do not "
             "generate a patch until that source context has been checked.",
             "",
-            "After reading the file, generate 1-3 candidate unified diffs. For each candidate, "
+            "After reading the file, decide 1-3 candidate fixes and write each one as an "
+            "edit spec. For each candidate, "
             "include its approach, explicit assumption, and confidence. Prefer a minimal patch "
             "and treat the semantic class as a hint, not as proof.",
             "",
@@ -338,29 +341,29 @@ def _root_cause_verification_guidance(*, start_index: int | None = None) -> list
 
 def _patch_file_guidance() -> list[str]:
     return [
-        "Patch file output:",
+        "Patch formatter workflow:",
         "",
-        "- After generating candidate patch content, write each candidate to the output "
-        "directory as `candidate_N.patch`, for example `candidate_1.patch`.",
-        "- Each `.patch` file must be standard unified diff format that `git apply` can "
-        "recognize.",
-        "- Use paths relative to the project root with `a/...` and `b/...` prefixes when "
-        "possible, so the user can run `git apply` from the project root. Be careful: "
-        "the correct project-root-relative path depends on this package layout.",
-        "- Preserve indentation exactly. Unified diff context lines and the original "
-        "side of changed lines must match the source file byte-for-byte, including "
-        "tabs versus spaces.",
-        "- Copy each context line and the original version of each changed line "
-        "VERBATIM from the source window in this `context.md`; do not retype them. "
-        "The source window preserves exact tabs, and retyping risks converting tabs "
-        "to spaces.",
-        "- Tell the user where each `candidate_N.patch` file was written. Recommend that "
-        "the user reviews the file and runs `git apply --check <path>` before applying it.",
-        "- If `git apply --check` fails, first suspect whitespace or context-line "
-        "mismatch rather than changing the fix logic. Recopy the relevant context "
-        "lines character-for-character from the source window, especially checking "
-        "tabs, because mismatched context lines make `git apply` fail even when the "
-        "repair idea is correct.",
+        "- For each semantic candidate, write an `edit_spec_N.json` file in the output "
+        "directory. The edit spec contains explicit `file`, `old`, and `new` values; "
+        "include `line`, `before`, or `after` when needed to disambiguate repeated old text.",
+        "- Run the deterministic formatter to produce the patch file instead of "
+        "hand-writing unified diff text:",
+        "",
+        "  ```bash",
+        "  python3 -m gbs_patch_suggest format-patch \\",
+        "      --src-root /path/to/source \\",
+        "      --edit-spec .gbs_patch_suggest/edit_spec_N.json \\",
+        "      --output .gbs_patch_suggest/candidate_N.patch \\",
+        "      --check",
+        "  ```",
+        "",
+        "- The formatter reads the real source file, applies the explicit edit only to a "
+        "temporary copy, uses `git diff --no-index` to create a standard unified diff, "
+        "and never modifies the source tree.",
+        "- If the formatter fails because `old` is missing, ambiguous, or does not pass "
+        "`git apply --check`, revise `edit_spec_N.json` and rerun the formatter. Do NOT "
+        "fall back to hand-writing a unified diff.",
+        "- Tell the user where each `candidate_N.patch` file was written.",
         "- Writing the `.patch` file only saves the suggestion to disk for review. It does "
         "NOT mean the patch should be applied. The user, not you, runs `git apply` after "
         "reviewing. Writing the file and applying are completely separate actions.",
