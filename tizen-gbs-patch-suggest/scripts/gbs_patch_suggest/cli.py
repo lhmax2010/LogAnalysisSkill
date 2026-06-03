@@ -12,6 +12,7 @@ from gbs_patch_suggest.analyzer_runner import (
     discover_analyzer_pythonpath,
     run_analyzer_for_buildlog,
 )
+from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch
 from gbs_patch_suggest.ingest import extract_first_diagnostic, load_evidence_packet
 from gbs_patch_suggest.render import write_outputs
 from gbs_patch_suggest.resolver import resolve_context
@@ -130,12 +131,47 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def build_format_patch_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="gbs_patch_suggest format-patch",
+        description="Format an explicit edit spec into a git-apply-compatible patch.",
+    )
+    parser.add_argument(
+        "--src-root",
+        type=Path,
+        required=True,
+        help="Source root used to validate edit paths and run git apply --check.",
+    )
+    parser.add_argument(
+        "--edit-spec",
+        type=Path,
+        required=True,
+        help="Path to gbs_patch_suggest edit-spec JSON.",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+        help="Output .patch file path.",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Run git apply --check against src-root before writing output.",
+    )
+    return parser
+
+
 def main(
     argv: list[str] | None = None,
     *,
     stderr: TextIO = sys.stderr,
     analyzer_extra_pythonpath: tuple[Path, ...] = (),
 ) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if argv and argv[0] == "format-patch":
+        return _main_format_patch(argv[1:], stderr=stderr)
+
     parser = build_parser()
     args = parser.parse_args(argv)
     src_root = args.src_root.resolve() if args.src_root is not None else None
@@ -163,4 +199,27 @@ def main(
     print(f"gbs_patch_suggest: context written to {result.context_path}", file=stderr)
     print(f"gbs_patch_suggest: meta written to {result.meta_path}", file=stderr)
     print(f"gbs_patch_suggest: status {result.status}", file=stderr)
+    return result.exit_code
+
+
+def _main_format_patch(argv: list[str], *, stderr: TextIO) -> int:
+    parser = build_format_patch_parser()
+    args = parser.parse_args(argv)
+    result = format_patch(
+        FormatPatchOptions(
+            src_root=args.src_root,
+            edit_spec=args.edit_spec,
+            output=args.output,
+            check=args.check,
+        )
+    )
+    if result.error:
+        print(
+            f"gbs_patch_suggest: format-patch {result.error_code}: {result.error}",
+            file=stderr,
+        )
+        return result.exit_code
+    print(f"gbs_patch_suggest: patch written to {result.output_path}", file=stderr)
+    if result.check_passed:
+        print("gbs_patch_suggest: git apply --check passed", file=stderr)
     return result.exit_code

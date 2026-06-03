@@ -112,21 +112,18 @@ def test_level_a_uses_evidence_source_snippet(tmp_path: Path) -> None:
     assert meta["has_source_context"] is True
     context = read_context(output_dir)
     assert "int value = av_temp_lss();" in context
-    assert "Generate 1-3 candidate fixes as unified diff blocks" in context
+    assert "Decide 1-3 candidate fixes and write each one as an edit spec" in context
     assert "approach, explicit assumption, and confidence" in context
     assert "Treat the semantic class as a hint, not as proof" in context
     assert "reported error may be a symptom, not the root cause" in context
     assert "verify that functions or symbols referenced near the error actually exist" in context
     assert "Do not silently keep an unverified symbol" in context
+    assert "edit_spec_N.json" in context
     assert "candidate_N.patch" in context
-    assert "a/..." in context
-    assert "b/..." in context
-    assert "git apply --check <path>" in context
-    assert "Preserve indentation exactly" in context
-    assert "byte-for-byte, including tabs versus spaces" in context
-    assert "VERBATIM from the source window" in context
-    assert "do not retype them" in context
-    assert "first suspect whitespace or context-line mismatch" in context
+    assert "python3 -m gbs_patch_suggest format-patch" in context
+    assert "git diff --no-index" in context
+    assert "never modifies the source tree" in context
+    assert "Do NOT fall back to hand-writing a unified diff" in context
     assert "Writing the `.patch` file only saves the suggestion to disk for review" in context
     assert MANDATORY_INSTRUCTIONS.strip() in context
     assert context.rstrip().endswith(MANDATORY_INSTRUCTIONS.strip())
@@ -273,12 +270,13 @@ def test_level_b_reports_file_line_without_source_context(tmp_path: Path) -> Non
     context = read_context(output_dir)
     assert "Source context for `src/demo.c:12` is unavailable" in context
     assert "First open the reported file and inspect the source around the reported line" in context
-    assert "generate 1-3 candidate unified diffs" in context
+    assert "write each one as an edit spec" in context
     assert "reported error may be a symptom, not the root cause" in context
     assert "Search the source tree" in context
+    assert "edit_spec_N.json" in context
     assert "candidate_N.patch" in context
-    assert "Preserve indentation exactly" in context
-    assert "VERBATIM from the source window" in context
+    assert "format-patch" in context
+    assert "Do NOT fall back to hand-writing a unified diff" in context
     assert "Writing the file and applying are completely separate actions" in context
     assert "Do NOT run `git apply` / `patch`" in context
     assert not list(output_dir.glob("*.patch"))

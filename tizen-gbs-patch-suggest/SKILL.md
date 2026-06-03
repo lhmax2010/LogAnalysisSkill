@@ -1,6 +1,6 @@
 ---
 name: tizen-gbs-patch-suggest
-description: Prepares LLM-ready patch-generation context from analyzer Evidence Packet JSON or a Tizen gbs build log for compiler or Werror source diagnostics. Use when the user wants help generating a source fix patch, candidate unified diff, or repair strategy for a compiler error, -Werror failure, warnings-as-errors diagnostic, and has an Evidence Packet, analyzer output directory, or buildlog. This skill writes context.md for Claude to read; it is not a patch generator and never applies changes.
+description: Prepares LLM-ready patch-generation context from analyzer Evidence Packet JSON or a Tizen gbs build log for compiler or Werror source diagnostics. Use when the user wants help generating a source fix patch, candidate unified diff, or repair strategy for a compiler error, -Werror failure, warnings-as-errors diagnostic, and has an Evidence Packet, analyzer output directory, or buildlog. This skill writes context.md for Claude to read; it is not a semantic patch generator and never applies changes.
 compatibility: Requires local access to analyzer Evidence Packet JSON or a Tizen gbs build log and the gbs_patch_suggest Python package or this skill folder. Buildlog mode also requires gbs_analyzer installed or a sibling tizen-gbs-log-analysis skill folder. Optional source context collection requires access to the Tizen package source tree. Built for local AI assistants such as Claude Code or Cline.
 ---
 
@@ -9,14 +9,16 @@ compatibility: Requires local access to analyzer Evidence Packet JSON or a Tizen
 Use this skill when the user wants a source patch suggestion for a Tizen `gbs`
 compiler or Werror source diagnostic and analyzer evidence or a build log is available.
 
-This skill is a context preparer, not a patch generator. It reads analyzer
+This skill is a context preparer, not a semantic patch generator. It reads analyzer
 `evidence_packet.json`, or runs analyzer on a build log to create that evidence,
 writes `context.md`, `README.md`, and `meta.json`, then stops. The outer Claude
-or Cline assistant reads `context.md` and generates candidate patches manually
-from that context.
+or Cline assistant reads `context.md`, decides the repair semantics, writes an
+explicit `edit_spec.json`, and may call the deterministic `format-patch`
+formatter to create candidate `.patch` files.
 
-This skill does not call an LLM, does not generate the final patch itself, does
-not apply patches, and does not modify the source tree.
+This skill does not call an LLM, does not decide what the repair should be, does
+not apply patches, and does not modify the source tree. The formatter only turns
+Claude's explicit edit spec into a correctly formatted patch.
 
 ## Triggers
 
@@ -53,15 +55,15 @@ Actions:
    read the reported file itself before generating a patch.
 4. If the user did not specify an output directory, use `./.gbs_patch_suggest`.
 5. Run the skill, then read `README.md` and `context.md`.
-6. Generate 1-3 candidate unified diffs from `context.md`, with approach,
-   assumption, and confidence for each candidate.
-7. Write each candidate to `.gbs_patch_suggest/candidate_N.patch` as a standard
-   unified diff using project-root-relative `a/...` and `b/...` paths.
-8. Do not apply the patch. Tell the user to review the file and optionally run
-   `git apply --check <path>` before applying it themselves.
+6. Decide 1-3 candidate fixes from `context.md`, with approach, assumption, and
+   confidence for each candidate.
+7. Write each candidate as `.gbs_patch_suggest/edit_spec_N.json`, then run the
+   `format-patch` formatter to create `.gbs_patch_suggest/candidate_N.patch`.
+8. Do not apply the patch. Tell the user to review the file before applying it
+   themselves.
 
-Result: `context.md` guides Claude to generate patch files for review without
-changing the source tree.
+Result: `context.md` guides Claude to write explicit edit specs, and the
+formatter creates patch files for review without changing the source tree.
 
 ### Example 2: User only points to an analyzer output directory
 
@@ -79,8 +81,9 @@ Actions:
    candidate patches.
 4. Follow the `How to generate the patch` and `Instructions — MUST follow`
    sections in `context.md`.
-5. If a patch candidate is generated, save it as `candidate_N.patch`; do not run
-   `git apply` or edit the source tree.
+5. If a patch candidate is generated, save its edit spec as `edit_spec_N.json`,
+   run the formatter to create `candidate_N.patch`, and do not run `git apply`
+   or edit the source tree.
 
 Result: Claude uses the context package as a disciplined patch-generation prompt,
 including Level B fallback when the skill could not read source context.
@@ -97,8 +100,8 @@ Actions:
 3. The skill runs analyzer internally and writes analyzer evidence under
    `.gbs_patch_suggest/analyzer_output/`.
 4. Read `.gbs_patch_suggest/context.md` as the main compressed patch-generation
-   prompt, then generate candidate patch files as the outer assistant. Do not
-   apply them.
+   prompt, then write edit spec files and use the formatter to create candidate
+   patch files as the outer assistant. Do not apply them.
 
 Result: One command turns a build log into patch-generation context.
 
@@ -216,22 +219,36 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
    focused check is different from reading a whole log or broad source tree.
 6. If `context.md` says source context is unavailable or ambiguous, Claude must
    inspect the reported file or candidate paths before generating any patch.
-7. Generate candidate patches yourself as the outer assistant, following
+7. Decide candidate repairs yourself as the outer assistant, following
    `context.md` exactly:
-   - produce unified diff candidate(s)
+   - write explicit `edit_spec_N.json` candidate(s)
    - include approach, explicit assumption, and confidence
    - question whether the reported error is only a symptom
    - verify referenced functions or symbols exist before preserving them
    - do not fabricate functions or headers
-8. When you generate a patch candidate, write it to
-   `.gbs_patch_suggest/candidate_N.patch` as a standard unified diff. Use paths
-   relative to the project root with `a/...` and `b/...` prefixes when possible,
-   so the user can run `git apply` from the project root.
-9. Preserve the exact tabs and spaces from the `context.md` source window when
-   writing unified diff context lines. Do not retype or reformat those lines;
-   copy them exactly. The detailed whitespace rules are in `context.md`.
-10. Tell the user where each `candidate_N.patch` file was written and recommend
-   `git apply --check <path>` as a verification step before applying.
+8. For each candidate, run the deterministic formatter to create the patch file:
+
+   ```bash
+   python3 -m gbs_patch_suggest format-patch \
+       --src-root /path/to/source \
+       --edit-spec .gbs_patch_suggest/edit_spec_N.json \
+       --output .gbs_patch_suggest/candidate_N.patch \
+       --check
+   ```
+
+   If using the skill folder directly, run the same subcommand through the fixed
+   launcher path:
+
+   ```bash
+   python3 scripts/run_patch_suggest.py format-patch \
+       --src-root /path/to/source \
+       --edit-spec .gbs_patch_suggest/edit_spec_N.json \
+       --output .gbs_patch_suggest/candidate_N.patch \
+       --check
+   ```
+9. If the formatter fails, revise `edit_spec_N.json` and rerun the formatter.
+   Do not hand-write a unified diff as a fallback.
+10. Tell the user where each `candidate_N.patch` file was written.
 11. Writing a `.patch` file only saves the suggestion to disk for review. It does
    not mean the patch should be applied. Writing the file and applying it are
    completely separate actions.
@@ -262,9 +279,10 @@ Files:
 - `meta.json`: machine-readable status, level, fault class, semantic class,
   primary error, source-context metadata, candidate paths, and output paths.
 
-`candidate_N.patch` files are not produced by the skill subprocess. They may be
-written later by the outer Claude after reading `context.md`. These files are
-suggestion drafts for user review and must not be auto-applied.
+`candidate_N.patch` files are not produced by the initial context-generation
+subprocess. They may be written later by the formatter subcommand from explicit
+Claude-authored `edit_spec_N.json` files. These files are suggestion drafts for
+user review and must not be auto-applied.
 
 Statuses:
 
