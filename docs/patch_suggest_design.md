@@ -275,3 +275,150 @@ candidate.relative_to(src_root).parts[-len(evidence_parts):] == evidence_parts
   - 不存在 → 保持 Level B。
 
 PS-M2 仍不做 `--buildlog`(PS-M4)、不写正式 `SKILL.md`(PS-M5)、不接 workflow(PS-M6)。
+
+---
+
+## 9quinquies. PS-M8 deterministic patch formatter(git 后端)
+
+> 触发: 真实 Cline 验证发现,即使 context.md 明确要求保持 tab/space,
+> 外层 Claude 手写 unified diff 仍容易把 tab 改成 space 或写错 hunk 头,
+> 导致 `git apply --check` 反复失败并消耗大量 token。
+> 结论: 继续加软提示有天花板,patch 格式必须交给程序确定性生成。
+
+[D20] **允许 deterministic patch formatter,但语义决策仍由外层 Claude 做**。
+  formatter 只把外层 Claude 明确给出的 edit spec 格式化成 `.patch` 文件。
+  它不决定修什么、不推断修复语义、不调 LLM、不 apply、不改源码树。
+  这扩展了 D2 的形式,但不破坏 D2 精神:skill 仍不做语义 patch 生成。
+
+[D21] **formatter 使用 `git diff --no-index` 作为 patch 后端,不手拼 unified diff**。
+  实现流程:
+  1. 读取真实源文件,复制到临时目录 `orig/` 和 `mod/`。
+  2. 只在 `mod/` 副本上应用 Claude 提供的 edit spec。
+  3. 运行 `git diff --no-index -- <tmp>/orig <tmp>/mod` 生成标准 git diff。
+  4. `git diff --no-index` 在有差异时通常返回 exit code 1,这不是失败;
+     真正失败是命令不可用、运行错误或未产出可用 diff。
+  5. 删除临时目录。
+
+  这样 hunk 头、上下文行、tab/space 都由 git 从文件副本生成,
+  Claude 不再手写 diff 格式。
+
+[D22] **路径头必须用 edit_spec.file 重建为项目相对路径(含中间目录)**。
+  `git diff --no-index` 对 `mkdtemp` 临时文件会输出随机绝对路径,例如:
+
+```
+diff --git a/tmp/tmp_xxxxx/orig/src/tdm_meson_hwc.c b/tmp/tmp_xxxxx/mod/src/tdm_meson_hwc.c
+--- a/tmp/tmp_xxxxx/orig/src/tdm_meson_hwc.c
++++ b/tmp/tmp_xxxxx/mod/src/tdm_meson_hwc.c
+```
+
+  formatter 不解析这些随机临时路径,也不按字面剥 `tmp/orig` / `tmp/mod` 前缀。
+  它已知 `edit_spec.edits[*].file` 是项目根相对路径,例如 `src/tdm_meson_hwc.c`,
+  因此必须直接用该相对路径重建三类路径头:
+
+```
+diff --git a/src/tdm_meson_hwc.c b/src/tdm_meson_hwc.c
+--- a/src/tdm_meson_hwc.c
++++ b/src/tdm_meson_hwc.c
+```
+
+  其中 `diff --git` 的 a/b 两侧都使用同一个 `edit_spec.file` 项目相对路径;
+  `---` 侧使用 `a/<file>`,`+++` 侧使用 `b/<file>`。对涉及多个文件的 patch,
+  每个 file diff block 都按对应 edit 的 `file` 单独重建。
+  这样用户可在项目根运行 `git apply candidate_N.patch`。
+
+[D23] **edit spec 文件路径必须限制在 src-root 内,复用 PS-M2 路径安全边界**。
+  `edit_spec.edits[*].file` 可以是项目相对路径;若未来支持绝对路径,
+  也必须满足“存在且位于 src-root 内”。
+  禁止 `../` 或 symlink/resolve 后逃逸到 src-root 外的路径。
+  这与 PS-M2 的 absolute-path-inside-src-root 边界一致。
+
+[D24] **formatter 失败时绝不退回手写 diff**。
+  如果 old 不匹配、多匹配、上下文不匹配、路径不安全、`git apply --check`
+  失败,外层 Claude 必须修正 `edit_spec.json` 后重跑 formatter。
+  不允许回退到手写 unified diff,否则会回到 tab/hunk/context 软约束天花板。
+
+### edit_spec.json schema(v1)
+
+```json
+{
+  "schema_version": "gbs_patch_suggest/edit-spec/v1",
+  "patch_name": "candidate_1.patch",
+  "description": "Fix invalid Werror condition",
+  "edits": [
+    {
+      "file": "src/tdm_meson_hwc.c",
+      "line": 515,
+      "old": "exact text to replace",
+      "new": "replacement text",
+      "before": "optional exact context before old",
+      "after": "optional exact context after old"
+    }
+  ]
+}
+```
+
+- `file`: 必填,项目根相对路径,必须位于 `--src-root` 内。
+- `line`: 推荐,用于多匹配消歧;不是单独真相,仍要验证 old/context。
+- `old`: 必填,要替换/删除的真实文本片段。
+- `new`: 必填,替换文本;删除可用空字符串。
+- `before` / `after`: 可选但推荐,用于 old 多处重复时消歧。
+
+Claude 不必提供完整 hunk 或含 tab 的整行上下文。`old` 只用于定位替换点;
+最终 patch 上下文由 git 从临时文件副本生成。
+
+### old 定位与多处相同 old
+
+真实场景可能存在两处完全相同的 old 文本(如同一表达式在 515/525 两行各出现一次)。
+formatter 不做 replace-all 默认行为,避免误伤。
+
+匹配规则:
+1. 若提供 `before` / `after`,优先用 `before + old + after` 做锚点匹配。
+   唯一匹配才通过;零匹配/多匹配都失败并要求修正 edit spec。
+2. 若无 `before` / `after`,用 `old` 全文件匹配。
+   - 唯一匹配: 通过。
+   - 多匹配且提供 `line`: 选择覆盖该 line 或最靠近该 line 的匹配;
+     若仍无法唯一确定,失败。
+   - 多匹配且无 `line`: 失败,列出候选行号,要求补 `line` 或上下文。
+3. 若多处相同 old 都要改,必须写多个 edit,每个 edit 带自己的 `line`
+   或 `before`/`after`。
+
+### CLI 形态
+
+新增 `format-patch` 子命令,与现有 context 生成路径分离:
+
+```bash
+python3 -m gbs_patch_suggest format-patch \
+  --src-root /path/to/source \
+  --edit-spec .gbs_patch_suggest/edit_spec.json \
+  --output .gbs_patch_suggest/candidate_1.patch \
+  --check
+```
+
+- `--check`: 运行 `git apply --check` 验证 patch 可应用,但绝不 apply。
+- 依赖系统 `git` 命令;不要求项目本身是 git 仓库。
+- 若 `git` 不存在,formatter 失败并提示安装/提供 git,不回退手写 diff。
+
+### 与三级降级的关系
+
+- Level A: context.md 有源码窗口。Claude 决定修复语义,写 edit_spec,
+  调 formatter 生成 patch。
+- Level B: 有 file:line 但无源码窗口。Claude 先按 context 指引打开 file:line
+  读取源码,再写 edit_spec,仍调 formatter。
+- Level C: 无 file:line。默认不运行 formatter,先补定位信息。
+- not_applicable: 不运行 formatter。
+
+### context.md / SKILL.md 更新方向
+
+PS-M8 实施时,`How to generate the patch` 从“手写 unified diff”改为:
+1. 外层 Claude 做语义判断。
+2. 外层 Claude 写 `edit_spec.json`。
+3. 调 `format-patch` 生成 `candidate_N.patch`。
+4. formatter 失败则修 edit spec 后重试,**不手写 diff**。
+5. 告诉用户 patch 路径;用户 review 后自行 `git apply`。
+
+SKILL.md 同步改为三段式:
+1. run patch-suggest 产 context.md;
+2. Claude 读 context.md 并写 edit spec;
+3. Claude 调 formatter 生成 `.patch`,但不 apply。
+
+PS-M8 不改 analyzer/workflow/resolver 三级降级/werror/别读 log/list_files/python3 入口引导。
