@@ -287,6 +287,7 @@ def assemble_packet(
     redactor: MinimalRedactor | None = None,
     trace_logger: TraceLogger | None = None,
     max_tokens: int = 1800,
+    error_clusters: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Assemble the v0.5 Evidence Packet storage JSON."""
 
@@ -369,6 +370,8 @@ def assemble_packet(
         "degraded_reasons": degraded_reasons,
         "allowed_next_actions": ["expand"],
     }
+    if error_clusters is not None:
+        packet["error_clusters"] = error_clusters
 
     if packet_verdict == "needs_llm":
         packet["prompt"] = active_redactor.redact_for_llm(_render_prompt(packet))
@@ -637,6 +640,14 @@ def render_packet_markdown(
         "## Evidence",
         json.dumps(public_packet.get("evidence", {}), ensure_ascii=False, indent=2),
     ]
+    if public_packet.get("error_clusters"):
+        lines.extend(
+            [
+                "",
+                "## Error Clusters",
+                json.dumps(public_packet.get("error_clusters", {}), ensure_ascii=False, indent=2),
+            ]
+        )
     if public_packet.get("prompt"):
         lines.extend(["", "## Prompt", str(public_packet["prompt"])])
     return "\n".join(lines)

@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from gbs_analyzer.analyze import (
@@ -68,6 +69,63 @@ def test_analyze_buildlog_full_path_tier2(tmp_path: Path) -> None:
     assert downstream["evidence_packet_md_tokens"] is None
     assert downstream["evidence_packet_json_tokens"] >= 1
     assert downstream["total_claude_facing_tokens"] == 0
+
+
+def test_analyze_buildlog_writes_error_clusters_sidecar_without_changing_primary(
+    tmp_path: Path,
+) -> None:
+    buildlog = tmp_path / "build.log"
+    buildlog.write_text(
+        "\n".join(
+            [
+                "+ %build",
+                "+ clang -Werror -c src/a.c",
+                "src/a.c:10:5: error: enum cast [-Werror,-Wimplicit-enum-enum-cast]",
+                "src/b.c:11:5: error: enum cast [-Werror,-Wimplicit-enum-enum-cast]",
+                "src/c.c:12:5: error: enum cast [-Werror,-Wimplicit-enum-enum-cast]",
+                "fatal error: too many errors emitted, stopping now",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = analyze_buildlog(
+        AnalyzeOptions(
+            buildlog_path=buildlog,
+            src_root=tmp_path,
+            output_dir=tmp_path / "out",
+            output_format="both",
+            use_tiktoken=False,
+        )
+    )
+
+    assert result.exit_code == EXIT_SUCCESS
+    assert result.packet is not None
+    assert result.packet["primary_error"]["file"] == "src/a.c"
+    assert result.packet["root_cause_candidates"][0]["event_id"] == "E001"
+    clusters = result.packet["error_clusters"]
+    assert clusters["truncated"] is True
+    assert clusters["full_locations_path"] == "error_clusters.json"
+    cluster = clusters["clusters"][0]
+    assert cluster["warning_option"] == "-Wimplicit-enum-enum-cast"
+    assert cluster["count"] == 3
+    assert cluster["file_count"] == 3
+    assert cluster["large_scale"] is True
+    assert [location["event_id"] for location in cluster["locations_sample"]] == [
+        "E001",
+        "E002",
+        "E003",
+    ]
+    sidecar_path = tmp_path / "out" / "error_clusters.json"
+    assert sidecar_path.is_file()
+    sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    assert sidecar["schema_version"] == "error_clusters_locations/v1"
+    assert len(sidecar["clusters"][0]["locations"]) == 3
+    assert result.output_paths["error_clusters_json"] == str(sidecar_path)
+    markdown = (tmp_path / "out" / "evidence_packet.md").read_text(encoding="utf-8")
+    assert "## Error Clusters" in markdown
+    assert "-Wimplicit-enum-enum-cast" in markdown
 
 
 def test_analyze_buildlog_returns_unreadable_exit(tmp_path: Path) -> None:
