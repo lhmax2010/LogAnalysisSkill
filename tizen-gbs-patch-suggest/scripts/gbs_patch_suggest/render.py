@@ -31,6 +31,7 @@ def write_outputs(
     *,
     evidence_path: Path | None = None,
     buildlog_path: Path | None = None,
+    cluster_advisory: str | None = None,
 ) -> dict[str, Path]:
     """Write patch-suggest context, README, and metadata outputs."""
 
@@ -39,7 +40,12 @@ def write_outputs(
     context_path = output_dir / "context.md"
     meta_path = output_dir / "meta.json"
     readme_path.write_text(
-        render_readme(resolved, context_path=context_path, meta_path=meta_path),
+        render_readme(
+            resolved,
+            context_path=context_path,
+            meta_path=meta_path,
+            cluster_advisory=cluster_advisory,
+        ),
         encoding="utf-8",
     )
     context_path.write_text(render_context(resolved), encoding="utf-8")
@@ -52,6 +58,7 @@ def write_outputs(
                 meta_path=meta_path,
                 evidence_path=evidence_path,
                 buildlog_path=buildlog_path,
+                cluster_advisory=cluster_advisory,
             ),
             indent=2,
             sort_keys=True,
@@ -62,7 +69,13 @@ def write_outputs(
     return {"readme_md": readme_path, "context_md": context_path, "meta_json": meta_path}
 
 
-def render_readme(resolved: ResolvedContext, *, context_path: Path, meta_path: Path) -> str:
+def render_readme(
+    resolved: ResolvedContext,
+    *,
+    context_path: Path,
+    meta_path: Path,
+    cluster_advisory: str | None = None,
+) -> str:
     """Render a short README for the patch-suggest output directory."""
 
     evidence = resolved.evidence
@@ -94,6 +107,15 @@ def render_readme(resolved: ResolvedContext, *, context_path: Path, meta_path: P
         "source tree.",
         "",
     ]
+    if cluster_advisory:
+        parts.extend(
+            [
+                "## Cluster Advisory",
+                "",
+                cluster_advisory,
+                "",
+            ]
+        )
     return "\n".join(parts)
 
 
@@ -184,12 +206,13 @@ def render_meta(
     meta_path: Path,
     evidence_path: Path | None = None,
     buildlog_path: Path | None = None,
+    cluster_advisory: str | None = None,
 ) -> dict[str, Any]:
     """Render machine-readable patch-suggest metadata."""
 
     evidence = resolved.evidence
     source = resolved.source_context
-    return {
+    meta = {
         "schema_version": "gbs_patch_suggest/meta/v1",
         "status": resolved.status,
         "level": resolved.level,
@@ -224,6 +247,9 @@ def render_meta(
             "meta_json": str(meta_path),
         },
     }
+    if cluster_advisory:
+        meta["cluster_advisory"] = cluster_advisory
+    return meta
 
 
 def _location(file: str | None, line: int | None, column: int | None) -> str:
