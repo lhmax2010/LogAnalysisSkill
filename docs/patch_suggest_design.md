@@ -422,3 +422,220 @@ SKILL.md 同步改为三段式:
 3. Claude 调 formatter 生成 `.patch`,但不 apply。
 
 PS-M8 不改 analyzer/workflow/resolver 三级降级/werror/别读 log/list_files/python3 入口引导。
+
+---
+
+## 9sexies. Large-scale error cluster patch context
+
+> 触发: 真实 `capi-network-bluetooth` buildlog 中有 55+ 个
+> `-Wimplicit-enum-enum-cast` / `-Werror` 源码级诊断,横跨 11 个文件,
+> analyzer 已通过 `error_clusters` + `error_clusters.json` 暴露全量聚类位置。
+> 现有 patch-suggest 只消费 `primary_error`,导致外层 Claude 只修 1 处,
+> 形成“修 primary 就够了”的错误信号。
+
+[D25] **large-scale cluster mode 的触发条件必须全部满足**。
+
+触发 cluster mode 需要:
+
+1. Evidence Packet 中存在 `error_clusters`。
+2. 至少一个 cluster 满足 `large_scale == true`。
+3. `error_clusters.full_locations_path` 指向的 sidecar 可读。
+4. cluster 是 source diagnostic 类: `kind == "source_warning_option"`,
+   且 `diagnostic_kinds` 仅包含或主要包含 `compiler` / `werror`。
+
+如果存在多个 large-scale source diagnostic cluster,patch-suggest 处理**全部**满足条件的 cluster,
+按 Evidence Packet 中 `clusters[]` 的顺序输出独立 cluster 子目录。每个 cluster 独立生成
+per-file context,不把不同 warning option 的修复混成一个 patch 计划。
+
+如果 sidecar 不可读或 schema 不匹配,不让整个 skill 失败;回退到既有 single diagnostic
+流程,并在 meta/README 中记录 `cluster_sidecar_unavailable` advisory。
+
+[D26] **cluster mode 只处理 analyzer evidence 暴露的位置,绝不读 raw log**。
+
+patch-suggest 的输入边界保持不变:
+
+- 可处理位置 = `error_clusters.json` sidecar 中列出的 locations。
+- 不打开、不扫描、不 grep 原始 buildlog。
+- 不尝试发现 sidecar 之外的零散非 cluster 错误。
+
+因此“该文件所有 error”在 cluster mode 中精确定义为:
+
+> 该 file 在当前 analyzer cluster sidecar 中列出的所有 locations。
+
+如果 raw log 里还有其它未被 analyzer 聚类暴露的错误,它们对 patch-suggest 是
+`not visible in evidence`,本阶段不处理。context.md 必须把这个边界说清楚,
+避免外层 Claude 以为工具已经覆盖 raw log 中所有可能错误。
+
+[D27] **源码窗口按文件、按 location 生成,默认 ±8 行,重叠窗口合并**。
+
+对每个 cluster location,在对应源码文件中取窗口:
+
+```
+start = max(1, line - 8)
+end   = min(file_line_count, line + 8)
+```
+
+选择 ±8 行的理由:
+
+- 比单点错误的 ±30 行更克制,适合一个文件内多个重复诊断。
+- 对 enum-cast / Werror 这类局部表达式错误通常足够看清语句和相邻上下文。
+- 降低一文件 20+ 个 location 时的 token 爆炸风险。
+
+同一文件内窗口按起始行排序,若两个窗口重叠或相邻间隔不超过 2 行,合并成一个连续窗口。
+合并后仍列出该文件所有 locations,并在窗口标题中标出覆盖了哪些 diagnostic line。
+
+若某个 per-file context 的源码窗口合计超过 400 行,仍列出该文件全部 locations,
+但源码窗口只渲染到 400 行上限,并标记 `source_windows_truncated=true`。
+context.md 必须提示外层 Claude 对未渲染窗口按 file:line 精确打开源码,而不是读 raw log。
+
+[D28] **输出组织固定为 top-level overview + cluster 子目录 + per-file context**。
+
+cluster mode 输出仍使用同一个 `--output-dir`,在既有 `README.md` / `context.md`
+/ `meta.json` 旁边新增 `cluster_context/`:
+
+```
+.gbs_patch_suggest/
+├── README.md
+├── context.md
+├── meta.json
+└── cluster_context/
+    └── CL001_-Wimplicit-enum-enum-cast/
+        ├── index.md
+        └── files/
+            ├── 001_device_common_foo_c.md
+            ├── 002_adapter_bar_c.md
+            └── ...
+```
+
+命名规则:
+
+- cluster 目录: `{cluster_id}_{warning_option_slug}`。
+- per-file context: `{NNN}_{file_slug}.md`,其中 NNN 按该文件在 sidecar 首次出现顺序编号。
+- `file_slug` 从项目相对路径生成: `/` 和非 `[A-Za-z0-9._-]` 字符替换为 `_`,
+  必要时截断,但 meta/index 中保留完整原始 file 路径。
+
+top-level `context.md` 在 cluster mode 中变成“cluster overview”,只列 cluster 总览、
+每个文件 context 路径、逐文件处理顺序和不读 raw log/不 apply 的规则。
+具体源码窗口放在 `cluster_context/.../files/*.md` 中。
+
+[D29] **默认 patch 策略是一文件一 patch,不是一个巨型多文件 patch**。
+
+对于一个 cluster 中的 N 个文件,默认输出 N 个 per-file patch 计划:
+
+- 每个 per-file context 引导外层 Claude 为该文件写一个 edit spec。
+- 该 edit spec 包含该文件中 sidecar 暴露的所有需要修复 locations。
+- 调 PS-M8 `format-patch` 生成一个该文件对应的 patch。
+
+推荐命名:
+
+```
+edit_spec_CL001_001_device_common_foo_c.json
+candidate_CL001_001_device_common_foo_c.patch
+```
+
+一文件一 patch 的理由:
+
+- review 粒度清晰,用户可以逐个检查和 apply。
+- 失败时只影响一个文件,便于修正 edit spec。
+- 复用 formatter 已支持的“同文件多 edits → multi-hunk patch”能力。
+
+formatter 技术上可以生成多文件 patch,但 cluster mode 不默认引导这么做。
+多文件 patch 只能作为用户明确要求时的高级用法,不作为本阶段默认流程。
+
+[D30] **token 策略:Claude 逐文件处理,不要一次加载全部 11 个 per-file context**。
+
+cluster mode 的 Claude-facing token 模型是:
+
+1. 先读 top-level `context.md` / cluster `index.md` 了解规模和文件清单。
+2. 一次只打开一个 `files/{NNN}_{file_slug}.md`。
+3. 为该文件生成 edit spec + patch。
+4. 再处理下一个文件。
+
+context 必须明确写:
+
+- Do not load every per-file context at once.
+- Process one file at a time.
+- Do not read the raw buildlog.
+
+per-file context 是 Claude-facing 输出,需要控制体积;sidecar `error_clusters.json`
+是机器输入,不要求 Claude 直接阅读,也不纳入 per-file context token 预算。
+
+未来若 workflow/downstream token 统计扩展到 cluster mode,应按用户实际推荐阅读路径计:
+overview + 当前 per-file context,而不是 overview + 所有 per-file contexts 一次性求和。
+
+[D31] **无 large-scale cluster 时退回原 single diagnostic 流程**。
+
+以下情况保持现有 patch-suggest 行为不变:
+
+- packet 没有 `error_clusters`。
+- 没有任何 cluster `large_scale == true`。
+- cluster 没有 source diagnostic locations。
+- cluster sidecar 不可读或无可用 locations。
+
+此时仍按 PS-M1~PS-M8 的 single diagnostic 流程:
+`primary_error` → 三级 resolver → `context.md` → 外层 Claude 写 edit spec → formatter。
+
+小规模重复错误仍可由 single diagnostic + root-cause guidance 覆盖;
+本阶段不为小规模 cluster 额外生成 per-file context,避免改变既有少数错误 case 的交互成本。
+
+[D32] **源码定位失败时 per-file context 降级为 advisory,不硬猜,不生成 patch**。
+
+cluster mode 对每个 sidecar file 复用 PS-M2 的 src-root suffix search 和安全边界:
+
+- 唯一命中:读取该文件窗口,生成 per-file Level A context。
+- 零匹配:生成 per-file advisory,列出该 file 的所有 cluster locations,
+  指引外层 Claude 按 file:line 自己打开源码。
+- 多匹配:生成 per-file ambiguous advisory,列候选路径,要求外层 Claude 先选择正确文件。
+- 绝对路径仍必须位于 src-root 内,否则不读。
+
+零匹配/多匹配时不生成 patch,不硬猜源码,不把缺失源码上下文伪装成可直接修复。
+
+[D33] **cluster mode 是纯叠加新模块,不改 single diagnostic resolver/render/formatter 语义**。
+
+实现时新增模块优先:
+
+- `cluster_ingest.py`: 从 packet + sidecar 读取 large-scale source clusters。
+- `cluster_resolver.py`: 按文件分组、源码定位、窗口合并。
+- `cluster_render.py`: 渲染 overview/index/per-file context/meta 扩展。
+
+既有 single diagnostic 路径保持稳定:
+
+- 不改 `extract_first_diagnostic` 的语义。
+- 不改 `resolve_context` 的三级降级逻辑。
+- 不改 PS-M8 formatter 的 edit spec / git backend / no-apply 不变量。
+- 不改 werror 接纳范围、别读 log、python3/list_files 引导。
+
+如果实现需要抽共享 helper,只能做无行为变化的提取,并用测试证明 single diagnostic
+输出不退化。
+
+[D34] **workflow 调用方式不变;patch-suggest 内部多产 cluster_context**。
+
+PS-M6 workflow 仍只调用 patch-suggest 一次,传 `--evidence` 和 `--src-root`。
+workflow 不需要知道 cluster mode 的内部细节:
+
+- patch-suggest 若检测到 large-scale cluster,在同一 output-dir 下多写 `cluster_context/`。
+- workflow 现有 `patch_context/context.md` 路径仍存在,作为 overview。
+- workflow exit code/verdict/suggestions/token 主流程不变。
+
+workflow_summary 是否展示 cluster_context 的文件清单可作为后续增强;
+本阶段不要求修改 workflow。若后续修改 workflow,也必须是 summary-only additive,
+不改变 build/analyze/suggest/verdict/exit code。
+
+[D35] **实现 PR 范围锁定为 cluster context 生成,不做 raw-log 分析或自动修复**。
+
+Implementation PR 允许:
+
+- 新增 cluster ingest/resolver/render 模块。
+- CLI 在 `run_patch_suggest` 中检测并触发 cluster mode。
+- meta/README/context 增加 cluster mode 字段和输出路径。
+- 测试 large-scale cluster sidecar、按文件分组、窗口合并、源码 miss/ambiguous、
+  小规模退化、single diagnostic 非回归。
+
+Implementation PR 禁止:
+
+- 读取 raw buildlog 来补充 locations。
+- 自动生成 edit spec 或 patch。
+- 自动调用 formatter。
+- 自动 apply patch 或写源码树。
+- 修改 analyzer/build/workflow/Suggester/pattern。
+- 改变 single diagnostic 的输出语义。
