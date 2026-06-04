@@ -18,6 +18,8 @@ from gbs_patch_suggest.cli import (
     main,
     run_patch_suggest,
 )
+from gbs_patch_suggest.cluster_ingest import ClusterLocation, LargeScaleCluster
+from gbs_patch_suggest.cluster_resolver import resolve_clusters
 from gbs_patch_suggest.ingest import extract_first_diagnostic
 from gbs_patch_suggest.render import MANDATORY_INSTRUCTIONS
 
@@ -58,6 +60,69 @@ def write_packet(tmp_path: Path, packet: dict[str, object]) -> Path:
     path = tmp_path / "evidence_packet.json"
     path.write_text(json.dumps(packet), encoding="utf-8")
     return path
+
+
+def add_error_cluster(
+    packet: dict[str, object],
+    tmp_path: Path,
+    *,
+    cluster_id: str = "CL001",
+    warning_option: str = "-Wimplicit-enum-enum-cast",
+    large_scale: bool = True,
+    locations: list[dict[str, object]] | None = None,
+) -> None:
+    locations = locations or [
+        {
+            "event_id": "E001",
+            "kind": "werror",
+            "file": "src/device.c",
+            "line": 10,
+            "column": 5,
+            "line_no": 100,
+            "message": "enum cast [-Werror,-Wimplicit-enum-enum-cast]",
+        }
+    ]
+    files = []
+    for location in locations:
+        file = location.get("file")
+        if isinstance(file, str) and file not in files:
+            files.append(file)
+    packet["error_clusters"] = {
+        "schema_version": "error_clusters/v1",
+        "truncated": False,
+        "truncation_signals": [],
+        "full_locations_path": "error_clusters.json",
+        "clusters": [
+            {
+                "id": cluster_id,
+                "kind": "source_warning_option",
+                "diagnostic_kinds": ["werror"],
+                "warning_option": warning_option,
+                "count": len(locations),
+                "file_count": len(files),
+                "files": files,
+                "locations_sample": locations[:10],
+                "locations_truncated": False,
+                "advisory": "Large repeated source diagnostic cluster.",
+                "large_scale": large_scale,
+            }
+        ],
+    }
+    (tmp_path / "error_clusters.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "error_clusters_locations/v1",
+                "clusters": [
+                    {
+                        "id": cluster_id,
+                        "warning_option": warning_option,
+                        "locations": locations,
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
 
 
 def read_meta(output_dir: Path) -> dict[str, object]:
@@ -260,6 +325,259 @@ def test_buildlog_mode_reports_analyzer_failure(
 
     assert result.exit_code == EXIT_FATAL
     assert result.error == "gbs_analyzer exited with 7"
+
+
+def test_large_scale_cluster_writes_overview_and_per_file_contexts(tmp_path: Path) -> None:
+    packet = compiler_packet(kind="werror", message="enum cast [-Werror,-Wimplicit-enum-enum-cast]")
+    add_error_cluster(
+        packet,
+        tmp_path,
+        locations=[
+            {
+                "event_id": "E001",
+                "kind": "werror",
+                "file": "src/device.c",
+                "line": 10,
+                "column": 5,
+                "line_no": 100,
+                "message": "device enum cast [-Werror,-Wimplicit-enum-enum-cast]",
+            },
+            {
+                "event_id": "E002",
+                "kind": "werror",
+                "file": "src/device.c",
+                "line": 13,
+                "column": 5,
+                "line_no": 103,
+                "message": "device enum cast 2 [-Werror,-Wimplicit-enum-enum-cast]",
+            },
+            {
+                "event_id": "E003",
+                "kind": "werror",
+                "file": "src/adapter.c",
+                "line": 20,
+                "column": 7,
+                "line_no": 120,
+                "message": "adapter enum cast [-Werror,-Wimplicit-enum-enum-cast]",
+            },
+        ],
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/device.c", lines=40)
+    write_source(src_root, "src/adapter.c", lines=40)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "cluster_context_available"
+    meta = read_meta(output_dir)
+    assert meta["mode"] == "cluster"
+    assert meta["status"] == "cluster_context_available"
+    assert (output_dir / "cluster_context").is_dir()
+    overview = read_context(output_dir)
+    assert "Do not load every per-file context at once" in overview
+    assert "Do not read the raw buildlog" in overview
+    assert "not visible in evidence" in overview
+    file_contexts = sorted((output_dir / "cluster_context").glob("CL001_*/files/*.md"))
+    assert len(file_contexts) == 2
+    device_context = next(path for path in file_contexts if "device" in path.name)
+    text = device_context.read_text(encoding="utf-8")
+    assert "line `10:5`" in text
+    assert "line `13:5`" in text
+    assert "src/device.c line 10" in text
+    assert "one edit spec containing edits for every listed location" in text
+    assert "candidate_CL001_001" in text
+
+
+def test_large_scale_cluster_sidecar_missing_falls_back_to_single_with_advisory(
+    tmp_path: Path,
+) -> None:
+    packet = compiler_packet()
+    packet["error_clusters"] = {
+        "schema_version": "error_clusters/v1",
+        "truncated": False,
+        "truncation_signals": [],
+        "full_locations_path": "missing_error_clusters.json",
+        "clusters": [
+            {
+                "id": "CL001",
+                "kind": "source_warning_option",
+                "diagnostic_kinds": ["werror"],
+                "warning_option": "-Wimplicit-enum-enum-cast",
+                "count": 55,
+                "file_count": 11,
+                "large_scale": True,
+            }
+        ],
+    }
+    evidence_path = write_packet(tmp_path, packet)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(PatchSuggestOptions(evidence_path, output_dir=output_dir))
+
+    assert result.exit_code == 0
+    assert result.status == "source_context_unavailable"
+    assert not (output_dir / "cluster_context").exists()
+    meta = read_meta(output_dir)
+    assert "cluster_sidecar_unavailable" in str(meta["cluster_advisory"])
+    assert "cluster_sidecar_unavailable" in read_readme(output_dir)
+
+
+def test_non_large_scale_cluster_uses_single_diagnostic_flow(tmp_path: Path) -> None:
+    packet = compiler_packet(
+        source_snippet={
+            "path": "src/demo.c",
+            "start_line": 1,
+            "end_line": 1,
+            "text": "int x;",
+        }
+    )
+    add_error_cluster(packet, tmp_path, large_scale=False)
+    evidence_path = write_packet(tmp_path, packet)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(PatchSuggestOptions(evidence_path, output_dir=output_dir))
+
+    assert result.exit_code == 0
+    assert result.status == "source_context_available"
+    assert not (output_dir / "cluster_context").exists()
+    assert "mode" not in read_meta(output_dir)
+
+
+def test_cluster_context_marks_ambiguous_source_candidates(tmp_path: Path) -> None:
+    packet = compiler_packet(kind="werror")
+    add_error_cluster(packet, tmp_path)
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "src"
+    write_source(src_root, "a/src/device.c", lines=20)
+    write_source(src_root, "b/src/device.c", lines=20)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    file_meta = meta["clusters"][0]["files"][0]  # type: ignore[index]
+    assert file_meta["status"] == "source_context_ambiguous"
+    file_context = next((output_dir / "cluster_context").glob("CL001_*/files/*.md"))
+    text = file_context.read_text(encoding="utf-8")
+    assert "Candidate source matches" in text
+    assert "Choose the correct file" in text
+
+
+def test_cluster_window_merges_close_ranges_and_truncates_large_context(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    write_source(src_root, "src/dpm.c", lines=1000)
+    cluster = LargeScaleCluster(
+        id="CL001",
+        warning_option="-Wimplicit-enum-enum-cast",
+        diagnostic_kinds=("werror",),
+        truncated=True,
+        locations=tuple(
+            ClusterLocation(
+                event_id=f"E{index:03d}",
+                kind="werror",
+                file="src/dpm.c",
+                line=line,
+                column=None,
+                line_no=None,
+                message="enum cast",
+            )
+            for index, line in enumerate([20, 25, *range(100, 700, 20)], start=1)
+        ),
+    )
+
+    resolved = resolve_clusters((cluster,), src_root=src_root)
+
+    file_context = resolved[0].file_contexts[0]
+    assert file_context.source_windows[0].diagnostic_lines == (20, 25)
+    assert file_context.source_windows_truncated is True
+    total_lines = sum(
+        window.end_line - window.start_line + 1 for window in file_context.source_windows
+    )
+    assert total_lines <= 400
+
+
+def test_multiple_large_scale_clusters_get_independent_directories(tmp_path: Path) -> None:
+    packet = compiler_packet(kind="werror")
+    packet["error_clusters"] = {
+        "schema_version": "error_clusters/v1",
+        "truncated": False,
+        "truncation_signals": [],
+        "full_locations_path": "error_clusters.json",
+        "clusters": [
+            {
+                "id": "CL001",
+                "kind": "source_warning_option",
+                "diagnostic_kinds": ["werror"],
+                "warning_option": "-Wone",
+                "count": 10,
+                "file_count": 1,
+                "large_scale": True,
+            },
+            {
+                "id": "CL002",
+                "kind": "source_warning_option",
+                "diagnostic_kinds": ["compiler"],
+                "warning_option": "-Wtwo",
+                "count": 10,
+                "file_count": 1,
+                "large_scale": True,
+            },
+        ],
+    }
+    (tmp_path / "error_clusters.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "error_clusters_locations/v1",
+                "clusters": [
+                    {
+                        "id": "CL001",
+                        "warning_option": "-Wone",
+                        "locations": [
+                            {
+                                "kind": "werror",
+                                "file": "src/one.c",
+                                "line": 5,
+                                "message": "one",
+                            }
+                        ],
+                    },
+                    {
+                        "id": "CL002",
+                        "warning_option": "-Wtwo",
+                        "locations": [
+                            {
+                                "kind": "compiler",
+                                "file": "src/two.c",
+                                "line": 6,
+                                "message": "two",
+                            }
+                        ],
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/one.c")
+    write_source(src_root, "src/two.c")
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=tmp_path / "out", src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    dirs = sorted(path.name for path in (tmp_path / "out" / "cluster_context").iterdir())
+    assert dirs == ["CL001_-Wone", "CL002_-Wtwo"]
 
 
 def test_level_b_reports_file_line_without_source_context(tmp_path: Path) -> None:

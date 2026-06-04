@@ -12,6 +12,9 @@ from gbs_patch_suggest.analyzer_runner import (
     discover_analyzer_pythonpath,
     run_analyzer_for_buildlog,
 )
+from gbs_patch_suggest.cluster_ingest import ingest_large_scale_clusters
+from gbs_patch_suggest.cluster_render import write_cluster_outputs
+from gbs_patch_suggest.cluster_resolver import resolve_clusters
 from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch
 from gbs_patch_suggest.ingest import extract_first_diagnostic, load_evidence_packet
 from gbs_patch_suggest.render import write_outputs
@@ -76,6 +79,22 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
 
     try:
         packet = load_evidence_packet(evidence_path)
+        cluster_ingest = ingest_large_scale_clusters(packet, evidence_path=evidence_path)
+        if cluster_ingest.has_clusters:
+            resolved_clusters = resolve_clusters(cluster_ingest.clusters, src_root=options.src_root)
+            outputs = write_cluster_outputs(
+                resolved_clusters,
+                options.output_dir,
+                evidence_path=evidence_path,
+                buildlog_path=options.buildlog_path,
+            )
+            return PatchSuggestResult(
+                exit_code=EXIT_SUCCESS,
+                output_dir=options.output_dir,
+                context_path=outputs["context_md"],
+                meta_path=outputs["meta_json"],
+                status="cluster_context_available",
+            )
         diagnostic = extract_first_diagnostic(packet)
         resolved = resolve_context(diagnostic, src_root=options.src_root)
         outputs = write_outputs(
@@ -83,6 +102,7 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
             options.output_dir,
             evidence_path=evidence_path,
             buildlog_path=options.buildlog_path,
+            cluster_advisory=cluster_ingest.advisory,
         )
     except (OSError, ValueError) as exc:
         return PatchSuggestResult(
