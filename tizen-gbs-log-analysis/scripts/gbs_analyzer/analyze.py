@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, TypeVar
 
+from gbs_analyzer.error_clusters import ErrorClusterResult, build_error_clusters
 from gbs_analyzer.evidence import Evidence
 from gbs_analyzer.evidence.base import EvidenceCollector
 from gbs_analyzer.evidence.router import collector_for_candidate
@@ -67,6 +68,7 @@ class AnalyzeResult:
 class PipelineState:
     timings_ms: dict[str, float] = field(default_factory=dict)
     scan_result: ScanResult | None = None
+    error_cluster_result: ErrorClusterResult | None = None
     quick_result: QuickFilterResult | None = None
     rank_result: RankResult | None = None
     evidence: Evidence | None = None
@@ -104,6 +106,11 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                 lambda: scan_buildlog(buildlog, cwd=src_root, trace_logger=trace_logger),
             )
             scan_result = state.scan_result
+            state.error_cluster_result = _timed(
+                state,
+                "L1_error_clusters",
+                lambda: build_error_clusters(scan_result),
+            )
             state.quick_result = _timed(state, "L4a_quick", lambda: quick_filter(scan_result))
 
             if state.quick_result.hit and state.quick_result.match is not None:
@@ -111,6 +118,11 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                     state.quick_result,
                     options=options,
                     estimator=estimator,
+                    error_clusters=(
+                        state.error_cluster_result.summary
+                        if state.error_cluster_result is not None
+                        else None
+                    ),
                 )
             else:
                 state.rank_result = _timed(state, "L2_rank", lambda: rank_causes(scan_result))
@@ -152,6 +164,11 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                         redactor=redactor,
                         trace_logger=trace_logger,
                         max_tokens=options.max_tokens,
+                        error_clusters=(
+                            state.error_cluster_result.summary
+                            if state.error_cluster_result is not None
+                            else None
+                        ),
                     ),
                 )
                 packet["token_budget"]["limit_with_prompt"] = options.max_tokens
@@ -172,6 +189,11 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                 options=options,
                 redactor=redactor,
                 estimator=estimator,
+                error_cluster_sidecar=(
+                    state.error_cluster_result.sidecar
+                    if state.error_cluster_result is not None
+                    else None
+                ),
             )
             trace_logger.info(
                 "wrapper",
@@ -196,6 +218,7 @@ def write_outputs(
     options: AnalyzeOptions,
     redactor: MinimalRedactor,
     estimator: TokenEstimator,
+    error_cluster_sidecar: dict[str, Any] | None = None,
 ) -> dict[str, str]:
     """Write wrapper artifacts without printing to stdout."""
 
@@ -214,6 +237,13 @@ def write_outputs(
         markdown_path.write_text(markdown_text, encoding="utf-8")
         packet_markdown_tokens = estimator.estimate_text(markdown_text)
         output_paths["evidence_packet_md"] = str(markdown_path)
+    if error_cluster_sidecar is not None:
+        cluster_path = options.output_dir / "error_clusters.json"
+        cluster_path.write_text(
+            json.dumps(error_cluster_sidecar, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        output_paths["error_clusters_json"] = str(cluster_path)
 
     _attach_downstream_output_tokens(
         perf_report,
@@ -365,6 +395,7 @@ def _fast_path_packet(
     *,
     options: AnalyzeOptions,
     estimator: TokenEstimator,
+    error_clusters: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     assert result.match is not None
     packet = dict(result.match.minimal_packet)
@@ -376,6 +407,8 @@ def _fast_path_packet(
         "limit_with_prompt": options.max_tokens,
         "estimate_method": estimator.method,
     }
+    if error_clusters is not None:
+        packet["error_clusters"] = error_clusters
     packet["token_budget"]["used"] = estimator.estimate_obj(packet)
     return packet
 
