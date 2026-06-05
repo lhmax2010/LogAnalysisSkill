@@ -639,3 +639,174 @@ Implementation PR 禁止:
 - 自动 apply patch 或写源码树。
 - 修改 analyzer/build/workflow/Suggester/pattern。
 - 改变 single diagnostic 的输出语义。
+
+---
+
+## 9septies. Cluster mode Level A edit-spec skeletons
+
+> 触发: 真实 cluster mode 验证发现,外层 Claude 面对 11 个文件逐个写
+> edit spec + 调 formatter 的流程时,可能为了省事直接修改源码,违反“不 apply / 不写源码”铁律。
+> 继续加强软约束不足以根治;需要把合规路径做得比越权路径更省事。
+
+[D36] **Level A per-file context 必须预生成 edit_spec skeleton**。
+
+当 cluster mode 的某个 file context 达到 Level A(`source_context_available`)时,
+patch-suggest 为该文件生成一个 edit spec skeleton:
+
+```json
+{
+  "schema_version": "gbs_patch_suggest/edit-spec/v1",
+  "patch_name": "candidate_CL001_001_device_common_c.patch",
+  "description": "Fill new values for all listed source diagnostics in this file.",
+  "edits": [
+    {
+      "file": "src/device_common.c",
+      "line": 119,
+      "old": "\t... exact original source line ...",
+      "new": "<FILL_REPLACEMENT_LINE>"
+    }
+  ]
+}
+```
+
+预填字段:
+
+- `file`: sidecar location 的项目相对路径。
+- `line`: sidecar location 的行号。
+- `old`: 真实源码的整行文本,从 `lines[line - 1]` 提取。
+- `new`: 固定占位符 `"<FILL_REPLACEMENT_LINE>"`。
+
+`old` 必须保留源码原始 tab/space,不 `strip`,不转换缩进;JSON 写出时由
+`json.dumps` 正常转义。整行 old + line 的目标是最大化 formatter 一次匹配成功率,
+避免外层 Claude 自己构造 old 时产生格式/缩进错误。
+
+[D37] **同一 file 的同一 line 只生成一个 edit,但不丢 location 信息**。
+
+同一个文件中若多个 cluster locations 指向同一行,edit spec skeleton 只生成一条 edit:
+
+```
+dedupe key = (file, line)
+```
+
+理由:
+
+- formatter 不允许 overlapping edits。
+- 同一行多诊断通常应由同一个 replacement line 处理。
+
+但 context/meta 仍必须列出该行的所有 locations/messages/event_id,不得因为 edit 去重而丢失诊断事实。
+per-file context 应把“该 edit 覆盖哪些 diagnostic messages”讲清楚,让外层 Claude 填写
+`new` 时能同时考虑同一行的多个问题。
+
+[D38] **每个 skeleton edit 必须带诊断 message 辅助 Claude 填写 new**。
+
+edit spec schema 本身不扩展 message 字段,避免破坏 formatter schema。
+诊断 message 放在 per-file context 的 location 列表和 skeleton 指引中:
+
+- context.md 列出 line/column/message/event_id。
+- 若同一 edit 覆盖多个 location,context.md 标注这些 messages 都对应同一个 skeleton edit。
+
+Claude 根据 message 和源码窗口填写 `new`,但不需要自己重新抄 `file`/`line`/`old`。
+
+[D39] **Level B / ambiguous / C 不生成 skeleton**。
+
+以下状态不预生成 edit spec skeleton:
+
+- `source_context_unavailable`
+- `source_context_ambiguous`
+- `diagnostic_only`
+- `not_applicable`
+
+理由:没有唯一源码文件或无法取得真实行文本时,预填 `old` 会误导外层 Claude,
+并可能让 formatter 失败。此时保持 advisory:先打开/确认源码,再由 Claude 自行写 edit spec。
+
+[D40] **before/after 初版不默认生成**。
+
+skeleton 默认只填 `file` / `line` / `old` / `new`。
+
+不默认填 `before` / `after` 的理由:
+
+- 整行 old + line 已经是稳定定位组合。
+- before/after 会增大 skeleton 体积。
+- before/after 也可能引入额外文本匹配失败面。
+
+若 formatter 后续报 `old_not_unique` 或 `context_not_unique`,外层 Claude 再按 formatter
+错误码补 `before` / `after` 并重跑 formatter。不要因为少数失败场景让所有 skeleton 变重。
+
+[D41] **越界 line 不生成 edit,并标记 missing_line_text**。
+
+如果 sidecar location 的 line 不在源码文件范围内:
+
+- 不为该 location 生成 edit。
+- per-file context 仍列出该 location。
+- meta/context 标记 `missing_line_text`。
+- 指引外层 Claude 按 file:line 重新检查源码或确认 analyzer location 是否过期。
+
+越界 line 不能用猜测 old,也不能退回手写 diff。
+
+[D42] **skeleton 输出到独立 edit_specs/ 目录**。
+
+cluster mode 输出结构扩展为:
+
+```
+.gbs_patch_suggest/
+└── cluster_context/
+    └── CL001_-Wimplicit-enum-enum-cast/
+        ├── index.md
+        ├── files/
+        │   └── 001_device_common_c.md
+        └── edit_specs/
+            └── edit_spec_CL001_001_device_common_c.json
+```
+
+`files/` 只放 per-file markdown context;`edit_specs/` 只放 skeleton JSON。
+per-file context 必须指向对应 skeleton 路径,避免 Claude 探目录。
+
+[D43] **token 策略:per-file context 指向 skeleton,不重复展开 skeleton 内容**。
+
+skeleton 是 Claude-facing 操作文件,但不应在 per-file context 中全文重复。
+推荐阅读路径:
+
+1. 读 overview / index。
+2. 一次打开一个 per-file context。
+3. 打开该 per-file context 指向的 skeleton JSON。
+4. 填写 skeleton 的 `new` 字段。
+5. 调 formatter。
+
+per-file context 应说明 skeleton 的关键字段和路径,但不要把完整 JSON 再复制一遍。
+这样避免“源码窗口 + skeleton old”双重展开导致 token 翻倍。
+
+[D44] **per-file How-to 必须把“填 skeleton”放在第一位**。
+
+Level A per-file context 的 patch 流程改为:
+
+1. 打开本文件对应的 generated edit spec skeleton。
+2. 保留 `file` / `line` / `old` 不变,除非 formatter 报具体 mismatch。
+3. 只填写每个 edit 的 `new`。
+4. 运行 `format-patch --check`。
+5. 若 formatter 失败,修正 skeleton 后重跑 formatter。
+6. 不直接改源码文件,不手写 unified diff,不 apply patch。
+
+目标是让“走 skeleton + formatter”成为最省事路径,降低外层 Claude 越权直接写源码的动机。
+
+[D45] **实现影响面限制在 cluster mode**。
+
+Implementation 允许改:
+
+- `cluster_resolver.py`: 提取 line text / missing_line_text 信息。
+- `cluster_render.py`: 写 `edit_specs/*.json`,更新 per-file context 指引和 meta。
+- cluster mode 相关测试。
+
+Implementation 禁止改:
+
+- single diagnostic `extract_first_diagnostic` / `resolve_context` / `render_context` 语义。
+- formatter schema 和 formatter matching 行为。
+- analyzer/build/workflow/Suggester/pattern。
+- werror 接纳范围、别读 log/list_files/python3 引导。
+
+[D46] **实现 PR 范围:只预生成 skeleton,不自动填 new、不自动运行 formatter**。
+
+Implementation PR 只生成 skeleton JSON 和更新 context 指引。
+它不做语义修复,不填 `new`,不调用 `format-patch`,不生成 `.patch`,
+不运行 `git apply --check`,不 apply,不写源码树。
+
+外层 Claude 仍负责语义判断和填写 `new`;用户仍负责 review 和最终 apply。
