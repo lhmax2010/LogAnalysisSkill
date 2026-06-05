@@ -133,7 +133,13 @@ def resolve_candidate_paths(file_value: str, src_root: Path | None) -> list[Path
     requested_parts = requested.parts
     if not requested_parts:
         return []
-    basename = requested.name
+    return _suffix_candidates(root, requested_parts)
+
+
+def _suffix_candidates(root: Path, requested_parts: tuple[str, ...]) -> list[Path]:
+    if not requested_parts:
+        return []
+    basename = requested_parts[-1]
     candidates: list[Path] = []
     for path in _iter_files_by_basename(root, basename):
         try:
@@ -172,13 +178,21 @@ def _context_from_file(path: Path, line: int, *, window: int) -> SourceContext:
 
 def _absolute_candidate(path: Path, root: Path) -> list[Path]:
     candidate = path.resolve()
-    if not candidate.is_file():
-        return []
-    try:
-        candidate.relative_to(root)
-    except ValueError:
-        return []
-    return [candidate]
+    if candidate.is_file():
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            pass
+        else:
+            return [candidate]
+
+    parts = path.parts
+    for start in range(1, len(parts)):
+        suffix = parts[start:]
+        candidates = _suffix_candidates(root, suffix)
+        if candidates:
+            return candidates
+    return []
 
 
 def _iter_files_by_basename(root: Path, basename: str) -> list[Path]:
