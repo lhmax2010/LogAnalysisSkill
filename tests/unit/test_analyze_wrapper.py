@@ -128,6 +128,46 @@ def test_analyze_buildlog_writes_error_clusters_sidecar_without_changing_primary
     assert "-Wimplicit-enum-enum-cast" in markdown
 
 
+def test_main_auto_src_root_with_bare_buildlog_keeps_markdown_punctuation(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:  # type: ignore[no-untyped-def]
+    buildlog = tmp_path / "log.txt"
+    buildlog.write_text(
+        "\n".join(
+            [
+                "+ %build",
+                "+ clang -Werror -c src/a.c",
+                "src/a.c:10:5: error: enum cast [-Werror,-Wimplicit-enum-enum-cast]",
+                "src/b.c:11:5: error: enum cast [-Werror,-Wimplicit-enum-enum-cast]",
+                "src/c.c:12:5: error: enum cast [-Werror,-Wimplicit-enum-enum-cast]",
+                "fatal error: too many errors emitted, stopping now",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+
+    code = main(
+        [
+            "analyze",
+            "log.txt",
+            "--output-dir",
+            "out",
+            "--output-format",
+            "both",
+            "--no-tiktoken",
+        ]
+    )
+
+    assert code == EXIT_SUCCESS
+    markdown = (tmp_path / "out" / "evidence_packet.md").read_text(encoding="utf-8")
+    assert "error_clusters.json" in markdown
+    assert "error_clusters<WORKSPACE>json" not in markdown
+    assert "fix strategy. Compiler output" in markdown
+
+
 def test_analyze_buildlog_returns_unreadable_exit(tmp_path: Path) -> None:
     result = analyze_buildlog(
         AnalyzeOptions(

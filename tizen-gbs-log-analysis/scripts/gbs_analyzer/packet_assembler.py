@@ -225,7 +225,11 @@ class MinimalRedactor:
         workspace_root: str | Path | None = None,
         hostname: str | None = None,
     ) -> None:
-        self.workspace_root = str(Path(workspace_root)) if workspace_root is not None else None
+        self.workspace_root = None
+        if workspace_root is not None:
+            resolved_workspace = str(Path(workspace_root).resolve())
+            if len(resolved_workspace) > 1 and resolved_workspace not in {"", ".", "/"}:
+                self.workspace_root = resolved_workspace
         self.hostname = hostname or socket.gethostname()
 
     def redact_for_llm(self, text: str) -> str:
