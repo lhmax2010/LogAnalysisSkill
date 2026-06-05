@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 from pathlib import Path
+from typing import cast
 
 import pytest
 from gbs_patch_suggest.analyzer_runner import (
@@ -20,6 +21,7 @@ from gbs_patch_suggest.cli import (
 )
 from gbs_patch_suggest.cluster_ingest import ClusterLocation, LargeScaleCluster
 from gbs_patch_suggest.cluster_resolver import resolve_clusters
+from gbs_patch_suggest.formatter import EDIT_SPEC_SCHEMA, FormatPatchOptions, format_patch
 from gbs_patch_suggest.ingest import extract_first_diagnostic
 from gbs_patch_suggest.render import MANDATORY_INSTRUCTIONS
 
@@ -126,7 +128,9 @@ def add_error_cluster(
 
 
 def read_meta(output_dir: Path) -> dict[str, object]:
-    return json.loads((output_dir / "meta.json").read_text(encoding="utf-8"))
+    data = json.loads((output_dir / "meta.json").read_text(encoding="utf-8"))
+    assert isinstance(data, dict)
+    return cast(dict[str, object], data)
 
 
 def read_context(output_dir: Path) -> str:
@@ -389,8 +393,182 @@ def test_large_scale_cluster_writes_overview_and_per_file_contexts(tmp_path: Pat
     assert "line `10:5`" in text
     assert "line `13:5`" in text
     assert "src/device.c line 10" in text
-    assert "one edit spec containing edits for every listed location" in text
+    assert "Generated Edit Spec Skeleton" in text
+    assert "Fill every `<FILL_REPLACEMENT_LINE>` value" in text
     assert "candidate_CL001_001" in text
+    edit_specs = sorted((device_context.parents[1] / "edit_specs").glob("*.json"))
+    assert edit_specs
+    skeleton = json.loads(edit_specs[0].read_text(encoding="utf-8"))
+    assert skeleton["schema_version"] == EDIT_SPEC_SCHEMA
+    assert skeleton["edits"][0]["file"] == "src/device.c"
+    assert skeleton["edits"][0]["line"] == 10
+    assert skeleton["edits"][0]["old"] == "src/device.c line 10"
+    assert skeleton["edits"][0]["new"] == "<FILL_REPLACEMENT_LINE>"
+
+
+def test_cluster_edit_spec_skeleton_preserves_tabs_and_formats_patch(
+    tmp_path: Path,
+) -> None:
+    packet = compiler_packet(kind="werror", message="enum cast [-Werror,-Wenum-conversion]")
+    add_error_cluster(
+        packet,
+        tmp_path,
+        warning_option="-Wenum-conversion",
+        locations=[
+            {
+                "event_id": "E001",
+                "kind": "werror",
+                "file": "src/device.c",
+                "line": 3,
+                "column": 12,
+                "line_no": 100,
+                "message": "enum cast [-Werror,-Wenum-conversion]",
+            }
+        ],
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    source = src_root / "src" / "device.c"
+    source.parent.mkdir(parents=True)
+    source.write_text(
+        "\n".join(
+            [
+                "int demo(void)",
+                "{",
+                "\t\terror_code = old_status;",
+                "\t\treturn error_code;",
+                "}",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    skeleton_path = next(output_dir.glob("cluster_context/*/edit_specs/*.json"))
+    skeleton = json.loads(skeleton_path.read_text(encoding="utf-8"))
+    assert skeleton["edits"] == [
+        {
+            "file": "src/device.c",
+            "line": 3,
+            "old": "\t\terror_code = old_status;",
+            "new": "<FILL_REPLACEMENT_LINE>",
+        }
+    ]
+
+    skeleton["edits"][0]["new"] = "\t\terror_code = new_status;"
+    filled_spec = tmp_path / "filled_edit_spec.json"
+    filled_spec.write_text(json.dumps(skeleton), encoding="utf-8")
+    patch_path = tmp_path / "candidate.patch"
+
+    formatted = format_patch(
+        FormatPatchOptions(
+            src_root=src_root,
+            edit_spec=filled_spec,
+            output=patch_path,
+            check=True,
+        )
+    )
+
+    assert formatted.exit_code == 0
+    assert formatted.check_passed is True
+    patch_text = patch_path.read_text(encoding="utf-8")
+    assert "-\t\terror_code = old_status;" in patch_text
+    assert "+\t\terror_code = new_status;" in patch_text
+
+
+def test_cluster_edit_spec_skeleton_deduplicates_same_line_locations(
+    tmp_path: Path,
+) -> None:
+    packet = compiler_packet(kind="werror")
+    add_error_cluster(
+        packet,
+        tmp_path,
+        locations=[
+            {
+                "event_id": "E001",
+                "kind": "werror",
+                "file": "src/device.c",
+                "line": 10,
+                "column": 5,
+                "line_no": 100,
+                "message": "first enum cast",
+            },
+            {
+                "event_id": "E002",
+                "kind": "werror",
+                "file": "src/device.c",
+                "line": 10,
+                "column": 25,
+                "line_no": 100,
+                "message": "second enum cast on same line",
+            },
+        ],
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/device.c", lines=20)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    skeleton_path = next(output_dir.glob("cluster_context/*/edit_specs/*.json"))
+    skeleton = json.loads(skeleton_path.read_text(encoding="utf-8"))
+    assert len(skeleton["edits"]) == 1
+    assert skeleton["edits"][0]["line"] == 10
+    file_context = next(output_dir.glob("cluster_context/*/files/*.md"))
+    text = file_context.read_text(encoding="utf-8")
+    assert "first enum cast" in text
+    assert "second enum cast on same line" in text
+    assert text.count("line `10` covers:") == 1
+
+
+def test_cluster_edit_spec_skeleton_skips_missing_line_text(tmp_path: Path) -> None:
+    packet = compiler_packet(kind="werror")
+    add_error_cluster(
+        packet,
+        tmp_path,
+        locations=[
+            {
+                "event_id": "E001",
+                "kind": "werror",
+                "file": "src/device.c",
+                "line": 99,
+                "column": 5,
+                "line_no": 100,
+                "message": "line is beyond source file",
+            }
+        ],
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/device.c", lines=5)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    assert not list(output_dir.glob("cluster_context/*/edit_specs/*.json"))
+    meta = read_meta(output_dir)
+    file_meta = meta["clusters"][0]["files"][0]  # type: ignore[index]
+    assert file_meta["edit_spec_json"] is None
+    assert file_meta["missing_line_text"] == [
+        {"column": 5, "line": 99, "message": "line is beyond source file"}
+    ]
+    file_context = next(output_dir.glob("cluster_context/*/files/*.md"))
+    text = file_context.read_text(encoding="utf-8")
+    assert "Missing Line Text" in text
+    assert "no skeleton edit was generated" in text
 
 
 def test_large_scale_cluster_sidecar_missing_falls_back_to_single_with_advisory(
@@ -666,7 +844,8 @@ def test_suffix_search_multiple_matches_stays_level_b_with_candidates(tmp_path: 
     meta = read_meta(output_dir)
     assert meta["status"] == "source_context_ambiguous"
     assert meta["level"] == "B"
-    assert set(meta["candidate_paths"]) == {str(first), str(second)}
+    candidate_paths = cast(list[str], meta["candidate_paths"])
+    assert set(candidate_paths) == {str(first), str(second)}
     context = read_context(output_dir)
     assert "Candidate matches found" in context
     assert "Do not choose a source file blindly" in context
