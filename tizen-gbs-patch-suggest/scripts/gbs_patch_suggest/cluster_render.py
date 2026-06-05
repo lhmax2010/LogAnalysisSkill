@@ -465,7 +465,7 @@ def _cluster_dir_name(cluster: ResolvedCluster) -> str:
 
 
 def _file_context_name(file_context: ClusterFileContext) -> str:
-    return f"{file_context.index:03d}_{_slug(file_context.file)}.md"
+    return f"{file_context.index:03d}_{_file_slug(file_context.file)}.md"
 
 
 def _write_edit_spec_skeleton(
@@ -499,11 +499,15 @@ def _write_edit_spec_skeleton(
 
 
 def _edit_spec_name(cluster: ResolvedCluster, file_context: ClusterFileContext) -> str:
-    return f"edit_spec_{cluster.id}_{file_context.index:03d}_{_slug(file_context.file)}.json"
+    return f"edit_spec_{cluster.id}_{file_context.index:03d}_{_file_slug(file_context.file)}.json"
 
 
 def _patch_name(cluster: ResolvedCluster, file_context: ClusterFileContext) -> str:
-    return f"candidate_{cluster.id}_{file_context.index:03d}_{_slug(file_context.file)}.patch"
+    return f"candidate_{cluster.id}_{file_context.index:03d}_{_file_slug(file_context.file)}.patch"
+
+
+def _file_slug(file_value: str) -> str:
+    return _slug(Path(file_value).name)
 
 
 def _slug(value: str, *, max_length: int = 80) -> str:

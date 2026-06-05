@@ -608,9 +608,82 @@ def test_cluster_gbs_absolute_paths_fall_back_to_suffix_search(
     assert file_meta["status"] == "source_context_available"
     assert file_meta["edit_spec_json"] is not None
     file_context = next(output_dir.glob("cluster_context/*/files/*.md"))
+    assert file_context.name == "001_bluetooth-device.c.md"
+    assert "home_abuild" not in file_context.name
     text = file_context.read_text(encoding="utf-8")
+    assert (
+        "/home/abuild/rpmbuild/BUILD/capi-network-bluetooth-0.10.0/"
+        "src/bluetooth-device.c"
+    ) in text
     assert "src/bluetooth-device.c line 10" in text
     assert "Generated Edit Spec Skeleton" in text
+    skeleton_path = Path(str(file_meta["edit_spec_json"]))
+    assert skeleton_path.name == "edit_spec_CL001_001_bluetooth-device.c.json"
+    assert "home_abuild" not in skeleton_path.name
+    skeleton = json.loads(skeleton_path.read_text(encoding="utf-8"))
+    assert skeleton["patch_name"] == "candidate_CL001_001_bluetooth-device.c.patch"
+    assert skeleton["edits"][0]["file"] == (
+        "/home/abuild/rpmbuild/BUILD/capi-network-bluetooth-0.10.0/"
+        "src/bluetooth-device.c"
+    )
+    assert "candidate_CL001_001_bluetooth-device.c.patch" in text
+    assert file_meta["file"] == (
+        "/home/abuild/rpmbuild/BUILD/capi-network-bluetooth-0.10.0/"
+        "src/bluetooth-device.c"
+    )
+
+
+def test_cluster_short_filenames_remain_unique_for_duplicate_basenames(
+    tmp_path: Path,
+) -> None:
+    packet = compiler_packet(kind="werror")
+    add_error_cluster(
+        packet,
+        tmp_path,
+        locations=[
+            {
+                "event_id": "E001",
+                "kind": "werror",
+                "file": "src/foo.c",
+                "line": 10,
+                "column": 5,
+                "line_no": 100,
+                "message": "first foo",
+            },
+            {
+                "event_id": "E002",
+                "kind": "werror",
+                "file": "tests/foo.c",
+                "line": 12,
+                "column": 7,
+                "line_no": 120,
+                "message": "second foo",
+            },
+        ],
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/foo.c", lines=20)
+    write_source(src_root, "tests/foo.c", lines=20)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    file_names = sorted(path.name for path in output_dir.glob("cluster_context/*/files/*.md"))
+    assert file_names == ["001_foo.c.md", "002_foo.c.md"]
+    skeleton_names = sorted(
+        path.name for path in output_dir.glob("cluster_context/*/edit_specs/*.json")
+    )
+    assert skeleton_names == [
+        "edit_spec_CL001_001_foo.c.json",
+        "edit_spec_CL001_002_foo.c.json",
+    ]
+    meta = read_meta(output_dir)
+    files = meta["clusters"][0]["files"]  # type: ignore[index]
+    assert [item["file"] for item in files] == ["src/foo.c", "tests/foo.c"]
 
 
 def test_large_scale_cluster_sidecar_missing_falls_back_to_single_with_advisory(
