@@ -24,6 +24,16 @@ class SourceWindow:
 
 
 @dataclass(frozen=True)
+class SkeletonEdit:
+    """Pre-filled edit-spec skeleton edit for one source line."""
+
+    file: str
+    line: int
+    old: str
+    covered_locations: tuple[ClusterLocation, ...]
+
+
+@dataclass(frozen=True)
 class ClusterFileContext:
     """Resolved context for one file in a repeated diagnostic cluster."""
 
@@ -37,6 +47,8 @@ class ClusterFileContext:
     source_windows_truncated: bool = False
     advisory: str | None = None
     candidates: tuple[str, ...] = ()
+    skeleton_edits: tuple[SkeletonEdit, ...] = ()
+    missing_line_text_locations: tuple[ClusterLocation, ...] = ()
 
     @property
     def has_source_context(self) -> bool:
@@ -140,6 +152,11 @@ def _resolve_file_context(
             window=window,
             max_source_lines=max_source_lines,
         )
+        skeleton_edits, missing_line_text_locations = _skeleton_edits(
+            file,
+            lines,
+            locations,
+        )
         return ClusterFileContext(
             index=index,
             file=file,
@@ -149,6 +166,8 @@ def _resolve_file_context(
             source_path=str(source_path),
             source_windows=windows,
             source_windows_truncated=truncated,
+            skeleton_edits=skeleton_edits,
+            missing_line_text_locations=missing_line_text_locations,
         )
     if len(candidates) > 1:
         return ClusterFileContext(
@@ -236,3 +255,28 @@ def _source_windows(
         if truncated:
             break
     return tuple(windows), truncated
+
+
+def _skeleton_edits(
+    file: str,
+    lines: list[str],
+    locations: tuple[ClusterLocation, ...],
+) -> tuple[tuple[SkeletonEdit, ...], tuple[ClusterLocation, ...]]:
+    grouped: dict[int, list[ClusterLocation]] = {}
+    missing: list[ClusterLocation] = []
+    for location in locations:
+        if 1 <= location.line <= len(lines):
+            grouped.setdefault(location.line, []).append(location)
+        else:
+            missing.append(location)
+
+    edits = tuple(
+        SkeletonEdit(
+            file=file,
+            line=line,
+            old=lines[line - 1],
+            covered_locations=tuple(line_locations),
+        )
+        for line, line_locations in sorted(grouped.items())
+    )
+    return edits, tuple(missing)

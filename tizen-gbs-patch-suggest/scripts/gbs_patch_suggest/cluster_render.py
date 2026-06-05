@@ -8,7 +8,10 @@ from pathlib import Path
 from typing import Any
 
 from gbs_patch_suggest.cluster_resolver import ClusterFileContext, ResolvedCluster
+from gbs_patch_suggest.formatter import EDIT_SPEC_SCHEMA
 from gbs_patch_suggest.render import MANDATORY_INSTRUCTIONS
+
+FILL_REPLACEMENT_LINE = "<FILL_REPLACEMENT_LINE>"
 
 
 def write_cluster_outputs(
@@ -28,15 +31,24 @@ def write_cluster_outputs(
     for cluster in clusters:
         cluster_dir = cluster_context_dir / _cluster_dir_name(cluster)
         files_dir = cluster_dir / "files"
+        edit_specs_dir = cluster_dir / "edit_specs"
         files_dir.mkdir(parents=True, exist_ok=True)
+        edit_specs_dir.mkdir(parents=True, exist_ok=True)
         file_outputs = []
         for file_context in cluster.file_contexts:
             file_path = files_dir / _file_context_name(file_context)
+            edit_spec_path = _write_edit_spec_skeleton(
+                cluster,
+                file_context,
+                edit_specs_dir=edit_specs_dir,
+            )
             file_path.write_text(
-                render_file_context(cluster, file_context),
+                render_file_context(cluster, file_context, edit_spec_path=edit_spec_path),
                 encoding="utf-8",
             )
-            file_outputs.append({"context": file_context, "path": file_path})
+            file_outputs.append(
+                {"context": file_context, "path": file_path, "edit_spec_path": edit_spec_path}
+            )
         index_path = cluster_dir / "index.md"
         index_path.write_text(
             render_cluster_index(cluster, file_outputs=file_outputs),
@@ -198,12 +210,22 @@ def render_cluster_index(
     return "\n".join(lines)
 
 
-def render_file_context(cluster: ResolvedCluster, file_context: ClusterFileContext) -> str:
+def render_file_context(
+    cluster: ResolvedCluster,
+    file_context: ClusterFileContext,
+    *,
+    edit_spec_path: Path | None = None,
+) -> str:
     """Render one per-file context."""
 
     file_slug = _slug(file_context.file)
     edit_spec_name = f"edit_spec_{cluster.id}_{file_context.index:03d}_{file_slug}.json"
-    patch_name = f"candidate_{cluster.id}_{file_context.index:03d}_{file_slug}.patch"
+    patch_name = _patch_name(cluster, file_context)
+    edit_spec_command_path = (
+        f".gbs_patch_suggest/{_relative(edit_spec_path, edit_spec_path.parents[3])}"
+        if edit_spec_path is not None
+        else f".gbs_patch_suggest/{edit_spec_name}"
+    )
     lines = [
         f"# File Patch Context: `{file_context.file}`",
         "",
@@ -224,6 +246,49 @@ def render_file_context(cluster: ResolvedCluster, file_context: ClusterFileConte
         column = "" if location.column is None else f":{location.column}"
         lines.append(f"- line `{location.line}{column}`: `{location.message}`")
     lines.append("")
+    if file_context.skeleton_edits and edit_spec_path is not None:
+        lines.extend(
+            [
+                "## Generated Edit Spec Skeleton",
+                "",
+                f"- Skeleton: `{_relative(edit_spec_path, edit_spec_path.parents[1])}`",
+                "- Keep `file`, `line`, and `old` unchanged unless the formatter reports a "
+                "specific mismatch.",
+                f"- Fill every `{FILL_REPLACEMENT_LINE}` value with the corrected source line.",
+                "- The skeleton is not repeated here to avoid duplicating source text and token "
+                "usage; open the JSON file when you are ready to fill `new`.",
+                "",
+                "Skeleton edit coverage:",
+                "",
+            ]
+        )
+        for edit in file_context.skeleton_edits:
+            lines.append(f"- line `{edit.line}` covers:")
+            for location in edit.covered_locations:
+                column = "" if location.column is None else f":{location.column}"
+                lines.append(f"  - `{location.line}{column}`: `{location.message}`")
+        lines.append("")
+    if file_context.missing_line_text_locations:
+        lines.extend(
+            [
+                "## Missing Line Text",
+                "",
+                "The following locations were outside the readable source file range, so no "
+                "skeleton edit was generated for them:",
+                "",
+            ]
+        )
+        for location in file_context.missing_line_text_locations:
+            column = "" if location.column is None else f":{location.column}"
+            lines.append(f"- line `{location.line}{column}`: `{location.message}`")
+        lines.extend(
+            [
+                "",
+                "Confirm these locations manually before preparing edits. Do not guess `old` "
+                "text and do not hand-write a diff.",
+                "",
+            ]
+        )
 
     if file_context.source_windows:
         lines.extend(
@@ -273,16 +338,36 @@ def render_file_context(cluster: ResolvedCluster, file_context: ClusterFileConte
             lines.extend(f"- `{candidate}`" for candidate in file_context.candidates)
             lines.append("")
 
+    lines.extend(["## How to generate the patch for this file", ""])
+    if edit_spec_path is not None:
+        lines.extend(
+            [
+                "1. Work only on this file context before moving to the next file.",
+                f"2. Open the generated edit spec skeleton: "
+                f"`{_relative(edit_spec_path, edit_spec_path.parents[1])}`.",
+                "3. Preserve every `file`, `line`, and `old` value unless the formatter reports "
+                "a specific mismatch. The `old` values are exact whole source lines copied by "
+                "the skill, including tabs and spaces.",
+                f"4. Replace each `{FILL_REPLACEMENT_LINE}` placeholder with the corrected full "
+                "source line. Use the locations/messages above to decide the right replacement.",
+                "5. Run the deterministic formatter; do not hand-write unified diff text and do "
+                "not edit the source file directly.",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "1. Work only on this file context before moving to the next file.",
+                "2. Source context is unavailable or ambiguous, so no skeleton was generated.",
+                "3. First open the correct file around the listed lines and inspect the source.",
+                "4. Write an edit spec only after you have verified the real source text. Use "
+                "`line`, `before`, or `after` to disambiguate repeated text.",
+                "5. Run the deterministic formatter; do not hand-write unified diff text and do "
+                "not edit the source file directly.",
+            ]
+        )
     lines.extend(
         [
-            "## How to generate the patch for this file",
-            "",
-            "1. Work only on this file context before moving to the next file.",
-            "2. Decide the class-wide edit strategy for this file.",
-            "3. Write one edit spec containing edits for every listed location in this file "
-            "that should be changed.",
-            "4. Use `line`, `before`, or `after` to disambiguate repeated old text.",
-            "5. Run the deterministic formatter; do not hand-write unified diff text.",
             "",
             "Recommended names:",
             "",
@@ -296,14 +381,13 @@ def render_file_context(cluster: ResolvedCluster, file_context: ClusterFileConte
             "```bash",
             "python3 -m gbs_patch_suggest format-patch \\",
             "    --src-root /path/to/source \\",
-            f"    --edit-spec .gbs_patch_suggest/{edit_spec_name} \\",
+            f"    --edit-spec {edit_spec_command_path} \\",
             f"    --output .gbs_patch_suggest/{patch_name} \\",
             "    --check",
             "```",
             "",
-            "If source context is unavailable or ambiguous, first open the correct file around "
-            "the listed lines. Do not guess, and do not generate a patch until the source "
-            "has been inspected.",
+            "If the formatter fails, fix the edit spec and rerun the formatter. Do not fall "
+            "back to hand-writing a unified diff, and do not edit the source file directly.",
             "",
             MANDATORY_INSTRUCTIONS.rstrip(),
             "",
@@ -351,9 +435,22 @@ def render_cluster_meta(
                         "status": file_output["context"].status,
                         "location_count": len(file_output["context"].locations),
                         "context_md": str(file_output["path"]),
+                        "edit_spec_json": None
+                        if file_output["edit_spec_path"] is None
+                        else str(file_output["edit_spec_path"]),
                         "source_windows_truncated": file_output[
                             "context"
                         ].source_windows_truncated,
+                        "missing_line_text": [
+                            {
+                                "line": location.line,
+                                "column": location.column,
+                                "message": location.message,
+                            }
+                            for location in file_output[
+                                "context"
+                            ].missing_line_text_locations
+                        ],
                     }
                     for file_output in output["file_outputs"]
                 ],
@@ -369,6 +466,44 @@ def _cluster_dir_name(cluster: ResolvedCluster) -> str:
 
 def _file_context_name(file_context: ClusterFileContext) -> str:
     return f"{file_context.index:03d}_{_slug(file_context.file)}.md"
+
+
+def _write_edit_spec_skeleton(
+    cluster: ResolvedCluster,
+    file_context: ClusterFileContext,
+    *,
+    edit_specs_dir: Path,
+) -> Path | None:
+    if not file_context.skeleton_edits:
+        return None
+    path = edit_specs_dir / _edit_spec_name(cluster, file_context)
+    data = {
+        "schema_version": EDIT_SPEC_SCHEMA,
+        "patch_name": _patch_name(cluster, file_context),
+        "description": "Fill new values for all listed source diagnostics in this file.",
+        "edits": [
+            {
+                "file": edit.file,
+                "line": edit.line,
+                "old": edit.old,
+                "new": FILL_REPLACEMENT_LINE,
+            }
+            for edit in file_context.skeleton_edits
+        ],
+    }
+    path.write_text(
+        json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def _edit_spec_name(cluster: ResolvedCluster, file_context: ClusterFileContext) -> str:
+    return f"edit_spec_{cluster.id}_{file_context.index:03d}_{_slug(file_context.file)}.json"
+
+
+def _patch_name(cluster: ResolvedCluster, file_context: ClusterFileContext) -> str:
+    return f"candidate_{cluster.id}_{file_context.index:03d}_{_slug(file_context.file)}.patch"
 
 
 def _slug(value: str, *, max_length: int = 80) -> str:
