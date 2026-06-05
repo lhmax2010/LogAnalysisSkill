@@ -294,10 +294,25 @@ def test_token_estimator_estimates_objects() -> None:
 def test_redactor_redacts_workspace_home_and_host() -> None:
     redactor = MinimalRedactor(workspace_root="/home/linhao/work", hostname="builder01")
 
-    redacted = redactor.redact_for_llm("/home/linhao/work/src/foo.c on builder01")
+    redacted = redactor.redact_for_llm(
+        "/home/linhao/work/src/foo.c on builder01 error_clusters.json."
+    )
 
     assert "<WORKSPACE>/src/foo.c" in redacted
     assert "<HOST>" in redacted
+    assert "error_clusters.json." in redacted
+
+
+def test_redactor_does_not_replace_periods_for_dot_workspace_root(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.chdir(tmp_path)
+    redactor = MinimalRedactor(workspace_root=".")
+
+    text = "error_clusters.json. version 0.10.0. src/foo.c"
+
+    assert redactor.redact_for_llm(text) == text
 
 
 def test_redactor_storage_preserves_raw_paths() -> None:

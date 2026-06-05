@@ -97,7 +97,7 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
     try:
         with setup_tracing(options.output_dir, trace=options.trace) as trace_logger:
             trace_logger.info("wrapper", "analysis_started", buildlog_path=str(buildlog))
-            src_root = options.src_root or buildlog.parent
+            src_root = options.src_root or buildlog.resolve().parent
             spec_path = options.spec_path or _find_spec_path(options.package, src_root)
 
             state.scan_result = _timed(
@@ -415,7 +415,7 @@ def _fast_path_packet(
 
 def _resolve_src_root(src_root: str, buildlog_path: Path) -> Path | None:
     if src_root in {"", "auto"}:
-        return buildlog_path.parent
+        return buildlog_path.resolve().parent
     return Path(src_root)
 
 
