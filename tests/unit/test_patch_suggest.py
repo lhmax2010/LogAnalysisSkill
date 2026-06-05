@@ -571,6 +571,48 @@ def test_cluster_edit_spec_skeleton_skips_missing_line_text(tmp_path: Path) -> N
     assert "no skeleton edit was generated" in text
 
 
+def test_cluster_gbs_absolute_paths_fall_back_to_suffix_search(
+    tmp_path: Path,
+) -> None:
+    packet = compiler_packet(kind="werror")
+    add_error_cluster(
+        packet,
+        tmp_path,
+        locations=[
+            {
+                "event_id": "E001",
+                "kind": "werror",
+                "file": (
+                    "/home/abuild/rpmbuild/BUILD/capi-network-bluetooth-0.10.0/"
+                    "src/bluetooth-device.c"
+                ),
+                "line": 10,
+                "column": 5,
+                "line_no": 100,
+                "message": "enum cast from gbs absolute path",
+            }
+        ],
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/bluetooth-device.c", lines=20)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    file_meta = meta["clusters"][0]["files"][0]  # type: ignore[index]
+    assert file_meta["status"] == "source_context_available"
+    assert file_meta["edit_spec_json"] is not None
+    file_context = next(output_dir.glob("cluster_context/*/files/*.md"))
+    text = file_context.read_text(encoding="utf-8")
+    assert "src/bluetooth-device.c line 10" in text
+    assert "Generated Edit Spec Skeleton" in text
+
+
 def test_large_scale_cluster_sidecar_missing_falls_back_to_single_with_advisory(
     tmp_path: Path,
 ) -> None:
@@ -950,6 +992,83 @@ def test_absolute_path_missing_stays_level_b(tmp_path: Path) -> None:
     assert result.exit_code == 0
     meta = read_meta(output_dir)
     assert meta["status"] == "source_context_unavailable"
+
+
+def test_gbs_absolute_path_falls_back_to_suffix_search(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    write_source(src_root, "src/bluetooth-device.c", lines=20)
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(
+            file=(
+                "/home/abuild/rpmbuild/BUILD/capi-network-bluetooth-0.10.0/"
+                "src/bluetooth-device.c"
+            ),
+            line=12,
+        ),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_available"
+    assert meta["level"] == "A"
+    context = read_context(output_dir)
+    assert "src/bluetooth-device.c line 12" in context
+
+
+def test_absolute_suffix_fallback_prefers_longest_matching_suffix(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    exact = write_source(src_root, "pkg-1.0/src/foo.c", lines=20)
+    write_source(src_root, "src/foo.c", lines=20)
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(
+            file="/home/abuild/rpmbuild/BUILD/pkg-1.0/src/foo.c",
+            line=12,
+        ),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_available"
+    assert str(exact) in read_context(output_dir)
+
+
+def test_absolute_suffix_fallback_stops_on_ambiguous_longest_suffix(
+    tmp_path: Path,
+) -> None:
+    src_root = tmp_path / "src"
+    first = write_source(src_root, "a/src/foo.c", lines=20)
+    second = write_source(src_root, "b/src/foo.c", lines=20)
+    write_source(src_root, "foo.c", lines=20)
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(
+            file="/home/abuild/rpmbuild/BUILD/pkg-1.0/src/foo.c",
+            line=12,
+        ),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_ambiguous"
+    candidate_paths = cast(list[str], meta["candidate_paths"])
+    assert set(candidate_paths) == {str(first), str(second)}
 
 
 def test_level_c_reports_diagnostic_only_without_file_line(tmp_path: Path) -> None:
