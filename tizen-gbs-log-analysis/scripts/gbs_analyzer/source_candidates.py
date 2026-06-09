@@ -58,10 +58,12 @@ class SourceCandidateResult:
 
 
 @dataclass(frozen=True)
-class _PathInfo:
+class _SourcePathInfo:
     normalized_file: str
-    project_source: bool | None
-    reason: str
+    source_reachable: bool
+    source_resolution_status: str
+    source_owned: bool
+    source_ownership_status: str
 
 
 def build_source_candidates(
@@ -97,6 +99,13 @@ def build_source_candidates(
                 excluded_summary["missing_file_count"] += 1
             if missing_line:
                 excluded_summary["missing_line_count"] += 1
+            excluded_source_diagnostics.append(
+                _excluded_missing_location(
+                    event,
+                    missing_file=missing_file,
+                    missing_line=missing_line,
+                )
+            )
             continue
         assert isinstance(line_value, int)
         line_int = line_value
@@ -107,7 +116,7 @@ def build_source_candidates(
 
         semantic_class = active_classifier.classify(event, scan_data).name
         warning_option = extract_warning_option(event)
-        path_info = _path_info(str(file_value), src_root)
+        path_info = _source_path_info(str(file_value), src_root)
         candidate = _candidate(
             event,
             file_value=str(file_value),
@@ -123,14 +132,18 @@ def build_source_candidates(
     if not candidates and not any(excluded_summary.values()):
         return SourceCandidateResult(summary=None, sidecar=None)
 
-    counts = _fixability_counts(candidates)
+    counts = _candidate_counts(candidates)
     summary = {
         "schema_version": SOURCE_CANDIDATES_SCHEMA,
         "full_candidates_path": SIDECAR_NAME,
         "candidate_count": len(candidates),
-        "probably_fixable_count": counts["probably_fixable"],
-        "unknown_count": counts["unknown"],
-        "not_fixable_count": counts["not_fixable"],
+        "structured_source_candidate_count": len(candidates),
+        "type_probably_fixable_count": counts["type_probably_fixable"],
+        "type_unknown_count": counts["type_unknown"],
+        "type_not_fixable_count": counts["type_not_fixable"],
+        "source_reachable_count": counts["source_reachable"],
+        "source_owned_count": counts["source_owned"],
+        "patch_ready_count": counts["patch_ready"],
         "excluded_summary": excluded_summary,
     }
     sidecar = {
@@ -151,14 +164,13 @@ def _candidate(
     warning_option: str | None,
     fatal_detection_source: str,
     warning_option_source: str,
-    path_info: _PathInfo,
+    path_info: _SourcePathInfo,
 ) -> dict[str, Any]:
     message = str(event.get("message") or "")
-    provisional_fixability, fixability_reason = _fixability(
+    type_fixability, type_fixability_reason = _type_fixability(
         warning_option=warning_option,
         semantic_class=semantic_class,
         message=message,
-        path_info=path_info,
     )
     key, degraded_key = _dedupe_key(
         normalized_file=path_info.normalized_file,
@@ -187,8 +199,12 @@ def _candidate(
         "parent": event.get("parent"),
         "cascade_status": "none",
         "fatal_detection_source": fatal_detection_source,
-        "provisional_fixability": provisional_fixability,
-        "fixability_reason": fixability_reason,
+        "type_fixability": type_fixability,
+        "type_fixability_reason": type_fixability_reason,
+        "source_reachable": path_info.source_reachable,
+        "source_resolution_status": path_info.source_resolution_status,
+        "source_owned": path_info.source_owned,
+        "source_ownership_status": path_info.source_ownership_status,
         "exclusion_reason": None,
         "dedupe_key": key,
         "degraded_key": degraded_key,
@@ -207,6 +223,27 @@ def _excluded_parent(event: dict[str, Any], file_value: str) -> dict[str, Any]:
     return {key: value for key, value in data.items() if value is not None}
 
 
+def _excluded_missing_location(
+    event: dict[str, Any],
+    *,
+    missing_file: bool,
+    missing_line: bool,
+) -> dict[str, Any]:
+    if missing_file and missing_line:
+        reason = "missing_file_and_line"
+    elif missing_file:
+        reason = "missing_file"
+    else:
+        reason = "missing_line"
+    data = {
+        "event_id": event.get("id"),
+        "file": event.get("file"),
+        "line": event.get("line"),
+        "exclusion_reason": reason,
+    }
+    return {key: value for key, value in data.items() if value is not None}
+
+
 def _fatal_detection_source(event: dict[str, Any]) -> str | None:
     if str(event.get("severity") or "").strip().lower() == "error":
         return "severity"
@@ -217,17 +254,12 @@ def _fatal_detection_source(event: dict[str, Any]) -> str | None:
     return None
 
 
-def _fixability(
+def _type_fixability(
     *,
     warning_option: str | None,
     semantic_class: str,
     message: str,
-    path_info: _PathInfo,
 ) -> tuple[str, str]:
-    if path_info.project_source is False:
-        return "not_fixable", path_info.reason
-    if path_info.project_source is None:
-        return "unknown", path_info.reason
     if warning_option in PROBABLY_FIXABLE_WARNING_OPTIONS:
         return "probably_fixable", f"whitelisted_warning_option:{warning_option}"
     if _is_unused_field(semantic_class=semantic_class, message=message):
@@ -244,22 +276,64 @@ def _is_unused_field(*, semantic_class: str, message: str) -> bool:
     ) or "private field" in lowered and "not used" in lowered
 
 
-def _path_info(file_value: str, src_root: str | Path | None) -> _PathInfo:
+def _source_path_info(file_value: str, src_root: str | Path | None) -> _SourcePathInfo:
     raw_normalized = _normalize_raw_file(file_value)
     if _is_system_path(raw_normalized):
-        return _PathInfo(raw_normalized, False, "system_or_toolchain_path")
+        return _SourcePathInfo(
+            normalized_file=raw_normalized,
+            source_reachable=False,
+            source_resolution_status=_unreachable_status(src_root),
+            source_owned=False,
+            source_ownership_status="system_or_toolchain_path",
+        )
 
     mapped = _mapped_source_path(file_value, src_root)
     if mapped is not None:
         assert src_root is not None
         normalized = _relative_posix(mapped, Path(src_root).resolve())
-        return _PathInfo(normalized, True, "mapped_to_source_root")
+        if _has_suspect_part(normalized):
+            return _SourcePathInfo(
+                normalized_file=normalized,
+                source_reachable=True,
+                source_resolution_status="mapped_to_source_root",
+                source_owned=False,
+                source_ownership_status="generated_or_vendor",
+            )
+        return _SourcePathInfo(
+            normalized_file=normalized,
+            source_reachable=True,
+            source_resolution_status="mapped_to_source_root",
+            source_owned=True,
+            source_ownership_status="project_owned",
+        )
 
     if _has_suspect_part(raw_normalized):
-        return _PathInfo(raw_normalized, None, "suspected_generated_or_vendor_path")
+        return _SourcePathInfo(
+            normalized_file=raw_normalized,
+            source_reachable=False,
+            source_resolution_status=_unreachable_status(src_root),
+            source_owned=False,
+            source_ownership_status="generated_or_vendor",
+        )
     if src_root is None:
-        return _PathInfo(raw_normalized, None, "source_root_unavailable")
-    return _PathInfo(raw_normalized, None, "source_mapping_unavailable")
+        return _SourcePathInfo(
+            normalized_file=raw_normalized,
+            source_reachable=False,
+            source_resolution_status="source_root_unavailable",
+            source_owned=False,
+            source_ownership_status="unknown",
+        )
+    return _SourcePathInfo(
+        normalized_file=raw_normalized,
+        source_reachable=False,
+        source_resolution_status="source_mapping_unavailable",
+        source_owned=False,
+        source_ownership_status="unknown",
+    )
+
+
+def _unreachable_status(src_root: str | Path | None) -> str:
+    return "source_root_unavailable" if src_root is None else "source_mapping_unavailable"
 
 
 def _mapped_source_path(file_value: str, src_root: str | Path | None) -> Path | None:
@@ -400,12 +474,33 @@ def _message_fingerprint(message: str) -> str:
     ]
 
 
-def _fixability_counts(candidates: list[dict[str, Any]]) -> dict[str, int]:
-    counts = {"probably_fixable": 0, "unknown": 0, "not_fixable": 0}
+def _candidate_counts(candidates: list[dict[str, Any]]) -> dict[str, int]:
+    counts = {
+        "type_probably_fixable": 0,
+        "type_unknown": 0,
+        "type_not_fixable": 0,
+        "source_reachable": 0,
+        "source_owned": 0,
+        "patch_ready": 0,
+    }
     for candidate in candidates:
-        value = candidate.get("provisional_fixability")
-        if value in counts:
-            counts[value] += 1
+        value = candidate.get("type_fixability")
+        if value == "probably_fixable":
+            counts["type_probably_fixable"] += 1
+        elif value == "not_fixable":
+            counts["type_not_fixable"] += 1
+        else:
+            counts["type_unknown"] += 1
+        if candidate.get("source_reachable") is True:
+            counts["source_reachable"] += 1
+        if candidate.get("source_owned") is True:
+            counts["source_owned"] += 1
+        if (
+            value == "probably_fixable"
+            and candidate.get("source_reachable") is True
+            and candidate.get("source_owned") is True
+        ):
+            counts["patch_ready"] += 1
     return counts
 
 

@@ -50,7 +50,61 @@ def write_source(src_root: Path, relative: str) -> None:
     path.write_text("int placeholder;\n", encoding="utf-8")
 
 
-def test_unused_field_werror_singleton_becomes_probably_fixable(tmp_path: Path) -> None:
+def inference_engine_events() -> list[dict[str, object]]:
+    deprecated = "warning: function is deprecated [-Werror,-Wdeprecated-declarations]"
+    return [
+        event(
+            "E011",
+            file="/home/abuild/rpmbuild/BUILD/inference-engine-1.0/src/OutputMetadata.h",
+        ),
+        event(
+            "E012",
+            message=deprecated,
+            file="/home/abuild/rpmbuild/BUILD/inference-engine-1.0/src/profiler.cpp",
+            line=20,
+        ),
+        event(
+            "E013",
+            message=deprecated,
+            file="/home/abuild/rpmbuild/BUILD/inference-engine-1.0/src/profiler.cpp",
+            line=30,
+        ),
+        event(
+            "E014",
+            message=deprecated,
+            file="/home/abuild/rpmbuild/BUILD/inference-engine-1.0/src/profiler.cpp",
+            line=40,
+        ),
+        event(
+            "E015",
+            message=deprecated,
+            file="/home/abuild/rpmbuild/BUILD/inference-engine-1.0/src/tc.cpp",
+            line=50,
+        ),
+        event(
+            "E016",
+            message=deprecated,
+            file="/home/abuild/rpmbuild/BUILD/inference-engine-1.0/src/tc.cpp",
+            line=60,
+        ),
+        event(
+            "E017",
+            message=deprecated,
+            file="/home/abuild/rpmbuild/BUILD/inference-engine-1.0/src/tc.cpp",
+            line=70,
+        ),
+        event(
+            "E019",
+            message=deprecated,
+            file="/home/abuild/rpmbuild/BUILD/inference-engine-1.0/src/tc.cpp",
+            line=80,
+        ),
+    ]
+
+
+def test_unused_field_werror_singleton_becomes_type_probably_fixable(
+    tmp_path: Path,
+) -> None:
     write_source(tmp_path, "src/OutputMetadata.h")
     result = build_source_candidates(
         packet(
@@ -66,15 +120,73 @@ def test_unused_field_werror_singleton_becomes_probably_fixable(tmp_path: Path) 
 
     assert result.summary is not None
     assert result.summary["candidate_count"] == 1
-    assert result.summary["probably_fixable_count"] == 1
+    assert result.summary["structured_source_candidate_count"] == 1
+    assert result.summary["type_probably_fixable_count"] == 1
+    assert result.summary["source_reachable_count"] == 1
+    assert result.summary["source_owned_count"] == 1
+    assert result.summary["patch_ready_count"] == 1
     assert result.sidecar is not None
     candidate = result.sidecar["candidates"][0]
     assert candidate["event_id"] == "E011"
     assert candidate["warning_option"] == "-Wunused-private-field"
     assert candidate["warning_option_source"] == "message_regex"
     assert candidate["normalized_file"] == "src/OutputMetadata.h"
-    assert candidate["provisional_fixability"] == "probably_fixable"
-    assert candidate["fixability_reason"] == "whitelisted_warning_option:-Wunused-private-field"
+    assert candidate["type_fixability"] == "probably_fixable"
+    assert candidate["type_fixability_reason"] == (
+        "whitelisted_warning_option:-Wunused-private-field"
+    )
+    assert candidate["source_reachable"] is True
+    assert candidate["source_resolution_status"] == "mapped_to_source_root"
+    assert candidate["source_owned"] is True
+    assert candidate["source_ownership_status"] == "project_owned"
+
+
+def test_type_fixability_is_independent_from_local_source_mapping() -> None:
+    result = build_source_candidates(packet(inference_engine_events()), src_root=Path("/missing"))
+
+    assert result.summary is not None
+    assert result.summary["structured_source_candidate_count"] == 8
+    assert result.summary["candidate_count"] == 8
+    assert result.summary["type_probably_fixable_count"] == 8
+    assert result.summary["source_reachable_count"] == 0
+    assert result.summary["source_owned_count"] == 0
+    assert result.summary["patch_ready_count"] == 0
+    assert result.sidecar is not None
+    candidates = result.sidecar["candidates"]
+    assert {candidate["warning_option"] for candidate in candidates} == {
+        "-Wunused-private-field",
+        "-Wdeprecated-declarations",
+    }
+    assert {candidate["type_fixability"] for candidate in candidates} == {
+        "probably_fixable"
+    }
+    assert {candidate["source_reachable"] for candidate in candidates} == {False}
+    assert {candidate["source_owned"] for candidate in candidates} == {False}
+    assert {candidate["source_resolution_status"] for candidate in candidates} == {
+        "source_mapping_unavailable"
+    }
+    assert {candidate["source_ownership_status"] for candidate in candidates} == {
+        "unknown"
+    }
+
+
+def test_type_and_source_both_succeed_with_mock_inference_engine_source(
+    tmp_path: Path,
+) -> None:
+    write_source(tmp_path, "src/OutputMetadata.h")
+    write_source(tmp_path, "src/profiler.cpp")
+    write_source(tmp_path, "src/tc.cpp")
+
+    result = build_source_candidates(packet(inference_engine_events()), src_root=tmp_path)
+
+    assert result.summary is not None
+    assert result.summary["type_probably_fixable_count"] == 8
+    assert result.summary["source_reachable_count"] == 8
+    assert result.summary["source_owned_count"] == 8
+    assert result.summary["patch_ready_count"] == 8
+    assert result.sidecar is not None
+    normalized_files = {candidate["normalized_file"] for candidate in result.sidecar["candidates"]}
+    assert normalized_files == {"src/OutputMetadata.h", "src/profiler.cpp", "src/tc.cpp"}
 
 
 def test_missing_file_or_line_stays_out_of_main_candidates() -> None:
@@ -90,6 +202,8 @@ def test_missing_file_or_line_stays_out_of_main_candidates() -> None:
 
     assert result.summary is not None
     assert result.summary["candidate_count"] == 0
+    assert result.summary["structured_source_candidate_count"] == 0
+    assert result.summary["type_probably_fixable_count"] == 0
     assert result.summary["excluded_summary"] == {
         "missing_file_count": 1,
         "missing_line_count": 1,
@@ -97,6 +211,43 @@ def test_missing_file_or_line_stays_out_of_main_candidates() -> None:
     }
     assert result.sidecar is not None
     assert result.sidecar["candidates"] == []
+    assert result.sidecar["excluded_source_diagnostics"] == [
+        {
+            "event_id": "E001",
+            "line": 1,
+            "exclusion_reason": "missing_file",
+        },
+        {
+            "event_id": "E002",
+            "file": "src/foo.c",
+            "exclusion_reason": "missing_line",
+        },
+    ]
+
+
+def test_excluded_diagnostics_do_not_pollute_candidate_counts() -> None:
+    excluded = [
+        event(f"E{index:03d}", file=None, line=None)
+        for index in range(101, 110)
+    ]
+    result = build_source_candidates(
+        packet([*inference_engine_events(), *excluded]),
+        src_root=Path("/missing"),
+    )
+
+    assert result.summary is not None
+    assert result.summary["structured_source_candidate_count"] == 8
+    assert result.summary["candidate_count"] == 8
+    assert result.summary["type_probably_fixable_count"] == 8
+    assert result.summary["source_reachable_count"] == 0
+    assert result.summary["excluded_summary"] == {
+        "missing_file_count": 9,
+        "missing_line_count": 9,
+        "explicit_parent_count": 0,
+    }
+    assert result.sidecar is not None
+    assert len(result.sidecar["candidates"]) == 8
+    assert len(result.sidecar["excluded_source_diagnostics"]) == 9
 
 
 def test_explicit_parent_is_excluded_not_candidate(tmp_path: Path) -> None:
@@ -108,6 +259,8 @@ def test_explicit_parent_is_excluded_not_candidate(tmp_path: Path) -> None:
 
     assert result.summary is not None
     assert result.summary["candidate_count"] == 0
+    assert result.summary["structured_source_candidate_count"] == 0
+    assert result.summary["type_probably_fixable_count"] == 0
     assert result.summary["excluded_summary"]["explicit_parent_count"] == 1
     assert result.sidecar is not None
     assert result.sidecar["candidates"] == []
@@ -191,7 +344,7 @@ def test_dedupe_key_uses_sentinels_and_degraded_flag(tmp_path: Path) -> None:
     assert "command_id=<unknown>" in candidate["dedupe_key"]
 
 
-def test_system_header_is_not_fixable_but_remains_visible() -> None:
+def test_system_header_is_visible_but_not_owned() -> None:
     result = build_source_candidates(
         packet([event("E001", file="/usr/include/foo.h")]),
         src_root=None,
@@ -199,5 +352,28 @@ def test_system_header_is_not_fixable_but_remains_visible() -> None:
 
     assert result.sidecar is not None
     candidate = result.sidecar["candidates"][0]
-    assert candidate["provisional_fixability"] == "not_fixable"
-    assert candidate["fixability_reason"] == "system_or_toolchain_path"
+    assert candidate["type_fixability"] == "probably_fixable"
+    assert candidate["source_reachable"] is False
+    assert candidate["source_owned"] is False
+    assert candidate["source_resolution_status"] == "source_root_unavailable"
+    assert candidate["source_ownership_status"] == "system_or_toolchain_path"
+
+
+def test_generated_or_vendor_source_can_be_reachable_but_not_owned(tmp_path: Path) -> None:
+    write_source(tmp_path, "third_party/foo.cpp")
+    result = build_source_candidates(
+        packet([event("E001", file="third_party/foo.cpp")]),
+        src_root=tmp_path,
+    )
+
+    assert result.summary is not None
+    assert result.summary["type_probably_fixable_count"] == 1
+    assert result.summary["source_reachable_count"] == 1
+    assert result.summary["source_owned_count"] == 0
+    assert result.summary["patch_ready_count"] == 0
+    assert result.sidecar is not None
+    candidate = result.sidecar["candidates"][0]
+    assert candidate["source_reachable"] is True
+    assert candidate["source_resolution_status"] == "mapped_to_source_root"
+    assert candidate["source_owned"] is False
+    assert candidate["source_ownership_status"] == "generated_or_vendor"

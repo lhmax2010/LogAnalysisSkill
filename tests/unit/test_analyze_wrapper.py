@@ -168,7 +168,11 @@ def test_analyze_buildlog_writes_source_candidates_sidecar_additively(
     summary = result.packet["source_candidates"]
     assert summary["full_candidates_path"] == "source_candidates.json"
     assert summary["candidate_count"] == 1
-    assert summary["probably_fixable_count"] == 1
+    assert summary["structured_source_candidate_count"] == 1
+    assert summary["type_probably_fixable_count"] == 1
+    assert summary["source_reachable_count"] == 1
+    assert summary["source_owned_count"] == 1
+    assert summary["patch_ready_count"] == 1
     sidecar_path = tmp_path / "out" / "source_candidates.json"
     assert sidecar_path.is_file()
     sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
@@ -176,7 +180,9 @@ def test_analyze_buildlog_writes_source_candidates_sidecar_additively(
     assert candidate["event_id"] == "E001"
     assert candidate["normalized_file"] == "src/OutputMetadata.h"
     assert candidate["warning_option"] == "-Wunused-private-field"
-    assert candidate["provisional_fixability"] == "probably_fixable"
+    assert candidate["type_fixability"] == "probably_fixable"
+    assert candidate["source_reachable"] is True
+    assert candidate["source_owned"] is True
     assert result.output_paths["source_candidates_json"] == str(sidecar_path)
     markdown = (tmp_path / "out" / "evidence_packet.md").read_text(encoding="utf-8")
     assert "## Source Candidates" in markdown
