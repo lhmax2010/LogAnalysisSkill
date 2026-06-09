@@ -23,6 +23,9 @@ from gbs_analyzer.rank_causes import RankResult
 from gbs_analyzer.scan_and_extract import ScanResult
 from gbs_analyzer.tracing import TraceLogger
 
+MAX_CANDIDATE_MESSAGE_CHARS = 240
+CANDIDATE_MESSAGE_TRUNCATION_MARKER = "... [truncated]"
+
 
 @dataclass(frozen=True)
 class HardReserve:
@@ -296,7 +299,7 @@ def assemble_packet(
     """Assemble the v0.5 Evidence Packet storage JSON."""
 
     scan_data = _scan_as_dict(scan_result)
-    candidates = _rank_candidates(rank_result)
+    candidates = _enrich_candidate_events(_rank_candidates(rank_result), scan_data)
     top_event = _top_event(candidates, scan_data)
     pool = budget_pool or BudgetPool()
     active_estimator = estimator or TokenEstimator()
@@ -800,6 +803,64 @@ def _rank_candidates(
         candidates = rank_result.get("root_cause_candidates", [])
         return [item for item in candidates if isinstance(item, dict)]
     return [item for item in rank_result if isinstance(item, dict)]
+
+
+def _enrich_candidate_events(
+    candidates: list[dict[str, Any]],
+    scan_data: dict[str, Any],
+) -> list[dict[str, Any]]:
+    events_by_id = {
+        event.get("id"): event
+        for event in scan_data.get("events", [])
+        if isinstance(event, dict) and event.get("id") is not None
+    }
+    enriched: list[dict[str, Any]] = []
+    for candidate in candidates:
+        item = dict(candidate)
+        event = events_by_id.get(candidate.get("event_id"))
+        if isinstance(event, dict):
+            _copy_candidate_string_field(item, event, "file")
+            _copy_candidate_int_field(item, event, "line")
+            _copy_candidate_int_field(item, event, "column")
+            _copy_candidate_string_field(
+                item,
+                event,
+                "message",
+                max_chars=MAX_CANDIDATE_MESSAGE_CHARS,
+            )
+            _copy_candidate_int_field(item, event, "line_no")
+            _copy_candidate_string_field(item, event, "tool")
+        enriched.append(item)
+    return enriched
+
+
+def _copy_candidate_string_field(
+    candidate: dict[str, Any],
+    event: dict[str, Any],
+    key: str,
+    *,
+    max_chars: int | None = None,
+) -> None:
+    value = event.get(key)
+    if not isinstance(value, str) or not value:
+        return
+    if max_chars is not None and len(value) > max_chars:
+        value = (
+            value[: max(0, max_chars - len(CANDIDATE_MESSAGE_TRUNCATION_MARKER))]
+            .rstrip()
+            + CANDIDATE_MESSAGE_TRUNCATION_MARKER
+        )
+    candidate[key] = value
+
+
+def _copy_candidate_int_field(
+    candidate: dict[str, Any],
+    event: dict[str, Any],
+    key: str,
+) -> None:
+    value = event.get(key)
+    if isinstance(value, int):
+        candidate[key] = value
 
 
 def _evidence_as_dict(evidence: Evidence | dict[str, Any] | None) -> dict[str, Any] | None:

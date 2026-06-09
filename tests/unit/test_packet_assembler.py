@@ -139,6 +139,194 @@ def tier2_result() -> FullMatchResult:
     )
 
 
+def test_assemble_packet_enriches_candidates_from_scan_events(tmp_path: Path) -> None:
+    scan = scan_data(tmp_path)
+    event = scan["events"][0]
+    assert isinstance(event, dict)
+    event["column"] = 7
+    event["tool"] = "clang"
+
+    packet = assemble_packet(
+        scan,
+        candidates(),
+        compile_evidence().as_dict(),
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    candidate = packet["root_cause_candidates"][0]
+    assert candidate["rank"] == 1
+    assert candidate["event_id"] == "E001"
+    assert candidate["kind"] == "compiler"
+    assert candidate["file"] == "/home/linhao/work/src/foo.c"
+    assert candidate["line"] == 5
+    assert candidate["column"] == 7
+    assert candidate["message"] == "use of undeclared identifier 'missing_symbol'"
+    assert candidate["line_no"] == 3
+    assert candidate["tool"] == "clang"
+
+
+def test_assemble_packet_skips_candidate_enrichment_for_missing_event(tmp_path: Path) -> None:
+    packet = assemble_packet(
+        scan_data(tmp_path),
+        [{"rank": 1, "event_id": "missing", "kind": "compiler"}],
+        compile_evidence().as_dict(),
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    candidate = packet["root_cause_candidates"][0]
+    assert candidate == {"rank": 1, "event_id": "missing", "kind": "compiler"}
+
+
+def test_assemble_packet_truncates_long_candidate_message(tmp_path: Path) -> None:
+    scan = scan_data(tmp_path)
+    event = scan["events"][0]
+    assert isinstance(event, dict)
+    event["message"] = "error: " + ("very long diagnostic " * 40)
+
+    packet = assemble_packet(
+        scan,
+        candidates(),
+        compile_evidence().as_dict(),
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+    )
+
+    message = packet["root_cause_candidates"][0]["message"]
+    assert len(message) <= packet_assembler.MAX_CANDIDATE_MESSAGE_CHARS
+    assert message.endswith(packet_assembler.CANDIDATE_MESSAGE_TRUNCATION_MARKER)
+
+
+def test_appcore_agent_three_terminal_candidates_stay_within_token_budget(
+    tmp_path: Path,
+) -> None:
+    buildlog = tmp_path / "appcore-agent.log"
+    buildlog.write_text("+ %build\n", encoding="utf-8")
+    scan = {
+        "schema_version": "scan_result/v1",
+        "buildlog_path": str(buildlog),
+        "buildlog_size_bytes": buildlog.stat().st_size,
+        "is_gzip": False,
+        "failed_phase": "%build",
+        "phases": [{"name": "%build", "line_no": 1}],
+        "commands": [
+            {
+                "id": "C001",
+                "phase": "%build",
+                "argv_short": "clang++ -Werror appcore-agent",
+            }
+        ],
+        "events": [
+            {
+                "id": "E009",
+                "kind": "compiler",
+                "severity": "error",
+                "message": "no member named 'event_loop' in namespace 'ecore'",
+                "line_no": 109,
+                "raw_offset": 900,
+                "phase": "%build",
+                "command_id": "C001",
+                "tool": "clang++",
+                "file": "include/ecore_event_loop.hh",
+                "line": 50,
+                "column": 13,
+            },
+            {
+                "id": "E015",
+                "kind": "compiler",
+                "severity": "error",
+                "message": "exception specification does not match previous declaration",
+                "line_no": 215,
+                "raw_offset": 1500,
+                "phase": "%build",
+                "command_id": "C001",
+                "tool": "clang++",
+                "file": "src/exception.cc",
+                "line": 25,
+                "column": 7,
+            },
+            {
+                "id": "E020",
+                "kind": "compiler",
+                "severity": "error",
+                "message": "cannot initialize service app callback with incompatible type",
+                "line_no": 320,
+                "raw_offset": 2100,
+                "phase": "%build",
+                "command_id": "C001",
+                "tool": "clang++",
+                "file": "src/service_app_main.cc",
+                "line": 82,
+                "column": 21,
+            },
+        ],
+        "degraded_reasons": [],
+    }
+    rank_candidates = [
+        {
+            "rank": 1,
+            "event_id": "E009",
+            "kind": "compiler",
+            "semantic_class": "type_mismatch",
+            "confidence": 0.88,
+            "confidence_band": "high",
+            "confidence_reason": [],
+            "is_terminal": True,
+            "summary": "compiler type_mismatch at include/ecore_event_loop.hh:50",
+            "severity": "error",
+        },
+        {
+            "rank": 2,
+            "event_id": "E015",
+            "kind": "compiler",
+            "semantic_class": "type_mismatch",
+            "confidence": 0.86,
+            "confidence_band": "high",
+            "confidence_reason": [],
+            "is_terminal": True,
+            "summary": "compiler type_mismatch at src/exception.cc:25",
+            "severity": "error",
+        },
+        {
+            "rank": 3,
+            "event_id": "E020",
+            "kind": "compiler",
+            "semantic_class": "type_mismatch",
+            "confidence": 0.84,
+            "confidence_band": "medium_high",
+            "confidence_reason": [],
+            "is_terminal": True,
+            "summary": "compiler type_mismatch at src/service_app_main.cc:82",
+            "severity": "error",
+        },
+    ]
+    evidence = compile_evidence()
+    evidence.data["source_snippet"]["text"] = "\n".join(
+        f"representative source context line {index}" for index in range(120)
+    )
+
+    packet = assemble_packet(
+        scan,
+        rank_candidates,
+        evidence,
+        {"verdict": "needs_llm"},
+        estimator=TokenEstimator(use_tiktoken=False),
+        max_tokens=1800,
+    )
+
+    assert packet["token_budget"]["used"] <= 1800
+    assert "packet_truncated_to_token_budget" not in packet["degraded_reasons"]
+    assert packet["root_cause_candidates"][0]["file"] == "include/ecore_event_loop.hh"
+    assert packet["root_cause_candidates"][0]["line"] == 50
+    assert packet["root_cause_candidates"][1]["file"] == "src/exception.cc"
+    assert packet["root_cause_candidates"][2]["file"] == "src/service_app_main.cc"
+    assert all(
+        candidate["is_terminal"] is True
+        for candidate in packet["root_cause_candidates"]
+    )
+
+
 def test_budget_pool_initial_state_conserves_total() -> None:
     pool = BudgetPool()
 
