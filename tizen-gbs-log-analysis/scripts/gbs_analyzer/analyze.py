@@ -26,6 +26,7 @@ from gbs_analyzer.packet_assembler import (
 from gbs_analyzer.quick_filter import QuickFilterResult, quick_filter
 from gbs_analyzer.rank_causes import RankResult, rank_causes
 from gbs_analyzer.scan_and_extract import ScanResult, scan_buildlog
+from gbs_analyzer.source_candidates import SourceCandidateResult, build_source_candidates
 from gbs_analyzer.tizen.spec_minimal import SpecMinimalParser
 from gbs_analyzer.tracing import setup_tracing
 from gbs_analyzer.tracing.perf_report import build_perf_report
@@ -69,6 +70,7 @@ class PipelineState:
     timings_ms: dict[str, float] = field(default_factory=dict)
     scan_result: ScanResult | None = None
     error_cluster_result: ErrorClusterResult | None = None
+    source_candidate_result: SourceCandidateResult | None = None
     quick_result: QuickFilterResult | None = None
     rank_result: RankResult | None = None
     evidence: Evidence | None = None
@@ -111,6 +113,11 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                 "L1_error_clusters",
                 lambda: build_error_clusters(scan_result),
             )
+            state.source_candidate_result = _timed(
+                state,
+                "L1_source_candidates",
+                lambda: build_source_candidates(scan_result, src_root=src_root),
+            )
             state.quick_result = _timed(state, "L4a_quick", lambda: quick_filter(scan_result))
 
             if state.quick_result.hit and state.quick_result.match is not None:
@@ -121,6 +128,11 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                     error_clusters=(
                         state.error_cluster_result.summary
                         if state.error_cluster_result is not None
+                        else None
+                    ),
+                    source_candidates=(
+                        state.source_candidate_result.summary
+                        if state.source_candidate_result is not None
                         else None
                     ),
                 )
@@ -169,6 +181,11 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                             if state.error_cluster_result is not None
                             else None
                         ),
+                        source_candidates=(
+                            state.source_candidate_result.summary
+                            if state.source_candidate_result is not None
+                            else None
+                        ),
                     ),
                 )
                 packet["token_budget"]["limit_with_prompt"] = options.max_tokens
@@ -192,6 +209,11 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                 error_cluster_sidecar=(
                     state.error_cluster_result.sidecar
                     if state.error_cluster_result is not None
+                    else None
+                ),
+                source_candidate_sidecar=(
+                    state.source_candidate_result.sidecar
+                    if state.source_candidate_result is not None
                     else None
                 ),
             )
@@ -219,6 +241,7 @@ def write_outputs(
     redactor: MinimalRedactor,
     estimator: TokenEstimator,
     error_cluster_sidecar: dict[str, Any] | None = None,
+    source_candidate_sidecar: dict[str, Any] | None = None,
 ) -> dict[str, str]:
     """Write wrapper artifacts without printing to stdout."""
 
@@ -244,6 +267,14 @@ def write_outputs(
             encoding="utf-8",
         )
         output_paths["error_clusters_json"] = str(cluster_path)
+    if source_candidate_sidecar is not None:
+        source_candidates_path = options.output_dir / "source_candidates.json"
+        source_candidates_path.write_text(
+            json.dumps(source_candidate_sidecar, ensure_ascii=False, indent=2, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
+        output_paths["source_candidates_json"] = str(source_candidates_path)
 
     _attach_downstream_output_tokens(
         perf_report,
@@ -396,6 +427,7 @@ def _fast_path_packet(
     options: AnalyzeOptions,
     estimator: TokenEstimator,
     error_clusters: dict[str, Any] | None = None,
+    source_candidates: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     assert result.match is not None
     packet = dict(result.match.minimal_packet)
@@ -409,6 +441,8 @@ def _fast_path_packet(
     }
     if error_clusters is not None:
         packet["error_clusters"] = error_clusters
+    if source_candidates is not None:
+        packet["source_candidates"] = source_candidates
     packet["token_budget"]["used"] = estimator.estimate_obj(packet)
     return packet
 

@@ -128,6 +128,66 @@ def test_analyze_buildlog_writes_error_clusters_sidecar_without_changing_primary
     assert "-Wimplicit-enum-enum-cast" in markdown
 
 
+def test_analyze_buildlog_writes_source_candidates_sidecar_additively(
+    tmp_path: Path,
+) -> None:
+    src = tmp_path / "src"
+    (src / "src").mkdir(parents=True)
+    (src / "src" / "OutputMetadata.h").write_text("int metadata;\n", encoding="utf-8")
+    buildlog = tmp_path / "build.log"
+    buildlog.write_text(
+        "\n".join(
+            [
+                "+ %build",
+                "+ clang++ -Werror -c src/OutputMetadata.cc",
+                (
+                    "/home/abuild/rpmbuild/BUILD/inference-engine-1.0/src/OutputMetadata.h:"
+                    "42:9: error: private field 'metadata' is not used "
+                    "[-Werror,-Wunused-private-field]"
+                ),
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = analyze_buildlog(
+        AnalyzeOptions(
+            buildlog_path=buildlog,
+            src_root=src,
+            output_dir=tmp_path / "out",
+            output_format="both",
+            use_tiktoken=False,
+        )
+    )
+
+    assert result.exit_code == EXIT_SUCCESS
+    assert result.packet is not None
+    assert result.packet["primary_error"]["file"].endswith("OutputMetadata.h")
+    assert result.packet["root_cause_candidates"][0]["event_id"] == "E001"
+    summary = result.packet["source_candidates"]
+    assert summary["full_candidates_path"] == "source_candidates.json"
+    assert summary["candidate_count"] == 1
+    assert summary["structured_source_candidate_count"] == 1
+    assert summary["type_probably_fixable_count"] == 1
+    assert summary["source_reachable_count"] == 1
+    assert summary["source_owned_count"] == 1
+    assert summary["patch_ready_count"] == 1
+    sidecar_path = tmp_path / "out" / "source_candidates.json"
+    assert sidecar_path.is_file()
+    sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    candidate = sidecar["candidates"][0]
+    assert candidate["event_id"] == "E001"
+    assert candidate["normalized_file"] == "src/OutputMetadata.h"
+    assert candidate["warning_option"] == "-Wunused-private-field"
+    assert candidate["type_fixability"] == "probably_fixable"
+    assert candidate["source_reachable"] is True
+    assert candidate["source_owned"] is True
+    assert result.output_paths["source_candidates_json"] == str(sidecar_path)
+    markdown = (tmp_path / "out" / "evidence_packet.md").read_text(encoding="utf-8")
+    assert "## Source Candidates" in markdown
+
+
 def test_main_auto_src_root_with_bare_buildlog_keeps_markdown_punctuation(
     tmp_path: Path,
     monkeypatch,

@@ -295,6 +295,7 @@ def assemble_packet(
     trace_logger: TraceLogger | None = None,
     max_tokens: int = 1800,
     error_clusters: dict[str, Any] | None = None,
+    source_candidates: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Assemble the v0.5 Evidence Packet storage JSON."""
 
@@ -379,6 +380,8 @@ def assemble_packet(
     }
     if error_clusters is not None:
         packet["error_clusters"] = error_clusters
+    if source_candidates is not None:
+        packet["source_candidates"] = source_candidates
 
     if packet_verdict == "needs_llm":
         packet["prompt"] = active_redactor.redact_for_llm(_render_prompt(packet))
@@ -653,6 +656,18 @@ def render_packet_markdown(
                 "",
                 "## Error Clusters",
                 json.dumps(public_packet.get("error_clusters", {}), ensure_ascii=False, indent=2),
+            ]
+        )
+    if public_packet.get("source_candidates"):
+        lines.extend(
+            [
+                "",
+                "## Source Candidates",
+                json.dumps(
+                    public_packet.get("source_candidates", {}),
+                    ensure_ascii=False,
+                    indent=2,
+                ),
             ]
         )
     if public_packet.get("prompt"):
