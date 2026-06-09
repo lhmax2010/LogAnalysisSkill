@@ -40,7 +40,9 @@ This deliberately does not claim raw build-log completeness. If analyzer's
 scanner does not recognize a raw diagnostic, patch-suggest cannot see it.
 
 This also does not claim that every candidate is certainly fixable. Fixability
-is provisional until analyzer grows a stronger taxonomy.
+is split into a machine-independent type assessment and a machine-dependent
+source reachability/ownership assessment until analyzer grows a stronger
+taxonomy.
 
 ### D0.2. Sidecar naming
 
@@ -86,20 +88,35 @@ Each sidecar candidate includes:
 - `column`
 - `message`
 - `warning_option`
+- `warning_option_source`
 - `semantic_class`
 - `command_id`
 - `line_no`
 - `source_located`
 - `parent`
 - `cascade_status`
-- `provisional_fixability`
-- `fixability_reason`
+- `fatal_detection_source`
+- `type_fixability`
+- `type_fixability_reason`
+- `source_reachable`
+- `source_resolution_status`
+- `source_owned`
+- `source_ownership_status`
 - `exclusion_reason`
 - `dedupe_key`
+- `degraded_key`
 
 Fields may be omitted only when truly unavailable. Missing data must be visible
-through `source_located`, `provisional_fixability`, or `exclusion_reason` rather
-than silently disappearing.
+through `source_located`, `type_fixability`, `source_resolution_status`,
+`source_ownership_status`, or `exclusion_reason` rather than silently
+disappearing.
+
+The main `candidates` list contains only source-located coverage candidates that
+pass the fatal gate and do not have an explicit parent. Fatal diagnostics missing
+usable `file` or positive `line`, and diagnostics excluded by explicit parent,
+must not appear in the main list. They belong in `excluded_summary` and
+`excluded_source_diagnostics` so Phase 2 can consume the main list without
+treating missing-location diagnostics or cascades as patch targets.
 
 ### D1.3. Source-located source diagnostic scope
 
@@ -111,15 +128,16 @@ Eligible source diagnostic event kinds are:
 The event must also pass the severity gate:
 
 - strong signal: `severity == "error"`, recorded as
-  `detection_source="severity"`;
+  `fatal_detection_source="severity"`;
 - strong signal: `kind == "werror"`, recorded as
-  `detection_source="kind"`;
+  `fatal_detection_source="kind"`;
 - fallback signal: message contains `-Werror`, recorded as
-  `detection_source="werror-message-fallback"`.
+  `fatal_detection_source="werror-message-fallback"`.
 
 Prefer strong signals. The message fallback is intentionally weaker because raw
-text may mention `-Werror` in explanatory context. Keeping `detection_source`
-makes the fatal-build decision auditable in observation reports and sidecars.
+text may mention `-Werror` in explanatory context. Keeping
+`fatal_detection_source` makes the fatal-build decision auditable in observation
+reports and sidecars.
 
 Plain compiler warnings must not enter the sidecar. They can pollute coverage and
 fixability statistics but do not represent fatal build failures.
@@ -139,28 +157,36 @@ Weak cascade heuristics may be recorded as annotations, but must not drop a
 candidate. Missing a real independent diagnostic is more harmful than listing an
 extra candidate for review.
 
-### D1.5. Provisional fixability taxonomy
+Events excluded by explicit `parent` must not appear in the main
+`source_candidates` list. Record them in `excluded_source_diagnostics` with
+their `event_id`, location when available, and `exclusion_reason`.
 
-Analyzer assigns a conservative `provisional_fixability`:
+### D1.5. Type fixability taxonomy
+
+Analyzer assigns a conservative, machine-independent `type_fixability`:
 
 - `probably_fixable`
 - `unknown`
 - `not_fixable`
 
-This is intentionally provisional. Most uncertain cases should be `unknown`, not
-forced into `probably_fixable`.
+This field describes whether the diagnostic type looks patchable in project
+source. It must not depend on whether the current machine has the source tree
+available. Source mapping failure must not turn a recognized migration warning
+into type `unknown`; that belongs to D1.7.
 
-Initial `probably_fixable` requires all of:
+Initial `type_fixability="probably_fixable"` requires all of:
 
 - source-located `compiler` or `werror`
 - severity-gated fatal source diagnostic per D1.3
 - no explicit parent
-- project-source path according to the path heuristics in D1.7
 - one positive migration signal from D1.6, such as a whitelisted warning option,
   semantic class, or explicit message pattern
 
-If analyzer cannot determine source ownership, generation status, or warning
-semantics, use `unknown`.
+If analyzer cannot determine warning semantics or diagnostic intent, use
+`unknown`. Do not upgrade uncertain cases merely to improve coverage numbers.
+
+`type_fixability_reason` records the rule or absence of rule that produced the
+classification.
 
 ### D1.6. Initial warning-option whitelist
 
@@ -187,26 +213,77 @@ gold case. They must be able to reach `probably_fixable` either through a
 confirmed warning option such as `-Wunused-private-field` or through an explicit
 semantic/message rule that recognizes unused-field diagnostics. Otherwise the
 gold case would be internally inconsistent: `E011` would be counted as a source
-candidate but would not receive a per-file skeleton.
+candidate but would not become patch-ready when source is reachable.
 
 Diagnostics without concrete warning options are not automatically
 `probably_fixable`; classify them by other explicit rules only when the rule is
-tested and source-owned. Otherwise leave them `unknown`.
+tested. Source ownership and reachability are recorded separately in D1.7.
+Otherwise leave them `unknown`.
 
 Phase 1 must add warning-option extraction for every source diagnostic event,
 not only for events inside `error_clusters`. The existing cluster extractor can
 be reused, but the sidecar candidate must expose `warning_option` for singleton
 and non-cluster diagnostics too.
 
-### D1.7. Path ownership heuristics
+`warning_option_source` records how the option was extracted:
+
+- `message_regex`
+- `cluster_extractor`
+- `none`
+
+### D1.7. Source ownership and reachability
+
+Analyzer records source reachability and ownership separately from type
+fixability:
+
+- `source_reachable`: whether the current machine can map the diagnostic path to
+  a source file under the provided source root.
+- `source_resolution_status`: why the source is or is not locally reachable.
+- `source_owned`: whether the path appears to be project-owned source that
+  patch-suggest may prepare patches for.
+- `source_ownership_status`: why the source is or is not project-owned.
+
+Allowed `source_resolution_status` values:
+
+- `mapped_to_source_root`
+- `source_mapping_unavailable`
+- `source_root_unavailable`
+
+Allowed `source_ownership_status` values:
+
+- `project_owned`
+- `system_or_toolchain_path`
+- `generated_or_vendor`
+- `unknown`
+
+The boolean fields are derived summaries and must stay consistent with the
+statuses:
+
+- `source_reachable=true` iff
+  `source_resolution_status=="mapped_to_source_root"`.
+- `source_owned=true` iff `source_ownership_status=="project_owned"`.
+- A file may be reachable but not owned. For example, a readable
+  `third_party/foo.cpp` under the source root has
+  `source_reachable=true`, but `source_owned=false` and
+  `source_ownership_status="generated_or_vendor"`.
 
 Path heuristics are conservative:
 
-- Treat source paths under the user source root as project source.
+- Treat source paths mapped under the user source root as project source:
+  `source_reachable=true`, `source_owned=true`, and
+  `source_resolution_status="mapped_to_source_root"`,
+  `source_ownership_status="project_owned"`.
 - Exclude system or external paths such as `/usr/include`, `/usr/lib`,
-  `/opt/toolchain`, and other absolute toolchain roots.
-- Mark paths containing generated or vendored indicators as `unknown` unless
-  explicitly proven project-owned. Examples:
+  `/opt/toolchain`, and other absolute toolchain roots:
+  `source_owned=false`, `source_reachable=false`, and
+  `source_resolution_status="source_mapping_unavailable"` or
+  `source_resolution_status="source_root_unavailable"` as appropriate, with
+  `source_ownership_status="system_or_toolchain_path"`.
+- Mark paths containing generated or vendored indicators as not project-owned
+  unless explicitly proven project-owned:
+  `source_owned=false` and `source_ownership_status="generated_or_vendor"`.
+  These files may still be locally reachable when they live under the source
+  root. Examples:
   - `generated`
   - `gen`
   - `third_party`
@@ -226,11 +303,19 @@ project source tree and should be treated as project-owned when suffix/source-ro
 resolution proves the mapping. Do not mark a candidate `unknown` merely because
 the raw build path contains `GBS-ROOT` or a build-root prefix.
 
-If the package BUILD-root to source-root mapping cannot be established, use
-`unknown`, not `not_fixable`.
+If the package BUILD-root to source-root mapping cannot be established, keep the
+type classification from D1.5, but record `source_reachable=false`,
+`source_owned=false`, and
+`source_resolution_status="source_mapping_unavailable"`,
+`source_ownership_status="unknown"`.
 
-These heuristics are not proof of fixability. They exist to avoid confidently
-patching third-party, generated, or toolchain-owned code.
+If no source root is available, record `source_reachable=false`,
+`source_owned=false`, and
+`source_resolution_status="source_root_unavailable"`,
+`source_ownership_status="unknown"`.
+
+These heuristics are not proof of type fixability. They exist to decide whether
+patch-suggest may safely prepare a patch against local project source.
 
 ### D1.8. Dedupe key
 
@@ -307,21 +392,35 @@ Run observation on:
 - `ffmpeg`
 - `appcore-agent` multi-candidate case
 
-Phase 2 shape is not finalized until this observation shows acceptable coverage
-and unknown/not-fixable rates.
+Phase 2 shape is not finalized until this observation shows acceptable coverage,
+type-fixability distribution, and source reachability/ownership distribution.
 
-Observation must also report `unknown_by_reason`, including counts for at least:
+Observation must separately report type and source dimensions.
 
-- source ownership or path mapping cannot be determined
+`type_unknown_by_reason` includes counts for at least:
+
 - no concrete warning option
-- suspected generated/vendor/third-party path
 - no matching fixability rule
 - missing structured location
 
+`source_unreachable_by_status` includes counts for true reachability failures:
+
+- `source_mapping_unavailable`
+- `source_root_unavailable`
+
+`source_not_owned_by_status` includes counts for reachable or classified paths
+that should not be patched automatically:
+
+- `system_or_toolchain_path`
+- `generated_or_vendor`
+- `unknown`
+
 This replaces a subjective "unknown rate is too high" interpretation with
-diagnosable reasons. A high unknown count may be acceptable if it reflects
-reasonable conservatism, and blocking if it shows the rules are too narrow for
-known migration cases.
+diagnosable reasons. A high type-unknown count may mean rules are too narrow. A
+high source-unreachable count may simply mean the local machine lacks the source
+tree, which should not invalidate the type taxonomy. A high not-owned count means
+the analyzer can see diagnostics but patch-suggest should avoid automatic patch
+preparation for ownership reasons.
 
 Phase 2 is blocked if any of these are true:
 
@@ -331,9 +430,10 @@ Phase 2 is blocked if any of these are true:
   path gap.
 - scanner coverage shows obvious Werror-promoted diagnostics that were not
   converted into structured events.
-- `unknown_by_reason` shows known migration cases falling into unknown because
-  of missing warning-option extraction, missing path mapping, or missing
-  fixability rules.
+- `type_unknown_by_reason` shows known migration cases falling into type
+  `unknown` because of missing warning-option extraction or missing type rules.
+- source reachability observations cannot distinguish "no local source tree"
+  from "path mapping bug".
 - the sidecar lacks the fields needed for file grouping, dedupe, or provenance.
 
 ## Phase 2. Experimental Patch-suggest Fix-all by File
@@ -356,15 +456,26 @@ are present in the source candidate sidecar.
 
 ### D2.3. Fixability routing
 
-- `probably_fixable`: may receive edit-spec skeletons and patch-generation
-  guidance.
-- `unknown`: listed in overview for human/assistant review, but does not
+Patch-suggest may prepare edit-spec skeletons only when all of these are true:
+
+- `type_fixability == "probably_fixable"`
+- `source_reachable == true`
+- `source_owned == true`
+
+This is the patch-ready intersection. A recognized migration diagnostic without
+local source reachability remains visible in the overview but does not receive a
+skeleton on that machine.
+
+- type `probably_fixable` but source not reachable or not owned: listed with
+  source status and no skeleton.
+- type `unknown`: listed in overview for human/assistant review, but does not
   automatically receive patch skeletons.
-- `not_fixable`: listed as excluded with reason.
+- type `not_fixable`: listed as excluded with reason.
 
 Patch count in Phase 2 means the number of file groups containing at least one
-`probably_fixable` candidate. `unknown` candidates do not count toward patch
-count until the taxonomy or user review upgrades them.
+patch-ready candidate. Type `unknown` candidates and source-unreachable
+candidates do not count toward patch count until the taxonomy, source setup, or
+user review upgrades them.
 
 ### D2.4. Per-file rendering reuse
 
@@ -395,18 +506,24 @@ Required assertions:
 - structured source candidate count is 8:
   - `E011` unused-field
   - seven deprecated Werror diagnostics
-- `probably_fixable` count is 8 after the Phase 1 taxonomy recognizes both the
-  unused-field diagnostic and the seven deprecated Werror diagnostics.
-- file groups count is 3:
+- type `probably_fixable` count is 8 after the Phase 1 taxonomy recognizes both
+  the unused-field diagnostic and the seven deprecated Werror diagnostics. This
+  assertion is machine-independent and must pass even when the fixture is run
+  without a local `inference-engine` source tree.
+- without a local source tree, `source_reachable` count may be 0 and patch count
+  must not be asserted.
+- with a mock or real source tree containing the relevant files,
+  `source_reachable` count is 8 and file groups count is 3:
   - `OutputMetadata.h`
   - `profiler.cpp`
   - `tc.cpp`
-- patch count is 3:
+- with that source tree, patch count is 3:
   - one patch for `OutputMetadata.h`
   - one patch for `profiler.cpp`
   - one patch for `tc.cpp`
 - `CL001` with `large_scale=false` is still covered.
-- `E011` receives a per-file edit-spec skeleton for `OutputMetadata.h`.
+- with that source tree, `E011` receives a per-file edit-spec skeleton for
+  `OutputMetadata.h`.
 - Coverage does not depend on continuous event numbering. Use the real event id
   set from the fixture.
 - `root_cause_candidates` containing only `E011` must not hide deprecated
@@ -446,6 +563,6 @@ The frozen gates for the next implementation work are:
 1. Naming remains honest: `source_candidate`, not `all_fixable`.
 2. Analyzer sidecar is additive and does not affect primary/ranking/verdict.
 3. Cascade exclusion is explicit-parent only.
-4. Fixability is provisional and conservative.
+4. Type fixability and source reachability/ownership are separate dimensions.
 5. Scanner coverage observation comes before patch output behavior changes.
 6. Phase 2 remains experimental until Phase 1.5 data validates the final shape.
