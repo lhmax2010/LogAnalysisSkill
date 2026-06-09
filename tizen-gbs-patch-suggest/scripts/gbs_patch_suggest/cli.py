@@ -17,6 +17,11 @@ from gbs_patch_suggest.cluster_render import write_cluster_outputs
 from gbs_patch_suggest.cluster_resolver import resolve_clusters
 from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch
 from gbs_patch_suggest.ingest import extract_first_diagnostic, load_evidence_packet
+from gbs_patch_suggest.multi_candidate_ingest import ingest_terminal_source_candidates
+from gbs_patch_suggest.multi_candidate_render import (
+    ResolvedCandidateContext,
+    write_multi_candidate_outputs,
+)
 from gbs_patch_suggest.render import write_outputs
 from gbs_patch_suggest.resolver import resolve_context
 
@@ -94,6 +99,29 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
                 context_path=outputs["context_md"],
                 meta_path=outputs["meta_json"],
                 status="cluster_context_available",
+            )
+        multi_ingest = ingest_terminal_source_candidates(packet)
+        if multi_ingest.has_candidates:
+            resolved_candidates = tuple(
+                ResolvedCandidateContext(
+                    diagnostic=candidate,
+                    resolved=resolve_context(candidate.evidence, src_root=options.src_root),
+                )
+                for candidate in multi_ingest.candidates
+            )
+            outputs = write_multi_candidate_outputs(
+                resolved_candidates,
+                multi_ingest.skipped,
+                options.output_dir,
+                evidence_path=evidence_path,
+                buildlog_path=options.buildlog_path,
+            )
+            return PatchSuggestResult(
+                exit_code=EXIT_SUCCESS,
+                output_dir=options.output_dir,
+                context_path=outputs["context_md"],
+                meta_path=outputs["meta_json"],
+                status="multi_candidate_context_available",
             )
         diagnostic = extract_first_diagnostic(packet)
         resolved = resolve_context(diagnostic, src_root=options.src_root)

@@ -23,6 +23,7 @@ from gbs_patch_suggest.cluster_ingest import ClusterLocation, LargeScaleCluster
 from gbs_patch_suggest.cluster_resolver import resolve_clusters
 from gbs_patch_suggest.formatter import EDIT_SPEC_SCHEMA, FormatPatchOptions, format_patch
 from gbs_patch_suggest.ingest import extract_first_diagnostic
+from gbs_patch_suggest.multi_candidate_ingest import ingest_terminal_source_candidates
 from gbs_patch_suggest.render import MANDATORY_INSTRUCTIONS
 
 
@@ -56,6 +57,78 @@ def compiler_packet(
     if source_snippet is not None:
         packet["evidence"] = {"source_snippet": source_snippet}
     return packet
+
+
+def multi_candidate_packet() -> dict[str, object]:
+    return {
+        "primary_error": {
+            "kind": "compiler",
+            "message": "primary diagnostic",
+            "file": "src/primary.c",
+            "line": 3,
+        },
+        "root_cause_candidates": [
+            {
+                "rank": 1,
+                "event_id": "E009",
+                "kind": "compiler",
+                "semantic_class": "type_mismatch",
+                "confidence": 0.88,
+                "confidence_band": "high",
+                "confidence_reason": [],
+                "is_terminal": True,
+                "summary": "compiler type_mismatch at src/first.c:3",
+                "severity": "error",
+                "file": "src/first.c",
+                "line": 3,
+                "column": 7,
+                "message": "first independent diagnostic",
+                "line_no": 90,
+                "tool": "clang++",
+            },
+            {
+                "rank": 2,
+                "event_id": "E015",
+                "kind": "werror",
+                "semantic_class": "type_mismatch",
+                "confidence": 0.86,
+                "confidence_band": "high",
+                "confidence_reason": [],
+                "is_terminal": True,
+                "summary": "werror type_mismatch at src/second.c:4",
+                "severity": "error",
+                "file": "src/second.c",
+                "line": 4,
+                "column": 9,
+                "message": "second independent diagnostic [-Werror,-Wconversion]",
+                "line_no": 120,
+                "tool": "clang++",
+            },
+            {
+                "rank": 3,
+                "event_id": "E020",
+                "kind": "compiler",
+                "semantic_class": "type_mismatch",
+                "confidence": 0.4,
+                "confidence_band": "low",
+                "confidence_reason": [],
+                "is_terminal": False,
+                "summary": "cascade child",
+                "severity": "error",
+                "file": "src/cascade.c",
+                "line": 5,
+                "message": "cascade diagnostic",
+            },
+        ],
+        "evidence": {
+            "source_snippet": {
+                "path": "src/primary.c",
+                "start_line": 1,
+                "end_line": 3,
+                "text": "WRONG PRIMARY SNIPPET",
+            }
+        },
+    }
 
 
 def write_packet(tmp_path: Path, packet: dict[str, object]) -> Path:
@@ -158,6 +231,30 @@ def test_extract_first_diagnostic_uses_primary_error_and_top_candidate() -> None
     assert diagnostic.message == "implicit declaration of function 'av_temp_lss'"
 
 
+def test_multi_candidate_ingest_selects_terminal_source_candidates() -> None:
+    result = ingest_terminal_source_candidates(multi_candidate_packet())
+
+    assert result.has_candidates is True
+    assert [candidate.event_id for candidate in result.candidates] == ["E009", "E015"]
+    assert result.candidates[0].candidate_id == "C001_E009"
+    assert result.candidates[0].evidence.file == "src/first.c"
+    assert result.candidates[0].evidence.line == 3
+    assert result.candidates[0].evidence.source_snippet is None
+    assert result.skipped[0].event_id == "E020"
+    assert result.skipped[0].reason == "not_terminal_cascade"
+
+
+def test_multi_candidate_ingest_requires_two_eligible_candidates() -> None:
+    packet = multi_candidate_packet()
+    candidates = packet["root_cause_candidates"]
+    assert isinstance(candidates, list)
+    candidates.pop(1)
+
+    result = ingest_terminal_source_candidates(packet)
+
+    assert result.has_candidates is False
+
+
 def test_level_a_uses_evidence_source_snippet(tmp_path: Path) -> None:
     evidence_path = write_packet(
         tmp_path,
@@ -236,6 +333,102 @@ def test_werror_uses_same_source_diagnostic_flow(tmp_path: Path) -> None:
     assert "Fault class: `werror`" in context
     assert "address of array" in context
     assert "if (array_field)" in context
+
+
+def test_multi_candidate_mode_writes_per_candidate_contexts_and_skeletons(
+    tmp_path: Path,
+) -> None:
+    evidence_path = write_packet(tmp_path, multi_candidate_packet())
+    src_root = tmp_path / "srcroot"
+    first = write_source(src_root, "src/first.c", lines=12)
+    second = write_source(src_root, "src/second.c", lines=12)
+    first.write_text(
+        "\n".join(
+            [
+                "first line 1",
+                "first line 2",
+                "\treturn first_bad_value;",
+                "first line 4",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    second.write_text(
+        "\n".join(
+            [
+                "second line 1",
+                "second line 2",
+                "second line 3",
+                "\treturn second_bad_value;",
+                "second line 5",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "multi_candidate_context_available"
+    meta = read_meta(output_dir)
+    assert meta["mode"] == "multi_candidate"
+    candidates = meta["candidates"]
+    assert isinstance(candidates, list)
+    assert [candidate["event_id"] for candidate in candidates] == ["E009", "E015"]
+    assert meta["skipped_candidates"] == [
+        {
+            "event_id": "E020",
+            "kind": "compiler",
+            "rank": 3,
+            "reason": "not_terminal_cascade",
+            "summary": "cascade child",
+        }
+    ]
+    overview = read_context(output_dir)
+    assert "Process one candidate at a time" in overview
+    assert "Do not load every candidate context at once" in overview
+    assert "Do not read the raw buildlog" in overview
+    assert "not_terminal_cascade" in overview
+    candidate_contexts = sorted((output_dir / "candidate_context").glob("*/context.md"))
+    assert len(candidate_contexts) == 2
+    first_context = next(path for path in candidate_contexts if "E009" in str(path))
+    first_text = first_context.read_text(encoding="utf-8")
+    assert "src/first.c:3:7" in first_text
+    assert "WRONG PRIMARY SNIPPET" not in first_text
+    assert "first_bad_value" in first_text
+    assert "candidate_C001_E009_first.c.patch" in first_text
+    first_spec = next(first_context.parent.glob("edit_specs/*.json"))
+    skeleton = json.loads(first_spec.read_text(encoding="utf-8"))
+    assert skeleton["schema_version"] == EDIT_SPEC_SCHEMA
+    assert skeleton["patch_name"] == "candidate_C001_E009_first.c.patch"
+    assert skeleton["edits"] == [
+        {
+            "file": "src/first.c",
+            "line": 3,
+            "old": "\treturn first_bad_value;",
+            "new": "<FILL_REPLACEMENT_LINE>",
+        }
+    ]
+
+
+def test_multi_candidate_level_b_does_not_generate_skeleton(tmp_path: Path) -> None:
+    evidence_path = write_packet(tmp_path, multi_candidate_packet())
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(PatchSuggestOptions(evidence_path, output_dir=output_dir))
+
+    assert result.exit_code == 0
+    assert result.status == "multi_candidate_context_available"
+    meta = read_meta(output_dir)
+    candidates = meta["candidates"]
+    assert isinstance(candidates, list)
+    assert candidates[0]["status"] == "source_context_unavailable"
+    assert candidates[0]["edit_spec_json"] is None
+    contexts = sorted((output_dir / "candidate_context").glob("*/context.md"))
+    assert "Source context is unavailable" in contexts[0].read_text(encoding="utf-8")
 
 
 def test_outputs_include_readme_and_meta_paths(tmp_path: Path) -> None:
@@ -404,6 +597,28 @@ def test_large_scale_cluster_writes_overview_and_per_file_contexts(tmp_path: Pat
     assert skeleton["edits"][0]["line"] == 10
     assert skeleton["edits"][0]["old"] == "src/device.c line 10"
     assert skeleton["edits"][0]["new"] == "<FILL_REPLACEMENT_LINE>"
+
+
+def test_cluster_mode_takes_priority_over_multi_candidate_mode(tmp_path: Path) -> None:
+    packet = multi_candidate_packet()
+    add_error_cluster(packet, tmp_path)
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/device.c", lines=20)
+    write_source(src_root, "src/first.c", lines=20)
+    write_source(src_root, "src/second.c", lines=20)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "cluster_context_available"
+    meta = read_meta(output_dir)
+    assert meta["mode"] == "cluster"
+    assert (output_dir / "cluster_context").is_dir()
+    assert not (output_dir / "candidate_context").exists()
 
 
 def test_cluster_edit_spec_skeleton_preserves_tabs_and_formats_patch(
