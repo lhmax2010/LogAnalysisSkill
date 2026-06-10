@@ -184,8 +184,15 @@ def test_analyze_buildlog_writes_source_candidates_sidecar_additively(
     assert candidate["source_reachable"] is True
     assert candidate["source_owned"] is True
     assert result.output_paths["source_candidates_json"] == str(sidecar_path)
+    observation_path = tmp_path / "out" / "source_candidate_observation.json"
+    assert observation_path.is_file()
+    assert result.output_paths["source_candidate_observation_json"] == str(observation_path)
+    observation = json.loads(observation_path.read_text(encoding="utf-8"))
+    assert observation["schema_version"] == "source_candidate_observation/v1"
+    assert observation["coverage_diff"]["counts"]["sidecar_diagnostics"] == 1
     markdown = (tmp_path / "out" / "evidence_packet.md").read_text(encoding="utf-8")
     assert "## Source Candidates" in markdown
+    assert "source_candidate_observation" not in markdown
 
 
 def test_main_auto_src_root_with_bare_buildlog_keeps_markdown_punctuation(

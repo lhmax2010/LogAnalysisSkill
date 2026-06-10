@@ -26,6 +26,7 @@ from gbs_analyzer.packet_assembler import (
 from gbs_analyzer.quick_filter import QuickFilterResult, quick_filter
 from gbs_analyzer.rank_causes import RankResult, rank_causes
 from gbs_analyzer.scan_and_extract import ScanResult, scan_buildlog
+from gbs_analyzer.source_candidate_observation import build_source_candidate_observation
 from gbs_analyzer.source_candidates import SourceCandidateResult, build_source_candidates
 from gbs_analyzer.tizen.spec_minimal import SpecMinimalParser
 from gbs_analyzer.tracing import setup_tracing
@@ -71,6 +72,7 @@ class PipelineState:
     scan_result: ScanResult | None = None
     error_cluster_result: ErrorClusterResult | None = None
     source_candidate_result: SourceCandidateResult | None = None
+    source_candidate_observation: dict[str, Any] | None = None
     quick_result: QuickFilterResult | None = None
     rank_result: RankResult | None = None
     evidence: Evidence | None = None
@@ -190,6 +192,25 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                 )
                 packet["token_budget"]["limit_with_prompt"] = options.max_tokens
 
+            state.source_candidate_observation = _timed(
+                state,
+                "L1_source_candidate_observation",
+                lambda: build_source_candidate_observation(
+                    packet=packet,
+                    scan_result=scan_result,
+                    buildlog_path=buildlog,
+                    source_candidate_sidecar=(
+                        state.source_candidate_result.sidecar
+                        if state.source_candidate_result is not None
+                        else None
+                    ),
+                    error_cluster_sidecar=(
+                        state.error_cluster_result.sidecar
+                        if state.error_cluster_result is not None
+                        else None
+                    ),
+                ),
+            )
             perf = build_perf_report(
                 buildlog_path=buildlog,
                 packet=packet,
@@ -216,6 +237,7 @@ def analyze_buildlog(options: AnalyzeOptions) -> AnalyzeResult:
                     if state.source_candidate_result is not None
                     else None
                 ),
+                source_candidate_observation=state.source_candidate_observation,
             )
             trace_logger.info(
                 "wrapper",
@@ -242,6 +264,7 @@ def write_outputs(
     estimator: TokenEstimator,
     error_cluster_sidecar: dict[str, Any] | None = None,
     source_candidate_sidecar: dict[str, Any] | None = None,
+    source_candidate_observation: dict[str, Any] | None = None,
 ) -> dict[str, str]:
     """Write wrapper artifacts without printing to stdout."""
 
@@ -275,6 +298,19 @@ def write_outputs(
             encoding="utf-8",
         )
         output_paths["source_candidates_json"] = str(source_candidates_path)
+    if source_candidate_observation is not None:
+        observation_path = options.output_dir / "source_candidate_observation.json"
+        observation_path.write_text(
+            json.dumps(
+                source_candidate_observation,
+                ensure_ascii=False,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        output_paths["source_candidate_observation_json"] = str(observation_path)
 
     _attach_downstream_output_tokens(
         perf_report,

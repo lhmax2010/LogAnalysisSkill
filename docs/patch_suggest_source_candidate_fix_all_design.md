@@ -521,7 +521,15 @@ Required assertions:
   - one patch for `OutputMetadata.h`
   - one patch for `profiler.cpp`
   - one patch for `tc.cpp`
-- `CL001` with `large_scale=false` is still covered.
+- Observation baselines are recorded separately:
+  - current main after multi-candidate support:
+    `selected_branch=multi`, `old_path_covered=3`, and `missed_by_old=5`
+    for the remaining deprecated diagnostics in `CL001`.
+  - pre-multi historical behavior, if reproduced separately:
+    `selected_branch=single` and `missed_by_old=7`.
+  - the fix-all target remains coverage of all 8 structured source candidates,
+    independent of historical baseline.
+- `CL001` with `large_scale=false` is still covered by the fix-all target.
 - with that source tree, `E011` receives a per-file edit-spec skeleton for
   `OutputMetadata.h`.
 - Coverage does not depend on continuous event numbering. Use the real event id
