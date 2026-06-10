@@ -7,7 +7,11 @@ import re
 from pathlib import Path
 from typing import Any
 
-from gbs_patch_suggest.cluster_resolver import ClusterFileContext, ResolvedCluster
+from gbs_patch_suggest.cluster_resolver import (
+    ClusterFileContext,
+    ResolvedCluster,
+    SuppressedSkeletonLocation,
+)
 from gbs_patch_suggest.formatter import EDIT_SPEC_SCHEMA
 from gbs_patch_suggest.render import MANDATORY_INSTRUCTIONS
 
@@ -290,6 +294,9 @@ def render_file_context(
             ]
         )
 
+    if file_context.suppressed_skeleton_locations:
+        lines.extend(_suppressed_skeleton_section(file_context.suppressed_skeleton_locations))
+
     if file_context.source_windows:
         lines.extend(
             [
@@ -451,6 +458,17 @@ def render_cluster_meta(
                                 "context"
                             ].missing_line_text_locations
                         ],
+                        "suppressed_skeleton": [
+                            {
+                                "line": item.location.line,
+                                "column": item.location.column,
+                                "message": item.location.message,
+                                "reason": item.reason,
+                            }
+                            for item in file_output[
+                                "context"
+                            ].suppressed_skeleton_locations
+                        ],
                     }
                     for file_output in output["file_outputs"]
                 ],
@@ -462,6 +480,27 @@ def render_cluster_meta(
 
 def _cluster_dir_name(cluster: ResolvedCluster) -> str:
     return f"{cluster.id}_{_slug(cluster.warning_option)}"
+
+
+def _suppressed_skeleton_section(items: tuple[SuppressedSkeletonLocation, ...]) -> list[str]:
+    lines = [
+        "## Suppressed Edit Spec Skeletons",
+        "",
+        "Some diagnostics did not receive edit-spec skeleton rows because the reported "
+        "line looks like a structural closing line or does not contain source symbols "
+        "from the diagnostic message. For multi-line macro or deprecated-symbol "
+        "diagnostics, locate the referenced symbol in the source window and write the "
+        "edit spec for that actual source line.",
+        "",
+    ]
+    for item in items:
+        location = item.location
+        column = "" if location.column is None else f":{location.column}"
+        lines.append(
+            f"- line `{location.line}{column}` reason `{item.reason}`: `{location.message}`"
+        )
+    lines.append("")
+    return lines
 
 
 def _file_context_name(file_context: ClusterFileContext) -> str:

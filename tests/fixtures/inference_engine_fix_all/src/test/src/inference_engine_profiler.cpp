@@ -289,7 +289,7 @@ test/src/inference_engine_profiler.cpp line 288
 test/src/inference_engine_profiler.cpp line 289
 test/src/inference_engine_profiler.cpp line 290
 test/src/inference_engine_profiler.cpp line 291
-test/src/inference_engine_profiler.cpp line 292
-test/src/inference_engine_profiler.cpp line 293
-test/src/inference_engine_profiler.cpp line 294
-test/src/inference_engine_profiler.cpp line 295
+INSTANTIATE_TEST_CASE_P(ProfilerDeprecated,
+                        ProfilerTest,
+                        ::testing::Values(ProfilerCase()));
+));

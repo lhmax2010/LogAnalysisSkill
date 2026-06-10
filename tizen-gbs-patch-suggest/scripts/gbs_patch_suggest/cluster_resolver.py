@@ -7,6 +7,7 @@ from pathlib import Path
 
 from gbs_patch_suggest.cluster_ingest import ClusterLocation, LargeScaleCluster
 from gbs_patch_suggest.resolver import resolve_candidate_paths
+from gbs_patch_suggest.skeleton_suppression import should_suppress_skeleton
 
 CLUSTER_CONTEXT_WINDOW = 8
 MERGE_GAP_LINES = 2
@@ -34,6 +35,14 @@ class SkeletonEdit:
 
 
 @dataclass(frozen=True)
+class SuppressedSkeletonLocation:
+    """Location where the reported line should not become a skeleton edit."""
+
+    location: ClusterLocation
+    reason: str
+
+
+@dataclass(frozen=True)
 class ClusterFileContext:
     """Resolved context for one file in a repeated diagnostic cluster."""
 
@@ -49,6 +58,7 @@ class ClusterFileContext:
     candidates: tuple[str, ...] = ()
     skeleton_edits: tuple[SkeletonEdit, ...] = ()
     missing_line_text_locations: tuple[ClusterLocation, ...] = ()
+    suppressed_skeleton_locations: tuple[SuppressedSkeletonLocation, ...] = ()
 
     @property
     def has_source_context(self) -> bool:
@@ -152,7 +162,11 @@ def _resolve_file_context(
             window=window,
             max_source_lines=max_source_lines,
         )
-        skeleton_edits, missing_line_text_locations = _skeleton_edits(
+        (
+            skeleton_edits,
+            missing_line_text_locations,
+            suppressed_skeleton_locations,
+        ) = _skeleton_edits(
             file,
             lines,
             locations,
@@ -168,6 +182,7 @@ def _resolve_file_context(
             source_windows_truncated=truncated,
             skeleton_edits=skeleton_edits,
             missing_line_text_locations=missing_line_text_locations,
+            suppressed_skeleton_locations=suppressed_skeleton_locations,
         )
     if len(candidates) > 1:
         return ClusterFileContext(
@@ -261,7 +276,11 @@ def _skeleton_edits(
     file: str,
     lines: list[str],
     locations: tuple[ClusterLocation, ...],
-) -> tuple[tuple[SkeletonEdit, ...], tuple[ClusterLocation, ...]]:
+) -> tuple[
+    tuple[SkeletonEdit, ...],
+    tuple[ClusterLocation, ...],
+    tuple[SuppressedSkeletonLocation, ...],
+]:
     grouped: dict[int, list[ClusterLocation]] = {}
     missing: list[ClusterLocation] = []
     for location in locations:
@@ -270,13 +289,32 @@ def _skeleton_edits(
         else:
             missing.append(location)
 
-    edits = tuple(
-        SkeletonEdit(
-            file=file,
-            line=line,
-            old=lines[line - 1],
-            covered_locations=tuple(line_locations),
+    edits: list[SkeletonEdit] = []
+    suppressed: list[SuppressedSkeletonLocation] = []
+    for line, line_locations in sorted(grouped.items()):
+        old = lines[line - 1]
+        reasons = {
+            reason
+            for location in line_locations
+            if (reason := should_suppress_skeleton(old, location.message)) is not None
+        }
+        if reasons:
+            reason = (
+                "structural_closing_line"
+                if "structural_closing_line" in reasons
+                else "no_message_symbol_in_line"
+            )
+            suppressed.extend(
+                SuppressedSkeletonLocation(location=location, reason=reason)
+                for location in line_locations
+            )
+            continue
+        edits.append(
+            SkeletonEdit(
+                file=file,
+                line=line,
+                old=old,
+                covered_locations=tuple(line_locations),
+            )
         )
-        for line, line_locations in sorted(grouped.items())
-    )
-    return edits, tuple(missing)
+    return tuple(edits), tuple(missing), tuple(suppressed)

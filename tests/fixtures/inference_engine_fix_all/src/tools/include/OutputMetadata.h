@@ -121,4 +121,4 @@ tools/include/OutputMetadata.h line 120
 tools/include/OutputMetadata.h line 121
 tools/include/OutputMetadata.h line 122
 tools/include/OutputMetadata.h line 123
-tools/include/OutputMetadata.h line 124
+  int decodingType;

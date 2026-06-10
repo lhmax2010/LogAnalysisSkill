@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +15,7 @@ from gbs_patch_suggest.multi_candidate_ingest import (
 )
 from gbs_patch_suggest.render import MANDATORY_INSTRUCTIONS
 from gbs_patch_suggest.resolver import ResolvedContext
+from gbs_patch_suggest.skeleton_suppression import should_suppress_skeleton
 
 FILL_REPLACEMENT_LINE = "<FILL_REPLACEMENT_LINE>"
 
@@ -26,6 +27,7 @@ class ResolvedCandidateContext:
     diagnostic: MultiCandidateDiagnostic
     resolved: ResolvedContext
     missing_line_text: bool = False
+    suppressed_skeleton_reason: str | None = None
 
 
 def write_multi_candidate_outputs(
@@ -47,7 +49,15 @@ def write_multi_candidate_outputs(
         candidate_dir = candidate_context_dir / candidate.diagnostic.candidate_id
         edit_specs_dir = candidate_dir / "edit_specs"
         edit_specs_dir.mkdir(parents=True, exist_ok=True)
-        edit_spec_path = _write_edit_spec_skeleton(candidate, edit_specs_dir=edit_specs_dir)
+        edit_spec_path, missing_line_text, suppressed_reason = _write_edit_spec_skeleton(
+            candidate,
+            edit_specs_dir=edit_specs_dir,
+        )
+        candidate = replace(
+            candidate,
+            missing_line_text=missing_line_text,
+            suppressed_skeleton_reason=suppressed_reason,
+        )
         context_path = candidate_dir / "context.md"
         context_path.write_text(
             render_candidate_context(candidate, edit_spec_path=edit_spec_path),
@@ -238,6 +248,21 @@ def render_candidate_context(
                 "",
             ]
         )
+    if candidate.suppressed_skeleton_reason is not None:
+        lines.extend(
+            [
+                "## Suppressed Edit Spec Skeleton",
+                "",
+                "No edit-spec skeleton was generated because the reported line looks like "
+                "a structural closing line or does not contain source symbols from the "
+                "diagnostic message. For multi-line macro or deprecated-symbol diagnostics, "
+                "locate the referenced symbol in the source context and write the edit spec "
+                "for that actual source line.",
+                "",
+                f"- Reason: `{candidate.suppressed_skeleton_reason}`",
+                "",
+            ]
+        )
 
     if resolved.source_context is not None:
         source = resolved.source_context
@@ -285,16 +310,29 @@ def render_candidate_context(
             ]
         )
     else:
-        lines.extend(
-            [
-                "1. Work only on this candidate context before moving to the next candidate.",
-                "2. Source context is unavailable or ambiguous, so no skeleton was generated.",
-                "3. First open the correct file around the listed line and inspect the source.",
-                "4. Write an edit spec only after you have verified the real source text.",
-                "5. Run the deterministic formatter; do not hand-write unified diff text and "
-                "do not edit the source file directly.",
-            ]
-        )
+        if candidate.suppressed_skeleton_reason is not None:
+            lines.extend(
+                [
+                    "1. Work only on this candidate context before moving to the next candidate.",
+                    "2. Source context is available, but the reported line was not used as "
+                    "a skeleton edit because it may not be the actual line to modify.",
+                    "3. Locate the referenced symbol in the source context, then write an "
+                    "edit spec for that actual source line.",
+                    "4. Run the deterministic formatter; do not hand-write unified diff text "
+                    "and do not edit the source file directly.",
+                ]
+            )
+        else:
+            lines.extend(
+                [
+                    "1. Work only on this candidate context before moving to the next candidate.",
+                    "2. Source context is unavailable or ambiguous, so no skeleton was generated.",
+                    "3. First open the correct file around the listed line and inspect the source.",
+                    "4. Write an edit spec only after you have verified the real source text.",
+                    "5. Run the deterministic formatter; do not hand-write unified diff text and "
+                    "do not edit the source file directly.",
+                ]
+            )
     lines.extend(
         [
             "",
@@ -367,6 +405,9 @@ def render_multi_candidate_meta(
                 "line": output["candidate"].resolved.evidence.line,
                 "message": output["candidate"].resolved.evidence.message,
                 "missing_line_text": output["candidate"].missing_line_text,
+                "suppressed_skeleton_reason": output[
+                    "candidate"
+                ].suppressed_skeleton_reason,
             }
             for output in candidate_outputs
         ],
@@ -387,14 +428,17 @@ def _write_edit_spec_skeleton(
     candidate: ResolvedCandidateContext,
     *,
     edit_specs_dir: Path,
-) -> Path | None:
+) -> tuple[Path | None, bool, str | None]:
     source = candidate.resolved.source_context
     evidence = candidate.resolved.evidence
     if source is None or evidence.file is None or evidence.line is None:
-        return None
+        return None, False, None
     line_text = _line_text(source.text, source.start_line, evidence.line)
     if line_text is None:
-        return None
+        return None, True, None
+    suppressed_reason = should_suppress_skeleton(line_text, evidence.message)
+    if suppressed_reason is not None:
+        return None, False, suppressed_reason
     path = edit_specs_dir / _edit_spec_name(candidate.diagnostic)
     data = {
         "schema_version": EDIT_SPEC_SCHEMA,
@@ -413,7 +457,7 @@ def _write_edit_spec_skeleton(
         json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    return path
+    return path, False, None
 
 
 def _line_text(text: str, start_line: int, target_line: int) -> str | None:
