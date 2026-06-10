@@ -865,6 +865,47 @@ def test_experimental_fix_all_unreadable_sidecar_falls_back_to_old_path(
     assert not (output_dir / "fix_all_context").exists()
 
 
+def test_mode_context_dirs_are_cleaned_when_switching_modes(tmp_path: Path) -> None:
+    packet = multi_candidate_packet()
+    multi_evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/first.c", lines=20)
+    write_source(src_root, "src/second.c", lines=20)
+    output_dir = tmp_path / "out"
+
+    first_result = run_patch_suggest(
+        PatchSuggestOptions(
+            multi_evidence_path,
+            output_dir=output_dir,
+            src_root=src_root,
+        )
+    )
+    assert first_result.status == "multi_candidate_context_available"
+    assert (output_dir / "candidate_context").is_dir()
+    assert not (output_dir / "fix_all_context").exists()
+
+    fix_all_packet = compiler_packet(kind="werror")
+    add_source_candidates(
+        fix_all_packet,
+        tmp_path,
+        inference_engine_source_candidates(reachable=False, owned=False),
+    )
+    fix_all_evidence_path = write_packet(tmp_path, fix_all_packet)
+    second_result = run_patch_suggest(
+        PatchSuggestOptions(
+            fix_all_evidence_path,
+            output_dir=output_dir,
+            src_root=None,
+            experimental_fix_all=True,
+        )
+    )
+
+    assert second_result.status == "fix_all_context_available"
+    assert (output_dir / "fix_all_context").is_dir()
+    assert not (output_dir / "candidate_context").exists()
+    assert not (output_dir / "cluster_context").exists()
+
+
 def test_outputs_include_readme_and_meta_paths(tmp_path: Path) -> None:
     evidence_path = write_packet(tmp_path, compiler_packet())
     output_dir = tmp_path / "out"

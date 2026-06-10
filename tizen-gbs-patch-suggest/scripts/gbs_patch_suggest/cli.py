@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,6 +33,7 @@ EXIT_SUCCESS = 0
 EXIT_FATAL = 1
 EXIT_EVIDENCE_UNREADABLE = 3
 DEFAULT_OUTPUT_DIR = Path(".gbs_patch_suggest")
+MODE_CONTEXT_DIRS = ("fix_all_context", "cluster_context", "candidate_context")
 
 
 @dataclass(frozen=True)
@@ -92,6 +94,7 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
             fix_all_ingest = ingest_source_candidates(packet, evidence_path=evidence_path)
             if fix_all_ingest.has_candidates:
                 resolved_fix_all = resolve_fix_all(fix_all_ingest, src_root=options.src_root)
+                _clean_mode_context_dirs(options.output_dir)
                 outputs = write_fix_all_outputs(
                     resolved_fix_all,
                     options.output_dir,
@@ -108,6 +111,7 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
         cluster_ingest = ingest_large_scale_clusters(packet, evidence_path=evidence_path)
         if cluster_ingest.has_clusters:
             resolved_clusters = resolve_clusters(cluster_ingest.clusters, src_root=options.src_root)
+            _clean_mode_context_dirs(options.output_dir)
             outputs = write_cluster_outputs(
                 resolved_clusters,
                 options.output_dir,
@@ -130,6 +134,7 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
                 )
                 for candidate in multi_ingest.candidates
             )
+            _clean_mode_context_dirs(options.output_dir)
             outputs = write_multi_candidate_outputs(
                 resolved_candidates,
                 multi_ingest.skipped,
@@ -146,6 +151,7 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
             )
         diagnostic = extract_first_diagnostic(packet)
         resolved = resolve_context(diagnostic, src_root=options.src_root)
+        _clean_mode_context_dirs(options.output_dir)
         outputs = write_outputs(
             resolved,
             options.output_dir,
@@ -167,6 +173,17 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
         meta_path=outputs["meta_json"],
         status=resolved.status,
     )
+
+
+def _clean_mode_context_dirs(output_dir: Path) -> None:
+    """Remove stale mode-specific generated context directories before writing output."""
+
+    for name in MODE_CONTEXT_DIRS:
+        path = output_dir / name
+        if path.is_dir() and not path.is_symlink():
+            shutil.rmtree(path)
+        elif path.exists():
+            path.unlink()
 
 
 def build_parser() -> argparse.ArgumentParser:

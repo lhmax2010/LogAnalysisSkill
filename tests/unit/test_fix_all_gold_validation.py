@@ -298,6 +298,41 @@ def test_inference_engine_gold_fix_all_by_file_with_mock_source(tmp_path: Path) 
     } == {"structural_closing_line"}
 
 
+def test_inference_engine_gold_fix_all_removes_stale_suppressed_edit_specs(
+    tmp_path: Path,
+) -> None:
+    output_dir = tmp_path / "out"
+    stale_edit_specs = output_dir / "fix_all_context" / "edit_specs"
+    stale_files = output_dir / "fix_all_context" / "files"
+    stale_edit_specs.mkdir(parents=True)
+    stale_files.mkdir(parents=True)
+    stale_spec = stale_edit_specs / "edit_spec_FIXALL_003_inference_engine_tc.cpp.json"
+    stale_file = stale_files / "003_inference_engine_tc.cpp.md"
+    stale_extra_file = stale_files / "999_old_context.md"
+    stale_spec.write_text('{"stale": true}', encoding="utf-8")
+    stale_file.write_text("stale context", encoding="utf-8")
+    stale_extra_file.write_text("stale extra context", encoding="utf-8")
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(
+            evidence_path=GOLD / "evidence_packet.json",
+            output_dir=output_dir,
+            src_root=GOLD / "src",
+            experimental_fix_all=True,
+        )
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "fix_all_context_available"
+    assert not stale_spec.exists()
+    assert stale_file.exists()
+    assert "stale context" not in stale_file.read_text(encoding="utf-8")
+    assert not stale_extra_file.exists()
+    assert [path.name for path in stale_edit_specs.glob("*.json")] == [
+        "edit_spec_FIXALL_001_OutputMetadata.h.json"
+    ]
+
+
 @pytest.mark.parametrize(
     ("case_name", "candidates", "source_files", "expected_counts", "expected_groups"),
     [
