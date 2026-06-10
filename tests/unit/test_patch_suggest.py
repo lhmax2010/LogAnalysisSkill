@@ -200,6 +200,178 @@ def add_error_cluster(
     )
 
 
+def add_source_candidates(
+    packet: dict[str, object],
+    tmp_path: Path,
+    candidates: list[dict[str, object]],
+) -> None:
+    packet["source_candidates"] = {
+        "schema_version": "source_candidates/v1",
+        "full_candidates_path": "source_candidates.json",
+        "candidate_count": len(candidates),
+        "structured_source_candidate_count": len(candidates),
+        "patch_ready_count": sum(
+            1
+            for candidate in candidates
+            if candidate.get("type_fixability") == "probably_fixable"
+            and candidate.get("source_reachable") is True
+            and candidate.get("source_owned") is True
+        ),
+    }
+    (tmp_path / "source_candidates.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "source_candidate_sidecar/v1",
+                "candidates": candidates,
+                "excluded_source_diagnostics": [],
+                "excluded_summary": {
+                    "missing_file_count": 0,
+                    "missing_line_count": 0,
+                    "explicit_parent_count": 0,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def source_candidate(
+    event_id: str,
+    *,
+    file: str,
+    normalized_file: str | None = None,
+    line: int = 10,
+    message: str = "fixable diagnostic [-Werror,-Wdeprecated-declarations]",
+    warning_option: str = "-Wdeprecated-declarations",
+    type_fixability: str = "probably_fixable",
+    source_reachable: bool = True,
+    source_owned: bool = True,
+) -> dict[str, object]:
+    if normalized_file is None:
+        normalized_file = file
+    return {
+        "event_id": event_id,
+        "kind": "werror",
+        "file": file,
+        "normalized_file": normalized_file,
+        "line": line,
+        "column": 1,
+        "message": message,
+        "warning_option": warning_option,
+        "semantic_class": "generic_error",
+        "source_located": True,
+        "type_fixability": type_fixability,
+        "type_fixability_reason": f"whitelisted_warning_option:{warning_option}",
+        "source_reachable": source_reachable,
+        "source_resolution_status": (
+            "mapped_to_source_root" if source_reachable else "source_mapping_unavailable"
+        ),
+        "source_owned": source_owned,
+        "source_ownership_status": "project_owned" if source_owned else "unknown",
+        "dedupe_key": f"{normalized_file}:{line}:{event_id}",
+        "degraded_key": False,
+    }
+
+
+def inference_engine_source_candidates(
+    *,
+    reachable: bool,
+    owned: bool,
+) -> list[dict[str, object]]:
+    return [
+        source_candidate(
+            "E011",
+            file=(
+                "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/"
+                "tools/include/OutputMetadata.h"
+            ),
+            normalized_file="tools/include/OutputMetadata.h",
+            line=10,
+            message="private field 'decodingType' is not used [-Werror,-Wunused-private-field]",
+            warning_option="-Wunused-private-field",
+            source_reachable=reachable,
+            source_owned=owned,
+        ),
+        source_candidate(
+            "E012",
+            file=(
+                "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/"
+                "test/src/inference_engine_profiler.cpp"
+            ),
+            normalized_file="test/src/inference_engine_profiler.cpp",
+            line=20,
+            source_reachable=reachable,
+            source_owned=owned,
+        ),
+        source_candidate(
+            "E013",
+            file=(
+                "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/"
+                "test/src/inference_engine_tc.cpp"
+            ),
+            normalized_file="test/src/inference_engine_tc.cpp",
+            line=30,
+            source_reachable=reachable,
+            source_owned=owned,
+        ),
+        source_candidate(
+            "E015",
+            file=(
+                "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/"
+                "test/src/inference_engine_tc.cpp"
+            ),
+            normalized_file="test/src/inference_engine_tc.cpp",
+            line=40,
+            source_reachable=reachable,
+            source_owned=owned,
+        ),
+        source_candidate(
+            "E016",
+            file=(
+                "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/"
+                "test/src/inference_engine_tc.cpp"
+            ),
+            normalized_file="test/src/inference_engine_tc.cpp",
+            line=50,
+            source_reachable=reachable,
+            source_owned=owned,
+        ),
+        source_candidate(
+            "E017",
+            file=(
+                "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/"
+                "test/src/inference_engine_tc.cpp"
+            ),
+            normalized_file="test/src/inference_engine_tc.cpp",
+            line=60,
+            source_reachable=reachable,
+            source_owned=owned,
+        ),
+        source_candidate(
+            "E018",
+            file=(
+                "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/"
+                "test/src/inference_engine_tc.cpp"
+            ),
+            normalized_file="test/src/inference_engine_tc.cpp",
+            line=70,
+            source_reachable=reachable,
+            source_owned=owned,
+        ),
+        source_candidate(
+            "E019",
+            file=(
+                "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/"
+                "test/src/inference_engine_tc.cpp"
+            ),
+            normalized_file="test/src/inference_engine_tc.cpp",
+            line=80,
+            source_reachable=reachable,
+            source_owned=owned,
+        ),
+    ]
+
+
 def read_meta(output_dir: Path) -> dict[str, object]:
     data = json.loads((output_dir / "meta.json").read_text(encoding="utf-8"))
     assert isinstance(data, dict)
@@ -429,6 +601,168 @@ def test_multi_candidate_level_b_does_not_generate_skeleton(tmp_path: Path) -> N
     assert candidates[0]["edit_spec_json"] is None
     contexts = sorted((output_dir / "candidate_context").glob("*/context.md"))
     assert "Source context is unavailable" in contexts[0].read_text(encoding="utf-8")
+
+
+def test_experimental_fix_all_default_off_keeps_existing_old_path(
+    tmp_path: Path,
+) -> None:
+    packet = multi_candidate_packet()
+    add_source_candidates(
+        packet,
+        tmp_path,
+        inference_engine_source_candidates(reachable=True, owned=True),
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "tools/include/OutputMetadata.h", lines=20)
+    write_source(src_root, "test/src/inference_engine_profiler.cpp", lines=30)
+    write_source(src_root, "test/src/inference_engine_tc.cpp", lines=90)
+    write_source(src_root, "src/first.c", lines=20)
+    write_source(src_root, "src/second.c", lines=20)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "multi_candidate_context_available"
+    meta = read_meta(output_dir)
+    assert meta["mode"] == "multi_candidate"
+    assert not (output_dir / "fix_all_context").exists()
+
+
+def test_experimental_fix_all_unreachable_candidates_are_visible_without_skeletons(
+    tmp_path: Path,
+) -> None:
+    packet = compiler_packet(kind="werror")
+    add_source_candidates(
+        packet,
+        tmp_path,
+        inference_engine_source_candidates(reachable=False, owned=False),
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(
+            evidence_path,
+            output_dir=output_dir,
+            src_root=None,
+            experimental_fix_all=True,
+        )
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "fix_all_context_available"
+    meta = read_meta(output_dir)
+    assert meta["mode"] == "fix_all_by_file"
+    assert meta["counts"] == {
+        "patch_ready_candidates": 0,
+        "patch_ready_file_groups": 0,
+        "source_candidates": 8,
+        "visible_not_patch_ready": 8,
+    }
+    overview = read_context(output_dir)
+    assert "Source candidates: `8`" in overview
+    assert "Patch-ready candidates: `0`" in overview
+    assert "source_mapping_unavailable" in overview
+    assert "No edit-spec skeletons were generated" in overview
+    assert not list(output_dir.glob("fix_all_context/edit_specs/*.json"))
+
+
+def test_experimental_fix_all_groups_patch_ready_candidates_by_file(
+    tmp_path: Path,
+) -> None:
+    packet = compiler_packet(kind="werror")
+    add_source_candidates(
+        packet,
+        tmp_path,
+        inference_engine_source_candidates(reachable=True, owned=True),
+    )
+    add_error_cluster(packet, tmp_path, large_scale=False)
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "tools/include/OutputMetadata.h", lines=20)
+    write_source(src_root, "test/src/inference_engine_profiler.cpp", lines=30)
+    write_source(src_root, "test/src/inference_engine_tc.cpp", lines=90)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(
+            evidence_path,
+            output_dir=output_dir,
+            src_root=src_root,
+            experimental_fix_all=True,
+        )
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "fix_all_context_available"
+    meta = read_meta(output_dir)
+    assert meta["mode"] == "fix_all_by_file"
+    assert meta["counts"] == {
+        "patch_ready_candidates": 8,
+        "patch_ready_file_groups": 3,
+        "source_candidates": 8,
+        "visible_not_patch_ready": 0,
+    }
+    file_contexts = sorted((output_dir / "fix_all_context" / "files").glob("*.md"))
+    assert [path.name for path in file_contexts] == [
+        "001_OutputMetadata.h.md",
+        "002_inference_engine_profiler.cpp.md",
+        "003_inference_engine_tc.cpp.md",
+    ]
+    edit_specs = sorted((output_dir / "fix_all_context" / "edit_specs").glob("*.json"))
+    assert [path.name for path in edit_specs] == [
+        "edit_spec_FIXALL_001_OutputMetadata.h.json",
+        "edit_spec_FIXALL_002_inference_engine_profiler.cpp.json",
+        "edit_spec_FIXALL_003_inference_engine_tc.cpp.json",
+    ]
+    first = json.loads(edit_specs[0].read_text(encoding="utf-8"))
+    assert first["edits"] == [
+        {
+            "file": "tools/include/OutputMetadata.h",
+            "line": 10,
+            "old": "tools/include/OutputMetadata.h line 10",
+            "new": "<FILL_REPLACEMENT_LINE>",
+        }
+    ]
+    tc = json.loads(edit_specs[2].read_text(encoding="utf-8"))
+    assert [edit["line"] for edit in tc["edits"]] == [30, 40, 50, 60, 70, 80]
+    overview = read_context(output_dir)
+    assert "large_scale" in overview
+    assert "Patch-ready file groups: `3`" in overview
+
+
+def test_experimental_fix_all_unreadable_sidecar_falls_back_to_old_path(
+    tmp_path: Path,
+) -> None:
+    packet = multi_candidate_packet()
+    packet["source_candidates"] = {
+        "schema_version": "source_candidates/v1",
+        "full_candidates_path": "missing_source_candidates.json",
+    }
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/first.c", lines=20)
+    write_source(src_root, "src/second.c", lines=20)
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(
+            evidence_path,
+            output_dir=output_dir,
+            src_root=src_root,
+            experimental_fix_all=True,
+        )
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "multi_candidate_context_available"
+    meta = read_meta(output_dir)
+    assert meta["mode"] == "multi_candidate"
+    assert not (output_dir / "fix_all_context").exists()
 
 
 def test_outputs_include_readme_and_meta_paths(tmp_path: Path) -> None:

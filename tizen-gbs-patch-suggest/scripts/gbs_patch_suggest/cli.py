@@ -15,6 +15,9 @@ from gbs_patch_suggest.analyzer_runner import (
 from gbs_patch_suggest.cluster_ingest import ingest_large_scale_clusters
 from gbs_patch_suggest.cluster_render import write_cluster_outputs
 from gbs_patch_suggest.cluster_resolver import resolve_clusters
+from gbs_patch_suggest.fix_all_ingest import ingest_source_candidates
+from gbs_patch_suggest.fix_all_render import write_fix_all_outputs
+from gbs_patch_suggest.fix_all_resolver import resolve_fix_all
 from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch
 from gbs_patch_suggest.ingest import extract_first_diagnostic, load_evidence_packet
 from gbs_patch_suggest.multi_candidate_ingest import ingest_terminal_source_candidates
@@ -38,6 +41,7 @@ class PatchSuggestOptions:
     output_dir: Path = DEFAULT_OUTPUT_DIR
     src_root: Path | None = None
     analyzer_extra_pythonpath: tuple[Path, ...] = ()
+    experimental_fix_all: bool = False
 
 
 @dataclass(frozen=True)
@@ -84,6 +88,23 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
 
     try:
         packet = load_evidence_packet(evidence_path)
+        if options.experimental_fix_all:
+            fix_all_ingest = ingest_source_candidates(packet, evidence_path=evidence_path)
+            if fix_all_ingest.has_candidates:
+                resolved_fix_all = resolve_fix_all(fix_all_ingest, src_root=options.src_root)
+                outputs = write_fix_all_outputs(
+                    resolved_fix_all,
+                    options.output_dir,
+                    evidence_path=evidence_path,
+                    buildlog_path=options.buildlog_path,
+                )
+                return PatchSuggestResult(
+                    exit_code=EXIT_SUCCESS,
+                    output_dir=options.output_dir,
+                    context_path=outputs["context_md"],
+                    meta_path=outputs["meta_json"],
+                    status="fix_all_context_available",
+                )
         cluster_ingest = ingest_large_scale_clusters(packet, evidence_path=evidence_path)
         if cluster_ingest.has_clusters:
             resolved_clusters = resolve_clusters(cluster_ingest.clusters, src_root=options.src_root)
@@ -176,6 +197,15 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional source root for suffix-based source context search.",
     )
+    parser.add_argument(
+        "--experimental-fix-all",
+        action="store_true",
+        help=(
+            "Experimental: consume analyzer source_candidates sidecar and prepare "
+            "fix-all-by-file context. Defaults off; without this flag existing "
+            "cluster/multi/single behavior is unchanged."
+        ),
+    )
     return parser
 
 
@@ -238,6 +268,7 @@ def main(
             output_dir=args.output_dir,
             src_root=src_root,
             analyzer_extra_pythonpath=extra_pythonpath,
+            experimental_fix_all=args.experimental_fix_all,
         )
     )
     if result.error:
