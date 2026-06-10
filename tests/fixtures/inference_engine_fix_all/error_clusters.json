@@ -1,0 +1,74 @@
+{
+  "clusters": [
+    {
+      "id": "CL001",
+      "locations": [
+        {
+          "column": 1,
+          "event_id": "E012",
+          "file": "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/test/src/inference_engine_profiler.cpp",
+          "kind": "werror",
+          "line": 295,
+          "line_no": 508,
+          "message": "'InstantiateTestCase_P_IsDeprecated' is deprecated: INSTANTIATE_TEST_CASE_P is deprecated, please use INSTANTIATE_TEST_SUITE_P [-Werror,-Wdeprecated-declarations]"
+        },
+        {
+          "column": 1,
+          "event_id": "E013",
+          "file": "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/test/src/inference_engine_tc.cpp",
+          "kind": "werror",
+          "line": 635,
+          "line_no": 520,
+          "message": "'InstantiateTestCase_P_IsDeprecated' is deprecated: INSTANTIATE_TEST_CASE_P is deprecated, please use INSTANTIATE_TEST_SUITE_P [-Werror,-Wdeprecated-declarations]"
+        },
+        {
+          "column": 1,
+          "event_id": "E015",
+          "file": "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/test/src/inference_engine_tc.cpp",
+          "kind": "werror",
+          "line": 642,
+          "line_no": 534,
+          "message": "'InstantiateTestCase_P_IsDeprecated' is deprecated: INSTANTIATE_TEST_CASE_P is deprecated, please use INSTANTIATE_TEST_SUITE_P [-Werror,-Wdeprecated-declarations]"
+        },
+        {
+          "column": 1,
+          "event_id": "E016",
+          "file": "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/test/src/inference_engine_tc.cpp",
+          "kind": "werror",
+          "line": 649,
+          "line_no": 546,
+          "message": "'InstantiateTestCase_P_IsDeprecated' is deprecated: INSTANTIATE_TEST_CASE_P is deprecated, please use INSTANTIATE_TEST_SUITE_P [-Werror,-Wdeprecated-declarations]"
+        },
+        {
+          "column": 1,
+          "event_id": "E017",
+          "file": "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/test/src/inference_engine_tc.cpp",
+          "kind": "werror",
+          "line": 661,
+          "line_no": 558,
+          "message": "'InstantiateTestCase_P_IsDeprecated' is deprecated: INSTANTIATE_TEST_CASE_P is deprecated, please use INSTANTIATE_TEST_SUITE_P [-Werror,-Wdeprecated-declarations]"
+        },
+        {
+          "column": 1,
+          "event_id": "E018",
+          "file": "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/test/src/inference_engine_tc.cpp",
+          "kind": "werror",
+          "line": 672,
+          "line_no": 570,
+          "message": "'InstantiateTestCase_P_IsDeprecated' is deprecated: INSTANTIATE_TEST_CASE_P is deprecated, please use INSTANTIATE_TEST_SUITE_P [-Werror,-Wdeprecated-declarations]"
+        },
+        {
+          "column": 1,
+          "event_id": "E019",
+          "file": "/home/abuild/rpmbuild/BUILD/inference-engine-interface-0.5.2/test/src/inference_engine_tc.cpp",
+          "kind": "werror",
+          "line": 690,
+          "line_no": 582,
+          "message": "'InstantiateTestCase_P_IsDeprecated' is deprecated: INSTANTIATE_TEST_CASE_P is deprecated, please use INSTANTIATE_TEST_SUITE_P [-Werror,-Wdeprecated-declarations]"
+        }
+      ],
+      "warning_option": "-Wdeprecated-declarations"
+    }
+  ],
+  "schema_version": "error_clusters_locations/v1"
+}
