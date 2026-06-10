@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from gbs_patch_suggest.cluster_resolver import ClusterFileContext
+from gbs_patch_suggest.cluster_resolver import ClusterFileContext, SuppressedSkeletonLocation
 from gbs_patch_suggest.fix_all_ingest import SourceCandidateDiagnostic
 from gbs_patch_suggest.fix_all_resolver import ResolvedFixAllContext
 from gbs_patch_suggest.formatter import EDIT_SPEC_SCHEMA
@@ -265,6 +265,9 @@ def render_file_context(
             lines.append(f"- {event}line `{location.line}{column}`: `{location.message}`")
         lines.append("")
 
+    if file_context.suppressed_skeleton_locations:
+        lines.extend(_suppressed_skeleton_section(file_context.suppressed_skeleton_locations))
+
     if file_context.source_windows:
         lines.extend(
             [
@@ -407,6 +410,15 @@ def render_meta(
                 if file_output["edit_spec_path"] is None
                 else str(file_output["edit_spec_path"]),
                 "source_windows_truncated": file_output["context"].source_windows_truncated,
+                "suppressed_skeleton": [
+                    {
+                        "line": item.location.line,
+                        "column": item.location.column,
+                        "message": item.location.message,
+                        "reason": item.reason,
+                    }
+                    for item in file_output["context"].suppressed_skeleton_locations
+                ],
             }
             for file_output in file_outputs
         ],
@@ -460,6 +472,29 @@ def _write_edit_spec_skeleton(
         encoding="utf-8",
     )
     return path
+
+
+def _suppressed_skeleton_section(items: tuple[SuppressedSkeletonLocation, ...]) -> list[str]:
+    lines = [
+        "## Suppressed Edit Spec Skeletons",
+        "",
+        "Some diagnostics did not receive edit-spec skeleton rows because the reported "
+        "line looks like a structural closing line or does not contain source symbols "
+        "from the diagnostic message. For multi-line macro or deprecated-symbol "
+        "diagnostics, locate the referenced symbol in the source window and write the "
+        "edit spec for that actual source line.",
+        "",
+    ]
+    for item in items:
+        location = item.location
+        column = "" if location.column is None else f":{location.column}"
+        event = "" if location.event_id is None else f"`{location.event_id}` "
+        lines.append(
+            f"- {event}line `{location.line}{column}` reason `{item.reason}`: "
+            f"`{location.message}`"
+        )
+    lines.append("")
+    return lines
 
 
 def _file_context_name(file_context: ClusterFileContext) -> str:

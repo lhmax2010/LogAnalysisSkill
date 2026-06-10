@@ -260,20 +260,42 @@ def test_inference_engine_gold_fix_all_by_file_with_mock_source(tmp_path: Path) 
     edit_specs = sorted((tmp_path / "out" / "fix_all_context" / "edit_specs").glob("*.json"))
     assert [path.name for path in edit_specs] == [
         "edit_spec_FIXALL_001_OutputMetadata.h.json",
-        "edit_spec_FIXALL_002_inference_engine_profiler.cpp.json",
-        "edit_spec_FIXALL_003_inference_engine_tc.cpp.json",
     ]
     first = json.loads(edit_specs[0].read_text(encoding="utf-8"))
     assert first["edits"] == [
         {
             "file": "tools/include/OutputMetadata.h",
             "line": 124,
-            "old": "tools/include/OutputMetadata.h line 124",
+            "old": "  int decodingType;",
             "new": "<FILL_REPLACEMENT_LINE>",
         }
     ]
-    tc = json.loads(edit_specs[2].read_text(encoding="utf-8"))
-    assert [edit["line"] for edit in tc["edits"]] == [635, 642, 649, 661, 672, 690]
+    assert meta["files"][0]["edit_spec_json"] is not None
+    assert meta["files"][1]["edit_spec_json"] is None
+    assert meta["files"][1]["suppressed_skeleton"] == [
+        {
+            "column": 1,
+            "line": 295,
+            "message": (
+                "'InstantiateTestCase_P_IsDeprecated' is deprecated: "
+                "INSTANTIATE_TEST_CASE_P is deprecated, please use "
+                "INSTANTIATE_TEST_SUITE_P [-Werror,-Wdeprecated-declarations]"
+            ),
+            "reason": "structural_closing_line",
+        }
+    ]
+    assert meta["files"][2]["edit_spec_json"] is None
+    assert [item["line"] for item in meta["files"][2]["suppressed_skeleton"]] == [
+        635,
+        642,
+        649,
+        661,
+        672,
+        690,
+    ]
+    assert {
+        item["reason"] for item in meta["files"][2]["suppressed_skeleton"]
+    } == {"structural_closing_line"}
 
 
 @pytest.mark.parametrize(

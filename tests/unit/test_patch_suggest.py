@@ -25,6 +25,7 @@ from gbs_patch_suggest.formatter import EDIT_SPEC_SCHEMA, FormatPatchOptions, fo
 from gbs_patch_suggest.ingest import extract_first_diagnostic
 from gbs_patch_suggest.multi_candidate_ingest import ingest_terminal_source_candidates
 from gbs_patch_suggest.render import MANDATORY_INSTRUCTIONS
+from gbs_patch_suggest.skeleton_suppression import should_suppress_skeleton
 
 
 def compiler_packet(
@@ -393,6 +394,37 @@ def write_source(root: Path, relative: str, *, lines: int = 20) -> Path:
     return path
 
 
+def test_should_suppress_skeleton_distinguishes_structure_symbols_and_warning_tokens() -> None:
+    assert (
+        should_suppress_skeleton(
+            "));",
+            "INSTANTIATE_TEST_CASE_P is deprecated [-Werror,-Wdeprecated-declarations]",
+        )
+        == "structural_closing_line"
+    )
+    assert (
+        should_suppress_skeleton(
+            "return 0;",
+            "implicit declaration of function 'get_lss'",
+        )
+        == "no_message_symbol_in_line"
+    )
+    assert (
+        should_suppress_skeleton(
+            "  int decodingType;",
+            "private field 'decodingType' is not used [-Werror,-Wunused-private-field]",
+        )
+        is None
+    )
+    assert (
+        should_suppress_skeleton(
+            "error_code = old_status;",
+            "enum cast [-Werror,-Wenum-conversion]",
+        )
+        is None
+    )
+
+
 def test_extract_first_diagnostic_uses_primary_error_and_top_candidate() -> None:
     diagnostic = extract_first_diagnostic(compiler_packet())
 
@@ -586,6 +618,68 @@ def test_multi_candidate_mode_writes_per_candidate_contexts_and_skeletons(
     ]
 
 
+def test_multi_candidate_suppresses_macro_closing_line_skeleton(tmp_path: Path) -> None:
+    packet = multi_candidate_packet()
+    candidates = packet["root_cause_candidates"]
+    assert isinstance(candidates, list)
+    candidates[0]["message"] = (
+        "'InstantiateTestCase_P_IsDeprecated' is deprecated: "
+        "INSTANTIATE_TEST_CASE_P is deprecated, please use INSTANTIATE_TEST_SUITE_P "
+        "[-Werror,-Wdeprecated-declarations]"
+    )
+    candidates[0]["line"] = 4
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    first = src_root / "src" / "first.c"
+    second = src_root / "src" / "second.c"
+    first.parent.mkdir(parents=True)
+    first.write_text(
+        "\n".join(
+            [
+                "INSTANTIATE_TEST_CASE_P(DeprecatedCase,",
+                "                        FirstTest,",
+                "                        ::testing::Values(FirstCase()));",
+                "));",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    second.write_text(
+        "\n".join(
+            [
+                "second line 1",
+                "second line 2",
+                "second line 3",
+                "\treturn second_bad_value;",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    first_meta = next(
+        candidate for candidate in meta["candidates"] if candidate["event_id"] == "E009"
+    )
+    second_meta = next(
+        candidate for candidate in meta["candidates"] if candidate["event_id"] == "E015"
+    )
+    assert first_meta["edit_spec_json"] is None
+    assert first_meta["suppressed_skeleton_reason"] == "structural_closing_line"
+    assert second_meta["edit_spec_json"] is not None
+    first_context = output_dir / "candidate_context" / "C001_E009" / "context.md"
+    text = first_context.read_text(encoding="utf-8")
+    assert "Suppressed Edit Spec Skeleton" in text
+    assert "structural_closing_line" in text
+    assert "INSTANTIATE_TEST_CASE_P" in text
+    assert "locate the referenced symbol" in text
+
+
 def test_multi_candidate_level_b_does_not_generate_skeleton(tmp_path: Path) -> None:
     evidence_path = write_packet(tmp_path, multi_candidate_packet())
     output_dir = tmp_path / "out"
@@ -614,7 +708,10 @@ def test_experimental_fix_all_default_off_keeps_existing_old_path(
     )
     evidence_path = write_packet(tmp_path, packet)
     src_root = tmp_path / "srcroot"
-    write_source(src_root, "tools/include/OutputMetadata.h", lines=20)
+    metadata = write_source(src_root, "tools/include/OutputMetadata.h", lines=20)
+    metadata_lines = metadata.read_text(encoding="utf-8").splitlines()
+    metadata_lines[9] = "  int decodingType;"
+    metadata.write_text("\n".join(metadata_lines), encoding="utf-8")
     write_source(src_root, "test/src/inference_engine_profiler.cpp", lines=30)
     write_source(src_root, "test/src/inference_engine_tc.cpp", lines=90)
     write_source(src_root, "src/first.c", lines=20)
@@ -683,7 +780,10 @@ def test_experimental_fix_all_groups_patch_ready_candidates_by_file(
     add_error_cluster(packet, tmp_path, large_scale=False)
     evidence_path = write_packet(tmp_path, packet)
     src_root = tmp_path / "srcroot"
-    write_source(src_root, "tools/include/OutputMetadata.h", lines=20)
+    metadata = write_source(src_root, "tools/include/OutputMetadata.h", lines=20)
+    metadata_lines = metadata.read_text(encoding="utf-8").splitlines()
+    metadata_lines[9] = "  int decodingType;"
+    metadata.write_text("\n".join(metadata_lines), encoding="utf-8")
     write_source(src_root, "test/src/inference_engine_profiler.cpp", lines=30)
     write_source(src_root, "test/src/inference_engine_tc.cpp", lines=90)
     output_dir = tmp_path / "out"
@@ -724,7 +824,7 @@ def test_experimental_fix_all_groups_patch_ready_candidates_by_file(
         {
             "file": "tools/include/OutputMetadata.h",
             "line": 10,
-            "old": "tools/include/OutputMetadata.h line 10",
+            "old": "  int decodingType;",
             "new": "<FILL_REPLACEMENT_LINE>",
         }
     ]
@@ -1029,6 +1129,74 @@ def test_cluster_edit_spec_skeleton_preserves_tabs_and_formats_patch(
     patch_text = patch_path.read_text(encoding="utf-8")
     assert "-\t\terror_code = old_status;" in patch_text
     assert "+\t\terror_code = new_status;" in patch_text
+
+
+def test_cluster_suppresses_deprecated_macro_closing_line_skeleton(
+    tmp_path: Path,
+) -> None:
+    packet = compiler_packet(kind="werror")
+    deprecated = (
+        "'InstantiateTestCase_P_IsDeprecated' is deprecated: "
+        "INSTANTIATE_TEST_CASE_P is deprecated, please use INSTANTIATE_TEST_SUITE_P "
+        "[-Werror,-Wdeprecated-declarations]"
+    )
+    add_error_cluster(
+        packet,
+        tmp_path,
+        warning_option="-Wdeprecated-declarations",
+        locations=[
+            {
+                "event_id": "E001",
+                "kind": "werror",
+                "file": "src/device.c",
+                "line": 4,
+                "column": 1,
+                "line_no": 100,
+                "message": deprecated,
+            }
+        ],
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    source = src_root / "src" / "device.c"
+    source.parent.mkdir(parents=True)
+    source.write_text(
+        "\n".join(
+            [
+                "INSTANTIATE_TEST_CASE_P(DeprecatedCase,",
+                "                        DeviceTest,",
+                "                        ::testing::Values(DeviceCase()));",
+                "));",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    assert not list(output_dir.glob("cluster_context/*/edit_specs/*.json"))
+    meta = read_meta(output_dir)
+    file_meta = meta["clusters"][0]["files"][0]  # type: ignore[index]
+    assert file_meta["edit_spec_json"] is None
+    assert file_meta["suppressed_skeleton"] == [
+        {
+            "column": 1,
+            "line": 4,
+            "message": deprecated,
+            "reason": "structural_closing_line",
+        }
+    ]
+    file_context = next(output_dir.glob("cluster_context/*/files/*.md"))
+    text = file_context.read_text(encoding="utf-8")
+    assert "Suppressed Edit Spec Skeletons" in text
+    assert "structural_closing_line" in text
+    assert "INSTANTIATE_TEST_CASE_P" in text
+    assert "Source Windows" in text
+    assert "locate the referenced symbol" in text
 
 
 def test_cluster_edit_spec_skeleton_deduplicates_same_line_locations(

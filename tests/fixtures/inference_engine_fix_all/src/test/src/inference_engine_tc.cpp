@@ -629,24 +629,24 @@ test/src/inference_engine_tc.cpp line 628
 test/src/inference_engine_tc.cpp line 629
 test/src/inference_engine_tc.cpp line 630
 test/src/inference_engine_tc.cpp line 631
-test/src/inference_engine_tc.cpp line 632
-test/src/inference_engine_tc.cpp line 633
-test/src/inference_engine_tc.cpp line 634
-test/src/inference_engine_tc.cpp line 635
+INSTANTIATE_TEST_CASE_P(TcDeprecatedOne,
+                        TcTest,
+                        ::testing::Values(TcCaseOne()));
+));
 test/src/inference_engine_tc.cpp line 636
 test/src/inference_engine_tc.cpp line 637
 test/src/inference_engine_tc.cpp line 638
-test/src/inference_engine_tc.cpp line 639
-test/src/inference_engine_tc.cpp line 640
-test/src/inference_engine_tc.cpp line 641
-test/src/inference_engine_tc.cpp line 642
+INSTANTIATE_TEST_CASE_P(TcDeprecatedTwo,
+                        TcTest,
+                        ::testing::Values(TcCaseTwo()));
+));
 test/src/inference_engine_tc.cpp line 643
 test/src/inference_engine_tc.cpp line 644
 test/src/inference_engine_tc.cpp line 645
-test/src/inference_engine_tc.cpp line 646
-test/src/inference_engine_tc.cpp line 647
-test/src/inference_engine_tc.cpp line 648
-test/src/inference_engine_tc.cpp line 649
+INSTANTIATE_TEST_CASE_P(TcDeprecatedThree,
+                        TcTest,
+                        ::testing::Values(TcCaseThree()));
+));
 test/src/inference_engine_tc.cpp line 650
 test/src/inference_engine_tc.cpp line 651
 test/src/inference_engine_tc.cpp line 652
@@ -655,10 +655,10 @@ test/src/inference_engine_tc.cpp line 654
 test/src/inference_engine_tc.cpp line 655
 test/src/inference_engine_tc.cpp line 656
 test/src/inference_engine_tc.cpp line 657
-test/src/inference_engine_tc.cpp line 658
-test/src/inference_engine_tc.cpp line 659
-test/src/inference_engine_tc.cpp line 660
-test/src/inference_engine_tc.cpp line 661
+INSTANTIATE_TEST_CASE_P(TcDeprecatedFour,
+                        TcTest,
+                        ::testing::Values(TcCaseFour()));
+));
 test/src/inference_engine_tc.cpp line 662
 test/src/inference_engine_tc.cpp line 663
 test/src/inference_engine_tc.cpp line 664
@@ -666,10 +666,10 @@ test/src/inference_engine_tc.cpp line 665
 test/src/inference_engine_tc.cpp line 666
 test/src/inference_engine_tc.cpp line 667
 test/src/inference_engine_tc.cpp line 668
-test/src/inference_engine_tc.cpp line 669
-test/src/inference_engine_tc.cpp line 670
-test/src/inference_engine_tc.cpp line 671
-test/src/inference_engine_tc.cpp line 672
+INSTANTIATE_TEST_CASE_P(TcDeprecatedFive,
+                        TcTest,
+                        ::testing::Values(TcCaseFive()));
+));
 test/src/inference_engine_tc.cpp line 673
 test/src/inference_engine_tc.cpp line 674
 test/src/inference_engine_tc.cpp line 675
@@ -684,7 +684,7 @@ test/src/inference_engine_tc.cpp line 683
 test/src/inference_engine_tc.cpp line 684
 test/src/inference_engine_tc.cpp line 685
 test/src/inference_engine_tc.cpp line 686
-test/src/inference_engine_tc.cpp line 687
-test/src/inference_engine_tc.cpp line 688
-test/src/inference_engine_tc.cpp line 689
-test/src/inference_engine_tc.cpp line 690
+INSTANTIATE_TEST_CASE_P(TcDeprecatedSix,
+                        TcTest,
+                        ::testing::Values(TcCaseSix()));
+));
