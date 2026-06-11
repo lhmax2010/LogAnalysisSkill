@@ -1,4 +1,4 @@
-"""Render experimental fix-all by file patch context outputs."""
+"""Render fix-all by file patch context outputs."""
 
 from __future__ import annotations
 
@@ -87,13 +87,13 @@ def render_readme(
     *,
     file_outputs: list[dict[str, Any]],
 ) -> str:
-    """Render README for experimental fix-all mode."""
+    """Render README for fix-all mode."""
 
     return "\n".join(
         [
             "# Patch Suggestion Output",
             "",
-            "This directory contains experimental fix-all-by-file context prepared from "
+            "This directory contains fix-all-by-file context prepared from "
             "analyzer `source_candidates` evidence.",
             "",
             "## Summary",
@@ -126,17 +126,17 @@ def render_overview(
     *,
     file_outputs: list[dict[str, Any]],
 ) -> str:
-    """Render top-level experimental fix-all overview."""
+    """Render top-level fix-all overview."""
 
     not_ready = tuple(candidate for candidate in resolved.candidates if not candidate.patch_ready)
     lines = [
-        "# Experimental Fix-all-by-file Patch Context",
+        "# Fix-all-by-file Patch Context",
         "",
         "This file is an overview for analyzer `source_candidates`. The skill did not "
         "read the raw buildlog, did not call an LLM, did not apply a patch, and did not "
         "modify the source tree.",
         "",
-        "## Experimental Scope",
+        "## Scope",
         "",
         "- This mode only covers diagnostics visible in `source_candidates.json`.",
         "- Excluded diagnostics are not part of this coverage universe.",
@@ -195,7 +195,7 @@ def render_file_context(
     *,
     edit_spec_path: Path | None = None,
 ) -> str:
-    """Render one per-file context for experimental fix-all mode."""
+    """Render one per-file context for fix-all mode."""
 
     edit_spec_name = _edit_spec_name(file_context)
     patch_name = _patch_name(file_context)
@@ -375,13 +375,13 @@ def render_meta(
     buildlog_path: Path | None,
     fix_all_dir: Path,
 ) -> dict[str, Any]:
-    """Render machine-readable metadata for experimental fix-all mode."""
+    """Render machine-readable metadata for fix-all mode."""
 
     return {
         "schema_version": "gbs_patch_suggest/meta/v1",
         "mode": "fix_all_by_file",
         "status": "fix_all_context_available",
-        "experimental": True,
+        "fix_all_enabled": True,
         "outputs": {
             "readme_md": str(readme_path),
             "context_md": str(context_path),

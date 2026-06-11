@@ -1,4 +1,4 @@
-"""Resolve source context for experimental fix-all source candidates."""
+"""Resolve source context for fix-all source candidates."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ FIX_ALL_CLUSTER_ID = "FIXALL"
 
 @dataclass(frozen=True)
 class ResolvedFixAllContext:
-    """Resolved context for experimental fix-all by file mode."""
+    """Resolved context for fix-all by file mode."""
 
     candidates: tuple[SourceCandidateDiagnostic, ...]
     patch_ready_candidates: tuple[SourceCandidateDiagnostic, ...]

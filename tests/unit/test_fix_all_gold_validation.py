@@ -145,7 +145,6 @@ def _run_fix_all(
             evidence_path=evidence_path,
             output_dir=output_dir,
             src_root=src_root,
-            experimental_fix_all=True,
         )
     )
     assert result.exit_code == 0
@@ -214,7 +213,7 @@ def test_inference_engine_gold_fixture_counts_and_current_main_gap() -> None:
     )
 
 
-def test_inference_engine_gold_default_off_keeps_current_multi_path(tmp_path: Path) -> None:
+def test_inference_engine_gold_no_fix_all_keeps_current_multi_path(tmp_path: Path) -> None:
     output_dir = tmp_path / "out"
 
     result = run_patch_suggest(
@@ -222,6 +221,7 @@ def test_inference_engine_gold_default_off_keeps_current_multi_path(tmp_path: Pa
             evidence_path=GOLD / "evidence_packet.json",
             output_dir=output_dir,
             src_root=GOLD / "src",
+            fix_all_enabled=False,
         )
     )
 
@@ -318,7 +318,6 @@ def test_inference_engine_gold_fix_all_removes_stale_suppressed_edit_specs(
             evidence_path=GOLD / "evidence_packet.json",
             output_dir=output_dir,
             src_root=GOLD / "src",
-            experimental_fix_all=True,
         )
     )
 
