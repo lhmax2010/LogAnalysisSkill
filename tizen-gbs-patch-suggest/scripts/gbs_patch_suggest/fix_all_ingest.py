@@ -1,4 +1,4 @@
-"""Ingest analyzer source candidate sidecars for experimental fix-all mode."""
+"""Ingest analyzer source candidate sidecars for fix-all mode."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ SOURCE_CANDIDATE_SIDECAR_SCHEMA = "source_candidate_sidecar/v1"
 
 @dataclass(frozen=True)
 class SourceCandidateDiagnostic:
-    """One analyzer source candidate visible to experimental fix-all mode."""
+    """One analyzer source candidate visible to fix-all mode."""
 
     index: int
     event_id: str | None
@@ -76,7 +76,7 @@ class SourceCandidateDiagnostic:
 
 @dataclass(frozen=True)
 class FixAllIngestResult:
-    """Source candidates and advisory for experimental fix-all mode."""
+    """Source candidates and advisory for fix-all mode."""
 
     candidates: tuple[SourceCandidateDiagnostic, ...] = ()
     advisory: str | None = None

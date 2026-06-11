@@ -54,16 +54,21 @@ Actions:
    Omit `--src-root`; the skill may produce a Level B advisory, and Claude will
    read the reported file itself before generating a patch.
 4. If the user did not specify an output directory, use `./.gbs_patch_suggest`.
-5. Run the skill, then read `README.md` and `context.md`.
-6. Decide 1-3 candidate fixes from `context.md`, with approach, assumption, and
-   confidence for each candidate.
-7. Write each candidate as `.gbs_patch_suggest/edit_spec_N.json`, then run the
-   `format-patch` formatter to create `.gbs_patch_suggest/candidate_N.patch`.
-8. Do not apply the patch. Tell the user to review the file before applying it
+5. Run the skill, then read `README.md` and `meta.json` to identify the output
+   mode.
+6. If status is `fix_all_context_available`, process
+   `.gbs_patch_suggest/fix_all_context/files/` one file at a time and fill the
+   matching skeleton in `.gbs_patch_suggest/fix_all_context/edit_specs/`.
+7. If the skill fell back to a legacy or single-diagnostic status, follow that
+   context exactly.
+8. Run the `format-patch` formatter for each completed edit spec to create a
+   candidate patch file.
+9. Do not apply the patch. Tell the user to review the file before applying it
    themselves.
 
-Result: `context.md` guides Claude to write explicit edit specs, and the
-formatter creates patch files for review without changing the source tree.
+Result: the skill guides Claude through fix-all by file when source candidates
+are available, and the formatter creates patch files for review without changing
+the source tree.
 
 ### Example 2: User only points to an analyzer output directory
 
@@ -76,14 +81,16 @@ Actions:
    evidence path.
 2. Run patch-suggest with that evidence and default output directory
    `./.gbs_patch_suggest`.
-3. If the resulting `context.md` says source context is unavailable, Claude must
-   open the reported `file:line` itself, read the source, and only then generate
+3. Read `README.md` and `meta.json`; if fix-all output is available, process one
+   file context and one edit spec at a time.
+4. If the resulting context says source context is unavailable, Claude must open
+   the reported `file:line` itself, read the source, and only then generate
    candidate patches.
-4. Follow the `How to generate the patch` and `Instructions — MUST follow`
-   sections in `context.md`.
-5. If a patch candidate is generated, save its edit spec as `edit_spec_N.json`,
-   run the formatter to create `candidate_N.patch`, and do not run `git apply`
-   or edit the source tree.
+5. Follow the relevant `How to generate the patch` and
+   `Instructions — MUST follow` sections.
+6. If a patch candidate is generated, save or fill its edit spec, run the
+   formatter to create a patch file, and do not run `git apply` or edit the
+   source tree.
 
 Result: Claude uses the context package as a disciplined patch-generation prompt,
 including Level B fallback when the skill could not read source context.
@@ -99,9 +106,10 @@ Actions:
 2. If the user provides the package source root, pass it with `--src-root`.
 3. The skill runs analyzer internally and writes analyzer evidence under
    `.gbs_patch_suggest/analyzer_output/`.
-4. Read `.gbs_patch_suggest/context.md` as the main compressed patch-generation
-   prompt, then write edit spec files and use the formatter to create candidate
-   patch files as the outer assistant. Do not apply them.
+4. Read `.gbs_patch_suggest/README.md` and `.gbs_patch_suggest/meta.json`, then
+   follow the selected output mode. For fix-all output, process
+   `.gbs_patch_suggest/fix_all_context/files/` one file at a time. Do not apply
+   generated patches.
 
 Result: One command turns a build log into patch-generation context.
 
@@ -134,7 +142,8 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
 > (for example, a large log can become roughly 1k tokens of Claude-facing
 > context). Reading the raw log yourself defeats that compression and can waste
 > around 10k tokens. After running the skill, read only its generated
-> `context.md`, `README.md`, and `meta.json`.
+> `README.md`, `meta.json`, `context.md`, and the per-file contexts or edit
+> specs those outputs explicitly point to.
 
 1. Identify the input. Use exactly one of:
    - `--evidence /path/to/evidence_packet.json`
@@ -150,7 +159,10 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
    generating the patch.
 5. Identify output directory. If the user did not specify one, use
    `./.gbs_patch_suggest` without asking.
-6. Run patch-suggest through one of the stable entry points. `--evidence` and
+6. Fix-all-by-file mode is the default. Do not add a flag to enable it. Use
+   `--no-fix-all` only when the user explicitly asks to temporarily fall back to
+   the legacy cluster, multi-candidate, or single-diagnostic path.
+7. Run patch-suggest through one of the stable entry points. `--evidence` and
    `--buildlog` are mutually exclusive; do not pass both. Use `python3`; use
    `python` only if `python3` is unavailable. Modern systems commonly expose
    Python as `python3`.
@@ -206,21 +218,37 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
 
 ### After the skill finishes
 
-1. Read `.gbs_patch_suggest/README.md` first for the selected diagnostic and
-   output summary.
-2. Read `.gbs_patch_suggest/context.md` as the primary patch-generation prompt.
-3. Read `.gbs_patch_suggest/meta.json` if machine-readable status, level,
-   source-context availability, or candidate paths are needed.
-4. If `context.md` already contains Level A source context, do not re-read the
+1. Read `.gbs_patch_suggest/README.md` first for the output summary, then read
+   `.gbs_patch_suggest/meta.json` to identify the status and mode.
+2. If status is `fix_all_context_available`, process fix-all output one file at
+   a time:
+   - Read `.gbs_patch_suggest/context.md` for the overview and file order.
+   - Open exactly one `.gbs_patch_suggest/fix_all_context/files/*.md` file.
+   - Fill the matching skeleton under
+     `.gbs_patch_suggest/fix_all_context/edit_specs/` by changing only `new`
+     values and preserving `file`, `line`, and `old`.
+   - Run the formatter for that file's edit spec and produce that file's
+     candidate patch.
+   - Then move to the next per-file context. Do not load every per-file context
+     or every edit spec at once.
+3. If status is `cluster_context_available`, process the cluster output one
+   file at a time from `.gbs_patch_suggest/cluster_context/`.
+4. If status is `multi_candidate_context_available`, process one candidate at a
+   time from `.gbs_patch_suggest/candidate_context/`.
+5. For single-diagnostic statuses such as `source_context_available`,
+   `source_context_unavailable`, `source_context_ambiguous`, `diagnostic_only`,
+   or `not_applicable`, read `.gbs_patch_suggest/context.md` as the primary
+   prompt.
+6. If a context already contains Level A source context, do not re-read the
    whole source file or large source areas. The context window is the primary
    source material for patch drafting.
-5. Targeted root-cause verification is still allowed and expected: search or
+7. Targeted root-cause verification is still allowed and expected: search or
    grep for a specific referenced function or symbol before preserving it. This
    focused check is different from reading a whole log or broad source tree.
-6. If `context.md` says source context is unavailable or ambiguous, Claude must
+8. If a context says source context is unavailable or ambiguous, Claude must
    inspect the reported file or candidate paths before generating any patch.
-7. Decide candidate repairs yourself as the outer assistant, following
-   `context.md` exactly:
+9. Decide candidate repairs yourself as the outer assistant, following the
+   relevant context exactly:
    - write explicit `edit_spec_N.json` candidate(s)
    - include approach, explicit assumption, and confidence
    - question whether the reported error is only a symptom
@@ -229,7 +257,7 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
    - if the same `old` text appears in multiple places, write multiple edits
      with their own `line` values instead of making `old` a giant multi-line
      block
-8. For each candidate, run the deterministic formatter to create the patch file:
+10. For each candidate, run the deterministic formatter to create the patch file:
 
    ```bash
    python3 -m gbs_patch_suggest format-patch \
@@ -249,17 +277,17 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
        --output .gbs_patch_suggest/candidate_N.patch \
        --check
    ```
-9. If the formatter fails, revise `edit_spec_N.json` and rerun the formatter.
+11. If the formatter fails, revise the edit spec and rerun the formatter.
    Do not hand-write a unified diff as a fallback. If the formatter reports
    `old_not_unique` or `context_not_unique`, use the error code and candidate
    line numbers to add `line`, `before`, or `after`. Do not read the formatter
    source code to infer rules, and do not make `old` huge just to force
    uniqueness.
-10. Tell the user where each `candidate_N.patch` file was written.
-11. Writing a `.patch` file only saves the suggestion to disk for review. It does
+12. Tell the user where each candidate patch file was written.
+13. Writing a `.patch` file only saves the suggestion to disk for review. It does
    not mean the patch should be applied. Writing the file and applying it are
    completely separate actions.
-12. Do not apply patches. Do not run `git apply` or `patch`. Do not modify the
+14. Do not apply patches. Do not run `git apply` or `patch`. Do not modify the
    source tree. The user reviews the patch file and decides whether to apply it.
 
 ## Output Contract
@@ -270,6 +298,11 @@ The skill writes a `.gbs_patch_suggest/` directory:
 .gbs_patch_suggest/
 ├── analyzer_output/
 │   └── evidence_packet.json
+├── fix_all_context/
+│   ├── files/
+│   └── edit_specs/
+├── cluster_context/
+├── candidate_context/
 ├── README.md
 ├── context.md
 └── meta.json
@@ -280,9 +313,14 @@ Files:
 - `README.md`: short summary of the selected diagnostic and which file to read.
 - `analyzer_output/`: present when `--buildlog` was used; contains analyzer output
   including `evidence_packet.json`.
-- `context.md`: the primary LLM-facing patch-generation context. It includes the
-  diagnostic, source context or fallback advisory, `How to generate the patch`,
-  and final `Instructions — MUST follow`.
+- `context.md`: overview or single-diagnostic LLM-facing patch-generation
+  context, depending on status.
+- `fix_all_context/`: default fix-all-by-file per-file contexts and edit spec
+  skeletons when analyzer source candidates are available.
+- `cluster_context/`: legacy large-scale cluster context when fix-all is
+  disabled or unavailable and a large-scale cluster is present.
+- `candidate_context/`: legacy per-candidate context when fix-all is disabled
+  or unavailable and multiple terminal candidates are present.
 - `meta.json`: machine-readable status, level, fault class, semantic class,
   primary error, source-context metadata, candidate paths, and output paths.
 
@@ -293,6 +331,9 @@ user review and must not be auto-applied.
 
 Statuses:
 
+- `fix_all_context_available`: default fix-all-by-file output was written.
+- `cluster_context_available`: legacy large-scale cluster output was written.
+- `multi_candidate_context_available`: legacy multi-candidate output was written.
 - `source_context_available`: Level A. Source context is included.
 - `source_context_unavailable`: Level B. File and line are known, but source
   context was not read by the skill.

@@ -697,7 +697,7 @@ def test_multi_candidate_level_b_does_not_generate_skeleton(tmp_path: Path) -> N
     assert "Source context is unavailable" in contexts[0].read_text(encoding="utf-8")
 
 
-def test_experimental_fix_all_default_off_keeps_existing_old_path(
+def test_no_fix_all_keeps_existing_old_path(
     tmp_path: Path,
 ) -> None:
     packet = multi_candidate_packet()
@@ -719,7 +719,12 @@ def test_experimental_fix_all_default_off_keeps_existing_old_path(
     output_dir = tmp_path / "out"
 
     result = run_patch_suggest(
-        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+        PatchSuggestOptions(
+            evidence_path,
+            output_dir=output_dir,
+            src_root=src_root,
+            fix_all_enabled=False,
+        )
     )
 
     assert result.exit_code == 0
@@ -729,7 +734,7 @@ def test_experimental_fix_all_default_off_keeps_existing_old_path(
     assert not (output_dir / "fix_all_context").exists()
 
 
-def test_experimental_fix_all_unreachable_candidates_are_visible_without_skeletons(
+def test_fix_all_default_on_unreachable_candidates_are_visible_without_skeletons(
     tmp_path: Path,
 ) -> None:
     packet = compiler_packet(kind="werror")
@@ -746,7 +751,6 @@ def test_experimental_fix_all_unreachable_candidates_are_visible_without_skeleto
             evidence_path,
             output_dir=output_dir,
             src_root=None,
-            experimental_fix_all=True,
         )
     )
 
@@ -768,7 +772,7 @@ def test_experimental_fix_all_unreachable_candidates_are_visible_without_skeleto
     assert not list(output_dir.glob("fix_all_context/edit_specs/*.json"))
 
 
-def test_experimental_fix_all_groups_patch_ready_candidates_by_file(
+def test_fix_all_default_on_groups_patch_ready_candidates_by_file(
     tmp_path: Path,
 ) -> None:
     packet = compiler_packet(kind="werror")
@@ -793,7 +797,6 @@ def test_experimental_fix_all_groups_patch_ready_candidates_by_file(
             evidence_path,
             output_dir=output_dir,
             src_root=src_root,
-            experimental_fix_all=True,
         )
     )
 
@@ -835,7 +838,7 @@ def test_experimental_fix_all_groups_patch_ready_candidates_by_file(
     assert "Patch-ready file groups: `3`" in overview
 
 
-def test_experimental_fix_all_unreadable_sidecar_falls_back_to_old_path(
+def test_fix_all_default_on_unreadable_sidecar_falls_back_to_old_path(
     tmp_path: Path,
 ) -> None:
     packet = multi_candidate_packet()
@@ -854,12 +857,45 @@ def test_experimental_fix_all_unreadable_sidecar_falls_back_to_old_path(
             evidence_path,
             output_dir=output_dir,
             src_root=src_root,
-            experimental_fix_all=True,
         )
     )
 
     assert result.exit_code == 0
     assert result.status == "multi_candidate_context_available"
+    meta = read_meta(output_dir)
+    assert meta["mode"] == "multi_candidate"
+    assert not (output_dir / "fix_all_context").exists()
+
+
+def test_cli_no_fix_all_uses_legacy_old_path(tmp_path: Path) -> None:
+    packet = multi_candidate_packet()
+    add_source_candidates(
+        packet,
+        tmp_path,
+        inference_engine_source_candidates(reachable=True, owned=True),
+    )
+    evidence_path = write_packet(tmp_path, packet)
+    src_root = tmp_path / "srcroot"
+    write_source(src_root, "src/first.c", lines=20)
+    write_source(src_root, "src/second.c", lines=20)
+    write_source(src_root, "tools/include/OutputMetadata.h", lines=20)
+    write_source(src_root, "test/src/inference_engine_profiler.cpp", lines=30)
+    write_source(src_root, "test/src/inference_engine_tc.cpp", lines=90)
+    output_dir = tmp_path / "out"
+
+    code = main(
+        [
+            "--evidence",
+            str(evidence_path),
+            "--src-root",
+            str(src_root),
+            "--output-dir",
+            str(output_dir),
+            "--no-fix-all",
+        ]
+    )
+
+    assert code == 0
     meta = read_meta(output_dir)
     assert meta["mode"] == "multi_candidate"
     assert not (output_dir / "fix_all_context").exists()
@@ -896,7 +932,6 @@ def test_mode_context_dirs_are_cleaned_when_switching_modes(tmp_path: Path) -> N
             fix_all_evidence_path,
             output_dir=output_dir,
             src_root=None,
-            experimental_fix_all=True,
         )
     )
 

@@ -43,7 +43,7 @@ class PatchSuggestOptions:
     output_dir: Path = DEFAULT_OUTPUT_DIR
     src_root: Path | None = None
     analyzer_extra_pythonpath: tuple[Path, ...] = ()
-    experimental_fix_all: bool = False
+    fix_all_enabled: bool = True
 
 
 @dataclass(frozen=True)
@@ -90,7 +90,7 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
 
     try:
         packet = load_evidence_packet(evidence_path)
-        if options.experimental_fix_all:
+        if options.fix_all_enabled:
             fix_all_ingest = ingest_source_candidates(packet, evidence_path=evidence_path)
             if fix_all_ingest.has_candidates:
                 resolved_fix_all = resolve_fix_all(fix_all_ingest, src_root=options.src_root)
@@ -215,12 +215,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional source root for suffix-based source context search.",
     )
     parser.add_argument(
-        "--experimental-fix-all",
-        action="store_true",
+        "--no-fix-all",
+        action="store_false",
+        dest="fix_all_enabled",
         help=(
-            "Experimental: consume analyzer source_candidates sidecar and prepare "
-            "fix-all-by-file context. Defaults off; without this flag existing "
-            "cluster/multi/single behavior is unchanged."
+            "Disable default fix-all-by-file context and use legacy "
+            "cluster/multi/single fallback behavior."
         ),
     )
     return parser
@@ -285,7 +285,7 @@ def main(
             output_dir=args.output_dir,
             src_root=src_root,
             analyzer_extra_pythonpath=extra_pythonpath,
-            experimental_fix_all=args.experimental_fix_all,
+            fix_all_enabled=args.fix_all_enabled,
         )
     )
     if result.error:
