@@ -37,8 +37,10 @@ assistant can read. Any generated patch is a review draft for a human to inspect
 - Emits `error_clusters.json` for repeated Werror classes.
 - Emits `source_candidates.json` and observation reports for structured source
   diagnostic coverage.
-- Handles Clang `unknown warning option` diagnostics without `file:line`, and
-  avoids mistaking compiler command lines containing `-Werror` for diagnostics.
+- Includes analyzer support for Clang `unknown warning option` diagnostics
+  without `file:line`, and avoids mistaking compiler command lines containing
+  `-Werror` for diagnostics. This path is code-complete in this review build
+  and still needs end-to-end `multi-assistant` validation.
 
 ### Workflow Skill
 
@@ -59,28 +61,41 @@ assistant can read. Any generated patch is a review draft for a human to inspect
 - Provides a deterministic `format-patch` helper that turns edit specs into
   standard `git apply` compatible patch files.
 - Supports insert-after edit specs with anchor validation for `.spec` changes.
-- Handles Clang `-Wunknown-warning-option` failures caused by GCC-only
-  `.spec` CFLAGS/CXXFLAGS by preserving original GCC flags and inserting a
-  `%{toolchain_is clang}` stripping block.
+- Includes a `.spec` toolchain-flag compatibility path for Clang
+  `-Wunknown-warning-option` failures caused by GCC-only CFLAGS/CXXFLAGS. This
+  path preserves original GCC flags and inserts a `%{toolchain_is clang}`
+  stripping block, and is code-complete but still under real-package
+  validation.
 
 ## Review Release Status
 
-### Completed in This Review Build
+### Verified Usable in This Review Build
 
 - Four-skill layout is present and publishable.
 - `tizen-gbs-build` broken-root recovery is implemented and tested.
 - Analyzer Evidence Packet, token metrics, error clusters, source candidates,
   and observation reports are implemented.
-- Analyzer now recognizes Clang unknown-warning-option diagnostics and prevents
-  `-Werror` command-line pollution.
 - Workflow integration is implemented and keeps subprocess LLM calls disabled.
 - Patch-suggest can run from `--evidence` or `--buildlog`.
 - Patch-suggest fix-all-by-file is default, with `--no-fix-all` as a fallback.
+  This path has been validated on the inference-engine Cline flow where it
+  produced three file-group patch contexts and covered the previous missed
+  diagnostics.
 - Patch-suggest deterministic formatter supports replacement and insert-after
-  edit operations.
-- Patch-suggest `.spec` toolchain flag compatibility path is implemented for
-  confirmed `.spec` CFLAGS/CXXFLAGS sources.
+  edit operations for the validated source-diagnostic paths.
 - Current regression test suite passes on this release branch.
+
+### Code Complete, Validation in Progress
+
+- Analyzer Clang unknown-warning-option support is included in this release
+  branch. It prevents `-Werror` compiler command lines from becoming primary
+  diagnostics and emits structured unknown-warning-option Werror events, but it
+  has not yet completed end-to-end `multi-assistant` real-log validation.
+- Patch-suggest `.spec` toolchain flag compatibility is included in this
+  release branch. It is designed to preserve GCC CFLAGS/CXXFLAGS and strip only
+  Clang-unsupported options inside `%{toolchain_is clang}`, but it still depends
+  on the analyzer path above and has not yet completed end-to-end trigger
+  validation on `multi-assistant`.
 
 ### Not Completed / Review Boundaries
 
