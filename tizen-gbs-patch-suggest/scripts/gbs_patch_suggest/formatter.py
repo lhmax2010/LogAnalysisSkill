@@ -23,9 +23,12 @@ class Edit:
     """One explicit source edit requested by the outer assistant."""
 
     file: str
-    old: str
-    new: str
+    operation: str
+    old: str | None = None
+    new: str | None = None
     line: int | None = None
+    anchor: str | None = None
+    insert: str | None = None
     before: str | None = None
     after: str | None = None
 
@@ -217,21 +220,44 @@ def _parse_edit(raw: object, index: int) -> Edit:
     if not isinstance(raw, dict):
         raise FormatterError("invalid_edit", f"edit #{index} must be an object")
     file = _required_str(raw, "file")
-    old = _required_str(raw, "old")
-    if old == "":
-        raise FormatterError("empty_old", f"edit #{index} old text must not be empty")
-    new = _required_str(raw, "new")
+    operation = _optional_str(raw, "operation") or "replace"
     line = raw.get("line")
     if line is not None and (not isinstance(line, int) or line <= 0):
         raise FormatterError("invalid_line", f"edit #{index} line must be a positive integer")
-    return Edit(
-        file=file,
-        old=old,
-        new=new,
-        line=line,
-        before=_optional_str(raw, "before"),
-        after=_optional_str(raw, "after"),
-    )
+    if operation == "replace":
+        old = _required_str(raw, "old")
+        if old == "":
+            raise FormatterError("empty_old", f"edit #{index} old text must not be empty")
+        new = _required_str(raw, "new")
+        return Edit(
+            file=file,
+            operation=operation,
+            old=old,
+            new=new,
+            line=line,
+            before=_optional_str(raw, "before"),
+            after=_optional_str(raw, "after"),
+        )
+    if operation == "insert_after":
+        if line is None:
+            raise FormatterError(
+                "missing_line",
+                f"edit #{index} insert_after requires a positive line",
+            )
+        anchor = _required_str(raw, "anchor")
+        if anchor == "":
+            raise FormatterError("empty_anchor", f"edit #{index} anchor must not be empty")
+        insert = _required_str(raw, "insert")
+        if insert == "":
+            raise FormatterError("empty_insert", f"edit #{index} insert must not be empty")
+        return Edit(
+            file=file,
+            operation=operation,
+            line=line,
+            anchor=anchor,
+            insert=insert,
+        )
+    raise FormatterError("unsupported_operation", f"unsupported edit operation: {operation}")
 
 
 def _required_str(data: dict[str, object], key: str) -> str:
@@ -314,6 +340,9 @@ def _locate_file_edits(
 
 
 def _locate_edit(text: str, edit: Edit) -> _Match:
+    if edit.operation == "insert_after":
+        return _locate_insert_after(text, edit)
+    assert edit.old is not None
     if edit.before is not None or edit.after is not None:
         before = edit.before or ""
         after = edit.after or ""
@@ -401,6 +430,25 @@ def _disambiguate_by_line(edit: Edit, matches: list[_Match]) -> _Match:
     )
 
 
+def _locate_insert_after(text: str, edit: Edit) -> _Match:
+    assert edit.line is not None
+    assert edit.anchor is not None
+    lines = text.splitlines(keepends=True)
+    if edit.line > len(lines):
+        raise FormatterError(
+            "insert_out_of_range",
+            f"insert_after line {edit.line} is outside {edit.file}",
+        )
+    line_text = lines[edit.line - 1].removesuffix("\n").removesuffix("\r")
+    if line_text != edit.anchor:
+        raise FormatterError(
+            "anchor_not_found",
+            f"insert_after anchor did not match line {edit.line} for {edit.file}",
+        )
+    end = sum(len(line) for line in lines[: edit.line])
+    return _Match(start=end, end=end, start_line=edit.line + 1, end_line=edit.line + 1)
+
+
 def _line_for_offset(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
@@ -424,12 +472,21 @@ def _ensure_non_overlapping(edits: list[_ResolvedEdit]) -> None:
 def _apply_resolved_edits(text: str, edits: tuple[_ResolvedEdit, ...]) -> str:
     modified = text
     for resolved_edit in sorted(edits, key=lambda item: item.start, reverse=True):
+        replacement = _replacement_text(resolved_edit.edit)
         modified = (
             modified[: resolved_edit.start]
-            + resolved_edit.edit.new
+            + replacement
             + modified[resolved_edit.end :]
         )
     return modified
+
+
+def _replacement_text(edit: Edit) -> str:
+    if edit.operation == "insert_after":
+        assert edit.insert is not None
+        return edit.insert if edit.insert.endswith("\n") else edit.insert + "\n"
+    assert edit.new is not None
+    return edit.new
 
 
 def _read_source_text(path: Path) -> str:

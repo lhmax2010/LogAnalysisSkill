@@ -28,12 +28,20 @@ from gbs_patch_suggest.multi_candidate_render import (
 )
 from gbs_patch_suggest.render import write_outputs
 from gbs_patch_suggest.resolver import resolve_context
+from gbs_patch_suggest.spec_toolchain_flag_ingest import ingest_spec_toolchain_flags
+from gbs_patch_suggest.spec_toolchain_flag_render import write_spec_toolchain_flag_outputs
+from gbs_patch_suggest.spec_toolchain_flag_resolver import resolve_spec_toolchain_flags
 
 EXIT_SUCCESS = 0
 EXIT_FATAL = 1
 EXIT_EVIDENCE_UNREADABLE = 3
 DEFAULT_OUTPUT_DIR = Path(".gbs_patch_suggest")
-MODE_CONTEXT_DIRS = ("fix_all_context", "cluster_context", "candidate_context")
+MODE_CONTEXT_DIRS = (
+    "spec_toolchain_flag_context",
+    "fix_all_context",
+    "cluster_context",
+    "candidate_context",
+)
 
 
 @dataclass(frozen=True)
@@ -90,6 +98,26 @@ def run_patch_suggest(options: PatchSuggestOptions) -> PatchSuggestResult:
 
     try:
         packet = load_evidence_packet(evidence_path)
+        spec_flag_ingest = ingest_spec_toolchain_flags(packet)
+        if spec_flag_ingest.has_options:
+            resolved_spec_flags = resolve_spec_toolchain_flags(
+                spec_flag_ingest,
+                src_root=options.src_root,
+            )
+            _clean_mode_context_dirs(options.output_dir)
+            outputs = write_spec_toolchain_flag_outputs(
+                resolved_spec_flags,
+                options.output_dir,
+                evidence_path=evidence_path,
+                buildlog_path=options.buildlog_path,
+            )
+            return PatchSuggestResult(
+                exit_code=EXIT_SUCCESS,
+                output_dir=options.output_dir,
+                context_path=outputs["context_md"],
+                meta_path=outputs["meta_json"],
+                status=resolved_spec_flags.status,
+            )
         if options.fix_all_enabled:
             fix_all_ingest = ingest_source_candidates(packet, evidence_path=evidence_path)
             if fix_all_ingest.has_candidates:

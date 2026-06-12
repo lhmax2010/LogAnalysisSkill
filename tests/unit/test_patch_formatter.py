@@ -244,6 +244,104 @@ def test_format_patch_rebuilds_headers_for_multiple_files(tmp_path: Path) -> Non
     assert "+++ b/nested/two.c" in patch
 
 
+def test_format_patch_insert_after_generates_git_apply_compatible_patch(
+    tmp_path: Path,
+) -> None:
+    src_root = tmp_path / "src"
+    spec_file = src_root / "packaging" / "demo.spec"
+    spec_file.parent.mkdir(parents=True)
+    original = "\n".join(
+        [
+            "%build",
+            "export CFLAGS=\"$CFLAGS -Wno-stringop-overflow\"",
+            "%cmake .",
+            "",
+        ]
+    )
+    spec_file.write_text(original, encoding="utf-8")
+    insert = "\n".join(
+        [
+            "%{?_toolchain:",
+            "%if %{toolchain_is clang}",
+            "CFLAGS=${CFLAGS/-Wno-stringop-overflow/}",
+            "%endif",
+            "}",
+        ]
+    )
+    spec = write_spec(
+        tmp_path,
+        [
+            {
+                "operation": "insert_after",
+                "file": "packaging/demo.spec",
+                "line": 2,
+                "anchor": "export CFLAGS=\"$CFLAGS -Wno-stringop-overflow\"",
+                "insert": insert,
+            }
+        ],
+    )
+    output = tmp_path / "candidate.patch"
+
+    result = format_patch(FormatPatchOptions(src_root, spec, output, check=True))
+
+    assert result.exit_code == 0
+    assert spec_file.read_text(encoding="utf-8") == original
+    patch = output.read_text(encoding="utf-8")
+    assert "diff --git a/packaging/demo.spec b/packaging/demo.spec" in patch
+    assert " export CFLAGS=\"$CFLAGS -Wno-stringop-overflow\"" in patch
+    assert "+%{?_toolchain:" in patch
+    assert "+CFLAGS=${CFLAGS/-Wno-stringop-overflow/}" in patch
+    subprocess.run(["git", "-C", str(src_root), "apply", "--check", str(output)], check=True)
+
+
+def test_format_patch_insert_after_rejects_anchor_mismatch(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    spec_file = src_root / "packaging" / "demo.spec"
+    spec_file.parent.mkdir(parents=True)
+    spec_file.write_text("%build\n%cmake .\n", encoding="utf-8")
+    spec = write_spec(
+        tmp_path,
+        [
+            {
+                "operation": "insert_after",
+                "file": "packaging/demo.spec",
+                "line": 2,
+                "anchor": "export CFLAGS=\"$CFLAGS\"",
+                "insert": "inserted\n",
+            }
+        ],
+    )
+
+    result = format_patch(FormatPatchOptions(src_root, spec, tmp_path / "candidate.patch"))
+
+    assert result.exit_code == 1
+    assert result.error_code == "anchor_not_found"
+
+
+def test_format_patch_insert_after_rejects_out_of_range_line(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    spec_file = src_root / "packaging" / "demo.spec"
+    spec_file.parent.mkdir(parents=True)
+    spec_file.write_text("%build\n", encoding="utf-8")
+    spec = write_spec(
+        tmp_path,
+        [
+            {
+                "operation": "insert_after",
+                "file": "packaging/demo.spec",
+                "line": 5,
+                "anchor": "%build",
+                "insert": "inserted\n",
+            }
+        ],
+    )
+
+    result = format_patch(FormatPatchOptions(src_root, spec, tmp_path / "candidate.patch"))
+
+    assert result.exit_code == 1
+    assert result.error_code == "insert_out_of_range"
+
+
 def test_format_patch_cli_subcommand_does_not_break_context_cli(tmp_path: Path) -> None:
     src_root = tmp_path / "src"
     source = src_root / "src" / "demo.c"
