@@ -99,6 +99,46 @@ def test_rank_prefers_werror_error_over_earlier_exempted_warning() -> None:
     )
 
 
+def test_rank_unknown_warning_options_not_shadowed_by_bare_werror_commands() -> None:
+    scan_result = scan(
+        "\n".join(
+            [
+                "Executing(%build): /bin/sh -e /var/tmp/rpm-tmp.x",
+                (
+                    "cd /home/abuild/rpmbuild/BUILD/pkg && clang "
+                    "-Werror -Wno-stringop-overflow -c src/a.c"
+                ),
+                (
+                    "cd /home/abuild/rpmbuild/BUILD/pkg && clang "
+                    "-Werror -Wno-stringop-truncation -c src/b.c"
+                ),
+                (
+                    "error: unknown warning option '-Wno-stringop-overflow'; "
+                    "did you mean '-Wno-shift-overflow'? "
+                    "[-Werror,-Wunknown-warning-option]"
+                ),
+                (
+                    "error: unknown warning option '-Wno-stringop-truncation'; "
+                    "did you mean '-Wno-string-concatenation'? "
+                    "[-Werror,-Wunknown-warning-option]"
+                ),
+                "",
+            ]
+        )
+    )
+
+    result = rank_causes(scan_result)
+
+    assert [event["kind"] for event in scan_result.as_dict()["events"]] == [
+        "werror",
+        "werror",
+    ]
+    summaries = [candidate.summary for candidate in result.root_cause_candidates]
+    assert "-Wno-stringop-overflow" in summaries[0]
+    assert "-Wno-stringop-truncation" in summaries[1]
+    assert all("cd /home/abuild" not in summary for summary in summaries)
+
+
 def test_rank_severity_breaks_close_score_near_tie_before_line_order() -> None:
     class CloseScoreClassifier:
         def classify(self, event, scan_result):

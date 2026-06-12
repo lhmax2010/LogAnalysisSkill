@@ -2,6 +2,51 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.3.0-rc1] - 2026-06-12
+
+Review release for company release-server validation. This release candidate
+includes the current four-skill workflow and the patch-suggest work needed for
+real Tizen `gbs` compiler migration review. It is intended for user review and
+field validation before a final stable v1.3.0 release.
+
+### Added
+
+- New `tizen-gbs-patch-suggest` skill: prepares LLM-ready patch context from
+  analyzer evidence or build logs, without calling an LLM or applying patches.
+- Patch-suggest deterministic `format-patch` helper based on edit specs and
+  `git diff --no-index`, so generated patches use standard `git apply`
+  compatible format.
+- Fix-all-by-file patch context mode: analyzer-exposed source diagnostics are
+  grouped by file and rendered as one patch context per file.
+- Edit-spec skeleton generation for reachable source diagnostics, including
+  tab-preserving original lines and suppression of misleading structural lines.
+- Analyzer `source_candidates.json` sidecar and observation reporting for
+  structured source diagnostic coverage.
+- Analyzer `error_clusters` summary and sidecar for repeated Werror classes.
+- Analyzer support for Clang `unknown warning option` diagnostics without
+  `file:line`, preventing compiler command lines from becoming the primary
+  error.
+- Patch-suggest `.spec` toolchain flag compatibility path for Clang
+  `-Wunknown-warning-option` failures caused by GCC-only CFLAGS/CXXFLAGS.
+
+### Changed
+
+- `tizen-gbs-patch-suggest` now defaults to fix-all-by-file when analyzer
+  source candidate data is available, with `--no-fix-all` as an escape hatch.
+- Workflow continues to build -> analyze -> suggest, and can surface patch
+  context for outer Claude/Cline review without invoking an LLM in subprocesses.
+- README is updated for release-server review with current feature status,
+  completed work, and known unfinished areas.
+
+### Not Yet Final
+
+- The release candidate still requires real package validation on the release
+  server before stable v1.3.0.
+- Patch suggestions remain review drafts. The tool never applies patches and
+  never modifies source trees automatically.
+- Non-source failures and uncertain source ownership still degrade to advisory
+  output rather than automatic patch context.
+
 ## [1.1.0] - 2026-06-01
 
 ### Added

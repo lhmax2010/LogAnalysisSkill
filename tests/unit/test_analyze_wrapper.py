@@ -195,6 +195,71 @@ def test_analyze_buildlog_writes_source_candidates_sidecar_additively(
     assert "source_candidate_observation" not in markdown
 
 
+def test_analyze_unknown_warning_option_is_not_shadowed_by_werror_command_lines(
+    tmp_path: Path,
+) -> None:
+    buildlog = tmp_path / "build.log"
+    buildlog.write_text(
+        "\n".join(
+            [
+                "Executing(%build): /bin/sh -e /var/tmp/rpm-tmp.x",
+                (
+                    "cd /home/abuild/rpmbuild/BUILD/multi-assistant-0.3.22 && "
+                    "armv7l-tizen-linux-gnueabi-clang -Dma_ui_EXPORTS -Werror "
+                    "-Wno-stringop-overflow -c ma_ui.c"
+                ),
+                (
+                    "cd /home/abuild/rpmbuild/BUILD/multi-assistant-0.3.22 && "
+                    "armv7l-tizen-linux-gnueabi-clang -Dma_core_EXPORTS -Werror "
+                    "-Wno-stringop-truncation -c ma_core.c"
+                ),
+                (
+                    "error: unknown warning option '-Wno-stringop-overflow'; "
+                    "did you mean '-Wno-shift-overflow'? "
+                    "[-Werror,-Wunknown-warning-option]"
+                ),
+                (
+                    "error: unknown warning option '-Wno-stringop-truncation'; "
+                    "did you mean '-Wno-string-concatenation'? "
+                    "[-Werror,-Wunknown-warning-option]"
+                ),
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = analyze_buildlog(
+        AnalyzeOptions(
+            buildlog_path=buildlog,
+            src_root=tmp_path,
+            output_dir=tmp_path / "out",
+            output_format="both",
+            use_tiktoken=False,
+        )
+    )
+
+    assert result.exit_code == EXIT_SUCCESS
+    assert result.packet is not None
+    primary = result.packet["primary_error"]
+    assert primary["kind"] == "werror"
+    assert "unknown warning option" in primary["message"]
+    assert primary["details"] == {
+        "diagnostic_type": "unknown_warning_option",
+        "warning_option": "-Wno-stringop-overflow",
+    }
+    candidate_messages = [
+        candidate["message"] for candidate in result.packet["root_cause_candidates"]
+    ]
+    assert any("-Wno-stringop-overflow" in message for message in candidate_messages)
+    assert any("-Wno-stringop-truncation" in message for message in candidate_messages)
+    assert all("cd /home/abuild" not in message for message in candidate_messages)
+    source_summary = result.packet["source_candidates"]
+    assert source_summary["candidate_count"] == 0
+    assert source_summary["excluded_summary"]["missing_file_count"] == 2
+    assert source_summary["excluded_summary"]["missing_line_count"] == 2
+
+
 def test_main_auto_src_root_with_bare_buildlog_keeps_markdown_punctuation(
     tmp_path: Path,
     monkeypatch,
