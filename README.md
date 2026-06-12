@@ -1,52 +1,115 @@
-# LogAnalysisSkill
+# LogAnalysisSkill v1.3.0rc1 Review Release
 
-Tizen `gbs` build assistance skills for local AI assistants. The repository is
-organized in the same shape as the publishable skills: three independent skill
-folders, each with its own `SKILL.md` and `scripts/` runtime.
+Tizen `gbs` build assistance skills for local AI assistants such as Claude Code
+or Cline. This review release is prepared for company release-server validation.
+It contains four publishable skills that work together to build, analyze, and
+prepare reviewable patch suggestions for Tizen package build failures.
 
-## Skill Layout
+This repository does not run an LLM by itself and never applies patches. It
+collects deterministic build evidence and writes context files that an outer
+assistant can read. Any generated patch is a review draft for a human to inspect.
 
-```text
-LogAnalysisSkill/
-├── tizen-gbs-build/
-│   ├── SKILL.md
-│   └── scripts/
-│       └── gbs_build_skill/
-├── tizen-gbs-log-analysis/
-│   ├── SKILL.md
-│   └── scripts/
-│       └── gbs_analyzer/
-│           └── patterns/
-├── tizen-gbs-build-workflow/
-│   ├── SKILL.md
-│   └── scripts/
-│       └── gbs_workflow/
-├── tests/
-├── integrations/
-└── docs/
-```
+## Included Skills
 
-## What Each Skill Does
-
-| Skill | Use It When | Entry Point |
+| Skill | Purpose | Entry Point |
 | --- | --- | --- |
-| `tizen-gbs-build` | You only want to run `gbs build` and capture a log plus exit code. | `python -m gbs_build_skill` or `tizen-gbs-build/scripts/run_build.py` |
-| `tizen-gbs-log-analysis` | You already have a buildlog and want a compact root-cause Evidence Packet. | `python -m gbs_analyzer analyze` or `tizen-gbs-log-analysis/scripts/run_analyzer.py analyze` |
-| `tizen-gbs-build-workflow` | You want the full local flow: build, analyze failures, and generate suggestion files. | `python -m gbs_workflow` or `tizen-gbs-build-workflow/scripts/run_workflow.py` |
+| `tizen-gbs-build` | Runs `gbs build`, captures compiler logs, finds GBS failure logs, and retries once with `--clean` when the build root is broken. | `python3 -m gbs_build_skill` or `tizen-gbs-build/scripts/run_build.py` |
+| `tizen-gbs-log-analysis` | Analyzes build logs and produces compact Evidence Packets, token metrics, error clusters, and source candidate sidecars. | `python3 -m gbs_analyzer analyze` or `tizen-gbs-log-analysis/scripts/run_analyzer.py analyze` |
+| `tizen-gbs-build-workflow` | Orchestrates build -> analyze -> advisory suggestions -> optional patch context. | `python3 -m gbs_workflow` or `tizen-gbs-build-workflow/scripts/run_workflow.py` |
+| `tizen-gbs-patch-suggest` | Prepares patch-generation context, edit-spec skeletons, and deterministic patch-formatting helpers. | `python3 -m gbs_patch_suggest` or `tizen-gbs-patch-suggest/scripts/run_patch_suggest.py` |
 
-The workflow skill depends on the build and log-analysis skills. Install all
-three into the same Python environment, or keep the three skill folders next to
-each other and use the direct launchers.
+## Main Features
+
+### Build Skill
+
+- Runs `gbs build` with explicit `gbs.conf` and target architecture.
+- Captures terminal compiler output into `compiler.log`.
+- Locates structured GBS package failure logs for downstream analysis.
+- Detects broken GBS build roots and retries exactly once with `--clean`.
+- Uses non-interactive stdin so broken-root prompts do not hang automation.
+
+### Analyzer Skill
+
+- Scans Tizen `gbs` build logs and extracts structured diagnostics.
+- Ranks likely root causes and produces `evidence_packet.json` and
+  `evidence_packet.md`.
+- Emits `perf_report.json` with downstream Claude-facing token estimates.
+- Emits `error_clusters.json` for repeated Werror classes.
+- Emits `source_candidates.json` and observation reports for structured source
+  diagnostic coverage.
+- Handles Clang `unknown warning option` diagnostics without `file:line`, and
+  avoids mistaking compiler command lines containing `-Werror` for diagnostics.
+
+### Workflow Skill
+
+- Runs the local build -> analyze -> suggestion flow.
+- Keeps verdicts and exit codes deterministic.
+- Adds optional patch context output without calling an LLM in subprocesses.
+- Reports downstream token estimates in `workflow_summary.md`.
+- Does not apply patches or modify package source trees.
+
+### Patch Suggest Skill
+
+- Consumes analyzer evidence or a build log and writes LLM-ready patch context.
+- Defaults to fix-all-by-file when analyzer source candidates are available.
+- Groups patch-ready diagnostics by file and writes one per-file context.
+- Generates edit-spec skeletons with tab-preserving original lines.
+- Suppresses misleading skeleton rows when diagnostics point to structural
+  closing lines rather than the real edit site.
+- Provides a deterministic `format-patch` helper that turns edit specs into
+  standard `git apply` compatible patch files.
+- Supports insert-after edit specs with anchor validation for `.spec` changes.
+- Handles Clang `-Wunknown-warning-option` failures caused by GCC-only
+  `.spec` CFLAGS/CXXFLAGS by preserving original GCC flags and inserting a
+  `%{toolchain_is clang}` stripping block.
+
+## Review Release Status
+
+### Completed in This Review Build
+
+- Four-skill layout is present and publishable.
+- `tizen-gbs-build` broken-root recovery is implemented and tested.
+- Analyzer Evidence Packet, token metrics, error clusters, source candidates,
+  and observation reports are implemented.
+- Analyzer now recognizes Clang unknown-warning-option diagnostics and prevents
+  `-Werror` command-line pollution.
+- Workflow integration is implemented and keeps subprocess LLM calls disabled.
+- Patch-suggest can run from `--evidence` or `--buildlog`.
+- Patch-suggest fix-all-by-file is default, with `--no-fix-all` as a fallback.
+- Patch-suggest deterministic formatter supports replacement and insert-after
+  edit operations.
+- Patch-suggest `.spec` toolchain flag compatibility path is implemented for
+  confirmed `.spec` CFLAGS/CXXFLAGS sources.
+- Current regression test suite passes on this release branch.
+
+### Not Completed / Review Boundaries
+
+- Stable v1.3.0 is not tagged yet. This is `1.3.0rc1` for review-server
+  validation.
+- The tools do not apply patches. Users must review patch files and run
+  `git apply --check` / `git apply` themselves.
+- The tools do not call an LLM. Patch semantics are still decided by the outer
+  assistant and human reviewer.
+- Source fixability is conservative. Uncertain ownership, generated files,
+  third-party code, system headers, and missing source roots degrade to advisory
+  output.
+- Non-source failures such as depsolve, linker, RPM phase, patch application,
+  and environment failures remain advisory rather than automatic patch context.
+- `.spec` toolchain flag handling currently targets unknown Clang warning
+  options proven to come from `.spec` CFLAGS/CXXFLAGS. Unknown flag sources such
+  as CMakeLists, environment variables, or toolchain files degrade to advisory.
+- Real package coverage still needs release-server validation before final
+  stable release.
 
 ## Install Mode
 
-Use this mode when developing or when you want the normal `python -m ...`
-commands.
+Use editable install when developing or when `python3 -m ...` entry points are
+preferred:
 
 ```bash
 git clone https://github.com/lhmax2010/LogAnalysisSkill.git
 cd LogAnalysisSkill
-python -m pip install -e .
+python3 -m pip install -e .
 ```
 
 System dependency:
@@ -58,93 +121,102 @@ sudo apt install universal-ctags
 Examples:
 
 ```bash
-python -m gbs_build_skill \
+python3 -m gbs_build_skill \
     --conf gbs.conf \
     --arch armv7l \
     --include-all \
     --output-log .gbs_workflow/compiler.log
 
-python -m gbs_analyzer analyze /path/to/buildlog \
+python3 -m gbs_analyzer analyze /path/to/buildlog \
     --src-root /path/to/source \
     --max-tokens 1800 \
     --output-dir ./out
 
-python -m gbs_workflow \
+python3 -m gbs_workflow \
     --conf gbs.conf \
     --arch armv7l \
     --include-all \
     --src-root . \
     --output-dir .gbs_workflow
+
+python3 -m gbs_patch_suggest \
+    --buildlog .gbs_workflow/compiler.log \
+    --src-root . \
+    --output-dir .gbs_patch_suggest
 ```
 
 ## Direct Folder Mode
 
 Use this mode when a skill hub checks out or copies the skill folders directly.
-Keep the three folders side by side:
+Keep all four folders side by side:
 
 ```text
 skills/
 ├── tizen-gbs-build/
 ├── tizen-gbs-log-analysis/
-└── tizen-gbs-build-workflow/
+├── tizen-gbs-build-workflow/
+└── tizen-gbs-patch-suggest/
 ```
 
-Run the launchers from any working directory:
+Run direct launchers:
 
 ```bash
-python /path/to/skills/tizen-gbs-build/scripts/run_build.py \
+python3 /path/to/skills/tizen-gbs-build/scripts/run_build.py \
     --conf gbs.conf \
     --arch armv7l \
     --include-all \
     --output-log .gbs_workflow/compiler.log
 
-python /path/to/skills/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze /path/to/buildlog \
+python3 /path/to/skills/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze /path/to/buildlog \
     --src-root /path/to/source \
     --max-tokens 1800 \
     --output-dir ./out
 
-python /path/to/skills/tizen-gbs-build-workflow/scripts/run_workflow.py \
+python3 /path/to/skills/tizen-gbs-build-workflow/scripts/run_workflow.py \
     --conf gbs.conf \
     --arch armv7l \
     --include-all \
     --src-root . \
     --output-dir .gbs_workflow
+
+python3 /path/to/skills/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py \
+    --buildlog .gbs_workflow/compiler.log \
+    --src-root . \
+    --output-dir .gbs_patch_suggest
 ```
 
-If the workflow skill is not next to the other two folders, set:
+If the workflow or patch-suggest skill is not next to sibling skills, set the
+needed discovery variables:
 
 ```bash
 export TIZEN_GBS_BUILD_SKILL_DIR=/path/to/tizen-gbs-build
 export TIZEN_GBS_LOG_ANALYSIS_SKILL_DIR=/path/to/tizen-gbs-log-analysis
+export TIZEN_GBS_PATCH_SUGGEST_SKILL_DIR=/path/to/tizen-gbs-patch-suggest
 ```
 
-## Company Hub Deployment & Cline Integration
+## Release Server Review Artifacts
 
-For company-machine deployment, clone the stable release branch and publish the
-three skill folders as the reviewable artifacts:
+For release-server review, publish the four skill folders as separate artifacts:
 
-```bash
-git clone --branch release/v1.0 https://github.com/lhmax2010/LogAnalysisSkill.git
+```text
+tizen-gbs-build/
+tizen-gbs-log-analysis/
+tizen-gbs-build-workflow/
+tizen-gbs-patch-suggest/
 ```
 
-Upload `tizen-gbs-build/`, `tizen-gbs-log-analysis/`, and
-`tizen-gbs-build-workflow/` to the company skill hub as separate skills. Each
-folder is self-contained for skill review because it includes its own
-`SKILL.md` and `scripts/` runtime. If the hub expects archives, zip each skill
-folder independently rather than uploading the whole repository as one skill.
+Each folder contains its own `SKILL.md` and `scripts/` runtime. If the release
+server expects archives, zip each skill folder independently rather than
+uploading the whole repository as one skill.
 
-For Cline or another local assistant, point the tool at the three `SKILL.md`
-files directly, or install them through the company hub if that is how your
-environment exposes skills. The workflow skill depends on the build and
-log-analysis skills, so make all three available when users want the full
-build -> analyze -> suggestions flow.
-
-After installation, verify routing with three simple prompts:
+Recommended review prompts:
 
 - Build only: "Run a Tizen gbs build and capture the compiler log."
 - Analyze only: "Analyze this gbs buildlog and find the root cause."
 - Full workflow: "Run the gbs build, analyze it if it fails, and generate
   suggestion files."
+- Patch context: "Use patch-suggest on this buildlog and prepare reviewable
+  patch context."
 
 ## Outputs
 
@@ -153,7 +225,10 @@ Analyzer output:
 - `evidence_packet.json`: machine-readable root-cause packet
 - `evidence_packet.md`: compact LLM-facing packet
 - `perf_report.json`: runtime and token metrics
-- `trace.jsonl`: structured debug trace
+- `error_clusters.json`: full locations for repeated source warning classes
+- `source_candidates.json`: structured source diagnostic candidates
+- `source_candidate_observation.json`: coverage and old-path comparison report
+- `trace.jsonl`: optional structured debug trace
 
 Workflow output:
 
@@ -162,26 +237,41 @@ Workflow output:
 ├── compiler.log
 ├── analyzer_output/
 ├── suggestions/
+├── patch_context/
 └── workflow_summary.md
 ```
 
-Workflow suggestions are advisory. The workflow never applies patches and never
-retries builds automatically.
+Patch-suggest output:
 
-## Development
+```text
+.gbs_patch_suggest/
+├── README.md
+├── context.md
+├── meta.json
+├── fix_all_context/
+├── cluster_context/
+├── candidate_context/
+└── spec_toolchain_flag_context/
+```
 
-Read these first before making code changes:
+Actual output depends on the selected diagnostic path. Read `README.md` and
+`meta.json` in the output directory first, then open only the relevant per-file
+context files.
 
-1. `docs/CODEX_PROMPT.md`
-2. `docs/DESIGN.md`
-3. `.dev_memory/current.yaml`
+## Safety Rules
 
-Useful links:
+- The tools never call an LLM.
+- The tools never run `git apply` or `patch`.
+- The tools never modify source trees.
+- Generated `.patch` files are suggestions only.
+- Users should review patches and run `git apply --check` before applying.
+
+## Development References
 
 - User guide: `docs/README_FOR_USER.md`
 - Analyzer design baseline: `docs/DESIGN.md`
 - Build workflow design: `docs/build_workflow/DESIGN.md`
-- Cline examples: `integrations/cline/README.md`
+- Patch-suggest design: `docs/patch_suggest_design.md`
 - Historical decisions: `.dev_memory/`
 
 ## License
