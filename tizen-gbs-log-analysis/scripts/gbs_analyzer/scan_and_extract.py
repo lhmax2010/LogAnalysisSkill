@@ -30,6 +30,16 @@ COMPILER_PATTERN = re.compile(
     r"(?P<severity>fatal error|error|warning):\s*(?P<message>.*)",
     re.IGNORECASE,
 )
+UNKNOWN_WARNING_OPTION_PATTERN = re.compile(
+    r"^(?:[A-Za-z0-9_./+-]+:\s*)?"
+    r"(?:error|warning):\s*unknown warning option "
+    r"['\"](?P<option>-W(?:no-)?[^'\"]+)['\"]",
+    re.IGNORECASE,
+)
+WERROR_DIAGNOSTIC_PATTERN = re.compile(
+    r"^(?:[A-Za-z0-9_./+-]+:\s*)?(?:error|warning):\s*.*\[-Werror(?:,|\])",
+    re.IGNORECASE,
+)
 LINKER_UNDEF_PATTERN = re.compile(r"undefined reference to [`'\"](?P<symbol>.+?)[`'\"]")
 LINKER_MISSING_PATTERN = re.compile(r"cannot find -l(?P<library>[A-Za-z0-9_.+-]+)")
 PATCH_PATTERNS = [
@@ -376,10 +386,18 @@ class _ScanState:
         if "file not found:" in lowered or "installed (but unpackaged) file(s) found" in lowered:
             return self._event(event_id, "install_missing", "error", text, line)
 
-        if "-werror" in lowered or "all warnings being treated as errors" in lowered:
-            compiler_match = COMPILER_PATTERN.search(text)
-            if compiler_match:
-                return self._werror_event(event_id, line, compiler_match)
+        unknown_warning_option = _match_unknown_warning_option(text)
+        if unknown_warning_option is not None:
+            return self._unknown_warning_option_event(event_id, line, unknown_warning_option)
+
+        compiler_match = COMPILER_PATTERN.search(text)
+        if compiler_match and "-werror" in lowered:
+            return self._werror_event(event_id, line, compiler_match)
+
+        if "all warnings being treated as errors" in lowered:
+            return self._event(event_id, "werror", "error", text, line)
+
+        if _looks_like_werror_diagnostic(text):
             return self._event(event_id, "werror", "error", text, line)
 
         linker_missing = LINKER_MISSING_PATTERN.search(text)
@@ -404,7 +422,6 @@ class _ScanState:
                 details={"symbol": linker_undef.group("symbol")},
             )
 
-        compiler_match = COMPILER_PATTERN.search(text)
         if compiler_match:
             return self._compiler_event(event_id, line, compiler_match)
 
@@ -476,6 +493,21 @@ class _ScanState:
             diagnostic_line=int(match.group("line")),
             column=int(column) if column is not None else None,
             details=details,
+        )
+
+    def _unknown_warning_option_event(
+        self, event_id: str, line: LogLine, match: re.Match[str]
+    ) -> DiagnosticEvent:
+        return self._event(
+            event_id,
+            "werror",
+            "error",
+            line.text,
+            line,
+            details={
+                "diagnostic_type": "unknown_warning_option",
+                "warning_option": match.group("option"),
+            },
         )
 
     def _current_command_tool(self) -> str | None:
@@ -638,6 +670,16 @@ def _tool_from_command(command_line: str) -> str | None:
 
 def _may_contain_diagnostic(lowered_text: str) -> bool:
     return any(marker in lowered_text for marker in DIAGNOSTIC_MARKERS)
+
+
+def _match_unknown_warning_option(text: str) -> re.Match[str] | None:
+    if "-wunknown-warning-option" not in text.lower():
+        return None
+    return UNKNOWN_WARNING_OPTION_PATTERN.search(text)
+
+
+def _looks_like_werror_diagnostic(text: str) -> bool:
+    return WERROR_DIAGNOSTIC_PATTERN.search(text) is not None
 
 
 def _looks_like_raw_error(lowered_text: str) -> bool:

@@ -240,6 +240,55 @@ def test_detects_werror(tmp_path: Path) -> None:
     assert event.column is None
 
 
+def test_bare_werror_command_line_is_not_a_diagnostic(tmp_path: Path) -> None:
+    path = write_log(
+        tmp_path,
+        (
+            "cd /home/abuild/rpmbuild/BUILD/pkg && "
+            "armv7l-tizen-linux-gnueabi-clang -Werror -Wno-stringop-overflow "
+            "-c src/ma_ui.c\n"
+        ),
+    )
+
+    assert scan_buildlog(path).events == []
+
+
+def test_detects_unknown_warning_option_werror_without_location(tmp_path: Path) -> None:
+    path = write_log(
+        tmp_path,
+        (
+            "clang: error: unknown warning option '-Wno-stringop-overflow'; "
+            "did you mean '-Wno-shift-overflow'? "
+            "[-Werror,-Wunknown-warning-option]\n"
+        ),
+    )
+
+    event = scan_buildlog(path).events[0]
+
+    assert event.kind == "werror"
+    assert event.severity == "error"
+    assert event.file is None
+    assert event.line is None
+    assert event.column is None
+    assert event.message.startswith("clang: error: unknown warning option")
+    assert event.details == {
+        "diagnostic_type": "unknown_warning_option",
+        "warning_option": "-Wno-stringop-overflow",
+    }
+
+
+def test_detects_unlocated_werror_diagnostic_prefix(tmp_path: Path) -> None:
+    path = write_log(tmp_path, "error: plugin rejected input [-Werror,-Wplugin]\n")
+
+    event = scan_buildlog(path).events[0]
+
+    assert event.kind == "werror"
+    assert event.severity == "error"
+    assert event.file is None
+    assert event.line is None
+    assert event.message == "error: plugin rejected input [-Werror,-Wplugin]"
+
+
 def test_detects_werror_diagnostic_location(tmp_path: Path) -> None:
     path = write_log(
         tmp_path,
