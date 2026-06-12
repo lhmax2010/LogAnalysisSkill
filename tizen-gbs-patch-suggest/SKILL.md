@@ -1,6 +1,6 @@
 ---
 name: tizen-gbs-patch-suggest
-description: Prepares LLM-ready patch-generation context from analyzer Evidence Packet JSON or a Tizen gbs build log for compiler or Werror source diagnostics. Use when the user wants help generating a source fix patch, candidate unified diff, or repair strategy for a compiler error, -Werror failure, warnings-as-errors diagnostic, and has an Evidence Packet, analyzer output directory, or buildlog. This skill writes context.md for Claude to read; it is not a semantic patch generator and never applies changes.
+description: Prepares LLM-ready patch-generation context from analyzer Evidence Packet JSON or a Tizen gbs build log for compiler, Werror, or .spec toolchain flag diagnostics. Use when the user wants help generating a source fix patch, candidate unified diff, or repair strategy for a compiler error, -Werror failure, warnings-as-errors diagnostic, Clang unknown warning option, or .spec CFLAGS/CXXFLAGS compatibility issue, and has an Evidence Packet, analyzer output directory, or buildlog. This skill writes context.md for Claude to read; it is not a semantic patch generator and never applies changes.
 compatibility: Requires local access to analyzer Evidence Packet JSON or a Tizen gbs build log and the gbs_patch_suggest Python package or this skill folder. Buildlog mode also requires gbs_analyzer installed or a sibling tizen-gbs-log-analysis skill folder. Optional source context collection requires access to the Tizen package source tree. Built for local AI assistants such as Claude Code or Cline.
 ---
 
@@ -33,6 +33,8 @@ Invoke patch-suggest when any of these are true:
   Werror diagnostic without applying changes.
 - The analyzer primary error is `compiler` or `werror` and the next step is patch
   drafting rather than more log analysis.
+- The diagnostic is Clang `unknown warning option` / `-Wunknown-warning-option`
+  and the option may come from `.spec` `CFLAGS` or `CXXFLAGS`.
 
 Do not use this skill for linker, dependency-resolution, patch-application,
 spec-script, or install failures. Use the workflow suggesters for those fault
@@ -113,7 +115,24 @@ Actions:
 
 Result: One command turns a build log into patch-generation context.
 
-### Example 4: Evidence is not a compiler or Werror source diagnostic
+### Example 4: Clang rejects GCC-only warning flags from .spec
+
+User says: "Clang fails on unknown warning option -Wno-stringop-overflow from this package."
+
+Actions:
+
+1. Run patch-suggest with the evidence or build log and pass the package source
+   root with `--src-root` so the skill can inspect the `.spec`.
+2. If status is `spec_toolchain_flag_context_available`, read `context.md` and
+   use the generated edit spec under `spec_toolchain_flag_context/`.
+3. The generated spec patch must preserve the original `CFLAGS` and `CXXFLAGS`
+   lines. Do not delete GCC-only flags from those original lines.
+4. Run the formatter to create the candidate patch. Do not apply it.
+
+Result: GCC keeps the original flags, while Clang strips only the unknown
+options inside a `%{toolchain_is clang}` branch.
+
+### Example 5: Evidence is not a compiler or Werror source diagnostic
 
 User says: "Generate a source patch from this depsolve evidence."
 
@@ -220,7 +239,18 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
 
 1. Read `.gbs_patch_suggest/README.md` first for the output summary, then read
    `.gbs_patch_suggest/meta.json` to identify the status and mode.
-2. If status is `fix_all_context_available`, process fix-all output one file at
+2. If status is `spec_toolchain_flag_context_available`, process the generated
+   `.spec` compatibility edit spec:
+   - Read `.gbs_patch_suggest/context.md`.
+   - Use `.gbs_patch_suggest/spec_toolchain_flag_context/edit_spec_spec_toolchain_flags.json`.
+   - Do not delete options from the original `.spec` `CFLAGS` or `CXXFLAGS`
+     lines; GCC must keep those flags.
+   - The patch should only insert a `%{toolchain_is clang}` branch that strips
+     the Clang-unknown options.
+3. If status is `spec_toolchain_flag_advisory`, do not guess a `.spec` patch.
+   Confirm the flag source and insertion point with the user or by inspecting
+   the `.spec` before preparing any edit.
+4. If status is `fix_all_context_available`, process fix-all output one file at
    a time:
    - Read `.gbs_patch_suggest/context.md` for the overview and file order.
    - Open exactly one `.gbs_patch_suggest/fix_all_context/files/*.md` file.
@@ -231,23 +261,23 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
      candidate patch.
    - Then move to the next per-file context. Do not load every per-file context
      or every edit spec at once.
-3. If status is `cluster_context_available`, process the cluster output one
+5. If status is `cluster_context_available`, process the cluster output one
    file at a time from `.gbs_patch_suggest/cluster_context/`.
-4. If status is `multi_candidate_context_available`, process one candidate at a
+6. If status is `multi_candidate_context_available`, process one candidate at a
    time from `.gbs_patch_suggest/candidate_context/`.
-5. For single-diagnostic statuses such as `source_context_available`,
+7. For single-diagnostic statuses such as `source_context_available`,
    `source_context_unavailable`, `source_context_ambiguous`, `diagnostic_only`,
    or `not_applicable`, read `.gbs_patch_suggest/context.md` as the primary
    prompt.
-6. If a context already contains Level A source context, do not re-read the
+8. If a context already contains Level A source context, do not re-read the
    whole source file or large source areas. The context window is the primary
    source material for patch drafting.
-7. Targeted root-cause verification is still allowed and expected: search or
+9. Targeted root-cause verification is still allowed and expected: search or
    grep for a specific referenced function or symbol before preserving it. This
    focused check is different from reading a whole log or broad source tree.
-8. If a context says source context is unavailable or ambiguous, Claude must
+10. If a context says source context is unavailable or ambiguous, Claude must
    inspect the reported file or candidate paths before generating any patch.
-9. Decide candidate repairs yourself as the outer assistant, following the
+11. Decide candidate repairs yourself as the outer assistant, following the
    relevant context exactly:
    - write explicit `edit_spec_N.json` candidate(s)
    - include approach, explicit assumption, and confidence
@@ -257,7 +287,7 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
    - if the same `old` text appears in multiple places, write multiple edits
      with their own `line` values instead of making `old` a giant multi-line
      block
-10. For each candidate, run the deterministic formatter to create the patch file:
+12. For each candidate, run the deterministic formatter to create the patch file:
 
    ```bash
    python3 -m gbs_patch_suggest format-patch \
@@ -277,17 +307,17 @@ Result: Non-source-diagnostic failures are routed away from patch-suggest.
        --output .gbs_patch_suggest/candidate_N.patch \
        --check
    ```
-11. If the formatter fails, revise the edit spec and rerun the formatter.
+13. If the formatter fails, revise the edit spec and rerun the formatter.
    Do not hand-write a unified diff as a fallback. If the formatter reports
    `old_not_unique` or `context_not_unique`, use the error code and candidate
    line numbers to add `line`, `before`, or `after`. Do not read the formatter
    source code to infer rules, and do not make `old` huge just to force
    uniqueness.
-12. Tell the user where each candidate patch file was written.
-13. Writing a `.patch` file only saves the suggestion to disk for review. It does
+14. Tell the user where each candidate patch file was written.
+15. Writing a `.patch` file only saves the suggestion to disk for review. It does
    not mean the patch should be applied. Writing the file and applying it are
    completely separate actions.
-14. Do not apply patches. Do not run `git apply` or `patch`. Do not modify the
+16. Do not apply patches. Do not run `git apply` or `patch`. Do not modify the
    source tree. The user reviews the patch file and decides whether to apply it.
 
 ## Output Contract
@@ -298,6 +328,7 @@ The skill writes a `.gbs_patch_suggest/` directory:
 .gbs_patch_suggest/
 ├── analyzer_output/
 │   └── evidence_packet.json
+├── spec_toolchain_flag_context/
 ├── fix_all_context/
 │   ├── files/
 │   └── edit_specs/
@@ -315,6 +346,8 @@ Files:
   including `evidence_packet.json`.
 - `context.md`: overview or single-diagnostic LLM-facing patch-generation
   context, depending on status.
+- `spec_toolchain_flag_context/`: `.spec` compatibility edit spec for Clang
+  unknown warning options caused by GCC-only CFLAGS/CXXFLAGS.
 - `fix_all_context/`: default fix-all-by-file per-file contexts and edit spec
   skeletons when analyzer source candidates are available.
 - `cluster_context/`: legacy large-scale cluster context when fix-all is
@@ -332,6 +365,10 @@ user review and must not be auto-applied.
 Statuses:
 
 - `fix_all_context_available`: default fix-all-by-file output was written.
+- `spec_toolchain_flag_context_available`: `.spec` toolchain flag compatibility
+  output was written.
+- `spec_toolchain_flag_advisory`: Clang unknown warning options were detected,
+  but the skill could not safely confirm `.spec` source or insertion point.
 - `cluster_context_available`: legacy large-scale cluster output was written.
 - `multi_candidate_context_available`: legacy multi-candidate output was written.
 - `source_context_available`: Level A. Source context is included.

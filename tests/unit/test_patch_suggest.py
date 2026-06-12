@@ -236,6 +236,29 @@ def add_source_candidates(
     )
 
 
+def unknown_warning_option_packet(*options: str) -> dict[str, object]:
+    messages = [
+        f"clang: error: unknown warning option '{option}' [-Werror,-Wunknown-warning-option]"
+        for option in options
+    ]
+    return {
+        "primary_error": {
+            "kind": "werror",
+            "message": messages[0],
+        },
+        "root_cause_candidates": [
+            {
+                "kind": "werror",
+                "semantic_class": "unknown_warning_option",
+                "message": message,
+                "is_terminal": True,
+            }
+            for message in messages
+        ],
+        "evidence": {},
+    }
+
+
 def source_candidate(
     event_id: str,
     *,
@@ -899,6 +922,158 @@ def test_cli_no_fix_all_uses_legacy_old_path(tmp_path: Path) -> None:
     meta = read_meta(output_dir)
     assert meta["mode"] == "multi_candidate"
     assert not (output_dir / "fix_all_context").exists()
+
+
+def test_spec_toolchain_flag_fix_inserts_clang_strip_block_without_deleting_flags(
+    tmp_path: Path,
+) -> None:
+    src_root = tmp_path / "srcroot"
+    spec = src_root / "packaging" / "multi-assistant.spec"
+    spec.parent.mkdir(parents=True)
+    cflags = (
+        'export CFLAGS="$CFLAGS -Wno-stringop-overflow -Wno-format-overflow '
+        '-Wno-format-truncation -Wno-stringop-truncation"'
+    )
+    cxxflags = (
+        'export CXXFLAGS="$CXXFLAGS -Wno-stringop-overflow -Wno-format-overflow '
+        '-Wno-format-truncation -Wno-stringop-truncation"'
+    )
+    spec.write_text(
+        "\n".join(["Name: multi-assistant", "%build", cflags, cxxflags, "%cmake .", ""]),
+        encoding="utf-8",
+    )
+    evidence_path = write_packet(
+        tmp_path,
+        unknown_warning_option_packet(
+            "-Wno-stringop-overflow",
+            "-Wno-stringop-truncation",
+        ),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "spec_toolchain_flag_context_available"
+    meta = read_meta(output_dir)
+    assert meta["mode"] == "spec_toolchain_flag"
+    assert meta["options"] == ["-Wno-stringop-overflow", "-Wno-stringop-truncation"]
+    edit_spec_path = (
+        output_dir / "spec_toolchain_flag_context" / "edit_spec_spec_toolchain_flags.json"
+    )
+    edit_spec = json.loads(edit_spec_path.read_text(encoding="utf-8"))
+    edit = edit_spec["edits"][0]
+    assert edit["operation"] == "insert_after"
+    assert edit["anchor"] == cxxflags
+    assert edit["insert"] == "\n".join(
+        [
+            "%{?_toolchain:",
+            "%if %{toolchain_is clang}",
+            "CFLAGS=${CFLAGS/-Wno-stringop-overflow/}",
+            "CFLAGS=${CFLAGS/-Wno-stringop-truncation/}",
+            "CXXFLAGS=${CXXFLAGS/-Wno-stringop-overflow/}",
+            "CXXFLAGS=${CXXFLAGS/-Wno-stringop-truncation/}",
+            "%endif",
+            "}",
+        ]
+    )
+    assert "format-overflow" not in edit["insert"]
+    assert "format-truncation" not in edit["insert"]
+
+    output_patch = tmp_path / "candidate.patch"
+    formatted = format_patch(FormatPatchOptions(src_root, edit_spec_path, output_patch, check=True))
+    assert formatted.exit_code == 0
+    patch = output_patch.read_text(encoding="utf-8")
+    assert "-Wno-stringop-overflow -Wno-format-overflow" in patch
+    assert "+%{?_toolchain:" in patch
+    assert "+CFLAGS=${CFLAGS/-Wno-stringop-overflow/}" in patch
+
+    spec_text = spec.read_text(encoding="utf-8")
+    assert cflags in spec_text
+    assert cxxflags in spec_text
+
+
+def test_spec_toolchain_flag_source_unknown_advisory(tmp_path: Path) -> None:
+    src_root = tmp_path / "srcroot"
+    spec = src_root / "packaging" / "demo.spec"
+    spec.parent.mkdir(parents=True)
+    spec.write_text("%build\n%cmake .\n", encoding="utf-8")
+    evidence_path = write_packet(
+        tmp_path,
+        unknown_warning_option_packet("-Wno-stringop-overflow"),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    assert result.status == "spec_toolchain_flag_advisory"
+    edit_spec_path = (
+        output_dir / "spec_toolchain_flag_context" / "edit_spec_spec_toolchain_flags.json"
+    )
+    assert not edit_spec_path.exists()
+    context = read_context(output_dir)
+    assert "unknown options were not found" in context
+    assert "Do not guess a .spec patch" in context
+
+
+def test_spec_toolchain_flag_appends_to_existing_clang_block(tmp_path: Path) -> None:
+    src_root = tmp_path / "srcroot"
+    spec = src_root / "packaging" / "demo.spec"
+    spec.parent.mkdir(parents=True)
+    cflags = 'export CFLAGS="$CFLAGS -Wno-stringop-overflow"'
+    spec.write_text(
+        "\n".join(
+            [
+                "%build",
+                cflags,
+                "%{?_toolchain:",
+                "%if %{toolchain_is clang}",
+                "CFLAGS=${CFLAGS/-Wno-stringop-overflow/}",
+                "CFLAGS=${CFLAGS/-Wno-existing/}",
+                "%endif",
+                "}",
+                "%cmake .",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    evidence_path = write_packet(
+        tmp_path,
+        unknown_warning_option_packet(
+            "-Wno-stringop-overflow",
+            "-Wno-stringop-truncation",
+        ),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.status == "spec_toolchain_flag_context_available"
+    edit_spec = json.loads(
+        (
+            output_dir
+            / "spec_toolchain_flag_context"
+            / "edit_spec_spec_toolchain_flags.json"
+        ).read_text(encoding="utf-8")
+    )
+    edit = edit_spec["edits"][0]
+    assert edit["line"] == 6
+    assert edit["anchor"] == "CFLAGS=${CFLAGS/-Wno-existing/}"
+    assert edit["insert"] == "\n".join(
+        [
+            "CFLAGS=${CFLAGS/-Wno-stringop-truncation/}",
+            "CXXFLAGS=${CXXFLAGS/-Wno-stringop-overflow/}",
+            "CXXFLAGS=${CXXFLAGS/-Wno-stringop-truncation/}",
+        ]
+    )
 
 
 def test_mode_context_dirs_are_cleaned_when_switching_modes(tmp_path: Path) -> None:
