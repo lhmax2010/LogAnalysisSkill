@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "gbs pattern library",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tier1_allowed_categories",
+    "tier1_forbidden_categories",
+    "patterns"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "tier1_allowed_categories": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "tier1_forbidden_categories": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "patterns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "tier",
+          "event_kinds",
+          "match",
+          "confidence",
+          "terminal"
+        ],
+        "anyOf": [
+          {"required": ["fix_template"]},
+          {"required": ["direct_answer_tier1"]},
+          {"required": ["direct_answer_tier2"]}
+        ],
+        "properties": {
+          "id": {"type": "string"},
+          "category": {"type": "string"},
+          "tier": {"enum": ["tier1", "tier2"]},
+          "event_kinds": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          },
+          "match": {
+            "type": "object",
+            "required": ["regex"],
+            "properties": {
+              "regex": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 1
+              },
+              "required_context": {
+                "type": "object",
+                "properties": {
+                  "phase": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                  },
+                  "severity": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                  },
+                  "tool_in": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                  },
+                  "not_in_warning_block": {"type": "boolean"}
+                },
+                "additionalProperties": false
+              },
+              "negative_patterns": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            },
+            "additionalProperties": false
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "terminal": {"type": "boolean"},
+          "fix_template": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "direct_answer_tier1": {"$ref": "#/$defs/direct_answer"},
+          "direct_answer_tier2": {"$ref": "#/$defs/direct_answer"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "direct_answer": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "evidence_required": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "fix_template": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
