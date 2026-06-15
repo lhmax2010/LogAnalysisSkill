@@ -123,6 +123,14 @@ def subprocess_module(command: list[str]) -> str:
     return command[command.index("-m") + 1]
 
 
+def write_fake_patch_context(output_dir: Path, *, status: str | None = None) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / "context.md").write_text("# Patch Context\n", encoding="utf-8")
+    (output_dir / "README.md").write_text("# README\n", encoding="utf-8")
+    meta = {"status": status} if status is not None else {}
+    (output_dir / "meta.json").write_text(json.dumps(meta), encoding="utf-8")
+
+
 def test_workflow_success_short_circuits_without_analyzer(tmp_path: Path) -> None:
     called = False
 
@@ -297,7 +305,9 @@ def test_workflow_compile_failure_writes_optional_patch_context(tmp_path: Path) 
     assert "patch_context_md" in roles
 
 
-def test_workflow_werror_failure_writes_optional_patch_context(tmp_path: Path) -> None:
+def test_workflow_werror_patch_ready_context_suppresses_generic_fallback(
+    tmp_path: Path,
+) -> None:
     patch_commands: list[list[str]] = []
 
     def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
@@ -307,8 +317,10 @@ def test_workflow_werror_failure_writes_optional_patch_context(tmp_path: Path) -
         if module == "gbs_patch_suggest":
             patch_commands.append(command)
             output_dir = Path(command[command.index("--output-dir") + 1])
-            output_dir.mkdir(parents=True, exist_ok=True)
-            (output_dir / "context.md").write_text("# Patch Context\n", encoding="utf-8")
+            write_fake_patch_context(
+                output_dir,
+                status="spec_toolchain_flag_context_available",
+            )
             return subprocess.CompletedProcess(command, 0)
         raise AssertionError(f"unexpected subprocess module: {module}")
 
@@ -323,6 +335,38 @@ def test_workflow_werror_failure_writes_optional_patch_context(tmp_path: Path) -
     assert result.patch_context_path == result.output_dir / "patch_context" / "context.md"
     assert result.patch_context_error is None
     assert len(patch_commands) == 1
+    assert result.suggestion_paths == []
+    summary = result.summary_path.read_text(encoding="utf-8")
+    assert "## Patch Context" in summary
+    assert "Patch-suggest status**: `spec_toolchain_flag_context_available`" in summary
+    assert "Patch-suggest produced patch-ready context" in summary
+    assert "Manually review unsupported error kind werror" not in summary
+    assert "fallback" not in summary
+
+
+def test_workflow_werror_patch_advisory_keeps_generic_fallback(tmp_path: Path) -> None:
+    def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        module = subprocess_module(command)
+        if module == "gbs_analyzer":
+            return fake_analyzer(werror_packet())(command, **kwargs)
+        if module == "gbs_patch_suggest":
+            output_dir = Path(command[command.index("--output-dir") + 1])
+            write_fake_patch_context(output_dir, status="spec_toolchain_flag_advisory")
+            return subprocess.CompletedProcess(command, 0)
+        raise AssertionError(f"unexpected subprocess module: {module}")
+
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build(1),
+        subprocess_runner=runner,
+        python_executable="/test/python",
+    )
+
+    summary = result.summary_path.read_text(encoding="utf-8")
+    assert "Patch-suggest status**: `spec_toolchain_flag_advisory`" in summary
+    assert "Patch-suggest produced patch-ready context" not in summary
+    assert "Manually review unsupported error kind werror" in summary
+    assert "| 001 | fallback |" in summary
 
 
 def test_workflow_non_source_diagnostic_failure_does_not_run_patch_suggest(
@@ -372,6 +416,29 @@ def test_workflow_patch_context_failure_is_non_fatal(tmp_path: Path) -> None:
     summary = result.summary_path.read_text(encoding="utf-8")
     assert "Patch context generation was skipped or unavailable" in summary
     assert "This is non-fatal" in summary
+
+
+def test_workflow_werror_patch_context_failure_keeps_generic_fallback(tmp_path: Path) -> None:
+    def runner(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        module = subprocess_module(command)
+        if module == "gbs_analyzer":
+            return fake_analyzer(werror_packet())(command, **kwargs)
+        if module == "gbs_patch_suggest":
+            raise subprocess.CalledProcessError(9, command)
+        raise AssertionError(f"unexpected subprocess module: {module}")
+
+    result = run_workflow(
+        workflow_options(tmp_path),
+        build_runner=fake_build(1),
+        subprocess_runner=runner,
+        python_executable="/test/python",
+    )
+
+    assert result.patch_context_error == "gbs_patch_suggest exited with 9"
+    summary = result.summary_path.read_text(encoding="utf-8")
+    assert "Patch context generation was skipped or unavailable" in summary
+    assert "Manually review unsupported error kind werror" in summary
+    assert "| 001 | fallback |" in summary
 
 
 def test_workflow_passes_extra_pythonpath_to_patch_suggest(

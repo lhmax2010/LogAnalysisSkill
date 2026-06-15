@@ -71,6 +71,7 @@ class PatchContextResult:
     triggered: bool
     output_dir: Path | None = None
     context_path: Path | None = None
+    status: str | None = None
     error: str | None = None
 
 
@@ -199,7 +200,6 @@ def run_workflow(
         )
 
     suggestions = collect_suggestions(packet, options.src_root, suggesters)
-    suggestion_files = write_suggestions(suggestions, suggestions_dir)
     patch_context = maybe_write_patch_context(
         packet=packet,
         evidence_packet_path=packet_path,
@@ -209,6 +209,8 @@ def run_workflow(
         python_executable=python_executable,
         extra_pythonpath=patch_suggest_extra_pythonpath,
     )
+    visible_suggestions = filter_suggestions_for_patch_context(suggestions, patch_context)
+    suggestion_files = write_suggestions(visible_suggestions, suggestions_dir)
     summary_text, downstream_tokens = render_workflow_summary_with_tokens(
         summary_path=summary_path,
         evidence_markdown_path=markdown_path,
@@ -216,9 +218,10 @@ def run_workflow(
         build_status=f"failed (exit {build_result.exit_code})",
         build_exit_code=build_result.exit_code,
         packet=packet,
-        suggestions=suggestions,
+        suggestions=visible_suggestions,
         suggestion_files=suggestion_files,
         patch_context_path=patch_context.context_path,
+        patch_context_status=patch_context.status,
         patch_context_error=patch_context.error,
     )
     summary_path.write_text(summary_text, encoding="utf-8")
@@ -253,6 +256,23 @@ def collect_suggestions(
         if suggester.matches(packet):
             suggestions.extend(suggester.generate(packet, src_root))
     return suggestions
+
+
+def filter_suggestions_for_patch_context(
+    suggestions: Sequence[Suggestion],
+    patch_context: PatchContextResult,
+) -> list[Suggestion]:
+    """Hide generic fallback once patch-suggest produced patch-ready context."""
+
+    if not patch_context_has_patch_ready_context(patch_context):
+        return list(suggestions)
+    return [suggestion for suggestion in suggestions if suggestion.suggester != "fallback"]
+
+
+def patch_context_has_patch_ready_context(patch_context: PatchContextResult) -> bool:
+    """Return true only for patch-suggest statuses that contain patch-ready context."""
+
+    return bool(patch_context.status and patch_context.status.endswith("_context_available"))
 
 
 def maybe_write_patch_context(
@@ -303,7 +323,26 @@ def maybe_write_patch_context(
             output_dir=output_dir,
             error="gbs_patch_suggest did not write patch_context/context.md",
         )
-    return PatchContextResult(triggered=True, output_dir=output_dir, context_path=context_path)
+    return PatchContextResult(
+        triggered=True,
+        output_dir=output_dir,
+        context_path=context_path,
+        status=read_patch_context_status(output_dir),
+    )
+
+
+def read_patch_context_status(output_dir: Path) -> str | None:
+    """Read patch-suggest meta status when available."""
+
+    meta_path = output_dir / "meta.json"
+    try:
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(meta, dict):
+        return None
+    status = meta.get("status")
+    return str(status) if status else None
 
 
 def primary_error_kind(packet: dict[str, Any]) -> str:
@@ -388,6 +427,7 @@ def render_workflow_summary(
     suggestion_files: Sequence[Path],
     error: str | None = None,
     patch_context_path: Path | None = None,
+    patch_context_status: str | None = None,
     patch_context_error: str | None = None,
 ) -> str:
     """Render the workflow summary markdown."""
@@ -411,6 +451,7 @@ def render_workflow_summary(
     error_block = f"\n**Workflow error**: {error}\n" if error else ""
     patch_context_block = render_patch_context_summary(
         patch_context_path=patch_context_path,
+        patch_context_status=patch_context_status,
         patch_context_error=patch_context_error,
     )
     return (
@@ -420,6 +461,7 @@ def render_workflow_summary(
         f"**Failed phase**: {failed_phase or 'n/a'}\n"
         f"**Top-1 root cause**: {root_cause}\n"
         f"{error_block}\n"
+        f"{patch_context_block}"
         "## Suggestions Generated\n\n"
         "| # | Suggester | Title | Confidence | Has Patch |\n"
         "|---|-----------|-------|------------|-----------|\n"
@@ -427,29 +469,44 @@ def render_workflow_summary(
         + "\n\n"
         "## Files Written\n\n"
         f"{files}\n\n"
-        f"{patch_context_block}"
         "## What to do next\n\n"
         "1. Read `analyzer_output/evidence_packet.md` for full diagnosis.\n"
-        "2. Read each `suggestions/*.md` for proposed fixes.\n"
-        "3. If `patch_context/context.md` exists, read it and generate candidate "
+        "2. If `patch_context/context.md` exists, read it before generic "
+        "advisory suggestions; patch-suggest context is more specific.\n"
+        "3. Read each `suggestions/*.md` for additional proposed fixes.\n"
+        "4. If `patch_context/context.md` exists, generate candidate "
         "patch files as the outer assistant. Do not apply them automatically.\n"
-        "4. For patch suggestions: run `git apply suggestions/<file>.patch` if you accept.\n"
-        "5. For advisory suggestions: follow manual_steps in the .md.\n"
-        "6. Re-run `python -m gbs_workflow` after applying changes.\n"
+        "5. For patch suggestions: run `git apply suggestions/<file>.patch` if you accept.\n"
+        "6. For advisory suggestions: follow manual_steps in the .md.\n"
+        "7. Re-run `python -m gbs_workflow` after applying changes.\n"
     )
 
 
 def render_patch_context_summary(
     *,
     patch_context_path: Path | None,
+    patch_context_status: str | None,
     patch_context_error: str | None,
 ) -> str:
     """Render the optional patch-suggest context status."""
 
     if patch_context_path is not None:
+        status_line = (
+            f"**Patch-suggest status**: `{patch_context_status}`\n\n"
+            if patch_context_status
+            else ""
+        )
+        priority_line = (
+            "Patch-suggest produced patch-ready context. Read this before generic "
+            "advisory suggestions.\n\n"
+            if patch_context_status and patch_context_status.endswith("_context_available")
+            else ""
+        )
         return (
             "## Patch Context\n\n"
             f"Patch generation context was written to `{patch_context_path}`.\n\n"
+            f"{status_line}"
+            f"{priority_line}"
             "The workflow only generated context. It did not generate a final patch, "
             "did not apply any patch, and did not modify the source tree. The outer "
             "Claude/Cline assistant should read this context and prepare candidate "
@@ -472,6 +529,7 @@ def render_workflow_summary_with_tokens(
     evidence_markdown_path: Path | None = None,
     suggestion_files: Sequence[Path] = (),
     patch_context_path: Path | None = None,
+    patch_context_status: str | None = None,
     analyzer_output_dir: Path | None = None,
     estimator: TokenEstimator | None = None,
     **summary_kwargs: Any,
@@ -482,6 +540,7 @@ def render_workflow_summary_with_tokens(
     base_summary = render_workflow_summary(
         suggestion_files=suggestion_files,
         patch_context_path=patch_context_path,
+        patch_context_status=patch_context_status,
         **summary_kwargs,
     )
     section = ""
