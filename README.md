@@ -1,9 +1,9 @@
-# LogAnalysisSkill v1.3.0rc1 Review Release
+# LogAnalysisSkill v1.3.0
 
 Tizen `gbs` build assistance skills for local AI assistants such as Claude Code
-or Cline. This review release is prepared for company release-server validation.
-It contains four publishable skills that work together to build, analyze, and
-prepare reviewable patch suggestions for Tizen package build failures.
+or Cline. This release contains four publishable skills that work together to
+build, analyze, and prepare reviewable patch suggestions for Tizen package build
+failures.
 
 This repository does not run an LLM by itself and never applies patches. It
 collects deterministic build evidence and writes context files that an outer
@@ -39,8 +39,7 @@ assistant can read. Any generated patch is a review draft for a human to inspect
   diagnostic coverage.
 - Includes analyzer support for Clang `unknown warning option` diagnostics
   without `file:line`, and avoids mistaking compiler command lines containing
-  `-Werror` for diagnostics. This path is code-complete in this review build
-  and still needs end-to-end `multi-assistant` validation.
+  `-Werror` for diagnostics.
 
 ### Workflow Skill
 
@@ -64,12 +63,11 @@ assistant can read. Any generated patch is a review draft for a human to inspect
 - Includes a `.spec` toolchain-flag compatibility path for Clang
   `-Wunknown-warning-option` failures caused by GCC-only CFLAGS/CXXFLAGS. This
   path preserves original GCC flags and inserts a `%{toolchain_is clang}`
-  stripping block, and is code-complete but still under real-package
-  validation.
+  stripping block for Clang.
 
-## Review Release Status
+## v1.3.0 Status
 
-### Verified Usable in This Review Build
+### Completed and Verified
 
 - Four-skill layout is present and publishable.
 - `tizen-gbs-build` broken-root recovery is implemented and tested.
@@ -81,26 +79,27 @@ assistant can read. Any generated patch is a review draft for a human to inspect
   This path has been validated on the inference-engine Cline flow where it
   produced three file-group patch contexts and covered the previous missed
   diagnostics.
+- Fix-all-by-file has also been validated on a large Bluetooth package case:
+  54 source diagnostics across 11 files produced 11 file-scoped FIXALL patch
+  contexts, with generated patches passing `git apply --check`.
+- Multi-candidate behavior was validated on appcore-agent: patch-ready
+  diagnostics stay covered, while conservative `type=unknown` diagnostics remain
+  visible without being patched automatically.
 - Patch-suggest deterministic formatter supports replacement and insert-after
   edit operations for the validated source-diagnostic paths.
-- Current regression test suite passes on this release branch.
+- Analyzer unknown-warning-option handling and patch-suggest `.spec` toolchain
+  flag compatibility were validated end to end on the multi-assistant package:
+  the analyzer primary diagnostic is the real Clang unknown-warning-option error,
+  patch-suggest emits an insert-after edit spec, original GCC flag lines remain
+  intact, and the Clang-only branch strips only the unsupported stringop flags.
+- Workflow build -> analyze -> patch-suggest chaining was validated on the same
+  multi-assistant case. When patch-suggest produces a patch-ready context, the
+  workflow summary surfaces `patch_context/` first and keeps generic fallback
+  only as a fallback.
+- Current regression test suite passes on this release.
 
-### Code Complete, Validation in Progress
+### Known Boundaries
 
-- Analyzer Clang unknown-warning-option support is included in this release
-  branch. It prevents `-Werror` compiler command lines from becoming primary
-  diagnostics and emits structured unknown-warning-option Werror events, but it
-  has not yet completed end-to-end `multi-assistant` real-log validation.
-- Patch-suggest `.spec` toolchain flag compatibility is included in this
-  release branch. It is designed to preserve GCC CFLAGS/CXXFLAGS and strip only
-  Clang-unsupported options inside `%{toolchain_is clang}`, but it still depends
-  on the analyzer path above and has not yet completed end-to-end trigger
-  validation on `multi-assistant`.
-
-### Not Completed / Review Boundaries
-
-- Stable v1.3.0 is not tagged yet. This is `1.3.0rc1` for review-server
-  validation.
 - The tools do not apply patches. Users must review patch files and run
   `git apply --check` / `git apply` themselves.
 - The tools do not call an LLM. Patch semantics are still decided by the outer
@@ -113,8 +112,11 @@ assistant can read. Any generated patch is a review draft for a human to inspect
 - `.spec` toolchain flag handling currently targets unknown Clang warning
   options proven to come from `.spec` CFLAGS/CXXFLAGS. Unknown flag sources such
   as CMakeLists, environment variables, or toolchain files degrade to advisory.
-- Real package coverage still needs release-server validation before final
-  stable release.
+- Appcore-agent E003/E005 remain `type=unknown` under the current conservative
+  fixability whitelist. They are visible to the user but not patched
+  automatically.
+- Direction-2 fallback strategies such as compiler-specific `-Wno-error=...`
+  exemptions are not implemented in v1.3.0.
 
 ## Install Mode
 
@@ -209,9 +211,10 @@ export TIZEN_GBS_LOG_ANALYSIS_SKILL_DIR=/path/to/tizen-gbs-log-analysis
 export TIZEN_GBS_PATCH_SUGGEST_SKILL_DIR=/path/to/tizen-gbs-patch-suggest
 ```
 
-## Release Server Review Artifacts
+## Release Artifacts
 
-For release-server review, publish the four skill folders as separate artifacts:
+For release or release-server review, publish the four skill folders as separate
+artifacts:
 
 ```text
 tizen-gbs-build/

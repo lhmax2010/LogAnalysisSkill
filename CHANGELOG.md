@@ -2,12 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
-## [1.3.0-rc1] - 2026-06-12
+## [1.3.0] - 2026-06-15
 
-Review release for company release-server validation. This release candidate
-includes the current four-skill workflow and the patch-suggest work needed for
-real Tizen `gbs` compiler migration review. It is intended for user review and
-field validation before a final stable v1.3.0 release.
+Stable release for the four-skill Tizen `gbs` build-analysis workflow. This
+release promotes patch-suggest fix-all-by-file to the default path, adds
+dual-compiler-safe `.spec` toolchain flag handling, and improves workflow
+summary UX so patch-suggest context is surfaced before generic fallback
+advisories.
 
 ### Added
 
@@ -28,6 +29,8 @@ field validation before a final stable v1.3.0 release.
   error.
 - Patch-suggest `.spec` toolchain flag compatibility path for Clang
   `-Wunknown-warning-option` failures caused by GCC-only CFLAGS/CXXFLAGS.
+- Workflow integration with patch-suggest output, including optional
+  `patch_context/` generation during build -> analyze -> suggest runs.
 
 ### Changed
 
@@ -35,13 +38,26 @@ field validation before a final stable v1.3.0 release.
   source candidate data is available, with `--no-fix-all` as an escape hatch.
 - Workflow continues to build -> analyze -> suggest, and can surface patch
   context for outer Claude/Cline review without invoking an LLM in subprocesses.
-- README is updated for release-server review with current feature status,
-  completed work, and known unfinished areas.
+- Workflow summaries now prioritize patch-suggest context when it produced a
+  patch-ready result, and keep generic fallback advisory only as a fallback.
+- Workflow `SKILL.md` now documents the fourth sibling skill,
+  `tizen-gbs-patch-suggest`, plus the matching discovery environment variable.
+- README is updated for stable v1.3.0 with feature status, verified real
+  package flows, and known boundaries.
 
-### Not Yet Final
+### Fixed
 
-- The release candidate still requires real package validation on the release
-  server before stable v1.3.0.
+- Analyzer no longer promotes compiler command lines containing `-Werror` to
+  primary diagnostics when a real diagnostic is present.
+- Analyzer extracts Clang unknown-warning-option diagnostics so `.spec`
+  toolchain flag handling can trigger.
+- Patch-suggest suppresses misleading edit-spec skeleton lines when diagnostics
+  point at structural closing lines in deprecated macro calls.
+- Patch-suggest clears stale mode output directories before writing new
+  fix-all, cluster, or multi-candidate context.
+
+### Safety / Boundaries
+
 - Patch suggestions remain review drafts. The tool never applies patches and
   never modifies source trees automatically.
 - Non-source failures and uncertain source ownership still degrade to advisory
