@@ -39,3 +39,11 @@ temp/
 # Temporary dev_memory drafts only; committed milestone memory remains tracked.
 .dev_memory/**/*.tmp
 .dev_memory/**/.DS_Store
+.gstack/
+
+# v1.3.0 release snapshot (skill copies, not source of truth)
+release-v1.3.0/
+
+# tizen-ci-triage runtime state/output (never commit clones/reports)
+.ci_triage/
+ci_triage_out/
