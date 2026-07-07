@@ -6,7 +6,6 @@ import subprocess
 from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, cast
 
 import pytest
 from ci_triage.verify.workspace import (
@@ -46,10 +45,6 @@ def _repo(tmp_path: Path, *, checkout_hook: bool = False) -> tuple[Path, str]:
     return repo, head
 
 
-def _worktree_list(repo: Path) -> str:
-    return _git(["worktree", "list", "--porcelain"], repo).stdout
-
-
 def test_create_worktree_writes_marker_and_leaves_clean_status(tmp_path: Path) -> None:
     repo, head = _repo(tmp_path, checkout_hook=True)
     root = tmp_path / "workspaces"
@@ -58,6 +53,8 @@ def test_create_worktree_writes_marker_and_leaves_clean_status(tmp_path: Path) -
 
     path = Path(handle.path)
     assert path.is_dir()
+    assert (path / ".git").is_dir()
+    assert _git(["rev-parse", "HEAD"], path).stdout.strip() == head
     marker_path = path / MARKER_FILENAME
     assert marker_path.is_file()
     marker = json.loads(marker_path.read_text(encoding="utf-8"))
@@ -77,7 +74,6 @@ def test_cleanup_worktree_removes_directory_and_git_metadata(tmp_path: Path) -> 
     cleanup_worktree(handle)
 
     assert not Path(handle.path).exists()
-    assert handle.path not in _worktree_list(repo)
 
 
 def test_cleanup_without_marker_raises(tmp_path: Path) -> None:
@@ -88,8 +84,7 @@ def test_cleanup_without_marker_raises(tmp_path: Path) -> None:
     with pytest.raises(WorkspaceViolation, match="missing"):
         cleanup_worktree(handle)
 
-    _git(["worktree", "remove", "--force", handle.path], repo)
-    _git(["worktree", "prune"], repo)
+    shutil.rmtree(handle.path)
 
 
 def test_cleanup_marker_workspace_root_mismatch_raises(tmp_path: Path) -> None:
@@ -145,25 +140,22 @@ def test_check_disk_cleans_oldest_iter_with_marker_checks(
     cleanup_worktree(new)
 
 
-def test_cleanup_falls_back_to_rmtree_after_marker_checks(
+def test_cleanup_uses_rmtree_after_marker_checks(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     repo, head = _repo(tmp_path)
     handle = create_worktree(str(repo), head, str(tmp_path / "workspaces"), 6)
-    real_run = subprocess.run
+    calls: list[str] = []
+    real_rmtree = shutil.rmtree
 
-    def fake_run(args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
-        if (
-            isinstance(args, list)
-            and args[:4] == ["git", "-C", handle.baseline_repo, "worktree"]
-            and "remove" in args
-        ):
-            raise subprocess.CalledProcessError(1, args)
-        return cast(subprocess.CompletedProcess[str], real_run(args, **kwargs))
+    def fake_rmtree(path: str | Path) -> None:
+        calls.append(str(path))
+        real_rmtree(path)
 
-    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setattr(shutil, "rmtree", fake_rmtree)
 
     cleanup_worktree(handle)
 
+    assert calls == [handle.path]
     assert not Path(handle.path).exists()

@@ -1,10 +1,10 @@
 """Build verification loop core for CI triage repairs.
 
 This module integrates the Stage 1 filesystem guards, append-only verification
-state DB, and failure classifier. It uses disposable Git worktrees today; real gbs
-compatibility with Git worktrees must be validated in Stage 1-3 field testing. If
-gbs cannot build reliably inside a worktree, ``workspace.py`` can switch its
-internal implementation to disposable copies without changing this module.
+state DB, and failure classifier. ``workspace.py`` provides disposable source
+copies with the same handle API used by earlier worktree-based experiments, so
+build verification can run gbs from a clean package root without depending on
+Git worktree compatibility.
 """
 
 from __future__ import annotations
@@ -354,7 +354,19 @@ def _run_gbs_build(
 
 
 def _gbs_command(options: BuildVerifyOptions) -> list[str]:
-    return ["gbs", "build", "--conf", str(options.gbs_conf), "--package", options.package]
+    return [
+        "gbs",
+        "-c",
+        str(options.gbs_conf),
+        "build",
+        "-A",
+        _gbs_arch(options.arch),
+        "--include-all",
+    ]
+
+
+def _gbs_arch(arch: str) -> str:
+    return arch.removeprefix("standard-")
 
 
 def _analyze_failure(

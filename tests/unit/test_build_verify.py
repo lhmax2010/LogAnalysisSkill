@@ -10,6 +10,8 @@ from ci_triage.state import StateDatabase, get_latest_status, get_record
 from ci_triage.verify.build_verify import (
     BuildVerifyOptions,
     _format_and_apply_patch,
+    _gbs_arch,
+    _gbs_command,
     build_verify,
 )
 
@@ -165,10 +167,41 @@ def test_pass_writes_verification_record_and_commits_before_build(tmp_path: Path
     assert record.verified_commit_sha == result.verified_commit_sha
     assert record.verified_tree_sha == result.verified_tree_sha
     assert record.project == "platform/test/demo"
+    assert record.command_line == f"gbs -c {options.gbs_conf} build -A armv7l --include-all"
     assert get_latest_status(options.state_db, record.failure_key) == "GERRIT_READY"
     assert runner.events.index("commit") < runner.events.index("gbs")
     assert Path(result.build_log or "").is_file()
     assert (options.output_dir / "audit" / "baseline_evidence.json").is_file()
+
+
+def test_gbs_command_matches_verified_real_machine_shape(tmp_path: Path) -> None:
+    options = _options(tmp_path)
+
+    command = _gbs_command(options)
+
+    assert command == [
+        "gbs",
+        "-c",
+        str(options.gbs_conf),
+        "build",
+        "-A",
+        "armv7l",
+        "--include-all",
+    ]
+    assert "--package" not in command
+
+
+@pytest.mark.parametrize(
+    ("arch", "expected"),
+    [
+        ("standard-aarch64", "aarch64"),
+        ("standard-armv7l", "armv7l"),
+        ("standard-x86_64", "x86_64"),
+        ("aarch64", "aarch64"),
+    ],
+)
+def test_gbs_arch_removes_standard_prefix(arch: str, expected: str) -> None:
+    assert _gbs_arch(arch) == expected
 
 
 def test_gbs_fail_source_werror_returns_repair_allowed(

@@ -1,11 +1,11 @@
-"""Disposable worktree management for build verification.
+"""Disposable source tree management for build verification.
 
-Stage 1 uses ``git worktree add --detach`` for cheap disposable verification
-directories. Compatibility of ``gbs build`` inside Git worktrees is not yet
-validated on real machines; Stage 1-3 build-verify must confirm it. If gbs does
-not behave correctly in a worktree, this module can switch internally to a
-one-shot ``src_clean`` copy while keeping the same ``DisposableWorktree`` API for
-callers.
+Real-machine validation showed that gbs 2.0.1 does not recognize source
+packages inside Git worktrees because their ``.git`` entry is a gitdir pointer
+file. The public API intentionally keeps the ``DisposableWorktree`` naming from
+Stage 1, but the implementation now creates one-shot full source copies that
+preserve the repository's real ``.git`` directory. Callers can keep treating the
+returned path as an isolated disposable checkout.
 """
 
 from __future__ import annotations
@@ -44,7 +44,7 @@ def create_worktree(
     workspace_root: str,
     iter_index: int,
 ) -> DisposableWorktree:
-    """Create a detached disposable worktree for one verification iteration."""
+    """Create a disposable full repository copy for one verification iteration."""
 
     baseline = Path(baseline_repo).resolve()
     root = Path(workspace_root).resolve()
@@ -52,7 +52,9 @@ def create_worktree(
     marker_path = worktree_path / MARKER_FILENAME
     root.mkdir(parents=True, exist_ok=True)
 
-    _run_git(["-C", str(baseline), "worktree", "add", "--detach", str(worktree_path), base_commit])
+    if worktree_path.exists():
+        raise WorkspaceViolation(f"disposable worktree already exists: {worktree_path}")
+    _copy_repository(baseline, worktree_path)
     _exclude_marker_from_status(worktree_path)
     marker = {
         "workspace_root": str(root),
@@ -62,6 +64,7 @@ def create_worktree(
         "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
     marker_path.write_text(json.dumps(marker, sort_keys=True) + "\n", encoding="utf-8")
+    _run_git(["-C", str(worktree_path), "checkout", "--detach", base_commit])
     _run_git(["-C", str(worktree_path), "reset", "--hard", base_commit])
     _run_git(["-C", str(worktree_path), "clean", "-ffdx", "-e", MARKER_FILENAME])
     return DisposableWorktree(
@@ -75,24 +78,10 @@ def create_worktree(
 
 
 def cleanup_worktree(handle: DisposableWorktree) -> None:
-    """Remove a disposable worktree after marker-based safety checks."""
+    """Remove a disposable source copy after marker-based safety checks."""
 
     _verify_cleanup_handle(handle)
-    try:
-        _run_git(
-            [
-                "-C",
-                handle.baseline_repo,
-                "worktree",
-                "remove",
-                "--force",
-                handle.path,
-            ]
-        )
-    except subprocess.CalledProcessError:
-        shutil.rmtree(handle.path)
-    finally:
-        _run_git(["-C", handle.baseline_repo, "worktree", "prune"])
+    shutil.rmtree(handle.path)
 
 
 def check_disk_and_maybe_cleanup(
@@ -186,6 +175,12 @@ def _is_relative_to(path: Path, root: Path) -> bool:
 
 def _run_git(args: list[str]) -> None:
     subprocess.run(["git", *args], check=True, text=True, capture_output=True)
+
+
+def _copy_repository(src: Path, dst: Path) -> None:
+    # Use cp -a to match the real-machine validation path: it preserves the
+    # full .git directory, symlinks, permissions, and timestamps for gbs.
+    subprocess.run(["cp", "-a", str(src), str(dst)], check=True, text=True, capture_output=True)
 
 
 def _exclude_marker_from_status(worktree_path: Path) -> None:
