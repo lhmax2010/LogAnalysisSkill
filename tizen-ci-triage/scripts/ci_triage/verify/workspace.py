@@ -1,0 +1,207 @@
+"""Disposable worktree management for build verification.
+
+Stage 1 uses ``git worktree add --detach`` for cheap disposable verification
+directories. Compatibility of ``gbs build`` inside Git worktrees is not yet
+validated on real machines; Stage 1-3 build-verify must confirm it. If gbs does
+not behave correctly in a worktree, this module can switch internally to a
+one-shot ``src_clean`` copy while keeping the same ``DisposableWorktree`` API for
+callers.
+"""
+
+from __future__ import annotations
+
+import json
+import shutil
+import subprocess
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+MARKER_FILENAME = ".ci_triage_workdir"
+DEFAULT_MIN_FREE_BYTES = 5 * 1024**3
+
+
+class WorkspaceViolation(RuntimeError):
+    """Raised when a disposable worktree operation would be unsafe."""
+
+
+@dataclass(frozen=True)
+class DisposableWorktree:
+    """Handle returned by ``create_worktree``."""
+
+    path: str
+    baseline_repo: str
+    base_commit: str
+    workspace_root: str
+    iter_index: int
+    marker_path: str
+
+
+def create_worktree(
+    baseline_repo: str,
+    base_commit: str,
+    workspace_root: str,
+    iter_index: int,
+) -> DisposableWorktree:
+    """Create a detached disposable worktree for one verification iteration."""
+
+    baseline = Path(baseline_repo).resolve()
+    root = Path(workspace_root).resolve()
+    worktree_path = root / f"iter_{iter_index}"
+    marker_path = worktree_path / MARKER_FILENAME
+    root.mkdir(parents=True, exist_ok=True)
+
+    _run_git(["-C", str(baseline), "worktree", "add", "--detach", str(worktree_path), base_commit])
+    _exclude_marker_from_status(worktree_path)
+    marker = {
+        "workspace_root": str(root),
+        "baseline_repo": str(baseline),
+        "base_commit": base_commit,
+        "iter_index": iter_index,
+        "created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    }
+    marker_path.write_text(json.dumps(marker, sort_keys=True) + "\n", encoding="utf-8")
+    _run_git(["-C", str(worktree_path), "reset", "--hard", base_commit])
+    _run_git(["-C", str(worktree_path), "clean", "-ffdx", "-e", MARKER_FILENAME])
+    return DisposableWorktree(
+        path=str(worktree_path),
+        baseline_repo=str(baseline),
+        base_commit=base_commit,
+        workspace_root=str(root),
+        iter_index=iter_index,
+        marker_path=str(marker_path),
+    )
+
+
+def cleanup_worktree(handle: DisposableWorktree) -> None:
+    """Remove a disposable worktree after marker-based safety checks."""
+
+    _verify_cleanup_handle(handle)
+    try:
+        _run_git(
+            [
+                "-C",
+                handle.baseline_repo,
+                "worktree",
+                "remove",
+                "--force",
+                handle.path,
+            ]
+        )
+    except subprocess.CalledProcessError:
+        shutil.rmtree(handle.path)
+    finally:
+        _run_git(["-C", handle.baseline_repo, "worktree", "prune"])
+
+
+def check_disk_and_maybe_cleanup(
+    workspace_root: str,
+    min_free_bytes: int = DEFAULT_MIN_FREE_BYTES,
+) -> list[str]:
+    """Clean oldest disposable worktrees when free space is below the threshold."""
+
+    root = Path(workspace_root).resolve()
+    warnings: list[str] = []
+    if not root.exists():
+        return warnings
+    free = shutil.disk_usage(root).free
+    if free >= min_free_bytes:
+        return warnings
+
+    for handle in _oldest_worktrees(root):
+        try:
+            cleanup_worktree(handle)
+        except (OSError, WorkspaceViolation, subprocess.CalledProcessError) as exc:
+            warnings.append(f"failed to clean {handle.path}: {exc}")
+            continue
+        warnings.append(f"cleaned disposable worktree {handle.path}")
+        if shutil.disk_usage(root).free >= min_free_bytes:
+            break
+    if shutil.disk_usage(root).free < min_free_bytes:
+        warnings.append(
+            f"free space below threshold after cleanup: {shutil.disk_usage(root).free} bytes"
+        )
+    return warnings
+
+
+def _verify_cleanup_handle(handle: DisposableWorktree) -> None:
+    marker_path = Path(handle.marker_path)
+    if not marker_path.is_file():
+        raise WorkspaceViolation(f"missing disposable worktree marker: {marker_path}")
+
+    marker = _read_marker(marker_path)
+    handle_root = Path(handle.workspace_root).resolve()
+    handle_path = Path(handle.path).resolve()
+    marker_root = Path(str(marker.get("workspace_root", ""))).resolve()
+
+    if marker_root != handle_root:
+        raise WorkspaceViolation("marker workspace_root does not match handle workspace_root")
+    if not _is_relative_to(handle_path, handle_root):
+        raise WorkspaceViolation("worktree path is outside workspace_root")
+
+
+def _oldest_worktrees(root: Path) -> list[DisposableWorktree]:
+    handles: list[DisposableWorktree] = []
+    for child in root.iterdir():
+        if not child.is_dir() or not child.name.startswith("iter_"):
+            continue
+        marker_path = child / MARKER_FILENAME
+        if not marker_path.is_file():
+            continue
+        try:
+            marker = _read_marker(marker_path)
+            baseline_repo = str(marker["baseline_repo"])
+            base_commit = str(marker["base_commit"])
+            iter_index = int(marker["iter_index"])
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError, OSError):
+            continue
+        handles.append(
+            DisposableWorktree(
+                path=str(child.resolve()),
+                baseline_repo=baseline_repo,
+                base_commit=base_commit,
+                workspace_root=str(root),
+                iter_index=iter_index,
+                marker_path=str(marker_path),
+            )
+        )
+    return sorted(handles, key=lambda handle: handle.iter_index)
+
+
+def _read_marker(marker_path: Path) -> dict[str, Any]:
+    raw = json.loads(marker_path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise WorkspaceViolation("disposable worktree marker is not a JSON object")
+    return raw
+
+
+def _is_relative_to(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+def _run_git(args: list[str]) -> None:
+    subprocess.run(["git", *args], check=True, text=True, capture_output=True)
+
+
+def _exclude_marker_from_status(worktree_path: Path) -> None:
+    result = subprocess.run(
+        ["git", "-C", str(worktree_path), "rev-parse", "--git-path", "info/exclude"],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    exclude_path = Path(result.stdout.strip())
+    if not exclude_path.is_absolute():
+        exclude_path = worktree_path / exclude_path
+    exclude_path.parent.mkdir(parents=True, exist_ok=True)
+    current = exclude_path.read_text(encoding="utf-8") if exclude_path.exists() else ""
+    if MARKER_FILENAME not in current.splitlines():
+        with exclude_path.open("a", encoding="utf-8") as handle:
+            if current and not current.endswith("\n"):
+                handle.write("\n")
+            handle.write(f"{MARKER_FILENAME}\n")
