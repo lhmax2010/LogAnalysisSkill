@@ -7,7 +7,11 @@ from typing import Any, cast
 
 import pytest
 from ci_triage.state import StateDatabase, get_latest_status, get_record
-from ci_triage.verify.build_verify import BuildVerifyOptions, build_verify
+from ci_triage.verify.build_verify import (
+    BuildVerifyOptions,
+    _format_and_apply_patch,
+    build_verify,
+)
 
 
 class GbsRunner:
@@ -271,6 +275,33 @@ def test_apply_failure_fails_before_build(tmp_path: Path) -> None:
     assert result.result == "FAIL"
     assert result.failure_stage == "apply_failed"
     assert "gbs" not in runner.events
+
+
+def test_format_and_apply_patch_uses_absolute_patch_path_for_git_c(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    options = _options(tmp_path)
+    worktree = tmp_path / "manual-worktree"
+    subprocess.run(
+        ["git", "clone", str(options.src_clean), str(worktree)],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    monkeypatch.chdir(tmp_path)
+
+    result = _format_and_apply_patch(
+        options.edit_spec_path,
+        src_root=worktree,
+        output_patch=Path("relative-audit/candidate.patch"),
+        subprocess_runner=subprocess.run,
+    )
+
+    assert result.error is None
+    assert (worktree / "src" / "main.c").read_text(encoding="utf-8") == (
+        "int main(void) { return 1; }\n"
+    )
 
 
 def test_gbs_timeout_fails_without_repair(tmp_path: Path) -> None:

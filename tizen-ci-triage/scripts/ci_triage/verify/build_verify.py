@@ -299,6 +299,7 @@ def _format_and_apply_patch(
     output_patch: Path,
     subprocess_runner: SubprocessRunner,
 ) -> _ApplyPatchResult:
+    output_patch = output_patch.resolve()
     result = format_patch(
         FormatPatchOptions(
             src_root=src_root,
