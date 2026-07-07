@@ -93,6 +93,8 @@ def main(
     stderr: TextIO = sys.stderr,
     extra_pythonpath: tuple[Path, ...] = (),
 ) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
     if argv and argv[0] == "build-verify":
         return _main_build_verify(argv[1:], stderr=stderr, extra_pythonpath=extra_pythonpath)
 

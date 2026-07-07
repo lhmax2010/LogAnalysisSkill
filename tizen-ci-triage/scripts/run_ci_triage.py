@@ -24,4 +24,4 @@ def _load_main() -> Callable[[list[str] | None], int]:
 
 
 if __name__ == "__main__":
-    raise SystemExit(_load_main()(None))
+    raise SystemExit(_load_main()(sys.argv[1:]))
