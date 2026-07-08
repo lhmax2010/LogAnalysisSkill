@@ -35,6 +35,9 @@ gbs_analyzer = ["patterns/*.yaml", "patterns/*.json", "patterns/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "integration: tests using real git/file-system behavior",
+]
 
 [tool.coverage.run]
 branch = true
