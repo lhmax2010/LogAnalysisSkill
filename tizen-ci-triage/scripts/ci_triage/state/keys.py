@@ -37,9 +37,10 @@ def build_failure_key(
 
 
 def build_submission_key(*, failure_key: str, verified_tree_sha: str) -> str:
-    """Build the stable key for one verified tree submitted for a failure."""
+    """Build the stable private key for one verified tree submitted for a failure."""
 
-    return f"{failure_key}:{verified_tree_sha}"
+    raw_key = f"{failure_key}:{verified_tree_sha}"
+    return hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
 
 
 def failure_key_sha12(failure_key: str) -> str:

@@ -125,14 +125,25 @@ def test_write_pass_record_rejects_non_pass_result(tmp_path: Path) -> None:
 
 def test_failure_and_submission_keys_are_stable() -> None:
     failure_key = _failure_key()
+    submission_key = build_submission_key(failure_key=failure_key, verified_tree_sha="c" * 40)
 
     assert failure_key == (
         "quickbuild/1118258/platform/core/multimedia/inference-engine-interface/"
         "tizen/standard-armv7l/inference-engine-interface/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     )
     assert _failure_key() == failure_key
-    assert build_submission_key(failure_key=failure_key, verified_tree_sha="c" * 40) == (
-        failure_key + ":" + "c" * 40
+    assert submission_key == build_submission_key(
+        failure_key=failure_key,
+        verified_tree_sha="c" * 40,
+    )
+    assert len(submission_key) == 64
+    assert all(char in "0123456789abcdef" for char in submission_key)
+    assert "/" not in submission_key
+    assert ":" not in submission_key
+    assert failure_key not in submission_key
+    assert submission_key != build_submission_key(
+        failure_key=failure_key,
+        verified_tree_sha="d" * 40,
     )
 
 

@@ -253,7 +253,7 @@ def test_cli_gerrit_submit_dispatches_and_writes_output(
         return GerritSubmitResult(
             action="dry_run",
             verification_id="verify-1",
-            submission_key="failure:tree",
+            submission_key="a" * 64,
             submit_target="refs/for/tizen",
             submit_mode="dry-run",
             command="git push ...",

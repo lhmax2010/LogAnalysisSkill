@@ -151,6 +151,16 @@ def test_gerrit_submit_dry_run_returns_command_without_push(tmp_path: Path) -> N
     ]
     assert result.command is not None
     assert all("push" not in command for command in runner.commands)
+    assert result.submission_key == build_submission_key(
+        failure_key=record.failure_key,
+        verified_tree_sha=record.verified_tree_sha,
+    )
+    assert result.submission_key is not None
+    assert len(result.submission_key) == 64
+    assert "/" not in result.submission_key
+    assert ":" not in result.submission_key
+    assert record.failure_key not in result.submission_key
+    assert result.provenance["failure_key"] == record.failure_key
     assert db.get_submission(result.submission_key or "") is None
     assert get_latest_status(db, record.failure_key) == GERRIT_READY
 
