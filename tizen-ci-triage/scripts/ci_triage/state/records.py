@@ -31,6 +31,15 @@ class VerificationRecord:
     command_line: str
 
 
+@dataclass(frozen=True)
+class LatestStatusRow:
+    """Latest append-only status row for a failure key."""
+
+    status: str
+    verification_id: str | None
+    timestamp: str
+
+
 def write_pass_record(db: StateDatabase, record: VerificationRecord) -> str:
     """Write a PASS record and mark the failure GERRIT_READY.
 
@@ -56,6 +65,23 @@ def get_latest_status(db: StateDatabase, unit_key: str) -> str | None:
     """Return the latest append-only status for one unit."""
 
     return db.get_latest_status(unit_key)
+
+
+def get_latest_status_row(db: StateDatabase, unit_key: str) -> LatestStatusRow | None:
+    """Return the latest append-only status row for one unit."""
+
+    row = db.get_latest_status_row(unit_key)
+    if row is None:
+        return None
+    status = row["status"]
+    timestamp = row["timestamp"]
+    if not isinstance(status, str) or not isinstance(timestamp, str):
+        raise TypeError("latest status row is missing status or timestamp")
+    return LatestStatusRow(
+        status=status,
+        verification_id=row["verification_id"],
+        timestamp=timestamp,
+    )
 
 
 def record_status(

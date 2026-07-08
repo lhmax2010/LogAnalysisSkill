@@ -129,10 +129,16 @@ class StateDatabase:
     def get_latest_status(self, unit_key: str) -> str | None:
         """Return the latest status for one unit key."""
 
+        row = self.get_latest_status_row(unit_key)
+        return row["status"] if row is not None else None
+
+    def get_latest_status_row(self, unit_key: str) -> dict[str, str | None] | None:
+        """Return the latest status row for one unit key."""
+
         conn = self.connect()
         try:
             row = conn.execute(
-                "SELECT status FROM unit_status_log WHERE unit_key = ? "
+                "SELECT status, verification_id, timestamp FROM unit_status_log WHERE unit_key = ? "
                 "ORDER BY timestamp DESC, log_id DESC LIMIT 1",
                 (unit_key,),
             ).fetchone()
@@ -140,7 +146,65 @@ class StateDatabase:
             conn.close()
         if row is None:
             return None
-        return _row_string(row, "status")
+        return {
+            "status": _row_string(row, "status"),
+            "verification_id": _row_optional_string(row, "verification_id"),
+            "timestamp": _row_string(row, "timestamp"),
+        }
+
+    def get_submission(self, submission_key: str) -> dict[str, str | None] | None:
+        """Fetch one submitted Gerrit record by submission key."""
+
+        conn = self.connect()
+        try:
+            row = conn.execute(
+                "SELECT submission_key, verification_id, submitted_at, action, gerrit_change_id "
+                "FROM submissions WHERE submission_key = ?",
+                (submission_key,),
+            ).fetchone()
+        finally:
+            conn.close()
+        if row is None:
+            return None
+        return {
+            "submission_key": _row_string(row, "submission_key"),
+            "verification_id": _row_string(row, "verification_id"),
+            "submitted_at": _row_string(row, "submitted_at"),
+            "action": _row_string(row, "action"),
+            "gerrit_change_id": _row_optional_string(row, "gerrit_change_id"),
+        }
+
+    def insert_submission(
+        self,
+        *,
+        submission_key: str,
+        verification_id: str,
+        action: str,
+        gerrit_change_id: str | None = None,
+    ) -> None:
+        """Insert one Gerrit submission audit row.
+
+        Stage 1 dry-run paths must not call this; it is present for duplicate
+        checks, tests, and the Stage 2 real-push path.
+        """
+
+        conn = self.connect()
+        try:
+            with conn:
+                conn.execute(
+                    "INSERT INTO submissions "
+                    "(submission_key, verification_id, submitted_at, action, gerrit_change_id) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (
+                        submission_key,
+                        verification_id,
+                        _now_iso8601(),
+                        action,
+                        gerrit_change_id,
+                    ),
+                )
+        finally:
+            conn.close()
 
     def get_status_log(self, unit_key: str) -> tuple[dict[str, str | None], ...]:
         """Read status rows for tests and audit views."""
@@ -208,6 +272,15 @@ def _initialize_schema(conn: sqlite3.Connection) -> None:
 
         CREATE INDEX IF NOT EXISTS idx_unit_status_log_latest
             ON unit_status_log (unit_key, timestamp, log_id);
+
+        CREATE TABLE IF NOT EXISTS submissions (
+            submission_key TEXT PRIMARY KEY,
+            verification_id TEXT NOT NULL,
+            submitted_at TEXT NOT NULL,
+            action TEXT NOT NULL,
+            gerrit_change_id TEXT,
+            FOREIGN KEY (verification_id) REFERENCES verification_records (verification_id)
+        );
         """
     )
 

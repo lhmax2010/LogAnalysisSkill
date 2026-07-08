@@ -22,6 +22,15 @@ from ci_triage.verify.convergence import (
     touched_files_from_json,
     write_convergence_result,
 )
+from ci_triage.verify.gerrit_submit import (
+    GerritSubmitOptions,
+    exit_code_for_release,
+    exit_code_for_submit,
+    gerrit_submit,
+    release_verified_worktree,
+    write_gerrit_submit_result,
+    write_release_result,
+)
 
 EXIT_SUCCESS = 0
 EXIT_FAILED = 1
@@ -107,6 +116,34 @@ def check_convergence_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def gerrit_submit_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="ci_triage gerrit-submit",
+        description="Validate a GERRIT_READY verification record and emit a dry-run Gerrit push.",
+    )
+    parser.add_argument("--verification-id", required=True)
+    parser.add_argument("--state-db", type=Path, required=True)
+    parser.add_argument("--gerrit-host", required=True)
+    parser.add_argument("--gerrit-port", required=True)
+    parser.add_argument("--gerrit-user", required=True)
+    parser.add_argument("--submit-target", required=True)
+    parser.add_argument("--submit-mode", choices=("dry-run", "submit"), default="dry-run")
+    parser.add_argument("--git-ssh-command")
+    parser.add_argument("--output", type=Path, required=True)
+    return parser
+
+
+def release_worktree_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="ci_triage release-worktree",
+        description="Release the protected worktree marker for a verification record.",
+    )
+    parser.add_argument("--verification-id", required=True)
+    parser.add_argument("--state-db", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
+    return parser
+
+
 def main(
     argv: list[str] | None = None,
     *,
@@ -119,6 +156,10 @@ def main(
         return _main_build_verify(argv[1:], stderr=stderr, extra_pythonpath=extra_pythonpath)
     if argv and argv[0] == "check-convergence":
         return _main_check_convergence(argv[1:], stderr=stderr)
+    if argv and argv[0] == "gerrit-submit":
+        return _main_gerrit_submit(argv[1:], stderr=stderr)
+    if argv and argv[0] == "release-worktree":
+        return _main_release_worktree(argv[1:], stderr=stderr)
 
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -218,6 +259,48 @@ def _main_check_convergence(argv: list[str], *, stderr: TextIO) -> int:
     print(json.dumps(result.to_dict(), sort_keys=True), file=stderr)
     print(f"ci_triage check-convergence: result written to {args.output}", file=stderr)
     return EXIT_SUCCESS
+
+
+def _main_gerrit_submit(argv: list[str], *, stderr: TextIO) -> int:
+    parser = gerrit_submit_parser()
+    try:
+        args = parser.parse_args(argv)
+    except SystemExit as exc:
+        if exc.code == 0:
+            raise
+        return EXIT_FAILED
+    result = gerrit_submit(
+        GerritSubmitOptions(
+            verification_id=args.verification_id,
+            state_db=StateDatabase(args.state_db),
+            gerrit_host=args.gerrit_host,
+            gerrit_port=args.gerrit_port,
+            gerrit_user=args.gerrit_user,
+            submit_target=args.submit_target,
+            submit_mode=args.submit_mode,
+            git_ssh_command=args.git_ssh_command,
+        )
+    )
+    write_gerrit_submit_result(result, args.output)
+    print(json.dumps(result.to_dict(), sort_keys=True), file=stderr)
+    print(f"ci_triage gerrit-submit: result written to {args.output}", file=stderr)
+    return exit_code_for_submit(result)
+
+
+def _main_release_worktree(argv: list[str], *, stderr: TextIO) -> int:
+    parser = release_worktree_parser()
+    try:
+        args = parser.parse_args(argv)
+    except SystemExit as exc:
+        if exc.code == 0:
+            raise
+        return EXIT_FAILED
+    result = release_verified_worktree(StateDatabase(args.state_db), args.verification_id)
+    if args.output is not None:
+        write_release_result(result, args.output)
+        print(f"ci_triage release-worktree: result written to {args.output}", file=stderr)
+    print(json.dumps(result.to_dict(), sort_keys=True), file=stderr)
+    return exit_code_for_release(result)
 
 
 def _read_json(path: Path) -> dict[str, object]:

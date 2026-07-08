@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 from ci_triage import cli
 from ci_triage.verify.build_verify import BuildVerifyResult
+from ci_triage.verify.gerrit_submit import GerritSubmitResult, ReleaseWorktreeResult
 
 
 def _build_verify_args(tmp_path: Path) -> list[str]:
@@ -227,6 +228,131 @@ def test_python_m_ci_triage_check_convergence_help_smoke() -> None:
     assert result.returncode == 0
     assert "--current-evidence" in result.stdout
     assert "--output" in result.stdout
+
+
+def test_cli_gerrit_submit_help_uses_gerrit_submit_parser(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main(["gerrit-submit", "--help"])
+
+    assert excinfo.value.code == 0
+    output = capsys.readouterr().out
+    assert "ci_triage gerrit-submit" in output
+    assert "--verification-id" in output
+    assert "--submit-target" in output
+
+
+def test_cli_gerrit_submit_dispatches_and_writes_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    output = tmp_path / "submit.json"
+
+    def fake_submit(options: object) -> GerritSubmitResult:
+        return GerritSubmitResult(
+            action="dry_run",
+            verification_id="verify-1",
+            submission_key="failure:tree",
+            submit_target="refs/for/tizen",
+            submit_mode="dry-run",
+            command="git push ...",
+            command_argv=["git", "push"],
+            warnings=[],
+            provenance={"failure_key": "failure"},
+        )
+
+    monkeypatch.setattr(cli, "gerrit_submit", fake_submit)
+
+    assert (
+        cli.main(
+            [
+                "gerrit-submit",
+                "--verification-id",
+                "verify-1",
+                "--state-db",
+                str(tmp_path / "state.sqlite3"),
+                "--gerrit-host",
+                "review.tizen.org",
+                "--gerrit-port",
+                "29418",
+                "--gerrit-user",
+                "ci-user",
+                "--submit-target",
+                "refs/for/tizen",
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+    assert json.loads(output.read_text(encoding="utf-8"))["action"] == "dry_run"
+
+
+def test_python_m_ci_triage_gerrit_submit_help_smoke() -> None:
+    env = os.environ.copy()
+    scripts_path = str(Path("tizen-ci-triage/scripts").resolve())
+    env["PYTHONPATH"] = (
+        scripts_path
+        if not env.get("PYTHONPATH")
+        else scripts_path + os.pathsep + env["PYTHONPATH"]
+    )
+    result = subprocess.run(
+        [sys.executable, "-m", "ci_triage", "gerrit-submit", "--help"],
+        check=False,
+        text=True,
+        capture_output=True,
+        env=env,
+    )
+
+    assert result.returncode == 0
+    assert "--verification-id" in result.stdout
+    assert "--submit-target" in result.stdout
+
+
+def test_cli_release_worktree_help_uses_release_parser(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main(["release-worktree", "--help"])
+
+    assert excinfo.value.code == 0
+    output = capsys.readouterr().out
+    assert "ci_triage release-worktree" in output
+    assert "--verification-id" in output
+
+
+def test_cli_release_worktree_dispatches(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    output = tmp_path / "release.json"
+
+    def fake_release(db: object, verification_id: str) -> ReleaseWorktreeResult:
+        return ReleaseWorktreeResult(
+            action="released",
+            verification_id=verification_id,
+            worktree_path="/tmp/worktree",
+            released=True,
+        )
+
+    monkeypatch.setattr(cli, "release_verified_worktree", fake_release)
+
+    assert (
+        cli.main(
+            [
+                "release-worktree",
+                "--verification-id",
+                "verify-1",
+                "--state-db",
+                str(tmp_path / "state.sqlite3"),
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+    assert json.loads(output.read_text(encoding="utf-8"))["action"] == "released"
 
 
 def test_single_build_help_smoke(capsys: pytest.CaptureFixture[str]) -> None:

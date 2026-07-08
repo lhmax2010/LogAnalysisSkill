@@ -38,6 +38,7 @@ from ci_triage.verify.workspace import (
     check_disk_and_maybe_cleanup,
     cleanup_worktree,
     create_worktree,
+    mark_worktree_protected,
 )
 
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
@@ -272,6 +273,7 @@ def build_verify(
         worktree_path=handle.path,
         command_line=" ".join(_gbs_command(options)),
     )
+    mark_worktree_protected(handle, verification_id=record.verification_id, failure_key=failure_key)
     verification_id = write_pass_record(options.state_db, record)
     return BuildVerifyResult(
         result="PASS",

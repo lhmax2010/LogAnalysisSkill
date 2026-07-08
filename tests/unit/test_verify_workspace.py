@@ -10,10 +10,14 @@ from types import SimpleNamespace
 import pytest
 from ci_triage.verify.workspace import (
     MARKER_FILENAME,
+    PROTECTED_FILENAME,
     WorkspaceViolation,
     check_disk_and_maybe_cleanup,
     cleanup_worktree,
     create_worktree,
+    is_protected,
+    mark_worktree_protected,
+    release_worktree_protection,
 )
 
 
@@ -159,3 +163,88 @@ def test_cleanup_uses_rmtree_after_marker_checks(
 
     assert calls == [handle.path]
     assert not Path(handle.path).exists()
+
+
+def test_mark_worktree_protected_writes_audit_marker_and_is_status_transparent(
+    tmp_path: Path,
+) -> None:
+    repo, head = _repo(tmp_path)
+    handle = create_worktree(str(repo), head, str(tmp_path / "workspaces"), 7)
+
+    mark_worktree_protected(
+        handle,
+        verification_id="verify-1",
+        failure_key="quickbuild/1/project/branch/arch/pkg/base",
+    )
+
+    protected_path = Path(handle.path) / PROTECTED_FILENAME
+    assert is_protected(handle.path)
+    protected = json.loads(protected_path.read_text(encoding="utf-8"))
+    assert protected["verification_id"] == "verify-1"
+    assert protected["failure_key"] == "quickbuild/1/project/branch/arch/pkg/base"
+    assert _git(["status", "--porcelain"], Path(handle.path)).stdout == ""
+    assert _git(["ls-files", "--others", "--exclude-standard"], Path(handle.path)).stdout == ""
+
+    cleanup_worktree(handle)
+
+
+def test_release_worktree_protection_removes_marker(tmp_path: Path) -> None:
+    repo, head = _repo(tmp_path)
+    handle = create_worktree(str(repo), head, str(tmp_path / "workspaces"), 8)
+    mark_worktree_protected(handle, verification_id="verify-1", failure_key="failure")
+
+    assert release_worktree_protection(handle.path) is True
+    assert release_worktree_protection(handle.path) is False
+    assert not is_protected(handle.path)
+
+    cleanup_worktree(handle)
+
+
+def test_check_disk_skips_protected_but_cleans_unprotected(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo, head = _repo(tmp_path)
+    root = tmp_path / "workspaces"
+    protected = create_worktree(str(repo), head, str(root), 0)
+    unprotected = create_worktree(str(repo), head, str(root), 1)
+    mark_worktree_protected(protected, verification_id="verify-1", failure_key="failure")
+    calls = {"count": 0}
+
+    def fake_disk_usage(path: object) -> object:
+        calls["count"] += 1
+        if calls["count"] < 2:
+            return SimpleNamespace(free=0)
+        return SimpleNamespace(free=10 * 1024**3)
+
+    monkeypatch.setattr(shutil, "disk_usage", fake_disk_usage)
+
+    warnings = check_disk_and_maybe_cleanup(str(root), min_free_bytes=5 * 1024**3)
+
+    assert any("cleaned disposable worktree" in warning for warning in warnings)
+    assert not any("disk_low_protected_worktrees_skipped" in warning for warning in warnings)
+    assert Path(protected.path).exists()
+    assert not Path(unprotected.path).exists()
+    release_worktree_protection(protected.path)
+    cleanup_worktree(protected)
+
+
+def test_check_disk_never_deletes_protected_when_space_remains_low(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo, head = _repo(tmp_path)
+    protected = create_worktree(str(repo), head, str(tmp_path / "workspaces"), 0)
+    mark_worktree_protected(protected, verification_id="verify-1", failure_key="failure")
+
+    monkeypatch.setattr(shutil, "disk_usage", lambda path: SimpleNamespace(free=0))
+
+    warnings = check_disk_and_maybe_cleanup(
+        str(tmp_path / "workspaces"),
+        min_free_bytes=5 * 1024**3,
+    )
+
+    assert Path(protected.path).exists()
+    assert any("disk_low_protected_worktrees_skipped" in warning for warning in warnings)
+    release_worktree_protection(protected.path)
+    cleanup_worktree(protected)

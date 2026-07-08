@@ -14,6 +14,7 @@ from ci_triage.verify.build_verify import (
     _gbs_command,
     build_verify,
 )
+from ci_triage.verify.workspace import PROTECTED_FILENAME
 
 
 class GbsRunner:
@@ -172,6 +173,9 @@ def test_pass_writes_verification_record_and_commits_before_build(tmp_path: Path
     assert runner.events.index("commit") < runner.events.index("gbs")
     assert Path(result.build_log or "").is_file()
     assert (options.output_dir / "audit" / "baseline_evidence.json").is_file()
+    assert result.worktree_path is not None
+    assert (Path(result.worktree_path) / PROTECTED_FILENAME).is_file()
+    assert _git(["status", "--porcelain"], Path(result.worktree_path)) == ""
 
 
 def test_gbs_command_matches_verified_real_machine_shape(tmp_path: Path) -> None:
@@ -382,3 +386,43 @@ def test_marker_is_excluded_from_actual_changed_paths(tmp_path: Path) -> None:
 
     assert result.result == "PASS"
     assert result.error is None
+
+
+def test_pass_marks_worktree_protected_before_writing_record(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    options = _options(tmp_path)
+    runner = GbsRunner(returncode=0)
+    events: list[str] = []
+
+    def fake_mark(handle: object, *, verification_id: str, failure_key: str) -> None:
+        events.append("mark")
+
+    def fake_write(db: object, record: object) -> str:
+        events.append("write")
+        return "verify-1"
+
+    monkeypatch.setattr("ci_triage.verify.build_verify.mark_worktree_protected", fake_mark)
+    monkeypatch.setattr("ci_triage.verify.build_verify.write_pass_record", fake_write)
+
+    result = build_verify(options, subprocess_runner=runner)
+
+    assert result.result == "PASS"
+    assert events == ["mark", "write"]
+
+
+def test_pass_write_record_failure_is_not_silent(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    options = _options(tmp_path)
+    runner = GbsRunner(returncode=0)
+
+    def fake_write(db: object, record: object) -> str:
+        raise RuntimeError("db is down")
+
+    monkeypatch.setattr("ci_triage.verify.build_verify.write_pass_record", fake_write)
+
+    with pytest.raises(RuntimeError, match="db is down"):
+        build_verify(options, subprocess_runner=runner)

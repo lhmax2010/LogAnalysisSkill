@@ -12,6 +12,7 @@ from ci_triage.state import (
     build_submission_key,
     failure_key_sha12,
     get_latest_status,
+    get_latest_status_row,
     get_record,
     record_status,
     write_pass_record,
@@ -78,6 +79,20 @@ def test_write_pass_record_appends_gerrit_ready_status(tmp_path: Path) -> None:
     assert len(rows) == 1
     assert rows[0]["status"] == GERRIT_READY
     assert rows[0]["verification_id"] == record.verification_id
+
+
+def test_get_latest_status_row_returns_status_verification_id_and_timestamp(tmp_path: Path) -> None:
+    db = _db(tmp_path)
+    record = _record()
+    record_status(db, record.failure_key, "DISCOVERED")
+    write_pass_record(db, record)
+
+    row = get_latest_status_row(db, record.failure_key)
+
+    assert row is not None
+    assert row.status == GERRIT_READY
+    assert row.verification_id == record.verification_id
+    assert row.timestamp
 
 
 def test_status_log_is_append_only_and_latest_status_uses_newest_row(tmp_path: Path) -> None:
