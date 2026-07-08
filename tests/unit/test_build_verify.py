@@ -13,6 +13,7 @@ from ci_triage.verify.build_verify import (
     _gbs_arch,
     _gbs_command,
     build_verify,
+    build_verify_to_json,
 )
 from ci_triage.verify.workspace import PROTECTED_FILENAME
 
@@ -160,6 +161,7 @@ def test_pass_writes_verification_record_and_commits_before_build(tmp_path: Path
     result = build_verify(options, subprocess_runner=runner)
 
     assert result.result == "PASS"
+    assert result.actual_changed_paths == ["src/main.c"]
     assert result.verification_id is not None
     assert result.verified_commit_sha
     assert result.verified_tree_sha
@@ -176,6 +178,11 @@ def test_pass_writes_verification_record_and_commits_before_build(tmp_path: Path
     assert result.worktree_path is not None
     assert (Path(result.worktree_path) / PROTECTED_FILENAME).is_file()
     assert _git(["status", "--porcelain"], Path(result.worktree_path)) == ""
+    result_json = tmp_path / "result.json"
+    build_verify_to_json(result, result_json)
+    assert json.loads(result_json.read_text(encoding="utf-8"))["actual_changed_paths"] == [
+        "src/main.c"
+    ]
 
 
 def test_gbs_command_matches_verified_real_machine_shape(tmp_path: Path) -> None:
@@ -237,6 +244,7 @@ def test_gbs_fail_source_werror_returns_repair_allowed(
     result = build_verify(options, subprocess_runner=runner)
 
     assert result.result == "FAIL"
+    assert result.actual_changed_paths == ["src/main.c"]
     assert result.failure_class == "source_repairable"
     assert result.repair_allowed is True
     assert result.evidence is not None
@@ -279,6 +287,7 @@ def test_build_mutated_tracked_source_after_commit_fails(tmp_path: Path) -> None
     result = build_verify(options, subprocess_runner=runner)
 
     assert result.result == "FAIL"
+    assert result.actual_changed_paths == ["src/main.c"]
     assert result.failure_stage == "build_mutated_source"
     assert result.failure_class == "build_mutated_source"
     assert result.repair_allowed is False
@@ -300,6 +309,7 @@ def test_invalid_edit_spec_fails_before_build(tmp_path: Path) -> None:
 
     assert result.result == "FAIL"
     assert result.failure_stage == "apply_failed"
+    assert result.actual_changed_paths == []
     assert "gbs" not in runner.events
 
 
@@ -311,6 +321,7 @@ def test_apply_failure_fails_before_build(tmp_path: Path) -> None:
 
     assert result.result == "FAIL"
     assert result.failure_stage == "apply_failed"
+    assert result.actual_changed_paths == []
     assert "gbs" not in runner.events
 
 
@@ -362,6 +373,7 @@ def test_unexpected_changed_paths_are_checked_before_no_effective_changes(
 
     assert result.result == "FAIL"
     assert result.failure_stage == "apply_unexpected_paths"
+    assert result.actual_changed_paths == ["src/main.c", "src/unexpected.c"]
     assert result.error is not None
     assert "src/unexpected.c" in result.error
     assert "gbs" not in runner.events
@@ -375,6 +387,7 @@ def test_no_effective_changes_fails_before_build(tmp_path: Path) -> None:
 
     assert result.result == "FAIL"
     assert result.failure_stage == "no_effective_changes"
+    assert result.actual_changed_paths == []
     assert "gbs" not in runner.events
 
 
@@ -385,6 +398,7 @@ def test_marker_is_excluded_from_actual_changed_paths(tmp_path: Path) -> None:
     result = build_verify(options, subprocess_runner=runner)
 
     assert result.result == "PASS"
+    assert result.actual_changed_paths == ["src/main.c"]
     assert result.error is None
 
 

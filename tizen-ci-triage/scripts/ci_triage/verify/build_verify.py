@@ -18,7 +18,7 @@ import subprocess
 import sys
 import uuid
 from collections.abc import Callable, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -73,6 +73,10 @@ class BuildVerifyResult:
     """Machine-readable build-verify result."""
 
     result: str
+    # Actual normalized paths changed by this build-verify attempt. The workflow
+    # feeds this into check-convergence as touched_files instead of asking an
+    # agent to infer touched files from edit_spec.
+    actual_changed_paths: list[str] = field(default_factory=list)
     failure_stage: str | None = None
     failure_class: str | None = None
     repair_allowed: bool | None = None
@@ -165,6 +169,7 @@ def build_verify(
         return _fail("apply_failed", "not_applicable", False, audit_dir, error=diff_check_error)
 
     changed_paths = _actual_changed_paths(Path(handle.path), subprocess_runner)
+    actual_changed_paths = sorted(changed_paths)
     unexpected = sorted(changed_paths - allowed_paths)
     if unexpected:
         return _fail(
@@ -173,6 +178,7 @@ def build_verify(
             False,
             audit_dir,
             error="unexpected changed paths: " + ", ".join(unexpected),
+            actual_changed_paths=actual_changed_paths,
         )
     if not changed_paths:
         return _fail(
@@ -207,6 +213,7 @@ def build_verify(
     if build_result.timed_out:
         return BuildVerifyResult(
             result="FAIL",
+            actual_changed_paths=actual_changed_paths,
             failure_stage="build_timeout",
             failure_class="build_timeout",
             repair_allowed=False,
@@ -219,6 +226,7 @@ def build_verify(
     if mutated:
         return BuildVerifyResult(
             result="FAIL",
+            actual_changed_paths=actual_changed_paths,
             failure_stage="build_mutated_source",
             failure_class="build_mutated_source",
             repair_allowed=False,
@@ -240,6 +248,7 @@ def build_verify(
             worktree_path=handle.path,
             build_log_path=build_log_path,
             evidence_path=evidence_path,
+            actual_changed_paths=actual_changed_paths,
         )
 
     build_log_text = build_log_path.read_text(encoding="utf-8")
@@ -277,6 +286,7 @@ def build_verify(
     verification_id = write_pass_record(options.state_db, record)
     return BuildVerifyResult(
         result="PASS",
+        actual_changed_paths=actual_changed_paths,
         verification_id=verification_id,
         verified_commit_sha=verified_commit_sha,
         verified_tree_sha=verified_tree_sha,
@@ -409,9 +419,11 @@ def _classification_fail(
     worktree_path: str,
     build_log_path: Path,
     evidence_path: Path | None,
+    actual_changed_paths: list[str],
 ) -> BuildVerifyResult:
     return BuildVerifyResult(
         result="FAIL",
+        actual_changed_paths=actual_changed_paths,
         failure_stage="gbs_build_failed",
         failure_class=classification.failure_class,
         repair_allowed=classification.repair_allowed,
@@ -429,9 +441,11 @@ def _fail(
     audit_dir: Path,
     *,
     error: str,
+    actual_changed_paths: list[str] | None = None,
 ) -> BuildVerifyResult:
     return BuildVerifyResult(
         result="FAIL",
+        actual_changed_paths=actual_changed_paths or [],
         failure_stage=failure_stage,
         failure_class=failure_class,
         repair_allowed=repair_allowed,
