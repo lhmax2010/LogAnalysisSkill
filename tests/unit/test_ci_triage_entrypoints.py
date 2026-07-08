@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -124,6 +125,108 @@ def test_python_m_ci_triage_build_verify_help_smoke() -> None:
     assert result.returncode == 0
     assert "--src-clean" in result.stdout
     assert "--base-commit" in result.stdout
+
+
+def test_cli_check_convergence_help_uses_check_convergence_parser(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main(["check-convergence", "--help"])
+
+    assert excinfo.value.code == 0
+    output = capsys.readouterr().out
+    assert "ci_triage check-convergence" in output
+    assert "--current-evidence" in output
+    assert "--previous-evidence" in output
+    assert "--touched-files" in output
+
+
+def test_cli_check_convergence_writes_output(tmp_path: Path) -> None:
+    current = tmp_path / "current.json"
+    previous = tmp_path / "previous.json"
+    output = tmp_path / "result.json"
+    packet = {
+        "primary_error": {
+            "kind": "werror",
+            "file": "src/foo.c",
+            "line": 1,
+            "message": "error: use of 'OldApi' [-Werror,-Wdeprecated-declarations]",
+        }
+    }
+    current.write_text(json.dumps(packet), encoding="utf-8")
+    previous.write_text(json.dumps(packet), encoding="utf-8")
+
+    assert (
+        cli.main(
+            [
+                "check-convergence",
+                "--current-evidence",
+                str(current),
+                "--previous-evidence",
+                str(previous),
+                "--output",
+                str(output),
+            ]
+        )
+        == 0
+    )
+
+    result = json.loads(output.read_text(encoding="utf-8"))
+    assert result["verdict"] == "stalled"
+
+
+def test_cli_check_convergence_reports_missing_file(tmp_path: Path) -> None:
+    assert (
+        cli.main(
+            [
+                "check-convergence",
+                "--current-evidence",
+                str(tmp_path / "missing.json"),
+                "--output",
+                str(tmp_path / "out.json"),
+            ]
+        )
+        == 2
+    )
+
+
+def test_cli_check_convergence_reports_invalid_json(tmp_path: Path) -> None:
+    current = tmp_path / "current.json"
+    current.write_text("{bad", encoding="utf-8")
+
+    assert (
+        cli.main(
+            [
+                "check-convergence",
+                "--current-evidence",
+                str(current),
+                "--output",
+                str(tmp_path / "out.json"),
+            ]
+        )
+        == 3
+    )
+
+
+def test_python_m_ci_triage_check_convergence_help_smoke() -> None:
+    env = os.environ.copy()
+    scripts_path = str(Path("tizen-ci-triage/scripts").resolve())
+    env["PYTHONPATH"] = (
+        scripts_path
+        if not env.get("PYTHONPATH")
+        else scripts_path + os.pathsep + env["PYTHONPATH"]
+    )
+    result = subprocess.run(
+        [sys.executable, "-m", "ci_triage", "check-convergence", "--help"],
+        check=False,
+        text=True,
+        capture_output=True,
+        env=env,
+    )
+
+    assert result.returncode == 0
+    assert "--current-evidence" in result.stdout
+    assert "--output" in result.stdout
 
 
 def test_single_build_help_smoke(capsys: pytest.CaptureFixture[str]) -> None:

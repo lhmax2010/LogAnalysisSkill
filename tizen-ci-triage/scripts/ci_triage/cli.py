@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from json import JSONDecodeError
 from pathlib import Path
 from typing import TextIO
 
@@ -16,9 +17,16 @@ from ci_triage.verify.build_verify import (
     build_verify,
     build_verify_to_json,
 )
+from ci_triage.verify.convergence import (
+    check_convergence,
+    touched_files_from_json,
+    write_convergence_result,
+)
 
 EXIT_SUCCESS = 0
 EXIT_FAILED = 1
+EXIT_FILE_MISSING = 2
+EXIT_JSON_INVALID = 3
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -87,6 +95,18 @@ def build_verify_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def check_convergence_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="ci_triage check-convergence",
+        description="Decide whether another build-repair iteration should continue.",
+    )
+    parser.add_argument("--current-evidence", type=Path, required=True)
+    parser.add_argument("--previous-evidence", type=Path)
+    parser.add_argument("--touched-files", type=Path)
+    parser.add_argument("--output", type=Path, required=True)
+    return parser
+
+
 def main(
     argv: list[str] | None = None,
     *,
@@ -97,6 +117,8 @@ def main(
         argv = sys.argv[1:]
     if argv and argv[0] == "build-verify":
         return _main_build_verify(argv[1:], stderr=stderr, extra_pythonpath=extra_pythonpath)
+    if argv and argv[0] == "check-convergence":
+        return _main_check_convergence(argv[1:], stderr=stderr)
 
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -158,6 +180,51 @@ def _main_build_verify(
     print(json.dumps(result.to_dict(), sort_keys=True), file=stderr)
     print(f"ci_triage build-verify: result written to {output_path}", file=stderr)
     return EXIT_SUCCESS if result.result == "PASS" else EXIT_FAILED
+
+
+def _main_check_convergence(argv: list[str], *, stderr: TextIO) -> int:
+    parser = check_convergence_parser()
+    try:
+        args = parser.parse_args(argv)
+    except SystemExit as exc:
+        if exc.code == 0:
+            raise
+        return EXIT_FAILED
+
+    paths = [args.current_evidence]
+    if args.previous_evidence is not None:
+        paths.append(args.previous_evidence)
+    if args.touched_files is not None:
+        paths.append(args.touched_files)
+    missing = [str(path) for path in paths if not path.is_file()]
+    if missing:
+        print("ci_triage check-convergence: missing file(s): " + ", ".join(missing), file=stderr)
+        return EXIT_FILE_MISSING
+
+    try:
+        current = _read_json(args.current_evidence)
+        previous = (
+            _read_json(args.previous_evidence) if args.previous_evidence is not None else None
+        )
+        touched = (
+            touched_files_from_json(args.touched_files) if args.touched_files is not None else None
+        )
+    except (JSONDecodeError, ValueError) as exc:
+        print(f"ci_triage check-convergence: invalid JSON: {exc}", file=stderr)
+        return EXIT_JSON_INVALID
+
+    result = check_convergence(current, previous, touched_files=touched)
+    write_convergence_result(result, args.output)
+    print(json.dumps(result.to_dict(), sort_keys=True), file=stderr)
+    print(f"ci_triage check-convergence: result written to {args.output}", file=stderr)
+    return EXIT_SUCCESS
+
+
+def _read_json(path: Path) -> dict[str, object]:
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError(f"{path} must contain a JSON object")
+    return raw
 
 
 if __name__ == "__main__":
