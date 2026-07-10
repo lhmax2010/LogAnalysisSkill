@@ -165,7 +165,7 @@ def run_triage(
         source_fetch = fetch_source_for_commit(
             project_key,
             commit_hash,
-            output_dir / "src",
+            output_dir / "src" / _safe_pkg_dir(selected.spec_name),
             subprocess_runner=subprocess_runner,
             git_ssh_command=options.git_ssh_command or os.environ.get("CI_TRIAGE_GIT_SSH_COMMAND"),
         )
@@ -250,6 +250,26 @@ def discover_sibling_pythonpath(*, launcher_path: Path | None = None) -> tuple[P
         root / "tizen-gbs-patch-suggest" / "scripts",
     )
     return tuple(path for path in candidates if path.is_dir())
+
+
+def _safe_pkg_dir(spec_name: str) -> str:
+    """Return a single safe package directory name for source checkout.
+
+    ``spec_name`` should be the RPM spec Name: value. It comes from external
+    QuickBuild/GBS report parsing, so reject path separators, parent-directory
+    names, empty strings, and NUL bytes before using it as a directory segment.
+    Package names may contain dots in the middle, e.g. ``libfoo.bar``.
+    """
+
+    if (
+        not spec_name
+        or "/" in spec_name
+        or "\\" in spec_name
+        or spec_name in (".", "..")
+        or "\x00" in spec_name
+    ):
+        raise ValueError(f"unsafe spec_name for source dir: {spec_name!r}")
+    return spec_name
 
 
 def _select_gbs_report_package(

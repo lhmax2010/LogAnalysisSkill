@@ -45,7 +45,7 @@ from ci_triage.quickbuild_log import (
     parse_failed_packages,
     select_failed_package,
 )
-from ci_triage.runner import TriageOptions, TriageResult, run_triage
+from ci_triage.runner import TriageOptions, TriageResult, _safe_pkg_dir, run_triage
 from ci_triage.sources import FailedBuild, QuickBuildSource
 
 OVERVIEW_HTML = """
@@ -928,6 +928,7 @@ def test_run_triage_continues_with_explicit_spec_name_when_failed_rows_missing(
         git_ssh_command: str | None,
     ) -> SourceFetchResult:
         assert project == "platform/core/appfw/united-service"
+        assert destination == tmp_path / "out" / "1095511" / "src" / "united-service"
         destination.mkdir(parents=True)
         return SourceFetchResult(
             status="source_available",
@@ -1032,6 +1033,7 @@ def test_run_triage_uses_gbs_report_package_log_when_arch_is_provided(
     ) -> SourceFetchResult:
         assert project == "platform/test/foo"
         assert commit_hash == "foo-commit"
+        assert destination == tmp_path / "out" / "111" / "src" / "foo"
         destination.mkdir(parents=True)
         return SourceFetchResult(
             status="source_available",
@@ -1169,7 +1171,7 @@ def test_run_triage_passes_cloned_src_root_to_analyzer_and_patch_suggest(
             "buildlogs/standard/armv7l/failed/multi-assistant.buildlog.txt",
         ]
     )
-    src_root = tmp_path / "out" / "111" / "src"
+    src_root = tmp_path / "out" / "111" / "src" / "multi-assistant"
     commands: list[list[str]] = []
 
     def fake_download(build_id: str, *, cookie_path: Path) -> SimpleNamespace:
@@ -1269,3 +1271,33 @@ def test_run_triage_passes_cloned_src_root_to_analyzer_and_patch_suggest(
     report = result.report_path.read_text(encoding="utf-8")
     assert "spec_toolchain_flag_context_available" in report
     assert "platform/core/uifw/multi-assistant" in report
+
+
+@pytest.mark.parametrize(
+    ("spec_name", "expected"),
+    [
+        ("inference-engine-interface", "inference-engine-interface"),
+        ("libfoo.bar", "libfoo.bar"),
+    ],
+)
+def test_safe_pkg_dir_accepts_single_segment_package_names(
+    spec_name: str,
+    expected: str,
+) -> None:
+    assert _safe_pkg_dir(spec_name) == expected
+
+
+@pytest.mark.parametrize(
+    "spec_name",
+    [
+        "",
+        ".",
+        "..",
+        "foo/bar",
+        "foo\\bar",
+        "bad\x00name",
+    ],
+)
+def test_safe_pkg_dir_rejects_path_escape_inputs(spec_name: str) -> None:
+    with pytest.raises(ValueError, match="unsafe spec_name"):
+        _safe_pkg_dir(spec_name)

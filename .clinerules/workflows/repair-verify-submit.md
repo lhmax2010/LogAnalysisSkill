@@ -68,7 +68,7 @@ Cline 的智能决策【只有一处】:根据 patch-suggest 的 context + 编�
 
 1. 已有一个 triage 单 build 产出的失败包,状态为 `source_context_available`
    (patch-suggest 已产出 context)。若状态不是 source_context_available → 不进入。
-2. 已有该包的干净源码(clone 的 src)、baseline evidence(原始失败的 evidence)。
+2. 已有该包的干净源码(clone 的 `<out>/src/<pkg>/`)、baseline evidence(原始失败的 evidence)。
 3. 环境已配置:gbs.conf 路径、state DB 路径、PYTHONPATH(四个 skill + ci_triage)。
 4. Python 解释器:本文命令写作 `python -m ci_triage ...`,但不同机器的解释器名
    可能是 `python` 或 `python3`。运行前先确认环境中可用的名字(如
@@ -88,10 +88,12 @@ LOOP:
   ── 步骤 A:编译验证(确定性工具)──
   调 build-verify:
     python -m ci_triage build-verify \
-      --src-clean <src> --base-commit <commit> --edit-spec <累积 edit_spec> \
+      --src-clean <out>/src/<pkg> --base-commit <commit> --edit-spec <累积 edit_spec> \
       --gbs-conf <conf> --package <pkg> --workspace-root <ws> \
       --output-dir <out> --baseline-evidence <baseline> --iter-index <iter> \
       --state-db <db> --build-id <id> --project <proj> --branch <br> --arch <arch>
+  注:triage 源码目录按包名分层为 `<out>/src/<pkg>/`;旧的扁平 `<out>/src/`
+  测试数据需要重新 clone 后再进入本 workflow。
   ⭐ Cline 必须读固定路径 `<out>/build_verify_result.json`(工具写的),
   从中提取以下字段(不得凭记忆/推理构造这些值):
     - `result`(PASS/FAIL)
