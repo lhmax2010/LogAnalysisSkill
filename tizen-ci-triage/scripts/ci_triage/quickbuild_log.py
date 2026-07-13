@@ -120,7 +120,14 @@ def select_failed_package(
 def match_pkg_key(spec_name: str, pkg_to_commit: dict[str, str]) -> tuple[str, str]:
     """Map a spec_name like 'multi-assistant' to one project key and commit."""
 
-    matches = [key for key in pkg_to_commit if key.split("/")[-1] == spec_name]
+    matches = _exact_project_matches(spec_name, pkg_to_commit)
+    if len(matches) == 1:
+        key = matches[0]
+        return key, pkg_to_commit[key]
+
+    if not matches:
+        matches = _tizen_prefix_project_matches(spec_name, pkg_to_commit)
+
     if len(matches) == 1:
         key = matches[0]
         return key, pkg_to_commit[key]
@@ -133,3 +140,29 @@ def match_pkg_key(spec_name: str, pkg_to_commit: dict[str, str]) -> tuple[str, s
         "PROJECT_COMMIT_AMBIGUOUS",
         f"multiple build_pkg_list_dic keys matched {spec_name!r}: {', '.join(matches)}",
     )
+
+
+def _exact_project_matches(spec_name: str, pkg_to_commit: dict[str, str]) -> list[str]:
+    return [key for key in pkg_to_commit if _project_basename(key) == spec_name]
+
+
+def _tizen_prefix_project_matches(spec_name: str, pkg_to_commit: dict[str, str]) -> list[str]:
+    rules = (
+        ("hal-api-", "/hal/api/"),
+        ("capi-ui-", "/api/"),
+        ("capi-", "/api/"),
+    )
+    for prefix, required_segment in rules:
+        if not spec_name.startswith(prefix):
+            continue
+        project_name = spec_name.removeprefix(prefix)
+        return [
+            key
+            for key in pkg_to_commit
+            if required_segment in f"/{key}/" and _project_basename(key) == project_name
+        ]
+    return []
+
+
+def _project_basename(project: str) -> str:
+    return project.split("/")[-1]

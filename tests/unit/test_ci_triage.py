@@ -871,6 +871,80 @@ def test_parse_full_log_package_mapping_and_failed_package() -> None:
     assert commit == "abc123"
 
 
+def test_match_pkg_key_supports_tizen_hal_and_capi_prefix_mapping() -> None:
+    mapping = {
+        "platform/hal/api/drm": "drm-commit",
+        "platform/hal/api/hdcp": "hdcp-commit",
+        "platform/core/api/inputmethod": "inputmethod-commit",
+        "platform/core/appfw/united-service": "united-commit",
+        "platform/core/system/sessiond": "sessiond-commit",
+        "profile/common/apps/native/enlightenment": "enlightenment-commit",
+        "platform/adaptation/libtdm-drm": "tdm-commit",
+        "platform/hal/backend/drm-generic": "backend-commit",
+    }
+
+    assert match_pkg_key("hal-api-drm", mapping) == ("platform/hal/api/drm", "drm-commit")
+    assert match_pkg_key("hal-api-hdcp", mapping) == ("platform/hal/api/hdcp", "hdcp-commit")
+    assert match_pkg_key("capi-ui-inputmethod", mapping) == (
+        "platform/core/api/inputmethod",
+        "inputmethod-commit",
+    )
+    assert match_pkg_key("united-service", mapping) == (
+        "platform/core/appfw/united-service",
+        "united-commit",
+    )
+    assert match_pkg_key("sessiond", mapping) == (
+        "platform/core/system/sessiond",
+        "sessiond-commit",
+    )
+    assert match_pkg_key("enlightenment", mapping) == (
+        "profile/common/apps/native/enlightenment",
+        "enlightenment-commit",
+    )
+
+
+def test_match_pkg_key_uses_exact_match_before_prefix_fallback() -> None:
+    mapping = {
+        "platform/core/api/inputmethod": "fallback-commit",
+        "platform/core/api/capi-ui-inputmethod": "exact-commit",
+    }
+
+    assert match_pkg_key("capi-ui-inputmethod", mapping) == (
+        "platform/core/api/capi-ui-inputmethod",
+        "exact-commit",
+    )
+
+
+def test_match_pkg_key_reports_ambiguous_prefix_fallback() -> None:
+    mapping = {
+        "platform/core/api/inputmethod": "first",
+        "platform/extra/api/inputmethod": "second",
+    }
+
+    with pytest.raises(QuickBuildLogError) as exc:
+        match_pkg_key("capi-ui-inputmethod", mapping)
+
+    assert exc.value.code == "PROJECT_COMMIT_AMBIGUOUS"
+    assert "platform/core/api/inputmethod" in str(exc.value)
+    assert "platform/extra/api/inputmethod" in str(exc.value)
+
+
+def test_match_pkg_key_keeps_not_found_when_prefix_fallback_has_no_safe_match() -> None:
+    mapping = {
+        "platform/adaptation/libtdm-drm": "tdm-commit",
+        "platform/hal/backend/drm-generic": "backend-commit",
+        "platform/core/uifw/inputmethod": "uifw-commit",
+    }
+
+    with pytest.raises(QuickBuildLogError) as exc:
+        match_pkg_key("hal-api-drm", mapping)
+    assert exc.value.code == "PROJECT_COMMIT_NOT_FOUND"
+
+    with pytest.raises(QuickBuildLogError) as exc:
+        match_pkg_key("capi-ui-inputmethod", mapping)
+    assert exc.value.code == "PROJECT_COMMIT_NOT_FOUND"
+
+
 def test_derive_package_buildlog_url_from_quickbuild_dest_file() -> None:
     url = derive_package_buildlog_url(
         "/data/workspace/gbsbuild-ROOT/live/"
