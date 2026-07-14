@@ -46,6 +46,7 @@ STATE_FAILED_PERMANENT = "FAILED_PERMANENT"
 UNKNOWN_SPEC_NAME = "<unknown>"
 NO_GBS_REPORT_SPEC_NAME = "__NO_GBS_REPORT__"
 PROCESSED_FILENAME = "processed.json"
+BATCH_MANIFEST_SCHEMA = "ci_triage/batch_manifest/v1"
 
 
 TriageRunner = Callable[[TriageOptions], TriageResult]
@@ -86,6 +87,8 @@ class PackageState:
     arch: str | None = None
     spec_name: str | None = None
     state: str = STATE_DISCOVERED
+    project: str | None = None
+    branch: str | None = "tizen"
     commit: str | None = None
     gerrit_status: str | None = None
     patchset_ref: str | None = None
@@ -104,6 +107,8 @@ class PackageState:
             arch=_optional_string(raw.get("arch")),
             spec_name=_optional_string(raw.get("spec_name")),
             state=_string(raw.get("state"), STATE_DISCOVERED),
+            project=_optional_string(raw.get("project")),
+            branch=_optional_string(raw.get("branch")) or "tizen",
             commit=_optional_string(raw.get("commit")),
             gerrit_status=_optional_string(raw.get("gerrit_status")),
             patchset_ref=_optional_string(raw.get("patchset_ref")),
@@ -119,6 +124,8 @@ class PackageState:
             "state": self.state,
             "arch": self.arch,
             "spec_name": self.spec_name,
+            "project": self.project,
+            "branch": self.branch,
             "commit": self.commit,
             "gerrit_status": self.gerrit_status,
             "patchset_ref": self.patchset_ref,
@@ -206,6 +213,8 @@ class BatchRunRecord:
     build_id: str
     arch: str
     spec_name: str
+    project: str | None
+    branch: str | None
     commit: str | None
     gerrit_status: str | None
     patch_status: str | None
@@ -275,6 +284,11 @@ class CiTriageOrchestrator:
         daily_report_path = paths.runs_dir / "daily_report.md"
         daily_report_path.write_text(
             _render_daily_report(builds, rows, warnings),
+            encoding="utf-8",
+        )
+        manifest_path = paths.runs_dir / "batch_manifest.json"
+        manifest_path.write_text(
+            _render_batch_manifest(paths, rows, now),
             encoding="utf-8",
         )
         return BatchTriageResult(
@@ -445,6 +459,7 @@ class CiTriageOrchestrator:
             )
             rows.append(_row_from_package(build.build_id, arch, spec_name, package))
             return
+        package.project = project_key
         package.commit = commit_hash
 
         try:
@@ -512,6 +527,7 @@ class _BatchPaths:
     runs_dir: Path
     logs_dir: Path
     processed_path: Path
+    run_date: str
 
     @classmethod
     def from_options(cls, options: BatchTriageOptions, now: datetime) -> _BatchPaths:
@@ -523,6 +539,7 @@ class _BatchPaths:
             runs_dir=state_root / "runs" / run_date,
             logs_dir=state_root / "logs",
             processed_path=state_root / PROCESSED_FILENAME,
+            run_date=run_date,
         )
 
     def ensure(self) -> None:
@@ -689,6 +706,69 @@ def _render_daily_report(
     return "\n".join(lines) + "\n"
 
 
+def _render_batch_manifest(paths: _BatchPaths, rows: list[BatchRunRecord], now: datetime) -> str:
+    manifest = {
+        "schema_version": BATCH_MANIFEST_SCHEMA,
+        "generated_at": _timestamp(now),
+        "run_date": paths.run_date,
+        "packages": [_manifest_package(paths, row) for row in rows],
+    }
+    return json.dumps(manifest, indent=2, sort_keys=True) + "\n"
+
+
+def _manifest_package(paths: _BatchPaths, row: BatchRunRecord) -> dict[str, Any]:
+    package_dir = paths.package_dir(row.build_id, row.arch, row.spec_name)
+    return {
+        "unit_key": _manifest_unit_key(row.build_id, row.arch, row.spec_name),
+        "build_id": row.build_id,
+        "arch": row.arch,
+        "spec_name": row.spec_name,
+        "state": row.state,
+        "patch_status": row.patch_status,
+        "project": row.project,
+        "base_commit": row.commit,
+        "branch": row.branch or "tizen",
+        "src_clean": _existing_dir(package_dir / "src" / row.spec_name),
+        "evidence_packet": _existing_file(package_dir / "evidence_packet.json"),
+        "patch_context": _existing_file(package_dir / "patch_context" / "context.md"),
+        "patch_context_meta": _existing_file(package_dir / "patch_context" / "meta.json"),
+        "report": _existing_file(Path(row.report_path)) if row.report_path else None,
+        "package_buildlog": _existing_file(package_dir / f"{row.spec_name}.buildlog.txt"),
+        "error": _manifest_error(row),
+    }
+
+
+def _manifest_unit_key(build_id: str, arch: str, spec_name: str) -> str:
+    return f"{build_id}:{arch}:{spec_name}"
+
+
+def _existing_file(path: Path) -> str | None:
+    return str(path.resolve()) if path.is_file() else None
+
+
+def _existing_dir(path: Path) -> str | None:
+    return str(path.resolve()) if path.is_dir() else None
+
+
+def _manifest_error(row: BatchRunRecord) -> dict[str, str] | None:
+    if row.error:
+        code, _, message = row.error.partition(":")
+        if message:
+            return {"code": code.strip() or row.state, "message": message.strip()}
+        return {"code": row.state, "message": row.error}
+    if row.state in {STATE_REPORTED, STATE_SKIPPED_PROCESSED}:
+        return None
+    if row.state.startswith("FAILED_") or row.state in {
+        STATE_NEEDS_INPUT,
+        STATE_REPORTED_NO_REPORT,
+        STATE_FAILED_PERMANENT,
+    }:
+        return {"code": row.state, "message": row.state}
+    # In-progress states such as LOG_FETCHED/ANALYZED are visible in the
+    # manifest during partial runs, but they are not errors by themselves.
+    return None
+
+
 def _load_processed(path: Path) -> dict[str, dict[str, set[str]]]:
     if not path.is_file():
         return {}
@@ -816,6 +896,8 @@ def _row_from_package(
         build_id=build_id,
         arch=arch,
         spec_name=spec_name,
+        project=package.project,
+        branch=package.branch,
         commit=package.commit,
         gerrit_status=package.gerrit_status,
         patch_status=package.patch_status,
@@ -852,6 +934,9 @@ def _read_report_metadata(package: PackageState, report_path: Path) -> None:
     patchset_match = re.search(r"^- Patch set ref: `([^`]+)`", text, flags=re.MULTILINE)
     if patchset_match is not None:
         package.patchset_ref = patchset_match.group(1)
+    branch_match = re.search(r"^- Branch: `([^`]+)`", text, flags=re.MULTILINE)
+    if branch_match is not None:
+        package.branch = branch_match.group(1)
 
 
 def _safe_path_name(value: str) -> str:

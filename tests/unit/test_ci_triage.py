@@ -149,6 +149,25 @@ OVERVIEW_HTML = """
 </html>
 """
 
+EXPECTED_MANIFEST_UNIT_KEYS = {
+    "unit_key",
+    "build_id",
+    "arch",
+    "spec_name",
+    "state",
+    "patch_status",
+    "project",
+    "base_commit",
+    "branch",
+    "src_clean",
+    "evidence_packet",
+    "patch_context",
+    "patch_context_meta",
+    "report",
+    "package_buildlog",
+    "error",
+}
+
 
 def _cookie_file(tmp_path: Path) -> Path:
     path = tmp_path / "quickbuild_cookies.json"
@@ -250,6 +269,68 @@ def _successful_triage(status: str) -> Callable[[TriageOptions], TriageResult]:
         )
 
     return runner
+
+
+def _manifest_success_triage(
+    status: str,
+    *,
+    wrong_context_type: bool = False,
+) -> Callable[[TriageOptions], TriageResult]:
+    def runner(options: TriageOptions) -> TriageResult:
+        assert options.output_dir is not None
+        assert options.spec_name is not None
+        output_dir = options.output_dir
+        output_dir.mkdir(parents=True)
+        report_path = output_dir / "report.md"
+        report_path.write_text(
+            "\n".join(
+                [
+                    "# report",
+                    "- Change status: `NEW`",
+                    "- Branch: `tizen`",
+                    "- Patch set ref: `refs/changes/01/1/1`",
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        (output_dir / "src" / options.spec_name).mkdir(parents=True)
+        (output_dir / "evidence_packet.json").write_text("{}", encoding="utf-8")
+        (output_dir / f"{options.spec_name}.buildlog.txt").write_text(
+            "PACKAGE LOG",
+            encoding="utf-8",
+        )
+        patch_context = output_dir / "patch_context"
+        patch_context.mkdir()
+        if wrong_context_type:
+            (patch_context / "context.md").mkdir()
+        else:
+            (patch_context / "context.md").write_text("# context\n", encoding="utf-8")
+        (patch_context / "meta.json").write_text(
+            json.dumps({"status": status}),
+            encoding="utf-8",
+        )
+        return TriageResult(
+            exit_code=0,
+            status="success",
+            output_dir=output_dir,
+            report_path=report_path,
+        )
+
+    return runner
+
+
+def _read_batch_manifest(result_path: Path) -> dict[str, Any]:
+    return json.loads((result_path.parent / "batch_manifest.json").read_text(encoding="utf-8"))
+
+
+def _manifest_package(manifest: dict[str, Any], spec_name: str) -> dict[str, Any]:
+    packages = manifest["packages"]
+    assert isinstance(packages, list)
+    for item in packages:
+        if item["spec_name"] == spec_name:
+            return item
+    raise AssertionError(f"manifest package {spec_name!r} not found")
 
 
 GBS_REPORT_HTML = """
@@ -429,6 +510,119 @@ def test_batch_orchestrator_reports_success_and_marks_processed(tmp_path: Path) 
         "| 111 | standard-armv7l | foo | foo-commit | NEW | not_applicable | REPORTED |"
         in report
     )
+
+
+def test_batch_manifest_includes_success_and_failure_units_with_stable_schema(
+    tmp_path: Path,
+) -> None:
+    orchestrator = CiTriageOrchestrator(
+        source=_FakeSource([_failed_build("111")]),
+        options=BatchTriageOptions(
+            state_root=tmp_path / ".ci_triage",
+            cookie_path=tmp_path / "cookies.json",
+            run_date="2026-07-03",
+            arches=("standard-armv7l",),
+        ),
+        full_log_downloader=lambda build_id, cookie_path: _full_log_for("good"),
+        gbs_report_discoverer=_gbs_discoverer(
+            _gbs_package("good"),
+            _gbs_package("missing"),
+        ),
+        package_log_downloader=lambda package, cookie_path: "PACKAGE LOG",
+        triage_runner=_manifest_success_triage("source_context_available"),
+        clock=lambda: datetime(2026, 7, 3, 9, 0, 0),
+    )
+
+    result = orchestrator.run(datetime(2026, 7, 2, 0, 0, 0))
+    report_text = result.daily_report_path.read_text(encoding="utf-8")
+    manifest = _read_batch_manifest(result.daily_report_path)
+
+    assert "batch_manifest.json" not in report_text
+    assert manifest["schema_version"] == "ci_triage/batch_manifest/v1"
+    assert manifest["generated_at"] == "2026-07-03T09:00:00"
+    assert manifest["run_date"] == "2026-07-03"
+    assert len(manifest["packages"]) == 2
+    keys = {item["unit_key"] for item in manifest["packages"]}
+    assert keys == {
+        "111:standard-armv7l:good",
+        "111:standard-armv7l:missing",
+    }
+    assert len(keys) == len(manifest["packages"])
+
+    for item in manifest["packages"]:
+        assert set(item) == EXPECTED_MANIFEST_UNIT_KEYS, f"schema drift: {item['unit_key']}"
+
+    success = _manifest_package(manifest, "good")
+    assert success["state"] == STATE_REPORTED
+    assert success["patch_status"] == "source_context_available"
+    assert success["project"] == "platform/test/good"
+    assert success["base_commit"] == "good-commit"
+    assert success["branch"] == "tizen"
+    assert success["error"] is None
+    assert success["src_clean"] is not None
+    assert success["evidence_packet"] is not None
+    assert success["patch_context"] is not None
+    assert Path(success["src_clean"]).is_absolute()
+    assert Path(success["src_clean"]).is_dir()
+    for key in [
+        "evidence_packet",
+        "patch_context",
+        "patch_context_meta",
+        "report",
+        "package_buildlog",
+    ]:
+        assert Path(success[key]).is_absolute()
+        assert Path(success[key]).is_file()
+
+    failed = _manifest_package(manifest, "missing")
+    assert failed["unit_key"] == "111:standard-armv7l:missing"
+    assert failed["state"] == STATE_NEEDS_INPUT
+    assert failed["patch_status"] is None
+    assert failed["project"] is None
+    assert failed["base_commit"] is None
+    assert failed["branch"] == "tizen"
+    assert failed["error"] is not None
+    assert set(failed["error"]) == {"code", "message"}
+    assert failed["error"]["code"] == "PROJECT_COMMIT_NOT_FOUND"
+    assert "missing" in failed["error"]["message"]
+    for key in [
+        "src_clean",
+        "evidence_packet",
+        "patch_context",
+        "patch_context_meta",
+        "report",
+        "package_buildlog",
+    ]:
+        assert failed[key] is None
+
+
+def test_batch_manifest_nulls_paths_when_existing_path_has_wrong_type(
+    tmp_path: Path,
+) -> None:
+    orchestrator = CiTriageOrchestrator(
+        source=_FakeSource([_failed_build("111")]),
+        options=BatchTriageOptions(
+            state_root=tmp_path / ".ci_triage",
+            run_date="2026-07-03",
+            arches=("standard-armv7l",),
+        ),
+        full_log_downloader=lambda build_id, cookie_path: _full_log_for("foo"),
+        gbs_report_discoverer=_gbs_discoverer(_gbs_package("foo")),
+        package_log_downloader=lambda package, cookie_path: "PACKAGE LOG",
+        triage_runner=_manifest_success_triage(
+            "source_context_available",
+            wrong_context_type=True,
+        ),
+        clock=lambda: datetime(2026, 7, 3, 9, 0, 0),
+    )
+
+    result = orchestrator.run(datetime(2026, 7, 2, 0, 0, 0))
+    manifest = _read_batch_manifest(result.daily_report_path)
+    package = _manifest_package(manifest, "foo")
+
+    assert set(package) == EXPECTED_MANIFEST_UNIT_KEYS
+    assert (Path(package["patch_context_meta"])).is_file()
+    assert package["patch_context"] is None
 
 
 def test_batch_orchestrator_skips_processed_package(tmp_path: Path) -> None:
