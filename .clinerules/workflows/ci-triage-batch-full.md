@@ -57,8 +57,8 @@ unit_dir = <work_root>/units/<unit_key 安全化>
 `unit_key` 含 `:`,虽然 Linux 路径能用,但对后续脚本/日志/跨平台不稳。统一安全化。
 
 ```bash
-UNIT_DIR="<work_root>/units/$(echo "<unit_key>" | tr ':' '_' | sed 's/_/__/g')"
-# 或直接:UNIT_DIR="<work_root>/units/${unit_key//:/__}"
+UNIT_SAFE="${unit_key//:/__}"
+UNIT_DIR="<work_root>/units/${UNIT_SAFE}"
 mkdir -p "$UNIT_DIR"
 ```
 
@@ -214,6 +214,17 @@ python3 -m gbs_patch_suggest format-patch \
 rm -rf "<unit_dir>/verify_ws" "<unit_dir>/verify_out"
 ```
 
+> **build root 疑似损坏时不要自动删。** 若上一次 build-verify 被中断/超时,
+> build root 可能残留 `not-ready` 标记,导致下一次 gbs 弹交互提示 `(y/N/c)`
+> 并在非交互模式挂起。此时 Cline **只做**:
+> 1. 列出疑似路径(`ls ~/GBS-ROOT*/local/BUILD-ROOTS/scratch.<arch>.0/`)和证据;
+> 2. **暂停,要求人确认**;
+> 3. **不得自动执行 `sudo rm -rf` 或删除 build root**;
+> 4. 人确认清理后再重跑 build-verify。
+>
+> `<unit_dir>/verify_ws` 是 disposable copy,可以自动 `rm -rf`;
+> 但 `GBS-ROOT*/BUILD-ROOTS` 是共享的 gbs 构建根,删它影响面大,必须人确认。
+
 ```bash
 python -m ci_triage build-verify \
   --src-clean "<unit.src_clean>" \
@@ -229,8 +240,16 @@ python -m ci_triage build-verify \
   --build-id "<unit.build_id>" \
   --project "<unit.project>" \
   --branch "<unit.branch>" \
-  --arch "<unit.arch>"
+  --arch "<unit.arch>" \
+  --wall-timeout 7200
 ```
+
+> **`--wall-timeout`**:默认 3600s 对大包(enlightenment、chromium 等)会超时。
+> 大包用 `7200` 或更大。**超时不代表 patch 错**,是编译时间不够 → 调大重试。
+>
+> **别把 build-verify 当卡住**:真 gbs 编译几十分钟很正常,耐心等到它写出
+> `build_verify_result.json`。可另开终端 `tail -f <unit_dir>/verify_out/audit/gbs_build.log`
+> 看进度。
 
 读 `<unit_dir>/verify_out/build_verify_result.json`,**按字段判断(不按直觉)**:
 
@@ -238,9 +257,32 @@ python -m ci_triage build-verify \
 |---|---|
 | `result == "PASS"` | → A6(出提交命令) |
 | `result == "FAIL"` 且 `failure_stage == "apply_failed"` | edit_spec 的 `old`/`line` 不对 → 修 edit_spec 重来(回 A3) |
-| `result == "FAIL"` 且 `repair_allowed == false` | **停,不进修复循环。** 看 `failure_class`:`dependency` → 检查 gbs.conf 是否用对;`toolchain`/`build_env` → 环境问题。转人工。 |
+| `result == "FAIL"` 且 `failure_stage == "build_timeout"` | 编译超时,非 patch 错 → 加大 `--wall-timeout` 重跑(回 A5) |
+| `result == "FAIL"` 且 `repair_allowed == false` 且 `failure_class == "dependency"` | 看 build log 区分真依赖 vs 误分类。**Cline 不得自己越过 `repair_allowed=false`**,只能提证据+暂停等人确认。见下方⚠️。 |
+| `result == "FAIL"` 且 `repair_allowed == false` 且 `failure_class ∈ {toolchain, build_env}` | **停,转人工。** 环境/工具链问题,不进修复循环。 |
 | `result == "FAIL"` 且 `repair_allowed == true` | 源码类失败 → **走 `repair-verify-submit.md` 的多轮循环剧本**(iter=2..3,含 check-convergence 判 advance/stalled/regressed) |
 | 其他 | fail-closed,转人工 |
+
+> ⚠️ **`failure_class == "dependency"` 的核查(实测踩过误判)**:
+> 分类器有时把源码类错误(如修完一个警告后**暴露出的另一批** `-Wunused-private-field`)
+> 误判成 `dependency`。但 **Cline 不得单方面越过 `repair_allowed == false` 去改源码**——
+> 这是 Stage1 的硬边界。只能**提出证据 + 暂停等人确认**:
+>
+> 看 build log 的实际错误:
+> ```bash
+> grep -iE "nothing provides|cannot install|error:" "<unit_dir>/verify_out/audit/gbs_build.log" | head
+> ```
+> - 是 `nothing provides` / `cannot install` → **真依赖问题**。
+>   若缺的是 dlog/glib/capi-base-common 等基础包 → 疑似 **gbs.conf 用错**。
+>   → 转人工(换 conf 或补依赖也由人定)。
+> - 是 `error: ... [-Werror,-Wxxx]` 之类**源码诊断** →
+>   标记 `classifier_misclassified_dependency`;**暂停,向人展示证据**
+>   (build log 里的实际源码错误)。
+>   **人确认后**,才允许把这些新源码诊断纳入 edit_spec / 走 repair-verify-submit。
+> - **判断不了 → 转人工。**
+>
+> 关键:`repair_allowed == false` 是安全边界,Cline 只能提"疑似误判 + 证据",
+> **不能自己决定继续改源码**。是否越过,由人确认。
 
 ### A6. gerrit-submit dry-run
 
@@ -315,4 +357,7 @@ python -m ci_triage gerrit-submit \
 | formatter 过但 build-verify apply 失败 | 同上 | 两者 line 语义不同。以 build-verify 为准。 |
 | edit_spec 的 `file` 写成构建路径 | apply 失败 / 文件找不到 | 必须先做 A2 路径归一化。 |
 | 残留 verify_ws | `WorkspaceViolation: disposable worktree already exists` | build-verify 前 `rm -rf verify_ws`。这是安全保护,不是 bug。 |
+| GBS build root 损坏 | gbs 弹 `y/N/c` 交互提示,非交互模式挂起超时;`not-ready` 文件残留 | Cline 只列出疑似路径 + 证据,**暂停等人确认**,不自动 `sudo rm -rf` build root。人确认清理后重跑。 |
+| build-verify 超时 | `result: FAIL`,`failure_stage: build_timeout`(默认 3600s) | 大包加 `--wall-timeout 7200`。超时 ≠ patch 错。 |
+| 磁盘 result 被重跑覆盖 | `build_verify_result.json` 显示 FAIL,但 state DB / gerrit_submit 的 verification_id 显示 PASS | 多轮/重跑用不同 `--output-dir`,或**以 state DB / gerrit-submit 的 verification_id 为准**,不信被覆盖的磁盘 JSON。 |
 | 并发跑多个 build-verify | gbs build root 冲突 | 串行,一个一个跑。 |

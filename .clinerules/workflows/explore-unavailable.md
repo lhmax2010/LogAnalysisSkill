@@ -48,26 +48,58 @@ reasons = ev.get("degraded_reasons")   # 常见:['source_file_unavailable', ...]
 
 ## 2. 决策树
 
-### 分支 1:相对路径带 `../` → 路径归一化(可自动修)
+### 分支 1:相对路径带 `../` → 路径归一化(通常可推进到 edit_spec)
 
 **特征**:`file` 形如 `../src/bin/server/e_comp_wl.c`
 
 **原因**:out-of-tree build,诊断路径相对于构建目录,不是源码根。
 文件**在** repo 里,只是 patch-suggest 的 suffix search 匹配不上。
+这是**假阴性**——不是"无法修",只是路径没归一化。
 
-**处理**:
+**处理(必须走完,不要停在泛泛建议)**:
+
+1. **归一化找文件**:
+   ```bash
+   # 剥掉前导 ../,在 src_clean 里找
+   find "<unit.src_clean>" -path "*<剥掉 ../ 后的路径>" -type f | head
+   ```
+   - 恰好 1 个 → 记下相对 src_clean 的路径,继续第 2 步。
+   - 0 个或多个 → 转 `needs_human`,写清情况。
+
+2. **打开文件看诊断行的实际代码**(`sed -n '<line-8>,<line+8>p' <找到的文件> | cat -A`)。
+   **不要凭诊断消息猜代码。**
+
+3. **拟定 edit_spec**(不是"给建议",是写出完整 edit_spec):
+   按诊断类型:
+   - **简单确定的改法**(格式符 `%zu→%u`、去 `std::move`、`|→||` 且已确认无副作用)
+     → 直接写出 edit_spec。
+   - **需要判断语义/副作用的改法** → 先做完判断(见下),判断清楚了照样写出 edit_spec;
+     判断不了才转 `needs_human`。
+
+4. **输出**:按第 3 节格式,给出**根因 + 改法 + 风险 + 完整 edit_spec**,
+   然后**暂停等人确认**。**不要只给"建议 XXX",要给可以直接 build-verify 的 edit_spec。**
+
+> **关键**:分支 1 的目标是**产出一个具体的 edit_spec 等人点头**,不是产出一句
+> "建议确认操作数类型"。如果你能归一化找到文件 + 看到代码,就应该能拟定 edit_spec。
+> 停在"建议"= 没做完探索。
+
+**`|` → `||` 的副作用判断**(bitwise-instead-of-logical 专用):
+`|` 不短路,`||` 短路。改 `||` 后,若左操作数为真会跳过右操作数。
+→ 必须确认右操作数**无副作用**(纯读取,不改状态/不触发回调)才能安全改。
 ```bash
-# 剥掉前导 ../,在 src_clean 里找
-find "<unit.src_clean>" -path "*<剥掉 ../ 后的路径>" | head
+# 看右操作数里调用的函数定义
+grep -rn "^<函数名>\b\|<函数名>(E_Client" "<unit.src_clean>/src/" | head
 ```
-
-找到 → 这就是标准的源码修复,回主 workflow 的 A3(写 edit_spec)。
-`edit_spec.file` 用**相对 src_clean** 的路径。
+- 都是纯 getter(只读字段,EFL 的 `_get` 命名约定通常如此)→ 安全,写 edit_spec。
+- 有副作用 → 不能简单改 `||`,转 `needs_human`。
 
 **实例**:enlightenment 的 `../src/bin/server/e_comp_wl.c:814`
-→ 实际在 `<src_clean>/src/bin/server/e_comp_wl.c`
-→ `-Wbitwise-instead-of-logical`,`|` → `||`(getter 是纯函数,短路安全)
-→ build-verify PASS ✓
+→ find 归一化到 `<src_clean>/src/bin/server/e_comp_wl.c`
+→ 诊断行:`e_client_priv_want_focus_set(ec, e_client_priv_want_focus_get(ec) | (...))`
+→ 右侧 `e_client_icccm_accepts_focus_get` / `e_client_override_get` 是纯 getter → 安全
+→ 拟定 edit_spec:`|` → `||`
+→ (实测)build-verify PASS ✓
+→ **应该产出这个 edit_spec 等确认,而不是停在"建议确认操作数类型"。**
 
 ### 分支 2:路径含 `generated/` → 构建时生成的代码
 
