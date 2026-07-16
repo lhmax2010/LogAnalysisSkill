@@ -30,10 +30,13 @@ arch(es)       例如 standard-aarch64 standard-armv7l standard-x86_64
 gbs_conf       例如 /home/xxx/Toolchain/gbs.conf   ← 必须是对的那个!
 state_db       例如 ./tmp/bXXX/citriage.db
 work_root      例如 ./tmp/bXXX
-cookie         QuickBuild cookie JSON 路径
+cookie_id      QuickBuild 登录后的 session cookie 值(见 1.2 生成 cookie 文件)
 gerrit_user    例如 lhmax2025
 since          覆盖该 build 的时间下限,例如 2026-07-12T00:00:00
 ```
+
+> ⚠️ `cookie_id` 是**认证凭据**(登录态),敏感。**不进 git、不进 manifest、不进日志、
+> 不进汇总报告。** 只在运行时用于生成 cookie 文件,处理完可删。
 
 环境:
 ```bash
@@ -67,6 +70,29 @@ mkdir -p "$UNIT_DIR"
 manifest 里的路径(`src_clean` / `evidence_packet` / `patch_context`)指向 batch 的输出,
 **只读**;Cline 自己的产物写到 `unit_dir`。
 
+### 1.2 从 cookie_id 生成 cookie 文件
+
+QuickBuild 抓取要一个浏览器导出格式的 cookie JSON。人只提供 `cookie_id`(session 值),
+Cline 生成文件:
+
+```bash
+mkdir -p "<work_root>"
+cat > "<work_root>/quickbuild_cookies.json" << EOF
+[{"name": "JSESSIONID_8810", "value": "<cookie_id>", "domain": "quickbuild.tizen.org"}]
+EOF
+chmod 600 "<work_root>/quickbuild_cookies.json"
+```
+
+后续 batch 命令用 `--cookie <work_root>/quickbuild_cookies.json`。
+
+要点:
+- `name` 固定为 `JSESSIONID_8810`(QuickBuild 实例的 session cookie 名,不变)。
+- `domain` 必须含 `quickbuild.tizen.org`(加载器按此过滤)。
+- **不要把 cookie 文件或 `cookie_id` 写进 git / manifest / 日志 / 汇总报告。**
+  它是登录凭据。生成文件放 `<work_root>`(临时区),`chmod 600`。
+- 如果抓取报 `COOKIE_EXPIRED` / `COOKIE_MISSING` → cookie 过期,让人重新登录 QuickBuild
+  导出新的 `cookie_id`,重新生成文件。
+
 ## 2. 跑 batch,拿 manifest
 
 ```bash
@@ -74,7 +100,7 @@ python tizen-ci-triage/scripts/run_ci_triage_batch.py \
   --since <since> \
   --arch <arch1> [--arch <arch2> ...] \
   --state-root <work_root>/batch_state \
-  --cookie <cookie> \
+  --cookie <work_root>/quickbuild_cookies.json \
   --git-ssh-command "ssh"
 ```
 
