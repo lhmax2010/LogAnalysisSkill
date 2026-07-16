@@ -16,6 +16,10 @@ SKIPPED_DIR_NAMES = {
     "build",
     "node_modules",
 }
+SYSTEM_ABSOLUTE_PREFIXES = (
+    ("/", "usr", "include"),
+    ("/", "usr", "local", "include"),
+)
 
 
 @dataclass(frozen=True)
@@ -130,10 +134,17 @@ def resolve_candidate_paths(file_value: str, src_root: Path | None) -> list[Path
     if requested.is_absolute():
         return _absolute_candidate(requested, root)
 
-    requested_parts = requested.parts
+    requested_parts = _strip_leading_dot_segments(requested.parts)
     if not requested_parts:
         return []
     return _suffix_candidates(root, requested_parts)
+
+
+def _strip_leading_dot_segments(parts: tuple[str, ...]) -> tuple[str, ...]:
+    index = 0
+    while index < len(parts) and parts[index] in {".", ".."}:
+        index += 1
+    return parts[index:]
 
 
 def _suffix_candidates(root: Path, requested_parts: tuple[str, ...]) -> list[Path]:
@@ -177,6 +188,9 @@ def _context_from_file(path: Path, line: int, *, window: int) -> SourceContext:
 
 
 def _absolute_candidate(path: Path, root: Path) -> list[Path]:
+    if _is_system_absolute_path(path):
+        return []
+
     candidate = path.resolve()
     if candidate.is_file():
         try:
@@ -193,6 +207,11 @@ def _absolute_candidate(path: Path, root: Path) -> list[Path]:
         if candidates:
             return candidates
     return []
+
+
+def _is_system_absolute_path(path: Path) -> bool:
+    parts = path.parts
+    return any(parts[: len(prefix)] == prefix for prefix in SYSTEM_ABSOLUTE_PREFIXES)
 
 
 def _iter_files_by_basename(root: Path, basename: str) -> list[Path]:

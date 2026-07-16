@@ -1889,6 +1889,107 @@ def test_suffix_search_unique_match_upgrades_to_level_a(tmp_path: Path) -> None:
     assert "gst-libs/ext/ffmpeg/libavcodec/utils.c line 12" in context
 
 
+def test_suffix_search_strips_leading_dotdot_for_out_of_tree_relative_path(
+    tmp_path: Path,
+) -> None:
+    src_root = tmp_path / "src"
+    write_source(src_root, "src/bin/server/e_comp_wl.c", lines=20)
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(file="../src/bin/server/e_comp_wl.c", line=12),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_available"
+    assert meta["level"] == "A"
+    context = read_context(output_dir)
+    assert "src/bin/server/e_comp_wl.c line 12" in context
+
+
+def test_suffix_search_strips_multiple_leading_dotdot_segments(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    write_source(src_root, "src/foo.c", lines=20)
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(file="../../src/foo.c", line=12),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_available"
+    assert meta["level"] == "A"
+
+
+def test_suffix_search_strips_leading_dot_segments_only(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    write_source(src_root, "src/foo.c", lines=20)
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(file="build/../src/foo.c", line=12),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_unavailable"
+    assert meta["candidate_paths"] == []
+
+
+def test_suffix_search_dotdot_only_stays_level_b(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    write_source(src_root, "foo.c", lines=20)
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(file="../", line=12),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_unavailable"
+    assert meta["candidate_paths"] == []
+
+
+def test_suffix_search_stripped_dotdot_keeps_ambiguity_protection(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    first = write_source(src_root, "a/src/foo.c", lines=20)
+    second = write_source(src_root, "b/src/foo.c", lines=20)
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(file="../src/foo.c", line=12),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_ambiguous"
+    candidate_paths = cast(list[str], meta["candidate_paths"])
+    assert set(candidate_paths) == {str(first), str(second)}
+
+
 def test_suffix_search_zero_match_stays_level_b(tmp_path: Path) -> None:
     src_root = tmp_path / "src"
     write_source(src_root, "other/utils.c")
@@ -1906,6 +2007,25 @@ def test_suffix_search_zero_match_stays_level_b(tmp_path: Path) -> None:
     meta = read_meta(output_dir)
     assert meta["status"] == "source_context_unavailable"
     assert meta["level"] == "B"
+    assert meta["candidate_paths"] == []
+
+
+def test_suffix_search_missing_generated_file_stays_level_b(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    src_root.mkdir()
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(file="generated/stub.c", line=12),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_unavailable"
     assert meta["candidate_paths"] == []
 
 
@@ -2015,6 +2135,24 @@ def test_absolute_path_outside_src_root_stays_level_b(tmp_path: Path) -> None:
     meta = read_meta(output_dir)
     assert meta["status"] == "source_context_unavailable"
     assert meta["candidate_paths"] == []
+
+
+def test_absolute_system_path_does_not_use_relative_dotdot_stripping(tmp_path: Path) -> None:
+    src_root = tmp_path / "src"
+    write_source(src_root, "usr/include/foo.h", lines=20)
+    evidence_path = write_packet(
+        tmp_path,
+        compiler_packet(file="/usr/include/foo.h", line=12),
+    )
+    output_dir = tmp_path / "out"
+
+    result = run_patch_suggest(
+        PatchSuggestOptions(evidence_path, output_dir=output_dir, src_root=src_root)
+    )
+
+    assert result.exit_code == 0
+    meta = read_meta(output_dir)
+    assert meta["status"] == "source_context_unavailable"
 
 
 def test_absolute_path_missing_stays_level_b(tmp_path: Path) -> None:
