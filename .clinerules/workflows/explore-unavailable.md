@@ -156,28 +156,105 @@ find ~/GBS-ROOT*/local/BUILD-ROOTS/*/home/abuild/rpmbuild/BUILD/<pkg>-*/ \
 
 **暂停,给人看 sed 的精确作用范围,确认后才 build-verify。**
 
-### 分支 3:绝对路径指向系统目录 → 跨包错误
+### 分支 3:诊断路径指向系统目录(`/usr/include/`)→ 先定位触发的编译单元,再决定
 
 **特征**:`file` 形如 `/usr/include/libscl-core-pure/sclcore.h`
 
-**原因**:错误在**依赖包**装到系统目录的头文件里,不在这个包的 repo。
+**易犯的错**:看到 `/usr/include/` 就直接判"跨包→needs_human"。**这太粗。**
+诊断 `file` 是警告**报告的位置**(第三方头文件里的字段/声明),但这个警告是
+**编译本包某个源文件时**触发的(那个 `.cpp`/`.c` `#include` 了这个头文件)。
+如果触发的编译单元在**本 repo**,通常可以在**本包的构建配置**里针对性抑制,
+不必转人工。
 
-**确认**:
+**第 1 步:从 evidence 找触发这个诊断的本包编译单元。**
+诊断的 `primary_error.file` 是系统头文件,但 evidence 的 **cascade 信息里通常已经
+含触发它的本包目标文件**(`.o`),不用读 raw log:
+- `cascade_summary`:如 `make cascade: .../src/inputmethod-core/fake_sclcore.cpp.o -> unlinked`
+- `root_cause_candidates` 里 `kind == "make_cascade"` 的 `message`:如
+  `make[2]: *** [.../fake_sclcore.cpp.o] Error 1`
+
+从这里提取触发的源文件(如 `fake_sclcore.cpp`)。若 evidence 的 cascade 没给出具体
+`.cpp`/`.c`,再退回在**本包源码树** grep 谁 `#include` 了这个系统头文件:
 ```bash
-find "<unit.src_clean>" -name "<文件名>" | head   # 应该找不到
+grep -rln "<系统头文件名，如 sclcore.h>" "<unit.src_clean>" \
+     --include="*.c" --include="*.cc" --include="*.cpp" \
+     --include="*.h" --include="*.hpp" | head
+```
+> 优先读 evidence 的 cascade(信息已被 analyzer 提取);grep **源码树**是允许的
+> targeted 检查。**都不要读 raw build log**(token rule)。
+
+**第 2 步:确认触发单元在本 repo。**
+```bash
+grep -rln "<触发源文件名，如 fake_sclcore>" "<unit.src_clean>" | head
+```
+- **恰好定位到本 repo 一个** owned 源文件(如 `tests/src/.../fake_sclcore.cpp`)
+  → 走第 3 步(本包抑制)。确认它所属的构建配置(哪个 `CMakeLists.txt`/`.spec`
+  段带 `-Werror`,且是哪个 target)。
+- **找不到 / 多个候选 / 无法确认属于哪个 target** → `needs_human` + `cross_package`。
+  不猜(保守 fallback,和只看 `primary_error.file` 的旧行为在"定位不到"时一致)。
+
+**第 3 步:本包针对性抑制(仅当警告源自第三方/系统头文件)。**
+
+判断这个抑制**是否正当**:
+- ✅ 正当:警告是**第三方/系统头文件**自身的代码问题(如依赖包某个类的
+  `-Wunused-private-field`),本包无法控制依赖包的代码质量,不该为它 block 构建。
+- ❌ 不正当:警告其实是**本包自己代码**的问题 → 不要 `-Wno` 掩盖,回分支 1/正常修复。
+
+正当时,产出 candidate edit_spec:在**触发单元所属的构建配置**(通常是那个目录的
+`CMakeLists.txt`,或 `packaging/*.spec` 的对应 target/CFLAGS)里,给 `-Werror` 那行
+**追加精确的单个** `-Wno-<具体warning>`:
+```
+# 例:tests/CMakeLists.txt 的
+SET(EXTRA_CFLAGS "... -Wall -Werror")
+# → 追加精确抑制（只关这一个 warning，不动其它检查）
+SET(EXTRA_CFLAGS "... -Wall -Werror -Wno-unused-private-field")
 ```
 
-**处理**:**标 `needs_human` + `cross_package`。**
+**允许**:
+```
+-Wno-<具体单个 warning>    如 -Wno-unused-private-field
+```
+**禁止(这些会把局部抑制泛化成危险 workaround)**:
+```
+-Wno-error                 会一次关掉一大片
+全局 -Wno-*                 无差别关警告
+全包/生产库范围的 CFLAGS/CXXFLAGS 修改
+在 spec 顶层 %build 全局关警告
+```
 
-报告:
-- 错误在哪个包的头文件(从路径推断:`/usr/include/libscl-core-pure/` → `libscl-core`)
-- 要修的是那个包,不是当前包
-- 当前包也可以加编译选项绕过,但那是掩盖问题,需要人判断值不值
+**作用域铁律**:抑制必须**限定到触发单元所在的 target / test target / 那一个
+`CMakeLists.txt` 的局部 compile option**,**不得扩散到生产库**。
+`fake_sclcore.cpp` 在 tests target → 抑制放 tests 的构建配置,不能碰生产库的 CFLAGS。
+
+**这不是修根因,必须在报告里写清**:
+```
+根因:  第三方/系统头文件(<依赖包>/<头文件>)触发的 warning
+本包动作:仅对触发该 warning 的本包编译单元/target 做局部 -Wno-<warning> 抑制,
+        用于避免该单元因依赖头文件 warning 被 -Werror 阻塞
+后续建议:依赖包(<依赖包>)仍应修正 warning 源头(报 bug/提 patch)
+```
+不要把局部抑制包装成"修好了"。这与本文档"上游 bug 不硬 workaround"的原则一致:
+局部抑制是**绕过依赖包 warning 对本包的阻塞**,不是修复依赖包的代码。
+
+**必须人确认,不因 skill 曾成功就跳过安全门**:这类修法(依赖头文件根因 + 本包局部抑制)
+风险高于标准源码修复。**暂停,展示完整 candidate edit_spec + 上面的根因说明,等人确认**
+后才走主 workflow A4→A5→A6(formatter → build-verify → gerrit-submit)。
+探索出的 patch 同样过 build-verify,不跳过安全门。
 
 **实例**:capi-ui-inputmethod
-→ `/usr/include/libscl-core-pure/sclcore.h:516` 的 `-Wunused-private-field`
-→ 要修的是 `libscl-core` 包
-→ 转人工
+→ 诊断:`/usr/include/libscl-core-pure/sclcore.h:516` 的 `-Wunused-private-field`
+  (evidence 判 `system_or_toolchain_path`,not patch-ready — 这是【正确】的
+  ownership 判定,但不等于无法处理)
+→ evidence 的 `cascade_summary` / make_cascade candidate 里含
+  `.../src/inputmethod-core/fake_sclcore.cpp.o` → 触发源文件是 `fake_sclcore.cpp`
+→ `grep fake_sclcore <src_clean>` 确认它在本 repo 的 `tests/src/inputmethod-core/`
+→ 确认构建配置:`tests/CMakeLists.txt` 的 `EXTRA_CFLAGS` 带 `-Werror`
+→ 正当性:警告源自依赖包 `libscl-core` 的头文件(`m_impl` 未使用),本包不该为它 block
+→ edit_spec:`tests/CMakeLists.txt` 的 `EXTRA_CFLAGS` 追加 `-Wno-unused-private-field`
+→ 报告说明根因在 `libscl-core`,建议给它报 bug
+→ 暂停等确认 → build-verify → 提交命令
+→ **不再直接 needs_human**;信息(触发单元)就在 evidence 的 cascade 里,
+  之前分支 3 只看 `primary_error.file` 才误判为纯跨包。
 
 ### 分支 4:`failure_class` 是 `dependency` / `toolchain` / `build_env`
 
