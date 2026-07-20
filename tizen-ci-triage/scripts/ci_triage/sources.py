@@ -57,9 +57,16 @@ class QuickBuildSource:
         """Scrape the configured QuickBuild overview and return failed builds newer than since."""
 
         self.warnings.clear()
+        if not self.overview_config_id.isdigit():
+            raise QuickBuildError(
+                "INVALID_OVERVIEW_ID",
+                "QuickBuild overview id must be a numeric configuration id such as "
+                f"{QUICKBUILD_OVERVIEW_CONFIG_ID}; got {self.overview_config_id!r}. "
+                "Pass only the id, not a full overview URL.",
+            )
+        overview_url = f"{self.base_url.rstrip('/')}/overview/{self.overview_config_id}"
         cookies = load_cookie_jar(self.cookie_path)
         fetch = self.fetcher or _urllib_fetch
-        overview_url = f"{self.base_url.rstrip('/')}/overview/{self.overview_config_id}"
         response = fetch(overview_url, cookies)
         _raise_if_login_page(response, action="open QuickBuild overview")
 
@@ -68,8 +75,10 @@ class QuickBuildSource:
             raise QuickBuildError(
                 "COOKIE_EXPIRED",
                 "QuickBuild overview did not contain the Recent Builds table. "
-                "The cookie may have expired; please log in and export cookies to "
-                f"{self.cookie_path}.",
+                f"Overview URL: {overview_url}. The cookie may have expired; please "
+                f"log in and export cookies to {self.cookie_path}. If the cookie is "
+                "fresh, the overview id may not exist or this account may not have "
+                "access; check --overview-id.",
             )
 
         builds = [_row_to_build(row, base_url=self.base_url) for row in table.rows]

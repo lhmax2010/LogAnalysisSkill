@@ -975,6 +975,40 @@ def test_quickbuild_source_uses_configured_overview_id(tmp_path: Path) -> None:
     assert calls == ["https://quickbuild.tizen.org/overview/2042"]
 
 
+@pytest.mark.parametrize(
+    "overview_config_id",
+    [
+        "abc",
+        "https://quickbuild.tizen.org/overview/1934",
+        "",
+    ],
+)
+def test_quickbuild_source_rejects_invalid_overview_id_before_io(
+    tmp_path: Path,
+    overview_config_id: str,
+) -> None:
+    cookie_path = tmp_path / "missing-cookies.json"
+    calls: list[str] = []
+
+    def fetcher(url: str, cookies: Mapping[str, str]) -> HttpResponse:
+        calls.append(url)
+        return HttpResponse(status=200, url=url, body=OVERVIEW_HTML.encode())
+
+    source = QuickBuildSource(
+        cookie_path=cookie_path,
+        fetcher=fetcher,
+        overview_config_id=overview_config_id,
+    )
+
+    with pytest.raises(QuickBuildError) as exc:
+        source.discover(datetime(2026, 7, 1, 3, 0, 0))
+
+    assert exc.value.code == "INVALID_OVERVIEW_ID"
+    assert repr(overview_config_id) in str(exc.value)
+    assert "numeric configuration id" in str(exc.value)
+    assert calls == []
+
+
 def test_quickbuild_source_filters_since_lower_bound(tmp_path: Path) -> None:
     cookie_path = _cookie_file(tmp_path)
 
@@ -1014,8 +1048,15 @@ def test_quickbuild_source_reports_expired_cookie_when_overview_has_no_builds_ta
         return HttpResponse(status=200, url=url, body=b"<html><body>signin</body></html>")
 
     source = QuickBuildSource(cookie_path=cookie_path, fetcher=fetcher)
-    with pytest.raises(QuickBuildError, match="cookie may have expired"):
+    with pytest.raises(QuickBuildError, match="cookie may have expired") as exc:
         source.discover(datetime(2026, 7, 1, 0, 0, 0))
+
+    message = str(exc.value)
+    assert exc.value.code == "COOKIE_EXPIRED"
+    assert "https://quickbuild.tizen.org/overview/1930" in message
+    assert str(cookie_path) in message
+    assert "overview id may not exist" in message
+    assert "check --overview-id" in message
 
 
 def test_download_full_log_resolves_wicket_download_link(tmp_path: Path) -> None:
