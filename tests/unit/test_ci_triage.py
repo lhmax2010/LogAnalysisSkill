@@ -28,8 +28,10 @@ from ci_triage.orchestrator import (
     STATE_REPORTED,
     STATE_REPORTED_NO_REPORT,
     STATE_SKIPPED_PROCESSED,
+    BatchRunRecord,
     BatchTriageOptions,
     CiTriageOrchestrator,
+    _manifest_error,
 )
 from ci_triage.quickbuild import (
     HttpResponse,
@@ -334,6 +336,23 @@ def _manifest_package(manifest: dict[str, Any], spec_name: str) -> dict[str, Any
     raise AssertionError(f"manifest package {spec_name!r} not found")
 
 
+def _manifest_error_row(error: str | None, state: str = STATE_NEEDS_INPUT) -> BatchRunRecord:
+    return BatchRunRecord(
+        build_id="111",
+        arch="standard-armv7l",
+        spec_name="demo",
+        project=None,
+        branch="tizen",
+        commit=None,
+        gerrit_status=None,
+        patch_status=None,
+        state=state,
+        report_path=None,
+        error=error,
+        retries=0,
+    )
+
+
 GBS_REPORT_HTML = """
 <html>
 <body>
@@ -635,6 +654,56 @@ def test_batch_manifest_nulls_paths_when_existing_path_has_wrong_type(
     assert set(package) == EXPECTED_MANIFEST_UNIT_KEYS
     assert (Path(package["patch_context_meta"])).is_file()
     assert package["patch_context"] is None
+
+
+@pytest.mark.parametrize(
+    ("text", "expected_code", "expected_message"),
+    [
+        (
+            "PROJECT_COMMIT_NOT_FOUND: no matching project",
+            "PROJECT_COMMIT_NOT_FOUND",
+            "no matching project",
+        ),
+        (
+            "GBS_REPORT_DOWNLOAD_FAILED: HTTP 500",
+            "GBS_REPORT_DOWNLOAD_FAILED",
+            "HTTP 500",
+        ),
+        ("ERROR2: something", "ERROR2", "something"),
+    ],
+)
+def test_manifest_error_splits_uppercase_error_code_prefixes(
+    text: str,
+    expected_code: str,
+    expected_message: str,
+) -> None:
+    error = _manifest_error(_manifest_error_row(text))
+
+    assert error == {"code": expected_code, "message": expected_message}
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        (
+            "GBS Reports contained no failed package rows "
+            "(scanned arches: standard-aarch64, standard-armv7l)"
+        ),
+        "scanned arches: a, b",
+        "Some Error: detail",
+        "failed to fetch https://example.com/x: HTTP 404",
+        "plain error text",
+    ],
+)
+def test_manifest_error_does_not_split_non_error_code_colons(text: str) -> None:
+    error = _manifest_error(_manifest_error_row(text))
+
+    assert error == {"code": STATE_NEEDS_INPUT, "message": text}
+
+
+@pytest.mark.parametrize("state", [STATE_REPORTED, STATE_SKIPPED_PROCESSED])
+def test_manifest_error_returns_none_for_success_or_skipped_without_error(state: str) -> None:
+    assert _manifest_error(_manifest_error_row(None, state=state)) is None
 
 
 def test_batch_orchestrator_skips_processed_package(tmp_path: Path) -> None:
