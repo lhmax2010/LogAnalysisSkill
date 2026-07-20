@@ -283,7 +283,7 @@ class CiTriageOrchestrator:
 
         daily_report_path = paths.runs_dir / "daily_report.md"
         daily_report_path.write_text(
-            _render_daily_report(builds, rows, warnings),
+            _render_daily_report(builds, rows, warnings, arch_order=self.options.arches),
             encoding="utf-8",
         )
         manifest_path = paths.runs_dir / "batch_manifest.json"
@@ -391,7 +391,10 @@ class CiTriageOrchestrator:
                 package,
                 STATE_NEEDS_INPUT,
                 ok=False,
-                error="GBS Reports contained no failed package rows",
+                error=(
+                    "GBS Reports contained no failed package rows "
+                    f"(scanned arches: {', '.join(self.options.arches)})"
+                ),
                 now=now,
             )
             rows.append(
@@ -603,6 +606,8 @@ def _render_daily_report(
     builds: list[FailedBuild],
     rows: list[BatchRunRecord],
     warnings: list[str],
+    *,
+    arch_order: tuple[str, ...] = (),
 ) -> str:
     patch_count = sum(
         1
@@ -617,7 +622,9 @@ def _render_daily_report(
     failure_count = sum(1 for row in rows if row.state.startswith("FAILED_"))
     needs_input = [row for row in rows if row.state == STATE_NEEDS_INPUT]
     no_gbs_report = [row for row in rows if row.state == STATE_REPORTED_NO_REPORT]
+    no_gbs_report_groups = _group_no_gbs_report_rows(rows)
     failures = [row for row in rows if row.state.startswith("FAILED_")]
+    build_urls = {build.build_id: build.quickbuild_url for build in builds if build.quickbuild_url}
 
     lines = [
         "# CI Triage Daily Report",
@@ -629,13 +636,31 @@ def _render_daily_report(
         f"- Not applicable: {not_applicable_count}",
         f"- Failed units: {failure_count}",
         f"- Needs input: {len(needs_input)}",
-        f"- No GBS report: {len(no_gbs_report)}",
+        (
+            f"- No GBS report: {_count_label(len(no_gbs_report), 'unit')} across "
+            f"{_count_label(len(no_gbs_report_groups), 'build')}"
+        ),
         "",
         "## Failed Package Index",
         "| build_id | arch | spec_name | commit | gerrit | patch_status | state | report |",
         "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
+    rendered_no_report_builds: set[str] = set()
     for row in rows:
+        if row.state == STATE_REPORTED_NO_REPORT:
+            if row.build_id in rendered_no_report_builds:
+                continue
+            rendered_no_report_builds.add(row.build_id)
+            folded_rows = no_gbs_report_groups[row.build_id]
+            first_row = folded_rows[0]
+            lines.append(
+                "| "
+                f"{first_row.build_id} | {_arch_summary(folded_rows, arch_order)} | "
+                f"{first_row.spec_name} | {_cell(first_row.commit)} | "
+                f"{_cell(first_row.gerrit_status)} | {_cell(first_row.patch_status)} | "
+                f"{first_row.state} | {_report_link(first_row.report_path)} |"
+            )
+            continue
         lines.append(
             "| "
             f"{row.build_id} | {row.arch} | {row.spec_name} | {_cell(row.commit)} | "
@@ -690,11 +715,11 @@ def _render_daily_report(
             "| --- | --- | --- |",
         ]
     )
-    if no_gbs_report:
-        for row in no_gbs_report:
+    if no_gbs_report_groups:
+        for build_id, folded_rows in no_gbs_report_groups.items():
+            build_url = build_urls.get(build_id, "")
             lines.append(
-                f"| {row.build_id} | {row.arch} | "
-                f"https://quickbuild.tizen.org/build/{row.build_id} |"
+                f"| {build_id} | {_arch_summary(folded_rows, arch_order)} | {build_url} |"
             )
     else:
         lines.append("| n/a | n/a | n/a |")
@@ -704,6 +729,43 @@ def _render_daily_report(
         lines.extend(f"- {warning}" for warning in warnings)
 
     return "\n".join(lines) + "\n"
+
+
+def _group_no_gbs_report_rows(rows: list[BatchRunRecord]) -> dict[str, list[BatchRunRecord]]:
+    groups: dict[str, list[BatchRunRecord]] = {}
+    for row in rows:
+        if row.state == STATE_REPORTED_NO_REPORT:
+            groups.setdefault(row.build_id, []).append(row)
+    return groups
+
+
+def _arch_summary(rows: list[BatchRunRecord], arch_order: tuple[str, ...]) -> str:
+    ordered_arches = _ordered_arches(rows, arch_order)
+    if len(ordered_arches) == 1:
+        return ordered_arches[0]
+    return f"{len(ordered_arches)} arches ({', '.join(ordered_arches)})"
+
+
+def _ordered_arches(rows: list[BatchRunRecord], arch_order: tuple[str, ...]) -> list[str]:
+    row_arches: list[str] = []
+    for row in rows:
+        if row.arch not in row_arches:
+            row_arches.append(row.arch)
+
+    ordered: list[str] = []
+    row_arch_set = set(row_arches)
+    for arch in arch_order:
+        if arch in row_arch_set:
+            ordered.append(arch)
+    for arch in row_arches:
+        if arch not in ordered:
+            ordered.append(arch)
+    return ordered
+
+
+def _count_label(count: int, singular: str) -> str:
+    suffix = "" if count == 1 else "s"
+    return f"{count} {singular}{suffix}"
 
 
 def _render_batch_manifest(paths: _BatchPaths, rows: list[BatchRunRecord], now: datetime) -> str:
@@ -753,7 +815,7 @@ def _existing_dir(path: Path) -> str | None:
 def _manifest_error(row: BatchRunRecord) -> dict[str, str] | None:
     if row.error:
         code, _, message = row.error.partition(":")
-        if message:
+        if message and _looks_like_error_code(code):
             return {"code": code.strip() or row.state, "message": message.strip()}
         return {"code": row.state, "message": row.error}
     if row.state in {STATE_REPORTED, STATE_SKIPPED_PROCESSED}:
@@ -767,6 +829,10 @@ def _manifest_error(row: BatchRunRecord) -> dict[str, str] | None:
     # In-progress states such as LOG_FETCHED/ANALYZED are visible in the
     # manifest during partial runs, but they are not errors by themselves.
     return None
+
+
+def _looks_like_error_code(value: str) -> bool:
+    return bool(re.fullmatch(r"[A-Z][A-Z0-9_]*", value.strip()))
 
 
 def _load_processed(path: Path) -> dict[str, dict[str, set[str]]]:

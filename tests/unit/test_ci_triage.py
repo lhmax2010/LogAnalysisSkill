@@ -783,9 +783,135 @@ def test_batch_orchestrator_marks_no_gbs_report_as_reported_no_report(
     processed = json.loads((state_root / "processed.json").read_text(encoding="utf-8"))
     assert processed == {"111": {"standard-armv7l": ["__NO_GBS_REPORT__"]}}
     report = result.daily_report_path.read_text(encoding="utf-8")
-    assert "- No GBS report: 1" in report
+    assert "- No GBS report: 1 unit across 1 build" in report
     assert "## No GBS Report (non-package builds)" in report
+    assert "| 111 | standard-armv7l | __NO_GBS_REPORT__ |" in report
+    assert "| 111 | standard-armv7l | https://quickbuild.tizen.org/build/111 |" in report
+    assert "1 arches" not in report
     assert "https://quickbuild.tizen.org/build/111" in report
+
+
+def test_daily_report_folds_no_gbs_report_rows_but_manifest_keeps_units(
+    tmp_path: Path,
+) -> None:
+    def discover(build_id: str, arch: str, cookie_path: Path) -> tuple[GbsReportPackage, ...]:
+        raise QuickBuildError(
+            "NO_GBS_REPORT",
+            f"build {build_id}/{arch} has no GBS report iframe",
+        )
+
+    state_root = tmp_path / ".ci_triage"
+    orchestrator = CiTriageOrchestrator(
+        source=_FakeSource([_failed_build("111")]),
+        options=BatchTriageOptions(
+            state_root=state_root,
+            run_date="2026-07-03",
+        ),
+        full_log_downloader=lambda build_id, cookie_path: _full_log_for("foo"),
+        gbs_report_discoverer=discover,
+        triage_runner=_successful_triage("x"),
+        clock=lambda: datetime(2026, 7, 3, 9, 0, 0),
+    )
+
+    result = orchestrator.run(datetime(2026, 7, 2, 0, 0, 0))
+
+    arch_cell = f"{len(DEFAULT_ARCHES)} arches ({', '.join(DEFAULT_ARCHES)})"
+    report = result.daily_report_path.read_text(encoding="utf-8")
+    assert "- No GBS report: 5 units across 1 build" in report
+    assert report.count(f"| 111 | {arch_cell} |") == 2
+    assert report.count("__NO_GBS_REPORT__") == 1
+
+    manifest = _read_batch_manifest(result.daily_report_path)
+    packages = manifest["packages"]
+    assert len(packages) == len(DEFAULT_ARCHES)
+    by_arch = {item["arch"]: item for item in packages}
+    assert tuple(by_arch) == DEFAULT_ARCHES
+    for arch in DEFAULT_ARCHES:
+        item = by_arch[arch]
+        assert item["unit_key"] == f"111:{arch}:__NO_GBS_REPORT__"
+        assert item["arch"] == arch
+        assert item["state"] == STATE_REPORTED_NO_REPORT
+        assert item["patch_status"] is None
+        assert item["error"]["code"] == STATE_REPORTED_NO_REPORT
+        for key in [
+            "src_clean",
+            "evidence_packet",
+            "patch_context",
+            "patch_context_meta",
+            "report",
+            "package_buildlog",
+        ]:
+            assert item[key] is None
+
+
+def test_daily_report_folds_no_gbs_report_once_per_build(tmp_path: Path) -> None:
+    def discover(build_id: str, arch: str, cookie_path: Path) -> tuple[GbsReportPackage, ...]:
+        raise QuickBuildError(
+            "NO_GBS_REPORT",
+            f"build {build_id}/{arch} has no GBS report iframe",
+        )
+
+    orchestrator = CiTriageOrchestrator(
+        source=_FakeSource([_failed_build("111"), _failed_build("222")]),
+        options=BatchTriageOptions(
+            state_root=tmp_path / ".ci_triage",
+            run_date="2026-07-03",
+            arches=("standard-armv7l",),
+        ),
+        full_log_downloader=lambda build_id, cookie_path: _full_log_for("foo"),
+        gbs_report_discoverer=discover,
+        triage_runner=_successful_triage("x"),
+        clock=lambda: datetime(2026, 7, 3, 9, 0, 0),
+    )
+
+    result = orchestrator.run(datetime(2026, 7, 2, 0, 0, 0))
+
+    report = result.daily_report_path.read_text(encoding="utf-8")
+    assert "- No GBS report: 2 units across 2 builds" in report
+    assert report.count("__NO_GBS_REPORT__") == 2
+    assert "| 111 | standard-armv7l | https://quickbuild.tizen.org/build/111 |" in report
+    assert "| 222 | standard-armv7l | https://quickbuild.tizen.org/build/222 |" in report
+
+
+def test_daily_report_preserves_row_order_when_folding_no_gbs_report(
+    tmp_path: Path,
+) -> None:
+    def discover(build_id: str, arch: str, cookie_path: Path) -> tuple[GbsReportPackage, ...]:
+        if arch == "standard-armv7l":
+            return (_gbs_package("good", arch=arch),)
+        raise QuickBuildError(
+            "NO_GBS_REPORT",
+            f"build {build_id}/{arch} has no GBS report iframe",
+        )
+
+    orchestrator = CiTriageOrchestrator(
+        source=_FakeSource([_failed_build("111")]),
+        options=BatchTriageOptions(
+            state_root=tmp_path / ".ci_triage",
+            run_date="2026-07-03",
+            arches=("standard-armv7l", "standard-x86_64", "emulator-x86_64"),
+        ),
+        full_log_downloader=lambda build_id, cookie_path: _full_log_for("good"),
+        gbs_report_discoverer=discover,
+        package_log_downloader=lambda package, cookie_path: "PACKAGE LOG",
+        triage_runner=_successful_triage("not_applicable"),
+        clock=lambda: datetime(2026, 7, 3, 9, 0, 0),
+    )
+
+    result = orchestrator.run(datetime(2026, 7, 2, 0, 0, 0))
+
+    report = result.daily_report_path.read_text(encoding="utf-8")
+    reported_row = (
+        "| 111 | standard-armv7l | good | good-commit | NEW | not_applicable | REPORTED |"
+    )
+    folded_row = (
+        "| 111 | 2 arches (standard-x86_64, emulator-x86_64) | "
+        "__NO_GBS_REPORT__ |"
+    )
+    assert reported_row in report
+    assert folded_row in report
+    assert report.index(reported_row) < report.index(folded_row)
+    assert report.count("__NO_GBS_REPORT__") == 1
 
 
 def test_batch_orchestrator_maps_gbs_report_download_failure_to_failed_log(
@@ -929,13 +1055,23 @@ def test_batch_orchestrator_marks_missing_failed_package_rows_as_needs_input(
         clock=lambda: datetime(2026, 7, 3, 9, 0, 0),
     )
 
-    orchestrator.run(datetime(2026, 7, 2, 0, 0, 0))
+    result = orchestrator.run(datetime(2026, 7, 2, 0, 0, 0))
 
     state = json.loads((tmp_path / ".ci_triage/state/111.json").read_text(encoding="utf-8"))
     package = state["packages"]["unknown-arch/<unknown>"]
     assert package["state"] == STATE_NEEDS_INPUT
     assert package["retries"] == 0
     assert "no failed package rows" in package["error"]
+    assert package["error"] == (
+        "GBS Reports contained no failed package rows "
+        "(scanned arches: standard-armv7l)"
+    )
+    manifest = _read_batch_manifest(result.daily_report_path)
+    missing = _manifest_package(manifest, "<unknown>")
+    assert missing["unit_key"] == "111:unknown-arch:<unknown>"
+    assert missing["arch"] == "unknown-arch"
+    assert missing["spec_name"] == "<unknown>"
+    assert missing["error"]["message"] == package["error"]
 
 
 def test_quickbuild_source_discovers_failed_builds_from_overview(tmp_path: Path) -> None:
