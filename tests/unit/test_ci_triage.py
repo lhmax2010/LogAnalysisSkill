@@ -8,6 +8,7 @@ from typing import Any
 
 import pytest
 from ci_triage.gbs_report import (
+    DEFAULT_ARCHES,
     GbsReportPackage,
     fetch_gbs_report,
     find_iframe_src,
@@ -459,6 +460,17 @@ def test_gbs_report_iframe_download_failure_remains_retryable(tmp_path: Path) ->
         fetch_gbs_report("111", "standard-x86_64", cookie_path=cookie_path, fetcher=fetcher)
 
     assert exc.value.code == "GBS_REPORT_DOWNLOAD_FAILED"
+
+
+def test_default_gbs_report_arches_include_emulator_and_gcov() -> None:
+    assert DEFAULT_ARCHES == (
+        "standard-aarch64",
+        "standard-armv7l",
+        "standard-x86_64",
+        "emulator-x86_64",
+        "standard_gcov-armv7l",
+    )
+    assert BatchTriageOptions().arches == DEFAULT_ARCHES
 
 
 def test_quickbuild_url_normalization_quotes_raw_spaces_idempotently() -> None:

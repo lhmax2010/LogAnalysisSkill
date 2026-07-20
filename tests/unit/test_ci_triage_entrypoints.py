@@ -417,3 +417,45 @@ def test_batch_cli_passes_overview_id_to_quickbuild_source(
     source = seen["source"]
     assert isinstance(source, batch_cli.QuickBuildSource)
     assert source.overview_config_id == "2042"
+
+
+def test_batch_cli_explicit_arch_replaces_default_arches(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ci_triage import batch_cli
+
+    seen: dict[str, object] = {}
+
+    class FakeOrchestrator:
+        def __init__(self, *, source: object, options: object) -> None:
+            seen["source"] = source
+            seen["options"] = options
+
+        def run(self, since: object) -> object:
+            seen["since"] = since
+            return SimpleNamespace(
+                discovered_builds=0,
+                package_units=0,
+                daily_report_path=tmp_path / "daily_report.md",
+                warnings=(),
+            )
+
+    monkeypatch.setattr(batch_cli, "CiTriageOrchestrator", FakeOrchestrator)
+
+    assert (
+        batch_cli.main(
+            [
+                "--arch",
+                "standard-armv7l",
+                "--hours",
+                "1",
+            ],
+            stderr=StringIO(),
+        )
+        == 0
+    )
+
+    options = seen["options"]
+    assert isinstance(options, batch_cli.BatchTriageOptions)
+    assert options.arches == ("standard-armv7l",)

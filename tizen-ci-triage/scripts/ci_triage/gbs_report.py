@@ -21,6 +21,8 @@ DEFAULT_ARCHES = (
     "standard-aarch64",
     "standard-armv7l",
     "standard-x86_64",
+    "emulator-x86_64",
+    "standard_gcov-armv7l",
 )
 
 
