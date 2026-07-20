@@ -226,6 +226,33 @@ SET(EXTRA_CFLAGS "... -Wall -Werror -Wno-unused-private-field")
 `CMakeLists.txt` 的局部 compile option**,**不得扩散到生产库**。
 `fake_sclcore.cpp` 在 tests target → 抑制放 tests 的构建配置,不能碰生产库的 CFLAGS。
 
+**怎么找对那个 `CMakeLists.txt` / target**(改错就会扩散到生产库,必须确认):
+```bash
+TRIGGER="tests/src/inputmethod-core/fake_sclcore.cpp"   # 归一化后的相对路径
+
+# a. 从触发单元向上找最近的 CMakeLists.txt
+D=$(dirname "<unit.src_clean>/$TRIGGER")
+while [ "$D" != "<unit.src_clean>" ] && [ "$D" != "/" ]; do
+  [ -f "$D/CMakeLists.txt" ] && echo "candidate: $D/CMakeLists.txt" && break
+  D=$(dirname "$D")
+done
+
+# b. 确认哪个 CMakeLists 真的把这个源文件编进了 target
+grep -rn "$(basename "$TRIGGER")\|add_executable\|add_library\|target_compile_options" \
+     "<unit.src_clean>" --include="CMakeLists.txt" | head -20
+```
+判定:
+- 找到的 `CMakeLists.txt` 里有 `add_executable` / `add_library` **包含该源文件**
+  (直接列出、或通过 `file(GLOB ...)`/变量间接包含)→ 就改这个文件里该 target
+  作用域的编译选项。
+- **该文件同时定义了生产库 target** → 只在触发单元所属 target 上加
+  (`target_compile_options(<该target> PRIVATE -Wno-xxx)`),**不要**改共享的全局变量。
+- **判断不出该源文件属于哪个 target** → `needs_human`,不猜。改错会把抑制扩散到生产库。
+
+> 例:capi-ui-inputmethod 的 `tests/CMakeLists.txt` 只管 tests target
+> (根目录的 `CMakeLists.txt` 管生产库),所以改 `tests/CMakeLists.txt` 的
+> `EXTRA_CFLAGS` 是安全的;若换成改根目录那个,就会波及生产库 —— 这正是要避免的。
+
 **这不是修根因,必须在报告里写清**:
 ```
 根因:  第三方/系统头文件(<依赖包>/<头文件>)触发的 warning

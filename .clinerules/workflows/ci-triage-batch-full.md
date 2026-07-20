@@ -25,15 +25,29 @@
 ## 1. 输入(人提供)
 
 ```
-build_id       例如 1127447
-arch(es)       例如 standard-aarch64 standard-armv7l standard-x86_64
-gbs_conf       例如 /home/xxx/Toolchain/gbs.conf   ← 必须是对的那个!
-state_db       例如 ./tmp/bXXX/citriage.db
-work_root      例如 ./tmp/bXXX
-cookie_id      QuickBuild 登录后的 session cookie 值(见 1.2 生成 cookie 文件)
-gerrit_user    例如 lhmax2025
-since          覆盖该 build 的时间下限,例如 2026-07-12T00:00:00
+时间范围(二选一,决定处理哪些 build):
+  hours        回看小时数,例如 48    ← 时间窗模式(处理窗内【所有】失败 build)
+  since        绝对时间下限,例如 2026-07-12T00:00:00(与 hours 二选一)
+
+build_id     可选。只想处理某一个 build 时给它;不给则处理时间窗内所有 build。
+arch(es)     例如 standard-aarch64 standard-armv7l standard-x86_64
+gbs_conf     例如 /home/xxx/Toolchain/gbs.conf   ← 必须是对的那个!
+state_db     例如 ./tmp/bXXX/citriage.db
+work_root    例如 ./tmp/bXXX
+cookie_id    QuickBuild 登录后的 session cookie 值(见 1.2 生成 cookie 文件)
+gerrit_user  例如 lhmax2025
 ```
+
+**两种模式**:
+| 模式 | 输入 | 处理范围 |
+|---|---|---|
+| **单 build** | `build_id` + `hours`/`since`(要覆盖到该 build) | 只处理这一个 build 的 unit |
+| **时间窗** | 只给 `hours`/`since`,不给 `build_id` | 处理窗内**所有**失败 build 的 unit |
+
+> batch 从 QuickBuild 的 `overview/1930` 发现时间窗内的失败 build。
+> ⚠️ 该 overview 只列最近约 10 条:若 stderr 出现
+> `history may contain more builds` 警告,说明窗内 build 数超出页面能列出的范围,
+> **更早的 build 会被漏掉**。此时缩小时间窗分批跑,并在报告里注明覆盖不完整。
 
 > ⚠️ `cookie_id` 是**认证凭据**(登录态),敏感。**不进 git、不进 manifest、不进日志、
 > 不进汇总报告。** 只在运行时用于生成 cookie 文件,处理完可删。
@@ -96,17 +110,32 @@ chmod 600 "<work_root>/quickbuild_cookies.json"
 ## 2. 跑 batch,拿 manifest
 
 ```bash
+# 时间参数二选一：--since 优先；省略 --since 时用 --hours 回看（默认 24）
 python tizen-ci-triage/scripts/run_ci_triage_batch.py \
-  --since <since> \
+  <time_arg> \
   --arch <arch1> [--arch <arch2> ...] \
   --state-root <work_root>/batch_state \
   --cookie <work_root>/quickbuild_cookies.json \
   --git-ssh-command "ssh"
+
+# time_arg 取其一：
+#   --hours 48                      回看 48 小时
+#   --since 2026-07-18T00:00:00     绝对时间下限
+# 人给了 since 就用 --since，给了 hours 就用 --hours，不要两个都套。
 ```
 
-**找 manifest**(`<date>` 是动态生成的,不要猜):
+**读 stderr 的发现结果**:
+```
+ci_triage_batch: discovered N failed builds
+ci_triage_batch: package units M
+```
+- 记下 N(发现的失败 build 数)和 M(包单元数),写进汇总。
+- ⚠️ 若出现 `history may contain more builds` 警告 → **窗内 build 超出 overview
+  页面能列出的范围,更早的被漏了**。缩小时间窗分批跑,并在报告里注明"覆盖不完整"。
+
+**找 manifest**(取本次最新的 run;同一天可能跑多次,按修改时间取最新):
 ```bash
-MANIFEST=$(ls <work_root>/batch_state/runs/*/batch_manifest.json | tail -1)
+MANIFEST=$(ls -t <work_root>/batch_state/runs/*/batch_manifest.json | head -1)
 ```
 
 ### 2.1 校验 manifest(防 manifest 生成 bug 把 Cline 带偏)
@@ -122,10 +151,31 @@ MANIFEST=$(ls <work_root>/batch_state/runs/*/batch_manifest.json | tail -1)
 ```
 任一不满足 → **停,报告 manifest 异常,不继续。**
 
-**只处理目标 build_id 的 unit**(manifest 可能含时间窗内其他 build):
+**选出要处理的 unit**:
 ```python
-units = [p for p in manifest["packages"] if p["build_id"] == "<build_id>"]
+pkgs = manifest["packages"]
+if build_id_given:          # 单 build 模式
+    units = [p for p in pkgs if p["build_id"] == "<build_id>"]
+else:                       # 时间窗模式:处理窗内所有 build
+    units = pkgs
 ```
+
+**时间窗模式的默认处理策略**(按此执行,不要自行发挥):
+```
+1. 按 build_id 分组,【新 build 优先】(新的更可能是当前要修的回归)。
+   "新"的定义:**按 `build_id` 数值降序**;若 manifest 里有更可靠的时间字段
+   (完成时间/创建时间),按该时间降序。
+2. 每个 build 组内:先处理完该组的分支 A,再处理该组的分支 B。
+3. 开跑前先把 N(build 数)/M(unit 数)和预估耗时报告给人,
+   若 unit 总数很大(>10),请人选择:
+     - 只处理最新 build
+     - 只处理分支 A(available,自动闭环)
+     - 全量跑
+   等人选定后再开始。
+```
+
+> ⚠️ 每个 available unit 的 build-verify 要几十分钟,时间窗模式 unit 数可能几十个。
+> 串行处理,中途每完成一个 build 组输出小结,便于人叫停。
 
 ## 3. 分流
 
@@ -304,7 +354,15 @@ python -m ci_triage build-verify \
 > - 是 `error: ... [-Werror,-Wxxx]` 之类**源码诊断** →
 >   标记 `classifier_misclassified_dependency`;**暂停,向人展示证据**
 >   (build log 里的实际源码错误)。
->   **人确认后**,才允许把这些新源码诊断纳入 edit_spec / 走 repair-verify-submit。
+>   **人确认 override 后**,按下面的方式**显式重入**,不要把
+>   `repair_allowed=false` 的结果当普通源码失败继续跑循环:
+>   ```
+>   1. 把这次人工 override 记录进汇总(unit_key / 原 failure_class / 证据 / 谁确认);
+>   2. 把新暴露的源码诊断纳入 edit_spec(扩展 A3 的 edit_spec);
+>   3. 从 A3 → A4 → A5 【重新进入安全门】(formatter + 新一轮 build-verify);
+>   4. 不把 repair_allowed=false 的那次结果直接交给
+>      repair-verify-submit 的多轮循环继续。
+>   ```
 > - **判断不了 → 转人工。**
 >
 > 关键:`repair_allowed == false` 是安全边界,Cline 只能提"疑似误判 + 证据",
@@ -353,22 +411,30 @@ python -m ci_triage gerrit-submit \
 ## 7. 汇总报告
 
 ```markdown
-# Build <build_id> Triage Summary
+# CI Triage Summary — <时间窗 或 build_id>
+
+## 覆盖范围
+- 模式:时间窗(--hours N) | 单 build(<build_id>)
+- 发现失败 build:N 个 —— <build_id 列表>
+- 包单元:M 个
+- ⚠️ 覆盖完整性:若出现 `history may contain more builds` 警告,
+  写明"overview 页面只列最近约 10 条,更早的 build 未纳入,本次覆盖不完整"
 
 ## 可提交(build-verify PASS + dry-run)
-| unit_key | 诊断 | 改动文件 | verification_id | worktree_path | 提交命令 |
-|---|---|---|---|---|---|
+| build_id | unit_key | 诊断 | 改动文件 | verification_id | worktree_path | 提交命令 |
+|---|---|---|---|---|---|---|
 
 ## 转人工
-| unit_key | 类别 | 原因 | 证据路径 |
-|---|---|---|---|
+| build_id | unit_key | 类别 | 原因 | 证据路径 |
+|---|---|---|---|---|
 
 ## 跳过
-| unit_key | patch_status | 原因 |
-|---|---|---|
+| build_id | unit_key | patch_status | 原因 |
+|---|---|---|---|
 
 ## 统计
 - 总 unit / 可提交 / 转人工 / 跳过
+- 按 build 分组的小计(时间窗模式)
 ```
 
 **提交命令只展示,不执行。** 人 review 后自己跑。
@@ -377,7 +443,7 @@ python -m ci_triage gerrit-submit \
 
 | 陷阱 | 表现 | 应对 |
 |---|---|---|
-| gbs.conf 用错 | `depsolve` 失败,缺 dlog/glib 等基础包 | 用对的 gbs.conf。不同 arch/工具链可能要不同的 conf。 |
+| gbs.conf 用错 | `depsolve` 失败,缺 dlog/glib 等基础包 | 用对的 gbs.conf。**不同 arch/工具链可能需要不同的 conf**;多 arch 跑之前先确认这份 conf 对所有目标 arch 都有效(尚未做过 armv7l 对照实验 → 若某 arch 大面积 `dependency` 失败,先怀疑 conf 而不是 patch)。 |
 | `--git-ssh-command` 传错 | `ssh variant 'simple' does not support setting port` | 传 `"ssh"`(一个 ssh 命令),不是别的命令或占位符。 |
 | `line` 号用错 | build-verify `apply_failed: edit old text was not found at or after the requested line` | `line` 用 `old` **开始**的行号。 |
 | formatter 过但 build-verify apply 失败 | 同上 | 两者 line 语义不同。以 build-verify 为准。 |
@@ -387,3 +453,4 @@ python -m ci_triage gerrit-submit \
 | build-verify 超时 | `result: FAIL`,`failure_stage: build_timeout`(默认 3600s) | 大包加 `--wall-timeout 7200`。超时 ≠ patch 错。 |
 | 磁盘 result 被重跑覆盖 | `build_verify_result.json` 显示 FAIL,但 state DB / gerrit_submit 的 verification_id 显示 PASS | 多轮/重跑用不同 `--output-dir`,或**以 state DB / gerrit-submit 的 verification_id 为准**,不信被覆盖的磁盘 JSON。 |
 | 并发跑多个 build-verify | gbs build root 冲突 | 串行,一个一个跑。 |
+| 时间窗内 build 过多被漏 | stderr `history may contain more builds` | `overview/1930` 只列最近约 10 条。缩小时间窗分批跑,报告注明覆盖不完整。 |
