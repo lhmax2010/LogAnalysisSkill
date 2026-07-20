@@ -158,12 +158,19 @@ def gerrit_submit(
         )
 
     command_argv = _push_command(record, options)
+    remote_unknown = _target_head_unknown_warning(warnings)
     return _record_result(
-        action="dry_run",
+        action="dry_run_unverified_remote" if remote_unknown else "dry_run",
         record=record,
         submission_key=submission_key,
         options=options,
         command_argv=command_argv,
+        reason=(
+            "remote state could not be verified "
+            f"({remote_unknown}); duplicate/drift checks did not run"
+            if remote_unknown
+            else None
+        ),
         warnings=[
             *warnings,
             (
@@ -173,6 +180,16 @@ def gerrit_submit(
             ),
         ],
     )
+
+
+def _target_head_unknown_warning(warnings: list[str]) -> str | None:
+    for warning in warnings:
+        if warning.startswith("target_head_unknown:"):
+            reason = warning.removeprefix("target_head_unknown:")
+            if reason == "ls_remote_failed":
+                return "ls-remote failed"
+            return reason.replace("_", " ")
+    return None
 
 
 def release_verified_worktree(

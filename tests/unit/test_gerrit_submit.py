@@ -31,15 +31,19 @@ class SubmitRunner:
         *,
         target_head: str | None,
         ls_remote_returncode: int = 0,
+        ls_remote_exception: OSError | None = None,
     ) -> None:
         self.target_head = target_head
         self.ls_remote_returncode = ls_remote_returncode
+        self.ls_remote_exception = ls_remote_exception
         self.commands: list[list[str]] = []
 
     def __call__(self, args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
         if isinstance(args, list):
             self.commands.append([str(item) for item in args])
             if args[:2] == ["git", "ls-remote"]:
+                if self.ls_remote_exception is not None:
+                    raise self.ls_remote_exception
                 stdout = ""
                 if self.target_head is not None:
                     stdout = f"{self.target_head}\trefs/heads/tizen\n"
@@ -122,6 +126,7 @@ def _options(
     verification_id: str,
     *,
     mode: str = "dry-run",
+    submit_target: str = "refs/for/tizen%wip",
 ) -> GerritSubmitOptions:
     return GerritSubmitOptions(
         verification_id=verification_id,
@@ -129,9 +134,20 @@ def _options(
         gerrit_host="review.tizen.org",
         gerrit_port="29418",
         gerrit_user="ci-user",
-        submit_target="refs/for/tizen%wip",
+        submit_target=submit_target,
         submit_mode=mode,
     )
+
+
+def _expected_push_command(record: VerificationRecord) -> list[str]:
+    return [
+        "git",
+        "-C",
+        record.worktree_path,
+        "push",
+        "ssh://ci-user@review.tizen.org:29418/platform/test/demo",
+        "HEAD:refs/for/tizen%wip",
+    ]
 
 
 def test_gerrit_submit_dry_run_returns_command_without_push(tmp_path: Path) -> None:
@@ -141,14 +157,7 @@ def test_gerrit_submit_dry_run_returns_command_without_push(tmp_path: Path) -> N
     result = gerrit_submit(_options(db, record.verification_id), subprocess_runner=runner)
 
     assert result.action == "dry_run"
-    assert result.command_argv == [
-        "git",
-        "-C",
-        record.worktree_path,
-        "push",
-        "ssh://ci-user@review.tizen.org:29418/platform/test/demo",
-        "HEAD:refs/for/tizen%wip",
-    ]
+    assert result.command_argv == _expected_push_command(record)
     assert result.command is not None
     assert all("push" not in command for command in runner.commands)
     assert result.submission_key == build_submission_key(
@@ -265,7 +274,7 @@ def test_gerrit_submit_warns_on_target_branch_drift(tmp_path: Path) -> None:
     assert any(warning.startswith("target_branch_drifted") for warning in result.warnings)
 
 
-def test_gerrit_submit_warns_when_target_head_unknown(tmp_path: Path) -> None:
+def test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_fails(tmp_path: Path) -> None:
     db, record, _base_commit = _record(tmp_path)
 
     result = gerrit_submit(
@@ -273,8 +282,71 @@ def test_gerrit_submit_warns_when_target_head_unknown(tmp_path: Path) -> None:
         subprocess_runner=SubmitRunner(target_head=None, ls_remote_returncode=1),
     )
 
-    assert result.action == "dry_run"
+    assert result.action == "dry_run_unverified_remote"
+    assert result.command_argv == _expected_push_command(record)
+    assert result.reason is not None
+    assert "remote state could not be verified" in result.reason
+    assert "ls-remote failed" in result.reason
     assert any(warning.startswith("target_head_unknown") for warning in result.warnings)
+
+
+def test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_raises(tmp_path: Path) -> None:
+    db, record, _base_commit = _record(tmp_path)
+
+    result = gerrit_submit(
+        _options(db, record.verification_id),
+        subprocess_runner=SubmitRunner(
+            target_head=None,
+            ls_remote_exception=OSError("network unavailable"),
+        ),
+    )
+
+    assert result.action == "dry_run_unverified_remote"
+    assert result.command_argv == _expected_push_command(record)
+    assert any(
+        warning.startswith("target_head_unknown:network unavailable")
+        for warning in result.warnings
+    )
+
+
+def test_gerrit_submit_marks_dry_run_unverified_when_target_head_missing(tmp_path: Path) -> None:
+    db, record, _base_commit = _record(tmp_path)
+
+    result = gerrit_submit(
+        _options(db, record.verification_id),
+        subprocess_runner=SubmitRunner(target_head=None),
+    )
+
+    assert result.action == "dry_run_unverified_remote"
+    assert result.command_argv == _expected_push_command(record)
+    assert any(warning == "target_head_unknown:not_found" for warning in result.warnings)
+
+
+def test_gerrit_submit_marks_dry_run_unverified_for_sandbox_target(tmp_path: Path) -> None:
+    db, record, _base_commit = _record(tmp_path)
+
+    result = gerrit_submit(
+        _options(
+            db,
+            record.verification_id,
+            submit_target="refs/heads/sandbox/ci-user/demo",
+        ),
+        subprocess_runner=SubmitRunner(target_head=record.base_commit),
+    )
+
+    assert result.action == "dry_run_unverified_remote"
+    assert result.command_argv == [
+        "git",
+        "-C",
+        record.worktree_path,
+        "push",
+        "ssh://ci-user@review.tizen.org:29418/platform/test/demo",
+        "HEAD:refs/heads/sandbox/ci-user/demo",
+    ]
+    assert any(
+        warning == "target_head_unknown:sandbox_target_not_checked"
+        for warning in result.warnings
+    )
 
 
 def test_gerrit_submit_skips_duplicate_submission_key(tmp_path: Path) -> None:
@@ -295,6 +367,27 @@ def test_gerrit_submit_skips_duplicate_submission_key(tmp_path: Path) -> None:
     )
 
     assert result.action == "skipped_duplicate"
+
+
+def test_gerrit_submit_skips_duplicate_before_unverified_remote_action(tmp_path: Path) -> None:
+    db, record, _base_commit = _record(tmp_path)
+    submission_key = build_submission_key(
+        failure_key=record.failure_key,
+        verified_tree_sha=record.verified_tree_sha,
+    )
+    db.insert_submission(
+        submission_key=submission_key,
+        verification_id=record.verification_id,
+        action="submitted",
+    )
+
+    result = gerrit_submit(
+        _options(db, record.verification_id),
+        subprocess_runner=SubmitRunner(target_head=None, ls_remote_returncode=1),
+    )
+
+    assert result.action == "skipped_duplicate"
+    assert any(warning.startswith("target_head_unknown") for warning in result.warnings)
 
 
 def test_gerrit_submit_submit_mode_is_rejected_without_push(tmp_path: Path) -> None:
