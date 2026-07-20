@@ -4,7 +4,9 @@ import json
 import os
 import subprocess
 import sys
+from io import StringIO
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from ci_triage import cli
@@ -371,3 +373,47 @@ def test_batch_help_smoke(capsys: pytest.CaptureFixture[str]) -> None:
 
     assert excinfo.value.code == 0
     assert "Discover recent QuickBuild failures" in capsys.readouterr().out
+
+
+def test_batch_cli_passes_overview_id_to_quickbuild_source(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ci_triage import batch_cli
+
+    seen: dict[str, object] = {}
+
+    class FakeOrchestrator:
+        def __init__(self, *, source: object, options: object) -> None:
+            seen["source"] = source
+            seen["options"] = options
+
+        def run(self, since: object) -> object:
+            seen["since"] = since
+            return SimpleNamespace(
+                discovered_builds=0,
+                package_units=0,
+                daily_report_path=tmp_path / "daily_report.md",
+                warnings=(),
+            )
+
+    monkeypatch.setattr(batch_cli, "CiTriageOrchestrator", FakeOrchestrator)
+
+    assert (
+        batch_cli.main(
+            [
+                "--cookie",
+                str(tmp_path / "cookies.json"),
+                "--overview-id",
+                "2042",
+                "--hours",
+                "1",
+            ],
+            stderr=StringIO(),
+        )
+        == 0
+    )
+
+    source = seen["source"]
+    assert isinstance(source, batch_cli.QuickBuildSource)
+    assert source.overview_config_id == "2042"

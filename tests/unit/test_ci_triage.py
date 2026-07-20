@@ -957,6 +957,24 @@ def test_quickbuild_source_discovers_failed_builds_from_overview(tmp_path: Path)
     ]
 
 
+def test_quickbuild_source_uses_configured_overview_id(tmp_path: Path) -> None:
+    cookie_path = _cookie_file(tmp_path)
+    calls: list[str] = []
+
+    def fetcher(url: str, cookies: Mapping[str, str]) -> HttpResponse:
+        calls.append(url)
+        return HttpResponse(status=200, url=url, body=OVERVIEW_HTML.encode())
+
+    source = QuickBuildSource(
+        cookie_path=cookie_path,
+        fetcher=fetcher,
+        overview_config_id="2042",
+    )
+    source.discover(datetime(2026, 7, 1, 3, 0, 0))
+
+    assert calls == ["https://quickbuild.tizen.org/overview/2042"]
+
+
 def test_quickbuild_source_filters_since_lower_bound(tmp_path: Path) -> None:
     cookie_path = _cookie_file(tmp_path)
 

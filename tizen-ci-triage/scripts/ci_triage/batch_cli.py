@@ -11,7 +11,7 @@ from typing import TextIO
 from ci_triage.orchestrator import BatchTriageOptions, CiTriageOrchestrator
 from ci_triage.quickbuild import DEFAULT_COOKIE_PATH
 from ci_triage.runner import discover_sibling_pythonpath
-from ci_triage.sources import QuickBuildSource
+from ci_triage.sources import QUICKBUILD_OVERVIEW_CONFIG_ID, QuickBuildSource
 
 EXIT_SUCCESS = 0
 EXIT_FAILED = 1
@@ -48,6 +48,14 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=DEFAULT_COOKIE_PATH,
         help=f"Browser-exported QuickBuild cookie JSON. Defaults to {DEFAULT_COOKIE_PATH}.",
+    )
+    parser.add_argument(
+        "--overview-id",
+        default=QUICKBUILD_OVERVIEW_CONFIG_ID,
+        help=(
+            "QuickBuild overview config id to scrape. "
+            f"Defaults to {QUICKBUILD_OVERVIEW_CONFIG_ID}."
+        ),
     )
     parser.add_argument(
         "--retry-limit",
@@ -89,7 +97,7 @@ def main(
     paths = extra_pythonpath or discover_sibling_pythonpath(
         launcher_path=Path(__file__).resolve().parents[1] / "run_ci_triage_batch.py"
     )
-    source = QuickBuildSource(cookie_path=args.cookie)
+    source = QuickBuildSource(cookie_path=args.cookie, overview_config_id=args.overview_id)
     orchestrator = CiTriageOrchestrator(
         source=source,
         options=BatchTriageOptions(

@@ -49,16 +49,17 @@ class QuickBuildSource:
 
     cookie_path: Path = DEFAULT_COOKIE_PATH
     base_url: str = DEFAULT_QUICKBUILD_BASE_URL
+    overview_config_id: str = QUICKBUILD_OVERVIEW_CONFIG_ID
     fetcher: HttpFetcher | None = None
     warnings: list[str] = field(default_factory=list, init=False)
 
     def discover(self, since: datetime) -> list[FailedBuild]:
-        """Scrape overview/1930 and return failed builds newer than since."""
+        """Scrape the configured QuickBuild overview and return failed builds newer than since."""
 
         self.warnings.clear()
         cookies = load_cookie_jar(self.cookie_path)
         fetch = self.fetcher or _urllib_fetch
-        overview_url = f"{self.base_url.rstrip('/')}/overview/{QUICKBUILD_OVERVIEW_CONFIG_ID}"
+        overview_url = f"{self.base_url.rstrip('/')}/overview/{self.overview_config_id}"
         response = fetch(overview_url, cookies)
         _raise_if_login_page(response, action="open QuickBuild overview")
 
