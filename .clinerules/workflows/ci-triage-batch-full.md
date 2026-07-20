@@ -30,6 +30,9 @@
   since        绝对时间下限,例如 2026-07-12T00:00:00(与 hours 二选一)
 
 build_id     可选。只想处理某一个 build 时给它;不给则处理时间窗内所有 build。
+overview_id  可选,默认 1930。QuickBuild overview(configuration)id,决定从哪个
+             overview 页面发现失败 build(如 166 是另一组构建)。**必须是纯数字**,
+             不要传完整 URL。不同 overview 请用不同的 `--state-root` 隔离 state。
 arch(es)     例如 standard-aarch64 standard-armv7l standard-x86_64
 gbs_conf     例如 /home/xxx/Toolchain/gbs.conf   ← 必须是对的那个!
 state_db     例如 ./tmp/bXXX/citriage.db
@@ -113,6 +116,7 @@ chmod 600 "<work_root>/quickbuild_cookies.json"
 # 时间参数二选一：--since 优先；省略 --since 时用 --hours 回看（默认 24）
 python tizen-ci-triage/scripts/run_ci_triage_batch.py \
   <time_arg> \
+  [--overview-id <overview_id>] \
   --arch <arch1> [--arch <arch2> ...] \
   --state-root <work_root>/batch_state \
   --cookie <work_root>/quickbuild_cookies.json \
@@ -122,6 +126,7 @@ python tizen-ci-triage/scripts/run_ci_triage_batch.py \
 #   --hours 48                      回看 48 小时
 #   --since 2026-07-18T00:00:00     绝对时间下限
 # 人给了 since 就用 --since，给了 hours 就用 --hours，不要两个都套。
+# --overview-id 只在人明确指定了非默认 overview 时才加（默认 1930）。
 ```
 
 **读 stderr 的发现结果**:
@@ -181,11 +186,21 @@ else:                       # 时间窗模式:处理窗内所有 build
 
 | `patch_status` | 处理 |
 |---|---|
-| `source_context_available` | → 分支 A(自动) |
+| `source_context_available` | → 分支 A(自动,先过 A0 的 arch 白名单) |
 | `source_context_unavailable` | → 分支 B(探索 + 人确认) |
 | `not_applicable` | → 分支 C(跳过,记录) |
 | `null`(有 `error`) | → 分支 C(跳过,记录 error) |
 | 其他值 | → **fail-closed,转人工** |
+
+**两种"非包失败"状态的区别**(实测遇到,归类都正确,含义不同):
+
+| state | 含义 | 处理 |
+|---|---|---|
+| `REPORTED_NO_REPORT`(spec_name `__NO_GBS_REPORT__`) | 该 build 压根没有 GBS Reports 页(RBS/trigger/snapshot 类) | 分支 C 跳过,报告里列出 build_url 供人工查看 |
+| `NEEDS_INPUT` + `GBS Reports contained no failed package rows` | **有** GBS Reports 页,但扫描的 arch 里全是成功包 —— 即该 build 失败在包构建之外的步骤 | 分支 C 跳过,注明"失败不在包构建阶段,需人工看 QuickBuild 页面" |
+
+> 这两种都**不是工具故障**,是诚实的边界标注。不要因为看到 `unknown-arch` /
+> `<unknown>` 就以为解析出错。
 
 **先处理所有 A,再处理 B。** A 成功率高,先把确定的做完。
 
@@ -198,6 +213,20 @@ else:                       # 时间窗模式:处理窗内所有 build
   src_clean / evidence_packet / patch_context / base_commit / project / branch / arch
 → 不自动处理;记录 manifest_incomplete;转人工。
 ```
+
+**arch 白名单检查(安全门缺口,必须挡)**:
+```
+build-verify 的 arch → gbs -A 映射目前只在这三个 arch 上验证过:
+  standard-aarch64 / standard-armv7l / standard-x86_64
+
+若 unit.arch 不在上述三个之内(例如 emulator-x86_64、standard_gcov-armv7l)
+→ 【不自动 build-verify】,标 needs_human + arch_not_verified,记录到汇总。
+```
+> 原因:这些 arch 能被 GBS report 发现(所以会出现在 manifest 里),但它们到
+> `gbs build -A` 的映射尚未确认。贸然传给 build-verify 有两种坏结果:
+> 报错白等几十分钟,或**用错误的 arch 构建却 PASS**,产出一个"验证过"
+> 但实际验证的是别的架构的提交命令 —— 后者会绕过安全门,危害更大。
+> 待映射确认后再放开这个白名单。
 
 ### A1. 读诊断和上下文
 
