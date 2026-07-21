@@ -417,8 +417,33 @@ python -m ci_triage gerrit-submit \
 | `action` | 处理 |
 |---|---|
 | `dry_run` | 记录 `command_argv` + `worktree_path`,进汇总。**不执行。** |
-| `skipped_duplicate` | 已提交过 → 记录,转人工确认,不再生成命令 |
+| `dry_run_unverified_remote` | 命令**可用**(和 `dry_run` 的 command_argv 一致),但**远端状态完全没确认过**(`ls-remote` 没成功)。记录进汇总,并**必须显式标注**:见下方⚠️。 |
+| `skipped_duplicate` | 本地 state DB 里已有同 `submission_key` → 记录,转人工确认,不再生成命令 |
 | **其他任何值** | fail-closed:记录 `action` / `reason` / `warnings`,转人工 |
+
+> ⚠️ **`dry_run_unverified_remote` 的含义**:`ls-remote` 失败,工具**对远端一无所知** ——
+> 既不知道目标分支是否已漂移,也无从判断 Gerrit 上是否已有相同 change。
+> command_argv 本身是对的(它只依赖本地已验证的 commit),但少了一层保证。
+>
+> 汇总里这类 unit **必须标注**:
+> ```
+> ⚠️ 远端状态未确认(ls-remote 失败)。执行前请人工核对:
+>    1. Gerrit 上是否已存在相同 change(避免重复提交)
+>    2. 目标分支 HEAD 是否仍是 base_commit(验证基础是否已过时)
+> ```
+> **不要**把它和普通 `dry_run` 混在同一行里不加区分 —— 那样人看不出差别,
+> 会当成已检查过而直接执行。
+
+> ⚠️ **`skipped_duplicate` 只查本地 state DB**,不查远端 Gerrit。
+> 换机器、换 `--state-db`、或之前由人手工推送过的 change,工具**发现不了**。
+> 首次在某个 state DB 上跑必然是 `dry_run` —— 这不代表远端没有相同 change。
+> 执行 push 前,人仍应自行确认。
+
+**分支漂移要单独列出,不要埋在 warnings 数组里**:
+若 `warnings` 中有 `target_branch_drifted:<sha>`,说明目标分支 HEAD 已经不是
+`base_commit` 了(验证基础相对当前远端已旧)。这是**已知事实**、信息完整,
+所以 action 仍是 `dry_run`;但汇总表里要给它**单独一列**(填新的 HEAD sha),
+让人一眼看出哪些 patch 的验证基础已经过时。埋在 warnings 里人扫不到。
 
 ## 5. 分支 B:source_context_unavailable(探索 + 人确认)
 
@@ -450,8 +475,13 @@ python -m ci_triage gerrit-submit \
   写明"overview 页面只列最近约 10 条,更早的 build 未纳入,本次覆盖不完整"
 
 ## 可提交(build-verify PASS + dry-run)
-| build_id | unit_key | 诊断 | 改动文件 | verification_id | worktree_path | 提交命令 |
-|---|---|---|---|---|---|---|
+| build_id | unit_key | 诊断 | 改动文件 | verification_id | worktree_path | 远端状态 | 分支漂移 | 提交命令 |
+|---|---|---|---|---|---|---|---|---|
+
+> **远端状态**列填 `已确认` 或 `⚠️ 未确认(ls-remote 失败)`
+> (对应 action `dry_run` / `dry_run_unverified_remote`)。
+> **分支漂移**列:无漂移填 `-`;有 `target_branch_drifted:<sha>` 就填那个 sha,
+> 表示验证基础相对当前远端已旧。
 
 ## 转人工
 | build_id | unit_key | 类别 | 原因 | 证据路径 |
@@ -482,4 +512,5 @@ python -m ci_triage gerrit-submit \
 | build-verify 超时 | `result: FAIL`,`failure_stage: build_timeout`(默认 3600s) | 大包加 `--wall-timeout 7200`。超时 ≠ patch 错。 |
 | 磁盘 result 被重跑覆盖 | `build_verify_result.json` 显示 FAIL,但 state DB / gerrit_submit 的 verification_id 显示 PASS | 多轮/重跑用不同 `--output-dir`,或**以 state DB / gerrit-submit 的 verification_id 为准**,不信被覆盖的磁盘 JSON。 |
 | 并发跑多个 build-verify | gbs build root 冲突 | 串行,一个一个跑。 |
+| 推了重复的 change | Gerrit 上出现内容相同的两个 change | `skipped_duplicate` 只查**本地 state DB**,不查远端。首次在某个 state DB 上跑必然返回 `dry_run`。执行 push 前人工核对 Gerrit(`git ls-remote <remote> \| grep <base_commit>` 能看到该 commit 是否已在某个 `refs/changes/*` 下)。实测撞过。 |
 | 时间窗内 build 过多被漏 | stderr `history may contain more builds` | `overview/1930` 只列最近约 10 条。缩小时间窗分批跑,报告注明覆盖不完整。 |
