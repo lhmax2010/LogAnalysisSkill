@@ -1,0 +1,23 @@
+# Python bytecode and caches
+__pycache__/
+*.pyc
+*.pyo
+
+# Test/type/lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build and packaging outputs
+*.egg-info/
+build/
+dist/
+
+# Coverage
+.coverage
+
+# Virtual environments
+.venv/
+
+# OS files
+.DS_Store
