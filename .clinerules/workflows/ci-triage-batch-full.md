@@ -7,7 +7,8 @@
 1. **主输入是 `batch_manifest.json`,不是 `daily_report.md`。** 不解析 markdown 表格,
    不从文本里猜路径。所有包信息、路径、状态都从 manifest 的字段读。
 2. **所有 gate 判断以工具 JSON 返回为准。** 不脑补"这个应该能过"。
-   `build-verify` 返回 `result`/`failure_stage`/`failure_class`/`repair_allowed`,
+   `build-verify` 返回 `result`/`failure_stage`/`failure_class`/`repair_allowed`
+   (`repair_allowed` 是三态字符串:`"auto"` / `"needs_confirmation"` / `"denied"`),
    `gerrit-submit` 返回 `action`,照读。
 3. **`gbs_conf` / `state_db` / `gerrit_user` 由人显式提供,不猜。** manifest 里没有这些
    (运行时参数)。用错 gbs.conf 会导致 depsolve 失败,或更糟——环境和 CI 不一致
@@ -363,14 +364,16 @@ python -m ci_triage build-verify \
 | `result == "PASS"` | → A6(出提交命令) |
 | `result == "FAIL"` 且 `failure_stage == "apply_failed"` | edit_spec 的 `old`/`line` 不对 → 修 edit_spec 重来(回 A3) |
 | `result == "FAIL"` 且 `failure_stage == "build_timeout"` | 编译超时,非 patch 错 → 加大 `--wall-timeout` 重跑(回 A5) |
-| `result == "FAIL"` 且 `repair_allowed == false` 且 `failure_class == "dependency"` | 看 build log 区分真依赖 vs 误分类。**Cline 不得自己越过 `repair_allowed=false`**,只能提证据+暂停等人确认。见下方⚠️。 |
-| `result == "FAIL"` 且 `repair_allowed == false` 且 `failure_class ∈ {toolchain, build_env}` | **停,转人工。** 环境/工具链问题,不进修复循环。 |
-| `result == "FAIL"` 且 `repair_allowed == true` | 源码类失败 → **走 `repair-verify-submit.md` 的多轮循环剧本**(iter=2..3,含 check-convergence 判 advance/stalled/regressed) |
+| `result == "FAIL"` 且 `repair_allowed == "denied"` 且 `failure_class == "dependency"` | 看 build log 区分真依赖 vs 误分类。**Cline 不得自己越过 `denied`**,只能提证据+暂停等人确认。见下方⚠️。 |
+| `result == "FAIL"` 且 `repair_allowed == "denied"` 且 `failure_class ∈ {toolchain, build_env}` | **停,转人工。** 环境/工具链问题,不进修复循环。 |
+| `result == "FAIL"` 且 `repair_allowed == "denied"`（其它 failure_class） | **停,转人工。** 源码不可达 / 非本包所有 / raw_unparsed / 非构建阶段等。 |
+| `result == "FAIL"` 且 `repair_allowed == "needs_confirmation"` | 错误**在本包源码内**,但诊断类型不在自动修白名单,修法需现场判断。→ 走 **`repair-verify-submit.md` 的循环剧本**;其中改进 edit_spec 的那一步按 **`explore-unavailable.md` 的 2.2 修复流程**做,产出 edit_spec 后**暂停等人确认**才进下一轮。 |
+| `result == "FAIL"` 且 `repair_allowed == "auto"` | 修法确定唯一 → **走 `repair-verify-submit.md` 的循环剧本**,自动扩展 edit_spec 进下一轮。轮次由 check-convergence(advance/stalled/regressed)决定,**无固定上限**。 |
 | 其他 | fail-closed,转人工 |
 
 > ⚠️ **`failure_class == "dependency"` 的核查(实测踩过误判)**:
 > 分类器有时把源码类错误(如修完一个警告后**暴露出的另一批** `-Wunused-private-field`)
-> 误判成 `dependency`。但 **Cline 不得单方面越过 `repair_allowed == false` 去改源码**——
+> 误判成 `dependency`。但 **Cline 不得单方面越过 `repair_allowed == "denied"` 去改源码**——
 > 这是 Stage1 的硬边界。只能**提出证据 + 暂停等人确认**:
 >
 > 看 build log 的实际错误:
@@ -384,17 +387,17 @@ python -m ci_triage build-verify \
 >   标记 `classifier_misclassified_dependency`;**暂停,向人展示证据**
 >   (build log 里的实际源码错误)。
 >   **人确认 override 后**,按下面的方式**显式重入**,不要把
->   `repair_allowed=false` 的结果当普通源码失败继续跑循环:
+>   `repair_allowed == "denied"` 的结果当普通源码失败继续跑循环:
 >   ```
 >   1. 把这次人工 override 记录进汇总(unit_key / 原 failure_class / 证据 / 谁确认);
 >   2. 把新暴露的源码诊断纳入 edit_spec(扩展 A3 的 edit_spec);
 >   3. 从 A3 → A4 → A5 【重新进入安全门】(formatter + 新一轮 build-verify);
->   4. 不把 repair_allowed=false 的那次结果直接交给
+>   4. 不把 repair_allowed == "denied" 的那次结果直接交给
 >      repair-verify-submit 的多轮循环继续。
 >   ```
 > - **判断不了 → 转人工。**
 >
-> 关键:`repair_allowed == false` 是安全边界,Cline 只能提"疑似误判 + 证据",
+> 关键:`repair_allowed == "denied"` 是安全边界,Cline 只能提"疑似误判 + 证据",
 > **不能自己决定继续改源码**。是否越过,由人确认。
 
 ### A6. gerrit-submit dry-run

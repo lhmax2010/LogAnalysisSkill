@@ -11,7 +11,7 @@
 Cline 是执行者,不是裁判。以下判断【只能】来自工具的 JSON 字段,【不能】来自
 Cline 的主观判断:
 - "编译过了吗" → 只看 `build-verify` 返回的 `result` 字段(PASS/FAIL)
-- "这个失败能修吗" → 只看 `build-verify` 返回的 `repair_allowed` 字段
+- "这个失败能修吗、要不要人确认" → 只看 `build-verify` 返回的 `repair_allowed` 字段("auto"/"needs_confirmation"/"denied")
 - "该继续下一轮吗" → 只看 `check-convergence` 返回的 `verdict` 字段
 - "能提交了吗" → 只看 `gerrit-submit` 返回的 `action` 字段
 
@@ -56,7 +56,7 @@ Cline 若跳过某个工具调用,就【拿不到】下一步需要的字段(文
 | 环节 | 谁负责 | 依据 |
 |------|--------|------|
 | 编译验证(过没过) | build-verify 工具 | `result` 字段 |
-| 失败能否修复 | build-verify 工具 | `repair_allowed` 字段 |
+| 失败能否修复、是否需人确认 | build-verify 工具 | `repair_allowed` 三态字段 |
 | 是否收敛(继续/停) | check-convergence 工具 | `verdict` 字段 |
 | 提交 gate | gerrit-submit 工具 | `action` 字段 + state DB |
 | **看编译错误、写/改进 edit_spec** | **Cline** | context + build log(智能决策) |
@@ -75,7 +75,13 @@ Cline 的智能决策【只有一处】:根据 patch-suggest 的 context + 编�
    `command -v python || command -v python3`),用可用的那个;若 `-m ci_triage`
    报 `No module named ci_triage`,先 export PYTHONPATH(见第 3 点)。
 
-## 循环剧本(iter = 1..MAX_ITER,MAX_ITER=3)
+## 循环剧本(iter 从 1 开始,无固定上限,由收敛判定决定何时停)
+
+轮次没有固定上限。是否继续由两件事决定,都是工具的确定性输出:
+  - build-verify 的 `repair_allowed`("denied" 立刻停)
+  - check-convergence 的 `verdict`("stalled"/"regressed" 立刻停)
+`needs_confirmation` 档每轮都要人确认,人始终在环里 ——
+这是不设轮次上限也安全的原因。
 
 累积 edit_spec 从空开始;每轮 build-verify 内部会从干净源码 copy 重打累积
 edit_spec(Cline 不需手动管理源码状态,只维护 edit_spec 内容)。
@@ -97,7 +103,7 @@ LOOP:
   ⭐ Cline 必须读固定路径 `<out>/build_verify_result.json`(工具写的),
   从中提取以下字段(不得凭记忆/推理构造这些值):
     - `result`(PASS/FAIL)
-    - `repair_allowed`(true/false)
+    - `repair_allowed`("auto" / "needs_confirmation" / "denied")
     - `verification_id`(PASS 时用于步骤 D,只能从这里读)
     - `actual_changed_paths`(list,步骤 B 的 touched_files 只能从这里来)
     - `evidence`(路径,步骤 B 用)
@@ -108,13 +114,17 @@ LOOP:
       → 跳到 步骤 D(GERRIT_READY,准备提交)
       → ⚠️ 不是 Cline 判断"过了",是 result JSON 的 result 字段说 PASS
 
-  ▸ result == "FAIL" 且 repair_allowed == false:
-      → 停止。这个失败不是源码可修(工具链/环境/依赖/apply/污染等)。
+  ▸ result == "FAIL" 且 repair_allowed == "denied":
+      → 停止。这个失败不是源码可修(工具链/环境/依赖/apply/污染/
+        源码不可达/非本包所有)。
       → 转人工。Cline 不得尝试改源码重试(工具已判定不可修)。
       → 输出 failure_class + reason,结束 workflow。
 
-  ▸ result == "FAIL" 且 repair_allowed == true:
+  ▸ result == "FAIL" 且 repair_allowed ∈ {"auto", "needs_confirmation"}:
       → 继续 步骤 B(收敛判断)
+      → ⚠️ 先判收敛再决定怎么继续:若本轮已 stalled/regressed,
+        根本不该往下走,没必要先花时间探索或让人审一个用不上的 edit_spec。
+        两档的区别在【步骤 C】体现,不在这里。
 
   ── 步骤 B:收敛判断(确定性工具)──
   ⭐ touched_files 【不由 Cline 从 edit_spec 凭空提取】,口径分两档:
@@ -165,9 +175,12 @@ LOOP:
 
   ── 步骤 C:改进累积 edit_spec(Cline 唯一的智能决策)──
   iter += 1
-  若 iter > MAX_ITER(3):
-    → 停止。达到迭代上限仍未编译通过。转人工。结束 workflow。
-  否则:
+  (无固定轮次上限:能走到这里说明 check-convergence 判了 advance,即有实质进展。
+   停止由 denied / stalled / regressed 决定,不由轮次决定。)
+
+  按本轮 build-verify 的 `repair_allowed` 分流:
+
+  ▸ repair_allowed == "auto"(修法确定唯一,白名单内诊断):
     1. 使用本轮 build-verify FAIL 返回的 evidence(步骤 A result.evidence)。
     2. 调 analyzer / patch-suggest 基于该 evidence 重新生成 context(显式动作,
        不是 Cline 凭印象)。
@@ -179,6 +192,17 @@ LOOP:
        结果始终是"让包编译通过所需的全部修改"的完整累积快照。
     5. 回到 步骤 A(下一轮 build-verify,内部会用干净源码重打累积 edit_spec)。
        下一轮 touched_files 用 previous_edit_spec → 新累积 edit_spec 的 delta 计算。
+
+  ▸ repair_allowed == "needs_confirmation"(错误在本包源码内,修法需现场判断):
+    1. 走 `explore-unavailable.md` 的 2.2 修复流程:
+       读懂错误 → 看清结构(不猜,把定义/引用/构建配置读出来)
+       → 拟定 edit_spec → 评估改动规模与风险(局部 / 跨文件 / 改声明接口)
+    2. 按 explore-unavailable.md 第 3 节的模板展示:
+       根因 + 改法 + 改动规模 + 风险 + 完整 edit_spec
+    3. **暂停,等人确认。未经确认不得进入下一轮。**
+    4. 人确认后,把新 edit_spec 并入累积 edit_spec(口径同 auto 档第 4 步:
+       同文件替换、新文件新增,始终是完整累积快照)。
+    5. 回到 步骤 A。
 
   ── 步骤 D:准备提交(确定性工具,dry-run)──
   ⭐ verification_id 【只能从步骤 A 读到的 build_verify_result.json 的
@@ -219,16 +243,14 @@ LOOP:
 | 停止原因 | 来源 | 后续 |
 |---------|------|------|
 | 编译通过 | build-verify `result==PASS` | → gerrit-submit dry-run(成功) |
-| 失败不可修 | build-verify `repair_allowed==false` | 转人工 |
+| 失败不可修 | build-verify `repair_allowed=="denied"` | 转人工,不得越过 |
 | 恶化 | check-convergence `verdict==regressed` | 转人工 |
 | 不收敛 | check-convergence `verdict==stalled` | 转人工 |
-| 达迭代上限 | iter > 3 | 转人工 |
 | 提交未放行 | gerrit-submit `action != dry_run`(含 rejected_* / skipped_duplicate / record_not_found) | 转人工 |
 
 ## 纪律(UX 兜底;真正的安全由工具的物理机制保证)
 
-- 编译/环境类错误(repair_allowed=false)不反复堆 patch:工具已判不可修,直接转人工。
-- 同一问题最多 3 轮(MAX_ITER):即使 convergence 一直 advance,超过 3 轮也停(刹车)。
+- 编译/环境类错误(repair_allowed=="denied")不反复堆 patch:工具已判不可修,直接转人工。
 - Cline 每轮只维护 edit_spec 内容;源码状态、编译、收敛、提交 gate 全交给工具。
 - ⚠️ 本节纪律是行为建议;即使 Cline 违反,底层工具的物理 gate(state DB /
   verification record / Git-object 匹配)仍会拦住不安全的提交。
