@@ -15,6 +15,7 @@ from ci_triage.verify.build_verify import (
     build_verify,
     build_verify_to_json,
 )
+from ci_triage.verify.failure_classify import REPAIR_AUTO, REPAIR_DENIED
 from ci_triage.verify.workspace import PROTECTED_FILENAME
 
 
@@ -246,8 +247,11 @@ def test_gbs_fail_source_werror_returns_repair_allowed(
     assert result.result == "FAIL"
     assert result.actual_changed_paths == ["src/main.c"]
     assert result.failure_class == "source_repairable"
-    assert result.repair_allowed is True
+    assert result.repair_allowed == REPAIR_AUTO
     assert result.evidence is not None
+    result_json = tmp_path / "result.json"
+    build_verify_to_json(result, result_json)
+    assert json.loads(result_json.read_text(encoding="utf-8"))["repair_allowed"] == REPAIR_AUTO
 
 
 def test_gbs_fail_toolchain_denylist_not_repair_allowed(
@@ -277,7 +281,7 @@ def test_gbs_fail_toolchain_denylist_not_repair_allowed(
 
     assert result.result == "FAIL"
     assert result.failure_class == "toolchain"
-    assert result.repair_allowed is False
+    assert result.repair_allowed == REPAIR_DENIED
 
 
 def test_build_mutated_tracked_source_after_commit_fails(tmp_path: Path) -> None:
@@ -290,7 +294,7 @@ def test_build_mutated_tracked_source_after_commit_fails(tmp_path: Path) -> None
     assert result.actual_changed_paths == ["src/main.c"]
     assert result.failure_stage == "build_mutated_source"
     assert result.failure_class == "build_mutated_source"
-    assert result.repair_allowed is False
+    assert result.repair_allowed == REPAIR_DENIED
 
 
 def test_invalid_edit_spec_fails_before_build(tmp_path: Path) -> None:
@@ -360,7 +364,7 @@ def test_gbs_timeout_fails_without_repair(tmp_path: Path) -> None:
 
     assert result.result == "FAIL"
     assert result.failure_stage == "build_timeout"
-    assert result.repair_allowed is False
+    assert result.repair_allowed == REPAIR_DENIED
 
 
 def test_unexpected_changed_paths_are_checked_before_no_effective_changes(

@@ -3,7 +3,13 @@
 from __future__ import annotations
 
 from ci_triage.verify.edit_spec_guard import EditSpecViolation, validate_edit_spec
-from ci_triage.verify.failure_classify import FailureClassification, classify_failure
+from ci_triage.verify.failure_classify import (
+    REPAIR_AUTO,
+    REPAIR_DENIED,
+    REPAIR_NEEDS_CONFIRMATION,
+    FailureClassification,
+    classify_failure,
+)
 from ci_triage.verify.workspace import (
     PROTECTED_FILENAME,
     DisposableWorktree,
@@ -21,6 +27,9 @@ __all__ = [
     "EditSpecViolation",
     "FailureClassification",
     "PROTECTED_FILENAME",
+    "REPAIR_AUTO",
+    "REPAIR_DENIED",
+    "REPAIR_NEEDS_CONFIRMATION",
     "WorkspaceViolation",
     "classify_failure",
     "cleanup_worktree",

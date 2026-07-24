@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import pytest
-from ci_triage.verify.failure_classify import classify_failure
+from ci_triage.verify.failure_classify import (
+    REPAIR_AUTO,
+    REPAIR_DENIED,
+    REPAIR_NEEDS_CONFIRMATION,
+    classify_failure,
+)
 
 
 def source_primary(**overrides: object) -> dict[str, object]:
@@ -36,7 +41,7 @@ def test_1118258_mlgo_toolchain_flag_is_denylisted_and_not_raw_unparsed() -> Non
         failure_stage="gbs_build_failed",
     )
 
-    assert result.repair_allowed is False
+    assert result.repair_allowed == REPAIR_DENIED
     assert result.failure_class == "toolchain"
     assert result.confidence == 1.0
     assert result.matched_rule is not None
@@ -50,7 +55,7 @@ def test_1095003_source_werror_is_repairable() -> None:
         failure_stage="gbs_build_failed",
     )
 
-    assert result.repair_allowed is True
+    assert result.repair_allowed == REPAIR_AUTO
     assert result.failure_class == "source_repairable"
     assert result.confidence >= 0.8
     assert result.matched_rule == "heuristic:source_werror_or_compile_error"
@@ -63,7 +68,7 @@ def test_denylist_cannot_be_flipped_by_source_repairable_signals() -> None:
         failure_stage="gbs_build_failed",
     )
 
-    assert result.repair_allowed is False
+    assert result.repair_allowed == REPAIR_DENIED
     assert result.failure_class == "toolchain"
     assert result.matched_rule == "denylist:toolchain_flag_enable_ml_inliner"
 
@@ -87,7 +92,7 @@ def test_non_compile_stages_are_classified_but_not_repair_allowed(
         failure_stage=stage,
     )
 
-    assert result.repair_allowed is False
+    assert result.repair_allowed == REPAIR_DENIED
     assert result.failure_class == expected_class
     assert result.matched_rule == f"failure_stage:{stage}"
 
@@ -98,7 +103,7 @@ def test_raw_unparsed_without_stronger_denylist_is_rejected() -> None:
         failure_stage="gbs_build_failed",
     )
 
-    assert result.repair_allowed is False
+    assert result.repair_allowed == REPAIR_DENIED
     assert result.failure_class == "raw_unparsed"
     assert result.matched_rule == "denylist:raw_unparsed"
 
@@ -114,26 +119,28 @@ def test_source_unreachable_is_not_repair_allowed() -> None:
         failure_stage="gbs_build_failed",
     )
 
-    assert result.repair_allowed is False
+    assert result.repair_allowed == REPAIR_DENIED
     assert result.failure_class == "source_unreachable"
     assert result.confidence < 0.8
 
 
-def test_uncertain_default_rejects_source_located_unknown_fixability() -> None:
+def test_source_owned_unknown_fixability_needs_confirmation() -> None:
     result = classify_failure(
         {
             "primary_error": source_primary(
                 type_fixability="unknown",
                 diagnostic_code=None,
-                message="error: something unusual happened",
+                message="error: reference to 'LWE' is ambiguous",
             )
         },
         failure_stage="gbs_build_failed",
     )
 
-    assert result.repair_allowed is False
-    assert result.failure_class == "uncertain"
+    assert result.repair_allowed == REPAIR_NEEDS_CONFIRMATION
+    assert result.failure_class == "source_repairable_unverified_type"
     assert result.confidence < 0.8
+    assert result.matched_rule == "heuristic:type_unknown"
+    assert "human confirmation" in result.reason
 
 
 @pytest.mark.parametrize(
@@ -155,7 +162,84 @@ def test_denylist_patterns_reject_non_source_failures(
         failure_stage="gbs_build_failed",
     )
 
-    assert result.repair_allowed is False
+    assert result.repair_allowed == REPAIR_DENIED
     assert result.failure_class == expected_class
     assert result.matched_rule is not None
     assert result.matched_rule.startswith("denylist:")
+
+
+def test_repair_allowed_constants_are_stable() -> None:
+    assert REPAIR_AUTO == "auto"
+    assert REPAIR_NEEDS_CONFIRMATION == "needs_confirmation"
+    assert REPAIR_DENIED == "denied"
+
+
+@pytest.mark.parametrize(
+    ("primary", "expected_class", "expected_rule"),
+    [
+        (
+            {"kind": "link_error", "message": "undefined reference to `foo_symbol`"},
+            "uncertain",
+            "heuristic:link_symbol",
+        ),
+        (
+            {"kind": "rpm_phase", "message": "script failed"},
+            "uncertain",
+            "heuristic:unsupported_kind",
+        ),
+        (
+            source_primary(file="", line=0),
+            "source_unreachable",
+            "heuristic:missing_source_location",
+        ),
+        (
+            source_primary(
+                source_reachable=False,
+                source_resolution_status="source_mapping_unavailable",
+            ),
+            "source_unreachable",
+            "heuristic:source_unreachable",
+        ),
+        (
+            source_primary(
+                source_owned=False,
+                source_ownership_status="generated_or_vendor",
+            ),
+            "source_unreachable",
+            "heuristic:source_not_owned",
+        ),
+    ],
+)
+def test_non_confirmable_boundaries_remain_denied(
+    primary: dict[str, object],
+    expected_class: str,
+    expected_rule: str,
+) -> None:
+    result = classify_failure({"primary_error": primary}, failure_stage="gbs_build_failed")
+
+    assert result.repair_allowed == REPAIR_DENIED
+    assert result.failure_class == expected_class
+    assert result.matched_rule == expected_rule
+
+
+def test_low_confidence_uncertain_stays_denied_and_distinct_from_unverified_type() -> None:
+    uncertain = classify_failure(
+        {"primary_error": {"kind": "rpm_phase", "message": "script failed"}},
+        failure_stage="gbs_build_failed",
+    )
+    unverified_type = classify_failure(
+        {
+            "primary_error": source_primary(
+                type_fixability="unknown",
+                diagnostic_code=None,
+                message="error: reference to 'LWE' is ambiguous",
+            )
+        },
+        failure_stage="gbs_build_failed",
+    )
+
+    assert uncertain.repair_allowed == REPAIR_DENIED
+    assert uncertain.failure_class == "uncertain"
+    assert unverified_type.repair_allowed == REPAIR_NEEDS_CONFIRMATION
+    assert unverified_type.failure_class == "source_repairable_unverified_type"
+    assert uncertain.failure_class != unverified_type.failure_class

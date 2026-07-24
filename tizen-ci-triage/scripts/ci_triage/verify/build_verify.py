@@ -33,7 +33,11 @@ from ci_triage.state import (
     write_pass_record,
 )
 from ci_triage.verify.edit_spec_guard import EditSpecViolation, validate_edit_spec
-from ci_triage.verify.failure_classify import FailureClassification, classify_failure
+from ci_triage.verify.failure_classify import (
+    REPAIR_DENIED,
+    FailureClassification,
+    classify_failure,
+)
 from ci_triage.verify.workspace import (
     check_disk_and_maybe_cleanup,
     cleanup_worktree,
@@ -79,7 +83,7 @@ class BuildVerifyResult:
     actual_changed_paths: list[str] = field(default_factory=list)
     failure_stage: str | None = None
     failure_class: str | None = None
-    repair_allowed: bool | None = None
+    repair_allowed: str | None = None
     verification_id: str | None = None
     verified_commit_sha: str | None = None
     verified_tree_sha: str | None = None
@@ -137,7 +141,7 @@ def build_verify(
         validate_edit_spec(edit_spec, handle.path)
     except EditSpecViolation as exc:
         cleanup_worktree(handle)
-        return _fail("apply_failed", "not_applicable", False, audit_dir, error=str(exc))
+        return _fail("apply_failed", "not_applicable", REPAIR_DENIED, audit_dir, error=str(exc))
 
     allowed_paths = _allowed_paths(edit_spec)
     patch_path = audit_dir / "candidate.patch"
@@ -151,7 +155,7 @@ def build_verify(
         return _fail(
             "no_effective_changes",
             "not_applicable",
-            False,
+            REPAIR_DENIED,
             audit_dir,
             error="edit spec produced no effective worktree changes",
         )
@@ -159,14 +163,20 @@ def build_verify(
         return _fail(
             "apply_failed",
             "not_applicable",
-            False,
+            REPAIR_DENIED,
             audit_dir,
             error=apply_result.error,
         )
 
     diff_check_error = _run_git_diff_check(Path(handle.path), subprocess_runner)
     if diff_check_error is not None:
-        return _fail("apply_failed", "not_applicable", False, audit_dir, error=diff_check_error)
+        return _fail(
+            "apply_failed",
+            "not_applicable",
+            REPAIR_DENIED,
+            audit_dir,
+            error=diff_check_error,
+        )
 
     changed_paths = _actual_changed_paths(Path(handle.path), subprocess_runner)
     actual_changed_paths = sorted(changed_paths)
@@ -175,7 +185,7 @@ def build_verify(
         return _fail(
             "apply_unexpected_paths",
             "not_applicable",
-            False,
+            REPAIR_DENIED,
             audit_dir,
             error="unexpected changed paths: " + ", ".join(unexpected),
             actual_changed_paths=actual_changed_paths,
@@ -184,7 +194,7 @@ def build_verify(
         return _fail(
             "no_effective_changes",
             "not_applicable",
-            False,
+            REPAIR_DENIED,
             audit_dir,
             error="edit spec produced no effective worktree changes",
         )
@@ -216,7 +226,7 @@ def build_verify(
             actual_changed_paths=actual_changed_paths,
             failure_stage="build_timeout",
             failure_class="build_timeout",
-            repair_allowed=False,
+            repair_allowed=REPAIR_DENIED,
             worktree_path=handle.path,
             build_log=str(build_log_path),
             error=build_result.error,
@@ -229,7 +239,7 @@ def build_verify(
             actual_changed_paths=actual_changed_paths,
             failure_stage="build_mutated_source",
             failure_class="build_mutated_source",
-            repair_allowed=False,
+            repair_allowed=REPAIR_DENIED,
             worktree_path=handle.path,
             build_log=str(build_log_path),
             error="gbs build modified tracked source after verification commit",
@@ -437,7 +447,7 @@ def _classification_fail(
 def _fail(
     failure_stage: str,
     failure_class: str,
-    repair_allowed: bool,
+    repair_allowed: str,
     audit_dir: Path,
     *,
     error: str,
