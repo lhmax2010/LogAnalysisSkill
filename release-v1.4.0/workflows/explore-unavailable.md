@@ -1,344 +1,294 @@
-# Explore Unavailable — source_context_unavailable 的探索决策树
+# Explore & Repair — 源码类失败的通用探索与修复
 
-`patch-suggest` 标 `source_context_unavailable`,意思是**它**没能把诊断指向的源码
-喂给你,**不等于这个失败无法修复**。它在 context.md 里明说了:
+这份文档处理两种情况:
 
-> "Ask the outer assistant to open that file and inspect the reported line before
-> generating a patch. Do not invent source content."
+1. `patch-suggest` 标了 `source_context_unavailable`(它没能把源码喂给你,
+   **不等于**这个失败无法修复)
+2. build-verify 返回 `repair_allowed == "needs_confirmation"`
+   (错误确实在本包源码内,但诊断类型不在自动修白名单,修法需要现场判断)
 
-你就是那个 outer assistant。这份文档告诉你怎么接这个球。
+两种情况走**同一套判断骨架**。
+
+> **这不是一本按诊断类型查表的手册。** 下面第 2 节是通用流程,适用于任何诊断。
+> 第 5 节的"已知模式"只是参考,**不穷尽** —— 遇到没见过的诊断类型,照第 2 节走,
+> 不要因为"文档里没写"就停下。
 
 ## 0. 铁律
 
-1. **不编造源码内容。** 没看到的代码不要猜。
-2. **探索有刹车。** 每个 unit 最多 **10 次探索性工具调用**(`find`/`grep`/`ls`/`sed`
-   等;**不计** formatter/build-verify/gerrit-submit)**或 10 分钟,先到者为准**。
+1. **不编造源码内容。** 没看到的代码不要猜。要改哪一行,先把它读出来。
+2. **探索有刹车。** 每个 unit 最多 **10 次探索性工具调用**(`find`/`grep`/`ls`/
+   `sed` 等;**不计** formatter/build-verify/gerrit-submit)**或 10 分钟,先到者为准**。
    仍无明确、可解释、owned-source 的 repair hypothesis → 标 `needs_human`,
-   写清卡在哪,继续下一个包。**不要无限探索。**
-3. **探索完成后暂停。** 把推理过程 + 拟定的 edit_spec 展示给人,**等确认**才 build-verify。
-   探索出的改法风险高于标准 patch-suggest 路径(见第 4 节反面教材)。
+   写清卡在哪,继续下一个包。
+3. **产出 edit_spec 后暂停。** 把推理过程 + 完整 edit_spec + 风险评估展示给人,
+   **等确认**才 formatter/build-verify。
 4. **安全门不因"人确认过"而跳过。** 探索出的 patch 同样要过 formatter + build-verify。
-5. **上游 bug 不硬 workaround。** 如果根因是工具链/生成器的 bug,标 `needs_human`,
-   报给上游。硬打补丁治标不治本,而且容易改坏。
+5. **上游 bug 不硬 workaround。** 根因在工具链/生成器/依赖包时,标 `needs_human`
+   报上游。局部绕过是可以的(见 3.3),但要说清它是绕过不是修复。
 
-## 1. 起点:读诊断
+## 1. 起点
 
 **先 guard**:
 ```
-若 unit["evidence_packet"] 为 null,或文件不存在
-→ 没有诊断可探索
-→ 标 needs_human + missing_evidence,继续下一个包。不要猜。
-
-若 unit["src_clean"] 为 null
-→ 源码没 clone 成功,无从探索
-→ 标 needs_human + missing_source。
+unit["evidence_packet"] 为 null 或文件不存在
+  → 没有诊断可探索 → needs_human + missing_evidence
+unit["src_clean"] 为 null
+  → 源码没 clone 成功,无从探索 → needs_human + missing_source
 ```
 
-guard 过了再读:
+读诊断:
 ```python
 ev = json.load(open(unit["evidence_packet"]))
 p = ev["primary_error"]
-file    = p["file"]        # 诊断指向的文件路径
-line    = p["line"]
-message = p["message"]
-reasons = ev.get("degraded_reasons")   # 常见:['source_file_unavailable', ...]
+file, line, message = p["file"], p["line"], p["message"]
+cascade = ev.get("cascade_summary", "")
+candidates = ev.get("root_cause_candidates", [])
 ```
 
-`file` 的形态决定走哪个分支。
+> **信息优先从 evidence 取。** analyzer 已经把 build log 压缩成结构化证据了 ——
+> `primary_error` 只是诊断报告的位置,`cascade_summary` 和 `root_cause_candidates`
+> 里常有触发它的编译单元、make 目标等关键线索。
+> **不要为了找线索去读 raw build log**(token rule);在**源码树**里 grep 是允许的。
 
-## 2. 决策树
+## 2. 通用判断骨架
 
-### 分支 1:相对路径带 `../` → 路径归一化(通常可推进到 edit_spec)
+### 2.1 这个错误在本包源码内吗
 
-**特征**:`file` 形如 `../src/bin/server/e_comp_wl.c`
+这是**唯一**的分流点。
 
-**原因**:out-of-tree build,诊断路径相对于构建目录,不是源码根。
-文件**在** repo 里,只是 patch-suggest 的 suffix search 匹配不上。
-这是**假阴性**——不是"无法修",只是路径没归一化。
-
-**处理(必须走完,不要停在泛泛建议)**:
-
-1. **归一化找文件**:
-   ```bash
-   # 剥掉前导 ../,在 src_clean 里找
-   find "<unit.src_clean>" -path "*<剥掉 ../ 后的路径>" -type f | head
-   ```
-   - 恰好 1 个 → 记下相对 src_clean 的路径,继续第 2 步。
-   - 0 个或多个 → 转 `needs_human`,写清情况。
-
-2. **打开文件看诊断行的实际代码**(`sed -n '<line-8>,<line+8>p' <找到的文件> | cat -A`)。
-   **不要凭诊断消息猜代码。**
-
-3. **拟定 edit_spec**(不是"给建议",是写出完整 edit_spec):
-   按诊断类型:
-   - **简单确定的改法**(格式符 `%zu→%u`、去 `std::move`、`|→||` 且已确认无副作用)
-     → 直接写出 edit_spec。
-   - **需要判断语义/副作用的改法** → 先做完判断(见下),判断清楚了照样写出 edit_spec;
-     判断不了才转 `needs_human`。
-
-4. **输出**:按第 3 节格式,给出**根因 + 改法 + 风险 + 完整 edit_spec**,
-   然后**暂停等人确认**。**不要只给"建议 XXX",要给可以直接 build-verify 的 edit_spec。**
-
-> **关键**:分支 1 的目标是**产出一个具体的 edit_spec 等人点头**,不是产出一句
-> "建议确认操作数类型"。如果你能归一化找到文件 + 看到代码,就应该能拟定 edit_spec。
-> 停在"建议"= 没做完探索。
-
-**`|` → `||` 的副作用判断**(bitwise-instead-of-logical 专用):
-`|` 不短路,`||` 短路。改 `||` 后,若左操作数为真会跳过右操作数。
-→ 必须确认右操作数**无副作用**(纯读取,不改状态/不触发回调)才能安全改。
-```bash
-# 看右操作数里调用的函数定义
-grep -rn "^<函数名>\b\|<函数名>(E_Client" "<unit.src_clean>/src/" | head
 ```
-- 都是纯 getter(只读字段,EFL 的 `_get` 命名约定通常如此)→ 安全,写 edit_spec。
-- 有副作用 → 不能简单改 `||`,转 `needs_human`。
-
-**实例**:enlightenment 的 `../src/bin/server/e_comp_wl.c:814`
-→ find 归一化到 `<src_clean>/src/bin/server/e_comp_wl.c`
-→ 诊断行:`e_client_priv_want_focus_set(ec, e_client_priv_want_focus_get(ec) | (...))`
-→ 右侧 `e_client_icccm_accepts_focus_get` / `e_client_override_get` 是纯 getter → 安全
-→ 拟定 edit_spec:`|` → `||`
-→ (实测)build-verify PASS ✓
-→ **应该产出这个 edit_spec 等确认,而不是停在"建议确认操作数类型"。**
-
-### 分支 2:路径含 `generated/` → 构建时生成的代码
-
-**特征**:`file` 形如 `.../src/service_plugin/generated/hal_drm_stub_1.c`
-
-**先确认它真的不在 repo 里**:
-```bash
-find "<unit.src_clean>" -name "<文件名>" | head
-ls "<unit.src_clean>/<generated 的父目录>/"
-```
-repo 里没有 → 确认是构建时生成的。
-
-**找出谁生成的**:
-```bash
-grep -nE "tidlc|generat|%build|%prep|codegen|protoc" \
-    "<unit.src_clean>"/packaging/*.spec
-grep -iE "tidlc|generat" "<unit.package_buildlog>" | head
+能定位到 <unit.src_clean> 下的一个 owned source 文件
+  → 在本包内 → 走 2.2 修复流程
+定位不到
+  → 转人工(第 4 节),说清是哪一类边界
 ```
 
-**判断根因,三选一**:
+`primary_error.file` 的形态**不能**直接决定答案 —— 它是诊断**报告**的位置,
+不一定是**能改**的位置:
 
-#### 2a. 生成器本身有 bug → `needs_human` + `upstream_bug`,**不 workaround**
+- 相对路径带 `../`(out-of-tree build)→ 剥掉前导 `../` 后文件通常就在 repo 里
+- 绝对路径指向 `/usr/include/`(依赖包头文件)→ 报告位置在包外,但**触发它的
+  编译单元**可能在本包内,那样就能在本包的构建配置里处理
+- 路径含 `generated/`(构建时生成)→ 文件不在 repo,但**生成它的输入**
+  (`.tidl`/`.proto`/spec 脚本)可能在
 
-**典型信号**:
-- 生成的代码引用了**自己没生成**的符号
-- 错误类型是 `use of undeclared identifier`,且集中在 `generated/`
-- 检查生成的代码:数组引用和函数定义**不成对**
-
-**实例**:hal-api-drm / hal-api-hdcp 的 `tidlc`
-→ 数组引用 `__rpc_port_stub_drm_method_<x>_privilege_checker`(18+ 个 method),
-  但只为其中 5 个生成了函数定义 → `use of undeclared identifier`
-→ 在 spec 里 sed 打补丁**看着能修,实际会改坏代码**(见第 4 节)
-→ 正解是修 tidlc 或 `.tidl`,不是 patch 生成的代码
-→ **标 needs_human,报上游**
-
-#### 2b. 生成器输入(`.tidl`/`.proto`/schema)有问题 → 改输入
-
-输入文件**在** repo 里(`include/*.tidl` 等)→ 可以改它 → 走标准安全门。
-
-#### 2c. 确实需要生成后 post-process → 可以改 spec,但**必须限定范围**
-
-`edit_spec` **可以改 `packaging/*.spec`**(已验证 `actual_changed_paths` 会含它)。
-
-但 sed/正则**必须限定作用范围**,不能无差别替换。写之前先看生成的代码实际结构:
+所以要**先查再判**,不要看一眼路径就下结论。查的手段:
 
 ```bash
-# 上一次 build 的产物(理解结构用)
-find ~/GBS-ROOT*/local/BUILD-ROOTS/*/home/abuild/rpmbuild/BUILD/<pkg>-*/ \
-     -name "<生成的文件名>" | head -1
-```
+# 剥掉前导 ../ 后在源码树里找
+find "<unit.src_clean>" -path "*<剥掉 ../ 后的路径>" -type f | head
 
-> ⚠️ **上一次 BUILD 产物只用于理解结构,不得作为当前验证的输入。**
-> 最终必须通过 build-verify 在本轮 verified copy 中重新生成并编译。
+# evidence 的 cascade 里有没有触发它的编译单元（.o / .cpp / .c）
+# → 拿到源文件名后再 grep 确认它在本 repo
+grep -rln "<触发源文件名>" "<unit.src_clean>" | head
 
-**暂停,给人看 sed 的精确作用范围,确认后才 build-verify。**
-
-### 分支 3:诊断路径指向系统目录(`/usr/include/`)→ 先定位触发的编译单元,再决定
-
-**特征**:`file` 形如 `/usr/include/libscl-core-pure/sclcore.h`
-
-**易犯的错**:看到 `/usr/include/` 就直接判"跨包→needs_human"。**这太粗。**
-诊断 `file` 是警告**报告的位置**(第三方头文件里的字段/声明),但这个警告是
-**编译本包某个源文件时**触发的(那个 `.cpp`/`.c` `#include` 了这个头文件)。
-如果触发的编译单元在**本 repo**,通常可以在**本包的构建配置**里针对性抑制,
-不必转人工。
-
-**第 1 步:从 evidence 找触发这个诊断的本包编译单元。**
-诊断的 `primary_error.file` 是系统头文件,但 evidence 的 **cascade 信息里通常已经
-含触发它的本包目标文件**(`.o`),不用读 raw log:
-- `cascade_summary`:如 `make cascade: .../src/inputmethod-core/fake_sclcore.cpp.o -> unlinked`
-- `root_cause_candidates` 里 `kind == "make_cascade"` 的 `message`:如
-  `make[2]: *** [.../fake_sclcore.cpp.o] Error 1`
-
-从这里提取触发的源文件(如 `fake_sclcore.cpp`)。若 evidence 的 cascade 没给出具体
-`.cpp`/`.c`,再退回在**本包源码树** grep 谁 `#include` 了这个系统头文件:
-```bash
-grep -rln "<系统头文件名，如 sclcore.h>" "<unit.src_clean>" \
+# 谁 include 了这个头文件 / 谁引用了这个符号
+grep -rln "<头文件名或符号>" "<unit.src_clean>" \
      --include="*.c" --include="*.cc" --include="*.cpp" \
      --include="*.h" --include="*.hpp" | head
 ```
-> 优先读 evidence 的 cascade(信息已被 analyzer 提取);grep **源码树**是允许的
-> targeted 检查。**都不要读 raw build log**(token rule)。
 
-**第 2 步:确认触发单元在本 repo。**
-```bash
-grep -rln "<触发源文件名，如 fake_sclcore>" "<unit.src_clean>" | head
-```
-- **恰好定位到本 repo 一个** owned 源文件(如 `tests/src/.../fake_sclcore.cpp`)
-  → 走第 3 步(本包抑制)。确认它所属的构建配置(哪个 `CMakeLists.txt`/`.spec`
-  段带 `-Werror`,且是哪个 target)。
-- **找不到 / 多个候选 / 无法确认属于哪个 target** → `needs_human` + `cross_package`。
-  不猜(保守 fallback,和只看 `primary_error.file` 的旧行为在"定位不到"时一致)。
+**恰好定位到一个**才算数。找不到、或多个候选无法确认 → 转人工,不猜。
 
-**第 3 步:本包针对性抑制(仅当警告源自第三方/系统头文件)。**
+### 2.2 修复流程(五步,任何诊断类型都走这个)
 
-判断这个抑制**是否正当**:
-- ✅ 正当:警告是**第三方/系统头文件**自身的代码问题(如依赖包某个类的
-  `-Wunused-private-field`),本包无法控制依赖包的代码质量,不该为它 block 构建。
-- ❌ 不正当:警告其实是**本包自己代码**的问题 → 不要 `-Wno` 掩盖,回分支 1/正常修复。
+#### 第 1 步:读懂错误
 
-正当时,产出 candidate edit_spec:在**触发单元所属的构建配置**(通常是那个目录的
-`CMakeLists.txt`,或 `packaging/*.spec` 的对应 target/CFLAGS)里,给 `-Werror` 那行
-**追加精确的单个** `-Wno-<具体warning>`:
-```
-# 例:tests/CMakeLists.txt 的
-SET(EXTRA_CFLAGS "... -Wall -Werror")
-# → 追加精确抑制（只关这一个 warning，不动其它检查）
-SET(EXTRA_CFLAGS "... -Wall -Werror -Wno-unused-private-field")
-```
+这个诊断在说什么?涉及哪些符号、哪些文件、哪个编译单元?
+消息里提到的每个标识符都要能对应到源码里的具体位置。
 
-**允许**:
-```
--Wno-<具体单个 warning>    如 -Wno-unused-private-field
-```
-**禁止(这些会把局部抑制泛化成危险 workaround)**:
-```
--Wno-error                 会一次关掉一大片
-全局 -Wno-*                 无差别关警告
-全包/生产库范围的 CFLAGS/CXXFLAGS 修改
-在 spec 顶层 %build 全局关警告
-```
+#### 第 2 步:看清结构(**不猜**)
 
-**作用域铁律**:抑制必须**限定到触发单元所在的 target / test target / 那一个
-`CMakeLists.txt` 的局部 compile option**,**不得扩散到生产库**。
-`fake_sclcore.cpp` 在 tests target → 抑制放 tests 的构建配置,不能碰生产库的 CFLAGS。
+把相关的定义、引用、构建配置**读出来**。要读什么由错误性质决定,例如:
 
-**怎么找对那个 `CMakeLists.txt` / target**(改错就会扩散到生产库,必须确认):
-```bash
-TRIGGER="tests/src/inputmethod-core/fake_sclcore.cpp"   # 归一化后的相对路径
+- 符号冲突 → 两个同名符号各自定义在哪、是嵌套还是平级
+- 类型/接口不匹配 → 双方的声明各是什么
+- 编译选项相关 → 哪个 `CMakeLists.txt`/`.spec` 段控制着这个编译单元,
+  它管的是 test target 还是生产库
+- 行为类警告(如短路语义变化)→ 相关函数是不是纯读取、有无副作用
 
-# a. 从触发单元向上找最近的 CMakeLists.txt
-D=$(dirname "<unit.src_clean>/$TRIGGER")
-while [ "$D" != "<unit.src_clean>" ] && [ "$D" != "/" ]; do
-  [ -f "$D/CMakeLists.txt" ] && echo "candidate: $D/CMakeLists.txt" && break
-  D=$(dirname "$D")
-done
+命令用 `grep -n` / `sed -n '<a>,<b>p'` / `cat -A`(看精确字节)。
+**看到什么才能写什么。**
 
-# b. 确认哪个 CMakeLists 真的把这个源文件编进了 target
-grep -rn "$(basename "$TRIGGER")\|add_executable\|add_library\|target_compile_options" \
-     "<unit.src_clean>" --include="CMakeLists.txt" | head -20
-```
-判定:
-- 找到的 `CMakeLists.txt` 里有 `add_executable` / `add_library` **包含该源文件**
-  (直接列出、或通过 `file(GLOB ...)`/变量间接包含)→ 就改这个文件里该 target
-  作用域的编译选项。
-- **该文件同时定义了生产库 target** → 只在触发单元所属 target 上加
-  (`target_compile_options(<该target> PRIVATE -Wno-xxx)`),**不要**改共享的全局变量。
-- **判断不出该源文件属于哪个 target** → `needs_human`,不猜。改错会把抑制扩散到生产库。
+#### 第 3 步:拟定 edit_spec
 
-> 例:capi-ui-inputmethod 的 `tests/CMakeLists.txt` 只管 tests target
-> (根目录的 `CMakeLists.txt` 管生产库),所以改 `tests/CMakeLists.txt` 的
-> `EXTRA_CFLAGS` 是安全的;若换成改根目录那个,就会波及生产库 —— 这正是要避免的。
+写出完整的 edit_spec,不是"建议 XXX"。
+`old` 字节级匹配,`line` 是 `old` **开始**的行号(见主 workflow A3)。
 
-**这不是修根因,必须在报告里写清**:
-```
-根因:  第三方/系统头文件(<依赖包>/<头文件>)触发的 warning
-本包动作:仅对触发该 warning 的本包编译单元/target 做局部 -Wno-<warning> 抑制,
-        用于避免该单元因依赖头文件 warning 被 -Werror 阻塞
-后续建议:依赖包(<依赖包>)仍应修正 warning 源头(报 bug/提 patch)
-```
-不要把局部抑制包装成"修好了"。这与本文档"上游 bug 不硬 workaround"的原则一致:
-局部抑制是**绕过依赖包 warning 对本包的阻塞**,不是修复依赖包的代码。
+**机械替换类修改必须精确到位置**:按 build log / evidence 给出的
+`file:line:column` 逐处改,**不要全局 sed 替换**。同一个标识符在文件里
+可能有些地方本来就是对的、有些地方语义不同,全局替换会误伤。
 
-**必须人确认,不因 skill 曾成功就跳过安全门**:这类修法(依赖头文件根因 + 本包局部抑制)
-风险高于标准源码修复。**暂停,展示完整 candidate edit_spec + 上面的根因说明,等人确认**
-后才走主 workflow A4→A5→A6(formatter → build-verify → gerrit-submit)。
-探索出的 patch 同样过 build-verify,不跳过安全门。
+#### 第 4 步:评估改动规模与风险
 
-**实例**:capi-ui-inputmethod
-→ 诊断:`/usr/include/libscl-core-pure/sclcore.h:516` 的 `-Wunused-private-field`
-  (evidence 判 `system_or_toolchain_path`,not patch-ready — 这是【正确】的
-  ownership 判定,但不等于无法处理)
-→ evidence 的 `cascade_summary` / make_cascade candidate 里含
-  `.../src/inputmethod-core/fake_sclcore.cpp.o` → 触发源文件是 `fake_sclcore.cpp`
-→ `grep fake_sclcore <src_clean>` 确认它在本 repo 的 `tests/src/inputmethod-core/`
-→ 确认构建配置:`tests/CMakeLists.txt` 的 `EXTRA_CFLAGS` 带 `-Werror`
-→ 正当性:警告源自依赖包 `libscl-core` 的头文件(`m_impl` 未使用),本包不该为它 block
-→ edit_spec:`tests/CMakeLists.txt` 的 `EXTRA_CFLAGS` 追加 `-Wno-unused-private-field`
-→ 报告说明根因在 `libscl-core`,建议给它报 bug
-→ 暂停等确认 → build-verify → 提交命令
-→ **不再直接 needs_human**;信息(触发单元)就在 evidence 的 cascade 里,
-  之前分支 3 只看 `primary_error.file` 才误判为纯跨包。
+按下面的档位判断,**结论要写进报告**:
 
-### 分支 4:`failure_class` 是 `dependency` / `toolchain` / `build_env`
+| 档位 | 特征 | 说明 |
+|---|---|---|
+| **局部** | 单文件、不改声明、机械可做(加关键字/加限定符/改格式符/加编译选项) | 风险低 |
+| **跨文件** | 改多个文件,但都是引用侧,不动定义 | 中等,要列全改了哪些文件 |
+| **改声明/接口** | 改函数签名、类型定义、命名、对外符号 | **高** —— 可能影响 ABI 和其它包,报告里必须显式标注 |
 
-**特征**:evidence 或 build-verify 返回 `repair_allowed: false`
+> ⚠️ **build-verify 只能验证"能编译",验证不了"改法对不对"。**
+> 改声明/重命名这类,编译过了也可能是错的。档位越高,报告里的风险说明要越详细。
 
-**处理**:**不进修复循环。** 标转人工。
+**抑制类修改的专门约束**(用 `-Wno-*` 绕过警告时,无论诊断类型):
 
-常见:
-- `dependency`:`nothing provides pkgconfig(xxx)` → 依赖缺失或 **gbs.conf 用错**
-- `toolchain`:编译器拒绝了某个 flag
-- `build_env`:构建环境问题
+- 只有当警告**源自第三方/系统头文件或生成代码**(本包无法控制其质量)时才正当;
+  警告出在本包自己代码里 → 回去正常修,不要 `-Wno` 掩盖
+- **只加单个精确的 `-Wno-<具体warning>`**
+- 禁止:`-Wno-error`(一次关一大片)、全局 `-Wno-*`、全包/生产库范围的
+  `CFLAGS`/`CXXFLAGS`、spec 顶层 `%build` 全局关警告
+- **作用域必须限定到触发单元所在的 target**,不得扩散到生产库
+- 怎么找对 target:从触发单元路径向上找最近的 `CMakeLists.txt`,
+  再 `grep` 确认哪个 `add_executable`/`add_library` 真的包含该源文件;
+  若同一文件也定义了生产库 target,用
+  `target_compile_options(<该target> PRIVATE -Wno-xxx)` 而非改共享变量;
+  **判断不出该源文件属于哪个 target → 转人工**,改错会扩散
+- 报告必须三段式写清:
+  ```
+  根因:    <依赖包/生成器> 的 <文件> 触发的 warning
+  本包动作:仅对触发该 warning 的本包编译单元/target 做局部抑制
+  后续建议:根因方仍应修正 warning 源头(报 bug / 提 patch)
+  ```
+  **不要把局部抑制包装成"修好了"。**
 
-**先检查 gbs.conf 是否用对**(这是最常见的假失败原因,实测踩过)。
+#### 第 5 步:展示,暂停,等确认
 
-### 分支 5:其他 / 无法归类
+按第 3 节的模板输出,然后**停下**。人确认后才走主 workflow 的
+A4(formatter)→ A5(build-verify)→ A6(gerrit-submit)。
 
-```bash
-ls "<unit.src_clean>"
-find "<unit.src_clean>" -name "<文件基名>" | head
-grep -rn "<诊断消息里的关键符号>" "<unit.src_clean>/" \
-     --include="*.c" --include="*.h" --include="*.cc" --include="*.cpp" | head
-```
+### 2.3 多轮:一个错误修完还有下一个
 
-**刹车内没有明确 hypothesis → 标 `needs_human`,写清:**
-- 诊断是什么
-- 探索了什么、发现了什么
-- 卡在哪、还需要什么信息
+修好当前错误后 build-verify 可能因**另一个**错误再次 FAIL。这是正常的 ——
+CI 上的诊断只是第一个撞到的墙,后面可能还有。
 
-## 3. 探索的输出
+判断依据是 build-verify 返回的 `repair_allowed`:
 
-对每个探索的 unit,产出:
+| 值 | 含义 | 行为 |
+|---|---|---|
+| `"auto"` | 修法确定唯一(白名单内诊断) | 扩展 edit_spec,自动进下一轮 |
+| `"needs_confirmation"` | 错误在本包源码内,但修法需现场判断 | **回到 2.2 走一遍**,产出新的 edit_spec,暂停等确认,确认后再进下一轮 |
+| `"denied"` | 依赖/工具链/环境/源码不可达/非本包所有 | **停,转人工。不得越过。** |
+
+轮次没有固定上限,由 `check-convergence` 决定何时停:
+
+- `advance`(指纹或错误数变化 = 有实质进展)→ 继续
+- `stalled`(指纹和错误数都没变 = 原地打转)→ 停,转人工
+- `regressed`(变糟了)→ 停,转人工
+
+> 每一轮的 `needs_confirmation` 都要人确认,人始终在环里 —— 这就是不设轮次
+> 上限也安全的原因。但如果同一个包连着走了很多轮,在报告里提醒人:
+> 这个包可能存在更系统性的问题,值得包 owner 看一眼。
+
+## 3. 输出模板
 
 ```markdown
 ### <unit_key>
 
 **诊断**: <message> @ <file>:<line>
 
-**探索**: <做了什么、发现了什么>
+**探索**: <查了什么、看到了什么>
 
 **结论**: repairable | needs_human
 
---- 如果 repairable ---
+--- repairable ---
 **根因**: <是什么>
-**改法**: <改哪个文件、怎么改、为什么这么改是对的>
-**风险**: <可能有什么副作用>
+**改法**: <改哪些文件、怎么改、为什么这么改是对的>
+**改动规模**: 局部 | 跨文件 | 改声明/接口
+**风险**: <可能的副作用;若是抑制类,写三段式说明>
 **edit_spec**: <完整 JSON>
-→ **等人确认后才 build-verify。**
+→ **等人确认后才 formatter + build-verify。**
 
---- 如果 needs_human ---
-**类别**: upstream_bug | cross_package | dependency | unknown
-**原因**: <为什么自动化处理不了>
-**建议**: <人该怎么做>
+--- needs_human ---
+**类别**: cross_package | upstream_bug | dependency | ambiguous_target | unknown
+**原因**: <为什么本包源码内解决不了,或为什么无法确定改法>
+**已查证据**: <查了什么、结论依据>
+**建议**: <人该怎么做;若是上游问题,给出报 bug 需要的信息>
 ```
 
-## 4. 反面教材(实测踩的坑)
+## 4. 转人工的边界
 
-**hal-api-drm 的 sed patch**——看着完全合理,实际改坏代码:
+这些是**真实**的能力边界,不是"暂时不会修":
+
+| 类别 | 特征 | 为什么不在本包修 |
+|---|---|---|
+| `cross_package` | 定位到的问题只能靠改依赖包解决 | 本包改不了对方的源码 |
+| `upstream_bug` | 生成器/工具链本身有 bug | 正解是修生成器或它的输入,不是 patch 生成物 |
+| `dependency` | `nothing provides ...` / 缺包 | 先查 gbs.conf 是否用对 |
+| `ambiguous_target` | 定位到多个候选、或无法确定改哪个 target | 猜错会扩散到生产库 |
+| `unknown` | 刹车用尽仍无明确 hypothesis | 写清卡在哪 |
+
+`repair_allowed == "denied"` 时同理:那是 build-verify 已经判定的边界,
+**Cline 不得单方面越过**。若怀疑误判,只能提出证据 + 暂停等人确认,
+人确认 override 后从 A3 重新进入安全门(见主 workflow A5 的说明)。
+
+## 5. 已知模式(参考,不穷尽)
+
+以下是实测遇到过的几类。**它们不是分支,是例子** —— 说明第 2 节的骨架
+在具体场景里长什么样。遇到没列出的诊断类型,照骨架走。
+
+### 5.1 相对路径带 `../` — out-of-tree build 的假阴性
+
+诊断 `../src/bin/server/e_comp_wl.c:814` 的 `-Wbitwise-instead-of-logical`。
+patch-suggest 的 suffix 匹配被前导 `..` 破坏,标了 unavailable,但文件就在 repo 里。
+
+骨架落地:剥前导 `../` → `find` 唯一命中 → 读第 814 行看实际代码 →
+第 2 步查右操作数那几个 getter 是不是纯读取(`|`→`||` 会引入短路,有副作用就不能改)
+→ 确认是 `return ec->字段` 的纯 getter → 拟定 `|`→`||` → 局部档 → PASS。
+
+> 这个模式后来沉淀回工具了(resolver 会剥前导 `.`/`..`),现在多数
+> `../` 路径会直接判 available,不再需要探索。
+
+### 5.2 诊断报告在系统头文件 — 但触发单元在本包
+
+诊断 `/usr/include/libscl-core-pure/sclcore.h:516` 的 `-Wunused-private-field`。
+路径在包外,但错误是**编译本包某个源文件时**触发的。
+
+骨架落地:evidence 的 `cascade_summary` 里有
+`.../src/inputmethod-core/fake_sclcore.cpp.o` → grep 确认该文件在本 repo 的
+`tests/src/inputmethod-core/` → 向上找到 `tests/CMakeLists.txt`,确认它管的是
+tests target 而非生产库 → 正当性成立(警告源自依赖包 `libscl-core` 的头文件)
+→ `EXTRA_CFLAGS` 追加 `-Wno-unused-private-field` → 报告三段式说明根因在
+`libscl-core` → 人确认 → build-verify PASS,`actual_changed_paths` 只含
+`tests/CMakeLists.txt`(作用域约束生效的实证)。
+
+### 5.3 符号冲突 — 结构决定了能不能局部修
+
+诊断 `reference to 'LWE' is ambiguous`,20 处,全在一个文件里。
+
+骨架落地:第 2 步查两个同名符号的定义 ——
+`inc/LWEWebView.h:43` 是 `namespace LWE {`,`:48` 是 `class LWE_EXPORT LWE {`,
+**class 在 namespace 内部**(嵌套)。所以全局作用域只有 namespace 一个 `LWE`,
+`::LWE::` 无歧义 → 在报错处按 `file:line:column` 逐处加 `::` 限定,
+不碰任何定义 → 局部档 → PASS。
+
+> **如果结构是平级的**(namespace 和 class 都在全局作用域),就只能重命名 ——
+> 那是"改声明/接口"档,跨文件、可能影响 ABI,要转人工或至少在报告里
+> 重点标注风险。**同一个诊断文本,结构不同修法完全不同** —— 这正是第 2 步
+> 必须"看清结构"而不能凭诊断类型查表的原因。
+
+### 5.4 构建时生成的代码 — 先判根因在哪
+
+诊断路径含 `generated/`(如 `src/service_plugin/generated/hal_drm_stub_1.c`),
+文件不在 repo。
+
+骨架落地:确认 repo 里没有该文件 → 找谁生成的
+(`grep -nE "tidlc|generat|%build|codegen" packaging/*.spec`)→ 判根因:
+
+- **生成器 bug**(生成的代码引用了自己没生成的符号;错误类型是
+  `use of undeclared identifier` 且集中在 `generated/`;检查发现数组引用和
+  函数定义不成对)→ `needs_human` + `upstream_bug`,**不 workaround**
+- **生成器输入有问题**(`.tidl`/`.proto` 在 repo 里)→ 改输入,走正常流程
+- **确实需要生成后 post-process** → 可以改 `packaging/*.spec`,但改动范围
+  必须限定,且理解生成物结构后再写
+  > 上一次 build 的产物(`~/GBS-ROOT*/.../BUILD/<pkg>-*/`)只用于**理解结构**,
+  > 不得作为当前验证的输入 —— 最终必须由 build-verify 在本轮 verified copy 中
+  > 重新生成并编译。
+
+## 6. 反面教材(实测踩的坑)
+
+**hal-api-drm 的 sed patch** —— 看着完全合理,实际改坏代码:
 
 ```
 诊断:generated/hal_drm_stub_1.c:3948 引用了未声明的
@@ -348,18 +298,20 @@ grep -rn "<诊断消息里的关键符号>" "<unit.src_clean>/" \
   sed -i 's/__rpc_port_stub_drm_method_[a-z_]*_privilege_checker/NULL/g' <生成的 .c>
 
 实际结果:
-  ✅ 数组里的引用 → NULL(这是想要的)
+  ✅ 数组里的引用 → NULL（这是想要的）
   ❌ 但函数【定义】也被替换了:
      static int __rpc_port_stub_drm_method_xxx_privilege_checker(...)
      → static int NULL(...)          ← 语法错误!
-  → 编译失败:expected identifier or '(' before 'void'
-  → build-verify FAIL,不出提交命令 ✓ 安全门兜住了
+  → 编译失败,build-verify FAIL,不出提交命令 ✓ 安全门兜住了
 
 教训:
-  1. 正则/sed 改代码必须【限定作用范围】(只改数组块,不碰函数定义)
-  2. 改之前要【看生成的代码实际结构】,不能凭诊断猜
-  3. 根因是 tidlc 的 bug(生成了引用但没生成定义)→ 正解是修 tidlc,不是打补丁
+  1. 正则/sed 改代码必须【限定作用范围】—— 这就是第 3 步"机械替换要精确到
+     file:line:column、不要全局 sed"的由来
+  2. 改之前要【看清结构】(第 2 步),不能凭诊断猜
+  3. 根因是 tidlc 的 bug → 正解是修 tidlc,不是打补丁(铁律 5)
   4. 安全门(build-verify 真编译)挡住了这个错误的推理 —— 这正是它存在的意义
 ```
 
-**这条教训的普适版本**:探索出来的 patch,**你的推理越"聪明",越要让 build-verify 检验它。**
+**普适版本**:探索出来的 patch,**你的推理越"聪明",越要让 build-verify 检验它。**
+而 build-verify 只能验证"能编译" —— 所以改动规模越大(第 4 步的档位越高),
+越要靠报告里的风险说明让人做最后判断。

@@ -17,6 +17,8 @@ v1.4.0 在 v1.3.0 的四个 GBS skill 基础上,新增 CI triage 编排能力和
 - QuickBuild GBS Reports 默认扫描 standard、emulator、gcov 相关 arch;workflow 对未验证的 emulator/gcov build-verify 路径保持人工确认。
 - Gerrit dry-run 结果会区分 `dry_run` 与 `dry_run_unverified_remote`,并在 workflow 汇总中显式暴露远端状态和分支漂移。
 - daily report 折叠无 GBS report 的重复 arch 行,同时 manifest 保持 per-unit 粒度。
+- `build-verify` 的 `repair_allowed` 改为 `"auto"` / `"needs_confirmation"` / `"denied"` 三态,把“源码可修”和“是否需要人确认”拆开。
+- 多轮修复不再使用固定轮次上限;只有 `denied` 或收敛判断返回 `stalled` / `regressed` 才停止,`needs_confirmation` 每轮仍必须由人确认。
 
 ### Fixed
 

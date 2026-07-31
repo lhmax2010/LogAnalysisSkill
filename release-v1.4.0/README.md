@@ -88,3 +88,5 @@ export TIZEN_GBS_PATCH_SUGGEST_SKILL_DIR=/path/to/tizen-gbs-patch-suggest
 ## 重要提示
 
 这些工具只生成分析结果、建议和 patch 文件,不会自动应用到源码。`tizen-ci-triage` 的 `gerrit-submit` 只做 dry-run,只输出命令,不会执行推送。
+
+`build-verify` 失败时的 `repair_allowed` 是三态字符串:`"auto"` 表示可自动进入下一轮,`"needs_confirmation"` 表示错误在本包源码内但修法必须经人确认,`"denied"` 表示不得越过安全边界。多轮修复没有固定轮次上限,是否停止由 `repair_allowed` 和 `check-convergence` 的确定性结果决定。

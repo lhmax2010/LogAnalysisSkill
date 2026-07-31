@@ -13,6 +13,9 @@ from dataclasses import dataclass
 from typing import Any
 
 CONFIDENCE_THRESHOLD = 0.8
+REPAIR_AUTO = "auto"
+REPAIR_NEEDS_CONFIRMATION = "needs_confirmation"
+REPAIR_DENIED = "denied"
 SOURCE_KINDS = {"compiler", "werror"}
 RAW_KINDS = {"raw_error", "raw_unparsed"}
 NON_BUILD_STAGE_CLASSES = {
@@ -40,7 +43,7 @@ SUSPECT_PATH_PARTS = {
 class FailureClassification:
     """Decision returned by the failure classifier."""
 
-    repair_allowed: bool
+    repair_allowed: str
     failure_class: str
     confidence: float
     matched_rule: str | None
@@ -132,8 +135,8 @@ def classify_failure(
 
     ``evidence`` may be a full Evidence Packet with ``primary_error`` or a primary
     diagnostic mapping directly. The result is deliberately biased toward
-    ``repair_allowed=False`` unless the diagnostic is a high-confidence source
-    repair candidate.
+    ``repair_allowed=denied`` unless the diagnostic is a high-confidence source
+    repair candidate or a source-owned diagnostic that needs human confirmation.
     """
 
     primary = _primary_error(evidence)
@@ -141,7 +144,7 @@ def classify_failure(
     stage_class = NON_BUILD_STAGE_CLASSES.get(failure_stage)
     if stage_class is not None:
         return FailureClassification(
-            repair_allowed=False,
+            repair_allowed=REPAIR_DENIED,
             failure_class=stage_class,
             confidence=1.0,
             matched_rule=f"failure_stage:{failure_stage}",
@@ -154,7 +157,7 @@ def classify_failure(
 
     if _kind(primary) in RAW_KINDS:
         return FailureClassification(
-            repair_allowed=False,
+            repair_allowed=REPAIR_DENIED,
             failure_class="raw_unparsed",
             confidence=1.0,
             matched_rule="denylist:raw_unparsed",
@@ -163,11 +166,12 @@ def classify_failure(
 
     heuristic = _heuristic_classification(primary)
     if (
-        heuristic.confidence < CONFIDENCE_THRESHOLD
+        heuristic.repair_allowed == REPAIR_DENIED
+        and heuristic.confidence < CONFIDENCE_THRESHOLD
         and heuristic.failure_class not in EXPLICIT_NON_REPAIR_CLASSES
     ):
         return FailureClassification(
-            repair_allowed=False,
+            repair_allowed=REPAIR_DENIED,
             failure_class="uncertain",
             confidence=heuristic.confidence,
             matched_rule=heuristic.matched_rule,
@@ -197,7 +201,7 @@ def _match_denylist(
     for rule in DENYLIST_RULES:
         if rule.pattern.search(haystack):
             return FailureClassification(
-                repair_allowed=False,
+                repair_allowed=REPAIR_DENIED,
                 failure_class=rule.failure_class,
                 confidence=1.0,
                 matched_rule=f"denylist:{rule.rule_id}",
@@ -213,7 +217,7 @@ def _heuristic_classification(primary: Mapping[str, Any]) -> FailureClassificati
 
     if kind.startswith("link") and _message_has_source_symbol(primary):
         return FailureClassification(
-            repair_allowed=False,
+            repair_allowed=REPAIR_DENIED,
             failure_class="uncertain",
             confidence=0.7,
             matched_rule="heuristic:link_symbol",
@@ -224,7 +228,7 @@ def _heuristic_classification(primary: Mapping[str, Any]) -> FailureClassificati
         )
 
     return FailureClassification(
-        repair_allowed=False,
+        repair_allowed=REPAIR_DENIED,
         failure_class="uncertain",
         confidence=0.2,
         matched_rule="heuristic:unsupported_kind",
@@ -235,7 +239,7 @@ def _heuristic_classification(primary: Mapping[str, Any]) -> FailureClassificati
 def _source_diagnostic_classification(primary: Mapping[str, Any]) -> FailureClassification:
     if not _has_source_location(primary):
         return FailureClassification(
-            repair_allowed=False,
+            repair_allowed=REPAIR_DENIED,
             failure_class="source_unreachable",
             confidence=0.4,
             matched_rule="heuristic:missing_source_location",
@@ -244,7 +248,7 @@ def _source_diagnostic_classification(primary: Mapping[str, Any]) -> FailureClas
 
     if not _source_reachable(primary):
         return FailureClassification(
-            repair_allowed=False,
+            repair_allowed=REPAIR_DENIED,
             failure_class="source_unreachable",
             confidence=0.55,
             matched_rule="heuristic:source_unreachable",
@@ -253,7 +257,7 @@ def _source_diagnostic_classification(primary: Mapping[str, Any]) -> FailureClas
 
     if not _source_owned(primary):
         return FailureClassification(
-            repair_allowed=False,
+            repair_allowed=REPAIR_DENIED,
             failure_class="source_unreachable",
             confidence=0.55,
             matched_rule="heuristic:source_not_owned",
@@ -262,15 +266,18 @@ def _source_diagnostic_classification(primary: Mapping[str, Any]) -> FailureClas
 
     if not _probably_fixable(primary):
         return FailureClassification(
-            repair_allowed=False,
-            failure_class="uncertain",
+            repair_allowed=REPAIR_NEEDS_CONFIRMATION,
+            failure_class="source_repairable_unverified_type",
             confidence=0.65,
             matched_rule="heuristic:type_unknown",
-            reason="diagnostic is source-located but not known probably-fixable",
+            reason=(
+                "source-located and source-owned, but the diagnostic type is not on the "
+                "auto-fix whitelist; repair is possible with human confirmation of the fix"
+            ),
         )
 
     return FailureClassification(
-        repair_allowed=True,
+        repair_allowed=REPAIR_AUTO,
         failure_class="source_repairable",
         confidence=0.95,
         matched_rule="heuristic:source_werror_or_compile_error",
@@ -314,9 +321,6 @@ def _probably_fixable(primary: Mapping[str, Any]) -> bool:
         value = primary.get(key)
         if isinstance(value, str):
             return value == "probably_fixable"
-    diagnostic_code = primary.get("diagnostic_code") or primary.get("warning_option")
-    if isinstance(diagnostic_code, str) and diagnostic_code.startswith("-W"):
-        return True
     message = _string(primary.get("message")).lower()
     return any(
         marker in message
