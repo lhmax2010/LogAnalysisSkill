@@ -14,8 +14,8 @@ second contract authority. Runtime behavior remains governed by
 | 05 M3 repair step | COMPLETE (code) | `5a7a5b3`, `2693218` | frozen order, CLI, JSON contract; 21 collected tests |
 | RA remediation | COMPLETE when this commit lands | checkpoint `checkpoint/p45_code_ready` | historical memory backfilled |
 | RB three-way review package | PENDING | - | self-contained design/code packages |
-| RC real E2E smoke | PENDING | - | synthetic arc, recovery, edges, historical cases |
-| RD close-out | BLOCKED ON RC/REVIEW | - | PR and human review |
+| RC real E2E smoke | COMPLETE | pending RC evidence commit | synthetic arc, recovery, edges, two real cases |
+| RD close-out | READY | - | PR and human review |
 
 ## Code-Ready Checkpoint
 
