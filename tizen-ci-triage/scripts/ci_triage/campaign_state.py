@@ -12,11 +12,12 @@ import hashlib
 import json
 import os
 import sqlite3
+import subprocess
 from collections.abc import Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from ci_triage.state import StateDatabase
@@ -679,9 +680,7 @@ def create_round(
             max_round = count_row["max_round"]
             expected = 1 if max_round is None else int(max_round) + 1
             if round_index != expected:
-                raise StateInconsistent(
-                    f"new round_index must be {expected}, got {round_index}"
-                )
+                raise StateInconsistent(f"new round_index must be {expected}, got {round_index}")
             conn.execute(
                 "INSERT INTO campaign_rounds "
                 "(campaign_unit_key, round_index, edit_spec_ref, edit_spec_sha256, created_at) "
@@ -790,6 +789,242 @@ def link_verification_with_convergence(
     edit_spec_sha256: str,
 ) -> None:
     """Atomically link one PASS record and its PASS convergence event."""
+    conn = _connect(state_db)
+    try:
+        with _immediate_transaction(conn):
+            _link_verification_with_convergence_on_connection(
+                conn,
+                campaign_unit_key,
+                convergence_payload=convergence_payload,
+                arch_raw=arch_raw,
+                arch_norm=arch_norm,
+                verification_id=verification_id,
+                round_index=round_index,
+                edit_spec_sha256=edit_spec_sha256,
+            )
+    except sqlite3.IntegrityError as exc:
+        raise StateInconsistent(f"verification link violated campaign constraints: {exc}") from exc
+    finally:
+        conn.close()
+
+
+def reconcile_pass_and_invocations(
+    state_db: StateDatabase,
+    campaign_unit_key: str,
+    *,
+    round_index: int,
+    arch_norm: str,
+    failure_key: str,
+    edit_spec_sha256: str,
+) -> ReconcileResult:
+    """Reconcile interrupted PASS records and invocation outcomes in one transaction."""
+
+    _require_arch_norm(arch_norm)
+    if round_index < 1 or not failure_key or not edit_spec_sha256:
+        raise ValueError("round_index, failure_key, and edit_spec_sha256 are required")
+    conn = _connect(state_db)
+    try:
+        with _immediate_transaction(conn):
+            unit = _require_unit(conn, campaign_unit_key)
+
+            # a0 is deliberately the first state classification. A half-state must
+            # not be disguised later as an ordinary orphan invocation.
+            if not _linked_pass_convergence_is_complete(
+                conn,
+                campaign_unit_key,
+                arch_norm,
+            ):
+                _insert_status_row(
+                    conn,
+                    campaign_unit_key,
+                    HELD_FOR_INVESTIGATION,
+                    "state_inconsistent",
+                    arch_norm,
+                )
+                return _empty_reconcile_result("state_inconsistent_held")
+
+            current_round = _round_on_connection(conn, campaign_unit_key, round_index)
+            if current_round is None or current_round.edit_spec_sha256 != edit_spec_sha256:
+                raise StateInconsistent("reconciliation input does not match the campaign round")
+
+            try:
+                current_link = _current_link_for_edit_spec(
+                    conn,
+                    campaign_unit_key,
+                    arch_norm,
+                    edit_spec_sha256,
+                )
+            except StateInconsistent:
+                _insert_status_row(
+                    conn,
+                    campaign_unit_key,
+                    HELD_FOR_INVESTIGATION,
+                    "state_inconsistent",
+                    arch_norm,
+                )
+                return _empty_reconcile_result("state_inconsistent_held")
+            attributed, non_campaign, attribution_is_inconsistent = _attributed_unlinked_passes(
+                conn,
+                campaign_unit_key,
+                arch_norm=arch_norm,
+                failure_key=failure_key,
+            )
+            if attribution_is_inconsistent:
+                _insert_status_row(
+                    conn,
+                    campaign_unit_key,
+                    HELD_FOR_INVESTIGATION,
+                    "state_inconsistent",
+                    arch_norm,
+                )
+                return _empty_reconcile_result(
+                    "state_inconsistent_held",
+                    non_campaign_verification_ids=non_campaign,
+                )
+
+            orphan_invocations = _orphan_invocations_by_round(
+                conn,
+                campaign_unit_key,
+                arch_norm,
+            )
+            relinks: list[tuple[int, str, int]] = []
+            orphan_pass_ids: list[str] = []
+            held_rounds: list[int] = []
+            frozen_rounds: set[int] = set()
+
+            for candidate_round in sorted(attributed):
+                records = attributed[candidate_round]
+                invocations = orphan_invocations.get(candidate_round, [])
+                if len(records) == 1 and len(invocations) == 1:
+                    record = records[0]
+                    invocation_event_id = invocations[0]
+                    rebuilt, reason = _rebuild_pass_convergence(
+                        unit,
+                        record,
+                        round_index=candidate_round,
+                        arch_norm=arch_norm,
+                        invocation_event_id=invocation_event_id,
+                    )
+                    if rebuilt is not None:
+                        try:
+                            with _savepoint(conn, "reconcile_link"):
+                                _link_verification_with_convergence_on_connection(
+                                    conn,
+                                    campaign_unit_key,
+                                    convergence_payload=rebuilt,
+                                    arch_raw=_text(record, "arch"),
+                                    arch_norm=arch_norm,
+                                    verification_id=_text(record, "verification_id"),
+                                    round_index=candidate_round,
+                                    edit_spec_sha256=_text(record, "edit_spec_sha256"),
+                                )
+                        except (CampaignStateError, sqlite3.IntegrityError):
+                            reason = "link_failed"
+                        else:
+                            relinks.append(
+                                (
+                                    candidate_round,
+                                    _text(record, "verification_id"),
+                                    invocation_event_id,
+                                )
+                            )
+                            continue
+                    _record_orphan_passes(
+                        conn,
+                        campaign_unit_key,
+                        candidate_round,
+                        arch_norm,
+                        records,
+                        reason or "ambiguous",
+                    )
+                else:
+                    _record_orphan_passes(
+                        conn,
+                        campaign_unit_key,
+                        candidate_round,
+                        arch_norm,
+                        records,
+                        "ambiguous",
+                    )
+                orphan_pass_ids.extend(_text(record, "verification_id") for record in records)
+                held_rounds.append(candidate_round)
+                frozen_rounds.add(candidate_round)
+
+            backfilled: list[int] = []
+            all_rounds = sorted(set(orphan_invocations) | set(attributed))
+            for candidate_round in all_rounds:
+                if attributed.get(candidate_round) or candidate_round in frozen_rounds:
+                    continue
+                for invocation_event_id in orphan_invocations.get(candidate_round, []):
+                    _append_event_on_connection(
+                        conn,
+                        campaign_unit_key,
+                        "CONVERGENCE",
+                        _orphan_invocation_payload(
+                            round_index=candidate_round,
+                            arch_norm=arch_norm,
+                            invocation_event_id=invocation_event_id,
+                        ),
+                    )
+                    backfilled.append(invocation_event_id)
+
+            if orphan_pass_ids:
+                _insert_status_row(
+                    conn,
+                    campaign_unit_key,
+                    HELD_FOR_INVESTIGATION,
+                    "orphan_pass",
+                    arch_norm,
+                )
+
+            current_relink = next(
+                (item for item in relinks if item[0] == round_index),
+                None,
+            )
+            if orphan_pass_ids:
+                branch = "orphan_pass_held"
+                current_verification_id = None
+                current_invocation_event_id = None
+            elif current_link is not None:
+                branch = "linked_already"
+                current_verification_id = _text(current_link, "verification_id")
+                current_invocation_event_id = None
+            elif current_relink is not None:
+                branch = "relinked"
+                current_verification_id = current_relink[1]
+                current_invocation_event_id = current_relink[2]
+            else:
+                branch = "proceed"
+                current_verification_id = None
+                current_invocation_event_id = None
+
+            other_round_relinks = tuple(item for item in sorted(relinks) if item[0] != round_index)
+            return ReconcileResult(
+                branch=branch,
+                current_verification_id=current_verification_id,
+                current_relinked_invocation_event_id=current_invocation_event_id,
+                other_round_relinks=other_round_relinks,
+                backfilled_invocation_event_ids=tuple(sorted(backfilled)),
+                orphan_pass_verification_ids=tuple(sorted(orphan_pass_ids)),
+                held_rounds=tuple(sorted(set(held_rounds))),
+                non_campaign_verification_ids=tuple(sorted(non_campaign)),
+            )
+    finally:
+        conn.close()
+
+
+def _link_verification_with_convergence_on_connection(
+    conn: sqlite3.Connection,
+    campaign_unit_key: str,
+    *,
+    convergence_payload: Mapping[str, object],
+    arch_raw: str,
+    arch_norm: str,
+    verification_id: str,
+    round_index: int,
+    edit_spec_sha256: str,
+) -> None:
+    """Transaction-internal primitive shared by normal PASS and reconciliation."""
 
     _require_arch_norm(arch_norm)
     if _normalize_arch_raw(arch_raw) != arch_norm:
@@ -804,58 +1039,361 @@ def link_verification_with_convergence(
     if convergence_payload.get("evidence_sha256") is not None:
         raise StateInconsistent("PASS convergence evidence_sha256 must be null")
 
-    conn = _connect(state_db)
+    _require_unit(conn, campaign_unit_key)
+    round_row = _round_on_connection(conn, campaign_unit_key, round_index)
+    if round_row is None or round_row.edit_spec_sha256 != edit_spec_sha256:
+        raise StateInconsistent("verification link does not match the campaign round")
+    record = conn.execute(
+        "SELECT result, edit_spec_sha256, arch FROM verification_records WHERE verification_id = ?",
+        (verification_id,),
+    ).fetchone()
+    if record is None:
+        raise StateInconsistent("verification record not found")
+    if _text(record, "result") != "PASS":
+        raise StateInconsistent("verification record is not PASS")
+    if _text(record, "edit_spec_sha256") != edit_spec_sha256:
+        raise StateInconsistent("verification edit_spec hash mismatch")
+    if _normalize_arch_raw(_text(record, "arch")) != arch_norm:
+        raise StateInconsistent("verification arch mismatch")
+    _validate_event_payload(
+        conn,
+        campaign_unit_key,
+        "CONVERGENCE",
+        convergence_payload,
+    )
+    conn.execute(
+        "INSERT INTO campaign_verifications "
+        "(campaign_unit_key, arch_raw, arch_norm, verification_id, round_index, "
+        "edit_spec_sha256, campaign_schema_version, created_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        (
+            campaign_unit_key,
+            arch_raw,
+            arch_norm,
+            verification_id,
+            round_index,
+            edit_spec_sha256,
+            CAMPAIGN_SCHEMA_VERSION,
+            _now_iso8601(),
+        ),
+    )
+    _insert_event_row(
+        conn,
+        campaign_unit_key,
+        "CONVERGENCE",
+        convergence_payload,
+    )
+
+
+def _linked_pass_convergence_is_complete(
+    conn: sqlite3.Connection,
+    campaign_unit_key: str,
+    arch_norm: str,
+) -> bool:
+    links = conn.execute(
+        "SELECT * FROM campaign_verifications "
+        "WHERE campaign_unit_key = ? AND arch_norm = ? ORDER BY link_id",
+        (campaign_unit_key, arch_norm),
+    ).fetchall()
+    if not links:
+        return True
+    convergence_rows = conn.execute(
+        "SELECT * FROM campaign_gate_events WHERE event_type = 'CONVERGENCE' ORDER BY event_id"
+    ).fetchall()
+    parsed: list[tuple[sqlite3.Row, dict[str, object]]] = []
+    for row in convergence_rows:
+        try:
+            payload = _payload_from_row(row)
+        except (json.JSONDecodeError, StateInconsistent):
+            return False
+        parsed.append((row, payload))
+
+    for link in links:
+        verification_id = _text(link, "verification_id")
+        matches = [
+            (row, payload)
+            for row, payload in parsed
+            if payload.get("verification_id") == verification_id
+        ]
+        if len(matches) != 1:
+            return False
+        row, payload = matches[0]
+        if (
+            _text(row, "campaign_unit_key") != campaign_unit_key
+            or row["round_index"] != link["round_index"]
+            or row["arch_norm"] != arch_norm
+            or row["verdict"] != "n_a"
+            or row["invocation_event_id"] != payload.get("invocation_event_id")
+            or payload.get("round_index") != link["round_index"]
+            or payload.get("arch_norm") != arch_norm
+            or payload.get("verification_id") != verification_id
+            or payload.get("result") != "PASS"
+            or payload.get("verdict") != "n_a"
+        ):
+            return False
+        try:
+            _validate_invocation_binding(conn, campaign_unit_key, payload)
+        except CampaignStateError:
+            return False
+    return True
+
+
+def _current_link_for_edit_spec(
+    conn: sqlite3.Connection,
+    campaign_unit_key: str,
+    arch_norm: str,
+    edit_spec_sha256: str,
+) -> sqlite3.Row | None:
+    rows = conn.execute(
+        "SELECT * FROM campaign_verifications WHERE campaign_unit_key = ? "
+        "AND arch_norm = ? AND edit_spec_sha256 = ? ORDER BY link_id",
+        (campaign_unit_key, arch_norm, edit_spec_sha256),
+    ).fetchall()
+    if len(rows) > 1:
+        raise StateInconsistent("multiple current verification links exist")
+    return rows[0] if rows else None
+
+
+def _attributed_unlinked_passes(
+    conn: sqlite3.Connection,
+    campaign_unit_key: str,
+    *,
+    arch_norm: str,
+    failure_key: str,
+) -> tuple[dict[int, list[sqlite3.Row]], tuple[str, ...], bool]:
+    rows = conn.execute(
+        "SELECT vr.* FROM verification_records AS vr "
+        "LEFT JOIN campaign_verifications AS cv "
+        "ON cv.verification_id = vr.verification_id "
+        "WHERE vr.failure_key = ? AND cv.verification_id IS NULL "
+        "ORDER BY vr.timestamp, vr.verification_id",
+        (failure_key,),
+    ).fetchall()
+    attributed: dict[int, list[sqlite3.Row]] = {}
+    non_campaign: list[str] = []
+    for record in rows:
+        if _normalize_arch_raw(_text(record, "arch")) != arch_norm:
+            continue
+        matches = conn.execute(
+            "SELECT round_index FROM campaign_rounds "
+            "WHERE campaign_unit_key = ? AND edit_spec_sha256 = ? "
+            "ORDER BY round_index",
+            (campaign_unit_key, _text(record, "edit_spec_sha256")),
+        ).fetchall()
+        if not matches:
+            non_campaign.append(_text(record, "verification_id"))
+            continue
+        if len(matches) > 1:
+            return attributed, tuple(sorted(non_campaign)), True
+        candidate_round = int(matches[0]["round_index"])
+        attributed.setdefault(candidate_round, []).append(record)
+    return attributed, tuple(sorted(non_campaign)), False
+
+
+def _orphan_invocations_by_round(
+    conn: sqlite3.Connection,
+    campaign_unit_key: str,
+    arch_norm: str,
+) -> dict[int, list[int]]:
+    rows = conn.execute(
+        "SELECT invocation.event_id, invocation.round_index "
+        "FROM campaign_gate_events AS invocation "
+        "WHERE invocation.campaign_unit_key = ? "
+        "AND invocation.event_type = 'BUILD_INVOCATION' "
+        "AND invocation.arch_norm = ? "
+        "AND NOT EXISTS ("
+        "  SELECT 1 FROM campaign_gate_events AS outcome "
+        "  WHERE outcome.event_type = 'CONVERGENCE' "
+        "  AND outcome.invocation_event_id = invocation.event_id"
+        ") ORDER BY invocation.round_index, invocation.event_id",
+        (campaign_unit_key, arch_norm),
+    ).fetchall()
+    grouped: dict[int, list[int]] = {}
+    for row in rows:
+        grouped.setdefault(int(row["round_index"]), []).append(int(row["event_id"]))
+    return grouped
+
+
+def _rebuild_pass_convergence(
+    unit: Unit,
+    record: sqlite3.Row,
+    *,
+    round_index: int,
+    arch_norm: str,
+    invocation_event_id: int,
+) -> tuple[dict[str, object] | None, str | None]:
+    if (
+        _text(record, "base_commit") != unit.base_commit
+        or _text(record, "project") != unit.project
+        or _text(record, "branch") != unit.branch
+        or _text(record, "spec_name") != unit.spec_name
+        or _normalize_arch_raw(_text(record, "arch")) != arch_norm
+    ):
+        return None, "hash_mismatch"
+
+    worktree = Path(_text(record, "worktree_path"))
+    protected = worktree / ".ci_triage_protected"
+    if not worktree.is_dir() or not protected.is_file():
+        return None, "worktree_damaged"
     try:
-        with _immediate_transaction(conn):
-            _require_unit(conn, campaign_unit_key)
-            round_row = _round_on_connection(conn, campaign_unit_key, round_index)
-            if round_row is None or round_row.edit_spec_sha256 != edit_spec_sha256:
-                raise StateInconsistent("verification link does not match the campaign round")
-            record = conn.execute(
-                "SELECT result, edit_spec_sha256, arch FROM verification_records "
-                "WHERE verification_id = ?",
-                (verification_id,),
-            ).fetchone()
-            if record is None:
-                raise StateInconsistent("verification record not found")
-            if _text(record, "result") != "PASS":
-                raise StateInconsistent("verification record is not PASS")
-            if _text(record, "edit_spec_sha256") != edit_spec_sha256:
-                raise StateInconsistent("verification edit_spec hash mismatch")
-            if _normalize_arch_raw(_text(record, "arch")) != arch_norm:
-                raise StateInconsistent("verification arch mismatch")
-            _validate_event_payload(
-                conn,
-                campaign_unit_key,
-                "CONVERGENCE",
-                convergence_payload,
-            )
-            conn.execute(
-                "INSERT INTO campaign_verifications "
-                "(campaign_unit_key, arch_raw, arch_norm, verification_id, round_index, "
-                "edit_spec_sha256, campaign_schema_version, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                (
-                    campaign_unit_key,
-                    arch_raw,
-                    arch_norm,
-                    verification_id,
-                    round_index,
-                    edit_spec_sha256,
-                    CAMPAIGN_SCHEMA_VERSION,
-                    _now_iso8601(),
-                ),
-            )
-            _insert_event_row(
-                conn,
-                campaign_unit_key,
-                "CONVERGENCE",
-                convergence_payload,
-            )
-    except sqlite3.IntegrityError as exc:
-        raise StateInconsistent(f"verification link violated campaign constraints: {exc}") from exc
-    finally:
-        conn.close()
+        marker = json.loads(protected.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None, "worktree_damaged"
+    if not isinstance(marker, dict) or (
+        marker.get("verification_id") != _text(record, "verification_id")
+        or marker.get("failure_key") != _text(record, "failure_key")
+    ):
+        return None, "worktree_damaged"
+
+    verified_tree = _run_git_text(worktree, "rev-parse", "HEAD^{tree}")
+    if verified_tree != _text(record, "verified_tree_sha"):
+        return None, "worktree_damaged"
+    status = _run_git_text(worktree, "status", "--porcelain", "--untracked-files=normal")
+    if status is None or status:
+        return None, "worktree_damaged"
+    changed_paths = _git_changed_paths(
+        worktree,
+        _text(record, "base_commit"),
+        _text(record, "verified_commit_sha"),
+    )
+    if changed_paths is None:
+        return None, "worktree_damaged"
+    return (
+        {
+            "round_index": round_index,
+            "arch_norm": arch_norm,
+            "invocation_event_id": invocation_event_id,
+            "result": "PASS",
+            "verdict": "n_a",
+            "reason": "build_passed",
+            "evidence_path": None,
+            "evidence_sha256": None,
+            "verification_id": _text(record, "verification_id"),
+            "actual_changed_paths": changed_paths,
+            "previous_basis": "none",
+            "at": _now_iso8601(),
+        },
+        None,
+    )
+
+
+def _run_git_text(worktree: Path, *args: str) -> str | None:
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(worktree), *args],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError:
+        return None
+    if completed.returncode != 0:
+        return None
+    return completed.stdout.strip()
+
+
+def _git_changed_paths(
+    worktree: Path,
+    base_commit: str,
+    verified_commit_sha: str,
+) -> list[str] | None:
+    try:
+        completed = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(worktree),
+                "diff",
+                "--name-only",
+                "--no-renames",
+                "-z",
+                base_commit,
+                verified_commit_sha,
+                "--",
+            ],
+            check=False,
+            capture_output=True,
+        )
+    except OSError:
+        return None
+    if completed.returncode != 0:
+        return None
+    paths: list[str] = []
+    for raw_path in completed.stdout.split(b"\0"):
+        if not raw_path:
+            continue
+        try:
+            path = raw_path.decode("utf-8")
+        except UnicodeDecodeError:
+            return None
+        normalized = PurePosixPath(path)
+        if normalized.is_absolute() or any(part in {".", ".."} for part in normalized.parts):
+            return None
+        paths.append(normalized.as_posix())
+    return sorted(paths)
+
+
+def _record_orphan_passes(
+    conn: sqlite3.Connection,
+    campaign_unit_key: str,
+    round_index: int,
+    arch_norm: str,
+    records: Sequence[sqlite3.Row],
+    reason: str,
+) -> None:
+    for record in records:
+        _append_event_on_connection(
+            conn,
+            campaign_unit_key,
+            "ORPHAN_PASS",
+            {
+                "round_index": round_index,
+                "arch_norm": arch_norm,
+                "verification_id": _text(record, "verification_id"),
+                "worktree_path": _text(record, "worktree_path"),
+                "reason": reason,
+                "detected_at": _now_iso8601(),
+            },
+        )
+
+
+def _orphan_invocation_payload(
+    *,
+    round_index: int,
+    arch_norm: str,
+    invocation_event_id: int,
+) -> dict[str, object]:
+    return {
+        "round_index": round_index,
+        "arch_norm": arch_norm,
+        "invocation_event_id": invocation_event_id,
+        "result": "n_a",
+        "verdict": "n_a",
+        "reason": "orphan_invocation",
+        "evidence_path": None,
+        "evidence_sha256": None,
+        "verification_id": None,
+        "actual_changed_paths": [],
+        "previous_basis": "none",
+        "at": _now_iso8601(),
+    }
+
+
+def _empty_reconcile_result(
+    branch: str,
+    *,
+    non_campaign_verification_ids: Sequence[str] = (),
+) -> ReconcileResult:
+    return ReconcileResult(
+        branch=branch,
+        current_verification_id=None,
+        current_relinked_invocation_event_id=None,
+        other_round_relinks=(),
+        backfilled_invocation_event_ids=(),
+        orphan_pass_verification_ids=(),
+        held_rounds=(),
+        non_campaign_verification_ids=tuple(non_campaign_verification_ids),
+    )
 
 
 def create_qb_request(
@@ -1066,6 +1604,19 @@ def _immediate_transaction(conn: sqlite3.Connection) -> Iterator[None]:
         conn.commit()
 
 
+@contextmanager
+def _savepoint(conn: sqlite3.Connection, name: str) -> Iterator[None]:
+    conn.execute(f"SAVEPOINT {name}")
+    try:
+        yield
+    except Exception:
+        conn.execute(f"ROLLBACK TO SAVEPOINT {name}")
+        conn.execute(f"RELEASE SAVEPOINT {name}")
+        raise
+    else:
+        conn.execute(f"RELEASE SAVEPOINT {name}")
+
+
 def _is_busy_error(exc: sqlite3.OperationalError) -> bool:
     message = str(exc).lower()
     return "locked" in message or "busy" in message
@@ -1136,9 +1687,7 @@ def _insert_or_compare_unit(conn: sqlite3.Connection, values: Mapping[str, objec
     ).fetchone()
     compare_columns = tuple(values)
     if existing is not None:
-        differences = [
-            column for column in compare_columns if existing[column] != values[column]
-        ]
+        differences = [column for column in compare_columns if existing[column] != values[column]]
         if differences:
             raise StateInconsistent(f"campaign unit differs in fields: {differences}")
         return False
