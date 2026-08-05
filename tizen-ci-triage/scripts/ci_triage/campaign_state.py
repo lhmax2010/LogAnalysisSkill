@@ -637,6 +637,36 @@ def latest_status(state_db: StateDatabase, campaign_unit_key: str) -> str | None
     return _text(row, "status") if row is not None else None
 
 
+def is_rebaseline_authorized(
+    state_db: StateDatabase,
+    campaign_unit_key: str,
+    *,
+    arch_norm: str,
+) -> bool:
+    """Return whether the latest status authorizes rebaseline for this arch.
+
+    Authorization is deliberately narrow: only the exact HELD transition written
+    for a missing previous-evidence binding may reopen the architecture.
+    """
+
+    _require_arch_norm(arch_norm)
+    conn = _connect(state_db)
+    try:
+        row = conn.execute(
+            "SELECT status, reason, arch_norm FROM campaign_status_log "
+            "WHERE campaign_unit_key = ? ORDER BY log_id DESC LIMIT 1",
+            (campaign_unit_key,),
+        ).fetchone()
+    finally:
+        conn.close()
+    return bool(
+        row is not None
+        and _text(row, "status") == HELD_FOR_INVESTIGATION
+        and _optional_text(row, "reason") == "previous_evidence_missing"
+        and _optional_text(row, "arch_norm") == arch_norm
+    )
+
+
 def create_round(
     state_db: StateDatabase,
     campaign_unit_key: str,

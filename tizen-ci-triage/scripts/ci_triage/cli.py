@@ -9,6 +9,10 @@ from json import JSONDecodeError
 from pathlib import Path
 from typing import TextIO
 
+from ci_triage.campaign_repair_step import (
+    CampaignRepairStepOptions,
+    campaign_repair_step,
+)
 from ci_triage.quickbuild import DEFAULT_COOKIE_PATH
 from ci_triage.runner import TriageOptions, discover_sibling_pythonpath, run_triage
 from ci_triage.state import StateDatabase
@@ -144,9 +148,25 @@ def release_worktree_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def campaign_repair_step_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="ci_triage campaign-repair-step",
+        description="Run one locked, budgeted, and reconciled campaign repair build.",
+    )
+    parser.add_argument("--campaign-unit-key", required=True)
+    parser.add_argument("--state-db", type=Path, required=True)
+    parser.add_argument("--config", type=Path, required=True)
+    parser.add_argument("--round-index", type=int, required=True)
+    parser.add_argument("--edit-spec", type=Path, required=True)
+    parser.add_argument("--arch", required=True)
+    parser.add_argument("--wall-timeout", type=int)
+    return parser
+
+
 def main(
     argv: list[str] | None = None,
     *,
+    stdout: TextIO = sys.stdout,
     stderr: TextIO = sys.stderr,
     extra_pythonpath: tuple[Path, ...] = (),
 ) -> int:
@@ -160,6 +180,12 @@ def main(
         return _main_gerrit_submit(argv[1:], stderr=stderr)
     if argv and argv[0] == "release-worktree":
         return _main_release_worktree(argv[1:], stderr=stderr)
+    if argv and argv[0] == "campaign-repair-step":
+        return _main_campaign_repair_step(
+            argv[1:],
+            stdout=stdout,
+            extra_pythonpath=extra_pythonpath,
+        )
 
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -301,6 +327,32 @@ def _main_release_worktree(argv: list[str], *, stderr: TextIO) -> int:
         print(f"ci_triage release-worktree: result written to {args.output}", file=stderr)
     print(json.dumps(result.to_dict(), sort_keys=True), file=stderr)
     return exit_code_for_release(result)
+
+
+def _main_campaign_repair_step(
+    argv: list[str],
+    *,
+    stdout: TextIO,
+    extra_pythonpath: tuple[Path, ...],
+) -> int:
+    args = campaign_repair_step_parser().parse_args(argv)
+    paths = extra_pythonpath or discover_sibling_pythonpath(
+        launcher_path=Path(__file__).resolve().parents[1] / "run_ci_triage.py"
+    )
+    outcome = campaign_repair_step(
+        CampaignRepairStepOptions(
+            campaign_unit_key=args.campaign_unit_key,
+            state_db=StateDatabase(args.state_db),
+            config_path=args.config,
+            round_index=args.round_index,
+            edit_spec_path=args.edit_spec,
+            arch_raw=args.arch,
+            wall_timeout=args.wall_timeout,
+            extra_pythonpath=paths,
+        )
+    )
+    print(json.dumps(outcome.result.to_dict(), sort_keys=True), file=stdout)
+    return outcome.exit_code
 
 
 def _read_json(path: Path) -> dict[str, object]:
