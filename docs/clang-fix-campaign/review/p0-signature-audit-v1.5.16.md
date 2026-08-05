@@ -267,3 +267,26 @@ sha256sum docs/clang-fix-campaign/p45-implementation-prompt-v1_5_15.md
 Results: Ruff clean; checker self-test `33/33`; current design `OK: 0
 problem`; snapshot byte-identical; prompt SHA-256
 `e214d1fb8b806e1ebc12e6e8cfafc57d71cbffcf0340d94c26396ef87816a3fb`.
+
+## Independent Four-Signature Check
+
+The independently extracted v1.5.14 parameter table was checked against the
+final Python declarations before P1 started:
+
+```bash
+python3 audit_four_sigs.py docs/clang-fix-campaign/design.md
+```
+
+Output:
+
+```text
+[OK] reconcile_pass_and_invocations
+[OK] adopt_secondary_target_with_convergence
+[OK] consume_build_invocation
+[OK] append_status
+
+result: PASS 4/4
+```
+
+This closes the dual-path transcription check: the implementation-side audit
+and the independent extraction agree on all four high-risk signatures.
