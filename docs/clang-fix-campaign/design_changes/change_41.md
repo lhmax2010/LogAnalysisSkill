@@ -1,6 +1,11 @@
-# change_41:RC smoke evidence boundary and missing historical inputs (PROPOSED)
+# change_41:RC smoke evidence boundary and historical-input scope (CLOSED)
 
-Status: **adjudication required; not applied to frozen design**
+Status: **closed (no design change)**
+
+Resolution: the frozen design and implementation already agree that
+REPRODUCE/CONVERGENCE evidence is analyzer JSON. The contradiction was confined
+to `e2e-smoke-runbook.md` v1. RC resumes under the v2 rules recorded in
+`docs/clang-fix-campaign/review/rc-resolution.md`.
 
 Triggered by: RC E0/E1 reality verification on 2026-08-05.
 
@@ -25,9 +30,9 @@ Passing the raw `.log` as written in the runbook deterministically fails closed
 as `previous evidence is invalid JSON`. Converting it without changing the
 runbook would be a silent protocol rewrite.
 
-### Proposed裁决
+### 裁决
 
-Adopt the existing implementation contract and revise RC E1/E6 as follows:
+The existing implementation contract is authoritative. RC E1/E6 shall:
 
 - retain every raw GBS log and SHA-256 as an immutable audit artifact;
 - run `gbs_analyzer` against that log with the selected source root;
@@ -43,40 +48,32 @@ Rejected alternative: teach convergence/previous-evidence to parse raw logs.
 That duplicates analyzer ownership, enlarges the frozen API, and is unnecessary
 because the analyzer already produces the required structured contract.
 
-## B. Contradiction 2: required historical logs are absent
+## B. Historical-input scope after resupply
 
-The remediation task states that `tmp/Verification/log/` contains historical
-real bug logs. On the target host the directory exists but is empty. The three
-source entries are:
+At the original stop point `tmp/Verification/log/` was empty. The developer
+subsequently supplied historical material and explicitly narrowed the
+executable E6 scope:
 
-- zlib: source + Git commit + packaging present;
-- cynara: source + Git commit + packaging present;
-- libtpl-egl: empty initialized Git repository, no commit, source, or packaging.
+- `multi-assistant.log` is the one historical case to execute after confirming
+  package/root cause, source + packaging, and analyzer parseability;
+- cynara supplies one E6' real-feeling C++ case under the three quality clauses
+  in `rc-resolution.md`;
+- an extra `united-servvice.log` is present, but no matching united-service
+  source/packaging exists under `tmp/Verification/codes/`; it is therefore
+  recorded as paused for missing inputs and is not fabricated into a case.
 
-E6's same-root-cause and historical/fresh fingerprint assertions cannot be
-executed without the historical logs. The logs cannot be inferred or recreated
-without defeating the purpose of that test.
+Any discovered case lacking source or real packaging remains a per-case pause,
+not permission to create packaging. The report must preserve that distinction.
 
-### Required input裁决
+## C. Resumption gate (satisfied)
 
-Choose one explicitly before RC resumes:
+RC resumed at E1 after:
 
-1. supply the intended historical logs under `tmp/Verification/log/`, with an
-   unambiguous mapping to source package; or
-2. amend the E6 case inventory to the artifacts actually available and mark
-   historical comparison as blocked/waived by the developer.
-
-`libtpl-egl` remains a protocol-defined skip unless a real source tree and real
-packaging are supplied. Packaging must not be fabricated.
-
-## C. Resumption gate
-
-RC may resume at E1 only after:
-
-1. the raw-log-to-evidence-JSON rule is accepted and written into the runbook;
-2. historical logs are supplied or E6 is explicitly re-scoped;
-3. the updated text identifies which SHA-256 belongs to the raw log and which
-   belongs to the analyzer evidence JSON.
+1. the raw-log-to-analyzer-JSON rule was accepted in `rc-resolution.md`;
+2. E6 was explicitly re-scoped to one historical case plus one cynara E6'
+   case, with missing-input cases paused;
+3. RC reporting was required to identify raw-log and analyzer-JSON SHA-256
+   values separately.
 
 RD remains prohibited until the resumed RC is all-green or every resulting
 deviation is explicitly adjudicated.
