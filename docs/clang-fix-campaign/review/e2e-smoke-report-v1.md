@@ -1,4 +1,4 @@
-# E2E Smoke Report v1: stopped at RC input-contract gate
+# E2E Smoke Report v1: stopped at RC E1 architecture-CLI gate
 
 Date: 2026-08-05 (Asia/Shanghai)
 
@@ -7,11 +7,13 @@ Branch: `clang-fix-campaign`
 Code under test: `269321820abe0eddb7db345dcb26ffaedc7127c6`
 (`checkpoint/p45_code_ready`)
 
-Result: **STOPPED -- adjudication required before E1**
+Result: **STOPPED -- resumed E1, then found a new runbook/CLI contradiction**
 
 This report follows the frozen stop-and-report protocol. No runtime code or
-frozen design text was changed to accommodate the two discrepancies below.
-E1-E6 and RD were not entered after the discrepancies were confirmed.
+frozen design text was changed to accommodate the discrepancies below. The
+initial evidence/input stop was adjudicated by `rc-resolution.md` and closed in
+change_41; RC then resumed at E1 and stopped again before unit seeding when the
+runbook's architecture argument was proven incompatible with the public CLI.
 
 ## E0 environment preflight
 
@@ -97,7 +99,7 @@ not accepted as evidence. The accidentally created nested `zlib/tmp` directory
 was moved to `tmp/campaign-smoke/misplaced-zlib-tmp`; the canonical absolute-
 path rerun above is the only accepted E0 artifact.
 
-## Stop condition 1: raw log versus evidence JSON
+## Resolved condition 1: raw log versus evidence JSON
 
 The runbook requires:
 
@@ -127,11 +129,11 @@ The unit fixture confirms the implemented shape: `ci_evidence_ref` may name an
 external evidence source, but REPRODUCE `evidence_local` points to
 `baseline.json`, an analyzer `evidence_packet/v1` object.
 
-Silently running the analyzer and substituting its JSON output would be a
-reasonable future protocol, but doing so here would change the written smoke
-contract. Per the frozen protocol, it requires adjudication first.
+The developer adjudicated this in `rc-resolution.md`: raw logs remain audit
+artifacts; real analyzer output JSON is the evidence/fingerprint input. The
+decision required no design or runtime-code change.
 
-## Stop condition 2: historical logs are absent
+## Resolved condition 2: historical logs were absent
 
 Commands:
 
@@ -160,8 +162,101 @@ real bug logs. Consequently E6 cannot:
 - seed `ci_evidence` from the historical log;
 - compare fingerprints produced from historical and fresh evidence.
 
-This is missing required test input, not a product failure. It cannot be
-reconstructed from the source trees without inventing evidence.
+The developer subsequently supplied `multi-assistant.log` and matching source
+plus packaging, and authorized one cynara E6' case. An extra
+`united-servvice.log` has no matching source/packaging under `codes/` and is a
+per-case pause. The exact resumed scope is recorded in `rc-resolution.md` and
+closed change_41.
+
+## E1 resumed: raw log to analyzer JSON
+
+### Synthetic broken baseline
+
+The zlib smoke repository was branched at the clean baseline and committed with
+two independent undeclared identifiers in `adler32.c`:
+
+```text
+branch: campaign-smoke/broken-zlib
+base_commit_broken: 0bd8e9a0c835b24471eaeba54e606583e5d2dfaa
+fault 1: campaign_missing_one
+fault 2: campaign_missing_two
+```
+
+Canonical build command used `bash -o pipefail`; GBS exited 1 as required:
+
+```text
+adler32.c:64:44: error: use of undeclared identifier 'campaign_missing_one'
+adler32.c:65:44: error: use of undeclared identifier 'campaign_missing_two'
+2 errors generated.
+=== Total succeeded built packages: (0) ===
+error: <gbs>some packages failed to be built
+WALL_SECONDS=12.28
+MAX_RSS_KB=100180
+```
+
+Artifacts are deliberately identified separately:
+
+```text
+raw_log: tmp/campaign-smoke/logs/E1-zlib-broken-baseline.log
+raw_log_sha256: d3adb3fd72bf115667a17efa6d7bb000597eab796df5ce5f15b1329fb5ae4154
+analyzer_json: tmp/campaign-smoke/analyzer/zlib-baseline/evidence_packet.json
+analyzer_json_sha256: d79617226de39f4d16ea703bb320207954309a8c21ff571f86bdcd94a1a593b0
+```
+
+Real analyzer command:
+
+```bash
+PYTHONPATH=tizen-gbs-log-analysis/scripts:tizen-ci-triage/scripts \
+  .venv/bin/python -m gbs_analyzer analyze \
+  tmp/campaign-smoke/logs/E1-zlib-broken-baseline.log \
+  --src-root tmp/Verification/codes/zlib \
+  --spec-path tmp/Verification/codes/zlib/packaging/zlib.spec \
+  --package zlib --arch standard-armv7l \
+  --profile tizen_unified_standard --output-format json \
+  --output-dir tmp/campaign-smoke/analyzer/zlib-baseline
+```
+
+It exited 0 and produced `evidence_packet/v1`; its primary error is
+`adler32.c:64:44`, kind `compiler`, message `use of undeclared identifier
+'campaign_missing_one'`. The second identifier is root-cause candidate rank 2.
+The v2 evidence pipeline is therefore proven through analyzer output.
+
+An earlier FAIL capture omitted shell `pipefail`, so `tee` masked GBS exit 1 as
+pipeline exit 0. That run was rejected as process-status evidence and replaced
+by the canonical rerun above; the raw artifact path was overwritten by the
+canonical bytes.
+
+## Stop condition 3: runbook arch argument versus public CLI
+
+The unchanged runbook E2 command passes:
+
+```text
+--arch armv7l
+```
+
+The implementation accepts raw QuickBuild architecture names only:
+
+```python
+ARCH_RAW_TO_NORM = {
+    "standard-aarch64": "aarch64",
+    "standard-armv7l": "armv7l",
+    "standard-x86_64": "x86_64",
+}
+```
+
+A no-build CLI probe using the runbook's argument returned one JSON object and
+exit 4:
+
+```json
+{"arch_norm":"","convergence_reason":"arch is not in the verified whitelist: 'armv7l'","error_code":"REJECTED_IDENTITY_MISMATCH","invocations_used":0,"result":"FAIL","verdict":"n_a"}
+```
+
+This rejection occurs before config, state, edit-spec, or source access. No
+state DB was created and no invocation was consumed. Substituting
+`standard-armv7l` would align with the implementation and cause build-verify to
+derive `gbs -A armv7l`, but v2 said all other runbook clauses were unchanged.
+Changing the command without adjudication would therefore violate the same
+stop-and-report rule that produced change_41.
 
 ## Execution matrix
 
@@ -169,32 +264,34 @@ reconstructed from the source trees without inventing evidence.
 |---|---|---|
 | E0 GBS/toolchain | PASS | Real armv7l LLVM 22.1.8 chroot confirmed |
 | E0 clean baseline | PASS | zlib built successfully; canonical log captured |
-| E1 seed/baseline | NOT RUN | Blocked by raw-log/evidence-JSON contract mismatch |
-| E2 repair arc | NOT RUN | Must not consume an unadjudicated baseline contract |
+| E1 raw failure + analyzer | PASS | Real GBS exit 1; analyzer JSON and separate hashes captured |
+| E1 unit seed | NOT RUN | Blocked by runbook `armv7l` versus CLI `standard-armv7l` contract |
+| E2 repair arc | NOT RUN | Must not bypass the unadjudicated architecture-input contract |
 | E3 crash recovery | NOT RUN | Depends on a valid seeded unit |
 | E4 edge cases | NOT RUN | Depends on a valid seeded unit |
-| E6 historical cases | NOT RUN | Historical logs absent; libtpl-egl also lacks source/packaging |
+| E6 historical cases | NOT RUN | Deferred by the E1 stop; resumed scope and inputs are recorded |
 | RD close-out/PR | NOT ENTERED | RC is not all-green and deviations are not adjudicated |
 
 ## Reality observations
 
 - Canonical clean build wall time: 48.13 seconds.
 - Canonical clean build max RSS: 136436 KiB.
-- Current `tmp/campaign-smoke` size after E0: 116 KiB.
-- Source sizes: zlib 9.3 MiB, cynara 4.1 MiB, libtpl-egl 124 KiB.
-- Campaign state DB/workspace: not created, because stopping before E1 avoids
-  leaving a misleading partially seeded campaign.
+- Current `tmp/campaign-smoke` size after the resumed E1 work: 352 KiB.
+- Source sizes: zlib 9.3 MiB, cynara 4.1 MiB, libtpl-egl 5.5 MiB,
+  multi-assistant 1.4 MiB.
+- Campaign state DB/workspace: not created, because the E1 architecture gate
+  was found before unit seeding.
 
 ## Required adjudication
 
-See `docs/clang-fix-campaign/design_changes/change_41.md`.
+Evidence/input adjudication is closed in
+`docs/clang-fix-campaign/design_changes/change_41.md`. The current stop is
+tracked in `docs/clang-fix-campaign/design_changes/change_42.md`.
 
-The recommended resolution is to make the evidence boundary explicit:
-preserve raw logs as immutable audit artifacts, run the existing analyzer on
-them, and bind the resulting evidence JSON to REPRODUCE/convergence. Historical
-and fresh comparisons should compare fingerprints of their analyzer evidence
-packets. The missing historical logs must be supplied, or E6's expected case
-set must be explicitly amended.
+The recommended resolution is to amend all repair-step smoke commands to pass
+the raw architecture `standard-armv7l`, while keeping assertions and DB queries
+on normalized `armv7l`. This matches the public CLI, the unit schema, and the
+existing `_gbs_arch()` conversion without changing runtime behavior.
 
-Until both points are adjudicated, this RC result is **stopped**, not failed and
+Until change_42 is adjudicated, this RC result is **stopped**, not failed and
 not waived.
