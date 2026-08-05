@@ -1,5 +1,11 @@
 # E2E-SMOKE:真实环境最小 campaign(P4.5 现实验证)
 
+> **v3 修订(2026-08-05)**:合并 change_41/42 的真实环境裁决。
+> 原始 GBS log 先经真实 analyzer 生成 evidence JSON,REPRODUCE 与
+> fingerprint 只消费 JSON;campaign-repair-step 使用完整公开参数名,
+> `--arch`/unit 字段传 raw 页名 `standard-armv7l`,DB/workspace 中的
+> `arch_norm` 仍为 `armv7l`。其余验收语义不变。
+
 ## 0. 定位与协议
 
 **目标**:在 GBS 构建主机上,用**真实 GBS chroot(armv7l,LLVM
@@ -27,7 +33,7 @@ API 吃真实数据的首次检验);②ci_evidence 用本地捕获的失败日�
    sha256);
 2. 选定 smoke 包:**小、快、C++**。推荐从 libc++ 迁移工作里挑一个
    单次构建 < 5 分钟的真实包;记录其 git 仓库、base_commit;
-3. smoke 目录:`~/campaign-smoke/{state.db, ws/, logs/}`;
+3. smoke 目录:`tmp/campaign-smoke/{state.db, ws/, logs/}`;
 4. 干净基线:该包在当前 chroot 下**能构建通过**(贴尾部日志)——
    这是注入故障前的对照锚。
 
@@ -36,17 +42,19 @@ API 吃真实数据的首次检验);②ci_evidence 用本地捕获的失败日�
 1. **注入故障**:在包源码加一个确定性 clang 错误(建议:C++ 源里
    引一个未定义符号或删一个必要 `#include`),commit 到本地分支,
    记 `base_commit_broken`;
-2. **捕获基线失败**:GBS 构建一次 → FAIL,保存完整日志为
-   `ci_evidence.log`,记 sha256——它同时充当 ci_evidence 替代物与
-   REPRODUCE 的 baseline evidence 来源;
+2. **捕获基线失败**:GBS 构建一次 → FAIL,保存完整 raw log 为
+   `ci_evidence.log` 并记 sha256;随后用真实 `gbs_analyzer` 分析该
+   log,保存 `evidence_packet.json` 并另记 sha256。raw log 是 unit 层
+   CI evidence 替代物与审计锚;REPRODUCE/convergence 只消费 analyzer
+   evidence JSON;
 3. **种子脚本 `seed_unit.py`**(冻结 API only):
    - `ensure_schema` → `create_unit`(真实身份字段、
-     primary_arch=armv7l、failed_arches=["armv7l"]、
+     primary_arch=standard-armv7l、failed_arches=["standard-armv7l"]、
      max_rounds=3、max_build_invocations=6、ci_evidence 三元组);
-   - `append_event(REPRODUCE, ...)`:evidence=基线日志真实路径+
+   - `append_event(REPRODUCE, ...)`:evidence=analyzer JSON 真实路径+
      sha256,outcome=matched,fingerprint 按
-     `convergence.py::_primary_fingerprint` 对真实日志计算(权威
-     来源,不许自算);
+     `convergence.py::_primary_fingerprint` 对该 JSON 计算(权威
+     来源,不许自算);payload `basis` 另记 raw log 路径+sha256;
    - 跑后用 sqlite3 只读查询贴出 unit 行与 REPRODUCE 事件原文。
 4. **准备两份 edit_spec**:
    - `es_round1.json`:**不完全修复**(改了但引入另一个确定性
@@ -56,8 +64,22 @@ API 吃真实数据的首次检验);②ci_evidence 用本地捕获的失败日�
 ## E2. 修复弧(核心验证)
 
 **R1(FAIL→6a)**:
-`python -m ci_triage campaign-repair-step --unit <key> --arch armv7l
---round-index 1 --edit-spec es_round1.json ...`
+
+```bash
+PYTHONPATH=tizen-ci-triage/scripts:tizen-gbs-log-analysis/scripts:tizen-gbs-patch-suggest/scripts \
+  .venv/bin/python -m ci_triage campaign-repair-step \
+  --campaign-unit-key <key> \
+  --state-db tmp/campaign-smoke/state.db \
+  --config tmp/campaign-smoke/campaign.yaml \
+  --round-index 1 \
+  --edit-spec tmp/campaign-smoke/es_round1.json \
+  --arch standard-armv7l
+```
+
+R2/E3/E4 的 repair-step 调用复用以上完整参数集合,只替换 unit、round
+和 edit_spec;`--arch` 始终传 raw `standard-armv7l`。实现映射后的
+`arch_norm=armv7l` 用于 DB 事件、workspace 与 `gbs -A armv7l`。
+
 断言(逐条贴原文):
 - exit=0(FAIL 但流程正常),stdout 为**单个可 `jq` 解析的 JSON**,
   固定字段齐(含空 `reconciliation`/`warnings`);

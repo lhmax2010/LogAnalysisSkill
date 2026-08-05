@@ -1,4 +1,4 @@
-# E2E Smoke Report v1: stopped at RC E1 architecture-CLI gate
+# E2E Smoke Report v1: RC resumed under runbook v3
 
 Date: 2026-08-05 (Asia/Shanghai)
 
@@ -7,7 +7,7 @@ Branch: `clang-fix-campaign`
 Code under test: `269321820abe0eddb7db345dcb26ffaedc7127c6`
 (`checkpoint/p45_code_ready`)
 
-Result: **STOPPED -- resumed E1, then found a new runbook/CLI contradiction**
+Result: **IN PROGRESS -- change_42 adjudicated, resuming at E1 unit seed**
 
 This report follows the frozen stop-and-report protocol. No runtime code or
 frozen design text was changed to accommodate the discrepancies below. The
@@ -258,6 +258,39 @@ derive `gbs -A armv7l`, but v2 said all other runbook clauses were unchanged.
 Changing the command without adjudication would therefore violate the same
 stop-and-report rule that produced change_41.
 
+### Plan-external validation: architecture fail-closed path
+
+Although the wrong runbook argument stopped RC, it unintentionally exercised a
+real safety path end to end. The public CLI returned:
+
+- process exit 4;
+- `REJECTED_IDENTITY_MISMATCH`;
+- one deterministic JSON object;
+- zero DB writes (the DB file was not created);
+- `invocations_used=0` and no GBS build.
+
+The architecture whitelist therefore behaved in the real process exactly as
+the frozen fail-closed identity gate specifies.
+
+## Runbook v3 CLI audit
+
+Every invocation in the runbook was compared with process-level `--help` and
+design §4.1 before resuming:
+
+| Invocation | v1/v2 text | v3 correction | Basis |
+|---|---|---|---|
+| repair-step unit key | `--unit <key>` | `--campaign-unit-key <key>` | CLI required option |
+| repair-step architecture | `--arch armv7l` | `--arch standard-armv7l` | §4.1 `arch_raw` page-name form |
+| repair-step required inputs | trailing `...` | explicit `--state-db` and `--config` | CLI required options |
+| repair-step round/edit | names already correct | retained | CLI required options |
+| repair-step timeout | omitted | retained as optional | CLI `[--wall-timeout]` |
+| GBS preflight | `gbs build --help` | retained | real GBS 2.0.6 help |
+| DB inspection | read-only `sqlite3` | retained | not a state-writing API |
+
+The nearby E1 seed fields were corrected from normalized `armv7l` to raw
+`standard-armv7l`; event queries and workspace assertions retain normalized
+`armv7l`. No other CLI invocation mismatch was found.
+
 ## Execution matrix
 
 | Stage | Result | Notes |
@@ -265,8 +298,8 @@ stop-and-report rule that produced change_41.
 | E0 GBS/toolchain | PASS | Real armv7l LLVM 22.1.8 chroot confirmed |
 | E0 clean baseline | PASS | zlib built successfully; canonical log captured |
 | E1 raw failure + analyzer | PASS | Real GBS exit 1; analyzer JSON and separate hashes captured |
-| E1 unit seed | NOT RUN | Blocked by runbook `armv7l` versus CLI `standard-armv7l` contract |
-| E2 repair arc | NOT RUN | Must not bypass the unadjudicated architecture-input contract |
+| E1 unit seed | PENDING | change_42 closed; resumes under audited v3 command |
+| E2 repair arc | PENDING | Starts after the resumed E1 unit seed succeeds |
 | E3 crash recovery | NOT RUN | Depends on a valid seeded unit |
 | E4 edge cases | NOT RUN | Depends on a valid seeded unit |
 | E6 historical cases | NOT RUN | Deferred by the E1 stop; resumed scope and inputs are recorded |
@@ -284,14 +317,10 @@ stop-and-report rule that produced change_41.
 
 ## Required adjudication
 
-Evidence/input adjudication is closed in
-`docs/clang-fix-campaign/design_changes/change_41.md`. The current stop is
-tracked in `docs/clang-fix-campaign/design_changes/change_42.md`.
+Evidence/input adjudication is closed in change_41 and architecture-input
+adjudication is closed in change_42. The authoritative smoke procedure is now
+the v3 header and corrected command in `e2e-smoke-runbook.md`.
 
-The recommended resolution is to amend all repair-step smoke commands to pass
-the raw architecture `standard-armv7l`, while keeping assertions and DB queries
-on normalized `armv7l`. This matches the public CLI, the unit schema, and the
-existing `_gbs_arch()` conversion without changing runtime behavior.
-
-Until change_42 is adjudicated, this RC result is **stopped**, not failed and
-not waived.
+RC resumes from E1 unit seeding using the already captured raw log and analyzer
+JSON hashes. Later reality/design differences remain subject to the unchanged
+stop-and-report protocol.
