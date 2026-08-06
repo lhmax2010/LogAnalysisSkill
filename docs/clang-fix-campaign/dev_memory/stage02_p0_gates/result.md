@@ -25,6 +25,8 @@ python3 docs/clang-fix-campaign/tools/check_design_doc.py --self-test
 python3 docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md
 ```
 
-## Remaining TODO
+## Final status
 
-None for the P0 contract gate. Real behavior validation belongs to RC.
+None. RC subsequently completed real behavior validation without weakening or
+changing the P0 contract gates. RD reran the checker at 33/33 and the frozen
+design at `OK: 0 problem`.

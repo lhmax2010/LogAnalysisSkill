@@ -13,7 +13,10 @@
 - Concurrency, append-only behavior, exact event binding, evidence CHECK, and
   convergence uniqueness have direct tests.
 
-## Remaining TODO
+## Final status
 
-- The layer is unit-tested; RC must exercise it through a real build arc and
-  crash-recovery process boundary.
+COMPLETE. RC exercised this layer through real build arcs, a SIGKILL window,
+re-entry, invocation accounting, HELD reachability, budget exhaustion, and
+concurrent process locking. The recovered PASS reused the original invocation
+and verification record without a second build or charge. No stage-local TODO
+remains.

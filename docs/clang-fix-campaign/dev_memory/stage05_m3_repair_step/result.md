@@ -14,9 +14,10 @@
 - Checkpoint tag: `checkpoint/p45_code_ready` at full commit
   `269321820abe0eddb7db345dcb26ffaedc7127c6`.
 
-## Remaining TODO
+## Final status
 
-- Real GBS synthetic and historical-case smoke (RC).
-- Process-level kill-window recovery, concurrent lock, budget terminal, and
-  HELD reachability validation (RC).
-- External three-way review closure and final PR (RB/RD).
+COMPLETE. RC covered real GBS synthetic and historical/source cases, the
+process kill window, lock loser, budget terminal, and HELD reachability. RB
+produced the external three-way review package. RD reran the 70 campaign tests,
+the 820-test full suite, CLI smoke, ruff, and mypy; only PR human review remains
+as a project-level gate, not a stage implementation TODO.

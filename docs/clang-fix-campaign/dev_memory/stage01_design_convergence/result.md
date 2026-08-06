@@ -29,7 +29,9 @@
   restarts numbering at 1. The requested canonical 1-7 ledger follows
   changes 37-40; the earlier two are retained as a prelude.
 
-## Remaining TODO
+## Final status
 
-- Complete three-way final review (RB).
-- Validate the frozen semantics against real GBS/filesystem behavior (RC).
+COMPLETE. RB produced the three-way design/code packages, and RC validated the
+frozen semantics against real GBS 2.0.6, Clang/LLVM 22.1.8, Git, filesystem,
+process-lock, and crash-recovery behavior. Changes 41-43 were closed without a
+design change. No stage-local TODO remains.

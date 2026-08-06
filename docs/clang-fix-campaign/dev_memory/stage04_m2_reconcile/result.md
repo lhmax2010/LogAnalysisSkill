@@ -14,7 +14,10 @@
 - The implementation uses a transaction-internal link primitive; no nested
   immediate transaction is opened from reconciliation.
 
-## Remaining TODO
+## Final status
 
-- RC E3 must prove the relink path across a real killed process, with no second
-  build and no second budget charge.
+COMPLETE. RC E3 killed the process after verification record creation and
+before campaign link. Re-entry relinked verification
+`00f34aa5-9b89-4b71-9773-ea427fdfa86a` to the original invocation, left
+`invocations_used=1`, and preserved the build log SHA/size/mtime. No second
+build or budget charge occurred.

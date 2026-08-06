@@ -36,10 +36,10 @@ and command transcript are in `../../review/e2e-smoke-report-v1.md`.
    campaign link for both the historical packaging case and the constructed
    source case.
 
-## Remaining work
+## Final status
 
-- RD close-out and human review remain outside RC.
-- The formatter-valid `insert_after` versus campaign old/new guard mismatch is
-  recorded as a non-blocking integration seam; no guard was weakened.
-- No residual TODO is required for C++ rich-diagnostic fingerprint stability;
-  E6' directly covered it before the P5 gate.
+COMPLETE. E1-E6 and E5 reporting are closed. The formatter-valid
+`insert_after` versus campaign old/new guard mismatch remains a named,
+non-blocking integration seam; the guard was not weakened. C++ rich-diagnostic
+fingerprint stability was directly covered by E6'. RD close-out evidence is
+recorded separately; PR human review is the only remaining project-level gate.
