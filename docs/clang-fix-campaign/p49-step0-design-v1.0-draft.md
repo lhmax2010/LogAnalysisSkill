@@ -19,11 +19,22 @@
 且 release 打包时六 skill 各自都要拖一份 ci_triage 依赖。
 
 **决策**:建独立顶级包 **`tizen_ci_shared`**(与六 skill、ci_triage
-编排层平级),承载全部 C 类库。依赖方向单向冻结:
+编排层平级),承载全部 C 类库。依赖方向单向冻结,
+shared 内部也不是扁平层:
 
 ```
 skill 包  ──→  tizen_ci_shared  ←──  ci_triage(编排层)
-              (谁都能向下依赖,shared 不依赖任何上层)
+                    |
+                    v
+      L1: state | workspace | classify
+                    |
+                    v
+             L0: quickbuild_http
+                    |
+                    v
+              L-1: types(最底层)
+
+依赖只能沿箭头向下:types < quickbuild_http < L1。
 ```
 
 - **shared 不 import 任何 skill、不 import ci_triage 编排层**(CI 加
@@ -36,22 +47,104 @@ skill 包  ──→  tizen_ci_shared  ←──  ci_triage(编排层)
 
 ```
 tizen_ci_shared/
-  state/         # 现 ci_triage/state/{db,keys,records}.py 整体迁入
-  types.py       # 跨 skill 数据类型(§2)
-  workspace/     # marker 权威 + 跨消费方 worktree 原语(§3)
-  classify.py    # 现 verify/failure_classify.py(REPAIR_DENIED 等)
-  quickbuild_http.py  # QuickBuild HTTP 公共面 + GBS report fetch 组(§4)
+  types.py             # L-1:跨 skill 纯数据类型(§2)
+  quickbuild_http.py   # L0:QuickBuild HTTP 公共面 + GBS fetch(§4)
+  state/               # L1:现 ci_triage/state/{db,keys,records}.py
+  workspace/           # L1:marker 权威 + 跨消费方原语(§3)
+  classify.py          # L1:现 verify/failure_classify.py
 ```
 
-**归属边界(符号自证 round 2)**:
+**归属边界(符号自证 round 2 + v1.3 分层)**:
 - QuickBuild HTTP 基础件横跨编排层、discovery 与 report,
-  `quickbuild_http.py` 是共享地基,**不是 qb-discover 私有客户端**;
-- `fetch_gbs_report` / `download_gbs_package_buildlog` 归 shared,
-  parse/render 留 triage-report,两组不直接互调;
+  归 `shared/quickbuild_http`;GBS 结果类型归最底层
+  `shared/types`,HTTP/fetch 向下依赖 types 合法;
+- `fetch_gbs_report` / `download_gbs_package_buildlog` 归
+  `shared/quickbuild_http`,parse/render 留 triage-report,两组不直接互调;
 - `edit_spec_guard` 实测消费方仅 build_verify,随
   **build-verify** 移动,不进 shared;
-- `failure_classify` 模块的 `REPAIR_DENIED` 语义被 wrapper 消费,
-  因此整体归 shared;`FailureClassification` 类型随模块同宿。
+- `failure_classify` 模块语义被 wrapper 消费,整体归
+  `shared/classify`;`FailureClassification` 随模块同宿。
+
+### 1.3 shared 内部三层契约(v1.3)
+
+shared 内部顺序冻结为:
+
+```
+L1:  state | workspace | classify
+                    ↓
+L0:        quickbuild_http
+                    ↓
+L-1:             types
+```
+
+三条可机械验证的层规则:
+1. **低层禁止上行**:`types` 不 import 任何 shared 子层;
+   `quickbuild_http` 只可 import `types`,不可 import L1。
+2. **L1 同层独立**:`state` / `workspace` / `classify` 之间不得
+   直接或间接横向 import;三者可依赖 L0/L-1。
+3. **shared 不得上行**:任何 shared 子层都不得 import
+   `ci_triage` 编排层或六个 skill 包。
+
+#### import-linter 配置草案(step-0 实现时落盘)
+
+以下是 `.importlinter` 契约草案,层次从高到低排列;
+`|` 表示同层 sibling 独立。实现时若包 import root 改名,
+包名与此配置必须在同一 commit 一起改,不得改语义。
+
+```ini
+[importlinter]
+root_packages =
+    tizen_ci_shared
+    ci_triage
+    tizen_qb_discover
+    tizen_gerrit_fetch
+    tizen_build_verify
+    tizen_convergence_judge
+    tizen_gerrit_submit
+    tizen_triage_report
+
+[importlinter:contract:shared-layers]
+name = shared layers: L1 -> quickbuild_http -> types
+type = layers
+containers =
+    tizen_ci_shared
+layers =
+    state | workspace | classify
+    quickbuild_http
+    types
+
+[importlinter:contract:shared-l1-independence]
+name = shared L1 domains are independent
+type = independence
+modules =
+    tizen_ci_shared.state
+    tizen_ci_shared.workspace
+    tizen_ci_shared.classify
+
+[importlinter:contract:shared-no-upward-imports]
+name = shared must not import orchestrator or skills
+type = forbidden
+source_modules =
+    tizen_ci_shared
+forbidden_modules =
+    ci_triage
+    tizen_qb_discover
+    tizen_gerrit_fetch
+    tizen_build_verify
+    tizen_convergence_judge
+    tizen_gerrit_submit
+    tizen_triage_report
+```
+
+S3-A 反向验证(每条都必须在 step-0 实现时先证明会红,
+再撤销故意违规):
+- **layers contract**:在 `types.py` 故意 import `quickbuild_http`,
+  或在 `quickbuild_http.py` 故意 import `state`,
+  `lint-imports` 必须失败;
+- **independence contract**:在 `state` 故意 import `workspace`,
+  `lint-imports` 必须失败;
+- **forbidden contract**:在 `classify.py` 故意 import `ci_triage`
+  (或任一 skill root),`lint-imports` 必须失败。
 
 ## §2 跨 skill 数据类型下沉(types.py)
 
@@ -61,11 +154,11 @@ tizen_ci_shared/
 |---|---|---|---|
 | `SourceFetchResult` | gerrit.py | report + gerrit-fetch 产出 | 迁 shared/types |
 | `FailedPackage` | quickbuild_log.py | orchestrator + report + runner | 迁 shared/types |
-| `DisposableWorktree` | verify/workspace.py | workspace 内部创建/清理链(外部无直接类名引用) | 迁 shared(随 workspace,§3) |
-| `WorkspaceViolation` | verify/workspace.py | campaign_repair_step + workspace 内部链 | 迁 shared(随 workspace,§3) |
-| `FailureClassification` | verify/failure_classify.py | 类名直接消费方仅 build_verify;classify 模块语义另被 wrapper 消费 | 随 classify.py 迁 shared |
+| `DisposableWorktree` | verify/workspace.py | workspace 内部创建/清理链(外部无直接类名引用) | 迁 shared/workspace |
+| `WorkspaceViolation` | verify/workspace.py | campaign_repair_step + workspace 内部链 | 迁 shared/workspace |
+| `FailureClassification` | verify/failure_classify.py | 类名直接消费方仅 build_verify;classify 模块语义另被 wrapper 消费 | 随 shared/classify 同宿 |
 | `GbsReportPackage` | gbs_report.py | orchestrator + runner | 迁 shared/types |
-| `GbsReport` | gbs_report.py | `fetch_gbs_report` 内部构造/返回 | 迁 shared/types(随 shared fetch 结果契约) |
+| `GbsReport` | gbs_report.py | `fetch_gbs_report` 内部构造/返回 | 迁 shared/types(最底层) |
 
 **原定义处留 re-export shim**(`from tizen_ci_shared.types import X`),
 **P4.9 全部 skill 抽取完成后统一删除**(不留永久 shim,提纲第 0 条)。
@@ -85,27 +178,27 @@ workspace.py 有**两个** marker,均为格式权威,**整体归 shared**,
 
 **格式权威归位**:两个 FILENAME 常量 + `_read_marker` + marker 结构
 = shared 唯一定义;**build-verify 只拥有"何时写"的调用语义**,调
-shared 的 `mark_worktree_protected` / `write_workdir_marker`,不自持任何
-marker 格式常量。
+shared/workspace 的 `mark_worktree_protected` /
+`write_workdir_marker`,不自持任何 marker 格式常量。
 
 ### 3.2 函数级归属表(附调用图证据,⑩补强要求)
 
 | 符号 | 完整调用图(非仅 import) | 归属 |
 |---|---|---|
 | `create_worktree` | 仅 build_verify;目标实现调 shared `write_workdir_marker` | **build-verify** |
-| `check_disk_and_maybe_cleanup` | 仅 build_verify;内部调 cleanup_worktree | **build-verify**(下行依赖 shared) |
+| `check_disk_and_maybe_cleanup` | 仅 build_verify;内部调 cleanup_worktree | **build-verify**(下行依赖 shared/workspace) |
 | `_copy_repository` | 仅 create_worktree:58(单消费方) | **build-verify**(随 create_worktree) |
-| `cleanup_worktree` | build_verify.py:143 + workspace 内部 :124/:186(双消费方) | **shared** |
-| `cleanup_disposable_copy` | campaign_repair_step(wrapper) | **shared** |
-| `is_protected` | campaign_repair_step(wrapper) | **shared** |
-| `release_worktree_protection` | gerrit_submit(submit) | **shared** |
-| `mark_worktree_protected` | build_verify | **shared**(格式权威;build-verify 调用) |
-| `write_workdir_marker` | S-1 待建原语;create_worktree 将调用 | **shared**(`status=to-be-created`) |
-| `_oldest_worktrees`/`_run_git`/`_verify_cleanup_handle` | shared 清理链内部 | **shared** |
-| `_exclude_private_files` | create_worktree:59 + mark 侧:137(跨界) | **shared** |
-| marker 全套(2×FILENAME + `_read_marker`) | 三方 | **shared** |
-| `DisposableWorktree` | workspace 内部创建/清理链 | **shared** |
-| `WorkspaceViolation` | campaign_repair_step + workspace 内部链 | **shared** |
+| `cleanup_worktree` | build_verify + workspace 内部链 | **shared/workspace** |
+| `cleanup_disposable_copy` | campaign_repair_step(wrapper) | **shared/workspace** |
+| `is_protected` | campaign_repair_step(wrapper) | **shared/workspace** |
+| `release_worktree_protection` | gerrit_submit(submit) | **shared/workspace** |
+| `mark_worktree_protected` | build_verify | **shared/workspace**(格式权威) |
+| `write_workdir_marker(worktree_path: Path) -> None` | S-1 待建原语;create_worktree 将调用;写 `MARKER_FILENAME` + marker dict | **shared/workspace**(`status=to-be-created`) |
+| `_oldest_worktrees`/`_run_git`/`_verify_cleanup_handle` | workspace 清理链内部 | **shared/workspace** |
+| `_exclude_private_files` | create_worktree + mark 侧(跨界) | **shared/workspace** |
+| marker 全套(2×FILENAME + `_read_marker`) | 三方 | **shared/workspace** |
+| `DisposableWorktree` | workspace 内部创建/清理链 | **shared/workspace** |
+| `WorkspaceViolation` | campaign_repair_step + workspace 内部链 | **shared/workspace** |
 
 **判据**:单消费方随消费者(`create_worktree`/`_copy_repository`→
 build-verify);多消费方或格式权威→shared。**skill→shared 的下行
@@ -119,24 +212,26 @@ build-verify);多消费方或格式权威→shared。**skill→shared 的下行
 下沉 shared(它是环境路径 helper,无编排语义);build_verify 与
 runner 均改 `import tizen_ci_shared`。
 
-## §4 QuickBuild HTTP / GBS report 归属(符号自证 round 2)
+## §4 QuickBuild HTTP / GBS report 归属(v1.3 分层)
 
 `quickbuild.py` 和 `gbs_report.py` 当前混合 HTTP、GBS 抓取、解析
-与编排层默认值。round-2 按完整公共面裁决为三层:
+与编排层默认值。round-2 符号自证后的完整归属为:
 
 | 组 | 完整符号面 | 实测消费方/内部链 | 归属 |
 |---|---|---|---|
-| HTTP 常量/类型 | `DEFAULT_QUICKBUILD_BASE_URL` / `DEFAULT_COOKIE_PATH` / `DOWNLOAD_LINK_MARKER` / `DOWNLOAD_TIZEN_BASE_URL` / `HttpFetcher` / `HttpResponse` / `QuickBuildDownload` / `PackageBuildLog` / `QuickBuildError` | gbs_report + sources + runner/orchestrator/CLI;其余为 HTTP 内部契约 | **shared/quickbuild_http** |
-| HTTP 函数 | `load_cookie_jar` / `download_full_log` / `find_download_href` / `derive_package_buildlog_url` / `download_package_buildlog` / `_raise_if_login_page` / `_urllib_fetch` / `normalize_quickbuild_url` | 多消费方或 HTTP 内部链 | **shared/quickbuild_http** |
-| GBS fetch | `fetch_gbs_report` / `download_gbs_package_buildlog` | orchestrator + runner | **shared** |
+| HTTP 常量/类型 | `DEFAULT_QUICKBUILD_BASE_URL` / `DEFAULT_COOKIE_PATH` / `DOWNLOAD_LINK_MARKER` / `DOWNLOAD_TIZEN_BASE_URL` / `HttpFetcher` / `HttpResponse` / `QuickBuildDownload` / `PackageBuildLog` / `QuickBuildError` | gbs_report + sources + runner/orchestrator/CLI;其余为 HTTP 内部契约 | **shared/quickbuild_http(L0)** |
+| HTTP 函数 | `load_cookie_jar` / `download_full_log` / `find_download_href` / `derive_package_buildlog_url` / `download_package_buildlog` / `_raise_if_login_page` / `_urllib_fetch` / `normalize_quickbuild_url` | 多消费方或 HTTP 内部链 | **shared/quickbuild_http(L0)** |
+| GBS fetch | `fetch_gbs_report` / `download_gbs_package_buildlog` | orchestrator + runner | **shared/quickbuild_http(L0)** |
 | 编排默认值 | `DEFAULT_ARCHES` | 仅 orchestrator | **ci_triage(orchestrator,不下沉)** |
-| GBS 结果类型 | `GbsReportPackage` / `GbsReport` | orchestrator + runner / shared fetch 内部 | **shared/types** |
+| GBS 结果类型 | `GbsReportPackage` / `GbsReport` | orchestrator + runner / fetch 内部 | **shared/types(L-1 最底层)** |
 | parse/render | `find_iframe_src` / `parse_gbs_report_packages` / `_Anchor` / `_Cell` / `_Row` / `_Table` / `_CellBuilder` / `_AnchorBuilder` / `_IframeParser` / `_ReportTableParser` / `_looks_like_build_status_table` / `_row_to_package` / `_status_from_anchor` / `_attrs_to_map` / `_class_names` / `_normalize_text` | parse 内部链 | **tizen-triage-report** |
 
-**解耦约束**:shared GBS fetch 组只抓取并返回原始 report 对象,
+`GbsReportPackage` / `GbsReport` 是无行为的数据契约,放在
+types 最底层;`quickbuild_http` 的 fetch 组向下 import types 合法。
+**解耦约束**:fetch 组只抓取并返回原始 report 对象,
 不直接调 triage-report 的 `find_iframe_src` /
 `parse_gbs_report_packages`;调用方在编排或 report 侧显式解析。
-因此最终依赖方向是编排/skill → shared 与 triage-report,
+最终依赖方向为上层 → quickbuild_http → types,
 不存在 shared → skill/report 的上行依赖。
 
 ## §5 回归绑定与 parity(行为等价证明)
@@ -146,13 +241,20 @@ runner 均改 `import tizen_ci_shared`。
    `tizen_ci_shared.*`/skill 路径;**断言与 fixture 内容一字不改**。
    diff 审核标准:测试文件 diff 只含 import 行。
 2. **parity 归一化规则冻结**(字面逐字节做不到):比对下沉前后同
-   输入的输出对象,掩码三类易变字段——`at` 时间戳、worktree 绝对
-   路径、tmp 文件名;其余字段严格相等。marker 文件内容除时间戳外
-   逐字节相等。
-3. **import-linter 规则**:CI 加 `shared 不得 import skill/ci_triage`
-   + `skill 不得 import 其它 skill` 两条,物理保证依赖方向。
+   输入的输出对象,只掩码白名单内的易变字段——`at` 时间戳、
+   worktree 绝对路径、tmp 文件名、cookie 路径及 `base_url` 等
+   环境派生绝对路径;其余字段严格相等。marker 文件内容除时间戳外
+   逐字节相等。白名单不得用宽泛的“所有路径”替代,新增项须有
+   parity 差异证据。
+3. **import-linter 规则**:CI 落 §1.3 的 layers / independence /
+   forbidden 三条 contract,并保留 skill 间独立约束,物理保证依赖方向。
 4. **全量基线**:step-0 完成后测试数 == P4.9 启动 merge 基线数
    (change_46 落测试后的数,不写死),原样全绿。
+5. **round-2 审计锚点**:归属基线报告为
+   `docs/clang-fix-campaign/review/p49-step0-symbol-audit.md`,commit
+   `4b3029a`,报告文件 SHA-256
+   `54ab1b5cc5c7eac59f38475e85620c2e10ebeda813bf40a11c5f1324b25a37dc`。
+   v1.3 只细化 shared 子层标签,不得改变该轮实测消费方。
 
 ## §6 shim 生命周期与执行
 
@@ -160,22 +262,26 @@ runner 均改 `import tizen_ci_shared`。
   旧 import);
 - **删除清单**(P4.9 六 skill 全抽完后统一执行,单独 commit):
   gerrit.py/quickbuild_log.py/workspace.py/failure_classify.py/
-  edit_spec_guard.py 的 re-export 行;
+  edit_spec_guard.py 的 re-export 行,以及 `quickbuild.py` 中全部
+  HTTP 件的 re-export shim;
 - step-0 自身分**三个 commit**:①建 shared 包 + 迁 state/types
   ②迁 workspace(双 marker)+ classify/edit_spec + 反向依赖清理
-  ③gbs_report 切分 + import-linter 规则;每 commit 后全量绿。
+  ③gbs_report 切分 + import-linter 规则;**每个 commit 后全量测试
+  与 `lint-imports` 都必须绿**,不得只在第三个 commit 才检查层级。
 
 ## §7 DoD
 
-- [ ] shared 独立包建立,import-linter 两规则生效(反向 import →
-  构建失败,反向验证:故意加一条 skip→ 必须红);
+- [ ] shared 独立包建立,§1.3 三条 import-linter contract 生效;
+  layers / independence / forbidden 各自按冻结反向用例故意违规时
+  `lint-imports` 必须红,撤销违规后恢复绿;
 - [ ] 两个 marker 格式常量在 shared 唯一定义(grep 全仓 `FILENAME =`
   仅 shared 命中);
 - [ ] workspace 函数级归属按 §3.2 表落地,调用图证据附 dev_memory;
 - [ ] gbs_report 切分,report 无 qb-discover 私有 import(grep 证);
 - [ ] 全量测试 == 基线数、原样全绿;测试 diff 仅 import 行;
 - [ ] parity:build-verify/convergence 关键路径下沉前后归一化相等;
-- [ ] 三 commit 各自全绿;shim 清单登记待 P4.9 末删除。
+- [ ] 三 commit 各自全量测试 + `lint-imports` 全绿;shim 清单登记
+  待 P4.9 末删除。
 
 ---
 
@@ -382,3 +488,71 @@ to-be-created 项按归属声明校验),且 0 MISMATCH / 0 INCOMPLETE** →
 Claude 的人工表仅作草案、以脚本输出为准。这是⑥/⑨/⑩三条
 "实测优先"方法论的合流终点:能机械核验的结构断言,不接受人工"我
 看过了"。
+
+---
+
+# 附:v1.3 修正(两家 step-0 冻结前评审)——shared 内部分层 + 收口项
+
+**依据**:两家评审在同一洞的两面收敛——评审 A S3-1(shared 分层
+依赖倒置风险)+ 评审 B S3-A(import-linter 无法表达"包内分层")。
+核验确认:HTTP 件当前**不依赖 state**(grep 空),故 shared 五子层
+可分层、非既有坏依赖;评审要的是**设计上先立层级、防未来长出倒置**。
+以下按两家一致意见补,补后送第二轮 step-0 评审。
+
+## §1.3 shared 内部分层(v1.3 新增,S3-1/S3-A 合并裁决)
+
+shared 不是扁平包,内部按**依赖层级**冻结,层间单向向下:
+
+```
+shared/
+  L0 基础层(无 shared 内部依赖):
+    types.py            # 纯数据类型,不 import 任何 shared 子模块
+    quickbuild_http.py  # HTTP 原语,依赖 types(仅类型),不依赖 state
+  L1 领域层(可依赖 L0):
+    state/              # 账本,依赖 types
+    workspace/          # marker + worktree,依赖 types
+    classify.py         # 失败分类,依赖 types
+```
+
+**层规则(import-linter 用 layered contract 表达,S3-A)**:
+- L0 不得 import 任何 L1(types/quickbuild_http 不碰 state/workspace/
+  classify);
+- L1 之间不得横向 import(state 不依赖 workspace,反之亦然);
+- 全 shared 不得 import skill / ci_triage 编排层(原规则不变)。
+- **import-linter 配置**:用 `layers` contract 声明 L0<L1 + 每层
+  内模块 `independence` contract 声明同层不横向;**三条 contract
+  各配一个"故意违反→构建红"的反向验证**(S3-A 要求可证伪)。
+
+## 收口项(两家 MINOR/NIT,逐条)
+
+- **S3-2(评审 A)**:§4 明确 fetch 组入 shared/quickbuild_http 后,
+  其对 `GbsReportPackage` 的依赖方向——`GbsReportPackage` 属 types(L0),
+  fetch 组(L0 quickbuild_http)依赖 types(L0)属**同层**,违反"L0
+  内 quickbuild_http 不 import 其它 L0"?**裁决**:类型是 L0 的
+  **最底**,quickbuild_http 依赖 types 合法(types 是 L0 的 L0,即
+  "L-1 纯类型层");import-linter 里 types 单列最底层,quickbuild_http
+  可依赖 types、不可依赖任何有逻辑的模块。§1.3 层图 types 降为最底。
+- **S3-3(评审 A)**:parity 归一化白名单补 **cookie 路径 / base_url
+  等环境派生绝对路径**(除已列的 at/worktree/tmp 三类)——HTTP 件
+  下沉后测试会触及这些;
+- **S3-B(评审 B)**:§6 三 commit 划分补一句"每 commit 后 import-linter
+  必须绿",不只全量测试绿——分层规则每步都要守;
+- **S3-C(评审 B)**:`write_workdir_marker` 待建原语的签名在 §3.2
+  预冻(`write_workdir_marker(worktree_path: Path) -> None`,写
+  MARKER_FILENAME + marker dict),避免 Codex 实现时再猜;
+- **S3-D(评审 B)**:shim 删除清单(§6)补 `quickbuild.py` 的 HTTP
+  件 re-export（下沉 shared 后原位留 shim,P4.9 末删);
+- **NIT(两家)**:审计报告 SHA 锚点写进设计稿 §5(可追溯到具体
+  59/59 那次);§1.1 依赖图补 types 最底层箭头。
+
+## 复评条件
+Codex 按 v1.3 更新设计稿正文(§1.1/§1.3 分层、§4 types 层级、§6
+commit 约束)+ symbol_audit 若因 types 分层需调归属则复跑至全 OK →
+送第二轮 step-0 评审。分层是新增结构决策,值得两家再过一轮再冻。
+
+## 方法论记账(⑪)
+**⑪ 共享层必须内建依赖层级,不做扁平包。** 两家独立指出"扁平 shared
+会允许未来分层倒置"——单一共享包是"把所有共享物平摊,靠纪律不互相
+依赖"的隐性赌注,与本项目"物理强制优于软约束"相悖。凡建共享层,
+须同时冻结层级 + import-linter layered contract,让倒置在构建期物理
+不可能,而非评审期靠人看。

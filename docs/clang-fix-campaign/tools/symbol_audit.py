@@ -2,9 +2,9 @@
 """Statically audit P4.9 step-0 attribution tables against the source tree.
 
 This tool parses source text and Python ASTs only. It never imports or executes
-the modules being audited. The hard-coded inventory transcribes the final v1.1
-correction section of p49-step0-design-v1.0-draft.md together with the tables it
-amends.
+the modules being audited. The hard-coded inventory transcribes the final v1.3
+ownership decisions in p49-step0-design-v1.0-draft.md together with the tables
+they amend.
 """
 
 from __future__ import annotations
@@ -28,6 +28,7 @@ class SymbolSpec:
     gbs_surface: bool = False
     quickbuild_surface: bool = False
     status: str = "existing"
+    expected_owner: str | None = None
 
 
 WORKSPACE = "ci_triage/verify/workspace.py"
@@ -55,20 +56,20 @@ SPECS: tuple[SymbolSpec, ...] = (
         "DisposableWorktree",
         ("§2", "§3.2"),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
     ),
     SymbolSpec(
         "WorkspaceViolation",
         ("§2", "§3.2"),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         ("ci_triage.campaign_repair_step",),
     ),
     SymbolSpec(
         "FailureClassification",
         ("§2",),
         "ci_triage/verify/failure_classify.py",
-        "shared",
+        "shared/classify",
         ("ci_triage.verify.build_verify",),
     ),
     SymbolSpec(
@@ -112,7 +113,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "cleanup_worktree",
         ("§3.2",),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         ("ci_triage.verify.build_verify",),
         ("cleanup_disposable_copy", "check_disk_and_maybe_cleanup"),
     ),
@@ -120,14 +121,14 @@ SPECS: tuple[SymbolSpec, ...] = (
         "cleanup_disposable_copy",
         ("§3.2",),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         ("ci_triage.campaign_repair_step",),
     ),
     SymbolSpec(
         "is_protected",
         ("§3.2",),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         ("ci_triage.campaign_repair_step",),
         ("cleanup_disposable_copy", "check_disk_and_maybe_cleanup"),
     ),
@@ -135,63 +136,63 @@ SPECS: tuple[SymbolSpec, ...] = (
         "release_worktree_protection",
         ("§3.2",),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         ("ci_triage.verify.gerrit_submit",),
     ),
     SymbolSpec(
         "mark_worktree_protected",
         ("§3.2",),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         ("ci_triage.verify.build_verify",),
     ),
     SymbolSpec(
         "_oldest_worktrees",
         ("§3.2",),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         declared_internal=("check_disk_and_maybe_cleanup",),
     ),
     SymbolSpec(
         "_run_git",
         ("§3.2",),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         declared_internal=("create_worktree",),
     ),
     SymbolSpec(
         "_verify_cleanup_handle",
         ("§3.2",),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         declared_internal=("cleanup_worktree", "mark_worktree_protected"),
     ),
     SymbolSpec(
         "_exclude_private_files",
         ("§3.2",),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         declared_internal=("create_worktree", "mark_worktree_protected"),
     ),
     SymbolSpec(
         "MARKER_FILENAME",
         ("§3.1", "§3.2"),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         format_authority=True,
     ),
     SymbolSpec(
         "PROTECTED_FILENAME",
         ("§3.1", "§3.2"),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         format_authority=True,
     ),
     SymbolSpec(
         "_read_marker",
         ("§3.1", "§3.2"),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         declared_internal=(
             "cleanup_disposable_copy",
             "_verify_cleanup_handle",
@@ -203,17 +204,18 @@ SPECS: tuple[SymbolSpec, ...] = (
         "write_workdir_marker",
         ("§3.2", "S-1"),
         WORKSPACE,
-        "shared",
+        "shared/workspace",
         declared_internal=("create_worktree",),
         format_authority=True,
         status="to-be-created",
+        expected_owner="shared/workspace",
     ),
     # §4 fetch half and its explicitly named quickbuild dependencies.
     SymbolSpec(
         "fetch_gbs_report",
         ("§4",),
         GBS_REPORT,
-        "shared",
+        "shared/quickbuild_http",
         ("ci_triage.runner", "ci_triage.orchestrator"),
         gbs_surface=True,
     ),
@@ -221,7 +223,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "download_gbs_package_buildlog",
         ("§4",),
         GBS_REPORT,
-        "shared",
+        "shared/quickbuild_http",
         ("ci_triage.runner", "ci_triage.orchestrator"),
         gbs_surface=True,
     ),
@@ -237,7 +239,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "HttpFetcher",
         ("§4",),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         ("ci_triage.gbs_report", "ci_triage.sources"),
         quickbuild_surface=True,
     ),
@@ -245,7 +247,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "QuickBuildError",
         ("§4",),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         (
             "ci_triage.gbs_report",
             "ci_triage.orchestrator",
@@ -258,7 +260,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "_raise_if_login_page",
         ("§4",),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         ("ci_triage.gbs_report", "ci_triage.sources"),
         quickbuild_surface=True,
     ),
@@ -266,7 +268,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "_urllib_fetch",
         ("§4",),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         ("ci_triage.gbs_report", "ci_triage.sources"),
         quickbuild_surface=True,
     ),
@@ -274,7 +276,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "DEFAULT_COOKIE_PATH",
         ("§4",),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         (
             "ci_triage.batch_cli",
             "ci_triage.cli",
@@ -289,7 +291,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "DEFAULT_QUICKBUILD_BASE_URL",
         ("§4",),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         ("ci_triage.gbs_report", "ci_triage.sources"),
         quickbuild_surface=True,
     ),
@@ -297,7 +299,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "load_cookie_jar",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         ("ci_triage.gbs_report", "ci_triage.sources"),
         quickbuild_surface=True,
     ),
@@ -305,7 +307,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "DOWNLOAD_LINK_MARKER",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         declared_internal=("find_download_href",),
         quickbuild_surface=True,
     ),
@@ -313,7 +315,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "DOWNLOAD_TIZEN_BASE_URL",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         declared_internal=("derive_package_buildlog_url",),
         quickbuild_surface=True,
     ),
@@ -321,28 +323,28 @@ SPECS: tuple[SymbolSpec, ...] = (
         "HttpResponse",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         quickbuild_surface=True,
     ),
     SymbolSpec(
         "QuickBuildDownload",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         quickbuild_surface=True,
     ),
     SymbolSpec(
         "PackageBuildLog",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         quickbuild_surface=True,
     ),
     SymbolSpec(
         "download_full_log",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         ("ci_triage.orchestrator", "ci_triage.runner"),
         quickbuild_surface=True,
     ),
@@ -350,7 +352,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "find_download_href",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         declared_internal=("download_full_log",),
         quickbuild_surface=True,
     ),
@@ -358,7 +360,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "derive_package_buildlog_url",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         declared_internal=("download_package_buildlog",),
         quickbuild_surface=True,
     ),
@@ -366,7 +368,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "download_package_buildlog",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         ("ci_triage.runner",),
         quickbuild_surface=True,
     ),
@@ -374,7 +376,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "normalize_quickbuild_url",
         ("§4", "v1.2-A"),
         QUICKBUILD,
-        "shared",
+        "shared/quickbuild_http",
         declared_internal=("_urllib_fetch",),
         quickbuild_surface=True,
     ),
@@ -741,9 +743,15 @@ def _audit_one(
     by_relative = {source.relative: source for source in sources}
     evidence = _raw_evidence(sources, spec)
     if spec.status == "to-be-created":
-        planned_reasons = (
-            () if spec.owner == "shared" else ("to-be-created owner must be shared",)
-        )
+        planned_reasons: tuple[str, ...]
+        if spec.expected_owner is None:
+            planned_reasons = ("to-be-created expected_owner must be declared",)
+        elif spec.owner == spec.expected_owner:
+            planned_reasons = ()
+        else:
+            planned_reasons = (
+                f"to-be-created owner must be {spec.expected_owner}",
+            )
         return AuditResult(
             spec,
             "TO_BE_CREATED",
@@ -879,9 +887,11 @@ def _public_surface(source: SourceFile) -> set[str]:
 def _declared_text(spec: SymbolSpec) -> str:
     consumers = ",".join(spec.declared_consumers) or "-"
     internal = ",".join(spec.declared_internal) or "-"
+    expected_owner = spec.expected_owner or "-"
     return (
         f"sections={'+'.join(spec.sections)}; status={spec.status}; owner={spec.owner}; "
-        f"consumers=[{consumers}]; internal=[{internal}]"
+        f"expected_owner={expected_owner}; consumers=[{consumers}]; "
+        f"internal=[{internal}]"
     )
 
 
