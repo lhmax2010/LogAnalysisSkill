@@ -2,7 +2,7 @@
 """Statically audit P4.9 step-0 attribution tables against the source tree.
 
 This tool parses source text and Python ASTs only. It never imports or executes
-the modules being audited. The hard-coded inventory transcribes the final v1.3
+the modules being audited. The hard-coded inventory transcribes the final v1.6
 ownership decisions in p49-step0-design-v1.0-draft.md together with the tables
 they amend.
 """
@@ -34,6 +34,7 @@ class SymbolSpec:
 WORKSPACE = "ci_triage/verify/workspace.py"
 GBS_REPORT = "ci_triage/gbs_report.py"
 QUICKBUILD = "ci_triage/quickbuild.py"
+RUNNER = "ci_triage/runner.py"
 
 
 SPECS: tuple[SymbolSpec, ...] = (
@@ -71,6 +72,18 @@ SPECS: tuple[SymbolSpec, ...] = (
         "ci_triage/verify/failure_classify.py",
         "shared/classify",
         ("ci_triage.verify.build_verify",),
+    ),
+    SymbolSpec(
+        "discover_sibling_pythonpath",
+        ("§3.3",),
+        RUNNER,
+        "shared/env",
+        (
+            "ci_triage.batch_cli",
+            "ci_triage.cli",
+            "ci_triage.orchestrator",
+            "ci_triage.verify.build_verify",
+        ),
     ),
     SymbolSpec(
         "GbsReportPackage",
