@@ -24,7 +24,7 @@ rg -n "<symbol or test name>" tizen-ci-triage/scripts/ci_triage \
 | D3 | The write-all/priority paragraph could be read as allowing b/b'/c/d after a0 or attribution ambiguity. | `design.md:1236`, `1268`, `1367-1377` now require HELD plus immediate return and limit the priority formula to c and clean groups coexisting. |
 | D4 | Terminal release naming was split between a bare protection release and campaign lifecycle release. | `design.md:1031`, `1649`, `2240`, `2309` consistently name `release_terminal_worktrees`; `ROUNDS_EXHAUSTED` remains an explicit terminal state at `1019`. |
 | D5 | FK behavior was described but the pragma-off reverse proof was absent. | `design.md:2054-2057` states the FK premise; DoD `design.md:2772-2773` requires the same raw SQL to succeed with `foreign_keys=OFF`. |
-| D6 | Comment prefixes were lost and checker fixtures did not prove real-document/unclosed-fence behavior. | Prefixes are restored around `design.md:1394-1400`, `1431-1437`, `1576-1580`; gate 7g at `3024` names real-document Python and unclosed-fence checks. Checker self-test is 38/38. |
+| D6 | Comment prefixes were lost and checker fixtures did not prove real-document/unclosed-fence behavior. | Prefixes are restored at `design.md:1425`, `1459-1461`, `1599-1600`; gate 7g at `3024` names real-document Python and unclosed-fence checks. Checker self-test is 38/38. |
 | D7 | Residual copy recovery risked deleting protected or PASS-bound evidence. | `design.md:1399-1403` keeps cleanup limited to unprotected, non-PASS-bound copies and puts it before charging; wrapper tests at `1268`, `1291`, `1325` cover all three cases. |
 | D8 | Orphan error mapping/no-slot reason/non-REJECTED error grep were incomplete. | `design.md:1345` names `no_free_invocation_slot`; exits at `1578` and `2040` map `REJECTED_ORPHAN_PASS_HELD`; error registry at `2470`; gate search at `3022` includes non-REJECTED names. |
 | D9 | The CONVERGENCE rewrite had dropped required fields/enums and the invalid-combination fallback. | The table row at `design.md:833` restores `at`, all enums, FAIL evidence, null rules, and `PayloadSchemaError`; DoD checks are at `2791-2800`. |
@@ -36,7 +36,7 @@ rg -n "<symbol or test name>" tizen-ci-triage/scripts/ci_triage \
 | ID | Executable grep proof |
 |---|---|
 | X1 | `_run_locked` is at `campaign_repair_step.py:216`; the same-round dual-arch test is `test_campaign_repair_step.py:1147`. |
-| X2 | Atomic materialization is `campaign_repair_step.py:1156-1188` (`mkstemp`, flush/fsync, `os.link`, EEXIST hash verification); race/failure tests are at `1049`, `1071`, `1094`. |
+| X2 | Atomic materialization is `campaign_repair_step.py:1156-1186` (`mkstemp`, flush/fsync, `os.link`, EEXIST hash verification); race/failure tests are at `1049`, `1071`, `1094`. |
 | X3 | a0 malformed/null invocation checks are exercised by `test_campaign_reconcile.py:463` and `497`. |
 | X4 | PASS is atomic through `campaign_state.py:840`; event validation tests start at `test_campaign_state.py:544` and `584`. |
 | X5 | Truncated-evidence adoption rejection is `test_campaign_state.py:718`. |
@@ -62,3 +62,6 @@ check_design_doc.py --self-test: 38/38 passed
 check_design_doc.py design.md: OK, 0 problem
 design.md vs v1.5.18-FROZEN snapshot: byte-equal
 ```
+
+Line numbers were individually rechecked against the v1.5.18 authoritative
+body (sha256: `37b5399af21bcd4aa8e5d6f2ae4cbc70b4a28484c606683f51352d58f3028160`).
