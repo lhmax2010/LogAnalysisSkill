@@ -36,6 +36,7 @@ from ci_triage.campaign_state import (
     get_unit,
     invocations_used,
     latest_reproduce,
+    latest_status,
     link_verification_with_convergence,
     reconcile_pass_and_invocations,
 )
@@ -48,9 +49,14 @@ from ci_triage.verify.failure_classify import (
     REPAIR_DENIED,
     REPAIR_NEEDS_CONFIRMATION,
 )
+from ci_triage.verify.workspace import (
+    WorkspaceViolation,
+    cleanup_disposable_copy,
+    is_protected,
+)
 
 EXIT_OK = 0
-EXIT_INVALID_ARGS = 2
+EXIT_INVALID_ARGS = 5
 EXIT_REJECTED = 4
 EXIT_TOOLING = 5
 
@@ -59,6 +65,7 @@ REJECTED_PREVIOUS_EVIDENCE_MISSING = "REJECTED_PREVIOUS_EVIDENCE_MISSING"
 REJECTED_BASELINE_EVIDENCE_MISMATCH = "REJECTED_BASELINE_EVIDENCE_MISMATCH"
 REJECTED_CONF_DRIFT = "REJECTED_CONF_DRIFT"
 REJECTED_STATE_INCONSISTENT = "REJECTED_STATE_INCONSISTENT"
+REJECTED_ORPHAN_PASS_HELD = "REJECTED_ORPHAN_PASS_HELD"
 CAMPAIGN_STATE_BUSY = "CAMPAIGN_STATE_BUSY"
 
 REPAIR_ROUND_RUNNING = "REPAIR_ROUND_RUNNING"
@@ -66,6 +73,7 @@ ROUNDS_EXHAUSTED = "ROUNDS_EXHAUSTED"
 DENIED = "DENIED"
 STALLED = "STALLED"
 REGRESSED = "REGRESSED"
+_EXECUTABLE_UNIT_STATUSES = frozenset({REPAIR_ROUND_RUNNING})
 
 BuildVerifyFn = Callable[[BuildVerifyOptions], BuildVerifyResult]
 ConvergenceFn = Callable[..., ConvergenceResult]
@@ -192,6 +200,16 @@ def campaign_repair_step(
             arch_norm,
             _StepError("BASELINE_TOOLING_FAILED", str(exc), EXIT_TOOLING),
         )
+    except Exception as exc:
+        return _error_outcome(
+            options,
+            arch_norm,
+            _StepError(
+                "BASELINE_TOOLING_FAILED",
+                f"unexpected campaign repair-step failure: {type(exc).__name__}: {exc}",
+                EXIT_TOOLING,
+            ),
+        )
 
 
 def _run_locked(
@@ -209,8 +227,9 @@ def _run_locked(
     # Step 2: bind the requested edit bytes to a per-round canonical path before
     # any reconciliation success can return.
     edit_bytes, edit_sha = _read_edit_spec(options.edit_spec_path)
+    unit_root = config.campaign_workspace / _unit_hash(options.campaign_unit_key)
     output_dir = workspace_root / "out" / f"round_{options.round_index}"
-    canonical_edit_spec = output_dir / "edit_spec.json"
+    canonical_edit_spec = unit_root / "rounds" / f"round_{options.round_index}" / "edit_spec.json"
     _materialize_canonical_edit_spec(canonical_edit_spec, edit_bytes, edit_sha)
     try:
         create_round(
@@ -221,11 +240,13 @@ def _run_locked(
             edit_spec_sha256=edit_sha,
         )
     except RoundsExhausted as exc:
-        append_status(options.state_db, options.campaign_unit_key, ROUNDS_EXHAUSTED, str(exc))
+        append_status(options.state_db, options.campaign_unit_key, ROUNDS_EXHAUSTED, "rounds")
         raise _StepError("RoundsExhausted", str(exc), EXIT_REJECTED) from exc
     except StateInconsistent as exc:
         raise _StepError(REJECTED_IDENTITY_MISMATCH, str(exc), EXIT_REJECTED) from exc
     _revalidate_round(options, canonical_edit_spec, edit_sha)
+    build_edit_spec = output_dir / "edit_spec.json"
+    _materialize_canonical_edit_spec(build_edit_spec, edit_bytes, edit_sha)
 
     failure_key = _failure_key(unit, options.arch_raw)
 
@@ -255,6 +276,11 @@ def _run_locked(
             exit_code=EXIT_OK,
         )
     if reconciliation.branch in {"state_inconsistent_held", "orphan_pass_held"}:
+        error_code = (
+            REJECTED_ORPHAN_PASS_HELD
+            if reconciliation.branch == "orphan_pass_held"
+            else REJECTED_STATE_INCONSISTENT
+        )
         return CampaignRepairStepOutcome(
             result=_result(
                 options,
@@ -265,7 +291,7 @@ def _run_locked(
                 reason=reconciliation.branch,
                 reconciliation=reconciliation_json,
                 warnings=warnings,
-                error_code=REJECTED_STATE_INCONSISTENT,
+                error_code=error_code,
             ),
             exit_code=EXIT_REJECTED,
         )
@@ -309,7 +335,7 @@ def _run_locked(
             arch_norm=arch_norm,
         )
     except BudgetExhausted as exc:
-        append_status(options.state_db, options.campaign_unit_key, ROUNDS_EXHAUSTED, str(exc))
+        append_status(options.state_db, options.campaign_unit_key, ROUNDS_EXHAUSTED, "budget")
         raise _StepError("BudgetExhausted", str(exc), EXIT_REJECTED) from exc
 
     # Step 5: filesystem identity is deliberately checked only once a new build
@@ -323,7 +349,7 @@ def _run_locked(
             arch_norm=arch_norm,
             workspace_root=workspace_root,
             output_dir=output_dir,
-            canonical_edit_spec=canonical_edit_spec,
+            canonical_edit_spec=build_edit_spec,
             subprocess_runner=subprocess_runner,
         )
     except _StepError as exc:
@@ -341,6 +367,28 @@ def _run_locked(
                 error_code=exc.code,
             ),
             exit_code=exc.exit_code,
+        )
+    residual_error = _prepare_build_workspace(
+        options,
+        workspace_root=workspace_root,
+        failure_key=failure_key,
+        arch_norm=arch_norm,
+    )
+    if residual_error is not None:
+        return CampaignRepairStepOutcome(
+            result=_result(
+                options,
+                arch_norm,
+                result="FAIL",
+                verdict="n_a",
+                repair_allowed=REPAIR_DENIED,
+                reason=residual_error,
+                reconciliation=reconciliation_json,
+                warnings=warnings,
+                invocations_used_count=receipt.invocations_used,
+                error_code=REJECTED_STATE_INCONSISTENT,
+            ),
+            exit_code=EXIT_REJECTED,
         )
     build_result = build_verify_fn(build_options)
 
@@ -635,6 +683,13 @@ def _read_only_identity(
             f"campaign unit does not exist: {options.campaign_unit_key}",
             EXIT_REJECTED,
         )
+    status = latest_status(options.state_db, options.campaign_unit_key)
+    if status not in _EXECUTABLE_UNIT_STATUSES:
+        raise _StepError(
+            REJECTED_STATE_INCONSISTENT,
+            f"campaign unit status is not executable: {status!r}",
+            EXIT_REJECTED,
+        )
     _read_edit_spec(options.edit_spec_path)
     reproduce = latest_reproduce(
         options.state_db,
@@ -764,6 +819,67 @@ def _validate_source_identity(
             "campaign clone marker does not match campaign unit",
             EXIT_REJECTED,
         )
+
+
+def _prepare_build_workspace(
+    options: CampaignRepairStepOptions,
+    *,
+    workspace_root: Path,
+    failure_key: str,
+    arch_norm: str,
+) -> str | None:
+    worktree_path = workspace_root / f"iter_{options.round_index}"
+    if not worktree_path.exists():
+        return None
+    if is_protected(worktree_path) or _has_matching_pass_record(
+        options.state_db,
+        failure_key=failure_key,
+        worktree_path=worktree_path,
+    ):
+        append_status(
+            options.state_db,
+            options.campaign_unit_key,
+            HELD_FOR_INVESTIGATION,
+            "state_inconsistent",
+            arch_norm,
+        )
+        return f"residual disposable copy is protected or PASS-bound: {worktree_path}"
+    try:
+        cleanup_disposable_copy(str(worktree_path), str(workspace_root))
+    except (OSError, WorkspaceViolation) as exc:
+        append_status(
+            options.state_db,
+            options.campaign_unit_key,
+            HELD_FOR_INVESTIGATION,
+            "state_inconsistent",
+            arch_norm,
+        )
+        return f"residual disposable copy could not be safely cleaned: {exc}"
+    append_event(
+        options.state_db,
+        options.campaign_unit_key,
+        "WORKSPACE_CLEANUP",
+        {"paths": [str(worktree_path)], "reason": "residual_unprotected_copy"},
+    )
+    return None
+
+
+def _has_matching_pass_record(
+    state_db: StateDatabase,
+    *,
+    failure_key: str,
+    worktree_path: Path,
+) -> bool:
+    conn = state_db.connect()
+    try:
+        row = conn.execute(
+            "SELECT 1 FROM verification_records WHERE result = 'PASS' "
+            "AND failure_key = ? AND worktree_path = ? LIMIT 1",
+            (failure_key, str(worktree_path)),
+        ).fetchone()
+    finally:
+        conn.close()
+    return row is not None
 
 
 def _load_current_evidence(path_value: str | None) -> ResolvedEvidence | MissingEvidence:
@@ -1046,9 +1162,18 @@ def _materialize_canonical_edit_spec(path: Path, raw: bytes, digest: str) -> Non
                 EXIT_REJECTED,
             )
         return
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    temporary.write_bytes(raw)
-    os.replace(temporary, path)
+    try:
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except FileExistsError:
+        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+            raise _StepError(
+                REJECTED_IDENTITY_MISMATCH,
+                f"canonical edit_spec conflicts with round output: {path}",
+                EXIT_REJECTED,
+            ) from None
+        return
+    with os.fdopen(descriptor, "wb") as stream:
+        stream.write(raw)
 
 
 def _revalidate_round(

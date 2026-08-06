@@ -7,7 +7,7 @@ import json
 import sys
 from json import JSONDecodeError
 from pathlib import Path
-from typing import TextIO
+from typing import NoReturn, TextIO
 
 from ci_triage.campaign_repair_step import (
     CampaignRepairStepOptions,
@@ -40,6 +40,15 @@ EXIT_SUCCESS = 0
 EXIT_FAILED = 1
 EXIT_FILE_MISSING = 2
 EXIT_JSON_INVALID = 3
+
+
+class _CampaignCliArgumentError(ValueError):
+    """Raised instead of argparse's stderr+exit path for the JSON-only command."""
+
+
+class _CampaignRepairStepParser(argparse.ArgumentParser):
+    def error(self, message: str) -> NoReturn:
+        raise _CampaignCliArgumentError(message)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -149,7 +158,7 @@ def release_worktree_parser() -> argparse.ArgumentParser:
 
 
 def campaign_repair_step_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
+    parser = _CampaignRepairStepParser(
         prog="ci_triage campaign-repair-step",
         description="Run one locked, budgeted, and reconciled campaign repair build.",
     )
@@ -335,7 +344,11 @@ def _main_campaign_repair_step(
     stdout: TextIO,
     extra_pythonpath: tuple[Path, ...],
 ) -> int:
-    args = campaign_repair_step_parser().parse_args(argv)
+    try:
+        args = campaign_repair_step_parser().parse_args(argv)
+    except _CampaignCliArgumentError as exc:
+        print(json.dumps(_campaign_cli_error_payload(str(exc)), sort_keys=True), file=stdout)
+        return 5
     paths = extra_pythonpath or discover_sibling_pythonpath(
         launcher_path=Path(__file__).resolve().parents[1] / "run_ci_triage.py"
     )
@@ -353,6 +366,30 @@ def _main_campaign_repair_step(
     )
     print(json.dumps(outcome.result.to_dict(), sort_keys=True), file=stdout)
     return outcome.exit_code
+
+
+def _campaign_cli_error_payload(reason: str) -> dict[str, object]:
+    return {
+        "result": "FAIL",
+        "verdict": "n_a",
+        "repair_allowed": "denied",
+        "failure_class": None,
+        "failure_stage": None,
+        "adopted": False,
+        "convergence_reason": reason,
+        "previous_basis": "none",
+        "round_index": 0,
+        "arch_norm": "",
+        "verification_id": None,
+        "evidence_path": None,
+        "reconciliation": {
+            "other_round_relinks": [],
+            "non_campaign_verification_ids": [],
+        },
+        "warnings": [],
+        "invocations_used": 0,
+        "error_code": "INVALID_ARGS",
+    }
 
 
 def _read_json(path: Path) -> dict[str, object]:

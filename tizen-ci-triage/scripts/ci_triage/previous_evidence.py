@@ -77,32 +77,37 @@ def resolve(
     if not events:
         return _from_reproduce(reproduce)
 
-    latest = events[0]
-    if latest.get("result") == "PASS":
-        return ResolvedEvidence(
-            evidence=_synthetic_zero_evidence(),
-            basis="synthetic_zero",
-            evidence_path=None,
-            evidence_sha256=None,
-        )
+    for payload in events:
+        if payload.get("result") == "PASS":
+            return ResolvedEvidence(
+                evidence=_synthetic_zero_evidence(),
+                basis="synthetic_zero",
+                evidence_path=None,
+                evidence_sha256=None,
+            )
+        if payload.get("verdict") != "n_a":
+            return _from_payload(payload, basis="prev_build")
 
-    if latest.get("verdict") == "n_a":
-        reason = latest.get("reason")
+        reason = payload.get("reason")
         if reason == "rebaselined":
-            return _from_reproduce(reproduce)
-        if reason in _SKIP_NA_REASONS:
-            substantive = next(
-                (payload for payload in events[1:] if payload.get("verdict") != "n_a"),
-                None,
+            event_id = payload.get("__event_id")
+            if not isinstance(event_id, int):
+                return MissingEvidence("rebaselined convergence event id is invalid")
+            anchored = _reproduce_before(
+                state_db,
+                campaign_unit_key,
+                arch_norm=arch_norm,
+                event_id=event_id,
             )
             return (
-                _from_payload(substantive, basis="prev_build")
-                if substantive
-                else _from_reproduce(reproduce)
+                _from_reproduce(anchored)
+                if anchored is not None
+                else MissingEvidence("rebaselined convergence has no preceding REPRODUCE anchor")
             )
-        return MissingEvidence(f"latest n_a convergence has unsupported reason {reason!r}")
+        if reason not in _SKIP_NA_REASONS:
+            return MissingEvidence(f"latest n_a convergence has unsupported reason {reason!r}")
 
-    return _from_payload(latest, basis="prev_build")
+    return _from_reproduce(reproduce)
 
 
 def _convergence_payloads(
@@ -113,7 +118,7 @@ def _convergence_payloads(
     conn = state_db.connect()
     try:
         rows = conn.execute(
-            "SELECT payload_json FROM campaign_gate_events "
+            "SELECT event_id, payload_json FROM campaign_gate_events "
             "WHERE campaign_unit_key = ? AND event_type = 'CONVERGENCE' "
             "AND arch_norm = ? ORDER BY event_id DESC",
             (campaign_unit_key, arch_norm),
@@ -128,8 +133,37 @@ def _convergence_payloads(
             return None
         if not isinstance(value, dict):
             return None
+        value["__event_id"] = int(row["event_id"])
         result.append(value)
     return result
+
+
+def _reproduce_before(
+    state_db: StateDatabase,
+    campaign_unit_key: str,
+    *,
+    arch_norm: str,
+    event_id: int,
+) -> dict[str, object] | None:
+    conn = state_db.connect()
+    try:
+        row = conn.execute(
+            "SELECT * FROM campaign_gate_events "
+            "WHERE campaign_unit_key = ? AND event_type = 'REPRODUCE' "
+            "AND arch_norm = ? AND event_id < ? ORDER BY event_id DESC LIMIT 1",
+            (campaign_unit_key, arch_norm, event_id),
+        ).fetchone()
+    finally:
+        conn.close()
+    if row is None:
+        return None
+    try:
+        payload: Any = json.loads(str(row["payload_json"]))
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    return {"event_id": int(row["event_id"]), "payload": payload}
 
 
 def _from_reproduce(event: dict[str, object]) -> PreviousEvidence:

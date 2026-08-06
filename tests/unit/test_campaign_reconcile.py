@@ -92,11 +92,17 @@ def _db(tmp_path: Path) -> StateDatabase:
     return db
 
 
-def _create_unit(db: StateDatabase, git: GitFixture) -> None:
+def _create_unit(
+    db: StateDatabase,
+    git: GitFixture,
+    *,
+    unit_key: str = UNIT_KEY,
+    build_id: str = "1234",
+) -> None:
     create_unit(
         db,
-        campaign_unit_key=UNIT_KEY,
-        submission_identity_key="submission:test-unit",
+        campaign_unit_key=unit_key,
+        submission_identity_key=f"submission:{unit_key}",
         primary_arch="standard-aarch64",
         failed_arches=("standard-aarch64",),
         toolchain_profile="tizen_unified_standard",
@@ -105,7 +111,7 @@ def _create_unit(db: StateDatabase, git: GitFixture) -> None:
         max_rounds=4,
         max_build_invocations=12,
         ci_system="quickbuild",
-        source_build_id="1234",
+        source_build_id=build_id,
         project="platform/core/appfw/united-service",
         branch="tizen",
         spec_name="united-service",
@@ -117,10 +123,12 @@ def _create_campaign_round(
     db: StateDatabase,
     round_index: int,
     edit_sha: str,
+    *,
+    unit_key: str = UNIT_KEY,
 ) -> None:
     create_round(
         db,
-        UNIT_KEY,
+        unit_key,
         round_index=round_index,
         edit_spec_ref=f"relative/round-{round_index}.json",
         edit_spec_sha256=edit_sha,
@@ -388,6 +396,10 @@ def test_single_pass_without_exactly_one_invocation_is_held(
     assert result.orphan_pass_verification_ids == ("V1",)
     assert result.held_rounds == (1,)
     assert len(_events(db, "ORPHAN_PASS")) == 1
+    orphan = json.loads(_events(db, "ORPHAN_PASS")[0]["payload_json"])
+    assert orphan["reason"] == (
+        "no_free_invocation_slot" if orphan_count == 0 else "ambiguous"
+    )
     status = _latest_campaign_status(db)
     assert status is not None
     assert status["status"] == HELD_FOR_INVESTIGATION
@@ -480,6 +492,90 @@ def test_a0_half_state_is_held_before_orphan_backfill_can_mask_it(tmp_path: Path
     assert status is not None
     assert status["reason"] == "state_inconsistent"
     assert status["arch_norm"] == "aarch64"
+
+
+def test_a0_pass_convergence_with_null_invocation_is_held(tmp_path: Path) -> None:
+    git = _git_fixture(tmp_path)
+    db = _db(tmp_path)
+    _create_unit(db, git)
+    _create_campaign_round(db, 1, EDIT_ONE)
+    receipt = consume_build_invocation(db, UNIT_KEY, round_index=1, arch_norm="aarch64")
+    record = _write_record(db, tmp_path, git, "V1")
+    link_verification_with_convergence(
+        db,
+        UNIT_KEY,
+        convergence_payload=_pass_payload(receipt.event_id, "V1", round_index=1),
+        arch_raw=record.arch,
+        arch_norm="aarch64",
+        verification_id="V1",
+        round_index=1,
+        edit_spec_sha256=EDIT_ONE,
+    )
+    conn = db.connect()
+    try:
+        row = conn.execute(
+            "SELECT event_id, payload_json FROM campaign_gate_events "
+            "WHERE event_type = 'CONVERGENCE'"
+        ).fetchone()
+        payload = json.loads(row["payload_json"])
+        payload["invocation_event_id"] = None
+        conn.execute(
+            "UPDATE campaign_gate_events SET invocation_event_id = NULL, payload_json = ? "
+            "WHERE event_id = ?",
+            (json.dumps(payload, sort_keys=True, separators=(",", ":")), row["event_id"]),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    result = _reconcile(db)
+
+    assert result.branch == "state_inconsistent_held"
+    status = _latest_campaign_status(db)
+    assert status is not None
+    assert status["reason"] == "state_inconsistent"
+
+
+def test_a0_is_scoped_to_target_unit(tmp_path: Path) -> None:
+    git = _git_fixture(tmp_path)
+    db = _db(tmp_path)
+    other_unit = "campaign:other-unit"
+    _create_unit(db, git)
+    _create_unit(db, git, unit_key=other_unit, build_id="5678")
+    _create_campaign_round(db, 1, EDIT_ONE)
+    _create_campaign_round(db, 1, EDIT_ONE, unit_key=other_unit)
+    receipt = consume_build_invocation(
+        db,
+        other_unit,
+        round_index=1,
+        arch_norm="aarch64",
+    )
+    record = _write_record(db, tmp_path, git, "V1")
+    link_verification_with_convergence(
+        db,
+        other_unit,
+        convergence_payload=_pass_payload(receipt.event_id, "V1", round_index=1),
+        arch_raw=record.arch,
+        arch_norm="aarch64",
+        verification_id="V1",
+        round_index=1,
+        edit_spec_sha256=EDIT_ONE,
+    )
+    conn = db.connect()
+    try:
+        conn.execute(
+            "DELETE FROM campaign_gate_events WHERE campaign_unit_key = ? "
+            "AND event_type = 'CONVERGENCE'",
+            (other_unit,),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    result = _reconcile(db)
+
+    assert result.branch == "proceed"
+    assert _latest_campaign_status(db) is None
 
 
 def test_a0_rejects_duplicate_pass_binding_that_weak_exists_check_would_accept(

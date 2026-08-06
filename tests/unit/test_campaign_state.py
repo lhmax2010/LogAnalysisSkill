@@ -12,6 +12,7 @@ from ci_triage.campaign_state import (
     CAMPAIGN_SCHEMA_VERSION,
     HELD_FOR_INVESTIGATION,
     REJECTED_ARCH_NOT_ALLOWED,
+    AmbiguousQbReference,
     BudgetExhausted,
     CampaignStateBusy,
     PayloadSchemaError,
@@ -381,6 +382,30 @@ def test_round_exact_retry_precedes_exhaustion_check(tmp_path: Path) -> None:
         conn.close()
 
 
+@pytest.mark.parametrize("edit_spec_ref", ["", "   ", "\t\n"])
+def test_create_round_rejects_blank_ref_before_realpath(
+    tmp_path: Path,
+    edit_spec_ref: str,
+) -> None:
+    db = _db(tmp_path)
+    _create_unit(db)
+
+    with pytest.raises(ValueError, match="edit_spec_ref must be non-empty"):
+        create_round(
+            db,
+            UNIT_KEY,
+            round_index=1,
+            edit_spec_ref=edit_spec_ref,
+            edit_spec_sha256=EDIT_SHA,
+        )
+
+    conn = db.connect()
+    try:
+        assert conn.execute("SELECT COUNT(*) FROM campaign_rounds").fetchone()[0] == 0
+    finally:
+        conn.close()
+
+
 def test_consume_returns_inserted_receipt_and_enforces_db_budget(tmp_path: Path) -> None:
     db = _db(tmp_path)
     _create_unit(db, max_build_invocations=2)
@@ -450,15 +475,31 @@ def test_convergence_index_rejects_second_outcome_for_same_invocation(
     _create_unit(db)
     _create_round(db)
     receipt = consume_build_invocation(db, UNIT_KEY, round_index=1, arch_norm="aarch64")
-    append_event(db, UNIT_KEY, "CONVERGENCE", _pass_payload(receipt.event_id, "V1"))
-    second = (
-        _pass_payload(receipt.event_id, "V2")
-        if second_kind == "pass"
-        else _fail_payload(receipt.event_id)
-    )
+    append_event(db, UNIT_KEY, "CONVERGENCE", _fail_payload(receipt.event_id))
 
-    with pytest.raises(sqlite3.IntegrityError):
-        append_event(db, UNIT_KEY, "CONVERGENCE", second)
+    with pytest.raises(StateInconsistent):
+        if second_kind == "pass":
+            write_pass_record(db, _record("V2"))
+            link_verification_with_convergence(
+                db,
+                UNIT_KEY,
+                convergence_payload=_pass_payload(receipt.event_id, "V2"),
+                arch_raw="standard-aarch64",
+                arch_norm="aarch64",
+                verification_id="V2",
+                round_index=1,
+                edit_spec_sha256=EDIT_SHA,
+            )
+        else:
+            append_event(db, UNIT_KEY, "CONVERGENCE", _fail_payload(receipt.event_id))
+    if second_kind == "pass":
+        conn = db.connect()
+        try:
+            assert conn.execute(
+                "SELECT COUNT(*) FROM campaign_verifications WHERE verification_id = 'V2'"
+            ).fetchone()[0] == 0
+        finally:
+            conn.close()
 
 
 def test_convergence_index_allows_orphan_then_new_invocation_outcome(tmp_path: Path) -> None:
@@ -552,7 +593,14 @@ def test_convergence_conditional_enums_are_fail_closed(tmp_path: Path) -> None:
     wrong_orphan_result["result"] = "FAIL"
     wrong_build_result = _fail_payload(receipt.event_id)
     wrong_build_result["result"] = "n_a"
-    for payload in (missing_invocation, wrong_orphan_result, wrong_build_result):
+    rebaselined_with_invocation = _orphan_payload(receipt.event_id)
+    rebaselined_with_invocation["reason"] = "rebaselined"
+    for payload in (
+        missing_invocation,
+        wrong_orphan_result,
+        wrong_build_result,
+        rebaselined_with_invocation,
+    ):
         with pytest.raises(PayloadSchemaError):
             append_event(db, UNIT_KEY, "CONVERGENCE", payload)
 
@@ -577,6 +625,20 @@ def test_append_status_requires_arch_for_arch_scoped_held_reason(tmp_path: Path)
         arch_norm="aarch64",
     )
     assert latest_status(db, UNIT_KEY) == HELD_FOR_INVESTIGATION
+
+
+def test_append_status_rejects_unknown_held_reason(tmp_path: Path) -> None:
+    db = _db(tmp_path)
+    _create_unit(db)
+
+    with pytest.raises(PayloadSchemaError, match="invalid HELD reason"):
+        append_status(
+            db,
+            UNIT_KEY,
+            HELD_FOR_INVESTIGATION,
+            reason="invented_reason",
+            arch_norm="aarch64",
+        )
 
 
 def test_reproduce_latest_is_filtered_by_arch(tmp_path: Path) -> None:
@@ -657,6 +719,16 @@ def test_secondary_adoption_rejects_changed_or_truncated_evidence(tmp_path: Path
     for suffix, current_evidence in (
         ("changed", _evidence("different warning")),
         ("truncated", {**_evidence("same warning"), "truncated": True}),
+        (
+            "clusters-truncated",
+            {
+                **_evidence("same warning"),
+                "error_clusters": {
+                    **_evidence("same warning")["error_clusters"],  # type: ignore[dict-item]
+                    "truncated": True,
+                },
+            },
+        ),
     ):
         db = _db(tmp_path, f"{suffix}.sqlite3")
         _create_unit(db)
@@ -716,7 +788,7 @@ def test_secondary_adoption_rolls_back_if_convergence_slot_is_already_filled(
     convergence["evidence_sha256"] = _file_sha(current)
     append_event(db, UNIT_KEY, "CONVERGENCE", convergence)
 
-    with pytest.raises(sqlite3.IntegrityError):
+    with pytest.raises(StateInconsistent):
         adopt_secondary_target_with_convergence(
             db,
             UNIT_KEY,
@@ -847,6 +919,119 @@ def test_link_mismatch_rolls_back_link_and_event(tmp_path: Path) -> None:
         conn.close()
 
 
+def test_campaign_verification_raw_sql_enforces_both_unique_guards(
+    tmp_path: Path,
+) -> None:
+    db = _db(tmp_path)
+    _create_unit(db)
+    _create_unit(db, unit_key=OTHER_UNIT_KEY, build_id="1127448")
+    _create_round(db)
+    _create_round(db, unit_key=OTHER_UNIT_KEY)
+    write_pass_record(db, _record("V1"))
+    write_pass_record(db, _record("V2"))
+    conn = db.connect()
+    try:
+        conn.execute(
+            "INSERT INTO campaign_verifications "
+            "(campaign_unit_key, arch_raw, arch_norm, verification_id, round_index, "
+            "edit_spec_sha256, campaign_schema_version, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                UNIT_KEY,
+                "standard-aarch64",
+                "aarch64",
+                "V1",
+                1,
+                EDIT_SHA,
+                CAMPAIGN_SCHEMA_VERSION,
+                "2026-08-05T00:00:00+00:00",
+            ),
+        )
+        conn.commit()
+
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO campaign_verifications "
+                "(campaign_unit_key, arch_raw, arch_norm, verification_id, round_index, "
+                "edit_spec_sha256, campaign_schema_version, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    OTHER_UNIT_KEY,
+                    "standard-armv7l",
+                    "armv7l",
+                    "V1",
+                    1,
+                    EDIT_SHA,
+                    CAMPAIGN_SCHEMA_VERSION,
+                    "2026-08-05T00:01:00+00:00",
+                ),
+            )
+        conn.rollback()
+
+        with pytest.raises(sqlite3.IntegrityError):
+            conn.execute(
+                "INSERT INTO campaign_verifications "
+                "(campaign_unit_key, arch_raw, arch_norm, verification_id, round_index, "
+                "edit_spec_sha256, campaign_schema_version, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    UNIT_KEY,
+                    "standard-aarch64",
+                    "aarch64",
+                    "V2",
+                    1,
+                    EDIT_SHA,
+                    CAMPAIGN_SCHEMA_VERSION,
+                    "2026-08-05T00:02:00+00:00",
+                ),
+            )
+    finally:
+        conn.close()
+
+
+def test_campaign_verification_fk_guard_depends_on_foreign_keys_pragma(
+    tmp_path: Path,
+) -> None:
+    db = _db(tmp_path)
+    _create_unit(db)
+    _create_round(db)
+    write_pass_record(db, _record("V-FK"))
+    values = (
+        UNIT_KEY,
+        "standard-aarch64",
+        "aarch64",
+        "V-FK",
+        1,
+        "9" * 64,
+        CAMPAIGN_SCHEMA_VERSION,
+        "2026-08-05T00:00:00+00:00",
+    )
+    statement = (
+        "INSERT INTO campaign_verifications "
+        "(campaign_unit_key, arch_raw, arch_norm, verification_id, round_index, "
+        "edit_spec_sha256, campaign_schema_version, created_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    )
+    guarded = db.connect()
+    try:
+        assert guarded.execute("PRAGMA foreign_keys").fetchone()[0] == 1
+        with pytest.raises(sqlite3.IntegrityError):
+            guarded.execute(statement, values)
+    finally:
+        guarded.close()
+
+    unguarded = sqlite3.connect(db.path)
+    try:
+        assert unguarded.execute("PRAGMA foreign_keys").fetchone()[0] == 0
+        unguarded.execute(statement, values)
+        assert unguarded.execute(
+            "SELECT edit_spec_sha256 FROM campaign_verifications "
+            "WHERE verification_id = 'V-FK'"
+        ).fetchone()[0] == "9" * 64
+    finally:
+        unguarded.close()
+
+
 def test_find_unlinked_pass_returns_all_matches_without_round_argument(tmp_path: Path) -> None:
     db = _db(tmp_path)
     _create_unit(db)
@@ -899,6 +1084,19 @@ def test_qb_request_and_result_follow_two_level_latest_semantics(tmp_path: Path)
     assert find_unit_by_qb_build_id(db, "B2") == UNIT_KEY
 
 
+def test_find_unit_by_qb_build_id_rejects_ambiguous_reference(tmp_path: Path) -> None:
+    db = _db(tmp_path)
+    _create_unit(db)
+    _create_unit(db, unit_key=OTHER_UNIT_KEY, build_id="1127448")
+    first = create_qb_request(db, UNIT_KEY, request_id="R1", sbs_target="target")
+    second = create_qb_request(db, OTHER_UNIT_KEY, request_id="R2", sbs_target="target")
+    append_qb_event(db, request_seq=first, event_type="BUILD_BOUND", qb_build_id="B1")
+    append_qb_event(db, request_seq=second, event_type="BUILD_BOUND", qb_build_id="B1")
+
+    with pytest.raises(AmbiguousQbReference):
+        find_unit_by_qb_build_id(db, "B1")
+
+
 def test_unknown_and_stronger_transaction_event_types_are_rejected(tmp_path: Path) -> None:
     db = _db(tmp_path)
     _create_unit(db)
@@ -914,6 +1112,8 @@ def test_unknown_and_stronger_transaction_event_types_are_rejected(tmp_path: Pat
         )
     with pytest.raises(PayloadSchemaError, match="atomic adoption"):
         append_event(db, UNIT_KEY, "SECONDARY_TARGET_ADOPTED", {})
+    with pytest.raises(PayloadSchemaError, match="link_verification_with_convergence"):
+        append_event(db, UNIT_KEY, "CONVERGENCE", {"result": "PASS"})
     assert latest_event(db, UNIT_KEY, "CONVERGENCE") is None
 
 

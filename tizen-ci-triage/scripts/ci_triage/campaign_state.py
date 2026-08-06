@@ -73,6 +73,20 @@ _ARCH_SCOPED_HELD_REASONS = frozenset(
         "orphan_pass",
         "link_mismatch",
         "verification_mismatch",
+        "state_inconsistent",
+    }
+)
+_HELD_REASONS = frozenset(
+    {
+        "previous_evidence_missing",
+        "orphan_pass",
+        "aggregate_mismatch",
+        "edit_spec_rebind_mismatch",
+        "state_inconsistent",
+        "verification_mismatch",
+        "worktree_dirty",
+        "suppress_policy_recheck",
+        "link_mismatch",
     }
 )
 _IDENTITY_FIELDS = (
@@ -231,6 +245,10 @@ class BudgetExhausted(CampaignStateError):
 
 class CampaignStateBusy(CampaignStateError):
     """SQLite could not acquire the required immediate write lock."""
+
+
+class AmbiguousQbReference(CampaignStateError):
+    """A QuickBuild id maps to more than one campaign unit."""
 
 
 @dataclass(frozen=True)
@@ -419,10 +437,16 @@ def append_event(
         raise PayloadSchemaError(
             "SECONDARY_TARGET_ADOPTED must be written by the atomic adoption API"
         )
+    if event_type == "CONVERGENCE" and payload.get("result") == "PASS":
+        raise PayloadSchemaError(
+            "PASS CONVERGENCE must be written by link_verification_with_convergence"
+        )
     conn = _connect(state_db)
     try:
         with _immediate_transaction(conn):
             return _append_event_on_connection(conn, campaign_unit_key, event_type, payload)
+    except sqlite3.IntegrityError as exc:
+        raise StateInconsistent(f"event append violated campaign constraints: {exc}") from exc
     finally:
         conn.close()
 
@@ -564,6 +588,8 @@ def adopt_secondary_target_with_convergence(
                 revised_convergence,
             )
             return True
+    except sqlite3.IntegrityError as exc:
+        raise StateInconsistent(f"secondary adoption violated campaign constraints: {exc}") from exc
     finally:
         conn.close()
 
@@ -609,6 +635,8 @@ def append_status(
         raise PayloadSchemaError("status must be non-empty")
     if arch_norm is not None:
         _require_arch_norm(arch_norm)
+    if status == HELD_FOR_INVESTIGATION and reason not in _HELD_REASONS:
+        raise PayloadSchemaError(f"invalid HELD reason: {reason!r}")
     if (
         status == HELD_FOR_INVESTIGATION
         and reason in _ARCH_SCOPED_HELD_REASONS
@@ -675,8 +703,10 @@ def create_round(
     edit_spec_ref: str,
     edit_spec_sha256: str,
 ) -> None:
+    if not edit_spec_ref or not edit_spec_ref.strip():
+        raise ValueError("edit_spec_ref must be non-empty")
     normalized_ref = os.path.realpath(edit_spec_ref)
-    if round_index < 1 or not edit_spec_sha256 or not normalized_ref:
+    if round_index < 1 or not edit_spec_sha256:
         raise ValueError("round_index, edit_spec_ref, and edit_spec_sha256 are required")
     conn = _connect(state_db)
     try:
@@ -974,7 +1004,9 @@ def reconcile_pass_and_invocations(
                         candidate_round,
                         arch_norm,
                         records,
-                        "ambiguous",
+                        "no_free_invocation_slot"
+                        if len(records) == 1 and not invocations
+                        else "ambiguous",
                     )
                 orphan_pass_ids.extend(_text(record, "verification_id") for record in records)
                 held_rounds.append(candidate_round)
@@ -1128,7 +1160,9 @@ def _linked_pass_convergence_is_complete(
     if not links:
         return True
     convergence_rows = conn.execute(
-        "SELECT * FROM campaign_gate_events WHERE event_type = 'CONVERGENCE' ORDER BY event_id"
+        "SELECT * FROM campaign_gate_events WHERE campaign_unit_key = ? "
+        "AND event_type = 'CONVERGENCE' ORDER BY event_id",
+        (campaign_unit_key,),
     ).fetchall()
     parsed: list[tuple[sqlite3.Row, dict[str, object]]] = []
     for row in convergence_rows:
@@ -1160,6 +1194,9 @@ def _linked_pass_convergence_is_complete(
             or payload.get("result") != "PASS"
             or payload.get("verdict") != "n_a"
         ):
+            return False
+        invocation_event_id = payload.get("invocation_event_id")
+        if not isinstance(invocation_event_id, int) or isinstance(invocation_event_id, bool):
             return False
         try:
             _validate_invocation_binding(conn, campaign_unit_key, payload)
@@ -1581,7 +1618,7 @@ def find_unit_by_qb_build_id(state_db: StateDatabase, qb_build_id: str) -> str |
         conn.close()
     units = sorted({_text(row, "campaign_unit_key") for row in rows})
     if len(units) > 1:
-        raise StateInconsistent("QB build id is ambiguous across campaign units")
+        raise AmbiguousQbReference("QB build id is ambiguous across campaign units")
     return units[0] if units else None
 
 
@@ -1941,7 +1978,13 @@ def _validate_orphan_pass(payload: Mapping[str, object]) -> None:
     _require_round_index(payload)
     _require_arch_norm(_payload_str(payload, "arch_norm"))
     _require_nonempty_strings(payload, ("verification_id", "worktree_path", "detected_at"))
-    if payload["reason"] not in {"link_failed", "hash_mismatch", "worktree_damaged", "ambiguous"}:
+    if payload["reason"] not in {
+        "link_failed",
+        "hash_mismatch",
+        "worktree_damaged",
+        "ambiguous",
+        "no_free_invocation_slot",
+    }:
         raise PayloadSchemaError("invalid ORPHAN_PASS reason")
 
 
@@ -2035,6 +2078,8 @@ def _validate_convergence_shape(payload: Mapping[str, object]) -> None:
     result = _payload_str(payload, "result")
     verdict = _payload_str(payload, "verdict")
     invocation_id = payload["invocation_event_id"]
+    if reason == "rebaselined" and invocation_id is not None:
+        raise PayloadSchemaError("rebaselined convergence must omit invocation_event_id")
     if verdict not in {"advance", "stalled", "regressed", "denied", "n_a"}:
         raise PayloadSchemaError("invalid CONVERGENCE verdict")
     if payload["previous_basis"] not in {"reproduce", "prev_build", "synthetic_zero", "none"}:
@@ -2273,6 +2318,8 @@ def _evidence_truncated(evidence: Mapping[str, object]) -> bool:
     clusters = evidence.get("error_clusters")
     if not isinstance(clusters, dict):
         return False
+    if clusters.get("truncated") is True:
+        return True
     raw_clusters = clusters.get("clusters")
     if not isinstance(raw_clusters, list):
         return False
