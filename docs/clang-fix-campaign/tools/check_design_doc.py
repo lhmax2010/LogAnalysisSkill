@@ -129,6 +129,37 @@ def _mask_fenced_blocks(src: str, blocks: list[_FenceBlock]) -> str:
     return "".join(chars)
 
 
+def _check_fence_structure(src: str, *, require_python_fence: bool) -> list[str]:
+    """Report unclosed CommonMark fences and the real-design Python-fence guard."""
+
+    lines = src.splitlines()
+    problems: list[str] = []
+    python_fence_count = 0
+    index = 0
+    while index < len(lines):
+        opener = FENCE_OPEN_RE.match(lines[index])
+        if opener is None:
+            index += 1
+            continue
+        tick_count = len(opener.group("ticks"))
+        info_parts = opener.group("info").strip().split(None, 1)
+        if info_parts and info_parts[0].lower() == "python":
+            python_fence_count += 1
+        close_re = re.compile(rf"^ {{0,3}}`{{{tick_count},}}[ \t]*$")
+        close_index = index + 1
+        while close_index < len(lines) and not close_re.match(lines[close_index]):
+            close_index += 1
+        if close_index >= len(lines):
+            problems.append(
+                f"[CK-FENCE-01] L{index + 1}: {tick_count}-backtick fence is not closed"
+            )
+            break
+        index = close_index + 1
+    if require_python_fence and python_fence_count <= 0:
+        problems.append("[CK-FENCE-01] real design contains no Python fence")
+    return problems
+
+
 def _section(src: str, start_pat: str, end_pat: str) -> str:
     m = re.search(start_pat, src, re.M)
     n = re.search(end_pat, src, re.M)
@@ -211,9 +242,17 @@ def _check_mermaid_contracts(src: str) -> list[str]:
     return problems
 
 
-def check(src: str, *, prompt_src: str | None = None) -> list[str]:
+def check(
+    src: str,
+    *,
+    prompt_src: str | None = None,
+    require_python_fence: bool = False,
+) -> list[str]:
     lines = src.split("\n")
     problems: list[str] = []
+    problems.extend(
+        _check_fence_structure(src, require_python_fence=require_python_fence)
+    )
     problems.extend(_check_python_contracts(src))
     problems.extend(_check_index_contract(src, prompt_src))
     problems.extend(_check_mermaid_contracts(src))
@@ -578,6 +617,15 @@ def self_test() -> int:
             BASE_PROMPT_OK,
         ),
         (
+            "ck-fence-unclosed",
+            BASE_OK.replace(
+                "### 4.3",
+                "```python\ndef valid_contract(a): ...\n### 4.3",
+            ),
+            "[CK-FENCE-01]",
+            BASE_PROMPT_OK,
+        ),
+        (
             "ck-api-duplicate-arg",
             BASE_OK.replace(
                 "### 4.3",
@@ -667,6 +715,32 @@ def self_test() -> int:
     else:
         print(f"[self-test] ok   commonmark-python-count: got={python_fence_count}")
         failed = 0
+    required_missing = check(
+        BASE_OK,
+        prompt_src=BASE_PROMPT_OK,
+        require_python_fence=True,
+    )
+    required_missing_ok = any("[CK-FENCE-01]" in item for item in required_missing)
+    print(
+        "[self-test] "
+        f"{'ok' if required_missing_ok else 'FAIL':4} real-document-python-required: "
+        f"got={required_missing or '[]'}"
+    )
+    if not required_missing_ok:
+        failed += 1
+    required_present = check(
+        commonmark_fixture,
+        prompt_src=BASE_PROMPT_OK,
+        require_python_fence=True,
+    )
+    required_present_ok = not required_present
+    print(
+        "[self-test] "
+        f"{'ok' if required_present_ok else 'FAIL':4} real-document-python-present: "
+        f"got={required_present or '[]'}"
+    )
+    if not required_present_ok:
+        failed += 1
     for name, doc, expect, prompt_src in all_cases:
         got = check(doc, prompt_src=prompt_src)
         hit = any(expect in p for p in got) if expect else not got
@@ -720,7 +794,7 @@ def self_test() -> int:
     if not historical_ok:
         failed += 1
 
-    total = len(all_cases) + 3
+    total = len(all_cases) + 5
     print(f"-- self-test: {total - failed}/{total} passed --")
     return 1 if failed else 0
 
@@ -743,6 +817,7 @@ def main() -> int:
     problems = check(
         p.read_text(encoding="utf-8"),
         prompt_src=prompt_src,
+        require_python_fence=True,
     )
     print(f"== check_design_doc: {p} ==")
     for x in problems:

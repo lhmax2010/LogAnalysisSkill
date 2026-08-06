@@ -30,6 +30,12 @@ during design convergence.
    every wrapper fixture and real smoke used one architecture. The FIX-1 gate
    therefore requires two architectures to share one unit-level round and both
    enter build.
+9. **Prove disposition claims against authoritative text.** A change record
+   states intent; the current design body states the contract. Every `Closed`
+   finding must include the body line, before/after excerpt, and a reproducible
+   grep. If the ledger and body disagree, the body wins and the finding stays
+   open. R14 round two established this after two independent reviewers found
+   D3/D10 marked closed while their required body edits were absent.
 
 ## R14 deferred cleanup ledger
 

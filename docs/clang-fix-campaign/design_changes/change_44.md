@@ -45,3 +45,13 @@ FIX-1 必须逐项实现并由 delta 评审包复核。
 完成标准:旧 70 个 campaign 异构测试、全量回归、checker self-test 与
 design check、ruff、mypy 全绿;生成 change_44 diff、FIX-1 diff、逐 finding
 处置表组成的 delta 评审包。任何未完成项不得以单架构 E2E 全绿抵消。
+
+## R14 第二轮正文审计补记
+
+第二轮 delta 评审发现本记录的 D3/D10 等“已冻结”声明强于当时权威正文。
+实际在 v1.5.17 已落正文的 D10 范围仅包括部分 stdout/状态与错误码措辞;
+`event_type` 注释、derive 的终态释放 API、§3.6 裸释放调用和
+`adopted_fingerprint` 单数标题仍未同步。D2 锚点方向、D3 写集收窄、D5
+反向 DoD、D6 fence 结构检查、D8 branch 映射、D9 条件枚举等残项统一由
+`change_45.md` 写回 v1.5.18 权威正文。本记录不再作为这些残项已关闭的
+独立证据;关闭状态以 v1.5.18 正文 diff/grep 自证表为准。
