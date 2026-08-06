@@ -96,6 +96,34 @@ def cleanup_worktree(handle: DisposableWorktree) -> None:
     shutil.rmtree(handle.path)
 
 
+def cleanup_disposable_copy(
+    worktree_path: str,
+    expected_workspace_root: str,
+    *,
+    reject_protected: bool = True,
+) -> None:
+    """Clean one residual disposable copy through the marker-verified path."""
+
+    path = Path(worktree_path).resolve()
+    root = Path(expected_workspace_root).resolve()
+    if reject_protected and is_protected(path):
+        raise WorkspaceViolation(f"protected disposable copy cannot be cleaned: {path}")
+    marker_path = path / MARKER_FILENAME
+    marker = _read_marker(marker_path)
+    try:
+        handle = DisposableWorktree(
+            path=str(path),
+            baseline_repo=str(marker["baseline_repo"]),
+            base_commit=str(marker["base_commit"]),
+            workspace_root=str(root),
+            iter_index=int(marker["iter_index"]),
+            marker_path=str(marker_path),
+        )
+    except (KeyError, TypeError, ValueError) as exc:
+        raise WorkspaceViolation(f"invalid disposable worktree marker: {marker_path}") from exc
+    cleanup_worktree(handle)
+
+
 def mark_worktree_protected(
     handle: DisposableWorktree,
     *,
