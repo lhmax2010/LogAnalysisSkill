@@ -16,12 +16,11 @@ import re
 import shutil
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 AUTHORITATIVE_PROMPT = "p45-implementation-prompt-v1_5_15.md"
-PYTHON_FENCE_RE = re.compile(r"^```python[^\n]*\n(.*?)^```\s*$", re.M | re.S)
-ANY_FENCE_RE = re.compile(r"^```[^\n]*\n.*?^```\s*$", re.M | re.S)
-MERMAID_FENCE_RE = re.compile(r"^```mermaid[^\n]*\n(.*?)^```\s*$", re.M | re.S)
+FENCE_OPEN_RE = re.compile(r"^(?P<indent> {0,3})(?P<ticks>`{3,})(?P<info>[^`]*)$")
 BARE_SIGNATURE_RE = re.compile(
     r"^[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)+\(",
     re.M,
@@ -61,6 +60,75 @@ RENAMED = {
 CODE_RE = r"(?:REJECTED_[A-Z][A-Z0-9_]*|[A-Z][A-Z0-9_]{7,})"
 
 
+@dataclass(frozen=True)
+class _FenceBlock:
+    """One CommonMark backtick fence with source offsets preserved.
+
+    CK-API, CK-MMD, and bare-signature masking must share this parser.  A
+    closing fence has no info string and contains at least as many backticks as
+    its opener; this is what lets a four-backtick outer block safely contain a
+    three-backtick JSON example.
+    """
+
+    language: str
+    body: str
+    start: int
+    end: int
+
+
+def _fenced_blocks(src: str) -> list[_FenceBlock]:
+    lines = src.splitlines(keepends=True)
+    offsets: list[int] = []
+    offset = 0
+    for line in lines:
+        offsets.append(offset)
+        offset += len(line)
+
+    blocks: list[_FenceBlock] = []
+    index = 0
+    while index < len(lines):
+        opener_text = lines[index].rstrip("\r\n")
+        opener = FENCE_OPEN_RE.match(opener_text)
+        if opener is None:
+            index += 1
+            continue
+        tick_count = len(opener.group("ticks"))
+        info_parts = opener.group("info").strip().split(None, 1)
+        language = info_parts[0].lower() if info_parts else ""
+        body_start = offsets[index] + len(lines[index])
+        close_index = index + 1
+        close_re = re.compile(rf"^ {{0,3}}`{{{tick_count},}}[ \t]*$")
+        while close_index < len(lines):
+            if close_re.match(lines[close_index].rstrip("\r\n")):
+                body_end = offsets[close_index]
+                block_end = offsets[close_index] + len(lines[close_index])
+                blocks.append(
+                    _FenceBlock(
+                        language=language,
+                        body=src[body_start:body_end],
+                        start=offsets[index],
+                        end=block_end,
+                    )
+                )
+                index = close_index + 1
+                break
+            close_index += 1
+        else:
+            # An unclosed fence is left visible to the bare-signature scan and
+            # separately reported by the structural fence check below.
+            index += 1
+    return blocks
+
+
+def _mask_fenced_blocks(src: str, blocks: list[_FenceBlock]) -> str:
+    chars = list(src)
+    for block in blocks:
+        for index in range(block.start, block.end):
+            if chars[index] not in {"\n", "\r"}:
+                chars[index] = " "
+    return "".join(chars)
+
+
 def _section(src: str, start_pat: str, end_pat: str) -> str:
     m = re.search(start_pat, src, re.M)
     n = re.search(end_pat, src, re.M)
@@ -79,20 +147,20 @@ def _find_authoritative_prompt(design_path: Path) -> Path | None:
 
 def _check_python_contracts(src: str) -> list[str]:
     problems: list[str] = []
-    for match in PYTHON_FENCE_RE.finditer(src):
-        line_no = src.count("\n", 0, match.start()) + 1
+    blocks = _fenced_blocks(src)
+    for block in blocks:
+        if block.language != "python":
+            continue
+        line_no = src.count("\n", 0, block.start) + 1
         try:
-            compile(match.group(1), f"<design.md:L{line_no}>", "exec")
+            compile(block.body, f"<design.md:L{line_no}>", "exec")
         except SyntaxError as exc:
             detail = exc.msg
             if exc.lineno is not None:
                 detail += f" at block line {exc.lineno}"
             problems.append(f"[CK-API-01] L{line_no}: {detail}")
 
-    bare_src = ANY_FENCE_RE.sub(
-        lambda match: "\n" * match.group(0).count("\n"),
-        src,
-    )
+    bare_src = _mask_fenced_blocks(src, blocks)
     for match in BARE_SIGNATURE_RE.finditer(bare_src):
         line_no = bare_src.count("\n", 0, match.start()) + 1
         signature = match.group(0).rstrip("(")
@@ -127,10 +195,12 @@ def _mermaid_edge_nodes(line: str) -> list[str]:
 
 def _check_mermaid_contracts(src: str) -> list[str]:
     problems: list[str] = []
-    for block in MERMAID_FENCE_RE.finditer(src):
-        block_line = src.count("\n", 0, block.start()) + 1
+    for block in _fenced_blocks(src):
+        if block.language != "mermaid":
+            continue
+        block_line = src.count("\n", 0, block.start) + 1
         declared: set[str] = set()
-        for offset, line in enumerate(block.group(1).splitlines(), 1):
+        for offset, line in enumerate(block.body.splitlines(), 1):
             declared.update(MERMAID_NODE_DECL_RE.findall(line))
             for node in _mermaid_edge_nodes(line):
                 if node not in declared:
@@ -498,6 +568,16 @@ def self_test() -> int:
     ]
     contract_cases = [
         (
+            "ck-api-commonmark-four-fence",
+            BASE_OK.replace(
+                "### 4.3",
+                "````text\nouter\n```json\n{}\n```\n````\n"
+                "```python\ndef valid_contract(a): ...\n```\n### 4.3",
+            ),
+            None,
+            BASE_PROMPT_OK,
+        ),
+        (
             "ck-api-duplicate-arg",
             BASE_OK.replace(
                 "### 4.3",
@@ -577,7 +657,16 @@ def self_test() -> int:
     all_cases = [
         (name, doc, expect, BASE_PROMPT_OK) for name, doc, expect in cases
     ] + contract_cases
-    failed = 0
+    commonmark_fixture = contract_cases[0][1]
+    python_fence_count = sum(
+        block.language == "python" for block in _fenced_blocks(commonmark_fixture)
+    )
+    if python_fence_count <= 0:
+        print("[self-test] FAIL commonmark-python-count: expected >0 got=0")
+        failed = 1
+    else:
+        print(f"[self-test] ok   commonmark-python-count: got={python_fence_count}")
+        failed = 0
     for name, doc, expect, prompt_src in all_cases:
         got = check(doc, prompt_src=prompt_src)
         hit = any(expect in p for p in got) if expect else not got
@@ -631,7 +720,7 @@ def self_test() -> int:
     if not historical_ok:
         failed += 1
 
-    total = len(all_cases) + 2
+    total = len(all_cases) + 3
     print(f"-- self-test: {total - failed}/{total} passed --")
     return 1 if failed else 0
 
