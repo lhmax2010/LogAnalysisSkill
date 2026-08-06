@@ -24,6 +24,29 @@ during design convergence.
 7. **Make the rule reproduce the incident it claims to prevent.** Every guard
    change needs a fixture proving that the original incident fails under the
    new rule. A guard that cannot catch its founding incident does not exist.
+8. **Cover every declared cardinality dimension.** A matrix claim such as
+   arch x round x concurrency is untested when fixtures exercise only one
+   point. R14 found a unit-round identity BLOCKER after 820 green tests because
+   every wrapper fixture and real smoke used one architecture. The FIX-1 gate
+   therefore requires two architectures to share one unit-level round and both
+   enter build.
+
+## R14 deferred cleanup ledger
+
+These findings are intentionally non-blocking for FIX-1 but retain names and
+closure stages:
+
+- C8, denied-short-circuit ordering under a rare race: revisit in P4.9
+  orchestration refactor.
+- C9, canonical edit-spec materialization timing: revisit in P4.9 after delta
+  review confirms the unit-level identity contract.
+- C15, source-substring assertions in tests: replace with structural assertions
+  in P4.9 test cleanup.
+- C18-C23, six review NITs: batch with the P4.9 refactor unless a production
+  trial makes one behavioral.
+- gate-view and lifecycle release APIs remain later milestones, not P4.5
+  deliverables. Before P5 push gates, explicitly close the
+  `ROUNDS_EXHAUSTED` release-whitelist acceptance test in that owner module.
 
 ## Earlier Prelude
 

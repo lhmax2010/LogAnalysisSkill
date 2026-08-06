@@ -5,11 +5,12 @@
 
 | Module | Completion | Implementation | Acceptance evidence |
 |---|---|---|---|
-| P0 contract gates | COMPLETE | frozen API/DDL transcription and checker fixtures | checker 33/33; design 0 problem; signature audit 4/4 |
+| P0 contract gates | COMPLETE | frozen API/DDL transcription and checker fixtures | checker 35/35; design 0 problem; signature audit 4/4 |
 | M1 campaign state | COMPLETE | seven additive tables, append-only APIs, physical guards | 29 state tests; CHECK/index reverse validation |
 | M2 reconciliation | COMPLETE | one-transaction a0/a/b/b'/c/d branch table | 20 reconcile tests; RC crash relink without rebuild/re-charge |
 | M3 repair wrapper | COMPLETE | frozen nine-step order, CLI, fixed JSON stdout | 21 wrapper tests; process CLI smoke; real GBS arcs |
 | RC real validation | COMPLETE | zlib synthetic arc, recovery/edge guards, two E6 cases | E1-E6 green; report `../review/e2e-smoke-report-v1.md` |
+| R14 FIX-1 closure | READY FOR DELTA REVIEW | change_44 + campaign state/reconcile/wrapper fixes | 93 campaign tests; 843+ full-suite baseline; dual-arch same-round build covered |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -27,6 +28,7 @@ second contract authority. Runtime behavior remains governed by
 | RB three-way review package | COMPLETE | `63c45be` | self-contained design/code packages |
 | RC real E2E smoke | COMPLETE | `f4ca370`..`9bc5fd2` | synthetic arc, recovery, edges, two real cases |
 | RD close-out | READY FOR HUMAN REVIEW | close-out evidence commit | P2/DoD audit complete; PR is the remaining human gate |
+| R14 delta closure | READY FOR CROSS-REVIEW | change_44/FIX-1 working tree | delta package under `../review/r14-delta/`; merge remains blocked pending two reviewers + developer |
 
 ## Code-Ready Checkpoint
 
