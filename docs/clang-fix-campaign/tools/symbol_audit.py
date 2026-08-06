@@ -26,6 +26,8 @@ class SymbolSpec:
     declared_internal: tuple[str, ...] = ()
     format_authority: bool = False
     gbs_surface: bool = False
+    quickbuild_surface: bool = False
+    status: str = "existing"
 
 
 WORKSPACE = "ci_triage/verify/workspace.py"
@@ -47,14 +49,13 @@ SPECS: tuple[SymbolSpec, ...] = (
         ("§2",),
         "ci_triage/quickbuild_log.py",
         "shared/types",
-        ("ci_triage.report",),
+        ("ci_triage.orchestrator", "ci_triage.report", "ci_triage.runner"),
     ),
     SymbolSpec(
         "DisposableWorktree",
         ("§2", "§3.2"),
         WORKSPACE,
         "shared",
-        ("ci_triage.verify.build_verify",),
     ),
     SymbolSpec(
         "WorkspaceViolation",
@@ -68,7 +69,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         ("§2",),
         "ci_triage/verify/failure_classify.py",
         "shared",
-        ("ci_triage.verify.build_verify", "ci_triage.campaign_repair_step"),
+        ("ci_triage.verify.build_verify",),
     ),
     SymbolSpec(
         "GbsReportPackage",
@@ -82,7 +83,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "GbsReport",
         ("§2", "§4"),
         GBS_REPORT,
-        "UNRESOLVED(parse-or-shared/types)",
+        "shared/types",
         gbs_surface=True,
     ),
     # §3.2, with the v1.1 line corrections and S-1 extraction applied.
@@ -205,13 +206,14 @@ SPECS: tuple[SymbolSpec, ...] = (
         "shared",
         declared_internal=("create_worktree",),
         format_authority=True,
+        status="to-be-created",
     ),
     # §4 fetch half and its explicitly named quickbuild dependencies.
     SymbolSpec(
         "fetch_gbs_report",
         ("§4",),
         GBS_REPORT,
-        "quickbuild",
+        "shared",
         ("ci_triage.runner", "ci_triage.orchestrator"),
         gbs_surface=True,
     ),
@@ -219,7 +221,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "download_gbs_package_buildlog",
         ("§4",),
         GBS_REPORT,
-        "quickbuild",
+        "shared",
         ("ci_triage.runner", "ci_triage.orchestrator"),
         gbs_surface=True,
     ),
@@ -227,7 +229,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         "DEFAULT_ARCHES",
         ("§4",),
         GBS_REPORT,
-        "quickbuild",
+        "orchestrator",
         ("ci_triage.orchestrator",),
         gbs_surface=True,
     ),
@@ -235,43 +237,146 @@ SPECS: tuple[SymbolSpec, ...] = (
         "HttpFetcher",
         ("§4",),
         QUICKBUILD,
-        "quickbuild",
-        ("ci_triage.gbs_report",),
+        "shared",
+        ("ci_triage.gbs_report", "ci_triage.sources"),
+        quickbuild_surface=True,
     ),
     SymbolSpec(
         "QuickBuildError",
         ("§4",),
         QUICKBUILD,
-        "quickbuild",
-        ("ci_triage.gbs_report",),
+        "shared",
+        (
+            "ci_triage.gbs_report",
+            "ci_triage.orchestrator",
+            "ci_triage.runner",
+            "ci_triage.sources",
+        ),
+        quickbuild_surface=True,
     ),
     SymbolSpec(
         "_raise_if_login_page",
         ("§4",),
         QUICKBUILD,
-        "quickbuild",
-        ("ci_triage.gbs_report",),
+        "shared",
+        ("ci_triage.gbs_report", "ci_triage.sources"),
+        quickbuild_surface=True,
     ),
     SymbolSpec(
         "_urllib_fetch",
         ("§4",),
         QUICKBUILD,
-        "quickbuild",
-        ("ci_triage.gbs_report",),
+        "shared",
+        ("ci_triage.gbs_report", "ci_triage.sources"),
+        quickbuild_surface=True,
     ),
     SymbolSpec(
         "DEFAULT_COOKIE_PATH",
         ("§4",),
         QUICKBUILD,
-        "quickbuild",
-        ("ci_triage.gbs_report",),
+        "shared",
+        (
+            "ci_triage.batch_cli",
+            "ci_triage.cli",
+            "ci_triage.gbs_report",
+            "ci_triage.orchestrator",
+            "ci_triage.runner",
+            "ci_triage.sources",
+        ),
+        quickbuild_surface=True,
     ),
     SymbolSpec(
         "DEFAULT_QUICKBUILD_BASE_URL",
         ("§4",),
         QUICKBUILD,
-        "quickbuild",
-        ("ci_triage.gbs_report",),
+        "shared",
+        ("ci_triage.gbs_report", "ci_triage.sources"),
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "load_cookie_jar",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        ("ci_triage.gbs_report", "ci_triage.sources"),
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "DOWNLOAD_LINK_MARKER",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        declared_internal=("find_download_href",),
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "DOWNLOAD_TIZEN_BASE_URL",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        declared_internal=("derive_package_buildlog_url",),
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "HttpResponse",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "QuickBuildDownload",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "PackageBuildLog",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "download_full_log",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        ("ci_triage.orchestrator", "ci_triage.runner"),
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "find_download_href",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        declared_internal=("download_full_log",),
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "derive_package_buildlog_url",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        declared_internal=("download_package_buildlog",),
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "download_package_buildlog",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        ("ci_triage.runner",),
+        quickbuild_surface=True,
+    ),
+    SymbolSpec(
+        "normalize_quickbuild_url",
+        ("§4", "v1.2-A"),
+        QUICKBUILD,
+        "shared",
+        declared_internal=("_urllib_fetch",),
+        quickbuild_surface=True,
     ),
     # §4 parse half. The v1.1 table groups all private helpers here; enumerate
     # them so the completeness guard cannot silently lose a cutting surface.
@@ -634,8 +739,34 @@ def _audit_one(
     spec: SymbolSpec,
 ) -> AuditResult:
     by_relative = {source.relative: source for source in sources}
-    source = by_relative.get(spec.definition)
     evidence = _raw_evidence(sources, spec)
+    if spec.status == "to-be-created":
+        planned_reasons = (
+            () if spec.owner == "shared" else ("to-be-created owner must be shared",)
+        )
+        return AuditResult(
+            spec,
+            "TO_BE_CREATED",
+            (),
+            (),
+            (),
+            (),
+            planned_reasons,
+            evidence,
+        )
+    if spec.status != "existing":
+        return AuditResult(
+            spec,
+            "INVALID_STATUS",
+            (),
+            (),
+            (),
+            (),
+            (f"unsupported inventory status {spec.status}",),
+            evidence,
+        )
+
+    source = by_relative.get(spec.definition)
     if source is None:
         return AuditResult(
             spec,
@@ -729,7 +860,7 @@ def _audit_one(
     )
 
 
-def _gbs_public_surface(source: SourceFile) -> set[str]:
+def _public_surface(source: SourceFile) -> set[str]:
     result: set[str] = set()
     for node in source.tree.body:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
@@ -749,7 +880,7 @@ def _declared_text(spec: SymbolSpec) -> str:
     consumers = ",".join(spec.declared_consumers) or "-"
     internal = ",".join(spec.declared_internal) or "-"
     return (
-        f"sections={'+'.join(spec.sections)}; owner={spec.owner}; "
+        f"sections={'+'.join(spec.sections)}; status={spec.status}; owner={spec.owner}; "
         f"consumers=[{consumers}]; internal=[{internal}]"
     )
 
@@ -769,11 +900,18 @@ def run(repo_root: Path) -> int:
     scripts_root = repo_root / "tizen-ci-triage/scripts"
     sources = _load_sources(scripts_root)
     by_relative = {source.relative: source for source in sources}
-    gbs_source = by_relative[GBS_REPORT]
-
-    audited_gbs = {spec.name for spec in SPECS if spec.gbs_surface}
-    actual_gbs = _gbs_public_surface(gbs_source)
-    incomplete = sorted(actual_gbs - audited_gbs)
+    surface_checks = (
+        (by_relative[GBS_REPORT], {spec.name for spec in SPECS if spec.gbs_surface}),
+        (
+            by_relative[QUICKBUILD],
+            {spec.name for spec in SPECS if spec.quickbuild_surface},
+        ),
+    )
+    incomplete = sorted(
+        (source.relative, symbol)
+        for source, audited in surface_checks
+        for symbol in _public_surface(source) - audited
+    )
 
     specs_by_name = {spec.name: spec for spec in SPECS}
     results = tuple(_audit_one(sources, specs_by_name, spec) for spec in SPECS)
@@ -783,8 +921,8 @@ def run(repo_root: Path) -> int:
             f"{result.spec.name} | {_declared_text(result.spec)} | "
             f"{_measured_text(result)} | {result.verdict}"
         )
-    for symbol in incomplete:
-        print(f"INCOMPLETE: {symbol} in gbs_report public surface but not audited")
+    for relative, symbol in incomplete:
+        print(f"INCOMPLETE: {symbol} in {relative} public surface but not audited")
 
     mismatches = [result for result in results if result.reasons]
     print(
@@ -800,12 +938,13 @@ def run(repo_root: Path) -> int:
                     print(f"  {line}")
             else:
                 print("  (no source matches)")
-        for symbol in incomplete:
+        for relative, symbol in incomplete:
+            source = by_relative[relative]
             pattern = re.compile(rf"\b{re.escape(symbol)}\b")
-            print(f"[INCOMPLETE:{symbol}]")
-            for line_number, line in enumerate(gbs_source.text.splitlines(), start=1):
+            print(f"[INCOMPLETE:{relative}:{symbol}]")
+            for line_number, line in enumerate(source.text.splitlines(), start=1):
                 if pattern.search(line):
-                    print(f"  {gbs_source.relative}:{line_number}:{line.strip()}")
+                    print(f"  {source.relative}:{line_number}:{line.strip()}")
     return 1 if mismatches or incomplete else 0
 
 
