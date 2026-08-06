@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import subprocess
+import tempfile
 from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
@@ -327,6 +328,28 @@ def _run_locked(
             exit_code=EXIT_REJECTED,
         )
 
+    residual_error = _prepare_build_workspace(
+        options,
+        workspace_root=workspace_root,
+        failure_key=failure_key,
+        arch_norm=arch_norm,
+    )
+    if residual_error is not None:
+        return CampaignRepairStepOutcome(
+            result=_result(
+                options,
+                arch_norm,
+                result="FAIL",
+                verdict="n_a",
+                repair_allowed=REPAIR_DENIED,
+                reason=residual_error,
+                reconciliation=reconciliation_json,
+                warnings=warnings,
+                error_code=REJECTED_STATE_INCONSISTENT,
+            ),
+            exit_code=EXIT_REJECTED,
+        )
+
     try:
         receipt = consume_build_invocation(
             options.state_db,
@@ -367,28 +390,6 @@ def _run_locked(
                 error_code=exc.code,
             ),
             exit_code=exc.exit_code,
-        )
-    residual_error = _prepare_build_workspace(
-        options,
-        workspace_root=workspace_root,
-        failure_key=failure_key,
-        arch_norm=arch_norm,
-    )
-    if residual_error is not None:
-        return CampaignRepairStepOutcome(
-            result=_result(
-                options,
-                arch_norm,
-                result="FAIL",
-                verdict="n_a",
-                repair_allowed=REPAIR_DENIED,
-                reason=residual_error,
-                reconciliation=reconciliation_json,
-                warnings=warnings,
-                invocations_used_count=receipt.invocations_used,
-                error_code=REJECTED_STATE_INCONSISTENT,
-            ),
-            exit_code=EXIT_REJECTED,
         )
     build_result = build_verify_fn(build_options)
 
@@ -1155,25 +1156,34 @@ def _read_edit_spec(path: Path) -> tuple[bytes, str]:
 def _materialize_canonical_edit_spec(path: Path, raw: bytes, digest: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
-        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
-            raise _StepError(
-                REJECTED_IDENTITY_MISMATCH,
-                f"canonical edit_spec conflicts with round output: {path}",
-                EXIT_REJECTED,
-            )
+        _verify_canonical_edit_spec(path, digest)
         return
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+    )
+    temporary_path = Path(temporary_name)
     try:
-        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    except FileExistsError:
-        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
-            raise _StepError(
-                REJECTED_IDENTITY_MISMATCH,
-                f"canonical edit_spec conflicts with round output: {path}",
-                EXIT_REJECTED,
-            ) from None
-        return
-    with os.fdopen(descriptor, "wb") as stream:
-        stream.write(raw)
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            os.link(temporary_path, path)
+        except FileExistsError:
+            _verify_canonical_edit_spec(path, digest)
+    finally:
+        temporary_path.unlink(missing_ok=True)
+
+
+def _verify_canonical_edit_spec(path: Path, digest: str) -> None:
+    if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+        raise _StepError(
+            REJECTED_IDENTITY_MISMATCH,
+            f"canonical edit_spec conflicts with round output: {path}",
+            EXIT_REJECTED,
+        )
 
 
 def _revalidate_round(

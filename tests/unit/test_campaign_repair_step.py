@@ -324,6 +324,7 @@ def test_pass_runs_frozen_order_and_emits_fixed_schema(
         "create": create_round,
         "reconcile": reconcile_pass_and_invocations,
         "resolve": repair_step.resolve,
+        "prepare": repair_step._prepare_build_workspace,
         "consume": consume_build_invocation,
         "link": link_verification_with_convergence,
     }
@@ -352,6 +353,7 @@ def test_pass_runs_frozen_order_and_emits_fixed_schema(
         ("create", "create_round"),
         ("reconcile", "reconcile_pass_and_invocations"),
         ("resolve", "resolve"),
+        ("prepare", "_prepare_build_workspace"),
         ("consume", "consume_build_invocation"),
         ("link", "link_verification_with_convergence"),
     ):
@@ -376,6 +378,7 @@ def test_pass_runs_frozen_order_and_emits_fixed_schema(
         "create",
         "reconcile",
         "resolve",
+        "prepare",
         "consume",
         "build",
         "link",
@@ -957,7 +960,28 @@ def test_previous_resolver_does_not_cross_rebaseline_anchor_after_later_na(
     tmp_path: Path,
 ) -> None:
     fixture = _fixture(tmp_path)
-    _ensure_round(fixture)
+    round_index = _ensure_round(fixture)
+    stale = tmp_path / "stale-before-rebaseline.json"
+    stale_packet = {
+        **BASE_PACKET,
+        "primary_error": {
+            **BASE_PACKET["primary_error"],  # type: ignore[dict-item]
+            "message": "error: stale failure before rebaseline",
+        },
+    }
+    stale.write_text(json.dumps(stale_packet, sort_keys=True) + "\n", encoding="utf-8")
+    stale_invocation = consume_build_invocation(
+        fixture.db,
+        UNIT_KEY,
+        round_index=round_index,
+        arch_norm=ARCH_NORM,
+    )
+    append_event(
+        fixture.db,
+        UNIT_KEY,
+        "CONVERGENCE",
+        _fail_convergence(stale_invocation.event_id, stale),
+    )
     rebased = tmp_path / "rebased.json"
     rebased_packet = {
         **BASE_PACKET,
@@ -1020,6 +1044,79 @@ def test_previous_resolver_does_not_cross_rebaseline_anchor_after_later_na(
     assert isinstance(resolved, ResolvedEvidence)
     assert resolved.basis == "reproduce"
     assert resolved.evidence_path == str(rebased)
+
+
+def test_canonical_edit_spec_is_published_only_after_temp_is_complete(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "rounds/round_1/edit_spec.json"
+    raw = b'{"schema_version":"test/v1","edits":[]}\n'
+    digest = hashlib.sha256(raw).hexdigest()
+    original_link = repair_step.os.link
+
+    def observed_link(source: os.PathLike[str], destination: os.PathLike[str]) -> None:
+        assert Path(source).read_bytes() == raw
+        assert not Path(destination).exists()
+        original_link(source, destination)
+
+    monkeypatch.setattr(repair_step.os, "link", observed_link)
+
+    repair_step._materialize_canonical_edit_spec(target, raw, digest)
+
+    assert target.read_bytes() == raw
+    assert list(target.parent.glob(f".{target.name}.*.tmp")) == []
+
+
+def test_canonical_publish_failure_never_leaves_partial_target(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "rounds/round_1/edit_spec.json"
+    raw = b'{"schema_version":"test/v1","edits":[]}\n'
+
+    def fail_link(source: os.PathLike[str], destination: os.PathLike[str]) -> None:
+        raise OSError("injected publish failure")
+
+    monkeypatch.setattr(repair_step.os, "link", fail_link)
+
+    with pytest.raises(OSError, match="injected publish failure"):
+        repair_step._materialize_canonical_edit_spec(
+            target,
+            raw,
+            hashlib.sha256(raw).hexdigest(),
+        )
+
+    assert not target.exists()
+    assert list(target.parent.glob(f".{target.name}.*.tmp")) == []
+
+
+def test_canonical_publish_race_accepts_only_matching_existing_bytes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    target = tmp_path / "rounds/round_1/edit_spec.json"
+    raw = b'{"schema_version":"test/v1","edits":[]}\n'
+    digest = hashlib.sha256(raw).hexdigest()
+
+    def publish_first(source: os.PathLike[str], destination: os.PathLike[str]) -> None:
+        Path(destination).write_bytes(Path(source).read_bytes())
+        raise FileExistsError
+
+    monkeypatch.setattr(repair_step.os, "link", publish_first)
+
+    repair_step._materialize_canonical_edit_spec(target, raw, digest)
+    assert target.read_bytes() == raw
+
+    target.unlink()
+
+    def publish_conflict(source: os.PathLike[str], destination: os.PathLike[str]) -> None:
+        Path(destination).write_bytes(b"conflicting bytes\n")
+        raise FileExistsError
+
+    monkeypatch.setattr(repair_step.os, "link", publish_conflict)
+    with pytest.raises(repair_step._StepError, match="canonical edit_spec conflicts"):
+        repair_step._materialize_canonical_edit_spec(target, raw, digest)
 
 
 def test_previous_resolver_fails_closed_for_missing_substantive_file(tmp_path: Path) -> None:
@@ -1211,6 +1308,18 @@ def test_protected_residual_copy_is_held_and_not_deleted(tmp_path: Path) -> None
     assert outcome.result.error_code == REJECTED_STATE_INCONSISTENT
     assert Path(handle.path).is_dir()
     assert latest_status(fixture.db, UNIT_KEY) == HELD_FOR_INVESTIGATION
+    assert outcome.result.invocations_used == 0
+    conn = fixture.db.connect()
+    try:
+        assert (
+            conn.execute(
+                "SELECT COUNT(*) FROM campaign_gate_events "
+                "WHERE event_type = 'BUILD_INVOCATION'"
+            ).fetchone()[0]
+            == 0
+        )
+    finally:
+        conn.close()
 
 
 def test_pass_bound_residual_copy_is_held_even_without_protection_marker(
@@ -1284,6 +1393,7 @@ def test_pass_bound_residual_copy_is_held_even_without_protection_marker(
     assert outcome.exit_code == 4
     assert outcome.result.error_code == REJECTED_STATE_INCONSISTENT
     assert residual.is_dir()
+    assert outcome.result.invocations_used == 1
 
 
 def test_pass_link_failure_records_orphan_and_held(

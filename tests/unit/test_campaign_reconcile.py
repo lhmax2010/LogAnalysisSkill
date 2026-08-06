@@ -536,7 +536,7 @@ def test_a0_pass_convergence_with_null_invocation_is_held(tmp_path: Path) -> Non
     assert status["reason"] == "state_inconsistent"
 
 
-def test_a0_is_scoped_to_target_unit(tmp_path: Path) -> None:
+def test_a0_ignores_malformed_convergence_payload_in_another_unit(tmp_path: Path) -> None:
     git = _git_fixture(tmp_path)
     db = _db(tmp_path)
     other_unit = "campaign:other-unit"
@@ -544,28 +544,45 @@ def test_a0_is_scoped_to_target_unit(tmp_path: Path) -> None:
     _create_unit(db, git, unit_key=other_unit, build_id="5678")
     _create_campaign_round(db, 1, EDIT_ONE)
     _create_campaign_round(db, 1, EDIT_ONE, unit_key=other_unit)
-    receipt = consume_build_invocation(
+    target_receipt = consume_build_invocation(
+        db,
+        UNIT_KEY,
+        round_index=1,
+        arch_norm="aarch64",
+    )
+    target_record = _write_record(db, tmp_path, git, "V-target")
+    link_verification_with_convergence(
+        db,
+        UNIT_KEY,
+        convergence_payload=_pass_payload(target_receipt.event_id, "V-target", round_index=1),
+        arch_raw=target_record.arch,
+        arch_norm="aarch64",
+        verification_id="V-target",
+        round_index=1,
+        edit_spec_sha256=EDIT_ONE,
+    )
+    other_receipt = consume_build_invocation(
         db,
         other_unit,
         round_index=1,
         arch_norm="aarch64",
     )
-    record = _write_record(db, tmp_path, git, "V1")
+    other_record = _write_record(db, tmp_path, git, "V-other")
     link_verification_with_convergence(
         db,
         other_unit,
-        convergence_payload=_pass_payload(receipt.event_id, "V1", round_index=1),
-        arch_raw=record.arch,
+        convergence_payload=_pass_payload(other_receipt.event_id, "V-other", round_index=1),
+        arch_raw=other_record.arch,
         arch_norm="aarch64",
-        verification_id="V1",
+        verification_id="V-other",
         round_index=1,
         edit_spec_sha256=EDIT_ONE,
     )
     conn = db.connect()
     try:
         conn.execute(
-            "DELETE FROM campaign_gate_events WHERE campaign_unit_key = ? "
-            "AND event_type = 'CONVERGENCE'",
+            "UPDATE campaign_gate_events SET payload_json = '{malformed' "
+            "WHERE campaign_unit_key = ? AND event_type = 'CONVERGENCE'",
             (other_unit,),
         )
         conn.commit()
@@ -574,7 +591,8 @@ def test_a0_is_scoped_to_target_unit(tmp_path: Path) -> None:
 
     result = _reconcile(db)
 
-    assert result.branch == "proceed"
+    assert result.branch == "linked_already"
+    assert result.current_verification_id == "V-target"
     assert _latest_campaign_status(db) is None
 
 
