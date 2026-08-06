@@ -2,9 +2,11 @@
 """Statically audit P4.9 step-0 attribution tables against the source tree.
 
 This tool parses source text and Python ASTs only. It never imports or executes
-the modules being audited. The hard-coded inventory transcribes the final v1.6
-ownership decisions in p49-step0-design-v1.0-draft.md together with the tables
-they amend.
+the modules being audited. The inventory is limited to modules that step-0
+actually changes: the quickbuild.py HTTP surface, workspace functions and
+markers, failure classification, state/types moves, and
+discover_sibling_pythonpath. gbs_report.py is intentionally out of scope and
+deferred as a whole to the triage-report extraction batch.
 """
 
 from __future__ import annotations
@@ -25,14 +27,12 @@ class SymbolSpec:
     declared_consumers: tuple[str, ...] = ()
     declared_internal: tuple[str, ...] = ()
     format_authority: bool = False
-    gbs_surface: bool = False
     quickbuild_surface: bool = False
     status: str = "existing"
     expected_owner: str | None = None
 
 
 WORKSPACE = "ci_triage/verify/workspace.py"
-GBS_REPORT = "ci_triage/gbs_report.py"
 QUICKBUILD = "ci_triage/quickbuild.py"
 RUNNER = "ci_triage/runner.py"
 
@@ -84,21 +84,6 @@ SPECS: tuple[SymbolSpec, ...] = (
             "ci_triage.orchestrator",
             "ci_triage.verify.build_verify",
         ),
-    ),
-    SymbolSpec(
-        "GbsReportPackage",
-        ("§2", "§4"),
-        GBS_REPORT,
-        "shared/types",
-        ("ci_triage.runner", "ci_triage.orchestrator"),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "GbsReport",
-        ("§2", "§4"),
-        GBS_REPORT,
-        "shared/types",
-        gbs_surface=True,
     ),
     # §3.2, with the v1.1 line corrections and S-1 extraction applied.
     SymbolSpec(
@@ -223,31 +208,7 @@ SPECS: tuple[SymbolSpec, ...] = (
         status="to-be-created",
         expected_owner="shared/workspace",
     ),
-    # §4 fetch half and its explicitly named quickbuild dependencies.
-    SymbolSpec(
-        "fetch_gbs_report",
-        ("§4",),
-        GBS_REPORT,
-        "shared/quickbuild_http",
-        ("ci_triage.runner", "ci_triage.orchestrator"),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "download_gbs_package_buildlog",
-        ("§4",),
-        GBS_REPORT,
-        "shared/quickbuild_http",
-        ("ci_triage.runner", "ci_triage.orchestrator"),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "DEFAULT_ARCHES",
-        ("§4",),
-        GBS_REPORT,
-        "orchestrator",
-        ("ci_triage.orchestrator",),
-        gbs_surface=True,
-    ),
+    # §4 quickbuild.py HTTP public surface. gbs_report.py is out of scope.
     SymbolSpec(
         "HttpFetcher",
         ("§4",),
@@ -392,112 +353,6 @@ SPECS: tuple[SymbolSpec, ...] = (
         "shared/quickbuild_http",
         declared_internal=("_urllib_fetch",),
         quickbuild_surface=True,
-    ),
-    # §4 parse half. The v1.1 table groups all private helpers here; enumerate
-    # them so the completeness guard cannot silently lose a cutting surface.
-    SymbolSpec(
-        "find_iframe_src",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("fetch_gbs_report",),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "parse_gbs_report_packages",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("fetch_gbs_report",),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_Anchor",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        gbs_surface=True,
-    ),
-    SymbolSpec("_Cell", ("§4",), GBS_REPORT, "triage-report", gbs_surface=True),
-    SymbolSpec("_Row", ("§4",), GBS_REPORT, "triage-report", gbs_surface=True),
-    SymbolSpec("_Table", ("§4",), GBS_REPORT, "triage-report", gbs_surface=True),
-    SymbolSpec(
-        "_CellBuilder",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_AnchorBuilder",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_IframeParser",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("find_iframe_src",),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_ReportTableParser",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("parse_gbs_report_packages",),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_looks_like_build_status_table",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("parse_gbs_report_packages",),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_row_to_package",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("parse_gbs_report_packages",),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_status_from_anchor",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("_row_to_package",),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_attrs_to_map",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("_IframeParser.handle_starttag", "_ReportTableParser.handle_starttag"),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_class_names",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("_ReportTableParser.handle_starttag",),
-        gbs_surface=True,
-    ),
-    SymbolSpec(
-        "_normalize_text",
-        ("§4",),
-        GBS_REPORT,
-        "triage-report",
-        declared_internal=("_ReportTableParser.handle_endtag",),
-        gbs_surface=True,
     ),
 )
 
@@ -924,7 +779,6 @@ def run(repo_root: Path) -> int:
     sources = _load_sources(scripts_root)
     by_relative = {source.relative: source for source in sources}
     surface_checks = (
-        (by_relative[GBS_REPORT], {spec.name for spec in SPECS if spec.gbs_surface}),
         (
             by_relative[QUICKBUILD],
             {spec.name for spec in SPECS if spec.quickbuild_surface},

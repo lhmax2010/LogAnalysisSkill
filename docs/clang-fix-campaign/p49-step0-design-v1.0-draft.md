@@ -1,8 +1,8 @@
-# P4.9 step-0 设计:共享层下沉与 marker 权威归位(v1.4-FROZEN-candidate)
+# P4.9 step-0 设计:共享层下沉与 marker 权威归位(v1.4-FROZEN-candidate, rulings through v1.12)
 
 - 阶段:P4.9 step-0(六 skill 抽取的地基,先于任何 skill)
 - 前置:P4.5 已 merge(v1.5.18-FROZEN);提纲四轮评审收敛(v3.1)
-- **v1.4 说明**:本稿为**干净正文**,v1.0→v1.3 的全部附录裁决已合并
+- **正文说明**:本稿为**干净正文**,v1.0→v1.12 的生效裁决已合并
   进正文对应节,不再叠补丁(消除 body/appendix 三次漂移)。归属表经
   symbol_audit 最新轮次 **N/N** 机械核验(design SHA 见审计报告)。
 - **总铁律**:行为等价——只搬家 + 建共享层 + 改 import 路径,零语义
@@ -36,7 +36,7 @@ skill ──→ tizen_ci_shared ←── ci_triage(编排层)
 ```
 tizen_ci_shared/
   types.py            # L-1 最底:纯数据类型(§2),零 shared 内部依赖
-  quickbuild_http.py  # L0 :QuickBuild HTTP 公共面 + GBS fetch_raw(§4)
+  quickbuild_http.py  # L0 :QuickBuild HTTP 公共面(§4)
   env.py              # L0 :discover_sibling_pythonpath(§3.3,纯 stdlib)
   state/              # L1 :现 ci_triage/state/{db,keys,records}
   workspace/          # L1 :marker 权威 + worktree 原语(§3)
@@ -58,8 +58,8 @@ L-1: types                         (纯数据,最底)
 
 层规则:①L-1 不 import 任何上层;②L0 只 import L-1,L0 内模块互不
 import;③L1 只 import L-1/L0,L1 三域互不 import;④全 shared 不 import
-skill / ci_triage 编排层。`fetch_gbs_report_raw` 对 types(GbsReport
-等)的依赖是 L0→L-1,合法。
+skill / ci_triage 编排层。同层互不 import 由 independence 契约强制,
+不是依赖 `layers` 配置中的并列语法假设。
 
 **import-linter 配置(随 commit ① 落盘,step-0 阶段名单)**:
 
@@ -86,6 +86,21 @@ source_modules = tizen_ci_shared
 forbidden_modules = ci_triage
 # 六 skill 随批次加入 forbidden 清单(演进点)
 
+[importlinter:contract:shared-l1-independence]
+name = shared L1 领域互不 import
+type = independence
+modules =
+    tizen_ci_shared.state
+    tizen_ci_shared.workspace
+    tizen_ci_shared.classify
+
+[importlinter:contract:shared-l0-independence]
+name = shared L0 原语互不 import
+type = independence
+modules =
+    tizen_ci_shared.quickbuild_http
+    tizen_ci_shared.env
+
 [importlinter:contract:root-layers]
 name = 根级:ci_triage / skills / shared 单向(skill↛ci_triage、skill↛skill)
 type = layers
@@ -95,17 +110,28 @@ layers =
     tizen_ci_shared
 containers = .
 # step-0 阶段 skill 层为空(包未建);各 skill 批次填入自己那格,
-# 该 contract 一次性表达 skill↛ci_triage(向下合法、向上禁)+
-# skill↛skill(同层独立)——收口两家三轮重申的 skill 侧契约缺位。
+# 该 contract 表达 skill↛ci_triage(向下合法、向上禁)。
+
+[importlinter:contract:skill-independence]
+name = 六个 skill 互不 import
+type = independence
+modules =
+# 预留:六个 skill root 随各自抽取批次填入。step-0 不虚构尚不存在的包;
+# 每个 skill 批次必须同时补自身模块和一条横向负控制。
 ```
 
-**三条反向验证(S3-A 可证伪,每条一个"故意违反→lint 红"用例)**:
-①shared 内 types 加一行 `import ...state` → shared-layers 红;
-②shared 加一行 `import ci_triage` → shared-no-uplink 红;
-③模拟一个 skill 加 `import ci_triage` → root-layers 红。
-**每 commit 后 `lint-imports` 必须绿**(配置随 commit ① 在,①②③ 各步
-可跑)。`shared/__init__.py` 冻结为**空或仅导出 types**,避免
-`import tizen_ci_shared` 连带拉起 state。
+**step-0 五条反向验证(S3-A 可证伪,每条一个"故意违反→lint 红"用例)**:
+①types 加 `import ...state` → shared-layers 红;②shared 加
+`import ci_triage` → shared-no-uplink 红;③模拟 skill 加
+`import ci_triage` → root-layers 红;④state 加 `import ...workspace`
+→ shared-l1-independence 红;⑤quickbuild_http 加 `import ...env`
+→ shared-l0-independence 红。skill-independence 在首个 skill 批次填入
+模块时增加其横向负控制。
+
+**每 commit 后 `lint-imports` 必须绿**。commit ① 必须用钉住版本实跑
+每个已生效 contract 的正向绿与上述五条反向红,记录实际 exit code;
+未见工具实测输出不得声称护栏生效。`shared/__init__.py` 冻结为**空或
+仅导出 types**,避免 `import tizen_ci_shared` 连带拉起 state。
 
 **import-linter 为新增 dev-dep**,pyproject dev-deps 钉版本(sibling
 `|` 语法版本相关),挂现有 .github workflow。
@@ -116,8 +142,6 @@ containers = .
 |---|---|---|---|
 | `SourceFetchResult` | gerrit.py | report | shared/types |
 | `FailedPackage` | quickbuild_log.py | orchestrator/report/runner | shared/types |
-| `GbsReportPackage` | gbs_report.py | orchestrator/runner | shared/types |
-| `GbsReport` | gbs_report.py | fetch_raw 构造/返回 | shared/types |
 | `FailureClassification` | failure_classify.py | build_verify(随 classify 模块) | shared/classify |
 | `DisposableWorktree` | workspace.py | build-verify + 清理链 | shared/workspace |
 | `WorkspaceViolation` | workspace.py | campaign_repair_step + 清理链 | shared/workspace |
@@ -168,7 +192,7 @@ symbol_audit 清单**(此前盲区);`runner.py` 属不抽取的编排层,
 不加公共面全面 INCOMPLETE 护栏,其余 14 个公共符号不进入 step-0
 归属清单。
 
-## §4 QuickBuild HTTP / GBS report 归属(分层落地)
+## §4 QuickBuild HTTP 归属(分层落地)
 
 ### 4.1 HTTP 件下沉 shared/quickbuild_http(L0)
 
@@ -180,27 +204,9 @@ symbol_audit 清单**(此前盲区);`runner.py` 属不抽取的编排层,
 symbol_audit INCOMPLETE 护栏覆盖)。qb-discover 保留"失败发现语义"
 (sources.py discovery + 失败包解析),消费 shared HTTP 层。
 
-### 4.2 gbs_report fetch/parse 解耦(收口两轮重申的契约冲突)
-
-**问题**:`fetch_gbs_report` 函数体 @72/@88 调 `find_iframe_src`/
-`parse_gbs_report_packages`(parse 组)。若整体下沉 shared,则
-shared→ci_triage 上行,被 root-layers/forbidden 打红;若按"改返回原
-始对象"解耦,则返回契约变更(现 GbsReport 含已解析 packages),
-runner/orchestrator 调用点改动超出 import 行,击穿 §5.1 与行为等价。
-
-**裁决(两家一致解法)**:
-- shared/quickbuild_http 出 **`fetch_gbs_report_raw`**(纯抓取:取
-  page → iframe → 原始 HTML,**不调 parse**,返回原始响应对象);
-- `ci_triage.gbs_report` 留一个**薄组合函数** `fetch_gbs_report`
-  = `fetch_gbs_report_raw` + `parse_gbs_report_packages`,**字节等价、
-  调用点零改动**;它随 report 批次消亡(parse 组届时入 triage-report,
-  组合函数改为 skill 内);
-- 即:fetch 与 parse **物理解耦**,shared 不含 parse,ci_triage 侧薄
-  壳负责组合——L0 不上行,调用点不变,两个铁律都不破。
-- parse/render 组(`parse_gbs_report_packages`/`find_iframe_src`/
-  `_ReportTableParser` 等 `_*` helper)**留 ci_triage.gbs_report**,
-  随 triage-report 批次抽走;`DEFAULT_ARCHES` 仅 orchestrator 消费,
-  随 orchestrator 留 ci_triage(不下沉)。
+`gbs_report.py` 整模块不在 step-0 改动与审计范围内;它继续从
+`quickbuild.py` 的兼容 re-export 消费 HTTP 件。fetch/parse 拆分及
+模块内类型归属统一延期到 triage-report 抽取批次(§8)。
 
 ## §5 回归绑定与 parity(行为等价证明)
 
@@ -226,10 +232,11 @@ parity 差异证据。marker 文件内容除时间戳 + 上述路径掩码外逐
 
 ### 5.3 import-linter 全集契约
 
-见 §1.3。step-0 落 shared-layers + shared-no-uplink + root-layers 三
-契约(root-layers 的 skill 层 step-0 为空、各批次填入);目标全集
-(skill↛ci_triage、skill↛skill)由 root-layers 一次表达,**不留待
-各 skill 批次现场起草**(收口三轮重申)。
+见 §1.3。step-0 落 shared-layers、shared-no-uplink、root-layers、
+shared-l1-independence、shared-l0-independence 五个生效契约;
+skill-independence 的契约形态在正文预冻,首个 skill 批次填入真实模块
+后启用。skill↛skill 由 skill-independence 强制,不是 `layers` 中的
+并列符号附带表达。
 
 ### 5.4 全量基线
 
@@ -254,7 +261,7 @@ commit 中的版本,再用 `sha256sum` 复算;锚在 commit,不锚在文件内�
   + **classify**(edit_spec **不搬**,随 build-verify,S-2b)+ 反向
   依赖清理(discover_sibling_pythonpath → shared/env);
 - **commit ③**:HTTP 件下沉 shared/quickbuild_http(quickbuild.py 17
-  符号)+ gbs_report fetch/parse 解耦(§4.2)。
+  符号);`gbs_report.py` 原样不动。
 
 ### 6.2 shim 删除清单(P4.9 六 skill 全抽完后统一执行,单 commit)
 
@@ -270,27 +277,60 @@ commit 中的版本,再用 `sha256sum` 复算;锚在 commit,不锚在文件内�
 
 ## §7 DoD
 
-- [ ] tizen_ci_shared 独立包建立,三层 + 三契约 lint-imports 绿;
-  三条反向验证(§1.3 ①②③)各自转红;
+- [ ] tizen_ci_shared 独立包建立,三层 + step-0 五个生效契约
+  lint-imports 绿;五条反向验证(§1.3 ①—⑤)各自转红并记录 exit code;
 - [ ] 两个 marker 格式常量在 shared 唯一定义(`grep FILENAME =` 仅
   shared 命中,**排除 `release-v1.4.0/` 快照副本**);
 - [ ] **S-1 机械验证**:`write_workdir_marker` 落地 +
   `create_worktree` 函数体 grep 无 `FILENAME`(marker 写入已移原语);
 - [ ] workspace 函数级归属按 §3.2 落地;discover_sibling_pythonpath
   单点入 symbol_audit 且四消费方一致,全 OK;runner.py 不加全面护栏;
-- [ ] **gbs_report fetch/parse 机械解耦验证**:shared 侧
-  `fetch_gbs_report_raw` 不含 parse import;ci_triage 薄壳字节等价
-  (调用点零改动,§5.1 diff 标准);**DoD 不再写"report 无 qb-discover
-  私有 import"(v2 已作废 qb-discover fetch 角色)**;
+- [ ] **审计范围一致**:symbol_audit 只覆盖 step-0 实际触碰面;
+  quickbuild.py 公共面护栏全绿,`gbs_report.py` 无 inventory、无公共面
+  护栏、无生产 diff(延期项见 §8);
 - [ ] 全量测试 == 基线数、原样全绿;测试 diff 仅 §5.1 两类;每 commit
   lint-imports 绿;
 - [ ] parity:build-verify/convergence 关键路径下沉前后归一化相等
   (§5.2 掩码);
 - [ ] 三 commit 各自双绿;shim 清单(§6.2)登记待 P4.9 末删除。
 
+## §8 移出项:GBS report 整模块延期
+
+`ci_triage/gbs_report.py` 在 step-0 **原样不动**,其全部公共面与私有
+helper 均不进入 step-0 symbol_audit。fetch/parse 拆分、
+`GbsReportPackage`/`GbsReport` 类型归属、iframe 抽取闭包与
+`_attrs_to_map`/htmlutil 层位统一延期至 **triage-report 抽取批次**。
+该批次必须把 fetch 与 parse 放在同一设计窗口内,一次性解决完整闭包,
+不得再作为 HTTP 下沉的附带裁量夹入其它主变更。
+
+七轮推演形成的约束保留为后续批次输入:
+
+1. 若引入 raw 抓取结果,其字段必须覆盖 parse 的真实输入,至少包括
+   `iframe_url` 与 `build_id`;字段由调用图实测决定,不得凭空冻结。
+2. 跨边界迁移按完整依赖闭包设计;闭包至少核对
+   `QuickBuildError`、HTTP 原语、iframe 定位链和 parser 输入,且闭包内
+   不得留下未声明的上行依赖。
+3. 结构断言按阶段执行:拆分前不得拿目标态 AST 约束现状;实现完成后
+   必须转入严格结构校验,出现新增算法分支即红。
+4. 若未来确有“范围内但目标形态尚未形成”的符号,审计状态须明确区分
+   `existing`/`to-be-created`/`to-be-refactored`;过渡态必须显著计数并
+   绑定转正 DoD,不能成为永久免检。
+5. 若保留 composition shell,它只能组合已归属的 raw fetch、parse、
+   类型构造与 return,并以 AST 允许调用集合防滥用;也可在同批次裁定
+   直接拆分,但不得临场猜测。
+6. `find_iframe_src`/`_IframeParser` 与 `_attrs_to_map` 的层位必须随完整
+   调用闭包重新裁定;不得只迁入口符号。是否新建 htmlutil 由该批次
+   的真实复用面决定。
+7. `gbs_report.py` 的 inventory 与公共面完整性护栏必须同进同出;
+   triage-report 批次重新纳入时二者同一 commit 恢复。
+
+备选的 `deferred/out-of-scope` 审计状态本轮**不实现**。只有未来出现
+“符号仍在当前抽取范围内但确需延期”的真实案例时,才另行设计其
+防滥用契约;模块整体移出范围不需要临时豁免。
+
 ---
 
-## 附:方法论账(⑩⑪ + 本稿相关)
+## 附:方法论账(⑩—⑰ + 本稿相关)
 
 - **⑩**(归属/切割断言须 symbol_audit,人工表仅草案):本稿归属表经
   最新轮次 N/N,新增 discover_sibling_pythonpath 入册补盲区。
@@ -306,3 +346,12 @@ commit 中的版本,再用 `sha256sum` 复算;锚在 commit,不锚在文件内�
   SHA、长度、位置等“记录后即改变”的属性;完整性锚必须落在产物
   之外的不可变载体(Git commit、外部清单或上游 change 文档)。本稿
   与审计报告均不自记自身 SHA,由包含二者的 Git commit 锚定。
+- **⑭**(护栏必须由自身工具实测):配置文本不是生效证据;每条
+  import-linter contract 必须有正向 exit 0 与故意违反后的非零 exit。
+- **⑮**(审计判据按符号结构分类):数据类型、能力函数与组合外壳的
+  归属逻辑不同;新增类别必须同时提供防滥用结构断言。
+- **⑯**(审计状态覆盖时间维度):待建与待重构是延期而非豁免;每个
+  过渡态必须绑定转正时点、转正后的强校验和显著计数。
+- **⑰**(跨边界迁移以依赖闭包为单位):迁入口而漏被调者会把上行依赖
+  藏进函数体;设计期须列闭包且闭包内符号层级不得高于入口。v1.11
+  最终把持续外溢的 GBS 闭包整体移出 step-0,是该规则的范围治理应用。
