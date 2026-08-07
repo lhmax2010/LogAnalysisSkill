@@ -1,9 +1,10 @@
-# P4.9 step-0 设计:共享层下沉与 marker 权威归位(v1.4-FROZEN-candidate, rulings through v1.12)
+# P4.9 step-0 设计:共享层下沉与 marker 权威归位(v2.0-FROZEN)
 
 - 阶段:P4.9 step-0(六 skill 抽取的地基,先于任何 skill)
 - 前置:P4.5 已 merge(v1.5.18-FROZEN);提纲四轮评审收敛(v3.1)
-- **正文说明**:本稿为**干净正文**,v1.0→v1.12 的生效裁决已合并
-  进正文对应节,不再叠补丁(消除 body/appendix 三次漂移)。归属表经
+- **版本说明**:本稿为 **v2.0-FROZEN**,收敛自 v1.0–v1.12 全部裁决;
+  生效结论已合并进正文对应节,不再叠补丁(消除 body/appendix 三次
+  漂移)。归属表经
   symbol_audit 最新轮次 **N/N** 机械核验(design SHA 见审计报告)。
 - **总铁律**:行为等价——只搬家 + 建共享层 + 改 import 路径,零语义
   变更;完成后测试数 == P4.9 启动 merge 基线数,原样全绿(测试内容
@@ -36,12 +37,17 @@ skill ──→ tizen_ci_shared ←── ci_triage(编排层)
 ```
 tizen_ci_shared/
   types.py            # L-1 最底:纯数据类型(§2),零 shared 内部依赖
-  quickbuild_http.py  # L0 :QuickBuild HTTP 公共面(§4)
-  env.py              # L0 :discover_sibling_pythonpath(§3.3,纯 stdlib)
-  state/              # L1 :现 ci_triage/state/{db,keys,records}
-  workspace/          # L1 :marker 权威 + worktree 原语(§3)
-  classify.py         # L1 :现 verify/failure_classify.py
+  env.py              # L0 :commit ① 空占位;commit ② 迁 discover_sibling_pythonpath
+  quickbuild_http.py  # L0 :commit ① 空占位;commit ③ 迁 HTTP 公共面(§4)
+  state/              # L1 :commit ① 迁 ci_triage/state/{db,keys,records}
+  workspace/          # L1 :commit ① 空占位;commit ② 迁 marker/worktree(§3)
+  classify.py         # L1 :commit ① 空占位;commit ② 迁 failure_classify
 ```
+
+commit ① 的四个占位文件各自**仅含一行 docstring**,零 import、零定义、
+零逻辑;能力仍分别在 commit ②/③ 迁入。占位期不得夹带实现,验收必须
+逐文件贴 `wc -l` 与 `cat` 原文。占位只让四条层级契约能加载,不改变
+symbol_audit 归属清单(空文件无符号)。
 
 **edit_spec_guard 不在此**:实测仅 build_verify 消费(单消费方),随
 build-verify skill,非 shared(S-2b)。
@@ -61,14 +67,13 @@ import;③L1 只 import L-1/L0,L1 三域互不 import;④全 shared 不 import
 skill / ci_triage 编排层。同层互不 import 由 independence 契约强制,
 不是依赖 `layers` 配置中的并列语法假设。
 
-**import-linter 配置(随 commit ① 落盘,step-0 阶段名单)**:
+**import-linter step-0 实际落盘版(随 commit ① 落盘)**:
 
 ```ini
 [importlinter]
 root_packages =
     tizen_ci_shared
     ci_triage
-# 六个 skill root 随各自抽取批次同 commit 加入(演进点,勿在 step-0 落)
 
 [importlinter:contract:shared-layers]
 name = shared 内层:L1 -> L0 -> types
@@ -84,7 +89,6 @@ name = shared 不得 import 编排层或 skill
 type = forbidden
 source_modules = tizen_ci_shared
 forbidden_modules = ci_triage
-# 六 skill 随批次加入 forbidden 清单(演进点)
 
 [importlinter:contract:shared-l1-independence]
 name = shared L1 领域互不 import
@@ -100,41 +104,55 @@ type = independence
 modules =
     tizen_ci_shared.quickbuild_http
     tizen_ci_shared.env
-
-[importlinter:contract:root-layers]
-name = 根级:ci_triage / skills / shared 单向(skill↛ci_triage、skill↛skill)
-type = layers
-layers =
-    ci_triage
-    tizen_qb_discover | tizen_gerrit_fetch | tizen_build_verify | tizen_convergence_judge | tizen_gerrit_submit | tizen_triage_report
-    tizen_ci_shared
-containers = .
-# step-0 阶段 skill 层为空(包未建);各 skill 批次填入自己那格,
-# 该 contract 表达 skill↛ci_triage(向下合法、向上禁)。
-
-[importlinter:contract:skill-independence]
-name = 六个 skill 互不 import
-type = independence
-modules =
-# 预留:六个 skill root 随各自抽取批次填入。step-0 不虚构尚不存在的包;
-# 每个 skill 批次必须同时补自身模块和一条横向负控制。
 ```
 
-**step-0 五条反向验证(S3-A 可证伪,每条一个"故意违反→lint 红"用例)**:
-①types 加 `import ...state` → shared-layers 红;②shared 加
-`import ci_triage` → shared-no-uplink 红;③模拟 skill 加
-`import ci_triage` → root-layers 红;④state 加 `import ...workspace`
-→ shared-l1-independence 红;⑤quickbuild_http 加 `import ...env`
-→ shared-l0-independence 红。skill-independence 在首个 skill 批次填入
-模块时增加其横向负控制。
+step-0 **只落上述 4 条生效契约**。四个空占位使所有模块路径真实存在;
+正向 `lint-imports` 必须在 commit ① 对这四条同时 exit 0。下面是
+**目标全集模板**,step-0 配置中整体注释或省略,不得以生效 contract
+落盘:
 
-**每 commit 后 `lint-imports` 必须绿**。commit ① 必须用钉住版本实跑
-每个已生效 contract 的正向绿与上述五条反向红,记录实际 exit code;
-未见工具实测输出不得声称护栏生效。`shared/__init__.py` 冻结为**空或
-仅导出 types**,避免 `import tizen_ci_shared` 连带拉起 state。
+```ini
+# [importlinter:contract:root-layers]
+# name = 根级:ci_triage / skills / shared 单向
+# type = layers
+# layers =
+#     ci_triage
+#     tizen_qb_discover | tizen_gerrit_fetch | tizen_build_verify | tizen_convergence_judge | tizen_gerrit_submit | tizen_triage_report
+#     tizen_ci_shared
+# containers = <按 import-linter==2.3 实测确认,不得照抄猜测>
+# 首个 skill 抽取批次启用;每个 skill 批次填入自身那格。
 
-**import-linter 为新增 dev-dep**,pyproject dev-deps 钉版本(sibling
-`|` 语法版本相关),挂现有 .github workflow。
+# [importlinter:contract:skill-independence]
+# name = 六个 skill 互不 import
+# type = independence
+# modules =
+#     <已抽取的真实 skill root;随批次增量填入>
+# 首个 skill 批次启用,并同补该 skill 的横向负控制。
+```
+
+**四类反向验证(S3-A,每条生效契约一类)**:
+
+1. commit ①:types 加 `import tizen_ci_shared.state` → shared-layers 红;
+2. commit ①:shared 加 `import ci_triage` → shared-no-uplink 红;
+3. **顺延 commit ②**:workspace 能力落地后,state↔workspace 横向 import
+   → shared-l1-independence 红;
+4. **顺延 commit ③**:quickbuild_http/env 能力落地后,L0 横向 import
+   → shared-l0-independence 红。
+
+顺延不是免做:commit ②/③ 的验收报告必须分别贴对应 `lint-imports`
+exit 1 与报错原文并回填 dev_memory;任一顺延项未在绑定 commit 转正,
+step-0 不得声称完成。目标全集中的 root-layers/skill-independence 在
+首个 skill 批次启用,同时补横向负控制;`containers` 写法按钉定版本
+实测,不得沿用未经验证的 `containers = .` 假设。
+
+**每 commit 后 `lint-imports` 必须绿**。commit ① 用钉定的
+`import-linter==2.3` 实跑四条正向 exit 0 + 上述两条可构造的反向
+exit 1;若空占位、layers/independence/forbidden 或其它配置语法与 2.3
+不兼容,立即停止报告,不得改契约凑绿。`shared/__init__.py` 冻结为
+**空或仅导出 types**,避免 `import tizen_ci_shared` 连带拉起 state。
+
+**import-linter 为新增 dev-dep**,pyproject dev-deps精确钉定
+`import-linter==2.3`,挂现有 .github workflow。
 
 ## §2 跨 skill 数据类型下沉(types.py,L-1)
 
@@ -232,11 +250,11 @@ parity 差异证据。marker 文件内容除时间戳 + 上述路径掩码外逐
 
 ### 5.3 import-linter 全集契约
 
-见 §1.3。step-0 落 shared-layers、shared-no-uplink、root-layers、
-shared-l1-independence、shared-l0-independence 五个生效契约;
-skill-independence 的契约形态在正文预冻,首个 skill 批次填入真实模块
-后启用。skill↛skill 由 skill-independence 强制,不是 `layers` 中的
-并列符号附带表达。
+见 §1.3。step-0 落盘 **4 条生效契约**:shared-layers、
+shared-l1-independence、shared-l0-independence、shared-no-uplink。
+root-layers 与 skill-independence 仅为目标全集注释模板,首个 skill
+批次填入真实模块后启用;skill↛skill 最终由 skill-independence 强制,
+不是 `layers` 中的并列符号附带表达。
 
 ### 5.4 全量基线
 
@@ -255,13 +273,16 @@ commit 中的版本,再用 `sha256sum` 复算;锚在 commit,不锚在文件内�
 
 ### 6.1 三 commit 划分(每 commit 后全量测试 + lint-imports 双绿)
 
-- **commit ①**:建 tizen_ci_shared 包 + 迁 state/types + **import-linter
-  三契约配置落盘**(必须随 ①,否则 ②③ 无 lint 可跑);
+- **commit ①**:建 tizen_ci_shared 包 + 迁 state/types + 四个一行
+  docstring 空占位 + **import-linter 4 条契约配置落盘**(必须随 ①,
+  否则 ②③ 无 lint 可跑);正向四条全绿、反向两条实测;
 - **commit ②**:迁 workspace(双 marker + write_workdir_marker 新建)
   + **classify**(edit_spec **不搬**,随 build-verify,S-2b)+ 反向
-  依赖清理(discover_sibling_pythonpath → shared/env);
+  依赖清理(discover_sibling_pythonpath → shared/env);补做 L1
+  independence 顺延反向验证并回填证据;
 - **commit ③**:HTTP 件下沉 shared/quickbuild_http(quickbuild.py 17
-  符号);`gbs_report.py` 原样不动。
+  符号);`gbs_report.py` 原样不动;补做 L0 independence 顺延反向
+  验证并回填证据。
 
 ### 6.2 shim 删除清单(P4.9 六 skill 全抽完后统一执行,单 commit)
 
@@ -277,8 +298,13 @@ commit 中的版本,再用 `sha256sum` 复算;锚在 commit,不锚在文件内�
 
 ## §7 DoD
 
-- [ ] tizen_ci_shared 独立包建立,三层 + step-0 五个生效契约
-  lint-imports 绿;五条反向验证(§1.3 ①—⑤)各自转红并记录 exit code;
+- [ ] tizen_ci_shared 独立包建立,三层 + step-0 **4 条生效契约**
+  `lint-imports` 正向绿;**4 类反向验证**各自转红并记录 exit code:
+  commit ① 实测 shared-layers/shared-no-uplink 两类,L1 independence
+  具名顺延 commit ②,L0 independence 具名顺延 commit ③;顺延项未在
+  对应 commit 补做并贴 exit code,step-0 不得声称完成;
+- [ ] commit ① 四个占位文件各仅一行 docstring(`wc -l` + `cat`
+  原文留证),零 import/定义/逻辑;能力迁入前不得扩写;
 - [ ] 两个 marker 格式常量在 shared 唯一定义(`grep FILENAME =` 仅
   shared 命中,**排除 `release-v1.4.0/` 快照副本**);
 - [ ] **S-1 机械验证**:`write_workdir_marker` 落地 +
@@ -328,6 +354,16 @@ helper 均不进入 step-0 symbol_audit。fetch/parse 拆分、
 “符号仍在当前抽取范围内但确需延期”的真实案例时,才另行设计其
 防滥用契约;模块整体移出范围不需要临时豁免。
 
+### 8.1 step-0 实现期遗留(不阻塞本次冻结,有关闭时点)
+
+- **⑫ 自证桥脚本化**:当前设计表格 ↔ symbol_audit inventory 仍是
+  硬编码 + 人工对账。机械 diff 必须在 step-0 实现期落地,最晚不超过
+  commit ③;未完成前每轮改归属表都须保留人工逐项对账证据。
+- **root-layers `containers` 语法**:step-0 实际配置不落跨 root
+  contract。首个 skill 批次启用 root-layers 时,必须用钉定版本实测
+  `containers` 写法的正向 exit 0 与反向非零;未经实测不得采用
+  `containers = .`。同批次启用 skill-independence 并补横向负控制。
+
 ---
 
 ## 附:方法论账(⑩—⑰ + 本稿相关)
@@ -353,5 +389,6 @@ helper 均不进入 step-0 symbol_audit。fetch/parse 拆分、
 - **⑯**(审计状态覆盖时间维度):待建与待重构是延期而非豁免;每个
   过渡态必须绑定转正时点、转正后的强校验和显著计数。
 - **⑰**(跨边界迁移以依赖闭包为单位):迁入口而漏被调者会把上行依赖
-  藏进函数体;设计期须列闭包且闭包内符号层级不得高于入口。v1.11
-  最终把持续外溢的 GBS 闭包整体移出 step-0,是该规则的范围治理应用。
+  藏进函数体;设计期须列闭包且闭包内符号层级不得高于入口。
+  v2.0-FROZEN 把持续外溢的 GBS 闭包整体移出 step-0,是该规则的
+  范围治理应用。

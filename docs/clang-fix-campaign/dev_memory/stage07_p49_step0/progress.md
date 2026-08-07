@@ -2,8 +2,8 @@
 
 ## Current state
 
-- Status: freeze candidate after v1.12 scope convergence.
-- Contract body: `../../p49-step0-design-v1.0-draft.md`.
+- Status: v2.0-FROZEN; implementation commit ① awaits post-freeze approval.
+- Contract body: `../../p49-step0-design-v2.0-FROZEN.md`.
 - Mechanical attribution audit: `../../review/p49-step0-symbol-audit.md`.
 - Audited scope: only modules and symbols that step-0 will actually modify.
 - Latest result: 39/39 OK, 0 MISMATCH, 0 INCOMPLETE.
@@ -37,3 +37,17 @@ That batch must consume all of these constraints before implementation:
 The alternative `deferred/out-of-scope` audit status is not implemented for
 step-0. Reconsider it only when a real symbol is still inside an active
 extraction scope but cannot yet satisfy its target form.
+
+## Step-0 implementation TODOs
+
+- Mechanize the design-table to symbol-audit inventory diff no later than
+  commit ③. Until then, retain a manual row-by-row reconciliation after every
+  attribution change.
+- `root-layers` and `skill-independence` are target templates, not active
+  step-0 contracts. The first skill extraction batch must enable them, verify
+  the `containers` syntax against pinned `import-linter==2.3`, and add the
+  corresponding cross-skill negative control.
+- Commit ① lands four active shared contracts with four one-line placeholder
+  modules. It runs the shared-layers and shared-no-uplink negative controls;
+  L1 independence is bound to commit ② and L0 independence to commit ③. Each
+  deferred control must record the real exit-1 output in this memory tree.

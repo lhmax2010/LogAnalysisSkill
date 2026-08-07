@@ -1,18 +1,18 @@
 # P4.9 step-0 symbol attribution audit
 
-## Round 5 Result (v1.4 clean body + rulings through v1.12)
+## Freeze Result (v2.0-FROZEN)
 
 **PASS - ready for the final pre-freeze review.**
 
-- Design input: `docs/clang-fix-campaign/p49-step0-design-v1.0-draft.md`
-- Design SHA-256: `b1f30bdddd53f9ff0fef12f9c3bd6e3ac2e1128998f61bc7018690fc84d3f0a1`
+- Design input: `docs/clang-fix-campaign/p49-step0-design-v2.0-FROZEN.md`
+- Design SHA-256: `697aa94595eb052d0020c1ee5248112aa2223f7a1992bc0ecb850c040d8a45c5`
 - Audit command: `.venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py`
 - Result: **39/39 OK, 0 MISMATCH, 0 INCOMPLETE**
 
-The design keeps the historical filename so existing references remain valid,
-but its contents are the clean v1.4 body with rulings through v1.12 merged
-directly into the applicable sections. No v1.1/v1.2/v1.3 correction appendix
-remains.
+The design is frozen as v2.0 after merging the v1.0-v1.12 rulings directly
+into the applicable sections. No correction appendix remains. The frozen body
+and this report are anchored by the Git commit containing both files; neither
+file records its own hash.
 
 ## Scope
 
@@ -102,8 +102,9 @@ All three controls failed closed with exit status 1:
 
 ## Deferred Bridge
 
-The optional mechanical parser that compares design-table ownership directly
-with the hard-coded audit inventory is deferred to the first P4.9 skill batch.
-The current round remains guarded by full source/AST consumer measurement and
-the `quickbuild.py` public-surface completeness check. The optional design-table
-parser remains a TODO for the first P4.9 skill batch.
+The mechanical parser that compares design-table ownership directly with the
+hard-coded audit inventory is due during step-0 implementation, no later than
+commit ③. Until then, each attribution-table change requires a retained manual
+row-by-row reconciliation. The current freeze remains guarded by full
+source/AST consumer measurement and the `quickbuild.py` public-surface
+completeness check.
