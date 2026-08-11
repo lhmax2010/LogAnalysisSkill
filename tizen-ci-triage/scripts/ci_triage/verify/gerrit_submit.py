@@ -23,8 +23,7 @@ from tizen_ci_shared.state import (
     get_latest_status_row,
     get_record,
 )
-
-from ci_triage.verify.workspace import release_worktree_protection
+from tizen_ci_shared.workspace import release_worktree_protection
 
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
 

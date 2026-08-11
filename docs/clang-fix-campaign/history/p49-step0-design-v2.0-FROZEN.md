@@ -5,6 +5,10 @@
 - **版本说明**:本稿为 **v2.0-FROZEN**,收敛自 v1.0–v1.12 全部裁决;
   **v2.0 修订-1** 将 `SourceFetchResult` 的自封闭类型依赖
   `GerritPatchSet`/`GerritChange` 一并纳入 shared/types;
+  **v2.0 修订-2/3** 按 marker 数据与输出闭包将
+  `write_workdir_marker` 冻结为五参数 kw-only 并返回实际 `Path`,同时
+  新增 shared clean 原语承接 marker 排除规则;原单参数签名系预冻时
+  未拉数据字段闭包,依方法论⑰修正;
   生效结论已合并进正文对应节,不再叠补丁(消除 body/appendix 三次
   漂移)。归属表经
   symbol_audit 最新轮次 **N/N** 机械核验(design SHA 见审计报告)。
@@ -194,7 +198,8 @@ build-verify **不自持任何 marker 格式常量**,只调 shared 原语。
 | `create_worktree` | 仅 build_verify:133 | build-verify(调 shared write_workdir_marker) |
 | `check_disk_and_maybe_cleanup` | 仅 build_verify:126;内部调 cleanup_worktree | build-verify(下行依赖 shared) |
 | `_copy_repository` | 仅 create_worktree:58 | build-verify |
-| `write_workdir_marker(worktree_path: Path) -> None` | create_worktree 将调;写 MARKER_FILENAME + marker dict | **shared/workspace**(`to-be-created`) |
+| `write_workdir_marker(worktree_path: Path, *, workspace_root: Path, baseline_repo: Path, base_commit: str, iter_index: int) -> Path` | create_worktree 将调;写 MARKER_FILENAME + marker dict并返回实际 marker 路径 | **shared/workspace**(`to-be-created→existing`) |
+| `clean_repository_preserving_markers(worktree_path: Path) -> None` | create_worktree 将调;承接 git clean -ffdx + 双 marker 排除 | **shared/workspace**(`to-be-created→existing`) |
 | `cleanup_worktree` | build_verify:143 + workspace 内部:124/186 | shared/workspace |
 | `cleanup_disposable_copy` | campaign_repair_step | shared/workspace |
 | `is_protected` | campaign_repair_step | shared/workspace |

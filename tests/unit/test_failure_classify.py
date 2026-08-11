@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from ci_triage.verify.failure_classify import (
+from tizen_ci_shared.classify import (
     REPAIR_AUTO,
     REPAIR_DENIED,
     REPAIR_NEEDS_CONFIRMATION,

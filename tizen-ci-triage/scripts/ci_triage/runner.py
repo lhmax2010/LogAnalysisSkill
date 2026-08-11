@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from tizen_ci_shared.env import discover_sibling_pythonpath as discover_sibling_pythonpath
 from tizen_ci_shared.types import FailedPackage
 
 from ci_triage.gbs_report import (
@@ -237,20 +238,6 @@ def run_triage(
         return _finish(report, report_path, output_dir, status=exc.code, error=str(exc))
     except (OSError, json.JSONDecodeError, ValueError) as exc:
         return _finish(report, report_path, output_dir, status="TRIAGE_FAILED", error=str(exc))
-
-
-def discover_sibling_pythonpath(*, launcher_path: Path | None = None) -> tuple[Path, ...]:
-    """Return sibling analyzer/patch-suggest scripts paths for direct-folder usage."""
-
-    if launcher_path is None:
-        return ()
-    triage_root = launcher_path.resolve().parents[1]
-    root = triage_root.parent
-    candidates = (
-        root / "tizen-gbs-log-analysis" / "scripts",
-        root / "tizen-gbs-patch-suggest" / "scripts",
-    )
-    return tuple(path for path in candidates if path.is_dir())
 
 
 def _safe_pkg_dir(spec_name: str) -> str:

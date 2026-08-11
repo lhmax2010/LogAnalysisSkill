@@ -33,8 +33,8 @@ class SymbolSpec:
 
 
 WORKSPACE = "ci_triage/verify/workspace.py"
+SHARED_WORKSPACE = "tizen_ci_shared/workspace/__init__.py"
 QUICKBUILD = "ci_triage/quickbuild.py"
-RUNNER = "ci_triage/runner.py"
 SHARED_TYPES = "tizen_ci_shared/types.py"
 
 
@@ -76,27 +76,28 @@ SPECS: tuple[SymbolSpec, ...] = (
     SymbolSpec(
         "DisposableWorktree",
         ("§2", "§3.2"),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
+        ("ci_triage.verify.workspace",),
     ),
     SymbolSpec(
         "WorkspaceViolation",
         ("§2", "§3.2"),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.campaign_repair_step",),
+        ("ci_triage.campaign_repair_step", "ci_triage.verify.workspace"),
     ),
     SymbolSpec(
         "FailureClassification",
         ("§2",),
-        "ci_triage/verify/failure_classify.py",
+        "tizen_ci_shared/classify.py",
         "shared/classify",
         ("ci_triage.verify.build_verify",),
     ),
     SymbolSpec(
         "discover_sibling_pythonpath",
         ("§3.3",),
-        RUNNER,
+        "tizen_ci_shared/env.py",
         "shared/env",
         (
             "ci_triage.batch_cli",
@@ -130,86 +131,88 @@ SPECS: tuple[SymbolSpec, ...] = (
     SymbolSpec(
         "cleanup_worktree",
         ("§3.2",),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.build_verify",),
-        ("cleanup_disposable_copy", "check_disk_and_maybe_cleanup"),
+        ("ci_triage.verify.build_verify", "ci_triage.verify.workspace"),
+        ("cleanup_disposable_copy",),
     ),
     SymbolSpec(
         "cleanup_disposable_copy",
         ("§3.2",),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
         ("ci_triage.campaign_repair_step",),
     ),
     SymbolSpec(
         "is_protected",
         ("§3.2",),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.campaign_repair_step",),
-        ("cleanup_disposable_copy", "check_disk_and_maybe_cleanup"),
+        ("ci_triage.campaign_repair_step", "ci_triage.verify.workspace"),
+        ("cleanup_disposable_copy",),
     ),
     SymbolSpec(
         "release_worktree_protection",
         ("§3.2",),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
         ("ci_triage.verify.gerrit_submit",),
     ),
     SymbolSpec(
         "mark_worktree_protected",
         ("§3.2",),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
         ("ci_triage.verify.build_verify",),
     ),
     SymbolSpec(
         "_oldest_worktrees",
         ("§3.2",),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
-        declared_internal=("check_disk_and_maybe_cleanup",),
+        ("ci_triage.verify.workspace",),
     ),
     SymbolSpec(
         "_run_git",
         ("§3.2",),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
-        declared_internal=("create_worktree",),
+        ("ci_triage.verify.workspace",),
+        ("clean_repository_preserving_markers",),
     ),
     SymbolSpec(
         "_verify_cleanup_handle",
         ("§3.2",),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
         declared_internal=("cleanup_worktree", "mark_worktree_protected"),
     ),
     SymbolSpec(
         "_exclude_private_files",
         ("§3.2",),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
-        declared_internal=("create_worktree", "mark_worktree_protected"),
+        ("ci_triage.verify.workspace",),
+        ("mark_worktree_protected",),
     ),
     SymbolSpec(
         "MARKER_FILENAME",
         ("§3.1", "§3.2"),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
         format_authority=True,
     ),
     SymbolSpec(
         "PROTECTED_FILENAME",
         ("§3.1", "§3.2"),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
         format_authority=True,
     ),
     SymbolSpec(
         "_read_marker",
         ("§3.1", "§3.2"),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
         declared_internal=(
             "cleanup_disposable_copy",
@@ -221,12 +224,17 @@ SPECS: tuple[SymbolSpec, ...] = (
     SymbolSpec(
         "write_workdir_marker",
         ("§3.2", "S-1"),
-        WORKSPACE,
+        SHARED_WORKSPACE,
         "shared/workspace",
-        declared_internal=("create_worktree",),
+        ("ci_triage.verify.workspace",),
         format_authority=True,
-        status="to-be-created",
-        expected_owner="shared/workspace",
+    ),
+    SymbolSpec(
+        "clean_repository_preserving_markers",
+        ("§3.2", "S-1", "v2.0-revision-3"),
+        SHARED_WORKSPACE,
+        "shared/workspace",
+        ("ci_triage.verify.workspace",),
     ),
     # §4 quickbuild.py HTTP public surface. gbs_report.py is out of scope.
     SymbolSpec(

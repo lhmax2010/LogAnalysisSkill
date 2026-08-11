@@ -12,7 +12,6 @@ from ci_triage.verify.gerrit_submit import (
     gerrit_submit,
     release_verified_worktree,
 )
-from ci_triage.verify.workspace import PROTECTED_FILENAME
 from tizen_ci_shared.state import (
     GERRIT_READY,
     StateDatabase,
@@ -23,6 +22,7 @@ from tizen_ci_shared.state import (
     record_status,
     write_pass_record,
 )
+from tizen_ci_shared.workspace import PROTECTED_FILENAME
 
 
 class SubmitRunner:

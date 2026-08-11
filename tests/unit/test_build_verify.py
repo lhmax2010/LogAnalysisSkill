@@ -14,9 +14,9 @@ from ci_triage.verify.build_verify import (
     build_verify,
     build_verify_to_json,
 )
-from ci_triage.verify.failure_classify import REPAIR_AUTO, REPAIR_DENIED
-from ci_triage.verify.workspace import PROTECTED_FILENAME
+from tizen_ci_shared.classify import REPAIR_AUTO, REPAIR_DENIED
 from tizen_ci_shared.state import StateDatabase, get_latest_status, get_record
+from tizen_ci_shared.workspace import PROTECTED_FILENAME
 
 
 class GbsRunner:

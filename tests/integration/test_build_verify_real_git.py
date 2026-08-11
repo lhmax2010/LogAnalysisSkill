@@ -15,16 +15,16 @@ from ci_triage.verify.build_verify import (
     _format_and_apply_patch,
     build_verify,
 )
-from ci_triage.verify.workspace import (
+from ci_triage.verify.workspace import create_worktree
+from tizen_ci_shared.state import StateDatabase, get_latest_status, get_record
+from tizen_ci_shared.workspace import (
     MARKER_FILENAME,
     PROTECTED_FILENAME,
     DisposableWorktree,
     WorkspaceViolation,
     cleanup_worktree,
-    create_worktree,
     mark_worktree_protected,
 )
-from tizen_ci_shared.state import StateDatabase, get_latest_status, get_record
 
 if shutil.which("git") is None:
     pytest.skip("git not available", allow_module_level=True)

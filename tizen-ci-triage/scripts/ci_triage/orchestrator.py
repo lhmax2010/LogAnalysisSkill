@@ -11,6 +11,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.types import FailedPackage
 
 from ci_triage.gbs_report import (
@@ -25,7 +26,7 @@ from ci_triage.quickbuild_log import (
     match_pkg_key,
     parse_build_pkg_list,
 )
-from ci_triage.runner import TriageOptions, TriageResult, discover_sibling_pythonpath, run_triage
+from ci_triage.runner import TriageOptions, TriageResult, run_triage
 from ci_triage.sources import FailedBuild, FailedBuildSource, QuickBuildSource
 
 STATE_DISCOVERED = "DISCOVERED"

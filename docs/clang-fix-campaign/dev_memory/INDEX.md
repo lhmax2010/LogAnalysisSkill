@@ -11,7 +11,7 @@
 | M3 repair wrapper | COMPLETE | frozen nine-step order, CLI, fixed JSON stdout | 21 wrapper tests; process CLI smoke; real GBS arcs |
 | RC real validation | COMPLETE | zlib synthetic arc, recovery/edge guards, two E6 cases | E1-E6 green; report `../review/e2e-smoke-report-v1.md` |
 | R14 FIX-1 closure | READY FOR ROUND-2 DELTA REVIEW | change_45 + atomic canonical publish + strengthened X6/X11 tests | 96 campaign tests; 846 passed/1 skipped full suite; dual-arch same-round build retained |
-| P4.9 step-0 design | FROZEN | shared foundation scope and attribution audit | v2.0-FROZEN; 39/39 symbol audit; GBS report extraction deferred as one module |
+| P4.9 step-0 design | FROZEN | shared foundation scope and attribution audit | v2.0-FROZEN revisions 1-3; 42/42 symbol audit; GBS report extraction deferred as one module |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a

@@ -2,11 +2,14 @@
 
 ## Current state
 
-- Status: v2.0-FROZEN; implementation commit ① awaits post-freeze approval.
+- Status: v2.0-FROZEN; implementation commits ① and ② complete.
 - Contract body: `../../p49-step0-design-v2.0-FROZEN.md`.
 - Mechanical attribution audit: `../../review/p49-step0-symbol-audit.md`.
 - Audited scope: only modules and symbols that step-0 will actually modify.
-- Latest result: 39/39 OK, 0 MISMATCH, 0 INCOMPLETE.
+- Latest result: 42/42 OK, 0 MISMATCH, 0 INCOMPLETE after commit ② moves.
+- Commit ① command output and validation evidence was mistakenly written under
+  the repository-root `.dev_memory/`. It is now relocated without content changes as
+  [`commit1-evidence.md`](commit1-evidence.md); no root-side duplicate remains.
 
 ## Deferred TODO: GBS report extraction
 
@@ -51,3 +54,171 @@ extraction scope but cannot yet satisfy its target form.
   modules. It runs the shared-layers and shared-no-uplink negative controls;
   L1 independence is bound to commit ② and L0 independence to commit ③. Each
   deferred control must record the real exit-1 output in this memory tree.
+
+## Commit ② L1 independence evidence
+
+### Negative A: state imports workspace
+
+Temporary violation: add `import tizen_ci_shared.workspace` to
+`tizen_ci_shared/state/db.py`.
+
+Command:
+
+```bash
+.venv/bin/lint-imports
+```
+
+Output:
+
+```text
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 32 files, 61 dependencies.
+-----------------------------------
+
+shared internal layers: L1 -> L0 -> types BROKEN
+shared must not import orchestration KEPT
+shared L1 domains are independent BROKEN
+shared L0 primitives are independent KEPT
+
+Contracts: 2 kept, 2 broken.
+
+
+----------------
+Broken contracts
+----------------
+
+shared internal layers: L1 -> L0 -> types
+-----------------------------------------
+
+tizen_ci_shared.state is not allowed to import tizen_ci_shared.workspace:
+
+- tizen_ci_shared.state.db -> tizen_ci_shared.workspace (l.16)
+
+
+shared L1 domains are independent
+---------------------------------
+
+tizen_ci_shared.state is not allowed to import tizen_ci_shared.workspace:
+
+- tizen_ci_shared.state.db -> tizen_ci_shared.workspace (l.16)
+
+exit_code=1
+```
+
+The temporary import was removed.
+
+### Negative B: workspace imports classify
+
+Temporary violation: add `import tizen_ci_shared.classify` to
+`tizen_ci_shared/workspace/__init__.py`.
+
+Command:
+
+```bash
+.venv/bin/lint-imports
+```
+
+Output:
+
+```text
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 32 files, 61 dependencies.
+-----------------------------------
+
+shared internal layers: L1 -> L0 -> types BROKEN
+shared must not import orchestration KEPT
+shared L1 domains are independent BROKEN
+shared L0 primitives are independent KEPT
+
+Contracts: 2 kept, 2 broken.
+
+
+----------------
+Broken contracts
+----------------
+
+shared internal layers: L1 -> L0 -> types
+-----------------------------------------
+
+tizen_ci_shared.workspace is not allowed to import tizen_ci_shared.classify:
+
+- tizen_ci_shared.workspace -> tizen_ci_shared.classify (l.5)
+
+
+shared L1 domains are independent
+---------------------------------
+
+tizen_ci_shared.workspace is not allowed to import tizen_ci_shared.classify:
+
+- tizen_ci_shared.workspace -> tizen_ci_shared.classify (l.5)
+
+exit_code=1
+```
+
+The temporary import was removed.
+
+### Restored positive check
+
+```text
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 32 files, 60 dependencies.
+-----------------------------------
+
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+
+Contracts: 4 kept, 0 broken.
+exit_code=0
+```
+
+The commit ① L1 deferral is now closed. The L0 independence negative control
+remains explicitly bound to commit ③; step-0 cannot be declared complete until
+that run records its real exit-1 output here.
+
+## Commit ② validation
+
+- Workspace authority: both marker constants, marker JSON construction, marker
+  path construction, and the marker-preserving `git clean` exclusions now live
+  in `tizen_ci_shared.workspace`.
+- Marker parity: the same real-Git fixture before and after migration produced
+  identical normalized JSON and the same marker path suffix
+  `iter_7/.ci_triage_workdir`; `cmp` exited 0.
+- Move equivalence: AST comparisons passed for 13 moved workspace definitions
+  and `discover_sibling_pythonpath`; the moved classifier file passed a bytewise
+  `cmp` against its pre-move content.
+- Targeted regression: `113 passed in 4.61s`.
+- Full regression: 847 collected, `846 passed, 1 skipped in 21.97s`, matching
+  the commit ① baseline.
+- Mypy: `Success: no issues found in 99 source files`.
+- Py_compile: exit 0 for all Python files under `tizen_ci_shared` and
+  `ci_triage`.
+- Ruff: all tracked Python files and all task Python files pass `ruff check`.
+- Import Linter: `4 kept, 0 broken`, exit 0 after restoring both negative
+  probes.
+- Symbol audit: `42 OK, 0 MISMATCH, 0 INCOMPLETE`, exit 0.
+- Frozen canonical/history comparison: `cmp` exit 0 after revisions 2 and 3.
+- `quickbuild_http.py` remains a one-line docstring-only placeholder for
+  commit ③.

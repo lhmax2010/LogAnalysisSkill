@@ -8,13 +8,12 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from ci_triage.verify.workspace import (
+from ci_triage.verify.workspace import check_disk_and_maybe_cleanup, create_worktree
+from tizen_ci_shared.workspace import (
     MARKER_FILENAME,
     PROTECTED_FILENAME,
     WorkspaceViolation,
-    check_disk_and_maybe_cleanup,
     cleanup_worktree,
-    create_worktree,
     is_protected,
     mark_worktree_protected,
     release_worktree_protection,

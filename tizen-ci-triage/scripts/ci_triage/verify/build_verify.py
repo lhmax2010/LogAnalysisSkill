@@ -23,6 +23,12 @@ from pathlib import Path
 from typing import Any
 
 from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch
+from tizen_ci_shared.classify import (
+    REPAIR_DENIED,
+    FailureClassification,
+    classify_failure,
+)
+from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.state import (
     StateDatabase,
     VerificationRecord,
@@ -30,19 +36,12 @@ from tizen_ci_shared.state import (
     failure_key_sha12,
     write_pass_record,
 )
+from tizen_ci_shared.workspace import cleanup_worktree, mark_worktree_protected
 
-from ci_triage.runner import discover_sibling_pythonpath
 from ci_triage.verify.edit_spec_guard import EditSpecViolation, validate_edit_spec
-from ci_triage.verify.failure_classify import (
-    REPAIR_DENIED,
-    FailureClassification,
-    classify_failure,
-)
 from ci_triage.verify.workspace import (
     check_disk_and_maybe_cleanup,
-    cleanup_worktree,
     create_worktree,
-    mark_worktree_protected,
 )
 
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
