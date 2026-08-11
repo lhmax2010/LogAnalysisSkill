@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from ci_triage.state.db import GERRIT_READY, StateDatabase
-from ci_triage.state.keys import build_failure_key, build_submission_key, failure_key_sha12
-from ci_triage.state.records import (
+from tizen_ci_shared.state.db import GERRIT_READY, StateDatabase
+from tizen_ci_shared.state.keys import build_failure_key, build_submission_key, failure_key_sha12
+from tizen_ci_shared.state.records import (
     LatestStatusRow,
     VerificationRecord,
     get_latest_status,

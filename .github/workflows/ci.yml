@@ -24,14 +24,17 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e .
+          python -m pip install -e ".[dev]"
           python -m pip install -r requirements-dev.txt
 
       - name: Lint
-        run: ruff check .
+        run: |
+          ruff check .
+          lint-imports
 
       - name: Type check
         run: |
+          mypy tizen-ci-shared/scripts/tizen_ci_shared
           mypy tizen-gbs-log-analysis/scripts/gbs_analyzer
           mypy tizen-gbs-build-workflow/scripts/gbs_workflow
           mypy tizen-gbs-patch-suggest/scripts/gbs_patch_suggest

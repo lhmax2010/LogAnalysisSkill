@@ -12,6 +12,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from tizen_ci_shared.types import FailedPackage
+
 from ci_triage.gbs_report import (
     GbsReportPackage,
     download_gbs_package_buildlog,
@@ -25,7 +27,6 @@ from ci_triage.quickbuild import (
     download_package_buildlog,
 )
 from ci_triage.quickbuild_log import (
-    FailedPackage,
     QuickBuildLogError,
     match_pkg_key,
     parse_build_pkg_list,

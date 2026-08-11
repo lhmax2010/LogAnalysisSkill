@@ -16,7 +16,6 @@ from ci_triage.gbs_report import (
 )
 from ci_triage.gerrit import (
     GerritChange,
-    SourceFetchResult,
     fetch_source_for_commit,
     find_patchset_by_revision,
 )
@@ -50,6 +49,7 @@ from ci_triage.quickbuild_log import (
 )
 from ci_triage.runner import TriageOptions, TriageResult, _safe_pkg_dir, run_triage
 from ci_triage.sources import FailedBuild, QuickBuildSource
+from tizen_ci_shared.types import SourceFetchResult
 
 OVERVIEW_HTML = """
 <html>

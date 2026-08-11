@@ -1,18 +1,19 @@
 # P4.9 step-0 symbol attribution audit
 
-## Freeze Result (v2.0-FROZEN)
+## Commit 1 Result (v2.0-FROZEN revision-1)
 
-**PASS - ready for the final pre-freeze review.**
+**PASS - shared state/types attribution is mechanically consistent.**
 
 - Design input: `docs/clang-fix-campaign/p49-step0-design-v2.0-FROZEN.md`
-- Design SHA-256: `697aa94595eb052d0020c1ee5248112aa2223f7a1992bc0ecb850c040d8a45c5`
+- Design SHA-256: `70a5d699039504b92f6ee2c5ad2a6cccee81ba8ceeb064567cd97cc64bd52474`
 - Audit command: `.venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py`
-- Result: **39/39 OK, 0 MISMATCH, 0 INCOMPLETE**
+- Result: **41/41 OK, 0 MISMATCH, 0 INCOMPLETE**
 
-The design is frozen as v2.0 after merging the v1.0-v1.12 rulings directly
-into the applicable sections. No correction appendix remains. The frozen body
-and this report are anchored by the Git commit containing both files; neither
-file records its own hash.
+Revision-1 moves the complete Gerrit result type closure
+(`GerritPatchSet` -> `GerritChange` -> `SourceFetchResult`) into
+`shared/types` and adds a structural L-1 type-closure check. The design and
+report are anchored by the Git commit that contains them; neither file records
+its own hash.
 
 ## Scope
 
@@ -22,23 +23,14 @@ This audit covers only modules and symbols that step-0 actually changes:
   public-surface completeness guard;
 - the function-level workspace split and both marker formats;
 - failure classification and the state/types moves;
+- all dataclasses currently defined by `tizen_ci_shared.types`, including
+  the repository-owned field-type closure;
 - the single `discover_sibling_pythonpath` extraction.
 
 `ci_triage/gbs_report.py` is out of scope as a complete module. Its fetch and
 parse functions, report data types, iframe/parser closure, constants, and
 private helpers are neither inventoried nor guarded in this round. They are
-deferred together to the triage-report extraction batch. The inventory and a
-module public-surface guard must re-enter together in that batch.
-
-`discover_sibling_pythonpath` is audited as `shared/env` with the four
-measured consumers `ci_triage.batch_cli`, `ci_triage.cli`,
-`ci_triage.orchestrator`, and `ci_triage.verify.build_verify`. `runner.py` is
-the definition module and is intentionally not subject to a full public-surface
-completeness guard because the orchestrator module is not extracted in step-0.
-
-The report does not record its own hash. The design and report are anchored by
-the Git commit that contains them; either committed file can be recovered with
-`git show <commit>:<path>` and hashed independently.
+deferred together to the triage-report extraction batch.
 
 ## Full Audit Output
 
@@ -46,12 +38,14 @@ The following is the complete stdout from the audit command.
 
 ```text
 symbol | declared | measured_consumers | verdict
-SourceFetchResult | sections=§2; status=existing; owner=shared/types; expected_owner=-; consumers=[ci_triage.report]; internal=[-] | definition=ci_triage/gerrit.py:43; consumers=[ci_triage.report]; internal=[fetch_source_for_commit@157,231,239,247] | OK
-FailedPackage | sections=§2; status=existing; owner=shared/types; expected_owner=-; consumers=[ci_triage.orchestrator,ci_triage.report,ci_triage.runner]; internal=[-] | definition=ci_triage/quickbuild_log.py:11; consumers=[ci_triage.orchestrator,ci_triage.report,ci_triage.runner]; internal=[parse_failed_packages@56,59,74,select_failed_package@89,92] | OK
+GerritPatchSet | sections=§2+v2.0-revision-1; status=existing; owner=shared/types; expected_owner=-; consumers=[ci_triage.gerrit]; internal=[-] | definition=tizen_ci_shared/types.py:10; consumers=[ci_triage.gerrit]; internal=[GerritChange@28] | OK
+GerritChange | sections=§2+v2.0-revision-1; status=existing; owner=shared/types; expected_owner=-; consumers=[ci_triage.gerrit]; internal=[-] | definition=tizen_ci_shared/types.py:19; consumers=[ci_triage.gerrit]; internal=[SourceFetchResult@38] | OK
+SourceFetchResult | sections=§2+v2.0-revision-1; status=existing; owner=shared/types; expected_owner=-; consumers=[ci_triage.gerrit,ci_triage.report]; internal=[-] | definition=tizen_ci_shared/types.py:32; consumers=[ci_triage.gerrit,ci_triage.report]; internal=[-] | OK
+FailedPackage | sections=§2; status=existing; owner=shared/types; expected_owner=-; consumers=[ci_triage.orchestrator,ci_triage.quickbuild_log,ci_triage.report,ci_triage.runner]; internal=[-] | definition=tizen_ci_shared/types.py:43; consumers=[ci_triage.orchestrator,ci_triage.quickbuild_log,ci_triage.report,ci_triage.runner]; internal=[-] | OK
 DisposableWorktree | sections=§2+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[-] | definition=ci_triage/verify/workspace.py:31; consumers=[-]; internal=[_oldest_worktrees@220,221,236,_verify_cleanup_handle@204,cleanup_disposable_copy@114,cleanup_worktree@92,create_worktree@47,82,mark_worktree_protected@128] | OK
 WorkspaceViolation | sections=§2+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.campaign_repair_step]; internal=[-] | definition=ci_triage/verify/workspace.py:26; consumers=[ci_triage.campaign_repair_step]; internal=[_read_marker@251,_verify_cleanup_handle@207,215,217,check_disk_and_maybe_cleanup@187,cleanup_disposable_copy@110,123,create_worktree@57] | OK
 FailureClassification | sections=§2; status=existing; owner=shared/classify; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/verify/failure_classify.py:43; consumers=[ci_triage.verify.build_verify]; internal=[_heuristic_classification@213,219,230,_match_denylist@193,203,_source_diagnostic_classification@239,241,250,259,268,279,classify_failure@133,146,159,173] | OK
-discover_sibling_pythonpath | sections=§3.3; status=existing; owner=shared/env; expected_owner=-; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.orchestrator,ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/runner.py:241; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.orchestrator,ci_triage.verify.build_verify]; internal=[-] | OK
+discover_sibling_pythonpath | sections=§3.3; status=existing; owner=shared/env; expected_owner=-; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.orchestrator,ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/runner.py:242; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.orchestrator,ci_triage.verify.build_verify]; internal=[-] | OK
 create_worktree | sections=§3.2; status=existing; owner=build-verify; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/verify/workspace.py:42; consumers=[ci_triage.verify.build_verify]; internal=[-] | OK
 check_disk_and_maybe_cleanup | sections=§3.2; status=existing; owner=build-verify; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/verify/workspace.py:166; consumers=[ci_triage.verify.build_verify]; internal=[-] | OK
 _copy_repository | sections=§3.2; status=existing; owner=build-verify; expected_owner=-; consumers=[-]; internal=[create_worktree] | definition=ci_triage/verify/workspace.py:267; consumers=[-]; internal=[create_worktree@58] | OK
@@ -85,26 +79,28 @@ find_download_href | sections=§4+v1.2-A; status=existing; owner=shared/quickbui
 derive_package_buildlog_url | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[download_package_buildlog] | definition=ci_triage/quickbuild.py:150; consumers=[-]; internal=[download_package_buildlog@178] | OK
 download_package_buildlog | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.runner]; internal=[-] | definition=ci_triage/quickbuild.py:171; consumers=[ci_triage.runner]; internal=[-] | OK
 normalize_quickbuild_url | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[_urllib_fetch] | definition=ci_triage/quickbuild.py:228; consumers=[-]; internal=[_urllib_fetch@206] | OK
-SUMMARY | 39 OK | 0 MISMATCH | 0 INCOMPLETE
+SUMMARY | 41 OK | 0 MISMATCH | 0 INCOMPLETE
 ```
 
 ## Negative Controls
 
-All three controls failed closed with exit status 1:
+All four controls failed closed with exit status 1:
 
 1. Remove `QuickBuildError` from the inventory:
-   exit 1, `38 OK / 0 MISMATCH / 1 INCOMPLETE`.
+   `38 OK / 0 MISMATCH / 1 INCOMPLETE` in the pre-revision inventory.
 2. Relabel planned `write_workdir_marker` from `shared/workspace` to bare
-   `shared`: exit 1, `38 OK / 1 MISMATCH / 0 INCOMPLETE`.
-3. Replace the four measured `discover_sibling_pythonpath` consumers with
-   `build_verify + runner`: exit 1, `38 OK / 1 MISMATCH / 0 INCOMPLETE`; the audit
-   reports the missing and undeclared consumers explicitly.
+   `shared`: `38 OK / 1 MISMATCH / 0 INCOMPLETE` in the pre-revision
+   inventory.
+3. Replace the measured `discover_sibling_pythonpath` consumers with
+   `build_verify + runner`: `38 OK / 1 MISMATCH / 0 INCOMPLETE` in the
+   pre-revision inventory.
+4. Add a `FailedPackage` field typed as higher-layer `GerritError`:
+   exit 1, `40 OK / 1 MISMATCH / 0 INCOMPLETE`; the audit reports
+   `type-closure escapes L-1`.
 
 ## Deferred Bridge
 
 The mechanical parser that compares design-table ownership directly with the
 hard-coded audit inventory is due during step-0 implementation, no later than
 commit ③. Until then, each attribution-table change requires a retained manual
-row-by-row reconciliation. The current freeze remains guarded by full
-source/AST consumer measurement and the `quickbuild.py` public-surface
-completeness check.
+row-by-row reconciliation.

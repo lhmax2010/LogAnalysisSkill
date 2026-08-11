@@ -4,7 +4,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
-from ci_triage.state import (
+from tizen_ci_shared.state import (
     GERRIT_READY,
     StateDatabase,
     VerificationRecord,

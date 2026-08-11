@@ -11,6 +11,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from tizen_ci_shared.types import FailedPackage
+
 from ci_triage.gbs_report import (
     DEFAULT_ARCHES,
     GbsReportPackage,
@@ -19,7 +21,6 @@ from ci_triage.gbs_report import (
 )
 from ci_triage.quickbuild import DEFAULT_COOKIE_PATH, QuickBuildError, download_full_log
 from ci_triage.quickbuild_log import (
-    FailedPackage,
     QuickBuildLogError,
     match_pkg_key,
     parse_build_pkg_list,

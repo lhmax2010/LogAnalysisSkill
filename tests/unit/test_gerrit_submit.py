@@ -5,7 +5,15 @@ import subprocess
 from pathlib import Path
 from typing import Any, cast
 
-from ci_triage.state import (
+from ci_triage.verify.gerrit_submit import (
+    GerritSubmitOptions,
+    exit_code_for_release,
+    exit_code_for_submit,
+    gerrit_submit,
+    release_verified_worktree,
+)
+from ci_triage.verify.workspace import PROTECTED_FILENAME
+from tizen_ci_shared.state import (
     GERRIT_READY,
     StateDatabase,
     VerificationRecord,
@@ -15,14 +23,6 @@ from ci_triage.state import (
     record_status,
     write_pass_record,
 )
-from ci_triage.verify.gerrit_submit import (
-    GerritSubmitOptions,
-    exit_code_for_release,
-    exit_code_for_submit,
-    gerrit_submit,
-    release_verified_worktree,
-)
-from ci_triage.verify.workspace import PROTECTED_FILENAME
 
 
 class SubmitRunner:

@@ -10,7 +10,6 @@ from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
-from ci_triage.state import StateDatabase, get_latest_status, get_record
 from ci_triage.verify.build_verify import (
     BuildVerifyOptions,
     _format_and_apply_patch,
@@ -25,6 +24,7 @@ from ci_triage.verify.workspace import (
     create_worktree,
     mark_worktree_protected,
 )
+from tizen_ci_shared.state import StateDatabase, get_latest_status, get_record
 
 if shutil.which("git") is None:
     pytest.skip("git not available", allow_module_level=True)

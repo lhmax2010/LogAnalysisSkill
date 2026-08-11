@@ -20,7 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from ci_triage.state import StateDatabase
+from tizen_ci_shared.state import StateDatabase
+
 from ci_triage.verify.convergence import _error_count, _primary_fingerprint
 
 CAMPAIGN_SCHEMA_VERSION = "campaign/v1"

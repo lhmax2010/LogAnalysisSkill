@@ -4,16 +4,8 @@ from __future__ import annotations
 
 import ast
 import re
-from dataclasses import dataclass
 
-
-@dataclass(frozen=True)
-class FailedPackage:
-    """A failed package reported by QuickBuild publish logs."""
-
-    fail_pkg: str
-    spec_name: str
-    dest_file: str | None = None
+from tizen_ci_shared.types import FailedPackage  # P4.9 shim, removed at P4.9 end (§6.2)
 
 
 class QuickBuildLogError(RuntimeError):

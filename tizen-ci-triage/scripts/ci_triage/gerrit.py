@@ -7,47 +7,19 @@ import os
 import shutil
 import subprocess
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+# isort: off
+from tizen_ci_shared.types import GerritChange  # P4.9 shim, removed at P4.9 end (§6.2)
+from tizen_ci_shared.types import GerritPatchSet  # P4.9 shim, removed at P4.9 end (§6.2)
+from tizen_ci_shared.types import SourceFetchResult  # P4.9 shim, removed at P4.9 end (§6.2)
+# isort: on
 
 GERRIT_HOST = "review.tizen.org"
 GERRIT_PORT = "29418"
 
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
-
-
-@dataclass(frozen=True)
-class GerritPatchSet:
-    """Patch set matching a build commit."""
-
-    number: int | None
-    revision: str
-    ref: str
-
-
-@dataclass(frozen=True)
-class GerritChange:
-    """Relevant Gerrit change metadata for a build commit."""
-
-    project: str
-    branch: str
-    status: str
-    number: int | None
-    subject: str
-    url: str | None
-    matching_patchset: GerritPatchSet | None
-
-
-@dataclass(frozen=True)
-class SourceFetchResult:
-    """Source checkout result."""
-
-    status: str
-    src_root: Path
-    remote_url: str
-    change: GerritChange | None = None
-    error: str | None = None
 
 
 class GerritError(RuntimeError):

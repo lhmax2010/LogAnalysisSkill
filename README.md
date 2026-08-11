@@ -286,6 +286,12 @@ context files.
 
 ## Development References
 
+For source-tree development commands, include every package root:
+
+```bash
+export PYTHONPATH="$PWD/tizen-ci-shared/scripts:$PWD/tizen-gbs-build/scripts:$PWD/tizen-gbs-log-analysis/scripts:$PWD/tizen-gbs-build-workflow/scripts:$PWD/tizen-gbs-patch-suggest/scripts:$PWD/tizen-ci-triage/scripts${PYTHONPATH:+:$PYTHONPATH}"
+```
+
 - User guide: `docs/README_FOR_USER.md`
 - Analyzer design baseline: `docs/DESIGN.md`
 - Build workflow design: `docs/build_workflow/DESIGN.md`

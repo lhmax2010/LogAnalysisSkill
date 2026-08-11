@@ -35,23 +35,43 @@ class SymbolSpec:
 WORKSPACE = "ci_triage/verify/workspace.py"
 QUICKBUILD = "ci_triage/quickbuild.py"
 RUNNER = "ci_triage/runner.py"
+SHARED_TYPES = "tizen_ci_shared/types.py"
 
 
 SPECS: tuple[SymbolSpec, ...] = (
     # §2, with the v1.1 additions applied.
     SymbolSpec(
-        "SourceFetchResult",
-        ("§2",),
-        "ci_triage/gerrit.py",
+        "GerritPatchSet",
+        ("§2", "v2.0-revision-1"),
+        SHARED_TYPES,
         "shared/types",
-        ("ci_triage.report",),
+        ("ci_triage.gerrit",),
+    ),
+    SymbolSpec(
+        "GerritChange",
+        ("§2", "v2.0-revision-1"),
+        SHARED_TYPES,
+        "shared/types",
+        ("ci_triage.gerrit",),
+    ),
+    SymbolSpec(
+        "SourceFetchResult",
+        ("§2", "v2.0-revision-1"),
+        SHARED_TYPES,
+        "shared/types",
+        ("ci_triage.gerrit", "ci_triage.report"),
     ),
     SymbolSpec(
         "FailedPackage",
         ("§2",),
-        "ci_triage/quickbuild_log.py",
+        SHARED_TYPES,
         "shared/types",
-        ("ci_triage.orchestrator", "ci_triage.report", "ci_triage.runner"),
+        (
+            "ci_triage.orchestrator",
+            "ci_triage.quickbuild_log",
+            "ci_triage.report",
+            "ci_triage.runner",
+        ),
     ),
     SymbolSpec(
         "DisposableWorktree",
@@ -603,6 +623,48 @@ def _scope_names(internal: tuple[str, ...]) -> set[str]:
     return {entry.split("@", 1)[0] for entry in internal}
 
 
+def _type_closure_reasons(
+    sources: tuple[SourceFile, ...],
+    source: SourceFile,
+    symbol: str,
+) -> tuple[str, ...]:
+    """Reject shared/types dataclass fields that reference higher repo types."""
+
+    repo_types: dict[str, set[str]] = {}
+    for candidate in sources:
+        for node in candidate.tree.body:
+            if isinstance(node, ast.ClassDef):
+                repo_types.setdefault(node.name, set()).add(candidate.relative)
+
+    class_node = next(
+        (
+            node
+            for node in source.tree.body
+            if isinstance(node, ast.ClassDef) and node.name == symbol
+        ),
+        None,
+    )
+    if class_node is None:
+        return ()
+
+    reasons: list[str] = []
+    for field in class_node.body:
+        if not isinstance(field, ast.AnnAssign) or not isinstance(field.target, ast.Name):
+            continue
+        referenced_names = {
+            node.id for node in ast.walk(field.annotation) if isinstance(node, ast.Name)
+        }
+        for referenced in sorted(referenced_names):
+            external_definitions = repo_types.get(referenced, set()) - {source.relative}
+            if external_definitions:
+                locations = ",".join(sorted(external_definitions))
+                reasons.append(
+                    "type-closure escapes L-1: "
+                    f"{symbol}.{field.target.id} references {referenced} from {locations}"
+                )
+    return tuple(reasons)
+
+
 def _audit_one(
     sources: tuple[SourceFile, ...],
     specs_by_name: dict[str, SymbolSpec],
@@ -709,6 +771,9 @@ def _audit_one(
     if spec.format_authority and not spec.owner.startswith("shared"):
         reasons.append("format authority requires shared ownership")
 
+    if spec.owner == "shared/types":
+        reasons.extend(_type_closure_reasons(sources, source, spec.name))
+
     if not (spec.owner.startswith("shared") or spec.owner.startswith("UNRESOLVED")):
         for scope in sorted(_scope_names(internal)):
             caller_name = scope.split(".", 1)[0]
@@ -775,13 +840,18 @@ def _measured_text(result: AuditResult) -> str:
 
 
 def run(repo_root: Path) -> int:
-    scripts_root = repo_root / "tizen-ci-triage/scripts"
-    sources = _load_sources(scripts_root)
+    triage_scripts_root = repo_root / "tizen-ci-triage/scripts"
+    shared_scripts_root = repo_root / "tizen-ci-shared/scripts"
+    sources = _load_sources(triage_scripts_root) + _load_sources(shared_scripts_root)
     by_relative = {source.relative: source for source in sources}
     surface_checks = (
         (
             by_relative[QUICKBUILD],
             {spec.name for spec in SPECS if spec.quickbuild_surface},
+        ),
+        (
+            by_relative[SHARED_TYPES],
+            {spec.name for spec in SPECS if spec.owner == "shared/types"},
         ),
     )
     incomplete = sorted(

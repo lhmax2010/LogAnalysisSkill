@@ -111,7 +111,12 @@ def test_cli_build_verify_minimal_args_dispatches_to_build_verify(
 
 def test_python_m_ci_triage_build_verify_help_smoke() -> None:
     env = os.environ.copy()
-    scripts_path = str(Path("tizen-ci-triage/scripts").resolve())
+    scripts_path = os.pathsep.join(
+        (
+            str(Path("tizen-ci-shared/scripts").resolve()),
+            str(Path("tizen-ci-triage/scripts").resolve()),
+        )
+    )
     env["PYTHONPATH"] = (
         scripts_path
         if not env.get("PYTHONPATH")
@@ -213,7 +218,12 @@ def test_cli_check_convergence_reports_invalid_json(tmp_path: Path) -> None:
 
 def test_python_m_ci_triage_check_convergence_help_smoke() -> None:
     env = os.environ.copy()
-    scripts_path = str(Path("tizen-ci-triage/scripts").resolve())
+    scripts_path = os.pathsep.join(
+        (
+            str(Path("tizen-ci-shared/scripts").resolve()),
+            str(Path("tizen-ci-triage/scripts").resolve()),
+        )
+    )
     env["PYTHONPATH"] = (
         scripts_path
         if not env.get("PYTHONPATH")
@@ -293,7 +303,12 @@ def test_cli_gerrit_submit_dispatches_and_writes_output(
 
 def test_python_m_ci_triage_gerrit_submit_help_smoke() -> None:
     env = os.environ.copy()
-    scripts_path = str(Path("tizen-ci-triage/scripts").resolve())
+    scripts_path = os.pathsep.join(
+        (
+            str(Path("tizen-ci-shared/scripts").resolve()),
+            str(Path("tizen-ci-triage/scripts").resolve()),
+        )
+    )
     env["PYTHONPATH"] = (
         scripts_path
         if not env.get("PYTHONPATH")

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 
-from ci_triage.state.db import GERRIT_READY, StateDatabase
+from tizen_ci_shared.state.db import GERRIT_READY, StateDatabase
 
 
 @dataclass(frozen=True)

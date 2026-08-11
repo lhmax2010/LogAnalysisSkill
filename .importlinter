@@ -1,0 +1,34 @@
+[importlinter]
+root_packages =
+    tizen_ci_shared
+    ci_triage
+
+[importlinter:contract:shared-layers]
+name = shared internal layers: L1 -> L0 -> types
+type = layers
+layers =
+    state | workspace | classify
+    quickbuild_http | env
+    types
+containers = tizen_ci_shared
+
+[importlinter:contract:shared-no-uplink]
+name = shared must not import orchestration
+type = forbidden
+source_modules = tizen_ci_shared
+forbidden_modules = ci_triage
+
+[importlinter:contract:shared-l1-independence]
+name = shared L1 domains are independent
+type = independence
+modules =
+    tizen_ci_shared.state
+    tizen_ci_shared.workspace
+    tizen_ci_shared.classify
+
+[importlinter:contract:shared-l0-independence]
+name = shared L0 primitives are independent
+type = independence
+modules =
+    tizen_ci_shared.quickbuild_http
+    tizen_ci_shared.env

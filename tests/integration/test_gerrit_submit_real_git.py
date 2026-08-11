@@ -6,8 +6,13 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
-from ci_triage.state import StateDatabase, VerificationRecord, build_failure_key, write_pass_record
 from ci_triage.verify.gerrit_submit import GerritSubmitOptions, gerrit_submit
+from tizen_ci_shared.state import (
+    StateDatabase,
+    VerificationRecord,
+    build_failure_key,
+    write_pass_record,
+)
 
 if shutil.which("git") is None:
     pytest.skip("git not available", allow_module_level=True)

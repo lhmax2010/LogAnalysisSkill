@@ -42,7 +42,7 @@ from ci_triage.campaign_state import (
     latest_status,
     link_verification_with_convergence,
 )
-from ci_triage.state import StateDatabase, VerificationRecord, write_pass_record
+from tizen_ci_shared.state import StateDatabase, VerificationRecord, write_pass_record
 
 UNIT_KEY = "campaign-unit-1"
 OTHER_UNIT_KEY = "campaign-unit-2"

@@ -3,6 +3,8 @@
 - 阶段:P4.9 step-0(六 skill 抽取的地基,先于任何 skill)
 - 前置:P4.5 已 merge(v1.5.18-FROZEN);提纲四轮评审收敛(v3.1)
 - **版本说明**:本稿为 **v2.0-FROZEN**,收敛自 v1.0–v1.12 全部裁决;
+  **v2.0 修订-1** 将 `SourceFetchResult` 的自封闭类型依赖
+  `GerritPatchSet`/`GerritChange` 一并纳入 shared/types;
   生效结论已合并进正文对应节,不再叠补丁(消除 body/appendix 三次
   漂移)。归属表经
   symbol_audit 最新轮次 **N/N** 机械核验(design SHA 见审计报告)。
@@ -158,13 +160,20 @@ exit 1;若空占位、layers/independence/forbidden 或其它配置语法与 2.3
 
 | 类型 | 现定义 | 实测消费方 | 归属 |
 |---|---|---|---|
-| `SourceFetchResult` | gerrit.py | report | shared/types |
-| `FailedPackage` | quickbuild_log.py | orchestrator/report/runner | shared/types |
+| `GerritPatchSet` | gerrit.py | gerrit(构造/兼容 shim) | shared/types |
+| `GerritChange` | gerrit.py | gerrit(构造/兼容 shim) | shared/types |
+| `SourceFetchResult` | gerrit.py | gerrit(构造/兼容 shim)/report | shared/types |
+| `FailedPackage` | quickbuild_log.py | quickbuild_log(构造/兼容 shim)/orchestrator/report/runner | shared/types |
 | `FailureClassification` | failure_classify.py | build_verify(随 classify 模块) | shared/classify |
 | `DisposableWorktree` | workspace.py | build-verify + 清理链 | shared/workspace |
 | `WorkspaceViolation` | workspace.py | campaign_repair_step + 清理链 | shared/workspace |
 
 原定义处留 re-export shim,P4.9 全 skill 抽完统一删(§6)。
+
+**L-1 类型闭包校验(v2.0 修订-1)**:`shared/types.py` 中每个 dataclass
+字段若引用仓库自有类型,该类型必须同属 `shared/types` 或更底层;引用逃逸
+则 symbol_audit 报 `MISMATCH: type-closure escapes L-1`。stdlib/typing 类型
+不属于仓库自有类型,不计入该判据。
 
 ## §3 workspace 函数级归属 + 双 marker 权威
 
@@ -286,7 +295,8 @@ commit 中的版本,再用 `sha256sum` 复算;锚在 commit,不锚在文件内�
 
 ### 6.2 shim 删除清单(P4.9 六 skill 全抽完后统一执行,单 commit)
 
-- gerrit.py / quickbuild_log.py / workspace.py / failure_classify.py
+- gerrit.py 的 `GerritPatchSet`/`GerritChange`/`SourceFetchResult`、
+  quickbuild_log.py 的 `FailedPackage`、workspace.py / failure_classify.py
   的 re-export 行;
 - **`quickbuild.py` 的 17 个 HTTP 符号 re-export**(明确属主:随
   commit ③ 下沉后原位留 shim);

@@ -14,6 +14,11 @@ dependencies = [
     "tiktoken>=0.7.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "import-linter==2.3",
+]
+
 [tool.setuptools.packages.find]
 where = [
     "tizen-gbs-build/scripts",
@@ -21,6 +26,7 @@ where = [
     "tizen-gbs-build-workflow/scripts",
     "tizen-gbs-patch-suggest/scripts",
     "tizen-ci-triage/scripts",
+    "tizen-ci-shared/scripts",
 ]
 include = [
     "gbs_analyzer*",
@@ -28,6 +34,7 @@ include = [
     "gbs_workflow*",
     "gbs_patch_suggest*",
     "ci_triage*",
+    "tizen_ci_shared*",
 ]
 
 [tool.setuptools.package-data]
@@ -63,6 +70,7 @@ mypy_path = [
     "tizen-gbs-build-workflow/scripts",
     "tizen-gbs-patch-suggest/scripts",
     "tizen-ci-triage/scripts",
+    "tizen-ci-shared/scripts",
 ]
 packages = [
     "gbs_analyzer",
@@ -70,4 +78,5 @@ packages = [
     "gbs_workflow",
     "gbs_patch_suggest",
     "ci_triage",
+    "tizen_ci_shared",
 ]

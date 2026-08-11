@@ -42,15 +42,15 @@ from ci_triage.campaign_state import (
     reconcile_pass_and_invocations,
 )
 from ci_triage.previous_evidence import MissingEvidence, ResolvedEvidence, resolve
-from ci_triage.state import (
+from ci_triage.verify.build_verify import BuildVerifyOptions, BuildVerifyResult
+from ci_triage.verify.convergence import ConvergenceResult
+from ci_triage.verify.workspace import create_worktree, mark_worktree_protected
+from tizen_ci_shared.state import (
     StateDatabase,
     VerificationRecord,
     build_failure_key,
     write_pass_record,
 )
-from ci_triage.verify.build_verify import BuildVerifyOptions, BuildVerifyResult
-from ci_triage.verify.convergence import ConvergenceResult
-from ci_triage.verify.workspace import create_worktree, mark_worktree_protected
 
 UNIT_KEY = "campaign:repair-step"
 ARCH_RAW = "standard-aarch64"
@@ -1447,7 +1447,12 @@ def test_orphan_reconciliation_uses_dedicated_error_code(
 
 def test_campaign_cli_malformed_args_emit_one_json_and_exit_five() -> None:
     env = os.environ.copy()
-    scripts = str(Path("tizen-ci-triage/scripts").resolve())
+    scripts = os.pathsep.join(
+        (
+            str(Path("tizen-ci-shared/scripts").resolve()),
+            str(Path("tizen-ci-triage/scripts").resolve()),
+        )
+    )
     env["PYTHONPATH"] = scripts
     completed = subprocess.run(
         [sys.executable, "-m", "ci_triage", "campaign-repair-step", "--round-index", "x"],
@@ -1467,7 +1472,12 @@ def test_campaign_cli_malformed_args_emit_one_json_and_exit_five() -> None:
 def test_campaign_cli_rejection_emits_one_json_and_exit_four(tmp_path: Path) -> None:
     fixture = _fixture(tmp_path)
     env = os.environ.copy()
-    scripts = str(Path("tizen-ci-triage/scripts").resolve())
+    scripts = os.pathsep.join(
+        (
+            str(Path("tizen-ci-shared/scripts").resolve()),
+            str(Path("tizen-ci-triage/scripts").resolve()),
+        )
+    )
     env["PYTHONPATH"] = scripts
     completed = subprocess.run(
         [
@@ -1580,7 +1590,12 @@ def test_python_m_campaign_repair_step_emits_one_json_document(tmp_path: Path) -
         edit_spec_sha256=_sha(canonical),
     )
     env = os.environ.copy()
-    scripts = str(Path("tizen-ci-triage/scripts").resolve())
+    scripts = os.pathsep.join(
+        (
+            str(Path("tizen-ci-shared/scripts").resolve()),
+            str(Path("tizen-ci-triage/scripts").resolve()),
+        )
+    )
     env["PYTHONPATH"] = (
         scripts
         if not env.get("PYTHONPATH")

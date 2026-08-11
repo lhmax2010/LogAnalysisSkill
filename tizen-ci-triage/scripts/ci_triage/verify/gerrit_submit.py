@@ -15,7 +15,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from ci_triage.state import (
+from tizen_ci_shared.state import (
     GERRIT_READY,
     StateDatabase,
     VerificationRecord,
@@ -23,6 +23,7 @@ from ci_triage.state import (
     get_latest_status_row,
     get_record,
 )
+
 from ci_triage.verify.workspace import release_worktree_protection
 
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]

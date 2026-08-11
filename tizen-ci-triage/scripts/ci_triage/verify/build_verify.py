@@ -23,15 +23,15 @@ from pathlib import Path
 from typing import Any
 
 from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch
-
-from ci_triage.runner import discover_sibling_pythonpath
-from ci_triage.state import (
+from tizen_ci_shared.state import (
     StateDatabase,
     VerificationRecord,
     build_failure_key,
     failure_key_sha12,
     write_pass_record,
 )
+
+from ci_triage.runner import discover_sibling_pythonpath
 from ci_triage.verify.edit_spec_guard import EditSpecViolation, validate_edit_spec
 from ci_triage.verify.failure_classify import (
     REPAIR_DENIED,

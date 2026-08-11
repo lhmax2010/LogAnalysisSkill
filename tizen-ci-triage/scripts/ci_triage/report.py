@@ -6,8 +6,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from ci_triage.gerrit import SourceFetchResult
-from ci_triage.quickbuild_log import FailedPackage
+from tizen_ci_shared.types import FailedPackage, SourceFetchResult
 
 
 @dataclass

@@ -9,8 +9,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from tizen_ci_shared.state import StateDatabase
+
 from ci_triage.campaign_state import latest_reproduce
-from ci_triage.state import StateDatabase
 
 _SKIP_NA_REASONS = {
     "orphan_invocation",

@@ -23,7 +23,7 @@ from ci_triage.campaign_state import (
     link_verification_with_convergence,
     reconcile_pass_and_invocations,
 )
-from ci_triage.state import StateDatabase, VerificationRecord, write_pass_record
+from tizen_ci_shared.state import StateDatabase, VerificationRecord, write_pass_record
 
 UNIT_KEY = "campaign:test-unit"
 FAILURE_KEY = "quickbuild/failure/aarch64"
