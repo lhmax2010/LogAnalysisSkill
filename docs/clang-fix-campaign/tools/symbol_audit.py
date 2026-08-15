@@ -54,6 +54,7 @@ SHARED_STATE_DB = "tizen_ci_shared/state/db.py"
 SHARED_STATE_KEYS = "tizen_ci_shared/state/keys.py"
 SHARED_STATE_RECORDS = "tizen_ci_shared/state/records.py"
 SKILL_CONVERGENCE = "tizen_convergence_judge/convergence.py"
+SKILL_QB_DISCOVER = "tizen_qb_discover/sources.py"
 
 SpecKey = tuple[str, str]
 
@@ -64,10 +65,12 @@ SpecKey = tuple[str, str]
 ROOT_LAYERS_HIGH_TO_LOW = (
     "ci_triage",
     "tizen_convergence_judge",
+    "tizen_qb_discover",
     "tizen_ci_shared",
 )
 REGISTERED_SKILL_ROOTS: dict[str, str] = {
     "skill/tizen_convergence_judge": "tizen_convergence_judge",
+    "skill/tizen_qb_discover": "tizen_qb_discover",
 }
 
 
@@ -110,6 +113,63 @@ CONVERGENCE_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("_string_list", ()),
     ("primary_fingerprint", ()),
     ("error_count", ()),
+)
+
+QB_DISCOVER_SYMBOLS: tuple[
+    tuple[str, tuple[str, ...], tuple[str, ...]], ...
+] = (
+    (
+        "QUICKBUILD_OVERVIEW_CONFIG_ID",
+        ("ci_triage.batch_cli",),
+        ("QuickBuildSource", "QuickBuildSource.discover"),
+    ),
+    ("_STATUS_CLASSES", (), ("_status_from_classes",)),
+    (
+        "FailedBuild",
+        ("ci_triage.orchestrator",),
+        ("FailedBuildSource.discover", "QuickBuildSource.discover", "_row_to_build"),
+    ),
+    ("FailedBuildSource", ("ci_triage.orchestrator",), ()),
+    (
+        "QuickBuildSource",
+        ("ci_triage.batch_cli", "ci_triage.orchestrator"),
+        (),
+    ),
+    (
+        "_Anchor",
+        (),
+        ("_BuildsTableParser.handle_endtag", "_Cell", "_CellBuilder"),
+    ),
+    ("_Cell", (), ("_BuildsTableParser.__init__", "_BuildsTableParser.handle_endtag", "_Row")),
+    (
+        "_Row",
+        (),
+        (
+            "_BuildsTable",
+            "_BuildsTableParser.__init__",
+            "_BuildsTableParser.handle_endtag",
+            "_row_to_build",
+        ),
+    ),
+    ("_BuildsTable", (), ("_parse_builds_table",)),
+    (
+        "_CellBuilder",
+        (),
+        ("_BuildsTableParser.__init__", "_BuildsTableParser.handle_starttag"),
+    ),
+    (
+        "_AnchorBuilder",
+        (),
+        ("_BuildsTableParser.__init__", "_BuildsTableParser.handle_starttag"),
+    ),
+    ("_BuildsTableParser", (), ("_parse_builds_table",)),
+    ("_parse_builds_table", (), ("QuickBuildSource.discover",)),
+    ("_row_to_build", (), ("QuickBuildSource.discover",)),
+    ("_status_from_classes", (), ("_row_to_build",)),
+    ("_strip_snapshot_prefix", (), ("_row_to_build",)),
+    ("_attrs_to_map", (), ("_BuildsTableParser.handle_starttag",)),
+    ("_class_names", (), ("_BuildsTableParser.handle_starttag",)),
+    ("_normalize_text", (), ("_BuildsTableParser.handle_endtag",)),
 )
 
 
@@ -357,7 +417,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§4",),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "ci_triage.sources"),
+        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -369,7 +429,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
             "ci_triage.gbs_report",
             "ci_triage.orchestrator",
             "ci_triage.runner",
-            "ci_triage.sources",
+            "tizen_qb_discover.sources",
         ),
         quickbuild_surface=True,
     ),
@@ -378,7 +438,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§4",),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "ci_triage.sources"),
+        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -386,7 +446,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§4",),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "ci_triage.sources"),
+        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -400,7 +460,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
             "ci_triage.gbs_report",
             "ci_triage.orchestrator",
             "ci_triage.runner",
-            "ci_triage.sources",
+            "tizen_qb_discover.sources",
         ),
         quickbuild_surface=True,
     ),
@@ -409,7 +469,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§4",),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "ci_triage.sources"),
+        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -417,7 +477,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§4", "v1.2-A"),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "ci_triage.sources"),
+        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -507,6 +567,17 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         )
         for name, consumers in CONVERGENCE_SYMBOLS
     ),
+    *(
+        SymbolSpec(
+            name,
+            ("skill2-§2.2", "skill2-v1.3"),
+            SKILL_QB_DISCOVER,
+            "skill/tizen_qb_discover",
+            consumers,
+            internal,
+        )
+        for name, consumers, internal in QB_DISCOVER_SYMBOLS
+    ),
 )
 
 
@@ -517,7 +588,7 @@ MODULE_OWNERS: dict[str, str] = {
     "ci_triage.orchestrator": "orchestrator",
     "ci_triage.report": "triage-report",
     "ci_triage.runner": "orchestrator",
-    "ci_triage.sources": "quickbuild",
+    "tizen_qb_discover.sources": "skill/tizen_qb_discover",
     "ci_triage.verify.build_verify": "build-verify",
     "ci_triage.verify.gerrit_submit": "submit",
 }
@@ -1171,10 +1242,12 @@ def run(repo_root: Path) -> int:
     triage_scripts_root = repo_root / "tizen-ci-triage/scripts"
     shared_scripts_root = repo_root / "tizen-ci-shared/scripts"
     convergence_scripts_root = repo_root / "tizen-convergence-judge/scripts"
+    qb_discover_scripts_root = repo_root / "tizen-qb-discover/scripts"
     sources = (
         _load_sources(triage_scripts_root)
         + _load_sources(shared_scripts_root)
         + _load_sources(convergence_scripts_root)
+        + _load_sources(qb_discover_scripts_root)
     )
     by_relative = {source.relative: source for source in sources}
     symbol_specs = tuple(spec for spec in SPECS if isinstance(spec, SymbolSpec))
@@ -1200,6 +1273,7 @@ def run(repo_root: Path) -> int:
         if source.relative == "tizen_ci_shared/__init__.py"
         or source.relative.startswith("tizen_ci_shared/")
         or source.relative == SKILL_CONVERGENCE
+        or source.relative == SKILL_QB_DISCOVER
     )
     incomplete = sorted(
         (source.relative, symbol)

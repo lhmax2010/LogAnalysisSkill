@@ -113,3 +113,123 @@ Success: no issues found in 101 source files
 lint-imports: 5 kept, 0 broken
 ruff: All checks passed
 ```
+
+## Commit C: gates, audit, and skill contract
+
+### Mechanical registration sync
+
+The seven `tizen_ci_shared.quickbuild_http` inventory entries that previously
+named `ci_triage.sources` now name `tizen_qb_discover.sources`:
+
+1. `HttpFetcher`
+2. `QuickBuildError`
+3. `_raise_if_login_page`
+4. `_urllib_fetch`
+5. `DEFAULT_COOKIE_PATH`
+6. `DEFAULT_QUICKBUILD_BASE_URL`
+7. `load_cookie_jar`
+
+The eighth stale reference was handled explicitly rather than left inert:
+`MODULE_OWNERS["ci_triage.sources"]` became
+`MODULE_OWNERS["tizen_qb_discover.sources"] = "skill/tizen_qb_discover"`.
+`REGISTERED_SKILL_ROOTS`, `ROOT_LAYERS_HIGH_TO_LOW`, setuptools package
+discovery, and mypy paths/packages all include the new skill.
+
+The first linter run after editing `pyproject.toml` failed closed because the
+existing editable installation still exposed the old package map:
+
+```text
+Could not find package 'tizen_qb_discover' in your Python path.
+```
+
+After `.venv/bin/python -m pip install -e .`, import-linter 2.3 loaded the new
+root and the positive run was:
+
+```text
+Analyzed 36 files, 65 dependencies.
+application layers: orchestration -> skills -> shared KEPT
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+Contracts: 6 kept, 0 broken.
+exit 0
+```
+
+### Negative controls
+
+Each violation was introduced temporarily, measured, removed, and followed by
+the positive `6 kept, 0 broken` run above.
+
+```text
+qb-discover -> ci_triage:
+tizen_qb_discover is not allowed to import ci_triage
+tizen_qb_discover.sources -> ci_triage (l.5)
+root-layers BROKEN; exit 1
+
+qb-discover -> convergence-judge:
+tizen_qb_discover is not allowed to import tizen_convergence_judge
+tizen_qb_discover.sources -> tizen_convergence_judge (l.5)
+skill-independence BROKEN; exit 1
+
+shared -> qb-discover:
+tizen_ci_shared is not allowed to import tizen_qb_discover
+tizen_ci_shared.types -> tizen_qb_discover (l.5)
+shared-no-uplink BROKEN; exit 1
+```
+
+`skill-independence` is a symmetric independence contract, so the measured
+qb-discover-to-convergence violation activates the same rule in both peer
+directions.
+
+### Audit and behavioral parity
+
+```text
+symbol_audit: 96 SYMBOL OK; 4 MODULE-SCOPE OK (48 symbols covered);
+              0 MISMATCH; 0 INCOMPLETE
+table bridge: 96 SYMBOL OK; 4 MODULE-SCOPE OK;
+              0 MISSING_FROM_INVENTORY; 0 MISSING_FROM_BODY;
+              0 OWNER_MISMATCH; 0 PARSE_ERROR
+```
+
+The legacy shim and extracted skill ran the existing `OVERVIEW_HTML` fixture
+through the same fake fetcher without network access. Their normalized JSON
+bytes were identical:
+
+```text
+shim_sha256=96783e837cd25f76f79134c31edc5c4faee195ae302a4d84b62b360fe56f0d01
+skill_sha256=96783e837cd25f76f79134c31edc5c4faee195ae302a4d84b62b360fe56f0d01
+byte_equal=True
+build_count=5
+```
+
+The arch exemption probe was also explicit:
+
+```text
+$ grep -c arch tizen-qb-discover/scripts/tizen_qb_discover/sources.py
+0
+exit 1
+```
+
+The source-side and report-side `_normalize_text` helpers remain separate,
+and `tizen-ci-triage/scripts/ci_triage/gbs_report.py` has zero diff from commit
+`41152fe`. The legacy `ci_triage.sources` file remains a four-name re-export
+shim for deletion at P4.9 end.
+
+### Commit C gates
+
+```text
+pytest: 847 passed, 1 skipped in 17.69s
+lint-imports: 6 kept, 0 broken
+mypy: Success: no issues found in 103 source files
+ruff (tracked Python files): All checks passed
+py_compile: exit 0
+skill validator: Skill is valid!
+symbol_audit: 96 + 4, all green
+table bridge: 96 + 4, all green
+```
+
+An unscoped `ruff check .` also inspected the unrelated untracked
+`audit_four_sigs.py` and reported its pre-existing style issues. That file was
+not modified or staged; the repository's complete tracked Python set passed.

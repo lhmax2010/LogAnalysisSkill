@@ -16,7 +16,8 @@ SECTION_HEADINGS = (
     "### 3.3 ",
     "### 4.1 ",
 )
-SKILL_SECTION_HEADINGS = ("### 1.2 ",)
+CONVERGENCE_SECTION_HEADINGS = ("### 1.2 ",)
+QB_DISCOVER_SECTION_HEADINGS = ("### 2.2 ",)
 MODULE_SCOPE_HEADING = "### 1.2a "
 SYMBOL_COLUMNS = frozenset({"symbol", "类型", "符号"})
 MODULE_COLUMNS = frozenset({"module"})
@@ -229,13 +230,21 @@ def run(repo_root: Path) -> int:
         "docs/clang-fix-campaign/"
         "p49-skill1-convergence-judge-design-v1.4-FROZEN.md"
     )
+    qb_discover_design_path = repo_root / (
+        "docs/clang-fix-campaign/"
+        "p49-skill2-qb-discover-design-v1.3-FROZEN.md"
+    )
     try:
         body = parse_design_tables(design_path)
         skill_body = parse_design_tables(
             skill_design_path,
-            section_headings=SKILL_SECTION_HEADINGS,
+            section_headings=CONVERGENCE_SECTION_HEADINGS,
         )
-        body = _merge_symbol_tables(body, skill_body)
+        qb_discover_body = parse_design_tables(
+            qb_discover_design_path,
+            section_headings=QB_DISCOVER_SECTION_HEADINGS,
+        )
+        body = _merge_symbol_tables(body, skill_body, qb_discover_body)
         body_modules = parse_module_scope_table(design_path)
     except TableParseError as exc:
         print(f"PARSE_ERROR | {exc}")
