@@ -118,15 +118,18 @@ def _git(cwd: Path, *args: str) -> str:
 
 def _subprocess_env() -> dict[str, str]:
     repo_root = Path(__file__).resolve().parents[2]
-    scripts = (
-        "tizen-ci-shared/scripts",
-        "tizen-ci-triage/scripts",
-        "tizen-gbs-log-analysis/scripts",
-        "tizen-gbs-patch-suggest/scripts",
-        "tizen-gbs-build/scripts",
+    script_roots = tuple(
+        path
+        for path in sorted(repo_root.glob("*/scripts"))
+        if path.parent.name != "release-v1.4.0"
     )
+    assert script_roots, "no repository script roots discovered"
+    assert all(
+        any((root / package).is_dir() for root in script_roots)
+        for package in ("tizen_convergence_judge", "ci_triage")
+    ), "required subprocess import roots were not discovered"
     env = os.environ.copy()
-    env["PYTHONPATH"] = os.pathsep.join(str(repo_root / path) for path in scripts)
+    env["PYTHONPATH"] = os.pathsep.join(str(path) for path in script_roots)
     return env
 
 

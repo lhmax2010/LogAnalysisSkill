@@ -1,6 +1,6 @@
 # P4.9 Skill-1 Convergence-Judge Progress
 
-Status: **COMMIT C VALIDATED; READY TO COMMIT**.
+Status: **COMMIT D VALIDATED; READY TO COMMIT**.
 
 - Frozen authority:
   `../../p49-skill1-convergence-judge-design-v1.2-FROZEN.md`.
@@ -256,3 +256,71 @@ canonical/history cmp: exit 0
 No production implementation or test file changed in commit C. The only
 runtime-facing addition is the declarative `SKILL.md`; all Python changes are
 confined to the two read-only audit tools.
+
+## Commit D: C21 Dynamic Script-Root Discovery
+
+### Root Cause
+
+Commit A followed the task prompt and hard-coded five repository script roots.
+Commit B then added the sixth root, `tizen-convergence-judge/scripts`, to the
+subprocess import chain without updating that fixed list. The target machine's
+ambient environment masked the omission and reported 847 passing tests, while
+a clean environment exposed three failures. The prompt's fixed five-path list
+was therefore incorrect: a maintained list plus repository structure evolution
+creates silent drift, the same failure class as the sibling-directory list
+already deferred from `runner.py` during step-0.
+
+The C21 helper now derives all immediate repository script roots with
+`sorted(repo_root.glob("*/scripts"))`, excludes `release-v1.4.0`, and asserts
+both a non-empty result and the presence of the `tizen_convergence_judge` and
+`ci_triage` import packages. New skill roots are included without another
+manual list update.
+
+The three affected Python subprocess tests all use the shared helper:
+
+- `test_campaign_cli_malformed_args_emit_one_json_and_exit_five`;
+- `test_campaign_cli_rejection_emits_one_json_and_exit_four`;
+- `test_python_m_campaign_repair_step_emits_one_json_document`.
+
+The only other `subprocess.run` in the file belongs to the `_git` fixture
+helper. It invokes the `git` executable and does not start a Python import
+chain, so it intentionally does not use `_subprocess_env()`.
+
+Measured script roots, in deterministic order:
+
+```text
+/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-ci-shared/scripts
+/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-ci-triage/scripts
+/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-convergence-judge/scripts
+/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-build/scripts
+/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-build-workflow/scripts
+/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-log-analysis/scripts
+/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-patch-suggest/scripts
+count=7
+has_tizen_convergence_judge=True
+has_ci_triage=True
+```
+
+Clean-CWD definition tests:
+
+```text
+cd /tmp && /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/pytest \
+  /home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_campaign_repair_step.py \
+  -k 'campaign_cli_malformed_args_emit_one_json_and_exit_five or campaign_cli_rejection_emits_one_json_and_exit_four or python_m_campaign_repair_step_emits_one_json_document'
+3 passed, 35 deselected in 0.48s
+
+cd /tmp && /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/pytest \
+  /home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_campaign_repair_step.py
+38 passed in 2.07s
+```
+
+Target-machine full regression:
+
+```text
+.venv/bin/pytest
+847 passed, 1 skipped in 17.68s
+```
+
+Claude's clean-environment rerun of `test_campaign_repair_step.py` remains the
+definition-level external acceptance for this commit; the repository-side
+clean-CWD run above is green and no ambient `PYTHONPATH` is required.
