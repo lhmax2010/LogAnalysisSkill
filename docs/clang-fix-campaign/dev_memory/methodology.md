@@ -96,6 +96,16 @@ during design convergence.
     roots are now discovered mechanically. The deferred `runner.py` sibling
     list is the same failure class and must be removed by its owning batch.
 
+## P4.9 skill-2 addition
+
+20. **Do not sacrifice independence in a bidirectional audit for convenience.**
+    If the body-to-inventory bridge obtains `definition` from SPECS, both sides
+    share one source and the check collapses into self-proof. The skill-2 v1.3
+    ruling instead added explicit definition columns to all three frozen
+    authorities and keyed both independently by `(definition, symbol)`.
+    Missing columns fail closed with `PARSE_ERROR`; there is no name-only
+    fallback that could silently reintroduce same-name collisions.
+
 ## R14 deferred cleanup ledger
 
 These findings are intentionally non-blocking for FIX-1 but retain names and

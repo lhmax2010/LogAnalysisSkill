@@ -13,6 +13,7 @@
 | R14 FIX-1 closure | READY FOR ROUND-2 DELTA REVIEW | change_45 + atomic canonical publish + strengthened X6/X11 tests | 96 campaign tests; 846 passed/1 skipped full suite; dual-arch same-round build retained |
 | P4.9 step-0 foundation | CLOSED | shared package, state/types/workspace/classify/env/HTTP moves, four import contracts | commits `8dca6c1`/`ab58bfd`/`6def1ed`; 42 symbols + 4 module scopes covering 48; final sign-off `../review/p49-step0-closeout.md#最终签批` |
 | P4.9 skill-1 convergence-judge | CLOSED | convergence skill, public aliases, root gates, layered audit, C21 glob discovery | commits `d3478ab`/`f4c8142`/`f7194ae`/`954bbcd`/`9bf1af0`; 77 symbols + 4 module scopes; final sign-off `../review/p49-skill1-closeout.md#最终签批` |
+| P4.9 skill-2 qb-discover | CLOSED | QuickBuild overview discovery skill, binary attribution keys, skill-independence activation | commits `097294f`/`95ed550`/`41152fe`/`812b213`; 96 symbols + 4 module scopes; closeout `../review/p49-skill2-closeout.md` |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -33,6 +34,7 @@ second contract authority. Runtime behavior remains governed by
 | R14 delta closure | READY FOR ROUND-2 CROSS-REVIEW | `a12d683` + `bb4af36` | package under `../review/r14-round2-delta/`; merge remains blocked pending two reviewers + developer |
 | P4.9 step-0 foundation | CLOSED | `8dca6c1`, `ab58bfd`, `6def1ed` | v2.0-FROZEN revisions 1-7a implemented; `stage07_p49_step0/result.md`; final sign-off `../review/p49-step0-closeout.md#最终签批` |
 | P4.9 skill-1 convergence-judge | CLOSED | `d3478ab`, `f4c8142`, `f7194ae`, `954bbcd`, `9bf1af0` | frozen authority `../p49-skill1-convergence-judge-design-v1.4-FROZEN.md`; result `stage08_p49_skill1_convergence_judge/result.md`; final sign-off `../review/p49-skill1-closeout.md#最终签批` |
+| P4.9 skill-2 qb-discover | CLOSED | `097294f`, `95ed550`, `41152fe`, `812b213` | frozen authority `../p49-skill2-qb-discover-design-v1.3-FROZEN.md`; result `stage09_p49_skill2_qb_discover/result.md`; review package `../review/p49-skill2-final/README.md` |
 
 ## Code-Ready Checkpoint
 
