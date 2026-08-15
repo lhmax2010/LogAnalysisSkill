@@ -21,6 +21,9 @@ during design convergence.
    validated them.
 6. **Run every checker rule against real input before freezing it.** A checker
    is code; a rule change without a real-document trial output is incomplete.
+   A claim that a rule needs "no change" also requires a dry-run against the
+   planned target topology; inspection alone did not expose the stale
+   multi-consumer premise before the convergence skill's v1.3 layering ruling.
 7. **Make the rule reproduce the incident it claims to prevent.** Every guard
    change needs a fixture proving that the original incident fails under the
    new rule. A guard that cannot catch its founding incident does not exist.
@@ -78,6 +81,15 @@ during design convergence.
     report extraction out of step-0 preserved seven concrete constraints in
     the frozen design, so the later triage-report batch starts from named risks
     rather than repeating the same discovery cycle.
+
+## P4.9 skill-1 addition
+
+19. **Derive evolving path and membership sets instead of maintaining them.**
+    A hard-coded list plus repository evolution is a silent mismatch: C21's
+    five script roots omitted the newly extracted convergence skill and passed
+    only because the target environment masked it. Repository `*/scripts`
+    roots are now discovered mechanically. The deferred `runner.py` sibling
+    list is the same failure class and must be removed by its owning batch.
 
 ## R14 deferred cleanup ledger
 

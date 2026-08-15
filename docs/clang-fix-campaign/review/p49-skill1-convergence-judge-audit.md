@@ -18,7 +18,7 @@ layered-audit ruling; the path remains stable for existing references.
 - Revised v1.3 canonical/history SHA-256:
   `c41427e092a677f45c5cb10a51ccc7dbdaa561459131fe37221e98c62ccb24d0`.
 
-Implementation audit results are appended by commits A, B, and C.
+Implementation audit results are appended by commits A, B, C, and D.
 
 ## Freeze Baseline Audit
 
@@ -89,3 +89,15 @@ Final validation: `847 passed, 1 skipped`; import-linter `5 kept, 0 broken`;
 ruff clean; mypy clean across 97 source files; 34 shared/skill/triage Python
 files compiled successfully. Canonical/history design comparison returned exit
 0. Commit C changes no production implementation or test file.
+
+## Commit D: C21 Dynamic Discovery
+
+Commit A's fixed five-root list drifted as soon as commit B added
+`tizen-convergence-judge/scripts`. Commit D (`9bf1af0`) replaced that maintained
+list with deterministic discovery of repository `*/scripts` roots, excluding
+the release snapshot, and added non-empty plus known-package assertions.
+
+Independent Claude clean-environment acceptance changed from three failing CLI
+subprocess tests before the fix to zero failures at `9bf1af0`. A repository-side
+minimal-environment run selected the same three tests and reported `3 passed,
+35 deselected`; the full suite remained `847 passed, 1 skipped`.

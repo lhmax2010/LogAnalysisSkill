@@ -1,13 +1,15 @@
 # P4.9 Skill-1 Convergence-Judge Progress
 
-Status: **COMMIT D VALIDATED; READY TO COMMIT**.
+Status: **CLOSED**. DoD account:
+`../../review/p49-skill1-closeout.md`.
 
 - Frozen authority:
   `../../p49-skill1-convergence-judge-design-v1.2-FROZEN.md`.
 - Audit record:
   `../../review/p49-skill1-convergence-judge-audit.md`.
 - Baseline: step-0 CLOSED at `7e9eb4e`; 846 passed, one skipped.
-- Planned implementation commits: A (C21), B (extraction), C (gates/audit).
+- Delivered commits: A (C21), B (extraction), C (gates/audit), and D (C21
+  dynamic script-root discovery).
 
 ## Freeze Provenance
 
@@ -321,6 +323,7 @@ Target-machine full regression:
 847 passed, 1 skipped in 17.68s
 ```
 
-Claude's clean-environment rerun of `test_campaign_repair_step.py` remains the
-definition-level external acceptance for this commit; the repository-side
-clean-CWD run above is green and no ambient `PYTHONPATH` is required.
+Independent Claude clean-environment acceptance was reported on 2026-08-15:
+the three definition tests changed from `3 failed` before `9bf1af0` to
+`0 failed` at `9bf1af0`. The repository-side minimal-environment run above is
+also green and requires no ambient `PYTHONPATH`.
