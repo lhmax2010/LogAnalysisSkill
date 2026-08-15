@@ -81,3 +81,15 @@ frozen canonical/history cmp: exit 0, byte-identical
 symbol audit: 42 SYMBOL OK + 4 MODULE-SCOPE OK (48 covered), 0/0
 table bridge: 42 SYMBOL OK + 4 MODULE-SCOPE OK, all difference counts zero
 ```
+
+## 最终签批
+
+| 签批方 | 日期 | 结论 |
+|---|---|---|
+| Claude | 2026-08-15 | 对 commit `eb6438b` 的六项独立核验全部通过，确认 step-0 可以关闭。 |
+| 评审 A | 2026-08-15 | 独立实跑双道审计、`lint-imports` 与 `pytest` 后，确认 step-0 CLOSED。 |
+| 评审 B | 2026-08-15 | 独立实跑双道审计、`lint-imports` 与 `pytest` 后，确认 step-0 CLOSED；提出 module-scope 覆盖数钉定的 MINOR。 |
+
+**状态：step-0 CLOSED（开发者放行日期：2026-08-15）。**
+
+评审 B MINOR：module-scope 覆盖数未钉定，新增顶层符号会被静默吸收；硬化措施排入 `convergence-judge` 批次。
