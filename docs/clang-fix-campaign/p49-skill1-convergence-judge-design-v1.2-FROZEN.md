@@ -1,4 +1,4 @@
-# P4.9 skill-1 设计:tizen-convergence-judge 抽取(v1.2-FROZEN)
+# P4.9 skill-1 设计:tizen-convergence-judge 抽取(v1.3-FROZEN)
 
 > **v1.1 修订(两家评审)**:①【MAJOR,Kimi】弃 module-scope、改纯逐
 > 符号注册(v1.0 的同文件双重注册撞死修订-7 互斥断言③);33 符号表
@@ -9,6 +9,12 @@
 > ChatGPT 确认三重点成立;Kimi 消费图独立复核吻合(439 行/零内部
 > import/零 arch)。**v1.2**:两家 delta 双 freeze-ready;修 Kimi 两处
 > v1.0 残留文字(§7 "skill 注册表"、附录"唯一判据变更")。
+> **v1.3 修订(commit C 裁决)**:原“本批零判据变更”未经规划终态
+> SPECS + 实测消费图试跑即冻结,违反⑥。`check_convergence` 被两个
+> `ci_triage` 编排模块消费是 skill API 的正常下行拓扑,旧“多消费方
+> 必须 shared”判据隐含的“下层唯 shared”前提已失效。本批将多消费方
+> 判据改为与 root-layers 同源的层化判定,并用两条负 fixture 与 step-0
+> 逐项回归锁定证明它是精化而非削弱。
 
 - 阶段:P4.9 首个 skill 批次(step-0 CLOSED @7e9eb4e 之后)
 - 前置输入:stage07 result.md"下游输入"四项(本稿全部承接)
@@ -167,6 +173,16 @@ convergence-judge 测试变更前完成:两个子进程测试
 
 - SPECS/bridge 扩展:§1.2 的 35 行逐符号表进 SPECS;本稿 §1.2 单表进
   bridge 解析域(第六张表;§2.1 为 §1.2 的公开子集,不重复入表);双道全绿为冻结/收口双闸;
+- **多消费方判据层化(v1.3)**:层序与 root-layers 同源,
+  `ci_triage > 注册 skill > tizen_ci_shared`;owner=shared 仍允许任意
+  上层消费组合;owner=skill 仅当该 skill 已在 root-layers 注册且全部
+  边界外消费方都位于 `ci_triage` 层时合法。shared 消费 skill 或另一
+  skill 同层消费均为 MISMATCH。防滥用三件套:skill→shared 负 fixture、
+  skill→另一注册 skill 负 fixture、step-0 既有 42 逐符号 + 4
+  module-scope 判定逐项不翻转;
+- **skill-2 起的冻结前置**:每个 skill 批次在设计冻结前,必须用“规划
+  终态 SPECS + 实测消费方”对当前审计判据做一次 dry-run,输出随设计稿
+  送审。未试跑不得再声明“零判据变更”或 audit-ready;
 - parity:同 fixture 双跑 `check_convergence`,输出 JSON 掩码
   (§5.2 规则沿用)后逐字节一致;别名走同一性断言(§2.2),免掩码;
 - **⑧三架构声明**:convergence.py 零 arch 分支(grep `arch` 实测为
@@ -180,7 +196,8 @@ convergence-judge 测试变更前完成:两个子进程测试
 - **B(抽取主体)**:建 skill 包 + convergence 整体迁移 + 两公开
   别名 + 旧址纯 shim + 消费方翻转(cli/campaign_repair_step/
   campaign_state/测试)+ 同一性断言测试;
-- **C(门禁与审计)**:root-layers 激活 + forbidden 扩列 + 负控制
+- **C(门禁与审计)**:root-layers 激活 + forbidden 扩列 + 多消费方判据
+  层化及防滥用三件套 + 负控制
   ①②③ + SPECS/bridge 扩展(35 行逐符号)+ module-scope 计数钉定(仅溯及 step-0 四模块)
   + SKILL.md。
 
@@ -191,7 +208,8 @@ convergence-judge 测试变更前完成:两个子进程测试
 - [ ] 旧址 convergence.py 零 def/class(纯 shim);
 - [ ] root-layers/forbidden 激活,负控制①②红 + 四契约正向绿,
   exit code 入 dev_memory;
-- [ ] 双道审计全绿(35 行逐符号 + 计数钉定溯及 step-0 四模块);
+- [ ] 双道审计全绿(35 行逐符号 + 计数钉定溯及 step-0 四模块),
+  多消费方两条负 fixture 均红,step-0 42+4 判定逐项不翻转;
 - [ ] parity 掩码一致;⑧ arch 豁免证据(grep)在档;
 - [ ] SKILL.md 落盘;shim 清单更新;
 - [ ] 测试 diff 仅 §5.1 两类(C21 的 A commit 除外,其性质为测试
@@ -200,6 +218,8 @@ convergence-judge 测试变更前完成:两个子进程测试
 ---
 ## 附:与 step-0 的机制复用清单
 module-scope(修订-7/7a)+ 计数钉定(评审 B)+ 双道审计 + ⑭ 实测
-纪律 + §5.1/§5.2 边界 + shim 生命周期——全部直接复用,本稿零新
-机制;**本批零判据变更**(module-scope 断言(a)的 skill root 扩展留
-备述、未启用,待首个真正整模块迁移的 skill 批次)。
+纪律 + §5.1/§5.2 边界 + shim 生命周期——全部直接复用。**本批判据
+变更一项:多消费方判据层化(v1.3)**;其防滥用断言为两条跨层/同层负
+fixture + step-0 判定回归锁定。原“本批零判据变更”声明因未对目标
+拓扑试跑即冻结而作废;module-scope 断言(a)的 skill root 扩展仍留备述、
+未启用,待首个真正整模块迁移的 skill 批次。

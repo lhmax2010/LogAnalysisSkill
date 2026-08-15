@@ -1,7 +1,16 @@
 [importlinter]
 root_packages =
     tizen_ci_shared
+    tizen_convergence_judge
     ci_triage
+
+[importlinter:contract:root-layers]
+name = application layers: orchestration -> convergence skill -> shared
+type = layers
+layers =
+    ci_triage
+    tizen_convergence_judge
+    tizen_ci_shared
 
 [importlinter:contract:shared-layers]
 name = shared internal layers: L1 -> L0 -> types
@@ -17,6 +26,7 @@ name = shared must not import orchestration
 type = forbidden
 source_modules = tizen_ci_shared
 forbidden_modules = ci_triage
+    tizen_convergence_judge
 
 [importlinter:contract:shared-l1-independence]
 name = shared L1 domains are independent

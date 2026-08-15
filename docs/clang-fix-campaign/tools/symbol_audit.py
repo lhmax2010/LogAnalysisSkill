@@ -42,6 +42,7 @@ class ModuleScopeSpec:
     legacy_path: str
     legacy_mode: str
     import_root: str
+    expected_top_level_count: int
 
 
 WORKSPACE = "ci_triage/verify/workspace.py"
@@ -52,6 +53,62 @@ SHARED_CLASSIFY = "tizen_ci_shared/classify.py"
 SHARED_STATE_DB = "tizen_ci_shared/state/db.py"
 SHARED_STATE_KEYS = "tizen_ci_shared/state/keys.py"
 SHARED_STATE_RECORDS = "tizen_ci_shared/state/records.py"
+SKILL_CONVERGENCE = "tizen_convergence_judge/convergence.py"
+
+
+# Keep this high-to-low order and the registered skill roots synchronized with
+# .importlinter's root-layers contract. A skill owner is valid only when its
+# import root is explicitly registered here and in that contract.
+ROOT_LAYERS_HIGH_TO_LOW = (
+    "ci_triage",
+    "tizen_convergence_judge",
+    "tizen_ci_shared",
+)
+REGISTERED_SKILL_ROOTS: dict[str, str] = {
+    "skill/tizen_convergence_judge": "tizen_convergence_judge",
+}
+
+
+CONVERGENCE_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("DEFAULT_BUILD_PREFIXES", ()),
+    ("SOURCE_CLUSTER_KINDS", ()),
+    ("SOURCE_DIAGNOSTIC_KINDS", ()),
+    ("ERROR_DIAGNOSTIC_KINDS", ()),
+    ("_WARNING_OPTION_RE", ()),
+    ("_IDENTIFIER_RE", ()),
+    ("_BUILD_PACKAGE_RE", ()),
+    ("ConvergenceResult", ("ci_triage.campaign_repair_step",)),
+    ("_Fingerprint", ()),
+    ("_ClusterView", ()),
+    (
+        "check_convergence",
+        ("ci_triage.campaign_repair_step", "ci_triage.cli"),
+    ),
+    ("write_convergence_result", ("ci_triage.cli",)),
+    ("touched_files_from_json", ("ci_triage.cli",)),
+    ("_fingerprint_dict", ()),
+    ("_primary_fingerprint", ("ci_triage.campaign_state",)),
+    ("_diagnostic_code", ()),
+    ("_anchor", ()),
+    ("_regression_reason", ()),
+    ("_regression_suspected", ()),
+    ("_clusters", ()),
+    ("_cluster_view", ()),
+    ("_cluster_diagnostic_code", ()),
+    ("_cluster_files", ()),
+    ("_location_dicts", ()),
+    ("_is_source_level_cluster", ()),
+    ("_error_count", ("ci_triage.campaign_state",)),
+    ("_is_error_cluster", ()),
+    ("_normalize_file", ()),
+    ("_normalize_message", ()),
+    ("_stable_hash", ()),
+    ("_string", ()),
+    ("_int", ()),
+    ("_string_list", ()),
+    ("primary_fingerprint", ()),
+    ("error_count", ()),
+)
 
 
 SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
@@ -63,6 +120,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         "tizen-ci-triage/scripts/ci_triage/state/db.py",
         "deleted",
         "tizen_ci_shared.state",
+        10,
     ),
     ModuleScopeSpec(
         "state/keys.py",
@@ -72,6 +130,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         "tizen-ci-triage/scripts/ci_triage/state/keys.py",
         "deleted",
         "tizen_ci_shared.state",
+        3,
     ),
     ModuleScopeSpec(
         "state/records.py",
@@ -81,6 +140,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         "tizen-ci-triage/scripts/ci_triage/state/records.py",
         "deleted",
         "tizen_ci_shared.state",
+        8,
     ),
     ModuleScopeSpec(
         "classify.py",
@@ -90,6 +150,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
         "pure-shim",
         "tizen_ci_shared.classify",
+        27,
     ),
     # §2, with the v1.1 additions applied.
     SymbolSpec(
@@ -434,6 +495,16 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         declared_internal=("_urllib_fetch",),
         quickbuild_surface=True,
     ),
+    *(
+        SymbolSpec(
+            name,
+            ("skill1-§1.2", "skill1-v1.3"),
+            SKILL_CONVERGENCE,
+            "skill/tizen_convergence_judge",
+            consumers,
+        )
+        for name, consumers in CONVERGENCE_SYMBOLS
+    ),
 )
 
 
@@ -737,6 +808,53 @@ def _type_closure_reasons(
     return tuple(reasons)
 
 
+def _module_root(module: str) -> str:
+    return module.split(".", 1)[0]
+
+
+def _skill_layer_reasons(
+    owner: str,
+    consumers: set[str],
+    *,
+    registered_skill_roots: dict[str, str] = REGISTERED_SKILL_ROOTS,
+) -> tuple[str, ...]:
+    """Enforce root-layers ownership for a registered skill API.
+
+    The owner module itself is an internal consumer, not a cross-boundary
+    dependency. Every other consumer must be in the higher ci_triage layer.
+    A shared consumer is an uplink; a peer skill consumer is a same-layer edge.
+    """
+
+    if not owner.startswith("skill/"):
+        return ()
+    owner_root = registered_skill_roots.get(owner)
+    if owner_root is None:
+        return (f"skill owner {owner} is not registered in root-layers",)
+
+    known_skill_roots = set(registered_skill_roots.values())
+    reasons: list[str] = []
+    for consumer in sorted(consumers):
+        consumer_root = _module_root(consumer)
+        if consumer_root == owner_root:
+            continue
+        if consumer_root == "ci_triage":
+            continue
+        if consumer_root == "tizen_ci_shared":
+            reasons.append(
+                f"skill owner {owner} is above shared consumer {consumer}"
+            )
+        elif consumer_root in known_skill_roots:
+            reasons.append(
+                f"skill owner {owner} has same-layer skill consumer {consumer}"
+            )
+        else:
+            reasons.append(
+                f"consumer {consumer} is outside registered root-layers "
+                f"{ROOT_LAYERS_HIGH_TO_LOW}"
+            )
+    return tuple(reasons)
+
+
 def _audit_one(
     sources: tuple[SourceFile, ...],
     specs_by_name: dict[str, SymbolSpec],
@@ -828,10 +946,20 @@ def _audit_one(
         for extra in sorted(actual_internal - declared_internal):
             reasons.append(f"undeclared internal consumer {extra}")
 
-    if len(measured_consumers) > 1 and not spec.owner.startswith("shared"):
-        reasons.append("multiple consumers require shared ownership")
+    # Ownership is checked against the same ci_triage > registered skills >
+    # tizen_ci_shared order as .importlinter's root-layers contract. Shared is
+    # the bottom layer, so all consumer combinations remain valid. A skill API
+    # may have one or many orchestration consumers, but no shared or peer-skill
+    # consumer. Non-skill ci_triage owners retain the original single-consumer
+    # attribution check.
+    reasons.extend(_skill_layer_reasons(spec.owner, measured_consumers))
+    if len(measured_consumers) > 1 and not (
+        spec.owner.startswith("shared") or spec.owner.startswith("skill/")
+    ):
+        reasons.append("multiple consumers require lower-layer ownership")
     elif len(measured_consumers) == 1 and not (
         spec.owner.startswith("shared") or spec.owner.startswith("UNRESOLVED")
+        or spec.owner.startswith("skill/")
     ):
         consumer = next(iter(measured_consumers))
         consumer_owner = MODULE_OWNERS.get(consumer)
@@ -949,6 +1077,12 @@ def _audit_module_scope(
         covered_symbols: tuple[str, ...] = ()
     else:
         covered_symbols = tuple(sorted(_public_surface(source)))
+        if len(covered_symbols) != spec.expected_top_level_count:
+            reasons.append(
+                "module-scope top-level count drift: "
+                f"expected {spec.expected_top_level_count}, measured "
+                f"{len(covered_symbols)}"
+            )
 
     overlaps = sorted(
         symbol_spec.name
@@ -1017,7 +1151,12 @@ def _measured_text(result: AuditResult) -> str:
 def run(repo_root: Path) -> int:
     triage_scripts_root = repo_root / "tizen-ci-triage/scripts"
     shared_scripts_root = repo_root / "tizen-ci-shared/scripts"
-    sources = _load_sources(triage_scripts_root) + _load_sources(shared_scripts_root)
+    convergence_scripts_root = repo_root / "tizen-convergence-judge/scripts"
+    sources = (
+        _load_sources(triage_scripts_root)
+        + _load_sources(shared_scripts_root)
+        + _load_sources(convergence_scripts_root)
+    )
     by_relative = {source.relative: source for source in sources}
     symbol_specs = tuple(spec for spec in SPECS if isinstance(spec, SymbolSpec))
     module_specs = tuple(spec for spec in SPECS if isinstance(spec, ModuleScopeSpec))
@@ -1041,6 +1180,7 @@ def run(repo_root: Path) -> int:
         for source in sources
         if source.relative == "tizen_ci_shared/__init__.py"
         or source.relative.startswith("tizen_ci_shared/")
+        or source.relative == SKILL_CONVERGENCE
     )
     incomplete = sorted(
         (source.relative, symbol)
@@ -1066,7 +1206,8 @@ def run(repo_root: Path) -> int:
         print(
             f"{module_result.spec.module} | module-scope | "
             f"{module_result.spec.owner} | "
-            f"{len(module_result.covered_symbols)} symbols covered; "
+            f"{len(module_result.covered_symbols)}/"
+            f"{module_result.spec.expected_top_level_count} symbols covered; "
             f"consumers=[{consumers}] | {module_result.verdict}"
         )
     for relative, symbol in incomplete:
@@ -1111,7 +1252,36 @@ def run(repo_root: Path) -> int:
     return 1 if mismatches or module_mismatches or incomplete else 0
 
 
+def _run_negative_fixture(name: str) -> int:
+    registered = dict(REGISTERED_SKILL_ROOTS)
+    if name == "skill-owner-shared-consumer":
+        consumers = {"tizen_ci_shared.types"}
+    elif name == "skill-owner-peer-skill-consumer":
+        registered["skill/fake_peer"] = "fake_peer_skill"
+        consumers = {"fake_peer_skill.api"}
+    else:
+        print(f"unknown negative fixture: {name}")
+        return 2
+    reasons = _skill_layer_reasons(
+        "skill/tizen_convergence_judge",
+        consumers,
+        registered_skill_roots=registered,
+    )
+    verdict = "MISMATCH: " + "; ".join(reasons) if reasons else "OK"
+    print(f"NEGATIVE_FIXTURE | {name} | {verdict}")
+    return 1 if reasons else 0
+
+
 def main() -> int:
+    if len(sys.argv) == 3 and sys.argv[1] == "--negative-fixture":
+        return _run_negative_fixture(sys.argv[2])
+    if len(sys.argv) != 1:
+        print(
+            "usage: symbol_audit.py "
+            "[--negative-fixture skill-owner-shared-consumer|"
+            "skill-owner-peer-skill-consumer]"
+        )
+        return 2
     repo_root = Path(__file__).resolve().parents[3]
     return run(repo_root)
 

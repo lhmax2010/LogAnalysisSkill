@@ -16,6 +16,7 @@ SECTION_HEADINGS = (
     "### 3.3 ",
     "### 4.1 ",
 )
+SKILL_SECTION_HEADINGS = ("### 1.2 ",)
 MODULE_SCOPE_HEADING = "### 1.2a "
 SYMBOL_COLUMNS = frozenset({"symbol", "类型", "符号"})
 MODULE_COLUMNS = frozenset({"module"})
@@ -99,12 +100,16 @@ def _first_table(lines: list[str], heading_index: int) -> tuple[int, int]:
     return start, end
 
 
-def parse_design_tables(design_path: Path) -> dict[str, BodyEntry]:
-    """Parse the four frozen attribution tables, rejecting ambiguous rows."""
+def parse_design_tables(
+    design_path: Path,
+    *,
+    section_headings: tuple[str, ...] = SECTION_HEADINGS,
+) -> dict[str, BodyEntry]:
+    """Parse selected frozen attribution tables, rejecting ambiguous rows."""
 
     lines = design_path.read_text(encoding="utf-8").splitlines()
     heading_indexes: dict[str, int] = {}
-    for heading in SECTION_HEADINGS:
+    for heading in section_headings:
         matches = [index for index, line in enumerate(lines) if line.startswith(heading)]
         if len(matches) != 1:
             raise TableParseError(
@@ -193,8 +198,23 @@ def run(repo_root: Path) -> int:
     design_path = (
         repo_root / "docs/clang-fix-campaign/p49-step0-design-v2.0-FROZEN.md"
     )
+    skill_design_path = repo_root / (
+        "docs/clang-fix-campaign/"
+        "p49-skill1-convergence-judge-design-v1.2-FROZEN.md"
+    )
     try:
         body = parse_design_tables(design_path)
+        skill_body = parse_design_tables(
+            skill_design_path,
+            section_headings=SKILL_SECTION_HEADINGS,
+        )
+        duplicates = sorted(body.keys() & skill_body.keys())
+        if duplicates:
+            raise TableParseError(
+                "symbols appear in both step-0 and skill-1 tables: "
+                + ",".join(duplicates)
+            )
+        body.update(skill_body)
         body_modules = parse_module_scope_table(design_path)
     except TableParseError as exc:
         print(f"PARSE_ERROR | {exc}")
