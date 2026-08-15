@@ -92,3 +92,16 @@ same-name counts: _normalize_text=2, _attrs_to_map=2, _class_names=2
 legacy sources shim def/class count: 0
 gbs_report diff stat: empty
 ```
+
+## 最终签批
+
+| Signer | Date | Confirmation |
+|---|---|---|
+| Claude | 2026-08-15 | 独立核验七项，包含双道审计亲跑及两个环境敏感失败与 skill-1 基线的对比，确认零 finding。 |
+| 评审 A | 2026-08-15 | 独立实跑全部门禁与 binary/name-only fixtures，确认 skill-2 CLOSED，零 finding。 |
+| 评审 B | 2026-08-15 | 独立实跑全部门禁与 binary/name-only fixtures，确认八处机械同步完整、DEFERRED 可接受，零 finding。 |
+
+状态：**skill-2 CLOSED @ `90b90e4`**（开发者放行日期：2026-08-15）。
+
+系列里程碑：本批是 P4.9 skill 抽取系列首个终审零 finding 批次；
+v1.0→v1.1 的 §1.2 动机重设及其断言 d 是直接原因，留档供后续批次参照。

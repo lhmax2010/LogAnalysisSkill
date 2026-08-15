@@ -105,6 +105,12 @@ during design convergence.
     authorities and keyed both independently by `(definition, symbol)`.
     Missing columns fail closed with `PARSE_ERROR`; there is no name-only
     fallback that could silently reintroduce same-name collisions.
+21. **Prove a rule change at the assertion layer instead of merely describing it.**
+    Every tool or rule change needs an assertion that necessarily fails under
+    the old implementation; otherwise the change has no existence proof.
+    Skill-2 assertion d is the reference pattern: binary-key indexing is green
+    for two same-named definitions, while the name-only implementation is
+    reproduced as red.
 
 ## R14 deferred cleanup ledger
 
