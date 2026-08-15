@@ -10,13 +10,13 @@ from pathlib import Path
 from typing import NoReturn, TextIO
 
 from tizen_ci_shared.env import discover_sibling_pythonpath
+from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH
 from tizen_ci_shared.state import StateDatabase
 
 from ci_triage.campaign_repair_step import (
     CampaignRepairStepOptions,
     campaign_repair_step,
 )
-from ci_triage.quickbuild import DEFAULT_COOKIE_PATH
 from ci_triage.runner import TriageOptions, run_triage
 from ci_triage.verify.build_verify import (
     BuildVerifyOptions,

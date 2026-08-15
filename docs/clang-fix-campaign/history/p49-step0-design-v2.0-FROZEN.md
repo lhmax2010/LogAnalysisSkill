@@ -9,6 +9,10 @@
   `write_workdir_marker` 冻结为五参数 kw-only 并返回实际 `Path`,同时
   新增 shared clean 原语承接 marker 排除规则;原单参数签名系预冻时
   未拉数据字段闭包,依方法论⑰修正;
+  **v2.0 修订-4/5** 将 §4.1 的“等,共 17 项”、§3.2 的“×2”
+  与 §3.3 的叙述式归属补为逐符号表行,供四表 bridge 双向穷举核验;
+  概括对人类够用、对机械核验即漏洞——契约文本不得以“等/etc”替代
+  供机器消费的显式清单,凡 `SPECS` 在册符号正文四表必有其行,反之亦然;
   生效结论已合并进正文对应节,不再叠补丁(消除 body/appendix 三次
   漂移)。归属表经
   symbol_audit 最新轮次 **N/N** 机械核验(design SHA 见审计报告)。
@@ -206,7 +210,10 @@ build-verify **不自持任何 marker 格式常量**,只调 shared 原语。
 | `release_worktree_protection` | gerrit_submit | shared/workspace |
 | `mark_worktree_protected` | build_verify(调用) | shared/workspace(格式权威) |
 | `_oldest_worktrees`/`_run_git`/`_verify_cleanup_handle`/`_exclude_private_files`/`_read_marker` | 清理链/marker 内部 | shared/workspace |
-| marker 常量 ×2 + `DisposableWorktree`/`WorkspaceViolation` | §2/§3.1 | shared/workspace |
+| `MARKER_FILENAME` | §3.1 | shared/workspace |
+| `PROTECTED_FILENAME` | §3.1 | shared/workspace |
+| `DisposableWorktree` | §2 | shared/workspace |
+| `WorkspaceViolation` | §2 | shared/workspace |
 
 判据:单消费方随消费者(create_worktree/_copy_repository→build-verify);
 多消费方或格式权威→shared。skill→shared 下行合法。
@@ -224,17 +231,39 @@ symbol_audit 清单**(此前盲区);`runner.py` 属不抽取的编排层,
 不加公共面全面 INCOMPLETE 护栏,其余 14 个公共符号不进入 step-0
 归属清单。
 
+| symbol | owner |
+|---|---|
+| `discover_sibling_pythonpath` | shared/env |
+
 ## §4 QuickBuild HTTP 归属(分层落地)
 
 ### 4.1 HTTP 件下沉 shared/quickbuild_http(L0)
 
 实测消费面横跨编排层 + 多消费方,无单一 skill 独占 → 全归 shared:
-`HttpFetcher`/`HttpResponse`/`QuickBuildError`/`_raise_if_login_page`/
-`_urllib_fetch`/`load_cookie_jar`/`download_full_log`/
-`download_package_buildlog`/`DEFAULT_COOKIE_PATH`/
-`DEFAULT_QUICKBUILD_BASE_URL` 等 quickbuild.py 全部 HTTP 公共面(17 项,
-symbol_audit INCOMPLETE 护栏覆盖)。qb-discover 保留"失败发现语义"
-(sources.py discovery + 失败包解析),消费 shared HTTP 层。
+
+| symbol | owner |
+|---|---|
+| `DEFAULT_QUICKBUILD_BASE_URL` | shared/quickbuild_http |
+| `DEFAULT_COOKIE_PATH` | shared/quickbuild_http |
+| `DOWNLOAD_LINK_MARKER` | shared/quickbuild_http |
+| `DOWNLOAD_TIZEN_BASE_URL` | shared/quickbuild_http |
+| `HttpResponse` | shared/quickbuild_http |
+| `HttpFetcher` | shared/quickbuild_http |
+| `QuickBuildDownload` | shared/quickbuild_http |
+| `PackageBuildLog` | shared/quickbuild_http |
+| `QuickBuildError` | shared/quickbuild_http |
+| `load_cookie_jar` | shared/quickbuild_http |
+| `download_full_log` | shared/quickbuild_http |
+| `find_download_href` | shared/quickbuild_http |
+| `derive_package_buildlog_url` | shared/quickbuild_http |
+| `download_package_buildlog` | shared/quickbuild_http |
+| `_raise_if_login_page` | shared/quickbuild_http |
+| `_urllib_fetch` | shared/quickbuild_http |
+| `normalize_quickbuild_url` | shared/quickbuild_http |
+
+以上 17 项为 `quickbuild.py` HTTP 公共面全集,与 symbol_audit
+INCOMPLETE 护栏同源。qb-discover 保留“失败发现语义”(sources.py
+discovery + 失败包解析),消费 shared HTTP 层。
 
 `gbs_report.py` 整模块不在 step-0 改动与审计范围内;它继续从
 `quickbuild.py` 的兼容 re-export 消费 HTTP 件。fetch/parse 拆分及

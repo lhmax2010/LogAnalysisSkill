@@ -34,7 +34,7 @@ class SymbolSpec:
 
 WORKSPACE = "ci_triage/verify/workspace.py"
 SHARED_WORKSPACE = "tizen_ci_shared/workspace/__init__.py"
-QUICKBUILD = "ci_triage/quickbuild.py"
+QUICKBUILD = "tizen_ci_shared/quickbuild_http.py"
 SHARED_TYPES = "tizen_ci_shared/types.py"
 
 

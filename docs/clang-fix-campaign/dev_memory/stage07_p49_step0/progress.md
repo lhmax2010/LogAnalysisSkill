@@ -222,3 +222,268 @@ that run records its real exit-1 output here.
 - Frozen canonical/history comparison: `cmp` exit 0 after revisions 2 and 3.
 - `quickbuild_http.py` remains a one-line docstring-only placeholder for
   commit ③.
+
+
+## Commit ③ L0 independence evidence
+
+### Negative A: quickbuild_http imports env
+
+Temporary violation: add `import tizen_ci_shared.env` to
+`tizen_ci_shared/quickbuild_http.py`.
+
+Command:
+
+```bash
+PYTHONPATH=tizen-ci-shared/scripts:tizen-ci-triage/scripts .venv/bin/lint-imports
+```
+
+Output:
+
+```text
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 32 files, 62 dependencies.
+-----------------------------------
+
+shared internal layers: L1 -> L0 -> types BROKEN
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent BROKEN
+
+Contracts: 2 kept, 2 broken.
+
+
+----------------
+Broken contracts
+----------------
+
+shared internal layers: L1 -> L0 -> types
+-----------------------------------------
+
+tizen_ci_shared.quickbuild_http is not allowed to import tizen_ci_shared.env:
+
+- tizen_ci_shared.quickbuild_http -> tizen_ci_shared.env (l.8)
+
+
+shared L0 primitives are independent
+------------------------------------
+
+tizen_ci_shared.quickbuild_http is not allowed to import tizen_ci_shared.env:
+
+- tizen_ci_shared.quickbuild_http -> tizen_ci_shared.env (l.8)
+
+
+exit_code=1
+```
+
+The temporary import was removed.
+
+### Negative B: env imports quickbuild_http
+
+Temporary violation: add `import tizen_ci_shared.quickbuild_http` to
+`tizen_ci_shared/env.py`.
+
+Command:
+
+```bash
+PYTHONPATH=tizen-ci-shared/scripts:tizen-ci-triage/scripts .venv/bin/lint-imports
+```
+
+Output:
+
+```text
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 32 files, 62 dependencies.
+-----------------------------------
+
+shared internal layers: L1 -> L0 -> types BROKEN
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent BROKEN
+
+Contracts: 2 kept, 2 broken.
+
+
+----------------
+Broken contracts
+----------------
+
+shared internal layers: L1 -> L0 -> types
+-----------------------------------------
+
+tizen_ci_shared.env is not allowed to import tizen_ci_shared.quickbuild_http:
+
+- tizen_ci_shared.env -> tizen_ci_shared.quickbuild_http (l.5)
+
+
+shared L0 primitives are independent
+------------------------------------
+
+tizen_ci_shared.env is not allowed to import tizen_ci_shared.quickbuild_http:
+
+- tizen_ci_shared.env -> tizen_ci_shared.quickbuild_http (l.5)
+
+
+exit_code=1
+```
+
+The temporary import was removed. The restored positive check reports
+`4 kept, 0 broken` with exit code 0.
+
+### Four negative-control classes closed
+
+| Contract | Temporary violation | Exit | Completed |
+|---|---|---:|---|
+| shared-layers | types imports state | 1 | commit ① |
+| shared-no-uplink | shared state imports ci_triage | 1 | commit ① |
+| shared-l1-independence | state imports workspace; workspace imports classify | 1 / 1 | commit ② |
+| shared-l0-independence | quickbuild_http imports env; env imports quickbuild_http | 1 / 1 | commit ③ |
+
+All four classes now have real fail-closed evidence. No deferred step-0
+import-linter negative control remains.
+
+## Commit ③ table-audit bridge evidence
+
+The read-only bridge compares the frozen design's §2, §3.2, §3.3, and §4.1
+tables against the complete `symbol_audit.SPECS` inventory. Its final positive
+run is `42 OK` with all difference and parse-error counts zero.
+
+### Negative: owner mismatch
+
+```text
+symbol | body_owner | inventory_owner | verdict
+DEFAULT_COOKIE_PATH | shared/types | shared/quickbuild_http | OWNER_MISMATCH
+DEFAULT_QUICKBUILD_BASE_URL | shared/quickbuild_http | shared/quickbuild_http | OK
+DOWNLOAD_LINK_MARKER | shared/quickbuild_http | shared/quickbuild_http | OK
+DOWNLOAD_TIZEN_BASE_URL | shared/quickbuild_http | shared/quickbuild_http | OK
+DisposableWorktree | shared/workspace | shared/workspace | OK
+FailedPackage | shared/types | shared/types | OK
+FailureClassification | shared/classify | shared/classify | OK
+GerritChange | shared/types | shared/types | OK
+GerritPatchSet | shared/types | shared/types | OK
+HttpFetcher | shared/quickbuild_http | shared/quickbuild_http | OK
+HttpResponse | shared/quickbuild_http | shared/quickbuild_http | OK
+MARKER_FILENAME | shared/workspace | shared/workspace | OK
+PROTECTED_FILENAME | shared/workspace | shared/workspace | OK
+PackageBuildLog | shared/quickbuild_http | shared/quickbuild_http | OK
+QuickBuildDownload | shared/quickbuild_http | shared/quickbuild_http | OK
+QuickBuildError | shared/quickbuild_http | shared/quickbuild_http | OK
+SourceFetchResult | shared/types | shared/types | OK
+WorkspaceViolation | shared/workspace | shared/workspace | OK
+_copy_repository | build-verify | build-verify | OK
+_exclude_private_files | shared/workspace | shared/workspace | OK
+_oldest_worktrees | shared/workspace | shared/workspace | OK
+_raise_if_login_page | shared/quickbuild_http | shared/quickbuild_http | OK
+_read_marker | shared/workspace | shared/workspace | OK
+_run_git | shared/workspace | shared/workspace | OK
+_urllib_fetch | shared/quickbuild_http | shared/quickbuild_http | OK
+_verify_cleanup_handle | shared/workspace | shared/workspace | OK
+check_disk_and_maybe_cleanup | build-verify | build-verify | OK
+clean_repository_preserving_markers | shared/workspace | shared/workspace | OK
+cleanup_disposable_copy | shared/workspace | shared/workspace | OK
+cleanup_worktree | shared/workspace | shared/workspace | OK
+create_worktree | build-verify | build-verify | OK
+derive_package_buildlog_url | shared/quickbuild_http | shared/quickbuild_http | OK
+discover_sibling_pythonpath | shared/env | shared/env | OK
+download_full_log | shared/quickbuild_http | shared/quickbuild_http | OK
+download_package_buildlog | shared/quickbuild_http | shared/quickbuild_http | OK
+find_download_href | shared/quickbuild_http | shared/quickbuild_http | OK
+is_protected | shared/workspace | shared/workspace | OK
+load_cookie_jar | shared/quickbuild_http | shared/quickbuild_http | OK
+mark_worktree_protected | shared/workspace | shared/workspace | OK
+normalize_quickbuild_url | shared/quickbuild_http | shared/quickbuild_http | OK
+release_worktree_protection | shared/workspace | shared/workspace | OK
+write_workdir_marker | shared/workspace | shared/workspace | OK
+SUMMARY | 41 OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 1 OWNER_MISMATCH | 0 PARSE_ERROR
+exit_code=1
+```
+
+### Negative: symbol missing from inventory
+
+```text
+symbol | body_owner | inventory_owner | verdict
+DEFAULT_COOKIE_PATH | shared/quickbuild_http | shared/quickbuild_http | OK
+DEFAULT_QUICKBUILD_BASE_URL | shared/quickbuild_http | shared/quickbuild_http | OK
+DOWNLOAD_LINK_MARKER | shared/quickbuild_http | shared/quickbuild_http | OK
+DOWNLOAD_TIZEN_BASE_URL | shared/quickbuild_http | shared/quickbuild_http | OK
+DisposableWorktree | shared/workspace | shared/workspace | OK
+FailedPackage | shared/types | shared/types | OK
+FailureClassification | shared/classify | shared/classify | OK
+GerritChange | shared/types | shared/types | OK
+GerritPatchSet | shared/types | shared/types | OK
+HttpFetcher | shared/quickbuild_http | shared/quickbuild_http | OK
+HttpResponse | shared/quickbuild_http | - | MISSING_FROM_INVENTORY
+MARKER_FILENAME | shared/workspace | shared/workspace | OK
+PROTECTED_FILENAME | shared/workspace | shared/workspace | OK
+PackageBuildLog | shared/quickbuild_http | shared/quickbuild_http | OK
+QuickBuildDownload | shared/quickbuild_http | shared/quickbuild_http | OK
+QuickBuildError | shared/quickbuild_http | shared/quickbuild_http | OK
+SourceFetchResult | shared/types | shared/types | OK
+WorkspaceViolation | shared/workspace | shared/workspace | OK
+_copy_repository | build-verify | build-verify | OK
+_exclude_private_files | shared/workspace | shared/workspace | OK
+_oldest_worktrees | shared/workspace | shared/workspace | OK
+_raise_if_login_page | shared/quickbuild_http | shared/quickbuild_http | OK
+_read_marker | shared/workspace | shared/workspace | OK
+_run_git | shared/workspace | shared/workspace | OK
+_urllib_fetch | shared/quickbuild_http | shared/quickbuild_http | OK
+_verify_cleanup_handle | shared/workspace | shared/workspace | OK
+check_disk_and_maybe_cleanup | build-verify | build-verify | OK
+clean_repository_preserving_markers | shared/workspace | shared/workspace | OK
+cleanup_disposable_copy | shared/workspace | shared/workspace | OK
+cleanup_worktree | shared/workspace | shared/workspace | OK
+create_worktree | build-verify | build-verify | OK
+derive_package_buildlog_url | shared/quickbuild_http | shared/quickbuild_http | OK
+discover_sibling_pythonpath | shared/env | shared/env | OK
+download_full_log | shared/quickbuild_http | shared/quickbuild_http | OK
+download_package_buildlog | shared/quickbuild_http | shared/quickbuild_http | OK
+find_download_href | shared/quickbuild_http | shared/quickbuild_http | OK
+is_protected | shared/workspace | shared/workspace | OK
+load_cookie_jar | shared/quickbuild_http | shared/quickbuild_http | OK
+mark_worktree_protected | shared/workspace | shared/workspace | OK
+normalize_quickbuild_url | shared/quickbuild_http | shared/quickbuild_http | OK
+release_worktree_protection | shared/workspace | shared/workspace | OK
+write_workdir_marker | shared/workspace | shared/workspace | OK
+SUMMARY | 41 OK | 1 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+exit_code=1
+```
+
+Both temporary edits were restored. The bridge returned exit code 1 for each
+negative control and exit code 0 after restoration.
+
+## Commit ③ validation
+
+- HTTP move equivalence: the pre-move `ci_triage/quickbuild.py` and final
+  `tizen_ci_shared/quickbuild_http.py` are byte-identical (`cmp` exit 0).
+- Compatibility surface: `ci_triage/quickbuild.py` contains exactly 17
+  one-symbol re-export statements and no implementation definitions.
+- Direct consumers: orchestrator, runner, batch_cli, cli, and sources import
+  `tizen_ci_shared.quickbuild_http`; gbs_report remains unchanged and consumes
+  the compatibility shim.
+- Full regression: `846 passed, 1 skipped in 22.90s`, matching commits ①/②.
+- Mypy: `Success: no issues found in 99 source files`.
+- Ruff: `All checks passed!` for tracked Python files plus the new bridge.
+- Py_compile: exit 0 for every Python file under `tizen_ci_shared` and
+  `ci_triage`.
+- Import Linter: `4 kept, 0 broken`, exit 0 after both L0 negative probes were
+  restored.
+- Symbol audit: `42 OK, 0 MISMATCH, 0 INCOMPLETE`, exit 0.
+- Table bridge: `42 OK`; all missing/mismatch/parse-error counts zero, exit 0.
+- Frozen canonical/history comparison: `cmp` exit 0 after revisions 4 and 5.
+- S-1 regression check: create_worktree has zero `FILENAME` references; marker
+  constants remain uniquely defined in `tizen_ci_shared.workspace`.
+- Out-of-scope files: `ci_triage/gbs_report.py` and P4.5 `design.md` have zero
+  diff.

@@ -9,9 +9,9 @@ from pathlib import Path
 from typing import TextIO
 
 from tizen_ci_shared.env import discover_sibling_pythonpath
+from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH
 
 from ci_triage.orchestrator import BatchTriageOptions, CiTriageOrchestrator
-from ci_triage.quickbuild import DEFAULT_COOKIE_PATH
 from ci_triage.sources import QUICKBUILD_OVERVIEW_CONFIG_ID, QuickBuildSource
 
 EXIT_SUCCESS = 0

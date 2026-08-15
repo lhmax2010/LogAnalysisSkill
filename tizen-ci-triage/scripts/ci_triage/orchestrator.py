@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from tizen_ci_shared.env import discover_sibling_pythonpath
+from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH, QuickBuildError, download_full_log
 from tizen_ci_shared.types import FailedPackage
 
 from ci_triage.gbs_report import (
@@ -20,7 +21,6 @@ from ci_triage.gbs_report import (
     download_gbs_package_buildlog,
     fetch_gbs_report,
 )
-from ci_triage.quickbuild import DEFAULT_COOKIE_PATH, QuickBuildError, download_full_log
 from ci_triage.quickbuild_log import (
     QuickBuildLogError,
     match_pkg_key,

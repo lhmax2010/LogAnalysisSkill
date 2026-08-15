@@ -9,7 +9,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Protocol
 
-from ci_triage.quickbuild import (
+from tizen_ci_shared.quickbuild_http import (
     DEFAULT_COOKIE_PATH,
     DEFAULT_QUICKBUILD_BASE_URL,
     HttpFetcher,

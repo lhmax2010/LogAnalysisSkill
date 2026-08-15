@@ -1,40 +1,41 @@
-# P4.9 step-0 symbol attribution audit
-
-## Commit 1 Result (v2.0-FROZEN revision-1)
-
-**PASS - shared state/types attribution is mechanically consistent.**
-
-- Design input: `docs/clang-fix-campaign/p49-step0-design-v2.0-FROZEN.md`
-- Design SHA-256: `70a5d699039504b92f6ee2c5ad2a6cccee81ba8ceeb064567cd97cc64bd52474`
-- Audit command: `.venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py`
-- Result: **41/41 OK, 0 MISMATCH, 0 INCOMPLETE**
-
-Revision-1 moves the complete Gerrit result type closure
-(`GerritPatchSet` -> `GerritChange` -> `SourceFetchResult`) into
-`shared/types` and adds a structural L-1 type-closure check. The design and
-report are anchored by the Git commit that contains them; neither file records
-its own hash.
+# P4.9 step-0 Symbol Audit
 
 ## Scope
 
-This audit covers only modules and symbols that step-0 actually changes:
+This audit covers only modules and symbols changed by step-0: the QuickBuild
+HTTP surface, workspace functions and markers, failure classification,
+state/types moves, and `discover_sibling_pythonpath`. `gbs_report.py` remains
+out of scope and is deferred as a whole to the triage-report extraction batch.
 
-- the 17-symbol `ci_triage/quickbuild.py` HTTP public surface, with its
-  public-surface completeness guard;
-- the function-level workspace split and both marker formats;
-- failure classification and the state/types moves;
-- all dataclasses currently defined by `tizen_ci_shared.types`, including
-  the repository-owned field-type closure;
-- the single `discover_sibling_pythonpath` extraction.
+## Revision
 
-`ci_triage/gbs_report.py` is out of scope as a complete module. Its fetch and
-parse functions, report data types, iframe/parser closure, constants, and
-private helpers are neither inventoried nor guarded in this round. They are
-deferred together to the triage-report extraction batch.
+- Design: `p49-step0-design-v2.0-FROZEN.md`, including revisions 1 through 5.
+- Design SHA-256: `29b0824fec11e24f2951e8c261d1822e759f9384f7da135f815e7d9e0e8cfee3`.
+- Audit round: commit ③ final working tree, before the commit is created.
+- Result: 42/42 OK, 0 MISMATCH, 0 INCOMPLETE.
+- Commit ② reached 42/42 but its stdout was not written back promptly; this
+  round corrects that bookkeeping gap with the current complete output.
+- Report integrity is anchored by the Git commit containing this report; the
+  report does not record its own hash.
 
-## Full Audit Output
+## Method
 
-The following is the complete stdout from the audit command.
+The audit is read-only and uses Python AST/source analysis; it does not import
+or execute production modules. Run both checks from the repository root:
+
+```bash
+PYTHONPATH=tizen-ci-shared/scripts:tizen-ci-triage/scripts \
+  .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py
+PYTHONPATH=tizen-ci-shared/scripts:tizen-ci-triage/scripts \
+  .venv/bin/python docs/clang-fix-campaign/tools/table_audit_bridge.py
+```
+
+The first command verifies definitions, measured consumers, internal access,
+format authority, public-surface completeness, and L-1 type closure. The bridge
+parses the frozen design's §2, §3.2, §3.3, and §4.1 tables fail-closed and
+performs a complete bidirectional ownership diff against `symbol_audit.SPECS`.
+
+## Symbol Audit Output
 
 ```text
 symbol | declared | measured_consumers | verdict
@@ -42,65 +43,105 @@ GerritPatchSet | sections=§2+v2.0-revision-1; status=existing; owner=shared/typ
 GerritChange | sections=§2+v2.0-revision-1; status=existing; owner=shared/types; expected_owner=-; consumers=[ci_triage.gerrit]; internal=[-] | definition=tizen_ci_shared/types.py:19; consumers=[ci_triage.gerrit]; internal=[SourceFetchResult@38] | OK
 SourceFetchResult | sections=§2+v2.0-revision-1; status=existing; owner=shared/types; expected_owner=-; consumers=[ci_triage.gerrit,ci_triage.report]; internal=[-] | definition=tizen_ci_shared/types.py:32; consumers=[ci_triage.gerrit,ci_triage.report]; internal=[-] | OK
 FailedPackage | sections=§2; status=existing; owner=shared/types; expected_owner=-; consumers=[ci_triage.orchestrator,ci_triage.quickbuild_log,ci_triage.report,ci_triage.runner]; internal=[-] | definition=tizen_ci_shared/types.py:43; consumers=[ci_triage.orchestrator,ci_triage.quickbuild_log,ci_triage.report,ci_triage.runner]; internal=[-] | OK
-DisposableWorktree | sections=§2+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[-] | definition=ci_triage/verify/workspace.py:31; consumers=[-]; internal=[_oldest_worktrees@220,221,236,_verify_cleanup_handle@204,cleanup_disposable_copy@114,cleanup_worktree@92,create_worktree@47,82,mark_worktree_protected@128] | OK
-WorkspaceViolation | sections=§2+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.campaign_repair_step]; internal=[-] | definition=ci_triage/verify/workspace.py:26; consumers=[ci_triage.campaign_repair_step]; internal=[_read_marker@251,_verify_cleanup_handle@207,215,217,check_disk_and_maybe_cleanup@187,cleanup_disposable_copy@110,123,create_worktree@57] | OK
-FailureClassification | sections=§2; status=existing; owner=shared/classify; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/verify/failure_classify.py:43; consumers=[ci_triage.verify.build_verify]; internal=[_heuristic_classification@213,219,230,_match_denylist@193,203,_source_diagnostic_classification@239,241,250,259,268,279,classify_failure@133,146,159,173] | OK
-discover_sibling_pythonpath | sections=§3.3; status=existing; owner=shared/env; expected_owner=-; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.orchestrator,ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/runner.py:242; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.orchestrator,ci_triage.verify.build_verify]; internal=[-] | OK
+DisposableWorktree | sections=§2+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.workspace]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:22; consumers=[ci_triage.verify.workspace]; internal=[_oldest_worktrees@162,163,178,_verify_cleanup_handle@146,cleanup_disposable_copy@94,cleanup_worktree@72,mark_worktree_protected@108] | OK
+WorkspaceViolation | sections=§2+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.campaign_repair_step,ci_triage.verify.workspace]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:17; consumers=[ci_triage.campaign_repair_step,ci_triage.verify.workspace]; internal=[_read_marker@193,_verify_cleanup_handle@149,157,159,cleanup_disposable_copy@90,103] | OK
+FailureClassification | sections=§2; status=existing; owner=shared/classify; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=tizen_ci_shared/classify.py:43; consumers=[ci_triage.verify.build_verify]; internal=[_heuristic_classification@213,219,230,_match_denylist@193,203,_source_diagnostic_classification@239,241,250,259,268,279,classify_failure@133,146,159,173] | OK
+discover_sibling_pythonpath | sections=§3.3; status=existing; owner=shared/env; expected_owner=-; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.orchestrator,ci_triage.verify.build_verify]; internal=[-] | definition=tizen_ci_shared/env.py:8; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.orchestrator,ci_triage.verify.build_verify]; internal=[-] | OK
 create_worktree | sections=§3.2; status=existing; owner=build-verify; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/verify/workspace.py:42; consumers=[ci_triage.verify.build_verify]; internal=[-] | OK
-check_disk_and_maybe_cleanup | sections=§3.2; status=existing; owner=build-verify; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/verify/workspace.py:166; consumers=[ci_triage.verify.build_verify]; internal=[-] | OK
-_copy_repository | sections=§3.2; status=existing; owner=build-verify; expected_owner=-; consumers=[-]; internal=[create_worktree] | definition=ci_triage/verify/workspace.py:267; consumers=[-]; internal=[create_worktree@58] | OK
-cleanup_worktree | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[cleanup_disposable_copy,check_disk_and_maybe_cleanup] | definition=ci_triage/verify/workspace.py:92; consumers=[ci_triage.verify.build_verify]; internal=[check_disk_and_maybe_cleanup@186,cleanup_disposable_copy@124] | OK
-cleanup_disposable_copy | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.campaign_repair_step]; internal=[-] | definition=ci_triage/verify/workspace.py:99; consumers=[ci_triage.campaign_repair_step]; internal=[-] | OK
-is_protected | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.campaign_repair_step]; internal=[cleanup_disposable_copy,check_disk_and_maybe_cleanup] | definition=ci_triage/verify/workspace.py:160; consumers=[ci_triage.campaign_repair_step]; internal=[check_disk_and_maybe_cleanup@182,cleanup_disposable_copy@109] | OK
-release_worktree_protection | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.gerrit_submit]; internal=[-] | definition=ci_triage/verify/workspace.py:150; consumers=[ci_triage.verify.gerrit_submit]; internal=[-] | OK
-mark_worktree_protected | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/verify/workspace.py:127; consumers=[ci_triage.verify.build_verify]; internal=[-] | OK
-_oldest_worktrees | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[check_disk_and_maybe_cleanup] | definition=ci_triage/verify/workspace.py:220; consumers=[-]; internal=[check_disk_and_maybe_cleanup@181] | OK
-_run_git | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[create_worktree] | definition=ci_triage/verify/workspace.py:263; consumers=[-]; internal=[create_worktree@68,69,70] | OK
-_verify_cleanup_handle | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[cleanup_worktree,mark_worktree_protected] | definition=ci_triage/verify/workspace.py:204; consumers=[-]; internal=[cleanup_worktree@95,mark_worktree_protected@135] | OK
-_exclude_private_files | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[create_worktree,mark_worktree_protected] | definition=ci_triage/verify/workspace.py:273; consumers=[-]; internal=[create_worktree@59,mark_worktree_protected@137] | OK
-MARKER_FILENAME | sections=§3.1+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[-] | definition=ci_triage/verify/workspace.py:21; consumers=[-]; internal=[_exclude_private_files@287,_oldest_worktrees@225,cleanup_disposable_copy@111,create_worktree@53,77]; marker_reads=[_oldest_worktrees@226,_oldest_worktrees@229,_verify_cleanup_handle@206,_verify_cleanup_handle@209,cleanup_disposable_copy@112]; marker_writes=[create_worktree@67] | OK
-PROTECTED_FILENAME | sections=§3.1+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[-] | definition=ci_triage/verify/workspace.py:22; consumers=[-]; internal=[_exclude_private_files@287,create_worktree@79,is_protected@163,mark_worktree_protected@144,release_worktree_protection@153]; marker_reads=[is_protected@163,release_worktree_protection@154]; marker_writes=[mark_worktree_protected@144,release_worktree_protection@156] | OK
-_read_marker | sections=§3.1+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[cleanup_disposable_copy,_verify_cleanup_handle,_oldest_worktrees] | definition=ci_triage/verify/workspace.py:248; consumers=[-]; internal=[_oldest_worktrees@229,_verify_cleanup_handle@209,cleanup_disposable_copy@112] | OK
-write_workdir_marker | sections=§3.2+S-1; status=to-be-created; owner=shared/workspace; expected_owner=shared/workspace; consumers=[-]; internal=[create_worktree] | definition=TO_BE_CREATED; consumers=[-]; internal=[-] | OK
-HttpFetcher | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=ci_triage/quickbuild.py:35; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@111,download_package_buildlog@174] | OK
-QuickBuildError | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.orchestrator,ci_triage.runner,ci_triage.sources]; internal=[-] | definition=ci_triage/quickbuild.py:56; consumers=[ci_triage.gbs_report,ci_triage.orchestrator,ci_triage.runner,ci_triage.sources]; internal=[_raise_if_login_page@198,_urllib_fetch@225,download_full_log@123,download_package_buildlog@183,load_cookie_jar@70,75,81,98] | OK
-_raise_if_login_page | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=ci_triage/quickbuild.py:190; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@119,131] | OK
-_urllib_fetch | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=ci_triage/quickbuild.py:205; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@116,download_package_buildlog@181] | OK
-DEFAULT_COOKIE_PATH | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.gbs_report,ci_triage.orchestrator,ci_triage.runner,ci_triage.sources]; internal=[-] | definition=ci_triage/quickbuild.py:16; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.gbs_report,ci_triage.orchestrator,ci_triage.runner,ci_triage.sources]; internal=[_raise_if_login_page@201,download_full_log@109,load_cookie_jar@64] | OK
-DEFAULT_QUICKBUILD_BASE_URL | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=ci_triage/quickbuild.py:15; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@110] | OK
-load_cookie_jar | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=ci_triage/quickbuild.py:64; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@115] | OK
-DOWNLOAD_LINK_MARKER | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[find_download_href] | definition=ci_triage/quickbuild.py:17; consumers=[-]; internal=[find_download_href@145] | OK
-DOWNLOAD_TIZEN_BASE_URL | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[derive_package_buildlog_url] | definition=ci_triage/quickbuild.py:18; consumers=[-]; internal=[derive_package_buildlog_url@166] | OK
-HttpResponse | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[-] | definition=ci_triage/quickbuild.py:22; consumers=[-]; internal=[_raise_if_login_page@190,_urllib_fetch@205,211,218] | OK
-QuickBuildDownload | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[-] | definition=ci_triage/quickbuild.py:39; consumers=[-]; internal=[download_full_log@112,132] | OK
-PackageBuildLog | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[-] | definition=ci_triage/quickbuild.py:49; consumers=[-]; internal=[download_package_buildlog@175,187] | OK
-download_full_log | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.orchestrator,ci_triage.runner]; internal=[-] | definition=ci_triage/quickbuild.py:106; consumers=[ci_triage.orchestrator,ci_triage.runner]; internal=[-] | OK
-find_download_href | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[download_full_log] | definition=ci_triage/quickbuild.py:140; consumers=[-]; internal=[download_full_log@121] | OK
-derive_package_buildlog_url | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[download_package_buildlog] | definition=ci_triage/quickbuild.py:150; consumers=[-]; internal=[download_package_buildlog@178] | OK
-download_package_buildlog | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.runner]; internal=[-] | definition=ci_triage/quickbuild.py:171; consumers=[ci_triage.runner]; internal=[-] | OK
-normalize_quickbuild_url | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[_urllib_fetch] | definition=ci_triage/quickbuild.py:228; consumers=[-]; internal=[_urllib_fetch@206] | OK
-SUMMARY | 41 OK | 0 MISMATCH | 0 INCOMPLETE
+check_disk_and_maybe_cleanup | sections=§3.2; status=existing; owner=build-verify; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=ci_triage/verify/workspace.py:79; consumers=[ci_triage.verify.build_verify]; internal=[-] | OK
+_copy_repository | sections=§3.2; status=existing; owner=build-verify; expected_owner=-; consumers=[-]; internal=[create_worktree] | definition=ci_triage/verify/workspace.py:117; consumers=[-]; internal=[create_worktree@57] | OK
+cleanup_worktree | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.build_verify,ci_triage.verify.workspace]; internal=[cleanup_disposable_copy] | definition=tizen_ci_shared/workspace/__init__.py:72; consumers=[ci_triage.verify.build_verify,ci_triage.verify.workspace]; internal=[cleanup_disposable_copy@104] | OK
+cleanup_disposable_copy | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.campaign_repair_step]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:79; consumers=[ci_triage.campaign_repair_step]; internal=[-] | OK
+is_protected | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.campaign_repair_step,ci_triage.verify.workspace]; internal=[cleanup_disposable_copy] | definition=tizen_ci_shared/workspace/__init__.py:140; consumers=[ci_triage.campaign_repair_step,ci_triage.verify.workspace]; internal=[cleanup_disposable_copy@89] | OK
+release_worktree_protection | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.gerrit_submit]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:130; consumers=[ci_triage.verify.gerrit_submit]; internal=[-] | OK
+mark_worktree_protected | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.build_verify]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:107; consumers=[ci_triage.verify.build_verify]; internal=[-] | OK
+_oldest_worktrees | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.workspace]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:162; consumers=[ci_triage.verify.workspace]; internal=[-] | OK
+_run_git | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.workspace]; internal=[clean_repository_preserving_markers] | definition=tizen_ci_shared/workspace/__init__.py:205; consumers=[ci_triage.verify.workspace]; internal=[clean_repository_preserving_markers@58] | OK
+_verify_cleanup_handle | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[cleanup_worktree,mark_worktree_protected] | definition=tizen_ci_shared/workspace/__init__.py:146; consumers=[-]; internal=[cleanup_worktree@75,mark_worktree_protected@115] | OK
+_exclude_private_files | sections=§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.workspace]; internal=[mark_worktree_protected] | definition=tizen_ci_shared/workspace/__init__.py:209; consumers=[ci_triage.verify.workspace]; internal=[mark_worktree_protected@117] | OK
+MARKER_FILENAME | sections=§3.1+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:13; consumers=[-]; internal=[_exclude_private_files@223,_oldest_worktrees@167,clean_repository_preserving_markers@65,cleanup_disposable_copy@91,write_workdir_marker@43]; marker_reads=[_oldest_worktrees@168,_oldest_worktrees@171,_verify_cleanup_handle@148,_verify_cleanup_handle@151,cleanup_disposable_copy@92]; marker_writes=[write_workdir_marker@51] | OK
+PROTECTED_FILENAME | sections=§3.1+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:14; consumers=[-]; internal=[_exclude_private_files@223,clean_repository_preserving_markers@67,is_protected@143,mark_worktree_protected@124,release_worktree_protection@133]; marker_reads=[is_protected@143,release_worktree_protection@134]; marker_writes=[mark_worktree_protected@124,release_worktree_protection@136] | OK
+_read_marker | sections=§3.1+§3.2; status=existing; owner=shared/workspace; expected_owner=-; consumers=[-]; internal=[cleanup_disposable_copy,_verify_cleanup_handle,_oldest_worktrees] | definition=tizen_ci_shared/workspace/__init__.py:190; consumers=[-]; internal=[_oldest_worktrees@171,_verify_cleanup_handle@151,cleanup_disposable_copy@92] | OK
+write_workdir_marker | sections=§3.2+S-1; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.workspace]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:33; consumers=[ci_triage.verify.workspace]; internal=[-] | OK
+clean_repository_preserving_markers | sections=§3.2+S-1+v2.0-revision-3; status=existing; owner=shared/workspace; expected_owner=-; consumers=[ci_triage.verify.workspace]; internal=[-] | definition=tizen_ci_shared/workspace/__init__.py:55; consumers=[ci_triage.verify.workspace]; internal=[-] | OK
+HttpFetcher | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:35; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@111,download_package_buildlog@174] | OK
+QuickBuildError | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.orchestrator,ci_triage.runner,ci_triage.sources]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:56; consumers=[ci_triage.gbs_report,ci_triage.orchestrator,ci_triage.runner,ci_triage.sources]; internal=[_raise_if_login_page@198,_urllib_fetch@225,download_full_log@123,download_package_buildlog@183,load_cookie_jar@70,75,81,98] | OK
+_raise_if_login_page | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:190; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@119,131] | OK
+_urllib_fetch | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:205; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@116,download_package_buildlog@181] | OK
+DEFAULT_COOKIE_PATH | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.gbs_report,ci_triage.orchestrator,ci_triage.runner,ci_triage.sources]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:16; consumers=[ci_triage.batch_cli,ci_triage.cli,ci_triage.gbs_report,ci_triage.orchestrator,ci_triage.runner,ci_triage.sources]; internal=[_raise_if_login_page@201,download_full_log@109,load_cookie_jar@64] | OK
+DEFAULT_QUICKBUILD_BASE_URL | sections=§4; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:15; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@110] | OK
+load_cookie_jar | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:64; consumers=[ci_triage.gbs_report,ci_triage.sources]; internal=[download_full_log@115] | OK
+DOWNLOAD_LINK_MARKER | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[find_download_href] | definition=tizen_ci_shared/quickbuild_http.py:17; consumers=[-]; internal=[find_download_href@145] | OK
+DOWNLOAD_TIZEN_BASE_URL | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[derive_package_buildlog_url] | definition=tizen_ci_shared/quickbuild_http.py:18; consumers=[-]; internal=[derive_package_buildlog_url@166] | OK
+HttpResponse | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:22; consumers=[-]; internal=[_raise_if_login_page@190,_urllib_fetch@205,211,218] | OK
+QuickBuildDownload | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:39; consumers=[-]; internal=[download_full_log@112,132] | OK
+PackageBuildLog | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:49; consumers=[-]; internal=[download_package_buildlog@175,187] | OK
+download_full_log | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.orchestrator,ci_triage.runner]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:106; consumers=[ci_triage.orchestrator,ci_triage.runner]; internal=[-] | OK
+find_download_href | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[download_full_log] | definition=tizen_ci_shared/quickbuild_http.py:140; consumers=[-]; internal=[download_full_log@121] | OK
+derive_package_buildlog_url | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[download_package_buildlog] | definition=tizen_ci_shared/quickbuild_http.py:150; consumers=[-]; internal=[download_package_buildlog@178] | OK
+download_package_buildlog | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[ci_triage.runner]; internal=[-] | definition=tizen_ci_shared/quickbuild_http.py:171; consumers=[ci_triage.runner]; internal=[-] | OK
+normalize_quickbuild_url | sections=§4+v1.2-A; status=existing; owner=shared/quickbuild_http; expected_owner=-; consumers=[-]; internal=[_urllib_fetch] | definition=tizen_ci_shared/quickbuild_http.py:228; consumers=[-]; internal=[_urllib_fetch@206] | OK
+SUMMARY | 42 OK | 0 MISMATCH | 0 INCOMPLETE
+```
+
+## Table Bridge Output
+
+```text
+symbol | body_owner | inventory_owner | verdict
+DEFAULT_COOKIE_PATH | shared/quickbuild_http | shared/quickbuild_http | OK
+DEFAULT_QUICKBUILD_BASE_URL | shared/quickbuild_http | shared/quickbuild_http | OK
+DOWNLOAD_LINK_MARKER | shared/quickbuild_http | shared/quickbuild_http | OK
+DOWNLOAD_TIZEN_BASE_URL | shared/quickbuild_http | shared/quickbuild_http | OK
+DisposableWorktree | shared/workspace | shared/workspace | OK
+FailedPackage | shared/types | shared/types | OK
+FailureClassification | shared/classify | shared/classify | OK
+GerritChange | shared/types | shared/types | OK
+GerritPatchSet | shared/types | shared/types | OK
+HttpFetcher | shared/quickbuild_http | shared/quickbuild_http | OK
+HttpResponse | shared/quickbuild_http | shared/quickbuild_http | OK
+MARKER_FILENAME | shared/workspace | shared/workspace | OK
+PROTECTED_FILENAME | shared/workspace | shared/workspace | OK
+PackageBuildLog | shared/quickbuild_http | shared/quickbuild_http | OK
+QuickBuildDownload | shared/quickbuild_http | shared/quickbuild_http | OK
+QuickBuildError | shared/quickbuild_http | shared/quickbuild_http | OK
+SourceFetchResult | shared/types | shared/types | OK
+WorkspaceViolation | shared/workspace | shared/workspace | OK
+_copy_repository | build-verify | build-verify | OK
+_exclude_private_files | shared/workspace | shared/workspace | OK
+_oldest_worktrees | shared/workspace | shared/workspace | OK
+_raise_if_login_page | shared/quickbuild_http | shared/quickbuild_http | OK
+_read_marker | shared/workspace | shared/workspace | OK
+_run_git | shared/workspace | shared/workspace | OK
+_urllib_fetch | shared/quickbuild_http | shared/quickbuild_http | OK
+_verify_cleanup_handle | shared/workspace | shared/workspace | OK
+check_disk_and_maybe_cleanup | build-verify | build-verify | OK
+clean_repository_preserving_markers | shared/workspace | shared/workspace | OK
+cleanup_disposable_copy | shared/workspace | shared/workspace | OK
+cleanup_worktree | shared/workspace | shared/workspace | OK
+create_worktree | build-verify | build-verify | OK
+derive_package_buildlog_url | shared/quickbuild_http | shared/quickbuild_http | OK
+discover_sibling_pythonpath | shared/env | shared/env | OK
+download_full_log | shared/quickbuild_http | shared/quickbuild_http | OK
+download_package_buildlog | shared/quickbuild_http | shared/quickbuild_http | OK
+find_download_href | shared/quickbuild_http | shared/quickbuild_http | OK
+is_protected | shared/workspace | shared/workspace | OK
+load_cookie_jar | shared/quickbuild_http | shared/quickbuild_http | OK
+mark_worktree_protected | shared/workspace | shared/workspace | OK
+normalize_quickbuild_url | shared/quickbuild_http | shared/quickbuild_http | OK
+release_worktree_protection | shared/workspace | shared/workspace | OK
+write_workdir_marker | shared/workspace | shared/workspace | OK
+SUMMARY | 42 OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
 ```
 
 ## Negative Controls
 
-All four controls failed closed with exit status 1:
+The commit ③ controls are recorded verbatim in
+`dev_memory/stage07_p49_step0/progress.md`:
 
-1. Remove `QuickBuildError` from the inventory:
-   `38 OK / 0 MISMATCH / 1 INCOMPLETE` in the pre-revision inventory.
-2. Relabel planned `write_workdir_marker` from `shared/workspace` to bare
-   `shared`: `38 OK / 1 MISMATCH / 0 INCOMPLETE` in the pre-revision
-   inventory.
-3. Replace the measured `discover_sibling_pythonpath` consumers with
-   `build_verify + runner`: `38 OK / 1 MISMATCH / 0 INCOMPLETE` in the
-   pre-revision inventory.
-4. Add a `FailedPackage` field typed as higher-layer `GerritError`:
-   exit 1, `40 OK / 1 MISMATCH / 0 INCOMPLETE`; the audit reports
-   `type-closure escapes L-1`.
+1. Change one design-table owner: `OWNER_MISMATCH`, exit 1.
+2. Remove one inventory symbol: `MISSING_FROM_INVENTORY`, exit 1.
+3. Import env from quickbuild_http: L0 independence broken, exit 1.
+4. Import quickbuild_http from env: L0 independence broken, exit 1.
 
-## Deferred Bridge
-
-The mechanical parser that compares design-table ownership directly with the
-hard-coded audit inventory is due during step-0 implementation, no later than
-commit ③. Until then, each attribution-table change requires a retained manual
-row-by-row reconciliation.
+After every temporary violation was removed, symbol audit and the table bridge
+both returned exit 0, and import-linter reported 4 kept / 0 broken.
