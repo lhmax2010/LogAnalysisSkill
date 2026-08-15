@@ -12,6 +12,7 @@
 | RC real validation | COMPLETE | zlib synthetic arc, recovery/edge guards, two E6 cases | E1-E6 green; report `../review/e2e-smoke-report-v1.md` |
 | R14 FIX-1 closure | READY FOR ROUND-2 DELTA REVIEW | change_45 + atomic canonical publish + strengthened X6/X11 tests | 96 campaign tests; 846 passed/1 skipped full suite; dual-arch same-round build retained |
 | P4.9 step-0 foundation | CLOSED | shared package, state/types/workspace/classify/env/HTTP moves, four import contracts | commits `8dca6c1`/`ab58bfd`/`6def1ed`; 42 symbols + 4 module scopes covering 48; final sign-off `../review/p49-step0-closeout.md#最终签批` |
+| P4.9 skill-1 convergence-judge | DESIGN FROZEN | C21 anchoring, extraction, gates/audit pending | `p49-skill1-convergence-judge-design-v1.2-FROZEN.md`; `stage08_p49_skill1_convergence_judge/progress.md` |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -31,6 +32,7 @@ second contract authority. Runtime behavior remains governed by
 | RD close-out | READY FOR HUMAN REVIEW | close-out evidence commit | P2/DoD audit complete; PR is the remaining human gate |
 | R14 delta closure | READY FOR ROUND-2 CROSS-REVIEW | `a12d683` + `bb4af36` | package under `../review/r14-round2-delta/`; merge remains blocked pending two reviewers + developer |
 | P4.9 step-0 foundation | CLOSED | `8dca6c1`, `ab58bfd`, `6def1ed` | v2.0-FROZEN revisions 1-7a implemented; `stage07_p49_step0/result.md`; final sign-off `../review/p49-step0-closeout.md#最终签批` |
+| P4.9 skill-1 convergence-judge | DESIGN FROZEN | freeze commit pending | frozen authority `../p49-skill1-convergence-judge-design-v1.2-FROZEN.md`; progress `stage08_p49_skill1_convergence_judge/progress.md` |
 
 ## Code-Ready Checkpoint
 
