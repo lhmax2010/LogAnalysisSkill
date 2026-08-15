@@ -33,3 +33,9 @@ symbol audit: 42 SYMBOL OK + 4 MODULE-SCOPE OK (48 SYMBOLS COVERED),
 table bridge: 42 SYMBOL OK + 4 MODULE-SCOPE OK,
 0 MISSING_FROM_INVENTORY, 0 MISSING_FROM_BODY, 0 OWNER_MISMATCH, 0 PARSE_ERROR
 ```
+
+## Commit A: C21
+
+All three campaign CLI subprocess tests now share an exact five-path,
+`__file__`-anchored `PYTHONPATH`. A run launched from `/tmp` passed all three
+tests, and the full suite remained at 846 passed and one skipped.

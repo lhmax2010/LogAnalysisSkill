@@ -25,3 +25,34 @@ v1.2 body was used as the freeze source rather than merged with local edits.
   zero incomplete.
 - Baseline table bridge: 42 symbol OK + four module-scope OK, all difference
   and parse-error counts zero.
+
+## Commit A: C21 Subprocess Anchor
+
+The shared `_subprocess_env()` helper derives the repository root from
+`Path(__file__).resolve().parents[2]` and sets an exact five-entry
+`PYTHONPATH` for all three CLI subprocess tests in
+`tests/unit/test_campaign_repair_step.py`.
+
+Measured path:
+
+```text
+/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-ci-shared/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-ci-triage/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-log-analysis/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-patch-suggest/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-build/scripts
+```
+
+Clean-CWD targeted command and result:
+
+```text
+cd /tmp && /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/pytest \
+  /home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_campaign_repair_step.py \
+  -k 'campaign_cli_malformed_args_emit_one_json_and_exit_five or campaign_cli_rejection_emits_one_json_and_exit_four or python_m_campaign_repair_step_emits_one_json_document'
+3 passed, 35 deselected in 0.47s
+```
+
+Full baseline:
+
+```text
+.venv/bin/pytest
+846 passed, 1 skipped in 17.69s
+.venv/bin/ruff check tests/unit/test_campaign_repair_step.py
+All checks passed!
+```

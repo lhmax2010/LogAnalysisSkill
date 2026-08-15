@@ -116,6 +116,20 @@ def _git(cwd: Path, *args: str) -> str:
     return completed.stdout.strip()
 
 
+def _subprocess_env() -> dict[str, str]:
+    repo_root = Path(__file__).resolve().parents[2]
+    scripts = (
+        "tizen-ci-shared/scripts",
+        "tizen-ci-triage/scripts",
+        "tizen-gbs-log-analysis/scripts",
+        "tizen-gbs-patch-suggest/scripts",
+        "tizen-gbs-build/scripts",
+    )
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.pathsep.join(str(repo_root / path) for path in scripts)
+    return env
+
+
 def _fixture(
     tmp_path: Path,
     *,
@@ -1447,20 +1461,12 @@ def test_orphan_reconciliation_uses_dedicated_error_code(
 
 
 def test_campaign_cli_malformed_args_emit_one_json_and_exit_five() -> None:
-    env = os.environ.copy()
-    scripts = os.pathsep.join(
-        (
-            str(Path("tizen-ci-shared/scripts").resolve()),
-            str(Path("tizen-ci-triage/scripts").resolve()),
-        )
-    )
-    env["PYTHONPATH"] = scripts
     completed = subprocess.run(
         [sys.executable, "-m", "ci_triage", "campaign-repair-step", "--round-index", "x"],
         check=False,
         capture_output=True,
         text=True,
-        env=env,
+        env=_subprocess_env(),
     )
 
     assert completed.returncode == 5
@@ -1472,14 +1478,6 @@ def test_campaign_cli_malformed_args_emit_one_json_and_exit_five() -> None:
 
 def test_campaign_cli_rejection_emits_one_json_and_exit_four(tmp_path: Path) -> None:
     fixture = _fixture(tmp_path)
-    env = os.environ.copy()
-    scripts = os.pathsep.join(
-        (
-            str(Path("tizen-ci-shared/scripts").resolve()),
-            str(Path("tizen-ci-triage/scripts").resolve()),
-        )
-    )
-    env["PYTHONPATH"] = scripts
     completed = subprocess.run(
         [
             sys.executable,
@@ -1502,7 +1500,7 @@ def test_campaign_cli_rejection_emits_one_json_and_exit_four(tmp_path: Path) -> 
         check=False,
         capture_output=True,
         text=True,
-        env=env,
+        env=_subprocess_env(),
     )
 
     assert completed.returncode == 4
@@ -1590,18 +1588,6 @@ def test_python_m_campaign_repair_step_emits_one_json_document(tmp_path: Path) -
         round_index=1,
         edit_spec_sha256=_sha(canonical),
     )
-    env = os.environ.copy()
-    scripts = os.pathsep.join(
-        (
-            str(Path("tizen-ci-shared/scripts").resolve()),
-            str(Path("tizen-ci-triage/scripts").resolve()),
-        )
-    )
-    env["PYTHONPATH"] = (
-        scripts
-        if not env.get("PYTHONPATH")
-        else scripts + os.pathsep + env["PYTHONPATH"]
-    )
     completed = subprocess.run(
         [
             sys.executable,
@@ -1624,7 +1610,7 @@ def test_python_m_campaign_repair_step_emits_one_json_document(tmp_path: Path) -
         check=False,
         capture_output=True,
         text=True,
-        env=env,
+        env=_subprocess_env(),
     )
 
     assert completed.returncode == 0
