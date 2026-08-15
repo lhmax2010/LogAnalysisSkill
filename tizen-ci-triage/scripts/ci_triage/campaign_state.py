@@ -21,8 +21,12 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from tizen_ci_shared.state import StateDatabase
-
-from ci_triage.verify.convergence import _error_count, _primary_fingerprint
+from tizen_convergence_judge.convergence import (
+    error_count as _error_count,
+)
+from tizen_convergence_judge.convergence import (
+    primary_fingerprint as _primary_fingerprint,
+)
 
 CAMPAIGN_SCHEMA_VERSION = "campaign/v1"
 HELD_FOR_INVESTIGATION = "HELD_FOR_INVESTIGATION"

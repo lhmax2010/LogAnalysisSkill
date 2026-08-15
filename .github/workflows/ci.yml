@@ -35,6 +35,7 @@ jobs:
       - name: Type check
         run: |
           mypy tizen-ci-shared/scripts/tizen_ci_shared
+          mypy tizen-convergence-judge/scripts/tizen_convergence_judge
           mypy tizen-gbs-log-analysis/scripts/gbs_analyzer
           mypy tizen-gbs-build-workflow/scripts/gbs_workflow
           mypy tizen-gbs-patch-suggest/scripts/gbs_patch_suggest

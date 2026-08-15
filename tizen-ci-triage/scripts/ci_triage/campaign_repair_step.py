@@ -28,6 +28,7 @@ from tizen_ci_shared.workspace import (
     cleanup_disposable_copy,
     is_protected,
 )
+from tizen_convergence_judge import ConvergenceResult, check_convergence
 
 from ci_triage.campaign_state import (
     ARCH_RAW_TO_NORM,
@@ -54,7 +55,6 @@ from ci_triage.campaign_state import (
 )
 from ci_triage.previous_evidence import MissingEvidence, ResolvedEvidence, resolve
 from ci_triage.verify.build_verify import BuildVerifyOptions, BuildVerifyResult, build_verify
-from ci_triage.verify.convergence import ConvergenceResult, check_convergence
 
 EXIT_OK = 0
 EXIT_INVALID_ARGS = 5

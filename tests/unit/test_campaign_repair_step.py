@@ -43,7 +43,6 @@ from ci_triage.campaign_state import (
 )
 from ci_triage.previous_evidence import MissingEvidence, ResolvedEvidence, resolve
 from ci_triage.verify.build_verify import BuildVerifyOptions, BuildVerifyResult
-from ci_triage.verify.convergence import ConvergenceResult
 from ci_triage.verify.workspace import create_worktree
 from tizen_ci_shared.state import (
     StateDatabase,
@@ -52,6 +51,7 @@ from tizen_ci_shared.state import (
     write_pass_record,
 )
 from tizen_ci_shared.workspace import mark_worktree_protected
+from tizen_convergence_judge import ConvergenceResult
 
 UNIT_KEY = "campaign:repair-step"
 ARCH_RAW = "standard-aarch64"

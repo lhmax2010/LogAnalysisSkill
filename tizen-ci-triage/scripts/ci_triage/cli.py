@@ -12,6 +12,11 @@ from typing import NoReturn, TextIO
 from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH
 from tizen_ci_shared.state import StateDatabase
+from tizen_convergence_judge import (
+    check_convergence,
+    touched_files_from_json,
+    write_convergence_result,
+)
 
 from ci_triage.campaign_repair_step import (
     CampaignRepairStepOptions,
@@ -22,11 +27,6 @@ from ci_triage.verify.build_verify import (
     BuildVerifyOptions,
     build_verify,
     build_verify_to_json,
-)
-from ci_triage.verify.convergence import (
-    check_convergence,
-    touched_files_from_json,
-    write_convergence_result,
 )
 from ci_triage.verify.gerrit_submit import (
     GerritSubmitOptions,

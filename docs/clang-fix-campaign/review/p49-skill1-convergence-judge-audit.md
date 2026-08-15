@@ -39,3 +39,15 @@ table bridge: 42 SYMBOL OK + 4 MODULE-SCOPE OK,
 All three campaign CLI subprocess tests now share an exact five-path,
 `__file__`-anchored `PYTHONPATH`. A run launched from `/tmp` passed all three
 tests, and the full suite remained at 846 passed and one skipped.
+
+## Commit B: Extraction
+
+- Pre-alias source copy was byte-identical at SHA-256
+  `d606f86745c4d57b68a775a393d6adf2ef3c637c9c968cb0aea31ae0906ead3c`.
+- Removing the final two aliases and their separating blank lines restores the
+  exact original 439-line implementation (`cmp` exit 0).
+- Public/private function bindings are object-identical; only the two private
+  definitions remain in the repository.
+- The legacy module is a zero-def/class shim and is registered for the P4.9
+  final compatibility cleanup.
+- Full suite: 847 passed, one skipped (the baseline plus one identity test).

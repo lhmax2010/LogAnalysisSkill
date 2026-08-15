@@ -3,7 +3,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ci_triage.verify.convergence import check_convergence, touched_files_from_json
+from tizen_convergence_judge import check_convergence, touched_files_from_json
+from tizen_convergence_judge.convergence import (
+    _error_count,
+    _primary_fingerprint,
+    error_count,
+    primary_fingerprint,
+)
 
 
 def primary(
@@ -55,6 +61,11 @@ def cluster(
         "files": files,
         "locations_sample": [{"file": file, "line": index + 1} for index, file in enumerate(files)],
     }
+
+
+def test_public_fingerprint_and_error_count_aliases_are_identical() -> None:
+    assert primary_fingerprint is _primary_fingerprint
+    assert error_count is _error_count
 
 
 def test_same_primary_and_error_count_is_stalled() -> None:

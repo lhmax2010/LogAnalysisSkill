@@ -56,3 +56,52 @@ Full baseline:
 .venv/bin/ruff check tests/unit/test_campaign_repair_step.py
 All checks passed!
 ```
+
+## Commit B: Convergence Skill Extraction
+
+Migration proof:
+
+```text
+source SHA-256 before copy:
+d606f86745c4d57b68a775a393d6adf2ef3c637c9c968cb0aea31ae0906ead3c
+cmp old implementation vs new implementation before aliases: exit 0
+cmp HEAD implementation vs new implementation without final four lines: exit 0
+new-file tail:
+primary_fingerprint = _primary_fingerprint
+error_count = _error_count
+legacy shim def/class count: 0
+```
+
+Contract proof:
+
+```text
+primary_fingerprint is _primary_fingerprint: True
+error_count is _error_count: True
+repository definitions:
+tizen_convergence_judge/convergence.py:203 def _primary_fingerprint
+tizen_convergence_judge/convergence.py:383 def _error_count
+```
+
+Validation:
+
+```text
+targeted convergence/campaign/entrypoint tests: 71 passed
+full suite: 847 passed, 1 skipped in 17.85s
+lint-imports: Contracts: 4 kept, 0 broken
+mypy: Success: no issues found in 101 source files
+changed-path ruff: All checks passed!
+py_compile: exit 0
+```
+
+The suite count is the unchanged 846/1 baseline plus the required public-alias
+identity assertion. A repository-wide local `ruff check .` also saw the
+pre-existing untracked `audit_four_sigs.py`; that unrelated file is not staged.
+Changed production/test paths pass ruff, and clean-clone CI does not contain the
+untracked file.
+
+### Shim Extension
+
+`ci_triage/verify/convergence.py` now re-exports the six public skill symbols
+plus the two legacy private bindings, with zero definitions or classes. It is
+added to the compatibility-shim ledger and closes in the single P4.9 cleanup
+commit after all six skills are extracted.

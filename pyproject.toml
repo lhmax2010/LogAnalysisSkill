@@ -27,6 +27,7 @@ where = [
     "tizen-gbs-patch-suggest/scripts",
     "tizen-ci-triage/scripts",
     "tizen-ci-shared/scripts",
+    "tizen-convergence-judge/scripts",
 ]
 include = [
     "gbs_analyzer*",
@@ -35,6 +36,7 @@ include = [
     "gbs_patch_suggest*",
     "ci_triage*",
     "tizen_ci_shared*",
+    "tizen_convergence_judge*",
 ]
 
 [tool.setuptools.package-data]
@@ -71,6 +73,7 @@ mypy_path = [
     "tizen-gbs-patch-suggest/scripts",
     "tizen-ci-triage/scripts",
     "tizen-ci-shared/scripts",
+    "tizen-convergence-judge/scripts",
 ]
 packages = [
     "gbs_analyzer",
@@ -79,4 +82,5 @@ packages = [
     "gbs_patch_suggest",
     "ci_triage",
     "tizen_ci_shared",
+    "tizen_convergence_judge",
 ]
