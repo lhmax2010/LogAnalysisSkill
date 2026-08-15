@@ -1,4 +1,4 @@
-# P4.9 skill-1 设计:tizen-convergence-judge 抽取(v1.3-FROZEN)
+# P4.9 skill-1 设计:tizen-convergence-judge 抽取(v1.4-FROZEN)
 
 > **v1.1 修订(两家评审)**:①【MAJOR,Kimi】弃 module-scope、改纯逐
 > 符号注册(v1.0 的同文件双重注册撞死修订-7 互斥断言③);33 符号表
@@ -15,6 +15,8 @@
 > 必须 shared”判据隐含的“下层唯 shared”前提已失效。本批将多消费方
 > 判据改为与 root-layers 同源的层化判定,并用两条负 fixture 与 step-0
 > 逐项回归锁定证明它是精化而非削弱。
+> **v1.4 修订**:逐符号归属表增加 `definition` 列;bridge 二元组键
+> 需要正文侧提供定义路径,原表仅有 symbol/owner。
 
 - 阶段:P4.9 首个 skill 批次(step-0 CLOSED @7e9eb4e 之后)
 - 前置输入:stage07 result.md"下游输入"四项(本稿全部承接)
@@ -59,43 +61,43 @@ step-0 既有四模块**(批次输入第 1 项,不随本项取消)。
 **逐符号归属表(脚本自源码机械生成 @7e9eb4e,33 现存符号,owner
 全部 = skill/tizen_convergence_judge)**:
 
-| symbol | owner |
-|---|---|
-| DEFAULT_BUILD_PREFIXES | skill/tizen_convergence_judge |
-| SOURCE_CLUSTER_KINDS | skill/tizen_convergence_judge |
-| SOURCE_DIAGNOSTIC_KINDS | skill/tizen_convergence_judge |
-| ERROR_DIAGNOSTIC_KINDS | skill/tizen_convergence_judge |
-| _WARNING_OPTION_RE | skill/tizen_convergence_judge |
-| _IDENTIFIER_RE | skill/tizen_convergence_judge |
-| _BUILD_PACKAGE_RE | skill/tizen_convergence_judge |
-| ConvergenceResult | skill/tizen_convergence_judge |
-| _Fingerprint | skill/tizen_convergence_judge |
-| _ClusterView | skill/tizen_convergence_judge |
-| check_convergence | skill/tizen_convergence_judge |
-| write_convergence_result | skill/tizen_convergence_judge |
-| touched_files_from_json | skill/tizen_convergence_judge |
-| _fingerprint_dict | skill/tizen_convergence_judge |
-| _primary_fingerprint | skill/tizen_convergence_judge |
-| _diagnostic_code | skill/tizen_convergence_judge |
-| _anchor | skill/tizen_convergence_judge |
-| _regression_reason | skill/tizen_convergence_judge |
-| _regression_suspected | skill/tizen_convergence_judge |
-| _clusters | skill/tizen_convergence_judge |
-| _cluster_view | skill/tizen_convergence_judge |
-| _cluster_diagnostic_code | skill/tizen_convergence_judge |
-| _cluster_files | skill/tizen_convergence_judge |
-| _location_dicts | skill/tizen_convergence_judge |
-| _is_source_level_cluster | skill/tizen_convergence_judge |
-| _error_count | skill/tizen_convergence_judge |
-| _is_error_cluster | skill/tizen_convergence_judge |
-| _normalize_file | skill/tizen_convergence_judge |
-| _normalize_message | skill/tizen_convergence_judge |
-| _stable_hash | skill/tizen_convergence_judge |
-| _string | skill/tizen_convergence_judge |
-| _int | skill/tizen_convergence_judge |
-| _string_list | skill/tizen_convergence_judge |
-| primary_fingerprint(to-be-created,§2.2 别名) | skill/tizen_convergence_judge |
-| error_count(to-be-created,§2.2 别名) | skill/tizen_convergence_judge |
+| symbol | owner | definition |
+|---|---|---|
+| DEFAULT_BUILD_PREFIXES | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| SOURCE_CLUSTER_KINDS | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| SOURCE_DIAGNOSTIC_KINDS | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| ERROR_DIAGNOSTIC_KINDS | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _WARNING_OPTION_RE | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _IDENTIFIER_RE | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _BUILD_PACKAGE_RE | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| ConvergenceResult | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _Fingerprint | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _ClusterView | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| check_convergence | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| write_convergence_result | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| touched_files_from_json | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _fingerprint_dict | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _primary_fingerprint | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _diagnostic_code | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _anchor | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _regression_reason | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _regression_suspected | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _clusters | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _cluster_view | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _cluster_diagnostic_code | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _cluster_files | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _location_dicts | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _is_source_level_cluster | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _error_count | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _is_error_cluster | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _normalize_file | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _normalize_message | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _stable_hash | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _string | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _int | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| _string_list | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| primary_fingerprint(to-be-created,§2.2 别名) | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
+| error_count(to-be-created,§2.2 别名) | skill/tizen_convergence_judge | tizen_convergence_judge/convergence.py |
 
 旧址 `verify/convergence.py`(v1.1 更正表注:与 step-0 的
 workspace.py **同款处理方式**,非改 workspace.py)变纯 re-export

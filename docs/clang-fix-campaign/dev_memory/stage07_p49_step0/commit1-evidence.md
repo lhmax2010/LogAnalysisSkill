@@ -2,7 +2,7 @@
 
 ## Commit 1 Scope
 
-- Frozen authority: `docs/clang-fix-campaign/p49-step0-design-v2.0-FROZEN.md`.
+- Frozen authority: `docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md`.
 - Baseline command without repository package roots failed during collection with
   14 `ModuleNotFoundError: ci_triage` errors. The reproducible repository command is:
 

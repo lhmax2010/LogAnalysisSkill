@@ -1,9 +1,9 @@
 # P4.9 Skill-1 Convergence-Judge Audit
 
 Frozen authority:
-`docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.3-FROZEN.md`.
-The authority's body is revised in place to v1.3-FROZEN by the commit C
-layered-audit ruling; the path remains stable for existing references.
+`docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.4-FROZEN.md`.
+The authority's body was revised in place to v1.3-FROZEN by the commit C
+layered-audit ruling, then to v1.4-FROZEN for the bridge definition column.
 
 ## Freeze Provenance
 
@@ -15,8 +15,8 @@ layered-audit ruling; the path remains stable for existing references.
   by the freeze commit rather than a self-recorded hash.
 - Initial v1.2 frozen design SHA-256 at commit `d3478ab`:
   `ef0eda37112dfbcd574b5b17d42de264e2270b07462e6d244cdf5e5f4ff0a4a3`.
-- Revised v1.3 canonical/history SHA-256:
-  `c41427e092a677f45c5cb10a51ccc7dbdaa561459131fe37221e98c62ccb24d0`.
+- Revised v1.4 canonical/history SHA-256:
+  `0dc2b93aac0fafa498bf3bdc14cd9afc22577ea5aa6d6f6e0c1f82f41f816c90`.
 
 Implementation audit results are appended by commits A, B, C, and D.
 

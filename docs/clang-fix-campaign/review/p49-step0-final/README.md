@@ -9,7 +9,7 @@ Review request:
 
 ## Inputs
 
-- Frozen contract: `../../p49-step0-design-v2.0-FROZEN.md`.
+- Frozen contract: `../../p49-step0-design-v2.1-FROZEN.md`.
 - DoD account: `../p49-step0-closeout.md`.
 - Mechanical audit: `../p49-step0-symbol-audit.md`.
 - Stage result: `../../dev_memory/stage07_p49_step0/result.md`.
@@ -70,8 +70,8 @@ Command: `git diff 698bd7c..6def1ed --stat`
  docs/clang-fix-campaign/dev_memory/INDEX.md        |   2 +-
  .../stage07_p49_step0/commit1-evidence.md          | 195 +++++++++
  .../dev_memory/stage07_p49_step0/progress.md       | 440 ++++++++++++++++++++-
- .../history/p49-step0-design-v2.0-FROZEN.md        |  66 +++-
- .../p49-step0-design-v2.0-FROZEN.md                |  66 +++-
+ .../history/p49-step0-design-v2.1-FROZEN.md        |  66 +++-
+ .../p49-step0-design-v2.1-FROZEN.md                |  66 +++-
  .../review/p49-step0-symbol-audit.md               | 219 +++++-----
  docs/clang-fix-campaign/tools/symbol_audit.py      | 152 +++++--
  .../clang-fix-campaign/tools/table_audit_bridge.py | 194 +++++++++

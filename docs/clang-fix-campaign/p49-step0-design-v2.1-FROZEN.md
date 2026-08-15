@@ -1,8 +1,8 @@
-# P4.9 step-0 设计:共享层下沉与 marker 权威归位(v2.0-FROZEN)
+# P4.9 step-0 设计:共享层下沉与 marker 权威归位(v2.1-FROZEN)
 
 - 阶段:P4.9 step-0(六 skill 抽取的地基,先于任何 skill)
 - 前置:P4.5 已 merge(v1.5.18-FROZEN);提纲四轮评审收敛(v3.1)
-- **版本说明**:本稿为 **v2.0-FROZEN**,收敛自 v1.0–v1.12 全部裁决;
+- **版本说明**:本稿为 **v2.1-FROZEN**,收敛自 v1.0–v1.12 全部裁决;
   **v2.0 修订-1** 将 `SourceFetchResult` 的自封闭类型依赖
   `GerritPatchSet`/`GerritChange` 一并纳入 shared/types;
   **v2.0 修订-2/3** 按 marker 数据与输出闭包将
@@ -21,6 +21,9 @@
   预期数照抄前轮报告而未扣除 `FailureClassification` 重叠,修订-7a
   更正为“42 逐符号 + 4 module-scope 覆盖 48”——封闭规则优先于
   预期计数,计数由规则推导,不得反向让规则迁就计数;
+  **v2.1 修订**为逐符号归属表增加 `definition` 列;bridge 二元组键
+  需要正文侧显式提供定义路径,原表仅有 symbol/owner,不足以机械辨别
+  不同模块的同名符号;
   概括对人类够用、对机械核验即漏洞——契约文本不得以“等/etc”替代
   供机器消费的显式清单,凡 `SPECS` 在册符号正文四表必有其行,反之亦然;
   生效结论已合并进正文对应节,不再叠补丁(消除 body/appendix 三次
@@ -194,14 +197,14 @@ exit 1;若空占位、layers/independence/forbidden 或其它配置语法与 2.3
 
 ## §2 跨 skill 数据类型下沉(types.py,L-1)
 
-| 类型 | 现定义 | 实测消费方 | 归属 |
-|---|---|---|---|
-| `GerritPatchSet` | gerrit.py | gerrit(构造/兼容 shim) | shared/types |
-| `GerritChange` | gerrit.py | gerrit(构造/兼容 shim) | shared/types |
-| `SourceFetchResult` | gerrit.py | gerrit(构造/兼容 shim)/report | shared/types |
-| `FailedPackage` | quickbuild_log.py | quickbuild_log(构造/兼容 shim)/orchestrator/report/runner | shared/types |
-| `DisposableWorktree` | workspace.py | build-verify + 清理链 | shared/workspace |
-| `WorkspaceViolation` | workspace.py | campaign_repair_step + 清理链 | shared/workspace |
+| 类型 | 现定义 | 实测消费方 | 归属 | definition |
+|---|---|---|---|---|
+| `GerritPatchSet` | gerrit.py | gerrit(构造/兼容 shim) | shared/types | tizen_ci_shared/types.py |
+| `GerritChange` | gerrit.py | gerrit(构造/兼容 shim) | shared/types | tizen_ci_shared/types.py |
+| `SourceFetchResult` | gerrit.py | gerrit(构造/兼容 shim)/report | shared/types | tizen_ci_shared/types.py |
+| `FailedPackage` | quickbuild_log.py | quickbuild_log(构造/兼容 shim)/orchestrator/report/runner | shared/types | tizen_ci_shared/types.py |
+| `DisposableWorktree` | workspace.py | build-verify + 清理链 | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `WorkspaceViolation` | workspace.py | campaign_repair_step + 清理链 | shared/workspace | tizen_ci_shared/workspace/__init__.py |
 
 原定义处留 re-export shim,P4.9 全 skill 抽完统一删(§6)。
 
@@ -228,24 +231,24 @@ build-verify **不自持任何 marker 格式常量**,只调 shared 原语。
 
 ### 3.2 函数级归属表(调用图证据,方法论⑩硬闸;经 symbol_audit 核)
 
-| 符号 | 完整调用图 | 归属 |
-|---|---|---|
-| `create_worktree` | 仅 build_verify:133 | build-verify(调 shared write_workdir_marker) |
-| `check_disk_and_maybe_cleanup` | 仅 build_verify:126;内部调 cleanup_worktree | build-verify(下行依赖 shared) |
-| `_copy_repository` | 仅 create_worktree:58 | build-verify |
-| `write_workdir_marker(worktree_path: Path, *, workspace_root: Path, baseline_repo: Path, base_commit: str, iter_index: int) -> Path` | create_worktree 将调;写 MARKER_FILENAME + marker dict并返回实际 marker 路径 | **shared/workspace**(`to-be-created→existing`) |
-| `clean_repository_preserving_markers(worktree_path: Path) -> None` | create_worktree 将调;承接 git clean -ffdx + 双 marker 排除 | **shared/workspace**(`to-be-created→existing`) |
-| `cleanup_worktree` | build_verify:143 + workspace 内部:124/186 | shared/workspace |
-| `cleanup_disposable_copy` | campaign_repair_step | shared/workspace |
-| `is_protected` | campaign_repair_step | shared/workspace |
-| `release_worktree_protection` | gerrit_submit | shared/workspace |
-| `mark_worktree_protected` | build_verify(调用) | shared/workspace(格式权威) |
-| `_oldest_worktrees`/`_run_git`/`_verify_cleanup_handle`/`_exclude_private_files`/`_read_marker` | 清理链/marker 内部 | shared/workspace |
-| `_is_relative_to(path: Path, root: Path) -> bool` | 内部消费方 `_verify_cleanup_handle` | shared/workspace |
-| `MARKER_FILENAME` | §3.1 | shared/workspace |
-| `PROTECTED_FILENAME` | §3.1 | shared/workspace |
-| `DisposableWorktree` | §2 | shared/workspace |
-| `WorkspaceViolation` | §2 | shared/workspace |
+| 符号 | 完整调用图 | 归属 | definition |
+|---|---|---|---|
+| `create_worktree` | 仅 build_verify:133 | build-verify(调 shared write_workdir_marker) | ci_triage/verify/workspace.py |
+| `check_disk_and_maybe_cleanup` | 仅 build_verify:126;内部调 cleanup_worktree | build-verify(下行依赖 shared) | ci_triage/verify/workspace.py |
+| `_copy_repository` | 仅 create_worktree:58 | build-verify | ci_triage/verify/workspace.py |
+| `write_workdir_marker(worktree_path: Path, *, workspace_root: Path, baseline_repo: Path, base_commit: str, iter_index: int) -> Path` | create_worktree 将调;写 MARKER_FILENAME + marker dict并返回实际 marker 路径 | **shared/workspace**(`to-be-created→existing`) | tizen_ci_shared/workspace/__init__.py |
+| `clean_repository_preserving_markers(worktree_path: Path) -> None` | create_worktree 将调;承接 git clean -ffdx + 双 marker 排除 | **shared/workspace**(`to-be-created→existing`) | tizen_ci_shared/workspace/__init__.py |
+| `cleanup_worktree` | build_verify:143 + workspace 内部:124/186 | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `cleanup_disposable_copy` | campaign_repair_step | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `is_protected` | campaign_repair_step | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `release_worktree_protection` | gerrit_submit | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `mark_worktree_protected` | build_verify(调用) | shared/workspace(格式权威) | tizen_ci_shared/workspace/__init__.py |
+| `_oldest_worktrees`/`_run_git`/`_verify_cleanup_handle`/`_exclude_private_files`/`_read_marker` | 清理链/marker 内部 | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `_is_relative_to(path: Path, root: Path) -> bool` | 内部消费方 `_verify_cleanup_handle` | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `MARKER_FILENAME` | §3.1 | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `PROTECTED_FILENAME` | §3.1 | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `DisposableWorktree` | §2 | shared/workspace | tizen_ci_shared/workspace/__init__.py |
+| `WorkspaceViolation` | §2 | shared/workspace | tizen_ci_shared/workspace/__init__.py |
 
 判据:单消费方随消费者(create_worktree/_copy_repository→build-verify);
 多消费方或格式权威→shared。skill→shared 下行合法。
@@ -263,9 +266,9 @@ symbol_audit 清单**(此前盲区);`runner.py` 属不抽取的编排层,
 不加公共面全面 INCOMPLETE 护栏,其余 14 个公共符号不进入 step-0
 归属清单。
 
-| symbol | owner |
-|---|---|
-| `discover_sibling_pythonpath` | shared/env |
+| symbol | owner | definition |
+|---|---|---|
+| `discover_sibling_pythonpath` | shared/env | tizen_ci_shared/env.py |
 
 ## §4 QuickBuild HTTP 归属(分层落地)
 
@@ -273,25 +276,25 @@ symbol_audit 清单**(此前盲区);`runner.py` 属不抽取的编排层,
 
 实测消费面横跨编排层 + 多消费方,无单一 skill 独占 → 全归 shared:
 
-| symbol | owner |
-|---|---|
-| `DEFAULT_QUICKBUILD_BASE_URL` | shared/quickbuild_http |
-| `DEFAULT_COOKIE_PATH` | shared/quickbuild_http |
-| `DOWNLOAD_LINK_MARKER` | shared/quickbuild_http |
-| `DOWNLOAD_TIZEN_BASE_URL` | shared/quickbuild_http |
-| `HttpResponse` | shared/quickbuild_http |
-| `HttpFetcher` | shared/quickbuild_http |
-| `QuickBuildDownload` | shared/quickbuild_http |
-| `PackageBuildLog` | shared/quickbuild_http |
-| `QuickBuildError` | shared/quickbuild_http |
-| `load_cookie_jar` | shared/quickbuild_http |
-| `download_full_log` | shared/quickbuild_http |
-| `find_download_href` | shared/quickbuild_http |
-| `derive_package_buildlog_url` | shared/quickbuild_http |
-| `download_package_buildlog` | shared/quickbuild_http |
-| `_raise_if_login_page` | shared/quickbuild_http |
-| `_urllib_fetch` | shared/quickbuild_http |
-| `normalize_quickbuild_url` | shared/quickbuild_http |
+| symbol | owner | definition |
+|---|---|---|
+| `DEFAULT_QUICKBUILD_BASE_URL` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `DEFAULT_COOKIE_PATH` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `DOWNLOAD_LINK_MARKER` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `DOWNLOAD_TIZEN_BASE_URL` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `HttpResponse` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `HttpFetcher` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `QuickBuildDownload` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `PackageBuildLog` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `QuickBuildError` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `load_cookie_jar` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `download_full_log` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `find_download_href` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `derive_package_buildlog_url` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `download_package_buildlog` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `_raise_if_login_page` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `_urllib_fetch` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
+| `normalize_quickbuild_url` | shared/quickbuild_http | tizen_ci_shared/quickbuild_http.py |
 
 以上 17 项为 `quickbuild.py` HTTP 公共面全集,与 symbol_audit
 INCOMPLETE 护栏同源。qb-discover 保留“失败发现语义”(sources.py
@@ -466,5 +469,5 @@ helper 均不进入 step-0 symbol_audit。fetch/parse 拆分、
   过渡态必须绑定转正时点、转正后的强校验和显著计数。
 - **⑰**(跨边界迁移以依赖闭包为单位):迁入口而漏被调者会把上行依赖
   藏进函数体;设计期须列闭包且闭包内符号层级不得高于入口。
-  v2.0-FROZEN 把持续外溢的 GBS 闭包整体移出 step-0,是该规则的
+  v2.1-FROZEN 把持续外溢的 GBS 闭包整体移出 step-0,是该规则的
   范围治理应用。

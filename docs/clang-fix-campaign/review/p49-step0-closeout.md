@@ -1,6 +1,6 @@
 # P4.9 Step-0 Closeout
 
-Authority: `docs/clang-fix-campaign/p49-step0-design-v2.0-FROZEN.md`, including
+Authority: `docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md`, including
 revisions 1 through 7a.
 
 Implementation commits:

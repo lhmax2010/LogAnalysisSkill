@@ -21,6 +21,9 @@ MODULE_SCOPE_HEADING = "### 1.2a "
 SYMBOL_COLUMNS = frozenset({"symbol", "类型", "符号"})
 MODULE_COLUMNS = frozenset({"module"})
 OWNER_COLUMNS = frozenset({"owner", "归属"})
+DEFINITION_COLUMNS = frozenset({"definition"})
+
+SpecKey = tuple[str, str]
 
 
 class TableParseError(ValueError):
@@ -30,6 +33,7 @@ class TableParseError(ValueError):
 @dataclass(frozen=True)
 class BodyEntry:
     symbol: str
+    definition: str
     owner: str
     line_number: int
 
@@ -104,7 +108,7 @@ def parse_design_tables(
     design_path: Path,
     *,
     section_headings: tuple[str, ...] = SECTION_HEADINGS,
-) -> dict[str, BodyEntry]:
+) -> dict[SpecKey, BodyEntry]:
     """Parse selected frozen attribution tables, rejecting ambiguous rows."""
 
     lines = design_path.read_text(encoding="utf-8").splitlines()
@@ -117,7 +121,7 @@ def parse_design_tables(
             )
         heading_indexes[heading] = matches[0]
 
-    entries: dict[str, BodyEntry] = {}
+    entries: dict[SpecKey, BodyEntry] = {}
     for heading, heading_index in heading_indexes.items():
         start, end = _first_table(lines, heading_index)
         header = _cells(lines[start])
@@ -130,9 +134,14 @@ def parse_design_tables(
             owner_index = next(
                 index for index, name in enumerate(header) if name in OWNER_COLUMNS
             )
+            definition_index = next(
+                index for index, name in enumerate(header)
+                if name in DEFINITION_COLUMNS
+            )
         except StopIteration as exc:
             raise TableParseError(
-                f"table lacks symbol/owner columns after {heading!r}: {lines[start]}"
+                "table lacks symbol/definition/owner columns after "
+                f"{heading!r}: {lines[start]}"
             ) from exc
 
         for index in range(start + 2, end):
@@ -141,16 +150,34 @@ def parse_design_tables(
             if len(cells) != len(header):
                 raise TableParseError(f"column count mismatch: {raw_line}")
             owner = _owner(cells[owner_index], raw_line)
+            definition = _module(cells[definition_index], raw_line)
             for symbol in _symbol_names(cells[symbol_index], raw_line):
-                entry = BodyEntry(symbol, owner, index + 1)
-                previous = entries.get(symbol)
+                entry = BodyEntry(symbol, definition, owner, index + 1)
+                key = (definition, symbol)
+                previous = entries.get(key)
                 if previous is not None and previous.owner != owner:
                     raise TableParseError(
-                        f"conflicting owners for {symbol}: line {previous.line_number} "
-                        f"has {previous.owner}, line {entry.line_number} has {entry.owner}"
+                        f"conflicting owners for {definition}:{symbol}: "
+                        f"line {previous.line_number} has {previous.owner}, "
+                        f"line {entry.line_number} has {entry.owner}"
                     )
-                entries[symbol] = entry
+                entries[key] = entry
     return entries
+
+
+def _merge_symbol_tables(
+    *tables: dict[SpecKey, BodyEntry],
+) -> dict[SpecKey, BodyEntry]:
+    merged: dict[SpecKey, BodyEntry] = {}
+    for table in tables:
+        duplicates = sorted(merged.keys() & table.keys())
+        if duplicates:
+            rendered = ",".join(f"{definition}:{symbol}" for definition, symbol in duplicates)
+            raise TableParseError(
+                "symbol definitions appear in multiple attribution tables: " + rendered
+            )
+        merged.update(table)
+    return merged
 
 
 def parse_module_scope_table(design_path: Path) -> dict[str, BodyModuleEntry]:
@@ -196,11 +223,11 @@ def parse_module_scope_table(design_path: Path) -> dict[str, BodyModuleEntry]:
 
 def run(repo_root: Path) -> int:
     design_path = (
-        repo_root / "docs/clang-fix-campaign/p49-step0-design-v2.0-FROZEN.md"
+        repo_root / "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md"
     )
     skill_design_path = repo_root / (
         "docs/clang-fix-campaign/"
-        "p49-skill1-convergence-judge-design-v1.3-FROZEN.md"
+        "p49-skill1-convergence-judge-design-v1.4-FROZEN.md"
     )
     try:
         body = parse_design_tables(design_path)
@@ -208,13 +235,7 @@ def run(repo_root: Path) -> int:
             skill_design_path,
             section_headings=SKILL_SECTION_HEADINGS,
         )
-        duplicates = sorted(body.keys() & skill_body.keys())
-        if duplicates:
-            raise TableParseError(
-                "symbols appear in both step-0 and skill-1 tables: "
-                + ",".join(duplicates)
-            )
-        body.update(skill_body)
+        body = _merge_symbol_tables(body, skill_body)
         body_modules = parse_module_scope_table(design_path)
     except TableParseError as exc:
         print(f"PARSE_ERROR | {exc}")
@@ -226,10 +247,12 @@ def run(repo_root: Path) -> int:
 
     symbol_specs = tuple(spec for spec in SPECS if isinstance(spec, SymbolSpec))
     module_specs = tuple(spec for spec in SPECS if isinstance(spec, ModuleScopeSpec))
-    inventory = {spec.name: spec.owner for spec in symbol_specs}
+    inventory = {
+        (spec.definition, spec.name): spec.owner for spec in symbol_specs
+    }
     module_inventory = {spec.module: spec.owner for spec in module_specs}
     if len(inventory) != len(symbol_specs):
-        print("PARSE_ERROR | duplicate symbol names in symbol_audit.SPECS")
+        print("PARSE_ERROR | duplicate (definition, symbol) keys in symbol_audit.SPECS")
         print(
             "SUMMARY | 0 OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | "
             "0 OWNER_MISMATCH | 1 PARSE_ERROR"
@@ -249,15 +272,16 @@ def run(repo_root: Path) -> int:
     missing_body = 0
     owner_mismatch = 0
     ok = 0
-    print("symbol | body_owner | inventory_owner | verdict")
-    for symbol in all_symbols:
-        body_entry = body.get(symbol)
+    print("definition | symbol | body_owner | inventory_owner | verdict")
+    for key in all_symbols:
+        definition, symbol = key
+        body_entry = body.get(key)
         body_owner = body_entry.owner if body_entry is not None else "-"
-        inventory_owner = inventory.get(symbol, "-")
+        inventory_owner = inventory.get(key, "-")
         if body_entry is None:
             verdict = "MISSING_FROM_BODY"
             missing_body += 1
-        elif symbol not in inventory:
+        elif key not in inventory:
             verdict = "MISSING_FROM_INVENTORY"
             missing_inventory += 1
         elif body_owner != inventory_owner:
@@ -266,7 +290,10 @@ def run(repo_root: Path) -> int:
         else:
             verdict = "OK"
             ok += 1
-        print(f"{symbol} | {body_owner} | {inventory_owner} | {verdict}")
+        print(
+            f"{definition} | {symbol} | {body_owner} | "
+            f"{inventory_owner} | {verdict}"
+        )
 
     module_ok = 0
     print("module | body_owner | inventory_owner | verdict")
@@ -297,7 +324,53 @@ def run(repo_root: Path) -> int:
     return 1 if missing_inventory or missing_body or owner_mismatch else 0
 
 
+def _run_key_fixture(name: str) -> int:
+    sources = BodyEntry(
+        "_attrs_to_map",
+        "tizen_qb_discover/sources.py",
+        "skill/tizen_qb_discover",
+        1,
+    )
+    report = BodyEntry(
+        "_attrs_to_map",
+        "ci_triage/gbs_report.py",
+        "triage-report",
+        2,
+    )
+    if name == "twin-both-binary-key":
+        merged = _merge_symbol_tables(
+            {(sources.definition, sources.symbol): sources},
+            {(report.definition, report.symbol): report},
+        )
+        print(
+            "KEY_FIXTURE | twin-both-binary-key | "
+            f"{len(merged)} distinct definitions | OK"
+        )
+        return 0
+    if name == "twin-both-name-only":
+        by_name = {entry.symbol: entry for entry in (sources, report)}
+        if len(by_name) != 2:
+            print(
+                "NEGATIVE_FIXTURE | twin-both-name-only | MISMATCH: "
+                "name-only key overwrote one definition"
+            )
+            return 1
+        print("NEGATIVE_FIXTURE | twin-both-name-only | OK")
+        return 0
+    print(f"unknown key fixture: {name}")
+    return 2
+
+
 def main() -> int:
+    if len(sys.argv) == 3 and sys.argv[1] in {"--key-fixture", "--negative-fixture"}:
+        return _run_key_fixture(sys.argv[2])
+    if len(sys.argv) != 1:
+        print(
+            "usage: table_audit_bridge.py "
+            "[--key-fixture twin-both-binary-key|"
+            "--negative-fixture twin-both-name-only]"
+        )
+        return 2
     return run(Path(__file__).resolve().parents[3])
 
 

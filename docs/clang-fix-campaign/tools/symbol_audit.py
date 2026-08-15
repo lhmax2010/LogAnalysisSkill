@@ -55,6 +55,8 @@ SHARED_STATE_KEYS = "tizen_ci_shared/state/keys.py"
 SHARED_STATE_RECORDS = "tizen_ci_shared/state/records.py"
 SKILL_CONVERGENCE = "tizen_convergence_judge/convergence.py"
 
+SpecKey = tuple[str, str]
+
 
 # Keep this high-to-low order and the registered skill roots synchronized with
 # .importlinter's root-layers contract. A skill owner is valid only when its
@@ -744,7 +746,11 @@ def _actual_consumers(
         if source.relative == definition_source.relative:
             continue
         if symbol in source.top_level:
-            continue  # Same-spelled local implementation, not this definition.
+            # Known limit: this twin guard intentionally skips a module that
+            # shadows a name even if it also imports the original definition.
+            # That over-skip is deliberate; do not "fix" it without a new
+            # attribution design and a fixture for the ambiguous import.
+            continue
         visitor = _ReferenceVisitor(symbol)
         visitor.visit(source.tree)
         if visitor.lines:
@@ -857,7 +863,7 @@ def _skill_layer_reasons(
 
 def _audit_one(
     sources: tuple[SourceFile, ...],
-    specs_by_name: dict[str, SymbolSpec],
+    specs_by_key: dict[SpecKey, SymbolSpec],
     spec: SymbolSpec,
 ) -> AuditResult:
     by_relative = {source.relative: source for source in sources}
@@ -931,6 +937,19 @@ def _audit_one(
     if spec.owner.startswith("UNRESOLVED"):
         reasons.append(f"declared owner is unresolved: {spec.owner}")
 
+    if spec.owner.startswith("skill/"):
+        skill_root = REGISTERED_SKILL_ROOTS.get(spec.owner)
+        definition_root = Path(spec.definition).parts[0]
+        if skill_root is None:
+            reasons.append(
+                f"skill owner {spec.owner} is not registered in root-layers"
+            )
+        elif definition_root != skill_root:
+            reasons.append(
+                "skill-owned symbol defined outside its registered root: "
+                f"{spec.definition} is not under {skill_root}"
+            )
+
     declared_consumers = set(spec.declared_consumers)
     measured_consumers = set(consumers)
     for missing in sorted(declared_consumers - measured_consumers):
@@ -977,7 +996,7 @@ def _audit_one(
     if not (spec.owner.startswith("shared") or spec.owner.startswith("UNRESOLVED")):
         for scope in sorted(_scope_names(internal)):
             caller_name = scope.split(".", 1)[0]
-            caller_spec = specs_by_name.get(caller_name)
+            caller_spec = specs_by_key.get((spec.definition, caller_name))
             if caller_spec is None:
                 continue
             caller_owner = caller_spec.owner
@@ -1188,8 +1207,16 @@ def run(repo_root: Path) -> int:
         for symbol in _public_surface(source) - audited
     )
 
-    specs_by_name = {spec.name: spec for spec in symbol_specs}
-    results = tuple(_audit_one(sources, specs_by_name, spec) for spec in symbol_specs)
+    specs_by_key = {(spec.definition, spec.name): spec for spec in symbol_specs}
+    if len(specs_by_key) != len(symbol_specs):
+        print(
+            "SUMMARY | 0 SYMBOL OK | 0 MODULE-SCOPE OK (0 SYMBOLS COVERED) | "
+            "1 MISMATCH | 0 INCOMPLETE"
+        )
+        print("EVIDENCE")
+        print("[SPECS] duplicate (definition, symbol) inventory key")
+        return 1
+    results = tuple(_audit_one(sources, specs_by_key, spec) for spec in symbol_specs)
     module_results = tuple(
         _audit_module_scope(repo_root, sources, symbol_specs, spec)
         for spec in module_specs
@@ -1259,6 +1286,42 @@ def _run_negative_fixture(name: str) -> int:
     elif name == "skill-owner-peer-skill-consumer":
         registered["skill/fake_peer"] = "fake_peer_skill"
         consumers = {"fake_peer_skill.api"}
+    elif name == "duplicate-spec-root-mismatch":
+        repo_root = Path(__file__).resolve().parents[3]
+        sources = _fixture_sources(repo_root)
+        spec = SymbolSpec(
+            "_attrs_to_map",
+            ("fixture",),
+            "ci_triage/gbs_report.py",
+            "skill/tizen_qb_discover",
+            declared_internal=(
+                "_IframeParser.handle_starttag",
+                "_ReportTableParser.handle_starttag",
+            ),
+        )
+        REGISTERED_SKILL_ROOTS[spec.owner] = "tizen_qb_discover"
+        try:
+            result = _audit_one(
+                sources,
+                {(spec.definition, spec.name): spec},
+                spec,
+            )
+        finally:
+            del REGISTERED_SKILL_ROOTS[spec.owner]
+        print(f"NEGATIVE_FIXTURE | {name} | {result.verdict}")
+        expected = "skill-owned symbol defined outside its registered root"
+        return 1 if any(expected in reason for reason in result.reasons) else 0
+    elif name == "twin-both-name-only":
+        specs = _twin_specs(Path(__file__).resolve().parents[3])
+        by_name = {spec.name: spec for spec in specs}
+        if len(by_name) != len(specs):
+            print(
+                f"NEGATIVE_FIXTURE | {name} | MISMATCH: "
+                "name-only SPECS key overwrote one definition"
+            )
+            return 1
+        print(f"NEGATIVE_FIXTURE | {name} | OK")
+        return 0
     else:
         print(f"unknown negative fixture: {name}")
         return 2
@@ -1272,14 +1335,91 @@ def _run_negative_fixture(name: str) -> int:
     return 1 if reasons else 0
 
 
+def _fixture_sources(repo_root: Path) -> tuple[SourceFile, ...]:
+    roots = (
+        repo_root / "tizen-ci-triage/scripts",
+        repo_root / "tizen-ci-shared/scripts",
+        repo_root / "tizen-convergence-judge/scripts",
+        repo_root / "tizen-qb-discover/scripts",
+    )
+    return tuple(
+        source
+        for root in roots
+        if root.is_dir()
+        for source in _load_sources(root)
+    )
+
+
+def _twin_specs(repo_root: Path) -> tuple[SymbolSpec, SymbolSpec]:
+    extracted = (repo_root / "tizen-qb-discover/scripts/tizen_qb_discover/sources.py").is_file()
+    source_definition = (
+        "tizen_qb_discover/sources.py" if extracted else "ci_triage/sources.py"
+    )
+    source_owner = "skill/tizen_qb_discover" if extracted else "quickbuild"
+    return (
+        SymbolSpec(
+            "_attrs_to_map",
+            ("fixture",),
+            source_definition,
+            source_owner,
+            declared_internal=("_BuildsTableParser.handle_starttag",),
+        ),
+        SymbolSpec(
+            "_attrs_to_map",
+            ("fixture",),
+            "ci_triage/gbs_report.py",
+            "triage-report",
+            declared_internal=(
+                "_IframeParser.handle_starttag",
+                "_ReportTableParser.handle_starttag",
+            ),
+        ),
+    )
+
+
+def _run_key_fixture(name: str) -> int:
+    repo_root = Path(__file__).resolve().parents[3]
+    sources = _fixture_sources(repo_root)
+    source_spec, report_spec = _twin_specs(repo_root)
+    specs = (source_spec,) if name == "source-twin-only" else (source_spec, report_spec)
+    if name not in {"source-twin-only", "twin-both-binary-key"}:
+        print(f"unknown key fixture: {name}")
+        return 2
+    specs_by_key = {(spec.definition, spec.name): spec for spec in specs}
+    registered_here = (
+        source_spec.owner not in REGISTERED_SKILL_ROOTS
+        and source_spec.owner.startswith("skill/")
+    )
+    if registered_here:
+        REGISTERED_SKILL_ROOTS[source_spec.owner] = "tizen_qb_discover"
+    try:
+        results = tuple(
+            _audit_one(sources, specs_by_key, spec) for spec in specs
+        )
+    finally:
+        if registered_here:
+            del REGISTERED_SKILL_ROOTS[source_spec.owner]
+    for result in results:
+        print(
+            f"KEY_FIXTURE | {name} | {result.spec.definition}:"
+            f"{result.spec.name} | consumers={result.consumers} | "
+            f"internal={result.internal} | {result.verdict}"
+        )
+    return 1 if any(result.reasons for result in results) else 0
+
+
 def main() -> int:
     if len(sys.argv) == 3 and sys.argv[1] == "--negative-fixture":
         return _run_negative_fixture(sys.argv[2])
+    if len(sys.argv) == 3 and sys.argv[1] == "--key-fixture":
+        return _run_key_fixture(sys.argv[2])
     if len(sys.argv) != 1:
         print(
             "usage: symbol_audit.py "
             "[--negative-fixture skill-owner-shared-consumer|"
-            "skill-owner-peer-skill-consumer]"
+            "skill-owner-peer-skill-consumer|duplicate-spec-root-mismatch|"
+            "twin-both-name-only|--key-fixture source-twin-only|"
+            "twin-both-binary-key]"
         )
         return 2
     repo_root = Path(__file__).resolve().parents[3]

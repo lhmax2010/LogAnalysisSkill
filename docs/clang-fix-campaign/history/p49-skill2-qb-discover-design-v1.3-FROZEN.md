@@ -1,7 +1,7 @@
-# P4.9 skill-2 设计:tizen-qb-discover 抽取(v1.2-FROZEN)
+# P4.9 skill-2 设计:tizen-qb-discover 抽取(v1.3-FROZEN)
 
 - 阶段:P4.9 第二个 skill 批次(skill-1 CLOSED @e7900bb 之后)
-- 权威并行:step-0 `v2.0-FROZEN`、skill-1 `v1.3-FROZEN`
+- 权威并行:step-0 `v2.1-FROZEN`、skill-1 `v1.4-FROZEN`
 > **v1.1 修订(两家评审)**:①【MAJOR,Claude Code】§1.2 的动机**证伪并
 > 重设**——symbol_audit 早有 twin-guard(`symbol_audit.py:746`,同名
 > 本地实现自动跳过),AST 工具**不会**串台;v1.0 引为理由的"8 件被误
@@ -13,6 +13,9 @@
 > ④root-layers 去花括号。⑤NIT-4/5:quickbuild_http 的 7 处 declared
 > consumers 与 pyproject/mypy_path/审计注册表同批更新。⑥DoD 计数改
 > "三负控红 + 一正向回归绿"。
+> **v1.3 修订**:§2.2 补为含 `definition` 的 19 行真表格,并要求
+> step-0/skill-1 逐符号表同步补列;bridge 二元组键需要正文侧显式
+> 提供 definition,原表仅 symbol/owner。
 
 - **总铁律**:行为等价——整体搬移 + import 翻转,零语义变更;基线 ==
   skill-1 收口全量数(847/1),原样全绿。
@@ -152,14 +155,29 @@ skill-1 commit D 的收益兑现)。
 ### 2.2 逐符号注册(19 行,纯逐符号;不用 module-scope)
 
 理由同 skill-1:公开契约有逐行冻结诉求 + 同文件两制互斥(修订-7
-断言③)。owner 全部 = `skill/tizen_qb_discover`。表由脚本自源码
-机械生成(⑩),实现时贴原始输出;19 项为:
-`QUICKBUILD_OVERVIEW_CONFIG_ID` `_STATUS_CLASSES` `FailedBuild`
-`FailedBuildSource` `QuickBuildSource` `_Anchor` `_Cell` `_Row`
-`_BuildsTable` `_CellBuilder` `_AnchorBuilder` `_BuildsTableParser`
-`_parse_builds_table` `_row_to_build` `_status_from_classes`
-`_strip_snapshot_prefix` `_attrs_to_map` `_class_names`
-`_normalize_text`。
+断言③)。表由脚本自源码机械生成(⑩):
+
+| symbol | definition | owner |
+|---|---|---|
+| QUICKBUILD_OVERVIEW_CONFIG_ID | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _STATUS_CLASSES | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| FailedBuild | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| FailedBuildSource | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| QuickBuildSource | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _Anchor | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _Cell | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _Row | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _BuildsTable | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _CellBuilder | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _AnchorBuilder | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _BuildsTableParser | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _parse_builds_table | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _row_to_build | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _status_from_classes | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _strip_snapshot_prefix | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _attrs_to_map | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _class_names | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
+| _normalize_text | tizen_qb_discover/sources.py | skill/tizen_qb_discover |
 
 旧址 `ci_triage/sources.py` 变**纯 re-export shim**(零 def/class),
 入 shim 删除清单(P4.9 末)。INCOMPLETE 护栏覆盖 skill 包 sources.py

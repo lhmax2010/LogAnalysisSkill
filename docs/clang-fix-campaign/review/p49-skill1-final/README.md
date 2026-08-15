@@ -12,7 +12,7 @@ Review request:
 
 ## Inputs
 
-- Frozen contract: `../../p49-skill1-convergence-judge-design-v1.3-FROZEN.md`.
+- Frozen contract: `../../p49-skill1-convergence-judge-design-v1.4-FROZEN.md`.
 - DoD account: `../p49-skill1-closeout.md`.
 - Audit record: `../p49-skill1-convergence-judge-audit.md`.
 - Stage result: `../../dev_memory/stage08_p49_skill1_convergence_judge/result.md`.

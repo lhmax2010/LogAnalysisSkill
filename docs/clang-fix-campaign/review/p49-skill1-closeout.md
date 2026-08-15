@@ -1,7 +1,7 @@
 # P4.9 Skill-1 Convergence-Judge Closeout
 
 Authority:
-`docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.3-FROZEN.md`
+`docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.4-FROZEN.md`
 (v1.2 freeze, revised in place to v1.3 by commit C, then filename-aligned at
 sign-off).
 
@@ -97,6 +97,6 @@ table_audit_bridge: 77 SYMBOL OK + 4 MODULE-SCOPE OK; all difference counts zero
 状态：**skill-1 CLOSED @ `e7900bb`**（开发者放行日期：2026-08-15）。
 
 Kimi NIT 已在本签批提交中处置：冻结正文与 history 快照由旧的 v1.2
-文件名对齐为 `p49-skill1-convergence-judge-design-v1.3-FROZEN.md`，所有
+文件名对齐为 `p49-skill1-convergence-judge-design-v1.4-FROZEN.md`，所有
 tracked 引用同步更新；`table_audit_bridge.py` 仅更新解析目标路径常量，
 判据、解析逻辑与输出格式均未改变，并以 bridge 全绿复验。

@@ -9,9 +9,10 @@ out of scope and is deferred as a whole to the triage-report extraction batch.
 
 ## Revision
 
-- Design: `p49-step0-design-v2.0-FROZEN.md`, including revisions 1 through 7a.
-- Design SHA-256: `18ac1b7f7cc977f988ebafbef00cf7415a18cf2b21b45d9809b4db01c59040ce`.
-- Audit round: revision-7a closeout working tree.
+- Design: `p49-step0-design-v2.1-FROZEN.md`, including revisions 1 through 7a
+  and the v2.1 definition-column revision.
+- Design SHA-256: `82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da`.
+- Audit round: v2.1 binary-key migration.
 - Result: 42 symbol OK + 4 module-scope OK covering 48 symbols;
   0 MISMATCH, 0 INCOMPLETE.
 - Commit ② reached 42/42 but its stdout was not written back promptly; this

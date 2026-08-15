@@ -4,7 +4,7 @@
 
 - Status: CLOSED; implementation commits ①/②/③ and revision-7a audit gates
   green. DoD account: `../../review/p49-step0-closeout.md`.
-- Contract body: `../../p49-step0-design-v2.0-FROZEN.md`.
+- Contract body: `../../p49-step0-design-v2.1-FROZEN.md`.
 - Mechanical attribution audit: `../../review/p49-step0-symbol-audit.md`.
 - Audited scope: only modules and symbols that step-0 will actually modify.
 - Latest result: 42 symbol OK + 4 module-scope OK covering 48 symbols;
