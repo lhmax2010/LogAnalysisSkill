@@ -58,6 +58,11 @@ during design convergence.
     body-to-inventory gap. A closed module-scope row is also enumerable because
     its physical top-level surface is measured; counts are derived from the
     rule and must never be used to bend the rule, as revision-7a demonstrated.
+    The filename is part of that authority: after an in-place revision, its
+    version must match the document title so path-based discovery cannot select
+    the wrong generation. Path constants in audit tools count as document
+    references and may be updated non-semantically in the same commit, but the
+    tool must rerun green against the renamed authority.
 13. **Never make an artifact record its own mutable fingerprint.** The failed
     design/report self-SHA attempts established that integrity belongs in an
     external immutable anchor, here the containing Git commit.

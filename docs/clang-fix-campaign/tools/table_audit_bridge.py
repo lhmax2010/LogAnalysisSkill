@@ -200,7 +200,7 @@ def run(repo_root: Path) -> int:
     )
     skill_design_path = repo_root / (
         "docs/clang-fix-campaign/"
-        "p49-skill1-convergence-judge-design-v1.2-FROZEN.md"
+        "p49-skill1-convergence-judge-design-v1.3-FROZEN.md"
     )
     try:
         body = parse_design_tables(design_path)

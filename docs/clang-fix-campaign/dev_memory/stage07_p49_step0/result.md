@@ -49,7 +49,7 @@ Final mechanical inventory:
 ## 下游输入：convergence-judge
 
 Skill-1 frozen authority:
-`../../p49-skill1-convergence-judge-design-v1.2-FROZEN.md`.
+`../../p49-skill1-convergence-judge-design-v1.3-FROZEN.md`.
 
 1. **钉定 module-scope 覆盖数。** `symbol_audit` 的 module-scope 条目增加
    `expected_top_level_count`；实测数与钉定数不一致时报告 MISMATCH。四个模块依次

@@ -4,7 +4,7 @@ Status: **CLOSED**. DoD account:
 `../../review/p49-skill1-closeout.md`.
 
 - Frozen authority:
-  `../../p49-skill1-convergence-judge-design-v1.2-FROZEN.md`.
+  `../../p49-skill1-convergence-judge-design-v1.3-FROZEN.md`.
 - Audit record:
   `../../review/p49-skill1-convergence-judge-audit.md`.
 - Baseline: step-0 CLOSED at `7e9eb4e`; 846 passed, one skipped.

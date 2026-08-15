@@ -3,6 +3,9 @@
 Status: **CLOSED**. Detailed DoD account:
 `../../review/p49-skill1-closeout.md`.
 
+Frozen authority:
+`../../p49-skill1-convergence-judge-design-v1.3-FROZEN.md`.
+
 ## Delivered
 
 | Commit | Result |

@@ -1,8 +1,9 @@
 # P4.9 Skill-1 Convergence-Judge Closeout
 
 Authority:
-`docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.2-FROZEN.md`
-(body revised in place to v1.3-FROZEN by commit C).
+`docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.3-FROZEN.md`
+(v1.2 freeze, revised in place to v1.3 by commit C, then filename-aligned at
+sign-off).
 
 Implementation commits: `f4c8142`, `f7194ae`, `954bbcd`, `9bf1af0`.
 Freeze commit: `d3478ab`.
@@ -84,3 +85,18 @@ lint-imports: 5 kept, 0 broken; exit 0
 symbol_audit: 77 SYMBOL OK + 4 MODULE-SCOPE OK; 0 MISMATCH; 0 INCOMPLETE
 table_audit_bridge: 77 SYMBOL OK + 4 MODULE-SCOPE OK; all difference counts zero
 ```
+
+## 最终签批
+
+| Signer | Date | Confirmation |
+|---|---|---|
+| Claude | 2026-08-15 | 独立核验全部门禁，并完成 C21 定义性验收：干净环境三条子进程测试由 `3 failed` 变为 `0 failed`。 |
+| 评审 A | 2026-08-15 | 独立实跑评审包全部门禁命令后确认 skill-1 CLOSED。 |
+| 评审 B | 2026-08-15 | 独立实跑评审包全部门禁命令后确认 skill-1 CLOSED；提出冻结文件名与正文版本不一致的 Kimi NIT。 |
+
+状态：**skill-1 CLOSED @ `e7900bb`**（开发者放行日期：2026-08-15）。
+
+Kimi NIT 已在本签批提交中处置：冻结正文与 history 快照由旧的 v1.2
+文件名对齐为 `p49-skill1-convergence-judge-design-v1.3-FROZEN.md`，所有
+tracked 引用同步更新；`table_audit_bridge.py` 仅更新解析目标路径常量，
+判据、解析逻辑与输出格式均未改变，并以 bridge 全绿复验。

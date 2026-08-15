@@ -5,14 +5,14 @@
 
 Review request:
 
-> Skill-1 is complete against the v1.2-FROZEN design, including the v1.3
+> Skill-1 is complete against the v1.3-FROZEN design, including the v1.3
 > layered audit ruling. The DoD account is in `../p49-skill1-closeout.md`.
-> 请确认①实现与 v1.2-FROZEN 一致 ②v1.3 判据层化的三条防滥用断言充分
+> 请确认①实现与 v1.3-FROZEN 一致 ②v1.3 判据层化的三条防滥用断言充分
 > ③DEFERRED 可接受,无异议给 skill-1 CLOSED。
 
 ## Inputs
 
-- Frozen contract: `../../p49-skill1-convergence-judge-design-v1.2-FROZEN.md`.
+- Frozen contract: `../../p49-skill1-convergence-judge-design-v1.3-FROZEN.md`.
 - DoD account: `../p49-skill1-closeout.md`.
 - Audit record: `../p49-skill1-convergence-judge-audit.md`.
 - Stage result: `../../dev_memory/stage08_p49_skill1_convergence_judge/result.md`.

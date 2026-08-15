@@ -1,7 +1,7 @@
 # P4.9 Skill-1 Convergence-Judge Audit
 
 Frozen authority:
-`docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.2-FROZEN.md`.
+`docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.3-FROZEN.md`.
 The authority's body is revised in place to v1.3-FROZEN by the commit C
 layered-audit ruling; the path remains stable for existing references.
 
