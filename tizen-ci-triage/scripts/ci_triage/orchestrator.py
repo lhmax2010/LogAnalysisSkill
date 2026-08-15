@@ -14,6 +14,7 @@ from typing import Any
 from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH, QuickBuildError, download_full_log
 from tizen_ci_shared.types import FailedPackage
+from tizen_qb_discover.sources import FailedBuild, FailedBuildSource, QuickBuildSource
 
 from ci_triage.gbs_report import (
     DEFAULT_ARCHES,
@@ -27,7 +28,6 @@ from ci_triage.quickbuild_log import (
     parse_build_pkg_list,
 )
 from ci_triage.runner import TriageOptions, TriageResult, run_triage
-from ci_triage.sources import FailedBuild, FailedBuildSource, QuickBuildSource
 
 STATE_DISCOVERED = "DISCOVERED"
 STATE_LOG_FETCHED = "LOG_FETCHED"

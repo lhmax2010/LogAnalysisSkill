@@ -82,3 +82,34 @@ The twin guard's known over-skip is documented in `symbol_audit.py`: a module
 that defines a same-spelled top-level symbol is intentionally skipped even if
 it also imports the original. This is a known limit, not an invitation to
 silently change attribution semantics.
+
+## Commit B: extraction body
+
+The production module was copied before the move and compared immediately
+after `git mv`:
+
+```text
+$ cmp /tmp/qb_sources_before_move.py tizen-qb-discover/scripts/tizen_qb_discover/sources.py
+exit 0
+$ sha256sum /tmp/qb_sources_before_move.py tizen-qb-discover/scripts/tizen_qb_discover/sources.py
+c5fd0c5b1d715aedee508bbd69211e73e05ca4183f13ff303924f9053c5a5830  /tmp/qb_sources_before_move.py
+c5fd0c5b1d715aedee508bbd69211e73e05ca4183f13ff303924f9053c5a5830  tizen-qb-discover/scripts/tizen_qb_discover/sources.py
+```
+
+The legacy `ci_triage.sources` module is a pure four-name re-export shim with
+zero `def` or `class` statements. `batch_cli`, `orchestrator`, and the existing
+source tests import directly from `tizen_qb_discover.sources`; their diffs are
+limited to import lines.
+
+Commit B runs before the pyproject and root-linter registration assigned to
+commit C. Its checks therefore use an explicit temporary path prefix rather
+than pulling commit C configuration forward:
+
+```text
+PYTHONPATH=$PWD/tizen-qb-discover/scripts .venv/bin/pytest
+847 passed, 1 skipped
+MYPYPATH=$PWD/tizen-qb-discover/scripts .venv/bin/mypy
+Success: no issues found in 101 source files
+lint-imports: 5 kept, 0 broken
+ruff: All checks passed
+```

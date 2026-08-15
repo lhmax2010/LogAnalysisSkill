@@ -48,8 +48,8 @@ from ci_triage.quickbuild_log import (
     select_failed_package,
 )
 from ci_triage.runner import TriageOptions, TriageResult, _safe_pkg_dir, run_triage
-from ci_triage.sources import FailedBuild, QuickBuildSource
 from tizen_ci_shared.types import SourceFetchResult
+from tizen_qb_discover.sources import FailedBuild, QuickBuildSource
 
 OVERVIEW_HTML = """
 <html>

@@ -10,9 +10,9 @@ from typing import TextIO
 
 from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH
+from tizen_qb_discover.sources import QUICKBUILD_OVERVIEW_CONFIG_ID, QuickBuildSource
 
 from ci_triage.orchestrator import BatchTriageOptions, CiTriageOrchestrator
-from ci_triage.sources import QUICKBUILD_OVERVIEW_CONFIG_ID, QuickBuildSource
 
 EXIT_SUCCESS = 0
 EXIT_FAILED = 1

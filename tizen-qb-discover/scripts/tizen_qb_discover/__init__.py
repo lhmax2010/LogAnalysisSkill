@@ -1,4 +1,4 @@
-"""Compatibility exports for the extracted QuickBuild discovery skill."""
+"""Public QuickBuild discovery contract."""
 
 from tizen_qb_discover.sources import (
     QUICKBUILD_OVERVIEW_CONFIG_ID,
