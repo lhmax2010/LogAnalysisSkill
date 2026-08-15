@@ -37,6 +37,48 @@ during design convergence.
    open. R14 round two established this after two independent reviewers found
    D3/D10 marked closed while their required body edits were absent.
 
+## P4.9 step-0 additions
+
+10. **Mechanically audit ownership cuts.** Attribution tables are proposals
+    until source/AST measurement proves definitions, consumers, internal
+    access, and public-surface completeness; `symbol_audit.py` was introduced
+    after repeated hand-drawn consumer-map drift. The public-surface guard must
+    follow a module across the boundary in the same change; revision-6 exposed
+    the false completeness of guarding quickbuild/types but not workspace,
+    classify, and state.
+11. **Give a shared layer its own dependency direction.** Shared code is not a
+    flat dumping ground: types < HTTP/env < state/workspace/classify is enforced
+    by layers, independence, and no-uplink contracts in `.importlinter`.
+12. **Make the contract body explicitly enumerable.** Every inventory symbol
+    must appear in the authoritative tables and vice versa; revisions 4/5
+    replaced “etc./x2” shorthand before `table_audit_bridge.py` could close the
+    body-to-inventory gap. A closed module-scope row is also enumerable because
+    its physical top-level surface is measured; counts are derived from the
+    rule and must never be used to bend the rule, as revision-7a demonstrated.
+13. **Never make an artifact record its own mutable fingerprint.** The failed
+    design/report self-SHA attempts established that integrity belongs in an
+    external immutable anchor, here the containing Git commit.
+14. **A guard exists only after its own tool proves green and red.** Four
+    import-linter contracts were each run positively and deliberately broken;
+    configuration prose alone was not accepted as evidence.
+15. **Match audit rules to symbol structure without creating exemptions.**
+    Data types, capability functions, and temporary composition shells need
+    different checks, and every new category requires a structural anti-abuse
+    assertion. Module-scope therefore requires a physical shared module, a
+    deleted or pure-shim legacy location, and zero per-symbol overlap; the
+    abandoned GBS shell design and revision-7a exposed this distinction.
+16. **Treat transition states as debts with promotion gates.** `to-be-created`
+    and `to-be-refactored` are deferrals, not passes; each needs a visible count,
+    a conversion commit, and full checks after conversion.
+17. **Close all three migration closures before crossing a boundary.** Type,
+    input-data, and called/output closures must move or be explicitly retained;
+    the SourceFetchResult type chain and two successive marker-signature fixes
+    exposed missing type, data, and returned-path dependencies.
+18. **Write the inherited constraint list before deferring work.** Moving GBS
+    report extraction out of step-0 preserved seven concrete constraints in
+    the frozen design, so the later triage-report batch starts from named risks
+    rather than repeating the same discovery cycle.
+
 ## R14 deferred cleanup ledger
 
 These findings are intentionally non-blocking for FIX-1 but retain names and

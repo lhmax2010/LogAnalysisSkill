@@ -11,6 +11,16 @@
   未拉数据字段闭包,依方法论⑰修正;
   **v2.0 修订-4/5** 将 §4.1 的“等,共 17 项”、§3.2 的“×2”
   与 §3.3 的叙述式归属补为逐符号表行,供四表 bridge 双向穷举核验;
+  **v2.0 修订-6** 补录迁移时遗漏的 `_is_relative_to`,并将
+  INCOMPLETE 公共面护栏扩展至全部 shared 实体模块;根因是护栏未随
+  workspace 模块下沉同步生效。自本修订起,模块进入 shared 之日,
+  其公共面护栏必须同日生效(方法论⑩补强);
+  **v2.0 修订-7/7a** 为整体迁移模块引入封闭的 module-scope 归属,
+  以四条文件级声明覆盖 classify/state 的 48 个顶层符号;逐符号与
+  module-scope 不得在同文件并存。修订-7 的“43 逐符号 + 覆盖 47”
+  预期数照抄前轮报告而未扣除 `FailureClassification` 重叠,修订-7a
+  更正为“42 逐符号 + 4 module-scope 覆盖 48”——封闭规则优先于
+  预期计数,计数由规则推导,不得反向让规则迁就计数;
   概括对人类够用、对机械核验即漏洞——契约文本不得以“等/etc”替代
   供机器消费的显式清单,凡 `SPECS` 在册符号正文四表必有其行,反之亦然;
   生效结论已合并进正文对应节,不再叠补丁(消除 body/appendix 三次
@@ -58,6 +68,24 @@ commit ① 的四个占位文件各自**仅含一行 docstring**,零 import、�
 零逻辑;能力仍分别在 commit ②/③ 迁入。占位期不得夹带实现,验收必须
 逐文件贴 `wc -l` 与 `cat` 原文。占位只让四条层级契约能加载,不改变
 symbol_audit 归属清单(空文件无符号)。
+
+### 1.2a 整体迁移模块归属表
+
+| module | owner | 迁移形态 |
+|---|---|---|
+| `state/db.py` | shared/state | 整体迁移,旧址删除 |
+| `state/keys.py` | shared/state | 整体迁移,旧址删除 |
+| `state/records.py` | shared/state | 整体迁移,旧址删除 |
+| `classify.py` | shared/classify | 整体迁移,旧址纯 shim |
+
+module-scope 表示该文件的每个顶层符号自动归属同一 owner,适用于没有
+发生文件内拆分裁决的整体迁移模块。该类别必须同时满足三条机械断言:
+①模块物理位于 `tizen_ci_shared`;②旧址已从 `git ls-files` 消失,或仅含
+零 def/class 的 re-export shim;③该文件任何符号均不得同时出现在逐符号
+`SPECS`。任一断言失败即 MISMATCH。审计输出必须显示覆盖符号数与模块级
+外部 import 消费方。逐符号表继续承载 workspace 的拆分裁决,以及已逐行
+冻结的 quickbuild、types、env;两种归属均为封闭穷举,不构成“等/etc”式
+开放概括。
 
 **edit_spec_guard 不在此**:实测仅 build_verify 消费(单消费方),随
 build-verify skill,非 shared(S-2b)。
@@ -172,11 +200,14 @@ exit 1;若空占位、layers/independence/forbidden 或其它配置语法与 2.3
 | `GerritChange` | gerrit.py | gerrit(构造/兼容 shim) | shared/types |
 | `SourceFetchResult` | gerrit.py | gerrit(构造/兼容 shim)/report | shared/types |
 | `FailedPackage` | quickbuild_log.py | quickbuild_log(构造/兼容 shim)/orchestrator/report/runner | shared/types |
-| `FailureClassification` | failure_classify.py | build_verify(随 classify 模块) | shared/classify |
 | `DisposableWorktree` | workspace.py | build-verify + 清理链 | shared/workspace |
 | `WorkspaceViolation` | workspace.py | campaign_repair_step + 清理链 | shared/workspace |
 
 原定义处留 re-export shim,P4.9 全 skill 抽完统一删(§6)。
+
+`FailureClassification` 随 `classify.py` module-scope(§1.2a),原 §2
+逐行于修订-7a 移除。该指引保留 v1.2 类 D 裁决的 provenance,不是
+第五列归属声明,也不进入逐符号 bridge。
 
 **L-1 类型闭包校验(v2.0 修订-1)**:`shared/types.py` 中每个 dataclass
 字段若引用仓库自有类型,该类型必须同属 `shared/types` 或更底层;引用逃逸
@@ -210,6 +241,7 @@ build-verify **不自持任何 marker 格式常量**,只调 shared 原语。
 | `release_worktree_protection` | gerrit_submit | shared/workspace |
 | `mark_worktree_protected` | build_verify(调用) | shared/workspace(格式权威) |
 | `_oldest_worktrees`/`_run_git`/`_verify_cleanup_handle`/`_exclude_private_files`/`_read_marker` | 清理链/marker 内部 | shared/workspace |
+| `_is_relative_to(path: Path, root: Path) -> bool` | 内部消费方 `_verify_cleanup_handle` | shared/workspace |
 | `MARKER_FILENAME` | §3.1 | shared/workspace |
 | `PROTECTED_FILENAME` | §3.1 | shared/workspace |
 | `DisposableWorktree` | §2 | shared/workspace |
@@ -356,8 +388,8 @@ commit 中的版本,再用 `sha256sum` 复算;锚在 commit,不锚在文件内�
 - [ ] workspace 函数级归属按 §3.2 落地;discover_sibling_pythonpath
   单点入 symbol_audit 且四消费方一致,全 OK;runner.py 不加全面护栏;
 - [ ] **审计范围一致**:symbol_audit 只覆盖 step-0 实际触碰面;
-  quickbuild.py 公共面护栏全绿,`gbs_report.py` 无 inventory、无公共面
-  护栏、无生产 diff(延期项见 §8);
+  全部 shared 实体模块的公共面护栏全绿,`gbs_report.py` 无 inventory、
+  无公共面护栏、无生产 diff(延期项见 §8);
 - [ ] 全量测试 == 基线数、原样全绿;测试 diff 仅 §5.1 两类;每 commit
   lint-imports 绿;
 - [ ] parity:build-verify/convergence 关键路径下沉前后归一化相等

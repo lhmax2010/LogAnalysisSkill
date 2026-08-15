@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import ast
 import re
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,13 +33,64 @@ class SymbolSpec:
     expected_owner: str | None = None
 
 
+@dataclass(frozen=True)
+class ModuleScopeSpec:
+    module: str
+    sections: tuple[str, ...]
+    definition: str
+    owner: str
+    legacy_path: str
+    legacy_mode: str
+    import_root: str
+
+
 WORKSPACE = "ci_triage/verify/workspace.py"
 SHARED_WORKSPACE = "tizen_ci_shared/workspace/__init__.py"
 QUICKBUILD = "tizen_ci_shared/quickbuild_http.py"
 SHARED_TYPES = "tizen_ci_shared/types.py"
+SHARED_CLASSIFY = "tizen_ci_shared/classify.py"
+SHARED_STATE_DB = "tizen_ci_shared/state/db.py"
+SHARED_STATE_KEYS = "tizen_ci_shared/state/keys.py"
+SHARED_STATE_RECORDS = "tizen_ci_shared/state/records.py"
 
 
-SPECS: tuple[SymbolSpec, ...] = (
+SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
+    ModuleScopeSpec(
+        "state/db.py",
+        ("§1.2a", "v2.0-revision-7a"),
+        SHARED_STATE_DB,
+        "shared/state",
+        "tizen-ci-triage/scripts/ci_triage/state/db.py",
+        "deleted",
+        "tizen_ci_shared.state",
+    ),
+    ModuleScopeSpec(
+        "state/keys.py",
+        ("§1.2a", "v2.0-revision-7a"),
+        SHARED_STATE_KEYS,
+        "shared/state",
+        "tizen-ci-triage/scripts/ci_triage/state/keys.py",
+        "deleted",
+        "tizen_ci_shared.state",
+    ),
+    ModuleScopeSpec(
+        "state/records.py",
+        ("§1.2a", "v2.0-revision-7a"),
+        SHARED_STATE_RECORDS,
+        "shared/state",
+        "tizen-ci-triage/scripts/ci_triage/state/records.py",
+        "deleted",
+        "tizen_ci_shared.state",
+    ),
+    ModuleScopeSpec(
+        "classify.py",
+        ("§1.2a", "v2.0-revision-7a"),
+        SHARED_CLASSIFY,
+        "shared/classify",
+        "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+        "pure-shim",
+        "tizen_ci_shared.classify",
+    ),
     # §2, with the v1.1 additions applied.
     SymbolSpec(
         "GerritPatchSet",
@@ -86,13 +138,6 @@ SPECS: tuple[SymbolSpec, ...] = (
         SHARED_WORKSPACE,
         "shared/workspace",
         ("ci_triage.campaign_repair_step", "ci_triage.verify.workspace"),
-    ),
-    SymbolSpec(
-        "FailureClassification",
-        ("§2",),
-        "tizen_ci_shared/classify.py",
-        "shared/classify",
-        ("ci_triage.verify.build_verify",),
     ),
     SymbolSpec(
         "discover_sibling_pythonpath",
@@ -186,6 +231,13 @@ SPECS: tuple[SymbolSpec, ...] = (
         SHARED_WORKSPACE,
         "shared/workspace",
         declared_internal=("cleanup_worktree", "mark_worktree_protected"),
+    ),
+    SymbolSpec(
+        "_is_relative_to",
+        ("§3.2", "v2.0-revision-6"),
+        SHARED_WORKSPACE,
+        "shared/workspace",
+        declared_internal=("_verify_cleanup_handle",),
     ),
     SymbolSpec(
         "_exclude_private_files",
@@ -418,6 +470,18 @@ class AuditResult:
     marker_writes: tuple[str, ...]
     reasons: tuple[str, ...]
     evidence: tuple[str, ...]
+
+    @property
+    def verdict(self) -> str:
+        return "OK" if not self.reasons else "MISMATCH: " + "; ".join(self.reasons)
+
+
+@dataclass(frozen=True)
+class ModuleScopeResult:
+    spec: ModuleScopeSpec
+    covered_symbols: tuple[str, ...]
+    consumers: tuple[str, ...]
+    reasons: tuple[str, ...]
 
     @property
     def verdict(self) -> str:
@@ -825,6 +889,109 @@ def _public_surface(source: SourceFile) -> set[str]:
     return result
 
 
+def _module_consumers(
+    sources: tuple[SourceFile, ...],
+    *,
+    import_root: str,
+) -> tuple[str, ...]:
+    consumers: set[str] = set()
+    for source in sources:
+        if source.module == import_root or source.module.startswith(import_root + "."):
+            continue
+        for node in ast.walk(source.tree):
+            if isinstance(node, ast.Import):
+                matched = any(
+                    alias.name == import_root or alias.name.startswith(import_root + ".")
+                    for alias in node.names
+                )
+            elif isinstance(node, ast.ImportFrom) and node.module is not None:
+                matched = node.module == import_root or node.module.startswith(
+                    import_root + "."
+                )
+            else:
+                matched = False
+            if matched:
+                consumers.add(source.module)
+                break
+    return tuple(sorted(consumers))
+
+
+def _pure_reexport_reasons(source: SourceFile, import_root: str) -> tuple[str, ...]:
+    reasons: list[str] = []
+    for node in source.tree.body:
+        if isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant):
+            if isinstance(node.value.value, str):
+                continue
+        if isinstance(node, ast.ImportFrom) and node.module == import_root:
+            if all(alias.asname == alias.name for alias in node.names):
+                continue
+        reasons.append(
+            f"legacy pure-shim contains non-re-export {type(node).__name__} "
+            f"at {source.relative}:{getattr(node, 'lineno', '?')}"
+        )
+    return tuple(reasons)
+
+
+def _audit_module_scope(
+    repo_root: Path,
+    sources: tuple[SourceFile, ...],
+    symbol_specs: tuple[SymbolSpec, ...],
+    spec: ModuleScopeSpec,
+) -> ModuleScopeResult:
+    by_relative = {source.relative: source for source in sources}
+    reasons: list[str] = []
+    source = by_relative.get(spec.definition)
+
+    if not spec.definition.startswith("tizen_ci_shared/"):
+        reasons.append("module-scope definition is outside tizen_ci_shared")
+    if source is None:
+        reasons.append(f"module-scope definition file {spec.definition} not found")
+        covered_symbols: tuple[str, ...] = ()
+    else:
+        covered_symbols = tuple(sorted(_public_surface(source)))
+
+    overlaps = sorted(
+        symbol_spec.name
+        for symbol_spec in symbol_specs
+        if symbol_spec.definition == spec.definition
+    )
+    if overlaps:
+        reasons.append(
+            "module-scope conflicts with per-symbol inventory: " + ",".join(overlaps)
+        )
+
+    legacy_path = repo_root / spec.legacy_path
+    if spec.legacy_mode == "deleted":
+        tracked = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", spec.legacy_path],
+            cwd=repo_root,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if tracked.returncode == 0:
+            reasons.append(f"legacy module remains tracked: {spec.legacy_path}")
+        elif tracked.returncode != 1:
+            detail = tracked.stderr.strip() or f"exit {tracked.returncode}"
+            reasons.append(f"git ls-files failed for {spec.legacy_path}: {detail}")
+        if legacy_path.exists():
+            reasons.append(f"legacy module remains on disk: {spec.legacy_path}")
+    elif spec.legacy_mode == "pure-shim":
+        legacy_source = next(
+            (candidate for candidate in sources if candidate.path == legacy_path),
+            None,
+        )
+        if legacy_source is None:
+            reasons.append(f"legacy shim {spec.legacy_path} not found")
+        else:
+            reasons.extend(_pure_reexport_reasons(legacy_source, spec.import_root))
+    else:
+        reasons.append(f"unsupported module-scope legacy mode {spec.legacy_mode}")
+
+    consumers = _module_consumers(sources, import_root=spec.import_root)
+    return ModuleScopeResult(spec, covered_symbols, consumers, tuple(reasons))
+
+
 def _declared_text(spec: SymbolSpec) -> str:
     consumers = ",".join(spec.declared_consumers) or "-"
     internal = ",".join(spec.declared_internal) or "-"
@@ -852,15 +1019,28 @@ def run(repo_root: Path) -> int:
     shared_scripts_root = repo_root / "tizen-ci-shared/scripts"
     sources = _load_sources(triage_scripts_root) + _load_sources(shared_scripts_root)
     by_relative = {source.relative: source for source in sources}
-    surface_checks = (
+    symbol_specs = tuple(spec for spec in SPECS if isinstance(spec, SymbolSpec))
+    module_specs = tuple(spec for spec in SPECS if isinstance(spec, ModuleScopeSpec))
+    module_scope_paths = {spec.definition for spec in module_specs}
+    # Completeness follows the physical shared boundary. Once a module moves
+    # into tizen_ci_shared, every top-level public-surface symbol must be in
+    # the attribution inventory in the same change.
+    surface_checks = tuple(
         (
-            by_relative[QUICKBUILD],
-            {spec.name for spec in SPECS if spec.quickbuild_surface},
-        ),
-        (
-            by_relative[SHARED_TYPES],
-            {spec.name for spec in SPECS if spec.owner == "shared/types"},
-        ),
+            source,
+            (
+                _public_surface(source)
+                if source.relative in module_scope_paths
+                else {
+                    spec.name
+                    for spec in symbol_specs
+                    if spec.definition == source.relative
+                }
+            ),
+        )
+        for source in sources
+        if source.relative == "tizen_ci_shared/__init__.py"
+        or source.relative.startswith("tizen_ci_shared/")
     )
     incomplete = sorted(
         (source.relative, symbol)
@@ -868,23 +1048,41 @@ def run(repo_root: Path) -> int:
         for symbol in _public_surface(source) - audited
     )
 
-    specs_by_name = {spec.name: spec for spec in SPECS}
-    results = tuple(_audit_one(sources, specs_by_name, spec) for spec in SPECS)
+    specs_by_name = {spec.name: spec for spec in symbol_specs}
+    results = tuple(_audit_one(sources, specs_by_name, spec) for spec in symbol_specs)
+    module_results = tuple(
+        _audit_module_scope(repo_root, sources, symbol_specs, spec)
+        for spec in module_specs
+    )
     print("symbol | declared | measured_consumers | verdict")
     for result in results:
         print(
             f"{result.spec.name} | {_declared_text(result.spec)} | "
             f"{_measured_text(result)} | {result.verdict}"
         )
+    print("module | scope | owner | coverage_and_consumers | verdict")
+    for module_result in module_results:
+        consumers = ",".join(module_result.consumers) or "-"
+        print(
+            f"{module_result.spec.module} | module-scope | "
+            f"{module_result.spec.owner} | "
+            f"{len(module_result.covered_symbols)} symbols covered; "
+            f"consumers=[{consumers}] | {module_result.verdict}"
+        )
     for relative, symbol in incomplete:
         print(f"INCOMPLETE: {symbol} in {relative} public surface but not audited")
 
     mismatches = [result for result in results if result.reasons]
+    module_mismatches = [result for result in module_results if result.reasons]
+    covered_count = sum(len(result.covered_symbols) for result in module_results)
     print(
-        f"SUMMARY | {len(results) - len(mismatches)} OK | "
-        f"{len(mismatches)} MISMATCH | {len(incomplete)} INCOMPLETE"
+        f"SUMMARY | {len(results) - len(mismatches)} SYMBOL OK | "
+        f"{len(module_results) - len(module_mismatches)} MODULE-SCOPE OK "
+        f"({covered_count} SYMBOLS COVERED) | "
+        f"{len(mismatches) + len(module_mismatches)} MISMATCH | "
+        f"{len(incomplete)} INCOMPLETE"
     )
-    if mismatches or incomplete:
+    if mismatches or module_mismatches or incomplete:
         print("EVIDENCE")
         for result in mismatches:
             print(f"[{result.spec.name}] {result.verdict}")
@@ -893,6 +1091,16 @@ def run(repo_root: Path) -> int:
                     print(f"  {line}")
             else:
                 print("  (no source matches)")
+        for module_result in module_mismatches:
+            print(
+                f"[MODULE-SCOPE:{module_result.spec.module}] "
+                f"{module_result.verdict}"
+            )
+            print(f"  definition={module_result.spec.definition}")
+            print(
+                f"  legacy={module_result.spec.legacy_mode}:"
+                f"{module_result.spec.legacy_path}"
+            )
         for relative, symbol in incomplete:
             source = by_relative[relative]
             pattern = re.compile(rf"\b{re.escape(symbol)}\b")
@@ -900,7 +1108,7 @@ def run(repo_root: Path) -> int:
             for line_number, line in enumerate(source.text.splitlines(), start=1):
                 if pattern.search(line):
                     print(f"  {source.relative}:{line_number}:{line.strip()}")
-    return 1 if mismatches or incomplete else 0
+    return 1 if mismatches or module_mismatches or incomplete else 0
 
 
 def main() -> int:

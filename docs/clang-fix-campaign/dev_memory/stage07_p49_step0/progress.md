@@ -2,11 +2,13 @@
 
 ## Current state
 
-- Status: v2.0-FROZEN; implementation commits ① and ② complete.
+- Status: CLOSED; implementation commits ①/②/③ and revision-7a audit gates
+  green. DoD account: `../../review/p49-step0-closeout.md`.
 - Contract body: `../../p49-step0-design-v2.0-FROZEN.md`.
 - Mechanical attribution audit: `../../review/p49-step0-symbol-audit.md`.
 - Audited scope: only modules and symbols that step-0 will actually modify.
-- Latest result: 42/42 OK, 0 MISMATCH, 0 INCOMPLETE after commit ② moves.
+- Latest result: 42 symbol OK + 4 module-scope OK covering 48 symbols;
+  bridge 42 + 4; all mismatch/incomplete/missing counts zero.
 - Commit ① command output and validation evidence was mistakenly written under
   the repository-root `.dev_memory/`. It is now relocated without content changes as
   [`commit1-evidence.md`](commit1-evidence.md); no root-side duplicate remains.
@@ -41,19 +43,20 @@ The alternative `deferred/out-of-scope` audit status is not implemented for
 step-0. Reconsider it only when a real symbol is still inside an active
 extraction scope but cannot yet satisfy its target form.
 
-## Step-0 implementation TODOs
+## Step-0 follow-up ledger
 
-- Mechanize the design-table to symbol-audit inventory diff no later than
-  commit ③. Until then, retain a manual row-by-row reconciliation after every
-  attribution change.
+- The design-table to symbol-audit inventory bridge landed in commit ③ and is
+  closed for step-0; both negative controls and the final 42/42 run are below.
 - `root-layers` and `skill-independence` are target templates, not active
   step-0 contracts. The first skill extraction batch must enable them, verify
   the `containers` syntax against pinned `import-linter==2.3`, and add the
   corresponding cross-skill negative control.
-- Commit ① lands four active shared contracts with four one-line placeholder
-  modules. It runs the shared-layers and shared-no-uplink negative controls;
-  L1 independence is bound to commit ② and L0 independence to commit ③. Each
-  deferred control must record the real exit-1 output in this memory tree.
+- The four active shared contracts and all four negative-control classes are
+  closed across commits ①/②/③; the evidence and completion table are below.
+- C21 subprocess tests still derive repository paths from the process CWD.
+  Close this before the first convergence-judge extraction batch adds or
+  changes a subprocess smoke test: anchor paths to the test file/repository
+  root rather than the caller's working directory.
 
 ## Commit ② L1 independence evidence
 
@@ -487,3 +490,45 @@ negative control and exit code 0 after restoration.
   constants remain uniquely defined in `tizen_ci_shared.workspace`.
 - Out-of-scope files: `ci_triage/gbs_report.py` and P4.5 `design.md` have zero
   diff.
+
+## Closeout revisions 6, 7, and 7a
+
+Closeout found `_is_relative_to` had moved into shared/workspace without a
+matching §3.2 or inventory row. Revision-6 added it and expanded INCOMPLETE
+coverage from selected files to every physical module under
+`tizen_ci_shared`. The stronger guard then exposed 47 previously unaudited
+classify/state symbols. Revision-7a resolved those intact-module surfaces with
+four closed module-scope entries and removed the overlapping per-symbol
+`FailureClassification` entry.
+
+Positive checks after restoration:
+
+```text
+symbol_audit:
+SUMMARY | 42 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+exit_code=0
+
+table_audit_bridge:
+SUMMARY | 42 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+exit_code=0
+```
+
+Revision-7 negative controls:
+
+```text
+remove classify.py from §1.2a:
+classify.py | - | shared/classify | MISSING_FROM_BODY
+exit_code=1
+
+add a def to legacy failure_classify.py shim:
+MISMATCH: legacy pure-shim contains non-re-export FunctionDef at ci_triage/verify/failure_classify.py:18
+exit_code=1
+```
+
+Current closeout verification:
+
+- Full regression: 847 collected, `846 passed, 1 skipped in 19.41s`.
+- Import Linter: `4 kept, 0 broken`.
+- Main packages mypy: `Success: no issues found in 99 source files`.
+- Audit tools strict mypy: `Success: no issues found in 2 source files`.
+- Audit tools ruff: `All checks passed!`; py_compile: PASS.

@@ -9,10 +9,11 @@ out of scope and is deferred as a whole to the triage-report extraction batch.
 
 ## Revision
 
-- Design: `p49-step0-design-v2.0-FROZEN.md`, including revisions 1 through 5.
-- Design SHA-256: `29b0824fec11e24f2951e8c261d1822e759f9384f7da135f815e7d9e0e8cfee3`.
-- Audit round: commit ③ final working tree, before the commit is created.
-- Result: 42/42 OK, 0 MISMATCH, 0 INCOMPLETE.
+- Design: `p49-step0-design-v2.0-FROZEN.md`, including revisions 1 through 7a.
+- Design SHA-256: `18ac1b7f7cc977f988ebafbef00cf7415a18cf2b21b45d9809b4db01c59040ce`.
+- Audit round: revision-7a closeout working tree.
+- Result: 42 symbol OK + 4 module-scope OK covering 48 symbols;
+  0 MISMATCH, 0 INCOMPLETE.
 - Commit ② reached 42/42 but its stdout was not written back promptly; this
   round corrects that bookkeeping gap with the current complete output.
 - Report integrity is anchored by the Git commit containing this report; the
@@ -31,11 +32,12 @@ PYTHONPATH=tizen-ci-shared/scripts:tizen-ci-triage/scripts \
 ```
 
 The first command verifies definitions, measured consumers, internal access,
-format authority, public-surface completeness, and L-1 type closure. The bridge
-parses the frozen design's §2, §3.2, §3.3, and §4.1 tables fail-closed and
-performs a complete bidirectional ownership diff against `symbol_audit.SPECS`.
+format authority, public-surface completeness, L-1 type closure, and the
+module-scope anti-abuse rules. The bridge parses the frozen design's §1.2a,
+§2, §3.2, §3.3, and §4.1 tables fail-closed and performs a complete
+bidirectional ownership diff against `symbol_audit.SPECS`.
 
-## Symbol Audit Output
+## Commit ③ Historical Symbol Audit Output (Before Revisions 6/7a)
 
 ```text
 symbol | declared | measured_consumers | verdict
@@ -84,7 +86,7 @@ normalize_quickbuild_url | sections=§4+v1.2-A; status=existing; owner=shared/qu
 SUMMARY | 42 OK | 0 MISMATCH | 0 INCOMPLETE
 ```
 
-## Table Bridge Output
+## Commit ③ Historical Table Bridge Output (Before Revisions 6/7a)
 
 ```text
 symbol | body_owner | inventory_owner | verdict
@@ -145,3 +147,95 @@ The commit ③ controls are recorded verbatim in
 
 After every temporary violation was removed, symbol audit and the table bridge
 both returned exit 0, and import-linter reported 4 kept / 0 broken.
+
+## Revision-6 Closeout Audit: STOP
+
+Command:
+
+```text
+python3 docs/clang-fix-campaign/tools/symbol_audit.py
+```
+
+Revision-6 added `_is_relative_to` to the body and inventory, then changed the
+INCOMPLETE guard from selected modules to every physical module under
+`tizen_ci_shared`. The workspace, types, env, and quickbuild_http surfaces are
+complete. The newly active guard found 47 unaudited symbols in classify and
+state, so closeout stopped before producing a CLOSED claim.
+
+```text
+classify.py (26 INCOMPLETE):
+CONFIDENCE_THRESHOLD, DENYLIST_RULES, EXPLICIT_NON_REPAIR_CLASSES,
+NON_BUILD_STAGE_CLASSES, RAW_KINDS, REPAIR_AUTO, REPAIR_DENIED,
+REPAIR_NEEDS_CONFIRMATION, SOURCE_KINDS, SUSPECT_PATH_PARTS, SYSTEM_PREFIXES,
+_DenyRule, _has_source_location, _heuristic_classification, _kind,
+_looks_project_source_path, _match_denylist, _message_has_source_symbol,
+_primary_error, _probably_fixable, _source_diagnostic_classification,
+_source_file, _source_owned, _source_reachable, _string, classify_failure
+
+state/db.py (10 INCOMPLETE):
+GERRIT_READY, StateDatabase, _VERIFICATION_COLUMNS, _configure_connection,
+_initialize_schema, _insert_status, _insert_verification_record, _now_iso8601,
+_row_optional_string, _row_string
+
+state/keys.py (3 INCOMPLETE):
+build_failure_key, build_submission_key, failure_key_sha12
+
+state/records.py (8 INCOMPLETE):
+LatestStatusRow, VerificationRecord, _record_to_values, get_latest_status,
+get_latest_status_row, get_record, record_status, write_pass_record
+
+SUMMARY | 43 OK | 0 MISMATCH | 47 INCOMPLETE
+exit_code=1
+```
+
+The corresponding four-table bridge already accepts the revision-6 body and
+inventory addition:
+
+```text
+SUMMARY | 43 OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY |
+0 OWNER_MISMATCH | 0 PARSE_ERROR
+exit_code=0
+```
+
+No owner or consumer declaration has been invented for the 47 newly exposed
+symbols. They require a design-side ruling and explicit body-table entries
+before the audit inventory can be expanded.
+
+## Revision-7a Resolution
+
+Revision-7a resolved the stop by adding four closed module-scope entries. The
+module rows cover every top-level symbol in an intact migrated file and reject
+per-symbol overlap. The final measured module output is:
+
+```text
+state/db.py | module-scope | shared/state | 10 symbols covered; consumers=[ci_triage.campaign_repair_step,ci_triage.campaign_state,ci_triage.cli,ci_triage.previous_evidence,ci_triage.verify.build_verify,ci_triage.verify.gerrit_submit] | OK
+state/keys.py | module-scope | shared/state | 3 symbols covered; consumers=[ci_triage.campaign_repair_step,ci_triage.campaign_state,ci_triage.cli,ci_triage.previous_evidence,ci_triage.verify.build_verify,ci_triage.verify.gerrit_submit] | OK
+state/records.py | module-scope | shared/state | 8 symbols covered; consumers=[ci_triage.campaign_repair_step,ci_triage.campaign_state,ci_triage.cli,ci_triage.previous_evidence,ci_triage.verify.build_verify,ci_triage.verify.gerrit_submit] | OK
+classify.py | module-scope | shared/classify | 27 symbols covered; consumers=[ci_triage.campaign_repair_step,ci_triage.verify.build_verify,ci_triage.verify.failure_classify] | OK
+SUMMARY | 42 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+exit_code=0
+```
+
+The fifth-table bridge is also green:
+
+```text
+SUMMARY | 42 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+exit_code=0
+```
+
+Two revision-7 negative controls proved the new category fail-closed:
+
+```text
+# Remove the classify.py row from §1.2a
+classify.py | - | shared/classify | MISSING_FROM_BODY
+SUMMARY | 42 SYMBOL OK | 3 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 1 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+exit_code=1
+
+# Add a function definition to the legacy classify shim
+classify.py | module-scope | shared/classify | 27 symbols covered; ... | MISMATCH: legacy pure-shim contains non-re-export FunctionDef at ci_triage/verify/failure_classify.py:18
+SUMMARY | 42 SYMBOL OK | 3 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 1 MISMATCH | 0 INCOMPLETE
+exit_code=1
+```
+
+Both temporary violations were removed. The positive commands above were run
+again after restoration and returned exit 0.
