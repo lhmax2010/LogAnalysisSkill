@@ -15,7 +15,8 @@ import ast
 import re
 import subprocess
 import sys
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 
@@ -92,7 +93,7 @@ CONVERGENCE_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("write_convergence_result", ("ci_triage.cli",)),
     ("touched_files_from_json", ("ci_triage.cli",)),
     ("_fingerprint_dict", ()),
-    ("_primary_fingerprint", ("ci_triage.campaign_state",)),
+    ("_primary_fingerprint", ()),
     ("_diagnostic_code", ()),
     ("_anchor", ()),
     ("_regression_reason", ()),
@@ -103,7 +104,7 @@ CONVERGENCE_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("_cluster_files", ()),
     ("_location_dicts", ()),
     ("_is_source_level_cluster", ()),
-    ("_error_count", ("ci_triage.campaign_state",)),
+    ("_error_count", ()),
     ("_is_error_cluster", ()),
     ("_normalize_file", ()),
     ("_normalize_message", ()),
@@ -111,8 +112,8 @@ CONVERGENCE_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("_string", ()),
     ("_int", ()),
     ("_string_list", ()),
-    ("primary_fingerprint", ()),
-    ("error_count", ()),
+    ("primary_fingerprint", ("ci_triage.campaign_state",)),
+    ("error_count", ("ci_triage.campaign_state",)),
 )
 
 QB_DISCOVER_SYMBOLS: tuple[
@@ -605,6 +606,19 @@ class SourceFile:
 
 
 @dataclass(frozen=True)
+class _ImportBinding:
+    source_module: str
+    source_symbol: str
+    local_name: str
+
+
+ConsumerFinder = Callable[
+    [tuple[SourceFile, ...], SourceFile, str],
+    tuple[str, ...],
+]
+
+
+@dataclass(frozen=True)
 class AuditResult:
     spec: SymbolSpec
     definition: str
@@ -807,7 +821,78 @@ def _raw_evidence(sources: tuple[SourceFile, ...], spec: SymbolSpec) -> tuple[st
     return tuple(evidence)
 
 
-def _actual_consumers(
+def _import_from_module(source: SourceFile, node: ast.ImportFrom) -> str | None:
+    if node.module is None:
+        return None
+    if node.level == 0:
+        return node.module
+
+    package_parts = source.module.split(".")
+    if source.path.name != "__init__.py":
+        package_parts.pop()
+    parent_count = node.level - 1
+    if parent_count > len(package_parts):
+        return None
+    base_parts = package_parts[: len(package_parts) - parent_count]
+    return ".".join((*base_parts, *node.module.split(".")))
+
+
+def _module_scope_import_bindings(source: SourceFile) -> tuple[_ImportBinding, ...]:
+    bindings: list[_ImportBinding] = []
+    # This deliberately covers only named module-scope ImportFrom bindings.
+    # It does not cover ``import X; X.S`` attribute access, ImportFrom nodes
+    # nested inside functions/classes, or ``from X import *``. Those known
+    # limitations are intentional for this contract; do not "fix" them
+    # without a new attribution design and matching fixtures.
+    for node in source.tree.body:
+        if not isinstance(node, ast.ImportFrom):
+            continue
+        source_module = _import_from_module(source, node)
+        if source_module is None:
+            continue
+        for alias in node.names:
+            if alias.name == "*":
+                continue
+            bindings.append(
+                _ImportBinding(
+                    source_module=source_module,
+                    source_symbol=alias.name,
+                    local_name=alias.asname or alias.name,
+                )
+            )
+    return tuple(bindings)
+
+
+def _resolve_import_origin(
+    binding: _ImportBinding,
+    sources_by_module: dict[str, SourceFile],
+    bindings_by_module: dict[str, tuple[_ImportBinding, ...]],
+    *,
+    seen: frozenset[tuple[str, str]] = frozenset(),
+) -> tuple[str, str]:
+    key = (binding.source_module, binding.source_symbol)
+    if key in seen:
+        return key
+    source = sources_by_module.get(binding.source_module)
+    if source is None or binding.source_symbol in source.top_level:
+        return key
+
+    reexports = tuple(
+        candidate
+        for candidate in bindings_by_module.get(binding.source_module, ())
+        if candidate.local_name == binding.source_symbol
+    )
+    if len(reexports) != 1:
+        return key
+    return _resolve_import_origin(
+        reexports[0],
+        sources_by_module,
+        bindings_by_module,
+        seen=seen | {key},
+    )
+
+
+def _legacy_actual_consumers(
     sources: tuple[SourceFile, ...],
     definition_source: SourceFile,
     symbol: str,
@@ -825,6 +910,61 @@ def _actual_consumers(
         visitor = _ReferenceVisitor(symbol)
         visitor.visit(source.tree)
         if visitor.lines:
+            consumers.add(source.module)
+    return tuple(sorted(consumers))
+
+
+def _actual_consumers(
+    sources: tuple[SourceFile, ...],
+    definition_source: SourceFile,
+    symbol: str,
+) -> tuple[str, ...]:
+    consumers: set[str] = set()
+    sources_by_module = {source.module: source for source in sources}
+    bindings_by_module = {
+        source.module: _module_scope_import_bindings(source) for source in sources
+    }
+    target = (definition_source.module, symbol)
+
+    for source in sources:
+        if source.relative == definition_source.relative:
+            continue
+        if symbol in source.top_level:
+            # Known limit: this twin guard intentionally skips a module that
+            # shadows a name even if it also imports the original definition.
+            # That over-skip is deliberate; do not "fix" it without a new
+            # attribution design and a fixture for the ambiguous import.
+            continue
+
+        bindings_by_local_name = {
+            binding.local_name: binding
+            for binding in bindings_by_module[source.module]
+        }
+        origins_by_local_name = {
+            local_name: _resolve_import_origin(
+                binding,
+                sources_by_module,
+                bindings_by_module,
+            )
+            for local_name, binding in bindings_by_local_name.items()
+        }
+        matched = False
+        for local_name, origin in origins_by_local_name.items():
+            if origin != target:
+                continue
+            visitor = _ReferenceVisitor(local_name)
+            visitor.visit(source.tree)
+            if visitor.lines:
+                matched = True
+                break
+
+        # Preserve name-only attribution for code without a named ImportFrom
+        # binding. When the name is bound, its measured origin is authoritative.
+        if not matched and symbol not in origins_by_local_name:
+            visitor = _ReferenceVisitor(symbol)
+            visitor.visit(source.tree)
+            matched = bool(visitor.lines)
+        if matched:
             consumers.add(source.module)
     return tuple(sorted(consumers))
 
@@ -936,6 +1076,8 @@ def _audit_one(
     sources: tuple[SourceFile, ...],
     specs_by_key: dict[SpecKey, SymbolSpec],
     spec: SymbolSpec,
+    *,
+    consumer_finder: ConsumerFinder = _actual_consumers,
 ) -> AuditResult:
     by_relative = {source.relative: source for source in sources}
     evidence = _raw_evidence(sources, spec)
@@ -997,7 +1139,7 @@ def _audit_one(
             evidence,
         )
 
-    consumers = _actual_consumers(sources, source, spec.name)
+    consumers = consumer_finder(sources, source, spec.name)
     internal = _internal_references(source, spec.name)
     marker_reads: tuple[str, ...] = ()
     marker_writes: tuple[str, ...] = ()
@@ -1396,6 +1538,17 @@ def _run_negative_fixture(name: str) -> int:
             return 1
         print(f"NEGATIVE_FIXTURE | {name} | OK")
         return 0
+    elif name == "import-binding-legacy-alias":
+        _, _, legacy_a, _ = _aliased_binding_measurements()
+        if legacy_a != ("fixture.consumer",):
+            print(
+                f"NEGATIVE_FIXTURE | {name} | MISMATCH: legacy consumers "
+                f"for fixture.a:S were {legacy_a}, expected "
+                "('fixture.consumer',)"
+            )
+            return 1
+        print(f"NEGATIVE_FIXTURE | {name} | OK")
+        return 0
     else:
         print(f"unknown negative fixture: {name}")
         return 2
@@ -1422,6 +1575,175 @@ def _fixture_sources(repo_root: Path) -> tuple[SourceFile, ...]:
         if root.is_dir()
         for source in _load_sources(root)
     )
+
+
+def _synthetic_source(module: str, text: str) -> SourceFile:
+    path = Path(*module.split(".")).with_suffix(".py")
+    tree = ast.parse(text, filename=str(path))
+    return SourceFile(
+        path=path,
+        relative=path.as_posix(),
+        module=module,
+        text=text,
+        tree=tree,
+        top_level=_top_level_symbols(tree),
+    )
+
+
+def _aliased_binding_measurements(
+) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
+    definition_a = _synthetic_source("fixture.a", "class S:\n    pass\n")
+    definition_b = _synthetic_source("fixture.b", "class S:\n    pass\n")
+    consumer = _synthetic_source(
+        "fixture.consumer",
+        "from fixture.a import S as LocalS\n\n"
+        "def use():\n"
+        "    return LocalS()\n",
+    )
+    sources = (definition_a, definition_b, consumer)
+    return (
+        _actual_consumers(sources, definition_a, "S"),
+        _actual_consumers(sources, definition_b, "S"),
+        _legacy_actual_consumers(sources, definition_a, "S"),
+        _legacy_actual_consumers(sources, definition_b, "S"),
+    )
+
+
+def _legacy_convergence_specs(
+    specs: tuple[SymbolSpec, ...],
+) -> tuple[SymbolSpec, ...]:
+    legacy_consumers = {
+        "_primary_fingerprint": ("ci_triage.campaign_state",),
+        "_error_count": ("ci_triage.campaign_state",),
+        "primary_fingerprint": (),
+        "error_count": (),
+    }
+    return tuple(
+        replace(spec, declared_consumers=legacy_consumers[spec.name])
+        if spec.definition == SKILL_CONVERGENCE and spec.name in legacy_consumers
+        else spec
+        for spec in specs
+    )
+
+
+def _run_binding_fixture(name: str) -> int:
+    repo_root = Path(__file__).resolve().parents[3]
+    if name == "regression-lock":
+        sources = _fixture_sources(repo_root)
+        current_specs = tuple(
+            spec for spec in SPECS if isinstance(spec, SymbolSpec)
+        )
+        legacy_specs = _legacy_convergence_specs(current_specs)
+        current_by_key = {
+            (spec.definition, spec.name): spec for spec in current_specs
+        }
+        legacy_by_key = {
+            (spec.definition, spec.name): spec for spec in legacy_specs
+        }
+        current_results = {
+            (spec.definition, spec.name): _audit_one(
+                sources,
+                current_by_key,
+                spec,
+            ).verdict
+            for spec in current_specs
+        }
+        legacy_results = {
+            (spec.definition, spec.name): _audit_one(
+                sources,
+                legacy_by_key,
+                spec,
+                consumer_finder=_legacy_actual_consumers,
+            ).verdict
+            for spec in legacy_specs
+        }
+        changed = tuple(
+            key
+            for key in sorted(current_results)
+            if current_results[key] != legacy_results[key]
+        )
+        convergence = next(
+            source for source in sources if source.module == "tizen_convergence_judge.convergence"
+        )
+        public_consumers = _actual_consumers(
+            sources, convergence, "primary_fingerprint"
+        )
+        private_consumers = _actual_consumers(
+            sources, convergence, "_primary_fingerprint"
+        )
+        print(
+            f"BINDING_FIXTURE | {name} | symbols={len(current_results)} | "
+            f"verdict_changes={len(changed)}"
+        )
+        print(
+            "BINDING_FIXTURE | campaign-state-alias | "
+            f"primary_fingerprint consumers={public_consumers} | "
+            f"_primary_fingerprint consumers={private_consumers}"
+        )
+        expected_consumer = "ci_triage.campaign_state"
+        passed = (
+            not changed
+            and expected_consumer in public_consumers
+            and expected_consumer not in private_consumers
+        )
+        return 0 if passed else 1
+
+    if name == "aliased-import":
+        current_a, current_b, legacy_a, legacy_b = _aliased_binding_measurements()
+        print(
+            f"BINDING_FIXTURE | {name} | new A.S={current_a} | "
+            f"new B.S={current_b}"
+        )
+        print(
+            f"BINDING_FIXTURE | {name} | legacy A.S={legacy_a} | "
+            f"legacy B.S={legacy_b} | OLD_VERDICT=MISMATCH"
+        )
+        return 0 if (
+            current_a == ("fixture.consumer",)
+            and current_b == ()
+            and legacy_a == ()
+            and legacy_b == ()
+        ) else 1
+
+    if name == "same-name-import":
+        definition_a = _synthetic_source("fixture.a", "class S:\n    pass\n")
+        consumer = _synthetic_source(
+            "fixture.consumer",
+            "from fixture.a import S as S\n\n"
+            "def use():\n"
+            "    return S()\n",
+        )
+        consumers = _actual_consumers((definition_a, consumer), definition_a, "S")
+        print(
+            f"BINDING_FIXTURE | {name} | A.S={consumers} | "
+            "degenerate same-name case only; not alias-generalization evidence"
+        )
+        return 0 if consumers == ("fixture.consumer",) else 1
+
+    if name == "planned-run-git":
+        sources = _fixture_sources(repo_root)
+        planned_gerrit = _synthetic_source(
+            "tizen_gerrit_fetch.gerrit",
+            "def _run_git():\n    return None\n",
+        )
+        sources = (*sources, planned_gerrit)
+        workspace = next(
+            source for source in sources if source.module == "tizen_ci_shared.workspace"
+        )
+        gerrit_consumers = _actual_consumers(sources, planned_gerrit, "_run_git")
+        workspace_consumers = _actual_consumers(sources, workspace, "_run_git")
+        print(
+            f"BINDING_FIXTURE | {name} | gerrit._run_git={gerrit_consumers} | "
+            f"workspace._run_git={workspace_consumers}"
+        )
+        passed = (
+            gerrit_consumers == ()
+            and "ci_triage.verify.workspace" in workspace_consumers
+        )
+        return 0 if passed else 1
+
+    print(f"unknown binding fixture: {name}")
+    return 2
 
 
 def _twin_specs(repo_root: Path) -> tuple[SymbolSpec, SymbolSpec]:
@@ -1487,13 +1809,17 @@ def main() -> int:
         return _run_negative_fixture(sys.argv[2])
     if len(sys.argv) == 3 and sys.argv[1] == "--key-fixture":
         return _run_key_fixture(sys.argv[2])
+    if len(sys.argv) == 3 and sys.argv[1] == "--binding-fixture":
+        return _run_binding_fixture(sys.argv[2])
     if len(sys.argv) != 1:
         print(
             "usage: symbol_audit.py "
             "[--negative-fixture skill-owner-shared-consumer|"
             "skill-owner-peer-skill-consumer|duplicate-spec-root-mismatch|"
-            "twin-both-name-only|--key-fixture source-twin-only|"
-            "twin-both-binary-key]"
+            "twin-both-name-only|import-binding-legacy-alias|"
+            "--key-fixture source-twin-only|twin-both-binary-key|"
+            "--binding-fixture regression-lock|aliased-import|"
+            "same-name-import|planned-run-git]"
         )
         return 2
     repo_root = Path(__file__).resolve().parents[3]

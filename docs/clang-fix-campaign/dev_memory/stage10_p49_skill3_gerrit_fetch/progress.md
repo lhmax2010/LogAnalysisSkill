@@ -133,6 +133,110 @@ workflow without tiktoken: 1 passed in 0.07s
   tests/unit/test_workflow.py
   ```
 
-- Independent Claude clean-environment full suite: pending after push; this is
-  the definition-of-done signal required before commit A-prime.
+- Independent Claude clean-environment output was not supplied in this
+  session; the developer's explicit commit A-prime task authorized proceeding.
 - Production source diff: zero.
+
+## Commit A-prime: import-binding consumer attribution
+
+### Rule implementation
+
+`symbol_audit._actual_consumers` now parses named, module-scope `ImportFrom`
+bindings as `(source module, source symbol, local name)`. References are
+visited using the local name and attributed to the resolved source pair. Pure
+re-export chains are followed so existing legacy shims retain their measured
+consumers.
+
+The intentionally unsupported forms are documented next to the parser:
+`import X; X.S`, `ImportFrom` nested in a function or class, and
+`from X import *`. The existing twin guard's deliberate over-skip also remains
+documented and unchanged.
+
+The convergence inventory now attributes `ci_triage.campaign_state` to the
+public aliases `primary_fingerprint` and `error_count`, not to their private
+implementation definitions. This changes measured attribution while keeping
+every audit verdict unchanged.
+
+### Assertion group a: regression lock and real alias
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py \
+    --binding-fixture regression-lock
+BINDING_FIXTURE | regression-lock | symbols=96 | verdict_changes=0
+BINDING_FIXTURE | campaign-state-alias | primary_fingerprint consumers=('ci_triage.campaign_state',) | _primary_fingerprint consumers=()
+exit 0
+```
+
+The legacy and binding-aware runs use their corresponding pre/post attribution
+inventories. All 96 per-symbol verdicts remain unchanged; the four
+module-scope verdicts do not consume `_actual_consumers` and are unaffected.
+
+### Assertion group b: aliased import, including old implementation red
+
+The synthetic consumer contains `from fixture.a import S as LocalS`, uses
+`LocalS`, defines no top-level `S`, and coexists with `fixture.b.S`.
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py \
+    --binding-fixture aliased-import
+BINDING_FIXTURE | aliased-import | new A.S=('fixture.consumer',) | new B.S=()
+BINDING_FIXTURE | aliased-import | legacy A.S=() | legacy B.S=() | OLD_VERDICT=MISMATCH
+exit 0
+
+$ .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py \
+    --negative-fixture import-binding-legacy-alias
+NEGATIVE_FIXTURE | import-binding-legacy-alias | MISMATCH: legacy consumers for fixture.a:S were (), expected ('fixture.consumer',)
+exit 1
+```
+
+### Assertion group c: same-name import
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py \
+    --binding-fixture same-name-import
+BINDING_FIXTURE | same-name-import | A.S=('fixture.consumer',) | degenerate same-name case only; not alias-generalization evidence
+exit 0
+```
+
+This fixture covers only the `from A import S as S` degenerate form. It is not
+used as evidence for general alias handling; group b supplies that proof.
+
+### Assertion group d: planned gerrit `_run_git`
+
+The planned `tizen_gerrit_fetch.gerrit` definition is supplied as a synthetic
+source while all current repository sources remain real. This makes the
+post-extraction attribution testable before production migration.
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py \
+    --binding-fixture planned-run-git
+BINDING_FIXTURE | planned-run-git | gerrit._run_git=() | workspace._run_git=('ci_triage.verify.workspace',)
+exit 0
+```
+
+### Double audit
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py
+SUMMARY | 96 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+exit 0
+
+$ .venv/bin/python docs/clang-fix-campaign/tools/table_audit_bridge.py
+SUMMARY | 96 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+exit 0
+```
+
+### Commit A-prime gates
+
+```text
+pytest: 847 passed, 1 skipped in 17.53s
+ruff (all tracked Python files): All checks passed!
+mypy: Success: no issues found in 103 source files
+py_compile symbol_audit.py: exit 0
+```
+
+An unscoped `ruff check .` also inspected the unrelated, pre-existing
+untracked `audit_four_sigs.py` and reported its existing style errors. As in
+stage09, the complete tracked Python set is the repository gate and is green.
+
+Production code under `tizen-*/scripts/` and `ci_triage/` has zero diff.
