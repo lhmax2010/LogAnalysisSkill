@@ -34,6 +34,12 @@ Frozen authority:
 - C21 now discovers sorted repository `*/scripts` roots instead of maintaining
   a list. Independent clean-environment acceptance changed from three failures
   to zero at `9bf1af0`; the full suite is 847 passed and one skipped.
+- Evidence-strength note (added during skill-3 review): the recorded parity was
+  collected in post-shim form, where the legacy and extracted paths resolve to
+  the same objects. Behavior equivalence therefore rests primarily on source
+  `cmp` evidence plus the full regression suite; pre-shim independent-path
+  parity becomes the required pattern starting with skill-3. Skill-1 remains
+  CLOSED and is not being retrofitted.
 
 ## Methods Applied
 

@@ -31,6 +31,12 @@ Frozen authority:
   exit 1.
 - Target tests remain `847 passed, 1 skipped`; discovery parity is byte-equal
   and the implementation has no arch dimension.
+- Evidence-strength note (added during skill-3 review): the recorded parity was
+  collected in post-shim form, where the legacy and extracted paths resolve to
+  the same objects. Behavior equivalence therefore rests primarily on source
+  `cmp` evidence plus the full regression suite; pre-shim independent-path
+  parity becomes the required pattern starting with skill-3. Skill-2 remains
+  CLOSED and is not being retrofitted.
 
 ## Methods Applied
 

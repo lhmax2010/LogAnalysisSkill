@@ -112,6 +112,106 @@ during design convergence.
     for two same-named definitions, while the name-only implementation is
     reproduced as red.
 
+## P4.9 skill-3 addition
+
+22. **Synchronize all three explicit entry-point lists for every new top-level
+    package.** Package installation/discovery in `pyproject.toml`, CI type-check
+    coverage in `.github/workflows/ci.yml`, and source-tree `PYTHONPATH` guidance
+    in `README.md` are independent, explicitly enumerated lists; none is derived
+    from the others. Missing any one silently drops installation, verification,
+    or documented source execution. Every later skill design and DoD must carry
+    this three-entry checklist. Historical release snapshots remain read-only
+    unless a release batch explicitly supersedes them.
+23. **A degenerate production example cannot prove a generalized contract.**
+    When the real case collapses two distinct roles into the same spelling, as
+    in `_run_git as _run_git`, a defective implementation may still pass. The
+    fixture must exercise the non-degenerate form, such as
+    `from A import S as LocalS` with `LocalS != S`, and must be shown red under
+    the old implementation before it can prove alias-aware attribution. Keep the
+    degenerate real case as a regression test, not as the existence proof.
+24. **Capture comparative evidence before the compared paths converge.** A
+    migration parity check is meaningful only while the legacy and extracted
+    implementations are still distinguishable. Once a re-export shim makes both
+    imports resolve to the same object, output comparison becomes self-proof.
+    Record source equality and independent-path behavior before the shim switch;
+    after the switch, object identity proves wiring only. Skill-1 and skill-2
+    used post-shim comparisons, so their behavior confidence rests primarily on
+    source `cmp` evidence and full regression runs. The pre-shim parity pattern
+    is mandatory from skill-3 onward.
+25. **Self-test every mechanical DoD command against a known-green analogue.**
+    Before admitting a command into a DoD, run it against the corresponding
+    shape in a completed batch. Different delivery files may encode the same
+    package with different spellings (for example, a hyphenated source path
+    versus an underscored import package), so each probe must match the file's
+    actual semantics instead of reusing one token everywhere. If the command is
+    red on a known-green sample, treat the command as defective rather than the
+    delivery. This rule applies to every mechanical DoD command from skill-3
+    onward.
+26. **Reconcile every summary and appendix against the current body before
+    freezing.** An authoritative but stale summary is more dangerous than no
+    summary: it can cause an implementer to omit a later decision while still
+    believing the design was followed. After every multi-round revision,
+    restate each appendix boundary from the current body instead of retaining
+    an early-version slogan. The freeze checklist must compare the appendix,
+    commit plan, DoD, and all accepted decisions item by item. This is the third
+    recurrence of the same family after skill-1's stale §7 DoD and “only
+    criterion change” appendix, so appendix/body decision-surface consistency
+    is a mandatory pre-freeze check for skill-3 and every later skill design.
+27. **Reconcile every quantitative statement across the full design before
+    freezing.** Search every expression such as “N assertions,” “N symbols,”
+    “N registrations,” “N contracts,” and “N items,” then verify it against the
+    current rules and accepted decisions at every occurrence. The rule from
+    revision-7a says counts are derived from rules and must never bend them;
+    this complementary rule says every derived count must be refreshed when
+    the rule changes. Skill-3's three intra-document drifts were all stale
+    count expressions, so count reconciliation is a separate mandatory item in
+    the freeze checklist from skill-3 onward.
+28. **Give design counts a single textual source.** Repeated literals for
+    assertion counts, negative-control counts, registration counts, contract
+    counts, or symbol counts create independent stale copies. Starting with
+    skill-4, state each count once in its definition section; commit plans,
+    DoDs, summaries, and appendices must reference that section and say “all”
+    rather than restating the number. This is the documentation analogue of
+    deriving configuration instead of maintaining parallel explicit lists:
+    removing duplicated counts removes the drift surface. Skill-3 retains its
+    explicit cross-checks as the transition batch.
+29. **Prove verification scaffolding and delivery discovery separately.** A
+    temporary `PYTHONPATH` or `MYPYPATH` can prove that newly extracted code and
+    tests work before packaging metadata lands, but it cannot prove that users
+    or CI can discover the package through the supported installation path.
+    Every new installable unit needs a second green run after refreshing the
+    editable/install mapping and explicitly removing all temporary path
+    scaffolding. Record the commands and results for both phases separately;
+    neither is evidence for the other. This has the same evidence-timing shape
+    as pre-shim parity versus post-shim identity.
+30. **Move behavioral test ownership with an extracted skill.** Every extracted
+    skill needs a dedicated behavior-test file that imports its public package
+    directly and closes the contract-to-test map locally. Orchestration tests
+    should retain only integration wiring, while legacy-path and shim-identity
+    tests must be labeled separately because they prove compatibility wiring,
+    not behavior. Mixing these categories obscures which tests may disappear
+    with a shim and forces closeout evidence to span unrelated owners. Record a
+    targeted skill-test run and the full regression run separately; neither
+    substitutes for the other.
+31. **A green tool run is evidence only when its output names the changed
+    authority.** Re-running a checker after adding or renaming a document does
+    not prove that the checker read that document. The acceptance evidence must
+    contain entries attributable to the changed object, not merely an unchanged
+    green summary. When planned inventory cannot yet exist, use a parser-only
+    design-phase check and reserve full body-to-inventory agreement for the
+    implementation phase; label the two results separately and never let one
+    stand in for the other. Skill-3 established this rule when the existing
+    bridge stayed green while having no path to the reviewed design.
+32. **“Non-authoritative” lowers evidence weight, not the correctness bar.**
+    Historical and raw evidence still has to describe the observed facts
+    accurately; a false annotation is worse than no annotation because later
+    readers will treat it as the fact recorded at that time. When a revision
+    corrects a class of findings, check applicability symbol by symbol or item
+    by item instead of pasting the same explanation across superficially
+    similar entries. Skill-3 established this rule after an import-binding
+    explanation for `_run_git` was incorrectly copied onto the independently
+    defined `SubprocessRunner` twin.
+
 ## R14 deferred cleanup ledger
 
 These findings are intentionally non-blocking for FIX-1 but retain names and
