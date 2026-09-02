@@ -1,4 +1,4 @@
-# P4.9 skill-3 设计:tizen-gerrit-fetch 抽取(v1.3-FROZEN-candidate)
+# P4.9 skill-3 设计:tizen-gerrit-fetch 抽取(v1.3-FROZEN)
 
 - 阶段:P4.9 第三个 skill 批次(skill-2 CLOSED @90b90e4 之后)
 - 权威并行:step-0 `v2.1-FROZEN`、skill-1 `v1.4-FROZEN`、skill-2 `v1.3-FROZEN`
@@ -6,7 +6,7 @@
 > 消费方歧义为真——`workspace.py:25` 是 `from tizen_ci_shared.workspace
 > import _run_git as _run_git` 且**自身零顶层定义**,twin-guard 不生效,
 > 抽取后必红;新增 commit A' 工具加固(import-binding 追踪)。②【CC①】
-> 三类型 import **两处并存、角色不同**,skill 副本必须自带(签名真依赖:
+> §1.2 明列的类型 import **两处并存、角色不同**,skill 副本必须自带(签名真依赖:
 > :37/:87/:100/:129/:203/:211),v1.0"不随 skill 迁移"照字面实现会崩。
 > ③【CC②a】两份 `SubprocessRunner` **逐字节相同**,理由改沿 skill-2
 > `_normalize_text` 先例。④【CC②b】SPECS 中 `_run_git` 仅注册
@@ -27,7 +27,7 @@
 > pre-shim parity 的性能等价证据;统一超时/取消/错误归一化/清理
 > 策略具名延期至 `gerrit-submit` 批次,不得在抽取批次顺手实施。
 > **v1.3 修订(本轮架构/代码质量/测试/性能/一致性评审全量合入;
-> 状态保持 FROZEN-candidate)**:
+> 本次三项必检通过后落章为 FROZEN)**:
 > - 交付面显式同步与历史 release 边界 → §2 / §4a / §7;
 > - `ImportFrom` 来源名/本地名绑定语义 → §1.3a / §6 / §7;
 > - 破坏性输入、混合失败与残留契约 → §2.2 / §5.1 / §7;
@@ -45,7 +45,7 @@
 > - 消费测量、package-root API 与旧址兼容面分离 → §0 / §1.2 /
 >   §2.1 / §5.3 / §7;
 > - §0 唯一归属表与设计期/实现期取证分离 → §0 / §6 / §7;
-> - candidate 版本身份与单独冻结门 → 本修订块 / §7。
+> - FROZEN 版本身份与单独冻结门 → 本修订块 / §7。
 
 - **总铁律**:行为等价——整体搬移 + import 翻转,零语义变更;基线 ==
   skill-2 收口全量数(847/1),原样全绿。
@@ -96,7 +96,7 @@ Claude 实测 @57c04e2,将规划终态 SPECS 与实测消费方喂入 v1.3 层�
 
 **两期取证边界**:
 
-- **设计期(candidate 冻结前)**:对本文件的 §0 首表执行 parser-only
+- **设计期(FROZEN 落章前)**:对本文件的 §0 首表执行 parser-only
   检查,必须输出本表每个 `(definition, symbol)` 键且列齐
   `symbol/definition/owner`;本证据只证明文档形态可解析,不证明与 SPECS
   一致。
@@ -121,15 +121,15 @@ Claude 实测 @57c04e2,将规划终态 SPECS 与实测消费方喂入 v1.3 层�
 结论:**skill owner 全合法,本批零判据变更**(由 dry-run 证明,非
 检视得出)。
 
-## §1 本批三个新形态(前两批未覆盖)
+## §1 本批新形态(前两批未覆盖)
 
 ### 1.1 skill → shared/types 下行依赖(首次)
 
 gerrit.py 无任何 ci_triage 内部 import,唯一外部依赖是
-`tizen_ci_shared.types` 的三个 Gerrit 类型(step-0 已下沉)。抽取后
+`tizen_ci_shared.types` 中 §1.2 明列的 Gerrit 类型(step-0 已下沉)。抽取后
 形态为 **skill → shared 下行**,root-layers 已表达、合法。本批的
-门禁价值:**首次实测"消费 shared 类型的 skill"在 root-layers /
-forbidden / independence 三契约下的表现**(前两批分别是"零外部
+门禁价值:**首次实测"消费 shared 类型的 skill"在相关 root-layers /
+forbidden / independence 契约下的表现**(前两批分别是"零外部
 依赖"与"消费 shared HTTP 实现")。
 
 ### 1.2 gerrit.py 的双重身份:实现宿主 + step-0 shim 宿主
@@ -141,23 +141,23 @@ SourceFetchResult  # P4.9 shim`)。
 
 **裁决:两个身份分离处理**——
 - §0 全部实现行随 skill 走;
-- **三行类型 import 两处并存,角色不同(v1.1 关键更正,CC①)**:
-  - **skill 副本 `tizen_gerrit_fetch/gerrit.py` 必须自带这三行**——
+- **上述类型 import 两处并存,角色不同(v1.1 关键更正,CC①)**:
+  - **skill 副本 `tizen_gerrit_fetch/gerrit.py` 必须自带上述 import**——
     它们是自身函数签名的真实依赖(`-> GerritChange` :37/:87、
     `-> GerritPatchSet` :100、`-> SourceFetchResult` :129/:203/:211),
     删则 NameError;这正是 §1.1 的 skill→shared/types 下行;
-  - **旧址 `ci_triage/gerrit.py` 同样保留三行**,角色是 re-export
+  - **旧址 `ci_triage/gerrit.py` 同样保留上述 import**,角色是 re-export
     shim(服务尚未翻转的旧 import);
   - **不是"搬或留"的互斥选择**;shim 的服务对象是"尚未翻转的旧 import 路径",跟着 skill 走
   即失去其存在意义,且会把 shared 类型的 re-export 挂到 skill 包上
   (制造 skill 作为类型二级来源的歧义);
-- 故旧址 gerrit.py 抽取后**不是空 shim,而是“三行类型 shim + §0
+- 故旧址 gerrit.py 抽取后**不是空 shim,而是“§1.2 类型 shim + §0
   inventory 全部实现符号的 re-export shim”**,零 def/class 不变
   (全部 import 行)。这是旧路径兼容面,不代表新 package root 公开相同
   表面;
-- 该三行仍按 step-0 §6.2 在 P4.9 末统一删除,**本批不动其生命周期**。
+- 这些类型 re-export 仍按 step-0 §6.2 在 P4.9 末统一删除,**本批不动其生命周期**。
 
-### 1.3 同名 twin 五处(二元组键实战首用)
+### 1.3 同名 twin(二元组键实战首用)
 
 `_run_git`×3(gerrit / gerrit_submit / shared-workspace)、
 `SubprocessRunner`×2(gerrit / runner)。**沿 skill-2 裁决:严禁合并**,但两类理由不同(v1.1 更正,CC②a):
@@ -234,7 +234,7 @@ skill-2 `_normalize_text` 先例,不得与 import-binding 加固混写。
 tizen-gerrit-fetch/
   SKILL.md
   scripts/tizen_gerrit_fetch/
-    __init__.py   # 薄导出:fetch_source_for_commit + GerritError + 两常量
+    __init__.py   # 薄导出:§2.1 全部公开符号
     gerrit.py     # §0 全部实现行(现文件约 250 行,逐行搬移/cmp)
 ```
 
@@ -242,14 +242,14 @@ tizen-gerrit-fetch/
   `symbol | definition | owner`,definition 一律
   `tizen_gerrit_fetch/gerrit.py`);
 - 旧址处理见 §1.2;INCOMPLETE 护栏覆盖 skill 包 gerrit.py 公共面;
-- **交付面三入口同步(commit C)**:
+- **交付面入口同步(commit C)**:
   - `pyproject.toml` 的 package discovery 与 mypy 配置分别增加
     `tizen-gerrit-fetch/scripts` / `tizen_gerrit_fetch`;
   - `.github/workflows/ci.yml` 的 Type check 显式清单增加
     `mypy tizen-gerrit-fetch/scripts/tizen_gerrit_fetch`;
   - `README.md` 的开发 `PYTHONPATH` 显式清单增加
     `$PWD/tizen-gerrit-fetch/scripts`;
-  C21 glob 会自动纳入,但以上三处均为显式枚举,不得以 glob 已覆盖为由
+  C21 glob 会自动纳入,但以上入口均为显式枚举,不得以 glob 已覆盖为由
   漏改任一入口;
 - `release-v1.4.0/` 是历史发布快照,本批明确不回填;下一次发布统一纳入
   `tizen-gerrit-fetch`,DoD 须留边界声明,区分“故意不动”与“遗漏”。
@@ -396,7 +396,7 @@ skill-2 登记的两项(`test_build_runner.py::test_python_module_invocation_run
 
 ## §4a 机械同步清单(Kimi NIT-1/5,commit C 先做)
 
-1. **shared/types 三 Gerrit 类型的 declared consumers 更新**(必做,
+1. **shared/types Gerrit 类型的 declared consumers 更新**(必做,
    漏则审计红):`GerritPatchSet`/`GerritChange`:`ci_triage.gerrit` →
    `tizen_gerrit_fetch.gerrit`;`SourceFetchResult`:
    `ci_triage.gerrit, ci_triage.report` →
@@ -409,21 +409,16 @@ skill-2 登记的两项(`test_build_runner.py::test_python_module_invocation_run
    `fetch_source_for_commit`/`find_patchset_by_revision`/
    `GerritChange`,但收窄属语义变更,留 P4.9 末 shim 清理批统一处置);
    本条理由须写入 DoD 说明。
-4. **交付面三入口(架构评审-1)**:按 §2 同步
+4. **交付面入口(架构评审-1)**:按 §2 的完整入口清单同步
    `pyproject.toml`(安装/package discovery + mypy)、
    `.github/workflows/ci.yml`(CI Type check)与 `README.md`(源码运行
-   `PYTHONPATH`);三处都是显式枚举,漏一处即静默失效。执行归 commit C;
+   `PYTHONPATH`);这些入口都是显式枚举,漏一处即静默失效。执行归 commit C;
    `release-v1.4.0/` 按历史快照裁决只读,下一次发布再统一纳入。
 
 ## §5 审计与 parity
 
-- SPECS/bridge:§0 全部行入册;**二元组键实测(v1.2 改齐 §1.3/§7)**:
-  **两份 `_run_git`**(`tizen_ci_shared/workspace`(现由 module-scope
-  覆盖)+ `tizen_gerrit_fetch/gerrit`(本批逐符号入册))各自解析、各测
-  各消费集,贴**两行**;`SubprocessRunner` **仅 gerrit 一份入册**
-  (runner.py 侧属编排层、本批不抽);`gerrit_submit._run_git` 不在册
-  (属未来 submit 批次)。**未合并**由 `grep -c "^def _run_git"`=3、
-  `SubprocessRunner`=2 证明——DoD 硬项;
+- SPECS/bridge:§0 全部行入册;**二元组键实测**严格采用 §1.3 的
+  注册面、物理定义计数和 grep 阈值,逐项输出各自消费集——DoD 硬项;
 - 双道全绿(symbol 侧以当前基线 + §0 全部行为预期,精确总数以实跑为准);
 - **pre-shim 行为 parity(真正迁移证据)**:commit B 中先落新副本,旧址
   尚未改成 shim 时,两份独立实现用同一 fixture、各自独立的临时
@@ -433,7 +428,7 @@ skill-2 登记的两项(`test_build_runner.py::test_python_module_invocation_run
   源码逐字节一致。`cmp` 证“没有改字”,双跑证“新模块加载上下文下
   行为未漂移”,两者互不替代;
 - **post-shim identity(只证接线)**:旧址换成 shim 后,断言 §0 全部实现
-  符号 + 三个 shared 类型逐项 `old.X is new.X`;此证据只说明 shim
+  符号 + §1.2 明列的 shared 类型逐项 `old.X is new.X`;此证据只说明 shim
   指向正确对象,不得再称为行为 parity,也不得替代 pre-shim 双跑;
 
 ### 5.1 `fetch_source_for_commit` 分支覆盖表
@@ -575,9 +570,9 @@ grep 实测(证据入档,有据豁免)。
 
 ## §6 commit 划分(每 commit 全量 + lint 双绿)
 
-- **A(环境测试修复)**:§4 两项,零生产改动,先行;
+- **A(环境测试修复)**:§4 全部环境用例,零生产改动,先行;
 - **A'(工具加固)**:§1.3a 的 `_actual_consumers` import-binding 追踪
-  + 以下 **a–d 四组断言**,**先于抽取**:
+  + §1.3a 全部断言组,**先于抽取**:
   - **a 回归锁定**:`verdict_changes=0`,并锁定 `campaign_state.py` 的
     本地 `_primary_fingerprint` → 来源符号
     `tizen_convergence_judge.convergence.primary_fingerprint`;
@@ -589,17 +584,17 @@ grep 实测(证据入档,有据豁免)。
     `_run_git` 消费方含 `ci_triage.verify.workspace`;
 - **B(抽取主体,顺序硬约束)**:①建 skill 包 + §0 全部实现行副本;②在旧址仍为
   独立实现时完成源码 `cmp` 与 pre-shim 行为 parity并记录 SHA;③仅在
-  前两项绿后才把旧址改为双 shim(§1.2),完成 §0 全部实现行 + 三 shared
+  前两项绿后才把旧址改为双 shim(§1.2),完成 §0 全部实现行 + §1.2
   类型的 post-shim identity;④消费方翻转(runner.py 及测试);⑤实现
   §5.1 分支覆盖表的全部参数化行为测试,共用 fake runner、destination
   仅用 `tmp_path`,并对破坏性分支断言磁盘状态。任一预期与现行为不符
   必须停止报告,不得改生产代码迁就测试;其中必须覆盖 query
   `TimeoutExpired`、git 阶段 `TimeoutExpired` / 受控中断、
   `rmtree` / `unlink` / `mkdir` 的 `OSError` 以及所有 subprocess 调用
-  不含 `timeout` kwarg 四类现状锁;⑥按 §5.2 实现封闭 canonical
+  不含 `timeout` kwarg 的全部现状锁;⑥按 §5.2 实现封闭 canonical
   payload、唯一 destination 路径掩码、逐字段比较 + SHA 记录,并完成
-  `error`/命令顺序/`status` 三类 normalizer 反向测试;⑦按 §5.3 新建
-  `tests/unit/test_gerrit_fetch.py`,整体迁入现有两个纯 Gerrit 用例并
+  §5.2 全部 normalizer 反向测试;⑦按 §5.3 新建
+  `tests/unit/test_gerrit_fetch.py`,整体迁入 §5.3 指定的既有 Gerrit 用例并
   落下全部 skill 行为测试;`test_ci_triage.py` 只保留 runner 编排串联,
   legacy-path wiring / shim identity 单独标注且不混算;⑧为 §2.1 包根
   公开/不导出两面分别实现 identity 正向与 `not hasattr` 反向测试,
@@ -608,9 +603,9 @@ grep 实测(证据入档,有据豁免)。
   `PYTHONPATH` 与 `MYPYPATH`,再跑全量 pytest、mypy、ruff 与现有
   import-linter;报告必须列出实际环境变量与命令,不得隐式继承 shell
   环境。临时路径只保证本 commit 的门禁可执行,**不构成交付面**;
-- **C(门禁与审计)**:root-layers/independence/forbidden 三扩列 +
-  三条负控制 + §3 第 5 项正向验证 + §0 全部行入 SPECS + bridge + twin 实测
-  + SKILL.md + arch 豁免 + §2/§4a 第 4 项交付面三入口同步。更新
+- **C(门禁与审计)**:§3 全部门禁扩列、负控制和正向验证 + §0 全部行入
+  SPECS + bridge + twin 实测 + SKILL.md + arch 豁免 + §2/§4a 第 4 项
+  交付面入口同步。更新
   同时把最终 FROZEN 设计路径接入 bridge 常量;完整 bridge 输出必须出现
   skill-3 的 `(definition, symbol)` 行。更新 `pyproject.toml` / CI /
   README 后,先执行
@@ -627,13 +622,13 @@ grep 实测(证据入档,有据豁免)。
 
 ## §7 DoD
 
-**candidate 冻结门(设计期,与实现 DoD 分离)**:
+**冻结落章检查(设计期,与实现 DoD 分离)**:
 
 - 附录逐句与正文当前裁决面对账;
 - 全文所有计数类表述与各自定义节对账,非定义章节只引用定义节;
 - SKILL.md 契约句与 §5.1 用例完成双向对照;
-- 本轮评审收口后,以单独 commit 完成 FROZEN 定版;在此之前标题与状态
-  保持 `FROZEN-candidate`。
+- 本轮评审收口后,以本次单独 commit 完成 FROZEN 定版;标题与状态均为
+  `FROZEN`。
 
 - [ ] 全量 == 847/1(目标机,恒真);**Claude 干净环境:commit A 后
       847 passed**(首选)**或 845+2 明确 skip 且不可行原因入档**;
@@ -641,15 +636,15 @@ grep 实测(证据入档,有据豁免)。
 - [ ] **B 阶段验证脚手架证据**:报告显式列出追加
       `$PWD/tizen-gerrit-fetch/scripts` 的临时 `PYTHONPATH`/`MYPYPATH`
       及 pytest、mypy、ruff、现有 import-linter 的完整命令与绿色结果;
-      明写该路径不构成交付、不能替代 commit C 三入口同步;
-- [ ] **C 阶段正式交付入口证据**:三入口更新后先执行
+      明写该路径不构成交付、不能替代 commit C 的 §2 入口同步;
+- [ ] **C 阶段正式交付入口证据**:§2 全部入口更新后先执行
       `.venv/bin/python -m pip install -e .`,再显式清除全部临时
       `PYTHONPATH`/`MYPYPATH`,无脚手架重跑 pytest、mypy、ruff、
       `lint-imports` 与双道审计并全部绿;closeout 与 B 阶段分列;
-- [ ] 旧址 gerrit.py 零 def/class,**三行类型 shim 在**,**§0 全部实现行
+- [ ] 旧址 gerrit.py 零 def/class,**§1.2 类型 shim 在**,**§0 全部实现行
       re-export 全在**(§1.2/§4a 第 3 项,理由入档);
-- [ ] **skill 副本自带三行类型 import**(§1.2,签名依赖,grep 自证);
-- [ ] **SKILL.md 五节契约齐全**:Inputs / Outputs / Errors / Side effects /
+- [ ] **skill 副本自带 §1.2 类型 import**(签名依赖,grep 自证);
+- [ ] **SKILL.md 的 §2.2 全部行为契约节齐全**:Inputs / Outputs / Errors / Side effects /
       Idempotency 明写破坏性 destination、返回与抛出分界、失败残留和
       非幂等语义;Errors 明写无 timeout/cancellation、可由自定义
       `subprocess_runner` 施加 deadline,以及 `TimeoutExpired` 原样传播
@@ -658,7 +653,7 @@ grep 实测(证据入档,有据豁免)。
       穷举 SSH query、destination 同步清理、各 git fetch 分支的调用
       拓扑;声明 `rmtree` 成本随目录规模/文件系统性能增长、全链串行、
       无进度回调且不设 fake-runner 墙钟阈值;
-- [ ] **§0/§2.1 三概念分离**:消费测量只陈述哪些 inventory 定义有或
+- [ ] **§0/§2.1 概念分离**:消费测量只陈述哪些 inventory 定义有或
       无边界外消费;package root 的公开/不导出面只由 §2.1 裁决;旧址
       shim 的完整兼容 re-export 不得反向扩大新包根 API;
 - [ ] **package-root 公开契约正反测试**:§2.1 公开面逐项与
@@ -679,8 +674,8 @@ grep 实测(证据入档,有据豁免)。
       断言 query 与全部 git subprocess 调用均未传 `timeout`;若现状不符
       则停止并重裁 §2.2 契约,不得删除断言迁就;
 - [ ] **§5.3 测试所有权闭合**:新建 `tests/unit/test_gerrit_fetch.py`,
-      两个既有纯 Gerrit 用例整体迁入且除 import/monkeypatch 目标外内容
-      不变;skill 行为、runner 编排、legacy wiring/shim identity 三类
+      §5.3 指定的既有 Gerrit 用例整体迁入且除 import/monkeypatch 目标外内容
+      不变;skill 行为、runner 编排、legacy wiring/shim identity 各类
       测试显式分界,后者不混算为行为或 parity 证据;
 - [ ] **定向/全量两层结果**:单列
       `pytest tests/unit/test_gerrit_fetch.py` 绿色结果,随后单列全量 pytest
@@ -689,14 +684,14 @@ grep 实测(证据入档,有据豁免)。
       均在 §5.1 唯一对照表指向至少一个用例,每个分支与用例亦反向
       指回契约句;全部用例位于 `tests/unit/test_gerrit_fetch.py`,任一
       方向无锚点不得冻结;
-- [ ] **设计期 parser-only 证据**:v1.3 candidate 的 §0 首表可解析,
+- [ ] **设计期 parser-only 证据**:v1.3-FROZEN 的 §0 首表可解析,
       输出逐项出现 §0 全部 `(definition, symbol)` 键且三列齐全;本项只证
       文档形态,不得宣称已与 SPECS 对齐;
 - [ ] **实现期完整 bridge 证据**:不得在设计阶段提前写 SPECS;commit C
       待代码与 §0 全部行落地后,把最终 FROZEN 路径接入 bridge,全量绿色
       输出必须逐项出现 skill-3 键;只看 SUMMARY 总绿不算证据;
 - [ ] **工具加固(§1.3a)**:module-scope `ImportFrom` 的来源名/本地名映射
-      写入实现与源码注释,并验收以下 **a–d 四组断言**:
+      写入实现与源码注释,并验收 §1.3a 全部断言组:
       - **a 回归锁定**:`verdict_changes=0`,且 `campaign_state.py` 的本地
         `_primary_fingerprint` 正确归属到 convergence 来源符号;
       - **b 异名 fixture**:`from A import S as LocalS`(`LocalS != S`),
@@ -705,17 +700,15 @@ grep 实测(证据入档,有据豁免)。
         **不作为“含 as”泛化能力的证据**;
       - **d 本批真实用例**:gerrit `_run_git` 消费方空 / workspace
         `_run_git` 消费方含 `ci_triage.verify.workspace`;
-- [ ] **twin 实测(v1.1 更正)**:**两份** `_run_git`(workspace shared +
-      gerrit skill)在 SPECS/bridge 各自注册、各测各消费集(贴**两行**);
-      `gerrit_submit._run_git` 本批不注册(属 submit 批次);未合并由
-      `grep -c "^def _run_git"`**=3**、`SubprocessRunner`=2 证明;
-- [ ] 六契约正向绿 + 三负控制红;三条负控制逐项贴 `exit 1` 与报错
-      原文;**§3 第 5 项新形态:正向绿与第 4 项负控制③配对陈述**
+- [ ] **twin 实测(v1.1 更正)**:按 §1.3 的注册面、输出行和 grep 阈值
+      逐项验证;
+- [ ] §3 全部契约正向绿 + 全部负控制红;每项负控制逐项贴 `exit 1` 与
+      报错原文;§3 正向/负向配对按该节要求陈述
       (正向绿不单独作证);
-- [ ] **§4a 机械同步逐项**(尤其 shared/types 三类型 consumers);
-- [ ] **交付面三入口逐项贴 diff 证据**:安装入口
+- [ ] **§4a 机械同步逐项**(尤其该节第 1 项的 shared/types consumers);
+- [ ] **§2 交付面入口逐项贴 diff 证据**:安装入口
       `pyproject.toml` / CI 类型门禁 `.github/workflows/ci.yml` / 源码运行
-      `README.md` 均加入本 skill;按各文件的真实命名语义执行四条固定
+      `README.md` 均加入本 skill;按各文件的真实命名语义执行本项定义的固定
       字符串机械验收(`rg` 不可用时改用 `grep -F -c` 并在报告注明):
       - `rg -F -c "mypy tizen-gerrit-fetch/scripts/tizen_gerrit_fetch" .github/workflows/ci.yml` `>=1`;
       - `rg -F -c '\$PWD/tizen-gerrit-fetch/scripts' README.md` `>=1`;
@@ -723,14 +716,13 @@ grep 实测(证据入档,有据豁免)。
         (package discovery + `mypy_path`);
       - `rg -F -c "tizen_gerrit_fetch" pyproject.toml` `>=2`
         (`tizen_gerrit_fetch*` + `tizen_gerrit_fetch`);
-      四条命令须先将 `gerrit` 替换为已完成的 `qb-discover`/`qb_discover`
+      这些命令须先将 `gerrit` 替换为已完成的 `qb-discover`/`qb_discover`
       同类形态自检,预期计数依次为 `1/1/2/2`;命令在已知应绿样本上不绿,
       判定为验收命令错误而非交付错误;
 - [ ] **发布边界显式**:`release-v1.4.0/` 为历史只读快照,本批零 diff;
       下一次发布统一纳入 `tizen-gerrit-fetch`;
-- [ ] **pre-shim 行为 parity**:旧址尚未合流时,§5.2 payload 五项
-      (result 全字段 / Gerrit 类型全字段 / 有序调用轨迹 /
-      `GIT_SSH_COMMAND` / destination 树与阶段标记)逐项存在;唯一掩码
+- [ ] **pre-shim 行为 parity**:旧址尚未合流时,§5.2 payload 全部字段组
+      逐项存在;唯一掩码
       仅为各自 destination 绝对路径 → `<DEST>`。canonical payload
       先逐字段相等,固定 JSON 序列化后的 SHA 再相同,且源码 `cmp`
       相同;逐字段比较证明行为无漂移,SHA 只作记录锚,`cmp` 证明搬移
@@ -738,15 +730,15 @@ grep 实测(证据入档,有据豁免)。
       迁移前后调用次数、发生顺序及每次调用的完整 `argv` 逐元素相等,
       并从 `argv` 验收 fetch 次数及 `--depth 1/50`,作为未新增网络往返
       及 §2.2 成本拓扑不漂移的唯一性能等价证据,不单列新流程;
-- [ ] **normalizer 反向测试**:`error` 变异、命令顺序交换、`status`
-      变异三类样本各自使 parity 必红;逐项贴变异比较失败证据与对应
+- [ ] **normalizer 反向测试**:§5.2 定义的全部变异样本各自使 parity
+      必红;逐项贴变异比较失败证据与对应
       pytest 命令 `exit 0`,证明非白名单字段未被过度归一化;
-- [ ] **post-shim identity**:§0 全部实现行 + 三个 shared 类型逐项
+- [ ] **post-shim identity**:§0 全部实现行 + §1.2 明列的 shared 类型逐项
       `old.X is new.X`;本项只证 shim 接线,不可替代或冒充行为 parity;
 - [ ] 双道审计全绿(精确总数以实跑为准);⑧ arch 豁免证据;
 - [ ] SKILL.md 落盘;shim 清单更新;
 - [ ] **DEFERRED**:同名件合并议题→triage-report 批次;shim 删除→
-      P4.9 末(含 §1.2 三行类型 shim);悬空 symlink 未归一化为
+      P4.9 末(含 §1.2 类型 shim);悬空 symlink 未归一化为
       `SOURCE_DIR_UNSAFE` 的处置议题→gerrit-submit 批次,本批仅按 §2.2
       记录实际 `FileExistsError` 边界;统一 timeout/cancellation、错误
       归一化与中断清理策略→`gerrit-submit` 批次(与本 skill 同属 Gerrit
@@ -779,7 +771,7 @@ grep 实测(证据入档,有据豁免)。
 1. §4 环境测试修复,关闭 skill-2 DEFERRED;
 2. commit A′ 审计工具加固;
 3. §2.2 契约补写与 §5.1 分支覆盖表的现行为固化测试;
-4. `pyproject.toml` / CI / README 三入口同步,并声明
+4. `pyproject.toml` / CI / README 按 §2/§4a 同步全部交付入口,并声明
    `release-v1.4.0/` 历史快照不回填;
 5. pre-shim parity / post-shim identity 双段证据流程。
 
