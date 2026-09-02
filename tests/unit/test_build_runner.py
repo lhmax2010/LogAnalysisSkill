@@ -24,6 +24,18 @@ def write_executable(path: Path, body: str) -> Path:
     return path
 
 
+def repository_script_roots() -> tuple[Path, ...]:
+    repo_root = Path(__file__).resolve().parents[2]
+    script_roots = tuple(
+        path.resolve()
+        for path in sorted(repo_root.glob("*/scripts"))
+        if path.is_dir() and path.parent.name != "release-v1.4.0"
+    )
+    assert script_roots, "no repository script roots discovered"
+    assert any((root / "gbs_build_skill").is_dir() for root in script_roots)
+    return script_roots
+
+
 def test_build_command_includes_required_gbs_args(tmp_path: Path) -> None:
     options = BuildOptions(
         conf=tmp_path / "gbs.conf",
@@ -369,6 +381,7 @@ print("module invocation output")
     output_log = tmp_path / "module.log"
     env = os.environ.copy()
     env["PATH"] = f"{tmp_path}:{env.get('PATH', '')}"
+    env["PYTHONPATH"] = os.pathsep.join(str(path) for path in repository_script_roots())
 
     result = subprocess.run(
         [

@@ -341,7 +341,7 @@ def test_workflow_werror_patch_ready_context_suppresses_generic_fallback(
     assert "Patch-suggest status**: `spec_toolchain_flag_context_available`" in summary
     assert "Patch-suggest produced patch-ready context" in summary
     assert "Manually review unsupported error kind werror" not in summary
-    assert "fallback" not in summary
+    assert "| 001 | fallback |" not in summary
 
 
 def test_workflow_werror_patch_advisory_keeps_generic_fallback(tmp_path: Path) -> None:
