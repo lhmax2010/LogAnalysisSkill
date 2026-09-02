@@ -1,4 +1,4 @@
-# P4.9 skill-3 设计:tizen-gerrit-fetch 抽取(v1.3-FROZEN)
+# P4.9 skill-3 设计:tizen-gerrit-fetch 抽取(v1.3.1-FROZEN)
 
 - 阶段:P4.9 第三个 skill 批次(skill-2 CLOSED @90b90e4 之后)
 - 权威并行:step-0 `v2.1-FROZEN`、skill-1 `v1.4-FROZEN`、skill-2 `v1.3-FROZEN`
@@ -46,6 +46,21 @@
 >   §2.1 / §5.3 / §7;
 > - §0 唯一归属表与设计期/实现期取证分离 → §0 / §6 / §7;
 > - FROZEN 版本身份与单独冻结门 → 本修订块 / §7。
+> **v1.3.1 最终修订(两家 freeze-ready 后收口,1 MINOR + 6 NIT,
+> 共 7 项)**:
+> - 【MINOR,两家共提】§5.2 将 destination 掩码收窄为具名路径承载
+>   字段的逐字段处理,禁止全 payload 替换;样本组改为一正三反;
+> - 【N1,评审 A】§1.3a known-limitation 补函数/类内部嵌套
+>   `ImportFrom` 与 `from X import *`;
+> - 【N2,评审 A】§5.1 无 `timeout` 用例同时拦截 query 的直接 runner
+>   调用和全部 `_run_git` wrapper 调用;
+> - 【N3,评审 A】异常/中断注入点及对应磁盘状态逐点记入 dev_memory;
+> - 【N4,评审 A】pre-shim parity 用 `importlib.reload` 或双子进程隔离
+>   `sys.modules`,并把采用方式写入 DoD 证据;
+> - 【N5,评审 A】`SubprocessRunner` 两份的计数限定为 gerrit 的消费/
+>   同模块冲突面,不再表述为全仓定义数;
+> - 【N6,评审 B】closeout 显式登记解析/change 转换异常仅以畸形 JSON
+>   代表性固化,是契约覆盖中唯一非穷举项。
 
 - **总铁律**:行为等价——整体搬移 + import 翻转,零语义变更;基线 ==
   skill-2 收口全量数(847/1),原样全绿。
@@ -159,12 +174,15 @@ SourceFetchResult  # P4.9 shim`)。
 
 ### 1.3 同名 twin(二元组键实战首用)
 
-`_run_git`×3(gerrit / gerrit_submit / shared-workspace)、
-`SubprocessRunner`×2(gerrit / runner)。**沿 skill-2 裁决:严禁合并**,但两类理由不同(v1.1 更正,CC②a):
+`_run_git`×3(gerrit / gerrit_submit / shared-workspace)。仅就 gerrit
+`SubprocessRunner` 的消费/同模块冲突面,相关定义为 gerrit / runner
+两份,其中 runner.py 是唯一相关独立顶层定义;仓内其它模块(如
+`gbs_patch_suggest/formatter.py`)也有独立同名定义,但不属于本冲突面,
+不得把“两份”解释为全仓定义数。**沿 skill-2 裁决:严禁合并**,但两类理由不同(v1.1 更正,CC②a):
 - `_run_git`×3:**签名确已分化**(gerrit `(command, runner)`、
   gerrit_submit `(worktree, args, runner, *, check)`、workspace
   `(args)->None`),合并即语义变更;
-- `SubprocessRunner`×2:**逐字节相同**(两处均为
+- 本冲突面两份 `SubprocessRunner`:**逐字节相同**(两处均为
   `Callable[..., subprocess.CompletedProcess[str]]`)——理由沿
   **skill-2 `_normalize_text` 先例**:字节相同但合并会制造跨模块
   耦合点,且属可延期的语义中性去重,非本批范围。
@@ -174,7 +192,8 @@ SourceFetchResult  # P4.9 shim`)。
 `gerrit_submit._run_git` **不在册**(属未来 submit skill 批次)。故:
 - 二元组键的**首个真实生产符号用例**由这**两份**触发(此前均为构造
   fixture)——里程碑成立;
-- **未合并**由 `grep -c "^def _run_git"` **= 3** 证明(三处物理定义在);
+- **未合并**由 `rg '^def _run_git\(' -c --glob '*.py'
+  --glob '!release-v1.4.0/**' .` **合计 = 3** 证明(三处物理定义在);
 - DoD 贴**两行** SPECS 输出,不是三行。
 
 ### 1.3a [MAJOR,v1.1 新增] `_run_git` 消费方歧义与工具加固
@@ -219,8 +238,9 @@ SourceFetchResult  # P4.9 shim`)。
 
 **known-limitation(Kimi NIT-3,写进工具源码注释)**:本次加固只解析
 `from X import S`(含 `as`)绑定;**`import X` + `X.S` 属性访问形式
-不在覆盖内**(对本批无影响,gerrit/workspace 均为 from-import),后续
-维护者勿误以为所有 attribute access 均被解析。
+不在覆盖内**,函数/类内部嵌套的 `ImportFrom` 与 `from X import *`
+也不在覆盖内(对本批无影响,gerrit/workspace 均为 module-scope 的具名
+from-import);后续维护者勿误以为所有 import/attribute access 均被解析。
 
 **执行位置**:新增 **commit A'**(工具加固),排在 commit A(环境测试)
 之后、commit B(抽取)之前——抽取前工具必须先能正确解析。A' 只处理
@@ -457,7 +477,7 @@ fake-runner fixture。原先单列的固化测试并入本表,不另作平行计
 | 各终止性 `_run_git` 失败点 | init、remote add、NEW fetch/checkout、branch fallback fetch、非 NEW checkout 的 `CalledProcessError` 返回 `FAILED_SOURCE`;按失败点断言 destination 与 fake `.git`/阶段标记残留。非 NEW 首次 commit fetch 失败且有 branch 属上方 fallback 分支,不是终止性失败 |
 | git 阶段 `TimeoutExpired` / 受控中断 | 在 init 后、fetch 中、checkout 前选取代表阶段参数化注入;异常原样向上传播,并断言各阶段已完成操作的 destination 残留;不做全量笛卡尔积 |
 | `rmtree` / `unlink` / `mkdir` 抛 `OSError` | 参数化注入并原样向上传播;逐项断言部分删除、原文件保留或目录未创建的现状 |
-| 全部 subprocess 调用 | fake runner 断言 kwargs 中不存在 `timeout`;发现任一实际 timeout 即停止并重裁契约,不得删断言迁就 |
+| 全部 subprocess 调用 | fake runner 同时拦截 `query_change_for_commit` 的直接 runner 调用与全部 `_run_git` wrapper 调用,并断言 kwargs 中不存在 `timeout`;只挂在 wrapper 上的 fixture 不算覆盖;发现任一实际 timeout 即停止并重裁契约,不得删断言迁就 |
 
 **测试纪律**:
 
@@ -469,6 +489,10 @@ fake-runner fixture。原先单列的固化测试并入本表,不另作平行计
    阶段性磁盘痕迹。
 3. 所有破坏性分支必须断言磁盘状态(路径类型、是否重建、原内容是否
    删除、失败残留),不得只断言返回值或异常。
+4. query `TimeoutExpired`、git 阶段各代表 `TimeoutExpired` / 受控中断
+   注入点,以及 `rmtree` / `unlink` / `mkdir` 的每个 `OSError` 注入点,
+   必须把 fixture case id、精确注入位置和对应 destination 磁盘断言逐点
+   记入 dev_memory;只记参数化测试总绿不满足 closeout 可复现性。
 
 **冻结期唯一契约/分支/用例对照表**:下表是 closeout
 “用例名 ↔ 契约分支”与 SKILL.md Errors / Side effects 运行时承诺的唯一
@@ -499,6 +523,12 @@ fake-runner fixture。原先单列的固化测试并入本表,不另作平行计
 | Errors/Side effects:文件系统异常不归一化且磁盘状态可观测 | `rmtree` / `unlink` / `mkdir` 抛 `OSError` | `test_fetch_source_filesystem_errors_propagate[operation]` |
 | Errors/性能成本:实现不设置 timeout,调用可能无界阻塞 | 全部 subprocess 调用 | `test_fetch_source_subprocess_calls_have_no_timeout` |
 
+**代表性覆盖的唯一例外(评审 B NIT)**:§2.2“解析和 change 转换抛出的
+其它异常原样传播”由“畸形 JSON → `json.JSONDecodeError`”代表性固化;
+`change_from_query_obj` 缺字段产生的 `KeyError` 无独立分支。closeout
+必须显式登记这是“每契约句有分支”门禁中唯一采用代表样本而非异常
+类型穷举的取舍,不得把它描述成完整异常枚举。
+
 §2.2 中“无真实 Gerrit 基准、无 fake-runner 墙钟阈值、优化由未来真实
 测量驱动”是测试政策与范围裁决,不是运行时分支,由 §5.2 命令轨迹和
 closeout 命令审计验收,不得伪造一个墙钟用例塞入本表。
@@ -524,10 +554,13 @@ payload 只含以下五项,清单封闭,不得增加“等”或运行时任意�
    `(relative_path, kind, content_sha256_or_symlink_target)`,并记录 fake
    runner 的有序阶段标记;目录的第三列为 null。
 
-**唯一允许的掩码**:两次运行使用独立 destination,规范化时只允许把
-各自 destination 的绝对路径前缀替换为字面量 `<DEST>`。不得删除或
-掩盖 `status`、`remote_url`、`change`、`error`、命令顺序、非路径命令
-参数或上述其它字段。
+**唯一允许的掩码**:两次运行使用独立 destination,规范化只对以下具名
+路径承载字段逐字段施加,清单穷举:①fake runner 轨迹中每个 `argv` 元素;
+②`SourceFetchResult.src_root`;③destination tree 条目的 symlink target。
+在这些字段中,只允许把各自 destination 的绝对路径前缀替换为字面量
+`<DEST>`。**禁止对整个 payload 做全局字符串替换**;不得删除或掩盖
+`status`、`remote_url`、`change`、`error`、命令顺序、`argv` 的非路径
+部分或上述其它字段。
 
 **两层比较**:
 
@@ -536,10 +569,13 @@ payload 只含以下五项,清单封闭,不得增加“等”或运行时任意�
    `json.dumps(..., sort_keys=True, ensure_ascii=False, separators=(",", ":"))`
    并按 UTF-8 计算 SHA-256;SHA 只作记录锚,不得替代逐字段比较。
 
-**normalizer 反向测试(存在性证明)**:基于同一 canonical payload 分别
-只改 `error`、交换两条命令的顺序、只改 `status`,三类样本均必须触发
-parity 失败。每类测试须记录“变异 payload 比较不等/断言失败”的证据
-及对应 pytest 命令 `exit 0`;没有必红样本的 normalizer 不算验证机制。
+**normalizer 样本组(存在性证明,一正三反)**:正向样本只改变
+destination 绝对路径、其它字段完全相同,掩码后必须相等,证明掩码实际
+生效。三个反向样本基于同一 canonical payload 分别只改 `error`、交换
+两条命令的顺序、只改 `status`,均必须触发 parity 失败;其中 `error`
+变异必须落在非路径部分(例如错误码或消息文本),不得把变异藏在会被
+掩码的路径子串里。每个样本须记录比较结果及对应 pytest 命令 `exit 0`;
+缺少正向掩码样本或任一必红样本,normalizer 均不算验证机制。
 
 ### 5.3 测试所有权与三类边界
 
@@ -591,9 +627,12 @@ grep 实测(证据入档,有据豁免)。
   必须停止报告,不得改生产代码迁就测试;其中必须覆盖 query
   `TimeoutExpired`、git 阶段 `TimeoutExpired` / 受控中断、
   `rmtree` / `unlink` / `mkdir` 的 `OSError` 以及所有 subprocess 调用
-  不含 `timeout` kwarg 的全部现状锁;⑥按 §5.2 实现封闭 canonical
-  payload、唯一 destination 路径掩码、逐字段比较 + SHA 记录,并完成
-  §5.2 全部 normalizer 反向测试;⑦按 §5.3 新建
+  不含 `timeout` kwarg 的全部现状锁,并将每个异常/中断注入点与磁盘
+  状态断言逐点记入 dev_memory;⑥按 §5.2 实现封闭 canonical payload、
+  具名路径字段上的唯一 destination 掩码、逐字段比较 + SHA 记录,并完成
+  §5.2 一正三反 normalizer 样本;pre-shim 双跑必须显式使用
+  `importlib.reload` 或分两个子进程执行,防止 `sys.modules` 复用旧模块,
+  所选隔离方式与命令须写入 DoD 证据;⑦按 §5.3 新建
   `tests/unit/test_gerrit_fetch.py`,整体迁入 §5.3 指定的既有 Gerrit 用例并
   落下全部 skill 行为测试;`test_ci_triage.py` 只保留 runner 编排串联,
   legacy-path wiring / shim identity 单独标注且不混算;⑧为 §2.1 包根
@@ -669,10 +708,13 @@ grep 实测(证据入档,有据豁免)。
       `tmp_path`;任何预期不符均停下复核,不作语义修复;
 - [ ] **异常传播新增分支**:§5.1 对照表中的 query `TimeoutExpired`、
       git `TimeoutExpired` / 受控中断、文件系统 `OSError` 均有参数化
-      用例,逐项断言抛出边界与 destination 磁盘状态;
+      用例,逐项断言抛出边界与 destination 磁盘状态;每个 fixture case
+      的注入位置与磁盘状态断言逐点写入 dev_memory;
 - [ ] **无界阻塞回归锁**:`test_fetch_source_subprocess_calls_have_no_timeout`
-      断言 query 与全部 git subprocess 调用均未传 `timeout`;若现状不符
-      则停止并重裁 §2.2 契约,不得删除断言迁就;
+      必须同时拦截 `query_change_for_commit` 的直接 runner 调用与全部
+      `_run_git` wrapper 调用,断言两条路径均未传 `timeout`;只挂 wrapper
+      的 fake runner 不算覆盖。若现状不符则停止并重裁 §2.2 契约,
+      不得删除断言迁就;
 - [ ] **§5.3 测试所有权闭合**:新建 `tests/unit/test_gerrit_fetch.py`,
       §5.3 指定的既有 Gerrit 用例整体迁入且除 import/monkeypatch 目标外内容
       不变;skill 行为、runner 编排、legacy wiring/shim identity 各类
@@ -684,7 +726,7 @@ grep 实测(证据入档,有据豁免)。
       均在 §5.1 唯一对照表指向至少一个用例,每个分支与用例亦反向
       指回契约句;全部用例位于 `tests/unit/test_gerrit_fetch.py`,任一
       方向无锚点不得冻结;
-- [ ] **设计期 parser-only 证据**:v1.3-FROZEN 的 §0 首表可解析,
+- [ ] **设计期 parser-only 证据**:v1.3.1-FROZEN 的 §0 首表可解析,
       输出逐项出现 §0 全部 `(definition, symbol)` 键且三列齐全;本项只证
       文档形态,不得宣称已与 SPECS 对齐;
 - [ ] **实现期完整 bridge 证据**:不得在设计阶段提前写 SPECS;commit C
@@ -722,17 +764,21 @@ grep 实测(证据入档,有据豁免)。
 - [ ] **发布边界显式**:`release-v1.4.0/` 为历史只读快照,本批零 diff;
       下一次发布统一纳入 `tizen-gerrit-fetch`;
 - [ ] **pre-shim 行为 parity**:旧址尚未合流时,§5.2 payload 全部字段组
-      逐项存在;唯一掩码
-      仅为各自 destination 绝对路径 → `<DEST>`。canonical payload
+      逐项存在;唯一掩码只在 §5.2 穷举的 `argv` 元素、`src_root`、
+      symlink target 三类具名路径承载字段中施加 destination 绝对路径
+      → `<DEST>`,不得全 payload 替换。canonical payload
       先逐字段相等,固定 JSON 序列化后的 SHA 再相同,且源码 `cmp`
       相同;逐字段比较证明行为无漂移,SHA 只作记录锚,`cmp` 证明搬移
-      未改字,三者均在 shim 覆盖前采集;其中有序命令轨迹须显式报告
+      未改字,三者均在 shim 覆盖前采集;双跑须用 `importlib.reload` 或
+      两个子进程隔离 `sys.modules`,并把选用方式与命令写入证据;其中
+      有序命令轨迹须显式报告
       迁移前后调用次数、发生顺序及每次调用的完整 `argv` 逐元素相等,
       并从 `argv` 验收 fetch 次数及 `--depth 1/50`,作为未新增网络往返
       及 §2.2 成本拓扑不漂移的唯一性能等价证据,不单列新流程;
-- [ ] **normalizer 反向测试**:§5.2 定义的全部变异样本各自使 parity
-      必红;逐项贴变异比较失败证据与对应
-      pytest 命令 `exit 0`,证明非白名单字段未被过度归一化;
+- [ ] **normalizer 一正三反测试**:§5.2 的正向样本仅 destination 路径
+      不同且掩码后相等;三个变异样本各自使 parity 必红,其中 `error`
+      变异位于非路径部分。逐项贴比较证据与对应 pytest 命令 `exit 0`,
+      同时证明掩码有效且非白名单字段未被过度归一化;
 - [ ] **post-shim identity**:§0 全部实现行 + §1.2 明列的 shared 类型逐项
       `old.X is new.X`;本项只证 shim 接线,不可替代或冒充行为 parity;
 - [ ] 双道审计全绿(精确总数以实跑为准);⑧ arch 豁免证据;
