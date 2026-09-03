@@ -37,8 +37,9 @@ Frozen authority:
 - Symbol audit and body bridge are green at 108 per-symbol entries plus four
   module scopes. Bridge output explicitly names all 12 skill-3 rows.
 - Commit B established the new baseline: **883 passed, 1 skipped**. It preserves
-  all 848 pre-B nodeids after the two intentional test-file relocations and
-  adds 36 cases.
+  all 848 existing tests: 846 nodeids are unchanged and two moved from
+  `test_ci_triage.py` to `test_gerrit_fetch.py` under section 5.3 with
+  byte-identical function bodies. It adds 36 cases.
 
 ## Methods Applied
 
@@ -55,7 +56,13 @@ Frozen authority:
 ## Downstream Inputs
 
 1. Revisit same-name helper consolidation in the `triage-report` extraction.
-2. Remove every compatibility shim in the one-shot P4.9 final cleanup.
+2. Remove every legacy compatibility shim in the one-shot P4.9 final cleanup.
+   For Gerrit types, delete only the three re-exports in
+   `ci_triage/gerrit.py`; retain
+   `tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py:14-16`, which are
+   real signature dependencies. Their inherited `P4.9 shim` comments may be
+   corrected in that cleanup commit because the wording is stale in the skill
+   copy, but the imports must remain.
 3. In the `gerrit-submit` batch, design dangling-symlink normalization.
 4. In the `gerrit-submit` batch, jointly design timeout/cancellation,
    interruption cleanup, and error normalization for Gerrit external calls.

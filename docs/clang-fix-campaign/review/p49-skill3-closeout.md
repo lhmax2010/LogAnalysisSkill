@@ -27,7 +27,7 @@ Implementation commits: `4612167`, `751e7b4`, `f4be9e4`, `f6544df`,
 
 | # | DoD text | Status | Evidence anchor | Measured output excerpt |
 |---|---|---|---|---|
-| 1 | “全量 847/1;B/C 以 A 后基线验收” | DONE | `751e7b4`, `f6544df`, `c41d15a`; `stage10.../progress.md:107-138`, `:246-310`, `:711-747` | Commit A established `847 passed, 1 skipped`. Before B there were 848 nodeids; after mapping the two intentional file relocations, `missing=0` and `new_nodeids=36`. B established, and C retained, `883 passed, 1 skipped`. Fresh closeout replay: `883 passed, 1 skipped in 17.79s`. |
+| 1 | “全量 847/1;B/C 以 A 后基线验收” | DONE | `751e7b4`, `f6544df`, `c41d15a`; `stage10.../progress.md:107-138`, `:246-310`, `:711-747` | Commit A established `847 passed, 1 skipped`. All 848 existing tests were preserved: 846 nodeids were unchanged and two moved under section 5.3 from `test_ci_triage.py` to `test_gerrit_fetch.py` with byte-identical function bodies. The batch added 36 tests, for `883 passed, 1 skipped`. Fresh closeout replay: `883 passed, 1 skipped in 17.79s`. |
 | 2 | “B 阶段验证脚手架证据” | DONE | `f6544df`; `progress.md:413-435` | B explicitly used `PYTHONPATH=$PWD/tizen-gerrit-fetch/scripts...` and matching `MYPYPATH`; targeted 97, full 883/1, mypy 103 plus skill, ruff, py_compile, and six import contracts were green. The record states this was scaffolding, not delivery. |
 | 3 | “C 阶段正式交付入口证据” | DONE | `c41d15a`; `progress.md:438-474`, `:711-747` | Editable install completed; with `env -u PYTHONPATH -u MYPYPATH`, pytest was 883/1, targeted was 38, mypy covered 105 sources, ruff/compileall were green, import-linter was 6/0, and both audits were green. |
 | 4 | “旧址 gerrit.py 零 def/class,类型 shim 与实现 re-export 全在” | DONE | `f6544df`; `ci_triage/gerrit.py:1-32`; `progress.md:398-412` | Exact def/class search returned no matches. The file contains three shared-type shim imports and all 12 implementation re-exports. |
@@ -45,7 +45,7 @@ Implementation commits: `4612167`, `751e7b4`, `f4be9e4`, `f6544df`,
 | 16 | “设计期 parser-only 证据” | DONE | `4612167`; frozen §0 lines 76-89; closeout replay | `parser_only_rows=12`; output named all 12 `(tizen_gerrit_fetch/gerrit.py, symbol)` keys with owner `skill/tizen_gerrit_fetch`. This proves document parseability only. |
 | 17 | “实现期完整 bridge 证据须逐项出现 skill-3 键” | DONE | `c41d15a`; `progress.md:633-652`; closeout replay | Bridge printed all 12 `tizen_gerrit_fetch/gerrit.py` rows and `SUMMARY | 108 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING... | 0 PARSE_ERROR`. |
 | 18 | “§1.3a import-binding 加固断言 a-d” | DONE | `f4be9e4`, `c41d15a`; `progress.md:140-243`, `:633-687` | (a) `symbols=96`, `verdict_changes=0`; `primary_fingerprint consumers=('ci_triage.campaign_state',)`, internal `_primary_fingerprint consumers=()` (`[-]`). (b) aliased import new attribution was correct while legacy was `OLD_VERDICT=MISMATCH`. (c) same-name import independently passed. (d) planned/current Gerrit `_run_git` consumers were empty while workspace `_run_git` included `ci_triage.verify.workspace`. |
-| 19 | “twin 实测” | DONE | `c41d15a`; `progress.md:633-687` | Both `_run_git` definitions are independently registered: shared/workspace reports `ci_triage.verify.workspace`; Gerrit reports no external consumer. Exact repository checks show three `_run_git` definitions and two relevant Gerrit `SubprocessRunner` definitions, with no merge. |
+| 19 | “twin 实测” | DONE | `c41d15a`; `progress.md:633-687`; scoped command below | Both `_run_git` definitions are independently registered: shared/workspace reports `ci_triage.verify.workspace`; Gerrit reports no external consumer. Exact repository checks show three `_run_git` definitions and two relevant Gerrit `SubprocessRunner` definitions, with no merge. |
 | 20 | “§3 全部契约绿、全部负控制红并正反配对” | DONE | `c41d15a`; `progress.md:475-632` | Positive: `Contracts: 6 kept, 0 broken`. Skill→`ci_triage`, skill→peer skill, and shared→this skill each exited 1 under the expected contracts. The real skill→three shared types edge is the legal downward counterpart to the measured shared→skill failure; positive green alone is not used as proof. |
 | 21 | “§4a 机械同步逐项” | DONE | `c41d15a`; `progress.md:438-474`, `:633-687`; `symbol_audit.py`; `.importlinter`; `pyproject.toml` | Skill root, root-layer ordering, independence membership, forbidden roots, 12 SPECS rows, bridge path, and shared-type consumers all name `tizen_gerrit_fetch`; double audit found zero difference. |
 | 22 | “§2 三入口逐项贴 diff 与精确计数” | DONE | `c41d15a`; `progress.md:438-474` | The qb-discover analogue first returned `1/1/2/2`; Gerrit then returned CI `1`, README `1`, source-path registrations `2`, package-name registrations `2`. |
@@ -191,17 +191,72 @@ The three import-linter negative controls each returned exit 1:
    scope.
 2. “Baseline remains green” means the pre-existing test set is not reduced and
    has no failure or new skip; it does not freeze the total when required tests
-   are added. Commit B preserved all original 848 nodeids after the two
-   intentional path relocations and added 36, establishing 883/1 for commit C.
+   are added. Commit B preserved all 848 existing tests: 846 nodeids were
+   unchanged, while these two moved under section 5.3 with byte-identical
+   function bodies:
+   - `test_ci_triage.py::test_find_patchset_by_revision_uses_matching_revision_not_current`
+     -> `test_gerrit_fetch.py::test_find_patchset_by_revision_uses_matching_revision_not_current`
+   - `test_ci_triage.py::test_fetch_source_for_new_change_fetches_matching_patchset_ref`
+     -> `test_gerrit_fetch.py::test_fetch_source_for_new_change_fetches_matching_patchset_ref`
+   The batch added 36 tests, establishing 883/1 for commit C.
+
+## Review NIT Closure
+
+### N-A: Skill-Side Type Imports Are Not Shims
+
+The imports at
+`tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py:14-16` are real
+signature dependencies of the extracted implementation. Their inherited
+`# P4.9 shim, removed at P4.9 end` comments are semantically stale, but the
+imports themselves must remain. The one-shot P4.9 cleanup deletes only the
+corresponding type re-exports from the legacy `ci_triage/gerrit.py`; it may
+correct the skill-side comments without changing behavior. This exclusion is
+also recorded in the step-0 shim account and the stage-10 downstream ledger.
+
+### N-B: Existing-Test Accounting
+
+The exact preservation statement is: **848 existing tests retained = 846
+unchanged nodeids + two section-5.3 relocations with byte-identical function
+bodies; 36 new tests; 883 passed total**. It supersedes the shorthand that all
+pre-B nodeids were unchanged.
+
+### N-C: Scoped `SubprocessRunner` Count
+
+The reproducible assertion is deliberately limited to the two files in the
+Gerrit conflict surface:
+
+```bash
+rg -n '^SubprocessRunner = ' \
+  tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py \
+  tizen-ci-triage/scripts/ci_triage/runner.py
+```
+
+```text
+tizen-ci-triage/scripts/ci_triage/runner.py:39:SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
+tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py:22:SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
+```
+
+A repository-wide exact search returns eight independent definitions, which is
+expected. This batch asserts two only within the stated conflict surface.
 
 ## Deferred Ledger
 
 | # | Obligation | Status | Closing batch | Current boundary |
 |---|---|---|---|---|
 | D1 | Decide whether same-named Gerrit/report helpers should be consolidated | DEFERRED | `triage-report` extraction | Independent definitions remain; no cross-module coupling was introduced |
-| D2 | Delete all legacy compatibility shims, including three Gerrit type shims | DEFERRED | One-shot P4.9 final cleanup | Legacy imports remain compatible; new consumers use authoritative packages directly |
+| D2 | Delete all legacy compatibility shims, including the three type re-exports in `ci_triage/gerrit.py`; retain the skill-side type imports | DEFERRED | One-shot P4.9 final cleanup | Legacy imports remain compatible; `tizen_gerrit_fetch.gerrit` lines 14-16 are real signature dependencies, not shims |
 | D3 | Normalize dangling destination symlinks to `SOURCE_DIR_UNSAFE` | DEFERRED | `gerrit-submit` batch | Current `FileExistsError` propagation is documented and tested unchanged |
 | D4 | Design unified timeout/cancellation, error normalization, and interruption cleanup | DEFERRED | `gerrit-submit` batch | Current calls have no internal timeout; injected deadlines and interruption residues are documented and tested |
 
 No deferred item is ownerless, and none was silently implemented during this
 behavior-preserving extraction.
+
+## 最终签批
+
+| 签批方 | 日期 | 结论 |
+|---|---|---|
+| Claude | 2026-09-03 | 独立核验干净环境 `883 passed, 1 skipped`，亲跑双道审计 `108+4`，确认 bridge 输出含 skill-3 十二行，并核验包根导出面与 twin 两份注册，结论 CLOSED。 |
+| 评审 A | 2026-09-03 | 独立复跑全部门禁与四组 fixture，零未关闭 finding，确认 skill-3 CLOSED。 |
+| 评审 B | 2026-09-03 | 独立复跑全部门禁与四组 fixture，零未关闭 finding，确认 skill-3 CLOSED。 |
+
+**状态：skill-3 CLOSED @ `1ca2206`（开发者放行日期：2026-09-03）。**

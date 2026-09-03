@@ -189,7 +189,11 @@ a substitute for that behavior evidence.
 Confirm these closing batches are acceptable:
 
 1. Same-name consolidation: `triage-report` extraction.
-2. Compatibility-shim deletion: one-shot P4.9 final cleanup.
+2. Compatibility-shim deletion: one-shot P4.9 final cleanup. Delete the three
+   Gerrit type re-exports only from legacy `ci_triage/gerrit.py`; retain the
+   matching imports in `tizen_gerrit_fetch/gerrit.py` because they are real
+   signature dependencies. The inherited skill-side shim comments may be
+   corrected then.
 3. Dangling-symlink normalization: `gerrit-submit` batch.
 4. Unified timeout/cancellation, interruption cleanup, and error normalization:
    `gerrit-submit` batch.

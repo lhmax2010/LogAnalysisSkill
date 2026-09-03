@@ -59,6 +59,13 @@ final derived count is 42 per-symbol entries plus four module entries covering
 `runner.py` also consumes shared HTTP/types directly; those imports are not
 compatibility shims. `ci_triage/state/` is absent and intentionally has no shim.
 
+The P4.9 final cleanup must delete the three shared-type re-exports only from
+the legacy `ci_triage/gerrit.py` shim. The matching imports at
+`tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py:14-16` are real
+signature dependencies in the extracted skill and must remain. Their inherited
+`# P4.9 shim, removed at P4.9 end` comments are stale in the new location; the
+cleanup commit may correct those comments without changing behavior.
+
 ## Deferred Account
 
 | Item | Status | Owner / closing batch | Evidence |

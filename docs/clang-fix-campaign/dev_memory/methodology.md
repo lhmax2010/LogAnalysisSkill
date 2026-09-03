@@ -243,6 +243,14 @@ during design convergence.
     Acceptance therefore requires the bridge output to contain the expected
     `(definition, symbol)` rows for the newly connected authority; skill-3
     pinned this condition with all 12 Gerrit rows.
+39. **Review comment semantics after every byte-for-byte migration.** A source
+    copy preserves comments as faithfully as code, but wording such as “shim,”
+    “temporary,” or “will be deleted” can become false at the new authoritative
+    location. Audit those comments separately before closeout, and distinguish
+    stale wording from real imports or definitions that must remain. Skill-3's
+    shared-type imports established this rule: they are signature dependencies
+    in the extracted skill even though their inherited comments call them
+    P4.9 shims.
 
 ## R14 deferred cleanup ledger
 
