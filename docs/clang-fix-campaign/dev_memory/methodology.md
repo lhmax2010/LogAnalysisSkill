@@ -212,6 +212,38 @@ during design convergence.
     explanation for `_run_git` was incorrectly copied onto the independently
     defined `SubprocessRunner` twin.
 
+33. **Define a regression baseline as set preservation, not a frozen total.**
+    Adding required tests must increase the total. Acceptance means every
+    pre-existing nodeid is still collected after explicitly mapped relocations,
+    none fails or becomes a new skip, and every net-new nodeid passes. Skill-3
+    preserved all 848 pre-B nodeids and added 36, legitimately moving the
+    baseline from 847/1 to 883/1.
+34. **State diff limits in terms of the protected surface.** “Only two files”
+    was intended to prohibit production changes, not the evidence ledger that
+    proves the prohibition. A scope rule must explicitly name the protected
+    production namespaces, allowed test files, and allowed evidence documents;
+    otherwise faithful recordkeeping appears to violate the safety rule.
+35. **Make symbol-count commands syntactically exact and self-test them.** A
+    probe for a function must terminate the name, for example
+    `^def _run_git\(`, rather than matching longer prefixes accidentally. Run
+    the final command against the current known state and record its output
+    before treating it as a DoD gate.
+36. **Preserve evidence at the phase where it is true.** Record the exact
+    command, exit status, output, and topology of the measured phase. Do not
+    rewrite a pre-shim behavior result as post-shim identity, or a temporary
+    path run as installed-entry evidence. The evidence annotation is part of
+    the claim and must remain factually exact.
+37. **Apply parity masks only to explicitly named path-bearing fields.** Mask
+    destination differences independently in argv elements, `src_root`, and
+    symlink targets; never perform global payload substitution. Pair one
+    destination-only positive sample with non-path error, order, and status
+    negatives so the normalizer proves both usefulness and restraint.
+38. **Require a bridge to identify the changed authority in its output.** A
+    zero-difference summary can stay green while a new design path is omitted.
+    Acceptance therefore requires the bridge output to contain the expected
+    `(definition, symbol)` rows for the newly connected authority; skill-3
+    pinned this condition with all 12 Gerrit rows.
+
 ## R14 deferred cleanup ledger
 
 These findings are intentionally non-blocking for FIX-1 but retain names and

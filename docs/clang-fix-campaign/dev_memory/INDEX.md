@@ -14,6 +14,7 @@
 | P4.9 step-0 foundation | CLOSED | shared package, state/types/workspace/classify/env/HTTP moves, four import contracts | commits `8dca6c1`/`ab58bfd`/`6def1ed`; 42 symbols + 4 module scopes covering 48; final sign-off `../review/p49-step0-closeout.md#最终签批` |
 | P4.9 skill-1 convergence-judge | CLOSED | convergence skill, public aliases, root gates, layered audit, C21 glob discovery | commits `d3478ab`/`f4c8142`/`f7194ae`/`954bbcd`/`9bf1af0`; 77 symbols + 4 module scopes; final sign-off `../review/p49-skill1-closeout.md#最终签批` |
 | P4.9 skill-2 qb-discover | CLOSED | QuickBuild overview discovery skill, binary attribution keys, skill-independence activation | commits `097294f`/`95ed550`/`41152fe`/`812b213`; 96 symbols + 4 module scopes; final sign-off `../review/p49-skill2-closeout.md#最终签批` |
+| P4.9 skill-3 gerrit-fetch | CLOSED | Gerrit source-fetch skill, import-binding audit, pre-shim parity, three delivery entry points | commits `4612167`/`751e7b4`/`f4be9e4`/`f6544df`/`c41d15a`; 108 symbols + 4 module scopes; closeout `../review/p49-skill3-closeout.md` |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -35,6 +36,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 step-0 foundation | CLOSED | `8dca6c1`, `ab58bfd`, `6def1ed` | v2.0-FROZEN revisions 1-7a implemented; `stage07_p49_step0/result.md`; final sign-off `../review/p49-step0-closeout.md#最终签批` |
 | P4.9 skill-1 convergence-judge | CLOSED | `d3478ab`, `f4c8142`, `f7194ae`, `954bbcd`, `9bf1af0` | frozen authority `../p49-skill1-convergence-judge-design-v1.4-FROZEN.md`; result `stage08_p49_skill1_convergence_judge/result.md`; final sign-off `../review/p49-skill1-closeout.md#最终签批` |
 | P4.9 skill-2 qb-discover | CLOSED | `097294f`, `95ed550`, `41152fe`, `812b213` | frozen authority `../p49-skill2-qb-discover-design-v1.3-FROZEN.md`; result `stage09_p49_skill2_qb_discover/result.md`; final sign-off `../review/p49-skill2-closeout.md#最终签批` |
+| P4.9 skill-3 gerrit-fetch | CLOSED | `4612167`, `751e7b4`, `f4be9e4`, `f6544df`, `c41d15a` | frozen authority `../p49-skill3-gerrit-fetch-design-v1.3.1-FROZEN.md`; result `stage10_p49_skill3_gerrit_fetch/result.md`; closeout `../review/p49-skill3-closeout.md` |
 
 ## Code-Ready Checkpoint
 
