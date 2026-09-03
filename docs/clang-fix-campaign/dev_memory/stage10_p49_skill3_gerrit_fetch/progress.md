@@ -432,3 +432,316 @@ py_compile: exit 0
 lint-imports: 6 kept, 0 broken
 git diff --check: exit 0
 ```
+
+## Commit C: formal entry points, gates, and audit
+
+### Three formal entry points
+
+The commit C delivery surface registers `tizen-gerrit-fetch` in all three
+authoritative entry points:
+
+- `pyproject.toml`: package discovery plus `mypy_path` and configured package;
+- `.github/workflows/ci.yml`: an explicit mypy invocation;
+- `README.md`: the source-tree development `PYTHONPATH`.
+
+The prescribed count commands were first tested against the completed
+qb-discover entry points and returned `1/1/2/2`. The same exact forms then
+returned the required counts for Gerrit:
+
+```text
+$ rg -F -c "mypy tizen-gerrit-fetch/scripts/tizen_gerrit_fetch" .github/workflows/ci.yml
+1
+$ rg -F -c '$PWD/tizen-gerrit-fetch/scripts' README.md
+1
+$ rg -F -c "tizen-gerrit-fetch/scripts" pyproject.toml
+2
+$ rg -F -c "tizen_gerrit_fetch" pyproject.toml
+2
+```
+
+`release-v1.4.0/` remains a historical snapshot. `git diff --stat f6544df --
+release-v1.4.0` produced no output; Gerrit skill packaging will enter the next
+release snapshot rather than being backfilled here.
+
+The formal installation was refreshed before the C-stage gates:
+
+```text
+$ .venv/bin/python -m pip install -e .
+Successfully built gbs-analyzer
+Successfully installed gbs-analyzer-1.3.0
+exit 0
+```
+
+### Import contracts and negative controls
+
+The active root topology is now
+`ci_triage > tizen_convergence_judge | tizen_qb_discover |
+tizen_gerrit_fetch > tizen_ci_shared`. Skill independence and the shared
+forbidden list contain all three skills.
+
+Positive run after every temporary violation was removed:
+
+```text
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/lint-imports
+Analyzed 38 files, 68 dependencies.
+application layers: orchestration -> skills -> shared KEPT
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+Contracts: 6 kept, 0 broken.
+exit 0
+```
+
+Negative 1 temporarily added `import ci_triage` to
+`tizen_gerrit_fetch.gerrit`:
+
+```text
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 38 files, 69 dependencies.
+-----------------------------------
+
+application layers: orchestration -> skills -> shared BROKEN
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+
+Contracts: 5 kept, 1 broken.
+
+----------------
+Broken contracts
+----------------
+
+application layers: orchestration -> skills -> shared
+-----------------------------------------------------
+
+tizen_gerrit_fetch is not allowed to import ci_triage:
+
+- tizen_gerrit_fetch.gerrit -> ci_triage (l.6)
+
+exit 1
+```
+
+Negative 2 temporarily added `import tizen_qb_discover` to the Gerrit skill.
+Both root-layers and the dedicated independence contract rejected the same
+peer edge:
+
+```text
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 38 files, 69 dependencies.
+-----------------------------------
+
+application layers: orchestration -> skills -> shared BROKEN
+extracted skills are independent BROKEN
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+
+Contracts: 4 kept, 2 broken.
+
+----------------
+Broken contracts
+----------------
+
+application layers: orchestration -> skills -> shared
+-----------------------------------------------------
+
+tizen_gerrit_fetch is not allowed to import tizen_qb_discover:
+
+- tizen_gerrit_fetch.gerrit -> tizen_qb_discover (l.6)
+
+extracted skills are independent
+--------------------------------
+
+tizen_gerrit_fetch is not allowed to import tizen_qb_discover:
+
+- tizen_gerrit_fetch.gerrit -> tizen_qb_discover (l.6)
+
+exit 1
+```
+
+Negative 3 temporarily added `import tizen_gerrit_fetch` to
+`tizen_ci_shared.types`. Root-layers and shared-no-uplink both rejected the
+uplink:
+
+```text
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 38 files, 69 dependencies.
+-----------------------------------
+
+application layers: orchestration -> skills -> shared BROKEN
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration BROKEN
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+
+Contracts: 4 kept, 2 broken.
+
+----------------
+Broken contracts
+----------------
+
+application layers: orchestration -> skills -> shared
+-----------------------------------------------------
+
+tizen_ci_shared is not allowed to import tizen_gerrit_fetch:
+
+- tizen_ci_shared.types -> tizen_gerrit_fetch (l.8)
+
+shared must not import orchestration
+------------------------------------
+
+tizen_ci_shared is not allowed to import tizen_gerrit_fetch:
+
+- tizen_ci_shared.types -> tizen_gerrit_fetch (l.8)
+
+exit 1
+```
+
+The positive edge paired with negative 3 is the skill's real import of
+`GerritChange`, `GerritPatchSet`, and `SourceFetchResult` from
+`tizen_ci_shared.types`: skill-to-shared is a legal downward dependency and
+the six-contract positive run keeps it. A positive run alone is not treated
+as proof; its paired reverse edge is the measured forbidden failure above.
+
+### Symbol inventory, bridge, and twin identities
+
+The 12 rows from frozen section 0 are registered under
+`tizen_gerrit_fetch/gerrit.py`, and the three shared type consumer declarations
+now name `tizen_gerrit_fetch.gerrit` (plus `ci_triage.report` for
+`SourceFetchResult`). Both independent checks are green:
+
+```text
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py
+SUMMARY | 108 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+exit 0
+
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/python docs/clang-fix-campaign/tools/table_audit_bridge.py
+SUMMARY | 108 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+skill3_bridge_rows=12
+exit 0
+```
+
+The bridge output contains every Gerrit key from `GERRIT_HOST` through
+`_optional_int`; the `skill3_bridge_rows=12` count prevents a summary-only
+false green.
+
+Both `_run_git` definitions are simultaneously registered and retain separate
+consumer sets:
+
+```text
+_run_git | owner=shared/workspace | definition=tizen_ci_shared/workspace/__init__.py:205 | consumers=[ci_triage.verify.workspace] | OK
+_run_git | owner=skill/tizen_gerrit_fetch | definition=tizen_gerrit_fetch/gerrit.py:227 | consumers=[-] | OK
+$ .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py --binding-fixture planned-run-git
+BINDING_FIXTURE | planned-run-git | gerrit._run_git=() | workspace._run_git=('ci_triage.verify.workspace',)
+exit 0
+```
+
+The historical import-binding regression lock remains scoped to the exact
+96-symbol topology it originally certified. A first unscoped replay after
+adding the 12 skill-3 symbols reported one verdict change; inspection showed
+the sole key was `tizen_gerrit_fetch/gerrit.py:_run_git`: the new binding-aware
+analyzer correctly returned no consumer while the deliberately retained
+legacy analyzer misattributed `ci_triage.verify.workspace`. That is the
+skill-3 assertion above, not a regression in the prior topology. After making
+the historical scope explicit:
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/tools/symbol_audit.py --binding-fixture regression-lock
+BINDING_FIXTURE | regression-lock | symbols=96 | verdict_changes=0
+BINDING_FIXTURE | campaign-state-alias | primary_fingerprint consumers=('ci_triage.campaign_state',) | _primary_fingerprint consumers=()
+exit 0
+```
+
+Exact source-definition checks report three `_run_git` functions (Gerrit
+skill, Gerrit submit, shared workspace). In the Gerrit conflict scope there
+are exactly two `SubprocessRunner` definitions (Gerrit skill and orchestration
+runner), while exactly one Gerrit `SubprocessRunner` row is in the attribution
+inventory.
+
+### Skill contract, arch exemption, and shim lifecycle
+
+`tizen-gerrit-fetch/SKILL.md` names the four-symbol package-root contract and
+contains the five frozen sections: Inputs, Outputs, Errors, Side effects, and
+Idempotency. It records the absence of timeout/cancellation, unchanged
+`TimeoutExpired` propagation, dangling-symlink boundary, destructive
+destination lifecycle, and the closed one-query/depth-1/depth-50 call
+topology. The repository skill validator reports `Skill is valid!`.
+
+The arch exemption is explicit:
+
+```text
+$ grep -c arch tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py
+0
+exit 1
+```
+
+The legacy `ci_triage/gerrit.py` deletion ledger now consists of 12 Gerrit
+implementation re-exports plus the three shared type re-exports. It has zero
+`def`/`class` statements and remains scheduled for the one-shot P4.9 shim
+cleanup. The three imports in the authoritative skill implementation are real
+signature dependencies, not legacy-path shims, and remain required.
+
+### C-stage no-scaffolding gates
+
+These results were collected only after the editable reinstall, with both
+temporary B-stage variables explicitly removed. They are independent of the
+B-stage `PYTHONPATH`/`MYPYPATH` evidence above:
+
+```text
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/pytest -q
+883 passed, 1 skipped in 17.77s
+exit 0
+
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/pytest -q tests/unit/test_gerrit_fetch.py
+38 passed in 0.06s
+exit 0
+
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/mypy
+Success: no issues found in 105 source files
+exit 0
+
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/ruff check $(git ls-files '*.py')
+All checks passed!
+exit 0
+
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/lint-imports
+Contracts: 6 kept, 0 broken.
+exit 0
+
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/python -m compileall -q \
+    tizen-ci-shared/scripts tizen-convergence-judge/scripts \
+    tizen-qb-discover/scripts tizen-gerrit-fetch/scripts \
+    tizen-ci-triage/scripts docs/clang-fix-campaign/tools
+exit 0
+```
+
+The full suite exactly matches commit B's `883 passed, 1 skipped` baseline.
+`git diff --stat f6544df --` for `gbs_report.py`, the P4.5 `design.md`,
+`release-v1.4.0/`, and all production implementation paths produced no output.

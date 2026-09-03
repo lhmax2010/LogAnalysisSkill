@@ -289,7 +289,7 @@ context files.
 For source-tree development commands, include every package root:
 
 ```bash
-export PYTHONPATH="$PWD/tizen-ci-shared/scripts:$PWD/tizen-convergence-judge/scripts:$PWD/tizen-qb-discover/scripts:$PWD/tizen-gbs-build/scripts:$PWD/tizen-gbs-log-analysis/scripts:$PWD/tizen-gbs-build-workflow/scripts:$PWD/tizen-gbs-patch-suggest/scripts:$PWD/tizen-ci-triage/scripts${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$PWD/tizen-ci-shared/scripts:$PWD/tizen-convergence-judge/scripts:$PWD/tizen-qb-discover/scripts:$PWD/tizen-gerrit-fetch/scripts:$PWD/tizen-gbs-build/scripts:$PWD/tizen-gbs-log-analysis/scripts:$PWD/tizen-gbs-build-workflow/scripts:$PWD/tizen-gbs-patch-suggest/scripts:$PWD/tizen-ci-triage/scripts${PYTHONPATH:+:$PYTHONPATH}"
 ```
 
 - User guide: `docs/README_FOR_USER.md`

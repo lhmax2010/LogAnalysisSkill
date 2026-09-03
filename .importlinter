@@ -3,6 +3,7 @@ root_packages =
     tizen_ci_shared
     tizen_convergence_judge
     tizen_qb_discover
+    tizen_gerrit_fetch
     ci_triage
 
 [importlinter:contract:root-layers]
@@ -10,7 +11,7 @@ name = application layers: orchestration -> skills -> shared
 type = layers
 layers =
     ci_triage
-    tizen_convergence_judge | tizen_qb_discover
+    tizen_convergence_judge | tizen_qb_discover | tizen_gerrit_fetch
     tizen_ci_shared
 
 [importlinter:contract:skill-independence]
@@ -19,6 +20,7 @@ type = independence
 modules =
     tizen_convergence_judge
     tizen_qb_discover
+    tizen_gerrit_fetch
 
 [importlinter:contract:shared-layers]
 name = shared internal layers: L1 -> L0 -> types
@@ -36,6 +38,7 @@ source_modules = tizen_ci_shared
 forbidden_modules = ci_triage
     tizen_convergence_judge
     tizen_qb_discover
+    tizen_gerrit_fetch
 
 [importlinter:contract:shared-l1-independence]
 name = shared L1 domains are independent

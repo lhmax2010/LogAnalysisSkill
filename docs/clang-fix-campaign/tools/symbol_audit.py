@@ -2,11 +2,10 @@
 """Statically audit P4.9 step-0 attribution tables against the source tree.
 
 This tool parses source text and Python ASTs only. It never imports or executes
-the modules being audited. The inventory is limited to modules that step-0
-actually changes: the quickbuild.py HTTP surface, workspace functions and
-markers, failure classification, state/types moves, and
-discover_sibling_pythonpath. gbs_report.py is intentionally out of scope and
-deferred as a whole to the triage-report extraction batch.
+the modules being audited. The inventory covers the step-0 shared moves and the
+extracted convergence-judge, qb-discover, and gerrit-fetch skills. gbs_report.py
+is intentionally out of scope and deferred as a whole to the triage-report
+extraction batch.
 """
 
 from __future__ import annotations
@@ -56,6 +55,7 @@ SHARED_STATE_KEYS = "tizen_ci_shared/state/keys.py"
 SHARED_STATE_RECORDS = "tizen_ci_shared/state/records.py"
 SKILL_CONVERGENCE = "tizen_convergence_judge/convergence.py"
 SKILL_QB_DISCOVER = "tizen_qb_discover/sources.py"
+SKILL_GERRIT_FETCH = "tizen_gerrit_fetch/gerrit.py"
 
 SpecKey = tuple[str, str]
 
@@ -67,11 +67,13 @@ ROOT_LAYERS_HIGH_TO_LOW = (
     "ci_triage",
     "tizen_convergence_judge",
     "tizen_qb_discover",
+    "tizen_gerrit_fetch",
     "tizen_ci_shared",
 )
 REGISTERED_SKILL_ROOTS: dict[str, str] = {
     "skill/tizen_convergence_judge": "tizen_convergence_judge",
     "skill/tizen_qb_discover": "tizen_qb_discover",
+    "skill/tizen_gerrit_fetch": "tizen_gerrit_fetch",
 }
 
 
@@ -173,6 +175,21 @@ QB_DISCOVER_SYMBOLS: tuple[
     ("_normalize_text", (), ("_BuildsTableParser.handle_endtag",)),
 )
 
+GERRIT_FETCH_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("GERRIT_HOST", ()),
+    ("GERRIT_PORT", ()),
+    ("SubprocessRunner", ()),
+    ("GerritError", ()),
+    ("query_change_for_commit", ()),
+    ("parse_gerrit_query_output", ()),
+    ("change_from_query_obj", ()),
+    ("find_patchset_by_revision", ()),
+    ("fetch_source_for_commit", ("ci_triage.runner",)),
+    ("_run_git", ()),
+    ("_reset_generated_source_dir", ()),
+    ("_optional_int", ()),
+)
+
 
 SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
     ModuleScopeSpec(
@@ -221,21 +238,21 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§2", "v2.0-revision-1"),
         SHARED_TYPES,
         "shared/types",
-        ("ci_triage.gerrit",),
+        ("tizen_gerrit_fetch.gerrit",),
     ),
     SymbolSpec(
         "GerritChange",
         ("§2", "v2.0-revision-1"),
         SHARED_TYPES,
         "shared/types",
-        ("ci_triage.gerrit",),
+        ("tizen_gerrit_fetch.gerrit",),
     ),
     SymbolSpec(
         "SourceFetchResult",
         ("§2", "v2.0-revision-1"),
         SHARED_TYPES,
         "shared/types",
-        ("ci_triage.gerrit", "ci_triage.report"),
+        ("ci_triage.report", "tizen_gerrit_fetch.gerrit"),
     ),
     SymbolSpec(
         "FailedPackage",
@@ -579,6 +596,16 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         )
         for name, consumers, internal in QB_DISCOVER_SYMBOLS
     ),
+    *(
+        SymbolSpec(
+            name,
+            ("skill3-§0", "skill3-v1.3.1"),
+            SKILL_GERRIT_FETCH,
+            "skill/tizen_gerrit_fetch",
+            consumers,
+        )
+        for name, consumers in GERRIT_FETCH_SYMBOLS
+    ),
 )
 
 
@@ -590,6 +617,7 @@ MODULE_OWNERS: dict[str, str] = {
     "ci_triage.report": "triage-report",
     "ci_triage.runner": "orchestrator",
     "tizen_qb_discover.sources": "skill/tizen_qb_discover",
+    "tizen_gerrit_fetch.gerrit": "skill/tizen_gerrit_fetch",
     "ci_triage.verify.build_verify": "build-verify",
     "ci_triage.verify.gerrit_submit": "submit",
 }
@@ -1385,11 +1413,13 @@ def run(repo_root: Path) -> int:
     shared_scripts_root = repo_root / "tizen-ci-shared/scripts"
     convergence_scripts_root = repo_root / "tizen-convergence-judge/scripts"
     qb_discover_scripts_root = repo_root / "tizen-qb-discover/scripts"
+    gerrit_fetch_scripts_root = repo_root / "tizen-gerrit-fetch/scripts"
     sources = (
         _load_sources(triage_scripts_root)
         + _load_sources(shared_scripts_root)
         + _load_sources(convergence_scripts_root)
         + _load_sources(qb_discover_scripts_root)
+        + _load_sources(gerrit_fetch_scripts_root)
     )
     by_relative = {source.relative: source for source in sources}
     symbol_specs = tuple(spec for spec in SPECS if isinstance(spec, SymbolSpec))
@@ -1416,6 +1446,7 @@ def run(repo_root: Path) -> int:
         or source.relative.startswith("tizen_ci_shared/")
         or source.relative == SKILL_CONVERGENCE
         or source.relative == SKILL_QB_DISCOVER
+        or source.relative == SKILL_GERRIT_FETCH
     )
     incomplete = sorted(
         (source.relative, symbol)
@@ -1568,6 +1599,7 @@ def _fixture_sources(repo_root: Path) -> tuple[SourceFile, ...]:
         repo_root / "tizen-ci-shared/scripts",
         repo_root / "tizen-convergence-judge/scripts",
         repo_root / "tizen-qb-discover/scripts",
+        repo_root / "tizen-gerrit-fetch/scripts",
     )
     return tuple(
         source
@@ -1630,8 +1662,23 @@ def _run_binding_fixture(name: str) -> int:
     repo_root = Path(__file__).resolve().parents[3]
     if name == "regression-lock":
         sources = _fixture_sources(repo_root)
+        # This lock preserves the 96-symbol topology that existed when the
+        # import-binding rule landed. Skill-3's intentional old/new difference
+        # is covered separately by planned-run-git.
+        locked_definitions = {
+            WORKSPACE,
+            SHARED_WORKSPACE,
+            QUICKBUILD,
+            SHARED_TYPES,
+            "tizen_ci_shared/env.py",
+            SKILL_CONVERGENCE,
+            SKILL_QB_DISCOVER,
+        }
         current_specs = tuple(
-            spec for spec in SPECS if isinstance(spec, SymbolSpec)
+            spec
+            for spec in SPECS
+            if isinstance(spec, SymbolSpec)
+            and spec.definition in locked_definitions
         )
         legacy_specs = _legacy_convergence_specs(current_specs)
         current_by_key = {
@@ -1722,11 +1769,20 @@ def _run_binding_fixture(name: str) -> int:
 
     if name == "planned-run-git":
         sources = _fixture_sources(repo_root)
-        planned_gerrit = _synthetic_source(
-            "tizen_gerrit_fetch.gerrit",
-            "def _run_git():\n    return None\n",
+        planned_gerrit = next(
+            (
+                source
+                for source in sources
+                if source.module == "tizen_gerrit_fetch.gerrit"
+            ),
+            None,
         )
-        sources = (*sources, planned_gerrit)
+        if planned_gerrit is None:
+            planned_gerrit = _synthetic_source(
+                "tizen_gerrit_fetch.gerrit",
+                "def _run_git():\n    return None\n",
+            )
+            sources = (*sources, planned_gerrit)
         workspace = next(
             source for source in sources if source.module == "tizen_ci_shared.workspace"
         )
