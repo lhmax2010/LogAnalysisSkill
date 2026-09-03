@@ -1,0 +1,104 @@
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-MIGRATION-MODES --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_2 | gate_exit=1
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_3 | gate_exit=1
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_4 | gate_exit=1
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_5 | gate_exit=1
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_6 | gate_exit=1
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_7 | gate_exit=1
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_8 | gate_exit=1
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_9 | gate_exit=1
+NEGATIVE_BINDING | B-MIGRATION-MODES | delete_snippet_10 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-PYTHONPATH-PARITY --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-PYTHONPATH-PARITY | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-PYTHONPATH-PARITY | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-SYMBOL-TOTAL --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-SYMBOL-TOTAL | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-SYMBOL-TOTAL | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-INCOMPLETE-GUARDS --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-INCOMPLETE-GUARDS | delete_snippet_1 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-EXCEPTION-NEGATIVES --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-EXCEPTION-NEGATIVES | selector_outside_interference_exit=0
+NEGATIVE_BINDING | B-EXCEPTION-NEGATIVES | delete_numeral | gate_exit=1
+NEGATIVE_BINDING | B-EXCEPTION-NEGATIVES | change_count | gate_exit=1
+NEGATIVE_BINDING | B-EXCEPTION-NEGATIVES | definition_covered_add | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-EXCEPTION-CONFIG --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-EXCEPTION-CONFIG | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-EXCEPTION-CONFIG | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-TWIN-COUNT --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-TWIN-COUNT | delete_snippet_1 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-BRANCH-ARCH --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-BRANCH-ARCH | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-BRANCH-ARCH | delete_snippet_2 | gate_exit=1
+NEGATIVE_BINDING | B-BRANCH-ARCH | delete_snippet_3 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-PRE-SHIM --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-PRE-SHIM | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-PRE-SHIM | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-POST-SHIM --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-POST-SHIM | delete_snippet_1 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-DELIVERY --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-DELIVERY | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-DELIVERY | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-SUBPROCESS-BLIND-SPOT --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-SUBPROCESS-BLIND-SPOT | delete_snippet_1 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-MECHANICAL-SYNC --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-MECHANICAL-SYNC | selector_outside_interference_exit=0
+NEGATIVE_BINDING | B-MECHANICAL-SYNC | delete_numeral | gate_exit=1
+NEGATIVE_BINDING | B-MECHANICAL-SYNC | change_count | gate_exit=1
+NEGATIVE_BINDING | B-MECHANICAL-SYNC | definition_covered_add | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-RELOCATION-NEGATIVES --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-RELOCATION-NEGATIVES | selector_outside_interference_exit=0
+NEGATIVE_BINDING | B-RELOCATION-NEGATIVES | delete_numeral | gate_exit=1
+NEGATIVE_BINDING | B-RELOCATION-NEGATIVES | change_count | gate_exit=1
+NEGATIVE_BINDING | B-RELOCATION-NEGATIVES | definition_covered_add | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-SPECS-SEMANTICS --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-SPECS-SEMANTICS | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-SPECS-SEMANTICS | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-GUARD-EQUALITY --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-GUARD-EQUALITY | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-GUARD-EQUALITY | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-PARITY-FREEZE --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-PARITY-FREEZE | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-PARITY-FREEZE | delete_snippet_2 | gate_exit=1
+NEGATIVE_BINDING | B-PARITY-FREEZE | delete_snippet_3 | gate_exit=1
+NEGATIVE_BINDING | B-PARITY-FREEZE | delete_snippet_4 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-LEDGER-EXECUTION --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-LEDGER-EXECUTION | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-LEDGER-EXECUTION | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-RAW-DIFF --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-RAW-DIFF | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-RAW-DIFF | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-EXPECTED-MATCHES --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-EXPECTED-MATCHES | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-EXPECTED-MATCHES | delete_snippet_2 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-X-PRESERVE --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-X-PRESERVE | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-X-PRESERVE | delete_snippet_2 | gate_exit=1
+NEGATIVE_BINDING | B-X-PRESERVE | delete_snippet_3 | gate_exit=1
+NEGATIVE_BINDING | B-X-PRESERVE | delete_snippet_4 | gate_exit=1
+NEGATIVE_BINDING | B-X-PRESERVE | delete_snippet_5 | gate_exit=1
+exit=1
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py negative-binding B-CORPUS-REFERENCE --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+NEGATIVE_BINDING | B-CORPUS-REFERENCE | inject_restated_snippet | gate_exit=1
+NEGATIVE_BINDING | B-CORPUS-REFERENCE | point_to_existing_wrong_section | gate_exit=1
+exit=1

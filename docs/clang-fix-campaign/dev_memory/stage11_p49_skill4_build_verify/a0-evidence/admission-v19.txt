@@ -1,0 +1,6 @@
+$ python3 docs/clang-fix-campaign/tools/design_drift_ledger.py admission-v19 --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+BINDING_DRIFT | B-CORPUS-REFERENCE | missing_definition=['每一相邻版本对做原始 git diff'], leaked_snippets=[], parsed_targets=['§5.4.4'], expected=§5.4.4
+BINDING_DRIFT | B-RAW-DIFF | binding B-RAW-DIFF reference selector did not match v1.9
+BINDING_DRIFT | B-X-PRESERVE | missing_definition=[], missing_reference=['X 原样保留']
+ADMISSION_V19 | BINDING_DRIFT=3 | required_known=2 | RED_AS_EXPECTED
+exit=1
