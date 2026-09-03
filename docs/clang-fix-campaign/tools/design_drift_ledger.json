@@ -2855,7 +2855,7 @@
           "   `OUT_OF_SCOPE` 另须逐项通过防滥用证伪:构造一条豁免区外删除 span 并标为",
           "   `OUT_OF_SCOPE` 时门禁必须红;"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 603,
         "new_version": "1.12",
         "old_end": 598,
@@ -2876,7 +2876,7 @@
           "   行只允许由 retained、`FORMAT_ONLY` 或 `SUBSUMED` 覆盖,不得以",
           "   `OUT_OF_SCOPE` 吞掉;"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 609,
         "new_version": "1.12",
         "old_end": 601,
@@ -2896,7 +2896,7 @@
           "   - **命中须落在受检范围**:证伪的命中若全部落在豁免区(修订说明 / §5.4 /",
           "     §5.5),"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 633,
         "new_version": "1.12",
         "old_end": 623,
@@ -2915,7 +2915,7 @@
         "new_lines": [
           "   ——§5.5 曾手写\"其中计数式引用的对\"(值有误),"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 639,
         "new_version": "1.12",
         "old_end": 628,
@@ -2934,7 +2934,7 @@
         "new_lines": [
           "> 证伪(回归性回跑 / 预防性构造式)、取并集;由 **A₀ 脚本产出**,"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 651,
         "new_version": "1.12",
         "old_end": 640,
@@ -2954,7 +2954,7 @@
           "- **检查范围**:除**显式修订说明块**、`§5.4` 与 `§5.5` 外的",
           "  **全部规范正文**;"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 659,
         "new_version": "1.12",
         "old_end": 647,
@@ -2983,7 +2983,7 @@
           "     登记 `SYNONYM_PAIR` 并附两侧字面,且该登记须过 per-binding 证伪——",
           "     不得由实现者自行切除)——Claude 实测:DoD 侧写"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 708,
         "new_version": "1.12",
         "old_end": 699,
@@ -3010,7 +3010,7 @@
           "     **错指另一个现存章节仍会绿**;per-binding 证伪须含\"改指另一现存章节",
           "     → 必红\"。"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 723,
         "new_version": "1.12",
         "old_end": 704,
@@ -3031,7 +3031,7 @@
           "     (v1.12 **锚单位词**:DoD 行形如\"§2.4 机械同步 10 项\"同时含 `2/4/10`,",
           "     不锚单位词会永红),**须唯一命中**(多于一个即红,禁裁量);②**枚举 selector**——"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 732,
         "new_version": "1.12",
         "old_end": 710,
@@ -3055,7 +3055,7 @@
           "     binding 须额外断言:**(a) 增删一个被 selector 覆盖的枚举项、",
           "     引用数词不变 → 必红;(b) 在 selector 覆盖面之外加入干扰项 → 仍绿**——计数式引用的对(具体数目由 A₀ 清单持有,本节不书写)"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 737,
         "new_version": "1.12",
         "old_end": 714,
@@ -3076,7 +3076,7 @@
           "5. **外部锚(解自指;同 §5.4 台账④)**;**纯流程条目**(如 DEFERRED 登记行)",
           "   登记为 **`PROCESS_ONLY`** 类别,**登记即免绑,不得默认豁免**:**§7 DoD 的每一条都必须"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 752,
         "new_version": "1.12",
         "old_end": 725,
@@ -6314,9 +6314,9 @@
         "candidate_id": "v1.11|old:1-1,new:1-1|1653f9a27e76303a6cfacc7b15e0c209de2b1b320ff9b04294a96d14984bb41e",
         "new_end": 1,
         "new_lines": [
-          "# P4.9 skill-4 设计:tizen-build-verify 抽取(v1.12-FROZEN-candidate)"
+          "# P4.9 skill-4 设计:tizen-build-verify 抽取(v1.12-FROZEN)"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 1,
         "new_version": "1.12",
         "old_end": 1,
@@ -6339,7 +6339,7 @@
         "new_lines": [
           "      命中集,范围为全部规范正文(除修订说明、§5.4 与 §5.5);"
         ],
-        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
         "new_start": 839,
         "new_version": "1.12",
         "old_end": 811,
@@ -6449,7 +6449,7 @@
     "v1.9|old:1-1,new:1-1|0b98153812f07a48a1a6142e66f0176d39707d912d03d2be09c4ecf362eabaf2": {},
     "v1.9|old:662-662,new:736-736|ad9b4d914575002d2f28c7b8fc6c88d0ba18b131a8288d0fe24513febb5b2833": {}
   },
-  "generated_from": "raw git diff --no-index --unified=0 over v1.0..v1.12",
+  "generated_from": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12-FROZEN.md",
   "ignored_binding_candidates": [
     "§0->dod:DOD-01",
     "§0->dod:DOD-02",
@@ -7856,8 +7856,8 @@
     }
   ],
   "schema_version": "clang-fix-campaign/design-drift-ledger/v1",
-  "target_design": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.md",
-  "target_sha256": "6b5a6654f1e1141cc7a64de57597607bb9f890083e33c4d783b0ebc9042626a1",
+  "target_design": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12-FROZEN.md",
+  "target_sha256": "c0f730ab378b97b1f0a5483e508c9003d864248c7225db2405c71e955f618408",
   "target_version": "1.12",
   "version_corpus": [
     {
@@ -7921,8 +7921,8 @@
       "version": "1.11"
     },
     {
-      "path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.md",
-      "sha256": "6b5a6654f1e1141cc7a64de57597607bb9f890083e33c4d783b0ebc9042626a1",
+      "path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
+      "sha256": "c0f730ab378b97b1f0a5483e508c9003d864248c7225db2405c71e955f618408",
       "version": "1.12"
     }
   ]

@@ -5,9 +5,9 @@
 Status: COMPLETE, awaiting independent review before the design freeze.
 
 Authority under test:
-`docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.md`.
+`docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12-FROZEN.md`.
 
-The A0 precondition ruling is applied directly to the candidate body:
+The A0 precondition ruling is applied directly to the frozen body:
 
 - checked scope is every normative section except the revision block, section
   5.4, and section 5.5;
@@ -18,8 +18,8 @@ The A0 precondition ruling is applied directly to the candidate body:
   file.
 
 The target design SHA-256 recorded by the data file is
-`6b5a6654f1e1141cc7a64de57597607bb9f890083e33c4d783b0ebc9042626a1`.
-The v1.12 candidate and its corpus copy are byte-identical (`cmp` exit 0).
+`c0f730ab378b97b1f0a5483e508c9003d864248c7225db2405c71e955f618408`.
+The v1.12 frozen design and its corpus copy are byte-identical (`cmp` exit 0).
 
 ### First baseline generation
 
@@ -46,7 +46,7 @@ and the remainder are explicitly present in `ignored_binding_candidates`.
 
 Full output: [bootstrap.txt](a0-evidence/bootstrap.txt).
 
-### Frozen-candidate gates
+### Frozen-design gates
 
 Command:
 
@@ -170,3 +170,33 @@ bootstrap_sha_before=ebafd3f176530a99fe6ff82376866c02601b792da5a1145a2d52cabf76e
 bootstrap_sha_after=ebafd3f176530a99fe6ff82376866c02601b792da5a1145a2d52cabf76e0d2ff
 deterministic=yes
 ```
+
+## v1.12 freeze stamping
+
+The canonical design and the v1.12 corpus entry were renamed to
+`p49-skill4-build-verify-design-v1.12-FROZEN.md`. Their byte content is equal
+(`cmp` exit 0), and the frozen design SHA-256 is
+`c0f730ab378b97b1f0a5483e508c9003d864248c7225db2405c71e955f618408`.
+The ledger `target_design`, `generated_from`, corpus path, and SHA were rebuilt
+from that frozen path; bootstrap retained the reviewed inventory:
+
+```text
+BOOTSTRAP | candidates=128 retained=81 ignored=47 binding_candidates=1410 bindings=22
+```
+
+The four freeze checks completed as follows:
+
+```text
+APPENDIX_SUMMARY | 4/4 PASS
+COUNT_SUMMARY | 10/10 PASS
+CONTRACT_TEST_SUMMARY | contracts=13 | mapped_rows=13 | unmapped=0 | PASS
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=128 | retained=81 | ignored=47 | bindings=22 | binding_candidates=1410
+ADMISSION_V19 | BINDING_DRIFT=3 | required_known=2 | RED_AS_EXPECTED
+```
+
+The v1.9 admission command returned expected exit 1 and included both required
+historical defects, `B-RAW-DIFF` and `B-X-PRESERVE`. The frozen-design check
+returned exit 0. The appendix check reconciled the four declaration clauses;
+the count check covered the authority total and 29/12/4 split, three migration
+modes, four exception negatives, ten mechanical-sync items, eight twins,
+thirteen contract/test rows, and seventeen DoD items.

@@ -1,4 +1,4 @@
-# P4.9 skill-4 设计:tizen-build-verify 抽取(v1.12-FROZEN-candidate)
+# P4.9 skill-4 设计:tizen-build-verify 抽取(v1.12-FROZEN)
 
 - 阶段:P4.9 第四批(skill-3 CLOSED @1ca2206)
 - 权威并行:step-0 `v2.1-FROZEN`、skill-1 `v1.4`、skill-2 `v1.3`、skill-3 `v1.3.1`

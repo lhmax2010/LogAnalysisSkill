@@ -877,7 +877,7 @@ def _bootstrap(data_path: Path, repo_root: Path) -> int:
     corpus: list[dict[str, str]] = []
     for index in range(13):
         version = f"1.{index}"
-        suffix = ".md" if index == 12 else "-draft.md"
+        suffix = "-FROZEN.md" if index == 12 else "-draft.md"
         path = history / f"p49-skill4-build-verify-design-v{version}{suffix}"
         content = path.read_bytes()
         corpus.append(
@@ -948,7 +948,7 @@ def _bootstrap(data_path: Path, repo_root: Path) -> int:
     if target_content != corpus_target:
         raise LedgerError("target candidate and v1.12 history corpus are not byte-identical")
     data["target_sha256"] = _sha256_bytes(target_content)
-    data["generated_from"] = "raw git diff --no-index --unified=0 over v1.0..v1.12"
+    data["generated_from"] = str(data["target_design"])
     data_path.write_text(
         json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
