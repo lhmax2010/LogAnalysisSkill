@@ -14,11 +14,6 @@ from ci_triage.gbs_report import (
     find_iframe_src,
     parse_gbs_report_packages,
 )
-from ci_triage.gerrit import (
-    GerritChange,
-    fetch_source_for_commit,
-    find_patchset_by_revision,
-)
 from ci_triage.orchestrator import (
     STATE_FAILED_ANALYZE,
     STATE_FAILED_LOG,
@@ -48,7 +43,7 @@ from ci_triage.quickbuild_log import (
     select_failed_package,
 )
 from ci_triage.runner import TriageOptions, TriageResult, _safe_pkg_dir, run_triage
-from tizen_ci_shared.types import SourceFetchResult
+from tizen_ci_shared.types import GerritChange, SourceFetchResult
 from tizen_qb_discover.sources import FailedBuild, QuickBuildSource
 
 OVERVIEW_HTML = """
@@ -1625,78 +1620,7 @@ def test_run_triage_uses_gbs_report_package_log_when_arch_is_provided(
     assert any("gbs_analyzer" in command for command in commands)
 
 
-def test_find_patchset_by_revision_uses_matching_revision_not_current() -> None:
-    change = {
-        "patchSets": [
-            {
-                "number": 6,
-                "revision": "ba0d7cc0f960da15cbd1134d213a3708dddde59f",
-                "ref": "refs/changes/15/338415/6",
-            },
-            {
-                "number": 7,
-                "revision": "d4ce79de7e83e323aef427249eb4d0d2924d9263",
-                "ref": "refs/changes/15/338415/7",
-            },
-        ]
-    }
-
-    patchset = find_patchset_by_revision(
-        change,
-        "ba0d7cc0f960da15cbd1134d213a3708dddde59f",
-    )
-
-    assert patchset is not None
-    assert patchset.ref == "refs/changes/15/338415/6"
-
-
-def test_fetch_source_for_new_change_fetches_matching_patchset_ref(tmp_path: Path) -> None:
-    commands: list[list[str]] = []
-    commit = "ba0d7cc0f960da15cbd1134d213a3708dddde59f"
-    gerrit_output = "\n".join(
-        [
-            json.dumps(
-                {
-                    "project": "platform/upstream/lightweight-web-engine",
-                    "branch": "tizen",
-                    "status": "NEW",
-                    "number": 338415,
-                    "subject": "test",
-                    "patchSets": [
-                        {
-                            "number": 6,
-                            "revision": commit,
-                            "ref": "refs/changes/15/338415/6",
-                        },
-                        {
-                            "number": 7,
-                            "revision": "d4ce79de7e83e323aef427249eb4d0d2924d9263",
-                            "ref": "refs/changes/15/338415/7",
-                        },
-                    ],
-                }
-            ),
-            json.dumps({"type": "stats", "rowCount": 1}),
-        ]
-    )
-
-    def runner(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
-        commands.append(command)
-        if command[:3] == ["ssh", "-p", "29418"]:
-            return subprocess.CompletedProcess(command, 0, stdout=gerrit_output, stderr="")
-        return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
-
-    result = fetch_source_for_commit(
-        "platform/upstream/lightweight-web-engine",
-        commit,
-        tmp_path / "src",
-        subprocess_runner=runner,
-    )
-
-    assert result.status == "source_available"
-    assert result.remote_url == "ssh://review.tizen.org:29418/platform/upstream/lightweight-web-engine"
-    assert any("refs/changes/15/338415/6" in command for command in commands)
-    assert not any("refs/changes/15/338415/7" in command for command in commands)
+# Runner orchestration integration; Gerrit behavior lives in test_gerrit_fetch.py.
 
 
 def test_run_triage_passes_cloned_src_root_to_analyzer_and_patch_suggest(

@@ -20,13 +20,13 @@ from tizen_ci_shared.quickbuild_http import (
     download_package_buildlog,
 )
 from tizen_ci_shared.types import FailedPackage
+from tizen_gerrit_fetch import fetch_source_for_commit
 
 from ci_triage.gbs_report import (
     GbsReportPackage,
     download_gbs_package_buildlog,
     fetch_gbs_report,
 )
-from ci_triage.gerrit import fetch_source_for_commit
 from ci_triage.quickbuild_log import (
     QuickBuildLogError,
     match_pkg_key,
