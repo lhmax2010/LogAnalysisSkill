@@ -1,22 +1,29 @@
 from __future__ import annotations
 
+import importlib
 import json
 import subprocess
 from pathlib import Path
 from typing import Any, cast
 
+import ci_triage
 import pytest
-from ci_triage.verify.build_verify import (
+import tizen_build_verify
+from tizen_build_verify.build_verify import (
     BuildVerifyOptions,
     _format_and_apply_patch,
     _gbs_arch,
     _gbs_command,
     build_verify,
     build_verify_to_json,
+    default_extra_pythonpath,
 )
 from tizen_ci_shared.classify import REPAIR_AUTO, REPAIR_DENIED
+from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.state import StateDatabase, get_latest_status, get_record
 from tizen_ci_shared.workspace import PROTECTED_FILENAME
+
+_BUILD_VERIFY_MODULE = importlib.import_module("tizen_build_verify.build_verify")
 
 
 class GbsRunner:
@@ -240,7 +247,7 @@ def test_gbs_fail_source_werror_returns_repair_allowed(
             },
         )
 
-    monkeypatch.setattr("ci_triage.verify.build_verify._analyze_failure", fake_analyze)
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE, "_analyze_failure", fake_analyze)
 
     result = build_verify(options, subprocess_runner=runner)
 
@@ -275,7 +282,7 @@ def test_gbs_fail_toolchain_denylist_not_repair_allowed(
             },
         )
 
-    monkeypatch.setattr("ci_triage.verify.build_verify._analyze_failure", fake_analyze)
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE, "_analyze_failure", fake_analyze)
 
     result = build_verify(options, subprocess_runner=runner)
 
@@ -421,8 +428,8 @@ def test_pass_marks_worktree_protected_before_writing_record(
         events.append("write")
         return "verify-1"
 
-    monkeypatch.setattr("ci_triage.verify.build_verify.mark_worktree_protected", fake_mark)
-    monkeypatch.setattr("ci_triage.verify.build_verify.write_pass_record", fake_write)
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE, "mark_worktree_protected", fake_mark)
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE, "write_pass_record", fake_write)
 
     result = build_verify(options, subprocess_runner=runner)
 
@@ -440,7 +447,132 @@ def test_pass_write_record_failure_is_not_silent(
     def fake_write(db: object, record: object) -> str:
         raise RuntimeError("db is down")
 
-    monkeypatch.setattr("ci_triage.verify.build_verify.write_pass_record", fake_write)
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE, "write_pass_record", fake_write)
 
     with pytest.raises(RuntimeError, match="db is down"):
         build_verify(options, subprocess_runner=runner)
+
+
+def test_default_extra_pythonpath_matches_legacy_anchor_and_is_nonempty() -> None:
+    legacy_launcher = (
+        Path(cast(str, ci_triage.__file__)).resolve().parents[1] / "run_ci_triage.py"
+    )
+
+    before = discover_sibling_pythonpath(launcher_path=legacy_launcher)
+    after = default_extra_pythonpath()
+
+    assert after == before
+    assert after
+
+
+def test_legacy_shims_preserve_all_migrated_symbol_identities() -> None:
+    module_symbols = {
+        "build_verify": (
+            "SubprocessRunner",
+            "BuildVerifyOptions",
+            "BuildVerifyResult",
+            "_ApplyPatchResult",
+            "build_verify",
+            "_BuildProcessResult",
+            "_format_and_apply_patch",
+            "_run_gbs_build",
+            "_gbs_command",
+            "_gbs_arch",
+            "_analyze_failure",
+            "_classification_fail",
+            "_fail",
+            "_actual_changed_paths",
+            "_tracked_worktree_mutated",
+            "_allowed_paths",
+            "_run_git_diff_check",
+            "_canonical_diff_sha256",
+            "_normalize_build_log",
+            "_git",
+            "_git_stdout",
+            "_run",
+            "_read_json",
+            "_sha256_file",
+            "_sha256_text",
+            "_build_subprocess_env",
+            "_string_or_empty",
+            "build_verify_to_json",
+            "default_extra_pythonpath",
+        ),
+        "edit_spec_guard": (
+            "EDIT_SPEC_SCHEMA",
+            "EditSpecViolation",
+            "_LocatedEdit",
+            "validate_edit_spec",
+            "_validate_schema",
+            "_validate_target_path",
+            "_locate_edit",
+            "_find_old_from_line",
+            "_find_unique_old",
+            "_line_starts",
+            "_check_no_overlaps",
+            "_is_relative_to",
+        ),
+        "workspace": (
+            "DEFAULT_MIN_FREE_BYTES",
+            "create_worktree",
+            "check_disk_and_maybe_cleanup",
+            "_copy_repository",
+        ),
+    }
+    for module_name, symbols in module_symbols.items():
+        legacy = importlib.import_module(f"ci_triage.verify.{module_name}")
+        skill = importlib.import_module(f"tizen_build_verify.{module_name}")
+        for symbol in symbols:
+            assert getattr(legacy, symbol) is getattr(skill, symbol)
+
+    legacy_workspace = importlib.import_module("ci_triage.verify.workspace")
+    shared_workspace = importlib.import_module("tizen_ci_shared.workspace")
+    for symbol in (
+        "MARKER_FILENAME",
+        "PROTECTED_FILENAME",
+        "DisposableWorktree",
+        "WorkspaceViolation",
+        "_exclude_private_files",
+        "_is_relative_to",
+        "_oldest_worktrees",
+        "_read_marker",
+        "_run_git",
+        "_verify_cleanup_handle",
+        "clean_repository_preserving_markers",
+        "cleanup_disposable_copy",
+        "cleanup_worktree",
+        "is_protected",
+        "mark_worktree_protected",
+        "release_worktree_protection",
+        "write_workdir_marker",
+    ):
+        assert getattr(legacy_workspace, symbol) is getattr(shared_workspace, symbol)
+
+
+def test_package_root_exports_only_public_contract_and_not_workspace_s9() -> None:
+    public_contract = {
+        "BuildVerifyOptions",
+        "BuildVerifyResult",
+        "EditSpecViolation",
+        "build_verify",
+        "build_verify_to_json",
+        "check_disk_and_maybe_cleanup",
+        "create_worktree",
+        "default_extra_pythonpath",
+        "validate_edit_spec",
+    }
+    workspace_s9 = {
+        "DisposableWorktree",
+        "WorkspaceViolation",
+        "_exclude_private_files",
+        "_oldest_worktrees",
+        "_run_git",
+        "clean_repository_preserving_markers",
+        "cleanup_worktree",
+        "is_protected",
+        "write_workdir_marker",
+    }
+
+    assert set(tizen_build_verify.__all__) == public_contract
+    assert all(hasattr(tizen_build_verify, name) for name in public_contract)
+    assert all(not hasattr(tizen_build_verify, name) for name in workspace_s9)

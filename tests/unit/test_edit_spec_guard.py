@@ -5,7 +5,7 @@ import unicodedata
 from pathlib import Path
 
 import pytest
-from ci_triage.verify.edit_spec_guard import EditSpecViolation, validate_edit_spec
+from tizen_build_verify.edit_spec_guard import EditSpecViolation, validate_edit_spec
 
 
 def _write(root: Path, relative: str, text: str = "alpha\nbeta\ngamma\n") -> Path:

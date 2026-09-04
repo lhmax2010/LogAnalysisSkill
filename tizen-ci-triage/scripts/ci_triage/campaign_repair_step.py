@@ -17,6 +17,7 @@ from typing import Any
 from urllib.parse import urlsplit
 
 import yaml
+from tizen_build_verify import BuildVerifyOptions, BuildVerifyResult, build_verify
 from tizen_ci_shared.classify import (
     REPAIR_AUTO,
     REPAIR_DENIED,
@@ -54,7 +55,6 @@ from ci_triage.campaign_state import (
     reconcile_pass_and_invocations,
 )
 from ci_triage.previous_evidence import MissingEvidence, ResolvedEvidence, resolve
-from ci_triage.verify.build_verify import BuildVerifyOptions, BuildVerifyResult, build_verify
 
 EXIT_OK = 0
 EXIT_INVALID_ARGS = 5

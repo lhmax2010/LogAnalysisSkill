@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import json
 import shutil
 import subprocess
@@ -10,12 +11,12 @@ from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
-from ci_triage.verify.build_verify import (
+from tizen_build_verify.build_verify import (
     BuildVerifyOptions,
     _format_and_apply_patch,
     build_verify,
 )
-from ci_triage.verify.workspace import create_worktree
+from tizen_build_verify.workspace import create_worktree
 from tizen_ci_shared.state import StateDatabase, get_latest_status, get_record
 from tizen_ci_shared.workspace import (
     MARKER_FILENAME,
@@ -25,6 +26,8 @@ from tizen_ci_shared.workspace import (
     cleanup_worktree,
     mark_worktree_protected,
 )
+
+_BUILD_VERIFY_MODULE = importlib.import_module("tizen_build_verify.build_verify")
 
 if shutil.which("git") is None:
     pytest.skip("git not available", allow_module_level=True)
@@ -343,7 +346,7 @@ def test_build_verify_rejects_unexpected_paths_using_real_git_diff(
         (src_root / "src" / "unexpected.c").write_text("int unexpected;\n", encoding="utf-8")
         return SimpleNamespace(error=None, no_changes=False)
 
-    monkeypatch.setattr("ci_triage.verify.build_verify._format_and_apply_patch", fake_apply)
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE, "_format_and_apply_patch", fake_apply)
 
     result = build_verify(options, subprocess_runner=RealGitGbsRunner())
 

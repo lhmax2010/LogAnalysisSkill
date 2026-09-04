@@ -9,6 +9,11 @@ from json import JSONDecodeError
 from pathlib import Path
 from typing import NoReturn, TextIO
 
+from tizen_build_verify import (
+    BuildVerifyOptions,
+    build_verify,
+    build_verify_to_json,
+)
 from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH
 from tizen_ci_shared.state import StateDatabase
@@ -23,11 +28,6 @@ from ci_triage.campaign_repair_step import (
     campaign_repair_step,
 )
 from ci_triage.runner import TriageOptions, run_triage
-from ci_triage.verify.build_verify import (
-    BuildVerifyOptions,
-    build_verify,
-    build_verify_to_json,
-)
 from ci_triage.verify.gerrit_submit import (
     GerritSubmitOptions,
     exit_code_for_release,

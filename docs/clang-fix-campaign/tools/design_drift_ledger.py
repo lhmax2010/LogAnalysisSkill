@@ -877,8 +877,10 @@ def _bootstrap(data_path: Path, repo_root: Path) -> int:
     corpus: list[dict[str, str]] = []
     for index in range(13):
         version = f"1.{index}"
-        suffix = "-FROZEN.md" if index == 12 else "-draft.md"
-        path = history / f"p49-skill4-build-verify-design-v{version}{suffix}"
+        if index == 12:
+            path = history / "p49-skill4-build-verify-design-v1.12.1-FROZEN.md"
+        else:
+            path = history / f"p49-skill4-build-verify-design-v{version}-draft.md"
         content = path.read_bytes()
         corpus.append(
             {

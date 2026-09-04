@@ -42,8 +42,7 @@ from ci_triage.campaign_state import (
     reconcile_pass_and_invocations,
 )
 from ci_triage.previous_evidence import MissingEvidence, ResolvedEvidence, resolve
-from ci_triage.verify.build_verify import BuildVerifyOptions, BuildVerifyResult
-from ci_triage.verify.workspace import create_worktree
+from tizen_build_verify import BuildVerifyOptions, BuildVerifyResult, create_worktree
 from tizen_ci_shared.state import (
     StateDatabase,
     VerificationRecord,

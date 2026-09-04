@@ -1,4 +1,4 @@
-# P4.9 skill-4 设计:tizen-build-verify 抽取(v1.12-FROZEN)
+# P4.9 skill-4 设计:tizen-build-verify 抽取(v1.12.1-FROZEN)
 
 - 阶段:P4.9 第四批(skill-3 CLOSED @1ca2206)
 - 权威并行:step-0 `v2.1-FROZEN`、skill-1 `v1.4`、skill-2 `v1.3`、skill-3 `v1.3.1`
@@ -91,6 +91,13 @@
 >   全部旧版行号落在上述豁免区时成立,并以豁免区外误标必红作 per-item
 >   防滥用证伪。v1.0–v1.12 原稿同时入库 `history/skill4/`,使原始 diff
 >   可由 Git 锚定语料复算。
+>
+> **v1.12.1-FROZEN 落章后修订-1(monkeypatch 目标口径)**:包根公开函数
+> `build_verify` 会遮蔽同名子模块的属性解析,故字符串目标
+> `tizen_build_verify.build_verify.<内部符号>` 无法由 pytest 解析。六处测试改为
+> `importlib.import_module("tizen_build_verify.build_verify")` 取得权威模块对象后
+> 对象式 patch;包根公开面不变。包根验收同时排除 Python import 自然产生的
+> `build_verify`/`edit_spec_guard`/`workspace` 子模块属性,不把它们误算为 API。
 >
 > **v1.11 修订(三家 v1.10;一次收完全部 findings 以尽快收口)**:
 > ①**§5.5 补第三类谓词 `REF_ONLY`**(B-MAJOR-1:§5.4.4→§6 实测两类谓词
@@ -207,8 +214,21 @@ owner 已判本 skill 的符号,故漏 B-2。本稿补齐双向:
   (`_format_and_apply_patch`/`_gbs_arch`/`_gbs_command`);
 - `tests/integration/test_build_verify_real_git.py:15` import `_format_and_apply_patch`;
 - **六处 `monkeypatch.setattr("ci_triage.verify.build_verify...")`** 必须翻到新模块,
-  否则只 patch legacy shim、不影响新函数 globals(**测试会失真**);
-- 测试改动口径:**import 行 + monkeypatch/setattr 目标字符串**(沿 skill-3)。
+  否则只 patch legacy shim、不影响新函数 globals(**测试会失真**)。因包根
+  `build_verify` 函数遮蔽同名子模块,以下六处须先以
+  `importlib.import_module("tizen_build_verify.build_verify")` 取得真实模块对象,
+  再用 `monkeypatch.setattr(module, name, replacement)`:
+  1. `test_gbs_fail_source_werror_returns_repair_allowed` → `_analyze_failure`;
+  2. `test_gbs_fail_toolchain_denylist_not_repair_allowed` → `_analyze_failure`;
+  3. `test_pass_marks_worktree_protected_before_writing_record` →
+     `mark_worktree_protected`;
+  4. 同一用例 → `write_pass_record`;
+  5. `test_pass_write_record_failure_is_not_silent` → `write_pass_record`;
+  6. `test_build_verify_rejects_unexpected_paths_using_real_git_diff` →
+     `_format_and_apply_patch`。
+- 测试改动口径扩为三类:①import 路径;②monkeypatch/setattr 目标字符串中的
+  模块路径;③**字符串目标 → 对象目标的等价改写**,仅限上述因包根同名遮蔽而
+  不可解析的六处,不得泛化。对象仍是权威实现模块,不污染包根、零生产语义变更。
 
 ### 0.3 §0 证据面口径(⑩,v1.1 更正)
 
@@ -291,6 +311,11 @@ cleanup_disposable_copy 等)。
 `build_verify` / `BuildVerifyOptions` / `BuildVerifyResult` / `build_verify_to_json`
 / `default_extra_pythonpath` / `EditSpecViolation` / `validate_edit_spec`
 / `create_worktree` / `check_disk_and_maybe_cleanup`;其余为不导出实现面。
+
+**包根验收口径(v1.12.1 修订-1)**:`__all__` 与上述九符号集合等价,九符号逐项
+可取且 identity 正确,S9 逐项 `not hasattr`。若枚举包根 namespace 检查额外
+实现面,须先排除 `build_verify`/`edit_spec_guard`/`workspace` 三个子模块名;
+它们是 Python import 自然产生的模块属性,不属于包根 API,不得据此误报导出面扩张。
 
 ### 1.3 [BLOCKER-1 裁决] `default_extra_pythonpath` 的 `__file__` 锚点
 

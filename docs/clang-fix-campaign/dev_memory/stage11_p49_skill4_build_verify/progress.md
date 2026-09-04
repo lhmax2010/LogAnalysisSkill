@@ -5,7 +5,7 @@
 Status: COMPLETE, awaiting independent review before the design freeze.
 
 Authority under test:
-`docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12-FROZEN.md`.
+`docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md`.
 
 The A0 precondition ruling is applied directly to the frozen body:
 
@@ -173,9 +173,9 @@ deterministic=yes
 
 ## v1.12 freeze stamping
 
-The canonical design and the v1.12 corpus entry were renamed to
-`p49-skill4-build-verify-design-v1.12-FROZEN.md`. Their byte content is equal
-(`cmp` exit 0), and the frozen design SHA-256 is
+The canonical design and the v1.12 corpus entry were originally frozen under
+the v1.12 filename. Their byte content was equal (`cmp` exit 0), and that
+frozen design SHA-256 was
 `c0f730ab378b97b1f0a5483e508c9003d864248c7225db2405c71e955f618408`.
 The ledger `target_design`, `generated_from`, corpus path, and SHA were rebuilt
 from that frozen path; bootstrap retained the reviewed inventory:
@@ -200,3 +200,222 @@ returned exit 0. The appendix check reconciled the four declaration clauses;
 the count check covered the authority total and 29/12/4 split, three migration
 modes, four exception negatives, ten mechanical-sync items, eight twins,
 thirteen contract/test rows, and seventeen DoD items.
+
+## Commit A: three-mode extraction
+
+### v1.12.1-FROZEN post-stamp revision 1
+
+The first targeted post-shim run exposed a Python name-resolution conflict in
+the frozen test-edit wording: the required package-root `build_verify`
+function shadows the same-named implementation submodule, so pytest cannot
+resolve a string target such as
+`tizen_build_verify.build_verify._analyze_failure`. Per the explicit ruling,
+the authority and corpus snapshot were renamed to v1.12.1-FROZEN; six listed
+patches now obtain the authoritative module with `importlib.import_module` and
+pass that object to `monkeypatch.setattr`. The public package contract is
+unchanged.
+
+The ledger bootstrap keeps the established thirteen-node logical corpus
+v1.0..v1.12 while pointing its final node at the in-place v1.12.1 artifact.
+Only that terminal-path lookup changed in the tool; predicates are unchanged.
+The canonical design and history snapshot compare byte-for-byte:
+
+```text
+$ cmp p49-skill4-build-verify-design-v1.12.1-FROZEN.md \
+    history/skill4/p49-skill4-build-verify-design-v1.12.1-FROZEN.md
+exit 0
+```
+
+A0 was rebuilt because the checked text changed:
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/tools/design_drift_ledger.py bootstrap \
+    --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+BOOTSTRAP | candidates=129 retained=82 ignored=47 binding_candidates=1410 bindings=22
+exit 0
+
+$ .venv/bin/python docs/clang-fix-campaign/tools/design_drift_ledger.py check \
+    --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=129 | retained=82 | ignored=47 | bindings=22 | binding_candidates=1410
+exit 0
+
+$ .venv/bin/python docs/clang-fix-campaign/tools/design_drift_ledger.py admission-v19 \
+    --data docs/clang-fix-campaign/tools/design_drift_ledger.json
+BINDING_DRIFT | B-CORPUS-REFERENCE | missing_definition=['每一相邻版本对做原始 git diff'], leaked_snippets=[], parsed_targets=['§5.4.4'], expected=§5.4.4
+BINDING_DRIFT | B-RAW-DIFF | binding B-RAW-DIFF reference selector did not match v1.9
+BINDING_DRIFT | B-X-PRESERVE | missing_definition=[], missing_reference=['X 原样保留']
+ADMISSION_V19 | BINDING_DRIFT=3 | required_known=2 | RED_AS_EXPECTED
+exit 1 (expected)
+```
+
+### Pre-shim source evidence
+
+The three skill files were created while all legacy modules were still
+independent implementations. Initial byte comparisons all returned exit 0:
+
+```text
+cmp ci_triage/verify/build_verify.py tizen_build_verify/build_verify.py: exit 0
+cmp ci_triage/verify/edit_spec_guard.py tizen_build_verify/edit_spec_guard.py: exit 0
+cmp ci_triage/verify/workspace.py tizen_build_verify/workspace.py: exit 0
+```
+
+The build-verify copy was then changed only at the three frozen whitelist
+locations: the edit-spec import, the workspace import, and
+`default_extra_pythonpath`'s `parents[2]` to `parents[1]` anchor. The workspace
+copy retained byte-identical AST source segments for its four owned
+definitions and replaced the old 17-name compatibility header with exactly
+the nine shared bindings in S9. The edit-spec copy remained byte-identical.
+
+### Pre-shim behavioral parity
+
+The parity run occurred before any legacy module was replaced by a shim. It
+used `importlib.reload` to load distinct old and new module objects, fixed UUID
+and shared-workspace UTC sources, exported fixed Git author/committer dates,
+and replaced formatter `TemporaryDirectory` with one deterministic directory.
+The only normalizer mask replaced each run's destination root in named result
+path fields, individual argv elements, marker path fields, and symlink target
+fields; no payload-wide string replacement was used. DB rows were not part of
+the payload, so the independent state DB clock was outside the comparison.
+
+Temporary B-stage roots used by the command:
+
+```text
+PYTHONPATH=$PWD/tizen-build-verify/scripts:$PWD/tizen-ci-shared/scripts:$PWD/tizen-ci-triage/scripts:$PWD/tizen-gbs-log-analysis/scripts:$PWD/tizen-gbs-patch-suggest/scripts:$PWD/tizen-gbs-build/scripts:$PWD/tizen-convergence-judge/scripts:$PWD/tizen-qb-discover/scripts:$PWD/tizen-gerrit-fetch/scripts
+GIT_AUTHOR_DATE=2000-01-01T00:00:00+00:00
+GIT_COMMITTER_DATE=2000-01-01T00:00:00+00:00
+```
+
+Actual output (`exit 0`):
+
+```text
+old_module=.../tizen-ci-triage/scripts/ci_triage/verify/build_verify.py
+new_module=.../tizen-build-verify/scripts/tizen_build_verify/build_verify.py
+isolation=importlib.reload distinct_modules=True
+field_equal[result]=True
+field_equal[runner_trace]=True
+field_equal[destination_tree]=True
+field_equal[default_extra_pythonpath]=True
+field_equal[controlled_environment]=True
+default_extra_pythonpath_nonempty=True
+payload_sha256=375af83385970d797523956485d3e1b81cda8933273af698895be49d50883c8e
+normalizer_positive_destination_only=True
+normalizer_negative[failure_class]=True
+normalizer_negative[command_order]=True
+normalizer_negative[repair_allowed]=True
+```
+
+The payload's five sections are the complete `BuildVerifyResult`, ordered fake
+runner argv/timeout trace, normalized destination tree plus workdir/protected
+stage markers, ordered `default_extra_pythonpath` tuple, and the explicitly
+controlled environment fields (`PYTHONPATH`, `GIT_AUTHOR_DATE`, and
+`GIT_COMMITTER_DATE`). The three negative mutations were all outside path
+fields.
+
+### Three migration modes after wiring
+
+Mode 2's external zero-context diff contains only the frozen three changes:
+
+```diff
+@@ -41,2 +41,2 @@
+-from ci_triage.verify.edit_spec_guard import EditSpecViolation, validate_edit_spec
+-from ci_triage.verify.workspace import (
++from tizen_build_verify.edit_spec_guard import EditSpecViolation, validate_edit_spec
++from tizen_build_verify.workspace import (
+@@ -635 +635 @@
+-        launcher_path=Path(__file__).resolve().parents[2] / "run_ci_triage.py"
++        launcher_path=Path(__file__).resolve().parents[1] / "run_ci_triage.py"
+```
+
+The mode-specific mechanical checker returned exit 0:
+
+```text
+MODE1_CMP_EQUAL=True
+MODE3_DEFINITION_SET_EXACT=True
+MODE3_SEGMENT_EQUAL[DEFAULT_MIN_FREE_BYTES]=True
+MODE3_SEGMENT_EQUAL[_copy_repository]=True
+MODE3_SEGMENT_EQUAL[check_disk_and_maybe_cleanup]=True
+MODE3_SEGMENT_EQUAL[create_worktree]=True
+MODE3_CHANGED_HUNKS_HEADER_ONLY=True old_first_def=39 new_first_def=29
+MODE3_S9_EXACT=True count=9
+MODE3_S9_ALIASES=[]
+MODE3_PACKAGE_ROOT_S9_LEAKS=[]
+```
+
+A semantic-comment scan of all three skill copies found no inherited `shim`,
+`removed at`, `legacy`, or `ci_triage.verify` annotation. Their existing
+module/function comments continue to describe the moved implementation.
+
+### Shim and consumer wiring
+
+The build-verify and edit-spec old locations are pure re-export shims. The old
+workspace location is a combination shim with exactly 17 shared bindings and
+four skill bindings. An AST/grep check reported:
+
+```text
+LEGACY_SHIM_ZERO_DEF_CLASS=True
+WORKSPACE_SHIM_SHARED_COUNT=17
+WORKSPACE_SHIM_SKILL_COUNT=4
+rg_def_class_exit=1 (no matches)
+```
+
+All six monkeypatch calls listed by v1.12.1 revision 1 now patch the module
+object returned by
+`importlib.import_module("tizen_build_verify.build_verify")`. The targeted
+unit/integration set passed:
+
+```text
+109 passed, 1 skipped in 3.98s
+```
+
+Permanent tests cover the ordered/nonempty Python-path equivalence, all 45
+migrated symbol identities plus the 17 shared workspace identities, the exact
+nine-name package `__all__`, and absence of every S9 symbol from the package
+root.
+
+### Baseline preservation and gates
+
+A detached HEAD worktree supplied the pre-change collection. Comparing sorted
+nodeids against the working tree produced:
+
+```text
+baseline_nodeids=884
+current_nodeids=887
+missing_baseline_nodeids=0
+new_nodeids=3
+tests/unit/test_build_verify.py::test_default_extra_pythonpath_matches_legacy_anchor_and_is_nonempty
+tests/unit/test_build_verify.py::test_legacy_shims_preserve_all_migrated_symbol_identities
+tests/unit/test_build_verify.py::test_package_root_exports_only_public_contract_and_not_workspace_s9
+```
+
+The baseline was `883 passed, 1 skipped`; commit A establishes the new total:
+
+```text
+886 passed, 1 skipped in 17.80s
+SKIPPED [1] tests/unit/test_edit_spec_guard.py:97: case-sensitive filesystem
+```
+
+Temporary B-stage execution used all repository `*/scripts` roots, including
+`$PWD/tizen-build-verify/scripts`, in both `PYTHONPATH` and `MYPYPATH` where
+applicable. Packaging/README/CI registration remains deferred to commit C.
+
+```text
+mypy configured surface: Success: no issues found in 105 source files
+mypy tizen_build_verify: Success: no issues found in 4 source files
+ruff tracked Python plus tizen_build_verify: All checks passed!
+py_compile changed Python surface: exit 0
+lint-imports: Contracts: 6 kept, 0 broken.
+```
+
+The final design-gate replay remained pinned to v1.12.1:
+
+```text
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=129 | retained=82 | ignored=47 | bindings=22 | binding_candidates=1410
+check_exit=0
+ADMISSION_V19 | BINDING_DRIFT=3 | required_known=2 | RED_AS_EXPECTED
+admission_exit=1 (expected)
+```
+
+`git diff --stat` and `git status` scoped to `gbs_report.py`, the P4.5
+`design.md`, and `release-v1.4.0/` were empty. No production behavior changed
+outside the three frozen mode-2 lines, the mode-3 import header, compatibility
+shims, and direct consumer imports.
