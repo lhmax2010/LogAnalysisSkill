@@ -1,9 +1,15 @@
+# Static import gates do not see subprocess dependencies. In particular,
+# tizen_build_verify.build_verify invokes ``python -m gbs_analyzer`` and also
+# runs gbs, git, and cp -a. See
+# docs/clang-fix-campaign/dev_memory/subprocess-boundaries.md.
 [importlinter]
 root_packages =
     tizen_ci_shared
     tizen_convergence_judge
     tizen_qb_discover
     tizen_gerrit_fetch
+    tizen_build_verify
+    gbs_patch_suggest
     ci_triage
 
 [importlinter:contract:root-layers]
@@ -11,8 +17,11 @@ name = application layers: orchestration -> skills -> shared
 type = layers
 layers =
     ci_triage
-    tizen_convergence_judge | tizen_qb_discover | tizen_gerrit_fetch
+    tizen_convergence_judge | tizen_qb_discover | tizen_gerrit_fetch | tizen_build_verify | gbs_patch_suggest
     tizen_ci_shared
+ignore_imports =
+    tizen_build_verify.build_verify -> gbs_patch_suggest.formatter
+unmatched_ignore_imports_alerting = error
 
 [importlinter:contract:skill-independence]
 name = extracted skills are independent
@@ -21,6 +30,11 @@ modules =
     tizen_convergence_judge
     tizen_qb_discover
     tizen_gerrit_fetch
+    tizen_build_verify
+    gbs_patch_suggest
+ignore_imports =
+    tizen_build_verify.build_verify -> gbs_patch_suggest.formatter
+unmatched_ignore_imports_alerting = error
 
 [importlinter:contract:shared-layers]
 name = shared internal layers: L1 -> L0 -> types
@@ -39,6 +53,7 @@ forbidden_modules = ci_triage
     tizen_convergence_judge
     tizen_qb_discover
     tizen_gerrit_fetch
+    tizen_build_verify
 
 [importlinter:contract:shared-l1-independence]
 name = shared L1 domains are independent

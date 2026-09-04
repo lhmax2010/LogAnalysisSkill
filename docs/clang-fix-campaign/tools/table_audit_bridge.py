@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import re
 import sys
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -19,6 +20,7 @@ SECTION_HEADINGS = (
 CONVERGENCE_SECTION_HEADINGS = ("### 1.2 ",)
 QB_DISCOVER_SECTION_HEADINGS = ("### 2.2 ",)
 GERRIT_FETCH_SECTION_HEADINGS = ("## §0 ",)
+BUILD_VERIFY_SECTION_HEADINGS = ("## §0 ",)
 MODULE_SCOPE_HEADING = "### 1.2a "
 SYMBOL_COLUMNS = frozenset({"symbol", "类型", "符号"})
 MODULE_COLUMNS = frozenset({"module"})
@@ -26,6 +28,37 @@ OWNER_COLUMNS = frozenset({"owner", "归属"})
 DEFINITION_COLUMNS = frozenset({"definition"})
 
 SpecKey = tuple[str, str]
+RelocationTriplet = tuple[str, str, str]
+
+BUILD_VERIFY_RELOCATIONS: dict[RelocationTriplet, RelocationTriplet] = {
+    (
+        "ci_triage/verify/workspace.py",
+        "create_worktree",
+        "build-verify",
+    ): (
+        "tizen_build_verify/workspace.py",
+        "create_worktree",
+        "skill/tizen_build_verify",
+    ),
+    (
+        "ci_triage/verify/workspace.py",
+        "check_disk_and_maybe_cleanup",
+        "build-verify",
+    ): (
+        "tizen_build_verify/workspace.py",
+        "check_disk_and_maybe_cleanup",
+        "skill/tizen_build_verify",
+    ),
+    (
+        "ci_triage/verify/workspace.py",
+        "_copy_repository",
+        "build-verify",
+    ): (
+        "tizen_build_verify/workspace.py",
+        "_copy_repository",
+        "skill/tizen_build_verify",
+    ),
+}
 
 
 class TableParseError(ValueError):
@@ -45,6 +78,123 @@ class BodyModuleEntry:
     module: str
     owner: str
     line_number: int
+
+
+@dataclass(frozen=True)
+class RelocationResult:
+    entries: dict[SpecKey, BodyEntry]
+    consumed_sources: frozenset[RelocationTriplet]
+    produced_destinations: frozenset[RelocationTriplet]
+    verdicts: tuple[str, ...]
+
+
+def _triplet(entry: BodyEntry) -> RelocationTriplet:
+    return (entry.definition, entry.symbol, entry.owner)
+
+
+def _mapping_contract_reasons(
+    mapping: Mapping[RelocationTriplet, RelocationTriplet],
+    *,
+    expected: Mapping[RelocationTriplet, RelocationTriplet] | None = None,
+) -> tuple[str, ...]:
+    destinations = tuple(mapping.values())
+    reasons: list[str] = []
+    if len(set(destinations)) != len(destinations):
+        reasons.append("RELOCATION_NOT_BIJECTIVE: duplicate destination")
+    if expected is not None and dict(mapping) != dict(expected):
+        missing_sources = sorted(
+            source for source in expected if source not in mapping
+        )
+        for source in missing_sources:
+            reasons.append(f"UNMAPPED_SOURCE: production mapping omits {source}")
+        reasons.append(
+            "RELOCATION_MAPPING_NOT_EXACT: production mapping must contain "
+            f"exactly {len(expected)} frozen pairs"
+        )
+    return tuple(reasons)
+
+
+def _relocation_output_reasons(
+    entries: dict[SpecKey, BodyEntry],
+    consumed_sources: frozenset[RelocationTriplet],
+    produced_destinations: frozenset[RelocationTriplet],
+    mapping: Mapping[RelocationTriplet, RelocationTriplet],
+) -> tuple[str, ...]:
+    reasons: list[str] = []
+    for source_triplet, destination_triplet in mapping.items():
+        if source_triplet in consumed_sources and source_triplet[:2] in entries:
+            reasons.append(f"SOURCE_REMAINS: {source_triplet}")
+        if (
+            destination_triplet in produced_destinations
+            and destination_triplet[:2] not in entries
+        ):
+            reasons.append(f"DESTINATION_NOT_PRODUCED: {destination_triplet}")
+    return tuple(reasons)
+
+
+def apply_relocations(
+    source_entries: dict[SpecKey, BodyEntry],
+    destination_entries: dict[SpecKey, BodyEntry],
+    mapping: Mapping[RelocationTriplet, RelocationTriplet],
+) -> RelocationResult:
+    """Apply an injected relocation mapping without consulting global state."""
+
+    output = dict(source_entries)
+    consumed: set[RelocationTriplet] = set()
+    produced: set[RelocationTriplet] = set()
+    verdicts = list(_mapping_contract_reasons(mapping))
+
+    for source_triplet, destination_triplet in mapping.items():
+        source_key = source_triplet[:2]
+        destination_key = destination_triplet[:2]
+        source_entry = source_entries.get(source_key)
+        if source_entry is None or _triplet(source_entry) != source_triplet:
+            verdicts.append(f"UNMAPPED_SOURCE: {source_triplet}")
+            continue
+
+        destination_entry = destination_entries.get(destination_key)
+        if destination_entry is None:
+            same_symbol = tuple(
+                entry
+                for entry in destination_entries.values()
+                if entry.symbol == destination_triplet[1]
+            )
+            if same_symbol:
+                verdicts.append(
+                    "DESTINATION_DEFINITION_MISMATCH: expected "
+                    f"{destination_triplet[0]}, measured "
+                    + ",".join(sorted(entry.definition for entry in same_symbol))
+                )
+            else:
+                verdicts.append(f"MISSING_DESTINATION: {destination_triplet}")
+            continue
+        if _triplet(destination_entry) != destination_triplet:
+            verdicts.append(
+                "DESTINATION_MISMATCH: expected "
+                f"{destination_triplet}, measured {_triplet(destination_entry)}"
+            )
+            continue
+
+        output.pop(source_key, None)
+        output[destination_key] = destination_entry
+        consumed.add(source_triplet)
+        produced.add(destination_triplet)
+
+    verdicts.extend(
+        _relocation_output_reasons(
+            output,
+            frozenset(consumed),
+            frozenset(produced),
+            mapping,
+        )
+    )
+
+    return RelocationResult(
+        entries=output,
+        consumed_sources=frozenset(consumed),
+        produced_destinations=frozenset(produced),
+        verdicts=tuple(verdicts),
+    )
 
 
 def _cells(raw_line: str) -> list[str]:
@@ -239,6 +389,10 @@ def run(repo_root: Path) -> int:
         "docs/clang-fix-campaign/"
         "p49-skill3-gerrit-fetch-design-v1.3.1-FROZEN.md"
     )
+    build_verify_design_path = repo_root / (
+        "docs/clang-fix-campaign/"
+        "p49-skill4-build-verify-design-v1.12.1-FROZEN.md"
+    )
     try:
         body = parse_design_tables(design_path)
         skill_body = parse_design_tables(
@@ -253,11 +407,33 @@ def run(repo_root: Path) -> int:
             gerrit_fetch_design_path,
             section_headings=GERRIT_FETCH_SECTION_HEADINGS,
         )
-        body = _merge_symbol_tables(
+        build_verify_body = parse_design_tables(
+            build_verify_design_path,
+            section_headings=BUILD_VERIFY_SECTION_HEADINGS,
+        )
+        mapping_reasons = _mapping_contract_reasons(
+            BUILD_VERIFY_RELOCATIONS,
+            expected=BUILD_VERIFY_RELOCATIONS,
+        )
+        relocation = apply_relocations(
             body,
+            build_verify_body,
+            BUILD_VERIFY_RELOCATIONS,
+        )
+        relocation_destinations = {
+            destination[:2] for destination in BUILD_VERIFY_RELOCATIONS.values()
+        }
+        build_verify_new_body = {
+            key: entry
+            for key, entry in build_verify_body.items()
+            if key not in relocation_destinations
+        }
+        body = _merge_symbol_tables(
+            relocation.entries,
             skill_body,
             qb_discover_body,
             gerrit_fetch_body,
+            build_verify_new_body,
         )
         body_modules = parse_module_scope_table(design_path)
     except TableParseError as exc:
@@ -267,6 +443,23 @@ def run(repo_root: Path) -> int:
             "0 OWNER_MISMATCH | 1 PARSE_ERROR"
         )
         return 1
+
+    relocation_verdicts = (*mapping_reasons, *relocation.verdicts)
+    if relocation_verdicts:
+        for verdict in relocation_verdicts:
+            print(f"RELOCATION | {verdict}")
+        print(
+            "SUMMARY | 0 OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | "
+            "0 OWNER_MISMATCH | 1 RELOCATION_ERROR | 0 PARSE_ERROR"
+        )
+        return 1
+    print(
+        "RELOCATION | "
+        f"consumed={len(relocation.consumed_sources)}/"
+        f"{len(BUILD_VERIFY_RELOCATIONS)} | "
+        f"produced={len(relocation.produced_destinations)}/"
+        f"{len(BUILD_VERIFY_RELOCATIONS)} | OK"
+    )
 
     symbol_specs = tuple(spec for spec in SPECS if isinstance(spec, SymbolSpec))
     module_specs = tuple(spec for spec in SPECS if isinstance(spec, ModuleScopeSpec))
@@ -347,6 +540,165 @@ def run(repo_root: Path) -> int:
     return 1 if missing_inventory or missing_body or owner_mismatch else 0
 
 
+def _body_entry(triplet: RelocationTriplet, line_number: int = 1) -> BodyEntry:
+    definition, symbol, owner = triplet
+    return BodyEntry(symbol, definition, owner, line_number)
+
+
+def _run_relocation_negative_fixture(name: str) -> int:
+    source = ("legacy.py", "S", "legacy-owner")
+    destination = ("skill.py", "S", "skill-owner")
+    mapping = {source: destination}
+    source_entries = {source[:2]: _body_entry(source)}
+    destination_entries = {destination[:2]: _body_entry(destination)}
+
+    if name == "missing-destination":
+        result = apply_relocations(source_entries, {}, mapping)
+        reasons = result.verdicts
+        expected = "MISSING_DESTINATION"
+    elif name == "wrong-definition":
+        wrong = ("wrong.py", "S", "skill-owner")
+        result = apply_relocations(
+            source_entries,
+            {wrong[:2]: _body_entry(wrong)},
+            mapping,
+        )
+        reasons = result.verdicts
+        expected = "DESTINATION_DEFINITION_MISMATCH"
+    elif name == "wrong-owner":
+        wrong = ("skill.py", "S", "wrong-owner")
+        result = apply_relocations(
+            source_entries,
+            {wrong[:2]: _body_entry(wrong)},
+            mapping,
+        )
+        reasons = result.verdicts
+        expected = "DESTINATION_MISMATCH"
+    elif name == "source-remains":
+        result = apply_relocations(source_entries, destination_entries, mapping)
+        tampered = dict(result.entries)
+        tampered[source[:2]] = _body_entry(source)
+        reasons = _relocation_output_reasons(
+            tampered,
+            result.consumed_sources,
+            result.produced_destinations,
+            mapping,
+        )
+        expected = "SOURCE_REMAINS"
+    elif name == "mapping-contract":
+        production_items = tuple(BUILD_VERIFY_RELOCATIONS.items())
+        missing = dict(production_items[:-1])
+        extra = {
+            **BUILD_VERIFY_RELOCATIONS,
+            ("extra.py", "E", "old"): ("new.py", "E", "new"),
+        }
+        duplicate_destination = dict(BUILD_VERIFY_RELOCATIONS)
+        duplicate_destination[production_items[1][0]] = production_items[0][1]
+        cases = {
+            "missing": _mapping_contract_reasons(
+                missing,
+                expected=BUILD_VERIFY_RELOCATIONS,
+            ),
+            "non-exact": _mapping_contract_reasons(
+                extra,
+                expected=BUILD_VERIFY_RELOCATIONS,
+            ),
+            "non-bijective": _mapping_contract_reasons(
+                duplicate_destination,
+                expected=BUILD_VERIFY_RELOCATIONS,
+            ),
+        }
+        for case, case_reasons in cases.items():
+            print(
+                f"RELOCATION_NEGATIVE | {name}/{case} | "
+                + "; ".join(case_reasons)
+            )
+        passed = (
+            any("UNMAPPED_SOURCE" in item for item in cases["missing"])
+            and any("RELOCATION_MAPPING_NOT_EXACT" in item for item in cases["non-exact"])
+            and any("RELOCATION_NOT_BIJECTIVE" in item for item in cases["non-bijective"])
+        )
+        return 1 if passed else 0
+    elif name == "source-table-mismatch":
+        wrong_source = ("legacy.py", "S", "wrong-owner")
+        result = apply_relocations(
+            {wrong_source[:2]: _body_entry(wrong_source)},
+            destination_entries,
+            mapping,
+        )
+        reasons = result.verdicts
+        expected = "UNMAPPED_SOURCE"
+    else:
+        print(f"unknown relocation negative fixture: {name}")
+        return 2
+
+    rendered = "; ".join(reasons) or "OK"
+    print(f"RELOCATION_NEGATIVE | {name} | {rendered}")
+    return 1 if any(expected in reason for reason in reasons) else 0
+
+
+def _run_relocation_synthetic(name: str) -> int:
+    a = ("old.py", "A", "old-owner")
+    b = ("new.py", "B", "new-owner")
+    c = ("old.py", "C", "old-owner")
+    d = ("new.py", "D", "new-owner")
+    x = ("other.py", "X", "other-owner")
+
+    if name == "one":
+        mapping = {a: b}
+        result = apply_relocations(
+            {a[:2]: _body_entry(a)},
+            {b[:2]: _body_entry(b)},
+            mapping,
+        )
+        passed = (
+            result.consumed_sources == frozenset({a})
+            and result.produced_destinations == frozenset({b})
+            and set(result.entries) == {b[:2]}
+            and not result.verdicts
+        )
+    elif name == "two":
+        mapping = {a: b}
+        result = apply_relocations(
+            {x[:2]: _body_entry(x)},
+            {b[:2]: _body_entry(b)},
+            mapping,
+        )
+        passed = (
+            result.consumed_sources == frozenset()
+            and set(result.entries) == {x[:2]}
+            and any("UNMAPPED_SOURCE" in verdict for verdict in result.verdicts)
+        )
+    elif name == "three":
+        mapping = {a: b, c: d}
+        result = apply_relocations(
+            {a[:2]: _body_entry(a), x[:2]: _body_entry(x)},
+            {b[:2]: _body_entry(b), d[:2]: _body_entry(d)},
+            mapping,
+        )
+        passed = (
+            result.consumed_sources == frozenset({a})
+            and result.produced_destinations == frozenset({b})
+            and set(result.entries) == {b[:2], x[:2]}
+            and a[:2] not in result.entries
+            and c[:2] not in result.entries
+            and d[:2] not in result.entries
+            and any("UNMAPPED_SOURCE" in verdict for verdict in result.verdicts)
+        )
+    else:
+        print(f"unknown relocation synthetic fixture: {name}")
+        return 2
+
+    print(
+        f"RELOCATION_SYNTHETIC | {name} | "
+        f"consumed={sorted(result.consumed_sources)} | "
+        f"produced={sorted(result.produced_destinations)} | "
+        f"output={sorted(result.entries)} | verdicts={result.verdicts} | "
+        f"{'OK' if passed else 'MISMATCH'}"
+    )
+    return 0 if passed else 1
+
+
 def _run_key_fixture(name: str) -> int:
     sources = BodyEntry(
         "_attrs_to_map",
@@ -387,11 +739,18 @@ def _run_key_fixture(name: str) -> int:
 def main() -> int:
     if len(sys.argv) == 3 and sys.argv[1] in {"--key-fixture", "--negative-fixture"}:
         return _run_key_fixture(sys.argv[2])
+    if len(sys.argv) == 3 and sys.argv[1] == "--relocation-negative":
+        return _run_relocation_negative_fixture(sys.argv[2])
+    if len(sys.argv) == 3 and sys.argv[1] == "--relocation-synthetic":
+        return _run_relocation_synthetic(sys.argv[2])
     if len(sys.argv) != 1:
         print(
             "usage: table_audit_bridge.py "
             "[--key-fixture twin-both-binary-key|"
-            "--negative-fixture twin-both-name-only]"
+            "--negative-fixture twin-both-name-only|"
+            "--relocation-negative missing-destination|wrong-definition|"
+            "wrong-owner|source-remains|mapping-contract|source-table-mismatch|"
+            "--relocation-synthetic one|two|three]"
         )
         return 2
     return run(Path(__file__).resolve().parents[3])

@@ -554,3 +554,235 @@ This commit changes only test ownership/tests, the required §4 use-case
 writeback in the canonical and history design copies, the regenerated A0 data
 file, and this evidence record. Production files under `tizen-*/scripts/` and
 `ci_triage/` have zero diff from commit A.
+
+## Commit C: gates, audit, and formal delivery surface
+
+### Ten mechanical synchronizations
+
+The §2.4 inventory update was applied before evaluating the new skill. A
+read-only check over `symbol_audit.SPECS` reported all 21 individual assertions
+inside the ten checklist items as green:
+
+```text
+5 build_verify consumer flips: OK
+9 workspace consumer flips: OK
+3 workspace definition/owner supersessions: OK
+DEFAULT_MIN_FREE_BYTES registration: OK
+MODULE_OWNERS registration: OK
+REGISTERED_SKILL_ROOTS registration: OK
+ROOT_LAYERS_HIGH_TO_LOW registration: OK
+SUMMARY | checks=21 | passed=21 | failed=0
+```
+
+The remaining checklist items are mechanically visible in the final tools:
+
+- `surface_checks` selects all three `tizen_build_verify` definition paths and
+  compares `_top_level_symbols` with the exact SPECS set;
+- the bridge reads
+  `p49-skill4-build-verify-design-v1.12.1-FROZEN.md`;
+- source loading includes `tizen-build-verify/scripts` in both normal and
+  fixture paths;
+- binding fixture d now reports
+  `workspace._run_git=('tizen_build_verify.workspace',)`.
+
+The bridge proves the three exact module counts rather than only their sum:
+
+```text
+tizen_build_verify/build_verify.py=29
+tizen_build_verify/edit_spec_guard.py=12
+tizen_build_verify/workspace.py=4
+```
+
+### Relocation contract and fixtures
+
+`apply_relocations` is a pure function over injected source entries,
+destination entries, and a mapping. `consumed_sources` comes only from actual
+source-row lookup hits; unmapped entries remain byte-for-byte the original
+`BodyEntry` objects in the ordinary comparison output. The production run is:
+
+```text
+RELOCATION | consumed=3/3 | produced=3/3 | OK
+```
+
+Each negative control exits 1 for its named reason:
+
+```text
+missing-destination: MISSING_DESTINATION; exit 1
+wrong-definition: DESTINATION_DEFINITION_MISMATCH; exit 1
+wrong-owner: DESTINATION_MISMATCH; exit 1
+source-remains: SOURCE_REMAINS; exit 1
+mapping-contract/missing: UNMAPPED_SOURCE + RELOCATION_MAPPING_NOT_EXACT; exit 1
+mapping-contract/non-exact: RELOCATION_MAPPING_NOT_EXACT; exit 1
+mapping-contract/non-bijective: RELOCATION_NOT_BIJECTIVE + RELOCATION_MAPPING_NOT_EXACT; exit 1
+source-table-mismatch: UNMAPPED_SOURCE; exit 1
+```
+
+The three synthetic mapping cases execute the output and verdict checks, not
+only the self-reported consumed set:
+
+```text
+one: consumed=[A], produced=[B], output=[B], verdicts=(), exit 0
+two: consumed=[], produced=[], output=[X], verdicts=[UNMAPPED_SOURCE(A)], exit 0
+three: consumed=[A], produced=[B], output=[B,X],
+       verdicts=[UNMAPPED_SOURCE(C)], A/C/D absent, X preserved, exit 0
+```
+
+### Exact-surface and twin evidence
+
+The three exact surface guards use all top-level functions, classes, and
+assignments, so mixed-case aliases cannot escape. The anti-abuse fixture is:
+
+```text
+SURFACE_FIXTURE | mixed-case-alias | MISMATCH: present in source but not audited: MixedCaseAlias
+exit 1
+```
+
+The eight frozen twin groups remain physically distinct under exact,
+scope-limited probes: `SubprocessRunner=8`, `_git_stdout=3`, `_read_json=2`,
+`_sha256_file=2`, `_build_subprocess_env=2`, `_is_relative_to=2`,
+`EDIT_SPEC_SCHEMA=2`, and `_locate_edit=2`. These counts use anchored forms
+such as `^def _git_stdout\(` and `^SubprocessRunner = `; they do not use
+prefix matching. The two gbs-patch-suggest groups remain outside symbol-audit's
+declared source scope exactly as frozen, and are retained as manual twin
+evidence rather than silently merged.
+
+### Import-linter exception and negative controls
+
+The root set now includes `tizen_build_verify` and `gbs_patch_suggest` without
+`include_external_packages`. Both root-layers and skill-independence contain
+the exact same single edge ignore and independently set unmatched-ignore
+alerting to error:
+
+```text
+ignore edge count=2
+unmatched_ignore_imports_alerting count=2
+include_external_packages count=0
+```
+
+With only the exact formatter edge present, all six contracts are green:
+
+```text
+Analyzed 62 files, 124 dependencies.
+application layers: orchestration -> skills -> shared KEPT
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+Contracts: 6 kept, 0 broken.
+exit 0
+```
+
+N1 through N4 each retained the real allowed formatter edge while adding one
+temporary illegal edge. Each run reported exactly root-layers and
+skill-independence broken, with four contracts kept:
+
+```text
+N1 tizen_gerrit_fetch.gerrit -> gbs_patch_suggest.formatter: exit 1
+N2 tizen_build_verify.edit_spec_guard -> gbs_patch_suggest.formatter: exit 1
+N3 tizen_build_verify.build_verify -> gbs_patch_suggest.analyzer_runner: exit 1
+N4 gbs_patch_suggest.formatter -> tizen_build_verify: exit 1
+```
+
+The linter's broken-contract text named the exact edge shown above under both
+`application layers: orchestration -> skills -> shared` and `extracted skills
+are independent` in every run. Removing only root-layers' copy of the allowed
+edge produced:
+
+```text
+application layers: orchestration -> skills -> shared BROKEN
+extracted skills are independent KEPT
+tizen_build_verify.build_verify -> gbs_patch_suggest.formatter (l.25)
+Contracts: 5 kept, 1 broken.
+exit 1
+```
+
+Restoring that copy returned the six-contract positive run to exit 0. This is
+the direct proof that each contract carries its own ignore.
+
+### Subprocess boundary and shim ledgers
+
+`.importlinter` now points at the campaign-wide
+`dev_memory/subprocess-boundaries.md` ledger. The ledger records the actual
+`tizen_build_verify.build_verify --python -m--> gbs_analyzer` edge plus `gbs`,
+`git`, and `cp -a`, all invisible to static import analysis. It also records
+the formatter ignore's transitive-closure limitation.
+
+The P4.9 final shim-cleanup ledger gains these three legacy locations:
+
+- `ci_triage.verify.build_verify`: pure skill re-export shim;
+- `ci_triage.verify.edit_spec_guard`: pure skill re-export shim;
+- `ci_triage.verify.workspace`: composition shim retaining shared workspace
+  re-exports plus the four build-verify symbols.
+
+`ci_triage.verify.__init__` remains the existing package-level compatibility
+surface. These shims are retained until the one-shot P4.9 cleanup and are not
+counted as new authorities.
+
+### Formal entry points and two-stage evidence
+
+The prescribed commands were first proven against gerrit-fetch and returned
+`1/1/2/2`. Applied unchanged to build-verify they report:
+
+```text
+ci.yml mypy line: 1
+README $PWD script root: 1
+pyproject script root: 2
+pyproject import package: 2
+```
+
+`release-v1.4.0/` remains a historical snapshot and has zero diff in this
+commit. Commit A/B used the explicit temporary
+`$PWD/tizen-build-verify/scripts` PYTHONPATH/MYPYPATH scaffolding recorded
+above. Commit C refreshed editable packaging with:
+
+```text
+$ .venv/bin/python -m pip install -e .
+Successfully built gbs-analyzer
+Successfully installed gbs-analyzer-1.3.0
+exit 0
+```
+
+All C-stage commands below ran with
+`env -u PYTHONPATH -u MYPYPATH`, so none consume the B-stage scaffold:
+
+```text
+targeted build-verify: 45 passed, 1 skipped in 1.19s
+full suite: 897 passed, 1 skipped in 18.43s
+mypy configured packages: Success: no issues found in 109 source files
+mypy audit tools: Success: no issues found in 2 source files
+ruff tracked Python: All checks passed!
+py_compile tracked Python: exit 0
+lint-imports: 6 kept, 0 broken
+```
+
+The commit B 898-nodeid collection is unchanged; there are no test-file edits
+in commit C, so the 897-pass/1-skip baseline set cannot shrink behind a larger
+total.
+
+### Dual audits and design gates
+
+The final source audit and body bridge both pass, and the bridge output begins
+with the relocation evidence before listing all 45 skill-4 rows:
+
+```text
+symbol_audit: SUMMARY | 150 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+table_audit_bridge: RELOCATION | consumed=3/3 | produced=3/3 | OK
+table_audit_bridge: SUMMARY | 150 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+```
+
+The v1.12.1 design gates remain pinned and green; the older admission sample
+remains red for all three detected drifts:
+
+```text
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=130 | retained=83 | ignored=47 | bindings=22 | binding_candidates=1410
+check_exit=0
+ADMISSION_V19 | BINDING_DRIFT=3 | required_known=2 | RED_AS_EXPECTED
+admission_exit=1 (expected)
+```
+
+The skill's `SKILL.md` records Inputs, Outputs, Errors, Side Effects, and
+Idempotency, including the first-class `wall_timeout` contract and its contrast
+with gerrit-fetch's timeout propagation. Arch exemption is intentionally not
+claimed: raw/norm architecture behavior is covered by commit B's four-case
+matrix.

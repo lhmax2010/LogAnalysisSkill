@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Statically audit P4.9 step-0 attribution tables against the source tree.
+"""Statically audit P4.9 attribution tables against the source tree.
 
 This tool parses source text and Python ASTs only. It never imports or executes
 the modules being audited. The inventory covers the step-0 shared moves and the
-extracted convergence-judge, qb-discover, and gerrit-fetch skills. gbs_report.py
-is intentionally out of scope and deferred as a whole to the triage-report
-extraction batch.
+extracted convergence-judge, qb-discover, gerrit-fetch, and build-verify
+skills. gbs_report.py is intentionally out of scope and deferred as a whole to
+the triage-report extraction batch.
 """
 
 from __future__ import annotations
@@ -56,8 +56,17 @@ SHARED_STATE_RECORDS = "tizen_ci_shared/state/records.py"
 SKILL_CONVERGENCE = "tizen_convergence_judge/convergence.py"
 SKILL_QB_DISCOVER = "tizen_qb_discover/sources.py"
 SKILL_GERRIT_FETCH = "tizen_gerrit_fetch/gerrit.py"
+SKILL_BUILD_VERIFY = "tizen_build_verify/build_verify.py"
+SKILL_EDIT_SPEC_GUARD = "tizen_build_verify/edit_spec_guard.py"
+SKILL_BUILD_WORKSPACE = "tizen_build_verify/workspace.py"
 
 SpecKey = tuple[str, str]
+
+EXACT_SURFACE_COUNTS = {
+    SKILL_BUILD_VERIFY: 29,
+    SKILL_EDIT_SPEC_GUARD: 12,
+    SKILL_BUILD_WORKSPACE: 4,
+}
 
 
 # Keep this high-to-low order and the registered skill roots synchronized with
@@ -68,12 +77,14 @@ ROOT_LAYERS_HIGH_TO_LOW = (
     "tizen_convergence_judge",
     "tizen_qb_discover",
     "tizen_gerrit_fetch",
+    "tizen_build_verify",
     "tizen_ci_shared",
 )
 REGISTERED_SKILL_ROOTS: dict[str, str] = {
     "skill/tizen_convergence_judge": "tizen_convergence_judge",
     "skill/tizen_qb_discover": "tizen_qb_discover",
     "skill/tizen_gerrit_fetch": "tizen_gerrit_fetch",
+    "skill/tizen_build_verify": "tizen_build_verify",
 }
 
 
@@ -190,6 +201,53 @@ GERRIT_FETCH_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("_optional_int", ()),
 )
 
+BUILD_VERIFY_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("SubprocessRunner", ()),
+    ("BuildVerifyOptions", ("ci_triage.campaign_repair_step", "ci_triage.cli")),
+    ("BuildVerifyResult", ("ci_triage.campaign_repair_step",)),
+    ("_ApplyPatchResult", ()),
+    ("build_verify", ("ci_triage.campaign_repair_step", "ci_triage.cli")),
+    ("_BuildProcessResult", ()),
+    ("_format_and_apply_patch", ()),
+    ("_run_gbs_build", ()),
+    ("_gbs_command", ()),
+    ("_gbs_arch", ()),
+    ("_analyze_failure", ()),
+    ("_classification_fail", ()),
+    ("_fail", ()),
+    ("_actual_changed_paths", ()),
+    ("_tracked_worktree_mutated", ()),
+    ("_allowed_paths", ()),
+    ("_run_git_diff_check", ()),
+    ("_canonical_diff_sha256", ()),
+    ("_normalize_build_log", ()),
+    ("_git", ()),
+    ("_git_stdout", ()),
+    ("_run", ()),
+    ("_read_json", ()),
+    ("_sha256_file", ()),
+    ("_sha256_text", ()),
+    ("_build_subprocess_env", ()),
+    ("_string_or_empty", ()),
+    ("build_verify_to_json", ("ci_triage.cli",)),
+    ("default_extra_pythonpath", ()),
+)
+
+EDIT_SPEC_GUARD_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("EDIT_SPEC_SCHEMA", ()),
+    ("EditSpecViolation", ("tizen_build_verify.build_verify",)),
+    ("_LocatedEdit", ()),
+    ("validate_edit_spec", ("tizen_build_verify.build_verify",)),
+    ("_validate_schema", ()),
+    ("_validate_target_path", ()),
+    ("_locate_edit", ()),
+    ("_find_old_from_line", ()),
+    ("_find_unique_old", ()),
+    ("_line_starts", ()),
+    ("_check_no_overlaps", ()),
+    ("_is_relative_to", ()),
+)
+
 
 SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
     ModuleScopeSpec(
@@ -271,14 +329,14 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§2", "§3.2"),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.workspace",),
+        ("tizen_build_verify.workspace",),
     ),
     SymbolSpec(
         "WorkspaceViolation",
         ("§2", "§3.2"),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.campaign_repair_step", "ci_triage.verify.workspace"),
+        ("ci_triage.campaign_repair_step", "tizen_build_verify.workspace"),
     ),
     SymbolSpec(
         "discover_sibling_pythonpath",
@@ -289,29 +347,29 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
             "ci_triage.batch_cli",
             "ci_triage.cli",
             "ci_triage.orchestrator",
-            "ci_triage.verify.build_verify",
+            "tizen_build_verify.build_verify",
         ),
     ),
     # §3.2, with the v1.1 line corrections and S-1 extraction applied.
     SymbolSpec(
         "create_worktree",
         ("§3.2",),
-        WORKSPACE,
-        "build-verify",
-        ("ci_triage.verify.build_verify",),
+        SKILL_BUILD_WORKSPACE,
+        "skill/tizen_build_verify",
+        ("tizen_build_verify.build_verify",),
     ),
     SymbolSpec(
         "check_disk_and_maybe_cleanup",
         ("§3.2",),
-        WORKSPACE,
-        "build-verify",
-        ("ci_triage.verify.build_verify",),
+        SKILL_BUILD_WORKSPACE,
+        "skill/tizen_build_verify",
+        ("tizen_build_verify.build_verify",),
     ),
     SymbolSpec(
         "_copy_repository",
         ("§3.2",),
-        WORKSPACE,
-        "build-verify",
+        SKILL_BUILD_WORKSPACE,
+        "skill/tizen_build_verify",
         declared_internal=("create_worktree",),
     ),
     SymbolSpec(
@@ -319,7 +377,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§3.2",),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.build_verify", "ci_triage.verify.workspace"),
+        ("tizen_build_verify.build_verify", "tizen_build_verify.workspace"),
         ("cleanup_disposable_copy",),
     ),
     SymbolSpec(
@@ -334,7 +392,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§3.2",),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.campaign_repair_step", "ci_triage.verify.workspace"),
+        ("ci_triage.campaign_repair_step", "tizen_build_verify.workspace"),
         ("cleanup_disposable_copy",),
     ),
     SymbolSpec(
@@ -349,21 +407,21 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§3.2",),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.build_verify",),
+        ("tizen_build_verify.build_verify",),
     ),
     SymbolSpec(
         "_oldest_worktrees",
         ("§3.2",),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.workspace",),
+        ("tizen_build_verify.workspace",),
     ),
     SymbolSpec(
         "_run_git",
         ("§3.2",),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.workspace",),
+        ("tizen_build_verify.workspace",),
         ("clean_repository_preserving_markers",),
     ),
     SymbolSpec(
@@ -385,7 +443,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§3.2",),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.workspace",),
+        ("tizen_build_verify.workspace",),
         ("mark_worktree_protected",),
     ),
     SymbolSpec(
@@ -419,7 +477,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§3.2", "S-1"),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.workspace",),
+        ("tizen_build_verify.workspace",),
         format_authority=True,
     ),
     SymbolSpec(
@@ -427,7 +485,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§3.2", "S-1", "v2.0-revision-3"),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.workspace",),
+        ("tizen_build_verify.workspace",),
     ),
     # §4 quickbuild.py HTTP public surface. gbs_report.py is out of scope.
     SymbolSpec(
@@ -606,6 +664,32 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         )
         for name, consumers in GERRIT_FETCH_SYMBOLS
     ),
+    *(
+        SymbolSpec(
+            name,
+            ("skill4-§0", "skill4-v1.12.1"),
+            SKILL_BUILD_VERIFY,
+            "skill/tizen_build_verify",
+            consumers,
+        )
+        for name, consumers in BUILD_VERIFY_SYMBOLS
+    ),
+    *(
+        SymbolSpec(
+            name,
+            ("skill4-§0", "skill4-v1.12.1"),
+            SKILL_EDIT_SPEC_GUARD,
+            "skill/tizen_build_verify",
+            consumers,
+        )
+        for name, consumers in EDIT_SPEC_GUARD_SYMBOLS
+    ),
+    SymbolSpec(
+        "DEFAULT_MIN_FREE_BYTES",
+        ("skill4-§0", "skill4-v1.12.1", "new-ruling"),
+        SKILL_BUILD_WORKSPACE,
+        "skill/tizen_build_verify",
+    ),
 )
 
 
@@ -618,6 +702,7 @@ MODULE_OWNERS: dict[str, str] = {
     "ci_triage.runner": "orchestrator",
     "tizen_qb_discover.sources": "skill/tizen_qb_discover",
     "tizen_gerrit_fetch.gerrit": "skill/tizen_gerrit_fetch",
+    "tizen_build_verify.build_verify": "skill/tizen_build_verify",
     "ci_triage.verify.build_verify": "build-verify",
     "ci_triage.verify.gerrit_submit": "submit",
 }
@@ -1414,23 +1499,31 @@ def run(repo_root: Path) -> int:
     convergence_scripts_root = repo_root / "tizen-convergence-judge/scripts"
     qb_discover_scripts_root = repo_root / "tizen-qb-discover/scripts"
     gerrit_fetch_scripts_root = repo_root / "tizen-gerrit-fetch/scripts"
+    build_verify_scripts_root = repo_root / "tizen-build-verify/scripts"
     sources = (
         _load_sources(triage_scripts_root)
         + _load_sources(shared_scripts_root)
         + _load_sources(convergence_scripts_root)
         + _load_sources(qb_discover_scripts_root)
         + _load_sources(gerrit_fetch_scripts_root)
+        + _load_sources(build_verify_scripts_root)
     )
     by_relative = {source.relative: source for source in sources}
     symbol_specs = tuple(spec for spec in SPECS if isinstance(spec, SymbolSpec))
     module_specs = tuple(spec for spec in SPECS if isinstance(spec, ModuleScopeSpec))
     module_scope_paths = {spec.definition for spec in module_specs}
-    # Completeness follows the physical shared boundary. Once a module moves
-    # into tizen_ci_shared, every top-level public-surface symbol must be in
-    # the attribution inventory in the same change.
+    # Completeness follows every audited physical boundary. Shared modules use
+    # their established public/module-scope rules; extracted skill modules
+    # with frozen exact surfaces compare every top-level symbol in both
+    # directions against the attribution inventory.
     surface_checks = tuple(
         (
             source,
+            (
+                _top_level_symbols(source.tree)
+                if source.relative in EXACT_SURFACE_COUNTS
+                else _public_surface(source)
+            ),
             (
                 _public_surface(source)
                 if source.relative in module_scope_paths
@@ -1447,11 +1540,40 @@ def run(repo_root: Path) -> int:
         or source.relative == SKILL_CONVERGENCE
         or source.relative == SKILL_QB_DISCOVER
         or source.relative == SKILL_GERRIT_FETCH
+        or source.relative == SKILL_BUILD_VERIFY
+        or source.relative == SKILL_EDIT_SPEC_GUARD
+        or source.relative == SKILL_BUILD_WORKSPACE
     )
     incomplete = sorted(
-        (source.relative, symbol)
-        for source, audited in surface_checks
-        for symbol in _public_surface(source) - audited
+        (
+            source.relative,
+            symbol,
+            "present in source but not audited",
+        )
+        for source, actual, audited in surface_checks
+        for symbol in actual - audited
+    )
+    incomplete.extend(
+        sorted(
+            (
+                source.relative,
+                symbol,
+                "audited but absent from source",
+            )
+            for source, actual, audited in surface_checks
+            if source.relative in EXACT_SURFACE_COUNTS
+            for symbol in audited - actual
+        )
+    )
+    incomplete.extend(
+        (
+            source.relative,
+            "<top-level-count>",
+            f"expected {EXACT_SURFACE_COUNTS[source.relative]}, measured {len(actual)}",
+        )
+        for source, actual, _ in surface_checks
+        if source.relative in EXACT_SURFACE_COUNTS
+        and len(actual) != EXACT_SURFACE_COUNTS[source.relative]
     )
 
     specs_by_key = {(spec.definition, spec.name): spec for spec in symbol_specs}
@@ -1484,8 +1606,8 @@ def run(repo_root: Path) -> int:
             f"{module_result.spec.expected_top_level_count} symbols covered; "
             f"consumers=[{consumers}] | {module_result.verdict}"
         )
-    for relative, symbol in incomplete:
-        print(f"INCOMPLETE: {symbol} in {relative} public surface but not audited")
+    for relative, symbol, reason in incomplete:
+        print(f"INCOMPLETE: {symbol} in {relative}: {reason}")
 
     mismatches = [result for result in results if result.reasons]
     module_mismatches = [result for result in module_results if result.reasons]
@@ -1516,10 +1638,10 @@ def run(repo_root: Path) -> int:
                 f"  legacy={module_result.spec.legacy_mode}:"
                 f"{module_result.spec.legacy_path}"
             )
-        for relative, symbol in incomplete:
+        for relative, symbol, reason in incomplete:
             source = by_relative[relative]
             pattern = re.compile(rf"\b{re.escape(symbol)}\b")
-            print(f"[INCOMPLETE:{relative}:{symbol}]")
+            print(f"[INCOMPLETE:{relative}:{symbol}] {reason}")
             for line_number, line in enumerate(source.text.splitlines(), start=1):
                 if pattern.search(line):
                     print(f"  {source.relative}:{line_number}:{line.strip()}")
@@ -1600,6 +1722,7 @@ def _fixture_sources(repo_root: Path) -> tuple[SourceFile, ...]:
         repo_root / "tizen-convergence-judge/scripts",
         repo_root / "tizen-qb-discover/scripts",
         repo_root / "tizen-gerrit-fetch/scripts",
+        repo_root / "tizen-build-verify/scripts",
     )
     return tuple(
         source
@@ -1794,7 +1917,7 @@ def _run_binding_fixture(name: str) -> int:
         )
         passed = (
             gerrit_consumers == ()
-            and "ci_triage.verify.workspace" in workspace_consumers
+            and "tizen_build_verify.workspace" in workspace_consumers
         )
         return 0 if passed else 1
 
@@ -1860,6 +1983,26 @@ def _run_key_fixture(name: str) -> int:
     return 1 if any(result.reasons for result in results) else 0
 
 
+def _run_surface_fixture(name: str) -> int:
+    if name != "mixed-case-alias":
+        print(f"unknown surface fixture: {name}")
+        return 2
+    source = _synthetic_source(
+        "fixture.surface",
+        "KNOWN = object()\nMixedCaseAlias = object()\n",
+    )
+    audited = {"KNOWN"}
+    unexpected = sorted(_top_level_symbols(source.tree) - audited)
+    if unexpected == ["MixedCaseAlias"]:
+        print(
+            "SURFACE_FIXTURE | mixed-case-alias | MISMATCH: "
+            "present in source but not audited: MixedCaseAlias"
+        )
+        return 1
+    print(f"SURFACE_FIXTURE | mixed-case-alias | unexpected={unexpected} | OK")
+    return 0
+
+
 def main() -> int:
     if len(sys.argv) == 3 and sys.argv[1] == "--negative-fixture":
         return _run_negative_fixture(sys.argv[2])
@@ -1867,6 +2010,8 @@ def main() -> int:
         return _run_key_fixture(sys.argv[2])
     if len(sys.argv) == 3 and sys.argv[1] == "--binding-fixture":
         return _run_binding_fixture(sys.argv[2])
+    if len(sys.argv) == 3 and sys.argv[1] == "--surface-fixture":
+        return _run_surface_fixture(sys.argv[2])
     if len(sys.argv) != 1:
         print(
             "usage: symbol_audit.py "
@@ -1875,7 +2020,8 @@ def main() -> int:
             "twin-both-name-only|import-binding-legacy-alias|"
             "--key-fixture source-twin-only|twin-both-binary-key|"
             "--binding-fixture regression-lock|aliased-import|"
-            "same-name-import|planned-run-git]"
+            "same-name-import|planned-run-git|"
+            "--surface-fixture mixed-case-alias]"
         )
         return 2
     repo_root = Path(__file__).resolve().parents[3]

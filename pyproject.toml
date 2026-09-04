@@ -30,6 +30,7 @@ where = [
     "tizen-convergence-judge/scripts",
     "tizen-qb-discover/scripts",
     "tizen-gerrit-fetch/scripts",
+    "tizen-build-verify/scripts",
 ]
 include = [
     "gbs_analyzer*",
@@ -41,6 +42,7 @@ include = [
     "tizen_convergence_judge*",
     "tizen_qb_discover*",
     "tizen_gerrit_fetch*",
+    "tizen_build_verify*",
 ]
 
 [tool.setuptools.package-data]
@@ -80,6 +82,7 @@ mypy_path = [
     "tizen-convergence-judge/scripts",
     "tizen-qb-discover/scripts",
     "tizen-gerrit-fetch/scripts",
+    "tizen-build-verify/scripts",
 ]
 packages = [
     "gbs_analyzer",
@@ -91,4 +94,5 @@ packages = [
     "tizen_convergence_judge",
     "tizen_qb_discover",
     "tizen_gerrit_fetch",
+    "tizen_build_verify",
 ]
