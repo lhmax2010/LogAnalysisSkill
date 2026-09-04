@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 import subprocess
+import unicodedata
+from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast
 
@@ -18,12 +21,25 @@ from tizen_build_verify.build_verify import (
     build_verify_to_json,
     default_extra_pythonpath,
 )
+from tizen_build_verify.edit_spec_guard import EditSpecViolation, validate_edit_spec
 from tizen_ci_shared.classify import REPAIR_AUTO, REPAIR_DENIED
 from tizen_ci_shared.env import discover_sibling_pythonpath
-from tizen_ci_shared.state import StateDatabase, get_latest_status, get_record
+from tizen_ci_shared.state import (
+    StateDatabase,
+    build_failure_key,
+    get_latest_status,
+    get_record,
+)
 from tizen_ci_shared.workspace import PROTECTED_FILENAME
 
 _BUILD_VERIFY_MODULE = importlib.import_module("tizen_build_verify.build_verify")
+_EDIT_SPEC_MODULE = importlib.import_module("tizen_build_verify.edit_spec_guard")
+_WORKSPACE_MODULE = importlib.import_module("tizen_build_verify.workspace")
+
+# Test ownership boundary:
+# - this file: tizen_build_verify skill behavior;
+# - ci_triage unit/integration files: orchestration integration;
+# - test_build_verify_legacy_wiring.py: compatibility-shim identity only.
 
 
 class GbsRunner:
@@ -46,10 +62,12 @@ class GbsRunner:
         self.add_unexpected = add_unexpected
         self.timeout = timeout
         self.events: list[str] = []
+        self.gbs_commands: list[list[str]] = []
 
     def __call__(self, args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
         if isinstance(args, list) and args and args[0] == "gbs":
             self.events.append("gbs")
+            self.gbs_commands.append(list(args))
             if self.timeout:
                 raise subprocess.TimeoutExpired(args, kwargs.get("timeout") or 1)
             cwd = kwargs.get("cwd")
@@ -162,6 +180,31 @@ def _options(tmp_path: Path, *, edit_spec: Path | None = None) -> BuildVerifyOpt
     )
 
 
+def _worktree_path(options: BuildVerifyOptions) -> Path:
+    return options.workspace_root.resolve() / f"iter_{options.iter_index}"
+
+
+def _failure_key(options: BuildVerifyOptions) -> str:
+    return build_failure_key(
+        ci_system=options.ci_system,
+        build_id=options.build_id,
+        project=options.project,
+        branch=options.branch,
+        arch=options.arch,
+        spec_name=options.package,
+        base_commit=options.base_commit,
+    )
+
+
+def _is_analyzer_command(args: object) -> bool:
+    return (
+        isinstance(args, list)
+        and len(args) >= 3
+        and args[1:3] == ["-m", "gbs_analyzer"]
+    )
+
+
+# Skill behavior: existing build-verify coverage moved from the legacy owner.
 def test_pass_writes_verification_record_and_commits_before_build(tmp_path: Path) -> None:
     options = _options(tmp_path)
     runner = GbsRunner(returncode=0, stdout="PASS\n")
@@ -453,6 +496,199 @@ def test_pass_write_record_failure_is_not_silent(
         build_verify(options, subprocess_runner=runner)
 
 
+# Skill behavior: §4 branch-matrix deltas and side-effect assertions.
+def test_diff_check_failure_returns_apply_failed_and_preserves_applied_worktree(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    options = _options(tmp_path)
+    runner = GbsRunner()
+
+    monkeypatch.setattr(
+        _BUILD_VERIFY_MODULE,
+        "_run_git_diff_check",
+        lambda *_args: "git diff --check failed with exit 2",
+    )
+
+    result = build_verify(options, subprocess_runner=runner)
+
+    worktree = _worktree_path(options)
+    assert result.result == "FAIL"
+    assert result.failure_stage == "apply_failed"
+    assert result.repair_allowed == REPAIR_DENIED
+    assert result.actual_changed_paths == []
+    assert worktree.is_dir()
+    assert "return 1" in (worktree / "src" / "main.c").read_text(encoding="utf-8")
+    assert "gbs" not in runner.events
+
+
+def test_successful_apply_with_no_changed_paths_returns_no_effective_changes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    options = _options(tmp_path)
+    runner = GbsRunner()
+
+    monkeypatch.setattr(
+        _BUILD_VERIFY_MODULE,
+        "_format_and_apply_patch",
+        lambda *_args, **_kwargs: _BUILD_VERIFY_MODULE._ApplyPatchResult(),
+    )
+
+    result = build_verify(options, subprocess_runner=runner)
+
+    worktree = _worktree_path(options)
+    assert result.result == "FAIL"
+    assert result.failure_stage == "no_effective_changes"
+    assert result.repair_allowed == REPAIR_DENIED
+    assert result.actual_changed_paths == []
+    assert worktree.is_dir()
+    assert "return 0" in (worktree / "src" / "main.c").read_text(encoding="utf-8")
+    assert "gbs" not in runner.events
+
+
+def test_invalid_edit_spec_failure_removes_disposable_worktree(tmp_path: Path) -> None:
+    bad_spec = _write_json(
+        tmp_path / "bad-cleanup.json",
+        {
+            "schema_version": "gbs_patch_suggest/edit-spec/v1",
+            "patch_name": "candidate.patch",
+            "edits": [{"file": "/etc/passwd", "old": "x", "new": "y"}],
+        },
+    )
+    options = _options(tmp_path, edit_spec=bad_spec)
+
+    result = build_verify(options, subprocess_runner=GbsRunner())
+
+    assert result.failure_stage == "apply_failed"
+    assert not _worktree_path(options).exists()
+
+
+def test_analyzer_nonzero_exit_returns_no_evidence_and_preserves_worktree(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    options = _options(tmp_path)
+    runner = GbsRunner(returncode=1, stderr="compiler failed\n")
+    real_run = subprocess.run
+
+    def analyzer_fails(args: Any, *runner_args: Any, **runner_kwargs: Any) -> Any:
+        if _is_analyzer_command(args):
+            raise subprocess.CalledProcessError(7, args)
+        return real_run(args, *runner_args, **runner_kwargs)
+
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE.subprocess, "run", analyzer_fails)
+
+    result = build_verify(options, subprocess_runner=runner)
+
+    analyzer_dir = options.output_dir / "audit" / "analyzer_output"
+    assert result.result == "FAIL"
+    assert result.failure_stage == "gbs_build_failed"
+    assert result.evidence is None
+    assert analyzer_dir.is_dir()
+    assert not (analyzer_dir / "evidence_packet.json").exists()
+    assert _worktree_path(options).is_dir()
+
+
+def test_analyzer_success_without_evidence_returns_none_and_preserves_worktree(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    options = _options(tmp_path)
+    runner = GbsRunner(returncode=1, stderr="compiler failed\n")
+    real_run = subprocess.run
+
+    def analyzer_writes_nothing(args: Any, *runner_args: Any, **runner_kwargs: Any) -> Any:
+        if _is_analyzer_command(args):
+            return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+        return real_run(args, *runner_args, **runner_kwargs)
+
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE.subprocess, "run", analyzer_writes_nothing)
+
+    result = build_verify(options, subprocess_runner=runner)
+
+    analyzer_dir = options.output_dir / "audit" / "analyzer_output"
+    assert result.result == "FAIL"
+    assert result.failure_stage == "gbs_build_failed"
+    assert result.evidence is None
+    assert analyzer_dir.is_dir()
+    assert not (analyzer_dir / "evidence_packet.json").exists()
+    assert _worktree_path(options).is_dir()
+
+
+def test_marker_write_exception_propagates_before_db_write_and_leaves_clean_copy(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    options = _options(tmp_path)
+
+    def fail_mark(*_args: object, **_kwargs: object) -> None:
+        raise RuntimeError("marker write failed")
+
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE, "mark_worktree_protected", fail_mark)
+
+    with pytest.raises(RuntimeError, match="marker write failed"):
+        build_verify(options, subprocess_runner=GbsRunner(returncode=0))
+
+    worktree = _worktree_path(options)
+    assert worktree.is_dir()
+    assert not (worktree / PROTECTED_FILENAME).exists()
+    assert _git(["status", "--porcelain"], worktree) == ""
+    assert get_latest_status(options.state_db, _failure_key(options)) is None
+
+
+def test_db_write_exception_propagates_after_marker_and_preserves_protected_copy(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    options = _options(tmp_path)
+
+    def fail_write(*_args: object, **_kwargs: object) -> str:
+        raise RuntimeError("db write failed")
+
+    monkeypatch.setattr(_BUILD_VERIFY_MODULE, "write_pass_record", fail_write)
+
+    with pytest.raises(RuntimeError, match="db write failed"):
+        build_verify(options, subprocess_runner=GbsRunner(returncode=0))
+
+    worktree = _worktree_path(options)
+    assert worktree.is_dir()
+    assert (worktree / PROTECTED_FILENAME).is_file()
+    assert _git(["status", "--porcelain"], worktree) == ""
+    assert get_latest_status(options.state_db, _failure_key(options)) is None
+
+
+@pytest.mark.parametrize(
+    ("arch_raw", "arch_norm"),
+    [
+        ("standard-aarch64", "aarch64"),
+        ("standard-armv7l", "armv7l"),
+        ("standard-x86_64", "x86_64"),
+        ("aarch64", "aarch64"),
+    ],
+)
+def test_arch_matrix_normalizes_gbs_argv_and_preserves_raw_state(
+    tmp_path: Path,
+    arch_raw: str,
+    arch_norm: str,
+) -> None:
+    options = replace(_options(tmp_path), arch=arch_raw)
+    runner = GbsRunner(returncode=0)
+
+    result = build_verify(options, subprocess_runner=runner)
+
+    assert result.result == "PASS"
+    assert len(runner.gbs_commands) == 1
+    command = runner.gbs_commands[0]
+    assert command[command.index("-A") + 1] == arch_norm
+    assert result.verification_id is not None
+    record = get_record(options.state_db, result.verification_id)
+    assert record is not None
+    assert record.arch == arch_raw
+    assert record.failure_key == _failure_key(options)
+    assert f"/{arch_raw}/" in record.failure_key
+
+
 def test_default_extra_pythonpath_matches_legacy_anchor_and_is_nonempty() -> None:
     legacy_launcher = (
         Path(cast(str, ci_triage.__file__)).resolve().parents[1] / "run_ci_triage.py"
@@ -465,114 +701,194 @@ def test_default_extra_pythonpath_matches_legacy_anchor_and_is_nonempty() -> Non
     assert after
 
 
-def test_legacy_shims_preserve_all_migrated_symbol_identities() -> None:
-    module_symbols = {
-        "build_verify": (
-            "SubprocessRunner",
-            "BuildVerifyOptions",
-            "BuildVerifyResult",
-            "_ApplyPatchResult",
-            "build_verify",
-            "_BuildProcessResult",
-            "_format_and_apply_patch",
-            "_run_gbs_build",
-            "_gbs_command",
-            "_gbs_arch",
-            "_analyze_failure",
-            "_classification_fail",
-            "_fail",
-            "_actual_changed_paths",
-            "_tracked_worktree_mutated",
-            "_allowed_paths",
-            "_run_git_diff_check",
-            "_canonical_diff_sha256",
-            "_normalize_build_log",
-            "_git",
-            "_git_stdout",
-            "_run",
-            "_read_json",
-            "_sha256_file",
-            "_sha256_text",
-            "_build_subprocess_env",
-            "_string_or_empty",
-            "build_verify_to_json",
-            "default_extra_pythonpath",
-        ),
-        "edit_spec_guard": (
-            "EDIT_SPEC_SCHEMA",
-            "EditSpecViolation",
-            "_LocatedEdit",
-            "validate_edit_spec",
-            "_validate_schema",
-            "_validate_target_path",
-            "_locate_edit",
-            "_find_old_from_line",
-            "_find_unique_old",
-            "_line_starts",
-            "_check_no_overlaps",
-            "_is_relative_to",
-        ),
-        "workspace": (
-            "DEFAULT_MIN_FREE_BYTES",
-            "create_worktree",
-            "check_disk_and_maybe_cleanup",
-            "_copy_repository",
-        ),
-    }
-    for module_name, symbols in module_symbols.items():
-        legacy = importlib.import_module(f"ci_triage.verify.{module_name}")
-        skill = importlib.import_module(f"tizen_build_verify.{module_name}")
-        for symbol in symbols:
-            assert getattr(legacy, symbol) is getattr(skill, symbol)
-
-    legacy_workspace = importlib.import_module("ci_triage.verify.workspace")
-    shared_workspace = importlib.import_module("tizen_ci_shared.workspace")
-    for symbol in (
-        "MARKER_FILENAME",
-        "PROTECTED_FILENAME",
-        "DisposableWorktree",
-        "WorkspaceViolation",
-        "_exclude_private_files",
-        "_is_relative_to",
-        "_oldest_worktrees",
-        "_read_marker",
-        "_run_git",
-        "_verify_cleanup_handle",
-        "clean_repository_preserving_markers",
-        "cleanup_disposable_copy",
-        "cleanup_worktree",
-        "is_protected",
-        "mark_worktree_protected",
-        "release_worktree_protection",
-        "write_workdir_marker",
-    ):
-        assert getattr(legacy_workspace, symbol) is getattr(shared_workspace, symbol)
-
-
 def test_package_root_exports_only_public_contract_and_not_workspace_s9() -> None:
     public_contract = {
-        "BuildVerifyOptions",
-        "BuildVerifyResult",
-        "EditSpecViolation",
-        "build_verify",
-        "build_verify_to_json",
-        "check_disk_and_maybe_cleanup",
-        "create_worktree",
-        "default_extra_pythonpath",
-        "validate_edit_spec",
+        "BuildVerifyOptions": _BUILD_VERIFY_MODULE.BuildVerifyOptions,
+        "BuildVerifyResult": _BUILD_VERIFY_MODULE.BuildVerifyResult,
+        "EditSpecViolation": _EDIT_SPEC_MODULE.EditSpecViolation,
+        "build_verify": _BUILD_VERIFY_MODULE.build_verify,
+        "build_verify_to_json": _BUILD_VERIFY_MODULE.build_verify_to_json,
+        "check_disk_and_maybe_cleanup": _WORKSPACE_MODULE.check_disk_and_maybe_cleanup,
+        "create_worktree": _WORKSPACE_MODULE.create_worktree,
+        "default_extra_pythonpath": _BUILD_VERIFY_MODULE.default_extra_pythonpath,
+        "validate_edit_spec": _EDIT_SPEC_MODULE.validate_edit_spec,
     }
-    workspace_s9 = {
-        "DisposableWorktree",
-        "WorkspaceViolation",
-        "_exclude_private_files",
-        "_oldest_worktrees",
-        "_run_git",
-        "clean_repository_preserving_markers",
-        "cleanup_worktree",
-        "is_protected",
-        "write_workdir_marker",
+    private_contract = {
+        "SubprocessRunner",
+        "_ApplyPatchResult",
+        "_BuildProcessResult",
+        "_format_and_apply_patch",
+        "_run_gbs_build",
+        "_gbs_command",
+        "_gbs_arch",
+        "_analyze_failure",
+        "_classification_fail",
+        "_fail",
+        "_actual_changed_paths",
+        "_tracked_worktree_mutated",
+        "_allowed_paths",
+        "_run_git_diff_check",
+        "_canonical_diff_sha256",
+        "_normalize_build_log",
+        "_git",
+        "_git_stdout",
+        "_run",
+        "_read_json",
+        "_sha256_file",
+        "_sha256_text",
+        "_build_subprocess_env",
+        "_string_or_empty",
+        "EDIT_SPEC_SCHEMA",
+        "_LocatedEdit",
+        "_validate_schema",
+        "_validate_target_path",
+        "_locate_edit",
+        "_find_old_from_line",
+        "_find_unique_old",
+        "_line_starts",
+        "_check_no_overlaps",
+        "_is_relative_to",
+        "DEFAULT_MIN_FREE_BYTES",
+        "_copy_repository",
     }
 
-    assert set(tizen_build_verify.__all__) == public_contract
-    assert all(hasattr(tizen_build_verify, name) for name in public_contract)
-    assert all(not hasattr(tizen_build_verify, name) for name in workspace_s9)
+    assert len(public_contract) == 9
+    assert len(private_contract) == 36
+    assert set(tizen_build_verify.__all__) == set(public_contract)
+    for name, implementation in public_contract.items():
+        assert getattr(tizen_build_verify, name) is implementation
+    for name in private_contract:
+        assert not hasattr(tizen_build_verify, name)
+
+
+# Skill behavior: edit-spec path and schema guards moved from the legacy owner.
+def _write(root: Path, relative: str, text: str = "alpha\nbeta\ngamma\n") -> Path:
+    path = root / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+    return path
+
+
+def _spec(file_value: str, *, old: str = "beta", line: int | None = 2) -> dict[str, object]:
+    edit: dict[str, object] = {"file": file_value, "old": old, "new": "BETA"}
+    if line is not None:
+        edit["line"] = line
+    return {
+        "schema_version": "gbs_patch_suggest/edit-spec/v1",
+        "patch_name": "candidate.patch",
+        "edits": [edit],
+    }
+
+
+def test_normal_relative_path_passes(tmp_path: Path) -> None:
+    _write(tmp_path, "tools/include/OutputMetadata.h")
+
+    validate_edit_spec(_spec("tools/include/OutputMetadata.h"), str(tmp_path))
+
+
+def test_absolute_path_is_rejected(tmp_path: Path) -> None:
+    with pytest.raises(EditSpecViolation, match="absolute"):
+        validate_edit_spec(_spec("/etc/passwd"), str(tmp_path))
+
+
+def test_parent_traversal_is_rejected(tmp_path: Path) -> None:
+    with pytest.raises(EditSpecViolation, match="escapes|parent"):
+        validate_edit_spec(_spec("../../outside.c"), str(tmp_path))
+
+
+def test_intermediate_symlink_to_outside_is_rejected(tmp_path: Path) -> None:
+    root = tmp_path / "root"
+    root.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "target.c").write_text("beta\n", encoding="utf-8")
+    (root / "link").symlink_to(outside, target_is_directory=True)
+
+    with pytest.raises(EditSpecViolation, match="symlink escapes"):
+        validate_edit_spec(_spec("link/target.c", old="beta", line=1), str(root))
+
+
+def test_final_symlink_to_outside_is_rejected(tmp_path: Path) -> None:
+    root = tmp_path / "root"
+    root.mkdir()
+    outside = tmp_path / "outside.c"
+    outside.write_text("beta\n", encoding="utf-8")
+    src = root / "src"
+    src.mkdir()
+    (src / "link.c").symlink_to(outside)
+
+    with pytest.raises(EditSpecViolation, match="symlink escapes"):
+        validate_edit_spec(_spec("src/link.c", old="beta", line=1), str(root))
+
+
+def test_git_internal_path_is_rejected(tmp_path: Path) -> None:
+    (tmp_path / ".git").mkdir()
+    (tmp_path / ".git" / "config").write_text("beta\n", encoding="utf-8")
+
+    with pytest.raises(EditSpecViolation, match=".git"):
+        validate_edit_spec(_spec(".git/config", old="beta", line=1), str(tmp_path))
+
+
+def test_empty_and_directory_paths_are_rejected(tmp_path: Path) -> None:
+    (tmp_path / "src").mkdir()
+
+    with pytest.raises(EditSpecViolation, match="empty"):
+        validate_edit_spec(_spec(""), str(tmp_path))
+    with pytest.raises(EditSpecViolation, match="directory"):
+        validate_edit_spec(_spec("src"), str(tmp_path))
+
+
+def test_nfd_path_normalizes_to_existing_nfc_file(tmp_path: Path) -> None:
+    nfc_name = unicodedata.normalize("NFC", "café.c")
+    nfd_name = unicodedata.normalize("NFD", "café.c")
+    _write(tmp_path, nfc_name, "beta\n")
+
+    validate_edit_spec(_spec(nfd_name, old="beta", line=1), str(tmp_path))
+
+
+def test_case_insensitive_bypass_is_platform_specific(tmp_path: Path) -> None:
+    if os.path.normcase("A") == "A":
+        pytest.skip("case-sensitive filesystem")
+    _write(tmp_path, "Src/File.c", "beta\n")
+    validate_edit_spec(_spec("src/file.c", old="beta", line=1), str(tmp_path))
+
+
+def test_overlapping_edits_are_rejected(tmp_path: Path) -> None:
+    _write(tmp_path, "src/file.c", "abcdef\n")
+    spec = {
+        "schema_version": "gbs_patch_suggest/edit-spec/v1",
+        "patch_name": "candidate.patch",
+        "edits": [
+            {"file": "src/file.c", "line": 1, "old": "abc", "new": "ABC"},
+            {"file": "src/file.c", "line": 1, "old": "bcd", "new": "BCD"},
+        ],
+    }
+
+    with pytest.raises(EditSpecViolation, match="overlapping"):
+        validate_edit_spec(spec, str(tmp_path))
+
+
+@pytest.mark.parametrize(
+    "bad_spec",
+    [
+        {"schema_version": "wrong", "patch_name": "x.patch", "edits": []},
+        {
+            "schema_version": "gbs_patch_suggest/edit-spec/v1",
+            "patch_name": "x.patch",
+            "edits": [],
+        },
+        {
+            "schema_version": "gbs_patch_suggest/edit-spec/v1",
+            "patch_name": "x.patch",
+            "edits": [{"old": "x", "new": "y"}],
+        },
+        {
+            "schema_version": "gbs_patch_suggest/edit-spec/v1",
+            "patch_name": "x.patch",
+            "edits": [{"file": "x.c", "new": "y"}],
+        },
+    ],
+)
+def test_invalid_schema_is_rejected(tmp_path: Path, bad_spec: dict[str, object]) -> None:
+    with pytest.raises(EditSpecViolation):
+        validate_edit_spec(bad_spec, str(tmp_path))

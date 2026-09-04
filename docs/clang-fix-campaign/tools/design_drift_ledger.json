@@ -6372,6 +6372,53 @@
         }
       },
       {
+        "candidate_id": "v1.11|old:517-529,new:547-559|f17725e683d6fa07906c9fb4c1ec64a4cca3977ac7ffedb74937cca742830996",
+        "new_end": 559,
+        "new_lines": [
+          "| 成功返回 PASS | `result=\"PASS\"`(:267/:297 同一路径) | existing: `test_pass_writes_verification_record_and_commits_before_build` |",
+          "| patch 应用失败 | `apply_failed` ×3(:143 含 EditSpecViolation / :162 / :172) | existing: `test_invalid_edit_spec_fails_before_build`, `test_apply_failure_fails_before_build`; delta: `test_diff_check_failure_returns_apply_failed_and_preserves_applied_worktree` |",
+          "| 无有效变更 | `no_effective_changes` ×2(:155 / :194) | existing: `test_no_effective_changes_fails_before_build`; delta: `test_successful_apply_with_no_changed_paths_returns_no_effective_changes` |",
+          "| 越界路径 | `apply_unexpected_paths`(:184) | existing: `test_unexpected_changed_paths_are_checked_before_no_effective_changes` |",
+          "| diff --check 失败 | (:170) | delta: `test_diff_check_failure_returns_apply_failed_and_preserves_applied_worktree` |",
+          "| 构建超时 → DENIED | `build_timeout`(:226),断言 `repair_allowed=REPAIR_DENIED` | existing: `test_gbs_timeout_fails_without_repair` |",
+          "| 构建改动 tracked 源 → DENIED | `build_mutated_source`(:239),同断言 DENIED | existing: `test_build_mutated_tracked_source_after_commit_fails` |",
+          "| 构建失败经 classify | `gbs_build_failed`(:253 / :436) | existing: `test_gbs_fail_source_werror_returns_repair_allowed`, `test_gbs_fail_toolchain_denylist_not_repair_allowed` |",
+          "| analyzer 非零退出 | 调用点 :248 / 定义 :393 / **非零退出分支 :417-418**(`except CalledProcessError → return None`) | delta: `test_analyzer_nonzero_exit_returns_no_evidence_and_preserves_worktree` |",
+          "| analyzer 未产 evidence | **:419-421**(`evidence_path = …; if not is_file(): return None`)——v1.6 第三次更正:v1.4 模糊但正确、v1.5 \"精确化\"改成了错行(与非零退出撞号) | delta: `test_analyzer_success_without_evidence_returns_none_and_preserves_worktree` |",
+          "| marker 写入异常原样传播 | `mark_worktree_protected`(:294) | delta: `test_marker_write_exception_propagates_before_db_write_and_leaves_clean_copy` |",
+          "| DB 写入异常原样传播 | `write_pass_record`(:295) | existing: `test_pass_write_record_failure_is_not_silent`; delta: `test_db_write_exception_propagates_after_marker_and_preserves_protected_copy` |",
+          "| arch norm/raw 双向 | argv 用 `_gbs_arch` norm(:384);failure_key(:116)/record(:288) 保留 raw | existing: `test_gbs_arch_removes_standard_prefix`; delta: `test_arch_matrix_normalizes_gbs_argv_and_preserves_raw_state` |"
+        ],
+        "new_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
+        "new_start": 547,
+        "new_version": "1.12",
+        "old_end": 529,
+        "old_lines": [
+          "| 成功返回 PASS | `result=\"PASS\"`(:267/:297 同一路径) | existing |",
+          "| patch 应用失败 | `apply_failed` ×3(:143 含 EditSpecViolation / :162 / :172) | existing + delta |",
+          "| 无有效变更 | `no_effective_changes` ×2(:155 / :194) | existing |",
+          "| 越界路径 | `apply_unexpected_paths`(:184) | delta |",
+          "| diff --check 失败 | (:170) | delta |",
+          "| 构建超时 → DENIED | `build_timeout`(:226),断言 `repair_allowed=REPAIR_DENIED` | existing(补 DENIED 断言) |",
+          "| 构建改动 tracked 源 → DENIED | `build_mutated_source`(:239),同断言 DENIED | existing(补 DENIED 断言) |",
+          "| 构建失败经 classify | `gbs_build_failed`(:253 / :436) | existing |",
+          "| analyzer 非零退出 | 调用点 :248 / 定义 :393 / **非零退出分支 :417-418**(`except CalledProcessError → return None`) | delta |",
+          "| analyzer 未产 evidence | **:419-421**(`evidence_path = …; if not is_file(): return None`)——v1.6 第三次更正:v1.4 模糊但正确、v1.5 \"精确化\"改成了错行(与非零退出撞号) | delta |",
+          "| marker 写入异常原样传播 | `mark_worktree_protected`(:294) | delta |",
+          "| DB 写入异常原样传播 | `write_pass_record`(:295) | delta |",
+          "| arch norm/raw 双向 | argv 用 `_gbs_arch` norm(:384);failure_key(:116)/record(:288) 保留 raw | existing(参数化四例) |"
+        ],
+        "old_path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.11-draft.md",
+        "old_start": 517,
+        "old_version": "1.11",
+        "pattern": "\\|\\ 成功返回\\ PASS\\ \\|\\ result=\"PASS\"\\(:267/:297\\ 同一路径\\)\\ \\|\\ existing\\ \\|\\ \\|\\ patch\\ 应用失败\\ \\|\\ apply_failed\\ ×3\\(:143\\ 含\\ EditSpecViolation\\ /\\ :162\\ /\\ :172\\)\\ \\|\\ existing\\ \\+\\ delta\\ \\|\\ \\|\\ 无有效变更\\ \\|\\ no_effective_changes\\ ×2\\(:155\\ /\\ :194\\)\\ \\|\\ existing\\ \\|\\ \\|\\ 越界路径\\ \\|\\ apply_unexpected_paths\\(:184\\)\\ \\|\\ delta\\ \\|\\ \\|\\ diff\\ \\-\\-check\\ 失败\\ \\|\\ \\(:170\\)\\ \\|\\ delta\\ \\|\\ \\|\\ 构建超时\\ →\\ DENIED\\ \\|\\ build_timeout\\(:226\\),断言\\ repair_allowed=REPAIR_DENIED\\ \\|\\ existing\\(补\\ DENIED\\ 断言\\)\\ \\|\\ \\|\\ 构建改动\\ tracked\\ 源\\ →\\ DENIED\\ \\|\\ build_mutated_source\\(:239\\),同断言\\ DENIED\\ \\|\\ existing\\(补\\ DENIED\\ 断言\\)\\ \\|\\ \\|\\ 构建失败经\\ classify\\ \\|\\ gbs_build_failed\\(:253\\ /\\ :436\\)\\ \\|\\ existing\\ \\|\\ \\|\\ analyzer\\ 非零退出\\ \\|\\ 调用点\\ :248\\ /\\ 定义\\ :393\\ /\\ 非零退出分支\\ :417\\-418\\(except\\ CalledProcessError\\ →\\ return\\ None\\)\\ \\|\\ delta\\ \\|\\ \\|\\ analyzer\\ 未产\\ evidence\\ \\|\\ :419\\-421\\(evidence_path\\ =\\ \\.\\.\\.;\\ if\\ not\\ is_file\\(\\):\\ return\\ None\\)——v1\\.6\\ 第三次更正:v1\\.4\\ 模糊但正确、v1\\.5\\ \"精确化\"改成了错行\\(与非零退出撞号\\)\\ \\|\\ delta\\ \\|\\ \\|\\ marker\\ 写入异常原样传播\\ \\|\\ mark_worktree_protected\\(:294\\)\\ \\|\\ delta\\ \\|\\ \\|\\ DB\\ 写入异常原样传播\\ \\|\\ write_pass_record\\(:295\\)\\ \\|\\ delta\\ \\|\\ \\|\\ arch\\ norm/raw\\ 双向\\ \\|\\ argv\\ 用\\ _gbs_arch\\ norm\\(:384\\);failure_key\\(:116\\)/record\\(:288\\)\\ 保留\\ raw\\ \\|\\ existing\\(参数化四例\\)\\ \\|",
+        "replay_count": 1,
+        "replay_kind": "regression",
+        "replay_sections": {
+          "§4": 1
+        }
+      },
+      {
         "candidate_id": "v1.11|old:811-811,new:864-864|6c9987acb6a1fde3a92aeea68eb3481409b63f4a227058afdd05fe6595abaa3b",
         "new_end": 864,
         "new_lines": [
@@ -6429,6 +6476,7 @@
     "v1.10|old:747-747,new:817-817|ca45082617bed576f5625d521a84c94b732ccd3d170f14bcda3b35be8aa4231d": {},
     "v1.11|old:1-1,new:1-1|1653f9a27e76303a6cfacc7b15e0c209de2b1b320ff9b04294a96d14984bb41e": {},
     "v1.11|old:205-206,new:217-231|af6d2508b46e2f9ab516f9caaa4c8012ff4fae8ac609f552157fe08dab36be73": {},
+    "v1.11|old:517-529,new:547-559|f17725e683d6fa07906c9fb4c1ec64a4cca3977ac7ffedb74937cca742830996": {},
     "v1.11|old:811-811,new:864-864|6c9987acb6a1fde3a92aeea68eb3481409b63f4a227058afdd05fe6595abaa3b": {},
     "v1.1|old:1-1,new:1-1|eb1c107bdc182a035374075be908c7bfe62becbbe78859b7c326cd1d0b153a38": {},
     "v1.1|old:117-117,new:130-130|abd16fcdc14f48e151b69102aa3482e3733df7a028cae3ceb2e29597a793dc86": {},
@@ -7896,7 +7944,7 @@
   ],
   "schema_version": "clang-fix-campaign/design-drift-ledger/v1",
   "target_design": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
-  "target_sha256": "beb596ebf3747c90dd506f6315fa0aacf40237ce6b7a9d215af9dbe0e80065e0",
+  "target_sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
   "target_version": "1.12.1",
   "version_corpus": [
     {
@@ -7961,7 +8009,7 @@
     },
     {
       "path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
-      "sha256": "beb596ebf3747c90dd506f6315fa0aacf40237ce6b7a9d215af9dbe0e80065e0",
+      "sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
       "version": "1.12"
     }
   ]

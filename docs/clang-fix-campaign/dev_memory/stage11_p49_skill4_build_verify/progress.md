@@ -419,3 +419,138 @@ admission_exit=1 (expected)
 `design.md`, and `release-v1.4.0/` were empty. No production behavior changed
 outside the three frozen mode-2 lines, the mode-3 import header, compatibility
 shims, and direct consumer imports.
+
+## Commit B: test ownership and branch matrix
+
+### Ownership boundary
+
+The existing `tests/unit/test_build_verify.py` mixed skill behavior with shim
+identity checks, so the skill-owned file is named
+`tests/unit/test_tizen_build_verify.py`. The package-qualified name avoids a
+collision with the legacy owner and makes collection output unambiguous.
+
+- Skill behavior: `test_tizen_build_verify.py`, including the existing
+  build-verify and edit-spec tests moved from their old files.
+- Orchestration integration: existing `ci_triage` unit and integration files
+  remain at their original owners.
+- Legacy wiring: `test_build_verify_legacy_wiring.py` contains only shim
+  identity coverage and is not counted as behavior coverage.
+
+An AST source-segment comparison against commit A showed that all 36 existing
+top-level helpers/tests were retained. No moved function changed unexpectedly;
+the sole allowed delta was the package-root contract test, expanded from S9
+absence to the complete 9-public/36-private API assertion.
+
+```text
+old_top_level_functions=36
+missing_after_move=[]
+unexpected_changed_after_move=[]
+legacy_changed_after_move=[]
+allowed_delta=['test_package_root_exports_only_public_contract_and_not_workspace_s9']
+```
+
+### §4 branch matrix
+
+| Contract row | Existing coverage | Commit B delta |
+|---|---|---|
+| PASS | `test_pass_writes_verification_record_and_commits_before_build` | none |
+| `apply_failed` ×3 | `test_invalid_edit_spec_fails_before_build`; `test_apply_failure_fails_before_build` | `test_diff_check_failure_returns_apply_failed_and_preserves_applied_worktree` |
+| `no_effective_changes` ×2 | `test_no_effective_changes_fails_before_build` | `test_successful_apply_with_no_changed_paths_returns_no_effective_changes` |
+| unexpected paths | `test_unexpected_changed_paths_are_checked_before_no_effective_changes` | none |
+| diff check | none | `test_diff_check_failure_returns_apply_failed_and_preserves_applied_worktree` |
+| timeout and DENIED | `test_gbs_timeout_fails_without_repair` | none |
+| tracked mutation and DENIED | `test_build_mutated_tracked_source_after_commit_fails` | none |
+| GBS failure classification | `test_gbs_fail_source_werror_returns_repair_allowed`; `test_gbs_fail_toolchain_denylist_not_repair_allowed` | none |
+| analyzer nonzero | none | `test_analyzer_nonzero_exit_returns_no_evidence_and_preserves_worktree` |
+| analyzer missing evidence | none | `test_analyzer_success_without_evidence_returns_none_and_preserves_worktree` |
+| marker exception | none | `test_marker_write_exception_propagates_before_db_write_and_leaves_clean_copy` |
+| DB exception | `test_pass_write_record_failure_is_not_silent` | `test_db_write_exception_propagates_after_marker_and_preserves_protected_copy` |
+| arch norm/raw | `test_gbs_arch_removes_standard_prefix` | `test_arch_matrix_normalizes_gbs_argv_and_preserves_raw_state` |
+
+The table-to-AST checker reported:
+
+```text
+branch_rows=13
+rows_with_test_names=13
+missing_test_references=[]
+```
+
+### Exception injection and disk state
+
+- `EditSpecViolation`: the returned stage is `apply_failed` and `iter_1` is
+  absent, proving the explicit cleanup path removed the disposable copy.
+- diff-check failure: `_run_git_diff_check` returns an injected error; `iter_1`
+  remains present with the applied source content and GBS was not invoked.
+- analyzer nonzero: the analyzer subprocess raises `CalledProcessError(7)`;
+  `analyzer_output/` and the disposable copy remain, while
+  `evidence_packet.json` is absent and result evidence is null.
+- analyzer missing evidence: the analyzer subprocess returns zero without
+  writing evidence; the same directory/file assertions distinguish this path
+  from the nonzero path.
+- marker failure: `mark_worktree_protected` raises before DB write; the copy is
+  present and Git-clean, the protected marker is absent, and state has no
+  status row.
+- DB failure: `write_pass_record` raises after the real marker write; the copy
+  remains Git-clean and protected, while state still has no status row.
+- timeout and tracked-mutation tests both assert
+  `repair_allowed=REPAIR_DENIED`; the mutation test observes the real tracked
+  source change.
+
+The arch matrix runs the four frozen inputs. In each case the captured GBS
+argv contains the normalized `-A` value, while the persisted record's `arch`
+and exact `failure_key` retain the raw input.
+
+### Baseline and focused results
+
+Commit A collected 887 nodeids. After remapping only the two intentional test
+ownership moves, all 887 remain and commit B adds 11 parameter instances:
+
+```text
+baseline_nodeids=887
+current_nodeids=898
+missing_after_ownership_remap=0
+new_nodeids=11
+```
+
+Focused skill behavior and API/wiring checks:
+
+```text
+tests/unit/test_tizen_build_verify.py: 44 passed, 1 skipped in 1.03s
+package-root contract + legacy identity: 2 passed in 0.03s
+```
+
+The full suite establishes the commit B baseline:
+
+```text
+897 passed, 1 skipped in 18.37s
+```
+
+### Design gate replay after required test-name writeback
+
+The frozen §7 DoD requires real test names in the §4 table. Canonical and
+history copies were updated together (`cmp` exit 0). The first check correctly
+failed closed on the changed corpus SHA. Running the ledger's required
+`bootstrap` refreshed the diff-derived inventory, after which both gates
+passed; the v1.9 admission control remained red as required.
+
+```text
+BOOTSTRAP | candidates=130 retained=83 ignored=47 binding_candidates=1410 bindings=22
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=130 | retained=83 | ignored=47 | bindings=22 | binding_candidates=1410
+check_exit=0
+ADMISSION_V19 | BINDING_DRIFT=3 | required_known=2 | RED_AS_EXPECTED
+admission_exit=1 (expected)
+```
+
+### Commit B quality and scope checks
+
+```text
+ruff changed test owners: All checks passed!
+py_compile changed test owners: exit 0
+mypy configured production surface: Success: no issues found in 79 source files
+lint-imports: Contracts: 6 kept, 0 broken.
+```
+
+This commit changes only test ownership/tests, the required §4 use-case
+writeback in the canonical and history design copies, the regenerated A0 data
+file, and this evidence record. Production files under `tizen-*/scripts/` and
+`ci_triage/` have zero diff from commit A.

@@ -544,19 +544,19 @@ analyzer 非零退出 / analyzer 未产 evidence / marker 写入异常 / DB 写�
 
 | 契约句(SKILL.md) | 分支(代码锚) | 用例 |
 |---|---|---|
-| 成功返回 PASS | `result="PASS"`(:267/:297 同一路径) | existing |
-| patch 应用失败 | `apply_failed` ×3(:143 含 EditSpecViolation / :162 / :172) | existing + delta |
-| 无有效变更 | `no_effective_changes` ×2(:155 / :194) | existing |
-| 越界路径 | `apply_unexpected_paths`(:184) | delta |
-| diff --check 失败 | (:170) | delta |
-| 构建超时 → DENIED | `build_timeout`(:226),断言 `repair_allowed=REPAIR_DENIED` | existing(补 DENIED 断言) |
-| 构建改动 tracked 源 → DENIED | `build_mutated_source`(:239),同断言 DENIED | existing(补 DENIED 断言) |
-| 构建失败经 classify | `gbs_build_failed`(:253 / :436) | existing |
-| analyzer 非零退出 | 调用点 :248 / 定义 :393 / **非零退出分支 :417-418**(`except CalledProcessError → return None`) | delta |
-| analyzer 未产 evidence | **:419-421**(`evidence_path = …; if not is_file(): return None`)——v1.6 第三次更正:v1.4 模糊但正确、v1.5 "精确化"改成了错行(与非零退出撞号) | delta |
-| marker 写入异常原样传播 | `mark_worktree_protected`(:294) | delta |
-| DB 写入异常原样传播 | `write_pass_record`(:295) | delta |
-| arch norm/raw 双向 | argv 用 `_gbs_arch` norm(:384);failure_key(:116)/record(:288) 保留 raw | existing(参数化四例) |
+| 成功返回 PASS | `result="PASS"`(:267/:297 同一路径) | existing: `test_pass_writes_verification_record_and_commits_before_build` |
+| patch 应用失败 | `apply_failed` ×3(:143 含 EditSpecViolation / :162 / :172) | existing: `test_invalid_edit_spec_fails_before_build`, `test_apply_failure_fails_before_build`; delta: `test_diff_check_failure_returns_apply_failed_and_preserves_applied_worktree` |
+| 无有效变更 | `no_effective_changes` ×2(:155 / :194) | existing: `test_no_effective_changes_fails_before_build`; delta: `test_successful_apply_with_no_changed_paths_returns_no_effective_changes` |
+| 越界路径 | `apply_unexpected_paths`(:184) | existing: `test_unexpected_changed_paths_are_checked_before_no_effective_changes` |
+| diff --check 失败 | (:170) | delta: `test_diff_check_failure_returns_apply_failed_and_preserves_applied_worktree` |
+| 构建超时 → DENIED | `build_timeout`(:226),断言 `repair_allowed=REPAIR_DENIED` | existing: `test_gbs_timeout_fails_without_repair` |
+| 构建改动 tracked 源 → DENIED | `build_mutated_source`(:239),同断言 DENIED | existing: `test_build_mutated_tracked_source_after_commit_fails` |
+| 构建失败经 classify | `gbs_build_failed`(:253 / :436) | existing: `test_gbs_fail_source_werror_returns_repair_allowed`, `test_gbs_fail_toolchain_denylist_not_repair_allowed` |
+| analyzer 非零退出 | 调用点 :248 / 定义 :393 / **非零退出分支 :417-418**(`except CalledProcessError → return None`) | delta: `test_analyzer_nonzero_exit_returns_no_evidence_and_preserves_worktree` |
+| analyzer 未产 evidence | **:419-421**(`evidence_path = …; if not is_file(): return None`)——v1.6 第三次更正:v1.4 模糊但正确、v1.5 "精确化"改成了错行(与非零退出撞号) | delta: `test_analyzer_success_without_evidence_returns_none_and_preserves_worktree` |
+| marker 写入异常原样传播 | `mark_worktree_protected`(:294) | delta: `test_marker_write_exception_propagates_before_db_write_and_leaves_clean_copy` |
+| DB 写入异常原样传播 | `write_pass_record`(:295) | existing: `test_pass_write_record_failure_is_not_silent`; delta: `test_db_write_exception_propagates_after_marker_and_preserves_protected_copy` |
+| arch norm/raw 双向 | argv 用 `_gbs_arch` norm(:384);failure_key(:116)/record(:288) 保留 raw | existing: `test_gbs_arch_removes_standard_prefix`; delta: `test_arch_matrix_normalizes_gbs_argv_and_preserves_raw_state` |
 
 逐行标注 **existing / delta**,既有覆盖不重写(重复项处置见上文 §4 首段)。
 **引言与表对齐(v1.4,C-NIT)**:引言中"edit-spec 违规"**并入表中
