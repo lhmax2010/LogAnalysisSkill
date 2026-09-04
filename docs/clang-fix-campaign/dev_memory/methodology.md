@@ -252,6 +252,32 @@ during design convergence.
     in the extracted skill even though their inherited comments call them
     P4.9 shims.
 
+## P4.9 skill-4 addition
+
+40. **Require an admission falsification for every gate and every registered
+    item (campaign method 18).** A green checker run is not proof that its
+    predicates can reject drift. Before admission, the full gate must fail on a
+    known-bad authority, and each retained pattern, binding, or mechanical
+    ignored category must independently fail under a mutation constructed for
+    that item. Skill-4 required the v1.9 design to reproduce its known drifts,
+    all 22 bindings to reject their own mutations, and all 47 `OUT_OF_SCOPE`
+    entries to reject an in-scope span.
+41. **Place an integrity anchor outside the object being checked (campaign
+    method 19).** A document, report, or ledger cannot stably contain its own
+    hash or other write-sensitive identity. Pin the checked object's digest in
+    a different artifact and anchor the complete artifact set with the
+    containing Git commit. The skill-4 ledger follows this rule, and the sixth
+    lifecycle closeout commit is likewise identified by Git rather than by a
+    self-referential SHA inside `result.md`.
+42. **Make the first post-freeze implementation action a satisfiability test on
+    real input.** Review can miss constraints that are mutually impossible in
+    the actual parser, import system, or repository topology. Skill-4 exposed
+    two such cases immediately: the first ledger partition could not satisfy
+    complete raw-diff coverage, and a package-root `build_verify` function made
+    dotted-string patching of the same-named submodule impossible. Test the
+    frozen mechanism against real inputs before broad implementation work; if
+    it fails, stop and revise the authority rather than coding around it.
+
 ## R14 deferred cleanup ledger
 
 These findings are intentionally non-blocking for FIX-1 but retain names and
