@@ -116,6 +116,8 @@ point.
 
 ```text
 pytest: 897 passed, 1 skipped
+single skill behavior file (test_tizen_build_verify.py): 44 passed, 1 skipped
+three-file targeted set (skill + legacy wiring + real-git integration): 53 passed, 1 skipped
 lint-imports: 6 kept, 0 broken
 symbol audit: 150 SYMBOL OK + 4 MODULE-SCOPE OK (48 covered); 0 MISMATCH; 0 INCOMPLETE
 table bridge: relocation consumed=3/3, produced=3/3; 150+4; all differences zero
@@ -161,3 +163,31 @@ continued.
 
 No deferred item is ownerless, and none was silently implemented during this
 behavior-preserving extraction.
+
+## Targeted-Test Counting Convention
+
+The two supported targeted counts are intentionally different and must be
+quoted with their file scope:
+
+- Skill behavior only:
+  `tests/unit/test_tizen_build_verify.py` = **44 passed, 1 skipped**.
+- Three-file verification set:
+  `tests/unit/test_tizen_build_verify.py` +
+  `tests/unit/test_build_verify_legacy_wiring.py` +
+  `tests/integration/test_build_verify_real_git.py` =
+  **53 passed, 1 skipped**.
+
+The second count includes compatibility wiring and existing real-Git
+integration coverage; it must not be reported as the size of the skill
+behavior file.
+
+## 最终签批
+
+| 签批方 | 日期 | 结论 |
+|---|---|---|
+| Claude | 2026-09-04 | 独立核验每个 commit 的干净环境结果一致，亲跑双道审计 `150+4` 与 §5.4/§5.5 双门禁，确认 bridge 三路径 `29/12/4`，并验证 `include_external_packages` 零命中，结论 CLOSED。 |
+| 评审 A | 2026-09-04 | 独立复跑全部门禁、准入证伪与破坏性验证，零 finding，确认 skill-4 CLOSED。 |
+| 评审 B | 2026-09-04 | 独立复跑全部门禁、准入证伪与破坏性验证，零 finding，确认 skill-4 CLOSED。 |
+| 评审 C | 2026-09-04 | 独立复跑全部门禁、准入证伪与破坏性验证，零 finding，确认 skill-4 CLOSED。 |
+
+**状态：skill-4 CLOSED @ `7bfa070`（开发者放行日期：2026-09-04）。**

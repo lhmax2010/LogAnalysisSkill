@@ -277,6 +277,20 @@ during design convergence.
     dotted-string patching of the same-named submodule impossible. Test the
     frozen mechanism against real inputs before broad implementation work; if
     it fails, stop and revise the authority rather than coding around it.
+43. **Apply the four-part acceptance template to every dual-role migration
+    file.** When one legacy module is split between an extracted skill and a
+    shared owner, compare every retained definition's complete AST source
+    segment byte-for-byte, require exact equality of the shared import-binding
+    set, reject same-name `as X` aliases, and prove the skill package root does
+    not export that shared set. Skill-4's workspace mode established this
+    reusable template; later dual-role batches must apply it directly instead
+    of deriving a weaker local variant.
+44. **Inherit the A0 drift gate rather than rebuilding it per skill.** Skill-5
+    and skill-6 must use `design_drift_ledger.py` unchanged as their A0 gate.
+    Each batch generates its own corpus from its complete adjacent-version
+    sequence under the section 5.4.4 rules, then runs the existing reverse,
+    forward, admission, per-binding, and OUT_OF_SCOPE checks. New corpus data
+    is expected; a second gate implementation is not.
 
 ## R14 deferred cleanup ledger
 

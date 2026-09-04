@@ -44,6 +44,8 @@ temporary commit-A scaffolding:
 .venv/bin/python -m pip install -e .
 env -u PYTHONPATH -u MYPYPATH .venv/bin/python -m pytest -q
 env -u PYTHONPATH -u MYPYPATH .venv/bin/python -m pytest -q \
+  tests/unit/test_tizen_build_verify.py
+env -u PYTHONPATH -u MYPYPATH .venv/bin/python -m pytest -q \
   tests/unit/test_tizen_build_verify.py \
   tests/unit/test_build_verify_legacy_wiring.py \
   tests/integration/test_build_verify_real_git.py
@@ -147,7 +149,8 @@ normalizer results are preserved in `progress.md:269-374` and
 
 ```text
 pytest: 897 passed, 1 skipped
-targeted build-verify unit + wiring + real-git integration: 53 passed, 1 skipped
+single skill behavior file (test_tizen_build_verify.py): 44 passed, 1 skipped
+three-file targeted set (test_tizen_build_verify.py + legacy wiring + real-git integration): 53 passed, 1 skipped
 lint-imports: 6 kept, 0 broken
 symbol audit: 150 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISMATCH | 0 INCOMPLETE
 table bridge: relocation 3/3 consumed and 3/3 produced; 150+4; all differences zero
