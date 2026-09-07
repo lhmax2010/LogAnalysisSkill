@@ -291,6 +291,27 @@ during design convergence.
     sequence under the section 5.4.4 rules, then runs the existing reverse,
     forward, admission, per-binding, and OUT_OF_SCOPE checks. New corpus data
     is expected; a second gate implementation is not.
+45. **Simple batches are more likely to omit template-mandated mechanical
+    surfaces.** Skill-5 concentrated review attention on its deferred behavior
+    design and omitted the authoritative attribution table that skill-4 had
+    already made routine. Every batch, especially an apparently simple
+    byte-for-byte move, must execute the complete template checklist and pass
+    parser-only attribution before freeze; familiarity is not evidence that a
+    mandatory artifact exists.
+46. **Align every admission required defect with the selected snapshot.** A
+    required-known list is valid only when each named defect is mechanically
+    present in that exact historical version. Defects from another transition
+    belong in the reverse ledger, not in the snapshot admission assertion.
+    Skill-5 therefore requires the two v1.2 defects actually present there,
+    while the earlier member-count change is proved by its adjacent-version
+    retained pattern.
+47. **Model patch versions explicitly and enforce one-step continuity.** A
+    design corpus may advance by a patch increment at fixed major/minor or by
+    one minor increment with patch reset to zero. Parse every version as an
+    `(N, M, P)` tuple with omitted P equal to zero, and reject skipped patches,
+    skipped minors, or a minor successor carrying a nonzero patch. Skill-5's
+    v1.3.1 correction and skill-4's v1.12.1 history established this rule with
+    direct positive and negative tests.
 
 ## R14 deferred cleanup ledger
 
