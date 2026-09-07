@@ -5,7 +5,7 @@
 Status: COMPLETE, awaiting independent review before extraction commit A.
 
 Authority under test:
-`docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md`
+`docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md`
 at freeze commit `f2bc050`.
 
 ### Parameterization
@@ -196,7 +196,7 @@ recorded final command above is green.
 Status: COMPLETE, pending commit and independent review.
 
 Authority:
-`docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md`
+`docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md`
 at `f2bc050`; A0 gate commit `31a91cb`.
 
 ### Migration and source identity
@@ -580,5 +580,248 @@ $ git diff --name-only HEAD -- ':(glob)tizen-*/scripts/**'
 $ git diff --name-only HEAD -- \
     tizen-ci-triage/scripts/ci_triage/gbs_report.py \
     docs/clang-fix-campaign/design.md release-v1.4.0/
+(no output)
+```
+
+## Commit C: gates, audit, and three-entry delivery
+
+### v1.3.1 authority repair and ledger version grammar
+
+The bridge failed closed before commit C because the v1.3 frozen body did not
+contain the three-column attribution table that commit C was required to
+consume. Per the execution ruling, the table was generated from the migrated
+module's AST rather than transcribed by hand. The authority and history
+snapshot were renamed to v1.3.1-FROZEN and remain byte-identical:
+
+```text
+$ cmp p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md \
+    history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md
+(no output)
+CMP_EXIT=0
+
+PARSER_ONLY=23/23
+definitions=tizen_gerrit_submit/gerrit_submit.py
+owners=skill/tizen_gerrit_submit
+```
+
+The ledger now accepts `N.M.P` versions with a missing patch normalized to
+zero. Its only legal successors are a one-step patch increment at fixed N/M,
+or a one-step minor increment with the patch reset to zero. The seven direct
+tests include all required green/red chains:
+
+```text
+$ pytest -q tests/unit/test_design_drift_ledger.py
+7 passed in 0.02s
+```
+
+The skill-4 corpus now includes both v1.12 and v1.12.1. Re-running the inherited
+gate after that correction produced:
+
+```text
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=131 | retained=84 | ignored=47 | bindings=22 | binding_candidates=1410
+ADMISSION_V19 | snapshot=v1.9 | BINDING_DRIFT=3 | required_known=2 | RED_AS_EXPECTED
+OUT_OF_SCOPE_SUMMARY | items=47 | RED_AS_EXPECTED
+NEGATIVE_BINDING_SUMMARY | items=22 | all_exit=1
+```
+
+The v1.3 to v1.3.1 pair is likewise part of the skill-5 corpus:
+
+```text
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=35 | retained=31 | ignored=4 | bindings=8 | binding_candidates=348
+ADMISSION | snapshot=v1.2 | BINDING_DRIFT=7 | required_known=2 | RED_AS_EXPECTED
+OUT_OF_SCOPE_SUMMARY | items=4 | RED_AS_EXPECTED
+NEGATIVE_BINDING_SUMMARY | items=8 | all_exit=1
+```
+
+### Mechanical synchronization
+
+All commit-C synchronization points were applied before the final audit:
+
+1. `release_worktree_protection` now declares
+   `tizen_gerrit_submit.gerrit_submit` as its consumer.
+2. The computed consumers for all three shared/state module-scope rows include
+   `tizen_gerrit_submit.gerrit_submit`:
+
+   ```text
+   state/db.py      consumers=[...,tizen_gerrit_submit.gerrit_submit] | OK
+   state/keys.py    consumers=[...,tizen_gerrit_submit.gerrit_submit] | OK
+   state/records.py consumers=[...,tizen_gerrit_submit.gerrit_submit] | OK
+   ```
+
+3. `REGISTERED_SKILL_ROOTS`, `ROOT_LAYERS_HIGH_TO_LOW`, and `MODULE_OWNERS`
+   contain the new skill.
+4. The exact-surface guard registers
+   `tizen_gerrit_submit/gerrit_submit.py` with count 23.
+5. The bridge reads the v1.3.1-FROZEN authority, and both the audit and fixture
+   source-root lists include `tizen-gerrit-submit/scripts`.
+
+The source-surface negative fixture proves the guard is set equality, not a
+one-way subset check:
+
+```text
+$ symbol_audit.py --surface-fixture mixed-case-alias
+SURFACE_FIXTURE | mixed-case-alias | MISMATCH: present in source but not audited: MixedCaseAlias
+EXIT_CODE=1
+```
+
+### Import contracts
+
+After `pip install -e .`, all checks below were run with both path-scaffolding
+variables removed:
+
+```text
+$ env -u PYTHONPATH -u MYPYPATH lint-imports
+Analyzed 64 files, 125 dependencies.
+application layers: orchestration -> skills -> shared KEPT
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+Contracts: 6 kept, 0 broken.
+EXIT_CODE=0
+```
+
+Each temporary violation was removed after its run, followed by the positive
+run above:
+
+```text
+skill import ci_triage:
+  application layers: orchestration -> skills -> shared BROKEN
+  tizen_gerrit_submit.gerrit_submit -> ci_triage
+  EXIT_CODE=1
+
+skill import tizen_build_verify:
+  application layers: orchestration -> skills -> shared BROKEN
+  extracted skills are independent BROKEN
+  tizen_gerrit_submit.gerrit_submit -> tizen_build_verify
+  EXIT_CODE=1
+
+shared/types import tizen_gerrit_submit:
+  shared must not import orchestration BROKEN
+  tizen_ci_shared.types -> tizen_gerrit_submit
+  EXIT_CODE=1
+```
+
+The positive downward edge from this skill to shared/state and
+`workspace.release_worktree_protection` is kept by the same positive run. It
+is the paired opposite of the third negative control: skill-to-shared is
+allowed, shared-to-skill is forbidden.
+
+The existing `gbs_patch_suggest` exception was not changed. The diff only adds
+`tizen_gerrit_submit` to root packages, the skill layer, independence members,
+and the shared forbidden list. `.importlinter` contains no
+`include_external_packages` key.
+
+### Symbol and body audits
+
+The final symbol audit includes 23 new skill symbols and preserves all prior
+verdicts:
+
+```text
+SUMMARY | 173 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+EXIT_CODE=0
+```
+
+The bridge proves it loaded the new authority rather than merely returning a
+green aggregate: its output contains all 23 rows with definition
+`tizen_gerrit_submit/gerrit_submit.py`, followed by:
+
+```text
+SUMMARY | 173 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+EXIT_CODE=0
+```
+
+The four twin families remain separate in production script roots:
+
+```text
+$ rg '^SubprocessRunner = ' tizen-*/scripts --glob '*.py' | wc -l
+8
+$ rg '^def _git_stdout\(' tizen-*/scripts --glob '*.py' | wc -l
+3
+$ rg '^def _run_git\(' tizen-*/scripts --glob '*.py' | wc -l
+3
+$ rg '^def _result\(' tizen-*/scripts --glob '*.py' | wc -l
+2
+```
+
+### Three entry points, skill contract, and shim ledger
+
+The exact delivery checks were first proven against build-verify and then run
+for this skill. Both returned `1/1/2/2`:
+
+```text
+ci.yml mypy command                         1
+README $PWD/tizen-gerrit-submit/scripts     1
+pyproject tizen-gerrit-submit/scripts       2
+pyproject tizen_gerrit_submit               2
+```
+
+`tizen-gerrit-submit/SKILL.md` records Inputs, Outputs, Errors, Side Effects,
+and Idempotency. It explicitly defines the skill as validation plus dry-run
+command generation and states that it never executes `git push`. Its timeout
+contract preserves the current split: local `_run_git` propagates
+`TimeoutExpired`, while the `ls-remote` path converts it to
+`target_head_unknown:*` and `dry_run_unverified_remote`.
+
+The arch exemption remains valid:
+
+```text
+$ rg -c arch tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py
+(no matches)
+EXIT_CODE=1
+```
+
+The legacy `ci_triage.verify.gerrit_submit` pure re-export module remains on
+the P4.9 final shim-deletion ledger. It is not deleted in this batch.
+`release-v1.4.0/` remains an unchanged historical snapshot.
+
+### B/C stage separation and final quality gates
+
+Commit B used temporary `PYTHONPATH`/`MYPYPATH` entries for
+`tizen-gerrit-submit/scripts`; these were scaffolding only. Commit C installed
+the editable project and cleared both variables for pytest, mypy, ruff,
+lint-imports, and both audits.
+
+```text
+$ env -u PYTHONPATH -u MYPYPATH pytest -q
+912 passed, 1 skipped in 18.34s
+
+$ env -u PYTHONPATH -u MYPYPATH pytest -q \
+    tests/unit/test_tizen_gerrit_submit.py \
+    tests/integration/test_gerrit_submit_real_git.py \
+    tests/unit/test_ci_triage_entrypoints.py
+46 passed in 1.21s
+
+$ env -u PYTHONPATH -u MYPYPATH pytest -q --collect-only
+913 tests collected
+
+commit-B collection=906
+commit-C collection=913
+existing_collection_missing=0
+new_tests=7
+
+$ env -u PYTHONPATH -u MYPYPATH mypy
+Success: no issues found in 111 source files
+
+$ ruff check $(git ls-files '*.py') tests/unit/test_design_drift_ledger.py
+All checks passed!
+
+$ python -m py_compile design_drift_ledger.py symbol_audit.py \
+    table_audit_bridge.py test_design_drift_ledger.py
+EXIT_CODE=0
+```
+
+The unrestricted `ruff check .` additionally sees the pre-existing untracked
+`audit_four_sigs.py` and reports its eight style findings. That file is outside
+this batch and remains untouched; every tracked Python file plus this batch's
+new test is clean.
+
+No production implementation changed in commit C:
+
+```text
+$ git diff --name-only HEAD -- ':(glob)tizen-*/scripts/**'
+(no output)
+$ git diff --name-only HEAD -- gbs_report.py design.md release-v1.4.0/
 (no output)
 ```

@@ -14,8 +14,9 @@
 
 ## §B 设计稿必答
 
-1. **权威归属表**(skill-2 v1.3):逐符号表使用
-   `symbol | definition | owner` 三列,冻结前以 parser-only 校验;整体迁移模块
+1. **权威归属表**(skill-2 v1.3,skill-5 v1.3.1):逐符号表使用
+   `symbol | definition | owner` 三列;所有 skill 批次冻结前必须以 parser-only
+   验证表可解析且行数/键集合与规划 inventory 一致,否则不得冻结。整体迁移模块
    仅在具备封闭 module-scope 判据时使用文件级归属。
 2. **三概念口径**(skill-3 v1.3.1):分别陈述实测消费面、包根公开面与包根
    不导出面;每个数量只在定义节出现一次。

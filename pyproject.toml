@@ -31,6 +31,7 @@ where = [
     "tizen-qb-discover/scripts",
     "tizen-gerrit-fetch/scripts",
     "tizen-build-verify/scripts",
+    "tizen-gerrit-submit/scripts",
 ]
 include = [
     "gbs_analyzer*",
@@ -43,6 +44,7 @@ include = [
     "tizen_qb_discover*",
     "tizen_gerrit_fetch*",
     "tizen_build_verify*",
+    "tizen_gerrit_submit*",
 ]
 
 [tool.setuptools.package-data]
@@ -83,6 +85,7 @@ mypy_path = [
     "tizen-qb-discover/scripts",
     "tizen-gerrit-fetch/scripts",
     "tizen-build-verify/scripts",
+    "tizen-gerrit-submit/scripts",
 ]
 packages = [
     "gbs_analyzer",
@@ -95,4 +98,5 @@ packages = [
     "tizen_qb_discover",
     "tizen_gerrit_fetch",
     "tizen_build_verify",
+    "tizen_gerrit_submit",
 ]

@@ -1,4 +1,4 @@
-# P4.9 skill-5 设计:tizen-gerrit-submit 抽取(v1.3-FROZEN)
+# P4.9 skill-5 设计:tizen-gerrit-submit 抽取(v1.3.1-FROZEN)
 
 - 阶段:P4.9 第五个 skill 批次(skill-4 CLOSED @7bfa070 / 签批 @8ed7588)
 - 权威并行:step-0 `v2.1`、skill-1 `v1.4`、skill-2 `v1.3`、skill-3 `v1.3.1`、
@@ -44,6 +44,11 @@
 > `timeout=None` 透传 kwarg;④§8 为分支表、结果映射表与门禁成员扩展补
 > 三条引用式 DoD,不复述定义节数字;⑤skill 批次模板首次独立入库,确立
 > “每行分支须有代码锚”与“引用侧无承重条目即无 binding”。
+>
+> **v1.3.1 修订(commit C 接入前补正)**:v1.3 漏掉 23 行权威归属表,
+> commit C 接入 bridge 时由 fail-closed parser 暴露;此前设计评审四轮未撞到,
+> 根因是没有工具实际读取该表。§0 现由源码 AST 机械生成并显式穷举
+> `symbol | definition | owner`;所有 skill 批次冻结前必须先过 parser-only。
 
 - **总铁律**:行为等价——逐字节迁移 + import 翻转,零语义变更
 - **门禁**:**继承 skill-4 的 A₀**(`design_drift_ledger.py`),**不重造**;
@@ -62,6 +67,35 @@
 ---
 
 ## §0 判据 dry-run(冻结前置,已完成)
+
+以下 23 行是本批唯一权威归属表,由
+`tizen_gerrit_submit/gerrit_submit.py` 顶层 AST 机械生成:
+
+| symbol | definition | owner |
+|---|---|---|
+| `SubprocessRunner` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `GerritSubmitOptions` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `GerritSubmitResult` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `ReleaseWorktreeResult` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `gerrit_submit` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_target_head_unknown_warning` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `release_verified_worktree` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `write_gerrit_submit_result` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `write_release_result` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `exit_code_for_submit` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `exit_code_for_release` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_verification_mismatch` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_dirty_reason` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_target_warnings` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_target_branch` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_push_command` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_remote_url` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_git_stdout` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_run_git` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_result` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_record_result` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_build_id_from_failure_key` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `_subprocess_env` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
 
 Claude 实测 @8ed7588:
 
@@ -156,6 +190,8 @@ tizen-gerrit-submit/scripts/tizen_gerrit_submit/
 **消费本 skill**:7 个公开符号**全部只被 `cli.py` 消费**(单一编排层消费方)。
 
 ### 1.2 公开契约(SKILL.md)
+
+下表只描述 SKILL.md 公开契约,不是权威归属表;归属仅以 §0 三列表为准。
 
 | symbol | 契约 |
 |---|---|

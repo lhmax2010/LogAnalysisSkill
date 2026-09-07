@@ -21,6 +21,7 @@ CONVERGENCE_SECTION_HEADINGS = ("### 1.2 ",)
 QB_DISCOVER_SECTION_HEADINGS = ("### 2.2 ",)
 GERRIT_FETCH_SECTION_HEADINGS = ("## §0 ",)
 BUILD_VERIFY_SECTION_HEADINGS = ("## §0 ",)
+GERRIT_SUBMIT_SECTION_HEADINGS = ("## §0 ",)
 MODULE_SCOPE_HEADING = "### 1.2a "
 SYMBOL_COLUMNS = frozenset({"symbol", "类型", "符号"})
 MODULE_COLUMNS = frozenset({"module"})
@@ -393,6 +394,10 @@ def run(repo_root: Path) -> int:
         "docs/clang-fix-campaign/"
         "p49-skill4-build-verify-design-v1.12.1-FROZEN.md"
     )
+    gerrit_submit_design_path = repo_root / (
+        "docs/clang-fix-campaign/"
+        "p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md"
+    )
     try:
         body = parse_design_tables(design_path)
         skill_body = parse_design_tables(
@@ -410,6 +415,10 @@ def run(repo_root: Path) -> int:
         build_verify_body = parse_design_tables(
             build_verify_design_path,
             section_headings=BUILD_VERIFY_SECTION_HEADINGS,
+        )
+        gerrit_submit_body = parse_design_tables(
+            gerrit_submit_design_path,
+            section_headings=GERRIT_SUBMIT_SECTION_HEADINGS,
         )
         mapping_reasons = _mapping_contract_reasons(
             BUILD_VERIFY_RELOCATIONS,
@@ -434,6 +443,7 @@ def run(repo_root: Path) -> int:
             qb_discover_body,
             gerrit_fetch_body,
             build_verify_new_body,
+            gerrit_submit_body,
         )
         body_modules = parse_module_scope_table(design_path)
     except TableParseError as exc:

@@ -3,9 +3,9 @@
 
 This tool parses source text and Python ASTs only. It never imports or executes
 the modules being audited. The inventory covers the step-0 shared moves and the
-extracted convergence-judge, qb-discover, gerrit-fetch, and build-verify
-skills. gbs_report.py is intentionally out of scope and deferred as a whole to
-the triage-report extraction batch.
+extracted convergence-judge, qb-discover, gerrit-fetch, build-verify, and
+gerrit-submit skills. gbs_report.py is intentionally out of scope and deferred
+as a whole to the triage-report extraction batch.
 """
 
 from __future__ import annotations
@@ -59,6 +59,7 @@ SKILL_GERRIT_FETCH = "tizen_gerrit_fetch/gerrit.py"
 SKILL_BUILD_VERIFY = "tizen_build_verify/build_verify.py"
 SKILL_EDIT_SPEC_GUARD = "tizen_build_verify/edit_spec_guard.py"
 SKILL_BUILD_WORKSPACE = "tizen_build_verify/workspace.py"
+SKILL_GERRIT_SUBMIT = "tizen_gerrit_submit/gerrit_submit.py"
 
 SpecKey = tuple[str, str]
 
@@ -66,6 +67,7 @@ EXACT_SURFACE_COUNTS = {
     SKILL_BUILD_VERIFY: 29,
     SKILL_EDIT_SPEC_GUARD: 12,
     SKILL_BUILD_WORKSPACE: 4,
+    SKILL_GERRIT_SUBMIT: 23,
 }
 
 
@@ -78,6 +80,7 @@ ROOT_LAYERS_HIGH_TO_LOW = (
     "tizen_qb_discover",
     "tizen_gerrit_fetch",
     "tizen_build_verify",
+    "tizen_gerrit_submit",
     "tizen_ci_shared",
 )
 REGISTERED_SKILL_ROOTS: dict[str, str] = {
@@ -85,6 +88,7 @@ REGISTERED_SKILL_ROOTS: dict[str, str] = {
     "skill/tizen_qb_discover": "tizen_qb_discover",
     "skill/tizen_gerrit_fetch": "tizen_gerrit_fetch",
     "skill/tizen_build_verify": "tizen_build_verify",
+    "skill/tizen_gerrit_submit": "tizen_gerrit_submit",
 }
 
 
@@ -248,6 +252,32 @@ EDIT_SPEC_GUARD_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("_is_relative_to", ()),
 )
 
+GERRIT_SUBMIT_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("SubprocessRunner", ()),
+    ("GerritSubmitOptions", ("ci_triage.cli",)),
+    ("GerritSubmitResult", ()),
+    ("ReleaseWorktreeResult", ()),
+    ("gerrit_submit", ("ci_triage.cli",)),
+    ("_target_head_unknown_warning", ()),
+    ("release_verified_worktree", ("ci_triage.cli",)),
+    ("write_gerrit_submit_result", ("ci_triage.cli",)),
+    ("write_release_result", ("ci_triage.cli",)),
+    ("exit_code_for_submit", ("ci_triage.cli",)),
+    ("exit_code_for_release", ("ci_triage.cli",)),
+    ("_verification_mismatch", ()),
+    ("_dirty_reason", ()),
+    ("_target_warnings", ()),
+    ("_target_branch", ()),
+    ("_push_command", ()),
+    ("_remote_url", ()),
+    ("_git_stdout", ()),
+    ("_run_git", ()),
+    ("_result", ()),
+    ("_record_result", ()),
+    ("_build_id_from_failure_key", ()),
+    ("_subprocess_env", ()),
+)
+
 
 SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
     ModuleScopeSpec(
@@ -400,7 +430,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§3.2",),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.verify.gerrit_submit",),
+        ("tizen_gerrit_submit.gerrit_submit",),
     ),
     SymbolSpec(
         "mark_worktree_protected",
@@ -690,6 +720,16 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         SKILL_BUILD_WORKSPACE,
         "skill/tizen_build_verify",
     ),
+    *(
+        SymbolSpec(
+            name,
+            ("skill5-§0", "skill5-v1.3.1"),
+            SKILL_GERRIT_SUBMIT,
+            "skill/tizen_gerrit_submit",
+            consumers,
+        )
+        for name, consumers in GERRIT_SUBMIT_SYMBOLS
+    ),
 )
 
 
@@ -703,6 +743,7 @@ MODULE_OWNERS: dict[str, str] = {
     "tizen_qb_discover.sources": "skill/tizen_qb_discover",
     "tizen_gerrit_fetch.gerrit": "skill/tizen_gerrit_fetch",
     "tizen_build_verify.build_verify": "skill/tizen_build_verify",
+    "tizen_gerrit_submit.gerrit_submit": "skill/tizen_gerrit_submit",
     "ci_triage.verify.build_verify": "build-verify",
     "ci_triage.verify.gerrit_submit": "submit",
 }
@@ -1500,6 +1541,7 @@ def run(repo_root: Path) -> int:
     qb_discover_scripts_root = repo_root / "tizen-qb-discover/scripts"
     gerrit_fetch_scripts_root = repo_root / "tizen-gerrit-fetch/scripts"
     build_verify_scripts_root = repo_root / "tizen-build-verify/scripts"
+    gerrit_submit_scripts_root = repo_root / "tizen-gerrit-submit/scripts"
     sources = (
         _load_sources(triage_scripts_root)
         + _load_sources(shared_scripts_root)
@@ -1507,6 +1549,7 @@ def run(repo_root: Path) -> int:
         + _load_sources(qb_discover_scripts_root)
         + _load_sources(gerrit_fetch_scripts_root)
         + _load_sources(build_verify_scripts_root)
+        + _load_sources(gerrit_submit_scripts_root)
     )
     by_relative = {source.relative: source for source in sources}
     symbol_specs = tuple(spec for spec in SPECS if isinstance(spec, SymbolSpec))
@@ -1543,6 +1586,7 @@ def run(repo_root: Path) -> int:
         or source.relative == SKILL_BUILD_VERIFY
         or source.relative == SKILL_EDIT_SPEC_GUARD
         or source.relative == SKILL_BUILD_WORKSPACE
+        or source.relative == SKILL_GERRIT_SUBMIT
     )
     incomplete = sorted(
         (
@@ -1723,6 +1767,7 @@ def _fixture_sources(repo_root: Path) -> tuple[SourceFile, ...]:
         repo_root / "tizen-qb-discover/scripts",
         repo_root / "tizen-gerrit-fetch/scripts",
         repo_root / "tizen-build-verify/scripts",
+        repo_root / "tizen-gerrit-submit/scripts",
     )
     return tuple(
         source

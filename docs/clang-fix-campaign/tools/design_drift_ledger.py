@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 SCHEMA_VERSION = "clang-fix-campaign/design-drift-ledger/v1"
-VERSION_RE = re.compile(r"^(?P<major>0|[1-9][0-9]*)\.(?P<minor>0|[1-9][0-9]*)$")
+VERSION_RE = re.compile(r"^v?(\d+)\.(\d+)(?:\.(\d+))?$")
 HUNK_RE = re.compile(
     r"^@@ -(?P<old_start>[0-9]+)(?:,(?P<old_count>[0-9]+))? "
     r"\+(?P<new_start>[0-9]+)(?:,(?P<new_count>[0-9]+))? @@"
@@ -119,11 +119,30 @@ def _load_json(path: Path) -> dict[str, Any]:
     return value
 
 
-def _version_key(version: str) -> tuple[int, int]:
+def _version_key(version: str) -> tuple[int, int, int]:
     match = VERSION_RE.fullmatch(version)
     if match is None:
         raise LedgerError(f"unsupported version: {version!r}")
-    return int(match.group("major")), int(match.group("minor"))
+    return int(match.group(1)), int(match.group(2)), int(match.group(3) or 0)
+
+
+def _validate_version_sequence(versions: tuple[str, ...]) -> None:
+    keys = [_version_key(version) for version in versions]
+    if len(set(keys)) != len(keys):
+        raise LedgerError(f"version sequence contains duplicates: {versions}")
+    for previous, current in zip(keys, keys[1:], strict=False):
+        same_minor_patch = (
+            current[0] == previous[0]
+            and current[1] == previous[1]
+            and current[2] == previous[2] + 1
+        )
+        next_minor = (
+            current[0] == previous[0]
+            and current[1] == previous[1] + 1
+            and current[2] == 0
+        )
+        if not (same_minor_patch or next_minor):
+            raise LedgerError(f"version sequence is not continuous: {versions}")
 
 
 def _string_list(data: dict[str, Any], key: str) -> tuple[str, ...]:
@@ -145,13 +164,7 @@ def _corpus_plan(data: dict[str, Any], repo_root: Path) -> tuple[tuple[str, Path
     ):
         raise LedgerError("version_files keys must exactly equal version_sequence")
 
-    keys = [_version_key(version) for version in versions]
-    if len(set(keys)) != len(keys):
-        raise LedgerError(f"version sequence contains duplicates: {versions}")
-    major = keys[0][0]
-    expected = [(major, keys[0][1] + offset) for offset in range(len(keys))]
-    if keys != expected:
-        raise LedgerError(f"version sequence is not continuous: {versions}")
+    _validate_version_sequence(versions)
 
     corpus_dir = repo_root / raw_dir
     return tuple((version, corpus_dir / str(raw_files[version])) for version in versions)
