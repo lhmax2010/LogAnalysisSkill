@@ -276,23 +276,25 @@ skill-3 `v1.3.1` 将二者**具名延期至本批**。**本批是其关门批次
 
 | 契约句 | 分支(代码锚) | 用例(实现期回写) |
 |---|---|---|
-| 记录不存在 | `action="record_not_found"`(:82) | |
-| 记录未就绪 | `rejected_not_ready`(:95;另 :103 第二入口) | |
-| worktree 缺失 | `rejected_worktree_missing`(:113) | |
-| verification 不匹配 | `rejected_verification_mismatch`(:123) | |
-| worktree dirty | `rejected_worktree_dirty`(:132) | |
-| submit 未启用 | `rejected_submit_not_enabled`(:142) | |
-| 重复跳过 | `skipped_duplicate`(:152) | |
-| dry-run(远端已验证) | `dry_run`(:163,`remote_unknown=False`) | |
-| dry-run(远端未验证) | `dry_run_unverified_remote`(:163,`remote_unknown=True`,由 :185 `target_head_unknown` 前缀触发) | |
-| 目标 HEAD 未知 warning | `_target_warnings`(:280-299:branch None :280 / ls-remote 异常 :291 / rc≠0 :293 / not_found :296 / drifted :299) | |
-| release:记录不存在 | `ReleaseWorktreeResult(action="record_not_found")`(:204) | |
-| release:已释放 | `action="released"`(:212,`released=True`) | |
-| release:未受保护 | `action="not_protected"`(:212,`released=False`) | |
-| exit code 映射 | `exit_code_for_submit`(:235)/ `exit_code_for_release`(:243) | |
+| 记录不存在 | `action="record_not_found"`(:82) | `test_gerrit_submit_record_not_found` |
+| 记录未就绪 | `rejected_not_ready`(:95;另 :103 第二入口) | `test_gerrit_submit_rejects_latest_non_ready`; `test_gerrit_submit_rejects_ready_for_different_verification_id` |
+| worktree 缺失 | `rejected_worktree_missing`(:113) | `test_gerrit_submit_rejects_missing_worktree_without_patch_fallback` |
+| verification 不匹配 | `rejected_verification_mismatch`(:123) | `test_gerrit_submit_rejects_commit_or_tree_mismatch` |
+| worktree dirty | `rejected_worktree_dirty`(:132) | `test_gerrit_submit_rejects_tracked_dirty_worktree`; `test_gerrit_submit_rejects_staged_dirty_worktree` |
+| submit 未启用 | `rejected_submit_not_enabled`(:142) | `test_gerrit_submit_submit_mode_is_rejected_without_push` |
+| 重复跳过 | `skipped_duplicate`(:152) | `test_gerrit_submit_skips_duplicate_submission_key`; `test_gerrit_submit_skips_duplicate_before_unverified_remote_action` |
+| dry-run(远端已验证) | `dry_run`(:163,`remote_unknown=False`) | `test_gerrit_submit_dry_run_returns_command_without_push` |
+| dry-run(远端未验证) | `dry_run_unverified_remote`(:163,`remote_unknown=True`,由 :185 `target_head_unknown` 前缀触发) | `test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_fails`; `test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_raises`; `test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning`; `test_gerrit_submit_marks_dry_run_unverified_when_target_head_missing`; `test_gerrit_submit_marks_dry_run_unverified_for_sandbox_target` |
+| 目标 HEAD 未知 warning | `_target_warnings`(:280-299:branch None :280 / ls-remote 异常 :291 / rc≠0 :293 / not_found :296 / drifted :299) | `test_gerrit_submit_marks_dry_run_unverified_for_sandbox_target`; `test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_raises`; `test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning`; `test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_fails`; `test_gerrit_submit_marks_dry_run_unverified_when_target_head_missing`; `test_gerrit_submit_warns_on_target_branch_drift` |
+| release:记录不存在 | `ReleaseWorktreeResult(action="record_not_found")`(:204) | `test_release_verified_worktree_reports_record_not_found` |
+| release:已释放 | `action="released"`(:212,`released=True`) | `test_release_verified_worktree_removes_protection` |
+| release:未受保护 | `action="not_protected"`(:212,`released=False`) | `test_release_verified_worktree_reports_not_protected` |
+| exit code 映射 | `exit_code_for_submit`(:235)/ `exit_code_for_release`(:243) | `test_exit_code_mappings_cover_success_missing_and_rejected_actions` |
 
 **规律留痕**:v1.2 表中带锚的四项全部准确、不带锚的六项两虚构两失真——
 **无锚即无证伪**,故本表逐行加锚为硬项。
+`test_gerrit_submit_dry_run_returns_command_without_push` 另以 fake runner
+锁定 `:160` 只构造、`:167` 只存入命令,全部实际 subprocess argv 均无 push。
 
 - **§3 现状锁定(硬项)**:①**无 timeout**——fake runner 断言**所有
   subprocess 调用均未传 `timeout`**(拦截**全部**传入路径,不只 wrapper;

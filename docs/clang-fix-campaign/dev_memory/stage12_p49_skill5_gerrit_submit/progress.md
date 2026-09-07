@@ -406,3 +406,179 @@ $ git diff --name-only HEAD -- \
     docs/clang-fix-campaign/design.md release-v1.4.0
 (no output)
 ```
+
+## Commit B: test ownership, branch matrix, and status locks
+
+Status: COMPLETE, pending commit and independent review.
+
+### Test ownership
+
+`tests/unit/test_gerrit_submit.py` was the legacy owner of 19 test functions.
+It was renamed to `tests/unit/test_tizen_gerrit_submit.py`; all 19 function
+names remain present. Six delta tests were added for the uncovered frozen
+branches and status locks.
+
+The three boundaries are explicit:
+
+- skill behavior and package surface:
+  `tests/unit/test_tizen_gerrit_submit.py`;
+- orchestration integration: the Gerrit submit/release CLI section in
+  `tests/unit/test_ci_triage_entrypoints.py`;
+- legacy wiring: the final identity-only section in
+  `tests/unit/test_tizen_gerrit_submit.py`.
+
+The real-Git integration tests remain in
+`tests/integration/test_gerrit_submit_real_git.py`; they already import the
+skill directly and retain their integration marker.
+
+```text
+old_test_functions=19
+new_test_functions=25
+missing_moved_functions=0
+new_functions=6
+```
+
+### Frozen section 4 branch table
+
+The use-case column was written back to both the authority and its history
+snapshot. A parser checked every row against actual top-level test functions:
+
+```text
+branch_rows=14
+rows_with_use_cases=14
+unresolved=0
+```
+
+| Frozen branch | Test coverage |
+|---|---|
+| `record_not_found` | `test_gerrit_submit_record_not_found` |
+| `rejected_not_ready`, both entries | `test_gerrit_submit_rejects_latest_non_ready`; `test_gerrit_submit_rejects_ready_for_different_verification_id` |
+| `rejected_worktree_missing` | `test_gerrit_submit_rejects_missing_worktree_without_patch_fallback` |
+| `rejected_verification_mismatch` | `test_gerrit_submit_rejects_commit_or_tree_mismatch` |
+| `rejected_worktree_dirty` | tracked and staged dirty tests |
+| `rejected_submit_not_enabled` | `test_gerrit_submit_submit_mode_is_rejected_without_push` |
+| `skipped_duplicate` | duplicate and duplicate-before-unverified tests |
+| `dry_run` | `test_gerrit_submit_dry_run_returns_command_without_push` |
+| `dry_run_unverified_remote` | rc, OSError, TimeoutExpired, not-found, and sandbox tests |
+| `_target_warnings` five branches | sandbox, exception, rc, empty output, and drift tests |
+| release `record_not_found` | `test_release_verified_worktree_reports_record_not_found` |
+| release `released` | `test_release_verified_worktree_removes_protection` |
+| release `not_protected` | `test_release_verified_worktree_reports_not_protected` |
+| both exit-code functions | `test_exit_code_mappings_cover_success_missing_and_rejected_actions` |
+
+`test_gerrit_submit_dry_run_returns_command_without_push` locks the no-push
+contract. The fake runner sees only validation and `ls-remote` calls; the push
+argv is constructed in the result but never executed.
+
+### Section 3 current-state locks
+
+Each injection point and assertion is recorded separately:
+
+| Point | Injection/observation | Assertion |
+|---|---|---|
+| all subprocess paths | `SubmitRunner.calls` records every argv and kwargs pair from both local `_run_git` and remote `ls-remote` paths | both path classes were observed; every kwargs object lacks `timeout`; every executed argv lacks `push` |
+| local `_run_git` timeout | runner raises one preconstructed `subprocess.TimeoutExpired` object | `pytest.raises` receives the same object by identity, proving bare propagation |
+| remote `ls-remote` timeout | `SubmitRunner` raises `TimeoutExpired` only for `git ls-remote` | action is `dry_run_unverified_remote`; warnings contain exact `target_head_unknown:<exception>` text |
+| dangling symlink | existing skill-3 fixture points destination at a missing target | `FileExistsError` propagates; symlink remains; missing target remains absent; runner has only its initial call |
+
+The referenced symlink lock is
+`tests/unit/test_gerrit_fetch.py::test_fetch_source_dangling_symlink_propagates_file_exists_error`;
+it was not copied or rewritten.
+
+```text
+$ pytest -q \
+    tests/unit/test_tizen_gerrit_submit.py::test_gerrit_submit_all_subprocess_paths_omit_timeout \
+    tests/unit/test_tizen_gerrit_submit.py::test_run_git_propagates_timeout_expired_unchanged \
+    tests/unit/test_tizen_gerrit_submit.py::test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning \
+    tests/unit/test_gerrit_fetch.py::test_fetch_source_dangling_symlink_propagates_file_exists_error
+4 passed in 0.11s
+```
+
+### Frozen-body writeback and A0 rerun
+
+The authority and history snapshot remain byte-identical after the test-name
+writeback:
+
+```text
+$ cmp <authority> <history-snapshot>
+(no output)
+CMP_EXIT=0
+sha256=e7e490daf680c11f69c8a775edb5573d6afe3dd00214a8df3b7a6244ac9b742f
+```
+
+The skill-5 data file was regenerated through the A0 bootstrap command rather
+than edited around the gate. Counts did not change; only final-version spans,
+captured text, and the Git-external target SHA moved:
+
+```text
+$ design_drift_ledger.py bootstrap --data design_drift_ledger.skill5.json
+BOOTSTRAP | candidates=34 retained=30 ignored=4 binding_candidates=348 bindings=8
+
+$ design_drift_ledger.py check --data design_drift_ledger.skill5.json
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=34 | retained=30 | ignored=4 | bindings=8 | binding_candidates=348
+
+$ design_drift_ledger.py admission --data design_drift_ledger.skill5.json
+ADMISSION | snapshot=v1.2 | BINDING_DRIFT=7 | required_known=2 | RED_AS_EXPECTED
+ADMISSION_EXIT=1
+```
+
+All four skill-5 `OUT_OF_SCOPE` misuse fixtures and all eight per-binding
+fixtures still turn red for their intended predicates. The inherited skill-4
+check also remains green:
+
+```text
+OUT_OF_SCOPE_SUMMARY | items=4 | RED_AS_EXPECTED
+OUT_OF_SCOPE_NEGATIVE_EXIT=1
+NEGATIVE_BINDING_EXIT | B-BRANCH-DOD | 1
+NEGATIVE_BINDING_EXIT | B-BRANCH-FABRICATION | 1
+NEGATIVE_BINDING_EXIT | B-TIMEOUT-BRANCH-LOCK | 1
+NEGATIVE_BINDING_EXIT | B-TIMEOUT-TWO-PATHS | 1
+NEGATIVE_BINDING_EXIT | B-RESULT-MAPPING | 1
+NEGATIVE_BINDING_EXIT | B-PRIVATE-COUNT | 1
+NEGATIVE_BINDING_EXIT | B-GATE-MEMBERS | 1
+NEGATIVE_BINDING_EXIT | B-GATE-CONTROLS | 1
+skill-4: SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=130 | retained=83 | ignored=47 | bindings=22 | binding_candidates=1410
+```
+
+### Baseline and quality gates
+
+Nodeids were compared after normalizing only the deliberate ownership rename:
+
+```text
+COLLECT_EXIT=0
+BEFORE=900
+AFTER=906
+MISSING_AFTER_OWNERSHIP_RENAME=0
+ADDED=6
+```
+
+The commit-A baseline set is intact. The new baseline is 905 passed and one
+skipped:
+
+```text
+$ pytest -q
+905 passed, 1 skipped in 18.60s
+
+$ pytest -q tests/unit/test_tizen_gerrit_submit.py
+25 passed in 0.78s
+
+$ ruff check <changed test surface>
+All checks passed!
+$ python -m py_compile <changed test surface>
+exit=0
+$ mypy
+Success: no issues found in 109 source files
+$ lint-imports
+Contracts: 6 kept, 0 broken.
+```
+
+Production code is unchanged, including all restricted surfaces:
+
+```text
+$ git diff --name-only HEAD -- ':(glob)tizen-*/scripts/**'
+(no output)
+$ git diff --name-only HEAD -- \
+    tizen-ci-triage/scripts/ci_triage/gbs_report.py \
+    docs/clang-fix-campaign/design.md release-v1.4.0/
+(no output)
+```

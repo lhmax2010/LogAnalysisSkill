@@ -242,6 +242,7 @@ def test_python_m_ci_triage_check_convergence_help_smoke() -> None:
     assert "--output" in result.stdout
 
 
+# Orchestration integration: Gerrit submit/release CLI parsing and dispatch.
 def test_cli_gerrit_submit_help_uses_gerrit_submit_parser(
     capsys: pytest.CaptureFixture[str],
 ) -> None:

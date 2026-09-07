@@ -3,9 +3,11 @@ from __future__ import annotations
 import importlib
 import json
 import subprocess
+from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast
 
+import pytest
 import tizen_gerrit_submit
 from tizen_ci_shared.state import (
     GERRIT_READY,
@@ -20,6 +22,8 @@ from tizen_ci_shared.state import (
 from tizen_ci_shared.workspace import PROTECTED_FILENAME
 from tizen_gerrit_submit import (
     GerritSubmitOptions,
+    GerritSubmitResult,
+    ReleaseWorktreeResult,
     exit_code_for_release,
     exit_code_for_submit,
     gerrit_submit,
@@ -55,6 +59,13 @@ INTERNAL_SYMBOLS = (
     "_subprocess_env",
 )
 
+_GERRIT_SUBMIT_MODULE = importlib.import_module("tizen_gerrit_submit.gerrit_submit")
+
+# Test ownership boundary:
+# - this file: tizen_gerrit_submit skill behavior and package surface;
+# - test_ci_triage_entrypoints.py: CLI orchestration integration;
+# - the final section here: compatibility-shim identity only.
+
 
 class SubmitRunner:
     def __init__(
@@ -62,16 +73,19 @@ class SubmitRunner:
         *,
         target_head: str | None,
         ls_remote_returncode: int = 0,
-        ls_remote_exception: OSError | None = None,
+        ls_remote_exception: OSError | subprocess.SubprocessError | None = None,
     ) -> None:
         self.target_head = target_head
         self.ls_remote_returncode = ls_remote_returncode
         self.ls_remote_exception = ls_remote_exception
         self.commands: list[list[str]] = []
+        self.calls: list[tuple[list[str], dict[str, Any]]] = []
 
     def __call__(self, args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
         if isinstance(args, list):
-            self.commands.append([str(item) for item in args])
+            command = [str(item) for item in args]
+            self.commands.append(command)
+            self.calls.append((command, dict(kwargs)))
             if args[:2] == ["git", "ls-remote"]:
                 if self.ls_remote_exception is not None:
                     raise self.ls_remote_exception
@@ -181,6 +195,7 @@ def _expected_push_command(record: VerificationRecord) -> list[str]:
     ]
 
 
+# Skill behavior: frozen section 4 branch table and section 3 status locks.
 def test_gerrit_submit_dry_run_returns_command_without_push(tmp_path: Path) -> None:
     db, record, base_commit = _record(tmp_path)
     runner = SubmitRunner(target_head=base_commit)
@@ -203,6 +218,33 @@ def test_gerrit_submit_dry_run_returns_command_without_push(tmp_path: Path) -> N
     assert result.provenance["failure_key"] == record.failure_key
     assert db.get_submission(result.submission_key or "") is None
     assert get_latest_status(db, record.failure_key) == GERRIT_READY
+
+
+def test_gerrit_submit_all_subprocess_paths_omit_timeout(tmp_path: Path) -> None:
+    db, record, base_commit = _record(tmp_path)
+    runner = SubmitRunner(target_head=base_commit)
+
+    result = gerrit_submit(_options(db, record.verification_id), subprocess_runner=runner)
+
+    assert result.action == "dry_run"
+    assert len(runner.calls) == 5
+    assert any(command[:2] == ["git", "ls-remote"] for command, _kwargs in runner.calls)
+    assert any(command[:2] == ["git", "-C"] for command, _kwargs in runner.calls)
+    assert all("timeout" not in kwargs for _command, kwargs in runner.calls)
+    assert all("push" not in command for command, _kwargs in runner.calls)
+    assert (Path(record.worktree_path) / PROTECTED_FILENAME).is_file()
+
+
+def test_run_git_propagates_timeout_expired_unchanged(tmp_path: Path) -> None:
+    timeout = subprocess.TimeoutExpired(["git", "status"], 7)
+
+    def raise_timeout(*_args: Any, **_kwargs: Any) -> subprocess.CompletedProcess[str]:
+        raise timeout
+
+    with pytest.raises(subprocess.TimeoutExpired) as captured:
+        _GERRIT_SUBMIT_MODULE._run_git(tmp_path, ["status"], raise_timeout)
+
+    assert captured.value is timeout
 
 
 def test_gerrit_submit_record_not_found(tmp_path: Path) -> None:
@@ -340,6 +382,23 @@ def test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_raises(tmp_path: 
     )
 
 
+def test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning(tmp_path: Path) -> None:
+    db, record, _base_commit = _record(tmp_path)
+    timeout = subprocess.TimeoutExpired(["git", "ls-remote"], 7)
+
+    result = gerrit_submit(
+        _options(db, record.verification_id),
+        subprocess_runner=SubmitRunner(
+            target_head=None,
+            ls_remote_exception=timeout,
+        ),
+    )
+
+    assert result.action == "dry_run_unverified_remote"
+    assert f"target_head_unknown:{timeout}" in result.warnings
+    assert (Path(record.worktree_path) / PROTECTED_FILENAME).is_file()
+
+
 def test_gerrit_submit_marks_dry_run_unverified_when_target_head_missing(tmp_path: Path) -> None:
     db, record, _base_commit = _record(tmp_path)
 
@@ -446,19 +505,71 @@ def test_release_verified_worktree_removes_protection(tmp_path: Path) -> None:
     assert exit_code_for_release(result) == 0
 
 
-def test_package_root_exports_only_public_api() -> None:
-    implementation = importlib.import_module("tizen_gerrit_submit.gerrit_submit")
+# Skill behavior: release outcomes and exit-code mapping.
+def test_release_verified_worktree_reports_record_not_found(tmp_path: Path) -> None:
+    db = StateDatabase(tmp_path / "state.sqlite3")
 
+    result = release_verified_worktree(db, "missing")
+
+    assert result.action == "record_not_found"
+    assert result.released is False
+    assert result.worktree_path is None
+    assert exit_code_for_release(result) == 2
+
+
+def test_release_verified_worktree_reports_not_protected(tmp_path: Path) -> None:
+    db, record, _base_commit = _record(tmp_path)
+    marker = Path(record.worktree_path) / PROTECTED_FILENAME
+    marker.unlink()
+
+    result = release_verified_worktree(db, record.verification_id)
+
+    assert result.action == "not_protected"
+    assert result.released is False
+    assert result.worktree_path == record.worktree_path
+    assert exit_code_for_release(result) == 0
+    assert not marker.exists()
+
+
+def test_exit_code_mappings_cover_success_missing_and_rejected_actions() -> None:
+    submit = GerritSubmitResult(
+        action="dry_run",
+        verification_id="verify-1",
+        submission_key=None,
+        submit_target=None,
+        submit_mode=None,
+        command=None,
+        command_argv=[],
+        warnings=[],
+        provenance={},
+    )
+    release = ReleaseWorktreeResult(
+        action="released",
+        verification_id="verify-1",
+        worktree_path=None,
+        released=True,
+    )
+
+    assert exit_code_for_submit(submit) == 0
+    assert exit_code_for_submit(replace(submit, action="record_not_found")) == 2
+    assert exit_code_for_submit(replace(submit, action="rejected_not_ready")) == 3
+    assert exit_code_for_release(release) == 0
+    assert exit_code_for_release(replace(release, action="not_protected")) == 0
+    assert exit_code_for_release(replace(release, action="record_not_found")) == 2
+
+
+# Public package surface: nine exports and fourteen deliberately private names.
+def test_package_root_exports_only_public_api() -> None:
     assert set(tizen_gerrit_submit.__all__) == set(PUBLIC_SYMBOLS)
     for name in PUBLIC_SYMBOLS:
-        assert getattr(tizen_gerrit_submit, name) is getattr(implementation, name)
+        assert getattr(tizen_gerrit_submit, name) is getattr(_GERRIT_SUBMIT_MODULE, name)
     for name in INTERNAL_SYMBOLS:
         assert not hasattr(tizen_gerrit_submit, name)
 
 
+# Legacy wiring: identity only, not a substitute for pre-shim parity.
 def test_legacy_shim_preserves_all_symbol_identities() -> None:
     legacy = importlib.import_module("ci_triage.verify.gerrit_submit")
-    implementation = importlib.import_module("tizen_gerrit_submit.gerrit_submit")
 
     for name in (*PUBLIC_SYMBOLS, *INTERNAL_SYMBOLS):
-        assert getattr(legacy, name) is getattr(implementation, name)
+        assert getattr(legacy, name) is getattr(_GERRIT_SUBMIT_MODULE, name)

@@ -1306,8 +1306,8 @@
         }
       },
       {
-        "candidate_id": "v1.2|old:245-248,new:269-296|9081ee874e89f85497c1102c3d819c12b510e33ceb70648854b1b28df7501bf1",
-        "new_end": 296,
+        "candidate_id": "v1.2|old:245-248,new:269-298|9081ee874e89f85497c1102c3d819c12b510e33ceb70648854b1b28df7501bf1",
+        "new_end": 298,
         "new_lines": [
           "- **分支表全部契约句逐行有用例**,且每行必有代码锚(行号即证伪手段——",
           "  沿 skill-4 §4 先例)。本表按 v1.3 真实 action 集重写。**首要事实:本",
@@ -1319,23 +1319,25 @@
           "",
           "| 契约句 | 分支(代码锚) | 用例(实现期回写) |",
           "|---|---|---|",
-          "| 记录不存在 | `action=\"record_not_found\"`(:82) | |",
-          "| 记录未就绪 | `rejected_not_ready`(:95;另 :103 第二入口) | |",
-          "| worktree 缺失 | `rejected_worktree_missing`(:113) | |",
-          "| verification 不匹配 | `rejected_verification_mismatch`(:123) | |",
-          "| worktree dirty | `rejected_worktree_dirty`(:132) | |",
-          "| submit 未启用 | `rejected_submit_not_enabled`(:142) | |",
-          "| 重复跳过 | `skipped_duplicate`(:152) | |",
-          "| dry-run(远端已验证) | `dry_run`(:163,`remote_unknown=False`) | |",
-          "| dry-run(远端未验证) | `dry_run_unverified_remote`(:163,`remote_unknown=True`,由 :185 `target_head_unknown` 前缀触发) | |",
-          "| 目标 HEAD 未知 warning | `_target_warnings`(:280-299:branch None :280 / ls-remote 异常 :291 / rc≠0 :293 / not_found :296 / drifted :299) | |",
-          "| release:记录不存在 | `ReleaseWorktreeResult(action=\"record_not_found\")`(:204) | |",
-          "| release:已释放 | `action=\"released\"`(:212,`released=True`) | |",
-          "| release:未受保护 | `action=\"not_protected\"`(:212,`released=False`) | |",
-          "| exit code 映射 | `exit_code_for_submit`(:235)/ `exit_code_for_release`(:243) | |",
+          "| 记录不存在 | `action=\"record_not_found\"`(:82) | `test_gerrit_submit_record_not_found` |",
+          "| 记录未就绪 | `rejected_not_ready`(:95;另 :103 第二入口) | `test_gerrit_submit_rejects_latest_non_ready`; `test_gerrit_submit_rejects_ready_for_different_verification_id` |",
+          "| worktree 缺失 | `rejected_worktree_missing`(:113) | `test_gerrit_submit_rejects_missing_worktree_without_patch_fallback` |",
+          "| verification 不匹配 | `rejected_verification_mismatch`(:123) | `test_gerrit_submit_rejects_commit_or_tree_mismatch` |",
+          "| worktree dirty | `rejected_worktree_dirty`(:132) | `test_gerrit_submit_rejects_tracked_dirty_worktree`; `test_gerrit_submit_rejects_staged_dirty_worktree` |",
+          "| submit 未启用 | `rejected_submit_not_enabled`(:142) | `test_gerrit_submit_submit_mode_is_rejected_without_push` |",
+          "| 重复跳过 | `skipped_duplicate`(:152) | `test_gerrit_submit_skips_duplicate_submission_key`; `test_gerrit_submit_skips_duplicate_before_unverified_remote_action` |",
+          "| dry-run(远端已验证) | `dry_run`(:163,`remote_unknown=False`) | `test_gerrit_submit_dry_run_returns_command_without_push` |",
+          "| dry-run(远端未验证) | `dry_run_unverified_remote`(:163,`remote_unknown=True`,由 :185 `target_head_unknown` 前缀触发) | `test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_fails`; `test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_raises`; `test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning`; `test_gerrit_submit_marks_dry_run_unverified_when_target_head_missing`; `test_gerrit_submit_marks_dry_run_unverified_for_sandbox_target` |",
+          "| 目标 HEAD 未知 warning | `_target_warnings`(:280-299:branch None :280 / ls-remote 异常 :291 / rc≠0 :293 / not_found :296 / drifted :299) | `test_gerrit_submit_marks_dry_run_unverified_for_sandbox_target`; `test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_raises`; `test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning`; `test_gerrit_submit_marks_dry_run_unverified_when_ls_remote_fails`; `test_gerrit_submit_marks_dry_run_unverified_when_target_head_missing`; `test_gerrit_submit_warns_on_target_branch_drift` |",
+          "| release:记录不存在 | `ReleaseWorktreeResult(action=\"record_not_found\")`(:204) | `test_release_verified_worktree_reports_record_not_found` |",
+          "| release:已释放 | `action=\"released\"`(:212,`released=True`) | `test_release_verified_worktree_removes_protection` |",
+          "| release:未受保护 | `action=\"not_protected\"`(:212,`released=False`) | `test_release_verified_worktree_reports_not_protected` |",
+          "| exit code 映射 | `exit_code_for_submit`(:235)/ `exit_code_for_release`(:243) | `test_exit_code_mappings_cover_success_missing_and_rejected_actions` |",
           "",
           "**规律留痕**:v1.2 表中带锚的四项全部准确、不带锚的六项两虚构两失真——",
           "**无锚即无证伪**,故本表逐行加锚为硬项。",
+          "`test_gerrit_submit_dry_run_returns_command_without_push` 另以 fake runner",
+          "锁定 `:160` 只构造、`:167` 只存入命令,全部实际 subprocess argv 均无 push。",
           ""
         ],
         "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
@@ -1359,8 +1361,8 @@
         }
       },
       {
-        "candidate_id": "v1.2|old:251-251,new:299-302|a0dcda0f147d4e1e6e4fdc5186c62751796b1852eccf5513c5cea793a1f099e7",
-        "new_end": 302,
+        "candidate_id": "v1.2|old:251-251,new:301-304|a0dcda0f147d4e1e6e4fdc5186c62751796b1852eccf5513c5cea793a1f099e7",
+        "new_end": 304,
         "new_lines": [
           "  skill-3 N2 教训);②**`TimeoutExpired` 两路径分别锁定(v1.3 同步 §3.1)**:`_run_git`(:341)",
           "  **裸传播**;`ls-remote`(:285)**捕获转 `target_head_unknown:<exc>` warning**",
@@ -1368,7 +1370,7 @@
           "  (v1.2 写\"原样传播\"只覆盖一半,同型于 skill-3 N2);"
         ],
         "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
-        "new_start": 299,
+        "new_start": 301,
         "new_version": "1.3",
         "old_end": 251,
         "old_lines": [
@@ -1385,13 +1387,13 @@
         }
       },
       {
-        "candidate_id": "v1.2|old:292-292,new:343-343|2d443d18241dbc30ab44f1110e874c6f9c20c7d526a15c25ee6350f096d43e07",
-        "new_end": 343,
+        "candidate_id": "v1.2|old:292-292,new:345-345|2d443d18241dbc30ab44f1110e874c6f9c20c7d526a15c25ee6350f096d43e07",
+        "new_end": 345,
         "new_lines": [
           "8. **A₀ 数据文件**:语料按 **skill-4 FROZEN §5.4.4** 规则从本批版本序列产出;binding 清单"
         ],
         "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
-        "new_start": 343,
+        "new_start": 345,
         "new_version": "1.3",
         "old_end": 292,
         "old_lines": [
@@ -1408,14 +1410,14 @@
         }
       },
       {
-        "candidate_id": "v1.2|old:313-314,new:364-365|e996404581c7cce867e551a7e75631c7e0a911288567772c5a31bf7206a3e5a3",
-        "new_end": 365,
+        "candidate_id": "v1.2|old:313-314,new:366-367|e996404581c7cce867e551a7e75631c7e0a911288567772c5a31bf7206a3e5a3",
+        "new_end": 367,
         "new_lines": [
           "- [ ] **§3 两项现状锁定测试**(无 timeout / **TimeoutExpired 两路径各一**:",
           "      `_run_git` 裸传播 + `ls-remote` 转 warning / 悬空 symlink 引 skill-3 既有用例)+ **两项设计已登记且新关门批次具名**;"
         ],
         "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
-        "new_start": 364,
+        "new_start": 366,
         "new_version": "1.3",
         "old_end": 314,
         "old_lines": [
@@ -1433,8 +1435,8 @@
         }
       },
       {
-        "candidate_id": "v1.2|old:317-317,new:368-371|7e135909bc742f0ae9989391d41369d03388cb5686def69e5c91a29304930559",
-        "new_end": 371,
+        "candidate_id": "v1.2|old:317-317,new:370-373|7e135909bc742f0ae9989391d41369d03388cb5686def69e5c91a29304930559",
+        "new_end": 373,
         "new_lines": [
           "- [ ] **双门禁继承 A₀ 且全绿**(check + 准入证伪 + skill-4 全部负向证伪不退化);",
           "- [ ] §4 分支表全部契约句逐行有用例,代码锚与实际实现一致;",
@@ -1442,7 +1444,7 @@
           "- [ ] §2 门禁成员扩展与三条负控制全部落地并实测。"
         ],
         "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
-        "new_start": 368,
+        "new_start": 370,
         "new_version": "1.3",
         "old_end": 317,
         "old_lines": [
@@ -1488,11 +1490,11 @@
     "v1.2|old:209-210,new:221-223|ed3d2435eb4fd6db80d946399865cec54ad2653902537bb820d932977797f6c7": {},
     "v1.2|old:215-220,new:228-243|5c57e8fb6fc5255dc10aaeea23f4aa8b001dacab74963c9167c13ac18599dfda": {},
     "v1.2|old:234-236,new:257-260|5f4d540b2b60c6022af18b62d5047cdf3f8573ac6340a7cc4dd55c663104d189": {},
-    "v1.2|old:245-248,new:269-296|9081ee874e89f85497c1102c3d819c12b510e33ceb70648854b1b28df7501bf1": {},
-    "v1.2|old:251-251,new:299-302|a0dcda0f147d4e1e6e4fdc5186c62751796b1852eccf5513c5cea793a1f099e7": {},
-    "v1.2|old:292-292,new:343-343|2d443d18241dbc30ab44f1110e874c6f9c20c7d526a15c25ee6350f096d43e07": {},
-    "v1.2|old:313-314,new:364-365|e996404581c7cce867e551a7e75631c7e0a911288567772c5a31bf7206a3e5a3": {},
-    "v1.2|old:317-317,new:368-371|7e135909bc742f0ae9989391d41369d03388cb5686def69e5c91a29304930559": {},
+    "v1.2|old:245-248,new:269-298|9081ee874e89f85497c1102c3d819c12b510e33ceb70648854b1b28df7501bf1": {},
+    "v1.2|old:251-251,new:301-304|a0dcda0f147d4e1e6e4fdc5186c62751796b1852eccf5513c5cea793a1f099e7": {},
+    "v1.2|old:292-292,new:345-345|2d443d18241dbc30ab44f1110e874c6f9c20c7d526a15c25ee6350f096d43e07": {},
+    "v1.2|old:313-314,new:366-367|e996404581c7cce867e551a7e75631c7e0a911288567772c5a31bf7206a3e5a3": {},
+    "v1.2|old:317-317,new:370-373|7e135909bc742f0ae9989391d41369d03388cb5686def69e5c91a29304930559": {},
     "v1.2|old:88-88,new:100-100|82dc438fa5af37e0bb12ca6cf259e0b60d941dc282c3193f891d8790bf554803": {}
   },
   "generated_from": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
@@ -1888,7 +1890,7 @@
   ],
   "schema_version": "clang-fix-campaign/design-drift-ledger/v1",
   "target_design": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
-  "target_sha256": "e52f3851c3c034936da872cde9a2e30b85af9651b3d9314517d504a85f57b600",
+  "target_sha256": "e7e490daf680c11f69c8a775edb5573d6afe3dd00214a8df3b7a6244ac9b742f",
   "target_version": "1.3",
   "version_corpus": [
     {
@@ -1908,7 +1910,7 @@
     },
     {
       "path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
-      "sha256": "e52f3851c3c034936da872cde9a2e30b85af9651b3d9314517d504a85f57b600",
+      "sha256": "e7e490daf680c11f69c8a775edb5573d6afe3dd00214a8df3b7a6244ac9b742f",
       "version": "1.3"
     }
   ],
