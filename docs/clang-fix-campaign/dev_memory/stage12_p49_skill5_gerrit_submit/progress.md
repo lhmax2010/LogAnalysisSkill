@@ -190,3 +190,219 @@ All checks passed!
 The first Ruff pass found one 102-character generic error message introduced
 by parameterization. It was split across lines without changing behavior; the
 recorded final command above is green.
+
+## Commit A: mode-one extraction and pre-shim parity
+
+Status: COMPLETE, pending commit and independent review.
+
+Authority:
+`docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md`
+at `f2bc050`; A0 gate commit `31a91cb`.
+
+### Migration and source identity
+
+The implementation was copied while the legacy module was still an independent
+implementation. The pre-shim comparison was empty. After installing the shim,
+the same result remains independently reproducible from the Git-anchored source:
+
+```text
+$ git show HEAD:tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py \
+    > /tmp/skill5-gerrit-submit-before.py
+$ cmp /tmp/skill5-gerrit-submit-before.py \
+    tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py
+(no output)
+CMP_EXIT=0
+$ sha256sum /tmp/skill5-gerrit-submit-before.py \
+    tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py
+ead701d0e943f395225729be5daef94f53912002d97534f2309cc264e037107f  /tmp/skill5-gerrit-submit-before.py
+ead701d0e943f395225729be5daef94f53912002d97534f2309cc264e037107f  tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py
+```
+
+AST inventory of the skill copy:
+
+```text
+top_level_migration_symbols=23
+SubprocessRunner,GerritSubmitOptions,GerritSubmitResult,ReleaseWorktreeResult,gerrit_submit,_target_head_unknown_warning,release_verified_worktree,write_gerrit_submit_result,write_release_result,exit_code_for_submit,exit_code_for_release,_verification_mismatch,_dirty_reason,_target_warnings,_target_branch,_push_command,_remote_url,_git_stdout,_run_git,_result,_record_result,_build_id_from_failure_key,_subprocess_env
+```
+
+The inherited module docstring and comments remain accurate in the skill copy.
+There are no inherited `shim`, `temporary`, or deletion comments whose meaning
+reversed after migration:
+
+```text
+$ rg -n 'P4\.9 shim|removed at|temporary|delete at|will be deleted' \
+    tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py
+(no output)
+exit=1
+```
+
+### B-stage scaffolding
+
+No project/package entrypoint was changed in commit A. The temporary
+`PYTHONPATH` and `MYPYPATH` used for tests and checks contained these script
+roots, in this order:
+
+```text
+$PWD/tizen-gerrit-submit/scripts
+$PWD/tizen-ci-shared/scripts
+$PWD/tizen-ci-triage/scripts
+$PWD/tizen-gbs-log-analysis/scripts
+$PWD/tizen-gbs-patch-suggest/scripts
+$PWD/tizen-gbs-build/scripts
+$PWD/tizen-convergence-judge/scripts
+$PWD/tizen-qb-discover/scripts
+$PWD/tizen-gerrit-fetch/scripts
+$PWD/tizen-build-verify/scripts
+```
+
+This is extraction scaffolding only. The three installation entrypoints remain
+commit C work.
+
+### Pre-shim parity
+
+Volatile-source discovery was run against this module rather than copied from a
+previous skill:
+
+```text
+$ rg -n 'uuid|datetime|\btime\b|random' \
+    tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py
+(no output)
+exit=1
+```
+
+No volatile source exists in this module, so no freeze was needed. Before the
+legacy file became a shim, the old and new implementations were loaded as
+distinct module objects and explicitly reloaded. Independent state databases,
+worktrees, protected markers, and fake runners were used. The fake runner
+observed five ordered calls across submit and release.
+
+The payload has exactly five partitions:
+
+1. every field of both result objects, including null fields;
+2. ordered fake-runner argv and kwargs traces;
+3. worktree, symlink, and protected-marker state before submit, after submit,
+   and after release;
+4. controlled environment inputs `PYTHONPATH` and `GIT_SSH_COMMAND` only;
+5. submit and release exit codes.
+
+Masking was applied only to named path carriers: result command tokens,
+`command_argv` elements, release `worktree_path`, runner argv elements, and the
+symlink target. No payload-wide replacement was used. Full evidence is in
+[pre-shim-parity.txt](commit-a-evidence/pre-shim-parity.txt).
+
+```text
+isolation.importlib_reload=True
+isolation.distinct_modules=True
+isolation.distinct_functions=True
+field_equal[result_objects]=True
+field_equal[runner_trace]=True
+field_equal[worktree_marker_state]=True
+field_equal[controlled_environment]=True
+field_equal[exit_codes]=True
+payload_equal=True
+old_sha256=b0f5a5dcdec7d25afd72737e0ca12e34a00ee06a0108867f1d5c9fb4baf14d40
+new_sha256=b0f5a5dcdec7d25afd72737e0ca12e34a00ee06a0108867f1d5c9fb4baf14d40
+mask_scope=result.command tokens,result.command_argv elements,release.worktree_path,runner argv elements,symlink target
+payload_wide_replacement=False
+runner_calls=5
+normalizer_positive.destination_only=True
+normalizer_negative.action=True
+normalizer_negative.command_order=True
+normalizer_negative.exit_code=True
+exit_code=0
+COMMAND_EXIT=0
+```
+
+The positive fixture changes destination paths only and normalizes equal. The
+three negative fixtures independently change `action`, command order, and an
+exit code outside masked path content; each compares unequal.
+
+### Shim, consumers, and package API
+
+The only production consumer was and remains the CLI. It now imports the seven
+consumed public symbols directly from `tizen_gerrit_submit`. The two public
+result types have no production consumer. Test imports were flipped directly;
+there were no string monkeypatch targets to rewrite.
+
+```text
+OLD_SHIM_DEF_CLASS_COUNT=0
+VERIFY_INIT_GERRIT_SUBMIT_COUNT=0
+PRODUCTION_DIRECT_CONSUMERS
+tizen-ci-triage/scripts/ci_triage/cli.py
+LEGACY_IMPORTS_OUTSIDE_SHIM_AND_EVIDENCE
+(no output)
+```
+
+The package root exports exactly nine public symbols. Its fourteen internal
+symbols remain absent, while the compatibility module re-exports all 23
+migration symbols by object identity:
+
+```text
+root_all_count=9
+root_all_exact=True
+public_identity=True
+internal_absent=True
+post_shim_identity_9_plus_14=True
+```
+
+`tests/unit/test_gerrit_submit.py` contains the package-surface and post-shim
+identity assertions. Post-shim identity is wiring evidence only; it does not
+replace the pre-shim behavioral comparison above.
+
+### Baseline preservation and verification
+
+Collection was compared before and after the test additions:
+
+```text
+COLLECT_EXIT=0
+BEFORE=898
+AFTER=900
+MISSING_BASELINE=0
+ADDED=2
+tests/unit/test_gerrit_submit.py::test_legacy_shim_preserves_all_symbol_identities
+tests/unit/test_gerrit_submit.py::test_package_root_exports_only_public_api
+```
+
+All 898 baseline nodeids remain collected. The new actual baseline is 899
+passed and one skipped:
+
+```text
+$ pytest -q
+899 passed, 1 skipped in 18.43s
+
+$ pytest -q tests/unit/test_gerrit_submit.py \
+    tests/integration/test_gerrit_submit_real_git.py \
+    tests/unit/test_ci_triage_entrypoints.py
+40 passed in 1.15s
+```
+
+Static and architecture checks:
+
+```text
+$ mypy
+Success: no issues found in 109 source files
+$ mypy tizen-gerrit-submit/scripts/tizen_gerrit_submit
+Success: no issues found in 2 source files
+$ ruff check <commit-A Python surface>
+All checks passed!
+$ python -m py_compile <commit-A Python surface>
+PY_COMPILE_EXIT=0
+$ lint-imports
+Contracts: 6 kept, 0 broken.
+```
+
+Both inherited design ledgers remain green:
+
+```text
+skill-4: SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=130 | retained=83 | ignored=47 | bindings=22 | binding_candidates=1410
+skill-5: SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=34 | retained=30 | ignored=4 | bindings=8 | binding_candidates=348
+```
+
+Restricted surfaces are untouched:
+
+```text
+$ git diff --name-only HEAD -- \
+    tizen-ci-triage/scripts/ci_triage/gbs_report.py \
+    docs/clang-fix-campaign/design.md release-v1.4.0
+(no output)
+```

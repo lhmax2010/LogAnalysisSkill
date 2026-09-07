@@ -22,13 +22,7 @@ from tizen_convergence_judge import (
     touched_files_from_json,
     write_convergence_result,
 )
-
-from ci_triage.campaign_repair_step import (
-    CampaignRepairStepOptions,
-    campaign_repair_step,
-)
-from ci_triage.runner import TriageOptions, run_triage
-from ci_triage.verify.gerrit_submit import (
+from tizen_gerrit_submit import (
     GerritSubmitOptions,
     exit_code_for_release,
     exit_code_for_submit,
@@ -37,6 +31,12 @@ from ci_triage.verify.gerrit_submit import (
     write_gerrit_submit_result,
     write_release_result,
 )
+
+from ci_triage.campaign_repair_step import (
+    CampaignRepairStepOptions,
+    campaign_repair_step,
+)
+from ci_triage.runner import TriageOptions, run_triage
 
 EXIT_SUCCESS = 0
 EXIT_FAILED = 1

@@ -1,17 +1,12 @@
 from __future__ import annotations
 
+import importlib
 import json
 import subprocess
 from pathlib import Path
 from typing import Any, cast
 
-from ci_triage.verify.gerrit_submit import (
-    GerritSubmitOptions,
-    exit_code_for_release,
-    exit_code_for_submit,
-    gerrit_submit,
-    release_verified_worktree,
-)
+import tizen_gerrit_submit
 from tizen_ci_shared.state import (
     GERRIT_READY,
     StateDatabase,
@@ -23,6 +18,42 @@ from tizen_ci_shared.state import (
     write_pass_record,
 )
 from tizen_ci_shared.workspace import PROTECTED_FILENAME
+from tizen_gerrit_submit import (
+    GerritSubmitOptions,
+    exit_code_for_release,
+    exit_code_for_submit,
+    gerrit_submit,
+    release_verified_worktree,
+)
+
+PUBLIC_SYMBOLS = (
+    "gerrit_submit",
+    "GerritSubmitOptions",
+    "GerritSubmitResult",
+    "release_verified_worktree",
+    "ReleaseWorktreeResult",
+    "write_gerrit_submit_result",
+    "write_release_result",
+    "exit_code_for_submit",
+    "exit_code_for_release",
+)
+
+INTERNAL_SYMBOLS = (
+    "SubprocessRunner",
+    "_target_head_unknown_warning",
+    "_verification_mismatch",
+    "_dirty_reason",
+    "_target_warnings",
+    "_target_branch",
+    "_push_command",
+    "_remote_url",
+    "_git_stdout",
+    "_run_git",
+    "_result",
+    "_record_result",
+    "_build_id_from_failure_key",
+    "_subprocess_env",
+)
 
 
 class SubmitRunner:
@@ -413,3 +444,21 @@ def test_release_verified_worktree_removes_protection(tmp_path: Path) -> None:
     assert result.released is True
     assert not (Path(record.worktree_path) / PROTECTED_FILENAME).exists()
     assert exit_code_for_release(result) == 0
+
+
+def test_package_root_exports_only_public_api() -> None:
+    implementation = importlib.import_module("tizen_gerrit_submit.gerrit_submit")
+
+    assert set(tizen_gerrit_submit.__all__) == set(PUBLIC_SYMBOLS)
+    for name in PUBLIC_SYMBOLS:
+        assert getattr(tizen_gerrit_submit, name) is getattr(implementation, name)
+    for name in INTERNAL_SYMBOLS:
+        assert not hasattr(tizen_gerrit_submit, name)
+
+
+def test_legacy_shim_preserves_all_symbol_identities() -> None:
+    legacy = importlib.import_module("ci_triage.verify.gerrit_submit")
+    implementation = importlib.import_module("tizen_gerrit_submit.gerrit_submit")
+
+    for name in (*PUBLIC_SYMBOLS, *INTERNAL_SYMBOLS):
+        assert getattr(legacy, name) is getattr(implementation, name)

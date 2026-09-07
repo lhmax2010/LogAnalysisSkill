@@ -10,8 +10,8 @@ from types import SimpleNamespace
 
 import pytest
 from ci_triage import cli
-from ci_triage.verify.gerrit_submit import GerritSubmitResult, ReleaseWorktreeResult
 from tizen_build_verify import BuildVerifyResult
+from tizen_gerrit_submit import GerritSubmitResult, ReleaseWorktreeResult
 
 
 def _build_verify_args(tmp_path: Path) -> list[str]:
