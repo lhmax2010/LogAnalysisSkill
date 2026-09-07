@@ -1,9 +1,11 @@
 {
-  "admission_v19": {
+  "admission": {
+    "minimum_drift_count": 1,
     "required": [
       "B-RAW-DIFF",
       "B-X-PRESERVE"
-    ]
+    ],
+    "snapshot_version": "1.9"
   },
   "binding_candidates": [
     "§0->dod:DOD-01",
@@ -7928,6 +7930,10 @@
     "§7->section:§6",
     "§7->section:§7"
   ],
+  "negative_reference_sections": [
+    "§5.4.3",
+    "§5.4.4"
+  ],
   "process_only": [
     {
       "dod_id": "DOD-13",
@@ -7942,10 +7948,46 @@
       "reason": "Explicit deferred-work registry process item with named closing batches."
     }
   ],
+  "corpus_dir": "docs/clang-fix-campaign/history/skill4",
+  "dod_section": "§7",
+  "excluded_sections": [
+    "§5.4",
+    "§5.5"
+  ],
   "schema_version": "clang-fix-campaign/design-drift-ledger/v1",
   "target_design": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
   "target_sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
   "target_version": "1.12.1",
+  "version_files": {
+    "1.0": "p49-skill4-build-verify-design-v1.0-draft.md",
+    "1.1": "p49-skill4-build-verify-design-v1.1-draft.md",
+    "1.10": "p49-skill4-build-verify-design-v1.10-draft.md",
+    "1.11": "p49-skill4-build-verify-design-v1.11-draft.md",
+    "1.12": "p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
+    "1.2": "p49-skill4-build-verify-design-v1.2-draft.md",
+    "1.3": "p49-skill4-build-verify-design-v1.3-draft.md",
+    "1.4": "p49-skill4-build-verify-design-v1.4-draft.md",
+    "1.5": "p49-skill4-build-verify-design-v1.5-draft.md",
+    "1.6": "p49-skill4-build-verify-design-v1.6-draft.md",
+    "1.7": "p49-skill4-build-verify-design-v1.7-draft.md",
+    "1.8": "p49-skill4-build-verify-design-v1.8-draft.md",
+    "1.9": "p49-skill4-build-verify-design-v1.9-draft.md"
+  },
+  "version_sequence": [
+    "1.0",
+    "1.1",
+    "1.2",
+    "1.3",
+    "1.4",
+    "1.5",
+    "1.6",
+    "1.7",
+    "1.8",
+    "1.9",
+    "1.10",
+    "1.11",
+    "1.12"
+  ],
   "version_corpus": [
     {
       "path": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.0-draft.md",

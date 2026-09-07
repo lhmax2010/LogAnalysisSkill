@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gate stale design text and definition-to-reference drift for skill-4."""
+"""Gate stale design text and definition-to-reference drift for one skill design."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 SCHEMA_VERSION = "clang-fix-campaign/design-drift-ledger/v1"
-VERSION_RE = re.compile(r"^1\.(0|[1-9]|1[0-2])$")
+VERSION_RE = re.compile(r"^(?P<major>0|[1-9][0-9]*)\.(?P<minor>0|[1-9][0-9]*)$")
 HUNK_RE = re.compile(
     r"^@@ -(?P<old_start>[0-9]+)(?:,(?P<old_count>[0-9]+))? "
     r"\+(?P<new_start>[0-9]+)(?:,(?P<new_count>[0-9]+))? @@"
@@ -36,6 +36,8 @@ class VersionDoc:
     version: str
     path: Path
     lines: tuple[str, ...]
+    excluded_sections: tuple[str, ...] = ("§5.4", "§5.5")
+    dod_section: str = "§7"
 
 
 @dataclass(frozen=True)
@@ -117,11 +119,54 @@ def _load_json(path: Path) -> dict[str, Any]:
     return value
 
 
-def _version_key(version: str) -> int:
+def _version_key(version: str) -> tuple[int, int]:
     match = VERSION_RE.fullmatch(version)
     if match is None:
         raise LedgerError(f"unsupported version: {version!r}")
-    return int(match.group(1))
+    return int(match.group("major")), int(match.group("minor"))
+
+
+def _string_list(data: dict[str, Any], key: str) -> tuple[str, ...]:
+    raw = data.get(key)
+    if not isinstance(raw, list) or not raw or not all(isinstance(item, str) for item in raw):
+        raise LedgerError(f"{key} must be a non-empty list of strings")
+    return tuple(raw)
+
+
+def _corpus_plan(data: dict[str, Any], repo_root: Path) -> tuple[tuple[str, Path], ...]:
+    raw_dir = data.get("corpus_dir")
+    raw_files = data.get("version_files")
+    versions = _string_list(data, "version_sequence")
+    if not isinstance(raw_dir, str) or not isinstance(raw_files, dict):
+        raise LedgerError("corpus_dir/version_files configuration missing")
+    if set(raw_files) != set(versions) or not all(
+        isinstance(version, str) and isinstance(filename, str)
+        for version, filename in raw_files.items()
+    ):
+        raise LedgerError("version_files keys must exactly equal version_sequence")
+
+    keys = [_version_key(version) for version in versions]
+    if len(set(keys)) != len(keys):
+        raise LedgerError(f"version sequence contains duplicates: {versions}")
+    major = keys[0][0]
+    expected = [(major, keys[0][1] + offset) for offset in range(len(keys))]
+    if keys != expected:
+        raise LedgerError(f"version sequence is not continuous: {versions}")
+
+    corpus_dir = repo_root / raw_dir
+    return tuple((version, corpus_dir / str(raw_files[version])) for version in versions)
+
+
+def _document_config(data: dict[str, Any]) -> tuple[tuple[str, ...], str]:
+    raw_excluded = data.get("excluded_sections", [])
+    dod_section = data.get("dod_section")
+    if not isinstance(raw_excluded, list) or not all(
+        isinstance(item, str) for item in raw_excluded
+    ):
+        raise LedgerError("excluded_sections must be a list of strings")
+    if not isinstance(dod_section, str):
+        raise LedgerError("dod_section must be a string")
+    return tuple(raw_excluded), dod_section
 
 
 def _load_versions(data: dict[str, Any], repo_root: Path) -> tuple[VersionDoc, ...]:
@@ -129,8 +174,13 @@ def _load_versions(data: dict[str, Any], repo_root: Path) -> tuple[VersionDoc, .
     if not isinstance(raw_versions, list):
         raise LedgerError("version_corpus must be a list")
 
+    plan = _corpus_plan(data, repo_root)
+    excluded_sections, dod_section = _document_config(data)
+    if len(raw_versions) != len(plan):
+        raise LedgerError("version_corpus length differs from configured version sequence")
+
     documents: list[VersionDoc] = []
-    for raw in raw_versions:
+    for raw, (configured_version, configured_path) in zip(raw_versions, plan, strict=True):
         if not isinstance(raw, dict):
             raise LedgerError("version_corpus entries must be objects")
         version = raw.get("version")
@@ -139,6 +189,11 @@ def _load_versions(data: dict[str, Any], repo_root: Path) -> tuple[VersionDoc, .
         if not isinstance(version, str) or not isinstance(raw_path, str):
             raise LedgerError("version corpus entry lacks version/path")
         path = repo_root / raw_path
+        if version != configured_version or path.resolve() != configured_path.resolve():
+            raise LedgerError(
+                "version corpus entry differs from configured sequence/path: "
+                f"{version}:{path} != {configured_version}:{configured_path}"
+            )
         try:
             content = path.read_bytes()
         except OSError as exc:
@@ -149,12 +204,15 @@ def _load_versions(data: dict[str, Any], repo_root: Path) -> tuple[VersionDoc, .
                 f"version corpus SHA mismatch for {version}: expected {expected_sha}, "
                 f"actual {actual_sha}"
             )
-        documents.append(VersionDoc(version, path, tuple(content.decode("utf-8").splitlines())))
-
-    documents.sort(key=lambda item: _version_key(item.version))
-    actual = [_version_key(item.version) for item in documents]
-    if actual != list(range(13)):
-        raise LedgerError(f"version sequence is not continuous v1.0..v1.12: {actual}")
+        documents.append(
+            VersionDoc(
+                version,
+                path,
+                tuple(content.decode("utf-8").splitlines()),
+                excluded_sections,
+                dod_section,
+            )
+        )
     return tuple(documents)
 
 
@@ -345,7 +403,7 @@ def _excluded_lines(doc: VersionDoc) -> frozenset[int]:
     if revision is not None:
         excluded.update(range(revision[0], revision[1] + 1))
     spans = _section_spans(doc.lines)
-    for section_id in ("§5.4", "§5.5"):
+    for section_id in doc.excluded_sections:
         span = spans.get(section_id)
         if span is not None:
             excluded.update(range(span[0], span[1] + 1))
@@ -375,9 +433,9 @@ def _section_text(doc: VersionDoc, section_id: str) -> str:
 
 
 def _dod_items(doc: VersionDoc) -> tuple[DodItem, ...]:
-    span = _section_spans(doc.lines).get("§7")
+    span = _section_spans(doc.lines).get(doc.dod_section)
     if span is None:
-        raise LedgerError(f"section 7 not found in v{doc.version}")
+        raise LedgerError(f"DoD section {doc.dod_section} not found in v{doc.version}")
     items: list[DodItem] = []
     current_lines: list[str] = []
     current_start = 0
@@ -850,7 +908,14 @@ def _target_doc(data: dict[str, Any], repo_root: Path) -> VersionDoc:
             f"target design SHA mismatch: expected {expected_sha}, actual {actual_sha}; "
             "rerun bootstrap and review the baseline"
         )
-    return VersionDoc(version, path, tuple(content.decode("utf-8").splitlines()))
+    excluded_sections, dod_section = _document_config(data)
+    return VersionDoc(
+        version,
+        path,
+        tuple(content.decode("utf-8").splitlines()),
+        excluded_sections,
+        dod_section,
+    )
 
 
 def _check_bindings(
@@ -873,14 +938,8 @@ def _bootstrap(data_path: Path, repo_root: Path) -> int:
     if data.get("schema_version") != SCHEMA_VERSION:
         raise LedgerError(f"unexpected schema version: {data.get('schema_version')}")
 
-    history = repo_root / "docs/clang-fix-campaign/history/skill4"
     corpus: list[dict[str, str]] = []
-    for index in range(13):
-        version = f"1.{index}"
-        if index == 12:
-            path = history / "p49-skill4-build-verify-design-v1.12.1-FROZEN.md"
-        else:
-            path = history / f"p49-skill4-build-verify-design-v{version}-draft.md"
+    for version, path in _corpus_plan(data, repo_root):
         content = path.read_bytes()
         corpus.append(
             {
@@ -948,7 +1007,9 @@ def _bootstrap(data_path: Path, repo_root: Path) -> int:
     target_content = target_path.read_bytes()
     corpus_target = documents[-1].path.read_bytes()
     if target_content != corpus_target:
-        raise LedgerError("target candidate and v1.12 history corpus are not byte-identical")
+        raise LedgerError(
+            "target design and final configured corpus document are not byte-identical"
+        )
     data["target_sha256"] = _sha256_bytes(target_content)
     data["generated_from"] = str(data["target_design"])
     data_path.write_text(
@@ -970,7 +1031,7 @@ def _run_check(data_path: Path, repo_root: Path) -> int:
     documents = _load_versions(data, repo_root)
     target = _target_doc(data, repo_root)
     if target.path.read_bytes() != documents[-1].path.read_bytes():
-        raise LedgerError("target candidate differs from Git-anchored v1.12 corpus")
+        raise LedgerError("target design differs from the configured final corpus document")
     exported_count, retained_count, ignored_count = _check_candidate_ledger(
         data, documents, repo_root
     )
@@ -984,26 +1045,56 @@ def _run_check(data_path: Path, repo_root: Path) -> int:
     return 0
 
 
-def _admission_v19(data_path: Path, repo_root: Path) -> int:
+def _admission(
+    data_path: Path, repo_root: Path, *, required_snapshot: str | None = None
+) -> int:
     data = _load_json(data_path)
     documents = _load_versions(data, repo_root)
     bindings, _ = _check_binding_inventory(data, documents)
-    v19 = next(item for item in documents if item.version == "1.9")
+    admission = data.get("admission")
+    if not isinstance(admission, dict):
+        raise LedgerError("admission must be an object")
+    snapshot_version = admission.get("snapshot_version")
+    required_raw = admission.get("required")
+    minimum_drift_count = admission.get("minimum_drift_count", 1)
+    if not isinstance(snapshot_version, str):
+        raise LedgerError("admission.snapshot_version must be a string")
+    if required_snapshot is not None and snapshot_version != required_snapshot:
+        raise LedgerError(
+            f"admission snapshot is v{snapshot_version}, not compatibility alias "
+            f"v{required_snapshot}"
+        )
+    if not isinstance(required_raw, list) or not all(
+        isinstance(item, str) for item in required_raw
+    ):
+        raise LedgerError("admission.required must be a list of binding IDs")
+    if not isinstance(minimum_drift_count, int) or minimum_drift_count < 1:
+        raise LedgerError("admission.minimum_drift_count must be a positive integer")
+    snapshot = next(
+        (item for item in documents if item.version == snapshot_version), None
+    )
+    if snapshot is None:
+        raise LedgerError(f"admission snapshot v{snapshot_version} is not in version_sequence")
     drifts: list[str] = []
     for binding_id, binding in sorted(bindings.items()):
-        passed, detail = _evaluate_binding(binding, v19)
+        passed, detail = _evaluate_binding(binding, snapshot)
         if not passed:
             drifts.append(binding_id)
             print(f"BINDING_DRIFT | {binding_id} | {detail}")
-    admission = data.get("admission_v19")
-    if not isinstance(admission, dict) or not isinstance(admission.get("required"), list):
-        raise LedgerError("admission_v19.required must be a list")
-    required = set(admission["required"])
-    if not drifts or not required <= set(drifts):
+    required = set(required_raw)
+    unknown_required = required - set(bindings)
+    if unknown_required:
+        raise LedgerError(f"admission requires unknown bindings: {sorted(unknown_required)}")
+    if len(drifts) < minimum_drift_count or not required <= set(drifts):
         raise LedgerError(
-            f"admission falsification incomplete: required={sorted(required)}, actual={drifts}"
+            "admission falsification incomplete: "
+            f"minimum={minimum_drift_count}, required={sorted(required)}, actual={drifts}"
         )
-    print(f"ADMISSION_V19 | BINDING_DRIFT={len(drifts)} | required_known=2 | RED_AS_EXPECTED")
+    label = "ADMISSION_V19" if required_snapshot == "1.9" else "ADMISSION"
+    print(
+        f"{label} | snapshot=v{snapshot_version} | BINDING_DRIFT={len(drifts)} | "
+        f"required_known={len(required)} | RED_AS_EXPECTED"
+    )
     return 1
 
 
@@ -1114,7 +1205,20 @@ def _negative_binding(data_path: Path, repo_root: Path, binding_id: str) -> int:
             )
         )
         target_ref = str(binding["definition_section"])
-        wrong_target = "§5.4.3" if target_ref != "§5.4.3" else "§5.4.4"
+        wrong_reference_sections = _string_list(data, "negative_reference_sections")
+        available_sections = set(_section_spans(target.lines))
+        wrong_target = next(
+            (
+                section
+                for section in wrong_reference_sections
+                if section != target_ref and section in available_sections
+            ),
+            None,
+        )
+        if wrong_target is None:
+            raise LedgerError(
+                f"REF_ONLY fixture has no configured existing wrong section: {binding_id}"
+            )
         wrong = reference_text.replace(target_ref, wrong_target)
         outcomes.append(
             (
@@ -1138,7 +1242,14 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "action",
-        choices=("bootstrap", "check", "admission-v19", "negative-binding", "negative-fixture"),
+        choices=(
+            "bootstrap",
+            "check",
+            "admission",
+            "admission-v19",
+            "negative-binding",
+            "negative-fixture",
+        ),
     )
     parser.add_argument("value", nargs="?")
     parser.add_argument("--data", type=Path, default=_default_data_path())
@@ -1154,8 +1265,10 @@ def main(argv: list[str] | None = None) -> int:
             return _bootstrap(data_path, repo_root)
         if args.action == "check":
             return _run_check(data_path, repo_root)
+        if args.action == "admission":
+            return _admission(data_path, repo_root)
         if args.action == "admission-v19":
-            return _admission_v19(data_path, repo_root)
+            return _admission(data_path, repo_root, required_snapshot="1.9")
         if args.action == "negative-binding":
             if args.value is None:
                 raise LedgerError("negative-binding requires a binding ID")
