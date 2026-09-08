@@ -5,14 +5,20 @@
 
 Review request:
 
-> 请确认①实现与 v1.3.1-FROZEN 一致 ②§3 三项现状锁定与 DEFERRED
-> 对价完整 ③双批门禁与 ledger 三段版本 ④P4.9 末终止批次 4 项清单可接受，
-> 无异议给 skill-5 CLOSED。
+> skill-5 已 CLOSED；本轮仅做 v1.3.1→v1.3.2 的 §3.2 映射表 delta
+> 确认。请确认①query/git 两态残留与 skill-3 冻结契约一致
+> ②六个 subprocess 调用面已穷举 ③三类异常构造形态可执行
+> ④marker 残留符合真实调用顺序。无需重审其余实现与 DoD。
+
+The v1.3.2 delta-review scope is only frozen §3.2's deferred result mapping:
+query/git residual-state separation, the added `_exclude_private_files` call
+surface, executable exception signatures, and measured marker-write order.
+The completed extraction and other DoD rows are unchanged.
 
 ## Inputs
 
 - Frozen contract:
-  `../../p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md`.
+  `../../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`.
 - DoD account: `../p49-skill5-closeout.md`.
 - Stage result:
   `../../dev_memory/stage12_p49_skill5_gerrit_submit/result.md`.
@@ -21,7 +27,7 @@ Review request:
 - Pre-shim evidence:
   `../../dev_memory/stage12_p49_skill5_gerrit_submit/commit-a-evidence/`.
 
-## Six Lifecycle Commits
+## Seven Lifecycle Commits
 
 ```text
 f2bc050e9878a77ad8f46014f4ffb1cf14b56356 docs(clang-fix-campaign): freeze P4.9 skill-5 gerrit-submit design v1.3
@@ -29,10 +35,11 @@ f2bc050e9878a77ad8f46014f4ffb1cf14b56356 docs(clang-fix-campaign): freeze P4.9 s
 a97c40bc2ffcfd453f52d3657336282c689c3873 feat(tizen-gerrit-submit): extract gerrit-submit skill (P4.9 skill-5 commit A)
 0dfa5f1e0221d2dbdcf10e323259a4e922a04510 test(tizen-gerrit-submit): establish skill test ownership, branch matrix, and status locks (P4.9 skill-5 commit B)
 a8620f1ba7caea6ea083b042596830be54bd2fd6 feat(tizen-gerrit-submit): activate gates and audit for skill-5 (P4.9)
-Git-anchored containing commit             docs(clang-fix-campaign): close out P4.9 skill-5 gerrit-submit
+d51145fc42415d063cb0cd53c7d3fa75a0566148 docs(clang-fix-campaign): close out P4.9 skill-5 gerrit-submit
+Git-anchored containing commit             docs(clang-fix-campaign): amend skill-5 frozen design to v1.3.2 (deferred mapping table precision)
 ```
 
-The sixth SHA is deliberately not self-recorded. Git anchors this package and
+The seventh SHA is deliberately not self-recorded. Git anchors this package and
 the closeout result outside their own contents (`⑬/⑲`).
 
 ## Reproduction Commands
@@ -138,7 +145,7 @@ targeted skill/integration/CLI set: 46 passed
 lint-imports: 6 kept, 0 broken
 symbol audit: 173 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISMATCH | 0 INCOMPLETE
 table bridge: 173+4; all differences zero; 23 skill-5 rows present
-skill-5 check: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0
+skill-5 check: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | 38 exported | 34 retained | 4 ignored
 skill-5 admission v1.2: BINDING_DRIFT=7 | RED_AS_EXPECTED
 skill-4 check: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0
 entry counts: 1/1/2/2

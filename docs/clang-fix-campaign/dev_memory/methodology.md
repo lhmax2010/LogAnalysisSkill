@@ -312,6 +312,14 @@ during design convergence.
     skipped minors, or a minor successor carrying a nonzero patch. Skill-5's
     v1.3.1 correction and skill-4's v1.12.1 history established this rule with
     direct positive and negative tests.
+48. **Make every cell in a deferred result or mapping table executable against
+    current code.** A terminal batch cannot “only implement” a table whose
+    exception constructors are not callable, whose subprocess surfaces were
+    not exhaustively found, or whose residual-state claims conflict with an
+    already frozen skill contract. Verify constructor signatures, derive call
+    surfaces mechanically, and measure operation order cell by cell. Skill-5
+    v1.3.2 caught all three classes, including an initial marker-order claim
+    inferred from a function name instead of the implementation.
 
 ## R14 deferred cleanup ledger
 

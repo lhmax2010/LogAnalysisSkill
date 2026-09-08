@@ -5,8 +5,10 @@
 Status: COMPLETE, awaiting independent review before extraction commit A.
 
 Authority under test:
-`docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md`
-at freeze commit `f2bc050`.
+`docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`.
+The original v1.3 freeze remains anchored at `f2bc050`; subsequent in-place
+corrections are recorded by their containing commits rather than by
+self-referential hashes inside this file.
 
 ### Parameterization
 
@@ -824,4 +826,110 @@ $ git diff --name-only HEAD -- ':(glob)tizen-*/scripts/**'
 (no output)
 $ git diff --name-only HEAD -- gbs_report.py design.md release-v1.4.0/
 (no output)
+```
+
+## v1.3.2 post-closeout deferred-mapping amendment
+
+Status: COMPLETE; the containing commit is the external integrity anchor and
+is intentionally not self-recorded.
+
+### Factual satisfiability check
+
+The implementation was read before the table was changed:
+
+```text
+tizen_gerrit_fetch/gerrit.py:132 query_change_for_commit(...)
+tizen_gerrit_fetch/gerrit.py:134 _reset_generated_source_dir(destination)
+tizen_ci_shared/workspace/__init__.py:115 _verify_cleanup_handle(handle)
+tizen_ci_shared/workspace/__init__.py:117 _exclude_private_files(path)
+tizen_ci_shared/workspace/__init__.py:118 protected = {...}
+tizen_ci_shared/workspace/__init__.py:124 PROTECTED_FILENAME.write_text(...)
+tizen_ci_shared/workspace/__init__.py:209 def _exclude_private_files(...)
+tizen_ci_shared/workspace/__init__.py:210 subprocess.run(...)
+tizen_gerrit_fetch/gerrit.py:28 GerritError.__init__(code, message)
+tizen_ci_shared/workspace/__init__.py:17 class WorkspaceViolation(RuntimeError)
+```
+
+This proves query precedes destination reset, `_exclude_private_files` is an
+independent subprocess surface, and a timeout in that surface leaves the
+workdir marker in place but occurs before this call writes the protected
+marker. It also fixes the executable constructor forms without changing
+production behavior.
+
+An exhaustive `rg 'subprocess_runner\(|subprocess\.run\(|_run_git\('` over the
+three affected implementation modules closes the six mapped surfaces:
+skill-3 query plus its git wrapper, this skill's `ls-remote` plus `_run_git`,
+and shared/workspace `_run_git` plus `_exclude_private_files`. No seventh
+independent subprocess entry was found.
+
+### Frozen copy and real patch-version transition
+
+```text
+$ cmp p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md \
+    history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md
+HISTORY_CMP_EXIT=0
+
+$ python design_drift_ledger.py --data design_drift_ledger.skill5.json bootstrap
+BOOTSTRAP | candidates=38 retained=34 ignored=4 binding_candidates=348 bindings=8
+
+sequence=1.0 -> 1.1 -> 1.2 -> 1.3 -> 1.3.1 -> 1.3.2
+NEW_TRANSITION_RETAINED=3
+target_sha256=6dd6a9a91f00b56999076d88a8ae5b120f19533d56485ac88e95c09640f75a03
+
+bootstrap_before=d84c0be0bfa328c5e9e58fdce481378b4e0332851317efd4684d5f0189c30fa6
+bootstrap_after=d84c0be0bfa328c5e9e58fdce481378b4e0332851317efd4684d5f0189c30fa6
+deterministic=yes
+```
+
+Bootstrap accepted `1.3.1 -> 1.3.2` as the first real patch-to-patch successor
+under the three-component continuity rule. The three retained candidates cover
+the title, closed call-surface list, and revised result table.
+
+### A0 rerun
+
+```text
+$ python design_drift_ledger.py --data design_drift_ledger.skill5.json check
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=38 | retained=34 | ignored=4 | bindings=8 | binding_candidates=348
+exit=0
+
+$ python design_drift_ledger.py --data design_drift_ledger.skill5.json admission v1.2
+ADMISSION | snapshot=v1.2 | BINDING_DRIFT=7 | required_known=2 | RED_AS_EXPECTED
+exit=1
+
+$ python design_drift_ledger.py --data design_drift_ledger.skill5.json negative-fixture out-of-scope-misuse
+OUT_OF_SCOPE_SUMMARY | items=4 | RED_AS_EXPECTED
+exit=1
+
+$ for each of 8 skill-5 binding IDs: negative-binding <id>
+SKILL5_BINDINGS_RED=8/8
+each exit=1
+
+$ python design_drift_ledger.py --data design_drift_ledger.json check
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=131 | retained=84 | ignored=47 | bindings=22 | binding_candidates=1410
+exit=0
+
+$ python design_drift_ledger.py --data design_drift_ledger.json admission-v19
+ADMISSION_V19 | snapshot=v1.9 | BINDING_DRIFT=3 | required_known=2 | RED_AS_EXPECTED
+exit=1
+
+$ python design_drift_ledger.py --data design_drift_ledger.json negative-fixture out-of-scope-misuse
+OUT_OF_SCOPE_SUMMARY | items=47 | RED_AS_EXPECTED
+exit=1
+
+$ for each of 22 skill-4 binding IDs: negative-binding <id>
+SKILL4_BINDINGS_RED=22/22
+each exit=1
+```
+
+### Audit and tool checks
+
+```text
+full pytest: 912 passed, 1 skipped
+mypy: Success: no issues found in 111 source files
+lint-imports: 6 kept, 0 broken
+symbol audit: 173 SYMBOL OK + 4 MODULE-SCOPE OK; 0 MISMATCH; 0 INCOMPLETE
+table bridge: 173+4; all five differences zero; skill-5 rows=23
+pytest tests/unit/test_design_drift_ledger.py: 7 passed
+ruff: All checks passed!
+py_compile: exit=0
 ```

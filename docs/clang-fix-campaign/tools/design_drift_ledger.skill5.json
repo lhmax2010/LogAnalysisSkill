@@ -418,10 +418,16 @@
     },
     {
       "canonical_snippets": [
-        "GerritError(\"FETCH_TIMEOUT\")",
-        "GerritSubmitError(\"GIT_TIMEOUT\")",
+        "query 阶段",
+        "destination 不动",
+        "git 阶段",
+        "阶段残留",
+        "GerritError(\"FETCH_TIMEOUT\", <message>)",
+        "GerritSubmitError(\"GIT_TIMEOUT\", <message>)",
         "target_head_unknown:timeout",
-        "WorkspaceViolation(\"GIT_TIMEOUT\")"
+        "WorkspaceViolation(<message>)",
+        "_exclude_private_files",
+        "protected marker 尚未写入"
       ],
       "definition_section": "§3.2",
       "id": "B-RESULT-MAPPING",
@@ -1482,6 +1488,86 @@
         "replay_sections": {
           "frontmatter": 1
         }
+      },
+      {
+        "candidate_id": "v1.3.1|old:1-1,new:1-1|a4c87a0c33cf19382e299065fb40cc534c0866b50916e6d41b9a5ef411a21018",
+        "new_end": 1,
+        "new_lines": [
+          "# P4.9 skill-5 设计:tizen-gerrit-submit 抽取(v1.3.2-FROZEN)"
+        ],
+        "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+        "new_start": 1,
+        "new_version": "1.3.2",
+        "old_end": 1,
+        "old_lines": [
+          "# P4.9 skill-5 设计:tizen-gerrit-submit 抽取(v1.3.1-FROZEN)"
+        ],
+        "old_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
+        "old_start": 1,
+        "old_version": "1.3.1",
+        "pattern": "\\#\\ P4\\.9\\ skill\\-5\\ 设计:tizen\\-gerrit\\-submit\\ 抽取\\(v1\\.3\\.1\\-FROZEN\\)",
+        "replay_count": 1,
+        "replay_kind": "regression",
+        "replay_sections": {
+          "frontmatter": 1
+        }
+      },
+      {
+        "candidate_id": "v1.3.1|old:255-256,new:267-269|21e9e5600e15831b88b61867563d5b617612f5fbe642c55dc69583aedc4c8b3a",
+        "new_end": 269,
+        "new_lines": [
+          "    ①**调用面清单**:skill-3 `fetch_source_for_commit` 的 query 阶段与 git",
+          "    阶段、本 skill `_run_git` 与 `ls-remote`、shared/workspace `_run_git`",
+          "    与 `_exclude_private_files`;"
+        ],
+        "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+        "new_start": 267,
+        "new_version": "1.3.2",
+        "old_end": 256,
+        "old_lines": [
+          "    ①**调用面清单**:skill-3 `fetch_source_for_commit`、本 skill `_run_git`",
+          "    与 `ls-remote`、shared/workspace `_run_git`;"
+        ],
+        "old_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
+        "old_start": 255,
+        "old_version": "1.3.1",
+        "pattern": "1调用面清单:skill\\-3\\ fetch_source_for_commit、本\\ skill\\ _run_git\\ 与\\ ls\\-remote、shared/workspace\\ _run_git;",
+        "replay_count": 1,
+        "replay_kind": "regression",
+        "replay_sections": {
+          "§3": 1
+        }
+      },
+      {
+        "candidate_id": "v1.3.1|old:272-275,new:285-290|d222ee1f4c44cecbecd528184c09210b2fc18c9bb6312b1840dc3acfb7a5ef7c",
+        "new_end": 290,
+        "new_lines": [
+          "    | skill-3 `fetch_source_for_commit` **query 阶段**(`gerrit.py:132`,在 `_reset` 之前) | `GerritError(\"FETCH_TIMEOUT\", <message>)` | 传播 | **destination 不动**(与 skill-3 冻结 :465 一致) |",
+          "    | skill-3 **git 阶段**(init/fetch/checkout,`_reset` 之后) | `GerritError(\"FETCH_TIMEOUT\", <message>)` | 传播 | **阶段残留**(与 skill-3 冻结 :478 一致) |",
+          "    | 本 skill `_run_git`(:348) | `GerritSubmitError(\"GIT_TIMEOUT\", <message>)`(新类型,签名与 `GerritError` 同形 `(code, message)`,末批定义) | 传播 | worktree 不变 |",
+          "    | 本 skill `ls-remote`(:284) | warning 码统一 `target_head_unknown:timeout` | 传播 | 无 |",
+          "    | shared/workspace `_run_git`(:205) | `WorkspaceViolation(<message>)`,message 以 `GIT_TIMEOUT:` 前缀承载码(`WorkspaceViolation` 无 code 字段,不改其签名——改签名属行为变更) | 传播 | marker 不变 |",
+          "    | **shared/workspace `_exclude_private_files`**(:209,`mark_worktree_protected` :117 调用) | 同上 `WorkspaceViolation(\"GIT_TIMEOUT: …\")` | 传播 | **workdir marker 保留、protected marker 尚未写入、exclude 未完成**(`mark_worktree_protected` 的真实顺序:`_verify_cleanup_handle`(:115)→ `_exclude_private_files`(:117)→ 构造并写入 protected marker(:118/:124);故超时点在 exclude 时,protected marker 尚未产生) |"
+        ],
+        "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+        "new_start": 285,
+        "new_version": "1.3.2",
+        "old_end": 275,
+        "old_lines": [
+          "    | skill-3 `fetch_source_for_commit` | 具名 `GerritError(\"FETCH_TIMEOUT\")` | 传播 | destination 部分初始化 |",
+          "    | 本 skill `_run_git` | 具名 `GerritSubmitError(\"GIT_TIMEOUT\")`(新类型,末批定义) | 传播 | worktree 不变 |",
+          "    | 本 skill `ls-remote` | warning 码**统一为 `target_head_unknown:timeout`**(不再含原始异常文本) | 传播 | 无 |",
+          "    | shared/workspace `_run_git` | 具名 `WorkspaceViolation(\"GIT_TIMEOUT\")` | 传播 | marker 不变 |"
+        ],
+        "old_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
+        "old_start": 272,
+        "old_version": "1.3.1",
+        "pattern": "\\|\\ skill\\-3\\ fetch_source_for_commit\\ \\|\\ 具名\\ GerritError\\(\"FETCH_TIMEOUT\"\\)\\ \\|\\ 传播\\ \\|\\ destination\\ 部分初始化\\ \\|\\ \\|\\ 本\\ skill\\ _run_git\\ \\|\\ 具名\\ GerritSubmitError\\(\"GIT_TIMEOUT\"\\)\\(新类型,末批定义\\)\\ \\|\\ 传播\\ \\|\\ worktree\\ 不变\\ \\|\\ \\|\\ 本\\ skill\\ ls\\-remote\\ \\|\\ warning\\ 码统一为\\ target_head_unknown:timeout\\(不再含原始异常文本\\)\\ \\|\\ 传播\\ \\|\\ 无\\ \\|\\ \\|\\ shared/workspace\\ _run_git\\ \\|\\ 具名\\ WorkspaceViolation\\(\"GIT_TIMEOUT\"\\)\\ \\|\\ 传播\\ \\|\\ marker\\ 不变\\ \\|",
+        "replay_count": 1,
+        "replay_kind": "regression",
+        "replay_sections": {
+          "§3": 1
+        }
       }
     ]
   },
@@ -1519,9 +1605,12 @@
     "v1.2|old:313-314,new:366-367|e996404581c7cce867e551a7e75631c7e0a911288567772c5a31bf7206a3e5a3": {},
     "v1.2|old:317-317,new:370-373|7e135909bc742f0ae9989391d41369d03388cb5686def69e5c91a29304930559": {},
     "v1.2|old:88-88,new:100-100|82dc438fa5af37e0bb12ca6cf259e0b60d941dc282c3193f891d8790bf554803": {},
+    "v1.3.1|old:1-1,new:1-1|a4c87a0c33cf19382e299065fb40cc534c0866b50916e6d41b9a5ef411a21018": {},
+    "v1.3.1|old:255-256,new:267-269|21e9e5600e15831b88b61867563d5b617612f5fbe642c55dc69583aedc4c8b3a": {},
+    "v1.3.1|old:272-275,new:285-290|d222ee1f4c44cecbecd528184c09210b2fc18c9bb6312b1840dc3acfb7a5ef7c": {},
     "v1.3|old:1-1,new:1-1|21b6a5b1b85a093a01285546330605ad12754b6006130435edb4490c143f5afc": {}
   },
-  "generated_from": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
+  "generated_from": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
   "ignored_binding_candidates": [
     "§0->dod:DOD-01",
     "§0->dod:DOD-02",
@@ -1913,9 +2002,9 @@
     }
   ],
   "schema_version": "clang-fix-campaign/design-drift-ledger/v1",
-  "target_design": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
-  "target_sha256": "05d18f79e612b838430587c0de207c91c6b282b12990126c9a27f6da49776ad8",
-  "target_version": "1.3.1",
+  "target_design": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+  "target_sha256": "6dd6a9a91f00b56999076d88a8ae5b120f19533d56485ac88e95c09640f75a03",
+  "target_version": "1.3.2",
   "version_corpus": [
     {
       "path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.0-draft.md",
@@ -1941,6 +2030,11 @@
       "path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
       "sha256": "05d18f79e612b838430587c0de207c91c6b282b12990126c9a27f6da49776ad8",
       "version": "1.3.1"
+    },
+    {
+      "path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+      "sha256": "6dd6a9a91f00b56999076d88a8ae5b120f19533d56485ac88e95c09640f75a03",
+      "version": "1.3.2"
     }
   ],
   "version_files": {
@@ -1948,13 +2042,15 @@
     "1.1": "p49-skill5-gerrit-submit-design-v1.1-draft.md",
     "1.2": "p49-skill5-gerrit-submit-design-v1.2-draft.md",
     "1.3": "p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
-    "1.3.1": "p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md"
+    "1.3.1": "p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
+    "1.3.2": "p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md"
   },
   "version_sequence": [
     "1.0",
     "1.1",
     "1.2",
     "1.3",
-    "1.3.1"
+    "1.3.1",
+    "1.3.2"
   ]
 }

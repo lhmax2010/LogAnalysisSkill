@@ -1,10 +1,11 @@
 # P4.9 Skill-5 Gerrit-Submit Result
 
-Status: **CLOSED**. Detailed DoD account:
+Status: **CLOSED for extraction; v1.3.2 mapping delta confirmation pending**.
+Detailed DoD account:
 `../../review/p49-skill5-closeout.md`.
 
 Frozen authority:
-`../../p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md`.
+`../../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`.
 
 ## Delivered
 
@@ -15,9 +16,12 @@ Frozen authority:
 | `a97c40b` | Extracted the byte-identical Gerrit-submit implementation, captured pre-shim parity, and installed the compatibility shim |
 | `0dfa5f1` | Moved behavior-test ownership, closed the 14-row branch table, and locked current timeout/symlink behavior |
 | `a8620f1` | Added the v1.3.1 authority table correction, patch-version ledger grammar, delivery entry points, import gates, 23-symbol audit surface, bridge integration, and `SKILL.md` |
+| `d51145f` | Closed the original v1.3.1 DoD account and assembled the final review package |
+| Git-anchored containing commit | Amends the frozen authority to v1.3.2 with an executable deferred-result mapping |
 
-The sixth lifecycle commit is this closeout commit. Its integrity is anchored
-externally by Git and its SHA is not recorded inside itself (`⑬/⑲`).
+The seventh lifecycle commit is this v1.3.2 amendment. Its integrity is
+anchored externally by Git and its SHA is not recorded inside itself
+(`⑬/⑲`).
 
 ## Final Contract State
 
@@ -42,6 +46,9 @@ externally by Git and its SHA is not recorded inside itself (`⑬/⑲`).
   per-item negative controls still reject known or constructed defects.
 - Commit C establishes the current baseline at **912 passed, 1 skipped** with
   all preceding nodeid sets preserved.
+- The v1.3.2 deferred mapping now distinguishes query/git residual states,
+  includes `_exclude_private_files`, uses executable exception signatures,
+  and records the measured marker-write order.
 
 ## Methods Applied
 

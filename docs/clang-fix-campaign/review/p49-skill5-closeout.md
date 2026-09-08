@@ -1,12 +1,12 @@
 # P4.9 Skill-5 Gerrit-Submit Closeout
 
 Authority:
-`docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md`.
+`docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`.
 
-Pre-closeout commits: `f2bc050`, `31a91cb`, `a97c40b`, `0dfa5f1`,
-`a8620f1`. The sixth lifecycle commit is this closeout commit. Git anchors its
-integrity externally; its SHA is intentionally not recorded inside itself
-(`⑬/⑲`).
+Lifecycle commits before this amendment: `f2bc050`, `31a91cb`, `a97c40b`,
+`0dfa5f1`, `a8620f1`, and closeout `d51145f`. The seventh lifecycle commit is
+the v1.3.2 amendment containing this update. Git anchors its integrity
+externally; its SHA is intentionally not recorded inside itself (`⑬/⑲`).
 
 ## Summary
 
@@ -47,7 +47,7 @@ green.
 | 7 | “§3 两项现状锁定测试... + 两项设计已登记且新关门批次具名” | DONE | `0dfa5f1`; frozen §3.2/§4; `progress.md:473-495`; tests at `test_tizen_gerrit_submit.py:199`, `:223`, `:238`, `:385`; `test_gerrit_fetch.py:535` | The fake runner sees both subprocess paths and no `timeout`; local timeout propagates by identity, remote timeout becomes an unverified warning/action, the dangling-symlink test preserves its disk state, and executed argv never contains `push`. The two behavior changes are designed and assigned to the P4.9 terminal batch. |
 | 8 | “pre-shim parity(一正三反)与 post-shim identity 分列” | DONE | `a97c40b`; `progress.md:261-318`, `:320-350`; `commit-a-evidence/pre-shim-parity.txt` | Five pre-shim payload partitions compare equal; destination-only normalizes green while action/order/exit mutations turn red. Post-shim 9+14 identity is recorded separately as wiring-only evidence. |
 | 9 | “三入口 1/1/2/2;两阶段分列;release-v1.4.0 不回填” | DONE | `a8620f1`; `progress.md:748-815`; CI/README/pyproject | CI, README, source-root, and package-name probes are `1/1/2/2`. B used explicit path scaffolding; C used editable install with both path variables unset. The release snapshot has zero diff. |
-| 10 | “双门禁继承 A₀ 且全绿” | DONE | `31a91cb`, `a8620f1`; `progress.md:3-170`, `:588-634` | Skill-5 check is `RESIDUAL_DRIFT=0 / BINDING_DRIFT=0`; v1.2 admission is red with seven drifts and both required defects. Skill-4 remains green, while all 47 OUT_OF_SCOPE and 22 per-binding controls remain red. |
+| 10 | “双门禁继承 A₀ 且全绿” | DONE | `31a91cb`, `a8620f1`; `progress.md` “v1.3.2 post-closeout deferred-mapping amendment” | The v1.3.2 check is `38/34/4` with zero drift; v1.2 admission remains red with seven drifts and both required defects. Skill-4 remains green, while all 47 OUT_OF_SCOPE and 22 per-binding controls remain red. |
 | 11 | “§4 分支表全部契约句逐行有用例,代码锚与实际实现一致” | DONE | `0dfa5f1`; frozen §4; `progress.md:441-471` | Mechanical closure reports `branch_rows=14`, `rows_with_use_cases=14`, `unresolved=0`; every row carries both a source anchor and collected test name. |
 | 12 | “§3.2 结果映射表由末批实现、parity 与评审逐行销账” | DONE | Frozen §3.2 lines 250-298; deferred ledger below | The six-part design and its four-row result map are complete and immutable input to the terminal behavior-unification batch. This extraction intentionally does not implement them early. |
 | 13 | “§2 门禁成员扩展与三条负控制全部落地并实测” | DONE | `a8620f1`; `.importlinter`; `progress.md:667-714` | The sixth skill is in root-layers and skill-independence and is forbidden from shared. All six contracts are green and all three new negative edges are red. No new exception exists. |
@@ -132,6 +132,12 @@ rows from the migrated module's AST, promoted the authority and history copy
 to v1.3.1-FROZEN, and added a universal parser-only requirement to the skill
 batch template. Parser-only and the full bridge both report 23/23.
 
+The v1.3.2 delta corrects only the factual precision of the deferred §3.2
+mapping: it splits skill-3 query/git residual states, adds the independently
+executed `_exclude_private_files` call surface, pins real exception constructor
+shapes, and records the measured marker-write order. No implemented behavior
+or prior extraction verdict changes.
+
 The same correction required the inherited ledger to parse patch versions.
 `_version_key` now returns `(N, M, P)`, with omitted P equal to zero. Legal
 successors are exactly patch +1 at fixed N/M or minor +1 with P reset to zero.
@@ -145,15 +151,18 @@ Direct tests prove:
 
 Additional skip cases `1.3 -> 1.4.1`, `1.3.1 -> 1.3.3`, and
 `1.3.1 -> 1.5` are also red. Skill-4's corpus now includes its real
-v1.12 -> v1.12.1 transition, and all inherited gates remain intact.
+v1.12 -> v1.12.1 transition. Skill-5 now supplies the rule's next real use:
+`1.3 -> 1.3.1 -> 1.3.2`, accepted with three retained transition candidates.
+All inherited gates remain intact.
 
 ## Deferred Terminal Ledger
 
 Frozen §3.2 supplies these six binding decisions to the terminal behavior
 batch:
 
-1. The call surface is closed: skill-3 `fetch_source_for_commit`, this skill's
-   `_run_git` and `ls-remote`, and shared/workspace `_run_git`.
+1. The call surface is closed: skill-3 `fetch_source_for_commit` query and git
+   stages, this skill's `_run_git` and `ls-remote`, and shared/workspace
+   `_run_git` and `_exclude_private_files`.
 2. Every surface accepts optional `timeout: float | None`; the default is
    `None`, callers inject it, and terminal parity admits only the added
    `timeout=None` runner kwarg.
@@ -168,17 +177,19 @@ batch:
 
 | Call surface | Timeout outcome | External interruption | Residual state |
 |---|---|---|---|
-| skill-3 `fetch_source_for_commit` | `GerritError("FETCH_TIMEOUT")` | propagate | destination partially initialized |
-| this skill `_run_git` | `GerritSubmitError("GIT_TIMEOUT")` | propagate | worktree unchanged |
+| skill-3 `fetch_source_for_commit` query stage | `GerritError("FETCH_TIMEOUT", <message>)` | propagate | destination unchanged |
+| skill-3 git stage | `GerritError("FETCH_TIMEOUT", <message>)` | propagate | stage-specific destination residue |
+| this skill `_run_git` | `GerritSubmitError("GIT_TIMEOUT", <message>)` | propagate | worktree unchanged |
 | this skill `ls-remote` | `target_head_unknown:timeout` warning | propagate | none |
-| shared/workspace `_run_git` | `WorkspaceViolation("GIT_TIMEOUT")` | propagate | marker unchanged |
+| shared/workspace `_run_git` | `WorkspaceViolation(<message>)`, prefixed `GIT_TIMEOUT:` | propagate | marker unchanged |
+| shared/workspace `_exclude_private_files` | `WorkspaceViolation("GIT_TIMEOUT: …")` | propagate | workdir marker retained; protected marker not yet written; exclude incomplete |
 
 These decisions are implementation input, not topics to redesign casually.
 
 | # | Obligation | Status | Terminal batch | Frozen design and current boundary |
 |---|---|---|---|---|
 | D1 | Normalize dangling-symlink handling | DEFERRED | P4.9 final cross-skill behavior-unification batch | §3.2 requires `path.is_symlink()` to yield `SOURCE_DIR_UNSAFE`; current skill-3 test locks `FileExistsError` plus unchanged disk state. |
-| D2 | Unify timeout, cancellation, interruption, and residual-state behavior | DEFERRED | P4.9 final cross-skill behavior-unification batch | §3.2 fixes injection location, no-default-timeout compatibility, normalized error outcomes, signal propagation, residual state, and the four-row result map. Current two-path timeout tests lock the starting point. |
+| D2 | Unify timeout, cancellation, interruption, and residual-state behavior | DEFERRED | P4.9 final cross-skill behavior-unification batch | §3.2 fixes injection location, no-default-timeout compatibility, normalized error outcomes, signal propagation, residual state, and the six-row result map. Current two-path timeout tests lock the starting point. |
 | D3 | Delete all legacy compatibility shims | DEFERRED | P4.9 final cleanup, separate commit from behavior unification | The Gerrit-submit legacy module is a pure re-export with zero def/class; compatibility remains test-covered until the one-shot deletion. |
 | D4 | Narrow tests that consume implementation-private symbols | DEFERRED | P4.9 final cleanup | Private names remain absent from package-root API; test access is explicit and must be narrowed without promoting those names. |
 

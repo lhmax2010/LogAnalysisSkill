@@ -396,7 +396,7 @@ def run(repo_root: Path) -> int:
     )
     gerrit_submit_design_path = repo_root / (
         "docs/clang-fix-campaign/"
-        "p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md"
+        "p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md"
     )
     try:
         body = parse_design_tables(design_path)

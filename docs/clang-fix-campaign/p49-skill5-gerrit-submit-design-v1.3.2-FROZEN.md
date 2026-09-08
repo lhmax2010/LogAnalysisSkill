@@ -1,4 +1,4 @@
-# P4.9 skill-5 设计:tizen-gerrit-submit 抽取(v1.3.1-FROZEN)
+# P4.9 skill-5 设计:tizen-gerrit-submit 抽取(v1.3.2-FROZEN)
 
 - 阶段:P4.9 第五个 skill 批次(skill-4 CLOSED @7bfa070 / 签批 @8ed7588)
 - 权威并行:step-0 `v2.1`、skill-1 `v1.4`、skill-2 `v1.3`、skill-3 `v1.3.1`、
@@ -49,6 +49,18 @@
 > commit C 接入 bridge 时由 fail-closed parser 暴露;此前设计评审四轮未撞到,
 > 根因是没有工具实际读取该表。§0 现由源码 AST 机械生成并显式穷举
 > `symbol | definition | owner`;所有 skill 批次冻结前必须先过 parser-only。
+>
+> **v1.3.2 修订(评审 MAJOR;DEFERRED 映射表事实精度补正)**:
+> ①skill-3 残留拆为 query/git 两态:`query_change_for_commit`(:132)位于
+> `_reset_generated_source_dir`(:134)之前,与 skill-3 冻结契约 :465/:478
+> 对齐;②`_exclude_private_files`(:209)含独立 `subprocess.run`(:210),补入
+> 封闭调用面;③异常的实际可调用形式钉死:`GerritError` 为
+> `(code, message)` 双参,`GerritSubmitError` 与之同形,`WorkspaceViolation`
+> 无 `code` 字段、以 `GIT_TIMEOUT:` message 前缀承载码。v1.3.2 裁决初稿
+> 曾写“mark 先写 marker 后 exclude”,系**未实测的顺序推测**,由实现方对照
+> `workspace/__init__.py:115-124` 更正:**为末批预留的残留描述必须逐格
+> 实测,不得凭调用名推断顺序**。明确不预置“protected marker 先写”这一
+> 新设计裁决;如末批认为应改顺序,须由该批设计评审另行提出并论证。
 
 - **总铁律**:行为等价——逐字节迁移 + import 翻转,零语义变更
 - **门禁**:**继承 skill-4 的 A₀**(`design_drift_ledger.py`),**不重造**;
@@ -252,8 +264,9 @@ skill-3 `v1.3.1` 将二者**具名延期至本批**。**本批是其关门批次
 - **但必须在本批给出设计**(否则违 skill-3 的延期本意):
   - **timeout/cancellation 统一策略(v1.2 补齐;skill-3 延期的是整套策略,
     v1.1 只给了可选 timeout + 错误码,仍属部分空手再延)**:
-    ①**调用面清单**:skill-3 `fetch_source_for_commit`、本 skill `_run_git`
-    与 `ls-remote`、shared/workspace `_run_git`;
+    ①**调用面清单**:skill-3 `fetch_source_for_commit` 的 query 阶段与 git
+    阶段、本 skill `_run_git` 与 `ls-remote`、shared/workspace `_run_git`
+    与 `_exclude_private_files`;
     ②**参数(v1.3 钉死)**:各调用面统一引入**可选 `timeout: float | None`**;
     **默认 `None` = 无 timeout(与现状行为等价,保证末批实施时 parity 可过)**;
     **不强制**——由调用方(wrapper/编排层)注入;
@@ -269,10 +282,12 @@ skill-3 `v1.3.1` 将二者**具名延期至本批**。**本批是其关门批次
     ⑥**结果映射表(v1.3 本稿落成,末批只实施)**:
     | 调用面 | 超时(timeout 触发) | 外部中断 | 残留 |
     |---|---|---|---|
-    | skill-3 `fetch_source_for_commit` | 具名 `GerritError("FETCH_TIMEOUT")` | 传播 | destination 部分初始化 |
-    | 本 skill `_run_git` | 具名 `GerritSubmitError("GIT_TIMEOUT")`(新类型,末批定义) | 传播 | worktree 不变 |
-    | 本 skill `ls-remote` | warning 码**统一为 `target_head_unknown:timeout`**(不再含原始异常文本) | 传播 | 无 |
-    | shared/workspace `_run_git` | 具名 `WorkspaceViolation("GIT_TIMEOUT")` | 传播 | marker 不变 |
+    | skill-3 `fetch_source_for_commit` **query 阶段**(`gerrit.py:132`,在 `_reset` 之前) | `GerritError("FETCH_TIMEOUT", <message>)` | 传播 | **destination 不动**(与 skill-3 冻结 :465 一致) |
+    | skill-3 **git 阶段**(init/fetch/checkout,`_reset` 之后) | `GerritError("FETCH_TIMEOUT", <message>)` | 传播 | **阶段残留**(与 skill-3 冻结 :478 一致) |
+    | 本 skill `_run_git`(:348) | `GerritSubmitError("GIT_TIMEOUT", <message>)`(新类型,签名与 `GerritError` 同形 `(code, message)`,末批定义) | 传播 | worktree 不变 |
+    | 本 skill `ls-remote`(:284) | warning 码统一 `target_head_unknown:timeout` | 传播 | 无 |
+    | shared/workspace `_run_git`(:205) | `WorkspaceViolation(<message>)`,message 以 `GIT_TIMEOUT:` 前缀承载码(`WorkspaceViolation` 无 code 字段,不改其签名——改签名属行为变更) | 传播 | marker 不变 |
+    | **shared/workspace `_exclude_private_files`**(:209,`mark_worktree_protected` :117 调用) | 同上 `WorkspaceViolation("GIT_TIMEOUT: …")` | 传播 | **workdir marker 保留、protected marker 尚未写入、exclude 未完成**(`mark_worktree_protected` 的真实顺序:`_verify_cleanup_handle`(:115)→ `_exclude_private_files`(:117)→ 构造并写入 protected marker(:118/:124);故超时点在 exclude 时,protected marker 尚未产生) |
     **末批 parity 须预先把 `timeout=None` 这个透传 kwarg 声明为掩码/白名单
     项**;生产语义等价,但 fake runner 轨迹会新增该 kwarg,不得把它误判为漂移。
     **末批的职责 = 按此表实施 + parity + 评审**;**不得改动本表裁决,除非重开

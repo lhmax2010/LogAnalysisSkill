@@ -723,7 +723,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
     *(
         SymbolSpec(
             name,
-            ("skill5-§0", "skill5-v1.3.1"),
+            ("skill5-§0", "skill5-v1.3.2"),
             SKILL_GERRIT_SUBMIT,
             "skill/tizen_gerrit_submit",
             consumers,
