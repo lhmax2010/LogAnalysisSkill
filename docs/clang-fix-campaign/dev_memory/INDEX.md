@@ -16,6 +16,7 @@
 | P4.9 skill-2 qb-discover | CLOSED | QuickBuild overview discovery skill, binary attribution keys, skill-independence activation | commits `097294f`/`95ed550`/`41152fe`/`812b213`; 96 symbols + 4 module scopes; final sign-off `../review/p49-skill2-closeout.md#最终签批` |
 | P4.9 skill-3 gerrit-fetch | CLOSED | Gerrit source-fetch skill, import-binding audit, pre-shim parity, three delivery entry points | commits `4612167`/`751e7b4`/`f4be9e4`/`f6544df`/`c41d15a`; 108 symbols + 4 module scopes; final sign-off `../review/p49-skill3-closeout.md#最终签批` |
 | P4.9 skill-4 build-verify | CLOSED | Three-mode build-verification extraction, branch matrix, precise formatter exception, dual design gates | commits `148b7f6`/`09da87d`/`3da2529`/`f85bd58`/`da6d503`; 150 symbols + 4 module scopes; final sign-off `../review/p49-skill4-closeout.md#最终签批` |
+| P4.9 skill-5 gerrit-submit | CLOSED | Gerrit-submit extraction, status locks, six-row terminal mapping, patch-version ledger | commits `f2bc050`/`31a91cb`/`a97c40b`/`0dfa5f1`/`a8620f1`/`d51145f`/`c6f734b`; 173 symbols + 4 module scopes; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -39,7 +40,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 skill-2 qb-discover | CLOSED | `097294f`, `95ed550`, `41152fe`, `812b213` | frozen authority `../p49-skill2-qb-discover-design-v1.3-FROZEN.md`; result `stage09_p49_skill2_qb_discover/result.md`; final sign-off `../review/p49-skill2-closeout.md#最终签批` |
 | P4.9 skill-3 gerrit-fetch | CLOSED | `4612167`, `751e7b4`, `f4be9e4`, `f6544df`, `c41d15a` | frozen authority `../p49-skill3-gerrit-fetch-design-v1.3.1-FROZEN.md`; result `stage10_p49_skill3_gerrit_fetch/result.md`; final sign-off `../review/p49-skill3-closeout.md#最终签批` |
 | P4.9 skill-4 build-verify | CLOSED | `148b7f6`, `09da87d`, `3da2529`, `f85bd58`, `da6d503` | frozen authority `../p49-skill4-build-verify-design-v1.12.1-FROZEN.md`; result `stage11_p49_skill4_build_verify/result.md`; final sign-off `../review/p49-skill4-closeout.md#最终签批` |
-| P4.9 skill-5 gerrit-submit | CLOSED, v1.3.2 delta review pending | `f2bc050`, `31a91cb`, `a97c40b`, `0dfa5f1`, `a8620f1`, `d51145f` | frozen authority `../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`; result `stage12_p49_skill5_gerrit_submit/result.md`; DoD closeout `../review/p49-skill5-closeout.md`; current amendment externally anchored by its containing commit |
+| P4.9 skill-5 gerrit-submit | CLOSED | `f2bc050`, `31a91cb`, `a97c40b`, `0dfa5f1`, `a8620f1`, `d51145f`, `c6f734b` | frozen authority `../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`; result `stage12_p49_skill5_gerrit_submit/result.md`; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 
 ## Code-Ready Checkpoint
 

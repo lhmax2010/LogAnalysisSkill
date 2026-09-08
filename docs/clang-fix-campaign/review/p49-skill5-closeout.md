@@ -3,18 +3,18 @@
 Authority:
 `docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`.
 
-Lifecycle commits before this amendment: `f2bc050`, `31a91cb`, `a97c40b`,
-`0dfa5f1`, `a8620f1`, and closeout `d51145f`. The seventh lifecycle commit is
-the v1.3.2 amendment containing this update. Git anchors its integrity
-externally; its SHA is intentionally not recorded inside itself (`⑬/⑲`).
+Lifecycle commits through the v1.3.2 amendment: `f2bc050`, `31a91cb`,
+`a97c40b`, `0dfa5f1`, `a8620f1`, closeout `d51145f`, and amendment `c6f734b`.
+The current sign-off commit is anchored externally by Git; its SHA is
+intentionally not recorded inside itself (`⑬/⑲`).
 
 ## Summary
 
 - Frozen section 8 account: **13 DONE / 1 DEFERRED umbrella**.
-- The umbrella is expanded below into **4 named DEFERRED obligations**. P4.9
-  final cleanup and cross-skill behavior unification are their terminal batch;
-  no further deferral is permitted without an explicit three-party
-  cancellation ruling.
+- The umbrella is expanded below into **4 named DEFERRED obligations** plus
+  **1 mandatory terminal-batch design decision**. P4.9 final cleanup and
+  cross-skill behavior unification are their terminal batch; no further
+  deferral is permitted without an explicit three-party cancellation ruling.
 - Baseline chain: **897 -> 899 -> 905 -> 912 passed**, with one intentional
   skip throughout. Each transition preserved the preceding collected-test
   set and introduced no failures or new skips.
@@ -47,11 +47,11 @@ green.
 | 7 | “§3 两项现状锁定测试... + 两项设计已登记且新关门批次具名” | DONE | `0dfa5f1`; frozen §3.2/§4; `progress.md:473-495`; tests at `test_tizen_gerrit_submit.py:199`, `:223`, `:238`, `:385`; `test_gerrit_fetch.py:535` | The fake runner sees both subprocess paths and no `timeout`; local timeout propagates by identity, remote timeout becomes an unverified warning/action, the dangling-symlink test preserves its disk state, and executed argv never contains `push`. The two behavior changes are designed and assigned to the P4.9 terminal batch. |
 | 8 | “pre-shim parity(一正三反)与 post-shim identity 分列” | DONE | `a97c40b`; `progress.md:261-318`, `:320-350`; `commit-a-evidence/pre-shim-parity.txt` | Five pre-shim payload partitions compare equal; destination-only normalizes green while action/order/exit mutations turn red. Post-shim 9+14 identity is recorded separately as wiring-only evidence. |
 | 9 | “三入口 1/1/2/2;两阶段分列;release-v1.4.0 不回填” | DONE | `a8620f1`; `progress.md:748-815`; CI/README/pyproject | CI, README, source-root, and package-name probes are `1/1/2/2`. B used explicit path scaffolding; C used editable install with both path variables unset. The release snapshot has zero diff. |
-| 10 | “双门禁继承 A₀ 且全绿” | DONE | `31a91cb`, `a8620f1`; `progress.md` “v1.3.2 post-closeout deferred-mapping amendment” | The v1.3.2 check is `38/34/4` with zero drift; v1.2 admission remains red with seven drifts and both required defects. Skill-4 remains green, while all 47 OUT_OF_SCOPE and 22 per-binding controls remain red. |
+| 10 | “双门禁继承 A₀ 且全绿” | DONE | `31a91cb`, `a8620f1`; `progress.md` “Sign-off registration and gate refresh” | The signed-off v1.3.2 check is `40/36/4` with zero drift; the two additional retained candidates are the explicit sign-off-period registration. v1.2 admission remains red with seven drifts and both required defects. Skill-4 remains green, while all 47 OUT_OF_SCOPE and 22 per-binding controls remain red. |
 | 11 | “§4 分支表全部契约句逐行有用例,代码锚与实际实现一致” | DONE | `0dfa5f1`; frozen §4; `progress.md:441-471` | Mechanical closure reports `branch_rows=14`, `rows_with_use_cases=14`, `unresolved=0`; every row carries both a source anchor and collected test name. |
-| 12 | “§3.2 结果映射表由末批实现、parity 与评审逐行销账” | DONE | Frozen §3.2 lines 250-298; deferred ledger below | The six-part design and its four-row result map are complete and immutable input to the terminal behavior-unification batch. This extraction intentionally does not implement them early. |
+| 12 | “§3.2 结果映射表由末批实现、parity 与评审逐行销账” | DONE | Frozen §3.2; deferred ledger below | The six-part design and its six-row result map are complete and immutable input to the terminal behavior-unification batch. This extraction intentionally does not implement them early. |
 | 13 | “§2 门禁成员扩展与三条负控制全部落地并实测” | DONE | `a8620f1`; `.importlinter`; `progress.md:667-714` | The sixth skill is in root-layers and skill-independence and is forbidden from shared. All six contracts are green and all three new negative edges are red. No new exception exists. |
-| 14 | “DEFERRED:timeout 统一 + 悬空 symlink 归一化...;shim 删除...;其余沿既有” | DEFERRED | Frozen §3.2 lines 250-298 and §8; named ledger below | Four obligations remain. Every item has the P4.9 terminal batch, a current-state test boundary, and a no-further-deferral clause. |
+| 14 | “DEFERRED:timeout 统一 + 悬空 symlink 归一化...;shim 删除...;其余沿既有” | DEFERRED | Frozen §3.2 and §8; named ledger below | Four deferred obligations remain, plus the mandatory D5 ordering decision. Every item has the P4.9 terminal batch, a current-state boundary, and a no-further-deferral clause. |
 
 ## Mode-One, API, and Twin Evidence
 
@@ -192,8 +192,19 @@ These decisions are implementation input, not topics to redesign casually.
 | D2 | Unify timeout, cancellation, interruption, and residual-state behavior | DEFERRED | P4.9 final cross-skill behavior-unification batch | §3.2 fixes injection location, no-default-timeout compatibility, normalized error outcomes, signal propagation, residual state, and the six-row result map. Current two-path timeout tests lock the starting point. |
 | D3 | Delete all legacy compatibility shims | DEFERRED | P4.9 final cleanup, separate commit from behavior unification | The Gerrit-submit legacy module is a pure re-export with zero def/class; compatibility remains test-covered until the one-shot deletion. |
 | D4 | Narrow tests that consume implementation-private symbols | DEFERRED | P4.9 final cleanup | Private names remain absent from package-root API; test access is explicit and must be narrowed without promoting those names. |
+| D5 | Decide protected-marker write ordering | REQUIRED DECISION (not a new deferral) | P4.9 final cross-skill behavior-unification design review | Current order is `_verify_cleanup_handle` -> `_exclude_private_files` -> protected-marker write. If exclude times out, the worktree has passed verification but remains unprotected and may be reclaimed by automatic cleanup. The terminal review must choose either reordering or retaining the behavior with rationale; “recorded” is not closure. |
 
 **Terminal clause:** P4.9 final cleanup/behavior unification is the last allowed
-batch for D1-D4. An unfinished item blocks P4.9 closure and may not be deferred
-again. The only alternative is an item-specific cancellation with rationale
-and three-party confirmation.
+batch for D1-D5. An unfinished item or undecided D5 blocks P4.9 closure and may
+not be deferred again. The only alternative is an item-specific cancellation
+with rationale and three-party confirmation.
+
+## 最终签批
+
+| 签批方 | 日期 | 结论 |
+|---|---|---|
+| Claude | 2026-09-08 | 独立核验每个 commit 的干净环境结果一致，亲跑双批门禁与双道审计，并逐项核对 v1.3.2 六行映射表，确认 skill-5 CLOSED。 |
+| 评审 A/B | 2026-09-08 | 两家终审均确认 CLOSED，无未关闭 finding。 |
+| 评审 C | 2026-09-08 | 提出的 1 项 MAJOR 已由 v1.3.2 事实精度修订关闭，delta 复核后确认 CLOSED。 |
+
+**状态：skill-5 CLOSED @ `d51145f`（含 v1.3.2 修订 `c6f734b`，开发者放行日期：2026-09-08）。**

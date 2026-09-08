@@ -320,6 +320,11 @@ during design convergence.
     surfaces mechanically, and measure operation order cell by cell. Skill-5
     v1.3.2 caught all three classes, including an initial marker-order claim
     inferred from a function name instead of the implementation.
+49. **Every cell in a ruling table needs a code provenance anchor.** Inferring
+    operation order from a function name or intended semantics is not
+    evidence. Skill-5 v1.3.2 initially claimed that the protected marker was
+    written before exclude; implementation review of shared workspace lines
+    115-124 proved the reverse order and corrected the residual-state cell.
 
 ## R14 deferred cleanup ledger
 

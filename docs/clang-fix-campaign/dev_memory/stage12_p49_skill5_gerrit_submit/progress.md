@@ -933,3 +933,33 @@ pytest tests/unit/test_design_drift_ledger.py: 7 passed
 ruff: All checks passed!
 py_compile: exit=0
 ```
+
+## Sign-off registration and gate refresh
+
+Status: COMPLETE. This is a documentation-only registration; no production
+implementation changed.
+
+The six-row mapping remains byte-for-byte unchanged. The canonical authority
+and history snapshot both add only the sign-off-period protected-marker
+ordering issue and the fifth terminal-batch inheritance item. Their current
+external digest is:
+
+```text
+canonical_history_cmp_exit=0
+target_sha256=0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27
+```
+
+The inherited ledger was bootstrapped from that updated pair and immediately
+rechecked:
+
+```text
+BOOTSTRAP | candidates=40 retained=36 ignored=4 binding_candidates=348 bindings=8
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=40 | retained=36 | ignored=4 | bindings=8 | binding_candidates=348
+ADMISSION | snapshot=v1.2 | BINDING_DRIFT=7 | required_known=2 | RED_AS_EXPECTED
+admission_exit=1
+```
+
+The two new retained candidates are the explicit sign-off-period registration,
+not a change to any of the six mapping rows. Symbol audit remains `173 SYMBOL
+OK + 4 MODULE-SCOPE OK`, and the independent bridge remains `173+4` with all
+five difference classes zero.

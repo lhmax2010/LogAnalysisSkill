@@ -61,6 +61,11 @@
 > `workspace/__init__.py:115-124` 更正:**为末批预留的残留描述必须逐格
 > 实测,不得凭调用名推断顺序**。明确不预置“protected marker 先写”这一
 > 新设计裁决;如末批认为应改顺序,须由该批设计评审另行提出并论证。
+>
+> **签批期登记(非映射表裁决变更)**:v1.3.2 的实测顺序暴露出一个须由
+> P4.9 末批设计评审显式裁决的议题:exclude 超时时 worktree 已通过验证,
+> 但 protected marker 尚未写入,存在被自动清理回收的隐患。该批必须在
+> “调整写入顺序”与“维持现状并说明”之间作出裁决,不得停在“已记录”。
 
 - **总铁律**:行为等价——逐字节迁移 + import 翻转,零语义变更
 - **门禁**:**继承 skill-4 的 A₀**(`design_drift_ledger.py`),**不重造**;
@@ -288,6 +293,12 @@ skill-3 `v1.3.1` 将二者**具名延期至本批**。**本批是其关门批次
     | 本 skill `ls-remote`(:284) | warning 码统一 `target_head_unknown:timeout` | 传播 | 无 |
     | shared/workspace `_run_git`(:205) | `WorkspaceViolation(<message>)`,message 以 `GIT_TIMEOUT:` 前缀承载码(`WorkspaceViolation` 无 code 字段,不改其签名——改签名属行为变更) | 传播 | marker 不变 |
     | **shared/workspace `_exclude_private_files`**(:209,`mark_worktree_protected` :117 调用) | 同上 `WorkspaceViolation("GIT_TIMEOUT: …")` | 传播 | **workdir marker 保留、protected marker 尚未写入、exclude 未完成**(`mark_worktree_protected` 的真实顺序:`_verify_cleanup_handle`(:115)→ `_exclude_private_files`(:117)→ 构造并写入 protected marker(:118/:124);故超时点在 exclude 时,protected marker 尚未产生) |
+    **protected marker 写入顺序议题(签批期登记,非本表裁决变更)**:
+    `mark_worktree_protected` 的现状顺序为 `_verify_cleanup_handle`(:115)→
+    `_exclude_private_files`(:117)→ 写 protected marker(:118/:124);exclude
+    超时时 worktree 已通过验证但 protected marker 未写入,存在被自动清理
+    回收的隐患。P4.9 末批须将此列为设计评审的显式议题,并在“调整顺序”/
+    “维持现状并说明”之间作出裁决,不得停在“已记录”。
     **末批 parity 须预先把 `timeout=None` 这个透传 kwarg 声明为掩码/白名单
     项**;生产语义等价,但 fake runner 轨迹会新增该 kwarg,不得把它误判为漂移。
     **末批的职责 = 按此表实施 + parity + 评审**;**不得改动本表裁决,除非重开
@@ -303,10 +314,12 @@ skill-3 `v1.3.1` 将二者**具名延期至本批**。**本批是其关门批次
     **且行为统一与 shim 删除至少分 commit 验收**;
   - **P4.9 末批次的当前继承项清单(v1.1 补;防其成为新的无限展期容器)**:
     ①shim 删除(step-0 §6.2 原章程);②测试私有件消费面收窄(skill-4);
-    ③悬空 symlink 归一化(本批);④timeout/取消/中断清理统一(本批)。
+    ③悬空 symlink 归一化(本批);④timeout/取消/中断清理统一(本批);
+    ⑤protected marker 写入顺序议题(具名评审议题,非新延期):末批须裁决
+    调整顺序或维持现状并说明,不得仅记录。
     **该批次开工前须以本清单为输入做一次 ⑰ 跨批次检查**;
   - **终止批次条款(v1.3 升级;v1.2 版仍允许"给新关门批次即再延")**:
-    **P4.9 末批次是这 4 项的终止批次;未完成即阻塞 P4.9 收口,不得转交
+    **P4.9 末批次是这 5 项的终止批次;未完成即阻塞 P4.9 收口,不得转交
     任何下一批次**。唯一例外是**逐项**在该批次评审中被裁定为"取消"(附
     理由并经三家确认),而非"延期"。
 - **本批 DoD 硬项**:二者的**现状必须被测试锁定**(见 §4),否则统一时无

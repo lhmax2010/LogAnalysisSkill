@@ -1,6 +1,6 @@
 # P4.9 Skill-5 Gerrit-Submit Result
 
-Status: **CLOSED for extraction; v1.3.2 mapping delta confirmation pending**.
+Status: **CLOSED and signed off**.
 Detailed DoD account:
 `../../review/p49-skill5-closeout.md`.
 
@@ -17,11 +17,11 @@ Frozen authority:
 | `0dfa5f1` | Moved behavior-test ownership, closed the 14-row branch table, and locked current timeout/symlink behavior |
 | `a8620f1` | Added the v1.3.1 authority table correction, patch-version ledger grammar, delivery entry points, import gates, 23-symbol audit surface, bridge integration, and `SKILL.md` |
 | `d51145f` | Closed the original v1.3.1 DoD account and assembled the final review package |
-| Git-anchored containing commit | Amends the frozen authority to v1.3.2 with an executable deferred-result mapping |
+| `c6f734b` | Amends the frozen authority to v1.3.2 with an executable deferred-result mapping |
 
-The seventh lifecycle commit is this v1.3.2 amendment. Its integrity is
-anchored externally by Git and its SHA is not recorded inside itself
-(`⑬/⑲`).
+The eighth lifecycle commit is the current sign-off registration. Its
+integrity is anchored externally by Git and its SHA is not recorded inside
+itself (`⑬/⑲`).
 
 ## Final Contract State
 
@@ -74,3 +74,24 @@ anchored externally by Git and its SHA is not recorded inside itself
    public APIs.
 4. Treat the terminal clause as binding: unfinished items block P4.9 closure
    unless explicitly cancelled with three-party confirmation.
+5. Put protected-marker write ordering on the terminal design-review agenda.
+   Current order is `_verify_cleanup_handle` -> `_exclude_private_files` ->
+   protected-marker write; an exclude timeout therefore leaves a verified but
+   unprotected worktree exposed to automatic cleanup. The terminal batch must
+   decide either to reorder the operations or retain the current order with a
+   rationale; recording the issue alone is not closure.
+
+## Stop-Report Protocol Evidence
+
+This batch contains two concrete cases where implementation-side checking
+corrected design-side assumptions before they became terminal behavior:
+
+1. The audited-side self-check found both the v1.2 timeout split (`_run_git`
+   propagation versus `ls-remote` warning conversion) and the seven
+   skill-4-specific A0 hardcodings that had to be parameterized before reuse.
+2. The v1.3.2 implementation comparison corrected the draft claim that the
+   protected marker was written before exclude. Source lines 115-124 prove the
+   opposite order and define the real interruption residue.
+
+These stops are evidence that the protocol is doing useful work: a plausible
+design narrative does not override measured control flow.

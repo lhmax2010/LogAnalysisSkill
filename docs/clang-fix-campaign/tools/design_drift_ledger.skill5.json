@@ -1513,15 +1513,15 @@
         }
       },
       {
-        "candidate_id": "v1.3.1|old:255-256,new:267-269|21e9e5600e15831b88b61867563d5b617612f5fbe642c55dc69583aedc4c8b3a",
-        "new_end": 269,
+        "candidate_id": "v1.3.1|old:255-256,new:272-274|21e9e5600e15831b88b61867563d5b617612f5fbe642c55dc69583aedc4c8b3a",
+        "new_end": 274,
         "new_lines": [
           "    ①**调用面清单**:skill-3 `fetch_source_for_commit` 的 query 阶段与 git",
           "    阶段、本 skill `_run_git` 与 `ls-remote`、shared/workspace `_run_git`",
           "    与 `_exclude_private_files`;"
         ],
         "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
-        "new_start": 267,
+        "new_start": 272,
         "new_version": "1.3.2",
         "old_end": 256,
         "old_lines": [
@@ -1539,18 +1539,24 @@
         }
       },
       {
-        "candidate_id": "v1.3.1|old:272-275,new:285-290|d222ee1f4c44cecbecd528184c09210b2fc18c9bb6312b1840dc3acfb7a5ef7c",
-        "new_end": 290,
+        "candidate_id": "v1.3.1|old:272-275,new:290-301|d222ee1f4c44cecbecd528184c09210b2fc18c9bb6312b1840dc3acfb7a5ef7c",
+        "new_end": 301,
         "new_lines": [
           "    | skill-3 `fetch_source_for_commit` **query 阶段**(`gerrit.py:132`,在 `_reset` 之前) | `GerritError(\"FETCH_TIMEOUT\", <message>)` | 传播 | **destination 不动**(与 skill-3 冻结 :465 一致) |",
           "    | skill-3 **git 阶段**(init/fetch/checkout,`_reset` 之后) | `GerritError(\"FETCH_TIMEOUT\", <message>)` | 传播 | **阶段残留**(与 skill-3 冻结 :478 一致) |",
           "    | 本 skill `_run_git`(:348) | `GerritSubmitError(\"GIT_TIMEOUT\", <message>)`(新类型,签名与 `GerritError` 同形 `(code, message)`,末批定义) | 传播 | worktree 不变 |",
           "    | 本 skill `ls-remote`(:284) | warning 码统一 `target_head_unknown:timeout` | 传播 | 无 |",
           "    | shared/workspace `_run_git`(:205) | `WorkspaceViolation(<message>)`,message 以 `GIT_TIMEOUT:` 前缀承载码(`WorkspaceViolation` 无 code 字段,不改其签名——改签名属行为变更) | 传播 | marker 不变 |",
-          "    | **shared/workspace `_exclude_private_files`**(:209,`mark_worktree_protected` :117 调用) | 同上 `WorkspaceViolation(\"GIT_TIMEOUT: …\")` | 传播 | **workdir marker 保留、protected marker 尚未写入、exclude 未完成**(`mark_worktree_protected` 的真实顺序:`_verify_cleanup_handle`(:115)→ `_exclude_private_files`(:117)→ 构造并写入 protected marker(:118/:124);故超时点在 exclude 时,protected marker 尚未产生) |"
+          "    | **shared/workspace `_exclude_private_files`**(:209,`mark_worktree_protected` :117 调用) | 同上 `WorkspaceViolation(\"GIT_TIMEOUT: …\")` | 传播 | **workdir marker 保留、protected marker 尚未写入、exclude 未完成**(`mark_worktree_protected` 的真实顺序:`_verify_cleanup_handle`(:115)→ `_exclude_private_files`(:117)→ 构造并写入 protected marker(:118/:124);故超时点在 exclude 时,protected marker 尚未产生) |",
+          "    **protected marker 写入顺序议题(签批期登记,非本表裁决变更)**:",
+          "    `mark_worktree_protected` 的现状顺序为 `_verify_cleanup_handle`(:115)→",
+          "    `_exclude_private_files`(:117)→ 写 protected marker(:118/:124);exclude",
+          "    超时时 worktree 已通过验证但 protected marker 未写入,存在被自动清理",
+          "    回收的隐患。P4.9 末批须将此列为设计评审的显式议题,并在“调整顺序”/",
+          "    “维持现状并说明”之间作出裁决,不得停在“已记录”。"
         ],
         "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
-        "new_start": 285,
+        "new_start": 290,
         "new_version": "1.3.2",
         "old_end": 275,
         "old_lines": [
@@ -1563,6 +1569,54 @@
         "old_start": 272,
         "old_version": "1.3.1",
         "pattern": "\\|\\ skill\\-3\\ fetch_source_for_commit\\ \\|\\ 具名\\ GerritError\\(\"FETCH_TIMEOUT\"\\)\\ \\|\\ 传播\\ \\|\\ destination\\ 部分初始化\\ \\|\\ \\|\\ 本\\ skill\\ _run_git\\ \\|\\ 具名\\ GerritSubmitError\\(\"GIT_TIMEOUT\"\\)\\(新类型,末批定义\\)\\ \\|\\ 传播\\ \\|\\ worktree\\ 不变\\ \\|\\ \\|\\ 本\\ skill\\ ls\\-remote\\ \\|\\ warning\\ 码统一为\\ target_head_unknown:timeout\\(不再含原始异常文本\\)\\ \\|\\ 传播\\ \\|\\ 无\\ \\|\\ \\|\\ shared/workspace\\ _run_git\\ \\|\\ 具名\\ WorkspaceViolation\\(\"GIT_TIMEOUT\"\\)\\ \\|\\ 传播\\ \\|\\ marker\\ 不变\\ \\|",
+        "replay_count": 1,
+        "replay_kind": "regression",
+        "replay_sections": {
+          "§3": 1
+        }
+      },
+      {
+        "candidate_id": "v1.3.1|old:291-291,new:317-319|bf2f97dc5c36559744fb06aba83146194f7e60a2d1883a5956521df005984a11",
+        "new_end": 319,
+        "new_lines": [
+          "    ③悬空 symlink 归一化(本批);④timeout/取消/中断清理统一(本批);",
+          "    ⑤protected marker 写入顺序议题(具名评审议题,非新延期):末批须裁决",
+          "    调整顺序或维持现状并说明,不得仅记录。"
+        ],
+        "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+        "new_start": 317,
+        "new_version": "1.3.2",
+        "old_end": 291,
+        "old_lines": [
+          "    ③悬空 symlink 归一化(本批);④timeout/取消/中断清理统一(本批)。"
+        ],
+        "old_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
+        "old_start": 291,
+        "old_version": "1.3.1",
+        "pattern": "3悬空\\ symlink\\ 归一化\\(本批\\);4timeout/取消/中断清理统一\\(本批\\)。",
+        "replay_count": 1,
+        "replay_kind": "regression",
+        "replay_sections": {
+          "§3": 1
+        }
+      },
+      {
+        "candidate_id": "v1.3.1|old:294-294,new:322-322|696bc4b3765f62463fb3afbee13e92d97a28d9da0439cdd3768ea56fc40fce4b",
+        "new_end": 322,
+        "new_lines": [
+          "    **P4.9 末批次是这 5 项的终止批次;未完成即阻塞 P4.9 收口,不得转交"
+        ],
+        "new_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+        "new_start": 322,
+        "new_version": "1.3.2",
+        "old_end": 294,
+        "old_lines": [
+          "    **P4.9 末批次是这 4 项的终止批次;未完成即阻塞 P4.9 收口,不得转交"
+        ],
+        "old_path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
+        "old_start": 294,
+        "old_version": "1.3.1",
+        "pattern": "P4\\.9\\ 末批次是这\\ 4\\ 项的终止批次;未完成即阻塞\\ P4\\.9\\ 收口,不得转交",
         "replay_count": 1,
         "replay_kind": "regression",
         "replay_sections": {
@@ -1606,8 +1660,10 @@
     "v1.2|old:317-317,new:370-373|7e135909bc742f0ae9989391d41369d03388cb5686def69e5c91a29304930559": {},
     "v1.2|old:88-88,new:100-100|82dc438fa5af37e0bb12ca6cf259e0b60d941dc282c3193f891d8790bf554803": {},
     "v1.3.1|old:1-1,new:1-1|a4c87a0c33cf19382e299065fb40cc534c0866b50916e6d41b9a5ef411a21018": {},
-    "v1.3.1|old:255-256,new:267-269|21e9e5600e15831b88b61867563d5b617612f5fbe642c55dc69583aedc4c8b3a": {},
-    "v1.3.1|old:272-275,new:285-290|d222ee1f4c44cecbecd528184c09210b2fc18c9bb6312b1840dc3acfb7a5ef7c": {},
+    "v1.3.1|old:255-256,new:272-274|21e9e5600e15831b88b61867563d5b617612f5fbe642c55dc69583aedc4c8b3a": {},
+    "v1.3.1|old:272-275,new:290-301|d222ee1f4c44cecbecd528184c09210b2fc18c9bb6312b1840dc3acfb7a5ef7c": {},
+    "v1.3.1|old:291-291,new:317-319|bf2f97dc5c36559744fb06aba83146194f7e60a2d1883a5956521df005984a11": {},
+    "v1.3.1|old:294-294,new:322-322|696bc4b3765f62463fb3afbee13e92d97a28d9da0439cdd3768ea56fc40fce4b": {},
     "v1.3|old:1-1,new:1-1|21b6a5b1b85a093a01285546330605ad12754b6006130435edb4490c143f5afc": {}
   },
   "generated_from": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
@@ -2003,7 +2059,7 @@
   ],
   "schema_version": "clang-fix-campaign/design-drift-ledger/v1",
   "target_design": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
-  "target_sha256": "6dd6a9a91f00b56999076d88a8ae5b120f19533d56485ac88e95c09640f75a03",
+  "target_sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
   "target_version": "1.3.2",
   "version_corpus": [
     {
@@ -2033,7 +2089,7 @@
     },
     {
       "path": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
-      "sha256": "6dd6a9a91f00b56999076d88a8ae5b120f19533d56485ac88e95c09640f75a03",
+      "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
       "version": "1.3.2"
     }
   ],
