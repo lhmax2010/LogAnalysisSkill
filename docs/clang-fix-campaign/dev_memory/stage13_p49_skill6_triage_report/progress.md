@@ -2,7 +2,7 @@
 
 ## Freeze prerequisites and A0 gates
 
-Status: A0 COMPLETE, awaiting independent review before extraction commit A.
+Status: commit C IMPLEMENTED AND VERIFIED, pending commit and independent review.
 
 Authority under test:
 `docs/clang-fix-campaign/p49-skill6-triage-report-design-v1.8-FROZEN.md`.
@@ -496,3 +496,261 @@ Production code, the P4.5 `design.md`, and `release-v1.4.0/` have zero task
 diff. The observed `QuickBuildError` interface exposes its message through
 `str(error)`, not a `.message` attribute; the frozen requirement is satisfied
 through that public exception representation without any production change.
+
+## Commit C: gates, audit, delivery entry points, and constraint 7
+
+Authority remains
+`docs/clang-fix-campaign/p49-skill6-triage-report-design-v1.8-FROZEN.md`.
+The commit B baseline is 941 passed and 1 skipped.
+
+### Mechanical synchronization and constraint 7
+
+The seven shared HTTP declarations now name the extracted implementation:
+`HttpFetcher`, `QuickBuildError`, `_raise_if_login_page`, `_urllib_fetch`,
+`DEFAULT_COOKIE_PATH`, `DEFAULT_QUICKBUILD_BASE_URL`, and `load_cookie_jar`
+all replace `ci_triage.gbs_report` with
+`tizen_triage_report.gbs_report`. The two shared type declarations similarly
+replace `ci_triage.report` with `tizen_triage_report.report` for
+`FailedPackage` and `SourceFetchResult`.
+
+`REGISTERED_SKILL_ROOTS`, `ROOT_LAYERS_HIGH_TO_LOW`, `MODULE_OWNERS`, the
+source-root loaders, `surface_checks`, and the body bridge all gained
+`tizen_triage_report`. The 21 GBS-report symbols and 3 report symbols entered
+`SPECS` in this same commit. The exact-set surface guards therefore activate
+with the inventory, satisfying step-0 constraint 7 without an unguarded
+intermediate state.
+
+```text
+$ env -u PYTHONPATH -u MYPYPATH python3 docs/clang-fix-campaign/tools/symbol_audit.py
+SUMMARY | 197 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+exit=0
+
+$ env -u PYTHONPATH -u MYPYPATH python3 docs/clang-fix-campaign/tools/table_audit_bridge.py
+SUMMARY | 197 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+exit=0
+
+$ rg -c '^tizen_triage_report/gbs_report\.py \|' /tmp/skill6-table-bridge.txt
+21
+$ rg -c '^tizen_triage_report/report\.py \|' /tmp/skill6-table-bridge.txt
+3
+
+$ python3 docs/clang-fix-campaign/tools/symbol_audit.py --surface-fixture mixed-case-alias
+SURFACE_FIXTURE | mixed-case-alias | MISMATCH: present in source but not audited: MixedCaseAlias
+exit=1 (red as expected)
+```
+
+The bridge output contains all 24 explicit skill-6 rows, not only a green
+summary. This proves it parsed both frozen definition paths.
+
+### Import-linter activation and negative controls
+
+Editable packaging was refreshed before the C-stage run:
+
+```text
+$ .venv/bin/python -m pip install -e .
+Successfully built gbs-analyzer
+Successfully installed gbs-analyzer-1.3.0
+exit=0
+```
+
+The positive run with both scaffold variables removed is:
+
+```text
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/lint-imports
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 67 files, 129 dependencies.
+------------------------------------
+
+application layers: orchestration -> skills -> shared KEPT
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+
+Contracts: 6 kept, 0 broken.
+exit=0
+```
+
+Negative 1 temporarily added `import ci_triage` to
+`tizen_triage_report.report`:
+
+```text
+application layers: orchestration -> skills -> shared BROKEN
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+
+Contracts: 5 kept, 1 broken.
+
+tizen_triage_report is not allowed to import ci_triage:
+- tizen_triage_report.report -> ci_triage (l.5)
+exit=1
+```
+
+Negative 2 temporarily added `import tizen_qb_discover` to the same module.
+This is the direct twin-host boundary test:
+
+```text
+application layers: orchestration -> skills -> shared BROKEN
+extracted skills are independent BROKEN
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+
+Contracts: 4 kept, 2 broken.
+
+tizen_triage_report is not allowed to import tizen_qb_discover:
+- tizen_triage_report.report -> tizen_qb_discover (l.5)
+exit=1
+```
+
+Negative 3 temporarily added `import tizen_triage_report` to
+`tizen_ci_shared.types`:
+
+```text
+application layers: orchestration -> skills -> shared BROKEN
+extracted skills are independent BROKEN
+shared internal layers: L1 -> L0 -> types BROKEN
+shared must not import orchestration BROKEN
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+
+Contracts: 2 kept, 4 broken.
+
+shared must not import orchestration
+------------------------------------
+tizen_ci_shared is not allowed to import tizen_triage_report:
+- tizen_ci_shared.types -> tizen_triage_report (l.5)
+exit=1
+```
+
+Each temporary edit was removed with a targeted patch. The positive run was
+then repeated and returned 6 kept, 0 broken. The production skill's two real
+downward edges are:
+
+```text
+tizen_triage_report/gbs_report.py:10:from tizen_ci_shared.quickbuild_http import (
+tizen_triage_report/report.py:9:from tizen_ci_shared.types import FailedPackage, SourceFetchResult
+```
+
+These legal downward edges are the positive counterpart to negative 3; the
+positive run alone is not presented as proof. The existing
+`gbs_patch_suggest` root membership and both exact ignore declarations are
+byte-unchanged, and `.importlinter` contains no `include_external_packages`.
+
+### Twin families remain separate
+
+All commands are deliberately scoped to the two modules in this conflict
+surface. Each result is exactly two:
+
+```text
+$ rg -c '^class _Anchor\b' <qb-sources> <triage-gbs-report> | sum
+2
+$ rg -c '^class _Cell\b' <qb-sources> <triage-gbs-report> | sum
+2
+$ rg -c '^class _Row\b' <qb-sources> <triage-gbs-report> | sum
+2
+$ rg -c '^class _CellBuilder\b' <qb-sources> <triage-gbs-report> | sum
+2
+$ rg -c '^class _AnchorBuilder\b' <qb-sources> <triage-gbs-report> | sum
+2
+$ rg -c '^def _attrs_to_map\(' <qb-sources> <triage-gbs-report> | sum
+2
+$ rg -c '^def _class_names\(' <qb-sources> <triage-gbs-report> | sum
+2
+$ rg -c '^def _normalize_text\(' <qb-sources> <triage-gbs-report> | sum
+2
+```
+
+`<qb-sources>` is
+`tizen-qb-discover/scripts/tizen_qb_discover/sources.py` and
+`<triage-gbs-report>` is
+`tizen-triage-report/scripts/tizen_triage_report/gbs_report.py`.
+
+### Delivery entry points, skill contract, and shim ledger
+
+The exact counting commands were first run against qb-discover and returned
+1/1/2/2. Applied unchanged to triage-report, they also return:
+
+```text
+ci.yml mypy command                       1
+README $PWD/tizen-triage-report/scripts   1
+pyproject script root                     2
+pyproject import package                  2
+```
+
+`release-v1.4.0/` remains an immutable historical snapshot with zero diff.
+`tizen-triage-report/SKILL.md` contains Inputs, Outputs, Errors, Side Effects,
+and Idempotency. It explicitly keeps fetch and parse together, documents raw
+arch passthrough, and compares its HTTP timeout shape with the subprocess/build
+timeout contracts of skills 3, 4, and 5. The repository skill validator says
+`Skill is valid!`.
+
+Commit B supplied the two raw-arch tests and they remain green here:
+
+```text
+$ pytest -q tests/unit/test_tizen_triage_report.py -k preserves_raw_arch
+2 passed, 32 deselected in 0.04s
+```
+
+The final one-shot P4.9 shim-removal ledger gains two pure re-export modules:
+
+- `ci_triage.gbs_report`: 21 implementation-name re-exports;
+- `ci_triage.report`: 3 implementation-name re-exports.
+
+Both legacy modules contain zero top-level `def` or `class`. They remain only
+for compatibility and are not counted as authorities.
+
+### Inherited design gates and branch inventory
+
+All checks ran without `PYTHONPATH` or `MYPYPATH`:
+
+```text
+skill-4 check: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | bindings=22 | exit=0
+skill-4 admission-v19: BINDING_DRIFT=3 | required_known=2 | RED_AS_EXPECTED | exit=1
+skill-5 check: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | bindings=8 | exit=0
+skill-5 admission-v12: BINDING_DRIFT=7 | required_known=2 | RED_AS_EXPECTED | exit=1
+skill-6 check: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | bindings=5 | exit=0
+
+branch parser-only: 24/24 | missing=0 | extra=0 | OWNER_MISMATCH=0 | OK
+branch table: rows=25 | referenced_ids=62 | unreferenced_ids=7 | external_rows=2 | OK
+gbs_report: decision_points=19 | terminal_outcomes=24 | ids=43 | unique=YES
+report: decision_points=22 | terminal_outcomes=4 | ids=26 | unique=YES
+branch summary: ids=69 | collisions=0 | unknown_refs=0 | missing_reasons=0 | OK
+admission-v17: required=2/2 | RED_AS_EXPECTED | exit=1
+```
+
+### C-stage no-scaffold verification
+
+Commit A and B used the explicit temporary paths recorded earlier in this
+file. After editable installation, every command below ran under
+`env -u PYTHONPATH -u MYPYPATH`:
+
+```text
+targeted triage-report/integration: 88 passed in 0.11s
+full suite: 941 passed, 1 skipped in 18.18s
+mypy configured packages: Success: no issues found in 114 source files
+mypy four audit/gate tools: Success: no issues found in 4 source files
+ruff tracked Python: All checks passed!
+py_compile tracked Python: exit=0
+lint-imports: 6 kept, 0 broken
+symbol audit: 197 SYMBOL OK + 4 MODULE-SCOPE OK, 0/0
+table bridge: 197 SYMBOL OK + 4 MODULE-SCOPE OK, all difference counts zero
+```
+
+`ruff check .` also examined the pre-existing untracked
+`audit_four_sigs.py` and reported its historical formatting violations. That
+file is outside this task and remains untouched; the repository's tracked
+Python set is the recorded green gate. No tests changed in commit C, so the
+941/1 nodeid set established by commit B cannot be hidden by a larger total.

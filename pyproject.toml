@@ -32,6 +32,7 @@ where = [
     "tizen-gerrit-fetch/scripts",
     "tizen-build-verify/scripts",
     "tizen-gerrit-submit/scripts",
+    "tizen-triage-report/scripts",
 ]
 include = [
     "gbs_analyzer*",
@@ -45,6 +46,7 @@ include = [
     "tizen_gerrit_fetch*",
     "tizen_build_verify*",
     "tizen_gerrit_submit*",
+    "tizen_triage_report*",
 ]
 
 [tool.setuptools.package-data]
@@ -86,6 +88,7 @@ mypy_path = [
     "tizen-gerrit-fetch/scripts",
     "tizen-build-verify/scripts",
     "tizen-gerrit-submit/scripts",
+    "tizen-triage-report/scripts",
 ]
 packages = [
     "gbs_analyzer",
@@ -99,4 +102,5 @@ packages = [
     "tizen_gerrit_fetch",
     "tizen_build_verify",
     "tizen_gerrit_submit",
+    "tizen_triage_report",
 ]

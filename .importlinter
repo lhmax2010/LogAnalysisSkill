@@ -10,6 +10,7 @@ root_packages =
     tizen_gerrit_fetch
     tizen_build_verify
     tizen_gerrit_submit
+    tizen_triage_report
     gbs_patch_suggest
     ci_triage
 
@@ -18,7 +19,7 @@ name = application layers: orchestration -> skills -> shared
 type = layers
 layers =
     ci_triage
-    tizen_convergence_judge | tizen_qb_discover | tizen_gerrit_fetch | tizen_build_verify | tizen_gerrit_submit | gbs_patch_suggest
+    tizen_convergence_judge | tizen_qb_discover | tizen_gerrit_fetch | tizen_build_verify | tizen_gerrit_submit | tizen_triage_report | gbs_patch_suggest
     tizen_ci_shared
 ignore_imports =
     tizen_build_verify.build_verify -> gbs_patch_suggest.formatter
@@ -33,6 +34,7 @@ modules =
     tizen_gerrit_fetch
     tizen_build_verify
     tizen_gerrit_submit
+    tizen_triage_report
     gbs_patch_suggest
 ignore_imports =
     tizen_build_verify.build_verify -> gbs_patch_suggest.formatter
@@ -57,6 +59,7 @@ forbidden_modules = ci_triage
     tizen_gerrit_fetch
     tizen_build_verify
     tizen_gerrit_submit
+    tizen_triage_report
 
 [importlinter:contract:shared-l1-independence]
 name = shared L1 domains are independent

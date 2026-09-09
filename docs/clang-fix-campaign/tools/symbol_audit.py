@@ -2,10 +2,9 @@
 """Statically audit P4.9 attribution tables against the source tree.
 
 This tool parses source text and Python ASTs only. It never imports or executes
-the modules being audited. The inventory covers the step-0 shared moves and the
-extracted convergence-judge, qb-discover, gerrit-fetch, build-verify, and
-gerrit-submit skills. gbs_report.py is intentionally out of scope and deferred
-as a whole to the triage-report extraction batch.
+the modules being audited. The inventory covers the step-0 shared moves and all
+six extracted skills: convergence-judge, qb-discover, gerrit-fetch,
+build-verify, gerrit-submit, and triage-report.
 """
 
 from __future__ import annotations
@@ -60,6 +59,8 @@ SKILL_BUILD_VERIFY = "tizen_build_verify/build_verify.py"
 SKILL_EDIT_SPEC_GUARD = "tizen_build_verify/edit_spec_guard.py"
 SKILL_BUILD_WORKSPACE = "tizen_build_verify/workspace.py"
 SKILL_GERRIT_SUBMIT = "tizen_gerrit_submit/gerrit_submit.py"
+SKILL_TRIAGE_GBS_REPORT = "tizen_triage_report/gbs_report.py"
+SKILL_TRIAGE_REPORT = "tizen_triage_report/report.py"
 
 SpecKey = tuple[str, str]
 
@@ -68,6 +69,8 @@ EXACT_SURFACE_COUNTS = {
     SKILL_EDIT_SPEC_GUARD: 12,
     SKILL_BUILD_WORKSPACE: 4,
     SKILL_GERRIT_SUBMIT: 23,
+    SKILL_TRIAGE_GBS_REPORT: 21,
+    SKILL_TRIAGE_REPORT: 3,
 }
 
 
@@ -81,6 +84,7 @@ ROOT_LAYERS_HIGH_TO_LOW = (
     "tizen_gerrit_fetch",
     "tizen_build_verify",
     "tizen_gerrit_submit",
+    "tizen_triage_report",
     "tizen_ci_shared",
 )
 REGISTERED_SKILL_ROOTS: dict[str, str] = {
@@ -89,6 +93,7 @@ REGISTERED_SKILL_ROOTS: dict[str, str] = {
     "skill/tizen_gerrit_fetch": "tizen_gerrit_fetch",
     "skill/tizen_build_verify": "tizen_build_verify",
     "skill/tizen_gerrit_submit": "tizen_gerrit_submit",
+    "skill/tizen_triage_report": "tizen_triage_report",
 }
 
 
@@ -278,6 +283,39 @@ GERRIT_SUBMIT_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("_subprocess_env", ()),
 )
 
+TRIAGE_GBS_REPORT_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("DEFAULT_ARCHES", ("ci_triage.orchestrator",)),
+    ("GbsReportPackage", ("ci_triage.orchestrator", "ci_triage.runner")),
+    ("GbsReport", ()),
+    ("fetch_gbs_report", ("ci_triage.orchestrator", "ci_triage.runner")),
+    (
+        "download_gbs_package_buildlog",
+        ("ci_triage.orchestrator", "ci_triage.runner"),
+    ),
+    ("find_iframe_src", ()),
+    ("parse_gbs_report_packages", ()),
+    ("_Anchor", ()),
+    ("_Cell", ()),
+    ("_Row", ()),
+    ("_Table", ()),
+    ("_CellBuilder", ()),
+    ("_AnchorBuilder", ()),
+    ("_IframeParser", ()),
+    ("_ReportTableParser", ()),
+    ("_looks_like_build_status_table", ()),
+    ("_row_to_package", ()),
+    ("_status_from_anchor", ()),
+    ("_attrs_to_map", ()),
+    ("_class_names", ()),
+    ("_normalize_text", ()),
+)
+
+TRIAGE_REPORT_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("TriageReportData", ("ci_triage.runner",)),
+    ("render_report", ("ci_triage.runner",)),
+    ("_primary_location", ()),
+)
+
 
 SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
     ModuleScopeSpec(
@@ -340,7 +378,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§2", "v2.0-revision-1"),
         SHARED_TYPES,
         "shared/types",
-        ("ci_triage.report", "tizen_gerrit_fetch.gerrit"),
+        ("tizen_gerrit_fetch.gerrit", "tizen_triage_report.report"),
     ),
     SymbolSpec(
         "FailedPackage",
@@ -350,8 +388,8 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         (
             "ci_triage.orchestrator",
             "ci_triage.quickbuild_log",
-            "ci_triage.report",
             "ci_triage.runner",
+            "tizen_triage_report.report",
         ),
     ),
     SymbolSpec(
@@ -517,13 +555,13 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         "shared/workspace",
         ("tizen_build_verify.workspace",),
     ),
-    # §4 quickbuild.py HTTP public surface. gbs_report.py is out of scope.
+    # §4 quickbuild.py HTTP public surface.
     SymbolSpec(
         "HttpFetcher",
         ("§4",),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
+        ("tizen_qb_discover.sources", "tizen_triage_report.gbs_report"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -532,10 +570,10 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         QUICKBUILD,
         "shared/quickbuild_http",
         (
-            "ci_triage.gbs_report",
             "ci_triage.orchestrator",
             "ci_triage.runner",
             "tizen_qb_discover.sources",
+            "tizen_triage_report.gbs_report",
         ),
         quickbuild_surface=True,
     ),
@@ -544,7 +582,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§4",),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
+        ("tizen_qb_discover.sources", "tizen_triage_report.gbs_report"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -552,7 +590,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§4",),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
+        ("tizen_qb_discover.sources", "tizen_triage_report.gbs_report"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -563,10 +601,10 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         (
             "ci_triage.batch_cli",
             "ci_triage.cli",
-            "ci_triage.gbs_report",
             "ci_triage.orchestrator",
             "ci_triage.runner",
             "tizen_qb_discover.sources",
+            "tizen_triage_report.gbs_report",
         ),
         quickbuild_surface=True,
     ),
@@ -575,7 +613,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§4",),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
+        ("tizen_qb_discover.sources", "tizen_triage_report.gbs_report"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -583,7 +621,7 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§4", "v1.2-A"),
         QUICKBUILD,
         "shared/quickbuild_http",
-        ("ci_triage.gbs_report", "tizen_qb_discover.sources"),
+        ("tizen_qb_discover.sources", "tizen_triage_report.gbs_report"),
         quickbuild_surface=True,
     ),
     SymbolSpec(
@@ -730,6 +768,26 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         )
         for name, consumers in GERRIT_SUBMIT_SYMBOLS
     ),
+    *(
+        SymbolSpec(
+            name,
+            ("skill6-§0", "skill6-v1.8"),
+            SKILL_TRIAGE_GBS_REPORT,
+            "skill/tizen_triage_report",
+            consumers,
+        )
+        for name, consumers in TRIAGE_GBS_REPORT_SYMBOLS
+    ),
+    *(
+        SymbolSpec(
+            name,
+            ("skill6-§0", "skill6-v1.8"),
+            SKILL_TRIAGE_REPORT,
+            "skill/tizen_triage_report",
+            consumers,
+        )
+        for name, consumers in TRIAGE_REPORT_SYMBOLS
+    ),
 )
 
 
@@ -744,6 +802,8 @@ MODULE_OWNERS: dict[str, str] = {
     "tizen_gerrit_fetch.gerrit": "skill/tizen_gerrit_fetch",
     "tizen_build_verify.build_verify": "skill/tizen_build_verify",
     "tizen_gerrit_submit.gerrit_submit": "skill/tizen_gerrit_submit",
+    "tizen_triage_report.gbs_report": "skill/tizen_triage_report",
+    "tizen_triage_report.report": "skill/tizen_triage_report",
     "ci_triage.verify.build_verify": "build-verify",
     "ci_triage.verify.gerrit_submit": "submit",
 }
@@ -1542,6 +1602,7 @@ def run(repo_root: Path) -> int:
     gerrit_fetch_scripts_root = repo_root / "tizen-gerrit-fetch/scripts"
     build_verify_scripts_root = repo_root / "tizen-build-verify/scripts"
     gerrit_submit_scripts_root = repo_root / "tizen-gerrit-submit/scripts"
+    triage_report_scripts_root = repo_root / "tizen-triage-report/scripts"
     sources = (
         _load_sources(triage_scripts_root)
         + _load_sources(shared_scripts_root)
@@ -1550,6 +1611,7 @@ def run(repo_root: Path) -> int:
         + _load_sources(gerrit_fetch_scripts_root)
         + _load_sources(build_verify_scripts_root)
         + _load_sources(gerrit_submit_scripts_root)
+        + _load_sources(triage_report_scripts_root)
     )
     by_relative = {source.relative: source for source in sources}
     symbol_specs = tuple(spec for spec in SPECS if isinstance(spec, SymbolSpec))
@@ -1587,6 +1649,8 @@ def run(repo_root: Path) -> int:
         or source.relative == SKILL_EDIT_SPEC_GUARD
         or source.relative == SKILL_BUILD_WORKSPACE
         or source.relative == SKILL_GERRIT_SUBMIT
+        or source.relative == SKILL_TRIAGE_GBS_REPORT
+        or source.relative == SKILL_TRIAGE_REPORT
     )
     incomplete = sorted(
         (
@@ -1768,6 +1832,7 @@ def _fixture_sources(repo_root: Path) -> tuple[SourceFile, ...]:
         repo_root / "tizen-gerrit-fetch/scripts",
         repo_root / "tizen-build-verify/scripts",
         repo_root / "tizen-gerrit-submit/scripts",
+        repo_root / "tizen-triage-report/scripts",
     )
     return tuple(
         source
