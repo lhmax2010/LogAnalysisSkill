@@ -1,0 +1,7 @@
+PARSER_ONLY | 24/24 | missing=0 | extra=0 | OWNER_MISMATCH=0 | OK
+BRANCH_TABLE | rows=25 | referenced_ids=62 | unreferenced_ids=7 | external_rows=2 | OK
+MODULE | gbs_report | decision_points=19 | terminal_outcomes=24 | ids=43 | unique=YES
+MODULE | report | decision_points=22 | terminal_outcomes=4 | ids=26 | unique=YES
+SUMMARY | modules=2 | ids=69 | collisions=0 | unknown_refs=0 | missing_reasons=0 | OK
+
+EXIT=0 EXPECTED=0

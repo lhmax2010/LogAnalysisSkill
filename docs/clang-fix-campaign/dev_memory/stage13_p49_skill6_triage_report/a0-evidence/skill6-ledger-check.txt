@@ -1,0 +1,65 @@
+DIFF_CANDIDATE | v1.3|old:56-56,new:76-78|5199f5b51fb73dcd3c5b3a2b329d264555123fa467767312a3fb5680cfadff60 | IGNORED:OUT_OF_SCOPE | span=56-56
+DRIFT_PATTERN | v1.0|old:1-1,new:1-1|b458c95a338cea732e5c1a8acaa02c510f99be299a1650ec837c72ea443bf422 | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:15-15,new:27-27|9570da43d11cc3269d8b1f3641ccebed5fa5a2c8a0a4c824ea9a9d4371edd575 | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:85-87,new:97-102|a2fe2eb0730e841095bb0414da356b5ac0a1506d72e3c9e1ad0138a38b551810 | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:129-129,new:144-152|68c38e7c59c6e9e7adf75addf5b95e8332bdf04c658d7bc3e446a82e0e5b2e78 | OK | replay={'§1': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:158-158,new:181-181|49ce6ab0405667d39022392ec7f119d7c8e907cd39af3d7bbbc9c343858ede93 | OK | replay={'§2': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:198-200,new:228-235|a2be3893f54f1fc50d3799a2341ed45bd071f3dae7b33397b452937745bd4768 | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:1-1,new:1-1|2fde64764cb7cd491cbc6df539ececa662e8da62d19e2e8f51d8d6a933810954 | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:98-99,new:112-116|a13bd8672cc4ea537ddf4869d2ba4694b354d92c3702a1ffb0442392749cd0d9 | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:109-109,new:126-126|90618fcc1eeb4392c7182c6f2ace0cee7361d269afff124d8e357d2a675d3c84 | OK | replay={'§1': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:176-176,new:193-193|ff18d413b7c97ed035f2e084c2517563b238e7b75a05fcfbc810052d606d281f | OK | replay={'§2': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:180-181,new:197-203|fbbf837ce10d7e8e351c2ce99c7db41513dc72782855011c5e222e5b5b3c495e | OK | replay={'§2': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:187-187,new:209-209|e43cf3c8612513db31593deb9380e3a014d53fb0f20b2799cdaf0f93b524b2ed | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:224-227,new:265-280|5be22d0e287a348012e94a693e3d91243dcd7ce7d08d5088975ef739d957c93d | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:233-238,new:286-308|ac0294147736ca8da86730f6bbe1c12e218261f6bc2402955f9cc2aa2870146c | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:1-1,new:1-1|3979ba6cd508148e35abc213c34200a3b3ab69b2d232361309e350b6ff2c0f39 | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:96-96,new:119-119|f4506a9d7d5a74521eecda39d2d62418e1470e6cd65c99aa51ff00f0d6d14d47 | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:228-249,new:251-283|fbeda709c611d43e71114661088cf8bb8a78bc5b92b20bacc494c074d126452b | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:275-276,new:309-312|986d41861a393d4c5b849b73bb5edd9b471b168f8c0e67eb61fab328f645da3e | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:290-290,new:326-327|75c5a427faf5babaa52263e5907b6064e35266b464f52490e17abc036a6a059b | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:298-298,new:335-335|1ad07651ef577f07a635bd54d72446e2c8fc266c2fc38dcd612efb81f4b79e2d | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:303-304,new:340-344|f4885b9c7a25401a309806db3ba0b9ce66b9dc420f750f1b4c08e606521df9f1 | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:313-315,new:353-358|d2196d48c9502e5b05c29cf9d820a8797be22722745dfd00063cf2fd53407636 | OK | replay={'§6': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:331-331,new:374-376|ee615f9814952005072066aac916a528c9277b5711f6fd90711c0d896b3debc2 | OK | replay={'§8': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:344-346,new:389-406|2efa1f86f773c4e06684f0b88ca329b76e7102e84b9674d75ac3684f67383cd2 | OK | replay={'§9': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:351-352,new:411-412|b6c95c658322ba8ef6f8683c15c29be7cf25c582007fae041eb5c4799f408e9d | OK | replay={'§9': 1} | expected={}
+DRIFT_PATTERN | v1.3|old:1-1,new:1-1|a9d4a75e1630c4fffe13afe1c29f7f1f34475b27a0ac02669ddc5e8e6d0ee050 | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.3|old:255-256,new:277-278|df2bd68688e997553adf5f180c308528bc40c842789032677e82977d02d6d3f5 | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.3|old:281-281,new:303-313|f1c2719717d101a5f48c1aaa5aecd014237d1a957b4afa8406b09e9c919f8273 | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.3|old:313-314,new:345-354|b75e770ff6d33d1c0d3a18ba6ef954d23d4055b110332046ed087fafa23323af | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.3|old:336-336,new:382-386|a07c33acfc09d4baf1ba42701af3c5c3384881ded84a1b32cdb0746208f67806 | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.4|old:1-1,new:1-1|dda174bc3ff60027e6ec19f15b7b238fb440dfc7f39d52aa2cdd25f1d8f94ec0 | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.4|old:150-150,new:166-166|1e0d57c151eab6318bd449cbd892080fd71924409de8a2f48783c85311890e8c | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.4|old:351-351,new:367-369|f2939c9512a8c343cedc8c5a548753639b2ed2809e39d98f4ff426bf4dedef48 | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.4|old:356-361,new:374-394|0226c3f779961d2a4ba0358f9cd53c805cf9485be839aacc6b2de5eec016ee7f | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.4|old:416-416,new:449-449|2c0206ac5c63fb4009d989368c5f04c273b064d39136fb510777194c902d6bfe | OK | replay={'§7': 1} | expected={}
+DRIFT_PATTERN | v1.4|old:425-425,new:458-459|abfbf8ae586ed6e23d6529f188d9e8f52b9a2cab3a2397d7d405b6645d366fe0 | OK | replay={'§8': 1} | expected={}
+DRIFT_PATTERN | v1.4|old:465-470,new:499-527|34fe318ba8c4fdf2d42f7943be7d65fe04f1a773c5a17f63dc57caf1f3061df6 | OK | replay={'§11': 1} | expected={}
+DRIFT_PATTERN | v1.4|old:476-476,new:533-533|8ee549bc4e875d572085b3eddcce32706402d26f2932eeedf48f7cb9356967c8 | OK | replay={'§11': 1} | expected={}
+DRIFT_PATTERN | v1.5|old:1-1,new:1-1|74d0e78ab6274d4ed0d10a73a467a7b43e0dbf492eceaa044a2732111fef0fbf | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.5|old:352-352,new:369-369|683f4a41939188d6ba85bad80be51268bba95be3e15849d3eea551adcc36c3ec | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.5|old:354-354,new:371-371|f954d8badcf3749c2728e349d33aabc33973c2cfe5fcb8b52ba6776c762fc395 | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.5|old:361-362,new:378-381|f067ab2f3fa956371e3d0af5af399baad3347811cdc3465b8b02c7aa886b59de | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.5|old:370-370,new:389-389|73709727c1d2fdea9faf1e2c805302188dec006729c34ee316bdccb33ea6432f | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.5|old:513-513,new:544-560|20f60f1af9a451a9dfef682c1f50cc87c11b03401e1d7f6c027cb70a27ac32f4 | OK | replay={'§11': 1} | expected={'§11': 1}
+DRIFT_PATTERN | v1.6|old:1-1,new:1-1|e4d06471f1b2fd98e04f25edb022d8e83019cd837c656aa1ea3a6643b27581f0 | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.6|old:369-369,new:369-369|e8b0a73a288410404c69b9e460198140ad148e2f7015abc941201afe9979bc6d | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.6|old:371-371,new:371-371|dac777ba1c07898fd23142fff4f47d99b6485605026aeb7896e8b8ee33c7c8df | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.6|old:377-377,new:377-377|1c0b605b0b8fd83dd53e82cc8e5592853a8f220ed58616c9d65de6e514a665ca | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.6|old:401-403,new:401-405|438cb54db2114a906663fdb7f495020cde434c85951af3432a87865878bb4e6b | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.6|old:540-540,new:542-542|3be00bac2cbe487e72c0cfee51ae6ef76ced7b53523fa16480eba69d4d7ac01f | OK | replay={'§11': 1} | expected={}
+DRIFT_PATTERN | v1.6|old:550-551,new:552-554|2637531e0b8f26c4d842c5a4a6a0d4a8829c65648e32bdc1b6947559c3148741 | OK | replay={'§11': 1} | expected={}
+DRIFT_PATTERN | v1.6|old:559-560,new:562-571|bd5fa1b9b833d50eaa613ccc3c812d103aaeb1559a77216823fdc0237f37d531 | OK | replay={'§11': 1} | expected={}
+DRIFT_PATTERN | v1.7|old:1-1,new:1-1|a699ffbc07383cb9748624419b495ae57f11fafd5f00ae83cb5414b05f27395f | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.7|old:368-392,new:417-441|ebd6b6ad27a514fb5b502e4ab4e2f69a63bb35b55bf2942f36e371390d006b29 | OK | replay={'§5': 1} | expected={}
+DRIFT_PATTERN | v1.7|old:490-490,new:539-541|9530b4e1607e49ab51f936b2209302adf317cbbde2825b353abbe1ec212e1add | OK | replay={'§8': 1} | expected={}
+DRIFT_PATTERN | v1.7|old:567-569,new:618-629|c55f68eaae926fa535817ad8084ddbcb9dcf0da8f5e4d6a013ec7c15bb3b7886 | OK | replay={'§11': 1} | expected={}
+BINDING | B-BRANCH-INVENTORY | OK | snippets=3
+BINDING | B-CONSTRAINT-CLOSE | OK | snippets=2
+BINDING | B-SYMBOL-PARSER | OK | snippets=2
+BINDING | B-TEST-PARITY | OK | snippets=3
+BINDING | B-TWIN-CLOSE | OK | snippets=3
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=57 | retained=56 | ignored=1 | bindings=5 | binding_candidates=435
+
+EXIT=0 EXPECTED=0

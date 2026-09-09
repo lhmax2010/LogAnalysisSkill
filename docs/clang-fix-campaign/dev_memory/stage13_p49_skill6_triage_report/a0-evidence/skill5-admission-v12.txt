@@ -1,0 +1,10 @@
+BINDING_DRIFT | B-BRANCH-DOD | missing_definition=['分支表全部契约句逐行有用例'], missing_reference=['分支表全部契约句逐行有用例']
+BINDING_DRIFT | B-BRANCH-FABRICATION | missing_definition=['本 skill 不执行 push', '推送成功/失败'], leaked_snippets=[], parsed_targets=[], expected=§4
+BINDING_DRIFT | B-GATE-CONTROLS | DoD item DOD-13 not found in v1.2
+BINDING_DRIFT | B-GATE-MEMBERS | DoD item DOD-13 not found in v1.2
+BINDING_DRIFT | B-RESULT-MAPPING | DoD item DOD-12 not found in v1.2
+BINDING_DRIFT | B-TIMEOUT-BRANCH-LOCK | missing_definition=[], missing_reference=['_run_git', 'ls-remote']
+BINDING_DRIFT | B-TIMEOUT-TWO-PATHS | missing_definition=[], missing_reference=['_run_git', 'ls-remote']
+ADMISSION | snapshot=v1.2 | BINDING_DRIFT=7 | required_known=2 | RED_AS_EXPECTED
+
+EXIT=1 EXPECTED=1

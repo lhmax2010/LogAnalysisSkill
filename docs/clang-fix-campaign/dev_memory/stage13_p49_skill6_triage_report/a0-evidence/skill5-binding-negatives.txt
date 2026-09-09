@@ -1,0 +1,44 @@
+
+=== B-BRANCH-DOD ===
+NEGATIVE_BINDING | B-BRANCH-DOD | delete_snippet_1 | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-BRANCH-FABRICATION ===
+NEGATIVE_BINDING | B-BRANCH-FABRICATION | inject_restated_snippet | gate_exit=1
+NEGATIVE_BINDING | B-BRANCH-FABRICATION | point_to_existing_wrong_section | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-TIMEOUT-BRANCH-LOCK ===
+NEGATIVE_BINDING | B-TIMEOUT-BRANCH-LOCK | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-TIMEOUT-BRANCH-LOCK | delete_snippet_2 | gate_exit=1
+NEGATIVE_BINDING | B-TIMEOUT-BRANCH-LOCK | delete_snippet_3 | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-TIMEOUT-TWO-PATHS ===
+NEGATIVE_BINDING | B-TIMEOUT-TWO-PATHS | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-TIMEOUT-TWO-PATHS | delete_snippet_2 | gate_exit=1
+NEGATIVE_BINDING | B-TIMEOUT-TWO-PATHS | delete_snippet_3 | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-RESULT-MAPPING ===
+NEGATIVE_BINDING | B-RESULT-MAPPING | inject_restated_snippet | gate_exit=1
+NEGATIVE_BINDING | B-RESULT-MAPPING | point_to_existing_wrong_section | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-PRIVATE-COUNT ===
+NEGATIVE_BINDING | B-PRIVATE-COUNT | selector_outside_interference_exit=0
+NEGATIVE_BINDING | B-PRIVATE-COUNT | delete_numeral | gate_exit=1
+NEGATIVE_BINDING | B-PRIVATE-COUNT | change_count | gate_exit=1
+NEGATIVE_BINDING | B-PRIVATE-COUNT | definition_covered_add | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-GATE-MEMBERS ===
+NEGATIVE_BINDING | B-GATE-MEMBERS | inject_restated_snippet | gate_exit=1
+NEGATIVE_BINDING | B-GATE-MEMBERS | point_to_existing_wrong_section | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-GATE-CONTROLS ===
+NEGATIVE_BINDING | B-GATE-CONTROLS | delete_snippet_1 | gate_exit=1
+EXIT=1 EXPECTED=1
+
+NEGATIVE_BINDING_SUMMARY | bindings=8 | expected=8 | unexpected=0

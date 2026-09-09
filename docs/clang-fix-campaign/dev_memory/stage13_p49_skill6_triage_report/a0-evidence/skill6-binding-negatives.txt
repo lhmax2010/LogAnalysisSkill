@@ -1,0 +1,30 @@
+
+=== B-SYMBOL-PARSER ===
+NEGATIVE_BINDING | B-SYMBOL-PARSER | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-SYMBOL-PARSER | delete_snippet_2 | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-CONSTRAINT-CLOSE ===
+NEGATIVE_BINDING | B-CONSTRAINT-CLOSE | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-CONSTRAINT-CLOSE | delete_snippet_2 | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-TWIN-CLOSE ===
+NEGATIVE_BINDING | B-TWIN-CLOSE | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-TWIN-CLOSE | delete_snippet_2 | gate_exit=1
+NEGATIVE_BINDING | B-TWIN-CLOSE | delete_snippet_3 | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-TEST-PARITY ===
+NEGATIVE_BINDING | B-TEST-PARITY | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-TEST-PARITY | delete_snippet_2 | gate_exit=1
+NEGATIVE_BINDING | B-TEST-PARITY | delete_snippet_3 | gate_exit=1
+EXIT=1 EXPECTED=1
+
+=== B-BRANCH-INVENTORY ===
+NEGATIVE_BINDING | B-BRANCH-INVENTORY | delete_snippet_1 | gate_exit=1
+NEGATIVE_BINDING | B-BRANCH-INVENTORY | delete_snippet_2 | gate_exit=1
+NEGATIVE_BINDING | B-BRANCH-INVENTORY | delete_snippet_3 | gate_exit=1
+EXIT=1 EXPECTED=1
+
+NEGATIVE_BINDING_SUMMARY | bindings=5 | expected=5 | unexpected=0

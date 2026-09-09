@@ -1,0 +1,7 @@
+OUT_OF_SCOPE_MISUSE | v1.1|old:25-26,new:41-48|961e8af6caa78310b3c81346399d7cf2a706c08fa5e092e2b40917221eab0d40 | old_version=v1.1 | in_scope_line=1 | gate_exit=1
+OUT_OF_SCOPE_MISUSE | v1.2|old:34-35,new:34-36|11c0272c1a4673baafcf39b22f18054b556987151249f0b4c8f0e7a0e8935b31 | old_version=v1.2 | in_scope_line=1 | gate_exit=1
+OUT_OF_SCOPE_MISUSE | v1.2|old:42-44,new:50-53|17b863b054b55ecba01887f28fe1ecb301a5f3c9dee7f310e573cdc21920e9a3 | old_version=v1.2 | in_scope_line=1 | gate_exit=1
+OUT_OF_SCOPE_MISUSE | v1.2|old:47-48,new:56-60|b94ec1dcffecf977b349a552fe544759d4e7a0ce91e5c47c1fa686b83e7c09b2 | old_version=v1.2 | in_scope_line=1 | gate_exit=1
+OUT_OF_SCOPE_SUMMARY | items=4 | RED_AS_EXPECTED
+
+EXIT=1 EXPECTED=1

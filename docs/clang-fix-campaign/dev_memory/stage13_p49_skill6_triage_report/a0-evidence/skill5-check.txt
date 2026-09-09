@@ -1,0 +1,51 @@
+DIFF_CANDIDATE | v1.1|old:25-26,new:41-48|961e8af6caa78310b3c81346399d7cf2a706c08fa5e092e2b40917221eab0d40 | IGNORED:OUT_OF_SCOPE | span=25-26
+DIFF_CANDIDATE | v1.2|old:34-35,new:34-36|11c0272c1a4673baafcf39b22f18054b556987151249f0b4c8f0e7a0e8935b31 | IGNORED:OUT_OF_SCOPE | span=34-35
+DIFF_CANDIDATE | v1.2|old:42-44,new:50-53|17b863b054b55ecba01887f28fe1ecb301a5f3c9dee7f310e573cdc21920e9a3 | IGNORED:OUT_OF_SCOPE | span=42-44
+DIFF_CANDIDATE | v1.2|old:47-48,new:56-60|b94ec1dcffecf977b349a552fe544759d4e7a0ce91e5c47c1fa686b83e7c09b2 | IGNORED:OUT_OF_SCOPE | span=47-48
+DRIFT_PATTERN | v1.0|old:1-1,new:1-1|999254ee16a7e9fa93ff70a452f9abec7cf361d31b11b4ece14bbb1faa1a93fe | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:18-46,new:35-71|97bf2aed42c1c2aea2249665f8e33a98ffb1a86439def9d1e4db083b45317ec1 | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:53-53,new:78-78|8d3439c9293078858ea51cd0f8f67a549327065b460faa369903b2d982a2f679 | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:56-56,new:81-81|9a27dc4204b5a4108b78181a579a407be846df17e77f5881e660a11798cd57ce | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:85-85,new:110-110|3e07455fdce14146695c2a93b4e58d4d308c3f5b85438617b9ef1a0805b3887e | OK | replay={'§1': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:115-115,new:145-145|a91a8a1b56d121f4db9bb23fca049229229ae7382ef88dd2480b9b86535e1288 | OK | replay={'§2': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:120-120,new:150-150|13f0f470e3ad4a196c1b8309c1c0baac9a62c7f63dffaf5bd6d280b9a61878cd | OK | replay={'§2': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:151-156,new:181-193|b3024ddfc7d480e145762c28c22b5b30d889c84e0b730a58647bfbeb5205b50b | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:172-172,new:209-217|71c8337730aa806ceb1534417a385b1c85fb39dcd20e39f67d869f829b96099f | OK | replay={'§4': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:194-194,new:239-243|0e106e95fd6fc7f783c7274ca48cd39b2affa8165804d5150a3f8fb9c55d1507 | OK | replay={'§6': 1} | expected={}
+DRIFT_PATTERN | v1.0|old:206-206,new:255-256|b694e3a6746d850f7e511e2f369f35cc470646d159b2b29b415567bfe9f6461b | OK | replay={'§7': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:1-1,new:1-1|83a906461ae3df3fb5398903e7f70ef1b5dbc7430ebbeeb3e0814c7f4ddb9c97 | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:66-66,new:88-88|b0b46b21dea5fbb373093bcf44902811180ba5154e00c907adc5effa4ed71551 | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:74-74,new:96-96|15a5ebb5da5cd752e8ea3e47cfe4f9c7b9204bbc0dc42f763449da52c55b5fa4 | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:145-145,new:167-167|e8557589352edbd8e91510a8a5a4014525249827d095586b77fc7c7bb9a3369c | OK | replay={'§2': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:150-150,new:172-172|fce9c33f502f6d3b8bd3ddd2ddb1fae84b4d2bbf8e906ec6e664607fe3f9b2ca | OK | replay={'§2': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:162-165,new:184-191|41cdd450d534d051152327325d087b54c8b41c11bcc81cc3bd79b83eff696312 | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:167-168,new:193-196|b5fec0cc1f256765fc88d6725b8f955a25c2ac49ac61fdb505332fc7648318f8 | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:177-180,new:205-220|62c7b4892957831e6b909247eab05458124614c9a9fc05d4854f0091b25c091f | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.1|old:255-255,new:298-298|a7d25d46a4375e18ecdab4cf6590ca9df8cc73acbc009749b5e727cefe35833d | OK | replay={'§7': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:1-1,new:1-1|b5cad75e774750364bf1072d3e360c9c170344d6a89925f03964a11471521654 | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:88-88,new:100-100|82dc438fa5af37e0bb12ca6cf259e0b60d941dc282c3193f891d8790bf554803 | OK | replay={'§0': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:209-210,new:221-223|ed3d2435eb4fd6db80d946399865cec54ad2653902537bb820d932977797f6c7 | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:215-220,new:228-243|5c57e8fb6fc5255dc10aaeea23f4aa8b001dacab74963c9167c13ac18599dfda | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:234-236,new:257-260|5f4d540b2b60c6022af18b62d5047cdf3f8573ac6340a7cc4dd55c663104d189 | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:245-248,new:269-298|9081ee874e89f85497c1102c3d819c12b510e33ceb70648854b1b28df7501bf1 | OK | replay={'§4': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:251-251,new:301-304|a0dcda0f147d4e1e6e4fdc5186c62751796b1852eccf5513c5cea793a1f099e7 | OK | replay={'§4': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:292-292,new:345-345|2d443d18241dbc30ab44f1110e874c6f9c20c7d526a15c25ee6350f096d43e07 | OK | replay={'§6': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:313-314,new:366-367|e996404581c7cce867e551a7e75631c7e0a911288567772c5a31bf7206a3e5a3 | OK | replay={'§8': 1} | expected={}
+DRIFT_PATTERN | v1.2|old:317-317,new:370-373|7e135909bc742f0ae9989391d41369d03388cb5686def69e5c91a29304930559 | OK | replay={'§8': 1} | expected={}
+DRIFT_PATTERN | v1.3|old:1-1,new:1-1|21b6a5b1b85a093a01285546330605ad12754b6006130435edb4490c143f5afc | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.3.1|old:1-1,new:1-1|a4c87a0c33cf19382e299065fb40cc534c0866b50916e6d41b9a5ef411a21018 | OK | replay={'frontmatter': 1} | expected={}
+DRIFT_PATTERN | v1.3.1|old:255-256,new:272-274|21e9e5600e15831b88b61867563d5b617612f5fbe642c55dc69583aedc4c8b3a | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.3.1|old:272-275,new:290-301|d222ee1f4c44cecbecd528184c09210b2fc18c9bb6312b1840dc3acfb7a5ef7c | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.3.1|old:291-291,new:317-319|bf2f97dc5c36559744fb06aba83146194f7e60a2d1883a5956521df005984a11 | OK | replay={'§3': 1} | expected={}
+DRIFT_PATTERN | v1.3.1|old:294-294,new:322-322|696bc4b3765f62463fb3afbee13e92d97a28d9da0439cdd3768ea56fc40fce4b | OK | replay={'§3': 1} | expected={}
+BINDING | B-BRANCH-DOD | OK | snippets=1
+BINDING | B-BRANCH-FABRICATION | OK | missing_definition=[], leaked_snippets=[], parsed_targets=['§4'], expected=§4
+BINDING | B-GATE-CONTROLS | OK | snippets=1
+BINDING | B-GATE-MEMBERS | OK | missing_definition=[], leaked_snippets=[], parsed_targets=['§2'], expected=§2
+BINDING | B-PRIVATE-COUNT | OK | definition_count=14, reference_count=14
+BINDING | B-RESULT-MAPPING | OK | missing_definition=[], leaked_snippets=[], parsed_targets=['§3.2'], expected=§3.2
+BINDING | B-TIMEOUT-BRANCH-LOCK | OK | snippets=3
+BINDING | B-TIMEOUT-TWO-PATHS | OK | snippets=3
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=40 | retained=36 | ignored=4 | bindings=8 | binding_candidates=348
+
+EXIT=0 EXPECTED=0
