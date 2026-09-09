@@ -151,3 +151,207 @@ exit=0
 $ .venv/bin/pytest -q
 912 passed, 1 skipped in 18.54s
 ```
+
+## Commit A: two-module extraction and pre-shim parity
+
+Status: COMPLETE, pending commit and independent review.
+
+Authority:
+`docs/clang-fix-campaign/p49-skill6-triage-report-design-v1.8-FROZEN.md`
+at `bdb5a55`; A0 gate commit `3dc0466`.
+
+### Migration source evidence
+
+The skill copies were created while both legacy modules were still independent
+implementations. The report module remained byte-identical. The GBS report
+module's zero-context diff contains exactly the one frozen import whitelist:
+
+```text
+$ git show 3dc0466:tizen-ci-triage/scripts/ci_triage/report.py > /tmp/report-before.py
+$ cmp /tmp/report-before.py tizen-triage-report/scripts/tizen_triage_report/report.py
+(no output)
+exit=0
+sha256(old)=a8138cb73ffa23cd58cb073dbc95d7add94db0866202a3a42d9eb3b1b158602e
+sha256(new)=a8138cb73ffa23cd58cb073dbc95d7add94db0866202a3a42d9eb3b1b158602e
+
+$ diff --unified=0 /tmp/gbs-report-before.py \
+    tizen-triage-report/scripts/tizen_triage_report/gbs_report.py
+@@ -10 +10 @@
+-from ci_triage.quickbuild import (
++from tizen_ci_shared.quickbuild_http import (
+exit=1 (the expected single diff)
+```
+
+The migrated module/function comments remain accurate. A scan for inherited
+`shim`, `removed at`, `temporary`, `delete at`, `will be deleted`, and `legacy`
+annotations returned no matches (`rg` exit 1).
+
+### B-stage scaffolding
+
+No packaging, CI, or README entrypoint is changed in commit A. Commands used the
+same temporary `PYTHONPATH` and `MYPYPATH`, with these script roots in order:
+
+```text
+$PWD/tizen-triage-report/scripts
+$PWD/tizen-ci-shared/scripts
+$PWD/tizen-ci-triage/scripts
+$PWD/tizen-gbs-log-analysis/scripts
+$PWD/tizen-gbs-patch-suggest/scripts
+$PWD/tizen-gbs-build/scripts
+$PWD/tizen-gbs-build-workflow/scripts
+$PWD/tizen-convergence-judge/scripts
+$PWD/tizen-qb-discover/scripts
+$PWD/tizen-gerrit-fetch/scripts
+$PWD/tizen-build-verify/scripts
+$PWD/tizen-gerrit-submit/scripts
+```
+
+This is extraction scaffolding only; permanent delivery entrypoints belong to
+commit C.
+
+### Pre-shim behavioral parity
+
+The parity command ran before either legacy implementation became a shim. A
+migration-only driver loaded and explicitly reloaded four distinct module
+objects (`ci_triage.gbs_report`, `tizen_triage_report.gbs_report`,
+`ci_triage.report`, and `tizen_triage_report.report`). It used JSON cookie files
+and fake `HttpResponse` objects only; no real QuickBuild request was made. The
+complete output is preserved in
+[pre-shim-parity.txt](commit-a-evidence/pre-shim-parity.txt).
+
+The six closed payload partitions were:
+
+1. every `GbsReport` field, every package field, and the separately materialized
+   ordered `failed_packages` property;
+2. ordered fake-fetcher URL/cookie/kwargs traces;
+3. every `TriageReportData` field and the complete `render_report` text;
+4. `cookie_path`, `DEFAULT_COOKIE_PATH`, and `DEFAULT_QUICKBUILD_BASE_URL`;
+5. exception type, `QuickBuildError.code`, and full message;
+6. the exact `download_gbs_package_buildlog` return text.
+
+Only `controlled_environment.cookie_path` was replaced with `<PATH>`, directly
+at that named field. No payload-wide replacement was performed. Volatile-source
+discovery against both modules (`uuid|datetime|time|random`) returned no match
+(`rg` exit 1), so no source freeze was required.
+
+```text
+isolation.importlib_reload=True
+isolation.distinct_gbs_modules=True
+isolation.distinct_report_modules=True
+field_equal[gbs_report]=True
+field_equal[fake_fetcher_trace]=True
+field_equal[triage_render]=True
+field_equal[controlled_environment]=True
+field_equal[error]=True
+field_equal[download_gbs_package_buildlog]=True
+payload_equal=True
+payload_sha256=3b48576e287920556366413926a16451f56883b944b2a8bb7cafd48c3879c2a1
+mask_scope=controlled_environment.cookie_path only
+payload_wide_replacement=False
+fake_fetcher_calls=4
+failed_packages_count=1
+normalizer_positive.cookie_path_only=True
+normalizer_negative.failed_packages=True
+normalizer_negative.http_call_order=True
+normalizer_negative.iframe_url=True
+exit_code=0
+```
+
+The migration-only driver was intentionally not retained after the shim
+convergence point: rerunning it from the final tree would compare a shim with
+its target and could be mistaken for independent pre-shim evidence. The output
+above is the Git-anchored migration-time evidence; commit parent `3dc0466`
+retains both original implementations for source replay.
+
+### Shim, consumers, and package surface
+
+The two old locations are pure re-export shims with zero top-level `def` or
+`class`. Runner and orchestrator diffs contain import-path changes only. The
+package root exports exactly the nine names frozen by section 1.2 and does not
+export the fifteen implementation names. Permanent tests also prove all 24
+legacy names are identical to their skill definitions.
+
+```text
+$ pytest -q tests/unit/test_ci_triage.py \
+    -k 'triage_report_package_root or triage_report_legacy_shims'
+2 passed, 59 deselected in 0.05s
+
+$ rg -n '^(def|class) ' \
+    tizen-ci-triage/scripts/ci_triage/{gbs_report,report}.py
+(no output)
+exit=1
+
+package_public_identity=9/9
+package_internal_absent=15/15
+post_shim_identity=9+15
+```
+
+Post-shim identity is wiring evidence only and does not replace the independent
+pre-shim behavior comparison.
+
+### Branch-inventory evidence-path migration
+
+The first final-state check correctly failed closed because `branch_inventory`
+still scanned the two legacy paths and therefore saw each shim's `__all__`
+rather than the 24 implementation symbols. Work stopped under the protocol.
+The subsequent ruling classified the fix as a gate evidence-path migration,
+not a predicate change. Exactly two `MODULES` paths and the matching two JSON
+`source` fields now point to `tizen-triage-report`; selector logic, branch-ID
+rules, subset checks, `EXTERNAL_BRANCH` bindings, and uniqueness checks are
+byte-unchanged. The tool no longer contains either legacy source path.
+
+Final output exactly matches the pre-freeze run:
+
+```text
+PARSER_ONLY | 24/24 | missing=0 | extra=0 | OWNER_MISMATCH=0 | OK
+BRANCH_TABLE | rows=25 | referenced_ids=62 | unreferenced_ids=7 | external_rows=2 | OK
+MODULE | gbs_report | decision_points=19 | terminal_outcomes=24 | ids=43 | unique=YES
+MODULE | report | decision_points=22 | terminal_outcomes=4 | ids=26 | unique=YES
+SUMMARY | modules=2 | ids=69 | collisions=0 | unknown_refs=0 | missing_reasons=0 | OK
+exit=0
+
+ADMISSION | HANDWRITTEN_BOOL_COUNT | DRIFT
+ADMISSION | MISSING_V17_REVISION_BLOCK | DRIFT
+ADMISSION | snapshot=v1.7 | required=2/2 | RED_AS_EXPECTED
+exit=1
+```
+
+The cross-batch template now records that any gate enumerating implementation
+AST/source must migrate its scan path in the same commit as the implementation,
+alongside declared-consumer and bridge-path synchronization.
+
+### Baseline preservation and verification
+
+The collected-nodeid sets were compared directly. All 913 baseline cases remain
+and the two package-surface/wiring tests are the only additions:
+
+```text
+before=913
+after=915
+missing=0
+added=2
+tests/unit/test_ci_triage.py::test_triage_report_legacy_shims_preserve_all_symbol_identities
+tests/unit/test_ci_triage.py::test_triage_report_package_root_exports_only_public_api
+
+$ pytest -q
+914 passed, 1 skipped in 18.86s
+
+$ mypy tizen-triage-report/scripts/tizen_triage_report
+Success: no issues found in 3 source files
+
+$ ruff check <commit-A Python files>
+All checks passed!
+
+$ python3 -m py_compile <five new/shim module files>
+exit=0
+```
+
+All three drift ledgers remain green:
+
+```text
+skill-4: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | bindings=22
+skill-5: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | bindings=8
+skill-6: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | bindings=5
+```
+
+`docs/clang-fix-campaign/design.md` and `release-v1.4.0/` have zero task diff.

@@ -15,13 +15,13 @@ from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH, QuickBuildError, download_full_log
 from tizen_ci_shared.types import FailedPackage
 from tizen_qb_discover.sources import FailedBuild, FailedBuildSource, QuickBuildSource
-
-from ci_triage.gbs_report import (
+from tizen_triage_report.gbs_report import (
     DEFAULT_ARCHES,
     GbsReportPackage,
     download_gbs_package_buildlog,
     fetch_gbs_report,
 )
+
 from ci_triage.quickbuild_log import (
     QuickBuildLogError,
     match_pkg_key,

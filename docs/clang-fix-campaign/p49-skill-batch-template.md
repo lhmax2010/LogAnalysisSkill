@@ -41,7 +41,10 @@
 1. **三入口同步**(skill-2 §4):新增顶级包须同步 pyproject package/mypy 路径、
    CI mypy 命令和 README PYTHONPATH;精确计数命令先在既有 skill 上自检。
 2. **机械同步清单**(skill-4 §2.4):definition、declared consumer、source root、
-   package owner、surface guard、bridge 路径等必须逐项穷举,不得写“等”。
+   package owner、surface guard、bridge 路径等必须逐项穷举,不得写“等”。凡对
+   被抽取模块实现做 AST/源码枚举的门禁,其扫描路径须与 declared consumer、
+   bridge 路径常量并列登记,并在实现迁移的同一 commit 同步,不得顺延到门禁
+   汇总 commit(skill-6 commit A)。
 3. **完整性护栏**(step-0 修订-6/7):实体模块的顶层符号与 SPECS 必须集合
    等价;别名识别须以 `MixedCaseAlias` 负 fixture 证明。
 4. **A0 继承**(skill-4 A0,skill-5 参数化):复用

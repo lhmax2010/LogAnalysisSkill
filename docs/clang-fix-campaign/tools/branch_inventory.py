@@ -24,12 +24,12 @@ EXCLUDED_QUALNAMES = frozenset({"_ReportTableParser", "_IframeParser"})
 MODULES = (
     (
         "gbs_report",
-        REPO_ROOT / "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+        REPO_ROOT / "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
         "tizen_triage_report/gbs_report.py",
     ),
     (
         "report",
-        REPO_ROOT / "tizen-ci-triage/scripts/ci_triage/report.py",
+        REPO_ROOT / "tizen-triage-report/scripts/tizen_triage_report/report.py",
         "tizen_triage_report/report.py",
     ),
 )

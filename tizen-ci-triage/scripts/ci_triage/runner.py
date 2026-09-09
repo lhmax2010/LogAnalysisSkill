@@ -21,12 +21,13 @@ from tizen_ci_shared.quickbuild_http import (
 )
 from tizen_ci_shared.types import FailedPackage
 from tizen_gerrit_fetch import fetch_source_for_commit
-
-from ci_triage.gbs_report import (
+from tizen_triage_report.gbs_report import (
     GbsReportPackage,
     download_gbs_package_buildlog,
     fetch_gbs_report,
 )
+from tizen_triage_report.report import TriageReportData, render_report
+
 from ci_triage.quickbuild_log import (
     QuickBuildLogError,
     match_pkg_key,
@@ -34,7 +35,6 @@ from ci_triage.quickbuild_log import (
     parse_failed_packages,
     select_failed_package,
 )
-from ci_triage.report import TriageReportData, render_report
 
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
 
