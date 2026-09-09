@@ -355,3 +355,144 @@ skill-6: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | bindings=5
 ```
 
 `docs/clang-fix-campaign/design.md` and `release-v1.4.0/` have zero task diff.
+
+## Commit B: test ownership and branch matrix
+
+Status: COMPLETE, pending commit and independent review.
+
+### Test ownership and baseline preservation
+
+The seven existing pure triage-report tests moved from `test_ci_triage.py` to
+`test_tizen_triage_report.py`. Their function ASTs are unchanged; orchestration
+coverage remains in `test_ci_triage.py`, while legacy wiring identity stays in
+the final section of the new skill-owned file. The 27 delta tests cover the
+frozen branch table and report renderer.
+
+```text
+$ <AST comparison of HEAD tests against the worktree>
+baseline_test_functions=784
+current_test_functions=811
+missing_function_names=[]
+added_function_count=27
+moved_tests_ast_equal=7/7
+
+$ pytest --collect-only -q
+942 tests collected in 0.24s
+
+$ pytest -q tests/unit/test_tizen_triage_report.py tests/unit/test_ci_triage.py
+88 passed in 0.11s
+
+$ pytest -q
+941 passed, 1 skipped in 18.79s
+```
+
+The B-stage test commands used an explicit temporary `PYTHONPATH` containing:
+
+```text
+tizen-ci-shared/scripts
+tizen-ci-triage/scripts
+tizen-convergence-judge/scripts
+tizen-qb-discover/scripts
+tizen-gerrit-fetch/scripts
+tizen-build-verify/scripts
+tizen-gerrit-submit/scripts
+tizen-triage-report/scripts
+tizen-gbs-log-analysis/scripts
+tizen-gbs-patch-suggest/scripts
+tizen-gbs-build/scripts
+```
+
+This remains test scaffolding; commit C owns the installed three-entry delivery
+surface for `tizen-triage-report`.
+
+### Four render fixtures and branch-table closure
+
+The nested renderer conditions remain four independent fixtures:
+
+| fixture | test | frozen sides |
+|---|---|---|
+| A, all optional fields present | `test_render_report_fixture_a_all_optional_fields_present` | ordinary true sides, nested true sides, outer `:53/:70` false sides |
+| B, all optional fields absent | `test_render_report_fixture_b_all_optional_fields_absent` | ordinary false sides and outer `:53/:70` true sides only |
+| C, outer present and inner absent | `test_render_report_fixture_c_outer_present_inner_absent` | `:62/:77/:85` false sides |
+| D, middle present and leaf absent | `test_render_report_fixture_d_middle_present_leaf_absent` | `:81/:83` false sides |
+
+The malformed-row contract has five inputs for four `None` exits: short cells,
+empty `spec_name`, header-row `spec_name`, missing status anchor, and unknown
+status. The two line-317 BoolOp operands therefore have distinct tests. The
+class-priority fixture uses `class_names=("failed",)` with text `Succeeded`, so
+a text-first implementation would fail. Both login-state fixtures assert
+`QuickBuildError.code == "COOKIE_EXPIRED"`. The arch pair uses the same raw
+`standard-armv7l` value; the success case first proves packages are non-empty,
+then checks the URL, report arch, and every package arch, while the missing
+iframe case checks the raw arch in `str(QuickBuildError)`.
+
+The frozen section 5 table now names only collected tests:
+
+```text
+branch_rows=25
+test_functions=34
+rows_with_existing_tests=25/25
+missing=[]
+```
+
+### Version-pinned A0 rerun
+
+The updated frozen body is byte-identical to both history snapshots and has
+SHA-256 `b7af458a505c47c28a9fecf038e1f9e28590dc4ba806d2ec6fe164c0419a9930`.
+The skill-6 ledger was regenerated from the version corpus, then checked; the
+branch inventory data records the same design SHA.
+
+```text
+$ design_drift_ledger.py --data design_drift_ledger.skill6.json bootstrap
+BOOTSTRAP | candidates=57 retained=56 ignored=1 binding_candidates=435 bindings=5
+
+$ design_drift_ledger.py --data design_drift_ledger.skill6.json check
+SUMMARY | RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | exported=57 | retained=56 | ignored=1 | bindings=5 | binding_candidates=435
+exit=0
+
+$ branch_inventory.py parser-only
+PARSER_ONLY | 24/24 | missing=0 | extra=0 | OWNER_MISMATCH=0 | OK
+exit=0
+
+$ branch_inventory.py check
+PARSER_ONLY | 24/24 | missing=0 | extra=0 | OWNER_MISMATCH=0 | OK
+BRANCH_TABLE | rows=25 | referenced_ids=62 | unreferenced_ids=7 | external_rows=2 | OK
+MODULE | gbs_report | decision_points=19 | terminal_outcomes=24 | ids=43 | unique=YES
+MODULE | report | decision_points=22 | terminal_outcomes=4 | ids=26 | unique=YES
+SUMMARY | modules=2 | ids=69 | collisions=0 | unknown_refs=0 | missing_reasons=0 | OK
+exit=0
+
+$ branch_inventory.py admission-v17
+ADMISSION | HANDWRITTEN_BOOL_COUNT | DRIFT
+ADMISSION | MISSING_V17_REVISION_BLOCK | DRIFT
+ADMISSION | snapshot=v1.7 | required=2/2 | RED_AS_EXPECTED
+exit=1
+```
+
+The inherited skill-4 and skill-5 ledger checks remain green:
+
+```text
+skill-4: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | bindings=22
+skill-5: RESIDUAL_DRIFT=0 | BINDING_DRIFT=0 | bindings=8
+```
+
+### Static and scope checks
+
+```text
+$ mypy tests/unit/test_tizen_triage_report.py
+Success: no issues found in 1 source file
+
+$ ruff check tests/unit/test_tizen_triage_report.py tests/unit/test_ci_triage.py
+All checks passed!
+
+$ python3 -m py_compile tests/unit/test_tizen_triage_report.py
+exit=0
+
+$ git diff --name-only -- tizen-*/scripts/
+(no output)
+```
+
+Production code, the P4.5 `design.md`, and `release-v1.4.0/` have zero task
+diff. The observed `QuickBuildError` interface exposes its message through
+`str(error)`, not a `.message` attribute; the frozen requirement is satisfied
+through that public exception representation without any production change.

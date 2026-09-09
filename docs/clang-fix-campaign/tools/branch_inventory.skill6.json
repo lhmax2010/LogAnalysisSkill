@@ -88,7 +88,7 @@
   },
   "schema_version": "clang-fix-campaign/branch-inventory/v1",
   "target_design": "docs/clang-fix-campaign/p49-skill6-triage-report-design-v1.8-FROZEN.md",
-  "target_sha256": "99971dac5fe0af8a9bcbf5801bfb5a7a174d049db40a5705851c5515693dbc2e",
+  "target_sha256": "b7af458a505c47c28a9fecf038e1f9e28590dc4ba806d2ec6fe164c0419a9930",
   "unreferenced_reasons": {
     "_attrs_to_map:350:compif": "Internal HTML attribute filtering has no independent observable outcome; parser fixtures cover it through their public results.",
     "_attrs_to_map:350:return": "Pure internal helper return; parser fixtures observe the containing parse flow.",
