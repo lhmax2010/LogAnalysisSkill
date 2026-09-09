@@ -326,6 +326,33 @@ during design convergence.
     written before exclude; implementation review of shared workspace lines
     115-124 proved the reverse order and corrected the residual-state cell.
 
+## P4.9 skill-6 addition
+
+50. **Reverse-account every structured rewrite.** When prose or a loose list is
+    rewritten as a table or other structured authority, prove that the prior
+    substantive-point set is a subset of the new row set. Derive the old-point
+    candidates from the substantive diff when practical, with humans allowed
+    to remove mechanically demonstrated noise but not add remembered items.
+    Skill-6 section 10 was introduced after a malformed-row obligation vanished
+    during an apparently clarifying table rewrite.
+51. **Admit branch tables through a closed mechanical inventory.** Freeze an
+    exact AST selector, generate unique branch IDs, require table references to
+    be a subset of that ID set, and give every unreferenced ID a reason.
+    Cross-module outcomes use `EXTERNAL_BRANCH` only when local call, external
+    source location, and expected result are all bound; unknown references and
+    ID collisions fail closed. Skill-6 section 11 established this rule.
+52. **Generate the first declared numeric value in the first real tool run.** A
+    count intended for mechanical reconciliation must originate from the
+    checker itself and be recorded in the same revision as that first run.
+    Hand-entering an expected value and later asking the checker to confirm it
+    merely mechanizes the assumption; skill-6's conflicting branch counts
+    demonstrated the failure mode.
+53. **Combine multi-party review conclusions by intersection, not union.** A
+    finding from one reviewer remains open even when every other reviewer is
+    green; majority confidence cannot dilute a concrete contradiction. When
+    only part of the review set is visible, report only those observed
+    conclusions and never infer the missing reviewers' outcomes.
+
 ## R14 deferred cleanup ledger
 
 These findings are intentionally non-blocking for FIX-1 but retain names and
