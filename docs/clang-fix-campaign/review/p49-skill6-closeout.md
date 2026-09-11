@@ -201,7 +201,7 @@ obligations:
 
 | # | Terminal obligation | Closing work |
 |---|---|---|
-| T1 | Delete every legacy compatibility shim | One-shot P4.9 final cleanup |
+| T1 | Delete every legacy compatibility shim | One-shot P4.9 final cleanup. Before deletion, classify every caller/import as compatibility-shim use or real dependency and archive the evidence; treating a real dependency as a shim requires rollback. |
 | T2 | Narrow tests that consume implementation-private symbols | Same final cleanup, without promoting private names into package APIs |
 | T3 | Normalize dangling-symlink handling | P4.9 final cross-skill behavior-unification batch |
 | T4 | Unify timeout, cancellation, interruption, residual state, and result mapping | Same behavior-unification batch, implementing skill-5 frozen §3.2 |
@@ -209,3 +209,16 @@ obligations:
 
 **Terminal clause:** unfinished T1-T5 blocks P4.9 closure. None may be handed
 to a later phase or silently reclassified.
+
+## 最终签批
+
+本批按计划采用 Claude 独立核验 + 评审 A + 评审 B 的三方确认。评审者只有
+两家是本批既定安排，并非遗漏第三家评审；不得将这一评审拓扑误读为缺席。
+
+| 签批方 | 日期 | 结论 |
+|---|---|---|
+| Claude | 2026-09-11 | 独立核验每个 commit 的干净环境结果一致，亲跑双道审计 `197+4` 与四道门禁，确认 bridge 两路径 `21/3`，并核对 branch inventory 迁移前后 `19/24`、`22/4`、69 IDs、零碰撞逐项不变，结论 CLOSED。 |
+| 评审 A | 2026-09-11 | 终审 CLOSED，零 finding。 |
+| 评审 B | 2026-09-11 | 终审 CLOSED，零 finding。 |
+
+**状态：skill-6 CLOSED @ `9a74c0b`（本批计划评审拓扑已完整履行，日期：2026-09-11）。**

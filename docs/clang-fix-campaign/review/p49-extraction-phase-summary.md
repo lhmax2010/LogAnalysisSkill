@@ -14,11 +14,24 @@ its closeout remain authoritative for that batch.
 | Skill-3 gerrit-fetch | `p49-skill3-gerrit-fetch-design-v1.3.1-FROZEN.md` | v1.0 through v1.3.1 | freeze `4612167`; implementation `751e7b4`/`f4be9e4`/`f6544df`/`c41d15a`; closeout `1ca2206`; sign-off `92111c4` | CLOSED |
 | Skill-4 build-verify | `p49-skill4-build-verify-design-v1.12.1-FROZEN.md` | v1.0 through v1.12.1 | A0/freeze `148b7f6`/`09da87d`; implementation `3da2529`/`f85bd58`/`da6d503`; closeout `7bfa070`; sign-off `8ed7588` | CLOSED |
 | Skill-5 gerrit-submit | `p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md` | v1.0 through v1.3.2 | freeze/A0 `f2bc050`/`31a91cb`; implementation `a97c40b`/`0dfa5f1`/`a8620f1`; closeout/amendment `d51145f`/`c6f734b`; sign-off `81ada54` | CLOSED |
-| Skill-6 triage-report | `p49-skill6-triage-report-design-v1.8-FROZEN.md` | v1.0 through v1.8 | freeze/A0 `bdb5a55`/`3dc0466`; implementation `3da12a4`/`2cc3dd3`/`dfbbf3b`; closeout is this Git-anchored delivery | CLOSED; final sign-off review pending |
+| Skill-6 triage-report | `p49-skill6-triage-report-design-v1.8-FROZEN.md` | v1.0 through v1.8 | freeze/A0 `bdb5a55`/`3dc0466`; implementation `3da12a4`/`2cc3dd3`/`dfbbf3b`; closeout `9a74c0b` | CLOSED |
 
-The extraction work is complete. Skill-6's final sign-off remains a review
-gate on this closeout package, not an implementation task and not a license to
-start or defer the terminal work below.
+All seven work batches (step-0 plus six skills) are CLOSED. The extraction work
+is complete; no further extraction batch may be inserted as a way to postpone
+the terminal work below.
+
+## 阶段签批
+
+- Step-0 and skills 1-5 retain their signed closeout anchors in the table above.
+- Skill-6 is signed CLOSED at `9a74c0b`: Claude independently reproduced each
+  clean-environment commit result and reran the `197+4` audits, four gate
+  families, bridge `21/3`, and invariant branch inventory; reviewers A and B
+  both returned CLOSED with zero findings. Two reviewers were the complete
+  planned review set for this batch, not a missing-third-reviewer condition.
+- **P4.9 抽取阶段：CLOSED（2026-09-11）。**
+
+The next stage has exactly one permitted entry point: **the P4.9 terminal
+batch**, consisting of the five items and terminal clause below.
 
 ## Extraction Outcome
 
@@ -38,7 +51,7 @@ start or defer the terminal work below.
 
 | # | Blocking obligation | Required closure |
 |---|---|---|
-| 1 | Delete all legacy compatibility shims | One explicit final cleanup commit after behavior unification; update all callers first and prove no legacy imports remain. |
+| 1 | Delete all legacy compatibility shims | One explicit final cleanup commit after behavior unification. First classify every caller/import as compatibility-shim use or real dependency and archive the evidence; if a real dependency is misclassified and removed as a shim, roll back. Then update callers and prove no legacy imports remain. |
 | 2 | Narrow tests that consume implementation-private symbols | Keep private names out of package-root APIs; remove or relocate test-only access in the final cleanup. |
 | 3 | Normalize dangling-symlink handling | Implement the frozen cross-skill outcome rather than preserving the current `FileExistsError` divergence. |
 | 4 | Unify timeout, cancellation, interruption, residual state, and result mapping | Implement and validate every row of skill-5 frozen §3.2 across gerrit-fetch, gerrit-submit, and shared workspace paths. |

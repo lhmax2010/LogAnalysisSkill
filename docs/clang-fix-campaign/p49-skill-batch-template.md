@@ -40,7 +40,7 @@
 
 1. **三入口同步**(skill-2 §4):新增顶级包须同步 pyproject package/mypy 路径、
    CI mypy 命令和 README PYTHONPATH;精确计数命令先在既有 skill 上自检。
-2. **机械同步清单**(skill-4 §2.4):definition、declared consumer、source root、
+2. **机械同步清单/执行期澄清②**(skill-4 §2.4,skill-6 commit A):definition、declared consumer、source root、
    package owner、surface guard、bridge 路径等必须逐项穷举,不得写“等”。凡对
    被抽取模块实现做 AST/源码枚举的门禁,其扫描路径须与 declared consumer、
    bridge 路径常量并列登记,并在实现迁移的同一 commit 同步,不得顺延到门禁
@@ -82,9 +82,11 @@
    行为测试随权威实现迁移,旧址 identity 不冒充行为证据。
 5. **DEFERRED 纪律**(step-0 ⑯):每项延期须具名关门批次与延期对价;终止批次
    未关闭即阻塞总收口,不得继续转交下一批。
-6. **冻结前置的时序表述**(skill-6 A0):“X 为冻结前置”表示 X 的实跑必须
-   先于冻结;X 的落盘 commit 可以后于冻结。设计稿须把实跑时点与提交顺序
-   分开写明,避免与“首个 commit 为冻结落章”的惯例冲突。
+6. **冻结前置的时序表述/执行期澄清①**(skill-6 A0):“X 为冻结前置”表示
+   X 的实跑必须先于冻结;X 的落盘 commit 可以后于冻结。冻结 commit message
+   必须锚定实跑结果与脚本 SHA,后续落盘脚本须与该 SHA 一致;若中间修改脚本,
+   必须重跑再冻结。设计稿须把实跑时点与提交顺序分开写明,避免与“首个 commit
+   为冻结落章”的惯例冲突。`bdb5a55`/`3dc0466` 的脚本 SHA 一致性是首个实例。
 
 ## §F 方法论索引
 

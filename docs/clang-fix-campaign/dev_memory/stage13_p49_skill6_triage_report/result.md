@@ -1,6 +1,8 @@
 # P4.9 Skill-6 Triage-Report Result
 
-Status: **CLOSED at implementation closeout; final review sign-off pending**.
+Status: **CLOSED and signed off at `9a74c0b`**. The planned review topology was
+Claude plus reviewers A and B; both reviewers returned CLOSED with zero
+findings, so no third reviewer is missing.
 Detailed DoD account:
 `../../review/p49-skill6-closeout.md`.
 
@@ -67,4 +69,6 @@ Exactly five items remain for the terminal P4.9 work: compatibility-shim
 deletion, private-test consumer narrowing, dangling-symlink normalization,
 timeout/cancellation/interruption/result-map unification, and the protected
 marker ordering decision. An unfinished item blocks P4.9 closure and may not
-be handed to a later phase.
+be handed to a later phase. Before shim deletion, every caller/import must be
+classified as compatibility use or real dependency with archived evidence;
+misclassifying a real dependency as a shim requires rollback.

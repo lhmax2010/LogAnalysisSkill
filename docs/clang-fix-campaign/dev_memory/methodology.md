@@ -330,28 +330,35 @@ during design convergence.
 
 50. **Reverse-account every structured rewrite.** When prose or a loose list is
     rewritten as a table or other structured authority, prove that the prior
-    substantive-point set is a subset of the new row set. Derive the old-point
-    candidates from the substantive diff when practical, with humans allowed
-    to remove mechanically demonstrated noise but not add remembered items.
-    Skill-6 section 10 was introduced after a malformed-row obligation vanished
-    during an apparently clarifying table rewrite.
+    substantive-point set is a subset of the new row set; a missing point is a
+    hard failure. Derive the old-point candidates from the substantive diff
+    when practical, with humans allowed to remove mechanically demonstrated
+    noise but not add remembered items. Skill-6 section 10 was introduced after
+    a malformed-row obligation vanished during an apparently clarifying table
+    rewrite.
 51. **Admit branch tables through a closed mechanical inventory.** Freeze an
-    exact AST selector, generate unique branch IDs, require table references to
-    be a subset of that ID set, and give every unreferenced ID a reason.
-    Cross-module outcomes use `EXTERNAL_BRANCH` only when local call, external
-    source location, and expected result are all bound; unknown references and
-    ID collisions fail closed. Skill-6 section 11 established this rule.
+    exact AST selector, generate unique `qualname:lineno:kind` branch IDs,
+    require table references to be a subset of that ID set, and give every
+    unreferenced ID a reason. Cross-module outcomes use `EXTERNAL_BRANCH` only
+    when local call, external source location, and expected result are all
+    bound. Unknown references, uncovered closed-set entries, and ID collisions
+    fail closed. Skill-6 section 11 established this rule.
 52. **Generate the first declared numeric value in the first real tool run.** A
     count intended for mechanical reconciliation must originate from the
-    checker itself and be recorded in the same revision as that first run.
-    Hand-entering an expected value and later asking the checker to confirm it
-    merely mechanizes the assumption; skill-6's conflicting branch counts
-    demonstrated the failure mode.
+    checker itself and be recorded in the same revision as that first run; the
+    document must contain no hand-entered copy. Hand-entering an expected value
+    and later asking the checker to confirm it merely mechanizes the assumption.
+    After four recurrences (three in skill-4 section 5.4 and one in skill-6
+    section 11), the remedy is not to correct the value again but to remove the
+    hand-entered value from the document.
 53. **Combine multi-party review conclusions by intersection, not union.** A
-    finding from one reviewer remains open even when every other reviewer is
-    green; majority confidence cannot dilute a concrete contradiction. When
-    only part of the review set is visible, report only those observed
-    conclusions and never infer the missing reviewers' outcomes.
+    BLOCKER or MAJOR from one reviewer prevents freeze until closed, even when
+    every other reviewer is green; a summary may not dilute it with majority
+    confidence. When only part of the review set is visible, report only those
+    observed conclusions and never infer the missing reviewers' outcomes.
+    Skill-6 established the rule after a summary incorrectly inferred two
+    freeze-ready reviews and issued a freeze prompt that was subsequently
+    withdrawn.
 
 ## R14 deferred cleanup ledger
 
