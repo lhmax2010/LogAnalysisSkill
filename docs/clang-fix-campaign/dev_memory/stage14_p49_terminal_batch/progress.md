@@ -1,8 +1,9 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART1_BLOCKED_BEFORE_ENCODING。更新日期: 2026-09-28。
+状态: A0_PART1_BLOCKED_V11。更新日期: 2026-09-28。
 2026-09-27 完成冻结稿入库与实施前复述;2026-09-28 接收 predicate 来源并建立
-干净工作区,逐条编码前发现三项待裁决问题,详见第9节。未运行任何 OBS producer,
+干净工作区。原三项停止问题已由判定条件v1.1关闭(第9.3节),v1.1取代v1.0
+作为编码来源;新发现两项编码阻塞(第10节)。未运行任何 OBS producer,
 未编写 verifier/测试,未采集 B-0;生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
@@ -399,7 +400,7 @@ C7a每个入口跑 `--help`。每项保留输入/命令/输出/exit/回退记录
 | 阶段 | 状态 | 证据 |
 |---|---|---|
 | 冻结稿入库与复述 | DONE @43a6aa6 | 本文件§0、Git提交三文件清单与冻结稿blob hash |
-| A₀ 第1段 | BLOCKED_BEFORE_ENCODING | 第9节:来源入库、干净worktree已建;三项待裁决,无producer/verifier/B-0运行结果 |
+| A₀ 第1段 | BLOCKED_V11 | 第10节:原三项CLOSED,新两项待裁决;干净worktree仍固定43a6aa6,无producer/verifier/B-0运行结果 |
 | A / B / C各组 / 删除后验证 / D | NOT_STARTED | 依第6节顺序推进,不提前标完成 |
 
 每个后续 commit 追加:执行命令和exit原文、输入tree/hash、输出路径、已闭合结论、
@@ -468,7 +469,7 @@ exit=0
 本轮仅做 Git/文档入库检查,未将新工具安装进去,未产出任何 OBS 事实。
 本次文档提交不会改变上述只读 worktree 固定的 HEAD/tree。
 
-### 9.3 编码前停止项(三项,均未自行裁决)
+### 9.3 v1.0 编码前停止项(三项,已由v1.1裁决关闭)
 
 以下 `P:Lx` 为 predicate 来源原件行号,`F:Lx` 为 v1.31-FROZEN 原件行号。
 
@@ -480,7 +481,16 @@ exit=0
 
 PRED-02 的空数组例和 PRED-03 的 ABSENT 例仅为输入文档的语义分析,
 不是真实 producer 观测,也不是已实现 verifier 的测试结果。
-尚未选择任何候选处理;未新增恒真节点、未扩充op集合、未推断expected。
+上述表保留v1.0时的困难与候选,不是本次开放项。设计方判定条件v1.1已获
+FatTank批准,本次按以下位置销账;不把v1.1的另两处困难重新挂回旧问题。
+
+| 原问题 | 当前状态 | v1.1 处理位置与关闭依据 |
+|---|---|---|
+| PRED-01 | CLOSED | §1:L58新增`schema_closed()`;§2:G4:L83显式使用该节点,消除“另行校验却要求逐条节点”的冲突 |
+| PRED-02 | CLOSED | §3 `OBS-6.intra-package-shim#3`:L248–252改为与`same_top_package_candidate_ids`的set_eq;§4:L288–290把扫描未漏的覆盖义务交给`CTRL-INTRA-PKG-PROXY` |
+| PRED-03 | CLOSED | §1:L60–66定义MISSING、求值错误与从左到右短路;item3#5:L129–132对悬空场景按ABSENT/VALUE显式分支,不再对缺失value直接取反 |
+
+v1.0原件保留不删。v1.1来源见第10节;未运行producer,未宣称JSON编码已经核准。
 
 ### 9.4 条件清点与未完成交付
 
@@ -532,3 +542,102 @@ exit=0
 
 恢复条件:设计方明确上述编码口径并由FatTank批准后继续第3步,再进入B-0。
 本次只提交原件与停止记录;不把本段标为完成,不将当前编码状态称作冻结。
+
+## 10. v1.1 续跑:来源替换与新的编码前停止报告
+
+### 10.1 输入与工作区复核
+
+本节为最新状态,第9.4节的三项OPEN/NOT_RUN表是v1.0停点历史。
+执行`git pull --ff-only origin clang-fix-campaign`,exit=0,
+stdout=`Already up to date.`。开工HEAD为
+`e8519d3eba92c52bfb47e5d6b1cc63fcd8041eb9`。
+
+编码来源现为`../../p49-terminal-obs-predicates-v1.1.md`,原件已在目标路径,
+本轮原字节入库,不自行修正文档。实测命令与输出:
+
+```text
+$ sha256sum docs/clang-fix-campaign/p49-terminal-obs-predicates-v1.1.md
+7f4beb2886733a6e2820324677c38463c19ee2482bbf34beeb329890299d00da  docs/clang-fix-campaign/p49-terminal-obs-predicates-v1.1.md
+exit=0
+```
+
+H4工作区仍为`/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6`。
+在那里复跑`git rev-parse HEAD HEAD^{tree}`得到:
+
+```text
+43a6aa625f27da46daba190657bf62256080c68e
+ca9331190e878af465e7968fe56e735585a5866e
+exit=0
+```
+
+同目录`git status --porcelain=v1 --untracked-files=all`的stdout为空,exit=0。
+未安装工具或改动该工作区;文档检查显式读取主工作树中v1.1原件,不把原件
+错误标成已经包含在43a6aa6中。原始命令/cwd/exit/stdout记录在
+`a0-evidence/intake/v1.1-preflight.json`,不是OBS产出或B-0证据。
+
+### 10.2 新停止项(待设计方裁决)
+
+以下`P:Lx`均指v1.1原件行号。本轮新增开放项为2,旧PRED-01/02/03保持CLOSED。
+
+| ID | 原文位置与要求 | 困难与影响 | 候选处理,须设计方裁决 |
+|---|---|---|---|
+| PRED-04 | P:L58要求schema_closed递归核对所有嵌套对象与数组元素;G3:L81–82要求evidence元素带两种证据字段;各claim如L93仅声明`evidence[]`;L236的`by_form{}`、L266的`reasons{}`又在L240/L270–271使用运行时键 | 当前schema缩写没有声明evidence元素的对象字段,也没有规定空花括号表示“无字段对象”还是“运行时键的map”。若按封闭字段集取空集,带证据或非空map会红;若自行允许未声明键,违反L58/L73。不能借G3的present检查擅自推导schema的required/optional/union规则 | 方案A:设计方提供统一schema记法:显式证据变体及字段、封闭record与动态map的区别、map的键/值约束;方案B:给出等价的完整结构化output_schema。字段形状与允许范围须来自设计方,不得用开放对象临时放行 |
+| PRED-05 | P:L128的LIVE分支只含`eq(exception_type,"GerritError")`和`eq(exception_code/value,"SOURCE_DIR_UNSAFE")`;L133又要求`state`不为VALUE即红;L121仅把value标可选 | 两种要求不等价。人工输入LIVE场景、type=GerritError、code={state:ABSENT,value:SOURCE_DIR_UNSAFE}满足逐字表达式,却违反L133。schema_closed只是字段存在性/封闭性,没有授权增加state/value的条件关联。逐字编码会漏验;自行补eq(state,VALUE)又违反不增改表达式的边界 | 方案A:设计方在LIVE分支all中显式补`eq(@/exception_code/state,"VALUE")`,保留L133;方案B:设计方撤销L133额外要求。实现方不选择、不修改来源或predicate |
+
+PRED-04尚未被实现为任何schema规则;PRED-05仅做了以下人工反例的直接
+布尔求值,不是通用verifier测试,也没有读取生产事实或调用producer。
+
+```text
+SOURCE: v1.1 line 128 expression vs line 133 state requirement
+INPUT: {'scenario_id': 'LIVE_SYMLINK_TO_DIR', 'exception_type': 'GerritError', 'exception_code': {'state': 'ABSENT', 'value': 'SOURCE_DIR_UNSAFE'}}
+LITERAL_EXPRESSION: True
+PROSE_STATE_REQUIREMENT: False
+COUNTEREXAMPLE_CONFIRMED (not a verifier/producer run)
+exit=0
+```
+
+其完整可复现命令已随原文输出保存在`v1.1-preflight.json`。
+不把反例确认的exit=0混称为verifier/控制测试通过。
+
+### 10.3 文档条件数与编码状态
+
+下表由输入文档每个claim小节的编号行机械清点;四条共用条件逐claim计入,
+编号连续性已检查。它是编号义务数,不是递归AST总节点数。
+因停在schema/表达式的可编码性核对,没有创建部分predicate来伪装完整交付。
+
+| claim | §3编号条件 + G1–G4 | 编码节点数 |
+|---|---|---|
+| OBS-1.item1-basis | 6 + 4 | 0 |
+| OBS-1.item2-scope | 8 + 4 | 0 |
+| OBS-1.item3-predicate | 6 + 4 | 0 |
+| OBS-1.item4-anchors | 8 + 4 | 0 |
+| OBS-1.item5-order | 8 + 4 | 0 |
+| OBS-2.seg1-staleness | 3 + 4 | 0 |
+| OBS-2.seg2-form | 5 + 4 | 0 |
+| OBS-3.commit-order | 3 + 4 | 0 |
+| OBS-3.transition-map | 5 + 4 | 0 |
+| OBS-4.owner-attribution | 4 + 4 | 0 |
+| OBS-5.entry-consumers | 4 + 4 | 0 |
+| OBS-6.proxy-count | 3 + 4 | 0 |
+| OBS-6.intra-package-shim | 3 + 4 | 0 |
+| OBS-7.falsification-samples | 4 + 4 | 0 |
+| OBS-7.class-c-projection | 4 + 4 | 0 |
+| 合计 | 74 + 60 = 134 | 0 |
+
+清点命令在固定worktree运行,exit=0,逐claim输出见`v1.1-preflight.json`。
+
+| 交付/验证 | 当前状态 | exit / hash |
+|---|---|---|
+| v1.1原件与旧三项关闭 | 已登记 | 原件SHA见10.1;v1.0不删 |
+| predicates.json / canonical hash | NOT_CREATED | N/A,不提供占位hash |
+| measurement_exemptions.json | NOT_CREATED | 规范值仍为[],未运行任何豁免判定 |
+| verifier / renderer / 节点正反 / ASSERTION与型别豁免控制 / 每claim变异 / 求值语义五条 / item3四输入 | NOT_RUN | N/A |
+| CTRL-INTRA-PKG-PROXY | NOT_RUN | 扫描器未实现;恢复后只登记control_catalog,本段不运行 |
+| B-0 pytest(逐nodeid) | NOT_RUN | N/A |
+| B-0 mypy | NOT_RUN | N/A |
+| B-0 ruff | NOT_RUN | N/A |
+| B-0 lint-imports | NOT_RUN | N/A |
+| OBS producers | NOT_RUN | 未满足predicate核对/批准/单独冻结门禁 |
+
+本轮只完成输入与停止记录,生产代码和测试零改动。等待PRED-04/05裁决后
+从编码继续;不越过停止点运行B-0,不把原件获批等同于JSON编码获批。

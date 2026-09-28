@@ -1,0 +1,31 @@
+{
+  "purpose": "Input-document checks and artificial counterexample only; not OBS producer, verifier, or B-0 execution.",
+  "source": "docs/clang-fix-campaign/p49-terminal-obs-predicates-v1.1.md",
+  "source_sha256": "7f4beb2886733a6e2820324677c38463c19ee2482bbf34beeb329890299d00da",
+  "runs": [
+    {
+      "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+      "command": "git rev-parse HEAD HEAD^{tree}",
+      "exit_code": 0,
+      "output": "43a6aa625f27da46daba190657bf62256080c68e\nca9331190e878af465e7968fe56e735585a5866e\n"
+    },
+    {
+      "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+      "command": "git status --porcelain=v1 --untracked-files=all",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+      "command": "python3 - <<'PY'\n# Artificial input only: evaluate the exact LIVE all[...] operands from v1.1 line 128.\nsample = {\n    \"scenario_id\": \"LIVE_SYMLINK_TO_DIR\",\n    \"exception_type\": \"GerritError\",\n    \"exception_code\": {\"state\": \"ABSENT\", \"value\": \"SOURCE_DIR_UNSAFE\"},\n}\nexpression_result = (\n    sample[\"scenario_id\"] != \"LIVE_SYMLINK_TO_DIR\"\n    or (\n        sample[\"exception_type\"] == \"GerritError\"\n        and sample[\"exception_code\"][\"value\"] == \"SOURCE_DIR_UNSAFE\"\n    )\n)\nprose_requirement = sample[\"exception_code\"][\"state\"] == \"VALUE\"\nprint(\"SOURCE: v1.1 line 128 expression vs line 133 state requirement\")\nprint(\"INPUT: \" + repr(sample))\nprint(\"LITERAL_EXPRESSION: \" + str(expression_result))\nprint(\"PROSE_STATE_REQUIREMENT: \" + str(prose_requirement))\nassert expression_result is True and prose_requirement is False\nprint(\"COUNTEREXAMPLE_CONFIRMED (not a verifier/producer run)\")\nPY",
+      "exit_code": 0,
+      "output": "SOURCE: v1.1 line 128 expression vs line 133 state requirement\nINPUT: {'scenario_id': 'LIVE_SYMLINK_TO_DIR', 'exception_type': 'GerritError', 'exception_code': {'state': 'ABSENT', 'value': 'SOURCE_DIR_UNSAFE'}}\nLITERAL_EXPRESSION: True\nPROSE_STATE_REQUIREMENT: False\nCOUNTEREXAMPLE_CONFIRMED (not a verifier/producer run)\n"
+    },
+    {
+      "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+      "command": "python3 - <<'PY'\nimport re\nfrom pathlib import Path\npath = Path(\"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p49-terminal-obs-predicates-v1.1.md\")\ntext = path.read_text()\nblocks = re.split(r\"^### B-\\d+ · `(OBS-[^`]+)`[^\\n]*\\n\", text, flags=re.M)\ntotal = 0\nclaims = 0\nfor i in range(1, len(blocks), 2):\n    ids = [int(n) for n in re.findall(r\"^  (\\d+)\\. \", blocks[i+1].split(\"\\n---\", 1)[0], re.M)]\n    assert ids == list(range(1, len(ids)+1))\n    total += len(ids)\n    claims += 1\n    print(f\"{blocks[i]}: document={len(ids)}+4 common; encoded=0\")\nprint(f\"CLAIMS={claims}; SECTION_3={total}; COMMON={claims*4}; TOTAL_NUMBERED={total+claims*4}; ENCODED=0\")\nPY",
+      "exit_code": 0,
+      "output": "OBS-1.item1-basis: document=6+4 common; encoded=0\nOBS-1.item2-scope: document=8+4 common; encoded=0\nOBS-1.item3-predicate: document=6+4 common; encoded=0\nOBS-1.item4-anchors: document=8+4 common; encoded=0\nOBS-1.item5-order: document=8+4 common; encoded=0\nOBS-2.seg1-staleness: document=3+4 common; encoded=0\nOBS-2.seg2-form: document=5+4 common; encoded=0\nOBS-3.commit-order: document=3+4 common; encoded=0\nOBS-3.transition-map: document=5+4 common; encoded=0\nOBS-4.owner-attribution: document=4+4 common; encoded=0\nOBS-5.entry-consumers: document=4+4 common; encoded=0\nOBS-6.proxy-count: document=3+4 common; encoded=0\nOBS-6.intra-package-shim: document=3+4 common; encoded=0\nOBS-7.falsification-samples: document=4+4 common; encoded=0\nOBS-7.class-c-projection: document=4+4 common; encoded=0\nCLAIMS=15; SECTION_3=74; COMMON=60; TOTAL_NUMBERED=134; ENCODED=0\n"
+    }
+  ]
+}
