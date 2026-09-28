@@ -1,7 +1,9 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: PLAN_RECORDED / A0_NOT_STARTED。日期: 2026-09-27。
-本次仅将冻结稿入库、登记本文件与 INDEX;没有开始 A₀、生产实现或测试修改。
+状态: A0_PART1_BLOCKED_BEFORE_ENCODING。更新日期: 2026-09-28。
+2026-09-27 完成冻结稿入库与实施前复述;2026-09-28 接收 predicate 来源并建立
+干净工作区,逐条编码前发现三项待裁决问题,详见第9节。未运行任何 OBS producer,
+未编写 verifier/测试,未采集 B-0;生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
 ## 0. 权威、输入与记录边界
@@ -383,7 +385,7 @@ R1 展开 E1–E4;七格第 3 格不造普通 item,第 4–6 格可造 fallback;
 名字/解释器兜底,第9类排除外零残留;⑤按仓库打包描述构建、干净环境安装,
 C7a每个入口跑 `--help`。每项保留输入/命令/输出/exit/回退记录。
 
-## 7. 阅读发现与待裁决问题(任务 3e)
+## 7. 首次入库的阅读发现(2026-09-27,原任务 3e)
 
 无。本轮未发现需新增裁决的自相矛盾、无法执行条文或 prompt/冻结稿冲突;
 新增问题条目数: 0。
@@ -396,10 +398,137 @@ C7a每个入口跑 `--help`。每项保留输入/命令/输出/exit/回退记录
 
 | 阶段 | 状态 | 证据 |
 |---|---|---|
-| 冻结稿入库与复述 | 本次提交交付 | 本文件§0、Git提交三文件清单与冻结稿blob hash |
-| A₀ | NOT_STARTED | 第2–4节为计划,无运行结果 |
+| 冻结稿入库与复述 | DONE @43a6aa6 | 本文件§0、Git提交三文件清单与冻结稿blob hash |
+| A₀ 第1段 | BLOCKED_BEFORE_ENCODING | 第9节:来源入库、干净worktree已建;三项待裁决,无producer/verifier/B-0运行结果 |
 | A / B / C各组 / 删除后验证 / D | NOT_STARTED | 依第6节顺序推进,不提前标完成 |
 
 每个后续 commit 追加:执行命令和exit原文、输入tree/hash、输出路径、已闭合结论、
 人工输入来源、未闭合项及关门点。自己的提交SHA不写回同一提交内的文件;
 由Git外部锚定,下一次进度更新再引用已存在的前置SHA。
+
+## 9. A₀ 第1段:判定条件入库与停止报告(2026-09-28)
+
+### 9.1 已完成事项与输入指纹
+
+- 已先读本进度并执行 `git pull --ff-only origin clang-fix-campaign`;
+  exit 0,stdout 为 `Already up to date.`。
+- 判定条件来源: `../../p49-terminal-obs-predicates-v1.0.md`,交付原件已位于
+  目标路径且尚未跟踪。本次原字节入库,不修订、不重新排版。
+- `sha256sum docs/clang-fix-campaign/p49-terminal-obs-predicates-v1.0.md`
+  的实测输出为:
+
+```text
+12e01f6f6e3aa42816047265c3529999328bdd3f1ab0b25c7d162193948bb712  docs/clang-fix-campaign/p49-terminal-obs-predicates-v1.0.md
+```
+
+- 既有 H1 的设计方输入已收到,但其可编码性尚未闭合。本文不把“原件获批”
+  等同于“实现方的 JSON 编码获批冻结”;仍须设计方逐条核对、FatTank 批准,
+  然后另 commit 冻结 predicate,此后才可首跑 producer。
+- 原 v1.31-FROZEN 不改。以下只报告困难与候选,不改来源文档中的条件。
+
+### 9.2 H4 干净工作区与主工作树隔离
+
+用途为只读快照输入,未修改其中任何 tracked 文件,不是以主工作树的脏状态
+作为观测对象。建立命令(在主工作树执行,exit 0):
+
+```bash
+git worktree add --detach /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6 43a6aa625f27da46daba190657bf62256080c68e
+```
+
+| 字段 | 固定值 |
+|---|---|
+| 工作区 | `/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6` |
+| HEAD / 后续 `$ctx.head` | `43a6aa625f27da46daba190657bf62256080c68e` |
+| tree / 后续 `$ctx.tree` | `ca9331190e878af465e7968fe56e735585a5866e` |
+| 分支状态 | detached HEAD,不移动主分支、不复用主工作树的 editable 安装作为干净环境证据 |
+
+在上述工作区实跑:
+
+```text
+$ git rev-parse HEAD HEAD^{tree}
+43a6aa625f27da46daba190657bf62256080c68e
+ca9331190e878af465e7968fe56e735585a5866e
+exit=0
+
+$ git status --porcelain=v1 --untracked-files=all
+(stdout empty)
+exit=0
+```
+
+主工作树的既有改动完整列表、所用命令与输出见
+`a0-evidence/intake/context.json` 的 `main_worktree_status`。
+该列表在本次编辑前采集,其中唯一属本任务的输入是未跟踪的 predicate 原件;
+`unrelated_changes` 已排除该输入,逐项保留其余状态。
+概要: `.gitignore` 的修改;`docs/BACKLOG.md`、
+`docs/analyzer_error_clusters_design.md`、`docs/architecture.md`、
+`docs/build_skill_v0.2_design.md` 的删除;`.claude/`、历史草稿、旧脚本、备份和
+其它未跟踪文件。仅记录,不 stash、不清理、不合并进本次提交。
+
+后续 A₀ 采集与测试须在此干净工作区使用独立环境运行,工具/数据另记内容hash;
+本轮仅做 Git/文档入库检查,未将新工具安装进去,未产出任何 OBS 事实。
+本次文档提交不会改变上述只读 worktree 固定的 HEAD/tree。
+
+### 9.3 编码前停止项(三项,均未自行裁决)
+
+以下 `P:Lx` 为 predicate 来源原件行号,`F:Lx` 为 v1.31-FROZEN 原件行号。
+
+| ID | 原文位置与要求 | 困难与影响 | 候选处理,须设计方裁决 |
+|---|---|---|---|
+| PRED-01 | P:L9“一条要求对应一个节点”;P:L61“每条 predicate 都以这四项开头”;P:L67 G4“由 verifier 按 schema 检查,不另写节点”;本次任务§3同时要求G1–G4逐条编码 | 若给G4节点,违反“不另写节点”;若只有schema校验,不能声称每项条件都有predicate节点。影响逐条件映射与节点数口径,不能隐去G4或把schema偷偷当新op | 方案A:保留原件G4的schema专属校验,以非predicate的condition引用绑定G4,将“条件数/AST节点数/schema义务数”分列;方案B:设计方明确修订G4,批准以封闭语言已有的keys_eq表示其适用范围。实现方不自行选 |
+| PRED-02 | P:L223–229,`OBS-6.intra-package-shim#3`:“不设必须为空或必须非空”,并称证明发现面没有用跨顶层包排除;P:L28封闭节点集 | #3没有可执行表达式;没有用于独立枚举“应发现的同包候选”的字段/路径。现有#1的forall与#2的subset在records=[]时均成立,不能因此证明未漏同包候选。删#3、写恒真节点或自行补独立全集都改变了要求 | 方案A:设计方将#3明确归为说明性约束,不计可执行节点,同时明确覆盖义务由哪道既有门禁承担;方案B:设计方提供独立全集的schema/路径与明确set_eq条件,再逐字编码。不得擅加常量或用producer自报“未排除”顶替 |
+| PRED-03 | P:L22–26路径定义、L33–35 present/eq/ne;P:L105 `exception_code{state,value?}`;P:L113 `not(eq(@/exception_code/value,"SOURCE_DIR_UNSAFE"))`;F §3 的ABSENT旧值登记 | value允许缺省,但eq/not对缺失路径的求值规则未规定。对人工输入`{"exception_code":{"state":"ABSENT"}}`,将缺失比较为false再取not会通过;将缺失视为求值失败则整条失败。这不是两个等价实现,亦不能用null代替缺失 | 方案A:设计方补语言规则,明确可选路径MISSING的eq/ne/not及组合节点语义,必填缺失仍由schema拒绝;方案B:设计方把该条件改成按state显式分支且先检查value存在的封闭表达式,并明确其它缺失路径统一失败。不得实现方改写#5 |
+
+PRED-02 的空数组例和 PRED-03 的 ABSENT 例仅为输入文档的语义分析,
+不是真实 producer 观测,也不是已实现 verifier 的测试结果。
+尚未选择任何候选处理;未新增恒真节点、未扩充op集合、未推断expected。
+
+### 9.4 条件清点与未完成交付
+
+编码前只对输入文档做编号清点,无 claim producer 调用。命令在干净worktree
+运行,显式读取主工作树的交付原件(独立输入hash见9.1,不冒称该原件已在基线tree中)。
+完整命令、cwd、exit与stdout见 `a0-evidence/intake/context.json` 的
+`condition_inventory`;只统计每个`### B-... OBS-...`小节内的编号行,
+不从生产源码或既有证据提取事实。
+
+```text
+OBS-1.item1-basis: 6 numbered conditions
+OBS-1.item2-scope: 8 numbered conditions
+OBS-1.item3-predicate: 6 numbered conditions
+OBS-1.item4-anchors: 8 numbered conditions
+OBS-1.item5-order: 8 numbered conditions
+OBS-2.seg1-staleness: 3 numbered conditions
+OBS-2.seg2-form: 5 numbered conditions
+OBS-3.commit-order: 3 numbered conditions
+OBS-3.transition-map: 5 numbered conditions
+OBS-4.owner-attribution: 4 numbered conditions
+OBS-5.entry-consumers: 4 numbered conditions
+OBS-6.proxy-count: 3 numbered conditions
+OBS-6.intra-package-shim: 3 numbered conditions
+OBS-7.falsification-samples: 4 numbered conditions
+OBS-7.class-c-projection: 4 numbered conditions
+CLAIMS=15; SECTION_3_NUMBERED_CONDITIONS=74
+COMMON_CONDITIONS=4; COMMON_INSTANCES=60
+NUMBERED_OBLIGATIONS=134 (not encoded node count; G4/#3 pending ruling)
+exit=0
+```
+
+这里的134是按原件编号统计的义务实例(74+15×4),**不是134个AST节点**。
+复合条件含子节点,G4及说明性#3的计数口径又待裁决,不能宣称已对齐。
+
+| 交付 | 状态 | 实测/缺项说明 |
+|---|---|---|
+| 来源文档 | 原字节入库 | 9.1 SHA;由Git外部锚定 |
+| 干净工作区 | 已建,内容未改 | 9.2 identity与空status,exit均0 |
+| `predicates.json` | NOT_CREATED | 编码节点0;canonical hash不存在,不填占位hash |
+| `measurement_exemptions.json` | NOT_CREATED | 规范值仍为[],待恢复编码时与判定条件一起交付 |
+| verifier / renderer / canonical实现 | NOT_STARTED | 因PRED-01–03停在编码前,无测试命令/exit |
+| 节点正反与各组构造式控制 | NOT_RUN | 无虚构通过数或exit |
+| B-0 pytest(含nodeids) | NOT_RUN | 第3步停止,不越过停点执行第4步;exit=N/A |
+| B-0 mypy | NOT_RUN | exit=N/A |
+| B-0 ruff | NOT_RUN | exit=N/A |
+| B-0 lint-imports | NOT_RUN | exit=N/A |
+| OBS producers | NOT_RUN | 仍受先批准冻结predicate再首跑的禁令约束 |
+| 本段停止报告 | 3 OPEN | PRED-01、PRED-02、PRED-03;待设计方裁决 |
+
+恢复条件:设计方明确上述编码口径并由FatTank批准后继续第3步,再进入B-0。
+本次只提交原件与停止记录;不把本段标为完成,不将当前编码状态称作冻结。
