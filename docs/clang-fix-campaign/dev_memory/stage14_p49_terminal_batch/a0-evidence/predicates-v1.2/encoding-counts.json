@@ -1,0 +1,115 @@
+{
+  "source_sha256": "3397ee5b097142c0e956bfe8162033791641d752097662689b86d24d91a6b3f1",
+  "canonical_hash": "8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6",
+  "claims": [
+    {
+      "claim_id": "OBS-1.item1-basis",
+      "document_conditions": 6,
+      "encoded_condition_nodes": 6,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 27
+    },
+    {
+      "claim_id": "OBS-1.item2-scope",
+      "document_conditions": 8,
+      "encoded_condition_nodes": 8,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 33
+    },
+    {
+      "claim_id": "OBS-1.item3-predicate",
+      "document_conditions": 6,
+      "encoded_condition_nodes": 6,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 44
+    },
+    {
+      "claim_id": "OBS-1.item4-anchors",
+      "document_conditions": 8,
+      "encoded_condition_nodes": 8,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 60
+    },
+    {
+      "claim_id": "OBS-1.item5-order",
+      "document_conditions": 8,
+      "encoded_condition_nodes": 8,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 40
+    },
+    {
+      "claim_id": "OBS-2.seg1-staleness",
+      "document_conditions": 3,
+      "encoded_condition_nodes": 3,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 24
+    },
+    {
+      "claim_id": "OBS-2.seg2-form",
+      "document_conditions": 5,
+      "encoded_condition_nodes": 5,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 29
+    },
+    {
+      "claim_id": "OBS-3.commit-order",
+      "document_conditions": 3,
+      "encoded_condition_nodes": 3,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 30
+    },
+    {
+      "claim_id": "OBS-3.transition-map",
+      "document_conditions": 5,
+      "encoded_condition_nodes": 5,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 34
+    },
+    {
+      "claim_id": "OBS-4.owner-attribution",
+      "document_conditions": 4,
+      "encoded_condition_nodes": 4,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 29
+    },
+    {
+      "claim_id": "OBS-5.entry-consumers",
+      "document_conditions": 4,
+      "encoded_condition_nodes": 4,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 28
+    },
+    {
+      "claim_id": "OBS-6.proxy-count",
+      "document_conditions": 3,
+      "encoded_condition_nodes": 3,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 24
+    },
+    {
+      "claim_id": "OBS-6.intra-package-shim",
+      "document_conditions": 3,
+      "encoded_condition_nodes": 3,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 22
+    },
+    {
+      "claim_id": "OBS-7.falsification-samples",
+      "document_conditions": 4,
+      "encoded_condition_nodes": 4,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 21
+    },
+    {
+      "claim_id": "OBS-7.class-c-projection",
+      "document_conditions": 4,
+      "encoded_condition_nodes": 4,
+      "common_conditions": 4,
+      "recursive_nodes_including_root": 25
+    }
+  ],
+  "unique_document_conditions": 78,
+  "instantiated_condition_nodes": 134,
+  "recursive_nodes": 470,
+  "semantic_review": "PENDING_DESIGNER_REVIEW_NOT_FROZEN"
+}

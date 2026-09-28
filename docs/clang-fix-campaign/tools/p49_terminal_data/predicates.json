@@ -1,0 +1,4594 @@
+[
+  {
+    "claim_id": "OBS-1.item1-basis",
+    "type": "ASSERTION",
+    "subject": "step-0 v2.1-FROZEN §6.2 的 shim 删除清单作为台账第一段的来源",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "source": {
+          "kind": "record",
+          "required": {
+            "path": "str",
+            "sha256": "str",
+            "heading": "str"
+          },
+          "optional": {}
+        },
+        "entries": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "entry_id": "str",
+              "text_sha256": "str",
+              "kind": "str",
+              "mapped_ledger_keys": {
+                "kind": "array",
+                "items": "str"
+              }
+            },
+            "optional": {}
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-1.item1-basis"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "eq",
+          "args": [
+            "/source/path",
+            "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md"
+          ],
+          "source": "OBS-1.item1-basis#1"
+        },
+        {
+          "op": "matches",
+          "args": [
+            "/source/heading",
+            "^### 6\\.2 "
+          ],
+          "source": "OBS-1.item1-basis#2"
+        },
+        {
+          "op": "nonempty",
+          "args": [
+            "/entries"
+          ],
+          "source": "OBS-1.item1-basis#3"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/entries/*",
+            {
+              "op": "in",
+              "args": [
+                "@/kind",
+                [
+                  "REEXPORT_SURFACE",
+                  "SYMBOL_GROUP",
+                  "PACKAGE_REEXPORT",
+                  "NEGATIVE"
+                ]
+              ],
+              "source": "OBS-1.item1-basis#4"
+            }
+          ],
+          "source": "OBS-1.item1-basis#4"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/entries/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "ne",
+                  "args": [
+                    "@/kind",
+                    "NEGATIVE"
+                  ],
+                  "source": "OBS-1.item1-basis#5"
+                },
+                {
+                  "op": "nonempty",
+                  "args": [
+                    "@/mapped_ledger_keys"
+                  ],
+                  "source": "OBS-1.item1-basis#5"
+                }
+              ],
+              "source": "OBS-1.item1-basis#5"
+            }
+          ],
+          "source": "OBS-1.item1-basis#5"
+        },
+        {
+          "op": "subset",
+          "args": [
+            "/entries/*/mapped_ledger_keys/*",
+            {
+              "op": "$file",
+              "args": [
+                "E/ledger_inventory.json",
+                "/seg1/*/ledger_key"
+              ],
+              "source": "OBS-1.item1-basis#6"
+            }
+          ],
+          "source": "OBS-1.item1-basis#6"
+        }
+      ],
+      "source": "§2+§3:OBS-1.item1-basis"
+    }
+  },
+  {
+    "claim_id": "OBS-1.item2-scope",
+    "type": "ASSERTION",
+    "subject": "skill-4 v1.12.1-FROZEN 登记的测试私有件义务与 `private_consumption.json` 的对应",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "obligation_source": {
+          "kind": "record",
+          "required": {
+            "path": "str",
+            "sha256": "str",
+            "heading": "str"
+          },
+          "optional": {}
+        },
+        "obligations": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "obligation_id": "str",
+              "text_sha256": "str"
+            },
+            "optional": {}
+          }
+        },
+        "consumption_ref": {
+          "kind": "record",
+          "required": {
+            "path": "str",
+            "sha256": "str"
+          },
+          "optional": {}
+        },
+        "mapping": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "obligation_id": "str",
+              "consumption_ids": {
+                "kind": "array",
+                "items": "str"
+              },
+              "status": "str"
+            },
+            "optional": {}
+          }
+        },
+        "unmapped_consumption_ids": {
+          "kind": "array",
+          "items": "str"
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-1.item2-scope"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "eq",
+          "args": [
+            "/obligation_source/path",
+            "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md"
+          ],
+          "source": "OBS-1.item2-scope#1"
+        },
+        {
+          "op": "nonempty",
+          "args": [
+            "/obligations"
+          ],
+          "source": "OBS-1.item2-scope#2"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/mapping/*/obligation_id",
+            "/obligations/*/obligation_id"
+          ],
+          "source": "OBS-1.item2-scope#3"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/mapping/*",
+            {
+              "op": "in",
+              "args": [
+                "@/status",
+                [
+                  "HAS_CONSUMERS",
+                  "NO_CURRENT_CONSUMER"
+                ]
+              ],
+              "source": "OBS-1.item2-scope#4"
+            }
+          ],
+          "source": "OBS-1.item2-scope#4"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/mapping/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/status",
+                    "HAS_CONSUMERS"
+                  ],
+                  "source": "OBS-1.item2-scope#5"
+                },
+                {
+                  "op": "nonempty",
+                  "args": [
+                    "@/consumption_ids"
+                  ],
+                  "source": "OBS-1.item2-scope#5"
+                }
+              ],
+              "source": "OBS-1.item2-scope#5"
+            }
+          ],
+          "source": "OBS-1.item2-scope#5"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/mapping/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/status",
+                    "NO_CURRENT_CONSUMER"
+                  ],
+                  "source": "OBS-1.item2-scope#6"
+                },
+                {
+                  "op": "count",
+                  "args": [
+                    "@/consumption_ids",
+                    0
+                  ],
+                  "cmp": "==",
+                  "source": "OBS-1.item2-scope#6"
+                }
+              ],
+              "source": "OBS-1.item2-scope#6"
+            }
+          ],
+          "source": "OBS-1.item2-scope#6"
+        },
+        {
+          "op": "eq",
+          "args": [
+            "/consumption_ref/path",
+            "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/private_consumption.json"
+          ],
+          "source": "OBS-1.item2-scope#7"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            {
+              "op": "$file",
+              "args": [
+                "E/private_consumption.json",
+                "/entries/*/id"
+              ],
+              "source": "OBS-1.item2-scope#8"
+            },
+            {
+              "op": "union",
+              "args": [
+                "/mapping/*/consumption_ids/*",
+                "/unmapped_consumption_ids/*"
+              ],
+              "source": "OBS-1.item2-scope#8"
+            }
+          ],
+          "source": "OBS-1.item2-scope#8"
+        }
+      ],
+      "source": "§2+§3:OBS-1.item2-scope"
+    }
+  },
+  {
+    "claim_id": "OBS-1.item3-predicate",
+    "type": "ASSERTION",
+    "subject": "`ANCHOR-3` 的现状判定式与四个相邻输入下的现状行为",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "anchor": {
+          "kind": "record",
+          "required": {
+            "file": "str",
+            "function": "str",
+            "selector": "str",
+            "matched_count": "int",
+            "expr_kind": "str",
+            "operand_calls": {
+              "kind": "array",
+              "items": "str"
+            },
+            "same_receiver": "bool",
+            "span_sha256": "str"
+          },
+          "optional": {}
+        },
+        "scenarios": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "scenario_id": "str",
+              "exception_code": {
+                "kind": "union",
+                "tag": "state",
+                "variants": {
+                  "ABSENT": {
+                    "kind": "record",
+                    "required": {
+                      "state": {
+                        "kind": "literal",
+                        "value": "ABSENT"
+                      }
+                    },
+                    "optional": {}
+                  },
+                  "VALUE": {
+                    "kind": "record",
+                    "required": {
+                      "state": {
+                        "kind": "literal",
+                        "value": "VALUE"
+                      },
+                      "value": "str"
+                    },
+                    "optional": {}
+                  }
+                }
+              },
+              "destination_after": "str"
+            },
+            "optional": {
+              "exception_type": "str"
+            }
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-1.item3-predicate"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "eq",
+          "args": [
+            "/anchor/file",
+            "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py"
+          ],
+          "source": "OBS-1.item3-predicate#1"
+        },
+        {
+          "op": "eq",
+          "args": [
+            "/anchor/matched_count",
+            1
+          ],
+          "source": "OBS-1.item3-predicate#2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "eq",
+              "args": [
+                "/anchor/expr_kind",
+                "BoolOp.And"
+              ],
+              "source": "OBS-1.item3-predicate#3"
+            },
+            {
+              "op": "subset",
+              "args": [
+                [
+                  "exists",
+                  "is_symlink"
+                ],
+                "/anchor/operand_calls"
+              ],
+              "source": "OBS-1.item3-predicate#3"
+            },
+            {
+              "op": "eq",
+              "args": [
+                "/anchor/same_receiver",
+                true
+              ],
+              "source": "OBS-1.item3-predicate#3"
+            }
+          ],
+          "source": "OBS-1.item3-predicate#3"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/scenarios/*/scenario_id",
+            [
+              "DANGLING_SYMLINK",
+              "LIVE_SYMLINK_TO_DIR",
+              "REAL_DIR",
+              "ABSENT"
+            ]
+          ],
+          "source": "OBS-1.item3-predicate#4"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "forall",
+              "args": [
+                "/scenarios/*",
+                {
+                  "op": "implies",
+                  "args": [
+                    {
+                      "op": "eq",
+                      "args": [
+                        "@/scenario_id",
+                        "LIVE_SYMLINK_TO_DIR"
+                      ],
+                      "source": "OBS-1.item3-predicate#5"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "eq",
+                          "args": [
+                            "@/exception_type",
+                            "GerritError"
+                          ],
+                          "source": "OBS-1.item3-predicate#5"
+                        },
+                        {
+                          "op": "eq",
+                          "args": [
+                            "@/exception_code/state",
+                            "VALUE"
+                          ],
+                          "source": "OBS-1.item3-predicate#5"
+                        },
+                        {
+                          "op": "eq",
+                          "args": [
+                            "@/exception_code/value",
+                            "SOURCE_DIR_UNSAFE"
+                          ],
+                          "source": "OBS-1.item3-predicate#5"
+                        }
+                      ],
+                      "source": "OBS-1.item3-predicate#5"
+                    }
+                  ],
+                  "source": "OBS-1.item3-predicate#5"
+                }
+              ],
+              "source": "OBS-1.item3-predicate#5"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/scenarios/*",
+                {
+                  "op": "implies",
+                  "args": [
+                    {
+                      "op": "eq",
+                      "args": [
+                        "@/scenario_id",
+                        "DANGLING_SYMLINK"
+                      ],
+                      "source": "OBS-1.item3-predicate#5"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exception_type"
+                          ],
+                          "source": "OBS-1.item3-predicate#5"
+                        },
+                        {
+                          "op": "in",
+                          "args": [
+                            "@/exception_code/state",
+                            [
+                              "ABSENT",
+                              "VALUE"
+                            ]
+                          ],
+                          "source": "OBS-1.item3-predicate#5"
+                        },
+                        {
+                          "op": "any",
+                          "args": [
+                            {
+                              "op": "eq",
+                              "args": [
+                                "@/exception_code/state",
+                                "ABSENT"
+                              ],
+                              "source": "OBS-1.item3-predicate#5"
+                            },
+                            {
+                              "op": "all",
+                              "args": [
+                                {
+                                  "op": "eq",
+                                  "args": [
+                                    "@/exception_code/state",
+                                    "VALUE"
+                                  ],
+                                  "source": "OBS-1.item3-predicate#5"
+                                },
+                                {
+                                  "op": "ne",
+                                  "args": [
+                                    "@/exception_code/value",
+                                    "SOURCE_DIR_UNSAFE"
+                                  ],
+                                  "source": "OBS-1.item3-predicate#5"
+                                }
+                              ],
+                              "source": "OBS-1.item3-predicate#5"
+                            }
+                          ],
+                          "source": "OBS-1.item3-predicate#5"
+                        }
+                      ],
+                      "source": "OBS-1.item3-predicate#5"
+                    }
+                  ],
+                  "source": "OBS-1.item3-predicate#5"
+                }
+              ],
+              "source": "OBS-1.item3-predicate#5"
+            }
+          ],
+          "source": "OBS-1.item3-predicate#5"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/scenarios/*",
+            {
+              "op": "present",
+              "args": [
+                "@/destination_after"
+              ],
+              "source": "OBS-1.item3-predicate#6"
+            }
+          ],
+          "source": "OBS-1.item3-predicate#6"
+        }
+      ],
+      "source": "§2+§3:OBS-1.item3-predicate"
+    }
+  },
+  {
+    "claim_id": "OBS-1.item4-anchors",
+    "type": "ASSERTION",
+    "subject": "skill-5 v1.3.2-FROZEN §3.2 映射表的行与顺序、六个调用面的定位、以及三处残留格的现状观测",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "table_source": {
+          "kind": "record",
+          "required": {
+            "path": "str",
+            "sha256": "str",
+            "heading": "str"
+          },
+          "optional": {}
+        },
+        "rows": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "surface": "str",
+              "timeout_cell": "str",
+              "interrupt_cell": "str",
+              "residual_cell": "str"
+            },
+            "optional": {}
+          }
+        },
+        "call_sites": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "anchor_no": "int",
+              "file": "str",
+              "function": "str",
+              "selector": "str",
+              "matched_count": "int"
+            },
+            "optional": {}
+          }
+        },
+        "residual_obs": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "anchor_no": "int",
+              "injected_at": "str"
+            },
+            "optional": {
+              "destination_unchanged": "bool",
+              "workdir_marker": {
+                "kind": "record",
+                "required": {
+                  "state": "str"
+                },
+                "optional": {
+                  "sha256": "str"
+                }
+              },
+              "protected_marker": {
+                "kind": "record",
+                "required": {
+                  "state": "str"
+                },
+                "optional": {
+                  "sha256": "str"
+                }
+              },
+              "exclude_completed": "bool"
+            }
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-1.item4-anchors"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "eq",
+              "args": [
+                "/table_source/path",
+                "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md"
+              ],
+              "source": "OBS-1.item4-anchors#1"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/table_source/heading",
+                "^### 3\\.2 "
+              ],
+              "source": "OBS-1.item4-anchors#1"
+            }
+          ],
+          "source": "OBS-1.item4-anchors#1"
+        },
+        {
+          "op": "count",
+          "args": [
+            "/rows",
+            6
+          ],
+          "cmp": "==",
+          "source": "OBS-1.item4-anchors#2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "matches",
+              "args": [
+                "/rows/0/surface",
+                "query 阶段"
+              ],
+              "source": "OBS-1.item4-anchors#3"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/1/surface",
+                "git 阶段"
+              ],
+              "source": "OBS-1.item4-anchors#3"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/2/surface",
+                "本 skill .*_run_git"
+              ],
+              "source": "OBS-1.item4-anchors#3"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/3/surface",
+                "ls-remote"
+              ],
+              "source": "OBS-1.item4-anchors#3"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/4/surface",
+                "shared/workspace .*_run_git"
+              ],
+              "source": "OBS-1.item4-anchors#3"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/5/surface",
+                "_exclude_private_files"
+              ],
+              "source": "OBS-1.item4-anchors#3"
+            }
+          ],
+          "source": "OBS-1.item4-anchors#3"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "matches",
+              "args": [
+                "/rows/0/timeout_cell",
+                "FETCH_TIMEOUT"
+              ],
+              "source": "OBS-1.item4-anchors#4"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/1/timeout_cell",
+                "FETCH_TIMEOUT"
+              ],
+              "source": "OBS-1.item4-anchors#4"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/2/timeout_cell",
+                "GerritSubmitError.*GIT_TIMEOUT"
+              ],
+              "source": "OBS-1.item4-anchors#4"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/3/timeout_cell",
+                "target_head_unknown:timeout"
+              ],
+              "source": "OBS-1.item4-anchors#4"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/4/timeout_cell",
+                "GIT_TIMEOUT:"
+              ],
+              "source": "OBS-1.item4-anchors#4"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/5/timeout_cell",
+                "GIT_TIMEOUT"
+              ],
+              "source": "OBS-1.item4-anchors#4"
+            }
+          ],
+          "source": "OBS-1.item4-anchors#4"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/rows/*",
+            {
+              "op": "matches",
+              "args": [
+                "@/interrupt_cell",
+                "^传播$"
+              ],
+              "source": "OBS-1.item4-anchors#5"
+            }
+          ],
+          "source": "OBS-1.item4-anchors#5"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "matches",
+              "args": [
+                "/rows/0/residual_cell",
+                "destination 不动"
+              ],
+              "source": "OBS-1.item4-anchors#6"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/1/residual_cell",
+                "阶段残留"
+              ],
+              "source": "OBS-1.item4-anchors#6"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/rows/5/residual_cell",
+                "protected marker 尚未写入"
+              ],
+              "source": "OBS-1.item4-anchors#6"
+            }
+          ],
+          "source": "OBS-1.item4-anchors#6"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "count",
+              "args": [
+                "/call_sites",
+                6
+              ],
+              "cmp": "==",
+              "source": "OBS-1.item4-anchors#7"
+            },
+            {
+              "op": "seq_eq",
+              "args": [
+                "/call_sites/*/anchor_no",
+                [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ]
+              ],
+              "source": "OBS-1.item4-anchors#7"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/call_sites/*",
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/matched_count",
+                    1
+                  ],
+                  "source": "OBS-1.item4-anchors#7"
+                }
+              ],
+              "source": "OBS-1.item4-anchors#7"
+            }
+          ],
+          "source": "OBS-1.item4-anchors#7"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "forall",
+              "args": [
+                "/residual_obs/*",
+                {
+                  "op": "implies",
+                  "args": [
+                    {
+                      "op": "eq",
+                      "args": [
+                        "@/anchor_no",
+                        1
+                      ],
+                      "source": "OBS-1.item4-anchors#8"
+                    },
+                    {
+                      "op": "eq",
+                      "args": [
+                        "@/destination_unchanged",
+                        true
+                      ],
+                      "source": "OBS-1.item4-anchors#8"
+                    }
+                  ],
+                  "source": "OBS-1.item4-anchors#8"
+                }
+              ],
+              "source": "OBS-1.item4-anchors#8"
+            },
+            {
+              "op": "exists",
+              "args": [
+                "/residual_obs/*",
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/anchor_no",
+                    2
+                  ],
+                  "source": "OBS-1.item4-anchors#8"
+                }
+              ],
+              "source": "OBS-1.item4-anchors#8"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/residual_obs/*",
+                {
+                  "op": "implies",
+                  "args": [
+                    {
+                      "op": "eq",
+                      "args": [
+                        "@/anchor_no",
+                        6
+                      ],
+                      "source": "OBS-1.item4-anchors#8"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "eq",
+                          "args": [
+                            "@/workdir_marker/state",
+                            "PRESENT"
+                          ],
+                          "source": "OBS-1.item4-anchors#8"
+                        },
+                        {
+                          "op": "eq",
+                          "args": [
+                            "@/protected_marker/state",
+                            "ABSENT"
+                          ],
+                          "source": "OBS-1.item4-anchors#8"
+                        },
+                        {
+                          "op": "eq",
+                          "args": [
+                            "@/exclude_completed",
+                            false
+                          ],
+                          "source": "OBS-1.item4-anchors#8"
+                        }
+                      ],
+                      "source": "OBS-1.item4-anchors#8"
+                    }
+                  ],
+                  "source": "OBS-1.item4-anchors#8"
+                }
+              ],
+              "source": "OBS-1.item4-anchors#8"
+            },
+            {
+              "op": "set_eq",
+              "args": [
+                "/residual_obs/*/anchor_no",
+                [
+                  1,
+                  2,
+                  6
+                ]
+              ],
+              "source": "OBS-1.item4-anchors#8"
+            }
+          ],
+          "source": "OBS-1.item4-anchors#8"
+        }
+      ],
+      "source": "§2+§3:OBS-1.item4-anchors"
+    }
+  },
+  {
+    "claim_id": "OBS-1.item5-order",
+    "type": "ASSERTION",
+    "subject": "`mark_worktree_protected` 的调用顺序、两个中断时点的失败态、既有读取方对其的结果",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "call_order": {
+          "kind": "array",
+          "items": "str"
+        },
+        "scenarios": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "scenario_id": "str",
+              "protected_marker": {
+                "kind": "record",
+                "required": {
+                  "state": "str"
+                },
+                "optional": {
+                  "sha256": "str"
+                }
+              },
+              "readers": {
+                "kind": "array",
+                "items": {
+                  "kind": "record",
+                  "required": {
+                    "reader": "str",
+                    "result_kind": "str",
+                    "result_value_or_type": "str"
+                  },
+                  "optional": {}
+                }
+              }
+            },
+            "optional": {}
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-1.item5-order"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "seq_eq",
+          "args": [
+            "/call_order",
+            [
+              "_verify_cleanup_handle",
+              "_exclude_private_files",
+              "write_protected_marker"
+            ]
+          ],
+          "source": "OBS-1.item5-order#1"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/scenarios/*/scenario_id",
+            [
+              "EXCLUDE_INTERRUPTED",
+              "MARKER_WRITE_INTERRUPTED"
+            ]
+          ],
+          "source": "OBS-1.item5-order#2"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/scenarios/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/scenario_id",
+                    "EXCLUDE_INTERRUPTED"
+                  ],
+                  "source": "OBS-1.item5-order#3"
+                },
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/protected_marker/state",
+                    "ABSENT"
+                  ],
+                  "source": "OBS-1.item5-order#3"
+                }
+              ],
+              "source": "OBS-1.item5-order#3"
+            }
+          ],
+          "source": "OBS-1.item5-order#3"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/scenarios/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/scenario_id",
+                    "MARKER_WRITE_INTERRUPTED"
+                  ],
+                  "source": "OBS-1.item5-order#4"
+                },
+                {
+                  "op": "in",
+                  "args": [
+                    "@/protected_marker/state",
+                    [
+                      "ABSENT",
+                      "PARTIAL"
+                    ]
+                  ],
+                  "source": "OBS-1.item5-order#4"
+                }
+              ],
+              "source": "OBS-1.item5-order#4"
+            }
+          ],
+          "source": "OBS-1.item5-order#4"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/scenarios/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/protected_marker/state",
+                    "PARTIAL"
+                  ],
+                  "source": "OBS-1.item5-order#5"
+                },
+                {
+                  "op": "present",
+                  "args": [
+                    "@/protected_marker/sha256"
+                  ],
+                  "source": "OBS-1.item5-order#5"
+                }
+              ],
+              "source": "OBS-1.item5-order#5"
+            }
+          ],
+          "source": "OBS-1.item5-order#5"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/scenarios/*",
+            {
+              "op": "all",
+              "args": [
+                {
+                  "op": "nonempty",
+                  "args": [
+                    "@/readers"
+                  ],
+                  "source": "OBS-1.item5-order#6"
+                },
+                {
+                  "op": "exists",
+                  "args": [
+                    "@/readers/*",
+                    {
+                      "op": "eq",
+                      "args": [
+                        "@/reader",
+                        "is_protected"
+                      ],
+                      "source": "OBS-1.item5-order#6"
+                    }
+                  ],
+                  "source": "OBS-1.item5-order#6"
+                }
+              ],
+              "source": "OBS-1.item5-order#6"
+            }
+          ],
+          "source": "OBS-1.item5-order#6"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/scenarios/*",
+            {
+              "op": "set_eq",
+              "args": [
+                "@/readers/*/reader",
+                {
+                  "op": "$file",
+                  "args": [
+                    "E/B-1-anchors.json",
+                    "/protected_marker_readers/*"
+                  ],
+                  "source": "OBS-1.item5-order#7"
+                }
+              ],
+              "source": "OBS-1.item5-order#7"
+            }
+          ],
+          "source": "OBS-1.item5-order#7"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/scenarios/*/readers/*",
+            {
+              "op": "in",
+              "args": [
+                "@/result_kind",
+                [
+                  "RETURN",
+                  "EXCEPTION"
+                ]
+              ],
+              "source": "OBS-1.item5-order#8"
+            }
+          ],
+          "source": "OBS-1.item5-order#8"
+        }
+      ],
+      "source": "§2+§3:OBS-1.item5-order"
+    }
+  },
+  {
+    "claim_id": "OBS-2.seg1-staleness",
+    "type": "ASSERTION",
+    "subject": "step-0 §6.2 每个条目在当前树上是否仍然成立",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "entries": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "entry_id": "str",
+              "staleness": "str",
+              "current_fact": {
+                "kind": "record",
+                "required": {
+                  "exists": "bool",
+                  "shape": "str"
+                },
+                "optional": {}
+              }
+            },
+            "optional": {}
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-2.seg1-staleness"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/entries/*/entry_id",
+            {
+              "op": "$ref",
+              "args": [
+                "OBS-1.item1-basis",
+                "/entries/*/entry_id"
+              ],
+              "source": "OBS-2.seg1-staleness#1"
+            }
+          ],
+          "source": "OBS-2.seg1-staleness#1"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/entries/*",
+            {
+              "op": "in",
+              "args": [
+                "@/staleness",
+                [
+                  "CURRENT",
+                  "STALE"
+                ]
+              ],
+              "source": "OBS-2.seg1-staleness#2"
+            }
+          ],
+          "source": "OBS-2.seg1-staleness#2"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/entries/*",
+            {
+              "op": "all",
+              "args": [
+                {
+                  "op": "present",
+                  "args": [
+                    "@/current_fact/exists"
+                  ],
+                  "source": "OBS-2.seg1-staleness#3"
+                },
+                {
+                  "op": "present",
+                  "args": [
+                    "@/current_fact/shape"
+                  ],
+                  "source": "OBS-2.seg1-staleness#3"
+                }
+              ],
+              "source": "OBS-2.seg1-staleness#3"
+            }
+          ],
+          "source": "OBS-2.seg1-staleness#3"
+        }
+      ],
+      "source": "§2+§3:OBS-2.seg1-staleness"
+    }
+  },
+  {
+    "claim_id": "OBS-2.seg2-form",
+    "type": "ASSERTION",
+    "subject": "step-0 与 skill-1…6 共七份 closeout 中 shim 相关条目的形态与可用性",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "sources": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "batch": "str",
+              "path": "str",
+              "sha256": "str",
+              "form": "str",
+              "usable_as_coverage": "bool",
+              "entry_count": "int"
+            },
+            "optional": {}
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-2.seg2-form"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/sources/*/batch",
+            [
+              "step-0",
+              "skill-1",
+              "skill-2",
+              "skill-3",
+              "skill-4",
+              "skill-5",
+              "skill-6"
+            ]
+          ],
+          "source": "OBS-2.seg2-form#1"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/sources/*",
+            {
+              "op": "matches",
+              "args": [
+                "@/path",
+                "^docs/clang-fix-campaign/review/p49-(step0|skill[1-6])-closeout\\.md$"
+              ],
+              "source": "OBS-2.seg2-form#2"
+            }
+          ],
+          "source": "OBS-2.seg2-form#2"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/sources/*",
+            {
+              "op": "in",
+              "args": [
+                "@/form",
+                [
+                  "STRUCTURED_TABLE",
+                  "PROSE",
+                  "NONE"
+                ]
+              ],
+              "source": "OBS-2.seg2-form#3"
+            }
+          ],
+          "source": "OBS-2.seg2-form#3"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/sources/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/usable_as_coverage",
+                    true
+                  ],
+                  "source": "OBS-2.seg2-form#4"
+                },
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/form",
+                    "STRUCTURED_TABLE"
+                  ],
+                  "source": "OBS-2.seg2-form#4"
+                }
+              ],
+              "source": "OBS-2.seg2-form#4"
+            }
+          ],
+          "source": "OBS-2.seg2-form#4"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/sources/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/form",
+                    "NONE"
+                  ],
+                  "source": "OBS-2.seg2-form#5"
+                },
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/entry_count",
+                    0
+                  ],
+                  "source": "OBS-2.seg2-form#5"
+                }
+              ],
+              "source": "OBS-2.seg2-form#5"
+            }
+          ],
+          "source": "OBS-2.seg2-form#5"
+        }
+      ],
+      "source": "§2+§3:OBS-2.seg2-form"
+    }
+  },
+  {
+    "claim_id": "OBS-3.commit-order",
+    "type": "ASSERTION",
+    "subject": "skill-3 批次登记的抽取提交、测试提交,以及使旧址模块变为 shim 的提交",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "batch": "str",
+        "registered_extraction_sha": {
+          "kind": "record",
+          "required": {
+            "value": "str",
+            "source_path": "str",
+            "source_sha256": "str"
+          },
+          "optional": {}
+        },
+        "test_commit_shas": {
+          "kind": "array",
+          "items": "str"
+        },
+        "shim_creations": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "old_path": "str",
+              "creating_sha": "str",
+              "pre_def_count": "int",
+              "post_def_count": "int"
+            },
+            "optional": {}
+          }
+        },
+        "relations": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "a": "str",
+              "b": "str",
+              "relation": "str"
+            },
+            "optional": {}
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-3.commit-order"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "eq",
+              "args": [
+                "/batch",
+                "skill-3"
+              ],
+              "source": "OBS-3.commit-order#1"
+            },
+            {
+              "op": "eq",
+              "args": [
+                "/registered_extraction_sha/source_path",
+                "docs/clang-fix-campaign/review/p49-skill3-closeout.md"
+              ],
+              "source": "OBS-3.commit-order#1"
+            },
+            {
+              "op": "matches",
+              "args": [
+                "/registered_extraction_sha/value",
+                "^[0-9a-f]{40}$"
+              ],
+              "source": "OBS-3.commit-order#1"
+            }
+          ],
+          "source": "OBS-3.commit-order#1"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/shim_creations"
+              ],
+              "source": "OBS-3.commit-order#2"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/shim_creations/*",
+                {
+                  "op": "all",
+                  "args": [
+                    {
+                      "op": "matches",
+                      "args": [
+                        "@/creating_sha",
+                        "^[0-9a-f]{40}$"
+                      ],
+                      "source": "OBS-3.commit-order#2"
+                    },
+                    {
+                      "op": "not",
+                      "args": [
+                        {
+                          "op": "eq",
+                          "args": [
+                            "@/pre_def_count",
+                            0
+                          ],
+                          "source": "OBS-3.commit-order#2"
+                        }
+                      ],
+                      "source": "OBS-3.commit-order#2"
+                    },
+                    {
+                      "op": "eq",
+                      "args": [
+                        "@/post_def_count",
+                        0
+                      ],
+                      "source": "OBS-3.commit-order#2"
+                    }
+                  ],
+                  "source": "OBS-3.commit-order#2"
+                }
+              ],
+              "source": "OBS-3.commit-order#2"
+            }
+          ],
+          "source": "OBS-3.commit-order#2"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/relations/*",
+            {
+              "op": "in",
+              "args": [
+                "@/relation",
+                [
+                  "ANCESTOR",
+                  "DESCENDANT",
+                  "SAME",
+                  "UNRELATED"
+                ]
+              ],
+              "source": "OBS-3.commit-order#3"
+            }
+          ],
+          "source": "OBS-3.commit-order#3"
+        }
+      ],
+      "source": "§2+§3:OBS-3.commit-order"
+    }
+  },
+  {
+    "claim_id": "OBS-3.transition-map",
+    "type": "ASSERTION",
+    "subject": "当前树中每个旧址整模块 shim 由哪一批、哪一个提交创建",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "modules": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "path": "str",
+              "creating_batch": "str",
+              "pre_def_count": "int",
+              "post_def_count": "int",
+              "uncovered_class": "str"
+            },
+            "optional": {
+              "creating_sha": "str"
+            }
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-3.transition-map"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/modules/*",
+            {
+              "op": "in",
+              "args": [
+                "@/creating_batch",
+                [
+                  "step-0",
+                  "skill-1",
+                  "skill-2",
+                  "skill-3",
+                  "skill-4",
+                  "skill-5",
+                  "skill-6",
+                  "UNREGISTERED"
+                ]
+              ],
+              "source": "OBS-3.transition-map#1"
+            }
+          ],
+          "source": "OBS-3.transition-map#1"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/modules/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "ne",
+                  "args": [
+                    "@/creating_batch",
+                    "UNREGISTERED"
+                  ],
+                  "source": "OBS-3.transition-map#2"
+                },
+                {
+                  "op": "all",
+                  "args": [
+                    {
+                      "op": "not",
+                      "args": [
+                        {
+                          "op": "eq",
+                          "args": [
+                            "@/pre_def_count",
+                            0
+                          ],
+                          "source": "OBS-3.transition-map#2"
+                        }
+                      ],
+                      "source": "OBS-3.transition-map#2"
+                    },
+                    {
+                      "op": "eq",
+                      "args": [
+                        "@/post_def_count",
+                        0
+                      ],
+                      "source": "OBS-3.transition-map#2"
+                    }
+                  ],
+                  "source": "OBS-3.transition-map#2"
+                }
+              ],
+              "source": "OBS-3.transition-map#2"
+            }
+          ],
+          "source": "OBS-3.transition-map#2"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/modules/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "ne",
+                  "args": [
+                    "@/creating_batch",
+                    "UNREGISTERED"
+                  ],
+                  "source": "OBS-3.transition-map#3"
+                },
+                {
+                  "op": "in_path",
+                  "args": [
+                    "@/creating_sha",
+                    {
+                      "op": "$file",
+                      "args": [
+                        "E/B-2-sources.json",
+                        "/registered_extraction_shas/*"
+                      ],
+                      "source": "OBS-3.transition-map#3"
+                    }
+                  ],
+                  "source": "OBS-3.transition-map#3"
+                }
+              ],
+              "source": "OBS-3.transition-map#3"
+            }
+          ],
+          "source": "OBS-3.transition-map#3"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/modules/*",
+            {
+              "op": "in",
+              "args": [
+                "@/uncovered_class",
+                [
+                  "NONE",
+                  "a",
+                  "b",
+                  "b'",
+                  "c",
+                  "d",
+                  "e",
+                  "f",
+                  "g",
+                  "h"
+                ]
+              ],
+              "source": "OBS-3.transition-map#4"
+            }
+          ],
+          "source": "OBS-3.transition-map#4"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/modules/*/path",
+            {
+              "op": "$file",
+              "args": [
+                "E/raw_findings.json",
+                "/module_granularity_old_location_paths/*"
+              ],
+              "source": "OBS-3.transition-map#5"
+            }
+          ],
+          "source": "OBS-3.transition-map#5"
+        }
+      ],
+      "source": "§2+§3:OBS-3.transition-map"
+    }
+  },
+  {
+    "claim_id": "OBS-4.owner-attribution",
+    "type": "ASSERTION",
+    "subject": "每个 A=是 的 binding 候选(`#REEXPORT`/`#INLINE`)所导入符号的定义位置",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "records": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "candidate_id": "str",
+              "symbol": "str",
+              "owner_module": "str",
+              "definition_sites": {
+                "kind": "array",
+                "items": {
+                  "kind": "record",
+                  "required": {
+                    "path": "str",
+                    "selector": "str"
+                  },
+                  "optional": {}
+                }
+              }
+            },
+            "optional": {
+              "owner_outside_host": "bool"
+            }
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-4.owner-attribution"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/records/*/candidate_id",
+            {
+              "op": "$file",
+              "args": [
+                "E/B-15-disposition_evidence.json",
+                "/a_true_binding_candidates/*"
+              ],
+              "source": "OBS-4.owner-attribution#1"
+            }
+          ],
+          "source": "OBS-4.owner-attribution#1"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/records/*",
+            {
+              "op": "count",
+              "args": [
+                "@/definition_sites",
+                1
+              ],
+              "cmp": ">=",
+              "source": "OBS-4.owner-attribution#2"
+            }
+          ],
+          "source": "OBS-4.owner-attribution#2"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/records/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "count",
+                  "args": [
+                    "@/definition_sites",
+                    1
+                  ],
+                  "cmp": "==",
+                  "source": "OBS-4.owner-attribution#3"
+                },
+                {
+                  "op": "present",
+                  "args": [
+                    "@/owner_outside_host"
+                  ],
+                  "source": "OBS-4.owner-attribution#3"
+                }
+              ],
+              "source": "OBS-4.owner-attribution#3"
+            }
+          ],
+          "source": "OBS-4.owner-attribution#3"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/records/*",
+            {
+              "op": "implies",
+              "args": [
+                {
+                  "op": "not",
+                  "args": [
+                    {
+                      "op": "count",
+                      "args": [
+                        "@/definition_sites",
+                        1
+                      ],
+                      "cmp": "==",
+                      "source": "OBS-4.owner-attribution#4"
+                    }
+                  ],
+                  "source": "OBS-4.owner-attribution#4"
+                },
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/owner_module",
+                    "AMBIGUOUS"
+                  ],
+                  "source": "OBS-4.owner-attribution#4"
+                }
+              ],
+              "source": "OBS-4.owner-attribution#4"
+            }
+          ],
+          "source": "OBS-4.owner-attribution#4"
+        }
+      ],
+      "source": "§2+§3:OBS-4.owner-attribution"
+    }
+  },
+  {
+    "claim_id": "OBS-5.entry-consumers",
+    "type": "ASSERTION",
+    "subject": "仓库全部已文档化入口(打包入口、包的 `__main__`、各 SKILL.md 中写明的命令)及其 smoke 结果",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "entries": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "entry_id": "str",
+              "kind": "str",
+              "target": "str",
+              "documented_in": {
+                "kind": "array",
+                "items": "str"
+              },
+              "consumers": {
+                "kind": "array",
+                "items": "str"
+              },
+              "smoke_command": "str",
+              "smoke_exit": "int"
+            },
+            "optional": {}
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-5.entry-consumers"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/entries/*",
+            {
+              "op": "in",
+              "args": [
+                "@/kind",
+                [
+                  "CONSOLE_SCRIPT",
+                  "PACKAGE_MAIN",
+                  "SKILL_MD_COMMAND"
+                ]
+              ],
+              "source": "OBS-5.entry-consumers#1"
+            }
+          ],
+          "source": "OBS-5.entry-consumers#1"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/entries/*/entry_id",
+            {
+              "op": "$file",
+              "args": [
+                "E/B-5-entries.json",
+                "/independent_enumeration/*"
+              ],
+              "source": "OBS-5.entry-consumers#2"
+            }
+          ],
+          "source": "OBS-5.entry-consumers#2"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/entries/*",
+            {
+              "op": "all",
+              "args": [
+                {
+                  "op": "nonempty",
+                  "args": [
+                    "@/documented_in"
+                  ],
+                  "source": "OBS-5.entry-consumers#3"
+                },
+                {
+                  "op": "present",
+                  "args": [
+                    "@/smoke_command"
+                  ],
+                  "source": "OBS-5.entry-consumers#3"
+                },
+                {
+                  "op": "eq",
+                  "args": [
+                    "@/smoke_exit",
+                    0
+                  ],
+                  "source": "OBS-5.entry-consumers#3"
+                }
+              ],
+              "source": "OBS-5.entry-consumers#3"
+            }
+          ],
+          "source": "OBS-5.entry-consumers#3"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/entries/*",
+            {
+              "op": "not",
+              "args": [
+                {
+                  "op": "matches",
+                  "args": [
+                    "@/smoke_command",
+                    "(^|\\s)tests/"
+                  ],
+                  "source": "OBS-5.entry-consumers#4"
+                }
+              ],
+              "source": "OBS-5.entry-consumers#4"
+            }
+          ],
+          "source": "OBS-5.entry-consumers#4"
+        }
+      ],
+      "source": "§2+§3:OBS-5.entry-consumers"
+    }
+  },
+  {
+    "claim_id": "OBS-6.proxy-count",
+    "type": "ASSERTION",
+    "subject": "当前树上的 `PROXY_CALLABLE` 候选",
+    "quantifier": "计数",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "count": "int",
+        "candidate_ids": {
+          "kind": "array",
+          "items": "str"
+        },
+        "by_form": {
+          "kind": "map",
+          "values": "int"
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-6.proxy-count"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "count",
+          "args": [
+            "/candidate_ids",
+            {
+              "op": "$value",
+              "args": [
+                "/count"
+              ],
+              "source": "OBS-6.proxy-count#1"
+            }
+          ],
+          "cmp": "==",
+          "source": "OBS-6.proxy-count#1"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/candidate_ids",
+            {
+              "op": "$file",
+              "args": [
+                "E/raw_findings.json",
+                "/proxy_candidate_ids/*"
+              ],
+              "source": "OBS-6.proxy-count#2"
+            }
+          ],
+          "source": "OBS-6.proxy-count#2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "subset",
+              "args": [
+                {
+                  "op": "keys",
+                  "args": [
+                    "/by_form"
+                  ],
+                  "source": "OBS-6.proxy-count#3"
+                },
+                [
+                  "DIRECT",
+                  "PARTIAL_FORWARD",
+                  "METHOD_LEVEL",
+                  "DECORATOR_GENERATED",
+                  "HOST_SIDE_EFFECT"
+                ]
+              ],
+              "source": "OBS-6.proxy-count#3"
+            },
+            {
+              "op": "sum_eq",
+              "args": [
+                "/by_form",
+                "/count"
+              ],
+              "source": "OBS-6.proxy-count#3"
+            }
+          ],
+          "source": "OBS-6.proxy-count#3"
+        }
+      ],
+      "source": "§2+§3:OBS-6.proxy-count"
+    }
+  },
+  {
+    "claim_id": "OBS-6.intra-package-shim",
+    "type": "ASSERTION",
+    "subject": "宿主与委托目标位于同一顶层包的兼容壳",
+    "quantifier": "∃/¬∃ 如实记录",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "records": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "candidate_id": "str",
+              "host_top_package": "str",
+              "target_top_package": "str"
+            },
+            "optional": {}
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-6.intra-package-shim"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/records/*",
+            {
+              "op": "eq_path",
+              "args": [
+                "@/host_top_package",
+                "@/target_top_package"
+              ],
+              "source": "OBS-6.intra-package-shim#1"
+            }
+          ],
+          "source": "OBS-6.intra-package-shim#1"
+        },
+        {
+          "op": "subset",
+          "args": [
+            "/records/*/candidate_id",
+            {
+              "op": "$file",
+              "args": [
+                "E/raw_findings.json",
+                "/all_candidate_ids/*"
+              ],
+              "source": "OBS-6.intra-package-shim#2"
+            }
+          ],
+          "source": "OBS-6.intra-package-shim#2"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/records/*/candidate_id",
+            {
+              "op": "$file",
+              "args": [
+                "E/raw_findings.json",
+                "/same_top_package_candidate_ids/*"
+              ],
+              "source": "OBS-6.intra-package-shim#3"
+            }
+          ],
+          "source": "OBS-6.intra-package-shim#3"
+        }
+      ],
+      "source": "§2+§3:OBS-6.intra-package-shim"
+    }
+  },
+  {
+    "claim_id": "OBS-7.falsification-samples",
+    "type": "ASSERTION",
+    "subject": "三份前批 ledger 中登记的现存漏检样本,以及消费者引擎对它们的命中",
+    "quantifier": "∀",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "sources": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "path": "str",
+              "sha256": "str"
+            },
+            "optional": {}
+          }
+        },
+        "samples": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "sample_id": "str",
+              "form": "str",
+              "file": "str",
+              "selector": "str"
+            },
+            "optional": {}
+          }
+        },
+        "hits": {
+          "kind": "array",
+          "items": {
+            "kind": "record",
+            "required": {
+              "sample_id": "str",
+              "consumer_edge_id": "str"
+            },
+            "optional": {}
+          }
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-7.falsification-samples"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "nonempty",
+          "args": [
+            "/samples"
+          ],
+          "source": "OBS-7.falsification-samples#1"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/hits/*/sample_id",
+            "/samples/*/sample_id"
+          ],
+          "source": "OBS-7.falsification-samples#2"
+        },
+        {
+          "op": "forall",
+          "args": [
+            "/samples/*",
+            {
+              "op": "in",
+              "args": [
+                "@/form",
+                [
+                  "C1",
+                  "C4",
+                  "C5a",
+                  "C2a",
+                  "C2b",
+                  "C3",
+                  "C6a",
+                  "C6b",
+                  "C5b",
+                  "C5c",
+                  "C5d",
+                  "C5e",
+                  "C6c",
+                  "C6d",
+                  "C8a",
+                  "C8b",
+                  "C7a",
+                  "C7b",
+                  "C7c",
+                  "C7d"
+                ]
+              ],
+              "source": "OBS-7.falsification-samples#3"
+            }
+          ],
+          "source": "OBS-7.falsification-samples#3"
+        },
+        {
+          "op": "nonempty",
+          "args": [
+            "/sources"
+          ],
+          "source": "OBS-7.falsification-samples#4"
+        }
+      ],
+      "source": "§2+§3:OBS-7.falsification-samples"
+    }
+  },
+  {
+    "claim_id": "OBS-7.class-c-projection",
+    "type": "ASSERTION",
+    "subject": "按 §2 三分规则落入 (c) 类(不可判定)的测试",
+    "quantifier": "计数",
+    "output_schema": {
+      "kind": "record",
+      "required": {
+        "claim_id": "str",
+        "snapshot": "str",
+        "evidence": {
+          "kind": "array",
+          "items": {
+            "kind": "union",
+            "tag": "kind",
+            "variants": {
+              "COMMAND": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "COMMAND"
+                  },
+                  "command": "str",
+                  "cwd": "str",
+                  "exit_code": "int",
+                  "output_sha256": "str"
+                },
+                "optional": {}
+              },
+              "FILE": {
+                "kind": "record",
+                "required": {
+                  "kind": {
+                    "kind": "literal",
+                    "value": "FILE"
+                  },
+                  "path": "str",
+                  "sha256": "str",
+                  "selector": "str"
+                },
+                "optional": {}
+              }
+            }
+          }
+        },
+        "count": "int",
+        "test_ids": {
+          "kind": "array",
+          "items": "str"
+        },
+        "reasons": {
+          "kind": "map",
+          "values": "str"
+        }
+      },
+      "optional": {}
+    },
+    "predicate": {
+      "op": "all",
+      "args": [
+        {
+          "op": "eq",
+          "args": [
+            "/claim_id",
+            "OBS-7.class-c-projection"
+          ],
+          "source": "G1"
+        },
+        {
+          "op": "eq_path",
+          "args": [
+            "/snapshot",
+            "$ctx.tree"
+          ],
+          "source": "G2"
+        },
+        {
+          "op": "all",
+          "args": [
+            {
+              "op": "nonempty",
+              "args": [
+                "/evidence"
+              ],
+              "source": "G3"
+            },
+            {
+              "op": "forall",
+              "args": [
+                "/evidence/*",
+                {
+                  "op": "any",
+                  "args": [
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/command"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/exit_code"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/output_sha256"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    },
+                    {
+                      "op": "all",
+                      "args": [
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/path"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/sha256"
+                          ],
+                          "source": "G3"
+                        },
+                        {
+                          "op": "present",
+                          "args": [
+                            "@/selector"
+                          ],
+                          "source": "G3"
+                        }
+                      ],
+                      "source": "G3"
+                    }
+                  ],
+                  "source": "G3"
+                }
+              ],
+              "source": "G3"
+            }
+          ],
+          "source": "G3"
+        },
+        {
+          "op": "schema_closed",
+          "args": [],
+          "source": "G4"
+        },
+        {
+          "op": "count",
+          "args": [
+            "/test_ids",
+            {
+              "op": "$value",
+              "args": [
+                "/count"
+              ],
+              "source": "OBS-7.class-c-projection#1"
+            }
+          ],
+          "cmp": "==",
+          "source": "OBS-7.class-c-projection#1"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            "/test_ids",
+            {
+              "op": "$file",
+              "args": [
+                "E/private_consumption.json",
+                "/class_c_test_ids/*"
+              ],
+              "source": "OBS-7.class-c-projection#2"
+            }
+          ],
+          "source": "OBS-7.class-c-projection#2"
+        },
+        {
+          "op": "set_eq",
+          "args": [
+            {
+              "op": "keys",
+              "args": [
+                "/reasons"
+              ],
+              "source": "OBS-7.class-c-projection#3"
+            },
+            "/test_ids"
+          ],
+          "source": "OBS-7.class-c-projection#3"
+        },
+        {
+          "op": "forall",
+          "args": [
+            {
+              "op": "values",
+              "args": [
+                "/reasons"
+              ],
+              "source": "OBS-7.class-c-projection#4"
+            },
+            {
+              "op": "in",
+              "args": [
+                "@",
+                [
+                  "GRAPH_NOT_CLOSED",
+                  "SEMANTICS_AMBIGUOUS",
+                  "DYNAMIC_CALL_UNRESOLVED"
+                ]
+              ],
+              "source": "OBS-7.class-c-projection#4"
+            }
+          ],
+          "source": "OBS-7.class-c-projection#4"
+        }
+      ],
+      "source": "§2+§3:OBS-7.class-c-projection"
+    }
+  }
+]

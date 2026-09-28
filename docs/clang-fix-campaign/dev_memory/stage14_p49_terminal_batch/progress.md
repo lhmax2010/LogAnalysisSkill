@@ -1,10 +1,10 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART1_BLOCKED_V11。更新日期: 2026-09-28。
-2026-09-27 完成冻结稿入库与实施前复述;2026-09-28 接收 predicate 来源并建立
-干净工作区。原三项停止问题已由判定条件v1.1关闭(第9.3节),v1.1取代v1.0
-作为编码来源;新发现两项编码阻塞(第10节)。未运行任何 OBS producer,
-未编写 verifier/测试,未采集 B-0;生产实现未开始。
+状态: A0_PART1_AWAITING_PREDICATE_REVIEW_V12。更新日期: 2026-09-28。
+判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
+PRED-01..05 全部 CLOSED;第11节记录候选编码、人工 fixture 测试与固定
+43a6aa6 工作区的 B-0 实跑。编码尚待设计方逐条核对、FatTank 批准及
+单独 commit 冻结。OBS producer 运行数为零;生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
 ## 0. 权威、输入与记录边界
@@ -400,7 +400,7 @@ C7a每个入口跑 `--help`。每项保留输入/命令/输出/exit/回退记录
 | 阶段 | 状态 | 证据 |
 |---|---|---|
 | 冻结稿入库与复述 | DONE @43a6aa6 | 本文件§0、Git提交三文件清单与冻结稿blob hash |
-| A₀ 第1段 | BLOCKED_V11 | 第10节:原三项CLOSED,新两项待裁决;干净worktree仍固定43a6aa6,无producer/verifier/B-0运行结果 |
+| A₀ 第1段 | AWAITING_PREDICATE_REVIEW_V12 | 第11节:134编号条件节点、95人工测试绿、B-0四项exit=0;待核对及单独冻结,不运行producer |
 | A / B / C各组 / 删除后验证 / D | NOT_STARTED | 依第6节顺序推进,不提前标完成 |
 
 每个后续 commit 追加:执行命令和exit原文、输入tree/hash、输出路径、已闭合结论、
@@ -575,9 +575,10 @@ exit=0
 错误标成已经包含在43a6aa6中。原始命令/cwd/exit/stdout记录在
 `a0-evidence/intake/v1.1-preflight.json`,不是OBS产出或B-0证据。
 
-### 10.2 新停止项(待设计方裁决)
+### 10.2 v1.1 停止项(历史记录;已由v1.2关闭,见11.1)
 
-以下`P:Lx`均指v1.1原件行号。本轮新增开放项为2,旧PRED-01/02/03保持CLOSED。
+以下`P:Lx`均指v1.1原件行号。当轮新增开放项为2,旧PRED-01/02/03保持CLOSED。
+当前 PRED-04/05 均 CLOSED;以下保留当时的问题与候选,不反写历史实测。
 
 | ID | 原文位置与要求 | 困难与影响 | 候选处理,须设计方裁决 |
 |---|---|---|---|
@@ -641,3 +642,182 @@ exit=0
 
 本轮只完成输入与停止记录,生产代码和测试零改动。等待PRED-04/05裁决后
 从编码继续;不越过停止点运行B-0,不把原件获批等同于JSON编码获批。
+
+## 11. A₀ 第1段续:按v1.2编码、人工控制与B-0(2026-09-28)
+
+### 11.1 输入、裁决关闭与人工批准边界
+
+本轮先读本记录,再执行`git pull --ff-only origin clang-fix-campaign`:
+`Already up to date.`,exit=0。续跑起点为`8241f293e956b8387705d2385497346768145a30`。
+交付原件已位于目标路径,本轮不改其字节,不改v1.31冻结设计。
+v1.2取代v1.0/v1.1为编码来源,旧两份原件保留。
+
+```text
+$ sha256sum docs/clang-fix-campaign/p49-terminal-obs-predicates-v1.2.md
+3397ee5b097142c0e956bfe8162033791641d752097662689b86d24d91a6b3f1  docs/clang-fix-campaign/p49-terminal-obs-predicates-v1.2.md
+exit=0
+```
+
+| 停止项 | 当前状态 | v1.2处理位置与本轮证据 |
+|---|---|---|
+| PRED-04 | CLOSED | §1:L68-84给出封闭record、optional、array、map、判别union与Common/Evidence/CodeState/MarkerState;§3十五个output_schema逐个重写为结构化形状。编码逐层展开,`test_schema_four_groups`四组通过,CodeState/嵌套字段控制另见item3测试 |
+| PRED-05 | CLOSED | item3#5:L155-161的LIVE分支含`eq(state,"VALUE")`;CodeState在L81限定ABSENT无value/VALUE有value。`test_item3_all_inputs`含原反例、LIVE合法与LIVE无value三个输入,以及悬空四输入,全部符合预期 |
+
+旧PRED-01/02/03仍CLOSED。**本轮新增停止报告条目数=0**。
+这是可编码性和人工样本测试结果,不是十五个OBS对真实仓库均成立的声明。
+H1仍有人工闸门:设计方逐条核对本候选JSON、FatTank批准、另commit冻结带hash。
+本提交不是该冻结commit,未生成真实OBS产物,不宣称SEAL-15整体已通过。
+
+### 11.2 交付路径与编码对账
+
+| 产物 | 路径(相对仓库根) |
+|---|---|
+| 逐claim候选与豁免表 | `docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json`;同目录`measurement_exemptions.json`=`[]` |
+| 比较器/renderer/canonical hash | `docs/clang-fix-campaign/tools/terminal_predicates.py` |
+| generated block与控制目录 | 同数据目录`predicates.generated.md`、`control_catalog.json`、`README.md` |
+| 人工假产出与测试 | `tests/fixtures/p49_terminal_predicates/synthetic.json`;`tests/unit/test_terminal_predicates.py` |
+| 编码/测试原始证据 | 本目录`a0-evidence/predicates-v1.2/` |
+| 固定旧树基线 | 本目录`a0-evidence/B-0/` |
+
+每条编号条件是claim根`all`的一个直接子节点;同一编号下多个显式表达式以
+`all`按原顺序组合。每个子表达式和引用操作数都带该条件的`source`。
+四共用条件先于专属条件;不把schema中的动态map改成开放record。
+schema从v1.2的显式结构记法转录,不从生产输出反推。
+subject/quantifier保留原文字段;不补与当前树有关的expected常量。
+
+下表由文档编号行与JSON直接子节点对比得到,原始结果:
+`a0-evidence/predicates-v1.2/encoding-counts.json`。
+自动检查证明编号/覆盖数量一致;逐条语义核对仍留给设计方,不把数量检查称为审批。
+
+| claim | 文档专属条件 + G1–G4 | 编码编号节点 | 递归表达式节点(含根) |
+|---|---|---|---|
+| OBS-1.item1-basis | 6 + 4 | 10 | 27 |
+| OBS-1.item2-scope | 8 + 4 | 12 | 33 |
+| OBS-1.item3-predicate | 6 + 4 | 10 | 44 |
+| OBS-1.item4-anchors | 8 + 4 | 12 | 60 |
+| OBS-1.item5-order | 8 + 4 | 12 | 40 |
+| OBS-2.seg1-staleness | 3 + 4 | 7 | 24 |
+| OBS-2.seg2-form | 5 + 4 | 9 | 29 |
+| OBS-3.commit-order | 3 + 4 | 7 | 30 |
+| OBS-3.transition-map | 5 + 4 | 9 | 34 |
+| OBS-4.owner-attribution | 4 + 4 | 8 | 29 |
+| OBS-5.entry-consumers | 4 + 4 | 8 | 28 |
+| OBS-6.proxy-count | 3 + 4 | 7 | 24 |
+| OBS-6.intra-package-shim | 3 + 4 | 7 | 22 |
+| OBS-7.falsification-samples | 4 + 4 | 8 | 21 |
+| OBS-7.class-c-projection | 4 + 4 | 8 | 25 |
+| 合计 | 74 + 60 = 134 | 134 | 470 |
+
+唯一文档条件编号为78个(74专属+4共用);共用条件实例化到15个claim后为134个。
+470含组合、子表达式、引用操作数与每claim组装根,不是新增470条要求。
+
+候选canonical hash(UTF-8/排序对象键/紧凑JSON/保留数组序,含完整claim对象,
+不含renderer_version):
+
+```text
+8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6
+```
+
+verifier要求外部expected hash与已保存generated block,不从待验输入自行生成
+oracle;翻转predicate或交换subject均被外部hash拒绝。renderer_version=1,
+每节点一行中文,旁注只通过renderer生成。工具无producer/子进程执行入口;
+`$file`只读取指定根之内的JSON,`$ref`只读取传入的事实。
+
+### 11.3 verifier、控制测试与开发检查实跑
+
+所有命令cwd为§9.2干净工作区。测试与工具使用主工作树的**绝对路径**读取本轮
+新文件;这些文件不谎称已存在于43a6aa6。各`*.command.json`记录读取版本的
+tool/tests SHA,与执行cwd/tree分开。fixture的`synthetic-tree`等均为人工值,
+不是固定树观测。95项测试未调用任何OBS producer。
+
+复现命令(变量仅缩写实跑记录中的绝对路径):
+
+```bash
+cd /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6
+R=/home/linhao/Toolchain/development/LogAnalysisSkill
+V=/tmp/p49-a0-baseline-v12-43a6aa6
+E=$R/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/predicates-v1.2
+env -u PYTHONPATH -u MYPYPATH -u PYTEST_ADDOPTS -u PYTEST_PLUGINS "$V/bin/python" -m pytest "$R/tests/unit/test_terminal_predicates.py" -vv --junitxml="$E/tests.xml"
+"$V/bin/ruff" check "$R/docs/clang-fix-campaign/tools/terminal_predicates.py" "$R/tests/unit/test_terminal_predicates.py"
+"$V/bin/mypy" --follow-imports=silent "$R/docs/clang-fix-campaign/tools/terminal_predicates.py" "$R/tests/unit/test_terminal_predicates.py"
+"$V/bin/python" -m py_compile "$R/docs/clang-fix-campaign/tools/terminal_predicates.py" "$R/tests/unit/test_terminal_predicates.py"
+"$V/bin/python" "$R/docs/clang-fix-campaign/tools/terminal_predicates.py" "$R/docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json"
+```
+
+最后一条加`--render`取得generated block。六个命令的argv/env/exit及完整
+stdout/stderr分别保存为`tests/ruff/mypy/py_compile/validate/render.*`。
+输出摘录:
+
+```text
+============================== 95 passed in 0.35s ==============================
+tests exit 0
+All checks passed!
+ruff exit 0
+Success: no issues found in 2 source files
+mypy exit 0
+py_compile exit 0  (stdout/stderr empty)
+registry_valid claims=15 canonical_hash=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6
+validate exit 0
+render exit 0
+```
+
+| 控制组 | 实测条目/内容 | 结果 |
+|---|---|---|
+| 封闭语言 | 28种节点/参数表达式,各含正反 | PASS |
+| ASSERTION | 翻转predicate/交换subject/旧snapshot/round-trip不一致 | 四条均拒绝 |
+| 型别 | 空predicate/解析失败/无理由豁免 | 三条均拒绝 |
+| 豁免上界 | 通配/决策引用/GATE引用/带predicate | 四条均拒绝 |
+| claim事实变异 | 15个claim各改坏一个相关事实 | 原人工样本全绿,各变异红 |
+| 求值语义 | 缺必填/多字段/未短路缺失错误/已短路不求值/空量词 | 五组PASS |
+| item3#5 | 悬空四输入+LIVE三输入(含PRED-05反例) | 七项PASS |
+| schema记法 | Evidence各变体与非法值/map/optional/嵌套extra | 四组PASS |
+| 其它边界 | 外部hash、renderer版本、JSON Pointer、缺引用、非法AST、union结构、batch空豁免等 | PASS |
+| CTRL-INTRA-PKG-PROXY | G-DETECTOR同包代理正控制与near-miss | NOT_RUN;只登记,扫描器尚未实现 |
+
+测试命令exit=0表示它成功断言负输入被拒绝,不表示负输入本身通过。
+逐控制nodeid、来源与测试证据见`control_catalog.json`。实跑JUnit生成其状态,
+不把NOT_RUN算进通过分子。未生成真实B-11控制产物或扫描器结论。
+
+开发过程如实记录:首轮人工测试89 passed/1 failed,原因是手构正样本把
+closeout路径误写成`p49-skill-1-closeout.md`这类名字,违反已正确编码的正则。
+只修fixture为实际契约的`p49-skill1-closeout.md`形态,未改predicate;
+之后90/90,补齐边界测试后为上列95/95。ruff行宽与mypy注解错误均已修复。
+
+### 11.4 B-0原始基线(不是OBS产出)
+
+继续复用§9.2工作区,HEAD/tree不变。独立venv:
+`/tmp/p49-a0-baseline-v12-43a6aa6`,Python 3.12.3。
+在该工作区执行`python -m pip install -e '.[dev]' -r requirements-dev.txt`,
+exit=0,安装记录`B-0/install.log`与`install.command.json`;
+`pip freeze`原文在`packages.log`。运行时清除PYTHONPATH/MYPYPATH/
+PYTEST_ADDOPTS/PYTEST_PLUGINS,PATH与VIRTUAL_ENV指向独立环境。
+
+| 命令(cwd固定工作区) | 实测输出摘录 | exit |
+|---|---|---|
+| `pytest tests/ -vv --tb=short --junitxml=<B-0绝对路径>/pytest.xml` | `941 passed, 1 skipped in 20.64s` | 0 |
+| `mypy` | `Success: no issues found in 114 source files` | 0 |
+| `ruff check .` | `All checks passed!` | 0 |
+| `lint-imports` | `Analyzed 67 files, 129 dependencies.`;`Contracts: 6 kept, 0 broken.` | 0 |
+
+完整输出分别为`a0-evidence/B-0/{pytest,mypy,ruff,lint-imports}.log`;
+每项`*.command.json`含精确argv、cwd、必要环境、exit、HEAD/tree。
+`nodeids.json`记录942个唯一nodeid及结果,逐项来自verbose日志并与JUnit
+计数核对。这里的941/1是本次实跑,不从历史报告复制;新人工测试95项另计,
+不加进固定旧树的B-0。没有运行OBS producer。
+
+环境准备的系统`python3 -m venv`因缺ensurepip退出1;改用uv并显式选择
+`/usr/bin/python3`。最初uv默认选到3.13,在安装/采集之前已将本轮自建临时
+环境重建为3.12.3。固定工作区tracked文件始终未改,详见B-0/README.md。
+
+### 11.5 边界、自检与下一停点
+
+- 原v1.31设计、v1.0/v1.1判定来源、生产源码、既有测试均不改;
+  仅新增本段verifier测试/人工fixture、工具/数据与记账文档。
+- 主树既有`.gitignore`修改、四份文档删除、其余untracked草稿保持原样;
+  继承§9.2的差异清单,精确add本轮产物,不处理环境卫生。
+- 固定工作区`git status --porcelain=v1`为空,HEAD/tree为§9.2值。
+- 当前判定编码待核对;`CTRL-INTRA-PKG-PROXY`与全部OBS producer仍NOT_RUN。
+  H2/H3等后续事实输入和A₀其余工具未提前完成,生产A/B/C/D未开始。
+- **本段新增停止项:0。交付后停止,等设计方逐条核对与FatTank批准冻结。**
+  完整性由包含本记录/源码/数据/原始输出的Git commit外部锚定,
+  本文件不自记自身SHA,也不把提交入库当成predicate冻结批准。

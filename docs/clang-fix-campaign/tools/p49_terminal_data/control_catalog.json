@@ -1,0 +1,959 @@
+[
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[all]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[all]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[any]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[any]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[not]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[not]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[present]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[present]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[eq]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[eq]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[ne]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[ne]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[eq_path]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[eq_path]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[in]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[in]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[matches]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[matches]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[nonempty]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[nonempty]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[count]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[count]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[count_eq]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[count_eq]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[set_eq]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[set_eq]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[subset]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[subset]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[seq_eq]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[seq_eq]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[keys_eq]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[keys_eq]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[forall]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[forall]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[exists]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[exists]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[implies]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[implies]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[sum_eq]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[sum_eq]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[in_path]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[in_path]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[union]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[union]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[keys]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[keys]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[values]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[values]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[$value]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[$value]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[$ref]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[$ref]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[$file]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[$file]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_each_node_positive_negative[schema_closed]",
+    "group": "NODE-LANGUAGE",
+    "source": "v1.2 §1",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[schema_closed]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_node_catalog_covers_closed_language",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_node_catalog_covers_closed_language",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_registry_source_condition_coverage",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_registry_source_condition_coverage",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_all_artificial_claims_positive",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_all_artificial_claims_positive",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-1.item1-basis]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item1-basis]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-1.item2-scope]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item2-scope]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-1.item3-predicate]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item3-predicate]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-1.item4-anchors]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item4-anchors]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-1.item5-order]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item5-order]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-2.seg1-staleness]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-2.seg1-staleness]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-2.seg2-form]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-2.seg2-form]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-3.commit-order]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-3.commit-order]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-3.transition-map]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-3.transition-map]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-4.owner-attribution]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-4.owner-attribution]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-5.entry-consumers]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-5.entry-consumers]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-6.proxy-count]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-6.proxy-count]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-6.intra-package-shim]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-6.intra-package-shim]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-7.falsification-samples]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-7.falsification-samples]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_claim_fact_mutation_red[OBS-7.class-c-projection]",
+    "group": "CLAIM-FACT",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-7.class-c-projection]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_assertion_four_controls[flip]",
+    "group": "ASSERTION",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_assertion_four_controls[flip]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_assertion_four_controls[subject]",
+    "group": "ASSERTION",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_assertion_four_controls[subject]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_assertion_four_controls[snapshot]",
+    "group": "ASSERTION",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_assertion_four_controls[snapshot]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_assertion_four_controls[roundtrip]",
+    "group": "ASSERTION",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_assertion_four_controls[roundtrip]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_type_three_controls[empty]",
+    "group": "TYPE",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_type_three_controls[empty]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_type_three_controls[parse]",
+    "group": "TYPE",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_type_three_controls[parse]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_type_three_controls[unreasoned-exemption]",
+    "group": "TYPE",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_type_three_controls[unreasoned-exemption]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_exemption_four_controls[wildcard]",
+    "group": "EXEMPTION-BOUND",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_exemption_four_controls[wildcard]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_exemption_four_controls[decision]",
+    "group": "EXEMPTION-BOUND",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_exemption_four_controls[decision]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_exemption_four_controls[gate]",
+    "group": "EXEMPTION-BOUND",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_exemption_four_controls[gate]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_exemption_four_controls[predicate]",
+    "group": "EXEMPTION-BOUND",
+    "source": "FROZEN §8-2",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_exemption_four_controls[predicate]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_evaluation_five_controls[required]",
+    "group": "EVALUATION",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[required]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_evaluation_five_controls[extra]",
+    "group": "EVALUATION",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[extra]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_evaluation_five_controls[error]",
+    "group": "EVALUATION",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[error]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_evaluation_five_controls[short-circuit]",
+    "group": "EVALUATION",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[short-circuit]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_evaluation_five_controls[empty]",
+    "group": "EVALUATION",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[empty]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_item3_all_inputs[dangling-absent]",
+    "group": "ITEM3-INPUT",
+    "source": "OBS-1.item3-predicate#5",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_item3_all_inputs[dangling-absent]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_item3_all_inputs[dangling-source]",
+    "group": "ITEM3-INPUT",
+    "source": "OBS-1.item3-predicate#5",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_item3_all_inputs[dangling-source]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_item3_all_inputs[dangling-missing-value]",
+    "group": "ITEM3-INPUT",
+    "source": "OBS-1.item3-predicate#5",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_item3_all_inputs[dangling-missing-value]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_item3_all_inputs[dangling-other]",
+    "group": "ITEM3-INPUT",
+    "source": "OBS-1.item3-predicate#5",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_item3_all_inputs[dangling-other]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_item3_all_inputs[live-old-counterexample]",
+    "group": "ITEM3-INPUT",
+    "source": "OBS-1.item3-predicate#5",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_item3_all_inputs[live-old-counterexample]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_item3_all_inputs[live-value]",
+    "group": "ITEM3-INPUT",
+    "source": "OBS-1.item3-predicate#5",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_item3_all_inputs[live-value]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_item3_all_inputs[live-absent]",
+    "group": "ITEM3-INPUT",
+    "source": "OBS-1.item3-predicate#5",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_item3_all_inputs[live-absent]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_schema_four_groups[evidence]",
+    "group": "SCHEMA-NOTATION",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_schema_four_groups[evidence]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_schema_four_groups[map]",
+    "group": "SCHEMA-NOTATION",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_schema_four_groups[map]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_schema_four_groups[optional]",
+    "group": "SCHEMA-NOTATION",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_schema_four_groups[optional]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_schema_four_groups[nested]",
+    "group": "SCHEMA-NOTATION",
+    "source": "v1.2 §4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_schema_four_groups[nested]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_missing_option_is_red_for_entire_claim_not_just_low_level",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_missing_option_is_red_for_entire_claim_not_just_low_level",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_json_pointer_arrays_missing_elements_and_scope_restoration",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_json_pointer_arrays_missing_elements_and_scope_restoration",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node0]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node0]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node1]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node1]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node2]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node2]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node3]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node3]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node4]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node4]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node5]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node5]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node6]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node6]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node7]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node7]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node8]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node8]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node9]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node9]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_malformed_ast_fails_closed_even_in_skipped_branch[node10]",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node10]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_canonical_and_renderer_are_deterministic_and_separate",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_canonical_and_renderer_are_deterministic_and_separate",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_json_loader_rejects_duplicate_keys_and_invalid_json",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_json_loader_rejects_duplicate_keys_and_invalid_json",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_file_operands_are_read_only_and_confined",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_file_operands_are_read_only_and_confined",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_unregistered_output_and_unknown_schema_fail_closed",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_unregistered_output_and_unknown_schema_fail_closed",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_union_requires_records_and_unique_discriminator",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_union_requires_records_and_unique_discriminator",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_renderer_upgrade_does_not_change_predicate_hash",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_renderer_upgrade_does_not_change_predicate_hash",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_count_comparators_and_value_rhs",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_count_comparators_and_value_rhs",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_empty_exemption_list_is_enforced_at_batch_boundary",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_empty_exemption_list_is_enforced_at_batch_boundary",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-test_missing_reference_cannot_be_negated_to_green",
+    "group": "VERIFIER-SUPPORT",
+    "source": "v1.2 §1/§4",
+    "test_nodeid": "tests/unit/test_terminal_predicates.py::test_missing_reference_cannot_be_negated_to_green",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/predicates-v1.2/tests.xml"
+  },
+  {
+    "control_id": "CTRL-INTRA-PKG-PROXY",
+    "group": "G-DETECTOR",
+    "source": "v1.2 §4",
+    "status": "NOT_RUN",
+    "reason": "Scanner not implemented or authorized in A0 segment 1; positive same-package proxy and near-miss remain due."
+  }
+]

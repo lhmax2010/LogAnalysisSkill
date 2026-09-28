@@ -1,0 +1,110 @@
+Obtaining file:///home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Collecting Jinja2>=3.1.4 (from -r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 1))
+  Using cached jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting PyYAML>=6.0.1 (from -r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 2))
+  Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting tiktoken>=0.7.0 (from -r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 3))
+  Downloading tiktoken-0.14.0-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (6.7 kB)
+Collecting coverage>=7.5.4 (from coverage[toml]>=7.5.4->-r requirements-dev.txt (line 2))
+  Downloading coverage-7.16.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (8.2 kB)
+Collecting mypy>=1.10.0 (from -r requirements-dev.txt (line 3))
+  Downloading mypy-2.3.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting pytest>=8.2.0 (from -r requirements-dev.txt (line 4))
+  Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+Collecting pytest-cov>=5.0.0 (from -r requirements-dev.txt (line 5))
+  Using cached pytest_cov-7.1.0-py3-none-any.whl.metadata (32 kB)
+Collecting ruff>=0.5.0 (from -r requirements-dev.txt (line 6))
+  Downloading ruff-0.16.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (20 kB)
+Collecting types-PyYAML>=6.0.12 (from -r requirements-dev.txt (line 7))
+  Downloading types_pyyaml-6.0.12.20260906-py3-none-any.whl.metadata (1.8 kB)
+Collecting import-linter==2.3 (from gbs-analyzer==1.3.0)
+  Using cached import_linter-2.3-py3-none-any.whl.metadata (4.4 kB)
+Collecting click>=6 (from import-linter==2.3->gbs-analyzer==1.3.0)
+  Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+Collecting grimp>=3.7 (from import-linter==2.3->gbs-analyzer==1.3.0)
+  Downloading grimp-3.17-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (5.8 kB)
+Collecting typing-extensions>=3.10.0.0 (from import-linter==2.3->gbs-analyzer==1.3.0)
+  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting MarkupSafe>=2.0 (from Jinja2>=3.1.4->-r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 1))
+  Using cached markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+Collecting regex (from tiktoken>=0.7.0->-r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 3))
+  Downloading regex-2026.9.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+Collecting requests (from tiktoken>=0.7.0->-r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 3))
+  Using cached requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+Collecting mypy_extensions>=1.0.0 (from mypy>=1.10.0->-r requirements-dev.txt (line 3))
+  Using cached mypy_extensions-1.1.0-py3-none-any.whl.metadata (1.1 kB)
+Collecting pathspec>=1.0.0 (from mypy>=1.10.0->-r requirements-dev.txt (line 3))
+  Using cached pathspec-1.1.1-py3-none-any.whl.metadata (14 kB)
+Collecting librt>=0.13.0 (from mypy>=1.10.0->-r requirements-dev.txt (line 3))
+  Downloading librt-0.15.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (1.3 kB)
+Collecting ast-serialize<1.0.0,>=0.6.0 (from mypy>=1.10.0->-r requirements-dev.txt (line 3))
+  Downloading ast_serialize-0.11.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.4 kB)
+Collecting iniconfig>=1.0.1 (from pytest>=8.2.0->-r requirements-dev.txt (line 4))
+  Using cached iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting packaging>=22 (from pytest>=8.2.0->-r requirements-dev.txt (line 4))
+  Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting pluggy<2,>=1.5 (from pytest>=8.2.0->-r requirements-dev.txt (line 4))
+  Using cached pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pygments>=2.7.2 (from pytest>=8.2.0->-r requirements-dev.txt (line 4))
+  Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting charset_normalizer<4,>=2 (from requests->tiktoken>=0.7.0->-r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 3))
+  Downloading charset_normalizer-3.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (45 kB)
+Collecting idna<4,>=2.5 (from requests->tiktoken>=0.7.0->-r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 3))
+  Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting urllib3<3,>=1.26 (from requests->tiktoken>=0.7.0->-r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 3))
+  Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+Collecting certifi>=2023.5.7 (from requests->tiktoken>=0.7.0->-r /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/requirements.txt (line 3))
+  Using cached certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)
+Using cached import_linter-2.3-py3-none-any.whl (41 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+Downloading tiktoken-0.14.0-cp312-cp312-manylinux_2_28_x86_64.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 4.4 MB/s  0:00:00
+Downloading coverage-7.16.2-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (258 kB)
+Downloading mypy-2.3.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (15.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 15.3/15.3 MB 8.7 MB/s  0:00:01
+Downloading ast_serialize-0.11.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 4.2 MB/s  0:00:00
+Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+Using cached pluggy-1.6.0-py3-none-any.whl (20 kB)
+Using cached pytest_cov-7.1.0-py3-none-any.whl (22 kB)
+Downloading ruff-0.16.9-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (10.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.4/10.4 MB 8.5 MB/s  0:00:01
+Downloading types_pyyaml-6.0.12.20260906-py3-none-any.whl (21 kB)
+Downloading click-8.5.0-py3-none-any.whl (125 kB)
+Downloading grimp-3.17-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 6.4 MB/s  0:00:00
+Using cached iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Downloading librt-0.15.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (531 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 531.9/531.9 kB 2.2 MB/s  0:00:00
+Using cached markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+Using cached mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)
+Using cached packaging-26.3-py3-none-any.whl (129 kB)
+Using cached pathspec-1.1.1-py3-none-any.whl (57 kB)
+Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 4.5 MB/s  0:00:00
+Using cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading regex-2026.9.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (804 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 804.6/804.6 kB 3.1 MB/s  0:00:00
+Using cached requests-2.34.2-py3-none-any.whl (73 kB)
+Downloading charset_normalizer-3.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (248 kB)
+Downloading idna-3.20-py3-none-any.whl (69 kB)
+Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+Using cached certifi-2026.7.22-py3-none-any.whl (136 kB)
+Building wheels for collected packages: gbs-analyzer
+  Building editable for gbs-analyzer (pyproject.toml): started
+  Building editable for gbs-analyzer (pyproject.toml): finished with status 'done'
+  Created wheel for gbs-analyzer: filename=gbs_analyzer-1.3.0-0.editable-py3-none-any.whl size=7462 sha256=4dd7e488024a2cd867e1127c63cecd983d1672f909189cfe30a31a3d4a7a268a
+  Stored in directory: /tmp/pip-ephem-wheel-cache-pgmk7kjl/wheels/3c/5a/1a/32407f5bdecb42bcb0828622826a8664958a86456905bd315e
+Successfully built gbs-analyzer
+Installing collected packages: urllib3, typing-extensions, types-PyYAML, ruff, regex, PyYAML, pygments, pluggy, pathspec, packaging, mypy_extensions, MarkupSafe, librt, iniconfig, idna, grimp, coverage, click, charset_normalizer, certifi, ast-serialize, requests, pytest, mypy, Jinja2, import-linter, tiktoken, pytest-cov, gbs-analyzer
+
+Successfully installed Jinja2-3.1.6 MarkupSafe-3.0.3 PyYAML-6.0.3 ast-serialize-0.11.2 certifi-2026.7.22 charset_normalizer-3.5.1 click-8.5.0 coverage-7.16.2 gbs-analyzer-1.3.0 grimp-3.17 idna-3.20 import-linter-2.3 iniconfig-2.3.0 librt-0.15.0 mypy-2.3.1 mypy_extensions-1.1.0 packaging-26.3 pathspec-1.1.1 pluggy-1.6.0 pygments-2.21.0 pytest-9.1.1 pytest-cov-7.1.0 regex-2026.9.10 requests-2.34.2 ruff-0.16.9 tiktoken-0.14.0 types-PyYAML-6.0.12.20260906 typing-extensions-4.16.0 urllib3-2.8.0

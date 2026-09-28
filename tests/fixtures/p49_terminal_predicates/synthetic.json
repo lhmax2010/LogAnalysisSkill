@@ -1,0 +1,900 @@
+{
+  "purpose": "Hand-constructed verifier inputs only. NOT observations; NOT producer output evidence.",
+  "context": {
+    "tree": "synthetic-tree",
+    "head": "synthetic-head",
+    "run_id": "synthetic-run"
+  },
+  "outputs": {
+    "OBS-1.item1-basis": {
+      "claim_id": "OBS-1.item1-basis",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "source": {
+        "path": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+        "sha256": "synthetic-file-hash",
+        "heading": "### 6.2 synthetic heading"
+      },
+      "entries": [
+        {
+          "entry_id": "entry-positive",
+          "text_sha256": "synthetic-text-hash",
+          "kind": "SYMBOL_GROUP",
+          "mapped_ledger_keys": [
+            "ledger-1"
+          ]
+        },
+        {
+          "entry_id": "entry-negative",
+          "text_sha256": "synthetic-text-hash",
+          "kind": "NEGATIVE",
+          "mapped_ledger_keys": []
+        }
+      ]
+    },
+    "OBS-1.item2-scope": {
+      "claim_id": "OBS-1.item2-scope",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "obligation_source": {
+        "path": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
+        "sha256": "synthetic-file-hash",
+        "heading": "synthetic heading"
+      },
+      "obligations": [
+        {
+          "obligation_id": "o1",
+          "text_sha256": "synthetic"
+        },
+        {
+          "obligation_id": "o2",
+          "text_sha256": "synthetic"
+        }
+      ],
+      "consumption_ref": {
+        "path": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/private_consumption.json",
+        "sha256": "synthetic"
+      },
+      "mapping": [
+        {
+          "obligation_id": "o1",
+          "consumption_ids": [
+            "c1"
+          ],
+          "status": "HAS_CONSUMERS"
+        },
+        {
+          "obligation_id": "o2",
+          "consumption_ids": [],
+          "status": "NO_CURRENT_CONSUMER"
+        }
+      ],
+      "unmapped_consumption_ids": [
+        "c2"
+      ]
+    },
+    "OBS-1.item3-predicate": {
+      "claim_id": "OBS-1.item3-predicate",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "anchor": {
+        "file": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+        "function": "synthetic",
+        "selector": "synthetic",
+        "matched_count": 1,
+        "expr_kind": "BoolOp.And",
+        "operand_calls": [
+          "exists",
+          "is_symlink"
+        ],
+        "same_receiver": true,
+        "span_sha256": "synthetic"
+      },
+      "scenarios": [
+        {
+          "scenario_id": "DANGLING_SYMLINK",
+          "exception_type": "synthetic.SomeError",
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "destination_after": "synthetic-state"
+        },
+        {
+          "scenario_id": "LIVE_SYMLINK_TO_DIR",
+          "exception_type": "GerritError",
+          "exception_code": {
+            "state": "VALUE",
+            "value": "SOURCE_DIR_UNSAFE"
+          },
+          "destination_after": "synthetic-state"
+        },
+        {
+          "scenario_id": "REAL_DIR",
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "destination_after": "synthetic-state"
+        },
+        {
+          "scenario_id": "ABSENT",
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "destination_after": "synthetic-state"
+        }
+      ]
+    },
+    "OBS-1.item4-anchors": {
+      "claim_id": "OBS-1.item4-anchors",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "table_source": {
+        "path": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+        "sha256": "synthetic-file-hash",
+        "heading": "### 3.2 synthetic"
+      },
+      "rows": [
+        {
+          "surface": "query 阶段",
+          "timeout_cell": "FETCH_TIMEOUT",
+          "interrupt_cell": "传播",
+          "residual_cell": "destination 不动"
+        },
+        {
+          "surface": "git 阶段",
+          "timeout_cell": "FETCH_TIMEOUT",
+          "interrupt_cell": "传播",
+          "residual_cell": "阶段残留"
+        },
+        {
+          "surface": "本 skill _run_git",
+          "timeout_cell": "GerritSubmitError GIT_TIMEOUT",
+          "interrupt_cell": "传播",
+          "residual_cell": "worktree 不变"
+        },
+        {
+          "surface": "ls-remote",
+          "timeout_cell": "target_head_unknown:timeout",
+          "interrupt_cell": "传播",
+          "residual_cell": "无"
+        },
+        {
+          "surface": "shared/workspace _run_git",
+          "timeout_cell": "GIT_TIMEOUT:",
+          "interrupt_cell": "传播",
+          "residual_cell": "marker 不变"
+        },
+        {
+          "surface": "_exclude_private_files",
+          "timeout_cell": "GIT_TIMEOUT",
+          "interrupt_cell": "传播",
+          "residual_cell": "protected marker 尚未写入"
+        }
+      ],
+      "call_sites": [
+        {
+          "anchor_no": 1,
+          "file": "synthetic.py",
+          "function": "synthetic",
+          "selector": "synthetic",
+          "matched_count": 1
+        },
+        {
+          "anchor_no": 2,
+          "file": "synthetic.py",
+          "function": "synthetic",
+          "selector": "synthetic",
+          "matched_count": 1
+        },
+        {
+          "anchor_no": 3,
+          "file": "synthetic.py",
+          "function": "synthetic",
+          "selector": "synthetic",
+          "matched_count": 1
+        },
+        {
+          "anchor_no": 4,
+          "file": "synthetic.py",
+          "function": "synthetic",
+          "selector": "synthetic",
+          "matched_count": 1
+        },
+        {
+          "anchor_no": 5,
+          "file": "synthetic.py",
+          "function": "synthetic",
+          "selector": "synthetic",
+          "matched_count": 1
+        },
+        {
+          "anchor_no": 6,
+          "file": "synthetic.py",
+          "function": "synthetic",
+          "selector": "synthetic",
+          "matched_count": 1
+        }
+      ],
+      "residual_obs": [
+        {
+          "anchor_no": 1,
+          "injected_at": "synthetic-query",
+          "destination_unchanged": true
+        },
+        {
+          "anchor_no": 2,
+          "injected_at": "synthetic-git",
+          "destination_unchanged": false
+        },
+        {
+          "anchor_no": 6,
+          "injected_at": "synthetic-exclude",
+          "workdir_marker": {
+            "state": "PRESENT"
+          },
+          "protected_marker": {
+            "state": "ABSENT"
+          },
+          "exclude_completed": false
+        }
+      ]
+    },
+    "OBS-1.item5-order": {
+      "claim_id": "OBS-1.item5-order",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "call_order": [
+        "_verify_cleanup_handle",
+        "_exclude_private_files",
+        "write_protected_marker"
+      ],
+      "scenarios": [
+        {
+          "scenario_id": "EXCLUDE_INTERRUPTED",
+          "protected_marker": {
+            "state": "ABSENT"
+          },
+          "readers": [
+            {
+              "reader": "is_protected",
+              "result_kind": "RETURN",
+              "result_value_or_type": "False"
+            },
+            {
+              "reader": "synthetic_reader",
+              "result_kind": "EXCEPTION",
+              "result_value_or_type": "synthetic.Error"
+            }
+          ]
+        },
+        {
+          "scenario_id": "MARKER_WRITE_INTERRUPTED",
+          "protected_marker": {
+            "state": "PARTIAL",
+            "sha256": "synthetic-bytes"
+          },
+          "readers": [
+            {
+              "reader": "is_protected",
+              "result_kind": "RETURN",
+              "result_value_or_type": "False"
+            },
+            {
+              "reader": "synthetic_reader",
+              "result_kind": "EXCEPTION",
+              "result_value_or_type": "synthetic.Error"
+            }
+          ]
+        }
+      ]
+    },
+    "OBS-2.seg1-staleness": {
+      "claim_id": "OBS-2.seg1-staleness",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "entries": [
+        {
+          "entry_id": "entry-positive",
+          "staleness": "CURRENT",
+          "current_fact": {
+            "exists": true,
+            "shape": "synthetic"
+          }
+        },
+        {
+          "entry_id": "entry-negative",
+          "staleness": "STALE",
+          "current_fact": {
+            "exists": false,
+            "shape": "synthetic"
+          }
+        }
+      ]
+    },
+    "OBS-2.seg2-form": {
+      "claim_id": "OBS-2.seg2-form",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "sources": [
+        {
+          "batch": "step-0",
+          "path": "docs/clang-fix-campaign/review/p49-step0-closeout.md",
+          "sha256": "synthetic",
+          "form": "STRUCTURED_TABLE",
+          "usable_as_coverage": true,
+          "entry_count": 1
+        },
+        {
+          "batch": "skill-1",
+          "path": "docs/clang-fix-campaign/review/p49-skill1-closeout.md",
+          "sha256": "synthetic",
+          "form": "PROSE",
+          "usable_as_coverage": false,
+          "entry_count": 1
+        },
+        {
+          "batch": "skill-2",
+          "path": "docs/clang-fix-campaign/review/p49-skill2-closeout.md",
+          "sha256": "synthetic",
+          "form": "NONE",
+          "usable_as_coverage": false,
+          "entry_count": 0
+        },
+        {
+          "batch": "skill-3",
+          "path": "docs/clang-fix-campaign/review/p49-skill3-closeout.md",
+          "sha256": "synthetic",
+          "form": "NONE",
+          "usable_as_coverage": false,
+          "entry_count": 0
+        },
+        {
+          "batch": "skill-4",
+          "path": "docs/clang-fix-campaign/review/p49-skill4-closeout.md",
+          "sha256": "synthetic",
+          "form": "NONE",
+          "usable_as_coverage": false,
+          "entry_count": 0
+        },
+        {
+          "batch": "skill-5",
+          "path": "docs/clang-fix-campaign/review/p49-skill5-closeout.md",
+          "sha256": "synthetic",
+          "form": "NONE",
+          "usable_as_coverage": false,
+          "entry_count": 0
+        },
+        {
+          "batch": "skill-6",
+          "path": "docs/clang-fix-campaign/review/p49-skill6-closeout.md",
+          "sha256": "synthetic",
+          "form": "NONE",
+          "usable_as_coverage": false,
+          "entry_count": 0
+        }
+      ]
+    },
+    "OBS-3.commit-order": {
+      "claim_id": "OBS-3.commit-order",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "batch": "skill-3",
+      "registered_extraction_sha": {
+        "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "source_path": "docs/clang-fix-campaign/review/p49-skill3-closeout.md",
+        "source_sha256": "synthetic"
+      },
+      "test_commit_shas": [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      ],
+      "shim_creations": [
+        {
+          "old_path": "synthetic.py",
+          "creating_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "pre_def_count": 2,
+          "post_def_count": 0
+        }
+      ],
+      "relations": [
+        {
+          "a": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "b": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "relation": "ANCESTOR"
+        }
+      ]
+    },
+    "OBS-3.transition-map": {
+      "claim_id": "OBS-3.transition-map",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "modules": [
+        {
+          "path": "synthetic-one.py",
+          "creating_batch": "skill-3",
+          "creating_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "pre_def_count": 1,
+          "post_def_count": 0,
+          "uncovered_class": "NONE"
+        },
+        {
+          "path": "synthetic-two.py",
+          "creating_batch": "UNREGISTERED",
+          "pre_def_count": 0,
+          "post_def_count": 1,
+          "uncovered_class": "b'"
+        }
+      ]
+    },
+    "OBS-4.owner-attribution": {
+      "claim_id": "OBS-4.owner-attribution",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "records": [
+        {
+          "candidate_id": "binding-one",
+          "symbol": "S",
+          "owner_module": "synthetic.owner",
+          "definition_sites": [
+            {
+              "path": "synthetic.py",
+              "selector": "def S"
+            }
+          ],
+          "owner_outside_host": true
+        },
+        {
+          "candidate_id": "binding-two",
+          "symbol": "T",
+          "owner_module": "AMBIGUOUS",
+          "definition_sites": [
+            {
+              "path": "synthetic1.py",
+              "selector": "def T"
+            },
+            {
+              "path": "synthetic2.py",
+              "selector": "def T"
+            }
+          ]
+        }
+      ]
+    },
+    "OBS-5.entry-consumers": {
+      "claim_id": "OBS-5.entry-consumers",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "entries": [
+        {
+          "entry_id": "entry-cli",
+          "kind": "CONSOLE_SCRIPT",
+          "target": "synthetic.cli",
+          "documented_in": [
+            "synthetic.md"
+          ],
+          "consumers": [],
+          "smoke_command": "synthetic-cli --help",
+          "smoke_exit": 0
+        }
+      ]
+    },
+    "OBS-6.proxy-count": {
+      "claim_id": "OBS-6.proxy-count",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "count": 2,
+      "candidate_ids": [
+        "proxy-one",
+        "proxy-two"
+      ],
+      "by_form": {
+        "DIRECT": 1,
+        "METHOD_LEVEL": 1
+      }
+    },
+    "OBS-6.intra-package-shim": {
+      "claim_id": "OBS-6.intra-package-shim",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "records": [
+        {
+          "candidate_id": "proxy-one",
+          "host_top_package": "synthetic",
+          "target_top_package": "synthetic"
+        }
+      ]
+    },
+    "OBS-7.falsification-samples": {
+      "claim_id": "OBS-7.falsification-samples",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "sources": [
+        {
+          "path": "synthetic.json",
+          "sha256": "synthetic"
+        }
+      ],
+      "samples": [
+        {
+          "sample_id": "sample-one",
+          "form": "C1",
+          "file": "synthetic1.py",
+          "selector": "synthetic"
+        },
+        {
+          "sample_id": "sample-two",
+          "form": "C7d",
+          "file": "synthetic2.py",
+          "selector": "synthetic"
+        }
+      ],
+      "hits": [
+        {
+          "sample_id": "sample-one",
+          "consumer_edge_id": "edge-1"
+        },
+        {
+          "sample_id": "sample-two",
+          "consumer_edge_id": "edge-2"
+        }
+      ]
+    },
+    "OBS-7.class-c-projection": {
+      "claim_id": "OBS-7.class-c-projection",
+      "snapshot": "synthetic-tree",
+      "evidence": [
+        {
+          "kind": "COMMAND",
+          "command": "synthetic-not-executed",
+          "cwd": "/synthetic",
+          "exit_code": 0,
+          "output_sha256": "synthetic-output-hash"
+        },
+        {
+          "kind": "FILE",
+          "path": "synthetic-input",
+          "sha256": "synthetic-hash",
+          "selector": "synthetic"
+        }
+      ],
+      "count": 2,
+      "test_ids": [
+        "test-one",
+        "test-two"
+      ],
+      "reasons": {
+        "test-one": "GRAPH_NOT_CLOSED",
+        "test-two": "SEMANTICS_AMBIGUOUS"
+      }
+    }
+  },
+  "files": {
+    "E/ledger_inventory.json": {
+      "seg1": [
+        {
+          "ledger_key": "ledger-1"
+        }
+      ]
+    },
+    "E/private_consumption.json": {
+      "entries": [
+        {
+          "id": "c1"
+        },
+        {
+          "id": "c2"
+        }
+      ],
+      "class_c_test_ids": [
+        "test-one",
+        "test-two"
+      ]
+    },
+    "E/B-1-anchors.json": {
+      "protected_marker_readers": [
+        "is_protected",
+        "synthetic_reader"
+      ]
+    },
+    "E/B-2-sources.json": {
+      "registered_extraction_shas": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ]
+    },
+    "E/raw_findings.json": {
+      "module_granularity_old_location_paths": [
+        "synthetic-one.py",
+        "synthetic-two.py"
+      ],
+      "proxy_candidate_ids": [
+        "proxy-one",
+        "proxy-two"
+      ],
+      "all_candidate_ids": [
+        "proxy-one",
+        "proxy-two",
+        "other-candidate"
+      ],
+      "same_top_package_candidate_ids": [
+        "proxy-one"
+      ]
+    },
+    "E/B-15-disposition_evidence.json": {
+      "a_true_binding_candidates": [
+        "binding-one",
+        "binding-two"
+      ]
+    },
+    "E/B-5-entries.json": {
+      "independent_enumeration": [
+        "entry-cli"
+      ]
+    }
+  },
+  "mutations": {
+    "OBS-1.item1-basis": {
+      "path": "/source/path",
+      "value": "wrong.md"
+    },
+    "OBS-1.item2-scope": {
+      "path": "/mapping/0/status",
+      "value": "UNDECLARED"
+    },
+    "OBS-1.item3-predicate": {
+      "path": "/anchor/same_receiver",
+      "value": false
+    },
+    "OBS-1.item4-anchors": {
+      "path": "/rows/5/residual_cell",
+      "value": "synthetic-wrong-residue"
+    },
+    "OBS-1.item5-order": {
+      "path": "/call_order",
+      "value": [
+        "_verify_cleanup_handle",
+        "write_protected_marker",
+        "_exclude_private_files"
+      ]
+    },
+    "OBS-2.seg1-staleness": {
+      "path": "/entries/0/staleness",
+      "value": "UNKNOWN"
+    },
+    "OBS-2.seg2-form": {
+      "path": "/sources/0/form",
+      "value": "PROSE"
+    },
+    "OBS-3.commit-order": {
+      "path": "/shim_creations/0/pre_def_count",
+      "value": 0
+    },
+    "OBS-3.transition-map": {
+      "path": "/modules/0/creating_sha",
+      "value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "OBS-4.owner-attribution": {
+      "path": "/records/1/owner_module",
+      "value": "synthetic-picked-one"
+    },
+    "OBS-5.entry-consumers": {
+      "path": "/entries/0/smoke_exit",
+      "value": 1
+    },
+    "OBS-6.proxy-count": {
+      "path": "/count",
+      "value": 3
+    },
+    "OBS-6.intra-package-shim": {
+      "path": "/records/0/target_top_package",
+      "value": "other"
+    },
+    "OBS-7.falsification-samples": {
+      "path": "/hits",
+      "value": [
+        {
+          "sample_id": "sample-one",
+          "consumer_edge_id": "edge-1"
+        }
+      ]
+    },
+    "OBS-7.class-c-projection": {
+      "path": "/reasons/test-two",
+      "value": "UNKNOWN"
+    }
+  }
+}

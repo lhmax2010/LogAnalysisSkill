@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_predicates.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json",
+    "--render"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "exit_code": 0,
+  "environment": {
+    "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "LANG": "C.UTF-8"
+  },
+  "execution_tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "tool_sha256": "fba660ab52db8e2e5c236c34aa9452d75805f2f1bc352d36c5f970ef5507e25d",
+  "tests_sha256": "962741d4af16fdae97d8ac52e581220f5bf401f8799f834a1800dd5ee742d480",
+  "note": "Uncommitted verifier/test inputs are read by absolute path, not members of the fixed baseline tree. Artificial inputs only."
+}

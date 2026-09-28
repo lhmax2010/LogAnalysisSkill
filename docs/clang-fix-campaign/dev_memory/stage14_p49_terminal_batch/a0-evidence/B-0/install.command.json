@@ -1,0 +1,26 @@
+{
+  "command": [
+    "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+    "-m",
+    "pip",
+    "install",
+    "-e",
+    ".[dev]",
+    "-r",
+    "requirements-dev.txt"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "exit_code": 0,
+  "elapsed_seconds": 30.50605058670044,
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "LANG": "C.UTF-8"
+  }
+}
