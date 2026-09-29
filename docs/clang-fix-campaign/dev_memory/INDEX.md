@@ -19,7 +19,7 @@
 | P4.9 skill-5 gerrit-submit | CLOSED | Gerrit-submit extraction, status locks, six-row terminal mapping, patch-version ledger | commits `f2bc050`/`31a91cb`/`a97c40b`/`0dfa5f1`/`a8620f1`/`d51145f`/`c6f734b`; 173 symbols + 4 module scopes; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | Triage-report extraction, gbs_report constraint closure, branch inventory, extraction-phase ledger | commits `bdb5a55`/`3dc0466`/`3da12a4`/`2cc3dd3`/`dfbbf3b`; 197 symbols + 4 module scopes; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | Step-0 plus all six skill extractions signed off | phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; next and only entry is the five-item terminal batch |
-| P4.9 terminal batch | A0_PART2_STOPPED_EXPECTED_DIFF_SOURCES | Predicate frozen in `6601cfc`; dual-hash guard and 99 artificial tests green; DIFF-01/02 OPEN | `stage14_p49_terminal_batch/progress.md` §12-13; expected-diff source/message rules need ruling; no OBS producers run |
+| P4.9 terminal batch | A0_PART2_ERRATUM1_ACCEPTED | Predicate frozen in `6601cfc`; DIFF-01/02 CLOSED by approved E1-1/E1-2 | `stage14_p49_terminal_batch/progress.md` §14; d4458459 erratum bytes admitted; observation tree stays 43a6aa6; only item3/item4 authorized |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -46,7 +46,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 skill-5 gerrit-submit | CLOSED | `f2bc050`, `31a91cb`, `a97c40b`, `0dfa5f1`, `a8620f1`, `d51145f`, `c6f734b` | frozen authority `../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`; result `stage12_p49_skill5_gerrit_submit/result.md`; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | `bdb5a55`, `3dc0466`, `3da12a4`, `2cc3dd3`, `dfbbf3b`, `9a74c0b` | frozen authority `../p49-skill6-triage-report-design-v1.8-FROZEN.md`; result `stage13_p49_skill6_triage_report/result.md`; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | step-0 + skills 1-6 | signed phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; P4.9 terminal five-item batch is the only next entry |
-| 14 P4.9 terminal batch | A0_PART2_STOPPED_EXPECTED_DIFF_SOURCES | Plan `43a6aa6`; v1.2 encoding `c79e893`; approved freeze `6601cfc` | source `../p49-terminal-obs-predicates-v1.2.md`; 134 condition nodes/470 recursive nodes unchanged; freeze §12, two stop items §13; producers/expected-diff controls NOT_RUN |
+| 14 P4.9 terminal batch | A0_PART2_ERRATUM1_ACCEPTED | Plan `43a6aa6`; encoding `c79e893`; freeze `6601cfc`; erratum1 Git-anchored | predicate bytes unchanged; §13 stops closed by E1-1/E1-2; intake and separate document/code provenance: progress §14 |
 
 ## Code-Ready Checkpoint
 
