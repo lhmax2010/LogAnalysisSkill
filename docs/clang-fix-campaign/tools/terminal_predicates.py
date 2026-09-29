@@ -2,8 +2,8 @@
 
 JSON AST: {op, args, source}; count also has cmp. Paths are strings; ref/file
 and ctx are explicit operands. source is provenance, never an executable rule.
-Only an independently supplied registry digest anchors subject/predicate integrity.
-The candidate registry in this segment is NOT an approved frozen registry.
+The batch entry point pins the registry approved by FatTank on 2026-09-28.
+The low-level evaluator remains available for artificial language-control tests.
 """
 
 from __future__ import annotations
@@ -18,6 +18,8 @@ from pathlib import Path
 from typing import Any
 
 RENDERER_VERSION = "1"
+FROZEN_PREDICATES_HASH = "8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6"
+FROZEN_EXEMPTIONS_HASH = "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
 EVIDENCE_PREFIX = "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/"
 MISSING = object()
 ARITIES = {
@@ -94,6 +96,19 @@ def canonical(value: Any) -> bytes:
 
 def canonical_hash(value: Any) -> str:
     return hashlib.sha256(canonical(value)).hexdigest()
+
+
+def check_frozen_hashes(registry: Any, exemptions: Any) -> None:
+    """Fail before evaluation; CLI arguments cannot replace these approval pins."""
+    for name, value, expected in (
+        ("predicates.json", registry, FROZEN_PREDICATES_HASH),
+        ("measurement_exemptions.json", exemptions, FROZEN_EXEMPTIONS_HASH),
+    ):
+        actual = canonical_hash(value)
+        if actual != expected:
+            raise PredicateError(
+                f"FROZEN_HASH_MISMATCH: {name}: expected={expected} actual={actual}"
+            )
 
 
 def load_json(path: Path) -> Any:
@@ -597,6 +612,7 @@ def main() -> int:
         exemptions = load_json(
             args.exemptions or args.registry.with_name("measurement_exemptions.json")
         )
+        check_frozen_hashes(registry, exemptions)
         if exemptions != []:
             raise PredicateError("this batch freezes measurement_exemptions as []")
         if args.render:

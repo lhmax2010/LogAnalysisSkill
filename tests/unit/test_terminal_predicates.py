@@ -446,3 +446,32 @@ def test_missing_reference_cannot_be_negated_to_green() -> None:
     for expr in [n("$ref", "unregistered", "/x"), n("$file", "missing.json", "/x")]:
         with pytest.raises(P.EvaluationError, match="MISSING"):
             evaluate(n("not", n("eq_path", "/x", expr)))
+
+
+def test_approved_frozen_hashes() -> None:
+    P.check_frozen_hashes(REGISTRY, [])
+    assert HASH == P.FROZEN_PREDICATES_HASH
+    assert P.canonical_hash([]) == P.FROZEN_EXEMPTIONS_HASH
+
+
+@pytest.mark.parametrize("target", ["registry", "exemptions"])
+def test_frozen_file_tampering_is_rejected(target: str) -> None:
+    registry, exemptions = copy.deepcopy(REGISTRY), []
+    if target == "registry":
+        registry[0]["subject"] += " changed"
+    else:
+        exemptions.append({"claim_id": REGISTRY[0]["claim_id"]})
+    with pytest.raises(P.PredicateError, match="FROZEN_HASH_MISMATCH"):
+        P.check_frozen_hashes(registry, exemptions)
+
+
+def test_cli_cannot_override_freeze_pin(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    registry = copy.deepcopy(REGISTRY)
+    registry[0]["subject"] += " changed"
+    path = tmp_path / "predicates.json"
+    path.write_bytes(P.canonical(registry))
+    path.with_name("measurement_exemptions.json").write_text("[]")
+    monkeypatch.setattr(
+        sys, "argv", [str(TOOL), str(path), "--expected-hash", P.canonical_hash(registry)]
+    )
+    assert P.main() == 1

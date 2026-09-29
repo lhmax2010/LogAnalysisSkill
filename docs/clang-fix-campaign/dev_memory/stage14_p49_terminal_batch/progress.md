@@ -1,6 +1,6 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART1_AWAITING_PREDICATE_REVIEW_V12。更新日期: 2026-09-28。
+状态: A0_PART2_PREDICATES_FROZEN。更新日期: 2026-09-29。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;第11节记录候选编码、人工 fixture 测试与固定
 43a6aa6 工作区的 B-0 实跑。编码尚待设计方逐条核对、FatTank 批准及
@@ -821,3 +821,46 @@ PYTEST_ADDOPTS/PYTEST_PLUGINS,PATH与VIRTUAL_ENV指向独立环境。
 - **本段新增停止项:0。交付后停止,等设计方逐条核对与FatTank批准冻结。**
   完整性由包含本记录/源码/数据/原始输出的Git commit外部锚定,
   本文件不自记自身SHA,也不把提交入库当成predicate冻结批准。
+
+## 12. A₀ 第2段:判定条件冻结(先于任何 producer)
+
+### 12.1 批准与不可变锚
+
+批准来源:本轮开发者指令确认,设计方已逐条核对
+`c79e893be0830af3969449d908de75314296d47d` 的编码与 v1.2 一致,
+FatTank 于 **2026-09-28** 批准冻结。H1 的人工批准前提 CLOSED。
+编码来源仍为 `p49-terminal-obs-predicates-v1.2.md`,不重写任何条件。
+
+| 冻结文件(T/p49_terminal_data/) | canonical SHA-256 |
+|---|---|
+| predicates.json | `8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6` |
+| measurement_exemptions.json | `4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945` |
+
+冻结提交为包含本节的独立 Git commit;本 commit 完整性由 Git 外部锚定,
+其实际 SHA 将在后续提交的 §12.2 引用,不在本提交内自记。
+两文件相对批准版本原字节不变,`git diff --` 精确两路径为空。
+以后修改须走 v1.31 勘误流程,不可通过 CLI 自带新 hash 授权自己。
+
+`terminal_predicates.py` 的批次 CLI 在验证/render 前核对固定的双 hash;
+不匹配报 `FROZEN_HASH_MISMATCH` 并 exit 1。低层求值器仅为通用比较及
+人工构造控制服务,不充当生产采集的授权入口。
+
+### 12.2 冻结前实测与执行边界
+
+本提交前没有运行任何 OBS producer。所有运行 cwd 为 §9.2 干净工作区,
+HEAD=`43a6aa625f27da46daba190657bf62256080c68e`,
+tree=`ca9331190e878af465e7968fe56e735585a5866e`;
+独立环境 `/tmp/p49-a0-baseline-v12-43a6aa6`,清除 PYTHONPATH/MYPYPATH。
+工具与人工测试通过主树绝对路径加载,观测对象仍为固定旧树。
+命令、环境、输入工具 hash、exit、原始输出见 `E/part2/freeze-*.command.json/.log`。
+
+| 命令(完整 argv 见原始记录) | 原始输出摘录 | exit |
+|---|---|---|
+| python -m pytest -q -o addopts= <main>/tests/unit/test_terminal_predicates.py | `99 passed in 0.20s` | 0 |
+| ruff check <main>/tools/terminal_predicates.py <main>/tests/unit/test_terminal_predicates.py | `All checks passed!` | 0 |
+| mypy <上述两文件> | `Success: no issues found in 2 source files` | 0 |
+| python <main>/tools/terminal_predicates.py <main>/tools/p49_terminal_data/predicates.json | `registry_valid claims=15 canonical_hash=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6` | 0 |
+
+新增四项人工测试:批准双 hash 正向、predicate 篡改拒绝、豁免篡改拒绝、
+CLI 传篡改后的 hash 仍拒绝。未改生产源码/冻结设计/判定条件,无真实事实采集。
+本轮后续只授权 item3/item4,其它 producer(含 item5)仍 NOT_RUN。

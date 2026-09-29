@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/tmp/p49-a0-baseline-v12-43a6aa6/bin/mypy",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_predicates.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_predicates.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path_prefix": "/tmp/p49-a0-baseline-v12-43a6aa6/bin",
+  "exit_code": 0,
+  "output_sha256": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8",
+  "tool_inputs": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_predicates.py": "47d6dc3a7e83ca97fef2bae3e30a1835c6b0ebf13b70b9d24470f90b8dff1dab",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_predicates.py": "ca1341684412cabec696b3c9e033f9557b4a7ed6ab25543609d25b8cc2f154c2"
+  }
+}
