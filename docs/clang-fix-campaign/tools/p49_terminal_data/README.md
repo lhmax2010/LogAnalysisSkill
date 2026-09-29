@@ -1,8 +1,10 @@
-# OBS predicate candidate encoding
+# Frozen OBS predicate encoding
 
-Source: `../../p49-terminal-obs-predicates-v1.2.md`. This is a candidate
-transcription awaiting designer review and FatTank's separate freeze approval.
-No OBS producer has been implemented or invoked by this segment.
+Source: `../../p49-terminal-obs-predicates-v1.2.md`. The designer checked the
+`c79e893` encoding and FatTank approved it on 2026-09-28. Freeze commit:
+`6601cfc60fcbed8d2f8fa91301f7693d52723d94`. No predicate or exemption bytes changed.
+No OBS producer has been invoked; segment 2 stopped at the expected-diff source
+rules (stage14 progress section 13).
 
 ## Representation
 
@@ -29,8 +31,11 @@ The canonical hash covers the whole registry, including subjects and schemas:
 UTF-8, sorted object keys, compact JSON separators, preserved array order. It
 excludes `renderer_version`. A verifier invocation must receive an external
 expected hash and the saved generated block. Recomputing the expected hash from
-an untrusted replacement registry is not a valid integrity check. This commit
-records the candidate hash only; it does not supply the pending human approval.
+an untrusted replacement registry is not a valid integrity check. The batch CLI
+additionally checks both approved canonical pins before evaluation or rendering;
+`--expected-hash` cannot replace them. Any mismatch refuses execution. Changes to
+these files require the frozen design's erratum/approval process. The low-level
+evaluator is retained for artificial language tests, not as the batch entry point.
 
 `measurement_exemptions.json` is `[]`. The batch boundary rejects nonempty
 exemptions. The generic upper-bound comparison is tested with artificial
@@ -53,5 +58,7 @@ this segment. The synthetic fixture is explicitly not an observation of the
 repository. Test exit 0 means the expected positive/negative behavior was
 asserted, not that a negative input was accepted.
 
-See stage14 `progress.md` section 11 for document/condition counts, current
-hashes, the clean baseline, the original logs, and remaining approval gates.
+See stage14 `progress.md` section 11 for document/condition counts and baseline,
+section 12 for approval, freeze SHA and canonical pins, and section 13 for the
+current stop report. Historical control_catalog entries describe segment 1;
+the additional freeze-guard tests and raw logs are recorded in section 12.

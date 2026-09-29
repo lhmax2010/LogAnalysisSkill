@@ -1,6 +1,6 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART2_PREDICATES_FROZEN。更新日期: 2026-09-29。
+状态: A0_PART2_STOPPED_EXPECTED_DIFF_SOURCES。更新日期: 2026-09-29。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;第11节记录候选编码、人工 fixture 测试与固定
 43a6aa6 工作区的 B-0 实跑。编码尚待设计方逐条核对、FatTank 批准及
@@ -847,6 +847,10 @@ FatTank 于 **2026-09-28** 批准冻结。H1 的人工批准前提 CLOSED。
 
 ### 12.2 冻结前实测与执行边界
 
+后续提交登记的冻结 SHA:
+`6601cfc60fcbed8d2f8fa91301f7693d52723d94`。
+该 commit 已先于任何 producer 落盘;以下保留冻结时的实测记录。
+
 本提交前没有运行任何 OBS producer。所有运行 cwd 为 §9.2 干净工作区,
 HEAD=`43a6aa625f27da46daba190657bf62256080c68e`,
 tree=`ca9331190e878af465e7968fe56e735585a5866e`;
@@ -864,3 +868,57 @@ tree=`ca9331190e878af465e7968fe56e735585a5866e`;
 新增四项人工测试:批准双 hash 正向、predicate 篡改拒绝、豁免篡改拒绝、
 CLI 传篡改后的 hash 仍拒绝。未改生产源码/冻结设计/判定条件,无真实事实采集。
 本轮后续只授权 item3/item4,其它 producer(含 item5)仍 NOT_RUN。
+
+## 13. A₀ 第2段停止报告:预期差异的取值来源
+
+### 13.1 本轮完成与未完成的边界
+
+已完成独立冻结提交与双 hash 核对。进入 §6 的来源核对时发现以下两项
+无法自行确定的口径,按冻结稿开头第3条(第10-11行)停止。
+这些是**差异登记规格的停止项**,不是 OBS claim 的失败结论。
+没有执行任何 producer,不借尚不存在的观测输出填充旧值。
+没有修改已冻结 predicates/exemptions,也没有修改任何生产文件。
+
+| ID | 状态 | 原文位置与困难 | 候选处置(仅提请裁决,未实施) |
+|---|---|---|---|
+| DIFF-01 | OPEN | 本轮任务第2项将新值来源限定为 skill-5 §3.2 映射表具体单元格或 terminal §3 具体句子。但 terminal v1.31 第1475行(§4)明确默认路径允许新增 `timeout=None` kwarg;skill-5 v1.3.2 第302-303行也要求登记,却在表外。六行映射表第290-295行没有该默认参数条目。故为调用轨迹登记这项新值,需引用当前准许集合之外的文本;不登记又不能按§6精确差集核验该已授权变化。 | 由设计方/FatTank明确将 terminal §4 第1475行及 skill-5 §3.2 表下第302-303行纳入来源白名单,或补入获批表格单元格;实现方不自行扩白名单、不把该实参全局掩掉。 |
+| DIFF-02 | OPEN | terminal v1.31 第1515-1516行要求实际差异与登记精确相等,第1525行要求 exception.message 必填。获准的新值来源中,skill-5 第290-292行仍是 `<message>`,第294行只给 `GIT_TIMEOUT:` 前缀,第295行是 `GIT_TIMEOUT: …`,没有钉定后缀/完整消息生成规则。本段没有改后实现,实现方不能选择 `str(exc)`、自定义文案或其它后缀并将之称为表格给定新值。 | 由设计方钉定完整消息的确定性生成规则及来源锚点(例如是否精确保留原 TimeoutExpired 的消息、shared 前缀拼接形式),再由固定 fixture 的事实按批准规则派生;不得以只比较前缀、忽略 message 或用占位字符串替代精确差异来凑绿。 |
+
+DIFF-02 只报告超时映射的消息规则缺口,不假定尚未取证的旧异常内容。
+这里的候选例子不构成新增设计裁决,也未写入任何 expected 值。
+
+### 13.2 原文证据与复现
+
+来源为 §9.2 固定工作区的 Git tree,不是主树 untracked 草稿。
+精确命令/环境/exit 与 stdout 位于:
+
+- `E/part2/diff-source-terminal.command.json` / `.log`:终止稿 §4/§6 的来源限制关联条款;
+- `E/part2/diff-source-mapping.command.json` / `.log`:映射表原文及表外 `timeout=None` 条款;
+- `E/part2/stop-source-hashes.command.json` / `.log`:两份被引用文档的原字节 SHA-256。
+
+以上为文档读取,exit 均0;**不是 OBS producer,不输出/冒充任何 claim 事实**。
+原始 hash 输出:
+
+```text
+66fd8684950004524ae7d86fb4e29328a1998ba48985a944ad39ae4d03a8598c  docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27  docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md
+```
+
+### 13.3 交付状态与恢复条件
+
+| 交付项 | 状态 | 命令/exit/证据 |
+|---|---|---|
+| predicate 冻结 | DONE | §12;独立提交 `6601cfc60fcbed8d2f8fa91301f7693d52723d94`;两文件原字节未改 |
+| 冻结 hash 核对与人工测试 | DONE | §12.2;99 passed,pytest/mypy/ruff/CLI exit均0 |
+| scenario_manifest/result_schema/expected_diff | NOT_CREATED | 来源口径未闭合,未写入占位值或自行设计的新值 |
+| §6 正常对照与七条准入证伪 | NOT_RUN | 门禁尚未实现;命令/exit=N/A,不把verifier人工测试冒充这组控制 |
+| OBS-1.item3-predicate | NOT_RUN | 无产出、无verifier结论、无事实证据路径;不是FAIL或PASS |
+| OBS-1.item4-anchors | NOT_RUN | 同上;query/git残留及第六格的动态核对尚未执行 |
+| OBS-1.item5-order及其它producer | NOT_RUN | 本段禁行,未越权采集读取方全集 |
+| expected_diff 每条登记来源 | 无登记 | 文件未创建,因此不存在已登记差异/来源清单;不是“空表已验收” |
+| 新增停止项 | 2 OPEN | DIFF-01、DIFF-02 |
+
+恢复条件:设计方给出两项来源/精确消息口径,由FatTank批准后继续 §6 与
+item3/item4。冻结提交已有效,不重复冻结或修改判定条件来消化本次停止项。
+本次保持主工作树既有 `.gitignore` 修改、四份文档删除和其它untracked稿不动。
+仅精确提交本段工具、人工测试、证据与记账文档;不开始生产 A/B/C/D。

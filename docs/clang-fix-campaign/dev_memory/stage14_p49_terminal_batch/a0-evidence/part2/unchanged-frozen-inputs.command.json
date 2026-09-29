@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--exit-code",
+    "c79e893",
+    "6601cfc",
+    "--",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+    "tizen-*/scripts/**",
+    "ci_triage/**"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path_prefix": "/tmp/p49-a0-baseline-v12-43a6aa6/bin",
+  "exit_code": 0,
+  "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

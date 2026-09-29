@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "-A",
+    "2",
+    "-B",
+    "2",
+    "FETCH_TIMEOUT|WorkspaceViolation\\(<message>|末批 parity 须预先",
+    "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path_prefix": "/tmp/p49-a0-baseline-v12-43a6aa6/bin",
+  "exit_code": 0,
+  "output_sha256": "2ca31f2231d94d1b78e2434c36dac31898b62bfac4f90c12f67adbeeec7b0d34"
+}

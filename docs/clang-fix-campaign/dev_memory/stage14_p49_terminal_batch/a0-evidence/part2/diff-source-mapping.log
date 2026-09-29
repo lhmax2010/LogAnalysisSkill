@@ -1,0 +1,21 @@
+41-> **v1.3 修订(两家 freeze-ready;冻结期澄清)**:①§4 warning 分支锚点范围
+42-> 补全至 `:280-299`,并给 branch None 补 `:280`;②A0 脚本硬编码计数由 6
+43:> 更正为 7,逐处穷举;③§3.2 结果映射明确末批 parity 须预先登记
+44-> `timeout=None` 透传 kwarg;④§8 为分支表、结果映射表与门禁成员扩展补
+45-> 三条引用式 DoD,不复述定义节数字;⑤skill 批次模板首次独立入库,确立
+--
+288-    | 调用面 | 超时(timeout 触发) | 外部中断 | 残留 |
+289-    |---|---|---|---|
+290:    | skill-3 `fetch_source_for_commit` **query 阶段**(`gerrit.py:132`,在 `_reset` 之前) | `GerritError("FETCH_TIMEOUT", <message>)` | 传播 | **destination 不动**(与 skill-3 冻结 :465 一致) |
+291:    | skill-3 **git 阶段**(init/fetch/checkout,`_reset` 之后) | `GerritError("FETCH_TIMEOUT", <message>)` | 传播 | **阶段残留**(与 skill-3 冻结 :478 一致) |
+292-    | 本 skill `_run_git`(:348) | `GerritSubmitError("GIT_TIMEOUT", <message>)`(新类型,签名与 `GerritError` 同形 `(code, message)`,末批定义) | 传播 | worktree 不变 |
+293-    | 本 skill `ls-remote`(:284) | warning 码统一 `target_head_unknown:timeout` | 传播 | 无 |
+294:    | shared/workspace `_run_git`(:205) | `WorkspaceViolation(<message>)`,message 以 `GIT_TIMEOUT:` 前缀承载码(`WorkspaceViolation` 无 code 字段,不改其签名——改签名属行为变更) | 传播 | marker 不变 |
+295-    | **shared/workspace `_exclude_private_files`**(:209,`mark_worktree_protected` :117 调用) | 同上 `WorkspaceViolation("GIT_TIMEOUT: …")` | 传播 | **workdir marker 保留、protected marker 尚未写入、exclude 未完成**(`mark_worktree_protected` 的真实顺序:`_verify_cleanup_handle`(:115)→ `_exclude_private_files`(:117)→ 构造并写入 protected marker(:118/:124);故超时点在 exclude 时,protected marker 尚未产生) |
+296-    **protected marker 写入顺序议题(签批期登记,非本表裁决变更)**:
+--
+300-    回收的隐患。P4.9 末批须将此列为设计评审的显式议题,并在“调整顺序”/
+301-    “维持现状并说明”之间作出裁决,不得停在“已记录”。
+302:    **末批 parity 须预先把 `timeout=None` 这个透传 kwarg 声明为掩码/白名单
+303-    项**;生产语义等价,但 fake runner 轨迹会新增该 kwarg,不得把它误判为漂移。
+304-    **末批的职责 = 按此表实施 + parity + 评审**;**不得改动本表裁决,除非重开
