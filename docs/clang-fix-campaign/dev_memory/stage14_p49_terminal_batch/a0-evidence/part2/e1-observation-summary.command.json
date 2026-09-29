@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "jq",
+    "{observations:(.observations|length), signals:[.observations[] | select(.fault == \"SIGINT\" or .fault == \"SIGTERM\") | {scenario_id, exit_code, injected_signal:.injection.signal}], residuals:[.observations[] | select(.surface == \"shared-exclude\" and .fault != \"none\") | {scenario_id, workdir_marker, protected_marker, exclude_completed}],fetch_residuals:[.observations[] | select(.surface|startswith(\"fetch-full-\")) | {scenario_id, destination_unchanged, after}]}",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path_prefix": "/tmp/p49-a0-baseline-v12-43a6aa6/bin",
+  "exit_code": 0,
+  "output_sha256": "ec6acdd23c4b06241835a898397ae600ef1f270f11b1303d4e4feaef695b894f",
+  "tool_inputs": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2"
+  }
+}

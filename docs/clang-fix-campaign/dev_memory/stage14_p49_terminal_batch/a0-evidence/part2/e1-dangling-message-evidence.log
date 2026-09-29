@@ -1,0 +1,39 @@
+{
+  "scenario_id": "DANGLING_SYMLINK",
+  "exception": {
+    "state": "VALUE",
+    "value": {
+      "type": "FileExistsError",
+      "module": "builtins",
+      "message": "[Errno 17] File exists: '/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination'",
+      "code": {
+        "state": "ABSENT"
+      }
+    }
+  },
+  "after": {
+    "kind": "SYMLINK",
+    "target": "/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/target",
+    "target_exists": false
+  }
+}
+{
+  "scenario_id": "LIVE_SYMLINK_TO_DIR",
+  "exception": {
+    "state": "VALUE",
+    "value": {
+      "type": "GerritError",
+      "module": "tizen_gerrit_fetch.gerrit",
+      "message": "source directory is a symlink: /tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination",
+      "code": {
+        "state": "VALUE",
+        "value": "SOURCE_DIR_UNSAFE"
+      }
+    }
+  },
+  "after": {
+    "kind": "SYMLINK",
+    "target": "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/target",
+    "target_exists": true
+  }
+}

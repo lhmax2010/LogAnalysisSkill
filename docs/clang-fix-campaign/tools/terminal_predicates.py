@@ -566,6 +566,7 @@ def verify(
     files: dict[str, Any] | None = None,
     root: Path | None = None,
     measurement_exemptions: list[dict[str, Any]] | None = None,
+    selected_claims: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     # This frozen batch permits no exemptions. Generic upper-bound comparisons
     # are tested separately, without synthesizing SEAL-16 reference facts.
@@ -576,10 +577,20 @@ def verify(
         raise PredicateError("registry canonical hash differs from external anchor")
     if render(registry) != generated:
         raise PredicateError("renderer round-trip differs")
-    if set(outputs) != {claim["claim_id"] for claim in registry}:
+    registered = {claim["claim_id"] for claim in registry}
+    selected = registered if selected_claims is None else set(selected_claims)
+    if (
+        not selected
+        or not selected <= registered
+        or (selected_claims is not None and len(selected) != len(selected_claims))
+    ):
+        raise PredicateError("invalid explicit claim selection")
+    if set(outputs) != selected:
         raise PredicateError("claim output coverage differs")
     results = []
     for claim in registry:
+        if claim["claim_id"] not in selected:
+            continue
         evaluator = Evaluator(
             outputs[claim["claim_id"]], claim["output_schema"], context, outputs, files or {}, root
         )
@@ -605,6 +616,9 @@ def main() -> int:
     parser.add_argument("--generated", type=Path)
     parser.add_argument("--root", type=Path)
     parser.add_argument("--exemptions", type=Path)
+    parser.add_argument(
+        "--claim", action="append", help="explicit subset; never marks omitted claims PASS"
+    )
     args = parser.parse_args()
     try:
         registry = load_json(args.registry)
@@ -628,6 +642,7 @@ def main() -> int:
                 generated=args.generated.read_text(encoding="utf-8"),
                 root=args.root,
                 measurement_exemptions=exemptions,
+                selected_claims=args.claim,
             )
             print(json.dumps(results, ensure_ascii=False, indent=2))
             return int(any(row["verdict"] != "PASS" for row in results))

@@ -1,6 +1,6 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART2_ERRATUM1_ACCEPTED。更新日期: 2026-09-29。
+状态: A0_PART2_STOPPED_DIFF03。更新日期: 2026-09-29。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;第11节记录候选编码、人工 fixture 测试与固定
 43a6aa6 工作区的 B-0 实跑。编码尚待设计方逐条核对、FatTank 批准及
@@ -938,3 +938,103 @@ item3/item4。冻结提交已有效,不重复冻结或修改判定条件来消�
   文档规则从本次主分支入库的新hash读取,不把旧工作区内勘误前文档当作新规则。
 - 当前未运行producer;后续授权仅item3/item4。item5(含读取方全集)仍禁行。
 - 规则入库与后续工具/事实记录分开提交,后续记录补本次入库SHA(Git外部锚)。
+
+## 15. 勘误1后:两项首跑PASS,差异登记新停止项
+
+### 15.1 入库锚、判定与代码来源分离
+
+勘误入库 commit=`32b7f432bdeed0b7f6aeeb26c9e37bd1d13486e1`。
+`E/part2/e1-intake-diff.log`为该commit相对`4cf85aa`的完整设计稿diff;
+`e1-intake-numstat.log`原文为`40 0 <design path>`,无删除行。
+新hash仍为§14所列`d4458459...`。文首提示与附录C之外一字未动。
+
+工具/测试从主树加载;全部执行cwd仍是干净的`LogAnalysisSkill-a0-43a6aa6`,
+观测HEAD/tree仍为§9.2固定值。独立环境`/tmp/p49-a0-baseline-v12-43a6aa6`;
+PYTHONPATH/MYPYPATH清除。producer检查HEAD/tree、空git status、生产模块
+实际`__file__`及主树规则文档hash;原始产出同时记录code_root与独立rules来源。
+
+冻结提交仍为`6601cfc`,两文件原字节及canonical hash均未变:
+`8271f1d0...`/`4f53cda1...`(全值见§12)。仅增加verifier的显式`--claim`选择:
+先校验**完整registry**的冻结hash/renderer,再要求产出键与显式选择精确相等。
+默认仍要求全部claim;空选择/重复/未知claim拒绝;未运行的claim不输出PASS。
+不修改任何predicate、schema、求值判据;四项人工控制见新增测试。
+
+### 15.2 两个producer的首次运行与verifier
+
+`T/verify_anchors.py`只开放item3/item4,无item5入口;输出`output.json`为原始
+schema事实,不含verdict。`raw.json`保存源区段、完整调用轨迹、异常内容、
+隔离fixture目录状态与子进程exit。verdict独立由已冻结判据的CLI生成。
+
+| claim | producer exit | verifier原始输出 | verifier exit | 原始事实/判定证据 |
+|---|---|---|---|---|
+| OBS-1.item3-predicate | 0 | `{"claim_id":"OBS-1.item3-predicate","verdict":"PASS"}` | 0 | `E/part2/e1-item3/{output,raw,context}.json`;`e1-item3-verifier.log` |
+| OBS-1.item4-anchors | 0 | `{"claim_id":"OBS-1.item4-anchors","verdict":"PASS"}` | 0 | `E/part2/e1-item4/{output,raw,context}.json`;`e1-item4-verifier.log` |
+
+各命令精确argv/cwd/env/exit在同名`*.command.json`,可直接复跑,不以本表缩写
+代替原始命令。item3验证PASS后才运行item4;没有改动或重生成失败事实。
+
+item3:AST机械selector命中1处BoolOp.And,同receiver的exists/is_symlink;
+四场景分别为悬空链接`FileExistsError`且code ABSENT、live链接
+`GerritError/SOURCE_DIR_UNSAFE`、真实目录与不存在目录均正常建目录。
+产出记录了完整异常message与执行后路径状态,不是只记期望code。
+
+item4:表六行保留单元格原文,六个FunctionDef/Call selector各命中1处。
+六调用面分别执行默认/注入TimeoutExpired/SIGINT/SIGTERM;另对完整fetch流程
+query/init/fetch/checkout逐点注入超时与两种信号,合计36条观察。
+signals在独立子进程真实`os.kill`触发:各SIGINT exit=-2,SIGTERM exit=-15,
+不是用异常文字伪造信号。查询阶段sentinel字节和目录保持不变;
+git各阶段旧sentinel已被重置、destination仍存在。源码的重置/建目录是真实执行,
+外部git/ssh均为fake runner,无真实网络,不把stub成功当成真实Gerrit/clone验证。
+
+§5要求专项:exclude超时/SIGINT/SIGTERM均观察到workdir marker PRESENT
+(原字节hash已存)、protected marker ABSENT、exclude_completed=false。
+故query/git残留**须区分**,表最后一格与本次观测一致。
+`E/part2/e1-observation-summary.log`是对raw JSON的机械汇总,不是第二份期望。
+未运行item5、未枚举其依赖的读取方全集,未把第六格观测冒充item5完成。
+
+### 15.3 DIFF-03:悬空链接的message新值来源仍未定义
+
+| ID | 状态 | 原文位置 + 困难 | 候选处置(未实施) |
+|---|---|---|---|
+| DIFF-03 | OPEN | 勘误后terminal §3第1454-1458行的“预期差异”仅钉code/type;§6第1516-1517行要求精确差集、第1526行要求message必填。E1-1第2082-2091行只准四类来源,E1-2第2093-2106行的消息派生明确仅适用于TimeoutExpired,未覆盖悬空链接。item3 raw `/observations/0/outcome/exception/value/message`实测旧值为`[Errno 17] File exists: '<dest>'`;相邻live场景和当前gerrit.py第236-238行的安全分支消息为`source directory is a symlink: <dest>`。让悬空输入进入这个既有分支还会改变message,但无法从获准的§3预期差异条目取得该message的新值/派生规则。现有实现字符串可证明缺口,不是实现方可自行追加的第五类新值来源。 | 设计方可明确授权悬空场景复用现有SOURCE_DIR_UNSAFE分支的精确message(给出固定规则及以fixture destination派生的方式/来源位置),并将其列入DIFF_SET;或另行裁定message处理。实现方不自行扩E1-2到非超时异常、不保留旧错误文本冒充目标行为、不删message字段、不用全局掩码吞差异。 |
+
+原始实测摘录(未改写产出):
+
+```text
+DANGLING_SYMLINK:
+  type=FileExistsError
+  message=[Errno 17] File exists: '/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination'
+  code={"state":"ABSENT"}
+LIVE_SYMLINK_TO_DIR:
+  type=GerritError
+  message=source directory is a symlink: /tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination
+  code={"state":"VALUE","value":"SOURCE_DIR_UNSAFE"}
+```
+
+证据:`e1-dangling-message-evidence.log`直接jq提取raw字段;
+`e1-source-dir-message.log`为固定树精确函数名rg;
+`e1-message-rule-scope.log`为新hash规则文档的原文定位。对应command.json均exit0。
+这不是claim判红:两项claim仍PASS;是§6登记来源的独立停止项。
+DIFF-01/02不重开,勘误1已生效。**本轮新增停止项1条,当前OPEN总数1条。**
+
+### 15.4 工具自检与本轮未交付项
+
+| 验证 | 实测输出 | exit/证据 |
+|---|---|---|
+| verifier+机械selector人工控制 | `111 passed in 0.92s` | 0;`e1-unit-tests.command.json/.log` |
+| mypy(两工具+两测试) | `Success: no issues found in 4 source files` | 0;`e1-tools-mypy-final.*` |
+| ruff(同上) | `All checks passed!` | 0;`e1-final-ruff.*` |
+| py_compile(同上) | 空输出 | 0;`e1-py-compile.*` |
+| 冻结registry核对 | `registry_valid claims=15 canonical_hash=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6` | 0;`e1-approved-hashes.*` |
+
+开发时首次mypy有6项工具注解错误,修正后复跑全绿;初次输出保留在
+`e1-tools-mypy.log`,不冒充首次即绿。发生在任何producer首跑之前,
+不涉及修predicate/重写产出。采集后工具源码未再修改。
+
+`scenario_manifest.json` / `result_schema.json` / `expected_diff.json`尚未生成;
+门禁及七条准入证伪仍**NOT_RUN**,命令/exit=N/A。不存在已登记差异的来源清单,
+不能把空清单或两个claim PASS当成§6门禁通过。旧值事实已有上述两份raw证据,
+续跑时可按hash复用;新值只能在裁决DIFF-03后依获准规则登记。
+生产源码及已冻结predicate/exemptions零diff,干净观测工作区status空;
+主树既有无关修改/删除/untracked稿保持不动。下一步只等DIFF-03裁决,
+不启动其它producer或生产实施。

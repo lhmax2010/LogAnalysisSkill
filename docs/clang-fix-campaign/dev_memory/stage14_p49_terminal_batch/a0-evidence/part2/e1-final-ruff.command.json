@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/tmp/p49-a0-baseline-v12-43a6aa6/bin/ruff",
+    "check",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_predicates.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_predicates.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_anchors.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path_prefix": "/tmp/p49-a0-baseline-v12-43a6aa6/bin",
+  "exit_code": 0,
+  "output_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+  "tool_inputs": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_predicates.py": "a6e6399059f42d6c266a11361e9090111b2f1a0379cc5b03e9f75ee529745cef",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py": "efa841b189956ebe3f786dcd4fb9a9fc82f91c9b81275af562548e997d05c23b",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_predicates.py": "0559e83647d3be7e28ddafe5cc31e1aed5728100cd432e8435ffcd6a616daa20",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_anchors.py": "aaca5602466590ccdd79fccc3c03607d535cee299743b9c33dfcc40f96cc4624"
+  }
+}

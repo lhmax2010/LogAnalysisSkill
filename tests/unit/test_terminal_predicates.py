@@ -475,3 +475,44 @@ def test_cli_cannot_override_freeze_pin(tmp_path: Path, monkeypatch: pytest.Monk
         sys, "argv", [str(TOOL), str(path), "--expected-hash", P.canonical_hash(registry)]
     )
     assert P.main() == 1
+
+
+@pytest.mark.parametrize("selection", [[], ["unknown"], ["OBS-1.item3-predicate"] * 2])
+def test_explicit_claim_selection_rejects_invalid(selection: list[str]) -> None:
+    with pytest.raises(P.PredicateError, match="claim selection"):
+        P.verify(
+            REGISTRY,
+            {},
+            context=FIXTURE["context"],
+            expected_hash=HASH,
+            generated=RENDERED,
+            selected_claims=selection,
+        )
+
+
+def test_explicit_subset_keeps_full_registry_hash_and_does_not_green_omissions() -> None:
+    selected = ["OBS-1.item3-predicate", "OBS-1.item4-anchors"]
+    outputs = {key: FIXTURE["outputs"][key] for key in selected}
+    results = P.verify(
+        REGISTRY,
+        outputs,
+        context=FIXTURE["context"],
+        expected_hash=HASH,
+        generated=RENDERED,
+        selected_claims=selected,
+    )
+    assert [row["claim_id"] for row in results] == selected
+    assert all(row["verdict"] == "PASS" for row in results)
+    with pytest.raises(P.PredicateError, match="coverage"):
+        P.verify(
+            REGISTRY, outputs, context=FIXTURE["context"], expected_hash=HASH, generated=RENDERED
+        )
+    with pytest.raises(P.PredicateError, match="canonical hash"):
+        P.verify(
+            REGISTRY[:2],
+            outputs,
+            context=FIXTURE["context"],
+            expected_hash=HASH,
+            generated=RENDERED,
+            selected_claims=selected,
+        )

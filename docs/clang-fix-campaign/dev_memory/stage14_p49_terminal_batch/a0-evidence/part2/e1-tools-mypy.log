@@ -1,0 +1,7 @@
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py:126: error: Argument 1 to "Path" has incompatible type "str | None"; expected "str | PathLike[str]"  [arg-type]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py:128: error: Incompatible return value type (got "tuple[Module, ...]", expected "tuple[Any, Any, Any]")  [return-value]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py:144: error: "expr" has no attribute "attr"  [attr-defined]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py:163: error: "expr" has no attribute "value"  [attr-defined]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py:164: error: Item "None" of "str | None" has no attribute "encode"  [union-attr]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py:465: error: Incompatible types in assignment (expression has type "list[dict[str, str]]", variable has type "list[dict[str, dict[str, str] | str]]")  [assignment]
+Found 6 errors in 1 file (checked 3 source files)

@@ -1,0 +1,244 @@
+{
+  "observations": 36,
+  "signals": [
+    {
+      "scenario_id": "surface1-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "surface1-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    },
+    {
+      "scenario_id": "surface2-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "surface2-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    },
+    {
+      "scenario_id": "surface3-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "surface3-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    },
+    {
+      "scenario_id": "surface4-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "surface4-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    },
+    {
+      "scenario_id": "surface5-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "surface5-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    },
+    {
+      "scenario_id": "surface6-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "surface6-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    },
+    {
+      "scenario_id": "fetch-query-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "fetch-query-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    },
+    {
+      "scenario_id": "fetch-init-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "fetch-init-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    },
+    {
+      "scenario_id": "fetch-fetch-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "fetch-fetch-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    },
+    {
+      "scenario_id": "fetch-checkout-SIGINT",
+      "exit_code": -2,
+      "injected_signal": "SIGINT"
+    },
+    {
+      "scenario_id": "fetch-checkout-SIGTERM",
+      "exit_code": -15,
+      "injected_signal": "SIGTERM"
+    }
+  ],
+  "residuals": [
+    {
+      "scenario_id": "surface6-timeout",
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface6-SIGINT",
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface6-SIGTERM",
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "f64d6ab99a64d3f109f36de21ed66c0dc028436605f6a6285c2cd7b540d33a8a"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    }
+  ],
+  "fetch_residuals": [
+    {
+      "scenario_id": "fetch-query-timeout",
+      "destination_unchanged": true,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    {
+      "scenario_id": "fetch-query-SIGINT",
+      "destination_unchanged": true,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    {
+      "scenario_id": "fetch-query-SIGTERM",
+      "destination_unchanged": true,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    {
+      "scenario_id": "fetch-init-timeout",
+      "destination_unchanged": false,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      }
+    },
+    {
+      "scenario_id": "fetch-init-SIGINT",
+      "destination_unchanged": false,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      }
+    },
+    {
+      "scenario_id": "fetch-init-SIGTERM",
+      "destination_unchanged": false,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      }
+    },
+    {
+      "scenario_id": "fetch-fetch-timeout",
+      "destination_unchanged": false,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      }
+    },
+    {
+      "scenario_id": "fetch-fetch-SIGINT",
+      "destination_unchanged": false,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      }
+    },
+    {
+      "scenario_id": "fetch-fetch-SIGTERM",
+      "destination_unchanged": false,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      }
+    },
+    {
+      "scenario_id": "fetch-checkout-timeout",
+      "destination_unchanged": false,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      }
+    },
+    {
+      "scenario_id": "fetch-checkout-SIGINT",
+      "destination_unchanged": false,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      }
+    },
+    {
+      "scenario_id": "fetch-checkout-SIGTERM",
+      "destination_unchanged": false,
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      }
+    }
+  ]
+}

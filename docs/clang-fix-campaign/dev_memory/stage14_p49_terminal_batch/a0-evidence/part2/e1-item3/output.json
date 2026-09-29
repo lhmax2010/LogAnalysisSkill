@@ -1,0 +1,72 @@
+{
+  "OBS-1.item3-predicate": {
+    "anchor": {
+      "file": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+      "function": "_reset_generated_source_dir",
+      "selector": "FunctionDef//BoolOp.And[direct operand calls include exists,is_symlink]",
+      "matched_count": 1,
+      "expr_kind": "BoolOp.And",
+      "operand_calls": [
+        "exists",
+        "is_symlink"
+      ],
+      "same_receiver": true,
+      "span_sha256": "3f3043b48944263c4547a4a009d29fb67667eccf10cee0b593592e4e007d8340"
+    },
+    "scenarios": [
+      {
+        "scenario_id": "DANGLING_SYMLINK",
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "destination_after": "{\"kind\": \"SYMLINK\", \"target\": \"/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/target\", \"target_exists\": false}",
+        "exception_type": "FileExistsError"
+      },
+      {
+        "scenario_id": "LIVE_SYMLINK_TO_DIR",
+        "exception_code": {
+          "state": "VALUE",
+          "value": "SOURCE_DIR_UNSAFE"
+        },
+        "destination_after": "{\"kind\": \"SYMLINK\", \"target\": \"/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/target\", \"target_exists\": true}",
+        "exception_type": "GerritError"
+      },
+      {
+        "scenario_id": "REAL_DIR",
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "destination_after": "{\"files\": {}, \"kind\": \"DIRECTORY\"}"
+      },
+      {
+        "scenario_id": "ABSENT",
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "destination_after": "{\"files\": {}, \"kind\": \"DIRECTORY\"}"
+      }
+    ],
+    "claim_id": "OBS-1.item3-predicate",
+    "snapshot": "ca9331190e878af465e7968fe56e735585a5866e",
+    "evidence": [
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+        "sha256": "5df43c509fffe76ecaa37914fb07db0e86056a81b98f849321e390a43fd5d82a",
+        "selector": "module source"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "selector": "/observations"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+        "sha256": "d44584592b54bfaf1406c13369da5f2f6a5894fc3dd8de04b3905eadd6213c3f",
+        "selector": "Appendix C/E1-1/E1-2"
+      }
+    ]
+  }
+}

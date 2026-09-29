@@ -1,0 +1,46 @@
+1454:- **预期差异**(§6 登记,字段值按 §6 标记值写法;v1.27 统一):**悬空 symlink 场景按 `DIFF_SET` 登记**:
+1455-  `GerritError.code` 由 `{"state":"ABSENT"}` → `{"state":"VALUE","value":"SOURCE_DIR_UNSAFE"}`;
+1456-  异常类型由现状异常(值见 `OBS-1.item3-predicate`)→ `GerritError`;
+1457-  **相邻的非悬空对照场景按 `NO_DIFF` 登记**;**其余输入的全部输出不变**;
+1458-  **具体旧值由 `OBS-1.item3-predicate` 与 `expected_diff.json` 提供**;
+1459-- 须更新 skill-3 冻结稿中相应的现状描述(**属冻结稿的行为变更记录,非漂移**)。
+1460-
+1461-## §4 项 4:timeout / cancellation 统一(行为变更)
+1462-
+1463-**输入 = skill-5 `v1.3.2` §3.2 的映射表**(条目与顺序见 `OBS-1.item4-anchors`);
+1464-**本批只实施 + parity + 评审,不得改动其裁决**。
+1465-
+1466-**规格锚点(`ANCHOR-4`)**:①skill-3 query 阶段 ②skill-3 git 阶段
+1467-③submit `_run_git` ④submit `ls-remote` ⑤shared `_run_git`
+1468-⑥shared `_exclude_private_files`。
+1469-
+1470-**参数**:各调用面统一 `timeout: float | None`,**默认 `None`**、不强制;
+1471-**SIGINT/SIGTERM 不捕获、原样传播**;**残留不自动回滚**;
+1472-`GerritSubmitError` 新类型**与 `GerritError` 同形 `(code, message)`**;
+1473-`WorkspaceViolation` **不改签名**,以 message 的 `GIT_TIMEOUT:` 前缀承载码。
+1474-
+1475-**验收口径(v1.25 补;丙 MAJOR-4)**:六个调用面**逐面**验收三类场景 ——
+--
+2086:> (iii) 本稿 §3 的"预期差异"条目、§4 的"验收口径"条目(含"默认 `timeout=None` 时调用轨迹中唯一允许的差异是新增的 `timeout=None` 关键字实参")、§5 的"§6 登记"条目;
+2087-> (iv) 本附录的勘误条目。
+2088-> **旧值**只能来自 OBS producer 的产出字段,或 §4 规定的"不存在"(`{"state":"ABSENT"}`)。
+2089-> **`timeout=None` 的登记方式**:六个调用面在"默认 `timeout=None`"场景下,调用轨迹中对应那一次调用的关键字实参集合**逐面登记**一条
+2090-> `DIFF_SET` 差异(旧:该关键字 `ABSENT`;新:`timeout` 值为 `None`);**不得**用全局掩码或"忽略 `timeout` 关键字"的方式处理。
+2091-> 除这一项外,该场景的其余字段一律精确相等。
+2092-
+2093:**E1-2 · 超时时异常消息与告警码的确定性生成规则**(DIFF-02)
+2094-> 映射表中的 `<message>` 与 `GIT_TIMEOUT:`/`GIT_TIMEOUT: …` 按下列规则取精确值;`exc` 指该调用面捕获到的 `subprocess.TimeoutExpired` 实例:
+2095-> | 调用面 | 超时时的结果(精确) |
+2096-> |---|---|
+2097-> | skill-3 query 阶段、git 阶段 | `GerritError(code="FETCH_TIMEOUT", message=str(exc))` |
+2098-> | 本 skill(gerrit-submit)`_run_git` | `GerritSubmitError(code="GIT_TIMEOUT", message=str(exc))` |
+2099-> | 本 skill `ls-remote` | 返回的告警列表中该项为字符串 `"target_head_unknown:timeout"`,**不附原异常文本** |
+2100-> | shared/workspace `_run_git`、`_exclude_private_files` | `WorkspaceViolation` 的消息为 `"GIT_TIMEOUT: " + str(exc)`(冒号后一个半角空格) |
+2101-> **理由**:`str(exc)` 由触发超时的命令与超时值唯一决定,固定 fixture 下可复现,不需要另造文案;
+2102-> ls-remote 的告警码按映射表"码值统一、不含原始异常文本"的本意取固定串。
+2103-> **登记方式**:`expected_diff.json` 中这些消息的新值写成"由规则派生"的形式:登记规则名(`TIMEOUT_MESSAGE_FROM_EXC` 或
+2104-> `GIT_TIMEOUT_PREFIX_PLUS_EXC`)与本勘误编号,门禁在固定 fixture 上按规则算出精确期望值后**逐字比较**;
+2105-> **不得**只比前缀、忽略消息或写占位串。
+2106-> `GerritError`/`GerritSubmitError` 以 `code` 与 `message` 两个字段进入 §6 结果对象;`WorkspaceViolation` 以消息全文进入。
+2107-
+2108-**生效范围**:仅 §6 登记与项 4(§4)的实现;不改变任何 SEAL、判定条件或其它事项。

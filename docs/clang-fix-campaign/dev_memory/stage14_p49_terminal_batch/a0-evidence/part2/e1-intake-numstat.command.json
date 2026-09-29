@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--numstat",
+    "4cf85aa",
+    "32b7f43",
+    "--",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path_prefix": "/tmp/p49-a0-baseline-v12-43a6aa6/bin",
+  "exit_code": 0,
+  "output_sha256": "f18e0564415741ff903cb9e5e74c77075062522bea5b9872a466d344c5595766"
+}

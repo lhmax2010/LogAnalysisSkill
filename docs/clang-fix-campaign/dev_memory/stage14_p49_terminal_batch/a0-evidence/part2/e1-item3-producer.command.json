@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+    "--root",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+    "--rules-root",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "--claim",
+    "item3",
+    "--out",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path_prefix": "/tmp/p49-a0-baseline-v12-43a6aa6/bin",
+  "exit_code": 0,
+  "output_sha256": "c6d740d40c1b6ad7d0091c0d1bff53aa808006d774378790c8216140ac6ce706",
+  "tool_inputs": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py": "efa841b189956ebe3f786dcd4fb9a9fc82f91c9b81275af562548e997d05c23b"
+  }
+}

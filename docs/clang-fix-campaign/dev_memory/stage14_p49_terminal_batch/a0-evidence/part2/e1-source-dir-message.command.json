@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "-A",
+    "4",
+    "^def _reset_generated_source_dir\\(",
+    "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path_prefix": "/tmp/p49-a0-baseline-v12-43a6aa6/bin",
+  "exit_code": 0,
+  "output_sha256": "0de9768c09e83cb482d86e81db8c86e181d80ac371913d5f34d8cf2d6b8ac118"
+}

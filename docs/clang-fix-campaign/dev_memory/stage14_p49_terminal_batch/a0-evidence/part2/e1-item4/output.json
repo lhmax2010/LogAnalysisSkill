@@ -1,0 +1,229 @@
+{
+  "OBS-1.item4-anchors": {
+    "table_source": {
+      "path": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+      "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+      "heading": "### 3.2 裁决:**本批完成设计、实施推迟至专门批次**(理由与新关门批次)"
+    },
+    "rows": [
+      {
+        "surface": "skill-3 `fetch_source_for_commit` **query 阶段**(`gerrit.py:132`,在 `_reset` 之前)",
+        "timeout_cell": "`GerritError(\"FETCH_TIMEOUT\", <message>)`",
+        "interrupt_cell": "传播",
+        "residual_cell": "**destination 不动**(与 skill-3 冻结 :465 一致)"
+      },
+      {
+        "surface": "skill-3 **git 阶段**(init/fetch/checkout,`_reset` 之后)",
+        "timeout_cell": "`GerritError(\"FETCH_TIMEOUT\", <message>)`",
+        "interrupt_cell": "传播",
+        "residual_cell": "**阶段残留**(与 skill-3 冻结 :478 一致)"
+      },
+      {
+        "surface": "本 skill `_run_git`(:348)",
+        "timeout_cell": "`GerritSubmitError(\"GIT_TIMEOUT\", <message>)`(新类型,签名与 `GerritError` 同形 `(code, message)`,末批定义)",
+        "interrupt_cell": "传播",
+        "residual_cell": "worktree 不变"
+      },
+      {
+        "surface": "本 skill `ls-remote`(:284)",
+        "timeout_cell": "warning 码统一 `target_head_unknown:timeout`",
+        "interrupt_cell": "传播",
+        "residual_cell": "无"
+      },
+      {
+        "surface": "shared/workspace `_run_git`(:205)",
+        "timeout_cell": "`WorkspaceViolation(<message>)`,message 以 `GIT_TIMEOUT:` 前缀承载码(`WorkspaceViolation` 无 code 字段,不改其签名——改签名属行为变更)",
+        "interrupt_cell": "传播",
+        "residual_cell": "marker 不变"
+      },
+      {
+        "surface": "**shared/workspace `_exclude_private_files`**(:209,`mark_worktree_protected` :117 调用)",
+        "timeout_cell": "同上 `WorkspaceViolation(\"GIT_TIMEOUT: …\")`",
+        "interrupt_cell": "传播",
+        "residual_cell": "**workdir marker 保留、protected marker 尚未写入、exclude 未完成**(`mark_worktree_protected` 的真实顺序:`_verify_cleanup_handle`(:115)→ `_exclude_private_files`(:117)→ 构造并写入 protected marker(:118/:124);故超时点在 exclude 时,protected marker 尚未产生)"
+      }
+    ],
+    "call_sites": [
+      {
+        "anchor_no": 1,
+        "file": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+        "function": "query_change_for_commit",
+        "selector": "FunctionDef[name=query_change_for_commit]//Call[func=subprocess_runner]",
+        "matched_count": 1
+      },
+      {
+        "anchor_no": 2,
+        "file": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+        "function": "_run_git",
+        "selector": "FunctionDef[name=_run_git]//Call[func=subprocess_runner]",
+        "matched_count": 1
+      },
+      {
+        "anchor_no": 3,
+        "file": "tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py",
+        "function": "_run_git",
+        "selector": "FunctionDef[name=_run_git]//Call[func=subprocess_runner]",
+        "matched_count": 1
+      },
+      {
+        "anchor_no": 4,
+        "file": "tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py",
+        "function": "_target_warnings",
+        "selector": "FunctionDef[name=_target_warnings]//Call[func=subprocess_runner]",
+        "matched_count": 1
+      },
+      {
+        "anchor_no": 5,
+        "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+        "function": "_run_git",
+        "selector": "FunctionDef[name=_run_git]//Call[func=subprocess.run]",
+        "matched_count": 1
+      },
+      {
+        "anchor_no": 6,
+        "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+        "function": "_exclude_private_files",
+        "selector": "FunctionDef[name=_exclude_private_files]//Call[func=subprocess.run]",
+        "matched_count": 1
+      }
+    ],
+    "residual_obs": [
+      {
+        "anchor_no": 6,
+        "injected_at": "_exclude_private_files/subprocess.run/timeout",
+        "workdir_marker": {
+          "state": "PRESENT",
+          "sha256": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17"
+        },
+        "protected_marker": {
+          "state": "ABSENT"
+        },
+        "exclude_completed": false
+      },
+      {
+        "anchor_no": 6,
+        "injected_at": "_exclude_private_files/subprocess.run/SIGINT",
+        "workdir_marker": {
+          "state": "PRESENT",
+          "sha256": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec"
+        },
+        "protected_marker": {
+          "state": "ABSENT"
+        },
+        "exclude_completed": false
+      },
+      {
+        "anchor_no": 6,
+        "injected_at": "_exclude_private_files/subprocess.run/SIGTERM",
+        "workdir_marker": {
+          "state": "PRESENT",
+          "sha256": "f64d6ab99a64d3f109f36de21ed66c0dc028436605f6a6285c2cd7b540d33a8a"
+        },
+        "protected_marker": {
+          "state": "ABSENT"
+        },
+        "exclude_completed": false
+      },
+      {
+        "anchor_no": 1,
+        "injected_at": "fetch_source_for_commit/query/timeout",
+        "destination_unchanged": true
+      },
+      {
+        "anchor_no": 1,
+        "injected_at": "fetch_source_for_commit/query/SIGINT",
+        "destination_unchanged": true
+      },
+      {
+        "anchor_no": 1,
+        "injected_at": "fetch_source_for_commit/query/SIGTERM",
+        "destination_unchanged": true
+      },
+      {
+        "anchor_no": 2,
+        "injected_at": "fetch_source_for_commit/init/timeout",
+        "destination_unchanged": false
+      },
+      {
+        "anchor_no": 2,
+        "injected_at": "fetch_source_for_commit/init/SIGINT",
+        "destination_unchanged": false
+      },
+      {
+        "anchor_no": 2,
+        "injected_at": "fetch_source_for_commit/init/SIGTERM",
+        "destination_unchanged": false
+      },
+      {
+        "anchor_no": 2,
+        "injected_at": "fetch_source_for_commit/fetch/timeout",
+        "destination_unchanged": false
+      },
+      {
+        "anchor_no": 2,
+        "injected_at": "fetch_source_for_commit/fetch/SIGINT",
+        "destination_unchanged": false
+      },
+      {
+        "anchor_no": 2,
+        "injected_at": "fetch_source_for_commit/fetch/SIGTERM",
+        "destination_unchanged": false
+      },
+      {
+        "anchor_no": 2,
+        "injected_at": "fetch_source_for_commit/checkout/timeout",
+        "destination_unchanged": false
+      },
+      {
+        "anchor_no": 2,
+        "injected_at": "fetch_source_for_commit/checkout/SIGINT",
+        "destination_unchanged": false
+      },
+      {
+        "anchor_no": 2,
+        "injected_at": "fetch_source_for_commit/checkout/SIGTERM",
+        "destination_unchanged": false
+      }
+    ],
+    "claim_id": "OBS-1.item4-anchors",
+    "snapshot": "ca9331190e878af465e7968fe56e735585a5866e",
+    "evidence": [
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+        "sha256": "5df43c509fffe76ecaa37914fb07db0e86056a81b98f849321e390a43fd5d82a",
+        "selector": "module source"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py",
+        "sha256": "ead701d0e943f395225729be5daef94f53912002d97534f2309cc264e037107f",
+        "selector": "module source"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+        "sha256": "b34956e7f4dba2c29c93b870601dcef31605dcf9e96b615caa393e16668f05a6",
+        "selector": "module source"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+        "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+        "selector": "module source"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "selector": "/observations"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+        "sha256": "d44584592b54bfaf1406c13369da5f2f6a5894fc3dd8de04b3905eadd6213c3f",
+        "selector": "Appendix C/E1-1/E1-2"
+      }
+    ]
+  }
+}

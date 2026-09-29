@@ -1,0 +1,55 @@
+diff --git a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+index d364689..4b3189a 100644
+--- a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
++++ b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+@@ -1,6 +1,7 @@
+ # P4.9 末终止批次设计(v1.31-FROZEN)
+ 
+ > **状态:FROZEN(2026-09-27,FatTank 批准)。** 交 Codex 按本稿实现。冻结后任何改动只走下面第 3 条的勘误流程。
++> **已生效勘误:附录 C 勘误 1(2026-09-29,FatTank 批准)。** 勘误只追加在附录 C,不改动正文任何一行。
+ > 冻结前的放行规则(v1.27 起,留作记录):
+ > 1. **落地核对**:三家只核对最新修订段所列改动是否按所写落地、有无改到别处;**不开新的审查面**;
+ > 2. **放行标准只看"朝开"**:仅当发现**会导致删错真实依赖或删掉行为型测试**的问题才阻止冻结;
+@@ -2066,3 +2067,42 @@ SEAL-12 的 `NON_SHIM_PREDICTION` 抑制例、SEAL-4 的
+ A/B 取值、**存在性检查证据(`lstat` 语义)**、**π 归一结果**、
+ **`EXISTENCE_CONFLICT` 命中时的两侧证据**)与结论,
+ **供删除后追溯"判据写错"与"执行错"的区分**。
++
++---
++
++## 附录 C:冻结后勘误
++
++> 本附录按冻结规则第 3 条追加:实现期停止-报告 → 设计方出勘误 → FatTank 批准。**勘误不改动正文任何一行**;
++> 正文与勘误冲突处以勘误为准。每条勘误写明触发的停止报告、所补的空位与生效范围。
++
++### 勘误 1(2026-09-29,FatTank 批准)—— §6 预期差异登记的取值来源与超时消息的生成规则
++
++**触发**:A₀ 第 2 段停止报告 DIFF-01、DIFF-02(stage14 `progress.md` §13)。
++
++**E1-1 · §6 登记新值的来源范围**(DIFF-01)
++> `expected_diff.json` 中每条 `DIFF_SET` 登记的**新值**,只能引用下列来源之一,并在登记中写明来源位置:
++> (i) skill-5 v1.3.2-FROZEN §3.2 结果映射表的具体单元格;
++> (ii) skill-5 v1.3.2-FROZEN §3.2 映射表下方关于"末批 parity 须预先把 `timeout=None` 这个透传 kwarg 声明为掩码/白名单项"的段落;
++> (iii) 本稿 §3 的"预期差异"条目、§4 的"验收口径"条目(含"默认 `timeout=None` 时调用轨迹中唯一允许的差异是新增的 `timeout=None` 关键字实参")、§5 的"§6 登记"条目;
++> (iv) 本附录的勘误条目。
++> **旧值**只能来自 OBS producer 的产出字段,或 §4 规定的"不存在"(`{"state":"ABSENT"}`)。
++> **`timeout=None` 的登记方式**:六个调用面在"默认 `timeout=None`"场景下,调用轨迹中对应那一次调用的关键字实参集合**逐面登记**一条
++> `DIFF_SET` 差异(旧:该关键字 `ABSENT`;新:`timeout` 值为 `None`);**不得**用全局掩码或"忽略 `timeout` 关键字"的方式处理。
++> 除这一项外,该场景的其余字段一律精确相等。
++
++**E1-2 · 超时时异常消息与告警码的确定性生成规则**(DIFF-02)
++> 映射表中的 `<message>` 与 `GIT_TIMEOUT:`/`GIT_TIMEOUT: …` 按下列规则取精确值;`exc` 指该调用面捕获到的 `subprocess.TimeoutExpired` 实例:
++> | 调用面 | 超时时的结果(精确) |
++> |---|---|
++> | skill-3 query 阶段、git 阶段 | `GerritError(code="FETCH_TIMEOUT", message=str(exc))` |
++> | 本 skill(gerrit-submit)`_run_git` | `GerritSubmitError(code="GIT_TIMEOUT", message=str(exc))` |
++> | 本 skill `ls-remote` | 返回的告警列表中该项为字符串 `"target_head_unknown:timeout"`,**不附原异常文本** |
++> | shared/workspace `_run_git`、`_exclude_private_files` | `WorkspaceViolation` 的消息为 `"GIT_TIMEOUT: " + str(exc)`(冒号后一个半角空格) |
++> **理由**:`str(exc)` 由触发超时的命令与超时值唯一决定,固定 fixture 下可复现,不需要另造文案;
++> ls-remote 的告警码按映射表"码值统一、不含原始异常文本"的本意取固定串。
++> **登记方式**:`expected_diff.json` 中这些消息的新值写成"由规则派生"的形式:登记规则名(`TIMEOUT_MESSAGE_FROM_EXC` 或
++> `GIT_TIMEOUT_PREFIX_PLUS_EXC`)与本勘误编号,门禁在固定 fixture 上按规则算出精确期望值后**逐字比较**;
++> **不得**只比前缀、忽略消息或写占位串。
++> `GerritError`/`GerritSubmitError` 以 `code` 与 `message` 两个字段进入 §6 结果对象;`WorkspaceViolation` 以消息全文进入。
++
++**生效范围**:仅 §6 登记与项 4(§4)的实现;不改变任何 SEAL、判定条件或其它事项。

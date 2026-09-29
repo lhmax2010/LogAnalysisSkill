@@ -3,8 +3,9 @@
 Source: `../../p49-terminal-obs-predicates-v1.2.md`. The designer checked the
 `c79e893` encoding and FatTank approved it on 2026-09-28. Freeze commit:
 `6601cfc60fcbed8d2f8fa91301f7693d52723d94`. No predicate or exemption bytes changed.
-No OBS producer has been invoked; segment 2 stopped at the expected-diff source
-rules (stage14 progress section 13).
+After erratum 1 (`32b7f43`), only item3/item4 producers ran, both verified PASS.
+Segment 2 now stops at the dangling-symlink message source rule (DIFF-03, stage14
+progress section 15). No other producer ran and no expected-diff gate passed.
 
 ## Representation
 
@@ -59,6 +60,9 @@ repository. Test exit 0 means the expected positive/negative behavior was
 asserted, not that a negative input was accepted.
 
 See stage14 `progress.md` section 11 for document/condition counts and baseline,
-section 12 for approval, freeze SHA and canonical pins, and section 13 for the
+section 12 for approval, freeze SHA and canonical pins, and section 15 for the
 current stop report. Historical control_catalog entries describe segment 1;
 the additional freeze-guard tests and raw logs are recorded in section 12.
+The batch CLI supports explicit `--claim` selection while checking the complete
+frozen registry and requiring exactly the selected output keys. It never emits
+PASS for omitted claims. Default invocation still requires all fifteen outputs.

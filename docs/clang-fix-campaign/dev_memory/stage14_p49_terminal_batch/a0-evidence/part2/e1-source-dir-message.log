@@ -1,0 +1,5 @@
+236:def _reset_generated_source_dir(path: Path) -> None:
+237-    if path.exists() and path.is_symlink():
+238-        raise GerritError("SOURCE_DIR_UNSAFE", f"source directory is a symlink: {path}")
+239-    if path.is_dir():
+240-        shutil.rmtree(path)

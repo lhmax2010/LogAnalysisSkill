@@ -1,0 +1,3501 @@
+{
+  "context": {
+    "head": "43a6aa625f27da46daba190657bf62256080c68e",
+    "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+    "code_root": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+    "rules": {
+      "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+      "sha256": "d44584592b54bfaf1406c13369da5f2f6a5894fc3dd8de04b3905eadd6213c3f"
+    },
+    "producer_sha256": "efa841b189956ebe3f786dcd4fb9a9fc82f91c9b81275af562548e997d05c23b"
+  },
+  "fixture_root": "/tmp/p49-item4-vik56x9g",
+  "observations": [
+    {
+      "scenario_id": "surface1-none",
+      "surface": "fetch-query",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-query",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface1-none"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface1-none",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "VALUE",
+          "value": {
+            "project": "fixture/project",
+            "branch": "fixture",
+            "status": "MERGED",
+            "number": 1,
+            "subject": "",
+            "url": null,
+            "matching_patchset": null
+          }
+        },
+        "exception": {
+          "state": "ABSENT"
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface1-timeout",
+      "surface": "fetch-query",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-query",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface1-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface1-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "TimeoutExpired",
+            "module": "subprocess",
+            "message": "Command '['ssh', '-p', '29418', 'review.tizen.org', 'gerrit', 'query', '--format=JSON', '--patch-sets', 'commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 0.125 seconds",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['ssh', '-p', '29418', 'review.tizen.org', 'gerrit', 'query', '--format=JSON', '--patch-sets', 'commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface1-SIGINT",
+      "surface": "fetch-query",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-query",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface1-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface1-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 334, in probe\n    result = fetch.query_change_for_commit(COMMIT, subprocess_runner=runner)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 52, in query_change_for_commit\n    completed = subprocess_runner(\n                ^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 438894,
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface1-SIGTERM",
+      "surface": "fetch-query",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-query",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface1-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface1-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 438898,
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface2-none",
+      "surface": "fetch-git",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-git",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface2-none"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface2-none",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface2-none/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {}
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "VALUE",
+          "value": null
+        },
+        "exception": {
+          "state": "ABSENT"
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface2-timeout",
+      "surface": "fetch-git",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-git",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface2-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface2-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface2-timeout/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {}
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "TimeoutExpired",
+            "module": "subprocess",
+            "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-timeout/destination', 'status']' timed out after 0.125 seconds",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface2-timeout/destination",
+          "status"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-timeout/destination', 'status']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface2-SIGINT",
+      "surface": "fetch-git",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-git",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface2-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface2-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 336, in probe\n    result = fetch._run_git([\"git\", \"-C\", str(destination), \"status\"], runner, env={})\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 233, in _run_git\n    subprocess_runner(command, check=True, text=True, env=env)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface2-SIGINT/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {}
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 438910,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface2-SIGINT/destination",
+          "status"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface2-SIGTERM",
+      "surface": "fetch-git",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-git",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface2-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface2-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface2-SIGTERM/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {}
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 438914,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface2-SIGTERM/destination",
+          "status"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface3-none",
+      "surface": "submit-git",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "submit-git",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface3-none"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface3-none",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface3-none/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": false,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "VALUE",
+          "value": {
+            "args": [
+              "git",
+              "-C",
+              "/tmp/p49-item4-vik56x9g/surface3-none/destination",
+              "status"
+            ],
+            "returncode": 0,
+            "stdout": "",
+            "stderr": ""
+          }
+        },
+        "exception": {
+          "state": "ABSENT"
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface3-timeout",
+      "surface": "submit-git",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "submit-git",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface3-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface3-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface3-timeout/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": false,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "TimeoutExpired",
+            "module": "subprocess",
+            "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-timeout/destination', 'status']' timed out after 0.125 seconds",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface3-timeout/destination",
+          "status"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-timeout/destination', 'status']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface3-SIGINT",
+      "surface": "submit-git",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "submit-git",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface3-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface3-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 338, in probe\n    result = submit._run_git(destination, [\"status\"], runner)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py\", line 348, in _run_git\n    return subprocess_runner(\n           ^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface3-SIGINT/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": false,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 438926,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface3-SIGINT/destination",
+          "status"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface3-SIGTERM",
+      "surface": "submit-git",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "submit-git",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface3-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface3-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface3-SIGTERM/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": false,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 438931,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface3-SIGTERM/destination",
+          "status"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface4-none",
+      "surface": "submit-remote",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "submit-remote",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface4-none"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface4-none",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "ls-remote",
+            "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+            "refs/heads/fixture"
+          ],
+          "kwargs": {
+            "check": false,
+            "text": true,
+            "capture_output": true,
+            "env": null
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "VALUE",
+          "value": []
+        },
+        "exception": {
+          "state": "ABSENT"
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface4-timeout",
+      "surface": "submit-remote",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "submit-remote",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface4-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface4-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "ls-remote",
+            "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+            "refs/heads/fixture"
+          ],
+          "kwargs": {
+            "check": false,
+            "text": true,
+            "capture_output": true,
+            "env": null
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "VALUE",
+          "value": [
+            "target_head_unknown:Command '['git', 'ls-remote', 'ssh://fixture-user@fixture.invalid:29418/fixture/project', 'refs/heads/fixture']' timed out after 0.125 seconds"
+          ]
+        },
+        "exception": {
+          "state": "ABSENT"
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "git",
+          "ls-remote",
+          "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+          "refs/heads/fixture"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['git', 'ls-remote', 'ssh://fixture-user@fixture.invalid:29418/fixture/project', 'refs/heads/fixture']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface4-SIGINT",
+      "surface": "submit-remote",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "submit-remote",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface4-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface4-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 349, in probe\n    result = submit._target_warnings(record, options, runner)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py\", line 284, in _target_warnings\n    completed = subprocess_runner(\n                ^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "ls-remote",
+            "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+            "refs/heads/fixture"
+          ],
+          "kwargs": {
+            "check": false,
+            "text": true,
+            "capture_output": true,
+            "env": null
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 438945,
+        "argv": [
+          "git",
+          "ls-remote",
+          "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+          "refs/heads/fixture"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface4-SIGTERM",
+      "surface": "submit-remote",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "submit-remote",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface4-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface4-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "ls-remote",
+            "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+            "refs/heads/fixture"
+          ],
+          "kwargs": {
+            "check": false,
+            "text": true,
+            "capture_output": true,
+            "env": null
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 438949,
+        "argv": [
+          "git",
+          "ls-remote",
+          "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+          "refs/heads/fixture"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface5-none",
+      "surface": "shared-git",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "shared-git",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface5-none"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface5-none",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "3bd1323595220e6505d467b8ec64054873579e928e8f044eef555924981a5e96",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "3bd1323595220e6505d467b8ec64054873579e928e8f044eef555924981a5e96",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface5-none/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "VALUE",
+          "value": null
+        },
+        "exception": {
+          "state": "ABSENT"
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "3bd1323595220e6505d467b8ec64054873579e928e8f044eef555924981a5e96"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface5-timeout",
+      "surface": "shared-git",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "shared-git",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface5-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface5-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "3bb21b014586db67d29b9b415abb6dfab72267c2541433c8d8558f5fb0a996c0",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "3bb21b014586db67d29b9b415abb6dfab72267c2541433c8d8558f5fb0a996c0",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface5-timeout/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "TimeoutExpired",
+            "module": "subprocess",
+            "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-timeout/destination', 'status']' timed out after 0.125 seconds",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface5-timeout/destination",
+          "status"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-timeout/destination', 'status']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "3bb21b014586db67d29b9b415abb6dfab72267c2541433c8d8558f5fb0a996c0"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface5-SIGINT",
+      "surface": "shared-git",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "shared-git",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface5-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface5-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 352, in probe\n    result = workspace._run_git([\"-C\", str(destination), \"status\"])\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 206, in _run_git\n    subprocess.run([\"git\", *args], check=True, text=True, capture_output=True)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "70632a0cdd6f7d4da78bb7e7c7cbc75dc48a3fb8b71e0e49a56628d2733c9c58",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "70632a0cdd6f7d4da78bb7e7c7cbc75dc48a3fb8b71e0e49a56628d2733c9c58",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface5-SIGINT/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 438961,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface5-SIGINT/destination",
+          "status"
+        ]
+      },
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "70632a0cdd6f7d4da78bb7e7c7cbc75dc48a3fb8b71e0e49a56628d2733c9c58"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface5-SIGTERM",
+      "surface": "shared-git",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "shared-git",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface5-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface5-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "871f9ca982b836c1a2a44940e1be3c4c1f1de3442d997d2e7cf8a34200bae6e1",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "871f9ca982b836c1a2a44940e1be3c4c1f1de3442d997d2e7cf8a34200bae6e1",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface5-SIGTERM/destination",
+            "status"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 438965,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface5-SIGTERM/destination",
+          "status"
+        ]
+      },
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "871f9ca982b836c1a2a44940e1be3c4c1f1de3442d997d2e7cf8a34200bae6e1"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface6-none",
+      "surface": "shared-exclude",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "shared-exclude",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface6-none"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface6-none",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "142ab31609905fa3b71a5a836ab4401e23d6dedffffeab2e1a661850214214a8",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_protected": "dc4eaeb7c6b3081096788fdc6bd3ec6eb38bae11eade8bfe4a63b0f1e0537af1",
+          ".ci_triage_workdir": "142ab31609905fa3b71a5a836ab4401e23d6dedffffeab2e1a661850214214a8",
+          ".git/info/exclude": "3e4969313bab8b06c233e5d1f0584f6ece3fb0b36b6014b879b5e6a86a7ed3e3",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface6-none/destination",
+            "rev-parse",
+            "--git-path",
+            "info/exclude"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "VALUE",
+          "value": null
+        },
+        "exception": {
+          "state": "ABSENT"
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "142ab31609905fa3b71a5a836ab4401e23d6dedffffeab2e1a661850214214a8"
+      },
+      "protected_marker": {
+        "state": "PRESENT",
+        "sha256": "dc4eaeb7c6b3081096788fdc6bd3ec6eb38bae11eade8bfe4a63b0f1e0537af1"
+      },
+      "exclude_completed": true
+    },
+    {
+      "scenario_id": "surface6-timeout",
+      "surface": "shared-exclude",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "shared-exclude",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface6-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface6-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface6-timeout/destination",
+            "rev-parse",
+            "--git-path",
+            "info/exclude"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "TimeoutExpired",
+            "module": "subprocess",
+            "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-timeout/destination', 'rev-parse', '--git-path', 'info/exclude']' timed out after 0.125 seconds",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface6-timeout/destination",
+          "rev-parse",
+          "--git-path",
+          "info/exclude"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-timeout/destination', 'rev-parse', '--git-path', 'info/exclude']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface6-SIGINT",
+      "surface": "shared-exclude",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "shared-exclude",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface6-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface6-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 355, in probe\n    result = workspace.mark_worktree_protected(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 117, in mark_worktree_protected\n    _exclude_private_files(path)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 210, in _exclude_private_files\n    result = subprocess.run(\n             ^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface6-SIGINT/destination",
+            "rev-parse",
+            "--git-path",
+            "info/exclude"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 438984,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface6-SIGINT/destination",
+          "rev-parse",
+          "--git-path",
+          "info/exclude"
+        ]
+      },
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "surface6-SIGTERM",
+      "surface": "shared-exclude",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "shared-exclude",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/surface6-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/surface6-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "f64d6ab99a64d3f109f36de21ed66c0dc028436605f6a6285c2cd7b540d33a8a",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          ".ci_triage_workdir": "f64d6ab99a64d3f109f36de21ed66c0dc028436605f6a6285c2cd7b540d33a8a",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/surface6-SIGTERM/destination",
+            "rev-parse",
+            "--git-path",
+            "info/exclude"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "capture_output": true
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 438988,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface6-SIGTERM/destination",
+          "rev-parse",
+          "--git-path",
+          "info/exclude"
+        ]
+      },
+      "workdir_marker": {
+        "state": "PRESENT",
+        "sha256": "f64d6ab99a64d3f109f36de21ed66c0dc028436605f6a6285c2cd7b540d33a8a"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-query-timeout",
+      "surface": "fetch-full-query",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-query",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-query-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-query-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "TimeoutExpired",
+            "module": "subprocess",
+            "message": "Command '['ssh', '-p', '29418', 'review.tizen.org', 'gerrit', 'query', '--format=JSON', '--patch-sets', 'commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 0.125 seconds",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['ssh', '-p', '29418', 'review.tizen.org', 'gerrit', 'query', '--format=JSON', '--patch-sets', 'commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-query-SIGINT",
+      "surface": "fetch-full-query",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-query",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-query-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-query-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 330, in probe\n    result = fetch.fetch_source_for_commit(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 132, in fetch_source_for_commit\n    change = query_change_for_commit(commit_hash, subprocess_runner=subprocess_runner)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 52, in query_change_for_commit\n    completed = subprocess_runner(\n                ^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 438996,
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-query-SIGTERM",
+      "surface": "fetch-full-query",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-query",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-query-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-query-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 439000,
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-init-timeout",
+      "surface": "fetch-full-init",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-init",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-init-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-init-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item4-vik56x9g/fetch-init-timeout/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "TimeoutExpired",
+            "module": "subprocess",
+            "message": "Command '['git', 'init', '/tmp/p49-item4-vik56x9g/fetch-init-timeout/destination']' timed out after 0.125 seconds",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "git",
+          "init",
+          "/tmp/p49-item4-vik56x9g/fetch-init-timeout/destination"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['git', 'init', '/tmp/p49-item4-vik56x9g/fetch-init-timeout/destination']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-init-SIGINT",
+      "surface": "fetch-full-init",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-init",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-init-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-init-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 330, in probe\n    result = fetch.fetch_source_for_commit(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 142, in fetch_source_for_commit\n    _run_git([\"git\", \"init\", str(destination)], subprocess_runner, env=env)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 233, in _run_git\n    subprocess_runner(command, check=True, text=True, env=env)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item4-vik56x9g/fetch-init-SIGINT/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 439008,
+        "argv": [
+          "git",
+          "init",
+          "/tmp/p49-item4-vik56x9g/fetch-init-SIGINT/destination"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-init-SIGTERM",
+      "surface": "fetch-full-init",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-init",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-init-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-init-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item4-vik56x9g/fetch-init-SIGTERM/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 439012,
+        "argv": [
+          "git",
+          "init",
+          "/tmp/p49-item4-vik56x9g/fetch-init-SIGTERM/destination"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-fetch-timeout",
+      "surface": "fetch-full-fetch",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-fetch",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-fetch-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-fetch-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item4-vik56x9g/fetch-fetch-timeout/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-fetch-timeout/destination",
+            "remote",
+            "add",
+            "origin",
+            "ssh://review.tizen.org:29418/fixture/project"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-fetch-timeout/destination",
+            "fetch",
+            "--depth",
+            "1",
+            "origin",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "TimeoutExpired",
+            "module": "subprocess",
+            "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/fetch-fetch-timeout/destination', 'fetch', '--depth', '1', 'origin', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 0.125 seconds",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/fetch-fetch-timeout/destination",
+          "fetch",
+          "--depth",
+          "1",
+          "origin",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/fetch-fetch-timeout/destination', 'fetch', '--depth', '1', 'origin', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-fetch-SIGINT",
+      "surface": "fetch-full-fetch",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-fetch",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 330, in probe\n    result = fetch.fetch_source_for_commit(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 175, in fetch_source_for_commit\n    _run_git(\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 233, in _run_git\n    subprocess_runner(command, check=True, text=True, env=env)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGINT/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGINT/destination",
+            "remote",
+            "add",
+            "origin",
+            "ssh://review.tizen.org:29418/fixture/project"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGINT/destination",
+            "fetch",
+            "--depth",
+            "1",
+            "origin",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 439020,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGINT/destination",
+          "fetch",
+          "--depth",
+          "1",
+          "origin",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-fetch-SIGTERM",
+      "surface": "fetch-full-fetch",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-fetch",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGTERM/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGTERM/destination",
+            "remote",
+            "add",
+            "origin",
+            "ssh://review.tizen.org:29418/fixture/project"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGTERM/destination",
+            "fetch",
+            "--depth",
+            "1",
+            "origin",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 439025,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/fetch-fetch-SIGTERM/destination",
+          "fetch",
+          "--depth",
+          "1",
+          "origin",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-checkout-timeout",
+      "surface": "fetch-full-checkout",
+      "fault": "timeout",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-checkout",
+        "--fault",
+        "timeout",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-checkout-timeout"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-checkout-timeout",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-timeout/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-timeout/destination",
+            "remote",
+            "add",
+            "origin",
+            "ssh://review.tizen.org:29418/fixture/project"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-timeout/destination",
+            "fetch",
+            "--depth",
+            "1",
+            "origin",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-timeout/destination",
+            "checkout",
+            "--detach",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "TimeoutExpired",
+            "module": "subprocess",
+            "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/fetch-checkout-timeout/destination', 'checkout', '--detach', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 0.125 seconds",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "type": "TimeoutExpired",
+        "cmd": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/fetch-checkout-timeout/destination",
+          "checkout",
+          "--detach",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "timeout": 0.125,
+        "message": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/fetch-checkout-timeout/destination', 'checkout', '--detach', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 0.125 seconds"
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-checkout-SIGINT",
+      "surface": "fetch-full-checkout",
+      "fault": "SIGINT",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-checkout",
+        "--fault",
+        "SIGINT",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGINT"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGINT",
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 585, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 576, in main\n    probe(args.root, args.fixture, args.probe, args.fault)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 330, in probe\n    result = fetch.fetch_source_for_commit(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 197, in fetch_source_for_commit\n    _run_git(\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 233, in _run_git\n    subprocess_runner(command, check=True, text=True, env=env)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py\", line 318, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGINT/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGINT/destination",
+            "remote",
+            "add",
+            "origin",
+            "ssh://review.tizen.org:29418/fixture/project"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGINT/destination",
+            "fetch",
+            "--depth",
+            "1",
+            "origin",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGINT/destination",
+            "checkout",
+            "--detach",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "KeyboardInterrupt",
+            "module": "builtins",
+            "message": "",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": {
+        "signal": "SIGINT",
+        "pid": 439053,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGINT/destination",
+          "checkout",
+          "--detach",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "fetch-checkout-SIGTERM",
+      "surface": "fetch-full-checkout",
+      "fault": "SIGTERM",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "fetch-full-checkout",
+        "--fault",
+        "SIGTERM",
+        "--fixture",
+        "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGTERM"
+      ],
+      "fixture": "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGTERM",
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGTERM/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGTERM/destination",
+            "remote",
+            "add",
+            "origin",
+            "ssh://review.tizen.org:29418/fixture/project"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGTERM/destination",
+            "fetch",
+            "--depth",
+            "1",
+            "origin",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGTERM/destination",
+            "checkout",
+            "--detach",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": null,
+      "injection": {
+        "signal": "SIGTERM",
+        "pid": 439057,
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/fetch-checkout-SIGTERM/destination",
+          "checkout",
+          "--detach",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      },
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    }
+  ],
+  "call_spans": [
+    {
+      "anchor_no": 1,
+      "matches": [
+        {
+          "lineno": 52,
+          "end_lineno": 57,
+          "source": "subprocess_runner(\n            command,\n            check=True,\n            capture_output=True,\n            text=True,\n        )"
+        }
+      ]
+    },
+    {
+      "anchor_no": 2,
+      "matches": [
+        {
+          "lineno": 233,
+          "end_lineno": 233,
+          "source": "subprocess_runner(command, check=True, text=True, env=env)"
+        }
+      ]
+    },
+    {
+      "anchor_no": 3,
+      "matches": [
+        {
+          "lineno": 348,
+          "end_lineno": 353,
+          "source": "subprocess_runner(\n        [\"git\", \"-C\", str(worktree), *args],\n        check=check,\n        text=True,\n        capture_output=True,\n    )"
+        }
+      ]
+    },
+    {
+      "anchor_no": 4,
+      "matches": [
+        {
+          "lineno": 284,
+          "end_lineno": 290,
+          "source": "subprocess_runner(\n            [\"git\", \"ls-remote\", remote, f\"refs/heads/{branch}\"],\n            check=False,\n            text=True,\n            capture_output=True,\n            env=_subprocess_env(options.git_ssh_command),\n        )"
+        }
+      ]
+    },
+    {
+      "anchor_no": 5,
+      "matches": [
+        {
+          "lineno": 206,
+          "end_lineno": 206,
+          "source": "subprocess.run([\"git\", *args], check=True, text=True, capture_output=True)"
+        }
+      ]
+    },
+    {
+      "anchor_no": 6,
+      "matches": [
+        {
+          "lineno": 210,
+          "end_lineno": 215,
+          "source": "subprocess.run(\n        [\"git\", \"-C\", str(worktree_path), \"rev-parse\", \"--git-path\", \"info/exclude\"],\n        check=True,\n        text=True,\n        capture_output=True,\n    )"
+        }
+      ]
+    }
+  ]
+}

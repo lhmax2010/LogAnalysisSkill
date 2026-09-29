@@ -1,0 +1,499 @@
+{
+  "context": {
+    "head": "43a6aa625f27da46daba190657bf62256080c68e",
+    "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+    "code_root": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+    "rules": {
+      "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+      "sha256": "d44584592b54bfaf1406c13369da5f2f6a5894fc3dd8de04b3905eadd6213c3f"
+    },
+    "producer_sha256": "efa841b189956ebe3f786dcd4fb9a9fc82f91c9b81275af562548e997d05c23b"
+  },
+  "fixture_root": "/tmp/p49-item3-vy6s9vtw",
+  "observations": [
+    {
+      "scenario_id": "DANGLING_SYMLINK",
+      "surface": "symlink:DANGLING_SYMLINK",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "symlink:DANGLING_SYMLINK",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK"
+      ],
+      "fixture": "/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "SYMLINK",
+        "target": "/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/target",
+        "target_exists": false
+      },
+      "after": {
+        "kind": "SYMLINK",
+        "target": "/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/target",
+        "target_exists": false
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "FileExistsError",
+            "module": "builtins",
+            "message": "[Errno 17] File exists: '/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination'",
+            "code": {
+              "state": "ABSENT"
+            }
+          }
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "LIVE_SYMLINK_TO_DIR",
+      "surface": "symlink:LIVE_SYMLINK_TO_DIR",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "symlink:LIVE_SYMLINK_TO_DIR",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR"
+      ],
+      "fixture": "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "SYMLINK",
+        "target": "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/target",
+        "target_exists": true
+      },
+      "after": {
+        "kind": "SYMLINK",
+        "target": "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/target",
+        "target_exists": true
+      },
+      "destination_unchanged": true,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception": {
+          "state": "VALUE",
+          "value": {
+            "type": "GerritError",
+            "module": "tizen_gerrit_fetch.gerrit",
+            "message": "source directory is a symlink: /tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination",
+            "code": {
+              "state": "VALUE",
+              "value": "SOURCE_DIR_UNSAFE"
+            }
+          }
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "REAL_DIR",
+      "surface": "symlink:REAL_DIR",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "symlink:REAL_DIR",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item3-vy6s9vtw/REAL_DIR"
+      ],
+      "fixture": "/tmp/p49-item3-vy6s9vtw/REAL_DIR",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "DIRECTORY",
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination",
+            "remote",
+            "add",
+            "origin",
+            "ssh://review.tizen.org:29418/fixture/project"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination",
+            "fetch",
+            "--depth",
+            "1",
+            "origin",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination",
+            "checkout",
+            "--detach",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "VALUE",
+          "value": {
+            "status": "source_available",
+            "src_root": "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination",
+            "remote_url": "ssh://review.tizen.org:29418/fixture/project",
+            "change": {
+              "project": "fixture/project",
+              "branch": "fixture",
+              "status": "MERGED",
+              "number": 1,
+              "subject": "",
+              "url": null,
+              "matching_patchset": null
+            },
+            "error": null
+          }
+        },
+        "exception": {
+          "state": "ABSENT"
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    },
+    {
+      "scenario_id": "ABSENT",
+      "surface": "symlink:ABSENT",
+      "fault": "none",
+      "command": [
+        "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/verify_anchors.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "symlink:ABSENT",
+        "--fault",
+        "none",
+        "--fixture",
+        "/tmp/p49-item3-vy6s9vtw/ABSENT"
+      ],
+      "fixture": "/tmp/p49-item3-vy6s9vtw/ABSENT",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "before": {
+        "kind": "ABSENT"
+      },
+      "after": {
+        "kind": "DIRECTORY",
+        "files": {}
+      },
+      "destination_unchanged": false,
+      "trace": [
+        {
+          "argv": [
+            "ssh",
+            "-p",
+            "29418",
+            "review.tizen.org",
+            "gerrit",
+            "query",
+            "--format=JSON",
+            "--patch-sets",
+            "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "capture_output": true,
+            "text": true
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "init",
+            "/tmp/p49-item3-vy6s9vtw/ABSENT/destination"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+            "remote",
+            "add",
+            "origin",
+            "ssh://review.tizen.org:29418/fixture/project"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+            "fetch",
+            "--depth",
+            "1",
+            "origin",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        },
+        {
+          "argv": [
+            "git",
+            "-C",
+            "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+            "checkout",
+            "--detach",
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          ],
+          "kwargs": {
+            "check": true,
+            "text": true,
+            "env": {
+              "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+              "HOME": "/home/linhao",
+              "LANG": "en_US.UTF-8",
+              "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+            }
+          }
+        }
+      ],
+      "outcome": {
+        "return_value": {
+          "state": "VALUE",
+          "value": {
+            "status": "source_available",
+            "src_root": "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+            "remote_url": "ssh://review.tizen.org:29418/fixture/project",
+            "change": {
+              "project": "fixture/project",
+              "branch": "fixture",
+              "status": "MERGED",
+              "number": 1,
+              "subject": "",
+              "url": null,
+              "matching_patchset": null
+            },
+            "error": null
+          }
+        },
+        "exception": {
+          "state": "ABSENT"
+        }
+      },
+      "injection": null,
+      "workdir_marker": {
+        "state": "ABSENT"
+      },
+      "protected_marker": {
+        "state": "ABSENT"
+      },
+      "exclude_completed": false
+    }
+  ]
+}

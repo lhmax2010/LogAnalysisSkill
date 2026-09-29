@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/tmp/p49-a0-baseline-v12-43a6aa6/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-o",
+    "addopts=",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_predicates.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_anchors.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path_prefix": "/tmp/p49-a0-baseline-v12-43a6aa6/bin",
+  "exit_code": 0,
+  "output_sha256": "f2e0b54ce7a54f864d0db49e68b436d2ba637f2ffd07e6950ddb250ca5692642",
+  "tool_inputs": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_predicates.py": "0559e83647d3be7e28ddafe5cc31e1aed5728100cd432e8435ffcd6a616daa20",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_anchors.py": "aaca5602466590ccdd79fccc3c03607d535cee299743b9c33dfcc40f96cc4624"
+  }
+}
