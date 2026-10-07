@@ -1,0 +1,7 @@
+tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py:11: error: Library stubs not installed for "yaml"  [import-untyped]
+tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py:11: note: Hint: "python3 -m pip install types-PyYAML"
+tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py:11: note: (or run "mypy --install-types" to install all missing stub packages)
+tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py:11: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+tizen-gbs-log-analysis/scripts/gbs_analyzer/quick_filter.py:12: error: Library stubs not installed for "yaml"  [import-untyped]
+tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py:12: error: Library stubs not installed for "yaml"  [import-untyped]
+Found 3 errors in 3 files (checked 88 source files)

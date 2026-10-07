@@ -21,13 +21,13 @@ from typing import Any
 
 from terminal_scan import (
     HEAD,
-    RULES,
     RULES_SHA,
     TREE,
     ModuleIndex,
     ScanError,
     contexts,
     fixed_inputs,
+    historical_rules,
     sha256,
     write_atomic,
 )
@@ -662,7 +662,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     manifest, files = fixed_inputs(args.root, args.rules_root)
-    rules = (args.rules_root / RULES).read_text()
+    rules = historical_rules(args.rules_root).decode()
     forms = re.findall(r"^(?:> )?\| `(C[0-9]+[a-z]?)` \|", rules, re.MULTILINE)
     if len(forms) != 24 or len(set(forms)) != 24 or not {"C9", "C8c", "C5f", "C7e"} <= set(forms):
         raise ScanError("E8_ATOMIC_TABLE_PARSE")

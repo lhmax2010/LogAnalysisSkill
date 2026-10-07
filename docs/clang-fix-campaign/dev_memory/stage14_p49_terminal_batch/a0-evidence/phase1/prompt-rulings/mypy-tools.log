@@ -1,0 +1,6 @@
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py:105: error: Argument 1 to "Path" has incompatible type "str | None"; expected "str | PathLike[str]"  [arg-type]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/protected_marker_readers.py:107: error: Need type annotation for "rows" (hint: "rows: list[<type>] = ...")  [var-annotated]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py:33: error: Argument 1 to "Path" has incompatible type "str | None"; expected "str | PathLike[str]"  [arg-type]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py:159: error: "Collection[str]" has no attribute "append"  [attr-defined]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py:174: error: Value of type "Collection[str]" is not indexable  [index]
+Found 5 errors in 3 files (checked 4 source files)

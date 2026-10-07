@@ -377,6 +377,16 @@ closure stages:
   deliverables. Before P5 push gates, explicitly close the
   `ROUNDS_EXHAUSTED` release-whitelist acceptance test in that owner module.
 
+## P4.9 末终止批次:已批准的轻量流程
+
+来源:FatTank批准的轻量流程,设计方对PHASE1-01/02的提示词裁决(2026-10-07)。
+
+- 设计评审最多两轮,第二轮只核对落实。
+- 三家评审仅用于涉及安全的阶段(sandbox推送、提交评审、状态库与对账、QuickBuild触发),其余一家。
+- 设计文档只写接口、行为、验收用例,不建元机制。
+- 不改变行为和安全边界的实现缺口由设计方在提示词中裁决并记入progress.md。
+- 收口签批为设计方核验加一家评审。
+
 ## Earlier Prelude
 
 `change_36.md` also records two earlier, separately numbered lessons: a human

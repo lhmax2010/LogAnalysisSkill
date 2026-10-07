@@ -1,0 +1,16 @@
+{
+  "return_value": {
+    "state": "ABSENT"
+  },
+  "exception_type": {
+    "state": "VALUE",
+    "value": "TimeoutExpired"
+  },
+  "exception_code": {
+    "state": "ABSENT"
+  },
+  "exception_message": {
+    "state": "VALUE",
+    "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-timeout/destination', 'rev-parse', '--git-path', 'info/exclude']' timed out after 0.125 seconds"
+  }
+}

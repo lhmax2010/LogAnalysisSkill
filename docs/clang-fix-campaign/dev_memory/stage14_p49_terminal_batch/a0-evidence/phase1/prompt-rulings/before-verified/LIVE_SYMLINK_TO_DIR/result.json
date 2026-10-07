@@ -1,0 +1,155 @@
+{
+  "return_value": {
+    "state": "ABSENT"
+  },
+  "exception_type": {
+    "state": "VALUE",
+    "value": "GerritError"
+  },
+  "exception_code": {
+    "state": "VALUE",
+    "value": "SOURCE_DIR_UNSAFE"
+  },
+  "exception_message": {
+    "state": "VALUE",
+    "value": "source directory is a symlink: /tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination"
+  },
+  "warnings": {
+    "state": "ABSENT"
+  },
+  "action": {
+    "state": "ABSENT"
+  },
+  "calls": [
+    {
+      "argv": [
+        "ssh",
+        "-p",
+        "29418",
+        "review.tizen.org",
+        "gerrit",
+        "query",
+        "--format=JSON",
+        "--patch-sets",
+        "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "kwargs": {
+        "check": true,
+        "capture_output": true,
+        "text": true
+      }
+    }
+  ],
+  "destination": {
+    "state": "VALUE",
+    "value": {
+      "exists": true,
+      "kind": "SYMLINK",
+      "symlink_target": {
+        "state": "VALUE",
+        "value": "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/target"
+      },
+      "files": {}
+    }
+  },
+  "worktree": {
+    "state": "VALUE",
+    "value": {
+      "exists": true,
+      "kind": "SYMLINK",
+      "symlink_target": {
+        "state": "VALUE",
+        "value": "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/target"
+      },
+      "files": {}
+    }
+  },
+  "workdir_marker": {
+    "exists": false,
+    "sha256": {
+      "state": "ABSENT"
+    }
+  },
+  "protected_marker": {
+    "exists": false,
+    "sha256": {
+      "state": "ABSENT"
+    },
+    "readers": [
+      {
+        "reader": "_exclude_private_files",
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception_type": {
+          "state": "VALUE",
+          "value": "subprocess.CalledProcessError"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "VALUE",
+          "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+        }
+      },
+      {
+        "reader": "clean_repository_preserving_markers",
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception_type": {
+          "state": "VALUE",
+          "value": "subprocess.CalledProcessError"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "VALUE",
+          "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+        }
+      },
+      {
+        "reader": "is_protected",
+        "return_value": {
+          "state": "VALUE",
+          "value": false
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      },
+      {
+        "reader": "release_worktree_protection",
+        "return_value": {
+          "state": "VALUE",
+          "value": false
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      }
+    ]
+  },
+  "exclude_completed": {
+    "state": "VALUE",
+    "value": false
+  },
+  "exit_code": {
+    "state": "VALUE",
+    "value": 0
+  }
+}

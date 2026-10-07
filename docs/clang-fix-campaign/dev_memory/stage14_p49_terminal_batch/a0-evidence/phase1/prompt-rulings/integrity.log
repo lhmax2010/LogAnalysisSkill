@@ -1,0 +1,13 @@
+PIN_OK | terminal_scan.py; terminal_registry.py; terminal_monitored_preflight.py; fixed_inputs callers | 8e72c345afc18efd118dd5880cd8ebd6b96e7bb1:docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md | 37862f4acdc330caa1ebb563885037814256746ae87663e51a64685fe21ccc01
+PIN_OK | protected_marker_readers.py | ab4779ef1cd4ab1613e7e894d1512264d5a6268c:docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md | b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0
+PIN_OK | verify_anchors.py | 27fb46077d2c3c91197bcedb534995f6987c9ef5:docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md | d44584592b54bfaf1406c13369da5f2f6a5894fc3dd8de04b3905eadd6213c3f
+PIN_OK | terminal_expected_diff.py: DOC | cbd3a22ae6fdb6454ecc5a55254304f72a17ecd1:docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md | 7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200
+PIN_OK | terminal_expected_diff.py: TABLE | 43a6aa625f27da46daba190657bf62256080c68e:docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md | 0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27
+EXECUTED_SOURCE_OK | protected_marker_readers | f428f21cee24870c855d098129f650721ba89af282b1538e0f864e75e247792a
+EXECUTED_SOURCE_OK | terminal_marker_observation | ac9307915689ce2a1e0cf351212a9d78d5bb7ada320ca4cce1b97dd6e67eafdb
+EXECUTED_SOURCE_OK | terminal_before_run | a14bddf6e72d7d4a466cdbc0d2ae7498757587355c3b1b2391aeaa41947d1603
+UNCHANGED old_evidence=490 production_and_release=233 protected_inputs=8
+FIXED_WORKTREE_CLEAN=PASS
+NODEIDS old=1305 preserved=1305 approved_scope_test_rename=1 added=10 prior_failures_fixed=14 lost=0 new_failures=0
+BEFORE_CONSISTENCY=PASS scenarios=30
+FROZEN_DOCUMENT_SHA256=b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0

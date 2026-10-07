@@ -1,0 +1,17 @@
+{
+  "return_value": {
+    "state": "VALUE",
+    "value": [
+      "target_head_unknown:Command '['git', 'ls-remote', 'ssh://fixture-user@fixture.invalid:29418/fixture/project', 'refs/heads/fixture']' timed out after 0.125 seconds"
+    ]
+  },
+  "exception_type": {
+    "state": "ABSENT"
+  },
+  "exception_code": {
+    "state": "ABSENT"
+  },
+  "exception_message": {
+    "state": "ABSENT"
+  }
+}

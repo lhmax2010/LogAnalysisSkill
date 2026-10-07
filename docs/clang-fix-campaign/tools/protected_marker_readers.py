@@ -1,8 +1,8 @@
 """E11-2: enumerate Name/Attribute references in live PY_SOURCE function bodies.
 
 This produces the independent B-1 reader universe, not an OBS verdict. It does
-not import observed modules, invoke functions, or discard tests and writers
-other than the explicitly excluded mark_worktree_protected.
+not import observed modules or invoke functions. The PHASE1-01 ruling excludes
+tests/; other writers except mark_worktree_protected remain in the universe.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from terminal_authority import E11_COMMIT, read_authority
 from terminal_predicates import check_frozen_hashes, load_json
 from terminal_scan import context_for, contexts, entry_kind
 from verify_anchors import HEAD, RULES_PATH, TREE
@@ -24,6 +25,8 @@ DATA = Path(__file__).with_name("p49_terminal_data")
 
 
 def functions(source: str, path: str) -> list[dict[str, Any]]:
+    if Path(path).parts[0] == "tests":
+        return []
     rows: list[dict[str, Any]] = []
 
     class Visitor(ast.NodeVisitor):
@@ -86,9 +89,7 @@ def collect(root: Path, rules_root: Path) -> dict[str, Any]:
         raise ValueError("tree differs")
     if git("status", "--porcelain=v1", "--untracked-files=all").strip():
         raise ValueError("observation worktree is not clean")
-    rules = (rules_root / RULES_PATH).read_bytes()
-    if hashlib.sha256(rules).hexdigest() != RULES_HASH:
-        raise ValueError("erratum 11 authority differs")
+    read_authority(rules_root, E11_COMMIT, RULES_HASH)
     check_frozen_hashes(
         load_json(DATA / "predicates.json"), load_json(DATA / "measurement_exemptions.json")
     )
@@ -103,13 +104,17 @@ def collect(root: Path, rules_root: Path) -> dict[str, Any]:
         if kind == "blob":
             files[path] = git("cat-file", "blob", blob)
     declarations = contexts(files)
-    rows, scanned, excluded = [], [], []
+    rows: list[dict[str, Any]] = []
+    scanned, excluded, excluded_tests = [], [], []
     for path, data in sorted(files.items()):
         if entry_kind(path, modes[path], data) != "PY_SOURCE":
             continue
         context = context_for(path, declarations).key
         if context != ".":
             excluded.append({"path": path, "context": context})
+            continue
+        if Path(path).parts[0] == "tests":
+            excluded_tests.append(path)
             continue
         if (root / path).read_bytes() != data:
             raise ValueError(f"worktree bytes differ: {path}")
@@ -122,11 +127,15 @@ def collect(root: Path, rules_root: Path) -> dict[str, Any]:
         "head": HEAD,
         "tree": TREE,
         "authority_sha256": RULES_HASH,
+        "current_authority_sha256": hashlib.sha256(
+            (rules_root / RULES_PATH).read_bytes()
+        ).hexdigest(),
         "enumerator_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "protected_marker_readers": [row["reader"] for row in rows],
         "functions": rows,
         "scanned": scanned,
         "excluded_non_live": excluded,
+        "excluded_tests": excluded_tests,
     }
 
 

@@ -1,0 +1,90 @@
+{
+  "OBS-1.item5-order": {
+    "claim_id": "OBS-1.item5-order",
+    "snapshot": "ca9331190e878af465e7968fe56e735585a5866e",
+    "call_order": [
+      "_verify_cleanup_handle",
+      "_exclude_private_files",
+      "write_protected_marker"
+    ],
+    "scenarios": [
+      {
+        "scenario_id": "EXCLUDE_INTERRUPTED",
+        "protected_marker": {
+          "state": "ABSENT"
+        },
+        "readers": [
+          {
+            "reader": "clean_repository_preserving_markers",
+            "result_kind": "RETURN",
+            "result_value_or_type": "None"
+          },
+          {
+            "reader": "release_worktree_protection",
+            "result_kind": "RETURN",
+            "result_value_or_type": "False"
+          },
+          {
+            "reader": "is_protected",
+            "result_kind": "RETURN",
+            "result_value_or_type": "False"
+          },
+          {
+            "reader": "_exclude_private_files",
+            "result_kind": "RETURN",
+            "result_value_or_type": "None"
+          }
+        ]
+      },
+      {
+        "scenario_id": "MARKER_WRITE_INTERRUPTED",
+        "protected_marker": {
+          "state": "PARTIAL",
+          "sha256": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+        },
+        "readers": [
+          {
+            "reader": "clean_repository_preserving_markers",
+            "result_kind": "RETURN",
+            "result_value_or_type": "None"
+          },
+          {
+            "reader": "release_worktree_protection",
+            "result_kind": "RETURN",
+            "result_value_or_type": "True"
+          },
+          {
+            "reader": "is_protected",
+            "result_kind": "RETURN",
+            "result_value_or_type": "True"
+          },
+          {
+            "reader": "_exclude_private_files",
+            "result_kind": "RETURN",
+            "result_value_or_type": "None"
+          }
+        ]
+      }
+    ],
+    "evidence": [
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/item5/raw.json",
+        "sha256": "a9076f8f9f0731ed86a3df4625db875450d005caf6f204d3749b8f29b370802d",
+        "selector": "/observations"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/B-1-anchors.json",
+        "sha256": "b41d24c96a9a1362204de80740e999354dd812886a7f25e945d81c156416ea7c",
+        "selector": "/protected_marker_readers"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+        "sha256": "b34956e7f4dba2c29c93b870601dcef31605dcf9e96b615caa393e16668f05a6",
+        "selector": "mark_worktree_protected"
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "argv": [
+      "ssh",
+      "-p",
+      "29418",
+      "review.tizen.org",
+      "gerrit",
+      "query",
+      "--format=JSON",
+      "--patch-sets",
+      "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "kwargs": {
+      "check": true,
+      "capture_output": true,
+      "text": true
+    }
+  }
+]

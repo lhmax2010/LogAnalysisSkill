@@ -2777,8 +2777,8 @@ control_catalog登记为E11专用枚举控制,不恢复旧SEAL五方门禁。
 
 | 编号 | 原文/代码锚 | 困难与证据 | 待设计方裁决的候选 |
 |---|---|---|---|
-| PHASE1-01 OPEN | F E11-2②:2481-2483;predicates v1.2 B-1:192-208;F §6:1535-1539 | 枚举14函数,其中10个在tests内;`_record(tmp_path)`会新建repo并写完整marker,另有pytest fixture参数。现有条文未规定这些函数如何读取同一中断态。完整函数源与参数在B-1-anchors.json | 明确读取方作用域/角色及调用形态;或保留14项、逐项指定fixture绑定与副作用隔离。不得自行只取is_protected等生产函数,也不得用缺参TypeError伪造读取结果 |
-| PHASE1-02 OPEN | F E11-2③、E11-3(5)/E11-5;terminal_scan.py:30、terminal_registry.py:31-34 | 全仓14失败全为旧扫描器E10 RULES_SHA与E11文档不符;whole-repo-pytest.log保存全nodeid和traceback | 设计方明确旧静态工具转历史回归读取E10不可变blob,或允许机械更新pin继续以E11作历史规则载体;不自行skip/删测试/改hash |
+| PHASE1-01 CLOSED,见§29.2 | F E11-2②:2481-2483;predicates v1.2 B-1:192-208;F §6:1535-1539 | 原问题:14函数含10个测试函数,同一中断态的调用契约未规定;原证据保留 | 2026-10-07提示词裁决:live、tests外;worktree_path独立副本。实测4函数,item5冻结verifier PASS |
+| PHASE1-02 CLOSED,见§29.1/29.4 | F E11-2③、E11-3(5)/E11-5;terminal_scan.py:30、terminal_registry.py:31-34 | 原问题:全仓14个RULES_SHA失败;旧失败日志保留 | 2026-10-07提示词裁决:不可变blob+当前稿逐字包含;原pin不改,14个失败恢复 |
 
 未产出item5 output/verifier结论;未执行30场景;未编写A/B生产实现;
 未进入第二阶段,OBS-5未运行。停止项不是claim判红,不伪造verifier结果。
@@ -2830,3 +2830,131 @@ EXIT=1
 暂存区`git diff --cached --check`对pytest原始traceback日志报尾随空格(exit2);
 保持原始日志字节及其hash,不为格式检查清洗证据。排除`*.log`后的同项检查
 exit0;这不改变全仓pytest失败结论。
+
+## 29. 提示词裁决、第一阶段前置取证与停止报告(2026-10-07)
+
+### 29.1 权威与不可变来源
+
+本轮无勘误,F逐字未改,SHA仍
+`b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0`。
+开场pull为`Already up to date.`;本节取代§28中的当前进度,不清洗历史失败。
+证据根`R=a0-evidence/phase1/prompt-rulings/`;每个`*.command.json`
+含完整argv、环境、固定HEAD/tree、输入hash、exit和原始输出hash;
+同名`*.log`保存stdout/stderr原文。cwd均为§9.2固定43a6aa6,
+独立环境`/tmp/p49-a0-regression-43a6aa6`,生产模块只取固定树scripts。
+
+`T/terminal_authority.py`读取不可变git blob并核原pin;当前稿须按原顺序
+包含历史完整字节行,不规范化、不折叠空白。只允许追加,删字/改字/重排红。
+全仓冻结稿SHA常量与间接读取处清单如下(`R/integrity.log`有完整commit/hash):
+
+| 读取处 | 不可变来源 | pin | 当前逐字包含 |
+|---|---|---|---|
+| terminal_scan.fixed_inputs/historical_rules; terminal_registry.authority/required_from_authority; terminal_monitored_preflight及fixed_inputs消费者 | E10 `8e72c34:F` | `37862f4a…cc01` | PASS |
+| verify_anchors.guard | E1 `27fb460:F` | `d4458459…3c3f` | PASS;未重跑item3/4 |
+| protected_marker_readers.collect | E11 `ab4779e:F` | `b9d72002…daf0` | PASS |
+| terminal_expected_diff.Sources(DOC); build_terminal_diff_data经该入口 | E3 `cbd3a22:F` | `7b8531fd…9200` | PASS;保留SCAN-07 quote/生效范围检查 |
+| terminal_expected_diff.Sources(TABLE) | `43a6aa6:skill-5 v1.3.2` | `0e2de5ff…55f27` | PASS |
+
+历史数据/OBS的hash、旧值、消息规则均不改。新增6项来源控制,
+覆盖合法追加、删字/改字/重排红、blob hash错红。PHASE1-02 CLOSED,
+不是跳过旧静态测试。批准的轻量流程已写入methodology专节。
+
+### 29.2 PHASE1-01与item5
+
+枚举范围live、tests外PY_SOURCE,排除具名写入方mark_worktree_protected。
+125条扫描、95条非live排除、52条tests排除,恰得:
+`clean_repository_preserving_markers / release_worktree_protection / is_protected / _exclude_private_files`。
+独立锚为`a0-evidence/B-1-anchors.json`;tests引用near-miss已加入,
+旧“测试不得排除”控制由本提示词裁决取代,control_catalog留历史证据链接。
+
+`T/terminal_marker_observation.py`只产item5事实。两个SIGINT现场各自生成,
+每个读取方复制独立worktree,以`worktree_path=副本`调用;不共享副本。
+记录返回repr或异常类型全名;子进程exit=-2。call_order为verify→exclude→write。
+
+| 场景 | protected marker | 按上述函数顺序的返回repr |
+|---|---|---|
+| EXCLUDE_INTERRUPTED | ABSENT | `None / False / False / None` |
+| MARKER_WRITE_INTERRUPTED | PARTIAL,SHA `87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54` | `None / True / True / None` |
+
+事实`R/item5/raw.json`,claim `R/item5/output.json`;producer exit0。
+冻结verifier命令见`R/item5-verifier.command.json`,exit0,输出原文:
+
+```json
+[
+  {
+    "claim_id": "OBS-1.item5-order",
+    "verdict": "PASS"
+  }
+]
+```
+
+PHASE1-01 CLOSED。predicates canonical仍
+`8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6`,
+exemptions canonical仍
+`4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`。
+未运行其它OBS producer。
+
+### 29.3 §6改前实跑
+
+`before_run=DONE`;权威产出`R/before-verified/before.json`,SHA:
+`a0eb4b107bbb7401a9ab3bf0e8dd29267a40e0386d582c049952d30352dfc133`。
+`T/terminal_before_run.py`是门禁采集器,不是OBS producer。逐场景子进程,
+同fixture/同调用点注入TimeoutExpired且改前不传timeout,中断场景实发信号。
+已有临时路径先备份、结束恢复;固定生产树不写入。clock作为固定fixture输入,
+不掩码输出。§5现场真实git init,使读取方执行git与item5同类fixture一致。
+
+封闭schema、每条登记旧值、全部OBS调用轨迹、timeout原始结果、item5
+marker状态/hash/逐读取方结果全部相等;读取方按身份逐项对账,不依赖枚举顺序。
+`consistency.json`为`{"scenarios":30,"failures":[]}`。
+`R/before-run-verified.log`原文:
+
+```text
+BEFORE=PASS scenarios=30 sha256=a0eb4b107bbb7401a9ab3bf0e8dd29267a40e0386d582c049952d30352dfc133
+EXIT=0
+```
+
+`R/before/`是较早有限检查(未含item5交叉核对),不作为完整验收。
+`before-run-final`因新代码在采集前引用结果而KeyError,未执行场景;
+修正顺序后才有上述完整绿输出。所有失败日志保留。
+正式取证后只补工具类型注解与`__file__ is None`拒绝检查;
+`R/executed-sources/*.py.txt`保留实跑版本,与当时enumerator/producer/collector
+hash逐一相等,由`integrity.log`验证。既有产出未改写成新版本重跑。
+
+### 29.4 回归与静态检查
+
+| R中的日志 | 实际命令范围 | 输出/exit |
+|---|---|---|
+| whole-repo-final.log | `python -m pytest <main>/tests -vv -p no:cacheprovider`;固定cwd与生产路径,本轮完整tests | `1314 passed, 1 skipped in 23.83s`,0 |
+| mypy-ci-complete.log | CI列明10个生产包 | `Success: no issues found in 88 source files`,0 |
+| mypy-current-tools-py312.log | 本轮9工具,实际解释器3.12,follow-imports=silent | `Success: no issues found in 9 source files`,0 |
+| ruff-fixed-tree.log | 固定树`ruff check .` | `All checks passed!`,0 |
+| ruff-current-tools.log | 主树本轮完整tools/与tests/ | `All checks passed!`,0 |
+| lint-imports.log | 固定树`lint-imports --no-cache` | `Contracts: 6 kept, 0 broken.`,0 |
+| integrity.log | 不可变pins/实跑源码/旧证据/生产/固定树/nodeids | 全PASS,0 |
+
+1305旧nodeid保留(批准的范围控制改名映射1项),新增10;原14失败恢复,
+原skip不变。490份旧证据、233生产/release文件、8项受保护输入未变;
+固定worktree保持干净。完整命令与环境见同名command.json。
+
+失败留痕:初次控制因误删subprocess import报54失败,恢复import后
+`controls-fixed.log`为147 passed;不改断言。新工具初轮mypy报5处注解问题,
+修正后绿。独立环境缺types-PyYAML导致首次CI mypy红,
+安装`types-PyYAML==6.0.12.20260906`后绿;工具mypy初次沿项目3.10目标
+找不到tomllib,按工具实际3.12复跑绿,生产CI目标未放宽。
+首次ruff错误扫入主树untracked历史脚本而报53错;这些文件git ls-files
+零命中,未修改。正式范围为干净固定树全仓+本轮tools/tests,两部分均绿。
+不清洗失败记录,不声称首轮通过。
+
+### 29.5 新停止项与当前计划
+
+报告:[PHASE1-03](a0-evidence/phase1/prompt-rulings/stop-report.md)。
+
+| 编号 | 原文位置 | 困难/实测证据 | 待裁决候选 |
+|---|---|---|---|
+| PHASE1-03 OPEN | F §6:1526、§7:1568、E11-2:2487;terminal_expected_diff.py:667/687 | A只做timeout,B做悬空链接,但完整门禁立即要求全部终态差异。构造A结果exit1:`missing=['/exception_code','/exception_message','/exception_type']`;完整终态人工对照绿 | 明确A阶段期望投影,B完整终态;或明确累计门禁仅在B后检。不能自行提前做B、过滤最终登记或放宽精确相等 |
+
+这是规格可满足性诊断,不是实际生产改后运行。停止项1条。
+前置:专用枚举/item5 PASS、30场景改前DONE、全仓及静态检查PASS。
+A/B均NOT_STARTED;第二阶段清单/归类/项2/OBS-5均NOT_STARTED。
+生产零改动;冻结稿、predicates/exemptions、expected_diff/manifest/schema与既有OBS
+零修改;无关dirty/untracked保持原样。提交前置与停止报告,push后等裁决。

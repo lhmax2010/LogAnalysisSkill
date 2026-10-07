@@ -1,0 +1,768 @@
+{
+  "context": {
+    "head": "43a6aa625f27da46daba190657bf62256080c68e",
+    "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+    "code_root": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+    "rules": {
+      "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+      "sha256": "b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0",
+      "source_commit": "27fb46077d2c3c91197bcedb534995f6987c9ef5",
+      "source_sha256": "d44584592b54bfaf1406c13369da5f2f6a5894fc3dd8de04b3905eadd6213c3f"
+    },
+    "guard_sha256": "d341353c730645abce29638badff6fe31bc68b4dd39ab49dc49b77c576cf1186",
+    "collector_sha256": "a14bddf6e72d7d4a466cdbc0d2ae7498757587355c3b1b2391aeaa41947d1603"
+  },
+  "observations": [
+    {
+      "scenario": "DANGLING_SYMLINK",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/DANGLING_SYMLINK/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/DANGLING_SYMLINK"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "LIVE_SYMLINK_TO_DIR",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/LIVE_SYMLINK_TO_DIR/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/LIVE_SYMLINK_TO_DIR"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "REAL_DIR",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/REAL_DIR/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/REAL_DIR"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "ABSENT",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/ABSENT/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/ABSENT"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface1-none",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface1-none/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface1-none"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface1-timeout",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface1-timeout/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface1-timeout"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface1-SIGINT",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface1-SIGINT/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface1-SIGINT"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 429, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 420, in main\n    run_probe(args.root, load_json(args.probe), args.out)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 180, in run_probe\n    result = fetch.query_change_for_commit(COMMIT, subprocess_runner=runner)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 52, in query_change_for_commit\n    completed = subprocess_runner(\n                ^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 156, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n"
+    },
+    {
+      "scenario": "surface1-SIGTERM",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface1-SIGTERM/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface1-SIGTERM"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface2-none",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface2-none/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface2-none"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface2-timeout",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface2-timeout/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface2-timeout"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface2-SIGINT",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface2-SIGINT/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface2-SIGINT"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 429, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 420, in main\n    run_probe(args.root, load_json(args.probe), args.out)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 182, in run_probe\n    result = fetch._run_git([\"git\", \"-C\", str(destination), \"status\"], runner, env={})\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py\", line 233, in _run_git\n    subprocess_runner(command, check=True, text=True, env=env)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 156, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n"
+    },
+    {
+      "scenario": "surface2-SIGTERM",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface2-SIGTERM/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface2-SIGTERM"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface3-none",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface3-none/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface3-none"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface3-timeout",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface3-timeout/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface3-timeout"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface3-SIGINT",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface3-SIGINT/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface3-SIGINT"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 429, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 420, in main\n    run_probe(args.root, load_json(args.probe), args.out)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 184, in run_probe\n    result = submit._run_git(destination, [\"status\"], runner)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py\", line 348, in _run_git\n    return subprocess_runner(\n           ^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 156, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n"
+    },
+    {
+      "scenario": "surface3-SIGTERM",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface3-SIGTERM/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface3-SIGTERM"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface4-none",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface4-none/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface4-none"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface4-timeout",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface4-timeout/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface4-timeout"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface4-SIGINT",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface4-SIGINT/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface4-SIGINT"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 429, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 420, in main\n    run_probe(args.root, load_json(args.probe), args.out)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 186, in run_probe\n    result = submit._target_warnings(\n             ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py\", line 284, in _target_warnings\n    completed = subprocess_runner(\n                ^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 156, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n"
+    },
+    {
+      "scenario": "surface4-SIGTERM",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface4-SIGTERM/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface4-SIGTERM"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface5-none",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface5-none/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface5-none"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface5-timeout",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface5-timeout/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface5-timeout"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface5-SIGINT",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface5-SIGINT/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface5-SIGINT"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 429, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 420, in main\n    run_probe(args.root, load_json(args.probe), args.out)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 199, in run_probe\n    result = workspace._run_git([\"-C\", str(destination), \"status\"])\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 206, in _run_git\n    subprocess.run([\"git\", *args], check=True, text=True, capture_output=True)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 156, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n"
+    },
+    {
+      "scenario": "surface5-SIGTERM",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface5-SIGTERM/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface5-SIGTERM"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface6-none",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface6-none/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface6-none"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface6-timeout",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface6-timeout/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface6-timeout"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "surface6-SIGINT",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface6-SIGINT/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface6-SIGINT"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 429, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 420, in main\n    run_probe(args.root, load_json(args.probe), args.out)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 202, in run_probe\n    result = workspace.mark_worktree_protected(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 117, in mark_worktree_protected\n    _exclude_private_files(path)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 210, in _exclude_private_files\n    result = subprocess.run(\n             ^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 156, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n"
+    },
+    {
+      "scenario": "surface6-SIGTERM",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface6-SIGTERM/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/surface6-SIGTERM"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -15,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "scenario": "EXCLUDE_INTERRUPTED",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/EXCLUDE_INTERRUPTED/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/EXCLUDE_INTERRUPTED"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 429, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 420, in main\n    run_probe(args.root, load_json(args.probe), args.out)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 202, in run_probe\n    result = workspace.mark_worktree_protected(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 117, in mark_worktree_protected\n    _exclude_private_files(path)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 210, in _exclude_private_files\n    result = subprocess.run(\n             ^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 156, in runner\n    os.kill(os.getpid(), getattr(signal, fault))\nKeyboardInterrupt\n"
+    },
+    {
+      "scenario": "MARKER_WRITE_INTERRUPTED",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "-B",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/MARKER_WRITE_INTERRUPTED/scenario.json",
+        "--out",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/before-verified/MARKER_WRITE_INTERRUPTED"
+      ],
+      "environment": {
+        "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+        "HOME": "/home/linhao",
+        "LANG": "en_US.UTF-8",
+        "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6"
+      },
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 429, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 420, in main\n    run_probe(args.root, load_json(args.probe), args.out)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 202, in run_probe\n    result = workspace.mark_worktree_protected(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 124, in mark_worktree_protected\n    (path / PROTECTED_FILENAME).write_text(\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_before_run.py\", line 169, in write\n    os.kill(os.getpid(), signal.SIGINT)\nKeyboardInterrupt\n"
+    }
+  ],
+  "clock_input": "2026-09-29T00:00:00+00:00"
+}

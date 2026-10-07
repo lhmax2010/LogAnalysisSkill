@@ -1,0 +1,4 @@
+FULL_TARGET_ARTIFICIAL=PASS
+POST_A_ARTIFICIAL: all timeout deltas present; item3 exception triple unchanged
+PRODUCTION_EDITS=0; not a real after run
+POST_A_ARTIFICIAL=REJECTED: DIFF_PATHS: extra=[] missing=['/exception_code', '/exception_message', '/exception_type']

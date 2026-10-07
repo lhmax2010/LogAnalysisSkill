@@ -17,6 +17,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from terminal_authority import read_authority
 from terminal_predicates import canonical, check_frozen_hashes, load_json
 
 DATA = Path(__file__).with_name("p49_terminal_data")
@@ -25,6 +26,7 @@ DOC_HASH = "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200"
 DOC_COMMIT = "cbd3a22ae6fdb6454ecc5a55254304f72a17ecd1"
 TABLE = "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md"
 TABLE_HASH = "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27"
+TABLE_COMMIT = "43a6aa625f27da46daba190657bf62256080c68e"
 OBS = "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/"
 OBS_HASHES = {
     OBS + "e1-item3/raw.json": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
@@ -103,14 +105,9 @@ class Sources:
         if file not in self.cache:
             if file == DOC:
                 self.current_authority()
-                result = subprocess.run(
-                    ["git", "show", f"{DOC_COMMIT}:{DOC}"],
-                    cwd=self.root,
-                    check=False,
-                    capture_output=True,
-                )
-                require(result.returncode == 0, f"SOURCE_GIT_BLOB: {result.stderr.decode()}")
-                self.cache[file] = result.stdout
+                self.cache[file] = read_authority(self.root, DOC_COMMIT, sha256)
+            elif file == TABLE:
+                self.cache[file] = read_authority(self.root, TABLE_COMMIT, sha256, TABLE)
             else:
                 self.cache[file] = (self.root / file).read_bytes()
         content = self.cache[file]

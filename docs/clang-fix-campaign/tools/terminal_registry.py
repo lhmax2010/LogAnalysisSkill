@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from terminal_predicates import load_json
-from terminal_scan import DATA, ENTRY_KINDS, RULES, RULES_SHA, ScanError, sha256
+from terminal_scan import DATA, ENTRY_KINDS, ScanError, historical_rules
 
 NAMESPACES = frozenset({"consumer", "ledger", "scan", "resolve", "provider", "entry"})
 ENTRY_OWNERS = {
@@ -29,9 +29,7 @@ LEGACY_OWNERS = {
 
 
 def authority(root: Path) -> dict[str, str]:
-    raw = (root / RULES).read_bytes()
-    if sha256(raw) != RULES_SHA:
-        raise ScanError("RULES_HASH")
+    raw = historical_rules(root)
     text = raw.decode()
     forms = re.findall(r"^(?:> )?\| `(C[0-9]+[a-z]?)` \|", text, re.MULTILINE)
     if len(forms) != len(set(forms)) or len(forms) != 24:
@@ -50,7 +48,7 @@ def authority(root: Path) -> dict[str, str]:
 
 def required_from_authority(root: Path) -> dict[str, list[str]]:
     domain = authority(root)
-    text = (root / RULES).read_text()
+    text = historical_rules(root).decode()
     e4 = text.split("**E4-2", 1)[1].split("**E4-3", 1)[0]
     rows = re.findall(r"^> \| [0-9]+ \| `([A-Z_]+)` \|.*?\| ([^|]+) \|$", e4, re.MULTILINE)
     e9 = text.split("**E9-1", 1)[1].split("**E9-2", 1)[0]

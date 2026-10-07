@@ -1,0 +1,16 @@
+{
+  "return_value": {
+    "state": "ABSENT"
+  },
+  "exception_type": {
+    "state": "VALUE",
+    "value": "FileExistsError"
+  },
+  "exception_code": {
+    "state": "ABSENT"
+  },
+  "exception_message": {
+    "state": "VALUE",
+    "value": "[Errno 17] File exists: '/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination'"
+  }
+}

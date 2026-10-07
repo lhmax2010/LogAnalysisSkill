@@ -1,0 +1,176 @@
+{
+  "context": {
+    "head": "43a6aa625f27da46daba190657bf62256080c68e",
+    "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+    "code_root": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+    "rules": {
+      "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+      "sha256": "b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0",
+      "source_commit": "27fb46077d2c3c91197bcedb534995f6987c9ef5",
+      "source_sha256": "d44584592b54bfaf1406c13369da5f2f6a5894fc3dd8de04b3905eadd6213c3f"
+    },
+    "producer_sha256": "ac9307915689ce2a1e0cf351212a9d78d5bb7ada320ca4cce1b97dd6e67eafdb"
+  },
+  "fixture_root": "/tmp/p49-item5-g3lm8bzh",
+  "observations": [
+    {
+      "scenario_id": "EXCLUDE_INTERRUPTED",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "EXCLUDE_INTERRUPTED",
+        "--directory",
+        "/tmp/p49-item5-g3lm8bzh/EXCLUDE_INTERRUPTED"
+      ],
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py\", line 211, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py\", line 202, in main\n    probe(args.root, args.directory, args.probe)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py\", line 105, in probe\n    module.mark_worktree_protected(handle, verification_id=\"fixture-v\", failure_key=\"fixture-f\")\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 117, in mark_worktree_protected\n    _exclude_private_files(path)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py\", line 90, in exclude\n    os.kill(os.getpid(), signal.SIGINT)\nKeyboardInterrupt\n",
+      "call_order": [
+        "_verify_cleanup_handle",
+        "_exclude_private_files"
+      ],
+      "readers": [
+        {
+          "reader": "clean_repository_preserving_markers",
+          "copy": "/tmp/p49-item5-g3lm8bzh/EXCLUDE_INTERRUPTED/copies/clean_repository_preserving_markers",
+          "result_kind": "RETURN",
+          "result_value_or_type": "None",
+          "marker_before": {
+            "state": "ABSENT"
+          },
+          "marker_after": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "copy": "/tmp/p49-item5-g3lm8bzh/EXCLUDE_INTERRUPTED/copies/release_worktree_protection",
+          "result_kind": "RETURN",
+          "result_value_or_type": "False",
+          "marker_before": {
+            "state": "ABSENT"
+          },
+          "marker_after": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "is_protected",
+          "copy": "/tmp/p49-item5-g3lm8bzh/EXCLUDE_INTERRUPTED/copies/is_protected",
+          "result_kind": "RETURN",
+          "result_value_or_type": "False",
+          "marker_before": {
+            "state": "ABSENT"
+          },
+          "marker_after": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "_exclude_private_files",
+          "copy": "/tmp/p49-item5-g3lm8bzh/EXCLUDE_INTERRUPTED/copies/_exclude_private_files",
+          "result_kind": "RETURN",
+          "result_value_or_type": "None",
+          "marker_before": {
+            "state": "ABSENT"
+          },
+          "marker_after": {
+            "state": "ABSENT"
+          }
+        }
+      ],
+      "protected_marker": {
+        "state": "ABSENT"
+      }
+    },
+    {
+      "scenario_id": "MARKER_WRITE_INTERRUPTED",
+      "command": [
+        "/tmp/p49-a0-regression-43a6aa6/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py",
+        "--root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+        "--rules-root",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill",
+        "--probe",
+        "MARKER_WRITE_INTERRUPTED",
+        "--directory",
+        "/tmp/p49-item5-g3lm8bzh/MARKER_WRITE_INTERRUPTED"
+      ],
+      "exit_code": -2,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py\", line 211, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py\", line 202, in main\n    probe(args.root, args.directory, args.probe)\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py\", line 105, in probe\n    module.mark_worktree_protected(handle, verification_id=\"fixture-v\", failure_key=\"fixture-f\")\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py\", line 124, in mark_worktree_protected\n    (path / PROTECTED_FILENAME).write_text(\n  File \"/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_marker_observation.py\", line 97, in write\n    os.kill(os.getpid(), signal.SIGINT)\nKeyboardInterrupt\n",
+      "call_order": [
+        "_verify_cleanup_handle",
+        "_exclude_private_files",
+        "write_protected_marker"
+      ],
+      "readers": [
+        {
+          "reader": "clean_repository_preserving_markers",
+          "copy": "/tmp/p49-item5-g3lm8bzh/MARKER_WRITE_INTERRUPTED/copies/clean_repository_preserving_markers",
+          "result_kind": "RETURN",
+          "result_value_or_type": "None",
+          "marker_before": {
+            "state": "PRESENT",
+            "sha256": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+          },
+          "marker_after": {
+            "state": "PRESENT",
+            "sha256": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "copy": "/tmp/p49-item5-g3lm8bzh/MARKER_WRITE_INTERRUPTED/copies/release_worktree_protection",
+          "result_kind": "RETURN",
+          "result_value_or_type": "True",
+          "marker_before": {
+            "state": "PRESENT",
+            "sha256": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+          },
+          "marker_after": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "is_protected",
+          "copy": "/tmp/p49-item5-g3lm8bzh/MARKER_WRITE_INTERRUPTED/copies/is_protected",
+          "result_kind": "RETURN",
+          "result_value_or_type": "True",
+          "marker_before": {
+            "state": "PRESENT",
+            "sha256": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+          },
+          "marker_after": {
+            "state": "PRESENT",
+            "sha256": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+          }
+        },
+        {
+          "reader": "_exclude_private_files",
+          "copy": "/tmp/p49-item5-g3lm8bzh/MARKER_WRITE_INTERRUPTED/copies/_exclude_private_files",
+          "result_kind": "RETURN",
+          "result_value_or_type": "None",
+          "marker_before": {
+            "state": "PRESENT",
+            "sha256": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+          },
+          "marker_after": {
+            "state": "PRESENT",
+            "sha256": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+          }
+        }
+      ],
+      "protected_marker": {
+        "state": "PARTIAL",
+        "sha256": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+      }
+    }
+  ]
+}

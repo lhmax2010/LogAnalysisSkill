@@ -20,14 +20,46 @@
     "evidence": "a0-evidence/phase1/erratum11/reader-controls.log"
   },
   {
-    "control_id": "CTRL-E11-READER-NO-SILENT-EXCLUSION",
+    "control_id": "CTRL-PHASE1-READER-TESTS-EXCLUDED",
     "group": "E11-2-DEDICATED-READERS",
-    "source": "v1.31-FROZEN appendix C E11-2",
+    "source": "2026-10-07 approved prompt ruling PHASE1-01; supersedes old tests-included control",
     "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
-    "test_nodeid": "tests/unit/test_terminal_protected_marker_readers.py::test_e11_tests_and_writers_not_silently_excluded",
+    "test_nodeid": "tests/unit/test_terminal_protected_marker_readers.py::test_phase1_tests_excluded_but_production_writers_remain",
     "status": "PASS",
     "exit_code": 0,
-    "evidence": "a0-evidence/phase1/erratum11/reader-controls.log"
+    "evidence": "a0-evidence/phase1/prompt-rulings/whole-repo-pytest.log",
+    "previous_evidence": "a0-evidence/phase1/erratum11/reader-controls.log"
+  },
+  {
+    "control_id": "CTRL-PHASE1-INDEPENDENT-READER-COPIES",
+    "group": "PHASE1-01",
+    "source": "2026-10-07 approved prompt ruling PHASE1-01",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_marker_observation.py::test_readers_do_not_share_or_mutate_failure_scene",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/phase1/prompt-rulings/whole-repo-pytest.log"
+  },
+  {
+    "control_id": "CTRL-PHASE1-READER-EXCEPTION-TYPE",
+    "group": "PHASE1-01",
+    "source": "2026-10-07 approved prompt ruling PHASE1-01",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_marker_observation.py::test_reader_exception_records_fully_qualified_type",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/phase1/prompt-rulings/whole-repo-pytest.log"
+  },
+  {
+    "control_id": "CTRL-PHASE1-AUTHORITY-CONTAINMENT",
+    "group": "PHASE1-02",
+    "source": "2026-10-07 approved prompt ruling PHASE1-02",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_authority.py",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/phase1/prompt-rulings/whole-repo-pytest.log",
+    "scope": "immutable git blob/hash plus current exact-line containment; additions green, removal/rewording/reordering and wrong hash red"
   },
   {
     "control_id": "CTRL-E11-READER-NESTED-ASYNC",

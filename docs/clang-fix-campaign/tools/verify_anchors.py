@@ -24,6 +24,7 @@ from types import SimpleNamespace
 from typing import Any
 from unittest.mock import patch
 
+from terminal_authority import E1_COMMIT, read_authority
 from terminal_predicates import check_frozen_hashes, load_json
 
 HEAD = "43a6aa625f27da46daba190657bf62256080c68e"
@@ -99,8 +100,7 @@ def guard(root: Path, rules_root: Path) -> dict[str, Any]:
         raise ValueError("observation worktree is not clean")
     if Path.cwd().resolve() != root.resolve():
         raise ValueError("producer must run in observation worktree")
-    if digest(rules_root / RULES_PATH) != RULES_HASH:
-        raise ValueError("admitted erratum hash differs")
+    read_authority(rules_root, E1_COMMIT, RULES_HASH)
     check_frozen_hashes(
         load_json(DATA / "predicates.json"), load_json(DATA / "measurement_exemptions.json")
     )
@@ -108,7 +108,12 @@ def guard(root: Path, rules_root: Path) -> dict[str, Any]:
         "head": HEAD,
         "tree": TREE,
         "code_root": str(root),
-        "rules": {"path": str(rules_root / RULES_PATH), "sha256": RULES_HASH},
+        "rules": {
+            "path": str(rules_root / RULES_PATH),
+            "sha256": digest(rules_root / RULES_PATH),
+            "source_commit": E1_COMMIT,
+            "source_sha256": RULES_HASH,
+        },
         "producer_sha256": digest(Path(__file__)),
     }
 
@@ -549,7 +554,7 @@ def produce(kind: str, root: Path, rules_root: Path, out: Path) -> None:
         {
             "kind": "FILE",
             "path": str(rules_root / RULES_PATH),
-            "sha256": RULES_HASH,
+            "sha256": digest(rules_root / RULES_PATH),
             "selector": "Appendix C/E1-1/E1-2",
         },
     ]

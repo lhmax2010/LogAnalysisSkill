@@ -1,0 +1,245 @@
+{
+  "return_value": {
+    "state": "VALUE",
+    "value": {
+      "status": "source_available",
+      "src_root": "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+      "remote_url": "ssh://review.tizen.org:29418/fixture/project",
+      "change": {
+        "project": "fixture/project",
+        "branch": "fixture",
+        "status": "MERGED",
+        "number": 1,
+        "subject": "",
+        "url": null,
+        "matching_patchset": null
+      },
+      "error": null
+    }
+  },
+  "exception_type": {
+    "state": "ABSENT"
+  },
+  "exception_code": {
+    "state": "ABSENT"
+  },
+  "exception_message": {
+    "state": "ABSENT"
+  },
+  "warnings": {
+    "state": "ABSENT"
+  },
+  "action": {
+    "state": "ABSENT"
+  },
+  "calls": [
+    {
+      "argv": [
+        "ssh",
+        "-p",
+        "29418",
+        "review.tizen.org",
+        "gerrit",
+        "query",
+        "--format=JSON",
+        "--patch-sets",
+        "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "kwargs": {
+        "check": true,
+        "capture_output": true,
+        "text": true
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "/tmp/p49-item3-vy6s9vtw/ABSENT/destination"
+      ],
+      "kwargs": {
+        "check": true,
+        "text": true,
+        "env": {
+          "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+          "HOME": "/home/linhao",
+          "LANG": "en_US.UTF-8",
+          "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+        "remote",
+        "add",
+        "origin",
+        "ssh://review.tizen.org:29418/fixture/project"
+      ],
+      "kwargs": {
+        "check": true,
+        "text": true,
+        "env": {
+          "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+          "HOME": "/home/linhao",
+          "LANG": "en_US.UTF-8",
+          "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+        "fetch",
+        "--depth",
+        "1",
+        "origin",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "kwargs": {
+        "check": true,
+        "text": true,
+        "env": {
+          "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+          "HOME": "/home/linhao",
+          "LANG": "en_US.UTF-8",
+          "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+        }
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+        "checkout",
+        "--detach",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "kwargs": {
+        "check": true,
+        "text": true,
+        "env": {
+          "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+          "HOME": "/home/linhao",
+          "LANG": "en_US.UTF-8",
+          "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+        }
+      }
+    }
+  ],
+  "destination": {
+    "state": "VALUE",
+    "value": {
+      "exists": true,
+      "kind": "DIRECTORY",
+      "symlink_target": {
+        "state": "ABSENT"
+      },
+      "files": {}
+    }
+  },
+  "worktree": {
+    "state": "VALUE",
+    "value": {
+      "exists": true,
+      "kind": "DIRECTORY",
+      "symlink_target": {
+        "state": "ABSENT"
+      },
+      "files": {}
+    }
+  },
+  "workdir_marker": {
+    "exists": false,
+    "sha256": {
+      "state": "ABSENT"
+    }
+  },
+  "protected_marker": {
+    "exists": false,
+    "sha256": {
+      "state": "ABSENT"
+    },
+    "readers": [
+      {
+        "reader": "_exclude_private_files",
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception_type": {
+          "state": "VALUE",
+          "value": "subprocess.CalledProcessError"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "VALUE",
+          "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/ABSENT/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+        }
+      },
+      {
+        "reader": "clean_repository_preserving_markers",
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception_type": {
+          "state": "VALUE",
+          "value": "subprocess.CalledProcessError"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "VALUE",
+          "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/ABSENT/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+        }
+      },
+      {
+        "reader": "is_protected",
+        "return_value": {
+          "state": "VALUE",
+          "value": false
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      },
+      {
+        "reader": "release_worktree_protection",
+        "return_value": {
+          "state": "VALUE",
+          "value": false
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      }
+    ]
+  },
+  "exclude_completed": {
+    "state": "VALUE",
+    "value": false
+  },
+  "exit_code": {
+    "state": "VALUE",
+    "value": 0
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "return_value": {
+    "state": "VALUE",
+    "value": {
+      "status": "source_available",
+      "src_root": "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination",
+      "remote_url": "ssh://review.tizen.org:29418/fixture/project",
+      "change": {
+        "project": "fixture/project",
+        "branch": "fixture",
+        "status": "MERGED",
+        "number": 1,
+        "subject": "",
+        "url": null,
+        "matching_patchset": null
+      },
+      "error": null
+    }
+  },
+  "exception_type": {
+    "state": "ABSENT"
+  },
+  "exception_code": {
+    "state": "ABSENT"
+  },
+  "exception_message": {
+    "state": "ABSENT"
+  }
+}

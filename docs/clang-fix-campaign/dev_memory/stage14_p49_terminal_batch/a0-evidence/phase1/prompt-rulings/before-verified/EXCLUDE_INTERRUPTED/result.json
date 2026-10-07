@@ -1,0 +1,190 @@
+{
+  "return_value": {
+    "state": "ABSENT"
+  },
+  "exception_type": {
+    "state": "VALUE",
+    "value": "KeyboardInterrupt"
+  },
+  "exception_code": {
+    "state": "ABSENT"
+  },
+  "exception_message": {
+    "state": "VALUE",
+    "value": ""
+  },
+  "warnings": {
+    "state": "ABSENT"
+  },
+  "action": {
+    "state": "ABSENT"
+  },
+  "calls": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p49-item4-vik56x9g/surface6-SIGINT/destination",
+        "rev-parse",
+        "--git-path",
+        "info/exclude"
+      ],
+      "kwargs": {
+        "check": true,
+        "text": true,
+        "capture_output": true
+      }
+    }
+  ],
+  "destination": {
+    "state": "VALUE",
+    "value": {
+      "exists": true,
+      "kind": "DIRECTORY",
+      "symlink_target": {
+        "state": "ABSENT"
+      },
+      "files": {
+        ".ci_triage_workdir": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec",
+        ".git/HEAD": "f6f2b945f6c411b02ba3da9c7ace88dcf71b6af65ba2e0d89aa82900042b5a10",
+        ".git/config": "cfe7ba1238c9a78be7535d7c63bcaf5a4d5011d46b07c9b45d3bbf7d6c312dfe",
+        ".git/description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+        ".git/hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+        ".git/hooks/commit-msg.sample": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437",
+        ".git/hooks/fsmonitor-watchman.sample": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0",
+        ".git/hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+        ".git/hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+        ".git/hooks/pre-commit.sample": "f9af7d95eb1231ecf2eba9770fedfa8d4797a12b02d7240e98d568201251244a",
+        ".git/hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+        ".git/hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+        ".git/hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+        ".git/hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+        ".git/hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+        ".git/hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+        ".git/hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+        ".git/hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+        ".git/info/exclude": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1",
+        "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+      }
+    }
+  },
+  "worktree": {
+    "state": "VALUE",
+    "value": {
+      "exists": true,
+      "kind": "DIRECTORY",
+      "symlink_target": {
+        "state": "ABSENT"
+      },
+      "files": {
+        ".ci_triage_workdir": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec",
+        ".git/HEAD": "f6f2b945f6c411b02ba3da9c7ace88dcf71b6af65ba2e0d89aa82900042b5a10",
+        ".git/config": "cfe7ba1238c9a78be7535d7c63bcaf5a4d5011d46b07c9b45d3bbf7d6c312dfe",
+        ".git/description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+        ".git/hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+        ".git/hooks/commit-msg.sample": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437",
+        ".git/hooks/fsmonitor-watchman.sample": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0",
+        ".git/hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+        ".git/hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+        ".git/hooks/pre-commit.sample": "f9af7d95eb1231ecf2eba9770fedfa8d4797a12b02d7240e98d568201251244a",
+        ".git/hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+        ".git/hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+        ".git/hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+        ".git/hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+        ".git/hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+        ".git/hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+        ".git/hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+        ".git/hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+        ".git/info/exclude": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1",
+        "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+      }
+    }
+  },
+  "workdir_marker": {
+    "exists": true,
+    "sha256": {
+      "state": "VALUE",
+      "value": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec"
+    }
+  },
+  "protected_marker": {
+    "exists": false,
+    "sha256": {
+      "state": "ABSENT"
+    },
+    "readers": [
+      {
+        "reader": "_exclude_private_files",
+        "return_value": {
+          "state": "VALUE",
+          "value": null
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      },
+      {
+        "reader": "clean_repository_preserving_markers",
+        "return_value": {
+          "state": "VALUE",
+          "value": null
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      },
+      {
+        "reader": "is_protected",
+        "return_value": {
+          "state": "VALUE",
+          "value": false
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      },
+      {
+        "reader": "release_worktree_protection",
+        "return_value": {
+          "state": "VALUE",
+          "value": false
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      }
+    ]
+  },
+  "exclude_completed": {
+    "state": "VALUE",
+    "value": false
+  },
+  "exit_code": {
+    "state": "VALUE",
+    "value": -2
+  }
+}

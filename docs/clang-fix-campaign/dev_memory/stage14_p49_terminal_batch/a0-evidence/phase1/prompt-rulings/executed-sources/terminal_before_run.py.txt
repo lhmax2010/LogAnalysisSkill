@@ -1,0 +1,429 @@
+"""Execute the frozen before scenarios; no production changes or OBS reruns."""
+
+from __future__ import annotations
+
+import argparse
+import importlib
+import json
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import tempfile
+from datetime import datetime
+from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
+from unittest.mock import patch
+
+from terminal_expected_diff import (
+    ABSENT,
+    MISSING,
+    equal,
+    load_gate,
+    pointer,
+    readers_from_item5,
+    tagged,
+    timeout_outcome,
+    value,
+)
+from terminal_predicates import load_json
+from verify_anchors import COMMIT, digest, guard, path_state, serial, write_json
+
+
+def exception_fields(exc: BaseException) -> dict[str, Any]:
+    return {
+        "return_value": dict(ABSENT),
+        "exception_type": value(type(exc).__name__),
+        "exception_code": value(exc.code) if hasattr(exc, "code") else dict(ABSENT),
+        "exception_message": value(str(exc)),
+    }
+
+
+def returned(result: Any) -> dict[str, Any]:
+    return {
+        "return_value": value(serial(result)),
+        "exception_type": dict(ABSENT),
+        "exception_code": dict(ABSENT),
+        "exception_message": dict(ABSENT),
+    }
+
+
+def file_state(path: Path) -> dict[str, Any]:
+    state = path_state(path)
+    return value(
+        {
+            "exists": path.exists(),
+            "kind": state["kind"],
+            "symlink_target": value(state["target"]) if "target" in state else dict(ABSENT),
+            "files": state.get("files", {}),
+        }
+    )
+
+
+def marker(path: Path) -> dict[str, Any]:
+    return {
+        "exists": path.is_file(),
+        "sha256": value(digest(path)) if path.is_file() else dict(ABSENT),
+    }
+
+
+def copy_scene(source: Path, target: Path) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if source.is_symlink():
+        target.symlink_to(os.readlink(source))
+    elif source.is_dir():
+        shutil.copytree(source, target, symlinks=True)
+    elif source.is_file():
+        shutil.copy2(source, target)
+
+
+def reader_results(
+    module: Any, source: Path, copies: Path, names: list[str]
+) -> list[dict[str, Any]]:
+    result = []
+    for name in names:
+        target = copies / name
+        copy_scene(source, target)
+        try:
+            row = returned(getattr(module, name)(worktree_path=target))
+        except Exception as exc:
+            row = exception_fields(exc)
+            row["exception_type"] = value(f"{type(exc).__module__}.{type(exc).__qualname__}")
+        result.append({"reader": name, **row})
+    return result
+
+
+def run_probe(root: Path, row: dict[str, Any], capture: Path) -> None:
+    for source in sorted(root.glob("*/scripts"), reverse=True):
+        sys.path.insert(0, str(source))
+    fetch = importlib.import_module("tizen_gerrit_fetch.gerrit")
+    submit = importlib.import_module("tizen_gerrit_submit.gerrit_submit")
+    workspace = importlib.import_module("tizen_ci_shared.workspace")
+    for module in (fetch, submit, workspace):
+        if not Path(module.__file__).resolve().is_relative_to(root):
+            raise ValueError("probe imports outside selected code tree")
+    destination = Path(row["fixture"]["destination"])
+    directory = destination.parent
+    if directory.exists():
+        raise ValueError(f"fixture path already exists, refusing overwrite: {directory}")
+    directory.mkdir(parents=True)
+    sid, surface, fault = row["id"], row["surface"], row["fault"]
+    if sid in {"DANGLING_SYMLINK", "LIVE_SYMLINK_TO_DIR"}:
+        target = directory / "target"
+        if sid == "LIVE_SYMLINK_TO_DIR":
+            target.mkdir()
+            (target / "sentinel").write_bytes(b"existing target\n")
+        destination.symlink_to(target, target_is_directory=True)
+    elif sid != "ABSENT":
+        destination.mkdir()
+        (destination / "sentinel").write_bytes(b"existing destination\n")
+    handle = None
+    if surface.startswith("shared"):
+        if row["section"].startswith("§5"):
+            # Match item5's real repository fixture for the four reader calls.
+            # This setup is outside the measured mark_worktree_protected call.
+            subprocess.run(["git", "init", "-q", str(destination)], check=True, capture_output=True)
+        workdir = destination / workspace.MARKER_FILENAME
+        write_json(
+            workdir,
+            {
+                "workspace_root": str(directory),
+                "baseline_repo": str(directory / "baseline"),
+                "base_commit": COMMIT,
+                "iter_index": 1,
+                "created_at": "2026-09-29T00:00:00+00:00",
+            },
+        )
+        handle = workspace.DisposableWorktree(
+            str(destination), str(directory / "baseline"), COMMIT, str(directory), 1, str(workdir)
+        )
+    trace: list[dict[str, Any]] = []
+    query = (
+        json.dumps(
+            {"project": "fixture/project", "branch": "fixture", "status": "MERGED", "number": 1}
+        )
+        + "\n"
+    )
+
+    def runner(argv: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
+        trace.append({"argv": list(argv), "kwargs": serial(kwargs)})
+        write_json(capture / "trace.json", trace)
+        if fault == "timeout":
+            raise subprocess.TimeoutExpired(list(argv), row["timeout"])
+        if fault in {"SIGINT", "SIGTERM"} and sid != "MARKER_WRITE_INTERRUPTED":
+            os.kill(os.getpid(), getattr(signal, fault))
+        stdout = query if argv[0] == "ssh" else ""
+        if "ls-remote" in argv:
+            stdout = COMMIT + "\trefs/heads/fixture\n"
+        if "--git-path" in argv:
+            stdout = str(destination / ".git/info/exclude") + "\n"
+        return subprocess.CompletedProcess(argv, 0, stdout, "")
+
+    original_write = Path.write_text
+
+    def write(self: Path, data: str, *args: Any, **kwargs: Any) -> int:
+        if self == destination / workspace.PROTECTED_FILENAME and sid == "MARKER_WRITE_INTERRUPTED":
+            self.write_bytes(b'{"protected_reason":')
+            os.kill(os.getpid(), signal.SIGINT)
+        return original_write(self, data, *args, **kwargs)
+
+    clock = SimpleNamespace(now=lambda tz: datetime.fromisoformat("2026-09-29T00:00:00+00:00"))
+    try:
+        with patch.object(workspace, "datetime", clock), patch.object(Path, "write_text", write):
+            if surface == "fetch-full":
+                result = fetch.fetch_source_for_commit(
+                    "fixture/project", COMMIT, destination, subprocess_runner=runner
+                )
+            elif surface == "fetch-query":
+                result = fetch.query_change_for_commit(COMMIT, subprocess_runner=runner)
+            elif surface == "fetch-git":
+                result = fetch._run_git(["git", "-C", str(destination), "status"], runner, env={})
+            elif surface == "submit-git":
+                result = submit._run_git(destination, ["status"], runner)
+            elif surface == "submit-remote":
+                result = submit._target_warnings(
+                    SimpleNamespace(project="fixture/project", base_commit=COMMIT),
+                    SimpleNamespace(
+                        submit_target="refs/for/fixture",
+                        gerrit_user="fixture-user",
+                        gerrit_host="fixture.invalid",
+                        gerrit_port="29418",
+                        git_ssh_command=None,
+                    ),
+                    runner,
+                )
+            elif surface == "shared-git":
+                with patch.object(workspace.subprocess, "run", runner):
+                    result = workspace._run_git(["-C", str(destination), "status"])
+            elif surface == "shared-exclude":
+                with patch.object(workspace.subprocess, "run", runner):
+                    result = workspace.mark_worktree_protected(
+                        handle, verification_id="fixture-v", failure_key="fixture-f"
+                    )
+            else:
+                raise ValueError(f"unsupported frozen surface: {surface}")
+        outcome = returned(result)
+    except BaseException as exc:
+        write_json(capture / "outcome.json", exception_fields(exc))
+        if not isinstance(exc, Exception):
+            raise
+    else:
+        write_json(capture / "outcome.json", outcome)
+
+
+def collect_before(root: Path, rules_root: Path, out: Path, item5_path: Path) -> None:
+    context = guard(root, rules_root)
+    context["guard_sha256"] = context.pop("producer_sha256")
+    context["collector_sha256"] = digest(Path(__file__))
+    gate = load_gate(rules_root)
+    resolved = gate.validate()
+    item5 = load_json(item5_path)
+    names = readers_from_item5(item5)
+    out.mkdir(parents=True, exist_ok=False)
+    workspace = importlib.import_module("tizen_ci_shared.workspace")
+    results, observations = {}, []
+    for row in gate.manifest["scenarios"]:
+        sid = row["id"]
+        capture = out / sid
+        capture.mkdir()
+        write_json(capture / "scenario.json", row)
+        command = [
+            sys.executable,
+            "-B",
+            str(Path(__file__).resolve()),
+            "--root",
+            str(root),
+            "--rules-root",
+            str(rules_root),
+            "--probe",
+            str(capture / "scenario.json"),
+            "--out",
+            str(capture),
+        ]
+        obs = gate.sources.fact(row["obs_ref"])
+        # The original runner passed this exact controlled environment through
+        # fetch_source_for_commit. Reuse it as input, not an output mask.
+        env = next(
+            (call["kwargs"]["env"] for call in obs["trace"] if call["kwargs"].get("env")), None
+        )
+        if env is None:
+            env = {
+                key: os.environ[key]
+                for key in ("PATH", "HOME", "LANG", "VIRTUAL_ENV")
+                if key in os.environ
+            }
+        destination = Path(row["fixture"]["destination"])
+        directory = destination.parent
+        backup = None
+        if directory.exists():
+            backup = Path(tempfile.mkdtemp(prefix="p49-before-save-")) / "original"
+            directory.rename(backup)
+        try:
+            child = subprocess.run(
+                command, cwd=root, env=env, capture_output=True, text=True, timeout=30
+            )
+            trace = load_json(capture / "trace.json") if (capture / "trace.json").exists() else []
+            outcome = (
+                load_json(capture / "outcome.json")
+                if (capture / "outcome.json").exists()
+                else {
+                    field: dict(ABSENT)
+                    for field in (
+                        "return_value",
+                        "exception_type",
+                        "exception_code",
+                        "exception_message",
+                    )
+                }
+            )
+            pmarker = marker(destination / workspace.PROTECTED_FILENAME)
+            pmarker["readers"] = reader_results(
+                workspace, destination, directory / "readers", names
+            )
+            exclude = destination / ".git/info/exclude"
+            result = {
+                **outcome,
+                "warnings": outcome["return_value"]
+                if row["surface"] == "submit-remote"
+                else dict(ABSENT),
+                "action": dict(ABSENT),
+                "calls": trace,
+                "destination": file_state(destination),
+                "worktree": file_state(destination),
+                "workdir_marker": marker(destination / workspace.MARKER_FILENAME),
+                "protected_marker": pmarker,
+                "exclude_completed": value(
+                    exclude.is_file()
+                    and {workspace.MARKER_FILENAME, workspace.PROTECTED_FILENAME}
+                    <= set(exclude.read_text().splitlines())
+                ),
+                "exit_code": value(child.returncode),
+            }
+            results[sid] = result
+            write_json(capture / "result.json", result)
+            observations.append(
+                {
+                    "scenario": sid,
+                    "command": command,
+                    "environment": env,
+                    "exit_code": child.returncode,
+                    "stdout": child.stdout,
+                    "stderr": child.stderr,
+                }
+            )
+        finally:
+            if directory.exists():
+                shutil.rmtree(directory)
+            if backup is not None:
+                backup.rename(directory)
+    write_json(out / "before.json", results)
+    write_json(
+        out / "execution.json",
+        {
+            "context": context,
+            "observations": observations,
+            "clock_input": "2026-09-29T00:00:00+00:00",
+        },
+    )
+    gate.validate_results(results, names)
+    failures = []
+    for row in gate.manifest["scenarios"]:
+        sid = row["id"]
+        observed = gate.sources.fact(row["obs_ref"])
+        if not equal(results[sid]["calls"], observed["trace"]):
+            failures.append(
+                {
+                    "scenario": sid,
+                    "field": "calls",
+                    "expected": observed["trace"],
+                    "actual": results[sid]["calls"],
+                }
+            )
+        for path, delta in resolved[sid].items():
+            if path.endswith("/timeout"):
+                actual = tagged(
+                    pointer(results[sid], path.rsplit("/", 1)[0]).get("timeout", MISSING)
+                )
+            else:
+                actual = pointer(results[sid], path)
+            if not equal(actual, delta["old"]):
+                failures.append(
+                    {"scenario": sid, "field": path, "expected": delta["old"], "actual": actual}
+                )
+        if row["fault"] == "timeout":
+            for field, expected in timeout_outcome(gate.sources.fact(row["obs_ref"])).items():
+                if not equal(results[sid][field], expected):
+                    failures.append(
+                        {
+                            "scenario": sid,
+                            "field": field,
+                            "expected": expected,
+                            "actual": results[sid][field],
+                        }
+                    )
+    for scene in item5["OBS-1.item5-order"]["scenarios"]:
+        sid = scene["scenario_id"]
+        marker_obs = scene["protected_marker"]
+        measured = results[sid]["protected_marker"]
+        if measured["exists"] != (marker_obs["state"] != "ABSENT") or (
+            "sha256" in marker_obs and measured["sha256"] != value(marker_obs["sha256"])
+        ):
+            failures.append(
+                {
+                    "scenario": sid,
+                    "field": "item5.marker",
+                    "expected": marker_obs,
+                    "actual": measured,
+                }
+            )
+        projected = []
+        for reader in measured["readers"]:
+            success = reader["return_value"]["state"] == "VALUE"
+            projected.append(
+                {
+                    "reader": reader["reader"],
+                    "result_kind": "RETURN" if success else "EXCEPTION",
+                    "result_value_or_type": repr(reader["return_value"]["value"])
+                    if success
+                    else reader["exception_type"]["value"],
+                }
+            )
+        if not equal(
+            {entry["reader"]: entry for entry in projected},
+            {entry["reader"]: entry for entry in scene["readers"]},
+        ):
+            failures.append(
+                {
+                    "scenario": sid,
+                    "field": "item5.readers",
+                    "expected": scene["readers"],
+                    "actual": projected,
+                }
+            )
+    write_json(out / "consistency.json", {"scenarios": len(results), "failures": failures})
+    if failures:
+        raise ValueError(f"BEFORE_DIFFERS: {failures}")
+    print(f"BEFORE=PASS scenarios={len(results)} sha256={digest(out / 'before.json')}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--rules-root", type=Path, required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--probe", type=Path)
+    parser.add_argument("--item5-output", type=Path)
+    args = parser.parse_args()
+    if args.probe:
+        run_probe(args.root, load_json(args.probe), args.out)
+    else:
+        if args.item5_output is None:
+            parser.error("verified item5 output required")
+        collect_before(args.root, args.rules_root, args.out, args.item5_output)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

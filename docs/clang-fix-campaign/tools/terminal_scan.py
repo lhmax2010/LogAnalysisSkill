@@ -22,6 +22,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 import tomllib
+from terminal_authority import E10_COMMIT, read_authority
 from terminal_predicates import canonical_hash, check_frozen_hashes, load_json
 
 HEAD = "43a6aa625f27da46daba190657bf62256080c68e"
@@ -53,6 +54,10 @@ class ScanError(ValueError):
 
 def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def historical_rules(root: Path) -> bytes:
+    return read_authority(root, E10_COMMIT, RULES_SHA)
 
 
 def git(root: Path, *args: str) -> bytes:
@@ -275,8 +280,7 @@ def fixed_inputs(root: Path, rules_root: Path) -> tuple[dict[str, Any], dict[str
         raise ScanError("FIXED_TREE_REQUIRED")
     if git(root, "status", "--porcelain=v1", "--untracked-files=all"):
         raise ScanError("CLEAN_WORKTREE_REQUIRED")
-    if sha256((rules_root / RULES).read_bytes()) != RULES_SHA:
-        raise ScanError("RULES_HASH")
+    historical_rules(rules_root)
     check_frozen_hashes(
         load_json(DATA / "predicates.json"), load_json(DATA / "measurement_exemptions.json")
     )
