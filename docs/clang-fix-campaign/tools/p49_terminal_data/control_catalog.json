@@ -1269,5 +1269,221 @@
       "evidence": "a0-evidence/part3/erratum6/missing-entry.log",
       "test_nodeid": "tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.binary_record]"
     }
+  },
+  {
+    "control_id": "CTRL-E8-C8C-DEFAULT",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C8c",
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": "具名默认值读取与经别名启动 sentinel",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_e8_fixed_point_reaches_alias_call",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C8C-FORWARD",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C8c",
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": "经 g(r) 向下传递直到启动 sentinel",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_e8_fixed_point_reaches_alias_call",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C8C-CROSS-MODULE",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C8c",
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": "跨模块关键字传参并经 re-export 解析到 def",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_e8_cross_module_keyword_and_shim_resolution",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C8C-NESTED",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C8c",
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": "real_run 在未重绑定的内层被调用",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_e8_fixed_point_reaches_alias_call",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C8C-ATTRIBUTE-ESCAPE",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C8c",
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": "self._run=subprocess.run 必须未决",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_e8_c8c_escape",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C8C-RETURN-ESCAPE",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C8c",
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": "return subprocess.run 必须未决",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_e8_c8c_escape",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C8C-UNPACK-ESCAPE",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C8c",
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": "h(*[subprocess.run]) 必须未决",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_e8_c8c_escape",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C8C-ANNOTATION",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C8c",
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "requirement": "标注位置读取不参与",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_e8_annotation_read_excluded",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C8C-IMPORT-READ",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C8c",
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "requirement": "导入函数裸读取仍 UNKNOWN_CAPABILITY",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_non_process_bare_read_remains_unknown",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C5F-SPEC",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C5f",
+    "branch": "consumer.C5f",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": "唯一同词法作用域 spec 赋值关联 C5d",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_c5f_links_unique_c5d",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C5F-PARAMETER",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C5f",
+    "branch": "consumer.C5f",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": "未知来源 loader 参数调用必须未决",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_c5f_unproven_receiver_is_dynamic",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E8-C5F-CONSTRUCTOR",
+    "group": "E8-CONSUMER-FORMS",
+    "source": "Erratum8 E8-5",
+    "form": "C5f",
+    "branch": "consumer.C5f",
+    "detector_owner": "消费者识别",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "requirement": "加载器构造不得吞入 C5f",
+    "reason": "Full consumer-edge pipeline/SEAL-16b/12b-10 pending SCAN-06; preflight component only.",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_c5f_constructor_not_swallowed",
+      "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
+    }
   }
 ]

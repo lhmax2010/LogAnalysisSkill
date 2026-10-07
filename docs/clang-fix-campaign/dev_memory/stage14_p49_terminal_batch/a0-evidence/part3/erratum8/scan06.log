@@ -1,0 +1,73 @@
+{
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "scope": "SCAN-06 single-witness check, not full name-backstop enumeration",
+  "candidate_id": "tizen-convergence-judge/scripts/tizen_convergence_judge/__init__.py#REEXPORT#check_convergence",
+  "candidate_module": "tizen_convergence_judge",
+  "candidate_import_line": 3,
+  "candidate_source": "from tizen_convergence_judge.convergence import (\n    ConvergenceResult,\n    check_convergence,\n    error_count,\n    primary_fingerprint,\n    touched_files_from_json,\n    write_convergence_result,\n)",
+  "all_contains_binding": true,
+  "provider_entry": {
+    "path": ".importlinter",
+    "git_mode": "100644",
+    "git_type": "blob",
+    "oid": "8738db4b5152f5673f884ef7379b0ec7aa64e18a",
+    "lstat_mode": 33204,
+    "size": 2223,
+    "sha256": "f3fc4705aa1ff57292f0d86ab8bb973bd479c34d11e79012de0cea9c2c1be527",
+    "entry_kind": "OTHER_TEXT",
+    "context": "."
+  },
+  "hits": [
+    {
+      "file": ".importlinter",
+      "line": 8,
+      "column": 4,
+      "line_text": "    tizen_convergence_judge",
+      "module": "tizen_convergence_judge",
+      "name_form": "DOTTED_MODULE",
+      "context": ".",
+      "entry_kind": "OTHER_TEXT",
+      "forms": [],
+      "result": "UNKNOWN_CAPABILITY"
+    },
+    {
+      "file": ".importlinter",
+      "line": 22,
+      "column": 4,
+      "line_text": "    tizen_convergence_judge | tizen_qb_discover | tizen_gerrit_fetch | tizen_build_verify | tizen_gerrit_submit | tizen_triage_report | gbs_patch_suggest",
+      "module": "tizen_convergence_judge",
+      "name_form": "DOTTED_MODULE",
+      "context": ".",
+      "entry_kind": "OTHER_TEXT",
+      "forms": [],
+      "result": "UNKNOWN_CAPABILITY"
+    },
+    {
+      "file": ".importlinter",
+      "line": 32,
+      "column": 4,
+      "line_text": "    tizen_convergence_judge",
+      "module": "tizen_convergence_judge",
+      "name_form": "DOTTED_MODULE",
+      "context": ".",
+      "entry_kind": "OTHER_TEXT",
+      "forms": [],
+      "result": "UNKNOWN_CAPABILITY"
+    },
+    {
+      "file": ".importlinter",
+      "line": 57,
+      "column": 4,
+      "line_text": "    tizen_convergence_judge",
+      "module": "tizen_convergence_judge",
+      "name_form": "DOTTED_MODULE",
+      "context": ".",
+      "entry_kind": "OTHER_TEXT",
+      "forms": [],
+      "result": "UNKNOWN_CAPABILITY"
+    }
+  ],
+  "disposition": "NOT_RUN; discovery cannot pre-filter retained entry packages"
+}
+SCAN-06=BLOCKED: OTHER_TEXT name hits have no C7a/C7b/C7c/C7d form or documented exclusion

@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/mypy",
+    "--follow-imports=silent",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_monitored_preflight.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_alias_preflight.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_monitored_preflight.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_alias_preflight.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-gate-seg2-43a6aa6",
+    "PATH": "/tmp/p49-a0-gate-seg2-43a6aa6/bin:/usr/bin:/bin",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 1,
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_scan.py": "bd1fdb9e5a93af0e74859b40b6de1c5552653d94603f8128831f1cd59fff432e",
+    "docs/clang-fix-campaign/tools/terminal_monitored_preflight.py": "4a8c4c549553e95cd888f56828598326b09081aceac05221ec909b73355db2dd",
+    "docs/clang-fix-campaign/tools/terminal_alias_preflight.py": "e3b3766145ea2cde7fe782a5c802d8648245cfb0edc1261dafcf8d07d3f35f3b",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "66b33ef6c365c3da835529756d60ee43626768a0d361eb47dbeea86177f6db3c",
+    "tests/unit/test_terminal_monitored_preflight.py": "cd54fa1b565714294a1cc83345c101abbcabe2304530f779069754686d3e2a56",
+    "tests/unit/test_terminal_alias_preflight.py": "52a300106ffdc8300ea60f3a23dfde164f1a632a99c92c437687e411a3532f57"
+  },
+  "output_sha256": "3b50304af655433f968b61b55be35995de03bc777445d0f8b2e00ad5ca24be38",
+  "scope": "E8-6 all PY_SOURCE preflight and tests only; no OBS producer or before-run"
+}

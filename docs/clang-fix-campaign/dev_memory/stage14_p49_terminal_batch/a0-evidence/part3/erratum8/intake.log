@@ -1,0 +1,70 @@
+diff --git a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+index 86e9d81..1e65ee2 100644
+--- a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
++++ b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+@@ -10,0 +11 @@
++> **已生效勘误:附录 C 勘误 8(2026-10-07,FatTank 批准)。**
+@@ -2303,0 +2305,60 @@ A/B 取值、**存在性检查证据(`lstat` 语义)**、**π 归一结果**、
++
++### 勘误 8(2026-10-07,FatTank 批准)—— 进程启动函数被当作值传递、以及加载器执行模块的承接
++
++**触发**:A₀ 第 3 段按勘误 7 E7-3 完成全树预检后停止报告 SCAN-05(stage14 `a0-evidence/part3/erratum7/blockers.md`),零命中 27 处、多命中 0 处,分两类:
++①25 处对 `subprocess.run`/`subprocess.Popen` 的**非调用读取**(参数默认值 `subprocess_runner: SubprocessRunner = subprocess.run`、
++调用实参 `subprocess_runner=subprocess.run`、赋值 `real_run = subprocess.run`、类型标注 `subprocess.Popen[str]`);正文 ②′ 只规定裸读取是参与点,没有形态承接。
++②2 处 `spec.loader.exec_module(module)`(被调者解析为 `importlib.machinery.SourceFileLoader.exec_module`),在受监控集合内、不在任何形态的被调者封闭集合中。
++第①类不能简单放行:这些读取把真实的进程启动函数注入下游函数(如 `analyzer_runner.py` 经 `subprocess_runner(command, ...)` 启动 Python 分析器),
++下游经别名发起的调用此前不是参与点,若不承接即为朝开漏洞。
++
++**E8-1 · 类型标注中的读取不是参与点**
++> 出现在类型标注位置(函数形参标注、返回值标注、`AnnAssign` 的标注)中的受监控名字读取(`Name`/`Attribute`/`Subscript` 的取值部分)不是参与点;
++> 标注位置中的**调用**仍按正文 ② 处理。本条对受监控名字集合全体适用。
++
++**E8-2 · 新增原子形态 `C8c`(分支 `consumer.C8c`,所属类 8):进程启动函数的别名**
++> | 形态 ID | 所属类 | 识别谓词(互斥) |
++> |---|---|---|
++> | `C8c` | 8 | 对**进程启动族**(见 `C8a`)中任一名字的非调用读取(标注位置除外,见 E8-1)。本身不产生消费边;按下述"别名绑定"规则处理其去向 |
++> **别名绑定**(封闭四种去向,其余一律 `DYNAMIC_UNRESOLVED`,形态仍记 `C8c`):
++> > (a)作为赋值右侧整体绑定到一个**普通名字** `n`(`n = subprocess.run`)→ 绑定 (所在作用域, `n`);
++> > (b)作为函数 `F` 某个**具名形参** `p` 的默认值 → 绑定 (`F`, `p`);
++> > (c)作为调用实参(位置或关键字),且被调者经 import binding **静态解析到扫描集合内的某个 `def`**,实参按签名绑定到其**具名形参** `p` → 绑定 (该 `def`, `p`);
++> > (d)其它一切去向 —— 存入属性或容器、作为返回值、绑定到 `*args`/`**kwargs`、被调者不能静态解析、经 `lambda` 默认值或解包传递等 → `DYNAMIC_UNRESOLVED`。
++> **经别名的调用(正文参与点新增 ②″)**:对每个绑定 (作用域 `S`, 名字 `n`),`S` 内(含未重新绑定 `n` 的嵌套函数与 `lambda`)
++> **每个以裸名 `n` 为被调者的调用**都是一个参与点,按被别名的函数的签名族取命令载荷,再按 `C8a`/`C8b` 的既有谓词落形态(并记录来源 `C8c` 点);
++> 一个绑定若经不同读取别名了**载荷位置不同**的函数(如同时收到 `subprocess.run` 与 `os.system`)→ 经该绑定的调用一律 `DYNAMIC_UNRESOLVED`。
++> **不按控制流区分**:`S` 内 `n` 即使在某些路径上被重新赋值、或调用方传入的是测试替身,同名调用仍一律按启动调用处理(宁多勿漏,朝闭)。
++> **向下传递**:`S` 内对 `n` 的非调用读取按上面 (a)–(d) 继续绑定;对 `n` 的其它使用(属性访问 `n.x`、存入属性或容器、作为返回值)→ `DYNAMIC_UNRESOLVED`。
++> 绑定集合按不动点求出,有限必收敛;不动点结果写入证据,逐条列出 (绑定、来源读取、经该绑定的调用点)。
++> **范围**:本形态**只**承接进程启动族的读取;导入机制与打桩类名字的裸读取(如 `f = importlib.import_module`)仍按正文为零命中 → `UNKNOWN_CAPABILITY`,
++> 正文该条正控制不变。
++
++**E8-3 · 新增原子形态 `C5f`(分支 `consumer.C5f`,所属类 5):加载器执行模块**
++> | 形态 ID | 所属类 | 识别谓词(互斥) |
++> |---|---|---|
++> | `C5f` | 5 | 调用解析为 `importlib` 下任一加载器类的 {`exec_module`, `load_module`} 方法。接收者为 `<s>.loader`,且 `s` 在同一词法作用域内**唯一一次**由某个 `C5d` 调用(`spec_from_file_location`/`spec_from_loader`/`find_spec`)赋值 → 关联到该 `C5d` 参与点,本身不另产生消费边(加载目标的消费边由该 `C5d` 点按既有规则产生);接收者其它来源(形参、属性、多次赋值、无法确定)→ `DYNAMIC_UNRESOLVED`,形态仍记 `C5f` |
++> 被调者封闭集合为上表两个方法名,扩充走勘误流程;加载器类的构造调用(如 `importlib.machinery.SourceFileLoader(...)`)不在本形态内,出现时仍按正文为零命中。
++
++**E8-4 · 计数与对账**
++> 原子形态由二十一个增为二十三个(新增 `C8c`、`C5f`);`SEAL-16b` 五方对账、`12b-10` 逐形态正控制、B-11 `MECH_FIVE_WAY` 按新表执行。
++> 勘误 4 E4-2 表中 `PY_SOURCE` 的"消费者参与点识别"按 E6-2 落到全部 Python 源 `consumer.*` 分支,即含 `C9`、`C8c`、`C5f`。
++
++**E8-5 · 控制**(登记进 `control_catalog.json`)
++> **`C8c` 正控制**:`def f(*, runner=subprocess.run): runner([sys.executable, "-m", "<sentinel>"])` → 读取落 `C8c`,调用落 `C8a` 并产生消费边;
++> 下传:`def g(r): r([sys.executable, "-m", "<sentinel>"])` 且 `def f(runner=subprocess.run): g(runner)` → 须产生消费边;
++> 跨模块关键字实参:测试文件中 `mod.f(runner=subprocess.run)`,`mod.f` 的形参 `runner` 被调用启动 `<sentinel>` → 须产生消费边;
++> 嵌套函数:`real_run = subprocess.run` 后在内层函数中 `real_run(["python", "-m", "<sentinel>"])` → 须产生消费边;
++> 逃逸:`self._run = subprocess.run`、`return subprocess.run`、`h(*[subprocess.run])` → 各须 `DYNAMIC_UNRESOLVED`。
++> **`C8c` near-miss**:`def f(p: subprocess.Popen[str]): ...` → 不是参与点、不阻塞;`f = importlib.import_module` → 仍须 `UNKNOWN_CAPABILITY`。
++> **`C5f` 正控制**:`spec = importlib.util.spec_from_file_location("n", "<sentinel>.py")`、`m = importlib.util.module_from_spec(spec)`、`spec.loader.exec_module(m)`
++> → `C5f` 关联到该 `C5d` 点,消费边经 `C5d` 产生;`def load(loader, m): loader.exec_module(m)` → 须 `DYNAMIC_UNRESOLVED`。
++> **`C5f` near-miss**:`importlib.machinery.SourceFileLoader("n", p)` 构造调用 → 仍须 `UNKNOWN_CAPABILITY`(不被 `C5f` 吞掉)。
++
++**已冻结判定条件的影响**:与勘误 7 相同 —— `OBS-7.falsification-samples` 第 3 条的形态取值清单按冻结时书写;若真实样本中出现 `C8c` 或 `C5f`,
++该 claim 判红并停止报告,届时按判定条件的勘误流程处理,本勘误不预改已冻结的判定条件。
++
++**E8-6 · 批量处理要求**:沿用 E7-3 —— 按本勘误重跑全树预检(含 ②″ 新增的经别名调用点),收集全部零命中与多命中后一次性停止报告;
++另报告本勘误新增的 `DYNAMIC_UNRESOLVED` 条数(按 `C8c` 逃逸、经别名调用的载荷不可规范化、`C5f` 三类分列),供后续销账排期。
++
++**生效范围**:§1.1 参与点(新增 ②″、标注位置除外)与原子形态表;不改变判定条件与其它事项。
+OLD_SHA256=d6496250c3f9ba80990785edab0e972c9b077fd4965a045cea31e3201bd7c032
+NEW_SHA256=66b33ef6c365c3da835529756d60ee43626768a0d361eb47dbeea86177f6db3c
+INSERT_ONLY=PASS hunks=2 deleted_lines=0 retained_old_bytes=PASS

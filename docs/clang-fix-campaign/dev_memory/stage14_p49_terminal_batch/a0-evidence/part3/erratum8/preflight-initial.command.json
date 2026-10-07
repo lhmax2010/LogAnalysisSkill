@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_monitored_preflight.py",
+    "--root",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+    "--rules-root",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "--output",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part3/erratum8/preflight-initial.json"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-gate-seg2-43a6aa6",
+    "PATH": "/tmp/p49-a0-gate-seg2-43a6aa6/bin:/usr/bin:/bin",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 0,
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_scan.py": "bd1fdb9e5a93af0e74859b40b6de1c5552653d94603f8128831f1cd59fff432e",
+    "docs/clang-fix-campaign/tools/terminal_monitored_preflight.py": "3e231a072f601a41bd25ef80d638cfce52beea59d6d2d7cf8309ef528bca37e3",
+    "docs/clang-fix-campaign/tools/terminal_alias_preflight.py": "0a2d4f0bf813bff251163e3089d65121d15f387402e6e517a2bb516cb0182b90",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "66b33ef6c365c3da835529756d60ee43626768a0d361eb47dbeea86177f6db3c",
+    "tests/unit/test_terminal_monitored_preflight.py": "b0f96669b5682938db58e61a59498a5f8ad63bbde6cef22ef972ffb745f37297"
+  },
+  "output_sha256": "009b86e075d9d64924ed1d66649bafafc0ec0c906418e1a72ffa469b09cee3c9",
+  "scope": "E8-6 all PY_SOURCE preflight and tests only; no OBS producer or before-run"
+}

@@ -1,0 +1,26 @@
+B905 `zip()` without an explicit `strict=` parameter
+   --> /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_alias_preflight.py:231:29
+    |
+229 |             args = func.args
+230 |             positional = [*args.posonlyargs, *args.args]
+231 |             defaults = list(zip(positional[len(positional) - len(args.defaults) :], args.defaults))
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+232 |             defaults += list(zip(args.kwonlyargs, args.kw_defaults))
+233 |             for parameter, value in defaults:
+    |
+help: Add explicit value for parameter `strict=`
+
+B905 `zip()` without an explicit `strict=` parameter
+   --> /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_alias_preflight.py:232:30
+    |
+230 |             positional = [*args.posonlyargs, *args.args]
+231 |             defaults = list(zip(positional[len(positional) - len(args.defaults) :], args.defaults))
+232 |             defaults += list(zip(args.kwonlyargs, args.kw_defaults))
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+233 |             for parameter, value in defaults:
+234 |                 if value is node:
+    |
+help: Add explicit value for parameter `strict=`
+
+Found 2 errors.
+No fixes available (2 hidden fixes can be enabled with the `--unsafe-fixes` option).

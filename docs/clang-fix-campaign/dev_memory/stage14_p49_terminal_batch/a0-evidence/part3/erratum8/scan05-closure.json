@@ -1,0 +1,515 @@
+[
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gerrit.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 64,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gerrit.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 155,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/runner.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 74,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 108,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 75,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 83,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/runner.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 286,
+      "column": 36,
+      "qualified_name": "subprocess.Popen",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.Popen",
+      "qualified_names": [
+        "subprocess.Popen"
+      ]
+    },
+    "resolution": "EXCLUDED_ANNOTATION"
+  },
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 35,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 98,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      "context": "release-v1.4.0",
+      "origin": "file",
+      "line": 177,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tests/integration/test_build_verify_real_git.py",
+      "context": ".",
+      "origin": "file",
+      "line": 203,
+      "column": 26,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tests/unit/test_design_drift_ledger.py",
+      "context": ".",
+      "origin": "file",
+      "line": 18,
+      "column": 4,
+      "qualified_name": "importlib.machinery.SourceFileLoader.exec_module",
+      "kind": "CALL",
+      "forms": [],
+      "match_count": 0,
+      "reason": "monitored callable outside closed callee sets",
+      "source": "spec.loader.exec_module(module)",
+      "qualified_names": [
+        "importlib.machinery.SourceFileLoader.exec_module"
+      ]
+    },
+    "resolution": "C5f"
+  },
+  {
+    "old": {
+      "path": "tests/unit/test_tizen_build_verify.py",
+      "context": ".",
+      "origin": "file",
+      "line": 400,
+      "column": 26,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tests/unit/test_tizen_build_verify.py",
+      "context": ".",
+      "origin": "file",
+      "line": 573,
+      "column": 15,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tests/unit/test_tizen_build_verify.py",
+      "context": ".",
+      "origin": "file",
+      "line": 599,
+      "column": 15,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tests/unit/test_workflow.py",
+      "context": ".",
+      "origin": "file",
+      "line": 28,
+      "column": 4,
+      "qualified_name": "importlib.machinery.SourceFileLoader.exec_module",
+      "kind": "CALL",
+      "forms": [],
+      "match_count": 0,
+      "reason": "monitored callable outside closed callee sets",
+      "source": "spec.loader.exec_module(module)",
+      "qualified_names": [
+        "importlib.machinery.SourceFileLoader.exec_module"
+      ]
+    },
+    "resolution": "C5f"
+  },
+  {
+    "old": {
+      "path": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "context": ".",
+      "origin": "file",
+      "line": 107,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "context": ".",
+      "origin": "file",
+      "line": 151,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tizen-ci-triage/scripts/ci_triage/runner.py",
+      "context": ".",
+      "origin": "file",
+      "line": 76,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": ".",
+      "origin": "file",
+      "line": 83,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tizen-gbs-build/scripts/gbs_build_skill/runner.py",
+      "context": ".",
+      "origin": "file",
+      "line": 286,
+      "column": 36,
+      "qualified_name": "subprocess.Popen",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.Popen",
+      "qualified_names": [
+        "subprocess.Popen"
+      ]
+    },
+    "resolution": "EXCLUDED_ANNOTATION"
+  },
+  {
+    "old": {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py",
+      "context": ".",
+      "origin": "file",
+      "line": 35,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      "context": ".",
+      "origin": "file",
+      "line": 98,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      "context": ".",
+      "origin": "file",
+      "line": 177,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+      "context": ".",
+      "origin": "file",
+      "line": 36,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+      "context": ".",
+      "origin": "file",
+      "line": 127,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  },
+  {
+    "old": {
+      "path": "tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py",
+      "context": ".",
+      "origin": "file",
+      "line": 75,
+      "column": 42,
+      "qualified_name": "subprocess.run",
+      "kind": "NON_CALL_READ",
+      "forms": [],
+      "match_count": 0,
+      "reason": "section 1.1 participant 2-prime: no form accepts monitored non-call read",
+      "source": "subprocess.run",
+      "qualified_names": [
+        "subprocess.run"
+      ]
+    },
+    "resolution": "C8c"
+  }
+]

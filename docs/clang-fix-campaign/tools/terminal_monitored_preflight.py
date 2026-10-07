@@ -1,4 +1,4 @@
-"""E7-3 fixed-tree Python participant preflight, not the full consumer scanner.
+"""E8-6 fixed-tree Python participant preflight, not the full consumer scanner.
 
 No observed module is imported or executed. All Python entries are visited even
 after a blocker. Name resolution retains lexical imports, local shadowing and
@@ -99,6 +99,7 @@ class Bindings(ast.NodeVisitor):
         self.module = module_name
         self.package = package
         self.scopes: dict[ast.AST, Scope] = {}
+        self.function_scopes: dict[ast.AST, Scope] = {}
         self.modules = {
             "builtins",
             "importlib",
@@ -186,7 +187,7 @@ class Bindings(ast.NodeVisitor):
 
     def function(self, node: ast.FunctionDef | ast.AsyncFunctionDef | ast.Lambda) -> None:
         if not isinstance(node, ast.Lambda):
-            self.scope.bind(node.name, None)
+            self.scope.bind(node.name, node)
             for decorator in node.decorator_list:
                 self.visit(decorator)
             if node.returns:
@@ -202,6 +203,7 @@ class Bindings(ast.NodeVisitor):
                 self.visit(default)
         outer = self.scope
         self.scope = Scope(outer, "function")
+        self.function_scopes[node] = self.scope
         for param in params:
             self.scope.bind(param.arg, "monkeypatch" if param.arg == "monkeypatch" else None)
         body = [node.body] if isinstance(node, ast.Lambda) else node.body
@@ -403,13 +405,21 @@ def inspect_source(
     package: bool = False,
     origin: str = "file",
     offset: int = 0,
+    prepared: Any = None,
+    alias_result: Any = None,
 ) -> dict[str, Any]:
+    from terminal_alias_preflight import AliasWorld, Unit, annotation_nodes
+
     try:
-        tree = ast.parse(source, filename=path)
+        unit = prepared or Unit(source, path, context, module, package)
+        tree = unit.tree
     except SyntaxError as exc:
         return {
             "participants": [],
             "excluded_compile": [],
+            "alias_bindings": [],
+            "dynamic_unresolved": [],
+            "excluded_annotations": [],
             "parse_errors": [
                 {
                     "path": path,
@@ -420,9 +430,21 @@ def inspect_source(
                 }
             ],
         }
-    bindings = Bindings(tree, module, package)
+    if alias_result is None:
+        world = AliasWorld([unit])
+        world.run()
+        alias_result = world.result(path)
+    bindings = unit.bindings
+    annotations = annotation_nodes(tree)
     parents = {child: parent for parent in ast.walk(tree) for child in ast.iter_child_nodes(parent)}
-    result: dict[str, Any] = {"participants": [], "excluded_compile": [], "parse_errors": []}
+    result: dict[str, Any] = {
+        "participants": [],
+        "excluded_compile": [],
+        "parse_errors": [],
+        "alias_bindings": alias_result["alias_bindings"],
+        "dynamic_unresolved": alias_result["dynamic_unresolved"],
+        "excluded_annotations": [],
+    }
     handled: set[ast.AST] = set()
 
     def add(node: ast.AST, kind: str, name: str, forms: list[str], reason: str) -> None:
@@ -500,6 +522,18 @@ def inspect_source(
         if isinstance(parent, ast.Attribute) and parent.value is node:
             continue
         for name in sorted(bindings.resolve(node)):
+            if node in annotations and monitored(name, bindings.modules):
+                result["excluded_annotations"].append(
+                    {
+                        "path": path,
+                        "context": context,
+                        "line": node.lineno + offset,
+                        "column": node.col_offset,
+                        "name": name,
+                        "rule": "E8-1",
+                    }
+                )
+                continue
             if name == "builtins.compile":
                 result["excluded_compile"].append(
                     {"path": path, "line": node.lineno + offset, "kind": "READ", "context": context}
@@ -521,8 +555,28 @@ def inspect_source(
                     "attribute access outside C5e callable/subscript/comparison forms",
                 )
 
+    # E8 replaces the old read/call classification at exactly the measured AST site.
+    for row in alias_result["participants"]:
+        kind = "CALL" if row["kind"] == "ALIAS_CALL" else row["kind"]
+        result["participants"] = [
+            p
+            for p in result["participants"]
+            if not (
+                p["line"] == row["line"] + offset
+                and p["column"] == row["column"]
+                and p["kind"] == kind
+            )
+        ]
+        result["participants"].append({**row, "line": row["line"] + offset, "origin": origin})
+
     # Only executable string sources, not arbitrary code-looking fixture strings.
     embedded: list[tuple[str, str, int]] = []
+    for row in alias_result["participants"]:
+        payload = row.get("payload", {})
+        if payload.get("code_source") in {"c", "stdin"} and isinstance(payload.get("payload"), str):
+            embedded.append(
+                (payload["payload"], f"{origin}:alias-code@{row['line']}", row["line"] - 1)
+            )
     for node in ast.walk(tree):
         if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
             doc = ast.get_docstring(node, clean=False)
@@ -553,6 +607,12 @@ def inspect_source(
                         }
                     )
         if isinstance(node, ast.Call):
+            if any(
+                row["kind"] == "ALIAS_CALL"
+                and (row["line"], row["column"]) == (node.lineno, node.col_offset)
+                for row in alias_result["participants"]
+            ):
+                continue
             names = bindings.resolve(node.func)
             payload = literal(argument(node, 0, "source"))
             if names & {"builtins.exec", "builtins.eval"} and isinstance(payload, str):
@@ -594,6 +654,8 @@ def inspect_source(
 
 
 def main() -> int:
+    from terminal_alias_preflight import AliasWorld, Unit
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--rules-root", type=Path, required=True)
@@ -602,14 +664,38 @@ def main() -> int:
     manifest, files = fixed_inputs(args.root, args.rules_root)
     rules = (args.rules_root / RULES).read_text()
     forms = re.findall(r"^(?:> )?\| `(C[0-9]+[a-z]?)` \|", rules, re.MULTILINE)
-    if len(forms) != 21 or len(set(forms)) != 21 or "C9" not in forms:
-        raise ScanError("E7_ATOMIC_TABLE_PARSE")
+    if len(forms) != 23 or len(set(forms)) != 23 or not {"C9", "C8c", "C5f"} <= set(forms):
+        raise ScanError("E8_ATOMIC_TABLE_PARSE")
     index = ModuleIndex(files, contexts(files))
     all_results: dict[str, list[Any]] = {
         "participants": [],
         "excluded_compile": [],
         "parse_errors": [],
+        "alias_bindings": [],
+        "dynamic_unresolved": [],
+        "excluded_annotations": [],
     }
+    units = []
+    for entry in manifest["entries"]:
+        if entry["entry_kind"] != "PY_SOURCE":
+            continue
+        path = entry["path"]
+        names = index.by_path.get(path, [])
+        module = names[0][1] if len(names) == 1 else ""
+        try:
+            units.append(
+                Unit(
+                    files[path].decode(),
+                    path,
+                    entry["context"],
+                    module,
+                    path.endswith("/__init__.py"),
+                )
+            )
+        except SyntaxError:
+            pass  # inspect_source records every parse error below, without aborting other files.
+    world = AliasWorld(units, index)
+    world.run()
     entries = []
     for entry in manifest["entries"]:
         if entry["entry_kind"] != "PY_SOURCE":
@@ -618,7 +704,13 @@ def main() -> int:
         names = index.by_path.get(path, [])
         module = names[0][1] if len(names) == 1 else ""
         measured = inspect_source(
-            files[path].decode(), path, entry["context"], module, path.endswith("/__init__.py")
+            files[path].decode(),
+            path,
+            entry["context"],
+            module,
+            path.endswith("/__init__.py"),
+            prepared=world.units.get(path),
+            alias_result=world.result(path) if path in world.units else None,
         )
         entries.append(
             {
@@ -645,13 +737,21 @@ def main() -> int:
         "multiple_matches": len(multi),
         "parse_errors": len(all_results["parse_errors"]),
         "excluded_compile": len(all_results["excluded_compile"]),
+        "excluded_annotations": len(all_results["excluded_annotations"]),
+        "alias_bindings": len(all_results["alias_bindings"]),
+        "alias_calls": sum(p["kind"] == "ALIAS_CALL" for p in points),
+        "fixed_point_rounds": world.fixed_point_rounds,
+        "dynamic_unresolved": {
+            category: sum(r["category"] == category for r in all_results["dynamic_unresolved"])
+            for category in ("C8c_ESCAPE", "ALIAS_PAYLOAD", "C5f")
+        },
     }
     result = {
         "head": HEAD,
         "tree": TREE,
         "rules_sha256": RULES_SHA,
         "tool_sha256": sha256(Path(__file__).read_bytes()),
-        "scope": "E7-3 Python preflight only; no full scan completion or OBS",
+        "scope": "E8-6 Python preflight only; no full scan completion or OBS",
         "summary": summary,
         "entries": entries,
         "participants": points,
@@ -659,7 +759,13 @@ def main() -> int:
         "multiple_matches": multi,
         "parse_errors": all_results["parse_errors"],
         "excluded_compile": all_results["excluded_compile"],
-        "module_identity_ambiguities": index.events,
+        "alias_bindings": all_results["alias_bindings"],
+        "dynamic_unresolved": all_results["dynamic_unresolved"],
+        "excluded_annotations": all_results["excluded_annotations"],
+        "module_resolution_events": index.events,
+        "module_identity_ambiguities": [
+            e for e in index.events if e["kind"] == "MODULE_IDENTITY_AMBIGUOUS"
+        ],
     }
     write_atomic(args.output, result)
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
@@ -674,11 +780,13 @@ def main() -> int:
         "PREFLIGHT="
         + (
             "BLOCKED"
-            if zero or multi or all_results["parse_errors"] or index.events
+            if zero or multi or all_results["parse_errors"] or result["module_identity_ambiguities"]
             else "ZERO_BLOCKERS"
         )
     )
-    return int(bool(zero or multi or all_results["parse_errors"] or index.events))
+    return int(
+        bool(zero or multi or all_results["parse_errors"] or result["module_identity_ambiguities"])
+    )
 
 
 if __name__ == "__main__":

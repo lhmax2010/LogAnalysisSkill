@@ -1,11 +1,12 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART3_STOPPED_SCAN05。更新日期: 2026-10-07。
+状态: A0_PART3_STOPPED_SCAN06。更新日期: 2026-10-07。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
-勘误7已核对原字节;DIFF-01..04、SCAN-01..04 CLOSED。第23节记录
-SCAN-05:全树PY_SOURCE预检27处零命中、0处多命中;§6改前实跑仍为PENDING_SEG3。
+勘误8已核对原字节;DIFF-01..04、SCAN-01..05 CLOSED。第24节记录
+E8-6全树PY_SOURCE预检零阻塞;恢复第1块后遇SCAN-06(非入口配置名字无承接)。
+§6改前实跑仍为PENDING_SEG3。
 本轮未运行任何 producer或真实双跑;既有两项产出不变,生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
@@ -2123,7 +2124,8 @@ SourceFileLoader与其exec_module归属;**没有调用module_from_spec或exec_mo
 
 ### 23.3 SCAN-05:两类未被封闭形态承接的参与点
 
-**状态:OPEN;停止项1条,内含两类27个site。** 非OBS claim判红。
+**状态:CLOSED,由勘误8 E8-1/E8-2/E8-3解决;实测闭合见§24。**
+原停止项1条,内含两类27个site。以下保留当时事实,非OBS claim判红。
 以下位置引用本轮d6496250正文,不沿用勘误前行号。
 
 | 设计原文 | 现状与不可继续之处 |
@@ -2206,3 +2208,116 @@ exemptions仍为`4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b94
 暂存`git diff --cached --check`的exit2仅来自intake-final.log的原始diff
 空白上下文行与preflight-tests.log的pytest原始失败输出尾空格;不清洗证据。
 排除这两个原始日志后检查exit0,正文/工具/测试不作豁免。
+
+## 24. 勘误8入库、E8-6零阻塞、续跑停止SCAN-06
+
+### 24.1 输入与批准
+
+FatTank批准来源:本轮用户指令(2026-10-07)。`git pull --ff-only origin
+clang-fix-campaign` exit0,`Already up to date.`;起始主树HEAD为`8046ecc`。
+交付原件已在权威路径,没有另取附件副本或重排字节。
+
+- 旧版 SHA-256: `d6496250c3f9ba80990785edab0e972c9b077fd4965a045cea31e3201bd7c032`。
+- 新版 SHA-256: `66b33ef6c365c3da835529756d60ee43626768a0d361eb47dbeea86177f6db3c`。
+- 证据目录 `a0-evidence/part3/erratum8/`(以下 E8 路径均相对它)。
+- `intake.log`保留 `git diff --unified=0 8046ecc -- <权威路径>` 全文;
+  两hunk分别是顶部新增状态行、Appendix C末尾新增勘误8,删除行0;
+  去除两处插入后旧版字节全部保留。exit0。
+- SCAN-05 CLOSED:旧27处逐点对照 `scan05-closure.json`,23处落C8c,
+  2处落C5f,2处由E8-1标注位置排除。没有删掉原报告或旧证据。
+
+### 24.2 全树预检与固定点证据
+
+采集仍在§9.2干净工作区,HEAD固定`43a6aa625f27da46daba190657bf62256080c68e`,
+tree固定`ca9331190e878af465e7968fe56e735585a5866e`;独立环境
+`/tmp/p49-a0-gate-seg2-43a6aa6`。命令记录逐项保存argv/cwd/env/输入hash/exit。
+AST只读,未import/执行任何被观测模块;未调用OBS producer。
+
+`terminal_alias_preflight.py`计算C8c有限绑定不动点;函数体局部重赋值不消去别名,
+未重绑定的嵌套作用域继承;具名参数沿静态def/import/re-export绑定传递;
+其它去向落未决。C5f保留同作用域唯一C5d来源,不执行loader。
+`terminal_monitored_preflight.py`按批准表23形态校验并覆盖全部PY_SOURCE,
+未遇首个阻塞即退出。annotation中的调用仍参与,compile仍排除。
+
+```text
+tracked_entries=846; contexts: .=736, release-v1.4.0=110
+python_entries=272; python_contexts: .=177, release-v1.4.0=95
+participants=2943; zero_matches=0; multiple_matches=0; parse_errors=0
+alias_bindings=67; alias_calls=25; fixed_point_rounds=6
+excluded_annotations=2; excluded_compile=1
+new DYNAMIC_UNRESOLVED: C8c_ESCAPE=0, ALIAS_PAYLOAD=25, C5f=0
+PREFLIGHT=ZERO_BLOCKERS; EXIT=0
+```
+
+本轮预检零阻塞,但25条动态记录未销账,不是consumer closure绿。
+完整输出 `preflight-final.json`,SHA-256:
+`87a80a16e6012fb709fe096e7a95da0bf040b50a72eca8bdcf14c2ed1ec25e44`。
+`preflight-summary.md`逐条列出绑定/来源读取/经别名调用,以及25条动态记录;
+JSON保留原文span、上下文、签名族与载荷失败原因。
+`preflight-crosscheck.log`证明与E7全部PY_SOURCE集合相等、旧27处闭合、绑定键唯一。
+模块索引无歧义;本轮alias-def resolver记录36次LOCAL、跨上下文回退0、歧义0。
+这不是完整消费者E5回退边计数,后者尚未采集,不得把0移作全树闭合结论。
+
+### 24.3 SCAN-06:非入口工具配置的名字命中
+
+**状态:OPEN;本轮停止项1条。** Python预检通过后,恢复第1块required detector
+落地核对,在OTHER_TEXT名字兜底上发现真实输入没有合法形态/排除出口。
+详细原文行号、候选证明、四处命中与待裁决方案见 `E8/blockers.md`。
+
+见证:包根 `tizen_convergence_judge/__init__.py` 的`check_convergence`
+为显式re-export且在`__all__`内,属于§1.1c粒度②发现范围;
+其模块名在`.importlinter:8/:22/:32/:57`命中。
+E4-2明确`.importlinter`为OTHER_TEXT;四处非解释器命令,不属DOC,
+也不属C7a/C7b/C7c/C7d。§1.1 L371要求其余一律UNKNOWN_CAPABILITY,
+L356禁止实现方逐条放行。不能用包入口保留策略提前裁掉binding候选。
+
+`scan06.log`/`scan06-witness.json`是独立单见证检查,exit1;
+没有声称完成全部非Python名字兜底,没有把真实红改绿。
+待裁:封闭新增工具配置形态与控制,或由设计方明确封闭排除规则及上界;
+实现方均未采用。此处停止,不推进第2–5块。
+
+### 24.4 测试、控制登记与尚未完成的范围
+
+| 命令/原始输出 | 实测 | 边界 |
+|---|---|---|
+| `preflight-final.command.json` / `.log` | exit0,上列完整272条目 | E8-6预检,非full scan |
+| `tests-preflight.command.json` / `.log` | pytest `226 passed`,exit0 | 67预检组件+35扫描基础+13注册投影+111判据/anchors人工fixture |
+| `preflight-controls-verbose.command.json` / `.log` | pytest `67 passed`,exit0 | 逐nodeid的E7/E8组件控制输出 |
+| `typing-preflight.command.json` / `.log` | mypy `Success: no issues found in 4 source files`,exit0 | 预检两脚本与两测试文件 |
+| `ruff-preflight.command.json` / `.log` | `All checks passed!`,exit0 | 上述四件及terminal_scan |
+| `py-compile.command.json` / `.log` | exit0,空输出 | 3工具+2测试,pycache定向/tmp |
+| `immutable.command.json` / `.log` | exit0,生产/旧证据零diff,固定工作区status空 | frozen predicates/exemptions字节不变 |
+
+E8-5的12项控制已登记到control_catalog,原子形态归属为C8c/C5f;
+各行component_check引用本轮已绿的预检测试。**全引擎控制status仍NOT_RUN**:
+解析出sentinel载荷不是完整消费边闭合证明。SEAL-16b与12b-10按23形态的
+正式五方对账尚未完成,不得拿组件测试冒充。C9正控制的消费边验收也仍待完成。
+CTRL-INTRA-PKG-PROXY、E5端到端、4个BINARY的正式SCANNED记录同样未完成。
+
+复现预检(实际argv与环境详见command.json):
+
+```bash
+R=/home/linhao/Toolchain/development/LogAnalysisSkill
+V=/tmp/p49-a0-gate-seg2-43a6aa6
+cd /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6
+env -u PYTHONPATH -u MYPYPATH -u PYTEST_ADDOPTS -u PYTEST_PLUGINS \
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONDONTWRITEBYTECODE=1 \
+  "$V/bin/python" "$R/docs/clang-fix-campaign/tools/terminal_monitored_preflight.py" \
+  --root "$PWD" --rules-root "$R" --output /tmp/p49-e8-preflight-recheck.json
+```
+
+首次工具命令在主shell使用`python`时报exit127(未启动采集),改为`python3`
+启动记录器;实际执行解释器始终为独立环境绝对路径。
+`tests-first.log`保留1 failed/66 passed:更新doctest near-miss样本时漏改其import,
+修正人工样本后全绿。`quality-initial.log`与`typing-initial.log`保留首次ruff/mypy
+输出(缺strict与静态类型标注);已修工具注解/zip显式strict,未改冻结判据。
+初次与最终全树预检均保留,最终计数无变化。
+
+未完成项:第1块矩阵/完成标记、第2块完整引擎、第3块台账/候选、第4块8个claim
+均未宣告完成;before_run=PENDING_SEG3,30场景未采集、hash=N/A。
+没有运行新增OBS,没有改既有OBS与设计正文,本轮不重跑生产全量测试。
+既有.gitignore改动、4份删除、其余untracked历史稿不动。
+提交仅勘误8原字节、预检工具/测试/证据、控制记账与progress/INDEX;push后停等裁决。
+
+暂存diff空白检查exit2仅为`erratum8/tests-first.log:15`的pytest原始错误输出尾空格;
+不清洗原始证据。仅排除该原始日志后的`git diff --cached --check`为exit0。

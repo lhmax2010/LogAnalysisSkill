@@ -1,4 +1,4 @@
-"""E7 preflight controls only; these do not certify consumer-edge detection."""
+"""Participant preflight controls; not a full consumer-set closure certificate."""
 
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ saved = sys.path[:]
 sys.path.insert(0, str(ROOT / "docs/clang-fix-campaign/tools"))
 try:
     P = importlib.import_module("terminal_monitored_preflight")
+    importlib.import_module("terminal_alias_preflight")
 finally:
     sys.path[:] = saved
 
@@ -59,8 +60,6 @@ def test_c9_classification(source: str) -> None:
 @pytest.mark.parametrize(
     "source,name",
     [
-        ("import subprocess\ndef f(runner=subprocess.run): pass", "subprocess.run"),
-        ("import subprocess as sp\nf = sp.Popen", "subprocess.Popen"),
         ("from importlib import reload as again\nf = again", "importlib.reload"),
         ("import importlib\nimportlib.reload(module)", "importlib.reload"),
         ("f = eval", "builtins.eval"),
@@ -98,29 +97,33 @@ spec = importlib.util.spec_from_file_location("fixture", path)
 assert spec is not None and spec.loader is not None
 spec.loader.exec_module(module)
 """
-    red = [p for p in inspect(source)["participants"] if p["match_count"] != 1]
-    assert len(red) == 1
-    assert red[0]["qualified_name"] == "importlib.machinery.SourceFileLoader.exec_module"
+    result = inspect(source)
+    assert not [p for p in result["participants"] if p["match_count"] != 1]
+    loader = [p for p in result["participants"] if p["forms"] == ["C5f"]]
+    assert len(loader) == 1 and loader[0]["c5d_link"]["line"] == 4
 
 
-def test_lookalike_loader_is_not_importlib() -> None:
-    assert inspect("def f(spec): spec.loader.exec_module(m)")["participants"] == []
+def test_unknown_loader_receiver_is_unresolved_under_e8() -> None:
+    result = inspect("def f(spec): spec.loader.exec_module(m)")
+    assert result["dynamic_unresolved"][0]["category"] == "C5f"
 
 
 def test_all_points_collected_instead_of_first_failure() -> None:
-    result = inspect("import subprocess\na = subprocess.run\nb = subprocess.Popen\nf = eval")
+    result = inspect(
+        "import importlib\na = importlib.reload\nb = importlib.import_module\nf = eval"
+    )
     assert len([p for p in result["participants"] if p["match_count"] == 0]) == 3
 
 
 def test_docstring_doctest_and_c_payload_are_scanned() -> None:
-    result = inspect('''""">>> import subprocess
->>> f = subprocess.run
+    result = inspect('''""">>> import importlib
+>>> f = importlib.import_module
 """
 import subprocess
 subprocess.run(["python3", "-c", "f = eval"])
 ''')
     red = [p for p in result["participants"] if p["match_count"] == 0]
-    assert {p["qualified_name"] for p in red} == {"subprocess.run", "builtins.eval"}
+    assert {p["qualified_name"] for p in red} == {"importlib.import_module", "builtins.eval"}
 
 
 def test_invalid_embedded_python_is_not_silent() -> None:
