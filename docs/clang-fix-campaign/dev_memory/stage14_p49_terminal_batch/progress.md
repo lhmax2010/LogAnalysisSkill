@@ -3278,31 +3278,3 @@ PENDING_REVIEW9,人工删除授权仍为0。到此停止,等待设计方与FatTa
 `gate-integrity.log`:119个生产文件与独立回归副本一致,既有测试零diff,
 固定树clean,冻结F/predicate/exemption hash不变,OBS-5脚本hash与产出一致,
 清单/分组/分类汇总核对通过,exit0。
-
-## 36. 第二阶段人工闸门批准与 C 分组执行
-
-### 36.1 批准范围
-
-FatTank 已批准 74ff34c 审批包原样执行:13宿主/183绑定、调用方归类表、
-4个完整拟删nodeid、C01至C13顺序。原审批包保留为批准对象,不覆盖其历史
-NOT_APPROVED状态;本节及 `a0-evidence/phase2/execution/approval.json`
-记录状态转正,逐项输入hash供核验。
-
-9项 PENDING_REVIEW 全部获得本轮轻量裁决:8项转 HISTORICAL_KEY,
-逐项文件:行、读取用途、43a6aa6不可变历史输入与sha256、保留理由见
-`execution/historical-keys.approved.json`。symbol_audit 的负fixture原样保留。
-PR-02 在 C10 落地:纯shim或逐项命中批准删除清单的已删除态;清单外缺失、
-残留实现各配必红控制。若且仅若audit/bridge因旧拓扑文件缺失失败,允许
-该组改读43a6aa6不可变blob,原断言不改,取证时逐项列出。
-
-验证读取每组commit的独立干净worktree,不把43a6aa6改前观测树或旧代码
-副本当作改后证据。每组commit后跑E11-3(4)五项;任何失败回退该组并停报,
-不在失败组中即兴修补。测试只允许按批准完整nodeid在首个相关组删除一次。
-主树既有 `.gitignore` 改动及4个 `docs/` 删除不处理、不提交。
-
-### 36.2 C01
-
-实施:仅去除 `verify/__init__.py` 中批准的16个re-export及其`__all__`,
-保留包与docstring。该组无待改调用方、无拟删测试,未触及其它兼容壳。
-状态:提交后等待五项验证;证据将落 `a0-evidence/phase2/execution/C01/`。
-不以提交本身或前轮1343/1冒充本组通过。后续组尚未实施。
