@@ -17,14 +17,16 @@ dry-run command generation only; it never executes `git push`.
   connection fields, submit target, submit mode, and optional SSH command.
 - An optional subprocess runner used for local git validation and the Gerrit
   `ls-remote` check.
+- `gerrit_submit` accepts keyword-only `timeout: float | None = None`, passed
+  to every local git validation call and the `ls-remote` call. `None` imposes no
+  subprocess timeout; a value applies per call, not to the whole operation.
 - `release_verified_worktree` accepts the state database and verification id
   for the separate marker-release operation.
 
-No subprocess timeout is currently supplied. Local `_run_git` calls propagate
-`subprocess.TimeoutExpired`; an `ls-remote` timeout is caught and converted to
-a `target_head_unknown:<exception>` warning. This differs from
-`tizen-gerrit-fetch`, which propagates subprocess timeouts, and
-`tizen-build-verify`, which treats its build wall timeout as a result state.
+Local `_run_git` timeouts raise `GerritSubmitError("GIT_TIMEOUT", str(exc))`;
+an `ls-remote` timeout becomes the fixed `target_head_unknown:timeout` warning.
+For comparison, `tizen-gerrit-fetch` raises `GerritError("FETCH_TIMEOUT", str(exc))`,
+while `tizen-build-verify` treats its build wall timeout as a result state.
 
 ## Outputs
 
@@ -45,9 +47,15 @@ for CLI consumers.
   `dry_run_unverified_remote`; the generated command remains present but the
   remote drift and duplicate assumptions are unverified.
 - Local git `CalledProcessError` is converted only where the implementation
-  explicitly returns a mismatch reason. Other runner, filesystem, and JSON
-  write exceptions propagate unchanged.
-- External interruption is not caught or normalized.
+  explicitly returns a mismatch reason. Local git `TimeoutExpired` is wrapped
+  as `GerritSubmitError` (defined in `tizen_gerrit_submit.gerrit_submit`), with
+  code `GIT_TIMEOUT`, the exact original message, and the original exception as
+  its cause. Other runner, filesystem, and JSON write exceptions retain their
+  existing propagation behavior.
+- An `ls-remote` timeout yields `dry_run_unverified_remote` with warning
+  `target_head_unknown:timeout`, not a raised `GerritSubmitError`.
+- SIGINT and SIGTERM are not caught or normalized; no automatic rollback or
+  cleanup is performed on timeout or interruption.
 
 ## Side Effects
 

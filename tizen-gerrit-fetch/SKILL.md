@@ -13,21 +13,25 @@ The package root exposes exactly `fetch_source_for_commit`, `GerritError`,
 ## Inputs
 
 - Gerrit project name and exact commit hash.
-- A destructive `destination` path owned by this tool. Every successful query
-  is followed by deletion and recreation of that path; never pass a directory
-  containing user-managed data.
+- A destructive `destination` path owned by this tool. After a successful query
+  and source-directory safety check, that path is deleted and recreated; never
+  pass a directory containing user-managed data.
 - An optional subprocess runner for controlled execution and an optional
   `git_ssh_command` propagated to every git subprocess.
+- An optional keyword-only `timeout: float | None = None`, passed to the Gerrit
+  query and each git subprocess. `None` imposes no subprocess timeout; a value
+  applies separately to each call, not to the whole operation.
 
-The implementation sets no timeout or cancellation. A caller may enforce a
-deadline through its subprocess runner.
+The implementation does not catch SIGINT or SIGTERM and does not automatically
+roll back residual files after timeout or interruption.
 
 ## Outputs
 
 `fetch_source_for_commit` returns `SourceFetchResult` with
 `source_available` after checkout, `FAILED_SOURCE` for a git
-`CalledProcessError`, or the code from a `GerritError` raised inside the git
-phase, currently `PATCHSET_REVISION_NOT_FOUND`.
+`CalledProcessError`, or `PATCHSET_REVISION_NOT_FOUND` when a NEW change lacks
+the requested patch-set revision. `FETCH_TIMEOUT` is raised, not returned as a
+`SourceFetchResult`.
 
 The operation performs one Gerrit SSH query. A NEW change fetches its matching
 patch-set ref at depth 1. A non-NEW change first fetches the commit at depth 1
@@ -38,20 +42,24 @@ and, only when that fails and a branch is known, fetches that branch at depth
 
 - Query failure, no matching change, and ambiguous changes raise
   `GerritError` with stable query error codes before destination deletion.
-- A live destination symlink raises `SOURCE_DIR_UNSAFE` without deleting the
-  link or its target.
-- A dangling destination symlink is not recognized by `Path.exists()`; the
-  following `mkdir(..., exist_ok=True)` raises `FileExistsError`.
-- JSON, change-conversion, filesystem, `subprocess.TimeoutExpired`, and other
-  non-`CalledProcessError` runner exceptions propagate unchanged. A timeout is
-  not converted to `GerritError` or `FAILED_SOURCE`.
+- Both live and dangling destination symlinks raise
+  `GerritError("SOURCE_DIR_UNSAFE", "source directory is a symlink: <path>")`.
+  The link and its target remain untouched, and no git command runs.
+- A query or git subprocess `TimeoutExpired` raises
+  `GerritError("FETCH_TIMEOUT", str(exc))`, retaining the original exception as
+  its cause. A query timeout occurs before destination reset; a git timeout
+  leaves whatever state that stage has already produced.
+- JSON, change-conversion, filesystem, and other runner exceptions retain their
+  existing propagation behavior. External interruption is not caught or
+  normalized.
 
 ## Side effects
 
-After a successful query, the destination is synchronously removed and
-recreated. Git initialization, remote setup, fetch, and checkout run serially.
-Failures, timeouts, or external interruption can leave any completed subset of
-that directory and its git state behind. Recursive removal cost grows with the
+After a successful query and safety check, the destination is synchronously
+removed and recreated. Git initialization, remote setup, fetch, and checkout
+run serially. Query failure, timeout, or interruption leaves the destination
+unchanged. Git-stage failure, timeout, or interruption leaves the state already
+produced by that stage, without automatic cleanup. Recursive removal cost grows with the
 destination tree and filesystem performance; there is no progress callback or
 fake-runner wall-clock guarantee.
 

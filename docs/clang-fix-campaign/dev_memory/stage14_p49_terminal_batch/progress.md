@@ -3098,7 +3098,7 @@ FULL30验收通过。第二阶段证据根`a0-evidence/phase2/`。
 
 | 编号 | 原文位置 | 实测与困难 | 候选处置 |
 |---|---|---|---|
-| PHASE2-01 OPEN | F E11-3(2)/(4):2497-2509;bridge:35-63,436-440;step-0表:236-238 | 代码中历史证据键不是运行时消费;改路径破坏relocation,保留需要明确HISTORICAL细粒度适用范围 | 建议逐命中保留历史键并绑定其不可变输入;或批准将键与历史输入外置。未自行选定 |
+| PHASE2-01 CLOSED,见§33 | F E11-3(2)/(4):2497-2509;bridge:35-63,436-440;step-0表:236-238 | 历史停止证据保留;设计方按轻量流程批准候选1 | 新增逐项HISTORICAL_KEY,不按目录豁免;宿主位置/用途/历史输入文件与hash/保留理由必须齐全 |
 
 真实依赖与排除:quickbuild_log.FailedPackage有5处本地读取,不能删import;
 skill副本三类型与新包根/release保留。runner env兼容行未在E11封闭来源内,
@@ -3117,3 +3117,51 @@ EXIT=0
 完整命令、隔离env与原始输出:`a0-evidence/phase2/full-regression.command.json`
 和`full-regression.log`。mypy/ruff/lint仍使用B同一生产字节,
 其exit0证据见§31;阶段二未产生任何生产或测试diff。
+
+## 33. A/B审查补漏与PHASE2-01轻量裁决
+
+设计方确认A/B生产改动符合§3及勘误1–3,skill-3行为记录合规。
+本轮不出勘误,终止F仍为`b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0`。
+
+### 33.1 独立纯文档补漏
+
+对tizen-ci-shared、tizen-gerrit-fetch、tizen-gerrit-submit全部README*/SKILL.md
+逐一搜索timeout/interruption/cancellation/symlink。tracked文件只有:
+
+```text
+tizen-gerrit-fetch/SKILL.md
+tizen-gerrit-submit/SKILL.md
+```
+
+三个目录没有README,shared没有SKILL.md,不凭空新增文件。
+fetch文档改为timeout默认None逐调用下传,FETCH_TIMEOUT保留str(exc)及cause;
+有效与悬空symlink均SOURCE_DIR_UNSAFE,不删链接/目标;query失败目标不动,
+git阶段留下阶段残留。submit文档改为GIT_TIMEOUT双参异常与固定
+target_head_unknown:timeout warning;两者明确不捕获SIGINT/SIGTERM、不自动回滚。
+不把这些说明写成CLI新增参数或包根新增导出,仅反映实际函数契约。
+
+```text
+git diff --stat -- tizen-gerrit-fetch/SKILL.md tizen-gerrit-submit/SKILL.md 'tizen-*/scripts/**' tests/
+ tizen-gerrit-fetch/SKILL.md  | 44 ++++++++++++++++++++++++++------------------
+ tizen-gerrit-submit/SKILL.md | 24 ++++++++++++++++--------
+ 2 files changed, 42 insertions(+), 26 deletions(-)
+
+pytest /home/linhao/Toolchain/development/LogAnalysisSkill/tests -vv -p no:cacheprovider
+======================= 1340 passed, 1 skipped in 25.87s =======================
+EXIT=0
+```
+
+完整argv/隔离环境/生产副本字节核对/逐nodeid原始输出:
+[doc-alignment-regression.md](a0-evidence/phase2/doc-alignment-regression.md)。
+本提交只含markdown文档,生产与测试零改动。
+
+### 33.2 后续准备的批准规则
+
+PHASE2-01 CLOSED:采候选1,新增HISTORICAL_KEY,仅适用于活动代码中的
+冻结历史表主键,不是import/patch/入口。每项必须登记宿主文件:行、读取用途、
+不可变历史输入文件与sha256、保留理由;不按文件或目录整体豁免。
+删除后残留允许HISTORICAL/RELEASE/已登记HISTORICAL_KEY。
+E11-3(1)(b)扩大到step-0 closeout已登记兼容壳,同判据核对runner
+discover_sibling_pythonpath,真实依赖须排除并附证据。
+继续用途复核、项2范围/拟删nodeid、OBS-5改前产出,全部完成后停等人工闸门;
+任何新缺口仍停报,当前没有授权删除。
