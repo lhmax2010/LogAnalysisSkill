@@ -1,0 +1,82 @@
+[
+  {
+    "nodeid": "tests/unit/test_tizen_build_verify.py::test_gbs_fail_source_werror_returns_repair_allowed",
+    "line": 293,
+    "module": "tizen_build_verify.build_verify",
+    "name": "_analyze_failure",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"_analyze_failure\", fake_analyze)"
+  },
+  {
+    "nodeid": "tests/unit/test_tizen_build_verify.py::test_gbs_fail_toolchain_denylist_not_repair_allowed",
+    "line": 328,
+    "module": "tizen_build_verify.build_verify",
+    "name": "_analyze_failure",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"_analyze_failure\", fake_analyze)"
+  },
+  {
+    "nodeid": "tests/unit/test_tizen_build_verify.py::test_pass_marks_worktree_protected_before_writing_record",
+    "line": 474,
+    "module": "tizen_build_verify.build_verify",
+    "name": "mark_worktree_protected",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"mark_worktree_protected\", fake_mark)"
+  },
+  {
+    "nodeid": "tests/unit/test_tizen_build_verify.py::test_pass_marks_worktree_protected_before_writing_record",
+    "line": 475,
+    "module": "tizen_build_verify.build_verify",
+    "name": "write_pass_record",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"write_pass_record\", fake_write)"
+  },
+  {
+    "nodeid": "tests/unit/test_tizen_build_verify.py::test_pass_write_record_failure_is_not_silent",
+    "line": 493,
+    "module": "tizen_build_verify.build_verify",
+    "name": "write_pass_record",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"write_pass_record\", fake_write)"
+  },
+  {
+    "nodeid": "tests/unit/test_tizen_build_verify.py::test_diff_check_failure_returns_apply_failed_and_preserves_applied_worktree",
+    "line": 507,
+    "module": "tizen_build_verify.build_verify",
+    "name": "_run_git_diff_check",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(\n        _BUILD_VERIFY_MODULE,\n        \"_run_git_diff_check\",\n        lambda *_args: \"git diff --check failed with exit 2\",\n    )"
+  },
+  {
+    "nodeid": "tests/unit/test_tizen_build_verify.py::test_successful_apply_with_no_changed_paths_returns_no_effective_changes",
+    "line": 532,
+    "module": "tizen_build_verify.build_verify",
+    "name": "_format_and_apply_patch",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(\n        _BUILD_VERIFY_MODULE,\n        \"_format_and_apply_patch\",\n        lambda *_args, **_kwargs: _BUILD_VERIFY_MODULE._ApplyPatchResult(),\n    )"
+  },
+  {
+    "nodeid": "tests/unit/test_tizen_build_verify.py::test_marker_write_exception_propagates_before_db_write_and_leaves_clean_copy",
+    "line": 628,
+    "module": "tizen_build_verify.build_verify",
+    "name": "mark_worktree_protected",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"mark_worktree_protected\", fail_mark)"
+  },
+  {
+    "nodeid": "tests/unit/test_tizen_build_verify.py::test_db_write_exception_propagates_after_marker_and_preserves_protected_copy",
+    "line": 649,
+    "module": "tizen_build_verify.build_verify",
+    "name": "write_pass_record",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"write_pass_record\", fail_write)"
+  },
+  {
+    "nodeid": "tests/integration/test_build_verify_real_git.py::test_build_verify_rejects_unexpected_paths_using_real_git_diff",
+    "line": 349,
+    "module": "tizen_build_verify.build_verify",
+    "name": "_format_and_apply_patch",
+    "action": "KEEP_DIRECT_IMPLEMENTATION_OBJECT_PATCH",
+    "source": "monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"_format_and_apply_patch\", fake_apply)"
+  }
+]

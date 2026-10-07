@@ -1,0 +1,182 @@
+[
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/verify/workspace.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 47,
+    "matched": "ci_triage/verify/workspace.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "WORKSPACE is a legacy topology lock key in _run_binding_fixture; no import or entry execution. Retain until frozen-fixture key provenance is approved.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "",
+      "",
+      "WORKSPACE = \"ci_triage/verify/workspace.py\"",
+      "SHARED_WORKSPACE = \"tizen_ci_shared/workspace/__init__.py\"",
+      "QUICKBUILD = \"tizen_ci_shared/quickbuild_http.py\""
+    ],
+    "proposed_action": "KEEP_UNCHANGED_PENDING_HUMAN_REVIEW",
+    "review_id": "PR-01"
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 356,
+    "matched": "ci_triage/verify/failure_classify.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "ModuleScopeSpec legacy_path is read by the pure-shim structural assertion. Deleting the host without an approved transition to deleted-state checking would fail the audit. Hold this group pending approval; do not weaken or auto-rewrite the assertion.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "        SHARED_CLASSIFY,",
+      "        \"shared/classify\",",
+      "        \"tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py\",",
+      "        \"pure-shim\",",
+      "        \"tizen_ci_shared.classify\","
+    ],
+    "proposed_action": "KEEP_UNCHANGED_PENDING_HUMAN_REVIEW",
+    "review_id": "PR-02"
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/sources.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 2041,
+    "matched": "ci_triage/sources.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "Fallback source definition for pre-extraction fixture topology; current branch selects tizen_qb_discover. Keep the unused historical fallback pending review.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    extracted = (repo_root / \"tizen-qb-discover/scripts/tizen_qb_discover/sources.py\").is_file()",
+      "    source_definition = (",
+      "        \"tizen_qb_discover/sources.py\" if extracted else \"ci_triage/sources.py\"",
+      "    )",
+      "    source_owner = \"skill/tizen_qb_discover\" if extracted else \"quickbuild\""
+    ],
+    "proposed_action": "KEEP_UNCHANGED_PENDING_HUMAN_REVIEW",
+    "review_id": "PR-03"
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+    "form": "DOT",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 807,
+    "matched": "ci_triage.verify.build_verify",
+    "classification": "PENDING_REVIEW",
+    "reason": "MODULE_OWNERS legacy build-verify classification key; not an import. Keep pending approval of stale-key disposition.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    \"tizen_triage_report.gbs_report\": \"skill/tizen_triage_report\",",
+      "    \"tizen_triage_report.report\": \"skill/tizen_triage_report\",",
+      "    \"ci_triage.verify.build_verify\": \"build-verify\",",
+      "    \"ci_triage.verify.gerrit_submit\": \"submit\",",
+      "}"
+    ],
+    "proposed_action": "KEEP_UNCHANGED_PENDING_HUMAN_REVIEW",
+    "review_id": "PR-04"
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+    "form": "DOT",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 808,
+    "matched": "ci_triage.verify.gerrit_submit",
+    "classification": "PENDING_REVIEW",
+    "reason": "MODULE_OWNERS legacy submit classification key; not an import. Keep pending approval of stale-key disposition.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    \"tizen_triage_report.report\": \"skill/tizen_triage_report\",",
+      "    \"ci_triage.verify.build_verify\": \"build-verify\",",
+      "    \"ci_triage.verify.gerrit_submit\": \"submit\",",
+      "}",
+      ""
+    ],
+    "proposed_action": "KEEP_UNCHANGED_PENDING_HUMAN_REVIEW",
+    "review_id": "PR-05"
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 1772,
+    "matched": "ci_triage/gbs_report.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "Negative fixture intentionally declares a symbol outside its skill root; retargeting would alter the counterexample. Keep pending historical-fixture disposition.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "            \"_attrs_to_map\",",
+      "            (\"fixture\",),",
+      "            \"ci_triage/gbs_report.py\",",
+      "            \"skill/tizen_qb_discover\",",
+      "            declared_internal=("
+    ],
+    "proposed_action": "KEEP_UNCHANGED_PENDING_HUMAN_REVIEW",
+    "review_id": "PR-06"
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 2055,
+    "matched": "ci_triage/gbs_report.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "Twin-key fixture second definition models the legacy report side. Retain until fixture lifetime and frozen input are approved.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "            \"_attrs_to_map\",",
+      "            (\"fixture\",),",
+      "            \"ci_triage/gbs_report.py\",",
+      "            \"triage-report\",",
+      "            declared_internal=("
+    ],
+    "proposed_action": "KEEP_UNCHANGED_PENDING_HUMAN_REVIEW",
+    "review_id": "PR-07"
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/report.py",
+    "form": "DOT",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 799,
+    "matched": "ci_triage.report",
+    "classification": "PENDING_REVIEW",
+    "reason": "MODULE_OWNERS legacy report classification key; not an import. Keep pending approval of stale-key disposition.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    \"ci_triage.cli\": \"orchestrator\",",
+      "    \"ci_triage.orchestrator\": \"orchestrator\",",
+      "    \"ci_triage.report\": \"triage-report\",",
+      "    \"ci_triage.runner\": \"orchestrator\",",
+      "    \"tizen_qb_discover.sources\": \"skill/tizen_qb_discover\","
+    ],
+    "proposed_action": "KEEP_UNCHANGED_PENDING_HUMAN_REVIEW",
+    "review_id": "PR-08"
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+    "line": 731,
+    "matched": "ci_triage/gbs_report.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "BodyEntry in binary-key/name-only counterexample, not an imported module. Retain pending approval of historical fixture identity.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    report = BodyEntry(",
+      "        \"_attrs_to_map\",",
+      "        \"ci_triage/gbs_report.py\",",
+      "        \"triage-report\",",
+      "        2,"
+    ],
+    "proposed_action": "KEEP_UNCHANGED_PENDING_HUMAN_REVIEW",
+    "review_id": "PR-09"
+  }
+]

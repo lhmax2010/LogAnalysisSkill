@@ -1,0 +1,164 @@
+[
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/verify/workspace.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 47,
+    "matched": "ci_triage/verify/workspace.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "Active diagnostic/fixture or metadata path: retain unchanged; rewriting could change a historical control or absence check. Requires per-site approval, not a directory exemption.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "",
+      "",
+      "WORKSPACE = \"ci_triage/verify/workspace.py\"",
+      "SHARED_WORKSPACE = \"tizen_ci_shared/workspace/__init__.py\"",
+      "QUICKBUILD = \"tizen_ci_shared/quickbuild_http.py\""
+    ]
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 356,
+    "matched": "ci_triage/verify/failure_classify.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "Active diagnostic/fixture or metadata path: retain unchanged; rewriting could change a historical control or absence check. Requires per-site approval, not a directory exemption.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "        SHARED_CLASSIFY,",
+      "        \"shared/classify\",",
+      "        \"tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py\",",
+      "        \"pure-shim\",",
+      "        \"tizen_ci_shared.classify\","
+    ]
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/sources.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 2041,
+    "matched": "ci_triage/sources.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "Active diagnostic/fixture or metadata path: retain unchanged; rewriting could change a historical control or absence check. Requires per-site approval, not a directory exemption.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    extracted = (repo_root / \"tizen-qb-discover/scripts/tizen_qb_discover/sources.py\").is_file()",
+      "    source_definition = (",
+      "        \"tizen_qb_discover/sources.py\" if extracted else \"ci_triage/sources.py\"",
+      "    )",
+      "    source_owner = \"skill/tizen_qb_discover\" if extracted else \"quickbuild\""
+    ]
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+    "form": "DOT",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 807,
+    "matched": "ci_triage.verify.build_verify",
+    "classification": "PENDING_REVIEW",
+    "reason": "Active diagnostic/fixture or metadata path: retain unchanged; rewriting could change a historical control or absence check. Requires per-site approval, not a directory exemption.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    \"tizen_triage_report.gbs_report\": \"skill/tizen_triage_report\",",
+      "    \"tizen_triage_report.report\": \"skill/tizen_triage_report\",",
+      "    \"ci_triage.verify.build_verify\": \"build-verify\",",
+      "    \"ci_triage.verify.gerrit_submit\": \"submit\",",
+      "}"
+    ]
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+    "form": "DOT",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 808,
+    "matched": "ci_triage.verify.gerrit_submit",
+    "classification": "PENDING_REVIEW",
+    "reason": "Active diagnostic/fixture or metadata path: retain unchanged; rewriting could change a historical control or absence check. Requires per-site approval, not a directory exemption.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    \"tizen_triage_report.report\": \"skill/tizen_triage_report\",",
+      "    \"ci_triage.verify.build_verify\": \"build-verify\",",
+      "    \"ci_triage.verify.gerrit_submit\": \"submit\",",
+      "}",
+      ""
+    ]
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 1772,
+    "matched": "ci_triage/gbs_report.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "Active diagnostic/fixture or metadata path: retain unchanged; rewriting could change a historical control or absence check. Requires per-site approval, not a directory exemption.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "            \"_attrs_to_map\",",
+      "            (\"fixture\",),",
+      "            \"ci_triage/gbs_report.py\",",
+      "            \"skill/tizen_qb_discover\",",
+      "            declared_internal=("
+    ]
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 2055,
+    "matched": "ci_triage/gbs_report.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "Active diagnostic/fixture or metadata path: retain unchanged; rewriting could change a historical control or absence check. Requires per-site approval, not a directory exemption.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "            \"_attrs_to_map\",",
+      "            (\"fixture\",),",
+      "            \"ci_triage/gbs_report.py\",",
+      "            \"triage-report\",",
+      "            declared_internal=("
+    ]
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/report.py",
+    "form": "DOT",
+    "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 799,
+    "matched": "ci_triage.report",
+    "classification": "PENDING_REVIEW",
+    "reason": "Active diagnostic/fixture or metadata path: retain unchanged; rewriting could change a historical control or absence check. Requires per-site approval, not a directory exemption.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    \"ci_triage.cli\": \"orchestrator\",",
+      "    \"ci_triage.orchestrator\": \"orchestrator\",",
+      "    \"ci_triage.report\": \"triage-report\",",
+      "    \"ci_triage.runner\": \"orchestrator\",",
+      "    \"tizen_qb_discover.sources\": \"skill/tizen_qb_discover\","
+    ]
+  },
+  {
+    "candidate": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+    "form": "SOURCE_PATH",
+    "path": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+    "line": 731,
+    "matched": "ci_triage/gbs_report.py",
+    "classification": "PENDING_REVIEW",
+    "reason": "Active diagnostic/fixture or metadata path: retain unchanged; rewriting could change a historical control or absence check. Requires per-site approval, not a directory exemption.",
+    "review_status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "context_lines": [
+      "    report = BodyEntry(",
+      "        \"_attrs_to_map\",",
+      "        \"ci_triage/gbs_report.py\",",
+      "        \"triage-report\",",
+      "        2,"
+    ]
+  }
+]

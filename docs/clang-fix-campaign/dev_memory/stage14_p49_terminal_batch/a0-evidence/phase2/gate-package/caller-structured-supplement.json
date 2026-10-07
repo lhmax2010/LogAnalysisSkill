@@ -1,0 +1,29 @@
+[
+  {
+    "file": "tests/unit/test_build_verify_legacy_wiring.py",
+    "line": 63,
+    "form": "FINITE_FSTRING_DICTIONARY_EXPANSION",
+    "old_module": "ci_triage.verify.build_verify",
+    "classification": "REWRITE",
+    "action": "Covered by the single whole-function deletion proposal, after approval.",
+    "binding_source": "module_symbols dictionary, lines9-61"
+  },
+  {
+    "file": "tests/unit/test_build_verify_legacy_wiring.py",
+    "line": 63,
+    "form": "FINITE_FSTRING_DICTIONARY_EXPANSION",
+    "old_module": "ci_triage.verify.edit_spec_guard",
+    "classification": "REWRITE",
+    "action": "Covered by the single whole-function deletion proposal, after approval.",
+    "binding_source": "module_symbols dictionary, lines9-61"
+  },
+  {
+    "file": "tests/unit/test_build_verify_legacy_wiring.py",
+    "line": 63,
+    "form": "FINITE_FSTRING_DICTIONARY_EXPANSION",
+    "old_module": "ci_triage.verify.workspace",
+    "classification": "REWRITE",
+    "action": "Covered by the single whole-function deletion proposal, after approval.",
+    "binding_source": "module_symbols dictionary, lines9-61"
+  }
+]

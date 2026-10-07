@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/tmp/p49-gate-prepare.py", line 201, in <module>
+    assert len(matched)==1,(symbol,matched)
+           ^^^^^^^^^^^^^^^
+AssertionError: ('create_worktree', [236, 238])

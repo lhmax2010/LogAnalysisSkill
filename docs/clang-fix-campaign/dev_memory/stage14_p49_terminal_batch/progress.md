@@ -3173,7 +3173,7 @@ discover_sibling_pythonpath,真实依赖须排除并附证据。
 
 | 编号 | 原文位置 | 实测与困难 | 候选处置 |
 |---|---|---|---|
-| PHASE2-02 OPEN | F E11-4:2514-2516; test_package_metadata.py:1/5; gbs_analyzer/__init__.py:3 | `__version__` 按字面属于包根下划线名字范围,但它在包根直接定义,非兼容壳;测试锁定版本接口,不可按兼容同一性用例删除。移除导出与保留接口/从现定义模块直取无法并立,未获准排除双下划线名字 | 1.具名保留此真实公开元数据,不扩为整体豁免;2.设计方明确特殊名字与私有名字边界再枚举。未自行选择 |
+| PHASE2-02 CLOSED,见§35 | F E11-4:2514-2516; test_package_metadata.py:1/5; gbs_analyzer/__init__.py:3 | 历史停止证据保留;设计方已澄清dunder不在项2范围,包根直接定义也是规范定义位置 | 按轻量裁决执行,不改冻结稿 |
 
 固定43a6aa6上全部52个tests/ Python文件的ImportFrom定向核对,
 按包根/已登记兼容绑定筛选命中1项,实际导入得`__version__=0.5.0-dev`。
@@ -3204,3 +3204,77 @@ EXIT=0
 完整命令/env/逐nodeid原文见`a0-evidence/phase2/rulings-stop-full-regression.*`。
 本次只提交准备诊断证据和记账文件,不改变生产/测试/既有OBS/冻结输入。
 等待设计方轻量裁决,不继续其它准备以绕开停止项。
+
+## 35. PHASE2-02裁决落实与人工审批包
+
+### 35.1 已批准口径
+
+PHASE2-02 CLOSED:项2的下划线名字限定私有名字,`__name__` 形式的dunder
+(`__version__`/`__all__`)排除。私有件若直接定义在包根 `__init__`,从该包根
+取用已经是直取定义模块,记入表但不移除。此前版本接口用例保留不改。
+
+第二阶段准备期间采用设计方批准的保守默认:分类/归属/范围边界若不涉及
+删测试、不改变行为且可归入现有类别,保留不改,逐项PENDING_REVIEW送人工
+审批,不单独停止。仅(a)会导致删除测试、(b)会改变行为、(c)无现有类别可归
+时停报。本轮9个待审条目均未改写,不是永久残留豁免。冻结稿/判定条件不改。
+
+### 35.2 准备完成,尚未批准
+
+[审批包](a0-evidence/phase2/gate-package/README.md)包含删除清单、最终归类、
+HISTORICAL_KEY逐项来源、项2最终范围、拟删测试、PENDING_REVIEW与13组计划。
+清单/用途表从主分支b3e0a95的Git tree读取,不读取用户dirty/untracked文件;
+OBS-5严格从固定43a6aa6改前树实跑,两者不混淆。
+
+- 来源登记14宿主/184绑定;拟清理13宿主/183绑定。runner.discover已加入;
+  quickbuild_log.FailedPackage因5处真实本地Load排除,新包根/skill类型依赖/
+  release也明确排除。没有为了数字与旧草案一致而保留错误范围。
+- 1973 tracked条目中4个二进制,字面匹配6944条候选乘形态出现:
+  REWRITE18 / HISTORICAL6806 / HISTORICAL_KEY3 / RELEASE108 / PENDING_REVIEW9,
+  OTHER0。另有一个有限f-string调用点展开3个旧模块目标,独立附表。
+- 历史键仅bridge:37/46/55三条源三元组,每条均有固定43a6aa6中的step-0
+  表文件/sha256/行号、读取用途及理由。其余活动工具旧键不整体豁免。
+- 项2解析68个tracked tests/Python文件,20处私有名import中4处是skill-4
+  义务,均已直取定义模块;6个包根私有函数为包根真实定义,相关5处属性读取
+  保留;dunder1处明确排除。有限identity循环已复核,项2无未解待审项。
+- 拟删4个nodeid仅是legacy identity,全函数原文/hash/理由入册,本轮仍在且
+  全绿。其它用例全部保留;不得按整文件删除。跨宿主identity只在首次相关
+  组经批准去除一次。每组均须通过E11-3(4)五项验证,失败回退该组并停报。
+- PENDING_REVIEW9条逐项说明用途,包括纯shim结构校验的后续转档边界;
+  相关组须先获明确处置批准。HISTORICAL_KEY不是按工具文件或目录豁免。
+
+### 35.3 OBS-5 与回归
+
+新增只读工具`tools/terminal_entry_observation.py`,只枚举与入口冒烟产事实。
+独立全集`a0-evidence/B-5-entries.json`,sha256
+`9a9d8d1f7131776525ee09832b7c85c8bd5a9fe1179db485d9a222ed90059bfe`。
+31入口(live16/release15;PACKAGE_MAIN10/SKILL_MD_COMMAND21/console0)
+逐一独立进程--help均exit0,不依赖tests/、不执行真实git/gbs操作;
+旧OBS与predicates/exemptions不改。冻结verifier:
+
+```text
+[{"claim_id": "OBS-5.entry-consumers", "verdict": "PASS"}]
+EXIT=0
+pytest tests -vv -p no:cacheprovider
+1343 passed, 1 skipped in 25.55s; EXIT=0
+NODEIDS old=1341 current=1344 lost=0 status_changes=0 added=3
+mypy CI: Success: no issues found in 88 source files; EXIT=0
+mypy producer: Success: no issues found in 1 source file; EXIT=0
+ruff tools/tests: All checks passed!; EXIT=0
+lint-imports: Contracts: 6 kept, 0 broken.; EXIT=0
+py_compile OK; EXIT=0
+```
+
+完整argv/env/sha/逐nodeid原文为`a0-evidence/phase2/gate-*.command.json/.log`,
+OBS-5原始事实在`gate-package/obs5/`,全部entry控制3个新增用例单列全绿。
+早期诊断的源码子串匹配、all(generator)识别及含空格nodeid解析问题已修正,
+原始调试输出保留;完整集合证明以`regression-set-proof.full.json`为准。
+仅新增观测工具/控制测试/证据文档,生产与既有测试无diff。
+
+状态 **E11_PHASE2_GATE_READY, NOT_APPROVED**。本轮新增停止项0,
+PENDING_REVIEW9,人工删除授权仍为0。到此停止,等待设计方与FatTank审批;
+不开始C、不删除兼容壳或测试、不修改9条待审引用。
+
+提交前最终复跑`gate-full-final.log`:1343 passed/1 skipped,25.57s,exit0。
+`gate-integrity.log`:119个生产文件与独立回归副本一致,既有测试零diff,
+固定树clean,冻结F/predicate/exemption hash不变,OBS-5脚本hash与产出一致,
+清单/分组/分类汇总核对通过,exit0。

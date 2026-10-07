@@ -1,0 +1,64 @@
+{
+  "human_approval": "PENDING",
+  "entries": [
+    {
+      "nodeid": "tests/unit/test_gerrit_fetch.py::test_legacy_module_reexports_implementation_and_types_by_identity",
+      "file": "tests/unit/test_gerrit_fetch.py",
+      "line": 841,
+      "end_line": 867,
+      "source": "def test_legacy_module_reexports_implementation_and_types_by_identity() -> None:\n    from ci_triage import gerrit as legacy\n\n    implementation_symbols = (\n        \"GERRIT_HOST\",\n        \"GERRIT_PORT\",\n        \"SubprocessRunner\",\n        \"GerritError\",\n        \"query_change_for_commit\",\n        \"parse_gerrit_query_output\",\n        \"change_from_query_obj\",\n        \"find_patchset_by_revision\",\n        \"fetch_source_for_commit\",\n        \"_run_git\",\n        \"_reset_generated_source_dir\",\n        \"_optional_int\",\n    )\n    for symbol in implementation_symbols:\n        assert getattr(legacy, symbol) is getattr(gerrit, symbol)\n\n    shared_types = {\n        \"GerritChange\": GerritChange,\n        \"GerritPatchSet\": GerritPatchSet,\n        \"SourceFetchResult\": SourceFetchResult,\n    }\n    for symbol, shared_type in shared_types.items():\n        assert getattr(legacy, symbol) is shared_type",
+      "source_sha256": "cc790d706b9623dab4e9a9603e53cb7050933478aaf55dd314eec90f2ecd06e6",
+      "assert_count": 2,
+      "host_groups": [
+        "gerrit.py"
+      ],
+      "human_approval": "PENDING",
+      "reason": "Only old.X is new.X assertions over migrated symbols/types; no behavior assertions. Proposed whole-function deletion under E11-4; execute only after approval, at first affected host group."
+    },
+    {
+      "nodeid": "tests/unit/test_build_verify_legacy_wiring.py::test_legacy_shims_preserve_all_migrated_symbol_identities",
+      "file": "tests/unit/test_build_verify_legacy_wiring.py",
+      "line": 8,
+      "end_line": 89,
+      "source": "def test_legacy_shims_preserve_all_migrated_symbol_identities() -> None:\n    module_symbols = {\n        \"build_verify\": (\n            \"SubprocessRunner\",\n            \"BuildVerifyOptions\",\n            \"BuildVerifyResult\",\n            \"_ApplyPatchResult\",\n            \"build_verify\",\n            \"_BuildProcessResult\",\n            \"_format_and_apply_patch\",\n            \"_run_gbs_build\",\n            \"_gbs_command\",\n            \"_gbs_arch\",\n            \"_analyze_failure\",\n            \"_classification_fail\",\n            \"_fail\",\n            \"_actual_changed_paths\",\n            \"_tracked_worktree_mutated\",\n            \"_allowed_paths\",\n            \"_run_git_diff_check\",\n            \"_canonical_diff_sha256\",\n            \"_normalize_build_log\",\n            \"_git\",\n            \"_git_stdout\",\n            \"_run\",\n            \"_read_json\",\n            \"_sha256_file\",\n            \"_sha256_text\",\n            \"_build_subprocess_env\",\n            \"_string_or_empty\",\n            \"build_verify_to_json\",\n            \"default_extra_pythonpath\",\n        ),\n        \"edit_spec_guard\": (\n            \"EDIT_SPEC_SCHEMA\",\n            \"EditSpecViolation\",\n            \"_LocatedEdit\",\n            \"validate_edit_spec\",\n            \"_validate_schema\",\n            \"_validate_target_path\",\n            \"_locate_edit\",\n            \"_find_old_from_line\",\n            \"_find_unique_old\",\n            \"_line_starts\",\n            \"_check_no_overlaps\",\n            \"_is_relative_to\",\n        ),\n        \"workspace\": (\n            \"DEFAULT_MIN_FREE_BYTES\",\n            \"create_worktree\",\n            \"check_disk_and_maybe_cleanup\",\n            \"_copy_repository\",\n        ),\n    }\n    for module_name, symbols in module_symbols.items():\n        legacy = importlib.import_module(f\"ci_triage.verify.{module_name}\")\n        skill = importlib.import_module(f\"tizen_build_verify.{module_name}\")\n        for symbol in symbols:\n            assert getattr(legacy, symbol) is getattr(skill, symbol)\n\n    legacy_workspace = importlib.import_module(\"ci_triage.verify.workspace\")\n    shared_workspace = importlib.import_module(\"tizen_ci_shared.workspace\")\n    for symbol in (\n        \"MARKER_FILENAME\",\n        \"PROTECTED_FILENAME\",\n        \"DisposableWorktree\",\n        \"WorkspaceViolation\",\n        \"_exclude_private_files\",\n        \"_is_relative_to\",\n        \"_oldest_worktrees\",\n        \"_read_marker\",\n        \"_run_git\",\n        \"_verify_cleanup_handle\",\n        \"clean_repository_preserving_markers\",\n        \"cleanup_disposable_copy\",\n        \"cleanup_worktree\",\n        \"is_protected\",\n        \"mark_worktree_protected\",\n        \"release_worktree_protection\",\n        \"write_workdir_marker\",\n    ):\n        assert getattr(legacy_workspace, symbol) is getattr(shared_workspace, symbol)",
+      "source_sha256": "7e9e1763e289bec3718c0bfd54808092433d7bdc817a832d2b6fd1aff4cdacdd",
+      "assert_count": 2,
+      "host_groups": [
+        "verify/build_verify.py",
+        "verify/edit_spec_guard.py",
+        "verify/workspace.py"
+      ],
+      "human_approval": "PENDING",
+      "reason": "Only old.X is new.X assertions over migrated symbols/types; no behavior assertions. Proposed whole-function deletion under E11-4; execute only after approval, at first affected host group."
+    },
+    {
+      "nodeid": "tests/unit/test_tizen_gerrit_submit.py::test_legacy_shim_preserves_all_symbol_identities",
+      "file": "tests/unit/test_tizen_gerrit_submit.py",
+      "line": 575,
+      "end_line": 579,
+      "source": "def test_legacy_shim_preserves_all_symbol_identities() -> None:\n    legacy = importlib.import_module(\"ci_triage.verify.gerrit_submit\")\n\n    for name in (*PUBLIC_SYMBOLS, *INTERNAL_SYMBOLS):\n        assert getattr(legacy, name) is getattr(_GERRIT_SUBMIT_MODULE, name)",
+      "source_sha256": "a5ec6324fa04c023499f5cba00dea9e6f36aab26f15aa9b2ae96c95726aef0c0",
+      "assert_count": 1,
+      "host_groups": [
+        "verify/gerrit_submit.py"
+      ],
+      "human_approval": "PENDING",
+      "reason": "Only old.X is new.X assertions over migrated symbols/types; no behavior assertions. Proposed whole-function deletion under E11-4; execute only after approval, at first affected host group."
+    },
+    {
+      "nodeid": "tests/unit/test_tizen_triage_report.py::test_triage_report_legacy_shims_preserve_all_symbol_identities",
+      "file": "tests/unit/test_tizen_triage_report.py",
+      "line": 681,
+      "end_line": 714,
+      "source": "def test_triage_report_legacy_shims_preserve_all_symbol_identities() -> None:\n    legacy_gbs = importlib.import_module(\"ci_triage.gbs_report\")\n    skill_gbs = importlib.import_module(\"tizen_triage_report.gbs_report\")\n    legacy_report = importlib.import_module(\"ci_triage.report\")\n    skill_report = importlib.import_module(\"tizen_triage_report.report\")\n    gbs_symbols = {\n        \"DEFAULT_ARCHES\",\n        \"GbsReport\",\n        \"GbsReportPackage\",\n        \"_Anchor\",\n        \"_AnchorBuilder\",\n        \"_Cell\",\n        \"_CellBuilder\",\n        \"_IframeParser\",\n        \"_ReportTableParser\",\n        \"_Row\",\n        \"_Table\",\n        \"_attrs_to_map\",\n        \"_class_names\",\n        \"_looks_like_build_status_table\",\n        \"_normalize_text\",\n        \"_row_to_package\",\n        \"_status_from_anchor\",\n        \"download_gbs_package_buildlog\",\n        \"fetch_gbs_report\",\n        \"find_iframe_src\",\n        \"parse_gbs_report_packages\",\n    }\n    report_symbols = {\"TriageReportData\", \"_primary_location\", \"render_report\"}\n\n    assert all(getattr(legacy_gbs, name) is getattr(skill_gbs, name) for name in gbs_symbols)\n    assert all(\n        getattr(legacy_report, name) is getattr(skill_report, name) for name in report_symbols\n    )",
+      "source_sha256": "3b3bf3b49d5b04ba1d05ee9047d1ccc4bfacca1d08f18f9a5f597dec092c21d2",
+      "assert_count": 2,
+      "host_groups": [
+        "gbs_report.py",
+        "report.py"
+      ],
+      "human_approval": "PENDING",
+      "reason": "Only old.X is new.X assertions over migrated symbols/types; no behavior assertions. Proposed whole-function deletion under E11-4; execute only after approval, at first affected host group."
+    }
+  ]
+}

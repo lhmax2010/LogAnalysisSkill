@@ -1,0 +1,44 @@
+[
+  {
+    "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+    "line": 37,
+    "symbol": "create_worktree",
+    "value": "ci_triage/verify/workspace.py",
+    "usage": "source triplet lookup in frozen table relocation; not an import/patch/entry",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+      "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+      "line": 236
+    },
+    "reason": "Original table key must survive module removal; canonical destination is stored separately."
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+    "line": 46,
+    "symbol": "check_disk_and_maybe_cleanup",
+    "value": "ci_triage/verify/workspace.py",
+    "usage": "source triplet lookup in frozen table relocation; not an import/patch/entry",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+      "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+      "line": 237
+    },
+    "reason": "Original table key must survive module removal; canonical destination is stored separately."
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+    "line": 55,
+    "symbol": "_copy_repository",
+    "value": "ci_triage/verify/workspace.py",
+    "usage": "source triplet lookup in frozen table relocation; not an import/patch/entry",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+      "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+      "line": 238
+    },
+    "reason": "Original table key must survive module removal; canonical destination is stored separately."
+  }
+]

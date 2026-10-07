@@ -1,0 +1,75 @@
+[
+  {
+    "file": "tests/unit/test_build_verify_legacy_wiring.py",
+    "line": 63,
+    "end_line": 63,
+    "source": "legacy = importlib.import_module(f\"ci_triage.verify.{module_name}\")",
+    "base_class": "REWRITE",
+    "status": "PENDING_REVIEW",
+    "reason": "Computed module reference; retain all tests and behavior. Exact legacy wiring fixtures are enumerated separately, no general dynamic exemption."
+  },
+  {
+    "file": "tests/unit/test_build_verify_legacy_wiring.py",
+    "line": 64,
+    "end_line": 64,
+    "source": "skill = importlib.import_module(f\"tizen_build_verify.{module_name}\")",
+    "base_class": "REWRITE",
+    "status": "PENDING_REVIEW",
+    "reason": "Computed module reference; retain all tests and behavior. Exact legacy wiring fixtures are enumerated separately, no general dynamic exemption."
+  },
+  {
+    "file": "tests/unit/test_terminal_marker_failures.py",
+    "line": 35,
+    "end_line": 35,
+    "source": "workspace._verify_cleanup_handle",
+    "module": "tizen_ci_shared.workspace",
+    "name": "_verify_cleanup_handle",
+    "status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "reason": "Private attribute through root/old host: retain until per-binding owner review."
+  },
+  {
+    "file": "tests/unit/test_terminal_marker_failures.py",
+    "line": 36,
+    "end_line": 36,
+    "source": "workspace._exclude_private_files",
+    "module": "tizen_ci_shared.workspace",
+    "name": "_exclude_private_files",
+    "status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "reason": "Private attribute through root/old host: retain until per-binding owner review."
+  },
+  {
+    "file": "tests/unit/test_terminal_marker_failures.py",
+    "line": 92,
+    "end_line": 92,
+    "source": "workspace._exclude_private_files",
+    "module": "tizen_ci_shared.workspace",
+    "name": "_exclude_private_files",
+    "status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "reason": "Private attribute through root/old host: retain until per-binding owner review."
+  },
+  {
+    "file": "tests/unit/test_terminal_timeout_contracts.py",
+    "line": 59,
+    "end_line": 59,
+    "source": "W._exclude_private_files",
+    "module": "tizen_ci_shared.workspace",
+    "name": "_exclude_private_files",
+    "status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "reason": "Private attribute through root/old host: retain until per-binding owner review."
+  },
+  {
+    "file": "tests/unit/test_terminal_timeout_contracts.py",
+    "line": 58,
+    "end_line": 58,
+    "source": "W._run_git",
+    "module": "tizen_ci_shared.workspace",
+    "name": "_run_git",
+    "status": "PENDING_REVIEW",
+    "base_class": "REWRITE",
+    "reason": "Private attribute through root/old host: retain until per-binding owner review."
+  }
+]

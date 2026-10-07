@@ -1,0 +1,416 @@
+[
+  {
+    "group": "C01",
+    "host": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+    "scope": "BINDING",
+    "binding_count": 16,
+    "deletion_kind": "remove listed re-export lines, retain module",
+    "test_deletions": [],
+    "caller_hits": [],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C02",
+    "host": "tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+    "scope": "MODULE",
+    "binding_count": 17,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [],
+    "caller_hits": [
+      {
+        "file": "tests/unit/test_ci_triage.py",
+        "line": 23,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tests/unit/test_ci_triage.py",
+        "line": 23,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tests/unit/test_ci_triage.py",
+        "line": 23,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tests/unit/test_ci_triage.py",
+        "line": 23,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tests/unit/test_ci_triage.py",
+        "line": 23,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tests/unit/test_ci_triage.py",
+        "line": 23,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tests/unit/test_ci_triage.py",
+        "line": 23,
+        "classification": "REWRITE"
+      }
+    ],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C03",
+    "host": "tizen-ci-triage/scripts/ci_triage/runner.py",
+    "scope": "BINDING",
+    "binding_count": 1,
+    "deletion_kind": "remove listed re-export lines, retain module",
+    "test_deletions": [],
+    "caller_hits": [],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C04",
+    "host": "tizen-ci-triage/scripts/ci_triage/gerrit.py",
+    "scope": "MODULE",
+    "binding_count": 15,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [
+      "tests/unit/test_gerrit_fetch.py::test_legacy_module_reexports_implementation_and_types_by_identity"
+    ],
+    "caller_hits": [
+      {
+        "file": "tests/unit/test_gerrit_fetch.py",
+        "line": 842,
+        "classification": "REWRITE"
+      }
+    ],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C05",
+    "host": "tizen-ci-triage/scripts/ci_triage/sources.py",
+    "scope": "MODULE",
+    "binding_count": 4,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [],
+    "caller_hits": [
+      {
+        "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "line": 2041,
+        "classification": "PENDING_REVIEW"
+      }
+    ],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C06",
+    "host": "tizen-ci-triage/scripts/ci_triage/verify/convergence.py",
+    "scope": "MODULE",
+    "binding_count": 8,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [],
+    "caller_hits": [],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C07",
+    "host": "tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+    "scope": "MODULE",
+    "binding_count": 29,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [
+      "tests/unit/test_build_verify_legacy_wiring.py::test_legacy_shims_preserve_all_migrated_symbol_identities"
+    ],
+    "caller_hits": [
+      {
+        "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "line": 807,
+        "classification": "PENDING_REVIEW"
+      }
+    ],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C08",
+    "host": "tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py",
+    "scope": "MODULE",
+    "binding_count": 12,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [],
+    "caller_hits": [],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C09",
+    "host": "tizen-ci-triage/scripts/ci_triage/verify/workspace.py",
+    "scope": "MODULE",
+    "binding_count": 21,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [],
+    "caller_hits": [
+      {
+        "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "line": 47,
+        "classification": "PENDING_REVIEW"
+      },
+      {
+        "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "line": 37,
+        "classification": "HISTORICAL_KEY"
+      },
+      {
+        "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "line": 46,
+        "classification": "HISTORICAL_KEY"
+      },
+      {
+        "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "line": 55,
+        "classification": "HISTORICAL_KEY"
+      },
+      {
+        "file": "tests/unit/test_build_verify_legacy_wiring.py",
+        "line": 68,
+        "classification": "REWRITE"
+      }
+    ],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C10",
+    "host": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+    "scope": "MODULE",
+    "binding_count": 13,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [],
+    "caller_hits": [
+      {
+        "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "line": 356,
+        "classification": "PENDING_REVIEW"
+      },
+      {
+        "file": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+        "line": 21,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+        "line": 21,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+        "line": 21,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+        "line": 21,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+        "line": 21,
+        "classification": "REWRITE"
+      },
+      {
+        "file": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+        "line": 21,
+        "classification": "REWRITE"
+      }
+    ],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C11",
+    "host": "tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+    "scope": "MODULE",
+    "binding_count": 23,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [
+      "tests/unit/test_tizen_gerrit_submit.py::test_legacy_shim_preserves_all_symbol_identities"
+    ],
+    "caller_hits": [
+      {
+        "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "line": 808,
+        "classification": "PENDING_REVIEW"
+      },
+      {
+        "file": "tests/unit/test_tizen_gerrit_submit.py",
+        "line": 576,
+        "classification": "REWRITE"
+      }
+    ],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C12",
+    "host": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+    "scope": "MODULE",
+    "binding_count": 21,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [
+      "tests/unit/test_tizen_triage_report.py::test_triage_report_legacy_shims_preserve_all_symbol_identities"
+    ],
+    "caller_hits": [
+      {
+        "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "line": 1772,
+        "classification": "PENDING_REVIEW"
+      },
+      {
+        "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "line": 2055,
+        "classification": "PENDING_REVIEW"
+      },
+      {
+        "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "line": 731,
+        "classification": "PENDING_REVIEW"
+      },
+      {
+        "file": "tests/unit/test_tizen_triage_report.py",
+        "line": 682,
+        "classification": "REWRITE"
+      }
+    ],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  },
+  {
+    "group": "C13",
+    "host": "tizen-ci-triage/scripts/ci_triage/report.py",
+    "scope": "MODULE",
+    "binding_count": 3,
+    "deletion_kind": "remove registered pure-shim module",
+    "test_deletions": [],
+    "caller_hits": [
+      {
+        "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "line": 799,
+        "classification": "PENDING_REVIEW"
+      },
+      {
+        "file": "tests/unit/test_tizen_triage_report.py",
+        "line": 684,
+        "classification": "REWRITE"
+      }
+    ],
+    "human_approval": "PENDING",
+    "precondition": "No group starts until inventory, nodeids and its pending reference dispositions have approval.",
+    "post_checks": [
+      "full nodeid-preserving regression + mypy + ruff + lint-imports + existing design gates",
+      "all OBS-5 entry smoke commands",
+      "fresh interpreter live import-all",
+      "literal residuals only HISTORICAL/RELEASE/registered HISTORICAL_KEY",
+      "build/install package and console-script help"
+    ],
+    "failure_policy": "Revert only this approved group and stop; do not improvise repairs."
+  }
+]

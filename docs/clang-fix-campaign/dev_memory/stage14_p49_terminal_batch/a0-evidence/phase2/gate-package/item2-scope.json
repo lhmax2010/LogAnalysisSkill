@@ -1,0 +1,512 @@
+{
+  "head": "b3e0a95a2d9d31710cc007ef03239d5aad20f559",
+  "ast_test_files": 68,
+  "rule": "PHASE2-02 approved private = leading underscore but not __name__; root direct definitions are canonical.",
+  "skill4_obligation": {
+    "file": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
+    "commit": "b3e0a95a2d9d31710cc007ef03239d5aad20f559",
+    "sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+    "lines": [
+      212,
+      228
+    ],
+    "quote": "**测试侧消费(须翻转,非\"仅 import 行\")**:\n- `tests/unit/test_build_verify.py:9-15` import **三个私有件**\n  (`_format_and_apply_patch`/`_gbs_arch`/`_gbs_command`);\n- `tests/integration/test_build_verify_real_git.py:15` import `_format_and_apply_patch`;\n- **六处 `monkeypatch.setattr(\"ci_triage.verify.build_verify...\")`** 必须翻到新模块,\n  否则只 patch legacy shim、不影响新函数 globals(**测试会失真**)。因包根\n  `build_verify` 函数遮蔽同名子模块,以下六处须先以\n  `importlib.import_module(\"tizen_build_verify.build_verify\")` 取得真实模块对象,\n  再用 `monkeypatch.setattr(module, name, replacement)`:\n  1. `test_gbs_fail_source_werror_returns_repair_allowed` → `_analyze_failure`;\n  2. `test_gbs_fail_toolchain_denylist_not_repair_allowed` → `_analyze_failure`;\n  3. `test_pass_marks_worktree_protected_before_writing_record` →\n     `mark_worktree_protected`;\n  4. 同一用例 → `write_pass_record`;\n  5. `test_pass_write_record_failure_is_not_silent` → `write_pass_record`;\n  6. `test_build_verify_rejects_unexpected_paths_using_real_git_diff` →\n     `_format_and_apply_patch`。"
+  },
+  "private_imports": [
+    {
+      "file": "tests/integration/test_build_verify_real_git.py",
+      "line": 14,
+      "end_line": 18,
+      "source": "from tizen_build_verify.build_verify import (\n    BuildVerifyOptions,\n    _format_and_apply_patch,\n    build_verify,\n)",
+      "module": "tizen_build_verify.build_verify",
+      "name": "_format_and_apply_patch",
+      "definition": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": true
+    },
+    {
+      "file": "tests/unit/test_build_runner.py",
+      "line": 6,
+      "end_line": 18,
+      "source": "from gbs_build_skill.runner import (\n    BROKEN_BUILD_ROOT_MARKER,\n    DEFAULT_TIMEOUT_SECONDS,\n    EXIT_ARGS,\n    EXIT_COMMAND_NOT_FOUND,\n    EXIT_TIMEOUT,\n    BuildOptions,\n    _extract_failure_log_path,\n    _has_broken_build_root,\n    build_command,\n    main,\n    run_gbs_build,\n)",
+      "module": "gbs_build_skill.runner",
+      "name": "_extract_failure_log_path",
+      "definition": "tizen-gbs-build/scripts/gbs_build_skill/runner.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_build_runner.py",
+      "line": 6,
+      "end_line": 18,
+      "source": "from gbs_build_skill.runner import (\n    BROKEN_BUILD_ROOT_MARKER,\n    DEFAULT_TIMEOUT_SECONDS,\n    EXIT_ARGS,\n    EXIT_COMMAND_NOT_FOUND,\n    EXIT_TIMEOUT,\n    BuildOptions,\n    _extract_failure_log_path,\n    _has_broken_build_root,\n    build_command,\n    main,\n    run_gbs_build,\n)",
+      "module": "gbs_build_skill.runner",
+      "name": "_has_broken_build_root",
+      "definition": "tizen-gbs-build/scripts/gbs_build_skill/runner.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_ci_triage.py",
+      "line": 10,
+      "end_line": 22,
+      "source": "from ci_triage.orchestrator import (\n    STATE_FAILED_ANALYZE,\n    STATE_FAILED_LOG,\n    STATE_FAILED_PERMANENT,\n    STATE_NEEDS_INPUT,\n    STATE_REPORTED,\n    STATE_REPORTED_NO_REPORT,\n    STATE_SKIPPED_PROCESSED,\n    BatchRunRecord,\n    BatchTriageOptions,\n    CiTriageOrchestrator,\n    _manifest_error,\n)",
+      "module": "ci_triage.orchestrator",
+      "name": "_manifest_error",
+      "definition": "tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_ci_triage.py",
+      "line": 38,
+      "end_line": 38,
+      "source": "from ci_triage.runner import TriageOptions, TriageResult, _safe_pkg_dir, run_triage",
+      "module": "ci_triage.runner",
+      "name": "_safe_pkg_dir",
+      "definition": "tizen-ci-triage/scripts/ci_triage/runner.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_convergence.py",
+      "line": 7,
+      "end_line": 12,
+      "source": "from tizen_convergence_judge.convergence import (\n    _error_count,\n    _primary_fingerprint,\n    error_count,\n    primary_fingerprint,\n)",
+      "module": "tizen_convergence_judge.convergence",
+      "name": "_error_count",
+      "definition": "tizen-convergence-judge/scripts/tizen_convergence_judge/convergence.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_convergence.py",
+      "line": 7,
+      "end_line": 12,
+      "source": "from tizen_convergence_judge.convergence import (\n    _error_count,\n    _primary_fingerprint,\n    error_count,\n    primary_fingerprint,\n)",
+      "module": "tizen_convergence_judge.convergence",
+      "name": "_primary_fingerprint",
+      "definition": "tizen-convergence-judge/scripts/tizen_convergence_judge/convergence.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_scan_and_extract.py",
+      "line": 5,
+      "end_line": 10,
+      "source": "from gbs_analyzer.scan_and_extract import (\n    BuildLogScanner,\n    _iter_log_lines,\n    _tool_from_command,\n    scan_buildlog,\n)",
+      "module": "gbs_analyzer.scan_and_extract",
+      "name": "_iter_log_lines",
+      "definition": "tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_scan_and_extract.py",
+      "line": 5,
+      "end_line": 10,
+      "source": "from gbs_analyzer.scan_and_extract import (\n    BuildLogScanner,\n    _iter_log_lines,\n    _tool_from_command,\n    scan_buildlog,\n)",
+      "module": "gbs_analyzer.scan_and_extract",
+      "name": "_tool_from_command",
+      "definition": "tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_tizen_build_verify.py",
+      "line": 15,
+      "end_line": 23,
+      "source": "from tizen_build_verify.build_verify import (\n    BuildVerifyOptions,\n    _format_and_apply_patch,\n    _gbs_arch,\n    _gbs_command,\n    build_verify,\n    build_verify_to_json,\n    default_extra_pythonpath,\n)",
+      "module": "tizen_build_verify.build_verify",
+      "name": "_format_and_apply_patch",
+      "definition": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": true
+    },
+    {
+      "file": "tests/unit/test_tizen_build_verify.py",
+      "line": 15,
+      "end_line": 23,
+      "source": "from tizen_build_verify.build_verify import (\n    BuildVerifyOptions,\n    _format_and_apply_patch,\n    _gbs_arch,\n    _gbs_command,\n    build_verify,\n    build_verify_to_json,\n    default_extra_pythonpath,\n)",
+      "module": "tizen_build_verify.build_verify",
+      "name": "_gbs_arch",
+      "definition": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": true
+    },
+    {
+      "file": "tests/unit/test_tizen_build_verify.py",
+      "line": 15,
+      "end_line": 23,
+      "source": "from tizen_build_verify.build_verify import (\n    BuildVerifyOptions,\n    _format_and_apply_patch,\n    _gbs_arch,\n    _gbs_command,\n    build_verify,\n    build_verify_to_json,\n    default_extra_pythonpath,\n)",
+      "module": "tizen_build_verify.build_verify",
+      "name": "_gbs_command",
+      "definition": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": true
+    },
+    {
+      "file": "tests/unit/test_tizen_triage_report.py",
+      "line": 17,
+      "end_line": 32,
+      "source": "from tizen_triage_report.gbs_report import (\n    DEFAULT_ARCHES,\n    GbsReport,\n    GbsReportPackage,\n    _Anchor,\n    _Cell,\n    _looks_like_build_status_table,\n    _Row,\n    _row_to_package,\n    _status_from_anchor,\n    _Table,\n    download_gbs_package_buildlog,\n    fetch_gbs_report,\n    find_iframe_src,\n    parse_gbs_report_packages,\n)",
+      "module": "tizen_triage_report.gbs_report",
+      "name": "_Anchor",
+      "definition": "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_tizen_triage_report.py",
+      "line": 17,
+      "end_line": 32,
+      "source": "from tizen_triage_report.gbs_report import (\n    DEFAULT_ARCHES,\n    GbsReport,\n    GbsReportPackage,\n    _Anchor,\n    _Cell,\n    _looks_like_build_status_table,\n    _Row,\n    _row_to_package,\n    _status_from_anchor,\n    _Table,\n    download_gbs_package_buildlog,\n    fetch_gbs_report,\n    find_iframe_src,\n    parse_gbs_report_packages,\n)",
+      "module": "tizen_triage_report.gbs_report",
+      "name": "_Cell",
+      "definition": "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_tizen_triage_report.py",
+      "line": 17,
+      "end_line": 32,
+      "source": "from tizen_triage_report.gbs_report import (\n    DEFAULT_ARCHES,\n    GbsReport,\n    GbsReportPackage,\n    _Anchor,\n    _Cell,\n    _looks_like_build_status_table,\n    _Row,\n    _row_to_package,\n    _status_from_anchor,\n    _Table,\n    download_gbs_package_buildlog,\n    fetch_gbs_report,\n    find_iframe_src,\n    parse_gbs_report_packages,\n)",
+      "module": "tizen_triage_report.gbs_report",
+      "name": "_looks_like_build_status_table",
+      "definition": "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_tizen_triage_report.py",
+      "line": 17,
+      "end_line": 32,
+      "source": "from tizen_triage_report.gbs_report import (\n    DEFAULT_ARCHES,\n    GbsReport,\n    GbsReportPackage,\n    _Anchor,\n    _Cell,\n    _looks_like_build_status_table,\n    _Row,\n    _row_to_package,\n    _status_from_anchor,\n    _Table,\n    download_gbs_package_buildlog,\n    fetch_gbs_report,\n    find_iframe_src,\n    parse_gbs_report_packages,\n)",
+      "module": "tizen_triage_report.gbs_report",
+      "name": "_Row",
+      "definition": "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_tizen_triage_report.py",
+      "line": 17,
+      "end_line": 32,
+      "source": "from tizen_triage_report.gbs_report import (\n    DEFAULT_ARCHES,\n    GbsReport,\n    GbsReportPackage,\n    _Anchor,\n    _Cell,\n    _looks_like_build_status_table,\n    _Row,\n    _row_to_package,\n    _status_from_anchor,\n    _Table,\n    download_gbs_package_buildlog,\n    fetch_gbs_report,\n    find_iframe_src,\n    parse_gbs_report_packages,\n)",
+      "module": "tizen_triage_report.gbs_report",
+      "name": "_row_to_package",
+      "definition": "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_tizen_triage_report.py",
+      "line": 17,
+      "end_line": 32,
+      "source": "from tizen_triage_report.gbs_report import (\n    DEFAULT_ARCHES,\n    GbsReport,\n    GbsReportPackage,\n    _Anchor,\n    _Cell,\n    _looks_like_build_status_table,\n    _Row,\n    _row_to_package,\n    _status_from_anchor,\n    _Table,\n    download_gbs_package_buildlog,\n    fetch_gbs_report,\n    find_iframe_src,\n    parse_gbs_report_packages,\n)",
+      "module": "tizen_triage_report.gbs_report",
+      "name": "_status_from_anchor",
+      "definition": "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_tizen_triage_report.py",
+      "line": 17,
+      "end_line": 32,
+      "source": "from tizen_triage_report.gbs_report import (\n    DEFAULT_ARCHES,\n    GbsReport,\n    GbsReportPackage,\n    _Anchor,\n    _Cell,\n    _looks_like_build_status_table,\n    _Row,\n    _row_to_package,\n    _status_from_anchor,\n    _Table,\n    download_gbs_package_buildlog,\n    fetch_gbs_report,\n    find_iframe_src,\n    parse_gbs_report_packages,\n)",
+      "module": "tizen_triage_report.gbs_report",
+      "name": "_Table",
+      "definition": "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    },
+    {
+      "file": "tests/unit/test_tizen_triage_report.py",
+      "line": 33,
+      "end_line": 37,
+      "source": "from tizen_triage_report.report import (\n    TriageReportData,\n    _primary_location,\n    render_report,\n)",
+      "module": "tizen_triage_report.report",
+      "name": "_primary_location",
+      "definition": "tizen-triage-report/scripts/tizen_triage_report/report.py",
+      "action": "KEEP_DIRECT_DEFINITION",
+      "in_item2": false
+    }
+  ],
+  "dunder_exclusions": [
+    {
+      "file": "tests/unit/test_package_metadata.py",
+      "line": 1,
+      "end_line": 1,
+      "source": "from gbs_analyzer import __version__",
+      "module": "gbs_analyzer",
+      "name": "__version__",
+      "action": "OUT_OF_SCOPE_DUNDER"
+    }
+  ],
+  "private_root_surface": [
+    {
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "line": 150,
+      "end_line": 163,
+      "source": "def _verify_cleanup_handle(handle: DisposableWorktree) -> None:\n    marker_path = Path(handle.marker_path)\n    if not marker_path.is_file():\n        raise WorkspaceViolation(f\"missing disposable worktree marker: {marker_path}\")\n\n    marker = _read_marker(marker_path)\n    handle_root = Path(handle.workspace_root).resolve()\n    handle_path = Path(handle.path).resolve()\n    marker_root = Path(str(marker.get(\"workspace_root\", \"\"))).resolve()\n\n    if marker_root != handle_root:\n        raise WorkspaceViolation(\"marker workspace_root does not match handle workspace_root\")\n    if not _is_relative_to(handle_path, handle_root):\n        raise WorkspaceViolation(\"worktree path is outside workspace_root\")",
+      "name": "_verify_cleanup_handle",
+      "action": "KEEP_ROOT_IS_DEFINITION",
+      "reason": "PHASE2-02: a directly defined private name is already imported from its definition module."
+    },
+    {
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "line": 166,
+      "end_line": 191,
+      "source": "def _oldest_worktrees(root: Path) -> list[DisposableWorktree]:\n    handles: list[DisposableWorktree] = []\n    for child in root.iterdir():\n        if not child.is_dir() or not child.name.startswith(\"iter_\"):\n            continue\n        marker_path = child / MARKER_FILENAME\n        if not marker_path.is_file():\n            continue\n        try:\n            marker = _read_marker(marker_path)\n            baseline_repo = str(marker[\"baseline_repo\"])\n            base_commit = str(marker[\"base_commit\"])\n            iter_index = int(marker[\"iter_index\"])\n        except (KeyError, TypeError, ValueError, json.JSONDecodeError, OSError):\n            continue\n        handles.append(\n            DisposableWorktree(\n                path=str(child.resolve()),\n                baseline_repo=baseline_repo,\n                base_commit=base_commit,\n                workspace_root=str(root),\n                iter_index=iter_index,\n                marker_path=str(marker_path),\n            )\n        )\n    return sorted(handles, key=lambda handle: handle.iter_index)",
+      "name": "_oldest_worktrees",
+      "action": "KEEP_ROOT_IS_DEFINITION",
+      "reason": "PHASE2-02: a directly defined private name is already imported from its definition module."
+    },
+    {
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "line": 194,
+      "end_line": 198,
+      "source": "def _read_marker(marker_path: Path) -> dict[str, Any]:\n    raw = json.loads(marker_path.read_text(encoding=\"utf-8\"))\n    if not isinstance(raw, dict):\n        raise WorkspaceViolation(\"disposable worktree marker is not a JSON object\")\n    return raw",
+      "name": "_read_marker",
+      "action": "KEEP_ROOT_IS_DEFINITION",
+      "reason": "PHASE2-02: a directly defined private name is already imported from its definition module."
+    },
+    {
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "line": 201,
+      "end_line": 206,
+      "source": "def _is_relative_to(path: Path, root: Path) -> bool:\n    try:\n        path.relative_to(root)\n    except ValueError:\n        return False\n    return True",
+      "name": "_is_relative_to",
+      "action": "KEEP_ROOT_IS_DEFINITION",
+      "reason": "PHASE2-02: a directly defined private name is already imported from its definition module."
+    },
+    {
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "line": 209,
+      "end_line": 213,
+      "source": "def _run_git(args: list[str], *, timeout: float | None = None) -> None:\n    try:\n        subprocess.run([\"git\", *args], check=True, text=True, capture_output=True, timeout=timeout)\n    except subprocess.TimeoutExpired as exc:\n        raise WorkspaceViolation(\"GIT_TIMEOUT: \" + str(exc)) from exc",
+      "name": "_run_git",
+      "action": "KEEP_ROOT_IS_DEFINITION",
+      "reason": "PHASE2-02: a directly defined private name is already imported from its definition module."
+    },
+    {
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "line": 216,
+      "end_line": 241,
+      "source": "def _exclude_private_files(worktree_path: Path, *, timeout: float | None = None) -> None:\n    try:\n        result = subprocess.run(\n            [\"git\", \"-C\", str(worktree_path), \"rev-parse\", \"--git-path\", \"info/exclude\"],\n            check=True,\n            text=True,\n            capture_output=True,\n            timeout=timeout,\n        )\n    except subprocess.TimeoutExpired as exc:\n        raise WorkspaceViolation(\"GIT_TIMEOUT: \" + str(exc)) from exc\n    exclude_path = Path(result.stdout.strip())\n    if not exclude_path.is_absolute():\n        exclude_path = worktree_path / exclude_path\n    exclude_path.parent.mkdir(parents=True, exist_ok=True)\n    current = exclude_path.read_text(encoding=\"utf-8\") if exclude_path.exists() else \"\"\n    lines = set(current.splitlines())\n    missing = [\n        filename for filename in (MARKER_FILENAME, PROTECTED_FILENAME) if filename not in lines\n    ]\n    if missing:\n        with exclude_path.open(\"a\", encoding=\"utf-8\") as handle:\n            if current and not current.endswith(\"\\n\"):\n                handle.write(\"\\n\")\n            for filename in missing:\n                handle.write(f\"{filename}\\n\")",
+      "name": "_exclude_private_files",
+      "action": "KEEP_ROOT_IS_DEFINITION",
+      "reason": "PHASE2-02: a directly defined private name is already imported from its definition module."
+    }
+  ],
+  "private_attribute_reads": [
+    {
+      "file": "tests/unit/test_terminal_marker_failures.py",
+      "line": 35,
+      "end_line": 35,
+      "source": "workspace._verify_cleanup_handle",
+      "module": "tizen_ci_shared.workspace",
+      "name": "_verify_cleanup_handle",
+      "status": "PENDING_REVIEW",
+      "base_class": "REWRITE",
+      "reason": "Private attribute through root/old host: retain until per-binding owner review."
+    },
+    {
+      "file": "tests/unit/test_terminal_marker_failures.py",
+      "line": 36,
+      "end_line": 36,
+      "source": "workspace._exclude_private_files",
+      "module": "tizen_ci_shared.workspace",
+      "name": "_exclude_private_files",
+      "status": "PENDING_REVIEW",
+      "base_class": "REWRITE",
+      "reason": "Private attribute through root/old host: retain until per-binding owner review."
+    },
+    {
+      "file": "tests/unit/test_terminal_marker_failures.py",
+      "line": 92,
+      "end_line": 92,
+      "source": "workspace._exclude_private_files",
+      "module": "tizen_ci_shared.workspace",
+      "name": "_exclude_private_files",
+      "status": "PENDING_REVIEW",
+      "base_class": "REWRITE",
+      "reason": "Private attribute through root/old host: retain until per-binding owner review."
+    },
+    {
+      "file": "tests/unit/test_terminal_timeout_contracts.py",
+      "line": 59,
+      "end_line": 59,
+      "source": "W._exclude_private_files",
+      "module": "tizen_ci_shared.workspace",
+      "name": "_exclude_private_files",
+      "status": "PENDING_REVIEW",
+      "base_class": "REWRITE",
+      "reason": "Private attribute through root/old host: retain until per-binding owner review."
+    },
+    {
+      "file": "tests/unit/test_terminal_timeout_contracts.py",
+      "line": 58,
+      "end_line": 58,
+      "source": "W._run_git",
+      "module": "tizen_ci_shared.workspace",
+      "name": "_run_git",
+      "status": "PENDING_REVIEW",
+      "base_class": "REWRITE",
+      "reason": "Private attribute through root/old host: retain until per-binding owner review."
+    }
+  ],
+  "computed_module_sites": [
+    {
+      "file": "tests/unit/test_build_verify_legacy_wiring.py",
+      "line": 63,
+      "end_line": 63,
+      "source": "legacy = importlib.import_module(f\"ci_triage.verify.{module_name}\")",
+      "base_class": "REWRITE",
+      "status": "PENDING_REVIEW",
+      "reason": "Computed module reference; retain all tests and behavior. Exact legacy wiring fixtures are enumerated separately, no general dynamic exemption."
+    },
+    {
+      "file": "tests/unit/test_build_verify_legacy_wiring.py",
+      "line": 64,
+      "end_line": 64,
+      "source": "skill = importlib.import_module(f\"tizen_build_verify.{module_name}\")",
+      "base_class": "REWRITE",
+      "status": "PENDING_REVIEW",
+      "reason": "Computed module reference; retain all tests and behavior. Exact legacy wiring fixtures are enumerated separately, no general dynamic exemption."
+    }
+  ],
+  "legacy_indirect_access": [
+    {
+      "nodeid": "tests/unit/test_gerrit_fetch.py::test_legacy_module_reexports_implementation_and_types_by_identity",
+      "hosts": [
+        "gerrit.py"
+      ],
+      "private_symbols": {
+        "gerrit.py": [
+          "_optional_int",
+          "_reset_generated_source_dir",
+          "_run_git"
+        ]
+      },
+      "reason": "Literal symbol collections and getattr loop inside identity-only function; full source included with deletion proposal."
+    },
+    {
+      "nodeid": "tests/unit/test_build_verify_legacy_wiring.py::test_legacy_shims_preserve_all_migrated_symbol_identities",
+      "hosts": [
+        "verify/build_verify.py",
+        "verify/edit_spec_guard.py",
+        "verify/workspace.py"
+      ],
+      "private_symbols": {
+        "verify/build_verify.py": [
+          "_actual_changed_paths",
+          "_allowed_paths",
+          "_analyze_failure",
+          "_ApplyPatchResult",
+          "_build_subprocess_env",
+          "_BuildProcessResult",
+          "_canonical_diff_sha256",
+          "_classification_fail",
+          "_fail",
+          "_format_and_apply_patch",
+          "_gbs_arch",
+          "_gbs_command",
+          "_git",
+          "_git_stdout",
+          "_normalize_build_log",
+          "_read_json",
+          "_run",
+          "_run_gbs_build",
+          "_run_git_diff_check",
+          "_sha256_file",
+          "_sha256_text",
+          "_string_or_empty",
+          "_tracked_worktree_mutated"
+        ],
+        "verify/edit_spec_guard.py": [
+          "_check_no_overlaps",
+          "_find_old_from_line",
+          "_find_unique_old",
+          "_is_relative_to",
+          "_line_starts",
+          "_locate_edit",
+          "_LocatedEdit",
+          "_validate_schema",
+          "_validate_target_path"
+        ],
+        "verify/workspace.py": [
+          "_copy_repository",
+          "_exclude_private_files",
+          "_is_relative_to",
+          "_oldest_worktrees",
+          "_read_marker",
+          "_run_git",
+          "_verify_cleanup_handle"
+        ]
+      },
+      "reason": "Literal symbol collections and getattr loop inside identity-only function; full source included with deletion proposal."
+    },
+    {
+      "nodeid": "tests/unit/test_tizen_gerrit_submit.py::test_legacy_shim_preserves_all_symbol_identities",
+      "hosts": [
+        "verify/gerrit_submit.py"
+      ],
+      "private_symbols": {
+        "verify/gerrit_submit.py": [
+          "_build_id_from_failure_key",
+          "_dirty_reason",
+          "_git_stdout",
+          "_push_command",
+          "_record_result",
+          "_remote_url",
+          "_result",
+          "_run_git",
+          "_subprocess_env",
+          "_target_branch",
+          "_target_head_unknown_warning",
+          "_target_warnings",
+          "_verification_mismatch"
+        ]
+      },
+      "reason": "Literal symbol collections and getattr loop inside identity-only function; full source included with deletion proposal."
+    },
+    {
+      "nodeid": "tests/unit/test_tizen_triage_report.py::test_triage_report_legacy_shims_preserve_all_symbol_identities",
+      "hosts": [
+        "gbs_report.py",
+        "report.py"
+      ],
+      "private_symbols": {
+        "gbs_report.py": [
+          "_Anchor",
+          "_AnchorBuilder",
+          "_attrs_to_map",
+          "_Cell",
+          "_CellBuilder",
+          "_class_names",
+          "_IframeParser",
+          "_looks_like_build_status_table",
+          "_normalize_text",
+          "_ReportTableParser",
+          "_Row",
+          "_row_to_package",
+          "_status_from_anchor",
+          "_Table"
+        ],
+        "report.py": [
+          "_primary_location"
+        ]
+      },
+      "reason": "Literal symbol collections and getattr loop inside identity-only function; full source included with deletion proposal."
+    }
+  ],
+  "keep_tests": [
+    "All tests except the four explicitly proposed nodeids; no blanket file deletion.",
+    "Convergence public alias identity is an API contract, not legacy wiring.",
+    "default_extra_pythonpath legacy-anchor equivalence is behavior, not legacy module identity.",
+    "test_package_exposes_dev_version remains unchanged under dunder exclusion."
+  ]
+}

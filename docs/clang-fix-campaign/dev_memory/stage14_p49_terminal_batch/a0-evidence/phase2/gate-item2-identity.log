@@ -1,0 +1,8 @@
+ITEM2 tests_ast_files= 68 private_imports= 20 in_scope_imports= 4 dunder_exclusions= 1 private_root_surface= 6
+PROPOSED_TEST_DELETIONS 4
+tests/unit/test_gerrit_fetch.py::test_legacy_module_reexports_implementation_and_types_by_identity | identity_asserts= 2 | PENDING_HUMAN_APPROVAL
+tests/unit/test_build_verify_legacy_wiring.py::test_legacy_shims_preserve_all_migrated_symbol_identities | identity_asserts= 2 | PENDING_HUMAN_APPROVAL
+tests/unit/test_tizen_gerrit_submit.py::test_legacy_shim_preserves_all_symbol_identities | identity_asserts= 1 | PENDING_HUMAN_APPROVAL
+tests/unit/test_tizen_triage_report.py::test_triage_report_legacy_shims_preserve_all_symbol_identities | identity_asserts= 2 | PENDING_HUMAN_APPROVAL
+PENDING_ITEM2 7
+NO_TESTS_DELETED

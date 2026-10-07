@@ -1,0 +1,387 @@
+{
+  "OBS-5.entry-consumers": {
+    "claim_id": "OBS-5.entry-consumers",
+    "snapshot": "ca9331190e878af465e7968fe56e735585a5866e",
+    "evidence": [
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/B-5-entries.json",
+        "sha256": "9a9d8d1f7131776525ee09832b7c85c8bd5a9fe1179db485d9a222ed90059bfe",
+        "selector": "/independent_enumeration"
+      },
+      {
+        "kind": "FILE",
+        "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase2/gate-package/obs5/raw.json",
+        "sha256": "4ee58f4358222d6fd72161a74b216a80f55bf034f92e739a61b1bb0fe8c33230",
+        "selector": "/runs"
+      }
+    ],
+    "entries": [
+      {
+        "entry_id": "live:PACKAGE_MAIN:ci_triage",
+        "kind": "PACKAGE_MAIN",
+        "target": "ci_triage",
+        "documented_in": [
+          "tizen-ci-triage/scripts/ci_triage/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m ci_triage --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:PACKAGE_MAIN:gbs_analyzer",
+        "kind": "PACKAGE_MAIN",
+        "target": "gbs_analyzer",
+        "documented_in": [
+          "tizen-gbs-log-analysis/scripts/gbs_analyzer/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_analyzer --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:PACKAGE_MAIN:gbs_build_skill",
+        "kind": "PACKAGE_MAIN",
+        "target": "gbs_build_skill",
+        "documented_in": [
+          "tizen-gbs-build/scripts/gbs_build_skill/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_build_skill --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:PACKAGE_MAIN:gbs_patch_suggest",
+        "kind": "PACKAGE_MAIN",
+        "target": "gbs_patch_suggest",
+        "documented_in": [
+          "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_patch_suggest --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:PACKAGE_MAIN:gbs_workflow",
+        "kind": "PACKAGE_MAIN",
+        "target": "gbs_workflow",
+        "documented_in": [
+          "tizen-gbs-build-workflow/scripts/gbs_workflow/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_workflow --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:-m gbs_analyzer",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_analyzer",
+        "documented_in": [
+          "tizen-build-verify/SKILL.md:51"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_analyzer --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:-m gbs_analyzer analyze",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_analyzer analyze",
+        "documented_in": [
+          "tizen-gbs-log-analysis/SKILL.md:60"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_analyzer analyze --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:-m gbs_build_skill",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_build_skill",
+        "documented_in": [
+          "tizen-gbs-build/SKILL.md:35",
+          "tizen-gbs-build/SKILL.md:52",
+          "tizen-gbs-build/SKILL.md:108"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_build_skill --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:-m gbs_patch_suggest",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_patch_suggest",
+        "documented_in": [
+          "tizen-gbs-patch-suggest/SKILL.md:189",
+          "tizen-gbs-patch-suggest/SKILL.md:190",
+          "tizen-gbs-patch-suggest/SKILL.md:205",
+          "tizen-gbs-patch-suggest/SKILL.md:214",
+          "tizen-gbs-patch-suggest/SKILL.md:223"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_patch_suggest --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:-m gbs_patch_suggest format-patch",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_patch_suggest format-patch",
+        "documented_in": [
+          "tizen-gbs-patch-suggest/SKILL.md:293"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_patch_suggest format-patch --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:-m gbs_workflow",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_workflow",
+        "documented_in": [
+          "tizen-gbs-build-workflow/SKILL.md:37",
+          "tizen-gbs-build-workflow/SKILL.md:84"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_workflow --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:tizen-gbs-build-workflow/scripts/run_workflow.py",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "tizen-gbs-build-workflow/scripts/run_workflow.py",
+        "documented_in": [
+          "tizen-gbs-build-workflow/SKILL.md:98",
+          "tizen-gbs-build-workflow/SKILL.md:37"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-build-workflow/scripts/run_workflow.py --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:tizen-gbs-build/scripts/run_build.py",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "tizen-gbs-build/scripts/run_build.py",
+        "documented_in": [
+          "tizen-gbs-build/SKILL.md:120",
+          "tizen-gbs-build/SKILL.md:36",
+          "tizen-gbs-build/SKILL.md:53"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-build/scripts/run_build.py --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:tizen-gbs-log-analysis/scripts/run_analyzer.py analyze",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "tizen-gbs-log-analysis/scripts/run_analyzer.py analyze",
+        "documented_in": [
+          "tizen-gbs-log-analysis/SKILL.md:70"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:tizen-gbs-patch-suggest/scripts/run_patch_suggest.py",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "tizen-gbs-patch-suggest/scripts/run_patch_suggest.py",
+        "documented_in": [
+          "tizen-gbs-patch-suggest/SKILL.md:193",
+          "tizen-gbs-patch-suggest/SKILL.md:232",
+          "tizen-gbs-patch-suggest/SKILL.md:197"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "live:SKILL_MD_COMMAND:tizen-gbs-patch-suggest/scripts/run_patch_suggest.py format-patch",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "tizen-gbs-patch-suggest/scripts/run_patch_suggest.py format-patch",
+        "documented_in": [
+          "tizen-gbs-patch-suggest/SKILL.md:304"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py format-patch --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:PACKAGE_MAIN:ci_triage",
+        "kind": "PACKAGE_MAIN",
+        "target": "ci_triage",
+        "documented_in": [
+          "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m ci_triage --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:PACKAGE_MAIN:gbs_analyzer",
+        "kind": "PACKAGE_MAIN",
+        "target": "gbs_analyzer",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_analyzer --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:PACKAGE_MAIN:gbs_build_skill",
+        "kind": "PACKAGE_MAIN",
+        "target": "gbs_build_skill",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_build_skill --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:PACKAGE_MAIN:gbs_patch_suggest",
+        "kind": "PACKAGE_MAIN",
+        "target": "gbs_patch_suggest",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_patch_suggest --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:PACKAGE_MAIN:gbs_workflow",
+        "kind": "PACKAGE_MAIN",
+        "target": "gbs_workflow",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/__main__.py"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_workflow --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:-m gbs_analyzer analyze",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_analyzer analyze",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-log-analysis/SKILL.md:60"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_analyzer analyze --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:-m gbs_build_skill",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_build_skill",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-build/SKILL.md:35",
+          "release-v1.4.0/tizen-gbs-build/SKILL.md:52",
+          "release-v1.4.0/tizen-gbs-build/SKILL.md:108"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_build_skill --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:-m gbs_patch_suggest",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_patch_suggest",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:189",
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:190",
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:205",
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:214",
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:223"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_patch_suggest --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:-m gbs_patch_suggest format-patch",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_patch_suggest format-patch",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:293"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_patch_suggest format-patch --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:-m gbs_workflow",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "-m gbs_workflow",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-build-workflow/SKILL.md:37",
+          "release-v1.4.0/tizen-gbs-build-workflow/SKILL.md:84"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python -m gbs_workflow --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:release-v1.4.0/tizen-gbs-build-workflow/scripts/run_workflow.py",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "release-v1.4.0/tizen-gbs-build-workflow/scripts/run_workflow.py",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-build-workflow/SKILL.md:98",
+          "release-v1.4.0/tizen-gbs-build-workflow/SKILL.md:37"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/release-v1.4.0/tizen-gbs-build-workflow/scripts/run_workflow.py --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:release-v1.4.0/tizen-gbs-build/scripts/run_build.py",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "release-v1.4.0/tizen-gbs-build/scripts/run_build.py",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-build/SKILL.md:120",
+          "release-v1.4.0/tizen-gbs-build/SKILL.md:36",
+          "release-v1.4.0/tizen-gbs-build/SKILL.md:53"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/release-v1.4.0/tizen-gbs-build/scripts/run_build.py --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:release-v1.4.0/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "release-v1.4.0/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-log-analysis/SKILL.md:70"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/release-v1.4.0/tizen-gbs-log-analysis/scripts/run_analyzer.py analyze --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:release-v1.4.0/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:193",
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:232",
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:197"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/release-v1.4.0/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py --help",
+        "smoke_exit": 0
+      },
+      {
+        "entry_id": "release-v1.4.0:SKILL_MD_COMMAND:release-v1.4.0/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py format-patch",
+        "kind": "SKILL_MD_COMMAND",
+        "target": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py format-patch",
+        "documented_in": [
+          "release-v1.4.0/tizen-gbs-patch-suggest/SKILL.md:304"
+        ],
+        "consumers": [],
+        "smoke_command": "/tmp/p49-a0-regression-43a6aa6/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/release-v1.4.0/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py format-patch --help",
+        "smoke_exit": 0
+      }
+    ]
+  }
+}

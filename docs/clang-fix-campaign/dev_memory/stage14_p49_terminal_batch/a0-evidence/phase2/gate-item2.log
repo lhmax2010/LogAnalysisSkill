@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/tmp/p49-gate-item2.py", line 98, in <module>
+    assert assertions and all(isinstance(n.test,ast.Compare) and all(isinstance(op,ast.Is) for op in n.test.ops) for n in assertions),name
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: test_triage_report_legacy_shims_preserve_all_symbol_identities
