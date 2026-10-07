@@ -4,8 +4,11 @@ Source: `../../p49-terminal-obs-predicates-v1.2.md`. The designer checked the
 `c79e893` encoding and FatTank approved it on 2026-09-28. Freeze commit:
 `6601cfc60fcbed8d2f8fa91301f7693d52723d94`. No predicate or exemption bytes changed.
 After erratum 1 (`32b7f43`), only item3/item4 producers ran, both verified PASS.
-Segment 2 now stops at the dangling-symlink message source rule (DIFF-03, stage14
-progress section 15). No other producer ran and no expected-diff gate passed.
+Erratum 2 closes DIFF-03; the recorded LIVE_SYMLINK_TO_DIR message passes its exact
+shape check. Segment 2 now stops at missing archived reader outcomes and the
+marker-write interruption observation (DIFF-04, stage14 progress section 16).
+No producer was rerun, the frozen JSON files remain unchanged, and the
+expected-diff gate has not run.
 
 ## Representation
 
@@ -60,7 +63,7 @@ repository. Test exit 0 means the expected positive/negative behavior was
 asserted, not that a negative input was accepted.
 
 See stage14 `progress.md` section 11 for document/condition counts and baseline,
-section 12 for approval, freeze SHA and canonical pins, and section 15 for the
+section 12 for approval, freeze SHA and canonical pins, and section 16 for the
 current stop report. Historical control_catalog entries describe segment 1;
 the additional freeze-guard tests and raw logs are recorded in section 12.
 The batch CLI supports explicit `--claim` selection while checking the complete

@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python",
+    "-c",
+    "from pathlib import Path\nimport hashlib, json\nmain = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\npart2 = main / 'docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2'\nraw_path = part2 / 'e1-item3/raw.json'\nraw = json.loads(raw_path.read_bytes())\nclaim = json.loads((part2 / 'e1-item3/output.json').read_bytes())['OBS-1.item3-predicate']\nsha = hashlib.sha256(raw_path.read_bytes()).hexdigest()\nassert sha == 'cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5'\nassert any(e['path'] == str(raw_path) and e['sha256'] == sha for e in claim['evidence'])\nassert claim['anchor']['matched_count'] == 1\nby_id = {o['scenario_id']: (i, o) for i, o in enumerate(raw['observations'])}\ni, live = by_id['LIVE_SYMLINK_TO_DIR']\nj, dangling = by_id['DANGLING_SYMLINK']\nexception = live['outcome']['exception']['value']\nexpected = 'source directory is a symlink: ' + live['fixture'] + '/destination'\nassert exception['type'] == 'GerritError'\nassert exception['code'] == {'state': 'VALUE', 'value': 'SOURCE_DIR_UNSAFE'}\nassert exception['message'] == expected\nprint('raw_sha256=' + sha)\nprint('anchor=' + json.dumps(claim['anchor'], ensure_ascii=False, sort_keys=True))\nprint('adjacent_observation=/observations/' + str(i) + '/outcome/exception/value')\nprint('observed_live_message=' + exception['message'])\nprint('expected_live_message=' + expected)\nprint('E2-1_LIVE_SELF_CHECK=PASS exact_string_equal=true')\nprint('dangling_old_message=' + dangling['outcome']['exception']['value']['message'])\nprint('EXISTING_BRANCH_OUTPUT(Erratum2/E2-1)=' + 'source directory is a symlink: ' + dangling['fixture'] + '/destination')\nprint('derived_value_status=NOT_REGISTERED; full Section6 gate blocked by missing observations')\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-e2-artifact-check-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path": "/tmp/p49-e2-artifact-check-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 0,
+  "output_sha256": "91c55d73bd83e0be59dd534468b70e880dde83dc22b1b91f444c66a05bec9fc2",
+  "tool_inputs": {
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+  },
+  "scope": "READ_ONLY_ARTIFACT_REUSE_CHECK; no OBS producer or production module executed"
+}

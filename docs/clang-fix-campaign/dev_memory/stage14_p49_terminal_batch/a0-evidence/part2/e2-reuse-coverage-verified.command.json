@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python",
+    "-c",
+    "from pathlib import Path\nimport hashlib, json, sys\nroot = Path('/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2')\nobservations = []\nfor kind in ('item3', 'item4'):\n    raw_path = root / ('e1-' + kind) / 'raw.json'\n    raw = json.loads(raw_path.read_bytes())\n    print(kind + '_raw_sha256=' + hashlib.sha256(raw_path.read_bytes()).hexdigest())\n    print(kind + '_observation_count=' + str(len(raw['observations'])))\n    print(kind + '_scenarios=' + json.dumps([o['scenario_id'] for o in raw['observations']]))\n    observations.extend((kind, i, o) for i, o in enumerate(raw['observations']))\npresent_without_read_results = [\n    {'path': 'e1-' + kind + '/raw.json#/observations/' + str(i) + '/protected_marker', 'observed': o['protected_marker']}\n    for kind, i, o in observations\n    if o['protected_marker']['state'] == 'PRESENT' and set(o['protected_marker']) <= {'state', 'sha256'}\n]\nprint('present_markers_with_only_state_and_hash=' + json.dumps(present_without_read_results, sort_keys=True))\nclaim = json.loads((root / 'e1-item4/output.json').read_bytes())['OBS-1.item4-anchors']\ninjection_sites = sorted({o['injected_at'] for o in claim['residual_obs']})\nprint('recorded_residual_injection_sites=' + json.dumps(injection_sites))\n# Only describe the archived producers' explicit sites, not an exhaustive reader enumeration.\nrecorded_marker_write_sites = [site for site in injection_sites if 'marker' in site and 'write' in site]\nprint('recorded_marker_write_sites=' + json.dumps(recorded_marker_write_sites))\nmissing = []\nif present_without_read_results:\n    missing.append('Section6 existing-reader outcomes missing from the PRESENT marker observation')\nif not recorded_marker_write_sites:\n    missing.append('Section5(ii) marker-write interruption has no archived residual observation')\nprint('missing_evidence=' + json.dumps(missing))\nprint('scope=artifact preflight only; NOT Section6 admission gate; no claim producer executed')\nprint('status=' + ('STOP_DIFF04' if missing else 'NO_LISTED_GAPS'))\nsys.exit(1 if missing else 0)\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-e2-artifact-check-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path": "/tmp/p49-e2-artifact-check-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 1,
+  "output_sha256": "f5258848c66bfdb804237175711685a26529119be3b84756541ae421514912e4",
+  "tool_inputs": {
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+  },
+  "scope": "READ_ONLY_ARTIFACT_REUSE_CHECK; no OBS producer or production module executed"
+}

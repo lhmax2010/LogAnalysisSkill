@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python",
+    "-c",
+    "from pathlib import Path\nimport hashlib, json, subprocess, sys\nmain = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\nprefix = 'docs/clang-fix-campaign/'\nstage = prefix + 'dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/'\nfor kind in ('item3', 'item4'):\n    for name in ('raw.json', 'output.json', 'context.json'):\n        rel = stage + 'e1-' + kind + '/' + name\n        content = (main / rel).read_bytes()\n        committed = subprocess.check_output(['git', '-C', str(main), 'show', '27fb460:' + rel])\n        assert content == committed, rel\n        print(rel + ' sha256=' + hashlib.sha256(content).hexdigest() + ' unchanged_from_27fb460=PASS')\n    raw_path = main / stage / ('e1-' + kind) / 'raw.json'\n    raw = json.loads(raw_path.read_bytes())\n    claim_id = 'OBS-1.' + kind + ('-predicate' if kind == 'item3' else '-anchors')\n    claim = json.loads((raw_path.parent / 'output.json').read_bytes())[claim_id]\n    digest = hashlib.sha256(raw_path.read_bytes()).hexdigest()\n    assert any(e['path'] == str(raw_path) and e['sha256'] == digest for e in claim['evidence'])\n    print(kind + ' prior_rules_context=' + json.dumps(raw['context'], ensure_ascii=False, sort_keys=True))\npins = {\n    'predicates.json': '8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6',\n    'measurement_exemptions.json': '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945',\n}\nfor name, expected in pins.items():\n    rel = prefix + 'tools/p49_terminal_data/' + name\n    data = (main / rel).read_bytes()\n    assert data == subprocess.check_output(['git', '-C', str(main), 'show', '6601cfc:' + rel])\n    canonical = json.dumps(json.loads(data), sort_keys=True, ensure_ascii=False, separators=(',', ':'), allow_nan=False).encode()\n    actual = hashlib.sha256(canonical).hexdigest()\n    assert actual == expected\n    print(name + ' canonical_sha256=' + actual + ' frozen_bytes=UNCHANGED')\nproducer = main / prefix / 'tools/verify_anchors.py'\nassert hashlib.sha256(producer.read_bytes()).hexdigest() == 'efa841b189956ebe3f786dcd4fb9a9fc82f91c9b81275af562548e997d05c23b'\nprint('producer_sha256=efa841b189956ebe3f786dcd4fb9a9fc82f91c9b81275af562548e997d05c23b unchanged; NOT_EXECUTED')\nprint('new_rules_sha256=' + hashlib.sha256((main / prefix / 'p49-terminal-batch-design-v1.31-FROZEN.md').read_bytes()).hexdigest())\nprint('runtime=' + sys.version.replace('\\n', ' ') + ' executable=' + sys.executable)\nprint('artifact_reuse_integrity=PASS')\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-e2-artifact-check-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path": "/tmp/p49-e2-artifact-check-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 0,
+  "output_sha256": "d46831b913314d15d0587214840bc133f596433535cb54ac775855a9afa1bd7e",
+  "tool_inputs": {
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+  },
+  "scope": "READ_ONLY_ARTIFACT_REUSE_CHECK; no OBS producer or production module executed"
+}

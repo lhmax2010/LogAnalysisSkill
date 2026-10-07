@@ -1,0 +1,12 @@
+item3_raw_sha256=cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5
+item3_observation_count=4
+item3_scenarios=["DANGLING_SYMLINK", "LIVE_SYMLINK_TO_DIR", "REAL_DIR", "ABSENT"]
+item4_raw_sha256=7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2
+item4_observation_count=36
+item4_scenarios=["surface1-none", "surface1-timeout", "surface1-SIGINT", "surface1-SIGTERM", "surface2-none", "surface2-timeout", "surface2-SIGINT", "surface2-SIGTERM", "surface3-none", "surface3-timeout", "surface3-SIGINT", "surface3-SIGTERM", "surface4-none", "surface4-timeout", "surface4-SIGINT", "surface4-SIGTERM", "surface5-none", "surface5-timeout", "surface5-SIGINT", "surface5-SIGTERM", "surface6-none", "surface6-timeout", "surface6-SIGINT", "surface6-SIGTERM", "fetch-query-timeout", "fetch-query-SIGINT", "fetch-query-SIGTERM", "fetch-init-timeout", "fetch-init-SIGINT", "fetch-init-SIGTERM", "fetch-fetch-timeout", "fetch-fetch-SIGINT", "fetch-fetch-SIGTERM", "fetch-checkout-timeout", "fetch-checkout-SIGINT", "fetch-checkout-SIGTERM"]
+present_markers_with_only_state_and_hash=[{"observed": {"sha256": "dc4eaeb7c6b3081096788fdc6bd3ec6eb38bae11eade8bfe4a63b0f1e0537af1", "state": "PRESENT"}, "path": "e1-item4/raw.json#/observations/20/protected_marker"}]
+recorded_residual_injection_sites=["_exclude_private_files/subprocess.run/SIGINT", "_exclude_private_files/subprocess.run/SIGTERM", "_exclude_private_files/subprocess.run/timeout", "fetch_source_for_commit/checkout/SIGINT", "fetch_source_for_commit/checkout/SIGTERM", "fetch_source_for_commit/checkout/timeout", "fetch_source_for_commit/fetch/SIGINT", "fetch_source_for_commit/fetch/SIGTERM", "fetch_source_for_commit/fetch/timeout", "fetch_source_for_commit/init/SIGINT", "fetch_source_for_commit/init/SIGTERM", "fetch_source_for_commit/init/timeout", "fetch_source_for_commit/query/SIGINT", "fetch_source_for_commit/query/SIGTERM", "fetch_source_for_commit/query/timeout"]
+recorded_marker_write_sites=[]
+missing_evidence=["Section6 existing-reader outcomes missing from the PRESENT marker observation", "Section5(ii) marker-write interruption has no archived residual observation"]
+scope=artifact preflight only; NOT Section6 admission gate; no claim producer executed
+status=STOP_DIFF04

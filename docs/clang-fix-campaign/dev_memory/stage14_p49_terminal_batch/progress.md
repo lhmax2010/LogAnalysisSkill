@@ -1,10 +1,11 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART2_STOPPED_DIFF03。更新日期: 2026-09-29。
+状态: A0_PART2_STOPPED_DIFF04。更新日期: 2026-10-07。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
-PRED-01..05 全部 CLOSED;第11节记录候选编码、人工 fixture 测试与固定
-43a6aa6 工作区的 B-0 实跑。编码尚待设计方逐条核对、FatTank 批准及
-单独 commit 冻结。OBS producer 运行数为零;生产实现未开始。
+PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
+6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
+勘误2已核对原字节,DIFF-01..03 CLOSED;第16节记录复用证据缺口 DIFF-04。
+本轮未运行任何 producer;既有两项产出不变,生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
 ## 0. 权威、输入与记录边界
@@ -996,7 +997,7 @@ git各阶段旧sentinel已被重置、destination仍存在。源码的重置/建
 
 | ID | 状态 | 原文位置 + 困难 | 候选处置(未实施) |
 |---|---|---|---|
-| DIFF-03 | OPEN | 勘误后terminal §3第1454-1458行的“预期差异”仅钉code/type;§6第1516-1517行要求精确差集、第1526行要求message必填。E1-1第2082-2091行只准四类来源,E1-2第2093-2106行的消息派生明确仅适用于TimeoutExpired,未覆盖悬空链接。item3 raw `/observations/0/outcome/exception/value/message`实测旧值为`[Errno 17] File exists: '<dest>'`;相邻live场景和当前gerrit.py第236-238行的安全分支消息为`source directory is a symlink: <dest>`。让悬空输入进入这个既有分支还会改变message,但无法从获准的§3预期差异条目取得该message的新值/派生规则。现有实现字符串可证明缺口,不是实现方可自行追加的第五类新值来源。 | 设计方可明确授权悬空场景复用现有SOURCE_DIR_UNSAFE分支的精确message(给出固定规则及以fixture destination派生的方式/来源位置),并将其列入DIFF_SET;或另行裁定message处理。实现方不自行扩E1-2到非超时异常、不保留旧错误文本冒充目标行为、不删message字段、不用全局掩码吞差异。 |
+| DIFF-03 | CLOSED (2026-10-07) | 勘误后terminal §3第1454-1458行的“预期差异”仅钉code/type;§6第1516-1517行要求精确差集、第1526行要求message必填。E1-1第2082-2091行只准四类来源,E1-2第2093-2106行的消息派生明确仅适用于TimeoutExpired,未覆盖悬空链接。item3 raw `/observations/0/outcome/exception/value/message`实测旧值为`[Errno 17] File exists: '<dest>'`;相邻live场景和当前gerrit.py第236-238行的安全分支消息为`source directory is a symlink: <dest>`。让悬空输入进入这个既有分支还会改变message,但无法从获准的§3预期差异条目取得该message的新值/派生规则。现有实现字符串可证明缺口,不是实现方可自行追加的第五类新值来源。 | 附录C勘误2 E2-1批准`EXISTING_BRANCH_OUTPUT`,锚定ANCHOR-3与LIVE_SYMLINK_TO_DIR的既有观测,代入悬空场景路径。第16.2节自检逐字相等(exit0);此来源缺口已关闭,不因DIFF-04重开。左栏保留勘误1时期的停止原因及原行号。 |
 
 原始实测摘录(未改写产出):
 
@@ -1038,3 +1039,124 @@ DIFF-01/02不重开,勘误1已生效。**本轮新增停止项1条,当前OPEN总
 生产源码及已冻结predicate/exemptions零diff,干净观测工作区status空;
 主树既有无关修改/删除/untracked稿保持不动。下一步只等DIFF-03裁决,
 不启动其它producer或生产实施。
+
+## 16. 勘误2入库与复用预检停止(2026-10-07)
+
+### 16.1 原字节入库、规则范围与不变量
+
+`git pull --ff-only origin clang-fix-campaign` 输出 `Already up to date.`;
+开工HEAD为 `27fb46077d2c3c91197bcedb534995f6987c9ef5`。
+批准文件已在主工作树目标路径,本轮未重排或改写任何字节;没有独立附件副本,
+以用户给定的全长SHA核对交付原件。
+
+| 版本 | SHA-256 | 证据 |
+|---|---|---|
+| 勘误前 | `66fd8684950004524ae7d86fb4e29328a1998ba48985a944ad39ae4d03a8598c` | 原始入库记录;不是本轮文档来源 |
+| 勘误1 | `d44584592b54bfaf1406c13369da5f2f6a5894fc3dd8de04b3905eadd6213c3f` | `git show 27fb460:docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md`;既有OBS采集时规则来源保持此值 |
+| 勘误2 | `73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e` | 本轮规则来源;与用户提供值完全一致 |
+
+`E/part2/e2-intake-diff-verified.command.json/.log` 保存完整命令与原始diff:
+
+```text
+append_only=PASS additions=27 deletions=0
+insertions=[('insert', 4, 4, 4, 5), ('insert', 2108, 2108, 2109, 2135)]
+```
+
+两段均为插入:文首勘误2生效行、附录C末尾勘误2。没有删除或修改旧行。
+E2-1关闭DIFF-03;E2-2将timeout关键字差异登记扩至**所有经过新签名的场景**,
+含默认、外部中断以及§3/§5中的相应调用,不是只扩默认场景。必须逐调用、逐场景登记;
+仍不允许全局掩码或省略字段。超时结果旧值依§4取ABSENT,其它旧值须有OBS字段。
+
+本轮只读复核在固定干净工作区执行:
+`/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6`;
+HEAD=`43a6aa625f27da46daba190657bf62256080c68e`,
+tree=`ca9331190e878af465e7968fe56e735585a5866e`,status为空。
+上轮`/tmp/p49-a0-baseline-v12-43a6aa6`已不存在;本轮建立仅供读取JSON的独立
+stdlib环境`/tmp/p49-e2-artifact-check-43a6aa6`,清除PYTHONPATH/MYPYPATH及pytest环境覆盖。
+首次普通venv创建因缺ensurepip失败;改用`python3 -m venv --without-pip`成功,
+未安装项目、未import生产模块。这里不是B-0或生产行为复跑。
+
+`e2-reuse-integrity.*` exit0核对下列原件均与`27fb460`逐字节一致,
+且raw SHA与各claim证据引用相符:
+
+| 原件 | SHA-256 |
+|---|---|
+| `e1-item3/raw.json` | `cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5` |
+| `e1-item4/raw.json` | `7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2` |
+
+同一日志还核对两组output/context未变、producer源码未变且未执行,
+predicates/exemptions与`6601cfc`原字节一致;canonical hash分别仍为
+`8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6`与
+`4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`。
+不把旧OBS中的规则SHA重写成勘误2SHA;采集来源与本轮登记规则来源分别留痕。
+
+### 16.2 E2-1相邻观测自检
+
+命令、完整代码参数与输出:`e2-live-message-selfcheck.command.json/.log`,exit0。
+只读既有item3 JSON,未运行producer。ANCHOR-3 selector与`matched_count=1`
+取自`e1-item3/output.json`;相邻观测路径:
+`e1-item3/raw.json#/observations/1/outcome/exception/value`。
+
+```text
+observed_live_message=source directory is a symlink: /tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination
+expected_live_message=source directory is a symlink: /tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination
+E2-1_LIVE_SELF_CHECK=PASS exact_string_equal=true
+EXISTING_BRANCH_OUTPUT(Erratum2/E2-1)=source directory is a symlink: /tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination
+derived_value_status=NOT_REGISTERED; full Section6 gate blocked by missing observations
+```
+
+这证明E2-1形式成立,不代表三个派生规则的门禁已实现或通过。
+
+### 16.3 DIFF-04:现有产出不足以闭合§6改前结果与场景
+
+| ID | 状态 | 原文位置 + 实测困难 | 候选处置(均未实施,待人工裁决) |
+|---|---|---|---|
+| DIFF-04 | OPEN | 当前冻结稿§6第1525-1533行要求封闭场景及必填字段,第1530行明确要求protected marker既有读取方结果;§5第1499行与第1502行要求marker写入中断场景。现有item3/item4产出只有marker存在状态/原字节SHA,没有读取结果;没有marker写入中断的观测。本轮任务明确“缺字段则停止报告”,且只能复用产出。 | (A) 明确授权后续阶段在读取方全集就绪后补采所缺场景与字段,保留本轮STOP状态,不修改已冻结predicate;或(B) 明确分段验收规则:本段只做门禁结构/人工控制,§5与读取方改前证据待第3段闭合,期间不得声称§6完成。实现方不自行选择、不重跑producer、不删必填字段、不把未观测写成ABSENT。 |
+
+具体证据(同一停止项的两个缺口):
+
+1. `e1-item4/raw.json#/observations/20/protected_marker`(`surface6-none`)
+   为 `{"state":"PRESENT","sha256":"dc4eaeb7c6b3081096788fdc6bd3ec6eb38bae11eade8bfe4a63b0f1e0537af1"}`。
+   原始对象无读取方返回/异常结果;producer `verify_anchors.py:71`的`marker_state`
+   也只采存在与SHA。不能由存在状态或SHA推导读取结果。
+2. item4的全部`residual_obs.injected_at`只有exclude subprocess与fetch
+   query/init/fetch/checkout故障注入;无marker写入中断。`surface6-SIGINT/SIGTERM`
+   的注入点是exclude,不是§5(ii)的marker写入。item3有4份观测,item4有36份;
+   这40份是既有观测记录数,**不是已冻结scenario_manifest的场景数**。
+
+`e2-reuse-coverage-verified.command.json/.log`保存按原JSON计算的缺口检查,exit1:
+
+```text
+recorded_marker_write_sites=[]
+missing_evidence=["Section6 existing-reader outcomes missing from the PRESENT marker observation", "Section5(ii) marker-write interruption has no archived residual observation"]
+scope=artifact preflight only; NOT Section6 admission gate; no claim producer executed
+status=STOP_DIFF04
+```
+
+item5上轮已明确未运行,其读取方全集依赖第3段名字兜底引擎。本停止项是
+**输入证据完整性不足**,不是新的取值来源争议,也不是已冻结claim判红。
+上轮两claim PASS保持历史事实,本轮没有重新执行producer或重新宣称verifier通过。
+不通过扫临时目录或临时调用读取方绕过“只复用”限制。
+
+### 16.4 本轮交付边界与未执行项
+
+| 项目 | 状态/计数 | 命令及exit |
+|---|---|---|
+| 勘误2原字节与仅追加 | PASS;27新增/0删除 | `e2-intake-diff-verified.command.json`,exit0 |
+| 旧产出SHA复用与冻结JSON不变 | PASS | `e2-reuse-integrity.command.json`,exit0 |
+| E2-1相邻消息形式 | PASS;精确相等 | `e2-live-message-selfcheck.command.json`,exit0 |
+| 复用输入完整性 | STOP_DIFF04 | `e2-reuse-coverage-verified.command.json`,exit1;非门禁准入证伪 |
+| scenario_manifest/result_schema/expected_diff | NOT_CREATED;场景数与NO_DIFF/DIFF_SET计数N/A | 未执行;不是0场景通过 |
+| 每条DIFF_SET来源清单 | N/A,尚无登记 | 新值来源规则已生效;缺旧观测不得补造清单 |
+| §6正常对照及七条准入证伪 | NOT_RUN | 命令/exit均N/A;不得用上述预检替代 |
+| 生产/测试/冻结predicate/exemptions/producer源码 | 零改动 | 本轮只入库文档与只读复核证据 |
+
+所有本轮证据命令的完整argv(含`python -c`源码)、cwd、环境、HEAD/tree、exit及
+输出SHA保存于同名command.json;读取日志不依赖未提交的临时驱动脚本。
+首次仅追加自检误把文首插入位置当作零基索引3,实际为4,exit1原文保留于
+`e2-intake-diff.*`;随后用“勘误1生效行之后”的锚定关系复验通过,
+没有修改批准的输入。初次`e2-reuse-coverage.*`是人工停止说明输出;
+最终证据为`-verified`版本按读取到的缺口决定exit,不冒充七条负控制之一。
+
+DIFF-01/02/03 CLOSED;**本轮停止报告1条,当前OPEN总数1条(DIFF-04)**。
+不启动A₀第3段、item5或任何生产改动;等补采/分段裁决。

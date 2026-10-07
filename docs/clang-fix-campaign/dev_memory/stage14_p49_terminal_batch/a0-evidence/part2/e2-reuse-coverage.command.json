@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python",
+    "-c",
+    "from pathlib import Path\nimport hashlib, json, sys, ast\nmain = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\nbase = main / 'docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2'\nall_observations = []\nfor kind in ('item3', 'item4'):\n    raw_path = base / ('e1-' + kind) / 'raw.json'\n    raw = json.loads(raw_path.read_bytes())\n    print(kind + '_raw_sha256=' + hashlib.sha256(raw_path.read_bytes()).hexdigest())\n    print(kind + '_observation_count=' + str(len(raw['observations'])))\n    print(kind + '_scenarios=' + json.dumps([o['scenario_id'] for o in raw['observations']]))\n    all_observations.extend(raw['observations'])\nitem4 = json.loads((base / 'e1-item4/raw.json').read_bytes())\nindex, example = next((i, o) for i, o in enumerate(item4['observations']) if o['scenario_id'] == 'surface6-none')\nprint('example=/e1-item4/raw.json#/observations/' + str(index) + '/protected_marker')\nprint('example_value=' + json.dumps(example['protected_marker'], sort_keys=True))\nprint('protected_marker_key_sets=' + repr(sorted({tuple(sorted(o['protected_marker'])) for o in all_observations})))\nproducer = main / 'docs/clang-fix-campaign/tools/verify_anchors.py'\nsource = producer.read_text()\ntree = ast.parse(source)\nfn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == 'marker_state')\nprint('marker_state_source=' + ast.get_source_segment(source, fn))\nprint('injection_sites=' + json.dumps(item4['OBS-1.item4-anchors']['residual_obs']) if 'OBS-1.item4-anchors' in item4 else 'injection_surfaces=' + json.dumps(sorted({o['surface'] for o in all_observations})))\nprint('MISSING_OBS: Section6 protected marker reader return/exception outcomes; no reader results in archived observations (even PRESENT example above).')\nprint('MISSING_SCENARIO: Section5(ii) interruption during protected marker write; archived injection sites only runner/subprocess boundaries, not marker write.')\nprint('NOTE: item5 was explicitly NOT_RUN in segment2; this is an input coverage gap, not a red frozen claim.')\nprint('NO_INFERENCE: missing observation is not {state:ABSENT}; no gate registry generated.')\nprint('DIFF-04=OPEN: one stop item, two documented evidence gaps')\nsys.exit(1)\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-e2-artifact-check-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path": "/tmp/p49-e2-artifact-check-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 1,
+  "output_sha256": "f65dd5d3ff6e19fcbecfabf481fc68797f28b45dcd541c120d9bb4eff04a227a",
+  "tool_inputs": {
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+  },
+  "scope": "READ_ONLY_ARTIFACT_REUSE_CHECK; no OBS producer or production module executed"
+}

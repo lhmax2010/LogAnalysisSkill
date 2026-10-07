@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python",
+    "-c",
+    "from pathlib import Path\nimport hashlib, subprocess, difflib\nmain = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\nrel = 'docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md'\nold = subprocess.check_output(['git', '-C', str(main), 'show', 'HEAD:' + rel])\nnew = (main / rel).read_bytes()\nold_sha = hashlib.sha256(old).hexdigest()\nnew_sha = hashlib.sha256(new).hexdigest()\nassert old_sha == 'd44584592b54bfaf1406c13369da5f2f6a5894fc3dd8de04b3905eadd6213c3f'\nassert new_sha == '73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e'\na, b = old.splitlines(keepends=True), new.splitlines(keepends=True)\nops = [op for op in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes() if op[0] != 'equal']\nassert len(ops) == 2 and all(op[0] == 'insert' for op in ops), ops\nassert ops[0][1] == 3 and ops[1][1] == len(a), ops\nprint('old_sha256=' + old_sha)\nprint('new_sha256=' + new_sha)\nprint('append_only=PASS additions=' + str(sum(j2-j1 for _,i1,i2,j1,j2 in ops)) + ' deletions=0')\nprint('insertions=' + repr(ops))\nprint(subprocess.check_output(['git', '-C', str(main), 'diff', '--no-ext-diff', '--unified=0', '--', rel], text=True), end='')\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-e2-artifact-check-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null
+  },
+  "path": "/tmp/p49-e2-artifact-check-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 1,
+  "output_sha256": "a3c2b6702fecb9ed7146b56da5b93ead04c136ac2b94c59af441abd93b252a51",
+  "tool_inputs": {
+    "/tmp/p49-e2-artifact-check-43a6aa6/bin/python": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+  },
+  "scope": "READ_ONLY_ARTIFACT_REUSE_CHECK; no OBS producer or production module executed"
+}

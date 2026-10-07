@@ -1,0 +1,17 @@
+item3_raw_sha256=cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5
+item3_observation_count=4
+item3_scenarios=["DANGLING_SYMLINK", "LIVE_SYMLINK_TO_DIR", "REAL_DIR", "ABSENT"]
+item4_raw_sha256=7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2
+item4_observation_count=36
+item4_scenarios=["surface1-none", "surface1-timeout", "surface1-SIGINT", "surface1-SIGTERM", "surface2-none", "surface2-timeout", "surface2-SIGINT", "surface2-SIGTERM", "surface3-none", "surface3-timeout", "surface3-SIGINT", "surface3-SIGTERM", "surface4-none", "surface4-timeout", "surface4-SIGINT", "surface4-SIGTERM", "surface5-none", "surface5-timeout", "surface5-SIGINT", "surface5-SIGTERM", "surface6-none", "surface6-timeout", "surface6-SIGINT", "surface6-SIGTERM", "fetch-query-timeout", "fetch-query-SIGINT", "fetch-query-SIGTERM", "fetch-init-timeout", "fetch-init-SIGINT", "fetch-init-SIGTERM", "fetch-fetch-timeout", "fetch-fetch-SIGINT", "fetch-fetch-SIGTERM", "fetch-checkout-timeout", "fetch-checkout-SIGINT", "fetch-checkout-SIGTERM"]
+example=/e1-item4/raw.json#/observations/20/protected_marker
+example_value={"sha256": "dc4eaeb7c6b3081096788fdc6bd3ec6eb38bae11eade8bfe4a63b0f1e0537af1", "state": "PRESENT"}
+protected_marker_key_sets=[('sha256', 'state'), ('state',)]
+marker_state_source=def marker_state(path: Path) -> dict[str, Any]:
+    return {"state": "PRESENT", "sha256": digest(path)} if path.is_file() else {"state": "ABSENT"}
+injection_surfaces=["fetch-full-checkout", "fetch-full-fetch", "fetch-full-init", "fetch-full-query", "fetch-git", "fetch-query", "shared-exclude", "shared-git", "submit-git", "submit-remote", "symlink:ABSENT", "symlink:DANGLING_SYMLINK", "symlink:LIVE_SYMLINK_TO_DIR", "symlink:REAL_DIR"]
+MISSING_OBS: Section6 protected marker reader return/exception outcomes; no reader results in archived observations (even PRESENT example above).
+MISSING_SCENARIO: Section5(ii) interruption during protected marker write; archived injection sites only runner/subprocess boundaries, not marker write.
+NOTE: item5 was explicitly NOT_RUN in segment2; this is an input coverage gap, not a red frozen claim.
+NO_INFERENCE: missing observation is not {state:ABSENT}; no gate registry generated.
+DIFF-04=OPEN: one stop item, two documented evidence gaps

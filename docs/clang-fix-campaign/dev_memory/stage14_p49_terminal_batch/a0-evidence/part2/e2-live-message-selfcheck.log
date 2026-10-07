@@ -1,0 +1,9 @@
+raw_sha256=cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5
+anchor={"expr_kind": "BoolOp.And", "file": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py", "function": "_reset_generated_source_dir", "matched_count": 1, "operand_calls": ["exists", "is_symlink"], "same_receiver": true, "selector": "FunctionDef//BoolOp.And[direct operand calls include exists,is_symlink]", "span_sha256": "3f3043b48944263c4547a4a009d29fb67667eccf10cee0b593592e4e007d8340"}
+adjacent_observation=/observations/1/outcome/exception/value
+observed_live_message=source directory is a symlink: /tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination
+expected_live_message=source directory is a symlink: /tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination
+E2-1_LIVE_SELF_CHECK=PASS exact_string_equal=true
+dangling_old_message=[Errno 17] File exists: '/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination'
+EXISTING_BRANCH_OUTPUT(Erratum2/E2-1)=source directory is a symlink: /tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination
+derived_value_status=NOT_REGISTERED; full Section6 gate blocked by missing observations
