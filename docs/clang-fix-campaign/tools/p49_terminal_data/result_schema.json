@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "readers_source": "OBS-1.item5-order",
+  "result": {
+    "kind": "record",
+    "required": {
+      "return_value": {
+        "kind": "state",
+        "value": "json"
+      },
+      "exception_type": {
+        "kind": "state",
+        "value": "str"
+      },
+      "exception_code": {
+        "kind": "state",
+        "value": "str"
+      },
+      "exception_message": {
+        "kind": "state",
+        "value": "str"
+      },
+      "warnings": {
+        "kind": "state",
+        "value": {
+          "kind": "array",
+          "items": "str"
+        }
+      },
+      "action": {
+        "kind": "state",
+        "value": "str"
+      },
+      "calls": {
+        "kind": "array",
+        "items": {
+          "kind": "record",
+          "required": {
+            "argv": {
+              "kind": "array",
+              "items": "str"
+            },
+            "kwargs": {
+              "kind": "record",
+              "required": {},
+              "optional": {
+                "check": "bool",
+                "capture_output": "bool",
+                "text": "bool",
+                "env": {
+                  "kind": "one_of",
+                  "choices": [
+                    "null",
+                    {
+                      "kind": "map",
+                      "values": "str"
+                    }
+                  ]
+                },
+                "timeout": {
+                  "kind": "one_of",
+                  "choices": [
+                    "null",
+                    "number"
+                  ]
+                }
+              }
+            }
+          },
+          "optional": {}
+        }
+      },
+      "destination": {
+        "kind": "state",
+        "value": {
+          "kind": "record",
+          "required": {
+            "exists": "bool",
+            "kind": {
+              "kind": "enum",
+              "values": [
+                "ABSENT",
+                "DIRECTORY",
+                "FILE",
+                "SYMLINK"
+              ]
+            },
+            "symlink_target": {
+              "kind": "state",
+              "value": "str"
+            },
+            "files": {
+              "kind": "map",
+              "values": "str"
+            }
+          },
+          "optional": {}
+        }
+      },
+      "worktree": {
+        "kind": "state",
+        "value": {
+          "kind": "record",
+          "required": {
+            "exists": "bool",
+            "kind": {
+              "kind": "enum",
+              "values": [
+                "ABSENT",
+                "DIRECTORY",
+                "FILE",
+                "SYMLINK"
+              ]
+            },
+            "symlink_target": {
+              "kind": "state",
+              "value": "str"
+            },
+            "files": {
+              "kind": "map",
+              "values": "str"
+            }
+          },
+          "optional": {}
+        }
+      },
+      "workdir_marker": {
+        "kind": "record",
+        "required": {
+          "exists": "bool",
+          "sha256": {
+            "kind": "state",
+            "value": "str"
+          }
+        },
+        "optional": {}
+      },
+      "protected_marker": {
+        "kind": "record",
+        "required": {
+          "exists": "bool",
+          "sha256": {
+            "kind": "state",
+            "value": "str"
+          },
+          "readers": {
+            "kind": "array",
+            "items": {
+              "kind": "record",
+              "required": {
+                "reader": "str",
+                "return_value": {
+                  "kind": "state",
+                  "value": "json"
+                },
+                "exception_type": {
+                  "kind": "state",
+                  "value": "str"
+                },
+                "exception_code": {
+                  "kind": "state",
+                  "value": "str"
+                },
+                "exception_message": {
+                  "kind": "state",
+                  "value": "str"
+                }
+              },
+              "optional": {}
+            }
+          }
+        },
+        "optional": {}
+      },
+      "exclude_completed": {
+        "kind": "state",
+        "value": "bool"
+      },
+      "exit_code": {
+        "kind": "state",
+        "value": "int"
+      }
+    },
+    "optional": {}
+  }
+}

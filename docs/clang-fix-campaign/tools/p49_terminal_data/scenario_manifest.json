@@ -1,0 +1,826 @@
+{
+  "version": 1,
+  "before_run": "PENDING_SEG3",
+  "rules": {
+    "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+    "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+    "section": "§6",
+    "quote": "## §6 [本批核心机制] 预期差异门禁"
+  },
+  "scenarios": [
+    {
+      "id": "DANGLING_SYMLINK",
+      "section": "§3",
+      "surface": "fetch-full",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-query",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/0/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "pointer": "/observations/0"
+      }
+    },
+    {
+      "id": "LIVE_SYMLINK_TO_DIR",
+      "section": "§3",
+      "surface": "fetch-full",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-query",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/1/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "pointer": "/observations/1"
+      }
+    },
+    {
+      "id": "REAL_DIR",
+      "section": "§3",
+      "surface": "fetch-full",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-query",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/2/trace/0"
+          }
+        },
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/2/trace/1"
+          }
+        },
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/2/trace/2"
+          }
+        },
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/2/trace/3"
+          }
+        },
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/2/trace/4"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "pointer": "/observations/2"
+      }
+    },
+    {
+      "id": "ABSENT",
+      "section": "§3",
+      "surface": "fetch-full",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item3-vy6s9vtw/ABSENT/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-query",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/3/trace/0"
+          }
+        },
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/3/trace/1"
+          }
+        },
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/3/trace/2"
+          }
+        },
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/3/trace/3"
+          }
+        },
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+            "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+            "pointer": "/observations/3/trace/4"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "pointer": "/observations/3"
+      }
+    },
+    {
+      "id": "surface1-none",
+      "section": "§4",
+      "surface": "fetch-query",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface1-none/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-query",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/0/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/0"
+      }
+    },
+    {
+      "id": "surface1-timeout",
+      "section": "§4",
+      "surface": "fetch-query",
+      "fault": "timeout",
+      "timeout": 0.125,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface1-timeout/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-query",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/1/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/1"
+      }
+    },
+    {
+      "id": "surface1-SIGINT",
+      "section": "§4",
+      "surface": "fetch-query",
+      "fault": "SIGINT",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface1-SIGINT/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-query",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/2/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/2"
+      }
+    },
+    {
+      "id": "surface1-SIGTERM",
+      "section": "§4",
+      "surface": "fetch-query",
+      "fault": "SIGTERM",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface1-SIGTERM/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-query",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/3/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/3"
+      }
+    },
+    {
+      "id": "surface2-none",
+      "section": "§4",
+      "surface": "fetch-git",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface2-none/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/4/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/4"
+      }
+    },
+    {
+      "id": "surface2-timeout",
+      "section": "§4",
+      "surface": "fetch-git",
+      "fault": "timeout",
+      "timeout": 0.125,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface2-timeout/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/5/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/5"
+      }
+    },
+    {
+      "id": "surface2-SIGINT",
+      "section": "§4",
+      "surface": "fetch-git",
+      "fault": "SIGINT",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface2-SIGINT/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/6/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/6"
+      }
+    },
+    {
+      "id": "surface2-SIGTERM",
+      "section": "§4",
+      "surface": "fetch-git",
+      "fault": "SIGTERM",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface2-SIGTERM/destination"
+      },
+      "calls": [
+        {
+          "surface": "fetch-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/7/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/7"
+      }
+    },
+    {
+      "id": "surface3-none",
+      "section": "§4",
+      "surface": "submit-git",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface3-none/destination"
+      },
+      "calls": [
+        {
+          "surface": "submit-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/8/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/8"
+      }
+    },
+    {
+      "id": "surface3-timeout",
+      "section": "§4",
+      "surface": "submit-git",
+      "fault": "timeout",
+      "timeout": 0.125,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface3-timeout/destination"
+      },
+      "calls": [
+        {
+          "surface": "submit-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/9/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/9"
+      }
+    },
+    {
+      "id": "surface3-SIGINT",
+      "section": "§4",
+      "surface": "submit-git",
+      "fault": "SIGINT",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface3-SIGINT/destination"
+      },
+      "calls": [
+        {
+          "surface": "submit-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/10/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/10"
+      }
+    },
+    {
+      "id": "surface3-SIGTERM",
+      "section": "§4",
+      "surface": "submit-git",
+      "fault": "SIGTERM",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface3-SIGTERM/destination"
+      },
+      "calls": [
+        {
+          "surface": "submit-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/11/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/11"
+      }
+    },
+    {
+      "id": "surface4-none",
+      "section": "§4",
+      "surface": "submit-remote",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface4-none/destination"
+      },
+      "calls": [
+        {
+          "surface": "submit-remote",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/12/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/12"
+      }
+    },
+    {
+      "id": "surface4-timeout",
+      "section": "§4",
+      "surface": "submit-remote",
+      "fault": "timeout",
+      "timeout": 0.125,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface4-timeout/destination"
+      },
+      "calls": [
+        {
+          "surface": "submit-remote",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/13/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/13"
+      }
+    },
+    {
+      "id": "surface4-SIGINT",
+      "section": "§4",
+      "surface": "submit-remote",
+      "fault": "SIGINT",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface4-SIGINT/destination"
+      },
+      "calls": [
+        {
+          "surface": "submit-remote",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/14/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/14"
+      }
+    },
+    {
+      "id": "surface4-SIGTERM",
+      "section": "§4",
+      "surface": "submit-remote",
+      "fault": "SIGTERM",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface4-SIGTERM/destination"
+      },
+      "calls": [
+        {
+          "surface": "submit-remote",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/15/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/15"
+      }
+    },
+    {
+      "id": "surface5-none",
+      "section": "§4",
+      "surface": "shared-git",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface5-none/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/16/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/16"
+      }
+    },
+    {
+      "id": "surface5-timeout",
+      "section": "§4",
+      "surface": "shared-git",
+      "fault": "timeout",
+      "timeout": 0.125,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface5-timeout/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/17/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/17"
+      }
+    },
+    {
+      "id": "surface5-SIGINT",
+      "section": "§4",
+      "surface": "shared-git",
+      "fault": "SIGINT",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface5-SIGINT/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/18/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/18"
+      }
+    },
+    {
+      "id": "surface5-SIGTERM",
+      "section": "§4",
+      "surface": "shared-git",
+      "fault": "SIGTERM",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface5-SIGTERM/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-git",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/19/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/19"
+      }
+    },
+    {
+      "id": "surface6-none",
+      "section": "§4",
+      "surface": "shared-exclude",
+      "fault": "none",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface6-none/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-exclude",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/20/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/20"
+      }
+    },
+    {
+      "id": "surface6-timeout",
+      "section": "§4",
+      "surface": "shared-exclude",
+      "fault": "timeout",
+      "timeout": 0.125,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface6-timeout/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-exclude",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/21/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/21"
+      }
+    },
+    {
+      "id": "surface6-SIGINT",
+      "section": "§4",
+      "surface": "shared-exclude",
+      "fault": "SIGINT",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface6-SIGINT/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-exclude",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/22/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/22"
+      }
+    },
+    {
+      "id": "surface6-SIGTERM",
+      "section": "§4",
+      "surface": "shared-exclude",
+      "fault": "SIGTERM",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface6-SIGTERM/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-exclude",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/23/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/23"
+      }
+    },
+    {
+      "id": "EXCLUDE_INTERRUPTED",
+      "section": "§5(i)",
+      "surface": "shared-exclude",
+      "fault": "SIGINT",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface6-SIGINT/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-exclude",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/22/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/22"
+      }
+    },
+    {
+      "id": "MARKER_WRITE_INTERRUPTED",
+      "section": "§5(ii)",
+      "surface": "shared-exclude",
+      "fault": "SIGINT",
+      "timeout": null,
+      "fixture": {
+        "destination": "/tmp/p49-item4-vik56x9g/surface6-none/destination"
+      },
+      "calls": [
+        {
+          "surface": "shared-exclude",
+          "trace_ref": {
+            "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+            "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+            "pointer": "/observations/20/trace/0"
+          }
+        }
+      ],
+      "obs_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/20"
+      }
+    }
+  ]
+}

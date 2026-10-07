@@ -19,7 +19,7 @@
 | P4.9 skill-5 gerrit-submit | CLOSED | Gerrit-submit extraction, status locks, six-row terminal mapping, patch-version ledger | commits `f2bc050`/`31a91cb`/`a97c40b`/`0dfa5f1`/`a8620f1`/`d51145f`/`c6f734b`; 173 symbols + 4 module scopes; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | Triage-report extraction, gbs_report constraint closure, branch inventory, extraction-phase ledger | commits `bdb5a55`/`3dc0466`/`3da12a4`/`2cc3dd3`/`dfbbf3b`; 197 symbols + 4 module scopes; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | Step-0 plus all six skill extractions signed off | phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; next and only entry is the five-item terminal batch |
-| P4.9 terminal batch | A0_PART2_STOPPED_DIFF04 | Erratum2 SHA `73dad3c6`; DIFF-01/02/03 CLOSED; E2-1 exact-message self-check PASS | `stage14_p49_terminal_batch/progress.md` §16; archived OBS lacks reader results and marker-write interruption; no producer rerun; expected-diff gate NOT_RUN |
+| P4.9 terminal batch | A0_PART2_STRUCTURE_COMPLETE_PENDING_SEG3 | DIFF-01..04 CLOSED; exact-diff structure: 30 scenarios,56 registrations; seven admission controls red | `stage14_p49_terminal_batch/progress.md` §17; 172 artificial tests green; real before-run PENDING_SEG3 (item5 reader universe); no producer run |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -46,7 +46,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 skill-5 gerrit-submit | CLOSED | `f2bc050`, `31a91cb`, `a97c40b`, `0dfa5f1`, `a8620f1`, `d51145f`, `c6f734b` | frozen authority `../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`; result `stage12_p49_skill5_gerrit_submit/result.md`; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | `bdb5a55`, `3dc0466`, `3da12a4`, `2cc3dd3`, `dfbbf3b`, `9a74c0b` | frozen authority `../p49-skill6-triage-report-design-v1.8-FROZEN.md`; result `stage13_p49_skill6_triage_report/result.md`; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | step-0 + skills 1-6 | signed phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; P4.9 terminal five-item batch is the only next entry |
-| 14 P4.9 terminal batch | A0_PART2_STOPPED_DIFF04 | Plan `43a6aa6`; encoding `c79e893`; freeze `6601cfc`; observations `27fb460`; erratum2 in this commit | code tree fixed; current rules 73dad3c6; prior item3/item4 evidence reused unchanged; progress §16 input-coverage stop,1 OPEN; no new producer run |
+| 14 P4.9 terminal batch | A0_PART2_STRUCTURE_COMPLETE_PENDING_SEG3 | Plan `43a6aa6`; encoding `c79e893`; freeze `6601cfc`; observations `27fb460`; erratum2 `77f55eb`; structure in this commit | fixed code tree/rules73dad3c6; NO_DIFF=0/DIFF_SET=30; progress §17; 0 OPEN stops, before-run explicitly PENDING_SEG3 |
 
 ## Code-Ready Checkpoint
 

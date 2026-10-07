@@ -5,10 +5,11 @@ Source: `../../p49-terminal-obs-predicates-v1.2.md`. The designer checked the
 `6601cfc60fcbed8d2f8fa91301f7693d52723d94`. No predicate or exemption bytes changed.
 After erratum 1 (`32b7f43`), only item3/item4 producers ran, both verified PASS.
 Erratum 2 closes DIFF-03; the recorded LIVE_SYMLINK_TO_DIR message passes its exact
-shape check. Segment 2 now stops at missing archived reader outcomes and the
-marker-write interruption observation (DIFF-04, stage14 progress section 16).
-No producer was rerun, the frozen JSON files remain unchanged, and the
-expected-diff gate has not run.
+shape check. DIFF-04 is CLOSED by the designer/FatTank's segment split: unchanged
+fields come from the gate's own paired execution, not OBS difference sources.
+Segment 2 structure, registration and artificial controls are complete; the real
+before-run is PENDING_SEG3, waiting for the item5 reader universe. No producer was
+rerun, and the frozen predicate/exemption JSON files remain unchanged.
 
 ## Representation
 
@@ -63,9 +64,73 @@ repository. Test exit 0 means the expected positive/negative behavior was
 asserted, not that a negative input was accepted.
 
 See stage14 `progress.md` section 11 for document/condition counts and baseline,
-section 12 for approval, freeze SHA and canonical pins, and section 16 for the
-current stop report. Historical control_catalog entries describe segment 1;
+section 12 for approval, freeze SHA and canonical pins, and section 17 for the
+segment-2 closeout. Historical control_catalog entries describe segment 1;
 the additional freeze-guard tests and raw logs are recorded in section 12.
 The batch CLI supports explicit `--claim` selection while checking the complete
 frozen registry and requiring exactly the selected output keys. It never emits
 PASS for omitted claims. Default invocation still requires all fifteen outputs.
+
+## Section 6 Expected-Difference Gate
+
+`scenario_manifest.json`, `result_schema.json` and `expected_diff.json` belong to
+the expected-difference gate, not the frozen OBS predicate registry. The current
+scope is segment-2 structure and artificial controls only. The real before-run
+is **PENDING_SEG3**; this is not an assertion that Section 6 or A0 is complete.
+
+The manifest covers four source-directory cases, six call surfaces with each of
+none/timeout/SIGINT/SIGTERM, and the two marker interruption points. All thirty
+currently use DIFF_SET: every scenario traverses a signature covered by E2-2.
+NO_DIFF is implemented and tested separately with artificial unchanged objects;
+no fictitious production scenario is added merely to obtain a nonzero count.
+Unlisted fields always compare exactly equal, with no normalization or masks.
+
+`expected_diff_sources.md` is a generated view of every registration, not a second
+authority. Each JSON recipe retains the original document quote/section/SHA or
+the archived OBS JSON Pointer/SHA. Timeout result absence comes only from Section
+4; missing old kwargs are checked on the exact archived call. The Section 5 OBS
+references establish only that kwarg's absence, not an observed marker-write
+interruption or reader result. Default/interruption timeout null is a real value,
+not the ABSENT tag. All derived strings are calculated from fixed fixture inputs
+and compared in full.
+
+From the repository root, using an isolated tooling environment:
+
+```bash
+python docs/clang-fix-campaign/tools/build_terminal_diff_data.py --check
+python docs/clang-fix-campaign/tools/terminal_expected_diff.py check
+python docs/clang-fix-campaign/tools/terminal_diff_controls.py normal
+python -m pytest tests/unit/test_terminal_expected_diff.py -vv
+```
+
+Replace `normal` with any of the following; each must exit 1:
+`extra-change`, `missed-change`, `empty-reason`, `impossible-registration`,
+`missing-mode`, `unknown-mode`, `no-diff-with-differences`, `empty-diff-set`,
+`readers-empty`, `readers-missing`. The missing/unknown-mode pair covers one of
+the seven normative controls. Stage14 progress section 17 records exact commands,
+exits and the final code/data hashes. No control invokes an OBS producer.
+
+### Segment-3 Integration Boundary
+
+`readers_from_item5(output)` extracts the nonempty common reader universe from
+the already-verified `OBS-1.item5-order` artifact. It does not infer outcomes or
+replace the frozen verifier. Pass that list into `Gate.collect(runner, readers)`
+or `Gate.dual_run(before_runner, after_runner, readers)`. Missing/empty/duplicate
+lists fail before callbacks. Every result must contain exactly those readers,
+including returned values or exception type/code/message; marker existence and
+raw-byte SHA cannot substitute for the reader results.
+
+A collector accepts `(scenario, sorted_reader_ids)` and returns a complete
+`result_schema` object. Before and after collectors are independent, use the same
+fixed fixture inputs, and must freeze volatile inputs rather than mask outputs.
+The framework snapshots returned objects to avoid cross-run aliasing, validates
+the complete result set, and compares the exact registered differences. The
+concrete production collectors and their **real execution are deferred to segment
+3**. Artificial disk/reader values from `terminal_diff_controls.py` must never be
+used to fill a real result or submitted as OBS facts.
+
+Once actual before/after files and the verified item5 output exist, the comparison
+entry is `terminal_expected_diff.py compare --before <file> --after <file>
+--item5-output <file>`. It rejects missing files/fields/scenarios, unknown envelope
+fields, incomplete reader membership, wrong old/new values and any extra or
+missing difference. It does not collect observations itself on this CLI path.

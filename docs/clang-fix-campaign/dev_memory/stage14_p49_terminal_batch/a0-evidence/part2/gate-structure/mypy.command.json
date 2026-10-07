@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/mypy",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_expected_diff.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/build_terminal_diff_data.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-gate-seg2-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  },
+  "path": "/tmp/p49-a0-gate-seg2-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 0,
+  "output_sha256": "71144743c83babea384888a735db0c4daba3d4d7b7942b6839984bd5c21b52bb",
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_expected_diff.py": "95ecdb55b31dfc79b619331854828387f860f3e9b5fb3f16c6025e249f48523d",
+    "docs/clang-fix-campaign/tools/build_terminal_diff_data.py": "6b08ffb61aedece1a17281088c221918d397ad6c64cb33a73508c6ccb86ed788",
+    "docs/clang-fix-campaign/tools/terminal_diff_controls.py": "f87ffe6a531ca544788d7e440d38229f842cfef4b3ffd4cee5acf6e0171d218c",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/scenario_manifest.json": "dd87d63ce53c8b7838348c02e8f1b072c14e585aa6ab5af1d5b54c137e638374",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/result_schema.json": "e23994a548a5ca0ac267b6d5e27bb1c712b0334219790ce38d89b8d294690360",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/expected_diff.json": "988aceccab2d41ea4179559b764fece2655ee73b9672e31adcc6bce165926893",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "scope": "SEGMENT2_ARTIFICIAL_ONLY; real before-run PENDING_SEG3; no OBS producer execution"
+}

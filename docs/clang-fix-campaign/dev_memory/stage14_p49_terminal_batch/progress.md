@@ -1,11 +1,12 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART2_STOPPED_DIFF04。更新日期: 2026-10-07。
+状态: A0_PART2_STRUCTURE_COMPLETE_PENDING_SEG3。更新日期: 2026-10-07。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
-勘误2已核对原字节,DIFF-01..03 CLOSED;第16节记录复用证据缺口 DIFF-04。
-本轮未运行任何 producer;既有两项产出不变,生产实现未开始。
+勘误2已核对原字节;DIFF-01..04 CLOSED。第17节记录第2段收尾裁决、
+预期差异门禁结构/登记/人工准入证伪;§6改前实跑为PENDING_SEG3。
+本轮未运行任何 producer或真实双跑;既有两项产出不变,生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
 ## 0. 权威、输入与记录边界
@@ -1111,7 +1112,7 @@ derived_value_status=NOT_REGISTERED; full Section6 gate blocked by missing obser
 
 | ID | 状态 | 原文位置 + 实测困难 | 候选处置(均未实施,待人工裁决) |
 |---|---|---|---|
-| DIFF-04 | OPEN | 当前冻结稿§6第1525-1533行要求封闭场景及必填字段,第1530行明确要求protected marker既有读取方结果;§5第1499行与第1502行要求marker写入中断场景。现有item3/item4产出只有marker存在状态/原字节SHA,没有读取结果;没有marker写入中断的观测。本轮任务明确“缺字段则停止报告”,且只能复用产出。 | (A) 明确授权后续阶段在读取方全集就绪后补采所缺场景与字段,保留本轮STOP状态,不修改已冻结predicate;或(B) 明确分段验收规则:本段只做门禁结构/人工控制,§5与读取方改前证据待第3段闭合,期间不得声称§6完成。实现方不自行选择、不重跑producer、不删必填字段、不把未观测写成ABSENT。 |
+| DIFF-04 | CLOSED (本轮设计方裁决,FatTank确认) | 当前冻结稿§6第1525-1533行要求封闭场景及必填字段,第1530行明确要求protected marker既有读取方结果;§5第1499行与第1502行要求marker写入中断场景。现有item3/item4产出只有marker存在状态/原字节SHA,没有读取结果;没有marker写入中断的观测。上轮任务明确“缺字段则停止报告”,且只能复用产出。 | 原prompt混淆门禁双跑与OBS采集;两者分开。E1-1旧值来源仅约束DIFF_SET登记,不约束其余字段的双跑取值。读取方全集取自item5;门禁改前实跑移至第3段。本轮交付结构、登记与人工控制,不补造读取结果、不重跑producer。裁决不改冻结稿,第17节落实。 |
 
 具体证据(同一停止项的两个缺口):
 
@@ -1160,3 +1161,155 @@ item5上轮已明确未运行,其读取方全集依赖第3段名字兜底引擎�
 
 DIFF-01/02/03 CLOSED;**本轮停止报告1条,当前OPEN总数1条(DIFF-04)**。
 不启动A₀第3段、item5或任何生产改动;等补采/分段裁决。
+
+## 17. 第2段收尾:结构、登记与人工准入证伪
+
+### 17.1 DIFF-04关闭与执行边界
+
+设计方裁决、FatTank确认(本轮任务):原prompt把§6门禁自己的双跑与OBS采集
+混为一谈。OBS只为差异登记提供旧值事实;读取结果、marker写入中断残留这些
+不变字段由门禁自己的双跑直接比较,无需从OBS补造旧值登记。
+读取方名单以已核验的`OBS-1.item5-order`全集为准,不得手挑成员。
+
+**§6改前实跑:PENDING_SEG3。** 第3段名字兜底引擎及item5就绪后才接入真实
+collector。本段的`Gate.collect/dual_run`仅以人工callback运行,不导入生产代码,
+不执行真实改前/改后采集,不运行任何OBS producer。A₀整体未宣称完成。
+冻结稿保持SHA `73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e`。
+`git pull --ff-only origin clang-fix-campaign`为`Already up to date.`,
+开工HEAD=`77f55ebeb2c4167de69bb1a848cd6dcb358088f2`。
+
+### 17.2 交付与封闭规则
+
+以下均在`docs/clang-fix-campaign/tools/`:
+
+| 产物 | 本段作用 |
+|---|---|
+| `p49_terminal_data/scenario_manifest.json` | 30场景封闭枚举:§3四输入、§4六调用面各none/timeout/SIGINT/SIGTERM、§5两个中断时点(SIGINT固定fixture)。记录fixture、逐调用及旧kwarg引证 |
+| `p49_terminal_data/result_schema.json` | 返回值、异常type/code/message、warnings/action、calls、destination/worktree存在状态及路径状态、workdir marker、exclude完成状态、exit code均必填。protected marker必含exists/原字节sha256/readers |
+| `p49_terminal_data/expected_diff.json` | 每场景恰一模式;每项具old/new来源及非空理由,派生值不写占位串 |
+| `p49_terminal_data/expected_diff_sources.md` | 从登记JSON生成的56行来源清单;逐项列场景/字段/旧OBS指针或§4ABSENT/新权威节与派生规则。完整source对象的文件SHA、原文quote、规则inputs在JSON内 |
+| `build_terminal_diff_data.py` | 只读批准文档与存档JSON生成登记,不是producer。`--check`验证四个生成物原字节一致;默认拒绝覆盖已有文件 |
+| `terminal_expected_diff.py` | 封闭场景/结果与来源校验、三种派生规则精确求值、精确差集比较、注入式双跑框架。真实compare入口须提供before/after/item5产物 |
+| `terminal_diff_controls.py` | 明示ARTIFICIAL的正/反结果对象;不作为OBS或改前实跑证据 |
+| `tests/unit/test_terminal_expected_diff.py` | 本轮61项人工测试,包含双跑callback接线、来源错行、三规则非前缀比较及完整性控制 |
+
+结果外层、marker及reader记录、调用参数记录均封闭;return_value与reader返回
+负载显式为JSON值(返回形状异构),**完整比较其全部内容**,不是忽略嵌套字段。
+`ABSENT`与`VALUE(null)`分开;bool不作为int;不做路径替换、全局掩码、前缀比较。
+未登记字段一律要求相等,没有“不重要字段”跳过分支。
+运行参数readers非空且唯一,每个场景实际readers集合须恰等于该参数;
+真实CLI从item5产物提取名单,两中断场景的名单须相同。调用者须先用冻结
+verifier核验item5。当前人工名单明确名为`ARTIFICIAL_READER_DO_NOT_USE_AS_ITEM5`。
+
+§5两行的`obs_ref`只为经过exclude调用的timeout旧关键字提供引证:
+exclude中断用`e1-item4/raw.json#/observations/22`,marker写入中断用
+`#/observations/20`的既有exclude调用。**没有把后一条默认场景当成marker
+写入中断实跑**,也没有从该引用推导任何reader结果或磁盘残留。
+
+### 17.3 场景计数、56条登记来源与精确值
+
+`gate-structure/final-structure.log`:
+
+```text
+STRUCTURE_SOURCES=PASS scenarios=30 NO_DIFF=0 DIFF_SET=30 registrations=56
+REAL_BEFORE=PENDING_SEG3
+```
+
+NO_DIFF为0不是放宽不变性:四个§3场景都先经query,REAL_DIR/ABSENT还经过
+后续git调用;§5两个时点都经过exclude。按E2-2,这些场景与§4场景全部至少有
+一条新增timeout kwarg,所以场景模式都是DIFF_SET;除登记字段外全部逐字段相等。
+未额外造一个场景凑NO_DIFF数。NO_DIFF模式本身另有人工正/反单测。
+
+| 登记组 | 条数 | 旧值来源 | 新值来源 |
+|---|---:|---|---|
+| 逐调用timeout | 38 | 对应OBS `trace/<i>/kwargs`成员中timeout不存在,按hash读取并检查;不是推测ABSENT | 附录C/E2-2;默认/中断为VALUE(null),timeout为该fixture的0.125 |
+| 悬空链接type/code/message | 3 | item3 `observations/0/outcome/exception/value/{type,code,message}` | §3 type/code;E2-1 `EXISTING_BRANCH_OUTPUT` + ANCHOR-3 + LIVE邻例 + 本fixture destination |
+| fetch query/git与submit git超时 | 9 | §4新timeout场景结果为ABSENT | skill-5 §3.2⑥相应行的type/code单元格;E1-2 `TIMEOUT_MESSAGE_FROM_EXC` |
+| shared git/exclude超时 | 4 | 同上§4ABSENT | 相应单元格的WorkspaceViolation;E1-2 `GIT_TIMEOUT_PREFIX_PLUS_EXC`(一个半角空格) |
+| ls-remote超时warnings/返回列表 | 2 | 同上§4ABSENT | E1-2固定列表项`target_head_unknown:timeout`,不附原异常文本;本fixture为helper返回面,action仍由双跑直接比较 |
+
+逐条清单见[expected_diff_sources.md](../../tools/p49_terminal_data/expected_diff_sources.md);
+登记JSON是唯一机器决策表,清单只是生成视图。
+旧来源实际计数:`OBS_ABSENT_TIMEOUT=38 / OBS_VALUE=2 / OBS_STATE=1 /
+ABSENT_SECTION4=15`。新来源实际计数:`TIMEOUT_KWARG=38 / LITERAL=10 /
+TIMEOUT_MESSAGE_FROM_EXC=3 / GIT_TIMEOUT_PREFIX_PLUS_EXC=2 /
+EXISTING_BRANCH_OUTPUT=1 / TIMEOUT_WARNING=2`。
+
+三种派生规则均在固定fixture上算出精确字符串;超时使用存档cmd/timeout构造
+标准库TimeoutExpired并复核其str与旧注入消息一致;E2-1重新核对既有LIVE观测
+消息形式再代入悬空路径。来源quote须落在声明章节,映射表须对应本调用面单元格,
+不能因相邻行同为GerritError而借用错行。
+
+### 17.4 实跑命令、准入证伪与质量闸门
+
+最终证据目录:`E/part2/gate-structure/`。每个`final-*.command.json`含完整
+argv/cwd/环境/HEAD/tree/工具与数据SHA/exit;同名log为原始合并输出。
+工具在固定干净工作区运行(HEAD/tree同§16.1),规则与存档通过主树的绝对路径
+只读加载。独立环境`/tmp/p49-a0-gate-seg2-43a6aa6`:
+Python3.12.3 / pytest9.0.3 / mypy2.0.0 / ruff0.15.12;
+清除PYTHONPATH/MYPYPATH/pytest覆盖,禁自动加载pytest插件,未安装生产包。
+
+可复现命令(在仓库根,`P`为上述独立环境python,`T`为tools绝对路径):
+
+```bash
+P=/tmp/p49-a0-gate-seg2-43a6aa6/bin/python
+T="$PWD/docs/clang-fix-campaign/tools"
+env -u PYTHONPATH -u MYPYPATH "$P" "$T/terminal_expected_diff.py" check
+env -u PYTHONPATH -u MYPYPATH "$P" "$T/build_terminal_diff_data.py" --check
+env -u PYTHONPATH -u MYPYPATH "$P" "$T/terminal_diff_controls.py" normal
+```
+
+以下每行命令均为`env -u PYTHONPATH -u MYPYPATH "$P" "$T/terminal_diff_controls.py" <参数>`:
+
+| §6控制 | 参数 | 实际exit | 拒绝原因 |
+|---|---|---:|---|
+| 正常对照 | `normal` | 0 | `EXACT_DIFF=PASS` |
+| ①额外变化 | `extra-change` | 1 | `DIFF_PATHS: extra=['/action'] missing=[]` |
+| ②漏改登记项 | `missed-change` | 1 | `DIFF_PATHS: extra=[] missing=['/calls/0/kwargs/timeout']` |
+| ③空理由 | `empty-reason` | 1 | `EMPTY_REASON` |
+| ④不可能的登记 | `impossible-registration` | 1 | `REGISTRATION_PATH_CLOSED_SET`;未获授权的action变化在登记层即拒绝 |
+| ⑤缺mode | `missing-mode` | 1 | `MODE_MISSING_OR_UNKNOWN` |
+| ⑤未知mode | `unknown-mode` | 1 | `MODE_MISSING_OR_UNKNOWN` |
+| ⑥NO_DIFF带differences | `no-diff-with-differences` | 1 | `CLOSED_FIELDS: NO_DIFF` |
+| ⑦空DIFF_SET | `empty-diff-set` | 1 | `EMPTY_DIFF_SET` |
+| 读取方空列表 | `readers-empty` | 1 | `READERS_EMPTY_OR_MISSING` |
+| 读取方缺失 | `readers-missing` | 1 | `READERS_EMPTY_OR_MISSING` |
+
+⑤两种非法形态分别运行,不把控制数改写成八条。④另有纯比较器构造式单测
+`test_registered_but_impossible_difference_cannot_pass_exact_set_comparison`,
+证明即使越过登记准入,登记变化未实际发生也会被精确差集拒绝。
+
+| 验证 | 命令/最终证据 | 实际exit与原文 |
+|---|---|---|
+| 结构/来源 | `terminal_expected_diff.py check`;`final-structure.*` | 0;上列30/0/30/56 |
+| 生成物一致 | `build_terminal_diff_data.py --check`;`final-regeneration.*` | 0;`REGISTRATION_DATA=MATCH scenarios=30` |
+| 人工测试及既有回归 | `python -m pytest tests/unit/test_terminal_expected_diff.py tests/unit/test_terminal_predicates.py tests/unit/test_terminal_anchors.py -vv`;`final-unit-tests.*` | 0;`172 passed in 2.96s`(新增61+既有111) |
+| mypy | 三个新工具+新测试;`final-mypy.*`完整argv | 0;`Success: no issues found in 4 source files` |
+| ruff | 同上;`final-ruff.*` | 0;`All checks passed!` |
+| py_compile | 同上;`final-py-compile.*` | 0;空输出 |
+
+开发中ruff先报20项格式/未使用import,格式化后剩一条长行已修正;
+mypy首次一项测试fixture类型推导错误,显式注解后通过。未将开发首跑描述为全绿。
+首次归档测试171全绿后补了“同异常类型但引用错行”反例,最终172全绿;
+`final-*`对应最终工具版本,早期证据保留不覆写。未重跑生产全量/B-0,
+上述172只证明门禁工具与人工控制,不是新的生产基线。
+
+### 17.5 完整性、挂账与停点
+
+`final-integrity.*` exit0记录三个生成物canonical SHA-256:
+
+| 文件 | canonical SHA-256 |
+|---|---|
+| scenario_manifest.json | `42e7955d7b79123cf450893df076a64e4edfd858b4466a8ce053340fb3e552e0` |
+| result_schema.json | `9def71e68aaa114f9f64cf03d2fbefc125f28bb80735055f41b5b412d8eeaf96` |
+| expected_diff.json | `e129c5a8ac060a3ced28383d4c0605980e5f9657e6939661f3866e0d516cb824` |
+
+同一命令证:生产源码、P4.5 design.md、release快照零diff;两份冻结JSON与
+6601cfc原字节一致;item3/item4的raw/output/context与27fb460原字节一致。
+本轮未改冻结稿、既有verifier或producer实现,未改既有OBS产出。
+原有.gitignore修改、无关文档删除与untracked历史稿不纳入提交。
+
+DIFF-01..04全部CLOSED;**本轮停止报告0条,当前OPEN停止项0条**。
+**挂账不是完成**:§6改前实跑PENDING_SEG3;依赖第3段名字兜底引擎、item5
+读取方全集及已核验的item5产物。真实双跑须与人工控制分开归档,不得复用人工
+磁盘/reader值。push后停止,不启动第3段或生产实施。

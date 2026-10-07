@@ -1,0 +1,1358 @@
+{
+  "version": 1,
+  "scenarios": {
+    "DANGLING_SYMLINK": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/0/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/exception_type": {
+          "old": {
+            "kind": "OBS_VALUE",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/0/outcome/exception/value/type"
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "GerritError",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§3 预期差异",
+              "quote": ",字段值按 §6 标记值写法;v1.27 统一):**悬空 symlink 场景按 `DIFF_SET` 登记**:\n  `GerritError.code` 由 `{\"state\":\"ABSENT\"}` → `{\"state\":\"VALUE\",\"value\":\"SOURCE_DIR_UNSAFE\"}`;\n  异常类型由现状异常(值见 `OBS-1.item3-predicate`)→ `GerritError`;\n  **相邻的非悬空对照场景按 `NO_DIFF` 登记**;**其余输入的全部输出不变**;\n  **具体旧值由 `OBS-1.item3-predicate` 与 `expected_diff.json` 提供**;\n"
+            }
+          },
+          "reason": "§3:悬空链接改走SOURCE_DIR_UNSAFE既有分支。"
+        },
+        "/exception_code": {
+          "old": {
+            "kind": "OBS_STATE",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/0/outcome/exception/value/code"
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "SOURCE_DIR_UNSAFE",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§3 预期差异",
+              "quote": ",字段值按 §6 标记值写法;v1.27 统一):**悬空 symlink 场景按 `DIFF_SET` 登记**:\n  `GerritError.code` 由 `{\"state\":\"ABSENT\"}` → `{\"state\":\"VALUE\",\"value\":\"SOURCE_DIR_UNSAFE\"}`;\n  异常类型由现状异常(值见 `OBS-1.item3-predicate`)→ `GerritError`;\n  **相邻的非悬空对照场景按 `NO_DIFF` 登记**;**其余输入的全部输出不变**;\n  **具体旧值由 `OBS-1.item3-predicate` 与 `expected_diff.json` 提供**;\n"
+            }
+          },
+          "reason": "§3:悬空链接改走SOURCE_DIR_UNSAFE既有分支。"
+        },
+        "/exception_message": {
+          "old": {
+            "kind": "OBS_VALUE",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/0/outcome/exception/value/message"
+            }
+          },
+          "new": {
+            "kind": "DERIVED",
+            "rule": "EXISTING_BRANCH_OUTPUT",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-1",
+              "quote": " 被改道进入\"改前已存在、本批未改\"的分支时,该分支产生的输出字段取何值**(DIFF-03)\n> 某场景因本批改动而进入一个改前就存在、且本批不改其文本的代码分支时,该分支产生的每个输出字段,其新值 =\n> **该分支对本场景输入的产出**,按下列方式确定(规则名 `EXISTING_BRANCH_OUTPUT`):\n> (i) 分支以 OBS producer 已锚定的源码位置为准(机械 selector,非行号);\n> (ii) 同一分支在改前已有至少一个相邻场景的观测实例(OBS 产出中的原始字段),用以证明该分支产出的形式;\n> (iii) 门禁按分支的产出规则代入本场景的 fixture 输入,算出精确期望值后**逐字比较**。\n> 登记写成\"由规则派生\":规则名 `EXISTING_BRANCH_OUTPUT` + 本勘误编号 + (i) 的锚点 + (ii) 的观测实例路径。\n> **本批唯一的适用实例 —— §3 悬空 symlink 场景**:分支 = ANCHOR-3 所在函数中抛出 `SOURCE_DIR_UNSAFE` 的分支;\n> 相邻观测 = `OBS-1.item3-predicate` 的 `LIVE_SYMLINK_TO_DIR` 场景;\n> 消息新值 = `\"source directory is a symlink: \" + str(<悬空场景的 destination 路径>)`(与该分支对 live symlink 的产出同一形式,只代入本场景路径);\n> `code` 新值 = `SOURCE_DIR_UNSAFE`、异常类型新值 = `GerritError`(§3 已规定);**旧消息**取 OBS 产出的原始字段。\n> 若门禁发现该分支在相邻场景的实际产出与上述形式不符,说明锚定或观测有误 → 停止报告,不得改用其它文案。\n\n"
+            },
+            "inputs": {
+              "anchor": {
+                "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/output.json",
+                "sha256": "117484f68d517b7ba032a0438841a0c6bef4933f8476ae43d1b3f9414d27078a",
+                "pointer": "/OBS-1.item3-predicate/anchor"
+              },
+              "adjacent": {
+                "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+                "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+                "pointer": "/observations/1"
+              },
+              "destination": {
+                "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+                "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+                "pointer": "/observations/0/fixture"
+              }
+            }
+          },
+          "reason": "E2-1:用LIVE相邻观测验证消息形式,代入本场景destination。"
+        }
+      }
+    },
+    "LIVE_SYMLINK_TO_DIR": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/1/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "REAL_DIR": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/2/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/calls/1/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/2/trace/1/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/calls/2/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/2/trace/2/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/calls/3/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/2/trace/3/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/calls/4/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/2/trace/4/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "ABSENT": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/3/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/calls/1/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/3/trace/1/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/calls/2/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/3/trace/2/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/calls/3/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/3/trace/3/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/calls/4/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+              "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+              "pointer": "/observations/3/trace/4/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface1-none": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/0/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface1-timeout": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/1/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/exception_type": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "GerritError",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+              "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+              "section": "§3.2⑥ timeout 单元格",
+              "quote": "| skill-3 `fetch_source_for_commit` **query 阶段**(`gerrit.py:132`,在 `_reset` 之前) | `GerritError(\"FETCH_TIMEOUT\", <message>)` | 传播 | **destination 不动**(与 skill-3 冻结 :465 一致) |"
+            }
+          },
+          "reason": "§4新可选timeout场景:按映射表该调用面的具名异常类型。"
+        },
+        "/exception_code": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "FETCH_TIMEOUT",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+              "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+              "section": "§3.2⑥ timeout 单元格",
+              "quote": "| skill-3 `fetch_source_for_commit` **query 阶段**(`gerrit.py:132`,在 `_reset` 之前) | `GerritError(\"FETCH_TIMEOUT\", <message>)` | 传播 | **destination 不动**(与 skill-3 冻结 :465 一致) |"
+            }
+          },
+          "reason": "映射表该调用面的具名异常code字段。"
+        },
+        "/exception_message": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "DERIVED",
+            "rule": "TIMEOUT_MESSAGE_FROM_EXC",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E1-2",
+              "quote": " 超时时异常消息与告警码的确定性生成规则**(DIFF-02)\n> 映射表中的 `<message>` 与 `GIT_TIMEOUT:`/`GIT_TIMEOUT: …` 按下列规则取精确值;`exc` 指该调用面捕获到的 `subprocess.TimeoutExpired` 实例:\n> | 调用面 | 超时时的结果(精确) |\n> |---|---|\n> | skill-3 query 阶段、git 阶段 | `GerritError(code=\"FETCH_TIMEOUT\", message=str(exc))` |\n> | 本 skill(gerrit-submit)`_run_git` | `GerritSubmitError(code=\"GIT_TIMEOUT\", message=str(exc))` |\n> | 本 skill `ls-remote` | 返回的告警列表中该项为字符串 `\"target_head_unknown:timeout\"`,**不附原异常文本** |\n> | shared/workspace `_run_git`、`_exclude_private_files` | `WorkspaceViolation` 的消息为 `\"GIT_TIMEOUT: \" + str(exc)`(冒号后一个半角空格) |\n> **理由**:`str(exc)` 由触发超时的命令与超时值唯一决定,固定 fixture 下可复现,不需要另造文案;\n> ls-remote 的告警码按映射表\"码值统一、不含原始异常文本\"的本意取固定串。\n> **登记方式**:`expected_diff.json` 中这些消息的新值写成\"由规则派生\"的形式:登记规则名(`TIMEOUT_MESSAGE_FROM_EXC` 或\n> `GIT_TIMEOUT_PREFIX_PLUS_EXC`)与本勘误编号,门禁在固定 fixture 上按规则算出精确期望值后**逐字比较**;\n> **不得**只比前缀、忽略消息或写占位串。\n> `GerritError`/`GerritSubmitError` 以 `code` 与 `message` 两个字段进入 §6 结果对象;`WorkspaceViolation` 以消息全文进入。\n\n"
+            },
+            "inputs": {
+              "injection": {
+                "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+                "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+                "pointer": "/observations/1/injection"
+              }
+            }
+          },
+          "reason": "E1-2:固定fixture构造TimeoutExpired,逐字比较派生消息。"
+        }
+      }
+    },
+    "surface1-SIGINT": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/2/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface1-SIGTERM": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/3/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface2-none": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/4/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface2-timeout": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/5/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/exception_type": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "GerritError",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+              "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+              "section": "§3.2⑥ timeout 单元格",
+              "quote": "| skill-3 **git 阶段**(init/fetch/checkout,`_reset` 之后) | `GerritError(\"FETCH_TIMEOUT\", <message>)` | 传播 | **阶段残留**(与 skill-3 冻结 :478 一致) |"
+            }
+          },
+          "reason": "§4新可选timeout场景:按映射表该调用面的具名异常类型。"
+        },
+        "/exception_code": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "FETCH_TIMEOUT",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+              "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+              "section": "§3.2⑥ timeout 单元格",
+              "quote": "| skill-3 **git 阶段**(init/fetch/checkout,`_reset` 之后) | `GerritError(\"FETCH_TIMEOUT\", <message>)` | 传播 | **阶段残留**(与 skill-3 冻结 :478 一致) |"
+            }
+          },
+          "reason": "映射表该调用面的具名异常code字段。"
+        },
+        "/exception_message": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "DERIVED",
+            "rule": "TIMEOUT_MESSAGE_FROM_EXC",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E1-2",
+              "quote": " 超时时异常消息与告警码的确定性生成规则**(DIFF-02)\n> 映射表中的 `<message>` 与 `GIT_TIMEOUT:`/`GIT_TIMEOUT: …` 按下列规则取精确值;`exc` 指该调用面捕获到的 `subprocess.TimeoutExpired` 实例:\n> | 调用面 | 超时时的结果(精确) |\n> |---|---|\n> | skill-3 query 阶段、git 阶段 | `GerritError(code=\"FETCH_TIMEOUT\", message=str(exc))` |\n> | 本 skill(gerrit-submit)`_run_git` | `GerritSubmitError(code=\"GIT_TIMEOUT\", message=str(exc))` |\n> | 本 skill `ls-remote` | 返回的告警列表中该项为字符串 `\"target_head_unknown:timeout\"`,**不附原异常文本** |\n> | shared/workspace `_run_git`、`_exclude_private_files` | `WorkspaceViolation` 的消息为 `\"GIT_TIMEOUT: \" + str(exc)`(冒号后一个半角空格) |\n> **理由**:`str(exc)` 由触发超时的命令与超时值唯一决定,固定 fixture 下可复现,不需要另造文案;\n> ls-remote 的告警码按映射表\"码值统一、不含原始异常文本\"的本意取固定串。\n> **登记方式**:`expected_diff.json` 中这些消息的新值写成\"由规则派生\"的形式:登记规则名(`TIMEOUT_MESSAGE_FROM_EXC` 或\n> `GIT_TIMEOUT_PREFIX_PLUS_EXC`)与本勘误编号,门禁在固定 fixture 上按规则算出精确期望值后**逐字比较**;\n> **不得**只比前缀、忽略消息或写占位串。\n> `GerritError`/`GerritSubmitError` 以 `code` 与 `message` 两个字段进入 §6 结果对象;`WorkspaceViolation` 以消息全文进入。\n\n"
+            },
+            "inputs": {
+              "injection": {
+                "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+                "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+                "pointer": "/observations/5/injection"
+              }
+            }
+          },
+          "reason": "E1-2:固定fixture构造TimeoutExpired,逐字比较派生消息。"
+        }
+      }
+    },
+    "surface2-SIGINT": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/6/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface2-SIGTERM": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/7/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface3-none": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/8/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface3-timeout": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/9/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/exception_type": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "GerritSubmitError",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+              "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+              "section": "§3.2⑥ timeout 单元格",
+              "quote": "| 本 skill `_run_git`(:348) | `GerritSubmitError(\"GIT_TIMEOUT\", <message>)`(新类型,签名与 `GerritError` 同形 `(code, message)`,末批定义) | 传播 | worktree 不变 |"
+            }
+          },
+          "reason": "§4新可选timeout场景:按映射表该调用面的具名异常类型。"
+        },
+        "/exception_code": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "GIT_TIMEOUT",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+              "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+              "section": "§3.2⑥ timeout 单元格",
+              "quote": "| 本 skill `_run_git`(:348) | `GerritSubmitError(\"GIT_TIMEOUT\", <message>)`(新类型,签名与 `GerritError` 同形 `(code, message)`,末批定义) | 传播 | worktree 不变 |"
+            }
+          },
+          "reason": "映射表该调用面的具名异常code字段。"
+        },
+        "/exception_message": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "DERIVED",
+            "rule": "TIMEOUT_MESSAGE_FROM_EXC",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E1-2",
+              "quote": " 超时时异常消息与告警码的确定性生成规则**(DIFF-02)\n> 映射表中的 `<message>` 与 `GIT_TIMEOUT:`/`GIT_TIMEOUT: …` 按下列规则取精确值;`exc` 指该调用面捕获到的 `subprocess.TimeoutExpired` 实例:\n> | 调用面 | 超时时的结果(精确) |\n> |---|---|\n> | skill-3 query 阶段、git 阶段 | `GerritError(code=\"FETCH_TIMEOUT\", message=str(exc))` |\n> | 本 skill(gerrit-submit)`_run_git` | `GerritSubmitError(code=\"GIT_TIMEOUT\", message=str(exc))` |\n> | 本 skill `ls-remote` | 返回的告警列表中该项为字符串 `\"target_head_unknown:timeout\"`,**不附原异常文本** |\n> | shared/workspace `_run_git`、`_exclude_private_files` | `WorkspaceViolation` 的消息为 `\"GIT_TIMEOUT: \" + str(exc)`(冒号后一个半角空格) |\n> **理由**:`str(exc)` 由触发超时的命令与超时值唯一决定,固定 fixture 下可复现,不需要另造文案;\n> ls-remote 的告警码按映射表\"码值统一、不含原始异常文本\"的本意取固定串。\n> **登记方式**:`expected_diff.json` 中这些消息的新值写成\"由规则派生\"的形式:登记规则名(`TIMEOUT_MESSAGE_FROM_EXC` 或\n> `GIT_TIMEOUT_PREFIX_PLUS_EXC`)与本勘误编号,门禁在固定 fixture 上按规则算出精确期望值后**逐字比较**;\n> **不得**只比前缀、忽略消息或写占位串。\n> `GerritError`/`GerritSubmitError` 以 `code` 与 `message` 两个字段进入 §6 结果对象;`WorkspaceViolation` 以消息全文进入。\n\n"
+            },
+            "inputs": {
+              "injection": {
+                "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+                "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+                "pointer": "/observations/9/injection"
+              }
+            }
+          },
+          "reason": "E1-2:固定fixture构造TimeoutExpired,逐字比较派生消息。"
+        }
+      }
+    },
+    "surface3-SIGINT": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/10/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface3-SIGTERM": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/11/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface4-none": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/12/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface4-timeout": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/13/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/warnings": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_WARNING",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E1-2",
+              "quote": " 超时时异常消息与告警码的确定性生成规则**(DIFF-02)\n> 映射表中的 `<message>` 与 `GIT_TIMEOUT:`/`GIT_TIMEOUT: …` 按下列规则取精确值;`exc` 指该调用面捕获到的 `subprocess.TimeoutExpired` 实例:\n> | 调用面 | 超时时的结果(精确) |\n> |---|---|\n> | skill-3 query 阶段、git 阶段 | `GerritError(code=\"FETCH_TIMEOUT\", message=str(exc))` |\n> | 本 skill(gerrit-submit)`_run_git` | `GerritSubmitError(code=\"GIT_TIMEOUT\", message=str(exc))` |\n> | 本 skill `ls-remote` | 返回的告警列表中该项为字符串 `\"target_head_unknown:timeout\"`,**不附原异常文本** |\n> | shared/workspace `_run_git`、`_exclude_private_files` | `WorkspaceViolation` 的消息为 `\"GIT_TIMEOUT: \" + str(exc)`(冒号后一个半角空格) |\n> **理由**:`str(exc)` 由触发超时的命令与超时值唯一决定,固定 fixture 下可复现,不需要另造文案;\n> ls-remote 的告警码按映射表\"码值统一、不含原始异常文本\"的本意取固定串。\n> **登记方式**:`expected_diff.json` 中这些消息的新值写成\"由规则派生\"的形式:登记规则名(`TIMEOUT_MESSAGE_FROM_EXC` 或\n> `GIT_TIMEOUT_PREFIX_PLUS_EXC`)与本勘误编号,门禁在固定 fixture 上按规则算出精确期望值后**逐字比较**;\n> **不得**只比前缀、忽略消息或写占位串。\n> `GerritError`/`GerritSubmitError` 以 `code` 与 `message` 两个字段进入 §6 结果对象;`WorkspaceViolation` 以消息全文进入。\n\n"
+            }
+          },
+          "reason": "映射表ls-remote告警单元格与E1-2:保留告警返回形状,统一码值。"
+        },
+        "/return_value": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_WARNING",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E1-2",
+              "quote": " 超时时异常消息与告警码的确定性生成规则**(DIFF-02)\n> 映射表中的 `<message>` 与 `GIT_TIMEOUT:`/`GIT_TIMEOUT: …` 按下列规则取精确值;`exc` 指该调用面捕获到的 `subprocess.TimeoutExpired` 实例:\n> | 调用面 | 超时时的结果(精确) |\n> |---|---|\n> | skill-3 query 阶段、git 阶段 | `GerritError(code=\"FETCH_TIMEOUT\", message=str(exc))` |\n> | 本 skill(gerrit-submit)`_run_git` | `GerritSubmitError(code=\"GIT_TIMEOUT\", message=str(exc))` |\n> | 本 skill `ls-remote` | 返回的告警列表中该项为字符串 `\"target_head_unknown:timeout\"`,**不附原异常文本** |\n> | shared/workspace `_run_git`、`_exclude_private_files` | `WorkspaceViolation` 的消息为 `\"GIT_TIMEOUT: \" + str(exc)`(冒号后一个半角空格) |\n> **理由**:`str(exc)` 由触发超时的命令与超时值唯一决定,固定 fixture 下可复现,不需要另造文案;\n> ls-remote 的告警码按映射表\"码值统一、不含原始异常文本\"的本意取固定串。\n> **登记方式**:`expected_diff.json` 中这些消息的新值写成\"由规则派生\"的形式:登记规则名(`TIMEOUT_MESSAGE_FROM_EXC` 或\n> `GIT_TIMEOUT_PREFIX_PLUS_EXC`)与本勘误编号,门禁在固定 fixture 上按规则算出精确期望值后**逐字比较**;\n> **不得**只比前缀、忽略消息或写占位串。\n> `GerritError`/`GerritSubmitError` 以 `code` 与 `message` 两个字段进入 §6 结果对象;`WorkspaceViolation` 以消息全文进入。\n\n"
+            }
+          },
+          "reason": "映射表ls-remote告警单元格与E1-2:保留告警返回形状,统一码值。"
+        }
+      }
+    },
+    "surface4-SIGINT": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/14/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface4-SIGTERM": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/15/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface5-none": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/16/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface5-timeout": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/17/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/exception_type": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "WorkspaceViolation",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+              "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+              "section": "§3.2⑥ timeout 单元格",
+              "quote": "| shared/workspace `_run_git`(:205) | `WorkspaceViolation(<message>)`,message 以 `GIT_TIMEOUT:` 前缀承载码(`WorkspaceViolation` 无 code 字段,不改其签名——改签名属行为变更) | 传播 | marker 不变 |"
+            }
+          },
+          "reason": "§4新可选timeout场景:按映射表该调用面的具名异常类型。"
+        },
+        "/exception_message": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "DERIVED",
+            "rule": "GIT_TIMEOUT_PREFIX_PLUS_EXC",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E1-2",
+              "quote": " 超时时异常消息与告警码的确定性生成规则**(DIFF-02)\n> 映射表中的 `<message>` 与 `GIT_TIMEOUT:`/`GIT_TIMEOUT: …` 按下列规则取精确值;`exc` 指该调用面捕获到的 `subprocess.TimeoutExpired` 实例:\n> | 调用面 | 超时时的结果(精确) |\n> |---|---|\n> | skill-3 query 阶段、git 阶段 | `GerritError(code=\"FETCH_TIMEOUT\", message=str(exc))` |\n> | 本 skill(gerrit-submit)`_run_git` | `GerritSubmitError(code=\"GIT_TIMEOUT\", message=str(exc))` |\n> | 本 skill `ls-remote` | 返回的告警列表中该项为字符串 `\"target_head_unknown:timeout\"`,**不附原异常文本** |\n> | shared/workspace `_run_git`、`_exclude_private_files` | `WorkspaceViolation` 的消息为 `\"GIT_TIMEOUT: \" + str(exc)`(冒号后一个半角空格) |\n> **理由**:`str(exc)` 由触发超时的命令与超时值唯一决定,固定 fixture 下可复现,不需要另造文案;\n> ls-remote 的告警码按映射表\"码值统一、不含原始异常文本\"的本意取固定串。\n> **登记方式**:`expected_diff.json` 中这些消息的新值写成\"由规则派生\"的形式:登记规则名(`TIMEOUT_MESSAGE_FROM_EXC` 或\n> `GIT_TIMEOUT_PREFIX_PLUS_EXC`)与本勘误编号,门禁在固定 fixture 上按规则算出精确期望值后**逐字比较**;\n> **不得**只比前缀、忽略消息或写占位串。\n> `GerritError`/`GerritSubmitError` 以 `code` 与 `message` 两个字段进入 §6 结果对象;`WorkspaceViolation` 以消息全文进入。\n\n"
+            },
+            "inputs": {
+              "injection": {
+                "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+                "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+                "pointer": "/observations/17/injection"
+              }
+            }
+          },
+          "reason": "E1-2:固定fixture构造TimeoutExpired,逐字比较派生消息。"
+        }
+      }
+    },
+    "surface5-SIGINT": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/18/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface5-SIGTERM": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/19/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface6-none": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/20/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface6-timeout": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/21/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        },
+        "/exception_type": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "LITERAL",
+            "value": "WorkspaceViolation",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+              "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+              "section": "§3.2⑥ timeout 单元格",
+              "quote": "| **shared/workspace `_exclude_private_files`**(:209,`mark_worktree_protected` :117 调用) | 同上 `WorkspaceViolation(\"GIT_TIMEOUT: …\")` | 传播 | **workdir marker 保留、protected marker 尚未写入、exclude 未完成**(`mark_worktree_protected` 的真实顺序:`_verify_cleanup_handle`(:115)→ `_exclude_private_files`(:117)→ 构造并写入 protected marker(:118/:124);故超时点在 exclude 时,protected marker 尚未产生) |"
+            }
+          },
+          "reason": "§4新可选timeout场景:按映射表该调用面的具名异常类型。"
+        },
+        "/exception_message": {
+          "old": {
+            "kind": "ABSENT_SECTION4",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "§4 验收口径",
+              "quote": "**②设置 timeout 且超时**:该面的结果与残留状态逐项登记进 `expected_diff.json`(旧值为\"不存在\","
+            }
+          },
+          "new": {
+            "kind": "DERIVED",
+            "rule": "GIT_TIMEOUT_PREFIX_PLUS_EXC",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E1-2",
+              "quote": " 超时时异常消息与告警码的确定性生成规则**(DIFF-02)\n> 映射表中的 `<message>` 与 `GIT_TIMEOUT:`/`GIT_TIMEOUT: …` 按下列规则取精确值;`exc` 指该调用面捕获到的 `subprocess.TimeoutExpired` 实例:\n> | 调用面 | 超时时的结果(精确) |\n> |---|---|\n> | skill-3 query 阶段、git 阶段 | `GerritError(code=\"FETCH_TIMEOUT\", message=str(exc))` |\n> | 本 skill(gerrit-submit)`_run_git` | `GerritSubmitError(code=\"GIT_TIMEOUT\", message=str(exc))` |\n> | 本 skill `ls-remote` | 返回的告警列表中该项为字符串 `\"target_head_unknown:timeout\"`,**不附原异常文本** |\n> | shared/workspace `_run_git`、`_exclude_private_files` | `WorkspaceViolation` 的消息为 `\"GIT_TIMEOUT: \" + str(exc)`(冒号后一个半角空格) |\n> **理由**:`str(exc)` 由触发超时的命令与超时值唯一决定,固定 fixture 下可复现,不需要另造文案;\n> ls-remote 的告警码按映射表\"码值统一、不含原始异常文本\"的本意取固定串。\n> **登记方式**:`expected_diff.json` 中这些消息的新值写成\"由规则派生\"的形式:登记规则名(`TIMEOUT_MESSAGE_FROM_EXC` 或\n> `GIT_TIMEOUT_PREFIX_PLUS_EXC`)与本勘误编号,门禁在固定 fixture 上按规则算出精确期望值后**逐字比较**;\n> **不得**只比前缀、忽略消息或写占位串。\n> `GerritError`/`GerritSubmitError` 以 `code` 与 `message` 两个字段进入 §6 结果对象;`WorkspaceViolation` 以消息全文进入。\n\n"
+            },
+            "inputs": {
+              "injection": {
+                "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+                "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+                "pointer": "/observations/21/injection"
+              }
+            }
+          },
+          "reason": "E1-2:固定fixture构造TimeoutExpired,逐字比较派生消息。"
+        }
+      }
+    },
+    "surface6-SIGINT": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/22/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "surface6-SIGTERM": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/23/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "EXCLUDE_INTERRUPTED": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/22/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    },
+    "MARKER_WRITE_INTERRUPTED": {
+      "mode": "DIFF_SET",
+      "differences": {
+        "/calls/0/kwargs/timeout": {
+          "old": {
+            "kind": "OBS_ABSENT_TIMEOUT",
+            "ref": {
+              "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+              "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+              "pointer": "/observations/20/trace/0/kwargs"
+            }
+          },
+          "new": {
+            "kind": "TIMEOUT_KWARG",
+            "source": {
+              "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+              "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+              "section": "附录C/E2-2",
+              "quote": " `timeout=None` 关键字的登记覆盖所有经过新签名的场景**\n> E1-1 中\"逐面登记 `timeout` 关键字差异\"不限于\"默认 `timeout=None`\"场景:**凡在改后会经过该调用面新签名的场景**\n> (默认、外部中断;以及 §3、§5 中途经这些调用面的场景),调用轨迹中对应调用的关键字集合都逐面逐场景登记这一条差异\n> (旧:`ABSENT`;新:该场景实际传入的值 —— 默认与中断场景为 `None`,超时场景为 fixture 设定的超时值)。\n> 超时场景中,结果字段的旧值按 §4 一律为\"不存在\"(改前无法表达该场景),新值按映射表单元格与 E1-2。\n> 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。\n\n"
+            }
+          },
+          "reason": "E2-2:逐调用登记新增timeout关键字;其它调用参数逐字比较。"
+        }
+      }
+    }
+  }
+}
