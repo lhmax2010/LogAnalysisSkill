@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "-c",
+    "\nfrom pathlib import Path\nimport difflib\nimport hashlib\nimport subprocess\n\nmain = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\npath = 'docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md'\nold = subprocess.check_output(['git', 'show', 'HEAD:' + path], cwd=main)\nnew = (main / path).read_bytes()\nold_sha = hashlib.sha256(old).hexdigest()\nnew_sha = hashlib.sha256(new).hexdigest()\nassert old_sha == '7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200'\nassert new_sha == 'e9b18793d3fea5755e886d55d0dbebdfc8a5d39374237fe0e05757a242ef6e9a'\nold_lines, new_lines = old.splitlines(keepends=True), new.splitlines(keepends=True)\nchanges = [op for op in difflib.SequenceMatcher(None, old_lines, new_lines, autojunk=False).get_opcodes() if op[0] != 'equal']\nassert len(changes) == 2\nassert all(op[0] == 'insert' for op in changes)\nassert changes[0][1:3] == (6, 6)\nassert changes[1][1:3] == (len(old_lines), len(old_lines))\nprint(subprocess.check_output(['git', 'diff', '--unified=3', '--', path], cwd=main).decode(), end='')\nprint('OLD_SHA256=' + old_sha)\nprint('NEW_SHA256=' + new_sha)\nprint('APPEND_ONLY=PASS additions=' + str(sum(op[4] - op[3] for op in changes)) + ' deletions=0 insert_blocks=2')\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "environment": {
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "PATH": "/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DX0p9c:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.930.61225-linux-x64/bin/linux-x86_64"
+  },
+  "exit_code": 0,
+  "output_sha256": "4197717727f7145c07a618a1a79f29000ed180bdb984a4f980d6a04495b4e1fe",
+  "classification": "READ_ONLY_PREFLIGHT_NOT_OBS_NOT_SCAN_COMPLETION"
+}

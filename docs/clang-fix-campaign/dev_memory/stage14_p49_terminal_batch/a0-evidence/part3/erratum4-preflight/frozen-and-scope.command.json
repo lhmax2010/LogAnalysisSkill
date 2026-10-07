@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "-c",
+    "\nfrom pathlib import Path\nimport hashlib\nimport json\nimport subprocess\n\nmain = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\ndata = main / 'docs/clang-fix-campaign/tools/p49_terminal_data'\nfor name, expected in (\n    ('predicates.json', '8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6'),\n    ('measurement_exemptions.json', '4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945'),\n):\n    canonical = json.dumps(json.loads((data / name).read_bytes()), ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()\n    actual = hashlib.sha256(canonical).hexdigest()\n    assert actual == expected\n    print(name + ' canonical=' + actual)\nargs = ['git', 'diff', '--exit-code', '--', 'tizen-*/scripts/**', 'ci_triage/**', 'release-v1.4.0/**', 'tests/**', 'docs/clang-fix-campaign/tools/**', 'docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/**']\nresult = subprocess.run(args, cwd=main, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)\nprint('IMMUTABLE_AND_PRODUCTION_DIFF_EXIT=' + str(result.returncode))\nprint(result.stdout.decode(), end='')\nassert result.returncode == 0\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "environment": {
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "PATH": "/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DX0p9c:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.930.61225-linux-x64/bin/linux-x86_64"
+  },
+  "exit_code": 0,
+  "output_sha256": "c3ec2b8e94dfe94a0c47c45c8472bdaa8ef9b2e2d236771cb31bb67a6522249f",
+  "classification": "READ_ONLY_PREFLIGHT_NOT_OBS_NOT_SCAN_COMPLETION"
+}

@@ -1,0 +1,1151 @@
+{
+  "kind": "PREIMPLEMENTATION_MODULE_IDENTITY_AMBIGUITY_NOT_CONSUMER_SCAN",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "tracked_leaf_count": 846,
+  "declared_package_roots": [
+    {
+      "config": "pyproject.toml",
+      "sha256": "125bfdd2a9eefe413ae63c5702455d15175d943d7ad099ddc168d605b1bbd24f",
+      "where": [
+        "tizen-gbs-build/scripts",
+        "tizen-gbs-log-analysis/scripts",
+        "tizen-gbs-build-workflow/scripts",
+        "tizen-gbs-patch-suggest/scripts",
+        "tizen-ci-triage/scripts",
+        "tizen-ci-shared/scripts",
+        "tizen-convergence-judge/scripts",
+        "tizen-qb-discover/scripts",
+        "tizen-gerrit-fetch/scripts",
+        "tizen-build-verify/scripts",
+        "tizen-gerrit-submit/scripts",
+        "tizen-triage-report/scripts"
+      ],
+      "include": [
+        "gbs_analyzer*",
+        "gbs_build_skill*",
+        "gbs_workflow*",
+        "gbs_patch_suggest*",
+        "ci_triage*",
+        "tizen_ci_shared*",
+        "tizen_convergence_judge*",
+        "tizen_qb_discover*",
+        "tizen_gerrit_fetch*",
+        "tizen_build_verify*",
+        "tizen_gerrit_submit*",
+        "tizen_triage_report*"
+      ]
+    },
+    {
+      "config": "release-v1.4.0/pyproject.toml",
+      "sha256": "e3f3e2aaff6c7af607d14217a2c57846c3726ce61e8a880ef293fa461dccf8d1",
+      "where": [
+        "tizen-gbs-build/scripts",
+        "tizen-gbs-log-analysis/scripts",
+        "tizen-gbs-build-workflow/scripts",
+        "tizen-gbs-patch-suggest/scripts",
+        "tizen-ci-triage/scripts"
+      ],
+      "include": [
+        "gbs_analyzer*",
+        "gbs_build_skill*",
+        "gbs_workflow*",
+        "gbs_patch_suggest*",
+        "ci_triage*"
+      ]
+    }
+  ],
+  "cross_config_duplicate_module_count": 85,
+  "duplicate_modules": {
+    "ci_triage": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/__init__.py"
+      }
+    ],
+    "ci_triage.__main__": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/__main__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/__main__.py"
+      }
+    ],
+    "ci_triage.batch_cli": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/batch_cli.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/batch_cli.py"
+      }
+    ],
+    "ci_triage.cli": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/cli.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/cli.py"
+      }
+    ],
+    "ci_triage.gbs_report": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/gbs_report.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gbs_report.py"
+      }
+    ],
+    "ci_triage.gerrit": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/gerrit.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gerrit.py"
+      }
+    ],
+    "ci_triage.orchestrator": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/orchestrator.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/orchestrator.py"
+      }
+    ],
+    "ci_triage.quickbuild": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/quickbuild.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py"
+      }
+    ],
+    "ci_triage.quickbuild_log": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/quickbuild_log.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild_log.py"
+      }
+    ],
+    "ci_triage.report": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/report.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/report.py"
+      }
+    ],
+    "ci_triage.runner": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/runner.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/runner.py"
+      }
+    ],
+    "ci_triage.sources": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/sources.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/sources.py"
+      }
+    ],
+    "ci_triage.verify": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/__init__.py"
+      }
+    ],
+    "ci_triage.verify.build_verify": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/verify/build_verify.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/build_verify.py"
+      }
+    ],
+    "ci_triage.verify.convergence": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/verify/convergence.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/convergence.py"
+      }
+    ],
+    "ci_triage.verify.edit_spec_guard": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py"
+      }
+    ],
+    "ci_triage.verify.failure_classify": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py"
+      }
+    ],
+    "ci_triage.verify.gerrit_submit": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py"
+      }
+    ],
+    "ci_triage.verify.workspace": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/verify/workspace.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/workspace.py"
+      }
+    ],
+    "gbs_analyzer": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py"
+      }
+    ],
+    "gbs_analyzer.__main__": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/__main__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/__main__.py"
+      }
+    ],
+    "gbs_analyzer._utils": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/__init__.py"
+      }
+    ],
+    "gbs_analyzer._utils.command_parser": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/command_parser.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/command_parser.py"
+      }
+    ],
+    "gbs_analyzer._utils.ctags_loader": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/ctags_loader.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/ctags_loader.py"
+      }
+    ],
+    "gbs_analyzer._utils.semantic_classifier": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py"
+      }
+    ],
+    "gbs_analyzer._utils.source_to_object": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/source_to_object.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/source_to_object.py"
+      }
+    ],
+    "gbs_analyzer.analyze": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py"
+      }
+    ],
+    "gbs_analyzer.error_clusters": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/error_clusters.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/error_clusters.py"
+      }
+    ],
+    "gbs_analyzer.evidence": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py"
+      }
+    ],
+    "gbs_analyzer.evidence._common": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/_common.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/_common.py"
+      }
+    ],
+    "gbs_analyzer.evidence.base": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py"
+      }
+    ],
+    "gbs_analyzer.evidence.compile": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/compile.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/compile.py"
+      }
+    ],
+    "gbs_analyzer.evidence.deps": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/deps.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/deps.py"
+      }
+    ],
+    "gbs_analyzer.evidence.link": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/link.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/link.py"
+      }
+    ],
+    "gbs_analyzer.evidence.router": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/router.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/router.py"
+      }
+    ],
+    "gbs_analyzer.evidence.spec": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/spec.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/spec.py"
+      }
+    ],
+    "gbs_analyzer.full_match": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py"
+      }
+    ],
+    "gbs_analyzer.packet_assembler": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py"
+      }
+    ],
+    "gbs_analyzer.quick_filter": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/quick_filter.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/quick_filter.py"
+      }
+    ],
+    "gbs_analyzer.rank_causes": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/rank_causes.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/rank_causes.py"
+      }
+    ],
+    "gbs_analyzer.scan_and_extract": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py"
+      }
+    ],
+    "gbs_analyzer.source_candidate_observation": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidate_observation.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidate_observation.py"
+      }
+    ],
+    "gbs_analyzer.source_candidates": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidates.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidates.py"
+      }
+    ],
+    "gbs_analyzer.tizen": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/__init__.py"
+      }
+    ],
+    "gbs_analyzer.tizen.spec_minimal": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/spec_minimal.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/spec_minimal.py"
+      }
+    ],
+    "gbs_analyzer.tracing": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py"
+      }
+    ],
+    "gbs_analyzer.tracing.logger": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py"
+      }
+    ],
+    "gbs_analyzer.tracing.perf_report": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-log-analysis/scripts",
+        "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/perf_report.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-log-analysis/scripts",
+        "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/perf_report.py"
+      }
+    ],
+    "gbs_build_skill": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build/scripts",
+        "path": "tizen-gbs-build/scripts/gbs_build_skill/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__init__.py"
+      }
+    ],
+    "gbs_build_skill.__main__": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build/scripts",
+        "path": "tizen-gbs-build/scripts/gbs_build_skill/__main__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__main__.py"
+      }
+    ],
+    "gbs_build_skill.runner": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build/scripts",
+        "path": "tizen-gbs-build/scripts/gbs_build_skill/runner.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/runner.py"
+      }
+    ],
+    "gbs_patch_suggest": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__init__.py"
+      }
+    ],
+    "gbs_patch_suggest.__main__": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__main__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__main__.py"
+      }
+    ],
+    "gbs_patch_suggest.analyzer_runner": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py"
+      }
+    ],
+    "gbs_patch_suggest.cli": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py"
+      }
+    ],
+    "gbs_patch_suggest.cluster_ingest": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_ingest.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_ingest.py"
+      }
+    ],
+    "gbs_patch_suggest.cluster_render": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_render.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_render.py"
+      }
+    ],
+    "gbs_patch_suggest.cluster_resolver": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_resolver.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_resolver.py"
+      }
+    ],
+    "gbs_patch_suggest.fix_all_ingest": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_ingest.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_ingest.py"
+      }
+    ],
+    "gbs_patch_suggest.fix_all_render": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_render.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_render.py"
+      }
+    ],
+    "gbs_patch_suggest.fix_all_resolver": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py"
+      }
+    ],
+    "gbs_patch_suggest.formatter": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py"
+      }
+    ],
+    "gbs_patch_suggest.ingest": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/ingest.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/ingest.py"
+      }
+    ],
+    "gbs_patch_suggest.multi_candidate_ingest": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_ingest.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_ingest.py"
+      }
+    ],
+    "gbs_patch_suggest.multi_candidate_render": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_render.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_render.py"
+      }
+    ],
+    "gbs_patch_suggest.render": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/render.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/render.py"
+      }
+    ],
+    "gbs_patch_suggest.resolver": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/resolver.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/resolver.py"
+      }
+    ],
+    "gbs_patch_suggest.skeleton_suppression": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/skeleton_suppression.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/skeleton_suppression.py"
+      }
+    ],
+    "gbs_patch_suggest.spec_toolchain_flag_ingest": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_ingest.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_ingest.py"
+      }
+    ],
+    "gbs_patch_suggest.spec_toolchain_flag_render": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_render.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_render.py"
+      }
+    ],
+    "gbs_patch_suggest.spec_toolchain_flag_resolver": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-patch-suggest/scripts",
+        "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_resolver.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-patch-suggest/scripts",
+        "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_resolver.py"
+      }
+    ],
+    "gbs_workflow": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/__init__.py"
+      }
+    ],
+    "gbs_workflow.__main__": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/__main__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/__main__.py"
+      }
+    ],
+    "gbs_workflow.suggesters": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py"
+      }
+    ],
+    "gbs_workflow.suggesters._common": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/_common.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/_common.py"
+      }
+    ],
+    "gbs_workflow.suggesters.base": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/base.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/base.py"
+      }
+    ],
+    "gbs_workflow.suggesters.compile_error": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py"
+      }
+    ],
+    "gbs_workflow.suggesters.depsolve": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/depsolve.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/depsolve.py"
+      }
+    ],
+    "gbs_workflow.suggesters.fallback": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py"
+      }
+    ],
+    "gbs_workflow.suggesters.linker_missing": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py"
+      }
+    ],
+    "gbs_workflow.suggesters.linker_undef": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_undef.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_undef.py"
+      }
+    ],
+    "gbs_workflow.suggesters.patch_failed": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/patch_failed.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/patch_failed.py"
+      }
+    ],
+    "gbs_workflow.suggesters.registry": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/registry.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/registry.py"
+      }
+    ],
+    "gbs_workflow.suggesters.spec_script": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py"
+      }
+    ],
+    "gbs_workflow.workflow": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-gbs-build-workflow/scripts",
+        "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py"
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-gbs-build-workflow/scripts",
+        "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py"
+      }
+    ]
+  },
+  "example": {
+    "module": "ci_triage.quickbuild",
+    "candidate_files": [
+      {
+        "config": "pyproject.toml",
+        "source_root": "tizen-ci-triage/scripts",
+        "path": "tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+        "sha256": "86dce8c04f17a7ba05239f46395e2a562bc996d57110063dc783438b8a98b1bc",
+        "lstat_mode": "0o100664",
+        "top_level_def_class_count": 0,
+        "first_lines": [
+          "\"\"\"Compatibility re-exports for QuickBuild HTTP helpers moved in P4.9.\"\"\"",
+          "",
+          "from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH as DEFAULT_COOKIE_PATH",
+          "from tizen_ci_shared.quickbuild_http import (",
+          "    DEFAULT_QUICKBUILD_BASE_URL as DEFAULT_QUICKBUILD_BASE_URL,",
+          ")",
+          "from tizen_ci_shared.quickbuild_http import DOWNLOAD_LINK_MARKER as DOWNLOAD_LINK_MARKER",
+          "from tizen_ci_shared.quickbuild_http import DOWNLOAD_TIZEN_BASE_URL as DOWNLOAD_TIZEN_BASE_URL",
+          "from tizen_ci_shared.quickbuild_http import HttpFetcher as HttpFetcher",
+          "from tizen_ci_shared.quickbuild_http import HttpResponse as HttpResponse",
+          "from tizen_ci_shared.quickbuild_http import PackageBuildLog as PackageBuildLog",
+          "from tizen_ci_shared.quickbuild_http import QuickBuildDownload as QuickBuildDownload",
+          "from tizen_ci_shared.quickbuild_http import QuickBuildError as QuickBuildError",
+          "from tizen_ci_shared.quickbuild_http import _raise_if_login_page as _raise_if_login_page",
+          "from tizen_ci_shared.quickbuild_http import _urllib_fetch as _urllib_fetch",
+          "from tizen_ci_shared.quickbuild_http import (",
+          "    derive_package_buildlog_url as derive_package_buildlog_url,",
+          ")"
+        ]
+      },
+      {
+        "config": "release-v1.4.0/pyproject.toml",
+        "source_root": "release-v1.4.0/tizen-ci-triage/scripts",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+        "sha256": "02d1b8754d119b8c50582fd3179394babe83254c18e83810b491a1b0df348a02",
+        "lstat_mode": "0o100664",
+        "top_level_def_class_count": 12,
+        "first_lines": [
+          "\"\"\"QuickBuild authenticated full-log download helpers.\"\"\"",
+          "",
+          "from __future__ import annotations",
+          "",
+          "import html",
+          "import json",
+          "import re",
+          "from collections.abc import Callable, Mapping",
+          "from dataclasses import dataclass",
+          "from pathlib import Path",
+          "from urllib.error import HTTPError, URLError",
+          "from urllib.parse import quote, unquote, urljoin, urlsplit, urlunsplit",
+          "from urllib.request import Request, urlopen",
+          "",
+          "DEFAULT_QUICKBUILD_BASE_URL = \"https://quickbuild.tizen.org\"",
+          "DEFAULT_COOKIE_PATH = Path(\"/tmp/quickbuild_cookies.json\")",
+          "DOWNLOAD_LINK_MARKER = \"ILinkListener-content-buildTab-panel-download\"",
+          "DOWNLOAD_TIZEN_BASE_URL = \"http://download.tizen.org/RBS/TIZEN/Tizen/Tizen-Unified-Toolchain\""
+        ]
+      }
+    ],
+    "snapshot_import": {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+      "sha256": "39c181bd039dddb289e3ab7d28af44958dd985aea37200a33742ba4a72dcc50c",
+      "lineno": 10,
+      "end_lineno": 18,
+      "source": "from ci_triage.quickbuild import (\n    DEFAULT_COOKIE_PATH,\n    DEFAULT_QUICKBUILD_BASE_URL,\n    HttpFetcher,\n    QuickBuildError,\n    _raise_if_login_page,\n    _urllib_fetch,\n    load_cookie_jar,\n)"
+    },
+    "selected_target": null
+  }
+}
+MODULE_IDENTITY_AMBIGUOUS=ci_triage.quickbuild candidates=2 selected=NONE

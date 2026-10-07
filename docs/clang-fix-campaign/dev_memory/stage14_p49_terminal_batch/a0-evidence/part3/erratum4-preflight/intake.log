@@ -1,0 +1,57 @@
+diff --git a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+index d76a534..a15a64f 100644
+--- a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
++++ b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+@@ -4,6 +4,7 @@
+ > **已生效勘误:附录 C 勘误 1(2026-09-29,FatTank 批准)。** 勘误只追加在附录 C,不改动正文任何一行。
+ > **已生效勘误:附录 C 勘误 2(2026-10-07,FatTank 批准)。**
+ > **已生效勘误:附录 C 勘误 3(2026-10-07,FatTank 批准)。**
++> **已生效勘误:附录 C 勘误 4(2026-10-07,FatTank 批准)。**
+ > 冻结前的放行规则(v1.27 起,留作记录):
+ > 1. **落地核对**:三家只核对最新修订段所列改动是否按所写落地、有无改到别处;**不开新的审查面**;
+ > 2. **放行标准只看"朝开"**:仅当发现**会导致删错真实依赖或删掉行为型测试**的问题才阻止冻结;
+@@ -2158,3 +2159,41 @@ A/B 取值、**存在性检查证据(`lstat` 语义)**、**π 归一结果**、
+ > 残留状态、marker、调用轨迹等其余字段改前改后须完全相等(对应 §4"残留不自动回滚")。
+ 
+ **生效范围**:仅 §6 中超时场景的运行方式与登记;不改变映射表裁决、实现目标、SEAL 与判定条件。
++
++### 勘误 4(2026-10-07,FatTank 批准)—— 扫描清单条目的分类:条目类别与 provider 类别分为两层
++
++**触发**:A₀ 第 3 段停止报告 SCAN-01(stage14 `progress.md` §19.2)。§1.1b 的封闭 artifact universe 只列了三种 Python provider,
++而 12b-1/12b-3b/12b-3c 要求完整 git tree 的每一个条目都有类别、都有 detector 判 `SCANNED`;配置、CI、文档、二进制等条目在正文中没有类别。
++
++**E4-1 · 两层分类**
++> **第一层:条目类别(entry kind)** —— `scan_manifest` 的每个条目都有且仅有一个,由下表**按顺序**机械判定(先命中者为准);
++> **第二层:provider 类别** —— 只对第一层判为 `PY_SOURCE` 或 `IMPORTABLE_BINARY` 的条目求值,仍是 §1.1b 的封闭 universe
++> (纯 `.py` 源文件、包目录、命名空间包 portion;其余 → `UNSUPPORTED` 阻塞)。
++> §1.1b"其余一律 `UNSUPPORTED`"只约束第二层;**非 provider 条目不是"其余",它们由第一层承接**。
++> 12b-3c 的"注册表键 ⊇ 封闭 universe 全部 kind"按两层分别适用:第一层的键 = 下表全部类别,第二层的键 = §1.1b 三种 provider。
++
++**E4-2 · 条目类别(封闭,按序判定;第一条不命中再看下一条)**
++> | # | 条目类别 | 机械判据 | required detectors |
++> |---|---|---|---|
++> | 1 | `GITLINK` | git mode `160000` | 解析层(按"打包入口与文件系统层重定向"落 `DYNAMIC_UNRESOLVED`) |
++> | 2 | `SYMLINK` | git mode `120000` | 解析层(同上) |
++> | 3 | `IMPORTABLE_BINARY` | 扩展名 ∈ {`.so`, `.pyd`, `.pyc`, `.pyo`} | provider 分类器(按 §1.1b 落 `UNSUPPORTED` 阻塞) |
++> | 4 | `PTH` | 扩展名 `.pth` | 解析层(`DYNAMIC_UNRESOLVED`)、名字命中兜底 |
++> | 5 | `BINARY` | 内容含 NUL 字节或不能按 UTF-8 解码 | 二进制记录器(逐个记入 B-8,§1.1 名字命中兜底的"二进制文件跳过并逐个记入") |
++> | 6 | `PY_SOURCE` | 扩展名 `.py`,或首行 shebang 指向 python 解释器 | provider 分类器、四级粒度候选扫描、消费者参与点识别(C1–C6d、C8a、C8b)、解析层、名字命中兜底 |
++> | 7 | `PACKAGING` | 文件名 ∈ {`pyproject.toml`, `setup.cfg`} | C7a 识别、解释器行兜底、名字命中兜底 |
++> | 8 | `CI_CONFIG` | 路径匹配 `.github/workflows/*.yml`、`.github/workflows/*.yaml`、`.gitlab-ci.yml`、`Jenkinsfile`、`.travis.yml` | C7b 识别、解释器行兜底、名字命中兜底 |
++> | 9 | `SHELL` | 扩展名 `.sh`,或首行 shebang 指向 sh/bash | C7c 识别、解释器行兜底、名字命中兜底 |
++> | 10 | `BUILD` | 文件名或模式 ∈ C7d 所列 {`Makefile`, `GNUmakefile`, `*.mk`, `*.spec`, `Dockerfile`, `*.service`, `tox.ini`} | C7d 识别、解释器行兜底、名字命中兜底 |
++> | 11 | `DOC` | 按 §1.1 名字命中兜底中"文档文件"的定义(`*.md`、`*.rst`,以及 `docs/` 下不属第 7–10 类、无可执行位且无 shebang 的文件) | doctest 提取器、名字命中兜底(非 doctest 行按第 9 类排除并记账) |
++> | 12 | `OTHER_TEXT` | 以上都不是的文本文件(如 `.json`、非 CI 的 `.yml`、`.txt`、`.ini`、`.importlinter`、无扩展名的文本文件) | 解释器行兜底、名字命中兜底(按 §1.1:未登记类别中的解释器行 → `UNKNOWN_CAPABILITY`) |
++> 第 12 类是**有内容规则的封闭类别**,不是"默认豁免":它的条目同样逐条扫描、逐条记账,名字命中或解释器行一律按 §1.1 处理。
++> **分类器必须全函数**:git mode 不属 {`100644`, `100755`, `120000`, `160000`} 的条目 → `UNKNOWN_PROVIDER_KIND` 阻塞(沿用 12b-3c③)。
++> 12b-3b"每个条目 ∃ detector 判 `SCANNED`":上表每类的 required detectors 至少一个对该条目判 `SCANNED`;
++> 二进制记录器对 `BINARY` 条目完成记录即为 `SCANNED`。
++
++**E4-3 · 与其它条款的关系**
++> 本勘误不新增消费者形态(`consumer.*` 仍为原子形态表二十个)、不减少任何条目、不改变 §1.1 的去处规则;
++> 它只给每个条目一个机械可判的类别和对应的 detector 集合。条目类别与 provider 类别的判定结果逐条落 B-8。
++
++**生效范围**:12b-1、12b-3、12b-3b、12b-3c 的实现与 §1.1b 封闭 universe 的适用面;不改变判定条件与其它事项。
+OLD_SHA256=7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200
+NEW_SHA256=e9b18793d3fea5755e886d55d0dbebdfc8a5d39374237fe0e05757a242ef6e9a
+APPEND_ONLY=PASS additions=39 deletions=0 insert_blocks=2

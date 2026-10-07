@@ -1502,7 +1502,8 @@ lstat mode、大小及文件SHA: `README.md`、`pyproject.toml`、
 
 ### 19.2 SCAN-01:provider域与全树扫描条目域的注册表接口未定
 
-**状态:OPEN。阻塞第1块A03/A04/A10的注册表编码,尚未运行任何claim。**
+**状态:CLOSED。勘误4 E4-1/E4-2已明确两层类别与required detectors;
+原字节入库及hash见§20.1。以下保留当时的问题,不代表当前仍待裁决。**
 这是判据编码前的口径问题,不是claim红、不是已实跑扫描器的失败。
 下列行号均对应SHA为`7b8531fd...`的当前冻结稿。
 
@@ -1549,9 +1550,160 @@ lstat mode、大小及文件SHA: `README.md`、`pyproject.toml`、
 | 第5块:§6改前实跑,A01 | PENDING_SEG3 | 30场景未采集,无改前文件hash;等待消费者引擎及item5读取方全集 |
 | 本轮测试/mypy/ruff | NOT_RUN,exit=N/A | 未改工具、测试或生产代码;不借用上一段197通过数作为本轮验证 |
 
-停止报告新增**1条(SCAN-01 OPEN)**,累计当前OPEN**1条**;
+当轮停止报告新增**1条(SCAN-01当时OPEN)**,当轮OPEN**1条**;
+SCAN-01已在§20按勘误4关闭;最新OPEN项以§20为准。
 PRED-01..05、DIFF-01..04继续CLOSED。不存在已完成的第3段实现块commit。
 本次只提交停止记录、原始诊断证据与INDEX,不把它命名或记账为扫描基础完成。
 既有OBS产出、三个差异门禁数据文件、冻结predicate/豁免及设计稿均不改;
 主树`.gitignore`修改、无关文档删除、untracked历史稿保持原样。
 push后停下,等待设计方澄清上述kind/适用性接口后续跑。
+
+## 20. 勘误4入库与release模块身份歧义停止报告(2026-10-07)
+
+### 20.1 原件、仅追加证明与SCAN-01关闭
+
+开场已读§19及§2.2交付映射。`git pull --ff-only origin clang-fix-campaign`
+exit=0,stdout=`Already up to date.`;本轮起点为
+`a2f197b9cb8cbdf60fee276b23f4e9f136af9c07`。
+批准原件已经位于目标文件,本轮直接入库,没有重写任何正文或勘误字节。
+
+| 版本 | 原字节SHA-256 |
+|---|---|
+| 勘误1–3版本 | `7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200` |
+| 勘误4版本 | `e9b18793d3fea5755e886d55d0dbebdfc8a5d39374237fe0e05757a242ef6e9a` |
+
+证据目录:`a0-evidence/part3/erratum4-preflight/`。
+`intake.command.json`保存实际命令、完整可复跑Python程序、cwd、环境、exit
+与输出SHA;`intake.log`含未清洗的`git diff --unified=3`与机械断言原文:
+
+```text
+intake exit=0
+APPEND_ONLY=PASS additions=39 deletions=0 insert_blocks=2
+```
+
+两处insert精确为:旧第6行之后新增勘误4生效行;旧文件末尾追加勘误4。
+除此以外所有旧行原字节保留,没有删除或替换。
+
+**SCAN-01 CLOSED**:
+
+- E4-1(当前冻结稿L2168–2173)将entry kind与provider kind拆为两层,
+  后者只对PY_SOURCE/IMPORTABLE_BINARY求值,§1.1b的“其余”不再误用于
+  普通非provider文本。
+- E4-2(L2175–2193)逐类给出按序判定的封闭12类及required detectors:
+  GITLINK/SYMLINK/IMPORTABLE_BINARY/PTH/BINARY/PY_SOURCE/PACKAGING/
+  CI_CONFIG/SHELL/BUILD/DOC/OTHER_TEXT。未知git mode阻塞;BINARY由
+  逐项记录满足行级SCANNED下界。该裁决关闭口径缺口,**不等于注册表已实现**。
+- E4-3保持20个consumer.*形态及现有去处规则不变。
+
+### 20.2 SCAN-02:全树同一点分名对应live与release两份文件
+
+**状态:OPEN。按本轮任务第2项的release歧义停止条款,在实现前只读核对时停止。**
+未排除release,未自行决定“优先live”“优先快照”“就近源码根”或“两者都算”。
+不是OBS claim判红,也不是已有消费者引擎误报的实跑结论。
+
+取证在§9.2固定干净工作区、独立Python环境执行;HEAD/tree不变:
+`43a6aa625f27da46daba190657bf62256080c68e` /
+`ca9331190e878af465e7968fe56e735585a5866e`。
+
+机械方法:对完整`git ls-tree -rz --name-only --full-tree <tree>`的tracked
+路径,分别读取`pyproject.toml`与`release-v1.4.0/pyproject.toml`的
+`tool.setuptools.packages.find.where/include/exclude`,按各自声明的源码根
+生成点分名,保留配置来源与文件路径。**这里只展示两份打包描述各自声明的
+对应关系,不将它们合成实际运行环境的sys.path、不选择消费者边目标。**
+两份配置的hash、源码根、全部重名对应及示例AST原文见
+`module-identity.log`;完整命令在同名`command.json`。
+
+```text
+module-identity exit=0
+tracked_leaf_count=846
+cross_config_duplicate_module_count=85
+MODULE_IDENTITY_AMBIGUOUS=ci_triage.quickbuild candidates=2 selected=NONE
+```
+
+exit=0表示只读诊断完成,不是扫描/闭合门禁通过。85是这两份打包描述下
+机械导出的重名数,不是完成全套扫描后的候选数或consumer计数。
+
+**具名实例**:
+
+| 同一点分名 | 来源描述与文件 | 实测结构 |
+|---|---|---|
+| `ci_triage.quickbuild` | 根`pyproject.toml`: `tizen-ci-triage/scripts/ci_triage/quickbuild.py` | 顶层def/class=0;转发到`tizen_ci_shared.quickbuild_http`的live shim |
+| `ci_triage.quickbuild` | `release-v1.4.0/pyproject.toml`: `release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py` | 顶层def/class=12;独立历史实现,不是同一个文件/同一个blob |
+
+实际引用为固定树
+`release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gbs_report.py:10–18`:
+
+```python
+from ci_triage.quickbuild import (
+    DEFAULT_COOKIE_PATH,
+    DEFAULT_QUICKBUILD_BASE_URL,
+    HttpFetcher,
+    QuickBuildError,
+    _raise_if_login_page,
+    _urllib_fetch,
+    load_cookie_jar,
+)
+```
+
+若只按点分名构图,这个引用无法唯一指定上述两份文件中的哪一份;
+如果静默选live,就可能把快照实现的依赖计为待删除live shim的消费者。
+这是用户点名的风险实例,**并未声称已经通过运行时import证实选错了文件**。
+
+**对应权威位置/困难**:
+
+- §1.1e 12b-1(当前L1285)与本轮任务第2项要求release照常入完整输入面。
+- §1.1名字命中兜底(当前L355–370)从模块名/路径形态产生消费关系;
+  12b-6要求同tree/run绑定,但tree本身同时包含上述两套源码根。
+- E4-1/E4-2解决条目类别与detector适用性,未规定跨打包根的模块身份或
+  绝对import解析优先级。选其中之一、把两者合并或忽略快照都会影响
+  candidate身份/消费者归属,不是实现方可自行选择的路径表示细节。
+
+**候选,仅供设计方裁决**:
+
+1. 为模块身份增加明确的打包/解析上下文,规定各上下文的入口与import
+   解析关系,并以(source context, module, file)保留证据。具体上下文
+   边界、跨上下文引用及无法静态绑定时的出口须由设计方给出;不能由
+   扫描器自定“就近”规则。
+2. 若仍采用全树单一点分名空间,明确多provider名称的具名未决出口及
+   可接受的消歧证据;在消歧前不产出唯一消费边,不视为零消费者。
+
+两方案都保留release在manifest与扫描内。本轮未选方案、未以排除快照
+作为候选修法。恢复条件是设计方裁决模块身份/对应规则后继续第1块。
+
+### 20.3 冻结边界、交付状态与未运行项
+
+`frozen-and-scope.command.json`/`.log`(exit=0)实测:
+
+```text
+predicates.json canonical=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6
+measurement_exemptions.json canonical=4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+IMMUTABLE_AND_PRODUCTION_DIFF_EXIT=0
+```
+
+最后一项为对生产源码、release快照、tests、tools与既有part2证据运行
+`git diff --exit-code`,stdout为空。没有调用任何OBS producer,没有改既有
+OBS产出或差异登记,没有执行改前实跑。两次原字节指纹核验不是重新批准
+predicate;冻结审批与6601cfc外部锚维持不变。
+
+| 交付项 | 状态/结果 |
+|---|---|
+| 勘误4入库、SCAN-01关闭 | DONE,本commit由Git外部锚定;不在文件自记SHA |
+| 第1块注册表/manifest/解析层 | STOPPED_BEFORE_IMPLEMENTATION;正式manifest/completion未产出;12类正例与2条新控制NOT_RUN,未登记假PASS |
+| 第2块20形态正控制/near-miss/CTRL-INTRA-PKG-PROXY | NOT_RUN;唯一control_catalog未改 |
+| 第3块三段台账/四粒度候选 | NOT_RUN;计数N/A |
+| 第4块8个获准claim | 全部NOT_RUN;无新verifier结论或claim证据路径 |
+| 第5块门禁改前采集 | PENDING_SEG3;30场景尚未实跑,无改前文件hash |
+| 测试/mypy/ruff | NOT_RUN,exit=N/A;本轮未实现工具或新增测试 |
+
+第4块的八项分别为item1-basis、seg1-staleness、seg2-form、commit-order、
+transition-map、proxy-count、intra-package-shim、item5-order,均未运行。
+各诊断命令的argv/环境/exit/原始输出与SHA已归档,不借用上一段测试数字。
+本轮新增停止项**1条(SCAN-02 OPEN)**;SCAN-01、PRED-01..05、DIFF-01..04
+均CLOSED。第1–5块没有完成块,不提供虚假的逐块完成commit。
+本次提交仅批准的勘误原件、progress/INDEX与只读诊断证据。原有.gitignore
+修改、无关删除、untracked草稿不处理。push后停止等待裁决。
+
+暂存区`git diff --cached --check`的exit=2仅指向
+`erratum4-preflight/intake.log:15`中的原始git diff上下文空行(` `)。
+不清洗证据字节或重算为别的输出;排除这个原始日志重跑exit=0。
+文档三文件的`git diff --check`亦exit=0。这是日志格式记录,不新增规格停止项。
