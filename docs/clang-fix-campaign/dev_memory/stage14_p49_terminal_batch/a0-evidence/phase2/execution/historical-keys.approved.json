@@ -1,0 +1,190 @@
+[
+  {
+    "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+    "line": 37,
+    "symbol": "create_worktree",
+    "value": "ci_triage/verify/workspace.py",
+    "usage": "source triplet lookup in frozen table relocation; not an import/patch/entry",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+      "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+      "line": 236
+    },
+    "reason": "Original table key must survive module removal; canonical destination is stored separately."
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+    "line": 46,
+    "symbol": "check_disk_and_maybe_cleanup",
+    "value": "ci_triage/verify/workspace.py",
+    "usage": "source triplet lookup in frozen table relocation; not an import/patch/entry",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+      "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+      "line": 237
+    },
+    "reason": "Original table key must survive module removal; canonical destination is stored separately."
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+    "line": 55,
+    "symbol": "_copy_repository",
+    "value": "ci_triage/verify/workspace.py",
+    "usage": "source triplet lookup in frozen table relocation; not an import/patch/entry",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+      "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+      "line": 238
+    },
+    "reason": "Original table key must survive module removal; canonical destination is stored separately."
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 47,
+    "value": "ci_triage/verify/workspace.py",
+    "exact_line": "WORKSPACE = \"ci_triage/verify/workspace.py\"",
+    "usage": "WORKSPACE is a legacy topology lock key in _run_binding_fixture",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+      "sha256": "8ebb905f0c12f6327ef7f7cd7f746afb3673e1017aa1b06b2ffc6211f860463a",
+      "matching_lines": [
+        47
+      ]
+    },
+    "reason": "FatTank approval: historical topology/owner/fixture identity, not an import, patch or entry. Preserve the original key and assertion.",
+    "review_id": "PR-01",
+    "classification": "HISTORICAL_KEY"
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 2041,
+    "value": "ci_triage/sources.py",
+    "exact_line": "        \"tizen_qb_discover/sources.py\" if extracted else \"ci_triage/sources.py\"",
+    "usage": "Fallback source definition for pre-extraction fixture topology",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+      "sha256": "8ebb905f0c12f6327ef7f7cd7f746afb3673e1017aa1b06b2ffc6211f860463a",
+      "matching_lines": [
+        2041
+      ]
+    },
+    "reason": "FatTank approval: historical topology/owner/fixture identity, not an import, patch or entry. Preserve the original key and assertion.",
+    "review_id": "PR-03",
+    "classification": "HISTORICAL_KEY"
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 807,
+    "value": "ci_triage.verify.build_verify",
+    "exact_line": "    \"ci_triage.verify.build_verify\": \"build-verify\",",
+    "usage": "MODULE_OWNERS legacy build-verify classification key",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+      "sha256": "8ebb905f0c12f6327ef7f7cd7f746afb3673e1017aa1b06b2ffc6211f860463a",
+      "matching_lines": [
+        807
+      ]
+    },
+    "reason": "FatTank approval: historical topology/owner/fixture identity, not an import, patch or entry. Preserve the original key and assertion.",
+    "review_id": "PR-04",
+    "classification": "HISTORICAL_KEY"
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 808,
+    "value": "ci_triage.verify.gerrit_submit",
+    "exact_line": "    \"ci_triage.verify.gerrit_submit\": \"submit\",",
+    "usage": "MODULE_OWNERS legacy submit classification key",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+      "sha256": "8ebb905f0c12f6327ef7f7cd7f746afb3673e1017aa1b06b2ffc6211f860463a",
+      "matching_lines": [
+        808
+      ]
+    },
+    "reason": "FatTank approval: historical topology/owner/fixture identity, not an import, patch or entry. Preserve the original key and assertion.",
+    "review_id": "PR-05",
+    "classification": "HISTORICAL_KEY"
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 1772,
+    "value": "ci_triage/gbs_report.py",
+    "exact_line": "            \"ci_triage/gbs_report.py\",",
+    "usage": "Negative fixture intentionally declares a symbol outside its skill root",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+      "sha256": "8ebb905f0c12f6327ef7f7cd7f746afb3673e1017aa1b06b2ffc6211f860463a",
+      "matching_lines": [
+        1772,
+        2055
+      ]
+    },
+    "reason": "FatTank approval: historical topology/owner/fixture identity, not an import, patch or entry. Preserve the original key and assertion.",
+    "review_id": "PR-06",
+    "classification": "HISTORICAL_KEY"
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 2055,
+    "value": "ci_triage/gbs_report.py",
+    "exact_line": "            \"ci_triage/gbs_report.py\",",
+    "usage": "Twin-key fixture second definition models the legacy report side. Retain until fixture lifetime and frozen input are approved.",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+      "sha256": "8ebb905f0c12f6327ef7f7cd7f746afb3673e1017aa1b06b2ffc6211f860463a",
+      "matching_lines": [
+        1772,
+        2055
+      ]
+    },
+    "reason": "FatTank approval: historical topology/owner/fixture identity, not an import, patch or entry. Preserve the original key and assertion.",
+    "review_id": "PR-07",
+    "classification": "HISTORICAL_KEY"
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 799,
+    "value": "ci_triage.report",
+    "exact_line": "    \"ci_triage.report\": \"triage-report\",",
+    "usage": "MODULE_OWNERS legacy report classification key",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+      "sha256": "8ebb905f0c12f6327ef7f7cd7f746afb3673e1017aa1b06b2ffc6211f860463a",
+      "matching_lines": [
+        799
+      ]
+    },
+    "reason": "FatTank approval: historical topology/owner/fixture identity, not an import, patch or entry. Preserve the original key and assertion.",
+    "review_id": "PR-08",
+    "classification": "HISTORICAL_KEY"
+  },
+  {
+    "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+    "line": 731,
+    "value": "ci_triage/gbs_report.py",
+    "exact_line": "        \"ci_triage/gbs_report.py\",",
+    "usage": "BodyEntry in binary-key/name-only counterexample, not an imported module. Retain pending approval of historical fixture identity.",
+    "immutable_input": {
+      "commit": "43a6aa625f27da46daba190657bf62256080c68e",
+      "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+      "sha256": "8f643af6359740ad431dae32308189abebaaa851cc580a309f05ce2511cb4d40",
+      "matching_lines": [
+        731
+      ]
+    },
+    "reason": "FatTank approval: historical topology/owner/fixture identity, not an import, patch or entry. Preserve the original key and assertion.",
+    "review_id": "PR-09",
+    "classification": "HISTORICAL_KEY"
+  }
+]
