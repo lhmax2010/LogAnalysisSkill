@@ -3165,3 +3165,42 @@ E11-3(1)(b)扩大到step-0 closeout已登记兼容壳,同判据核对runner
 discover_sibling_pythonpath,真实依赖须排除并附证据。
 继续用途复核、项2范围/拟删nodeid、OBS-5改前产出,全部完成后停等人工闸门;
 任何新缺口仍停报,当前没有授权删除。
+
+## 34. PHASE2-02: 项2包根特殊名字边界停止
+
+文档补漏 `f65949f` 已独立提交并推送;该提交1340/1,生产/测试零改动。
+继续准备时发现新口径缺口,按协议停止,不出勘误、不改冻结稿与判据。
+
+| 编号 | 原文位置 | 实测与困难 | 候选处置 |
+|---|---|---|---|
+| PHASE2-02 OPEN | F E11-4:2514-2516; test_package_metadata.py:1/5; gbs_analyzer/__init__.py:3 | `__version__` 按字面属于包根下划线名字范围,但它在包根直接定义,非兼容壳;测试锁定版本接口,不可按兼容同一性用例删除。移除导出与保留接口/从现定义模块直取无法并立,未获准排除双下划线名字 | 1.具名保留此真实公开元数据,不扩为整体豁免;2.设计方明确特殊名字与私有名字边界再枚举。未自行选择 |
+
+固定43a6aa6上全部52个tests/ Python文件的ImportFrom定向核对,
+按包根/已登记兼容绑定筛选命中1项,实际导入得`__version__=0.5.0-dev`。
+此诊断不是最终项2全集。初轮粗筛多列runner._safe_pkg_dir,
+随后按绑定粒度纠正(它是本地定义,不是discover兼容行),原始证据都保留。
+runner.discover原位只有1个import、0个Load,本轮来源扩展后判为兼容壳,
+应进入下一版清单;当前没有删除。
+
+[停止报告](a0-evidence/phase2/private-scope-stop.md)含文件:行、候选处置、
+完整命令及证据路径。事实文件与诊断程序:
+`a0-evidence/phase2/private-scope-binding-refinement/facts.json`、
+`private-scope-binding-refinement.command.json`与同名log。
+
+准备汇总仍沿用**上轮未定稿草案**:13宿主/183绑定/11跃迁,
+619候选乘形态命中(485 HISTORICAL/30 REWRITE/104 RELEASE)。
+本轮runner与逐项HISTORICAL_KEY尚未合入,不冒称最终清单。
+PHASE2-01已关闭,新增PHASE2-02未关闭;用途归类、项2拟删nodeid、
+OBS-5未完成/未运行,人工闸门NOT_READY,无删除。
+
+仅复跑交付留档回归:
+
+```text
+pytest /home/linhao/Toolchain/development/LogAnalysisSkill/tests -vv -p no:cacheprovider
+======================= 1340 passed, 1 skipped in 25.68s =======================
+EXIT=0
+```
+
+完整命令/env/逐nodeid原文见`a0-evidence/phase2/rulings-stop-full-regression.*`。
+本次只提交准备诊断证据和记账文件,不改变生产/测试/既有OBS/冻结输入。
+等待设计方轻量裁决,不继续其它准备以绕开停止项。

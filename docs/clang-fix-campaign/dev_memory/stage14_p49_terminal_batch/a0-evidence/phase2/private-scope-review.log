@@ -1,0 +1,9 @@
+CONTEXT head=43a6aa625f27da46daba190657bf62256080c68e tree=ca9331190e878af465e7968fe56e735585a5866e clean=True
+TEST_AST files=52 ImportFrom_scope_matches=2 status=PARTIAL_STOPPED_NOT_FINAL
+tests/unit/test_ci_triage.py:38 | ci_triage.runner._safe_pkg_dir | REGISTERED_OLD_HOST
+tests/unit/test_package_metadata.py:1 | gbs_analyzer.__version__ | PACKAGE_ROOT
+ROOT_DEFINITION tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py:3 | __version__ = "0.5.0-dev"
+RUNTIME module=/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py version=0.5.0-dev
+TEST_CONTRACT tests/unit/test_package_metadata.py:5 | assert __version__ == "0.5.0-dev"
+RUNNER discover_sibling_pythonpath import_count=1 local_loads=0 REEXPORT_ONLY
+PHASE2-02 STOP: E11-4 lexical scope includes the package-defined version API; no dunder exception has been approved.

@@ -1,0 +1,47 @@
+{
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "scope_status": "PARTIAL_STOPPED_NOT_FINAL",
+  "test_python_files": 52,
+  "import_from_matches": [
+    {
+      "file": "tests/unit/test_ci_triage.py",
+      "line": 38,
+      "module": "ci_triage.runner",
+      "name": "_safe_pkg_dir",
+      "local_name": "_safe_pkg_dir",
+      "route": "REGISTERED_OLD_HOST",
+      "root_definition": null,
+      "source": "from ci_triage.runner import TriageOptions, TriageResult, _safe_pkg_dir, run_triage"
+    },
+    {
+      "file": "tests/unit/test_package_metadata.py",
+      "line": 1,
+      "module": "gbs_analyzer",
+      "name": "__version__",
+      "local_name": "__version__",
+      "route": "PACKAGE_ROOT",
+      "root_definition": "tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py",
+      "source": "from gbs_analyzer import __version__"
+    }
+  ],
+  "limitation": "This stop diagnostic enumerates ImportFrom matches only; it is not the final item-2 inventory.",
+  "blocker": {
+    "id": "PHASE2-02",
+    "definition_file": "tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py",
+    "definition_line": 3,
+    "definition_text": "__version__ = \"0.5.0-dev\"",
+    "test": "tests/unit/test_package_metadata.py::test_package_exposes_dev_version",
+    "runtime_module_file": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py",
+    "runtime_version": "0.5.0-dev",
+    "package_sha256": "0241c202d38a64fe3ceb52a86865e74380df2bec12d23e3e8da85f5de82f6b0d",
+    "test_sha256": "b3da0ba68484cf1f48cf98088627580268f8902376c7b5ee112a40fe203a1f58"
+  },
+  "runner_compatibility": {
+    "file": "tizen-ci-triage/scripts/ci_triage/runner.py",
+    "import_line": 15,
+    "local_load_lines": [],
+    "status": "REEXPORT_ONLY",
+    "source": "review/p49-step0-closeout.md, approved source expansion"
+  }
+}
