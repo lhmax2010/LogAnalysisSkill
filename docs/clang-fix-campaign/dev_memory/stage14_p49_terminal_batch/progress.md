@@ -3079,3 +3079,41 @@ EXIT=0
 保留链接/缺失目标/git未执行断言,改断言为批准的新异常契约。
 阶段一A/B完成;第二阶段仅准备人工审批材料,尚未删除任何兼容壳或测试。
 当前无新停止项,冻结稿/判定条件不改;所有无关dirty/untracked保持原样。
+
+## 32. 第二阶段只读准备与PHASE2-01停止
+
+A `5213c5d`、B `c1ea4ef`分别提交并push;B后全仓1340/1,
+FULL30验收通过。第二阶段证据根`a0-evidence/phase2/`。
+
+固定树43a6aa6只读草案:13宿主、183转出绑定、11抽取跃迁;
+全846 tracked文件字面复扫(4二进制)619个候选×形态命中,路径粗分
+485 HISTORICAL / 30 REWRITE / 104 RELEASE / 0 OTHER。
+完整输入、逐项来源与源码诊断程序在`preparation.command.json`
+及`preparation/*.json`,归类用途复核未完成,不是最终审批材料。
+
+实测发现活动bridge的三条旧workspace路径为历史表键,按REWRITE替换
+后`consumed=0 produced=0`,出现3个UNMAPPED_SOURCE;原键3/3无verdict。
+该构造exit1与原文逐行位置见[停止报告](a0-evidence/phase2/stop-report.md),
+无需改生产即可复现,未改工具/判据/冻结表迁就结果。
+
+| 编号 | 原文位置 | 实测与困难 | 候选处置 |
+|---|---|---|---|
+| PHASE2-01 OPEN | F E11-3(2)/(4):2497-2509;bridge:35-63,436-440;step-0表:236-238 | 代码中历史证据键不是运行时消费;改路径破坏relocation,保留需要明确HISTORICAL细粒度适用范围 | 建议逐命中保留历史键并绑定其不可变输入;或批准将键与历史输入外置。未自行选定 |
+
+真实依赖与排除:quickbuild_log.FailedPackage有5处本地读取,不能删import;
+skill副本三类型与新包根/release保留。runner env兼容行未在E11封闭来源内,
+只登记差异,不自行补来源。项2/拟删nodeid/OBS-5尚未完成,
+因新缺口停下;人工闸门NOT_READY,无删除。
+
+停止后仅复跑全仓用于本次留档交付,未继续其它实施。所有既有证据和
+冻结F/predicates/expected_diff不变,无关工作树改动仍不处理。
+
+```text
+pytest /home/linhao/Toolchain/development/LogAnalysisSkill/tests -vv -p no:cacheprovider
+======================= 1340 passed, 1 skipped in 26.03s =======================
+EXIT=0
+```
+
+完整命令、隔离env与原始输出:`a0-evidence/phase2/full-regression.command.json`
+和`full-regression.log`。mypy/ruff/lint仍使用B同一生产字节,
+其exit0证据见§31;阶段二未产生任何生产或测试diff。

@@ -1,0 +1,6 @@
+UNCHANGED_HISTORICAL_KEYS consumed=3 produced=3 verdicts=0 PASS
+PATH_ONLY_REWRITE consumed=0 produced=0
+UNMAPPED_SOURCE: ('tizen_build_verify/workspace.py', 'create_worktree', 'build-verify')
+UNMAPPED_SOURCE: ('tizen_build_verify/workspace.py', 'check_disk_and_maybe_cleanup', 'build-verify')
+UNMAPPED_SOURCE: ('tizen_build_verify/workspace.py', '_copy_repository', 'build-verify')
+PHASE2-01: E11 literal REWRITE cannot be applied to these historical keys

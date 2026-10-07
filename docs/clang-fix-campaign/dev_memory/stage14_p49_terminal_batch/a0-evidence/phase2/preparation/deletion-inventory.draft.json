@@ -1,0 +1,2361 @@
+{
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "human_approval": "PENDING",
+  "entries": [
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/gerrit.py",
+      "module": "ci_triage.gerrit",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "GerritChange",
+          "line": 3,
+          "immediate_target": "tizen_ci_shared.types.GerritChange",
+          "canonical_target": "tizen_ci_shared.types.GerritChange",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "GerritPatchSet",
+          "line": 4,
+          "immediate_target": "tizen_ci_shared.types.GerritPatchSet",
+          "canonical_target": "tizen_ci_shared.types.GerritPatchSet",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "SourceFetchResult",
+          "line": 5,
+          "immediate_target": "tizen_ci_shared.types.SourceFetchResult",
+          "canonical_target": "tizen_ci_shared.types.SourceFetchResult",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "GERRIT_HOST",
+          "line": 6,
+          "immediate_target": "tizen_gerrit_fetch.gerrit.GERRIT_HOST",
+          "canonical_target": "tizen_gerrit_fetch.gerrit.GERRIT_HOST",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "GERRIT_PORT",
+          "line": 7,
+          "immediate_target": "tizen_gerrit_fetch.gerrit.GERRIT_PORT",
+          "canonical_target": "tizen_gerrit_fetch.gerrit.GERRIT_PORT",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "GerritError",
+          "line": 8,
+          "immediate_target": "tizen_gerrit_fetch.gerrit.GerritError",
+          "canonical_target": "tizen_gerrit_fetch.gerrit.GerritError",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "SubprocessRunner",
+          "line": 9,
+          "immediate_target": "tizen_gerrit_fetch.gerrit.SubprocessRunner",
+          "canonical_target": "tizen_gerrit_fetch.gerrit.SubprocessRunner",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_optional_int",
+          "line": 10,
+          "immediate_target": "tizen_gerrit_fetch.gerrit._optional_int",
+          "canonical_target": "tizen_gerrit_fetch.gerrit._optional_int",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_reset_generated_source_dir",
+          "line": 11,
+          "immediate_target": "tizen_gerrit_fetch.gerrit._reset_generated_source_dir",
+          "canonical_target": "tizen_gerrit_fetch.gerrit._reset_generated_source_dir",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_run_git",
+          "line": 12,
+          "immediate_target": "tizen_gerrit_fetch.gerrit._run_git",
+          "canonical_target": "tizen_gerrit_fetch.gerrit._run_git",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "change_from_query_obj",
+          "line": 13,
+          "immediate_target": "tizen_gerrit_fetch.gerrit.change_from_query_obj",
+          "canonical_target": "tizen_gerrit_fetch.gerrit.change_from_query_obj",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "fetch_source_for_commit",
+          "line": 14,
+          "immediate_target": "tizen_gerrit_fetch.gerrit.fetch_source_for_commit",
+          "canonical_target": "tizen_gerrit_fetch.gerrit.fetch_source_for_commit",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "find_patchset_by_revision",
+          "line": 15,
+          "immediate_target": "tizen_gerrit_fetch.gerrit.find_patchset_by_revision",
+          "canonical_target": "tizen_gerrit_fetch.gerrit.find_patchset_by_revision",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "parse_gerrit_query_output",
+          "line": 16,
+          "immediate_target": "tizen_gerrit_fetch.gerrit.parse_gerrit_query_output",
+          "canonical_target": "tizen_gerrit_fetch.gerrit.parse_gerrit_query_output",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "query_change_for_commit",
+          "line": 17,
+          "immediate_target": "tizen_gerrit_fetch.gerrit.query_change_for_commit",
+          "canonical_target": "tizen_gerrit_fetch.gerrit.query_change_for_commit",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "a",
+          "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+          "lines": [
+            367,
+            369
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+          "quote": "- gerrit.py 的 `GerritPatchSet`/`GerritChange`/`SourceFetchResult`、\n  quickbuild_log.py 的 `FailedPackage`、workspace.py / failure_classify.py\n  的 re-export 行;"
+        },
+        {
+          "kind": "b",
+          "file": "docs/clang-fix-campaign/review/p49-skill3-closeout.md",
+          "lines": [
+            33,
+            36
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "76210dc0f61dcf5f87f3d017a16a0938a4cd2f034e3ee5d08ad1662f9016ecb6",
+          "quote": "| 4 | “旧址 gerrit.py 零 def/class,类型 shim 与实现 re-export 全在” | DONE | `f6544df`; `ci_triage/gerrit.py:1-32`; `progress.md:398-412` | Exact def/class search returned no matches. The file contains three shared-type shim imports and all 12 implementation re-exports. |\n| 5 | “skill 副本自带 §1.2 类型 import” | DONE | `f6544df`; `tizen_gerrit_fetch/gerrit.py:14-16` | `GerritChange`, `GerritPatchSet`, and `SourceFetchResult` are imported directly from `tizen_ci_shared.types`. |\n| 6 | “SKILL.md 的 §2.2 全部行为契约节齐全” | DONE | `c41d15a`; `tizen-gerrit-fetch/SKILL.md:1-62`; `progress.md:688-710` | Validator printed `Skill is valid!`; Inputs, Outputs, Errors, Side effects, and Idempotency include the destructive destination, propagation, no-timeout, residual-state, call-topology, and serial-cost boundaries. |\n| 7 | “§0/§2.1 消费测量、package-root API、legacy shim 概念分离” | DONE | `f6544df`, `c41d15a`; frozen §0/§2.1; `progress.md:398-412`, `:633-687` | Inventory has 12 implementation symbols; the package root exports 4; the legacy path re-exports 12+3. None of these surfaces was used to enlarge another. |"
+        },
+        {
+          "kind": "c",
+          "commit": "f6544dfb822af3ebd6b001d92f238bc0e9422eff",
+          "file": "tizen-ci-triage/scripts/ci_triage/gerrit.py",
+          "before_defs": [
+            "GerritError",
+            "query_change_for_commit",
+            "parse_gerrit_query_output",
+            "change_from_query_obj",
+            "find_patchset_by_revision",
+            "fetch_source_for_commit",
+            "_run_git",
+            "_reset_generated_source_dir",
+            "_optional_int"
+          ],
+          "after_defs": [],
+          "before_sha256": "5df43c509fffe76ecaa37914fb07db0e86056a81b98f849321e390a43fd5d82a",
+          "after_sha256": "f38b12edaf3ad04180f4eb9080e0db3e072dcf9c409fd63738d3b15ab481de45"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/quickbuild_log.py",
+      "module": "ci_triage.quickbuild_log",
+      "scope": "BINDING",
+      "bindings": [
+        {
+          "name": "FailedPackage",
+          "line": 8,
+          "immediate_target": "tizen_ci_shared.types.FailedPackage",
+          "canonical_target": "tizen_ci_shared.types.FailedPackage",
+          "local_load_lines": [
+            48,
+            51,
+            66,
+            81,
+            84
+          ],
+          "dependency": "REAL_LOCAL_DEPENDENCY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "a",
+          "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+          "lines": [
+            367,
+            369
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+          "quote": "- gerrit.py 的 `GerritPatchSet`/`GerritChange`/`SourceFetchResult`、\n  quickbuild_log.py 的 `FailedPackage`、workspace.py / failure_classify.py\n  的 re-export 行;"
+        }
+      ],
+      "top_level_defs": [
+        "QuickBuildLogError",
+        "parse_build_pkg_list",
+        "parse_failed_packages",
+        "select_failed_package",
+        "match_pkg_key",
+        "_exact_project_matches",
+        "_tizen_prefix_project_matches",
+        "_project_basename"
+      ]
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+      "module": "ci_triage.quickbuild",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "DEFAULT_COOKIE_PATH",
+          "line": 3,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.DEFAULT_COOKIE_PATH",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.DEFAULT_COOKIE_PATH",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "DEFAULT_QUICKBUILD_BASE_URL",
+          "line": 4,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.DEFAULT_QUICKBUILD_BASE_URL",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.DEFAULT_QUICKBUILD_BASE_URL",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "DOWNLOAD_LINK_MARKER",
+          "line": 7,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.DOWNLOAD_LINK_MARKER",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.DOWNLOAD_LINK_MARKER",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "DOWNLOAD_TIZEN_BASE_URL",
+          "line": 8,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.DOWNLOAD_TIZEN_BASE_URL",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.DOWNLOAD_TIZEN_BASE_URL",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "HttpFetcher",
+          "line": 9,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.HttpFetcher",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.HttpFetcher",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "HttpResponse",
+          "line": 10,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.HttpResponse",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.HttpResponse",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "PackageBuildLog",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.PackageBuildLog",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.PackageBuildLog",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "QuickBuildDownload",
+          "line": 12,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.QuickBuildDownload",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.QuickBuildDownload",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "QuickBuildError",
+          "line": 13,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.QuickBuildError",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.QuickBuildError",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_raise_if_login_page",
+          "line": 14,
+          "immediate_target": "tizen_ci_shared.quickbuild_http._raise_if_login_page",
+          "canonical_target": "tizen_ci_shared.quickbuild_http._raise_if_login_page",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_urllib_fetch",
+          "line": 15,
+          "immediate_target": "tizen_ci_shared.quickbuild_http._urllib_fetch",
+          "canonical_target": "tizen_ci_shared.quickbuild_http._urllib_fetch",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "derive_package_buildlog_url",
+          "line": 16,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.derive_package_buildlog_url",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.derive_package_buildlog_url",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "download_full_log",
+          "line": 19,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.download_full_log",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.download_full_log",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "download_package_buildlog",
+          "line": 20,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.download_package_buildlog",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.download_package_buildlog",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "find_download_href",
+          "line": 21,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.find_download_href",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.find_download_href",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "load_cookie_jar",
+          "line": 22,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.load_cookie_jar",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.load_cookie_jar",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "normalize_quickbuild_url",
+          "line": 23,
+          "immediate_target": "tizen_ci_shared.quickbuild_http.normalize_quickbuild_url",
+          "canonical_target": "tizen_ci_shared.quickbuild_http.normalize_quickbuild_url",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "a",
+          "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+          "lines": [
+            370,
+            371
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+          "quote": "- **`quickbuild.py` 的 17 个 HTTP 符号 re-export**(明确属主:随\n  commit ③ 下沉后原位留 shim);"
+        },
+        {
+          "kind": "c",
+          "commit": "6def1edea087627a68e7343e458174d780401013",
+          "file": "tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+          "before_defs": [
+            "HttpResponse",
+            "QuickBuildDownload",
+            "PackageBuildLog",
+            "QuickBuildError",
+            "load_cookie_jar",
+            "download_full_log",
+            "find_download_href",
+            "derive_package_buildlog_url",
+            "download_package_buildlog",
+            "_raise_if_login_page",
+            "_urllib_fetch",
+            "normalize_quickbuild_url"
+          ],
+          "after_defs": [],
+          "before_sha256": "02d1b8754d119b8c50582fd3179394babe83254c18e83810b491a1b0df348a02",
+          "after_sha256": "86dce8c04f17a7ba05239f46395e2a562bc996d57110063dc783438b8a98b1bc"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/workspace.py",
+      "module": "ci_triage.verify.workspace",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "DEFAULT_MIN_FREE_BYTES",
+          "line": 3,
+          "immediate_target": "tizen_build_verify.workspace.DEFAULT_MIN_FREE_BYTES",
+          "canonical_target": "tizen_build_verify.workspace.DEFAULT_MIN_FREE_BYTES",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_copy_repository",
+          "line": 4,
+          "immediate_target": "tizen_build_verify.workspace._copy_repository",
+          "canonical_target": "tizen_build_verify.workspace._copy_repository",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "check_disk_and_maybe_cleanup",
+          "line": 5,
+          "immediate_target": "tizen_build_verify.workspace.check_disk_and_maybe_cleanup",
+          "canonical_target": "tizen_build_verify.workspace.check_disk_and_maybe_cleanup",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "create_worktree",
+          "line": 8,
+          "immediate_target": "tizen_build_verify.workspace.create_worktree",
+          "canonical_target": "tizen_build_verify.workspace.create_worktree",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "MARKER_FILENAME",
+          "line": 9,
+          "immediate_target": "tizen_ci_shared.workspace.MARKER_FILENAME",
+          "canonical_target": "tizen_ci_shared.workspace.MARKER_FILENAME",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "PROTECTED_FILENAME",
+          "line": 10,
+          "immediate_target": "tizen_ci_shared.workspace.PROTECTED_FILENAME",
+          "canonical_target": "tizen_ci_shared.workspace.PROTECTED_FILENAME",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "DisposableWorktree",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.workspace.DisposableWorktree",
+          "canonical_target": "tizen_ci_shared.workspace.DisposableWorktree",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "WorkspaceViolation",
+          "line": 12,
+          "immediate_target": "tizen_ci_shared.workspace.WorkspaceViolation",
+          "canonical_target": "tizen_ci_shared.workspace.WorkspaceViolation",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_exclude_private_files",
+          "line": 13,
+          "immediate_target": "tizen_ci_shared.workspace._exclude_private_files",
+          "canonical_target": "tizen_ci_shared.workspace._exclude_private_files",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_is_relative_to",
+          "line": 14,
+          "immediate_target": "tizen_ci_shared.workspace._is_relative_to",
+          "canonical_target": "tizen_ci_shared.workspace._is_relative_to",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_oldest_worktrees",
+          "line": 15,
+          "immediate_target": "tizen_ci_shared.workspace._oldest_worktrees",
+          "canonical_target": "tizen_ci_shared.workspace._oldest_worktrees",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_read_marker",
+          "line": 16,
+          "immediate_target": "tizen_ci_shared.workspace._read_marker",
+          "canonical_target": "tizen_ci_shared.workspace._read_marker",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_run_git",
+          "line": 17,
+          "immediate_target": "tizen_ci_shared.workspace._run_git",
+          "canonical_target": "tizen_ci_shared.workspace._run_git",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_verify_cleanup_handle",
+          "line": 18,
+          "immediate_target": "tizen_ci_shared.workspace._verify_cleanup_handle",
+          "canonical_target": "tizen_ci_shared.workspace._verify_cleanup_handle",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "clean_repository_preserving_markers",
+          "line": 19,
+          "immediate_target": "tizen_ci_shared.workspace.clean_repository_preserving_markers",
+          "canonical_target": "tizen_ci_shared.workspace.clean_repository_preserving_markers",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "cleanup_disposable_copy",
+          "line": 22,
+          "immediate_target": "tizen_ci_shared.workspace.cleanup_disposable_copy",
+          "canonical_target": "tizen_ci_shared.workspace.cleanup_disposable_copy",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "cleanup_worktree",
+          "line": 23,
+          "immediate_target": "tizen_ci_shared.workspace.cleanup_worktree",
+          "canonical_target": "tizen_ci_shared.workspace.cleanup_worktree",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "is_protected",
+          "line": 24,
+          "immediate_target": "tizen_ci_shared.workspace.is_protected",
+          "canonical_target": "tizen_ci_shared.workspace.is_protected",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "mark_worktree_protected",
+          "line": 25,
+          "immediate_target": "tizen_ci_shared.workspace.mark_worktree_protected",
+          "canonical_target": "tizen_ci_shared.workspace.mark_worktree_protected",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "release_worktree_protection",
+          "line": 26,
+          "immediate_target": "tizen_ci_shared.workspace.release_worktree_protection",
+          "canonical_target": "tizen_ci_shared.workspace.release_worktree_protection",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "write_workdir_marker",
+          "line": 29,
+          "immediate_target": "tizen_ci_shared.workspace.write_workdir_marker",
+          "canonical_target": "tizen_ci_shared.workspace.write_workdir_marker",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "a",
+          "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+          "lines": [
+            367,
+            369
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+          "quote": "- gerrit.py 的 `GerritPatchSet`/`GerritChange`/`SourceFetchResult`、\n  quickbuild_log.py 的 `FailedPackage`、workspace.py / failure_classify.py\n  的 re-export 行;"
+        },
+        {
+          "kind": "b",
+          "file": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
+          "lines": [
+            303,
+            307
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+          "quote": "### 1.1 旧址处置\n- `verify/build_verify.py`、`verify/edit_spec_guard.py` → 纯 re-export shim(零 def/class);\n- **`verify/workspace.py` → 组合 re-export shim**:同时转出 shared 侧原语与 skill 侧\n  四符号(该文件仍是 ci_triage 内的兼容入口);\n- `verify/__init__.py` re-export 面随之调整;"
+        },
+        {
+          "kind": "c",
+          "commit": "3da25296660eda55bce3072e9b5c75be66637a57",
+          "file": "tizen-ci-triage/scripts/ci_triage/verify/workspace.py",
+          "before_defs": [
+            "create_worktree",
+            "check_disk_and_maybe_cleanup",
+            "_copy_repository"
+          ],
+          "after_defs": [],
+          "before_sha256": "90e8fc0747c2d3a2fc03d07a69616a300e02b25c0f5f4413b504dd285f4e2c55",
+          "after_sha256": "10067d2237ca07b8b0e1fa72ac6db8361d0d41725336a68026b7b305176838a5"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+      "module": "ci_triage.verify.failure_classify",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "CONFIDENCE_THRESHOLD",
+          "line": 3,
+          "immediate_target": "tizen_ci_shared.classify.CONFIDENCE_THRESHOLD",
+          "canonical_target": "tizen_ci_shared.classify.CONFIDENCE_THRESHOLD",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "DENYLIST_RULES",
+          "line": 4,
+          "immediate_target": "tizen_ci_shared.classify.DENYLIST_RULES",
+          "canonical_target": "tizen_ci_shared.classify.DENYLIST_RULES",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "EXPLICIT_NON_REPAIR_CLASSES",
+          "line": 5,
+          "immediate_target": "tizen_ci_shared.classify.EXPLICIT_NON_REPAIR_CLASSES",
+          "canonical_target": "tizen_ci_shared.classify.EXPLICIT_NON_REPAIR_CLASSES",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "NON_BUILD_STAGE_CLASSES",
+          "line": 6,
+          "immediate_target": "tizen_ci_shared.classify.NON_BUILD_STAGE_CLASSES",
+          "canonical_target": "tizen_ci_shared.classify.NON_BUILD_STAGE_CLASSES",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "RAW_KINDS",
+          "line": 7,
+          "immediate_target": "tizen_ci_shared.classify.RAW_KINDS",
+          "canonical_target": "tizen_ci_shared.classify.RAW_KINDS",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "REPAIR_AUTO",
+          "line": 8,
+          "immediate_target": "tizen_ci_shared.classify.REPAIR_AUTO",
+          "canonical_target": "tizen_ci_shared.classify.REPAIR_AUTO",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "REPAIR_DENIED",
+          "line": 9,
+          "immediate_target": "tizen_ci_shared.classify.REPAIR_DENIED",
+          "canonical_target": "tizen_ci_shared.classify.REPAIR_DENIED",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "REPAIR_NEEDS_CONFIRMATION",
+          "line": 10,
+          "immediate_target": "tizen_ci_shared.classify.REPAIR_NEEDS_CONFIRMATION",
+          "canonical_target": "tizen_ci_shared.classify.REPAIR_NEEDS_CONFIRMATION",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "SOURCE_KINDS",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.classify.SOURCE_KINDS",
+          "canonical_target": "tizen_ci_shared.classify.SOURCE_KINDS",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "SUSPECT_PATH_PARTS",
+          "line": 12,
+          "immediate_target": "tizen_ci_shared.classify.SUSPECT_PATH_PARTS",
+          "canonical_target": "tizen_ci_shared.classify.SUSPECT_PATH_PARTS",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "SYSTEM_PREFIXES",
+          "line": 13,
+          "immediate_target": "tizen_ci_shared.classify.SYSTEM_PREFIXES",
+          "canonical_target": "tizen_ci_shared.classify.SYSTEM_PREFIXES",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "FailureClassification",
+          "line": 14,
+          "immediate_target": "tizen_ci_shared.classify.FailureClassification",
+          "canonical_target": "tizen_ci_shared.classify.FailureClassification",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "classify_failure",
+          "line": 15,
+          "immediate_target": "tizen_ci_shared.classify.classify_failure",
+          "canonical_target": "tizen_ci_shared.classify.classify_failure",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "a",
+          "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+          "lines": [
+            367,
+            369
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+          "quote": "- gerrit.py 的 `GerritPatchSet`/`GerritChange`/`SourceFetchResult`、\n  quickbuild_log.py 的 `FailedPackage`、workspace.py / failure_classify.py\n  的 re-export 行;"
+        },
+        {
+          "kind": "c",
+          "commit": "ab58bfdabe5f2845beb6d6d216b22d0847756bc5",
+          "file": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+          "before_defs": [
+            "FailureClassification",
+            "_DenyRule",
+            "classify_failure",
+            "_primary_error",
+            "_match_denylist",
+            "_heuristic_classification",
+            "_source_diagnostic_classification",
+            "_has_source_location",
+            "_source_reachable",
+            "_source_owned",
+            "_probably_fixable",
+            "_looks_project_source_path",
+            "_source_file",
+            "_message_has_source_symbol",
+            "_kind",
+            "_string"
+          ],
+          "after_defs": [],
+          "before_sha256": "585cfc427519331c7f4f995ba1bc811aada635107cdb12281e53f0e31168a1ab",
+          "after_sha256": "f0f8e4d6e1769f0eccd667a15bcce4408f4585fab0f42688439b2e460753fabb"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+      "module": "ci_triage.verify",
+      "scope": "BINDING",
+      "bindings": [
+        {
+          "name": "EditSpecViolation",
+          "line": 5,
+          "immediate_target": "tizen_build_verify.EditSpecViolation",
+          "canonical_target": "tizen_build_verify.edit_spec_guard.EditSpecViolation",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "check_disk_and_maybe_cleanup",
+          "line": 5,
+          "immediate_target": "tizen_build_verify.check_disk_and_maybe_cleanup",
+          "canonical_target": "tizen_build_verify.workspace.check_disk_and_maybe_cleanup",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "create_worktree",
+          "line": 5,
+          "immediate_target": "tizen_build_verify.create_worktree",
+          "canonical_target": "tizen_build_verify.workspace.create_worktree",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "validate_edit_spec",
+          "line": 5,
+          "immediate_target": "tizen_build_verify.validate_edit_spec",
+          "canonical_target": "tizen_build_verify.edit_spec_guard.validate_edit_spec",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "PROTECTED_FILENAME",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.workspace.PROTECTED_FILENAME",
+          "canonical_target": "tizen_ci_shared.workspace.PROTECTED_FILENAME",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "DisposableWorktree",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.workspace.DisposableWorktree",
+          "canonical_target": "tizen_ci_shared.workspace.DisposableWorktree",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "WorkspaceViolation",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.workspace.WorkspaceViolation",
+          "canonical_target": "tizen_ci_shared.workspace.WorkspaceViolation",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "cleanup_worktree",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.workspace.cleanup_worktree",
+          "canonical_target": "tizen_ci_shared.workspace.cleanup_worktree",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "is_protected",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.workspace.is_protected",
+          "canonical_target": "tizen_ci_shared.workspace.is_protected",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "mark_worktree_protected",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.workspace.mark_worktree_protected",
+          "canonical_target": "tizen_ci_shared.workspace.mark_worktree_protected",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "release_worktree_protection",
+          "line": 11,
+          "immediate_target": "tizen_ci_shared.workspace.release_worktree_protection",
+          "canonical_target": "tizen_ci_shared.workspace.release_worktree_protection",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "REPAIR_AUTO",
+          "line": 21,
+          "immediate_target": "ci_triage.verify.failure_classify.REPAIR_AUTO",
+          "canonical_target": "tizen_ci_shared.classify.REPAIR_AUTO",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "REPAIR_DENIED",
+          "line": 21,
+          "immediate_target": "ci_triage.verify.failure_classify.REPAIR_DENIED",
+          "canonical_target": "tizen_ci_shared.classify.REPAIR_DENIED",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "REPAIR_NEEDS_CONFIRMATION",
+          "line": 21,
+          "immediate_target": "ci_triage.verify.failure_classify.REPAIR_NEEDS_CONFIRMATION",
+          "canonical_target": "tizen_ci_shared.classify.REPAIR_NEEDS_CONFIRMATION",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "FailureClassification",
+          "line": 21,
+          "immediate_target": "ci_triage.verify.failure_classify.FailureClassification",
+          "canonical_target": "tizen_ci_shared.classify.FailureClassification",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "classify_failure",
+          "line": 21,
+          "immediate_target": "ci_triage.verify.failure_classify.classify_failure",
+          "canonical_target": "tizen_ci_shared.classify.classify_failure",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "a",
+          "file": "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md",
+          "lines": [
+            372,
+            373
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+          "quote": "- **`verify/__init__.py` 包级 re-export 面**(S-4,转出 workspace/\n  classify 等);"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/convergence.py",
+      "module": "ci_triage.verify.convergence",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "ConvergenceResult",
+          "line": 3,
+          "immediate_target": "tizen_convergence_judge.convergence.ConvergenceResult",
+          "canonical_target": "tizen_convergence_judge.convergence.ConvergenceResult",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_error_count",
+          "line": 6,
+          "immediate_target": "tizen_convergence_judge.convergence._error_count",
+          "canonical_target": "tizen_convergence_judge.convergence._error_count",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_primary_fingerprint",
+          "line": 9,
+          "immediate_target": "tizen_convergence_judge.convergence._primary_fingerprint",
+          "canonical_target": "tizen_convergence_judge.convergence._primary_fingerprint",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "check_convergence",
+          "line": 12,
+          "immediate_target": "tizen_convergence_judge.convergence.check_convergence",
+          "canonical_target": "tizen_convergence_judge.convergence.check_convergence",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "error_count",
+          "line": 15,
+          "immediate_target": "tizen_convergence_judge.convergence.error_count",
+          "canonical_target": "tizen_convergence_judge.convergence.error_count",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "primary_fingerprint",
+          "line": 18,
+          "immediate_target": "tizen_convergence_judge.convergence.primary_fingerprint",
+          "canonical_target": "tizen_convergence_judge.convergence.primary_fingerprint",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "touched_files_from_json",
+          "line": 21,
+          "immediate_target": "tizen_convergence_judge.convergence.touched_files_from_json",
+          "canonical_target": "tizen_convergence_judge.convergence.touched_files_from_json",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "write_convergence_result",
+          "line": 24,
+          "immediate_target": "tizen_convergence_judge.convergence.write_convergence_result",
+          "canonical_target": "tizen_convergence_judge.convergence.write_convergence_result",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "b",
+          "file": "docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.4-FROZEN.md",
+          "lines": [
+            102,
+            104
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "0dc2b93aac0fafa498bf3bdc14cd9afc22577ea5aa6d6f6e0c1f82f41f816c90",
+          "quote": "旧址 `verify/convergence.py`(v1.1 更正表注:与 step-0 的\nworkspace.py **同款处理方式**,非改 workspace.py)变纯 re-export\nshim(零 def/class),入 §6.2 shim 删除清单;INCOMPLETE 公共面护栏"
+        },
+        {
+          "kind": "c",
+          "commit": "f7194ae20ea842eb71d4f8803ba4f41373d3a04b",
+          "file": "tizen-ci-triage/scripts/ci_triage/verify/convergence.py",
+          "before_defs": [
+            "ConvergenceResult",
+            "_Fingerprint",
+            "_ClusterView",
+            "check_convergence",
+            "write_convergence_result",
+            "touched_files_from_json",
+            "_fingerprint_dict",
+            "_primary_fingerprint",
+            "_diagnostic_code",
+            "_anchor",
+            "_regression_reason",
+            "_regression_suspected",
+            "_clusters",
+            "_cluster_view",
+            "_cluster_diagnostic_code",
+            "_cluster_files",
+            "_location_dicts",
+            "_is_source_level_cluster",
+            "_error_count",
+            "_is_error_cluster",
+            "_normalize_file",
+            "_normalize_message",
+            "_stable_hash",
+            "_string",
+            "_string_list",
+            "_int"
+          ],
+          "after_defs": [],
+          "before_sha256": "d606f86745c4d57b68a775a393d6adf2ef3c637c9c968cb0aea31ae0906ead3c",
+          "after_sha256": "00a8728788fc77a9d31c6933c963c9f5052e89170a8593ca0b05db8c6d1e212f"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/sources.py",
+      "module": "ci_triage.sources",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "QUICKBUILD_OVERVIEW_CONFIG_ID",
+          "line": 3,
+          "immediate_target": "tizen_qb_discover.sources.QUICKBUILD_OVERVIEW_CONFIG_ID",
+          "canonical_target": "tizen_qb_discover.sources.QUICKBUILD_OVERVIEW_CONFIG_ID",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "FailedBuild",
+          "line": 3,
+          "immediate_target": "tizen_qb_discover.sources.FailedBuild",
+          "canonical_target": "tizen_qb_discover.sources.FailedBuild",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "FailedBuildSource",
+          "line": 3,
+          "immediate_target": "tizen_qb_discover.sources.FailedBuildSource",
+          "canonical_target": "tizen_qb_discover.sources.FailedBuildSource",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "QuickBuildSource",
+          "line": 3,
+          "immediate_target": "tizen_qb_discover.sources.QuickBuildSource",
+          "canonical_target": "tizen_qb_discover.sources.QuickBuildSource",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "b",
+          "file": "docs/clang-fix-campaign/p49-skill2-qb-discover-design-v1.3-FROZEN.md",
+          "lines": [
+            182,
+            184
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "f2e8e5c845286d6ff317a34d6e1bee047ffd38bf276b53ab2bd763b318e96f9e",
+          "quote": "旧址 `ci_triage/sources.py` 变**纯 re-export shim**(零 def/class),\n入 shim 删除清单(P4.9 末)。INCOMPLETE 护栏覆盖 skill 包 sources.py\n公共面(护栏跟模块走)。"
+        },
+        {
+          "kind": "c",
+          "commit": "41152fe27996b5c02509ba11998f5bd508551008",
+          "file": "tizen-ci-triage/scripts/ci_triage/sources.py",
+          "before_defs": [
+            "FailedBuild",
+            "FailedBuildSource",
+            "QuickBuildSource",
+            "_Anchor",
+            "_Cell",
+            "_Row",
+            "_BuildsTable",
+            "_CellBuilder",
+            "_AnchorBuilder",
+            "_BuildsTableParser",
+            "_parse_builds_table",
+            "_row_to_build",
+            "_status_from_classes",
+            "_strip_snapshot_prefix",
+            "_attrs_to_map",
+            "_class_names",
+            "_normalize_text"
+          ],
+          "after_defs": [],
+          "before_sha256": "c5fd0c5b1d715aedee508bbd69211e73e05ca4183f13ff303924f9053c5a5830",
+          "after_sha256": "b36774e8b0c0bc5e2d43193a1958da6e072d80a9c55b0563c32f4b8513e7af1a"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      "module": "ci_triage.verify.build_verify",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "BuildVerifyOptions",
+          "line": 3,
+          "immediate_target": "tizen_build_verify.build_verify.BuildVerifyOptions",
+          "canonical_target": "tizen_build_verify.build_verify.BuildVerifyOptions",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "BuildVerifyResult",
+          "line": 4,
+          "immediate_target": "tizen_build_verify.build_verify.BuildVerifyResult",
+          "canonical_target": "tizen_build_verify.build_verify.BuildVerifyResult",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "SubprocessRunner",
+          "line": 5,
+          "immediate_target": "tizen_build_verify.build_verify.SubprocessRunner",
+          "canonical_target": "tizen_build_verify.build_verify.SubprocessRunner",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_actual_changed_paths",
+          "line": 6,
+          "immediate_target": "tizen_build_verify.build_verify._actual_changed_paths",
+          "canonical_target": "tizen_build_verify.build_verify._actual_changed_paths",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_allowed_paths",
+          "line": 7,
+          "immediate_target": "tizen_build_verify.build_verify._allowed_paths",
+          "canonical_target": "tizen_build_verify.build_verify._allowed_paths",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_analyze_failure",
+          "line": 8,
+          "immediate_target": "tizen_build_verify.build_verify._analyze_failure",
+          "canonical_target": "tizen_build_verify.build_verify._analyze_failure",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_ApplyPatchResult",
+          "line": 9,
+          "immediate_target": "tizen_build_verify.build_verify._ApplyPatchResult",
+          "canonical_target": "tizen_build_verify.build_verify._ApplyPatchResult",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_build_subprocess_env",
+          "line": 10,
+          "immediate_target": "tizen_build_verify.build_verify._build_subprocess_env",
+          "canonical_target": "tizen_build_verify.build_verify._build_subprocess_env",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_BuildProcessResult",
+          "line": 11,
+          "immediate_target": "tizen_build_verify.build_verify._BuildProcessResult",
+          "canonical_target": "tizen_build_verify.build_verify._BuildProcessResult",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_canonical_diff_sha256",
+          "line": 12,
+          "immediate_target": "tizen_build_verify.build_verify._canonical_diff_sha256",
+          "canonical_target": "tizen_build_verify.build_verify._canonical_diff_sha256",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_classification_fail",
+          "line": 13,
+          "immediate_target": "tizen_build_verify.build_verify._classification_fail",
+          "canonical_target": "tizen_build_verify.build_verify._classification_fail",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_fail",
+          "line": 14,
+          "immediate_target": "tizen_build_verify.build_verify._fail",
+          "canonical_target": "tizen_build_verify.build_verify._fail",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_format_and_apply_patch",
+          "line": 15,
+          "immediate_target": "tizen_build_verify.build_verify._format_and_apply_patch",
+          "canonical_target": "tizen_build_verify.build_verify._format_and_apply_patch",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_gbs_arch",
+          "line": 16,
+          "immediate_target": "tizen_build_verify.build_verify._gbs_arch",
+          "canonical_target": "tizen_build_verify.build_verify._gbs_arch",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_gbs_command",
+          "line": 17,
+          "immediate_target": "tizen_build_verify.build_verify._gbs_command",
+          "canonical_target": "tizen_build_verify.build_verify._gbs_command",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_git",
+          "line": 18,
+          "immediate_target": "tizen_build_verify.build_verify._git",
+          "canonical_target": "tizen_build_verify.build_verify._git",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_git_stdout",
+          "line": 19,
+          "immediate_target": "tizen_build_verify.build_verify._git_stdout",
+          "canonical_target": "tizen_build_verify.build_verify._git_stdout",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_normalize_build_log",
+          "line": 20,
+          "immediate_target": "tizen_build_verify.build_verify._normalize_build_log",
+          "canonical_target": "tizen_build_verify.build_verify._normalize_build_log",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_read_json",
+          "line": 21,
+          "immediate_target": "tizen_build_verify.build_verify._read_json",
+          "canonical_target": "tizen_build_verify.build_verify._read_json",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_run",
+          "line": 22,
+          "immediate_target": "tizen_build_verify.build_verify._run",
+          "canonical_target": "tizen_build_verify.build_verify._run",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_run_gbs_build",
+          "line": 23,
+          "immediate_target": "tizen_build_verify.build_verify._run_gbs_build",
+          "canonical_target": "tizen_build_verify.build_verify._run_gbs_build",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_run_git_diff_check",
+          "line": 24,
+          "immediate_target": "tizen_build_verify.build_verify._run_git_diff_check",
+          "canonical_target": "tizen_build_verify.build_verify._run_git_diff_check",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_sha256_file",
+          "line": 25,
+          "immediate_target": "tizen_build_verify.build_verify._sha256_file",
+          "canonical_target": "tizen_build_verify.build_verify._sha256_file",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_sha256_text",
+          "line": 26,
+          "immediate_target": "tizen_build_verify.build_verify._sha256_text",
+          "canonical_target": "tizen_build_verify.build_verify._sha256_text",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_string_or_empty",
+          "line": 27,
+          "immediate_target": "tizen_build_verify.build_verify._string_or_empty",
+          "canonical_target": "tizen_build_verify.build_verify._string_or_empty",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_tracked_worktree_mutated",
+          "line": 28,
+          "immediate_target": "tizen_build_verify.build_verify._tracked_worktree_mutated",
+          "canonical_target": "tizen_build_verify.build_verify._tracked_worktree_mutated",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "build_verify",
+          "line": 31,
+          "immediate_target": "tizen_build_verify.build_verify.build_verify",
+          "canonical_target": "tizen_build_verify.build_verify.build_verify",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "build_verify_to_json",
+          "line": 32,
+          "immediate_target": "tizen_build_verify.build_verify.build_verify_to_json",
+          "canonical_target": "tizen_build_verify.build_verify.build_verify_to_json",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "default_extra_pythonpath",
+          "line": 33,
+          "immediate_target": "tizen_build_verify.build_verify.default_extra_pythonpath",
+          "canonical_target": "tizen_build_verify.build_verify.default_extra_pythonpath",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "b",
+          "file": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
+          "lines": [
+            303,
+            307
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+          "quote": "### 1.1 旧址处置\n- `verify/build_verify.py`、`verify/edit_spec_guard.py` → 纯 re-export shim(零 def/class);\n- **`verify/workspace.py` → 组合 re-export shim**:同时转出 shared 侧原语与 skill 侧\n  四符号(该文件仍是 ci_triage 内的兼容入口);\n- `verify/__init__.py` re-export 面随之调整;"
+        },
+        {
+          "kind": "c",
+          "commit": "3da25296660eda55bce3072e9b5c75be66637a57",
+          "file": "tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+          "before_defs": [
+            "BuildVerifyOptions",
+            "BuildVerifyResult",
+            "_ApplyPatchResult",
+            "build_verify",
+            "_BuildProcessResult",
+            "_format_and_apply_patch",
+            "_run_gbs_build",
+            "_gbs_command",
+            "_gbs_arch",
+            "_analyze_failure",
+            "_classification_fail",
+            "_fail",
+            "_actual_changed_paths",
+            "_tracked_worktree_mutated",
+            "_allowed_paths",
+            "_run_git_diff_check",
+            "_canonical_diff_sha256",
+            "_normalize_build_log",
+            "_git",
+            "_git_stdout",
+            "_run",
+            "_read_json",
+            "_sha256_file",
+            "_sha256_text",
+            "_build_subprocess_env",
+            "_string_or_empty",
+            "build_verify_to_json",
+            "default_extra_pythonpath"
+          ],
+          "after_defs": [],
+          "before_sha256": "8b203b51785191749a319fc4fc99c92f04525afc865bbaa219325a5bb7904605",
+          "after_sha256": "f0c17516dfe3633d0c4c4b87eeb894fea1bb13ecb148a5dc05f15605b4f0309a"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py",
+      "module": "ci_triage.verify.edit_spec_guard",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "EDIT_SPEC_SCHEMA",
+          "line": 3,
+          "immediate_target": "tizen_build_verify.edit_spec_guard.EDIT_SPEC_SCHEMA",
+          "canonical_target": "tizen_build_verify.edit_spec_guard.EDIT_SPEC_SCHEMA",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "EditSpecViolation",
+          "line": 4,
+          "immediate_target": "tizen_build_verify.edit_spec_guard.EditSpecViolation",
+          "canonical_target": "tizen_build_verify.edit_spec_guard.EditSpecViolation",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_check_no_overlaps",
+          "line": 5,
+          "immediate_target": "tizen_build_verify.edit_spec_guard._check_no_overlaps",
+          "canonical_target": "tizen_build_verify.edit_spec_guard._check_no_overlaps",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_find_old_from_line",
+          "line": 6,
+          "immediate_target": "tizen_build_verify.edit_spec_guard._find_old_from_line",
+          "canonical_target": "tizen_build_verify.edit_spec_guard._find_old_from_line",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_find_unique_old",
+          "line": 7,
+          "immediate_target": "tizen_build_verify.edit_spec_guard._find_unique_old",
+          "canonical_target": "tizen_build_verify.edit_spec_guard._find_unique_old",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_is_relative_to",
+          "line": 8,
+          "immediate_target": "tizen_build_verify.edit_spec_guard._is_relative_to",
+          "canonical_target": "tizen_build_verify.edit_spec_guard._is_relative_to",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_line_starts",
+          "line": 9,
+          "immediate_target": "tizen_build_verify.edit_spec_guard._line_starts",
+          "canonical_target": "tizen_build_verify.edit_spec_guard._line_starts",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_locate_edit",
+          "line": 10,
+          "immediate_target": "tizen_build_verify.edit_spec_guard._locate_edit",
+          "canonical_target": "tizen_build_verify.edit_spec_guard._locate_edit",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_LocatedEdit",
+          "line": 11,
+          "immediate_target": "tizen_build_verify.edit_spec_guard._LocatedEdit",
+          "canonical_target": "tizen_build_verify.edit_spec_guard._LocatedEdit",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_validate_schema",
+          "line": 12,
+          "immediate_target": "tizen_build_verify.edit_spec_guard._validate_schema",
+          "canonical_target": "tizen_build_verify.edit_spec_guard._validate_schema",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_validate_target_path",
+          "line": 13,
+          "immediate_target": "tizen_build_verify.edit_spec_guard._validate_target_path",
+          "canonical_target": "tizen_build_verify.edit_spec_guard._validate_target_path",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "validate_edit_spec",
+          "line": 14,
+          "immediate_target": "tizen_build_verify.edit_spec_guard.validate_edit_spec",
+          "canonical_target": "tizen_build_verify.edit_spec_guard.validate_edit_spec",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "b",
+          "file": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
+          "lines": [
+            303,
+            307
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+          "quote": "### 1.1 旧址处置\n- `verify/build_verify.py`、`verify/edit_spec_guard.py` → 纯 re-export shim(零 def/class);\n- **`verify/workspace.py` → 组合 re-export shim**:同时转出 shared 侧原语与 skill 侧\n  四符号(该文件仍是 ci_triage 内的兼容入口);\n- `verify/__init__.py` re-export 面随之调整;"
+        },
+        {
+          "kind": "c",
+          "commit": "3da25296660eda55bce3072e9b5c75be66637a57",
+          "file": "tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py",
+          "before_defs": [
+            "EditSpecViolation",
+            "_LocatedEdit",
+            "validate_edit_spec",
+            "_validate_schema",
+            "_validate_target_path",
+            "_locate_edit",
+            "_find_old_from_line",
+            "_find_unique_old",
+            "_line_starts",
+            "_check_no_overlaps",
+            "_is_relative_to"
+          ],
+          "after_defs": [],
+          "before_sha256": "212779a84421b619ccac576c688a94370e593aef6656cf0eca4b2be57915526f",
+          "after_sha256": "b325839982d65dcfe33008037949ae12f857a0d6610aa23dbdf0bca78225b761"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+      "module": "ci_triage.verify.gerrit_submit",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "GerritSubmitOptions",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.GerritSubmitOptions",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.GerritSubmitOptions",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "GerritSubmitResult",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.GerritSubmitResult",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.GerritSubmitResult",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "ReleaseWorktreeResult",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.ReleaseWorktreeResult",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.ReleaseWorktreeResult",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "SubprocessRunner",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.SubprocessRunner",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.SubprocessRunner",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_build_id_from_failure_key",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._build_id_from_failure_key",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._build_id_from_failure_key",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_dirty_reason",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._dirty_reason",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._dirty_reason",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_git_stdout",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._git_stdout",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._git_stdout",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_push_command",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._push_command",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._push_command",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_record_result",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._record_result",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._record_result",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_remote_url",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._remote_url",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._remote_url",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_result",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._result",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._result",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_run_git",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._run_git",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._run_git",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_subprocess_env",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._subprocess_env",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._subprocess_env",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_target_branch",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._target_branch",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._target_branch",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_target_head_unknown_warning",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._target_head_unknown_warning",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._target_head_unknown_warning",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_target_warnings",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._target_warnings",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._target_warnings",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_verification_mismatch",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit._verification_mismatch",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit._verification_mismatch",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "exit_code_for_release",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.exit_code_for_release",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.exit_code_for_release",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "exit_code_for_submit",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.exit_code_for_submit",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.exit_code_for_submit",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "gerrit_submit",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.gerrit_submit",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.gerrit_submit",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "release_verified_worktree",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.release_verified_worktree",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.release_verified_worktree",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "write_gerrit_submit_result",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.write_gerrit_submit_result",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.write_gerrit_submit_result",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "write_release_result",
+          "line": 3,
+          "immediate_target": "tizen_gerrit_submit.gerrit_submit.write_release_result",
+          "canonical_target": "tizen_gerrit_submit.gerrit_submit.write_release_result",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "b",
+          "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+          "lines": [
+            194,
+            195
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+          "quote": "- 旧址 `verify/gerrit_submit.py` → **纯 re-export shim**(零 def/class);\n  (`verify/__init__.py` **无需调整**:实测其未 re-export 任何 gerrit_submit 符号);"
+        },
+        {
+          "kind": "c",
+          "commit": "a97c40bc2ffcfd453f52d3657336282c689c3873",
+          "file": "tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+          "before_defs": [
+            "GerritSubmitOptions",
+            "GerritSubmitResult",
+            "ReleaseWorktreeResult",
+            "gerrit_submit",
+            "_target_head_unknown_warning",
+            "release_verified_worktree",
+            "write_gerrit_submit_result",
+            "write_release_result",
+            "exit_code_for_submit",
+            "exit_code_for_release",
+            "_verification_mismatch",
+            "_dirty_reason",
+            "_target_warnings",
+            "_target_branch",
+            "_push_command",
+            "_remote_url",
+            "_git_stdout",
+            "_run_git",
+            "_result",
+            "_record_result",
+            "_build_id_from_failure_key",
+            "_subprocess_env"
+          ],
+          "after_defs": [],
+          "before_sha256": "ead701d0e943f395225729be5daef94f53912002d97534f2309cc264e037107f",
+          "after_sha256": "187fb013ef922cb2d49cc131dc6b23ce05bacda4b35f552fdc16e855c03ba246"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+      "module": "ci_triage.gbs_report",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "DEFAULT_ARCHES",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report.DEFAULT_ARCHES",
+          "canonical_target": "tizen_triage_report.gbs_report.DEFAULT_ARCHES",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "GbsReport",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report.GbsReport",
+          "canonical_target": "tizen_triage_report.gbs_report.GbsReport",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "GbsReportPackage",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report.GbsReportPackage",
+          "canonical_target": "tizen_triage_report.gbs_report.GbsReportPackage",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_Anchor",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._Anchor",
+          "canonical_target": "tizen_triage_report.gbs_report._Anchor",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_AnchorBuilder",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._AnchorBuilder",
+          "canonical_target": "tizen_triage_report.gbs_report._AnchorBuilder",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_attrs_to_map",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._attrs_to_map",
+          "canonical_target": "tizen_triage_report.gbs_report._attrs_to_map",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_Cell",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._Cell",
+          "canonical_target": "tizen_triage_report.gbs_report._Cell",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_CellBuilder",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._CellBuilder",
+          "canonical_target": "tizen_triage_report.gbs_report._CellBuilder",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_class_names",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._class_names",
+          "canonical_target": "tizen_triage_report.gbs_report._class_names",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_IframeParser",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._IframeParser",
+          "canonical_target": "tizen_triage_report.gbs_report._IframeParser",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_looks_like_build_status_table",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._looks_like_build_status_table",
+          "canonical_target": "tizen_triage_report.gbs_report._looks_like_build_status_table",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_normalize_text",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._normalize_text",
+          "canonical_target": "tizen_triage_report.gbs_report._normalize_text",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_ReportTableParser",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._ReportTableParser",
+          "canonical_target": "tizen_triage_report.gbs_report._ReportTableParser",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_Row",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._Row",
+          "canonical_target": "tizen_triage_report.gbs_report._Row",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_row_to_package",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._row_to_package",
+          "canonical_target": "tizen_triage_report.gbs_report._row_to_package",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_status_from_anchor",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._status_from_anchor",
+          "canonical_target": "tizen_triage_report.gbs_report._status_from_anchor",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_Table",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report._Table",
+          "canonical_target": "tizen_triage_report.gbs_report._Table",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "download_gbs_package_buildlog",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report.download_gbs_package_buildlog",
+          "canonical_target": "tizen_triage_report.gbs_report.download_gbs_package_buildlog",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "fetch_gbs_report",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report.fetch_gbs_report",
+          "canonical_target": "tizen_triage_report.gbs_report.fetch_gbs_report",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "find_iframe_src",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report.find_iframe_src",
+          "canonical_target": "tizen_triage_report.gbs_report.find_iframe_src",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "parse_gbs_report_packages",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.gbs_report.parse_gbs_report_packages",
+          "canonical_target": "tizen_triage_report.gbs_report.parse_gbs_report_packages",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "b",
+          "file": "docs/clang-fix-campaign/review/p49-skill6-closeout.md",
+          "lines": [
+            41,
+            41
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "7d0aa9cba3b34feebc3f506b409b460dda272bfd9e5d185a3b11b796c538e93b",
+          "quote": "| 2 | “gbs_report 模式二仅一处白名单; report 模式一 cmp 空; 旧址双纯 shim” | DONE | `3da12a4`; `progress.md:163-183`, `:266-287` | `report.py` SHA/cmp equal; zero-context gbs diff contains only the shared HTTP import; both legacy modules have zero top-level def/class. |"
+        },
+        {
+          "kind": "c",
+          "commit": "3da12a4423cf8c17441c5738ddf5e3bd7b145675",
+          "file": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+          "before_defs": [
+            "GbsReportPackage",
+            "GbsReport",
+            "fetch_gbs_report",
+            "download_gbs_package_buildlog",
+            "find_iframe_src",
+            "parse_gbs_report_packages",
+            "_Anchor",
+            "_Cell",
+            "_Row",
+            "_Table",
+            "_CellBuilder",
+            "_AnchorBuilder",
+            "_IframeParser",
+            "_ReportTableParser",
+            "_looks_like_build_status_table",
+            "_row_to_package",
+            "_status_from_anchor",
+            "_attrs_to_map",
+            "_class_names",
+            "_normalize_text"
+          ],
+          "after_defs": [],
+          "before_sha256": "39c181bd039dddb289e3ab7d28af44958dd985aea37200a33742ba4a72dcc50c",
+          "after_sha256": "d2943904012b8f862caa0d3fca3637f0a92c80f3c34ee75cd408b4ec9e1c638e"
+        }
+      ],
+      "top_level_defs": []
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/report.py",
+      "module": "ci_triage.report",
+      "scope": "MODULE",
+      "bindings": [
+        {
+          "name": "TriageReportData",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.report.TriageReportData",
+          "canonical_target": "tizen_triage_report.report.TriageReportData",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "_primary_location",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.report._primary_location",
+          "canonical_target": "tizen_triage_report.report._primary_location",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        },
+        {
+          "name": "render_report",
+          "line": 3,
+          "immediate_target": "tizen_triage_report.report.render_report",
+          "canonical_target": "tizen_triage_report.report.render_report",
+          "local_load_lines": [],
+          "dependency": "REEXPORT_ONLY"
+        }
+      ],
+      "sources": [
+        {
+          "kind": "b",
+          "file": "docs/clang-fix-campaign/review/p49-skill6-closeout.md",
+          "lines": [
+            41,
+            41
+          ],
+          "commit": "c1ea4ef70c72e0464c6579f1dfe6694fc8abbf87",
+          "sha256": "7d0aa9cba3b34feebc3f506b409b460dda272bfd9e5d185a3b11b796c538e93b",
+          "quote": "| 2 | “gbs_report 模式二仅一处白名单; report 模式一 cmp 空; 旧址双纯 shim” | DONE | `3da12a4`; `progress.md:163-183`, `:266-287` | `report.py` SHA/cmp equal; zero-context gbs diff contains only the shared HTTP import; both legacy modules have zero top-level def/class. |"
+        },
+        {
+          "kind": "c",
+          "commit": "3da12a4423cf8c17441c5738ddf5e3bd7b145675",
+          "file": "tizen-ci-triage/scripts/ci_triage/report.py",
+          "before_defs": [
+            "TriageReportData",
+            "render_report",
+            "_primary_location"
+          ],
+          "after_defs": [],
+          "before_sha256": "a8138cb73ffa23cd58cb073dbc95d7add94db0866202a3a42d9eb3b1b158602e",
+          "after_sha256": "a00b371f373d3ecc1e8e9311f529fd4244b06907541c149b74214c81aa392873"
+        }
+      ],
+      "top_level_defs": []
+    }
+  ],
+  "extraction_transitions": [
+    {
+      "kind": "c",
+      "commit": "ab58bfdabe5f2845beb6d6d216b22d0847756bc5",
+      "file": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+      "before_defs": [
+        "FailureClassification",
+        "_DenyRule",
+        "classify_failure",
+        "_primary_error",
+        "_match_denylist",
+        "_heuristic_classification",
+        "_source_diagnostic_classification",
+        "_has_source_location",
+        "_source_reachable",
+        "_source_owned",
+        "_probably_fixable",
+        "_looks_project_source_path",
+        "_source_file",
+        "_message_has_source_symbol",
+        "_kind",
+        "_string"
+      ],
+      "after_defs": [],
+      "before_sha256": "585cfc427519331c7f4f995ba1bc811aada635107cdb12281e53f0e31168a1ab",
+      "after_sha256": "f0f8e4d6e1769f0eccd667a15bcce4408f4585fab0f42688439b2e460753fabb"
+    },
+    {
+      "kind": "c",
+      "commit": "6def1edea087627a68e7343e458174d780401013",
+      "file": "tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+      "before_defs": [
+        "HttpResponse",
+        "QuickBuildDownload",
+        "PackageBuildLog",
+        "QuickBuildError",
+        "load_cookie_jar",
+        "download_full_log",
+        "find_download_href",
+        "derive_package_buildlog_url",
+        "download_package_buildlog",
+        "_raise_if_login_page",
+        "_urllib_fetch",
+        "normalize_quickbuild_url"
+      ],
+      "after_defs": [],
+      "before_sha256": "02d1b8754d119b8c50582fd3179394babe83254c18e83810b491a1b0df348a02",
+      "after_sha256": "86dce8c04f17a7ba05239f46395e2a562bc996d57110063dc783438b8a98b1bc"
+    },
+    {
+      "kind": "c",
+      "commit": "f7194ae20ea842eb71d4f8803ba4f41373d3a04b",
+      "file": "tizen-ci-triage/scripts/ci_triage/verify/convergence.py",
+      "before_defs": [
+        "ConvergenceResult",
+        "_Fingerprint",
+        "_ClusterView",
+        "check_convergence",
+        "write_convergence_result",
+        "touched_files_from_json",
+        "_fingerprint_dict",
+        "_primary_fingerprint",
+        "_diagnostic_code",
+        "_anchor",
+        "_regression_reason",
+        "_regression_suspected",
+        "_clusters",
+        "_cluster_view",
+        "_cluster_diagnostic_code",
+        "_cluster_files",
+        "_location_dicts",
+        "_is_source_level_cluster",
+        "_error_count",
+        "_is_error_cluster",
+        "_normalize_file",
+        "_normalize_message",
+        "_stable_hash",
+        "_string",
+        "_string_list",
+        "_int"
+      ],
+      "after_defs": [],
+      "before_sha256": "d606f86745c4d57b68a775a393d6adf2ef3c637c9c968cb0aea31ae0906ead3c",
+      "after_sha256": "00a8728788fc77a9d31c6933c963c9f5052e89170a8593ca0b05db8c6d1e212f"
+    },
+    {
+      "kind": "c",
+      "commit": "41152fe27996b5c02509ba11998f5bd508551008",
+      "file": "tizen-ci-triage/scripts/ci_triage/sources.py",
+      "before_defs": [
+        "FailedBuild",
+        "FailedBuildSource",
+        "QuickBuildSource",
+        "_Anchor",
+        "_Cell",
+        "_Row",
+        "_BuildsTable",
+        "_CellBuilder",
+        "_AnchorBuilder",
+        "_BuildsTableParser",
+        "_parse_builds_table",
+        "_row_to_build",
+        "_status_from_classes",
+        "_strip_snapshot_prefix",
+        "_attrs_to_map",
+        "_class_names",
+        "_normalize_text"
+      ],
+      "after_defs": [],
+      "before_sha256": "c5fd0c5b1d715aedee508bbd69211e73e05ca4183f13ff303924f9053c5a5830",
+      "after_sha256": "b36774e8b0c0bc5e2d43193a1958da6e072d80a9c55b0563c32f4b8513e7af1a"
+    },
+    {
+      "kind": "c",
+      "commit": "f6544dfb822af3ebd6b001d92f238bc0e9422eff",
+      "file": "tizen-ci-triage/scripts/ci_triage/gerrit.py",
+      "before_defs": [
+        "GerritError",
+        "query_change_for_commit",
+        "parse_gerrit_query_output",
+        "change_from_query_obj",
+        "find_patchset_by_revision",
+        "fetch_source_for_commit",
+        "_run_git",
+        "_reset_generated_source_dir",
+        "_optional_int"
+      ],
+      "after_defs": [],
+      "before_sha256": "5df43c509fffe76ecaa37914fb07db0e86056a81b98f849321e390a43fd5d82a",
+      "after_sha256": "f38b12edaf3ad04180f4eb9080e0db3e072dcf9c409fd63738d3b15ab481de45"
+    },
+    {
+      "kind": "c",
+      "commit": "3da25296660eda55bce3072e9b5c75be66637a57",
+      "file": "tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      "before_defs": [
+        "BuildVerifyOptions",
+        "BuildVerifyResult",
+        "_ApplyPatchResult",
+        "build_verify",
+        "_BuildProcessResult",
+        "_format_and_apply_patch",
+        "_run_gbs_build",
+        "_gbs_command",
+        "_gbs_arch",
+        "_analyze_failure",
+        "_classification_fail",
+        "_fail",
+        "_actual_changed_paths",
+        "_tracked_worktree_mutated",
+        "_allowed_paths",
+        "_run_git_diff_check",
+        "_canonical_diff_sha256",
+        "_normalize_build_log",
+        "_git",
+        "_git_stdout",
+        "_run",
+        "_read_json",
+        "_sha256_file",
+        "_sha256_text",
+        "_build_subprocess_env",
+        "_string_or_empty",
+        "build_verify_to_json",
+        "default_extra_pythonpath"
+      ],
+      "after_defs": [],
+      "before_sha256": "8b203b51785191749a319fc4fc99c92f04525afc865bbaa219325a5bb7904605",
+      "after_sha256": "f0c17516dfe3633d0c4c4b87eeb894fea1bb13ecb148a5dc05f15605b4f0309a"
+    },
+    {
+      "kind": "c",
+      "commit": "3da25296660eda55bce3072e9b5c75be66637a57",
+      "file": "tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py",
+      "before_defs": [
+        "EditSpecViolation",
+        "_LocatedEdit",
+        "validate_edit_spec",
+        "_validate_schema",
+        "_validate_target_path",
+        "_locate_edit",
+        "_find_old_from_line",
+        "_find_unique_old",
+        "_line_starts",
+        "_check_no_overlaps",
+        "_is_relative_to"
+      ],
+      "after_defs": [],
+      "before_sha256": "212779a84421b619ccac576c688a94370e593aef6656cf0eca4b2be57915526f",
+      "after_sha256": "b325839982d65dcfe33008037949ae12f857a0d6610aa23dbdf0bca78225b761"
+    },
+    {
+      "kind": "c",
+      "commit": "3da25296660eda55bce3072e9b5c75be66637a57",
+      "file": "tizen-ci-triage/scripts/ci_triage/verify/workspace.py",
+      "before_defs": [
+        "create_worktree",
+        "check_disk_and_maybe_cleanup",
+        "_copy_repository"
+      ],
+      "after_defs": [],
+      "before_sha256": "90e8fc0747c2d3a2fc03d07a69616a300e02b25c0f5f4413b504dd285f4e2c55",
+      "after_sha256": "10067d2237ca07b8b0e1fa72ac6db8361d0d41725336a68026b7b305176838a5"
+    },
+    {
+      "kind": "c",
+      "commit": "a97c40bc2ffcfd453f52d3657336282c689c3873",
+      "file": "tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+      "before_defs": [
+        "GerritSubmitOptions",
+        "GerritSubmitResult",
+        "ReleaseWorktreeResult",
+        "gerrit_submit",
+        "_target_head_unknown_warning",
+        "release_verified_worktree",
+        "write_gerrit_submit_result",
+        "write_release_result",
+        "exit_code_for_submit",
+        "exit_code_for_release",
+        "_verification_mismatch",
+        "_dirty_reason",
+        "_target_warnings",
+        "_target_branch",
+        "_push_command",
+        "_remote_url",
+        "_git_stdout",
+        "_run_git",
+        "_result",
+        "_record_result",
+        "_build_id_from_failure_key",
+        "_subprocess_env"
+      ],
+      "after_defs": [],
+      "before_sha256": "ead701d0e943f395225729be5daef94f53912002d97534f2309cc264e037107f",
+      "after_sha256": "187fb013ef922cb2d49cc131dc6b23ce05bacda4b35f552fdc16e855c03ba246"
+    },
+    {
+      "kind": "c",
+      "commit": "3da12a4423cf8c17441c5738ddf5e3bd7b145675",
+      "file": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+      "before_defs": [
+        "GbsReportPackage",
+        "GbsReport",
+        "fetch_gbs_report",
+        "download_gbs_package_buildlog",
+        "find_iframe_src",
+        "parse_gbs_report_packages",
+        "_Anchor",
+        "_Cell",
+        "_Row",
+        "_Table",
+        "_CellBuilder",
+        "_AnchorBuilder",
+        "_IframeParser",
+        "_ReportTableParser",
+        "_looks_like_build_status_table",
+        "_row_to_package",
+        "_status_from_anchor",
+        "_attrs_to_map",
+        "_class_names",
+        "_normalize_text"
+      ],
+      "after_defs": [],
+      "before_sha256": "39c181bd039dddb289e3ab7d28af44958dd985aea37200a33742ba4a72dcc50c",
+      "after_sha256": "d2943904012b8f862caa0d3fca3637f0a92c80f3c34ee75cd408b4ec9e1c638e"
+    },
+    {
+      "kind": "c",
+      "commit": "3da12a4423cf8c17441c5738ddf5e3bd7b145675",
+      "file": "tizen-ci-triage/scripts/ci_triage/report.py",
+      "before_defs": [
+        "TriageReportData",
+        "render_report",
+        "_primary_location"
+      ],
+      "after_defs": [],
+      "before_sha256": "a8138cb73ffa23cd58cb073dbc95d7add94db0866202a3a42d9eb3b1b158602e",
+      "after_sha256": "a00b371f373d3ecc1e8e9311f529fd4244b06907541c149b74214c81aa392873"
+    }
+  ],
+  "negative_checks": {
+    "state_legacy_absent": true,
+    "edit_spec_guard_step0_negative_later_skill4_registered": true
+  },
+  "excluded": [
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/runner.py",
+      "name": "discover_sibling_pythonpath",
+      "reason": "step-0 closeout registered it, but E11-3(a) names only frozen section6.2, (b) only skill1..6; no whole-module transition under (c). Not added by inference."
+    },
+    {
+      "path": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+      "names": [
+        "GerritChange",
+        "GerritPatchSet",
+        "SourceFetchResult"
+      ],
+      "reason": "real signature dependencies; explicit exclusion in step-0/skill3 closeout"
+    },
+    {
+      "path": "new-package roots and release-v1.4.0/",
+      "reason": "E11-3(1) exclusions"
+    }
+  ]
+}
