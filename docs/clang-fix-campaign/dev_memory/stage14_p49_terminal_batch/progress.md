@@ -3400,3 +3400,29 @@ checker与CI验证(含coverage),每条命令/env/exit/原文分别留档。其�
 若只需补登记则按本轮授权单列处理;涉及行为改变则停报。
 仅全部通过后才重启C01→C13,每组仍按E11-3(4)提交后验证、失败回退停报。
 当前状态:PHASE2-03 **补登记完成,待提交后全门禁复核**;C组未重启,D未开始。
+
+### 37.1 补登记后的首次全checker复跑
+
+补登记commit `1cf3ee2` 已推送,在 `/tmp/p49-terminal-REG03` 复跑现行checker
+及其控制。symbol与bridge均为198符号+4模块全绿,design.md主检查也绿。
+明文E11-5停用的静态发现工具未重新升为门禁,由全量单测覆盖其既有语义;
+没有运行新OBS producer。命令全集与原文见 `execution/REG03/checkers/`。
+
+本轮补登记配套修正(非生产行为修改):
+
+- skill-5正文原“以下23行”引导句的删改触发了既有来源逐行包含校验;
+  恢复该句为明确标注的抽取期原文引用,当前表单独标注末批补登记,新类型
+  行及行为来源说明不变。既有来源读取/逐行包含断言和expected_diff不改。
+- skill-5 ledger的target_sha256同步实际新正文hash,仅该字段更新;
+  历史语料、8个binding、期望命中与全部判据不改。此为版本钉定的机械补登,
+  不是bootstrap重算或从扫描结果反推基线。
+- 首轮执行器误调用了skill-6 ledger不存在的admission配置,该命令exit2
+  不是设计缺陷。skill-6准入实际由branch_inventory admission-v17承载,
+  已实跑exit1且required=2/2。后续命令清单纠正此调用,保留原失败日志。
+- 首轮terminal负控制虽exit1但被上游来源缺失挡住,不能证明各负例被正确
+  捕获;配套修正后须全部重跑并核对红因,不得将首轮这些exit1记作通过。
+
+另外发现两类历史fixture问题,不属于本次符号补登记,待完整取证后停报:
+文档checker的v1.5.2历史样本未入库;symbol的两个旧report拓扑fixture读取的
+当前旧址已是shim,固定43a6aa6该旧址也已是shim。未选择其它历史SHA替代,
+未改symbol_audit的负fixture或断言。C01尚未重启。
