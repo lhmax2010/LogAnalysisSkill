@@ -1,0 +1,48 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /tmp/p49-a0-regression-43a6aa6/bin/python
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+collecting ... collected 40 items
+
+../LogAnalysisSkill/tests/unit/test_terminal_marker_failures.py::test_protection_interruption_preserves_failure_state[exclude] PASSED [  2%]
+../LogAnalysisSkill/tests/unit/test_terminal_marker_failures.py::test_protection_interruption_preserves_failure_state[marker-write] PASSED [  5%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_query_outcomes_preserve_destination[command-failed] PASSED [  7%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_query_outcomes_preserve_destination[not-found] PASSED [ 10%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_query_outcomes_preserve_destination[ambiguous] PASSED [ 12%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_query_outcomes_preserve_destination[malformed-json] PASSED [ 15%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_query_outcomes_preserve_destination[timeout] PASSED [ 17%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_find_patchset_by_revision_uses_matching_revision_not_current PASSED [ 20%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_for_new_change_fetches_matching_patchset_ref PASSED [ 22%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_new_without_matching_patchset_returns_code PASSED [ 25%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_non_new_paths[direct-fetch] PASSED [ 27%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_non_new_paths[branch-fallback] PASSED [ 30%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_non_new_paths[failed-without-branch] PASSED [ 32%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_rebuilds_destination[missing] PASSED [ 35%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_rebuilds_destination[directory] PASSED [ 37%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_rebuilds_destination[file] PASSED [ 40%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_rejects_live_symlink PASSED [ 42%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_rejects_dangling_symlink PASSED [ 45%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_sets_git_ssh_command_on_all_git_calls PASSED [ 47%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_git_failures_leave_observable_state[init] PASSED [ 50%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_git_failures_leave_observable_state[remote-add] PASSED [ 52%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_git_failures_leave_observable_state[new-fetch] PASSED [ 55%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_git_failures_leave_observable_state[new-checkout] PASSED [ 57%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_git_failures_leave_observable_state[branch-fallback-fetch] PASSED [ 60%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_git_failures_leave_observable_state[non-new-checkout] PASSED [ 62%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_git_interruption_propagates_and_leaves_state[timeout-after-init] PASSED [ 65%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_git_interruption_propagates_and_leaves_state[interrupt-during-fetch] PASSED [ 67%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_git_interruption_propagates_and_leaves_state[timeout-before-checkout] PASSED [ 70%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_filesystem_errors_propagate[rmtree] PASSED [ 72%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_filesystem_errors_propagate[unlink] PASSED [ 75%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_filesystem_errors_propagate[mkdir] PASSED [ 77%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_fetch_source_subprocess_calls_default_timeout_none PASSED [ 80%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_package_root_exports_only_public_contract_by_identity PASSED [ 82%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_package_root_does_not_export_implementation_symbols PASSED [ 85%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_parity_normalizer_masks_only_destination_fields PASSED [ 87%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_parity_normalizer_rejects_non_path_differences[error] PASSED [ 90%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_parity_normalizer_rejects_non_path_differences[command-order] PASSED [ 92%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_parity_normalizer_rejects_non_path_differences[status] PASSED [ 95%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_shared_gerrit_types_are_not_package_root_exports PASSED [ 97%]
+../LogAnalysisSkill/tests/unit/test_gerrit_fetch.py::test_legacy_module_reexports_implementation_and_types_by_identity PASSED [100%]
+
+============================== 40 passed in 0.24s ==============================

@@ -253,7 +253,7 @@ def _run_git(
 
 
 def _reset_generated_source_dir(path: Path) -> None:
-    if path.exists() and path.is_symlink():
+    if path.is_symlink():
         raise GerritError("SOURCE_DIR_UNSAFE", f"source directory is a symlink: {path}")
     if path.is_dir():
         shutil.rmtree(path)

@@ -532,15 +532,17 @@ def test_fetch_source_rejects_live_symlink(tmp_path: Path) -> None:
     assert len(runner.calls) == 1
 
 
-def test_fetch_source_dangling_symlink_propagates_file_exists_error(tmp_path: Path) -> None:
+def test_fetch_source_rejects_dangling_symlink(tmp_path: Path) -> None:
     destination = tmp_path / "src"
     missing_target = tmp_path / "missing"
     destination.symlink_to(missing_target, target_is_directory=True)
     runner = FakeRunner(destination)
 
-    with pytest.raises(FileExistsError):
+    with pytest.raises(GerritError) as captured:
         fetch_source_for_commit(PROJECT, COMMIT, destination, subprocess_runner=runner)
 
+    assert captured.value.code == "SOURCE_DIR_UNSAFE"
+    assert str(captured.value) == f"source directory is a symlink: {destination}"
     assert destination.is_symlink()
     assert not missing_target.exists()
     assert len(runner.calls) == 1

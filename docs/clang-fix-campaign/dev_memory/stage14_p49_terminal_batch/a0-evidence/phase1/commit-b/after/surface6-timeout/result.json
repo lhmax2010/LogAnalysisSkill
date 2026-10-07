@@ -1,0 +1,157 @@
+{
+  "return_value": {
+    "state": "ABSENT"
+  },
+  "exception_type": {
+    "state": "VALUE",
+    "value": "WorkspaceViolation"
+  },
+  "exception_code": {
+    "state": "ABSENT"
+  },
+  "exception_message": {
+    "state": "VALUE",
+    "value": "GIT_TIMEOUT: Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-timeout/destination', 'rev-parse', '--git-path', 'info/exclude']' timed out after 0.125 seconds"
+  },
+  "warnings": {
+    "state": "ABSENT"
+  },
+  "action": {
+    "state": "ABSENT"
+  },
+  "calls": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p49-item4-vik56x9g/surface6-timeout/destination",
+        "rev-parse",
+        "--git-path",
+        "info/exclude"
+      ],
+      "kwargs": {
+        "check": true,
+        "text": true,
+        "capture_output": true,
+        "timeout": 0.125
+      }
+    }
+  ],
+  "destination": {
+    "state": "VALUE",
+    "value": {
+      "exists": true,
+      "kind": "DIRECTORY",
+      "symlink_target": {
+        "state": "ABSENT"
+      },
+      "files": {
+        ".ci_triage_workdir": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17",
+        "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+      }
+    }
+  },
+  "worktree": {
+    "state": "VALUE",
+    "value": {
+      "exists": true,
+      "kind": "DIRECTORY",
+      "symlink_target": {
+        "state": "ABSENT"
+      },
+      "files": {
+        ".ci_triage_workdir": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17",
+        "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+      }
+    }
+  },
+  "workdir_marker": {
+    "exists": true,
+    "sha256": {
+      "state": "VALUE",
+      "value": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17"
+    }
+  },
+  "protected_marker": {
+    "exists": false,
+    "sha256": {
+      "state": "ABSENT"
+    },
+    "readers": [
+      {
+        "reader": "_exclude_private_files",
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception_type": {
+          "state": "VALUE",
+          "value": "subprocess.CalledProcessError"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "VALUE",
+          "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-timeout/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+        }
+      },
+      {
+        "reader": "clean_repository_preserving_markers",
+        "return_value": {
+          "state": "ABSENT"
+        },
+        "exception_type": {
+          "state": "VALUE",
+          "value": "subprocess.CalledProcessError"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "VALUE",
+          "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-timeout/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+        }
+      },
+      {
+        "reader": "is_protected",
+        "return_value": {
+          "state": "VALUE",
+          "value": false
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      },
+      {
+        "reader": "release_worktree_protection",
+        "return_value": {
+          "state": "VALUE",
+          "value": false
+        },
+        "exception_type": {
+          "state": "ABSENT"
+        },
+        "exception_code": {
+          "state": "ABSENT"
+        },
+        "exception_message": {
+          "state": "ABSENT"
+        }
+      }
+    ]
+  },
+  "exclude_completed": {
+    "state": "VALUE",
+    "value": false
+  },
+  "exit_code": {
+    "state": "VALUE",
+    "value": 0
+  }
+}

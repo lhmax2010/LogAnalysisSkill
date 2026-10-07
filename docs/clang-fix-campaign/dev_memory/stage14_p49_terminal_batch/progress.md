@@ -3032,3 +3032,50 @@ EXIT=0
 
 A提交后继续B;第二阶段尚未开始,任何新门禁红/OTHER/规格缺口即停报。
 轻量裁决不改变安全边界,全量最终登记保留,未启用任何忽略字段或掩码。
+
+## 31. commit B:悬空链接与marker失败态
+
+前置A已独立提交并push:`5213c5d`。本节证据根
+`B=a0-evidence/phase1/commit-b/`,各命令完整argv/env/exit在同名command.json,
+原始输出在log,不是复用历史测试数字。
+
+生产只改gerrit `_reset_generated_source_dir` 的判定:
+`path.exists() and path.is_symlink()` → `path.is_symlink()`。
+按F §3在skill-3正文对应Errors/分支表回写行为记录;history保留抽取时快照,
+不伪装为抽取期原始契约。终止F与所有冻结机器数据原字节不变。
+项5生产零改动,仍verify→exclude→write,两场景登记仍NO_DIFF。
+
+新测试`tests/unit/test_terminal_marker_failures.py`逐点固化:
+
+| 注入点 | 磁盘与顺序断言 | 四读取方(各独立副本) |
+|---|---|---|
+| exclude执行中KeyboardInterrupt | cleanup验证已完成;workdir字节不变;exclude仅部分内容;protected不存在 | None/False/False/None |
+| protected Path.write_text中KeyboardInterrupt | exclude完成;workdir字节不变;protected为实际部分JSON原字节,SHA与改前相同 | None/True/True/None |
+
+两测试均断言原异常对象原样抛出,无自动回滚;clean/release/is_protected/exclude
+读取相互隔离,不以第一次读取的副作用污染后续读取。
+
+完整§6改后采集复用固定43a6aa6改前文件,**phase=FULL,不用A投影**:
+
+```text
+AFTER=PASS phase=FULL scenarios=30 sha256=adef6922978fe5e63f99bbcad411e542e6cac28d6f5364447490648d3013ad71
+EXIT=0
+```
+
+`B/after/after.json`与comparison.json保存全部结果与前后hash。
+仅项3登记和A已兑现项4登记发生变化,未登记字段全等;两个项5场景零差异。
+
+| 证据 | 命令范围 | 实测结果 |
+|---|---|---|
+| targeted.log | pytest marker失败态+gerrit文件 -vv | 40 passed,exit0 |
+| full-regression.log | pytest全tests -vv | 1340 passed/1 skipped,exit0 |
+| mypy-ci.log | CI所列生产包 | 88 source files无问题,exit0 |
+| ruff-code.log | 独立实现worktree全仓 | All checks passed!,exit0 |
+| ruff-tools-tests.log | 当前tools/与tests/ | All checks passed!,exit0 |
+| lint-imports.log | 实现副本import-linter | 6 kept/0 broken,exit0 |
+| integrity.log | nodeid映射/保护输入/副本/固定树 | old=1339 retained=1339 renamed=1 added=2 lost=0 changed_status=0;1072保护文件不变,exit0 |
+
+唯一改名为dangling测试从旧FileExistsError名称到rejects_dangling_symlink,
+保留链接/缺失目标/git未执行断言,改断言为批准的新异常契约。
+阶段一A/B完成;第二阶段仅准备人工审批材料,尚未删除任何兼容壳或测试。
+当前无新停止项,冻结稿/判定条件不改;所有无关dirty/untracked保持原样。

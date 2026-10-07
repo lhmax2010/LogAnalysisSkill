@@ -1,0 +1,17 @@
+[
+  {
+    "argv": [
+      "git",
+      "ls-remote",
+      "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+      "refs/heads/fixture"
+    ],
+    "kwargs": {
+      "check": false,
+      "text": true,
+      "capture_output": true,
+      "env": null,
+      "timeout": 0.125
+    }
+  }
+]

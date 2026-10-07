@@ -1,0 +1,57 @@
+{
+  "id": "REAL_DIR",
+  "section": "§3",
+  "surface": "fetch-full",
+  "fault": "none",
+  "timeout": null,
+  "fixture": {
+    "destination": "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination"
+  },
+  "calls": [
+    {
+      "surface": "fetch-query",
+      "trace_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "pointer": "/observations/2/trace/0"
+      }
+    },
+    {
+      "surface": "fetch-git",
+      "trace_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "pointer": "/observations/2/trace/1"
+      }
+    },
+    {
+      "surface": "fetch-git",
+      "trace_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "pointer": "/observations/2/trace/2"
+      }
+    },
+    {
+      "surface": "fetch-git",
+      "trace_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "pointer": "/observations/2/trace/3"
+      }
+    },
+    {
+      "surface": "fetch-git",
+      "trace_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+        "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+        "pointer": "/observations/2/trace/4"
+      }
+    }
+  ],
+  "obs_ref": {
+    "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item3/raw.json",
+    "sha256": "cdd0c1065c458ae80d7a0a7440c4bdf6c1df4ff15ad77bb9ded760ccb7071bd5",
+    "pointer": "/observations/2"
+  }
+}

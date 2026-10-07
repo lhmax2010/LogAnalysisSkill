@@ -323,10 +323,15 @@ SKILL.md 必须有以下五节,逐项暴露现有实现,不得把返回与抛出
 
 #### Errors
 
+> P4.9 末终止批次行为变更记录:终止稿 v1.31-FROZEN §3 要求在本稿
+> 回写悬空链接目标行为,以下对应条目与用例据此更新,不是抽取漂移。
+> timeout 的后续行为以终止稿 §4 与勘误 1–3 为准;本稿其余文字与
+> history 快照仍记录 skill-3 抽取时状态,不改写历史取证。
+
 - `query_change_for_commit` 在 fetch try 块之前执行,其
   `GERRIT_QUERY_FAILED` / `GERRIT_CHANGE_NOT_FOUND` /
   `GERRIT_CHANGE_AMBIGUOUS` 以 `GerritError` **抛出**,不包装成返回值;
-- `_reset_generated_source_dir` 对“存在且可解析”的 symlink 抛
+- `_reset_generated_source_dir` 对有效或悬空的 symlink 均抛
   `GerritError(code="SOURCE_DIR_UNSAFE")`;
 - **不存在 catch-all**:查询函数只把 query runner 的
   `subprocess.CalledProcessError` 转成 `GerritError`;解析和 change 转换
@@ -340,10 +345,10 @@ SKILL.md 必须有以下五节,逐项暴露现有实现,不得把返回与抛出
   无限阻塞。调用方可通过自定义 `subprocess_runner` 施加 deadline;
   `subprocess.TimeoutExpired` 当前不归一化,会继续向上传播——不转换成
   `GerritError`,也不返回 `FAILED_SOURCE`,调用方须自行 catch;
-- **悬空 symlink 边界(实测)**:`path.exists()` 为 false,故不会触发
-  `SOURCE_DIR_UNSAFE`,也不会进入删除分支;随后的
-  `destination.mkdir(..., exist_ok=True)` 抛 `FileExistsError`,目标不被
-  清理、fetch 不继续。本批按行为等价铁律只记录、不修复。
+- **悬空 symlink 边界(末终止批次 §3)**:仅以 `path.is_symlink()`
+  拒绝有效与悬空链接,抛 `GerritError("SOURCE_DIR_UNSAFE", message)`;
+  不删除链接、不创建目标、不执行 git。抽取时原行为为 `exists()`
+  false 后 `mkdir` 抛 `FileExistsError`,该旧值在终止批次改前证据中保留。
 
 #### Side effects
 
@@ -472,7 +477,7 @@ fake-runner fixture。原先单列的固化测试并入本表,不另作平行计
 | destination 已有目录 | 原内容删除并重建 |
 | destination 已有普通文件 | 文件删除并重建为目录 |
 | destination 为有效 symlink | 抛 `GerritError(SOURCE_DIR_UNSAFE)`;链接及目标不动 |
-| destination 为悬空 symlink | 不触发 `SOURCE_DIR_UNSAFE`、不清理链接;`mkdir(..., exist_ok=True)` 抛 `FileExistsError`,git 不执行 |
+| destination 为悬空 symlink | 末终止批次 §3:抛 `GerritError(SOURCE_DIR_UNSAFE)`;链接与目标不动,git 不执行 |
 | 提供 `git_ssh_command` | 每条 git 调用的 env 均含正确 `GIT_SSH_COMMAND` |
 | 各终止性 `_run_git` 失败点 | init、remote add、NEW fetch/checkout、branch fallback fetch、非 NEW checkout 的 `CalledProcessError` 返回 `FAILED_SOURCE`;按失败点断言 destination 与 fake `.git`/阶段标记残留。非 NEW 首次 commit fetch 失败且有 branch 属上方 fallback 分支,不是终止性失败 |
 | git 阶段 `TimeoutExpired` / 受控中断 | 在 init 后、fetch 中、checkout 前选取代表阶段参数化注入;异常原样向上传播,并断言各阶段已完成操作的 destination 残留;不做全量笛卡尔积 |
@@ -515,8 +520,8 @@ fake-runner fixture。原先单列的固化测试并入本表,不另作平行计
 | Inputs/Side effects/Idempotency:每次调用重建工具自有 destination | destination 不存在 | `test_fetch_source_rebuilds_destination[missing]` |
 | Inputs/Side effects/Idempotency:已有内容被同步删除并重建 | destination 已有目录 | `test_fetch_source_rebuilds_destination[directory]` |
 | Inputs/Side effects/Idempotency:已有普通文件被删除并重建 | destination 已有普通文件 | `test_fetch_source_rebuilds_destination[file]` |
-| Errors:存在且可解析的 symlink 抛 `SOURCE_DIR_UNSAFE` | destination 为有效 symlink | `test_fetch_source_rejects_live_symlink` |
-| Errors:悬空 symlink 不拒绝、不清理,随后 `FileExistsError` | destination 为悬空 symlink | `test_fetch_source_dangling_symlink_propagates_file_exists_error` |
+| Errors:有效 symlink 抛 `SOURCE_DIR_UNSAFE` | destination 为有效 symlink | `test_fetch_source_rejects_live_symlink` |
+| Errors:末终止批次 §3 拒绝悬空 symlink,链接保留,抛 `SOURCE_DIR_UNSAFE` | destination 为悬空 symlink | `test_fetch_source_rejects_dangling_symlink` |
 | Inputs/Side effects:`git_ssh_command` 进入每条 git 调用环境 | 提供 `git_ssh_command` | `test_fetch_source_sets_git_ssh_command_on_all_git_calls` |
 | Outputs/Side effects:各终止性 git 失败返回 `FAILED_SOURCE` 并留阶段残留 | 各终止性 `_run_git` 失败点 | `test_fetch_source_git_failures_leave_observable_state[fail-point]` |
 | Errors/Side effects:`TimeoutExpired` 或受控中断原样传播并留阶段残留 | git 阶段 `TimeoutExpired` / 受控中断 | `test_fetch_source_git_interruption_propagates_and_leaves_state[interrupt-point]` |
@@ -786,7 +791,8 @@ grep 实测(证据入档,有据豁免)。
 - [ ] **DEFERRED**:同名件合并议题→triage-report 批次;shim 删除→
       P4.9 末(含 §1.2 类型 shim);悬空 symlink 未归一化为
       `SOURCE_DIR_UNSAFE` 的处置议题→gerrit-submit 批次,本批仅按 §2.2
-      记录实际 `FileExistsError` 边界;统一 timeout/cancellation、错误
+      记录实际 `FileExistsError` 边界(该历史延期已由末终止批次 §3 实施,
+      当前为 `SOURCE_DIR_UNSAFE`);统一 timeout/cancellation、错误
       归一化与中断清理策略→`gerrit-submit` 批次(与本 skill 同属 Gerrit
       外部调用面,届时合并设计并单独评审)。后者是行为变更,不得在任何
       抽取批次内顺手实施。

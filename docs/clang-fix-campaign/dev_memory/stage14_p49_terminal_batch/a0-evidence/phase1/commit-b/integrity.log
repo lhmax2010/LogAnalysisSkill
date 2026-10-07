@@ -1,0 +1,5 @@
+CONTRACT_NODEID | tests/unit/test_gerrit_fetch.py::test_fetch_source_dangling_symlink_propagates_file_exists_error -> tests/unit/test_gerrit_fetch.py::test_fetch_source_rejects_dangling_symlink
+NODEIDS old=1339 retained=1339 renamed=1 added=2 lost=0 changed_status=0
+PRODUCTION_DIFF=["tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py"]
+PROTECTED_UNCHANGED=1072
+FIXED_TREE_AND_BEFORE=PASS

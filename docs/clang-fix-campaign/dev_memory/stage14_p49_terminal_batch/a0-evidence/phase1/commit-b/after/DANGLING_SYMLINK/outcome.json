@@ -1,0 +1,17 @@
+{
+  "return_value": {
+    "state": "ABSENT"
+  },
+  "exception_type": {
+    "state": "VALUE",
+    "value": "GerritError"
+  },
+  "exception_code": {
+    "state": "VALUE",
+    "value": "SOURCE_DIR_UNSAFE"
+  },
+  "exception_message": {
+    "state": "VALUE",
+    "value": "source directory is a symlink: /tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination"
+  }
+}
