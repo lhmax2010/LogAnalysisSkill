@@ -1,0 +1,8186 @@
+{
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "rules_sha256": "37862f4acdc330caa1ebb563885037814256746ae87663e51a64685fe21ccc01",
+  "scope": "all PY_SOURCE line-only multi-binding span probe, not candidate universe",
+  "groups": [
+    {
+      "kind": "import_stmt",
+      "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+      "context": ".",
+      "lines": [
+        17,
+        17
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, replace",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            17,
+            24,
+            17,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "replace",
+          "span": [
+            17,
+            35,
+            17,
+            42
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+      "context": ".",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from symbol_audit import SPECS, ModuleScopeSpec, SymbolSpec",
+      "items": [
+        {
+          "name": "SPECS",
+          "span": [
+            12,
+            25,
+            12,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "ModuleScopeSpec",
+          "span": [
+            12,
+            32,
+            12,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SymbolSpec",
+          "span": [
+            12,
+            49,
+            12,
+            59
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "integrations/compiling_agent/log_analysis.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from typing import Any, cast",
+      "items": [
+        {
+          "name": "Any",
+          "span": [
+            8,
+            19,
+            8,
+            22
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "cast",
+          "span": [
+            8,
+            24,
+            8,
+            28
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/batch_cli.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timedelta",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            7,
+            21,
+            7,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timedelta",
+          "span": [
+            7,
+            31,
+            7,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/batch_cli.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.orchestrator import BatchTriageOptions, CiTriageOrchestrator",
+      "items": [
+        {
+          "name": "BatchTriageOptions",
+          "span": [
+            11,
+            35,
+            11,
+            53
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "CiTriageOrchestrator",
+          "span": [
+            11,
+            55,
+            11,
+            75
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/batch_cli.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        14,
+        14
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.sources import QUICKBUILD_OVERVIEW_CONFIG_ID, QuickBuildSource",
+      "items": [
+        {
+          "name": "QUICKBUILD_OVERVIEW_CONFIG_ID",
+          "span": [
+            14,
+            30,
+            14,
+            59
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "QuickBuildSource",
+          "span": [
+            14,
+            61,
+            14,
+            77
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/cli.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        13,
+        13
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.runner import TriageOptions, discover_sibling_pythonpath, run_triage",
+      "items": [
+        {
+          "name": "TriageOptions",
+          "span": [
+            13,
+            29,
+            13,
+            42
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "discover_sibling_pythonpath",
+          "span": [
+            13,
+            44,
+            13,
+            71
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "run_triage",
+          "span": [
+            13,
+            73,
+            13,
+            83
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            5,
+            24,
+            5,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            5,
+            35,
+            5,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gerrit.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            9,
+            28,
+            9,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            9,
+            38,
+            9,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            9,
+            24,
+            9,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            9,
+            35,
+            9,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        20,
+        20
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.quickbuild import DEFAULT_COOKIE_PATH, QuickBuildError, download_full_log",
+      "items": [
+        {
+          "name": "DEFAULT_COOKIE_PATH",
+          "span": [
+            20,
+            33,
+            20,
+            52
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "QuickBuildError",
+          "span": [
+            20,
+            54,
+            20,
+            69
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "download_full_log",
+          "span": [
+            20,
+            71,
+            20,
+            88
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        27,
+        27
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.runner import TriageOptions, TriageResult, discover_sibling_pythonpath, run_triage",
+      "items": [
+        {
+          "name": "TriageOptions",
+          "span": [
+            27,
+            29,
+            27,
+            42
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "TriageResult",
+          "span": [
+            27,
+            44,
+            27,
+            56
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "discover_sibling_pythonpath",
+          "span": [
+            27,
+            58,
+            27,
+            85
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "run_triage",
+          "span": [
+            27,
+            87,
+            27,
+            97
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        28,
+        28
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.sources import FailedBuild, FailedBuildSource, QuickBuildSource",
+      "items": [
+        {
+          "name": "FailedBuild",
+          "span": [
+            28,
+            30,
+            28,
+            41
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "FailedBuildSource",
+          "span": [
+            28,
+            43,
+            28,
+            60
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "QuickBuildSource",
+          "span": [
+            28,
+            62,
+            28,
+            78
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Mapping",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            8,
+            28,
+            8,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Mapping",
+          "span": [
+            8,
+            38,
+            8,
+            45
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from urllib.error import HTTPError, URLError",
+      "items": [
+        {
+          "name": "HTTPError",
+          "span": [
+            11,
+            25,
+            11,
+            34
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "URLError",
+          "span": [
+            11,
+            36,
+            11,
+            44
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from urllib.parse import quote, unquote, urljoin, urlsplit, urlunsplit",
+      "items": [
+        {
+          "name": "quote",
+          "span": [
+            12,
+            25,
+            12,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "unquote",
+          "span": [
+            12,
+            32,
+            12,
+            39
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "urljoin",
+          "span": [
+            12,
+            41,
+            12,
+            48
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "urlsplit",
+          "span": [
+            12,
+            50,
+            12,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "urlunsplit",
+          "span": [
+            12,
+            60,
+            12,
+            70
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        13,
+        13
+      ],
+      "scope": "Module",
+      "source": "from urllib.request import Request, urlopen",
+      "items": [
+        {
+          "name": "Request",
+          "span": [
+            13,
+            27,
+            13,
+            34
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "urlopen",
+          "span": [
+            13,
+            36,
+            13,
+            43
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/report.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            5,
+            24,
+            5,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            5,
+            35,
+            5,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/runner.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            10,
+            28,
+            10,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            10,
+            38,
+            10,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/runner.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        35,
+        35
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.report import TriageReportData, render_report",
+      "items": [
+        {
+          "name": "TriageReportData",
+          "span": [
+            35,
+            29,
+            35,
+            45
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "render_report",
+          "span": [
+            35,
+            47,
+            35,
+            60
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/sources.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            6,
+            24,
+            6,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            6,
+            35,
+            6,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/__init__.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.state.db import GERRIT_READY, StateDatabase",
+      "items": [
+        {
+          "name": "GERRIT_READY",
+          "span": [
+            5,
+            31,
+            5,
+            43
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "StateDatabase",
+          "span": [
+            5,
+            45,
+            5,
+            58
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/__init__.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.state.keys import build_failure_key, build_submission_key, failure_key_sha12",
+      "items": [
+        {
+          "name": "build_failure_key",
+          "span": [
+            6,
+            33,
+            6,
+            50
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "build_submission_key",
+          "span": [
+            6,
+            52,
+            6,
+            72
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "failure_key_sha12",
+          "span": [
+            6,
+            74,
+            6,
+            91
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/db.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        19,
+        19
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            19,
+            21,
+            19,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            19,
+            31,
+            19,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/records.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import asdict, dataclass",
+      "items": [
+        {
+          "name": "asdict",
+          "span": [
+            5,
+            24,
+            5,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "dataclass",
+          "span": [
+            5,
+            32,
+            5,
+            41
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/records.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.state.db import GERRIT_READY, StateDatabase",
+      "items": [
+        {
+          "name": "GERRIT_READY",
+          "span": [
+            7,
+            31,
+            7,
+            43
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "StateDatabase",
+          "span": [
+            7,
+            45,
+            7,
+            58
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.verify.edit_spec_guard import EditSpecViolation, validate_edit_spec",
+      "items": [
+        {
+          "name": "EditSpecViolation",
+          "span": [
+            5,
+            45,
+            5,
+            62
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "validate_edit_spec",
+          "span": [
+            5,
+            64,
+            5,
+            82
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        20,
+        20
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            20,
+            28,
+            20,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            20,
+            38,
+            20,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        21,
+        21
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import asdict, dataclass, field",
+      "items": [
+        {
+          "name": "asdict",
+          "span": [
+            21,
+            24,
+            21,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "dataclass",
+          "span": [
+            21,
+            32,
+            21,
+            41
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            21,
+            43,
+            21,
+            48
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        25,
+        25
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch",
+      "items": [
+        {
+          "name": "FormatPatchOptions",
+          "span": [
+            25,
+            40,
+            25,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "format_patch",
+          "span": [
+            25,
+            60,
+            25,
+            72
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        35,
+        35
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.verify.edit_spec_guard import EditSpecViolation, validate_edit_spec",
+      "items": [
+        {
+          "name": "EditSpecViolation",
+          "span": [
+            35,
+            45,
+            35,
+            62
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "validate_edit_spec",
+          "span": [
+            35,
+            64,
+            35,
+            82
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/convergence.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        14,
+        14
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import asdict, dataclass",
+      "items": [
+        {
+          "name": "asdict",
+          "span": [
+            14,
+            24,
+            14,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "dataclass",
+          "span": [
+            14,
+            32,
+            14,
+            41
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        14,
+        14
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import asdict, dataclass",
+      "items": [
+        {
+          "name": "asdict",
+          "span": [
+            14,
+            24,
+            14,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "dataclass",
+          "span": [
+            14,
+            32,
+            14,
+            41
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/workspace.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        17,
+        17
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            17,
+            21,
+            17,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            17,
+            31,
+            17,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            5,
+            41,
+            5,
+            54
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            5,
+            56,
+            5,
+            66
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/base.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from abc import ABC, abstractmethod",
+      "items": [
+        {
+          "name": "ABC",
+          "span": [
+            5,
+            16,
+            5,
+            19
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "abstractmethod",
+          "span": [
+            5,
+            21,
+            5,
+            35
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters._common import primary_error, primary_file_line, primary_message",
+      "items": [
+        {
+          "name": "primary_error",
+          "span": [
+            8,
+            44,
+            8,
+            57
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_file_line",
+          "span": [
+            8,
+            59,
+            8,
+            76
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_message",
+          "span": [
+            8,
+            78,
+            8,
+            93
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            9,
+            41,
+            9,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            9,
+            56,
+            9,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/depsolve.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            12,
+            41,
+            12,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            12,
+            56,
+            12,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters._common import primary_kind, primary_message",
+      "items": [
+        {
+          "name": "primary_kind",
+          "span": [
+            8,
+            44,
+            8,
+            56
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_message",
+          "span": [
+            8,
+            58,
+            8,
+            73
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            9,
+            41,
+            9,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            9,
+            56,
+            9,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters._common import first_regex_group, primary_message, relative_path",
+      "items": [
+        {
+          "name": "first_regex_group",
+          "span": [
+            10,
+            44,
+            10,
+            61
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_message",
+          "span": [
+            10,
+            63,
+            10,
+            78
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "relative_path",
+          "span": [
+            10,
+            80,
+            10,
+            93
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            11,
+            41,
+            11,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            11,
+            56,
+            11,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.depsolve import add_buildrequires_line, make_git_diff",
+      "items": [
+        {
+          "name": "add_buildrequires_line",
+          "span": [
+            12,
+            45,
+            12,
+            67
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "make_git_diff",
+          "span": [
+            12,
+            69,
+            12,
+            82
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_undef.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        13,
+        13
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            13,
+            41,
+            13,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            13,
+            56,
+            13,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/patch_failed.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            9,
+            41,
+            9,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            9,
+            56,
+            9,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters._common import failed_phase, primary_message",
+      "items": [
+        {
+          "name": "failed_phase",
+          "span": [
+            8,
+            44,
+            8,
+            56
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_message",
+          "span": [
+            8,
+            58,
+            8,
+            73
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            9,
+            41,
+            9,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            9,
+            56,
+            9,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            11,
+            28,
+            11,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            11,
+            38,
+            11,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            12,
+            24,
+            12,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            12,
+            35,
+            12,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        17,
+        17
+      ],
+      "scope": "Module",
+      "source": "from gbs_build_skill.runner import BuildOptions, BuildResult, run_gbs_build",
+      "items": [
+        {
+          "name": "BuildOptions",
+          "span": [
+            17,
+            35,
+            17,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "BuildResult",
+          "span": [
+            17,
+            49,
+            17,
+            60
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "run_gbs_build",
+          "span": [
+            17,
+            62,
+            17,
+            75
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        19,
+        19
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters import DEFAULT_SUGGESTERS, SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "DEFAULT_SUGGESTERS",
+          "span": [
+            19,
+            36,
+            19,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SuggesterBase",
+          "span": [
+            19,
+            56,
+            19,
+            69
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            19,
+            71,
+            19,
+            81
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__init__.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_build_skill.runner import BuildOptions, BuildResult, run_gbs_build",
+      "items": [
+        {
+          "name": "BuildOptions",
+          "span": [
+            8,
+            35,
+            8,
+            47
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "BuildResult",
+          "span": [
+            8,
+            49,
+            8,
+            60
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "run_gbs_build",
+          "span": [
+            8,
+            62,
+            8,
+            75
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "all_entry",
+      "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__init__.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "source": "__all__ = [\"BuildOptions\", \"BuildResult\", \"run_gbs_build\"]",
+      "items": [
+        {
+          "name": "BuildOptions",
+          "span": [
+            5,
+            11,
+            5,
+            25
+          ]
+        },
+        {
+          "name": "BuildResult",
+          "span": [
+            5,
+            27,
+            5,
+            40
+          ]
+        },
+        {
+          "name": "run_gbs_build",
+          "span": [
+            5,
+            42,
+            5,
+            57
+          ]
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            10,
+            24,
+            10,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            10,
+            35,
+            10,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from typing import Any, TypeVar",
+      "items": [
+        {
+          "name": "Any",
+          "span": [
+            12,
+            19,
+            12,
+            22
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "TypeVar",
+          "span": [
+            12,
+            24,
+            12,
+            31
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        14,
+        14
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.error_clusters import ErrorClusterResult, build_error_clusters",
+      "items": [
+        {
+          "name": "ErrorClusterResult",
+          "span": [
+            14,
+            40,
+            14,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "build_error_clusters",
+          "span": [
+            14,
+            60,
+            14,
+            80
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        18,
+        18
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.full_match import FullMatchResult, full_match",
+      "items": [
+        {
+          "name": "FullMatchResult",
+          "span": [
+            18,
+            36,
+            18,
+            51
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "full_match",
+          "span": [
+            18,
+            53,
+            18,
+            63
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        26,
+        26
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.quick_filter import QuickFilterResult, quick_filter",
+      "items": [
+        {
+          "name": "QuickFilterResult",
+          "span": [
+            26,
+            38,
+            26,
+            55
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "quick_filter",
+          "span": [
+            26,
+            57,
+            26,
+            69
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        27,
+        27
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.rank_causes import RankResult, rank_causes",
+      "items": [
+        {
+          "name": "RankResult",
+          "span": [
+            27,
+            37,
+            27,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "rank_causes",
+          "span": [
+            27,
+            49,
+            27,
+            60
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        28,
+        28
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.scan_and_extract import ScanResult, scan_buildlog",
+      "items": [
+        {
+          "name": "ScanResult",
+          "span": [
+            28,
+            42,
+            28,
+            52
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "scan_buildlog",
+          "span": [
+            28,
+            54,
+            28,
+            67
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        30,
+        30
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.source_candidates import SourceCandidateResult, build_source_candidates",
+      "items": [
+        {
+          "name": "SourceCandidateResult",
+          "span": [
+            30,
+            43,
+            30,
+            64
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "build_source_candidates",
+          "span": [
+            30,
+            66,
+            30,
+            89
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        3,
+        3
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.evidence.base import Evidence, EvidenceCollector",
+      "items": [
+        {
+          "name": "Evidence",
+          "span": [
+            3,
+            39,
+            3,
+            47
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "EvidenceCollector",
+          "span": [
+            3,
+            49,
+            3,
+            66
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from abc import ABC, abstractmethod",
+      "items": [
+        {
+          "name": "ABC",
+          "span": [
+            5,
+            16,
+            5,
+            19
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "abstractmethod",
+          "span": [
+            5,
+            21,
+            5,
+            35
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            6,
+            24,
+            6,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            6,
+            35,
+            6,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/compile.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.evidence._common import command_summary, quoted_symbol, search_header_declarations",
+      "items": [
+        {
+          "name": "command_summary",
+          "span": [
+            8,
+            42,
+            8,
+            57
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "quoted_symbol",
+          "span": [
+            8,
+            59,
+            8,
+            72
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "search_header_declarations",
+          "span": [
+            8,
+            74,
+            8,
+            100
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/deps.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.evidence._common import parse_missing_dependency, profile_hint",
+      "items": [
+        {
+          "name": "parse_missing_dependency",
+          "span": [
+            7,
+            42,
+            7,
+            66
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "profile_hint",
+          "span": [
+            7,
+            68,
+            7,
+            80
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        15,
+        15
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.quick_filter import DEFAULT_PATTERN_PATH, PatternValidationError",
+      "items": [
+        {
+          "name": "DEFAULT_PATTERN_PATH",
+          "span": [
+            15,
+            38,
+            15,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "PatternValidationError",
+          "span": [
+            15,
+            60,
+            15,
+            82
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            10,
+            24,
+            10,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            10,
+            35,
+            10,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        21,
+        21
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.full_match import FullMatchResult, Verdict",
+      "items": [
+        {
+          "name": "FullMatchResult",
+          "span": [
+            21,
+            36,
+            21,
+            51
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Verdict",
+          "span": [
+            21,
+            53,
+            21,
+            60
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/rank_causes.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer._utils.semantic_classifier import SemanticClass, SemanticClassifier",
+      "items": [
+        {
+          "name": "SemanticClass",
+          "span": [
+            8,
+            52,
+            8,
+            65
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SemanticClassifier",
+          "span": [
+            8,
+            67,
+            8,
+            85
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            10,
+            24,
+            10,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            10,
+            35,
+            10,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        3,
+        3
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.tracing.logger import TraceLogger, setup_tracing",
+      "items": [
+        {
+          "name": "TraceLogger",
+          "span": [
+            3,
+            40,
+            3,
+            51
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "setup_tracing",
+          "span": [
+            3,
+            53,
+            3,
+            66
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "all_entry",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "source": "__all__ = [\"TraceLogger\", \"setup_tracing\"]",
+      "items": [
+        {
+          "name": "TraceLogger",
+          "span": [
+            5,
+            11,
+            5,
+            24
+          ]
+        },
+        {
+          "name": "setup_tracing",
+          "span": [
+            5,
+            26,
+            5,
+            41
+          ]
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            7,
+            21,
+            7,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            7,
+            31,
+            7,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from typing import Any, TextIO",
+      "items": [
+        {
+          "name": "Any",
+          "span": [
+            9,
+            19,
+            9,
+            22
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "TextIO",
+          "span": [
+            9,
+            24,
+            9,
+            30
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/perf_report.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            5,
+            21,
+            5,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            5,
+            31,
+            5,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            8,
+            28,
+            8,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            8,
+            38,
+            8,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        22,
+        22
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch",
+      "items": [
+        {
+          "name": "FormatPatchOptions",
+          "span": [
+            22,
+            40,
+            22,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "format_patch",
+          "span": [
+            22,
+            60,
+            22,
+            72
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        23,
+        23
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.ingest import extract_first_diagnostic, load_evidence_packet",
+      "items": [
+        {
+          "name": "extract_first_diagnostic",
+          "span": [
+            23,
+            37,
+            23,
+            61
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "load_evidence_packet",
+          "span": [
+            23,
+            63,
+            23,
+            83
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_resolver.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.cluster_ingest import ClusterLocation, LargeScaleCluster",
+      "items": [
+        {
+          "name": "ClusterLocation",
+          "span": [
+            8,
+            45,
+            8,
+            60
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "LargeScaleCluster",
+          "span": [
+            8,
+            62,
+            8,
+            79
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_render.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.cluster_resolver import ClusterFileContext, SuppressedSkeletonLocation",
+      "items": [
+        {
+          "name": "ClusterFileContext",
+          "span": [
+            10,
+            47,
+            10,
+            65
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SuppressedSkeletonLocation",
+          "span": [
+            10,
+            67,
+            10,
+            93
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.cluster_resolver import ClusterFileContext, resolve_clusters",
+      "items": [
+        {
+          "name": "ClusterFileContext",
+          "span": [
+            9,
+            47,
+            9,
+            65
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "resolve_clusters",
+          "span": [
+            9,
+            67,
+            9,
+            83
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.fix_all_ingest import FixAllIngestResult, SourceCandidateDiagnostic",
+      "items": [
+        {
+          "name": "FixAllIngestResult",
+          "span": [
+            10,
+            45,
+            10,
+            63
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SourceCandidateDiagnostic",
+          "span": [
+            10,
+            65,
+            10,
+            90
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_render.py",
+      "context": "release-v1.4.0",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, replace",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            7,
+            24,
+            7,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "replace",
+          "span": [
+            7,
+            35,
+            7,
+            42
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/e2e/test_build_workflow_e2e.py",
+      "context": ".",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from gbs_build_skill.runner import BuildOptions, BuildResult",
+      "items": [
+        {
+          "name": "BuildOptions",
+          "span": [
+            7,
+            35,
+            7,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "BuildResult",
+          "span": [
+            7,
+            49,
+            7,
+            60
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/e2e/test_build_workflow_e2e.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.workflow import WorkflowOptions, run_workflow",
+      "items": [
+        {
+          "name": "WorkflowOptions",
+          "span": [
+            8,
+            34,
+            8,
+            49
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "run_workflow",
+          "span": [
+            8,
+            51,
+            8,
+            63
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/functional/test_full_match_fixtures.py",
+      "context": ".",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.full_match import Verdict, full_match",
+      "items": [
+        {
+          "name": "Verdict",
+          "span": [
+            7,
+            36,
+            7,
+            43
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "full_match",
+          "span": [
+            7,
+            45,
+            7,
+            55
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/integration/test_build_verify_real_git.py",
+      "context": ".",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from typing import Any, cast",
+      "items": [
+        {
+          "name": "Any",
+          "span": [
+            11,
+            19,
+            11,
+            22
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "cast",
+          "span": [
+            11,
+            24,
+            11,
+            28
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/integration/test_build_verify_real_git.py",
+      "context": ".",
+      "lines": [
+        20,
+        20
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.state import StateDatabase, get_latest_status, get_record",
+      "items": [
+        {
+          "name": "StateDatabase",
+          "span": [
+            20,
+            34,
+            20,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "get_latest_status",
+          "span": [
+            20,
+            49,
+            20,
+            66
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "get_record",
+          "span": [
+            20,
+            68,
+            20,
+            78
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/integration/test_gerrit_submit_real_git.py",
+      "context": ".",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from typing import Any, cast",
+      "items": [
+        {
+          "name": "Any",
+          "span": [
+            6,
+            19,
+            6,
+            22
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "cast",
+          "span": [
+            6,
+            24,
+            6,
+            28
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/integration/test_gerrit_submit_real_git.py",
+      "context": ".",
+      "lines": [
+        15,
+        15
+      ],
+      "scope": "Module",
+      "source": "from tizen_gerrit_submit import GerritSubmitOptions, gerrit_submit",
+      "items": [
+        {
+          "name": "GerritSubmitOptions",
+          "span": [
+            15,
+            32,
+            15,
+            51
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "gerrit_submit",
+          "span": [
+            15,
+            53,
+            15,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/suggesters/test_bw_m3_suggesters.py",
+      "context": ".",
+      "lines": [
+        18,
+        18
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.workflow import collect_suggestions, write_suggestions",
+      "items": [
+        {
+          "name": "collect_suggestions",
+          "span": [
+            18,
+            34,
+            18,
+            53
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "write_suggestions",
+          "span": [
+            18,
+            55,
+            18,
+            72
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_campaign_reconcile.py",
+      "context": ".",
+      "lines": [
+        26,
+        26
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.state import StateDatabase, VerificationRecord, write_pass_record",
+      "items": [
+        {
+          "name": "StateDatabase",
+          "span": [
+            26,
+            34,
+            26,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "VerificationRecord",
+          "span": [
+            26,
+            49,
+            26,
+            67
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "write_pass_record",
+          "span": [
+            26,
+            69,
+            26,
+            86
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, replace",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            11,
+            24,
+            11,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "replace",
+          "span": [
+            11,
+            35,
+            11,
+            42
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        44,
+        44
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.previous_evidence import MissingEvidence, ResolvedEvidence, resolve",
+      "items": [
+        {
+          "name": "MissingEvidence",
+          "span": [
+            44,
+            40,
+            44,
+            55
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "ResolvedEvidence",
+          "span": [
+            44,
+            57,
+            44,
+            73
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "resolve",
+          "span": [
+            44,
+            75,
+            44,
+            82
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        45,
+        45
+      ],
+      "scope": "Module",
+      "source": "from tizen_build_verify import BuildVerifyOptions, BuildVerifyResult, create_worktree",
+      "items": [
+        {
+          "name": "BuildVerifyOptions",
+          "span": [
+            45,
+            31,
+            45,
+            49
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "BuildVerifyResult",
+          "span": [
+            45,
+            51,
+            45,
+            68
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "create_worktree",
+          "span": [
+            45,
+            70,
+            45,
+            85
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_campaign_state.py",
+      "context": ".",
+      "lines": [
+        45,
+        45
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.state import StateDatabase, VerificationRecord, write_pass_record",
+      "items": [
+        {
+          "name": "StateDatabase",
+          "span": [
+            45,
+            34,
+            45,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "VerificationRecord",
+          "span": [
+            45,
+            49,
+            45,
+            67
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "write_pass_record",
+          "span": [
+            45,
+            69,
+            45,
+            86
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_ci_triage.py",
+      "context": ".",
+      "lines": [
+        3,
+        3
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Mapping",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            3,
+            28,
+            3,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Mapping",
+          "span": [
+            3,
+            38,
+            3,
+            45
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_ci_triage.py",
+      "context": ".",
+      "lines": [
+        38,
+        38
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.runner import TriageOptions, TriageResult, _safe_pkg_dir, run_triage",
+      "items": [
+        {
+          "name": "TriageOptions",
+          "span": [
+            38,
+            29,
+            38,
+            42
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "TriageResult",
+          "span": [
+            38,
+            44,
+            38,
+            56
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "_safe_pkg_dir",
+          "span": [
+            38,
+            58,
+            38,
+            71
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "run_triage",
+          "span": [
+            38,
+            73,
+            38,
+            83
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_ci_triage.py",
+      "context": ".",
+      "lines": [
+        39,
+        39
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.types import GerritChange, SourceFetchResult",
+      "items": [
+        {
+          "name": "GerritChange",
+          "span": [
+            39,
+            34,
+            39,
+            46
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SourceFetchResult",
+          "span": [
+            39,
+            48,
+            39,
+            65
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_ci_triage.py",
+      "context": ".",
+      "lines": [
+        40,
+        40
+      ],
+      "scope": "Module",
+      "source": "from tizen_qb_discover.sources import FailedBuild, QuickBuildSource",
+      "items": [
+        {
+          "name": "FailedBuild",
+          "span": [
+            40,
+            38,
+            40,
+            49
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "QuickBuildSource",
+          "span": [
+            40,
+            51,
+            40,
+            67
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_ci_triage.py",
+      "context": ".",
+      "lines": [
+        41,
+        41
+      ],
+      "scope": "Module",
+      "source": "from tizen_triage_report.gbs_report import DEFAULT_ARCHES, GbsReportPackage",
+      "items": [
+        {
+          "name": "DEFAULT_ARCHES",
+          "span": [
+            41,
+            43,
+            41,
+            57
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "GbsReportPackage",
+          "span": [
+            41,
+            59,
+            41,
+            75
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_ci_triage_entrypoints.py",
+      "context": ".",
+      "lines": [
+        14,
+        14
+      ],
+      "scope": "Module",
+      "source": "from tizen_gerrit_submit import GerritSubmitResult, ReleaseWorktreeResult",
+      "items": [
+        {
+          "name": "GerritSubmitResult",
+          "span": [
+            14,
+            32,
+            14,
+            50
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "ReleaseWorktreeResult",
+          "span": [
+            14,
+            52,
+            14,
+            73
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_convergence.py",
+      "context": ".",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from tizen_convergence_judge import check_convergence, touched_files_from_json",
+      "items": [
+        {
+          "name": "check_convergence",
+          "span": [
+            6,
+            36,
+            6,
+            53
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "touched_files_from_json",
+          "span": [
+            6,
+            55,
+            6,
+            78
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_error_clusters.py",
+      "context": ".",
+      "lines": [
+        1,
+        1
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.error_clusters import build_error_clusters, extract_warning_option",
+      "items": [
+        {
+          "name": "build_error_clusters",
+          "span": [
+            1,
+            40,
+            1,
+            60
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "extract_warning_option",
+          "span": [
+            1,
+            62,
+            1,
+            84
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_evidence_base.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.scan_and_extract import CommandRecord, DiagnosticEvent, ScanResult",
+      "items": [
+        {
+          "name": "CommandRecord",
+          "span": [
+            9,
+            42,
+            9,
+            55
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "DiagnosticEvent",
+          "span": [
+            9,
+            57,
+            9,
+            72
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "ScanResult",
+          "span": [
+            9,
+            74,
+            9,
+            84
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_fix_all_gold_validation.py",
+      "context": ".",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.cli import PatchSuggestOptions, run_patch_suggest",
+      "items": [
+        {
+          "name": "PatchSuggestOptions",
+          "span": [
+            6,
+            34,
+            6,
+            53
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "run_patch_suggest",
+          "span": [
+            6,
+            55,
+            6,
+            72
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_gerrit_fetch.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Mapping, Sequence",
+      "items": [
+        {
+          "name": "Mapping",
+          "span": [
+            8,
+            28,
+            8,
+            35
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            8,
+            37,
+            8,
+            45
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_gerrit_fetch.py",
+      "context": ".",
+      "lines": [
+        15,
+        15
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.types import GerritChange, GerritPatchSet, SourceFetchResult",
+      "items": [
+        {
+          "name": "GerritChange",
+          "span": [
+            15,
+            34,
+            15,
+            46
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "GerritPatchSet",
+          "span": [
+            15,
+            48,
+            15,
+            62
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SourceFetchResult",
+          "span": [
+            15,
+            64,
+            15,
+            81
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_gerrit_fetch.py",
+      "context": ".",
+      "lines": [
+        16,
+        16
+      ],
+      "scope": "Module",
+      "source": "from tizen_gerrit_fetch import GERRIT_HOST, GERRIT_PORT, GerritError, gerrit",
+      "items": [
+        {
+          "name": "GERRIT_HOST",
+          "span": [
+            16,
+            31,
+            16,
+            42
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "GERRIT_PORT",
+          "span": [
+            16,
+            44,
+            16,
+            55
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "GerritError",
+          "span": [
+            16,
+            57,
+            16,
+            68
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "gerrit",
+          "span": [
+            16,
+            70,
+            16,
+            76
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_packet_assembler.py",
+      "context": ".",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.full_match import FullMatchResult, Verdict",
+      "items": [
+        {
+          "name": "FullMatchResult",
+          "span": [
+            6,
+            36,
+            6,
+            51
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Verdict",
+          "span": [
+            6,
+            53,
+            6,
+            60
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_packet_assembler.py",
+      "context": ".",
+      "lines": [
+        17,
+        17
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.rank_causes import RankResult, RootCauseCandidate",
+      "items": [
+        {
+          "name": "RankResult",
+          "span": [
+            17,
+            37,
+            17,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "RootCauseCandidate",
+          "span": [
+            17,
+            49,
+            17,
+            67
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_patch_formatter.py",
+      "context": ".",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch",
+      "items": [
+        {
+          "name": "FormatPatchOptions",
+          "span": [
+            7,
+            40,
+            7,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "format_patch",
+          "span": [
+            7,
+            60,
+            7,
+            72
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_patch_suggest.py",
+      "context": ".",
+      "lines": [
+        22,
+        22
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.cluster_ingest import ClusterLocation, LargeScaleCluster",
+      "items": [
+        {
+          "name": "ClusterLocation",
+          "span": [
+            22,
+            45,
+            22,
+            60
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "LargeScaleCluster",
+          "span": [
+            22,
+            62,
+            22,
+            79
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_patch_suggest.py",
+      "context": ".",
+      "lines": [
+        24,
+        24
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.formatter import EDIT_SPEC_SCHEMA, FormatPatchOptions, format_patch",
+      "items": [
+        {
+          "name": "EDIT_SPEC_SCHEMA",
+          "span": [
+            24,
+            40,
+            24,
+            56
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "FormatPatchOptions",
+          "span": [
+            24,
+            58,
+            24,
+            76
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "format_patch",
+          "span": [
+            24,
+            78,
+            24,
+            90
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_rank_causes.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.rank_causes import clamp, confidence_band, rank_causes, rank_score",
+      "items": [
+        {
+          "name": "clamp",
+          "span": [
+            5,
+            37,
+            5,
+            42
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "confidence_band",
+          "span": [
+            5,
+            44,
+            5,
+            59
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "rank_causes",
+          "span": [
+            5,
+            61,
+            5,
+            72
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "rank_score",
+          "span": [
+            5,
+            74,
+            5,
+            84
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_tizen_build_verify.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from typing import Any, cast",
+      "items": [
+        {
+          "name": "Any",
+          "span": [
+            10,
+            19,
+            10,
+            22
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "cast",
+          "span": [
+            10,
+            24,
+            10,
+            28
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_tizen_build_verify.py",
+      "context": ".",
+      "lines": [
+        24,
+        24
+      ],
+      "scope": "Module",
+      "source": "from tizen_build_verify.edit_spec_guard import EditSpecViolation, validate_edit_spec",
+      "items": [
+        {
+          "name": "EditSpecViolation",
+          "span": [
+            24,
+            47,
+            24,
+            64
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "validate_edit_spec",
+          "span": [
+            24,
+            66,
+            24,
+            84
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_tizen_build_verify.py",
+      "context": ".",
+      "lines": [
+        25,
+        25
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.classify import REPAIR_AUTO, REPAIR_DENIED",
+      "items": [
+        {
+          "name": "REPAIR_AUTO",
+          "span": [
+            25,
+            37,
+            25,
+            48
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "REPAIR_DENIED",
+          "span": [
+            25,
+            50,
+            25,
+            63
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_tizen_gerrit_submit.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from typing import Any, cast",
+      "items": [
+        {
+          "name": "Any",
+          "span": [
+            8,
+            19,
+            8,
+            22
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "cast",
+          "span": [
+            8,
+            24,
+            8,
+            28
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_tizen_triage_report.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.quickbuild_http import HttpResponse, QuickBuildError",
+      "items": [
+        {
+          "name": "HttpResponse",
+          "span": [
+            10,
+            44,
+            10,
+            56
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "QuickBuildError",
+          "span": [
+            10,
+            58,
+            10,
+            73
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_tracing_logger.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.tracing import TraceLogger, setup_tracing",
+      "items": [
+        {
+          "name": "TraceLogger",
+          "span": [
+            5,
+            33,
+            5,
+            44
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "setup_tracing",
+          "span": [
+            5,
+            46,
+            5,
+            59
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_verify_workspace.py",
+      "context": ".",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from tizen_build_verify.workspace import check_disk_and_maybe_cleanup, create_worktree",
+      "items": [
+        {
+          "name": "check_disk_and_maybe_cleanup",
+          "span": [
+            11,
+            41,
+            11,
+            69
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "create_worktree",
+          "span": [
+            11,
+            71,
+            11,
+            86
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tests/unit/test_workflow.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_build_skill.runner import BuildOptions, BuildResult",
+      "items": [
+        {
+          "name": "BuildOptions",
+          "span": [
+            9,
+            35,
+            9,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "BuildResult",
+          "span": [
+            9,
+            49,
+            9,
+            60
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-build-verify/scripts/tizen_build_verify/__init__.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from tizen_build_verify.edit_spec_guard import EditSpecViolation, validate_edit_spec",
+      "items": [
+        {
+          "name": "EditSpecViolation",
+          "span": [
+            10,
+            47,
+            10,
+            64
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "validate_edit_spec",
+          "span": [
+            10,
+            66,
+            10,
+            84
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-build-verify/scripts/tizen_build_verify/__init__.py",
+      "context": ".",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from tizen_build_verify.workspace import check_disk_and_maybe_cleanup, create_worktree",
+      "items": [
+        {
+          "name": "check_disk_and_maybe_cleanup",
+          "span": [
+            11,
+            41,
+            11,
+            69
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "create_worktree",
+          "span": [
+            11,
+            71,
+            11,
+            86
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "context": ".",
+      "lines": [
+        20,
+        20
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            20,
+            28,
+            20,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            20,
+            38,
+            20,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "context": ".",
+      "lines": [
+        21,
+        21
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import asdict, dataclass, field",
+      "items": [
+        {
+          "name": "asdict",
+          "span": [
+            21,
+            24,
+            21,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "dataclass",
+          "span": [
+            21,
+            32,
+            21,
+            41
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            21,
+            43,
+            21,
+            48
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "context": ".",
+      "lines": [
+        25,
+        25
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch",
+      "items": [
+        {
+          "name": "FormatPatchOptions",
+          "span": [
+            25,
+            40,
+            25,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "format_patch",
+          "span": [
+            25,
+            60,
+            25,
+            72
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "context": ".",
+      "lines": [
+        39,
+        39
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.workspace import cleanup_worktree, mark_worktree_protected",
+      "items": [
+        {
+          "name": "cleanup_worktree",
+          "span": [
+            39,
+            38,
+            39,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "mark_worktree_protected",
+          "span": [
+            39,
+            56,
+            39,
+            79
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "context": ".",
+      "lines": [
+        41,
+        41
+      ],
+      "scope": "Module",
+      "source": "from tizen_build_verify.edit_spec_guard import EditSpecViolation, validate_edit_spec",
+      "items": [
+        {
+          "name": "EditSpecViolation",
+          "span": [
+            41,
+            47,
+            41,
+            64
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "validate_edit_spec",
+          "span": [
+            41,
+            66,
+            41,
+            84
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/quickbuild_http.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Mapping",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            8,
+            28,
+            8,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Mapping",
+          "span": [
+            8,
+            38,
+            8,
+            45
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/quickbuild_http.py",
+      "context": ".",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from urllib.error import HTTPError, URLError",
+      "items": [
+        {
+          "name": "HTTPError",
+          "span": [
+            11,
+            25,
+            11,
+            34
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "URLError",
+          "span": [
+            11,
+            36,
+            11,
+            44
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/quickbuild_http.py",
+      "context": ".",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from urllib.parse import quote, unquote, urljoin, urlsplit, urlunsplit",
+      "items": [
+        {
+          "name": "quote",
+          "span": [
+            12,
+            25,
+            12,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "unquote",
+          "span": [
+            12,
+            32,
+            12,
+            39
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "urljoin",
+          "span": [
+            12,
+            41,
+            12,
+            48
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "urlsplit",
+          "span": [
+            12,
+            50,
+            12,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "urlunsplit",
+          "span": [
+            12,
+            60,
+            12,
+            70
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/quickbuild_http.py",
+      "context": ".",
+      "lines": [
+        13,
+        13
+      ],
+      "scope": "Module",
+      "source": "from urllib.request import Request, urlopen",
+      "items": [
+        {
+          "name": "Request",
+          "span": [
+            13,
+            27,
+            13,
+            34
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "urlopen",
+          "span": [
+            13,
+            36,
+            13,
+            43
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/state/__init__.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.state.db import GERRIT_READY, StateDatabase",
+      "items": [
+        {
+          "name": "GERRIT_READY",
+          "span": [
+            5,
+            37,
+            5,
+            49
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "StateDatabase",
+          "span": [
+            5,
+            51,
+            5,
+            64
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/state/__init__.py",
+      "context": ".",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.state.keys import build_failure_key, build_submission_key, failure_key_sha12",
+      "items": [
+        {
+          "name": "build_failure_key",
+          "span": [
+            6,
+            39,
+            6,
+            56
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "build_submission_key",
+          "span": [
+            6,
+            58,
+            6,
+            78
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "failure_key_sha12",
+          "span": [
+            6,
+            80,
+            6,
+            97
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py",
+      "context": ".",
+      "lines": [
+        19,
+        19
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            19,
+            21,
+            19,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            19,
+            31,
+            19,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import asdict, dataclass",
+      "items": [
+        {
+          "name": "asdict",
+          "span": [
+            5,
+            24,
+            5,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "dataclass",
+          "span": [
+            5,
+            32,
+            5,
+            41
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py",
+      "context": ".",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.state.db import GERRIT_READY, StateDatabase",
+      "items": [
+        {
+          "name": "GERRIT_READY",
+          "span": [
+            7,
+            37,
+            7,
+            49
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "StateDatabase",
+          "span": [
+            7,
+            51,
+            7,
+            64
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            9,
+            21,
+            9,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            9,
+            31,
+            9,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/batch_cli.py",
+      "context": ".",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timedelta",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            7,
+            21,
+            7,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timedelta",
+          "span": [
+            7,
+            31,
+            7,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/batch_cli.py",
+      "context": ".",
+      "lines": [
+        13,
+        13
+      ],
+      "scope": "Module",
+      "source": "from tizen_qb_discover.sources import QUICKBUILD_OVERVIEW_CONFIG_ID, QuickBuildSource",
+      "items": [
+        {
+          "name": "QUICKBUILD_OVERVIEW_CONFIG_ID",
+          "span": [
+            13,
+            38,
+            13,
+            67
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "QuickBuildSource",
+          "span": [
+            13,
+            69,
+            13,
+            85
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/batch_cli.py",
+      "context": ".",
+      "lines": [
+        15,
+        15
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.orchestrator import BatchTriageOptions, CiTriageOrchestrator",
+      "items": [
+        {
+          "name": "BatchTriageOptions",
+          "span": [
+            15,
+            35,
+            15,
+            53
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "CiTriageOrchestrator",
+          "span": [
+            15,
+            55,
+            15,
+            75
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Iterator, Mapping",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            11,
+            28,
+            11,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Iterator",
+          "span": [
+            11,
+            38,
+            11,
+            46
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Mapping",
+          "span": [
+            11,
+            48,
+            11,
+            55
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        13,
+        13
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import asdict, dataclass",
+      "items": [
+        {
+          "name": "asdict",
+          "span": [
+            13,
+            24,
+            13,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "dataclass",
+          "span": [
+            13,
+            32,
+            13,
+            41
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        14,
+        14
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            14,
+            21,
+            14,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            14,
+            31,
+            14,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        20,
+        20
+      ],
+      "scope": "Module",
+      "source": "from tizen_build_verify import BuildVerifyOptions, BuildVerifyResult, build_verify",
+      "items": [
+        {
+          "name": "BuildVerifyOptions",
+          "span": [
+            20,
+            31,
+            20,
+            49
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "BuildVerifyResult",
+          "span": [
+            20,
+            51,
+            20,
+            68
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "build_verify",
+          "span": [
+            20,
+            70,
+            20,
+            82
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        26,
+        26
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.state import StateDatabase, build_failure_key, get_record",
+      "items": [
+        {
+          "name": "StateDatabase",
+          "span": [
+            26,
+            34,
+            26,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "build_failure_key",
+          "span": [
+            26,
+            49,
+            26,
+            66
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "get_record",
+          "span": [
+            26,
+            68,
+            26,
+            78
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        32,
+        32
+      ],
+      "scope": "Module",
+      "source": "from tizen_convergence_judge import ConvergenceResult, check_convergence",
+      "items": [
+        {
+          "name": "ConvergenceResult",
+          "span": [
+            32,
+            36,
+            32,
+            53
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "check_convergence",
+          "span": [
+            32,
+            55,
+            32,
+            72
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "context": ".",
+      "lines": [
+        57,
+        57
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.previous_evidence import MissingEvidence, ResolvedEvidence, resolve",
+      "items": [
+        {
+          "name": "MissingEvidence",
+          "span": [
+            57,
+            40,
+            57,
+            55
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "ResolvedEvidence",
+          "span": [
+            57,
+            57,
+            57,
+            73
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "resolve",
+          "span": [
+            57,
+            75,
+            57,
+            82
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_state.py",
+      "context": ".",
+      "lines": [
+        16,
+        16
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Iterator, Mapping, Sequence",
+      "items": [
+        {
+          "name": "Iterator",
+          "span": [
+            16,
+            28,
+            16,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Mapping",
+          "span": [
+            16,
+            38,
+            16,
+            45
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            16,
+            47,
+            16,
+            55
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_state.py",
+      "context": ".",
+      "lines": [
+        19,
+        19
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            19,
+            21,
+            19,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            19,
+            31,
+            19,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_state.py",
+      "context": ".",
+      "lines": [
+        20,
+        20
+      ],
+      "scope": "Module",
+      "source": "from pathlib import Path, PurePosixPath",
+      "items": [
+        {
+          "name": "Path",
+          "span": [
+            20,
+            20,
+            20,
+            24
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "PurePosixPath",
+          "span": [
+            20,
+            26,
+            20,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/cli.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from typing import NoReturn, TextIO",
+      "items": [
+        {
+          "name": "NoReturn",
+          "span": [
+            10,
+            19,
+            10,
+            27
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "TextIO",
+          "span": [
+            10,
+            29,
+            10,
+            35
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/cli.py",
+      "context": ".",
+      "lines": [
+        39,
+        39
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.runner import TriageOptions, run_triage",
+      "items": [
+        {
+          "name": "TriageOptions",
+          "span": [
+            39,
+            29,
+            39,
+            42
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "run_triage",
+          "span": [
+            39,
+            44,
+            39,
+            54
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            9,
+            24,
+            9,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            9,
+            35,
+            9,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "context": ".",
+      "lines": [
+        15,
+        15
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH, QuickBuildError, download_full_log",
+      "items": [
+        {
+          "name": "DEFAULT_COOKIE_PATH",
+          "span": [
+            15,
+            44,
+            15,
+            63
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "QuickBuildError",
+          "span": [
+            15,
+            65,
+            15,
+            80
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "download_full_log",
+          "span": [
+            15,
+            82,
+            15,
+            99
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "context": ".",
+      "lines": [
+        17,
+        17
+      ],
+      "scope": "Module",
+      "source": "from tizen_qb_discover.sources import FailedBuild, FailedBuildSource, QuickBuildSource",
+      "items": [
+        {
+          "name": "FailedBuild",
+          "span": [
+            17,
+            38,
+            17,
+            49
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "FailedBuildSource",
+          "span": [
+            17,
+            51,
+            17,
+            68
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "QuickBuildSource",
+          "span": [
+            17,
+            70,
+            17,
+            86
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "context": ".",
+      "lines": [
+        30,
+        30
+      ],
+      "scope": "Module",
+      "source": "from ci_triage.runner import TriageOptions, TriageResult, run_triage",
+      "items": [
+        {
+          "name": "TriageOptions",
+          "span": [
+            30,
+            29,
+            30,
+            42
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "TriageResult",
+          "span": [
+            30,
+            44,
+            30,
+            56
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "run_triage",
+          "span": [
+            30,
+            58,
+            30,
+            68
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/report.py",
+      "context": ".",
+      "lines": [
+        3,
+        3
+      ],
+      "scope": "Module",
+      "source": "from tizen_triage_report.report import TriageReportData, _primary_location, render_report",
+      "items": [
+        {
+          "name": "TriageReportData",
+          "span": [
+            3,
+            39,
+            3,
+            55
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "_primary_location",
+          "span": [
+            3,
+            57,
+            3,
+            74
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "render_report",
+          "span": [
+            3,
+            76,
+            3,
+            89
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "all_entry",
+      "path": "tizen-ci-triage/scripts/ci_triage/report.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "source": "__all__ = [\"TriageReportData\", \"_primary_location\", \"render_report\"]",
+      "items": [
+        {
+          "name": "TriageReportData",
+          "span": [
+            5,
+            11,
+            5,
+            29
+          ]
+        },
+        {
+          "name": "_primary_location",
+          "span": [
+            5,
+            31,
+            5,
+            50
+          ]
+        },
+        {
+          "name": "render_report",
+          "span": [
+            5,
+            52,
+            5,
+            67
+          ]
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/runner.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            10,
+            28,
+            10,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            10,
+            38,
+            10,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-ci-triage/scripts/ci_triage/runner.py",
+      "context": ".",
+      "lines": [
+        29,
+        29
+      ],
+      "scope": "Module",
+      "source": "from tizen_triage_report.report import TriageReportData, render_report",
+      "items": [
+        {
+          "name": "TriageReportData",
+          "span": [
+            29,
+            39,
+            29,
+            55
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "render_report",
+          "span": [
+            29,
+            57,
+            29,
+            70
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "all_entry",
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py",
+      "context": ".",
+      "lines": [
+        16,
+        16
+      ],
+      "source": "__all__ = [\"EDIT_SPEC_SCHEMA\", \"EditSpecViolation\", \"validate_edit_spec\"]",
+      "items": [
+        {
+          "name": "EDIT_SPEC_SCHEMA",
+          "span": [
+            16,
+            11,
+            16,
+            29
+          ]
+        },
+        {
+          "name": "EditSpecViolation",
+          "span": [
+            16,
+            31,
+            16,
+            50
+          ]
+        },
+        {
+          "name": "validate_edit_spec",
+          "span": [
+            16,
+            52,
+            16,
+            72
+          ]
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-convergence-judge/scripts/tizen_convergence_judge/convergence.py",
+      "context": ".",
+      "lines": [
+        14,
+        14
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import asdict, dataclass",
+      "items": [
+        {
+          "name": "asdict",
+          "span": [
+            14,
+            24,
+            14,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "dataclass",
+          "span": [
+            14,
+            32,
+            14,
+            41
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            5,
+            41,
+            5,
+            54
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            5,
+            56,
+            5,
+            66
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/base.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from abc import ABC, abstractmethod",
+      "items": [
+        {
+          "name": "ABC",
+          "span": [
+            5,
+            16,
+            5,
+            19
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "abstractmethod",
+          "span": [
+            5,
+            21,
+            5,
+            35
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters._common import primary_error, primary_file_line, primary_message",
+      "items": [
+        {
+          "name": "primary_error",
+          "span": [
+            8,
+            44,
+            8,
+            57
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_file_line",
+          "span": [
+            8,
+            59,
+            8,
+            76
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_message",
+          "span": [
+            8,
+            78,
+            8,
+            93
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            9,
+            41,
+            9,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            9,
+            56,
+            9,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/depsolve.py",
+      "context": ".",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            12,
+            41,
+            12,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            12,
+            56,
+            12,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters._common import primary_kind, primary_message",
+      "items": [
+        {
+          "name": "primary_kind",
+          "span": [
+            8,
+            44,
+            8,
+            56
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_message",
+          "span": [
+            8,
+            58,
+            8,
+            73
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            9,
+            41,
+            9,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            9,
+            56,
+            9,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters._common import first_regex_group, primary_message, relative_path",
+      "items": [
+        {
+          "name": "first_regex_group",
+          "span": [
+            10,
+            44,
+            10,
+            61
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_message",
+          "span": [
+            10,
+            63,
+            10,
+            78
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "relative_path",
+          "span": [
+            10,
+            80,
+            10,
+            93
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py",
+      "context": ".",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            11,
+            41,
+            11,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            11,
+            56,
+            11,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py",
+      "context": ".",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.depsolve import add_buildrequires_line, make_git_diff",
+      "items": [
+        {
+          "name": "add_buildrequires_line",
+          "span": [
+            12,
+            45,
+            12,
+            67
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "make_git_diff",
+          "span": [
+            12,
+            69,
+            12,
+            82
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_undef.py",
+      "context": ".",
+      "lines": [
+        13,
+        13
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            13,
+            41,
+            13,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            13,
+            56,
+            13,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/patch_failed.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            9,
+            41,
+            9,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            9,
+            56,
+            9,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters._common import failed_phase, primary_message",
+      "items": [
+        {
+          "name": "failed_phase",
+          "span": [
+            8,
+            44,
+            8,
+            56
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "primary_message",
+          "span": [
+            8,
+            58,
+            8,
+            73
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters.base import SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "SuggesterBase",
+          "span": [
+            9,
+            41,
+            9,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            9,
+            56,
+            9,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": ".",
+      "lines": [
+        11,
+        11
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            11,
+            28,
+            11,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            11,
+            38,
+            11,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": ".",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            12,
+            24,
+            12,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            12,
+            35,
+            12,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": ".",
+      "lines": [
+        17,
+        17
+      ],
+      "scope": "Module",
+      "source": "from gbs_build_skill.runner import BuildOptions, BuildResult, run_gbs_build",
+      "items": [
+        {
+          "name": "BuildOptions",
+          "span": [
+            17,
+            35,
+            17,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "BuildResult",
+          "span": [
+            17,
+            49,
+            17,
+            60
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "run_gbs_build",
+          "span": [
+            17,
+            62,
+            17,
+            75
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": ".",
+      "lines": [
+        19,
+        19
+      ],
+      "scope": "Module",
+      "source": "from gbs_workflow.suggesters import DEFAULT_SUGGESTERS, SuggesterBase, Suggestion",
+      "items": [
+        {
+          "name": "DEFAULT_SUGGESTERS",
+          "span": [
+            19,
+            36,
+            19,
+            54
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SuggesterBase",
+          "span": [
+            19,
+            56,
+            19,
+            69
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Suggestion",
+          "span": [
+            19,
+            71,
+            19,
+            81
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-build/scripts/gbs_build_skill/__init__.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_build_skill.runner import BuildOptions, BuildResult, run_gbs_build",
+      "items": [
+        {
+          "name": "BuildOptions",
+          "span": [
+            8,
+            35,
+            8,
+            47
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "BuildResult",
+          "span": [
+            8,
+            49,
+            8,
+            60
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "run_gbs_build",
+          "span": [
+            8,
+            62,
+            8,
+            75
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "all_entry",
+      "path": "tizen-gbs-build/scripts/gbs_build_skill/__init__.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "source": "__all__ = [\"BuildOptions\", \"BuildResult\", \"run_gbs_build\"]",
+      "items": [
+        {
+          "name": "BuildOptions",
+          "span": [
+            5,
+            11,
+            5,
+            25
+          ]
+        },
+        {
+          "name": "BuildResult",
+          "span": [
+            5,
+            27,
+            5,
+            40
+          ]
+        },
+        {
+          "name": "run_gbs_build",
+          "span": [
+            5,
+            42,
+            5,
+            57
+          ]
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            10,
+            24,
+            10,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            10,
+            35,
+            10,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": ".",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from typing import Any, TypeVar",
+      "items": [
+        {
+          "name": "Any",
+          "span": [
+            12,
+            19,
+            12,
+            22
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "TypeVar",
+          "span": [
+            12,
+            24,
+            12,
+            31
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": ".",
+      "lines": [
+        14,
+        14
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.error_clusters import ErrorClusterResult, build_error_clusters",
+      "items": [
+        {
+          "name": "ErrorClusterResult",
+          "span": [
+            14,
+            40,
+            14,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "build_error_clusters",
+          "span": [
+            14,
+            60,
+            14,
+            80
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": ".",
+      "lines": [
+        18,
+        18
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.full_match import FullMatchResult, full_match",
+      "items": [
+        {
+          "name": "FullMatchResult",
+          "span": [
+            18,
+            36,
+            18,
+            51
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "full_match",
+          "span": [
+            18,
+            53,
+            18,
+            63
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": ".",
+      "lines": [
+        26,
+        26
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.quick_filter import QuickFilterResult, quick_filter",
+      "items": [
+        {
+          "name": "QuickFilterResult",
+          "span": [
+            26,
+            38,
+            26,
+            55
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "quick_filter",
+          "span": [
+            26,
+            57,
+            26,
+            69
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": ".",
+      "lines": [
+        27,
+        27
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.rank_causes import RankResult, rank_causes",
+      "items": [
+        {
+          "name": "RankResult",
+          "span": [
+            27,
+            37,
+            27,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "rank_causes",
+          "span": [
+            27,
+            49,
+            27,
+            60
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": ".",
+      "lines": [
+        28,
+        28
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.scan_and_extract import ScanResult, scan_buildlog",
+      "items": [
+        {
+          "name": "ScanResult",
+          "span": [
+            28,
+            42,
+            28,
+            52
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "scan_buildlog",
+          "span": [
+            28,
+            54,
+            28,
+            67
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": ".",
+      "lines": [
+        30,
+        30
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.source_candidates import SourceCandidateResult, build_source_candidates",
+      "items": [
+        {
+          "name": "SourceCandidateResult",
+          "span": [
+            30,
+            43,
+            30,
+            64
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "build_source_candidates",
+          "span": [
+            30,
+            66,
+            30,
+            89
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py",
+      "context": ".",
+      "lines": [
+        3,
+        3
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.evidence.base import Evidence, EvidenceCollector",
+      "items": [
+        {
+          "name": "Evidence",
+          "span": [
+            3,
+            39,
+            3,
+            47
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "EvidenceCollector",
+          "span": [
+            3,
+            49,
+            3,
+            66
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from abc import ABC, abstractmethod",
+      "items": [
+        {
+          "name": "ABC",
+          "span": [
+            5,
+            16,
+            5,
+            19
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "abstractmethod",
+          "span": [
+            5,
+            21,
+            5,
+            35
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py",
+      "context": ".",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            6,
+            24,
+            6,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            6,
+            35,
+            6,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/compile.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.evidence._common import command_summary, quoted_symbol, search_header_declarations",
+      "items": [
+        {
+          "name": "command_summary",
+          "span": [
+            8,
+            42,
+            8,
+            57
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "quoted_symbol",
+          "span": [
+            8,
+            59,
+            8,
+            72
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "search_header_declarations",
+          "span": [
+            8,
+            74,
+            8,
+            100
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/deps.py",
+      "context": ".",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.evidence._common import parse_missing_dependency, profile_hint",
+      "items": [
+        {
+          "name": "parse_missing_dependency",
+          "span": [
+            7,
+            42,
+            7,
+            66
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "profile_hint",
+          "span": [
+            7,
+            68,
+            7,
+            80
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py",
+      "context": ".",
+      "lines": [
+        15,
+        15
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.quick_filter import DEFAULT_PATTERN_PATH, PatternValidationError",
+      "items": [
+        {
+          "name": "DEFAULT_PATTERN_PATH",
+          "span": [
+            15,
+            38,
+            15,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "PatternValidationError",
+          "span": [
+            15,
+            60,
+            15,
+            82
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            10,
+            24,
+            10,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            10,
+            35,
+            10,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py",
+      "context": ".",
+      "lines": [
+        21,
+        21
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.full_match import FullMatchResult, Verdict",
+      "items": [
+        {
+          "name": "FullMatchResult",
+          "span": [
+            21,
+            36,
+            21,
+            51
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Verdict",
+          "span": [
+            21,
+            53,
+            21,
+            60
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/rank_causes.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer._utils.semantic_classifier import SemanticClass, SemanticClassifier",
+      "items": [
+        {
+          "name": "SemanticClass",
+          "span": [
+            8,
+            52,
+            8,
+            65
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SemanticClassifier",
+          "span": [
+            8,
+            67,
+            8,
+            85
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            10,
+            24,
+            10,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            10,
+            35,
+            10,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py",
+      "context": ".",
+      "lines": [
+        3,
+        3
+      ],
+      "scope": "Module",
+      "source": "from gbs_analyzer.tracing.logger import TraceLogger, setup_tracing",
+      "items": [
+        {
+          "name": "TraceLogger",
+          "span": [
+            3,
+            40,
+            3,
+            51
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "setup_tracing",
+          "span": [
+            3,
+            53,
+            3,
+            66
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "all_entry",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "source": "__all__ = [\"TraceLogger\", \"setup_tracing\"]",
+      "items": [
+        {
+          "name": "TraceLogger",
+          "span": [
+            5,
+            11,
+            5,
+            24
+          ]
+        },
+        {
+          "name": "setup_tracing",
+          "span": [
+            5,
+            26,
+            5,
+            41
+          ]
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py",
+      "context": ".",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            7,
+            21,
+            7,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            7,
+            31,
+            7,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from typing import Any, TextIO",
+      "items": [
+        {
+          "name": "Any",
+          "span": [
+            9,
+            19,
+            9,
+            22
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "TextIO",
+          "span": [
+            9,
+            24,
+            9,
+            30
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/perf_report.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from datetime import datetime, timezone",
+      "items": [
+        {
+          "name": "datetime",
+          "span": [
+            5,
+            21,
+            5,
+            29
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "timezone",
+          "span": [
+            5,
+            31,
+            5,
+            39
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            8,
+            28,
+            8,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            8,
+            38,
+            8,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py",
+      "context": ".",
+      "lines": [
+        22,
+        22
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.formatter import FormatPatchOptions, format_patch",
+      "items": [
+        {
+          "name": "FormatPatchOptions",
+          "span": [
+            22,
+            40,
+            22,
+            58
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "format_patch",
+          "span": [
+            22,
+            60,
+            22,
+            72
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py",
+      "context": ".",
+      "lines": [
+        23,
+        23
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.ingest import extract_first_diagnostic, load_evidence_packet",
+      "items": [
+        {
+          "name": "extract_first_diagnostic",
+          "span": [
+            23,
+            37,
+            23,
+            61
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "load_evidence_packet",
+          "span": [
+            23,
+            63,
+            23,
+            83
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_resolver.py",
+      "context": ".",
+      "lines": [
+        8,
+        8
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.cluster_ingest import ClusterLocation, LargeScaleCluster",
+      "items": [
+        {
+          "name": "ClusterLocation",
+          "span": [
+            8,
+            45,
+            8,
+            60
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "LargeScaleCluster",
+          "span": [
+            8,
+            62,
+            8,
+            79
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_render.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.cluster_resolver import ClusterFileContext, SuppressedSkeletonLocation",
+      "items": [
+        {
+          "name": "ClusterFileContext",
+          "span": [
+            10,
+            47,
+            10,
+            65
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SuppressedSkeletonLocation",
+          "span": [
+            10,
+            67,
+            10,
+            93
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.cluster_resolver import ClusterFileContext, resolve_clusters",
+      "items": [
+        {
+          "name": "ClusterFileContext",
+          "span": [
+            9,
+            47,
+            9,
+            65
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "resolve_clusters",
+          "span": [
+            9,
+            67,
+            9,
+            83
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py",
+      "context": ".",
+      "lines": [
+        10,
+        10
+      ],
+      "scope": "Module",
+      "source": "from gbs_patch_suggest.fix_all_ingest import FixAllIngestResult, SourceCandidateDiagnostic",
+      "items": [
+        {
+          "name": "FixAllIngestResult",
+          "span": [
+            10,
+            45,
+            10,
+            63
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SourceCandidateDiagnostic",
+          "span": [
+            10,
+            65,
+            10,
+            90
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_render.py",
+      "context": ".",
+      "lines": [
+        7,
+        7
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, replace",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            7,
+            24,
+            7,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "replace",
+          "span": [
+            7,
+            35,
+            7,
+            42
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from collections.abc import Callable, Sequence",
+      "items": [
+        {
+          "name": "Callable",
+          "span": [
+            9,
+            28,
+            9,
+            36
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "Sequence",
+          "span": [
+            9,
+            38,
+            9,
+            46
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py",
+      "context": ".",
+      "lines": [
+        14,
+        14
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import asdict, dataclass",
+      "items": [
+        {
+          "name": "asdict",
+          "span": [
+            14,
+            24,
+            14,
+            30
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "dataclass",
+          "span": [
+            14,
+            32,
+            14,
+            41
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-qb-discover/scripts/tizen_qb_discover/sources.py",
+      "context": ".",
+      "lines": [
+        6,
+        6
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            6,
+            24,
+            6,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            6,
+            35,
+            6,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-triage-report/scripts/tizen_triage_report/__init__.py",
+      "context": ".",
+      "lines": [
+        12,
+        12
+      ],
+      "scope": "Module",
+      "source": "from .report import TriageReportData, render_report",
+      "items": [
+        {
+          "name": "TriageReportData",
+          "span": [
+            12,
+            20,
+            12,
+            36
+          ],
+          "explicit_export": true
+        },
+        {
+          "name": "render_report",
+          "span": [
+            12,
+            38,
+            12,
+            51
+          ],
+          "explicit_export": true
+        }
+      ],
+      "explicit_pair": true
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            5,
+            24,
+            5,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            5,
+            35,
+            5,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-triage-report/scripts/tizen_triage_report/report.py",
+      "context": ".",
+      "lines": [
+        5,
+        5
+      ],
+      "scope": "Module",
+      "source": "from dataclasses import dataclass, field",
+      "items": [
+        {
+          "name": "dataclass",
+          "span": [
+            5,
+            24,
+            5,
+            33
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "field",
+          "span": [
+            5,
+            35,
+            5,
+            40
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    },
+    {
+      "kind": "import_stmt",
+      "path": "tizen-triage-report/scripts/tizen_triage_report/report.py",
+      "context": ".",
+      "lines": [
+        9,
+        9
+      ],
+      "scope": "Module",
+      "source": "from tizen_ci_shared.types import FailedPackage, SourceFetchResult",
+      "items": [
+        {
+          "name": "FailedPackage",
+          "span": [
+            9,
+            34,
+            9,
+            47
+          ],
+          "explicit_export": false
+        },
+        {
+          "name": "SourceFetchResult",
+          "span": [
+            9,
+            49,
+            9,
+            66
+          ],
+          "explicit_export": false
+        }
+      ],
+      "explicit_pair": false
+    }
+  ]
+}

@@ -1,5 +1,113 @@
 [
   {
+    "control_id": "CTRL-test_e10_two_lambdas_unique_and_collision_red",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_callable_ids.py::test_e10_two_lambdas_unique_and_collision_red",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum10/ids-controls-final.log",
+    "scope": "callable identity/name-form/local-admission component; not complete four-granularity discovery"
+  },
+  {
+    "control_id": "CTRL-test_e10_nested_and_repeat_are_stable",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_callable_ids.py::test_e10_nested_and_repeat_are_stable",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum10/ids-controls-final.log",
+    "scope": "callable identity/name-form/local-admission component; not complete four-granularity discovery"
+  },
+  {
+    "control_id": "CTRL-test_e10_local_lambda_and_def_mechanical_evidence",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_callable_ids.py::test_e10_local_lambda_and_def_mechanical_evidence",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum10/ids-controls-final.log",
+    "scope": "callable identity/name-form/local-admission component; not complete four-granularity discovery"
+  },
+  {
+    "control_id": "CTRL-test_e10_module_and_class_binding_near_miss",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_callable_ids.py::test_e10_module_and_class_binding_near_miss",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum10/ids-controls-final.log",
+    "scope": "callable identity/name-form/local-admission component; not complete four-granularity discovery"
+  },
+  {
+    "control_id": "CTRL-test_e10_default_argument_compiler_parent_not_ast_parent",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_callable_ids.py::test_e10_default_argument_compiler_parent_not_ast_parent",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum10/ids-controls-final.log",
+    "scope": "callable identity/name-form/local-admission component; not complete four-granularity discovery"
+  },
+  {
+    "control_id": "CTRL-test_e10_unbound_lambda_has_no_invented_binding",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_callable_ids.py::test_e10_unbound_lambda_has_no_invented_binding",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum10/ids-controls-final.log",
+    "scope": "callable identity/name-form/local-admission component; not complete four-granularity discovery"
+  },
+  {
+    "control_id": "CTRL-test_e10_bound_name_forms_and_non_packaged_near_miss",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_callable_ids.py::test_e10_bound_name_forms_and_non_packaged_near_miss",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum10/ids-controls-final.log",
+    "scope": "callable identity/name-form/local-admission component; not complete four-granularity discovery"
+  },
+  {
+    "control_id": "CTRL-test_e10_named_ids_unchanged",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_callable_ids.py::test_e10_named_ids_unchanged",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum10/ids-controls-final.log",
+    "scope": "callable identity/name-form/local-admission component; not complete four-granularity discovery"
+  },
+  {
+    "control_id": "CTRL-test_e10_mutually_exclusive_lambdas_are_not_n1_merged",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_callable_ids.py::test_e10_mutually_exclusive_lambdas_are_not_n1_merged",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum10/ids-controls-final.log",
+    "scope": "callable identity/name-form/local-admission component; not complete four-granularity discovery"
+  },
+  {
+    "control_id": "CTRL-E10-FORCED-SAME-ORDINAL",
+    "group": "E10-3-CALLABLE-IDENTITY",
+    "source": "E10-3 reverse control",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "status": "RED_AS_EXPECTED",
+    "exit_code": 1,
+    "evidence": "a0-evidence/part3/erratum10/e10-collision-negative.log"
+  },
+  {
     "control_id": "CTRL-SCAN07-HISTORICAL-SOURCE",
     "group": "SCAN07-RULING",
     "source": "FatTank approved SCAN-07 option 2, 2026-10-07",
@@ -1005,7 +1113,7 @@
     "group": "G-DETECTOR",
     "source": "v1.2 §4",
     "status": "NOT_RUN",
-    "reason": "Scanner not implemented or authorized in A0 segment 1; positive same-package proxy and near-miss remain due."
+    "reason": "Full candidate scanner blocked by SCAN-09 after E10 identity work; positive same-package proxy and near-miss remain due, not claimed by identity-only controls."
   },
   {
     "control_id": "CTRL-E4-KIND-GITLINK",

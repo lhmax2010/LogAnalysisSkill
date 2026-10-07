@@ -10,6 +10,7 @@
 > **已生效勘误:附录 C 勘误 7(2026-10-07,FatTank 批准)。**
 > **已生效勘误:附录 C 勘误 8(2026-10-07,FatTank 批准)。**
 > **已生效勘误:附录 C 勘误 9(2026-10-07,FatTank 批准)。**
+> **已生效勘误:附录 C 勘误 10(2026-10-07,FatTank 批准)。**
 > 冻结前的放行规则(v1.27 起,留作记录):
 > 1. **落地核对**:三家只核对最新修订段所列改动是否按所写落地、有无改到别处;**不开新的审查面**;
 > 2. **放行标准只看"朝开"**:仅当发现**会导致删错真实依赖或删掉行为型测试**的问题才阻止冻结;
@@ -2421,3 +2422,40 @@ A/B 取值、**存在性检查证据(`lstat` 语义)**、**π 归一结果**、
 > 若 candidate 全集在此时尚不能完整产出,如实写明缺什么,不得以部分 candidate 的结果声称全量。
 
 **生效范围**:勘误 4 条目类别表、§1.1 原子形态表与非 Python 文件的名字兜底去处;不改变判定条件与其它事项。
+
+### 勘误 10(2026-10-07,FatTank 批准)—— 匿名 callable(`lambda`)的粒度④ candidate ID,以及函数体内局部 callable 的 admission
+
+**触发**:A₀ 第 3 段停止报告 SCAN-08(stage14 `a0-evidence/part3/scan07-resume/stop-report.md`):粒度④发现判据为"任一 callable",
+`lambda` 在其内;但同一函数内多个 `lambda` 的 lexical qualname 相同(如 `analyze_buildlog.<locals>.<lambda>`),
+按 §1.1c 粒度④ ID 格式得到同一 ID,违反"全局唯一"(SEAL-7)。固定树中有 5 组此类重名(live 与 release 各含 `analyze.py` 一组)。
+本勘误**保留**"任一 callable"的发现面(§1.1c"不得使用会结构性排除该形态的必要条件"),只补 ID 文法与 admission 证据规则。
+
+**E10-1 · 匿名 callable 的 lexical qualname 消歧**
+> 粒度④ ID 中的"callable 的 lexical qualname",对 `lambda` 及其内部定义的 callable 按下法构造:
+> 取 Python 编译器给出的 `co_qualname`,把其中每个 `<lambda>` 段改写为 `<lambda>#k`;
+> `k` 为从 1 起的序号,在**同一已消歧的父 qualname 之下**的全部 `lambda` 中按源码起点 `(lineno, col_offset)` 升序编号
+> (父 qualname 自身含 `<lambda>` 段时先按本条消歧,即自外向内逐层改写)。
+> 例:`analyze.py` 中 `analyze_buildlog` 内依次出现的 `lambda` 为
+> `tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py#PROXY#analyze_buildlog.<locals>.<lambda>#1`、`…#2`、……;
+> 模块级为 `<lambda>#k`;嵌套为 `f.<locals>.<lambda>#1.<locals>.<lambda>#1`。
+> 序号只依赖固定树的源码顺序,**不含行号**,同一树重复计算结果相同;具名 callable 的 ID 不变。
+> **N1 归并不适用于匿名 callable**:它们没有 bound name,不构成"同一逻辑 binding",不同 `lambda` 一律是不同 candidate。
+> **名字形态**:`lambda` 被模块级或类级**简单赋值**绑定到名字 `n` 时,按 `n` 生成 binding 级名字形态;否则只生成其所在模块的模块级名字形态。
+
+**E10-2 · 函数体内局部 callable 的 admission(机械证据)**
+> 粒度④候选的 lexical qualname 含 `<locals>` 段(即定义在函数体内,包括 `lambda` 与嵌套 `def`)时,
+> 它不能被其它模块按名字引用,不可能是兼容位置。其 admission 取 `REJECTED_NOT_SHIM`,
+> 结构化证据为 `(claim = 定义于函数体内不可按名字寻址, 判据 = lexical qualname 含 <locals>, 命令 = 产出该 ID 的 AST 扫描命令, 输出 = 该 callable 的源码 span 与 co_qualname)`。
+> 本条只适用于 qualname 含 `<locals>` 者;模块级与类级的 `lambda`(qualname 不含 `<locals>`)照常走 admission。
+> `REJECTED_NOT_SHIM` 不删除、不改动源码,故本条只减少人工裁决,不扩大删除面。
+
+**E10-3 · 控制**(登记进 `control_catalog.json`)
+> 同一函数内两个分别委托不同模块的 `lambda` → 产出 `…<lambda>#1` 与 `…<lambda>#2` 两个不同 ID,SEAL-7 不红;
+> 嵌套 `lambda` → `…<lambda>#1.<locals>.<lambda>#1`;同一固定树计算两次 → ID 逐字相同;
+> 函数体内的纯委托 `lambda` 与纯委托嵌套 `def` → admission 机械判 `REJECTED_NOT_SHIM` 并附 E10-2 证据;
+> **near-miss**:模块级 `f = lambda: mod.g()` → ID 为 `<lambda>#1`,按 `f` 生成 binding 级名字形态,**不得**被 E10-2 机械拒绝;
+> 反向控制:人为把两个 `lambda` 的序号置同 → SEAL-7 须红。
+
+**已冻结判定条件的影响**:与勘误 7–9 相同 —— 若已冻结的 OBS 判定条件因本勘误的 ID 文法或 admission 证据判红,停止报告,本勘误不预改已冻结的判定条件。
+
+**生效范围**:§1.1c 粒度④ candidate ID 规格与粒度④候选的 admission 证据;不改变发现判据、判定条件与其它事项。

@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.6.0 -- /tmp/p49-a0-regression-43a6aa6/bin/python
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+collecting ... collected 7 items
+
+../LogAnalysisSkill/tests/unit/test_terminal_callable_ids.py::test_e10_two_lambdas_unique_and_collision_red PASSED [ 14%]
+../LogAnalysisSkill/tests/unit/test_terminal_callable_ids.py::test_e10_nested_and_repeat_are_stable PASSED [ 28%]
+../LogAnalysisSkill/tests/unit/test_terminal_callable_ids.py::test_e10_local_lambda_and_def_mechanical_evidence PASSED [ 42%]
+../LogAnalysisSkill/tests/unit/test_terminal_callable_ids.py::test_e10_module_and_class_binding_near_miss PASSED [ 57%]
+../LogAnalysisSkill/tests/unit/test_terminal_callable_ids.py::test_e10_default_argument_compiler_parent_not_ast_parent PASSED [ 71%]
+../LogAnalysisSkill/tests/unit/test_terminal_callable_ids.py::test_e10_unbound_lambda_has_no_invented_binding PASSED [ 85%]
+../LogAnalysisSkill/tests/unit/test_terminal_callable_ids.py::test_e10_named_ids_unchanged PASSED [100%]
+
+============================== 7 passed in 0.02s ===============================

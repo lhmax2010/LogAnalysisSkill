@@ -1,0 +1,5 @@
+PREEXISTING_EVIDENCE_UNCHANGED=440
+Traceback (most recent call last):
+  File "/tmp/p49-e10-integrity.py", line 21, in <module>
+    check_frozen_hashes()
+TypeError: check_frozen_hashes() missing 2 required positional arguments: 'registry' and 'exemptions'

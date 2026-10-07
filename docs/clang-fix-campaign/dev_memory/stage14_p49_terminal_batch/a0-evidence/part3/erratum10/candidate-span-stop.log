@@ -1,0 +1,130 @@
+E10: five collision groups resolved; 121 lambda IDs unique; two full scans identical
+all_callable_sites=3183 code_location_issues=0
+python_entries=272 context_counts={'.': 736, 'release-v1.4.0': 110}
+raw_same_line_multi_binding_groups=225 explicit_reexport_groups=23
+by_kind={'import_stmt': 219, 'all_entry': 6}
+explicit_by_context={'release-v1.4.0': 9, '.': 14}
+cross_statement_import_groups=0
+same_line_assignment_groups=0
+same_line_callable_groups=0
+release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/__init__.py:[5, 5] import_stmt GERRIT_READY,StateDatabase
+release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/__init__.py:[6, 6] import_stmt build_failure_key,build_submission_key,failure_key_sha12
+release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/__init__.py:[5, 5] import_stmt EditSpecViolation,validate_edit_spec
+release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py:[5, 5] import_stmt SuggesterBase,Suggestion
+release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__init__.py:[8, 8] import_stmt BuildOptions,BuildResult,run_gbs_build
+release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__init__.py:[5, 5] all_entry BuildOptions,BuildResult,run_gbs_build
+release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py:[3, 3] import_stmt Evidence,EvidenceCollector
+release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py:[3, 3] import_stmt TraceLogger,setup_tracing
+release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py:[5, 5] all_entry TraceLogger,setup_tracing
+tizen-build-verify/scripts/tizen_build_verify/__init__.py:[10, 10] import_stmt EditSpecViolation,validate_edit_spec
+tizen-build-verify/scripts/tizen_build_verify/__init__.py:[11, 11] import_stmt check_disk_and_maybe_cleanup,create_worktree
+tizen-ci-shared/scripts/tizen_ci_shared/state/__init__.py:[5, 5] import_stmt GERRIT_READY,StateDatabase
+tizen-ci-shared/scripts/tizen_ci_shared/state/__init__.py:[6, 6] import_stmt build_failure_key,build_submission_key,failure_key_sha12
+tizen-ci-triage/scripts/ci_triage/report.py:[3, 3] import_stmt TriageReportData,_primary_location,render_report
+tizen-ci-triage/scripts/ci_triage/report.py:[5, 5] all_entry TriageReportData,_primary_location,render_report
+tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py:[16, 16] all_entry EDIT_SPEC_SCHEMA,EditSpecViolation,validate_edit_spec
+tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py:[5, 5] import_stmt SuggesterBase,Suggestion
+tizen-gbs-build/scripts/gbs_build_skill/__init__.py:[8, 8] import_stmt BuildOptions,BuildResult,run_gbs_build
+tizen-gbs-build/scripts/gbs_build_skill/__init__.py:[5, 5] all_entry BuildOptions,BuildResult,run_gbs_build
+tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py:[3, 3] import_stmt Evidence,EvidenceCollector
+tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py:[3, 3] import_stmt TraceLogger,setup_tracing
+tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py:[5, 5] all_entry TraceLogger,setup_tracing
+tizen-triage-report/scripts/tizen_triage_report/__init__.py:[12, 12] import_stmt TriageReportData,render_report
+[
+  {
+    "source": "from tizen_triage_report.report import TriageReportData, _primary_location, render_report",
+    "rows": [
+      {
+        "candidate_id": "tizen-ci-triage/scripts/ci_triage/report.py#REEXPORT#TriageReportData",
+        "contract_span": [
+          "tizen-ci-triage/scripts/ci_triage/report.py",
+          3,
+          3,
+          "import_stmt",
+          "TRUE"
+        ],
+        "ast_columns_not_in_contract": [
+          39,
+          55
+        ]
+      },
+      {
+        "candidate_id": "tizen-ci-triage/scripts/ci_triage/report.py#REEXPORT#_primary_location",
+        "contract_span": [
+          "tizen-ci-triage/scripts/ci_triage/report.py",
+          3,
+          3,
+          "import_stmt",
+          "TRUE"
+        ],
+        "ast_columns_not_in_contract": [
+          57,
+          74
+        ]
+      },
+      {
+        "candidate_id": "tizen-ci-triage/scripts/ci_triage/report.py#REEXPORT#render_report",
+        "contract_span": [
+          "tizen-ci-triage/scripts/ci_triage/report.py",
+          3,
+          3,
+          "import_stmt",
+          "TRUE"
+        ],
+        "ast_columns_not_in_contract": [
+          76,
+          89
+        ]
+      }
+    ]
+  },
+  {
+    "source": "__all__ = [\"TriageReportData\", \"_primary_location\", \"render_report\"]",
+    "rows": [
+      {
+        "candidate_id": "tizen-ci-triage/scripts/ci_triage/report.py#REEXPORT#TriageReportData",
+        "contract_span": [
+          "tizen-ci-triage/scripts/ci_triage/report.py",
+          5,
+          5,
+          "all_entry",
+          "TRUE"
+        ],
+        "ast_columns_not_in_contract": [
+          11,
+          29
+        ]
+      },
+      {
+        "candidate_id": "tizen-ci-triage/scripts/ci_triage/report.py#REEXPORT#_primary_location",
+        "contract_span": [
+          "tizen-ci-triage/scripts/ci_triage/report.py",
+          5,
+          5,
+          "all_entry",
+          "TRUE"
+        ],
+        "ast_columns_not_in_contract": [
+          31,
+          50
+        ]
+      },
+      {
+        "candidate_id": "tizen-ci-triage/scripts/ci_triage/report.py#REEXPORT#render_report",
+        "contract_span": [
+          "tizen-ci-triage/scripts/ci_triage/report.py",
+          5,
+          5,
+          "all_entry",
+          "TRUE"
+        ],
+        "ast_columns_not_in_contract": [
+          52,
+          67
+        ]
+      }
+    ]
+  }
+]
+SEAL-7 RED: distinct candidate IDs share the frozen five-field span; N1 cannot merge distinct binding names
+candidate_universe=NOT_COMPLETE; shim_inventory=NOT_COMPLETE; E9-5=NOT_RUN; 570 text entries not certified

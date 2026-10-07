@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import importlib
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -42,9 +43,9 @@ def test_scan07_git_blob_and_current_quotes(gate: Any) -> None:
     old = gate.sources.read(G.DOC, G.DOC_HASH)
     assert hashlib.sha256(old).hexdigest() == G.DOC_HASH
     assert old != (ROOT / G.DOC).read_bytes()
-    assert [s["erratum"] for s in G.check_later_errata((ROOT / G.DOC).read_text())] == list(
-        range(4, 10)
-    )
+    current = (ROOT / G.DOC).read_text()
+    headings = [int(n) for n in re.findall(r"^### 勘误 (\d+)\(", current, re.M)]
+    assert [s["erratum"] for s in G.check_later_errata(current)] == headings[3:]
     gate.validate()
 
 
@@ -70,14 +71,18 @@ def test_scan07_current_quote_removal_is_red(monkeypatch: pytest.MonkeyPatch, ga
 
 @pytest.mark.parametrize("scope", ["§3", "§4", "§5", "§6", "勘误 1–3", "勘误 2", "预期差异门禁"])
 def test_scan07_later_scope_affecting_diff_is_red(scope: str) -> None:
-    text = (ROOT / G.DOC).read_text() + f"\n### 勘误 10(人工控制)\n\n**生效范围**:仅 {scope}。\n"
-    with pytest.raises(G.GateError, match="LATER_ERRATUM_AFFECTS_DIFF: E10"):
+    current = (ROOT / G.DOC).read_text()
+    number = len(re.findall(r"^### 勘误 \d+\(", current, re.M)) + 1
+    text = current + f"\n### 勘误 {number}(人工控制)\n\n**生效范围**:仅 {scope}。\n"
+    with pytest.raises(G.GateError, match=f"LATER_ERRATUM_AFFECTS_DIFF: E{number}"):
         G.check_later_errata(text)
 
 
 def test_scan07_missing_scope_fails_closed() -> None:
+    current = (ROOT / G.DOC).read_text()
+    number = len(re.findall(r"^### 勘误 \d+\(", current, re.M)) + 1
     with pytest.raises(G.GateError, match="ERRATUM_SCOPE_MISSING"):
-        G.check_later_errata((ROOT / G.DOC).read_text() + "\n### 勘误 10(人工控制)\n未登记范围。\n")
+        G.check_later_errata(current + f"\n### 勘误 {number}(人工控制)\n未登记范围。\n")
 
 
 @pytest.mark.parametrize("control", C.CONTROLS)

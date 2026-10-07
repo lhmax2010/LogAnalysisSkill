@@ -1,12 +1,12 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART3_SCAN07_CLOSED_STOPPED_SCAN08。更新日期: 2026-10-07。
+状态: A0_PART3_E10_CLOSED_STOPPED_SCAN09。更新日期: 2026-10-07。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
-勘误9已核对原字节;DIFF-01..04、SCAN-01..07 CLOSED。第26节落实
-SCAN-07不可变Git来源裁决,全仓1291 passed/1 skipped/0 failed。
-四级候选前置发现SCAN-08(匿名callable的lexical ID碰撞);E9-5仍未做全量预检。
+勘误10已核对原字节;DIFF-01..04、SCAN-01..08 CLOSED。第27节落实
+E10编号/名字形态/局部admission证据组件,全仓1300 passed/1 skipped/0 failed。
+四级候选前置全树反查发现SCAN-09(行级span跨binding重复);E9-5仍未做全量预检。
 §6改前实跑仍为PENDING_SEG3。
 本轮未运行任何 producer或真实双跑;既有两项产出不变,生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
@@ -147,7 +147,7 @@ predicate 原件与机器产物分离;renderer 旁注由机器产生,不手写�
 | A03 | §1.1e 12b-1/2/3b/5/6;B-8 | `T/terminal_scan.py`;`E/scan_manifest.json`, `E/scan_matrix.json`, `E/completion.json`;`U/test_terminal_scan.py` | 完整固定 Git tree + mode/lstat,处理集精确相等,每 entry 有 SCANNED;原子完成标记、tree/run ID/hash 一致,不按目录或文档清单缩面 |
 | A04 | §1.1b;12b-3/3c/8 | `D/provider_registry.json`, `D/capability_registry.json`, `D/non_shim_predictions.json`;`T/terminal_scan.py`;`U/test_terminal_scan.py` | provider/kind 全函数、四条完备性、四态逐格记录;未知/FAILED/UNSUPPORTED 阻塞;预测不免 candidacy/行级下界/reconciliation;终态证伪钩不可提前 |
 | A05 | §1.1 三段;§1.1b;B-2/B-3 | `T/shim_inventory.py`;`D/ledger_sources.json`;`E/ledger_inventory.json`, `E/B-2-sources.json`, `E/B-3-transitions.json`;`U/test_terminal_shim_inventory.py` | 三段保持来源粒度;七来源覆盖;四 provenance 字段与真实抽取 SHA;不按提交序位猜,不由当前树展开来源 |
-| A06 | §1.1/1.1c;B-9 | `T/terminal_scan.py`, `T/shim_inventory.py`;`E/raw_findings.json`, `E/B-9-shapes.json`;`X/candidates/`;`U/test_terminal_shim_inventory.py` | MODULE/REEXPORT/INLINE/PROXY 全扫,A/B/D 与代理各种 callable;零命中显式记录;ID 无行号,span 带 guard,all/import 同删同留 |
+| A06 | §1.1/1.1c;B-9;E10 | `T/terminal_scan.py`, `T/shim_inventory.py`, `T/terminal_callable_ids.py`;`E/raw_findings.json`, `E/B-9-shapes.json`;`X/candidates/`;`U/test_terminal_shim_inventory.py`, `U/test_terminal_callable_ids.py` | MODULE/REEXPORT/INLINE/PROXY 全扫,A/B/D 与代理各种 callable;零命中显式记录;ID 无行号,span 带 guard,all/import 同删同留;E10组件已落,全集因SCAN-09未完成(§27) |
 | A07 | §1.1c-0;SEAL-2/7/7b/11 | `T/shim_inventory.py`;`E/normalization.json`;`U/test_terminal_normalization.py`;`X/normalization/` | N1 guard 归并、π 最细优先全函数、最多一个 primary;covers 与 primary 分离;独立不变式、七格、E1–E12、R1–R7/非法组合、独立 lstat 存在性 |
 | A08 | §1.1c-0 时序出口;§1.1c;B-14a | `T/terminal_scan.py`, `T/shim_inventory.py`;`E/dynamic_span_universe.json`, `E/admission.json`, `E/B-14a-resolution.json`;`U/test_terminal_normalization.py` | 独立 raw-syntax/config universe 冻结;严格单调/有界;新 site 不在 universe 则 UNSUPPORTED+整轮重启;admission A/B/C 后才求 SEAL-3,祖先 fallback 取得终态 |
 | A09 | §1.1 原子表;SEAL-16b | `T/terminal_consumers.py`;`D/consumer_closure_registry.json`;`E/consumer_callsites.json`, `E/consumer_closure.json`;`U/test_terminal_consumers.py`;`X/consumers/` | 表/registry/closure/控制/实际参与点五方按(形态,consumer.branch)精确对账,保留投影原记录;零/多命中阻塞;详见 2.3 |
@@ -2535,7 +2535,7 @@ EXIT=0
 今后每次冻结稿入库也必须复跑全仓测试并记录passed/failed,不再以局部扫描
 组件绿代替全仓回归。mypy/ruff本轮范围如表,不宣称它们是全仓静态检查。
 
-### 26.3 SCAN-08 OPEN:匿名callable候选ID无法唯一
+### 26.3 SCAN-08 CLOSED(E10-1至E10-3;以下保留原停止记录)
 
 规范与原始见证见R/stop-report.md及R/anonymous-callable-id.json。
 F:1022-1028规定任一纯委托callable入候选;F:1038-1048的PROXY ID只有
@@ -2578,3 +2578,138 @@ field/index路径,并明确名字形态及碰撞控制;或显式调整匿名call
 - predicates canonical仍`8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6`;
   exemptions仍`4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`。
 - 提交已授权修复、控制、原始证据与停止报告后push,等待SCAN-08裁决。
+
+## 27. 勘误10入库、SCAN-08关闭、候选span全树反查
+
+本轮开始HEAD=`72337e79ae53a1d97887afae27c405a038971dec`;
+`git pull --ff-only origin clang-fix-campaign`返回`Already up to date.`。
+先核对§26及§2.2交付映射。新证据目录R=`a0-evidence/part3/erratum10/`。
+观测/测试cwd始终为§9.2干净工作区,HEAD/tree不变;独立环境继续用
+`/tmp/p49-a0-regression-43a6aa6`。本轮没有运行任何OBS producer或门禁改前实跑。
+
+### 27.1 入库与SCAN-07回归
+
+用户交付原件已替换到目标路径,未编辑其正文。`admission.command.json`保存
+取证程序与完整命令;`admission.log`保存完整`git diff --unified=0`及机械核验:
+
+```text
+old_sha256=b5c2dce6568b722a70ceb92ed7860ecda4417ca8895310df4bdbf7ae9158cec3
+SHA256=37862f4acdc330caa1ebb563885037814256746ae87663e51a64685fe21ccc01
+hunks=2 added_lines=38 deleted_lines=0 ORIGINAL_PREFIX_PRESERVED
+SCAN07_GREEN: current quotes present; E4..E10 scopes clear; 30 registrations valid
+EXIT=0
+```
+
+去掉新增状态行后,新文件完整以前版原字节为前缀,剩余部分仅勘误10。
+`terminal_scan.RULES_SHA`同步当前权威,未改扫描判据。SCAN-07测试中旧的
+“最后勘误为9/伪造下一条为10”改为从当前标题序列确定,反向仍严格要求
+`LATER_ERRATUM_AFFECTS_DIFF`,没有把红因换成序列错误。入库后立即跑全仓:
+`full-regression-admission.log`:1291 passed/1 skipped/0 failed,exit0。
+
+### 27.2 SCAN-08 CLOSED与E10组件
+
+E10-1/E10-2/E10-3解决SCAN-08。新增`T/terminal_callable_ids.py`及
+`U/test_terminal_callable_ids.py`,对A06/A07补足身份组件,不冒充完整扫描器:
+
+- 编译/反汇编而不执行被观测模块,以code object的`co_qualname`为依据;
+  通过LOAD_CONST源码位置对齐AST,具名定义另以编译器定义位置核对。
+- lambda按已消歧父作用域及原始起点排序,自外向内替换每个lambda段;
+  编译器父作用域处理默认参数lambda,不把它误归入外层lambda函数体。
+- 模块/类简单赋值记录名字n并生成binding形态;未绑定lambda只有模块形态,
+  非打包文件按E5不发明点分模块名。具名callable ID不变,匿名不走N1归并。
+- `<locals>`者附E10-2机械证据四项,仅作用于将来被发现为PROXY的该callable;
+  模块/类lambda不据此拒绝。这里的AST四坐标是源码定位metadata,
+  **不是**擅自替换§1.1c的五字段`candidate.spans`。
+
+固定树重复扫描输出(完整命令/程序在`candidate-span-stop.command.json`):
+
+```text
+E10: five collision groups resolved; 121 lambda IDs unique; two full scans identical
+all_callable_sites=3183 code_location_issues=0
+python_entries=272 context_counts={'.': 736, 'release-v1.4.0': 110}
+```
+
+5组逐ID证据在`callable-id-scan.json/log`;新旧ID集合比对、重复运行、名字形态
+与局部证据在`candidate-span-stop.json`。3183是callable定位数,121是lambda数,
+均非PROXY候选数量。已登记9项单元控制及独立重号负控制到唯一目录
+`D/control_catalog.json`;没有把CTRL-INTRA-PKG-PROXY改为PASS。
+
+| 控制证据 | 实测 |
+|---|---|
+| `ids-controls-final.log` | 9 passed,exit0;覆盖E10-3各要求及同一行/default参数/N1边界 |
+| `e10-collision-negative.log` | 正常不同序号绿;人为同序号后`SEAL-7`红,exit1 |
+| `callable-id-scan.log` | 固定树5组旧冲突唯一化,匿名碰撞0、定位未决0,exit0 |
+
+### 27.3 SCAN-09 OPEN:候选span的同型问题已一次收齐
+
+正式报告:`R/stop-report.md`。F:1015-1021/1042-1045要求逐binding候选;
+F:1097-1103及1118要求行级五字段span不能跨ID重复。真实旧址
+`ci_triage/report.py:3/5`在同一行导出三名字,分别对应三个ID但相同span;
+N1不能合并不同名字。此问题独立于E10编号,不能靠补ordinal解决。
+
+不是遇首例即停:全272 PY_SOURCE(含release)同型排查完成:
+
+```text
+raw_same_line_multi_binding_groups=225
+by_kind={'import_stmt': 219, 'all_entry': 6}
+explicit_reexport_groups=23
+explicit_by_context={'release-v1.4.0': 9, '.': 14}
+cross_statement_import_groups=0
+same_line_assignment_groups=0
+same_line_callable_groups=0
+SEAL-7 RED: distinct candidate IDs share the frozen five-field span; N1 cannot merge distinct binding names
+EXIT=1
+```
+
+225为原始同型语法组,23组有直接导出证据,其余202不作shim裁定;
+完整逐项清单见`candidate-span-stop.json`与`span-feasibility-probe.json`。
+候选方案为设计侧增精确span身份,或显式定义共享语句的binding所有权及删除耦合;
+均未实现。停止项数1(SCAN-09),不扩字段、不合并不同binding、不修改源码排版。
+
+### 27.4 回归、边界与余账
+
+可复现命令的完整argv、环境、输入SHA、cwd、exit在R各`*.command.json`;
+命令使用固定工作区scripts路径,测试来自主树当前tests,生产/release与固定树
+逐字节检查另见`integrity-final.log`。没有editable install到固定树。
+
+```bash
+V=/tmp/p49-a0-regression-43a6aa6
+R=/home/linhao/Toolchain/development/LogAnalysisSkill
+cd /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6
+# 使用full-regression-final.command.json记录的环境
+"$V/bin/python" -m pytest -vv -p no:cacheprovider "$R/tests"
+```
+
+```text
+collected 1301 items
+1300 passed, 1 skipped
+failed=0
+EXIT=0
+```
+
+| 原始证据 | 命令与范围 | 实际结果 |
+|---|---|---|
+| `full-regression-admission.log` | 入库后全仓pytest | 1291 passed/1 skipped/0 failed,exit0 |
+| `full-regression-final.log` | E10九项新增测试后全仓pytest | 1300 passed/1 skipped/0 failed,exit0 |
+| `ruff.log` | ruff check本轮两工具+两测试 | All checks passed!,exit0 |
+| `mypy.log` | mypy --python-version 3.12 --follow-imports=silent同四文件 | Success: no issues found in 4 source files,exit0 |
+| `py-compile.log` | 同四文件py_compile,cache放/tmp | 空输出,exit0 |
+| `integrity-final.log` | 旧证据/冻结输入/生产与release/fixed tree/nodeid集合 | 440份旧证据不变、233生产与快照文件一致、1292既有nodeid无缺失或状态变化、新增9,exit0 |
+
+静态检查范围如表,不称全仓mypy/ruff。开发中的首轮静态检查曾报两处行长及
+类型注解/Optional问题,修正后才取得表中正式绿输出。未清洗失败证据或改断言。
+完整性诊断的首次调用漏传`check_frozen_hashes`实参而exit1,保留在
+`integrity.log`/`integrity.command.json`;只修诊断程序调用,未改verifier,
+成功复跑为`integrity-final.*`。
+
+- A05三段台账、A06四级候选全集仍未交付,计数N/A;不得拿callable定位数或
+  原始语法组数替代。CTRL-INTRA-PKG-PROXY与四级发现能力控制仍未完成。
+- E9-5仍NOT_RUN。范围确认为570非Python文本条目;UNKNOWN、多去处命中、
+  新增DYNAMIC_UNRESOLVED、跨上下文回退边/MODULE_IDENTITY_AMBIGUOUS均N/A,
+  不报0。现有contexts条目数为live736/release110。
+- 第3段后续8个claim未运行;before_run=PENDING_SEG3,30场景尚未采集。
+  不发放scanner completion/seal。
+- predicates canonical仍`8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6`;
+  exemptions仍`4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`。
+- 不改既有OBS、expected_diff旧值/quote/消息派生规则或生产源码;
+  无关dirty/untracked保持原样。提交本轮产物并push后停止等SCAN-09裁决。
