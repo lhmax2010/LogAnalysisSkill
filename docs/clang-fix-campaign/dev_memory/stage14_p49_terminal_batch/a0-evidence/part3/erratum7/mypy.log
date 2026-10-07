@@ -1,0 +1,4 @@
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_monitored_preflight.py:359: error: Incompatible types in assignment (expression has type "str | Any | None", variable has type "str")  [assignment]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_monitored_preflight.py:575: error: Incompatible types in assignment (expression has type "tuple[Any, Any, Any, Any]", variable has type "str")  [assignment]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_monitored_preflight.py:576: error: Argument 1 to "setdefault" of "MutableMapping" has incompatible type "str"; expected "tuple[Any, ...]"  [arg-type]
+Found 3 errors in 1 file (checked 3 source files)

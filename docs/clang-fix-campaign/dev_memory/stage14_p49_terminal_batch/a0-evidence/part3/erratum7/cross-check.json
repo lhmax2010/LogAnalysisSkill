@@ -1,0 +1,182 @@
+{
+  "independent_reads": [
+    [
+      "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gerrit.py",
+      64,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gerrit.py",
+      155,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/runner.py",
+      74,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      108,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+      75,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      83,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/runner.py",
+      286,
+      36,
+      "subprocess.Popen"
+    ],
+    [
+      "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py",
+      35,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      98,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      177,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tests/integration/test_build_verify_real_git.py",
+      203,
+      26,
+      "subprocess.run"
+    ],
+    [
+      "tests/unit/test_tizen_build_verify.py",
+      573,
+      15,
+      "subprocess.run"
+    ],
+    [
+      "tests/unit/test_tizen_build_verify.py",
+      599,
+      15,
+      "subprocess.run"
+    ],
+    [
+      "tests/unit/test_tizen_build_verify.py",
+      400,
+      26,
+      "subprocess.run"
+    ],
+    [
+      "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      107,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      151,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tizen-ci-triage/scripts/ci_triage/runner.py",
+      76,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      83,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tizen-gbs-build/scripts/gbs_build_skill/runner.py",
+      286,
+      36,
+      "subprocess.Popen"
+    ],
+    [
+      "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py",
+      35,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      98,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      177,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+      36,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+      127,
+      42,
+      "subprocess.run"
+    ],
+    [
+      "tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py",
+      75,
+      42,
+      "subprocess.run"
+    ]
+  ],
+  "parent_kinds": {
+    "arguments": 19,
+    "Subscript": 2,
+    "keyword": 2,
+    "Assign": 2
+  },
+  "loaders": [
+    {
+      "callsite": "tests/unit/test_design_drift_ledger.py:18",
+      "target": "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+      "target_sha256": "58ce6dd3175323f6e250d7797ce438ab9a725fd12e2cf1bbbef84f84c1b0a957",
+      "loader_type": "importlib.machinery.SourceFileLoader",
+      "method_module": "_frozen_importlib_external",
+      "method_qualname": "_LoaderBasics.exec_module",
+      "module_from_spec_called": false,
+      "exec_module_called": false
+    },
+    {
+      "callsite": "tests/unit/test_workflow.py:28",
+      "target": "tizen-gbs-build-workflow/scripts/run_workflow.py",
+      "target_sha256": "7448b76bf9fc2dac2144151f5c98ae207a642d848ae50ac3fab9e3bf24466bbf",
+      "loader_type": "importlib.machinery.SourceFileLoader",
+      "method_module": "_frozen_importlib_external",
+      "method_qualname": "_LoaderBasics.exec_module",
+      "module_from_spec_called": false,
+      "exec_module_called": false
+    }
+  ]
+}

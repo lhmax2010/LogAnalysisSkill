@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-o",
+    "cache_dir=/tmp/p49-seg3-pytest",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_monitored_preflight.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-gate-seg2-43a6aa6",
+    "PATH": "/tmp/p49-a0-gate-seg2-43a6aa6/bin:/usr/bin:/bin",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 0,
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_scan.py": "bced60dc844ae572547d7ec9fbbb89d853a600642750d65202706096a4511792",
+    "docs/clang-fix-campaign/tools/terminal_monitored_preflight.py": "ba8dc006a33f2d8abdc92efd5ccf0ac68cbc4392213751a41a071fac91bbf1c2",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "d6496250c3f9ba80990785edab0e972c9b077fd4965a045cea31e3201bd7c032",
+    "tests/unit/test_terminal_monitored_preflight.py": "b0f96669b5682938db58e61a59498a5f8ad63bbde6cef22ef972ffb745f37297"
+  },
+  "output_sha256": "670684a4067054d1ddfc1161677f7b3a23c1db1608a14aa5c8c24f0f82a43e89",
+  "scope": "E7-3 all PY_SOURCE preflight and tests only; no OBS producer or before-run"
+}

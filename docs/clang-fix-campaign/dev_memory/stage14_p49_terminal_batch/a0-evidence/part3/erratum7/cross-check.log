@@ -1,0 +1,6 @@
+PY_SOURCE_SET_EQUAL=PASS 272/272
+INDEPENDENT_SUBPROCESS_READS=25 {"Assign": 2, "Subscript": 2, "arguments": 19, "keyword": 2}
+LOADER_METADATA_ONLY={"callsite": "tests/unit/test_design_drift_ledger.py:18", "exec_module_called": false, "loader_type": "importlib.machinery.SourceFileLoader", "method_module": "_frozen_importlib_external", "method_qualname": "_LoaderBasics.exec_module", "module_from_spec_called": false, "target": "docs/clang-fix-campaign/tools/design_drift_ledger.py", "target_sha256": "58ce6dd3175323f6e250d7797ce438ab9a725fd12e2cf1bbbef84f84c1b0a957"}
+LOADER_METADATA_ONLY={"callsite": "tests/unit/test_workflow.py:28", "exec_module_called": false, "loader_type": "importlib.machinery.SourceFileLoader", "method_module": "_frozen_importlib_external", "method_qualname": "_LoaderBasics.exec_module", "module_from_spec_called": false, "target": "tizen-gbs-build-workflow/scripts/run_workflow.py", "target_sha256": "7448b76bf9fc2dac2144151f5c98ae207a642d848ae50ac3fab9e3bf24466bbf"}
+BLOCKER_CONTEXTS={".": 17, "release-v1.4.0": 10}
+PRECHECK_SHA256=9014a099dd8d163c8964975c8b27e19c40509b7bd6be37efeff01af033fb93e7

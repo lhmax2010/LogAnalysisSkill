@@ -1,11 +1,11 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART3_STOPPED_SCAN04。更新日期: 2026-10-07。
+状态: A0_PART3_STOPPED_SCAN05。更新日期: 2026-10-07。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
-勘误6已核对原字节;DIFF-01..04、SCAN-01..03 CLOSED。第22节记录
-SCAN-04:固定tree内建compile参与点无形态承接;§6改前实跑仍为PENDING_SEG3。
+勘误7已核对原字节;DIFF-01..04、SCAN-01..04 CLOSED。第23节记录
+SCAN-05:全树PY_SOURCE预检27处零命中、0处多命中;§6改前实跑仍为PENDING_SEG3。
 本轮未运行任何 producer或真实双跑;既有两项产出不变,生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
@@ -1932,7 +1932,7 @@ B-8逐条detector矩阵。`load_registry`尚未接入扫描器,也未生成正�
 
 ### 22.2 SCAN-04:固定tree的内建compile参与点无原子形态承接
 
-**状态:OPEN;本轮新增停止项1条。** 不是OBS claim判红;是在实现/接线前,
+**状态:CLOSED(勘误7 E7-1/E7-2);以下为当时的停止记录。** 不是OBS claim判红;是在实现/接线前,
 以真实输入做受监控调用闭集可满足性预检时发现的`UNKNOWN_CAPABILITY`。
 预检不是完整消费者识别引擎,没有声称跑完第1/2块。
 
@@ -2048,3 +2048,161 @@ IMMUTABLE_AND_PRODUCTION_DIFF_EXIT=0
 暂存`git diff --cached --check`的exit=2仅来自原始`intake.log:15`的
 git diff空白上下文行;为保留原始输出不清洗该日志。排除该日志后的
 `git diff --cached --check`须exit0,正文/工具/测试/登记文件不豁免。
+
+## 23. A0 第3段续四:勘误7与全树预检停止报告
+
+### 23.1 勘误入库与SCAN-04关闭
+
+开场读取§22与§2.2交付映射,确认当前分支clang-fix-campaign;
+`git pull --ff-only origin clang-fix-campaign`输出`Already up to date.`。
+本轮基点为`4662d036af56e44b640b074e150a5d3adde2089a`。
+FatTank批准的原件已在目标路径,直接采用原字节,没有重新编辑正文。
+
+| 指纹 | SHA-256 |
+|---|---|
+| 勘误6旧版 | `ccbe8923bdca5962189a458d0d7f51d32c8bb7e8af0f10fe592b2d478e4f2f0b` |
+| 勘误7新版 | `d6496250c3f9ba80990785edab0e972c9b077fd4965a045cea31e3201bd7c032` |
+
+`a0-evidence/part3/erratum7/intake-final.log`保留相对上述基点的完整git diff:
+
+```text
+APPEND_ONLY=PASS additions=27 deletions=0 insert_blocks=2
+EXIT=0
+```
+
+新增位置为文首勘误6提示下一行与附录C旧EOF之后,无删除/替换区段。
+E7-1移出compile调用/读取;E7-2新增C9承接exec/eval,据此关闭SCAN-04。
+未改冻结predicate形态清单;若未来OBS-7真实遇C9判红,仍须另走勘误。
+
+### 23.2 E7-3预检方法、完整性与结果
+
+§2.2 A09增加前置工具`T/terminal_monitored_preflight.py`,测试
+`U/test_terminal_monitored_preflight.py`;原始结果在本节erratum7目录。
+该工具是**PY_SOURCE参与点预检**,不是完整消费者引擎、B-8矩阵或SEAL。
+其运行早于继续第1块,结果非空后不进入本轮任务第3步。
+
+所有采集cwd为§9.2干净工作区
+`/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6`;
+HEAD=`43a6aa625f27da46daba190657bf62256080c68e`,
+tree=`ca9331190e878af465e7968fe56e735585a5866e`。
+独立环境`/tmp/p49-a0-gate-seg2-43a6aa6`,清除PYTHONPATH/MYPYPATH与pytest
+外部插件变量;输入先通过git tree/lstat/blob比对。新工具从主工作树绝对路径
+加载,其hash与权威hash逐命令入档,不向固定工作区写入代码或结果。
+
+遍历包括release的全部PY_SOURCE,按词法import binding、简单别名、局部遮蔽
+与函数默认值所在的外层作用域解析;默认参数/类型注解/关键字实参中的
+非调用读取不豁免。监控调用、裸读取、sys.modules操作和每个import alias
+逐点记录;doctest拼块、静态exec/eval与-c/input片段按Python解析。
+`compile`实际命中记录进入excluded_compile,不再成为参与点。
+遇阻塞继续收集其它条目,不存在首错早退。
+
+```text
+PY_SOURCE_SET_EQUAL=PASS 272/272
+tracked_entries=846; contexts: live=736, release-v1.4.0=110
+python_entries=272; python_contexts: live=177, release-v1.4.0=95
+participants=2825; zero_matches=27; multiple_matches=0; parse_errors=0
+excluded_compile=1
+PREFLIGHT=BLOCKED
+EXIT=1
+```
+
+`preflight-final.json`包含逐条输入(路径/mode/blob/hash/上下文)、全部参与点、
+所有阻塞及原始源码片段;其SHA-256为
+`9014a099dd8d163c8964975c8b27e19c40509b7bd6be37efeff01af033fb93e7`。
+`preflight-final.log`为完整stdout,相邻command.json含命令、环境、exit与工具hash。
+完整27行清单由JSON机械生成至
+[blockers.md](a0-evidence/part3/erratum7/blockers.md),每行都有文件/行/列、
+限定名、上下文、命中数和原因;其中live17处、release10处。
+
+交叉核对`cross-check.log`/`.json`(exit0):独立AST筛取subprocess.run/Popen
+非Call位置,所得25处与预检清单精确相等,父节点分布为
+arguments19、keyword2、Assign2、Subscript2。两处loader的.py路径由源码
+赋值链确定,仅调用stdlib的spec_from_file_location构造元数据,确认
+SourceFileLoader与其exec_module归属;**没有调用module_from_spec或exec_module**,
+未导入或执行被观测源码。这是预检证据,不是OBS producer。
+
+### 23.3 SCAN-05:两类未被封闭形态承接的参与点
+
+**状态:OPEN;停止项1条,内含两类27个site。** 非OBS claim判红。
+以下位置引用本轮d6496250正文,不沿用勘误前行号。
+
+| 设计原文 | 现状与不可继续之处 |
+|---|---|
+| L334–336:②′明确包含每个受监控名字的非调用读取,并明写没有形态承接即阻塞 | 25处subprocess.run/Popen读取;19处函数默认值、2处关键字传递、2处保存真实函数、2处类型注解;均非C8a/C8b的Call |
+| L345–347:importlib含全部子模块下的可调用对象;L418 C5d仅五个具名函数 | tests/unit/test_design_drift_ledger.py:18、tests/unit/test_workflow.py:28的spec.loader.exec_module均来自SourceFileLoader,不在C5d或其它闭集 |
+| L351–355:零/多命中必须阻塞,唯一解除途径为勘误扩表 | 不能将默认值读取归作一次subprocess调用,也不能把loader.exec_module归到“最相近”的module_from_spec |
+| E7-1/E7-2 L2285–2296 | compile已排除,C9只覆盖exec/eval内建调用,不覆盖上述两类 |
+
+例一:`tizen-ci-triage/scripts/ci_triage/runner.py:76`:
+
+```python
+subprocess_runner: SubprocessRunner = subprocess.run,
+```
+
+例二:`tests/unit/test_design_drift_ledger.py:14–18`:
+
+```python
+spec = importlib.util.spec_from_file_location("design_drift_ledger_for_test", path)
+assert spec is not None and spec.loader is not None
+module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module
+spec.loader.exec_module(module)
+```
+
+Popen注解即使受future annotations影响也未自行排除:正文②′是AST参与点
+口径,未授权类型位置豁免。快照中的10处同样不跳过,未改release文件。
+
+**候选,仅供裁决**:按L355扩充非调用引用的承接规则,明确默认值/注解/回调
+传递/别名的边与未决处理;为具来源证明的源码loader调用补承接及正/near-miss
+控制。若设计方选择收窄受监控集合或增加排除,同样须通过勘误明确安全边界。
+本轮未实施上述候选,未放宽判据、未把零命中改成无消费。
+
+### 23.4 验证命令、失败留痕与停点
+
+下列R为主仓绝对路径,V为上述独立venv;命令实际在固定工作区运行。
+每个argv、环境与exit的完整记录在同目录`*.command.json`。
+
+```sh
+"$V/bin/python" "$R/docs/clang-fix-campaign/tools/terminal_monitored_preflight.py" --root "$PWD" --rules-root "$R" --output "$R/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part3/erratum7/preflight-final.json"
+# 272条目、27零/0多; EXIT=1 (预期阻塞,并非工具崩溃)
+"$V/bin/python" -m pytest -q -o cache_dir=/tmp/p49-seg3-pytest "$R/tests/unit/test_terminal_monitored_preflight.py" "$R/tests/unit/test_terminal_scan.py" "$R/tests/unit/test_terminal_predicates.py" "$R/tests/unit/test_terminal_anchors.py" --junitxml="$R/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part3/erratum7/tests-final.xml"
+# 176 passed in 0.29s; EXIT=0 (30预检+35扫描基础+111人工predicate/anchor fixture)
+"$V/bin/python" -m ruff check "$R/docs/clang-fix-campaign/tools/terminal_scan.py" "$R/docs/clang-fix-campaign/tools/terminal_monitored_preflight.py" "$R/tests/unit/test_terminal_monitored_preflight.py"
+# All checks passed!; EXIT=0
+"$V/bin/python" -m mypy --strict --python-version 3.12 --follow-imports=silent "$R/docs/clang-fix-campaign/tools/terminal_scan.py" "$R/docs/clang-fix-campaign/tools/terminal_monitored_preflight.py" "$R/tests/unit/test_terminal_monitored_preflight.py"
+# Success: no issues found in 3 source files; EXIT=0
+```
+
+预检单测覆盖compile调用/读取near-miss、C9分类与嵌入片段、monitored裸读取、
+别名/遮蔽、sys.modules闭集、loader来源与同名非loader反例、收全错误不早退、
+词法绑定多形态阻塞和doctest跨行绑定。它们不是完整消费者边控制,
+不把sentinel的Import节点存在冒充实际消费边已产出。
+
+保留调试失败:首轮预检25零命中漏了loader返回对象的来源解析,补静态来源链
+后为27;没有把25报作最终结果。doctest单测首跑1 failed/27 passed,
+原因是把每个提示符例子分开解析丢失前行import;改为按冻结规则拼代码块,
+最终30项通过。ruff/mypy首跑各exit1(长行/局部变量类型),修正后全绿。
+intake首跑机械照搬上轮“旧行8”导致断言失败;最终改为定位旧勘误6提示行,
+确认只在它之后及EOF追加。原始日志均保留,未清洗失败痕迹。
+
+| 第3段原交付 | 本轮状态 |
+|---|---|
+| 第1块完整扫描/B-8/completion | 未继续;预检覆盖272 Python条目不等于全846条目的扫描完成;completion未生成 |
+| E6映射/三组对账、4真实BINARY | 原中间态保留;未继续detector集成或真实SCANNED |
+| 消费者形态控制、E5端到端、CTRL-INTRA-PKG-PROXY | NOT_RUN;C9引擎接入与control_catalog正式登记属预检为空后的步骤,本次未进入 |
+| 全树回退边 | N/A;预检不产完整消费者边,不能报0 |
+| MODULE_IDENTITY_AMBIGUOUS | 打包模块索引实测0;完整消费者解析中的歧义计数尚未采集 |
+| 三段台账/四粒度候选 | NOT_RUN,计数N/A |
+| 八个claim | item1-basis、seg1-staleness、seg2-form、commit-order、transition-map、proxy-count、intra-package-shim、item5-order均NOT_RUN |
+| 改前30场景 | PENDING_SEG3,未采集,hash N/A |
+| 全量生产pytest/mypy/ruff | 本次未跑,上表仅为具名工具与人工fixture验证 |
+
+`immutable.log`exit0:生产、release、P4.5 design、既有OBS及勘误6证据零diff;
+predicate canonical仍为`8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6`,
+exemptions仍为`4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`。
+本commit仅勘误入库、预检工具/测试/证据与状态登记;不是第1块完成commit。
+原有.gitignore修改、4份无关文档删除及untracked历史稿不动;push后停止等裁决。
+
+暂存`git diff --cached --check`的exit2仅来自intake-final.log的原始diff
+空白上下文行与preflight-tests.log的pytest原始失败输出尾空格;不清洗证据。
+排除这两个原始日志后检查exit0,正文/工具/测试不作豁免。

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/tmp/p49-e7-proof.py", line 26, in <module>
+    assert edits[0][1]==8 and edits[1][1]==len(a), edits
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: [('insert', 9, 9, 9, 10), ('insert', 2276, 2276, 2277, 2303)]

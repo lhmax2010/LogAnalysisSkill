@@ -1,0 +1,45 @@
+diff --git a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+index 67dff36..86e9d81 100644
+--- a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
++++ b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+@@ -7,6 +7,7 @@
+ > **已生效勘误:附录 C 勘误 4(2026-10-07,FatTank 批准)。**
+ > **已生效勘误:附录 C 勘误 5(2026-10-07,FatTank 批准)。**
+ > **已生效勘误:附录 C 勘误 6(2026-10-07,FatTank 批准)。**
++> **已生效勘误:附录 C 勘误 7(2026-10-07,FatTank 批准)。**
+ > 冻结前的放行规则(v1.27 起,留作记录):
+ > 1. **落地核对**:三家只核对最新修订段所列改动是否按所写落地、有无改到别处;**不开新的审查面**;
+ > 2. **放行标准只看"朝开"**:仅当发现**会导致删错真实依赖或删掉行为型测试**的问题才阻止冻结;
+@@ -2274,3 +2275,29 @@ A/B 取值、**存在性检查证据(`lstat` 语义)**、**π 归一结果**、
+ > 另加一条对账控制:从 registry 删去 `entry.binary_record` → 三方对账必红。
+ 
+ **生效范围**:capability registry 的命名空间、12b-3c④、12b-12 投影与新增的 `entry.*` 三方对账;不新增消费者形态,不改变判定条件与其它事项。
++
++### 勘误 7(2026-10-07,FatTank 批准)—— 内建 `exec`/`eval`/`compile` 的承接
++
++**触发**:A₀ 第 3 段停止报告 SCAN-04(stage14 `progress.md` §22.2):固定树 `check_design_doc.py` 中调用内建 `compile(...)`,
++它在 §1.1"受监控名字集合"(导入机制一类的内建 {`__import__`, `exec`, `eval`, `compile`})中,却没有任何原子形态承接,按规则只能阻塞并扩表。
++同一集合中的 `exec`、`eval` 同样没有形态承接。
++
++**E7-1 · `compile` 移出受监控名字集合**
++> `compile` 只把源码编译成代码对象,本身不加载任何模块;代码对象只有经 `exec`/`eval` 执行才产生导入效果,而后两者仍受监控。
++> 故 §1.1 受监控名字集合中的内建集合改为 {`__import__`, `exec`, `eval`};对 `compile` 的调用与读取不是参与点。
++
++**E7-2 · 新增原子形态 `C9`(分支 `consumer.C9`,所属类 5)**
++> | 形态 ID | 所属类 | 识别谓词(互斥) |
++> |---|---|---|
++> | `C9` | 5 | 调用内建 {`exec`, `eval`}。首参为字符串常量(含相邻字面量拼接)→ 按 §1.1"嵌入式 Python 片段"作为 Python 源解析并套用全部规则;首参不是字符串常量(含代码对象、变量、表达式)→ `DYNAMIC_UNRESOLVED`,形态仍记 `C9` |
++> 原子形态由二十个增为二十一个;`SEAL-16b` 五方对账、`12b-10` 逐形态正控制按新表执行。
++> **正控制**:`exec("import <sentinel>")` → 产生消费边;`exec(code_var)` → `DYNAMIC_UNRESOLVED`;
++> **near-miss**:`compile(src, "<x>", "exec")` 单独出现 → 不是参与点、不阻塞;`compile` 的结果再传给 `exec` → 由 `exec` 处落 `C9` 的 `DYNAMIC_UNRESOLVED`。
++> **已冻结判定条件的影响**:`OBS-7.falsification-samples` 第 3 条的形态取值清单按冻结时的二十个形态书写;若真实样本中出现 `C9`,该 claim 将判红并停止报告,
++> 届时按判定条件的勘误流程处理,本勘误不预改已冻结的判定条件。
++
++**E7-3 · 批量处理要求**
++> 为避免同类阻塞逐个出现,实现方在全树范围完成一次受监控名字预检:**收集全部零命中与多命中参与点后一次性停止报告**,
++> 逐条列出(文件、位置、被调限定名、为何零命中或多命中),不得发现第一处即停。
++
++**生效范围**:§1.1 受监控名字集合与原子形态表;不改变判定条件与其它事项。
+OLD_SHA256=ccbe8923bdca5962189a458d0d7f51d32c8bb7e8af0f10fe592b2d478e4f2f0b
+NEW_SHA256=d6496250c3f9ba80990785edab0e972c9b077fd4965a045cea31e3201bd7c032
+APPEND_ONLY=PASS additions=27 deletions=0 insert_blocks=2
