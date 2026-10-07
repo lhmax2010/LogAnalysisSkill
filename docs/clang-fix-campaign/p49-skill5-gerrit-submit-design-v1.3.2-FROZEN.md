@@ -85,12 +85,18 @@
 
 ## §0 判据 dry-run(冻结前置,已完成)
 
-以下 23 行是本批唯一权威归属表,由
+以下是本批唯一权威归属表,由
 `tizen_gerrit_submit/gerrit_submit.py` 顶层 AST 机械生成:
+
+> P4.9 末终止批次行为变更记录(PHASE2-03):`GerritSubmitError` 由
+> P4.9 末终止批次 commit A(5213c5d)按终止稿 §4 与勘误 1–3 新增,
+> 属行为变更记录,非抽取漂移。本表补录该类型;下文抽取时的实测记录
+> 保留其历史语境,不作为末终止批次现状计数。
 
 | symbol | definition | owner |
 |---|---|---|
 | `SubprocessRunner` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+| `GerritSubmitError` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
 | `GerritSubmitOptions` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
 | `GerritSubmitResult` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
 | `ReleaseWorktreeResult` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
