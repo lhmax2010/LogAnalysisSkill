@@ -3278,3 +3278,111 @@ PENDING_REVIEW9,人工删除授权仍为0。到此停止,等待设计方与FatTa
 `gate-integrity.log`:119个生产文件与独立回归副本一致,既有测试零diff,
 固定树clean,冻结F/predicate/exemption hash不变,OBS-5脚本hash与产出一致,
 清单/分组/分类汇总核对通过,exit0。
+
+## 36. 人工闸门批准、C01 回退与停止报告
+
+### 36.1 本轮批准与执行边界
+
+FatTank 已按74ff34c审批包原样批准:13宿主/183绑定、调用方归类表、4个完整
+拟删nodeid、C01至C13顺序。原审批包不覆盖,其NOT_APPROVED是批准前历史状态;
+本节及 `a0-evidence/phase2/execution/approval.json` 记录本轮批准与各输入hash。
+
+9项待审处置均已明确,不再等待人工归类:
+
+- 8项转HISTORICAL_KEY,原样保留。逐项位置、用途、对应43a6aa6不可变输入文件
+  与sha256、保留理由见 `execution/historical-keys.approved.json`;
+  连同此前bridge的3条历史键共11条,不是按工具文件或目录整体豁免。
+  symbol_audit:1772负fixture未改。
+- PR-02的授权为“纯shim或逐项命中批准清单的已删除态”;清单外缺失、残留
+  实现须各有必红控制,计划随C10落地。本轮在C01停下,该实现和控制尚未执行。
+- 仅当audit/bridge因旧址缺失无法读取历史拓扑时,才可在所属组改读43a6aa6
+  不可变blob,断言不改。本轮失败不是旧址缺失,没有使用此兜底。
+
+主树既有 `.gitignore` 改动及4个docs删除未处理、未提交。F、predicate、
+exemption、既有OBS均未改。冻结F sha256仍为
+`b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0`。
+
+### 36.2 C01 提交与提交后实测
+
+C01 `a214187141bd8bf1712ed9464baf4f0906160dc5`:只去除
+`ci_triage/verify/__init__.py`批准的16个转出及其`__all__`,保留包和docstring。
+无调用方需翻转、无测试删除、未触及其它壳。对应独立干净worktree为
+`/tmp/p49-terminal-C01`,测试使用该commit的代码和测试,不是43a6aa6改前代码。
+
+完整命令、环境、commit/tree、原始stdout/stderr在 `execution/C01/*.command.json`
+及相邻`.log`。执行器原文随命令记录,使用独立venv
+`/tmp/p49-a0-regression-43a6aa6`,PYTHONPATH按该组worktree的scripts目录派生,
+清MYPYPATH、禁pytest插件自动装载。实测如下:
+
+```text
+python -m pytest tests -vv -p no:cacheprovider
+1343 passed, 1 skipped in 25.16s
+EXIT=0
+mypy <CI十个包,完整argv见mypy.command.json>
+Success: no issues found in 88 source files
+EXIT=0
+ruff check .
+All checks passed!
+EXIT=0
+lint-imports --no-cache
+Contracts: 6 kept, 0 broken.
+EXIT=0
+python docs/clang-fix-campaign/tools/symbol_audit.py
+INCOMPLETE: GerritSubmitError in tizen_gerrit_submit/gerrit_submit.py: present in source but not audited
+INCOMPLETE: <top-level-count> in tizen_gerrit_submit/gerrit_submit.py: expected 23, measured 24
+SUMMARY | 197 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 2 INCOMPLETE
+EXIT=1
+```
+
+### 36.3 PHASE2-03: 旧门禁清单未随项4新增异常类型同步
+
+状态 **OPEN / STOPPED**。E11-3(4)第一项要求既有设计门禁全绿,但:
+
+| 位置 | 事实/冲突 |
+|---|---|
+| `tools/symbol_audit.py:71` | submit顶层计数仍钉23 |
+| `tools/symbol_audit.py:260` | GERRIT_SUBMIT_SYMBOLS未登记GerritSubmitError |
+| `tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py:31` | 新异常类型真实存在 |
+| 同文件`:384` | `_run_git`超时路径抛出该异常 |
+| `5213c5d` | 末批commit A加入该类型,非本轮C01新增;原diff留在 `execution/GerritSubmitError-origin.diff` |
+
+按“任一项失败回退该组”执行:
+
+```text
+git revert --no-edit a214187141bd8bf1712ed9464baf4f0906160dc5
+[clang-fix-campaign 864c778] Revert "refactor(ci-triage): remove verify package compatibility exports (P4.9 terminal C01)"
+git diff 74ff34c 864c778 --
+(空输出,exit 0)
+```
+
+回退commit `864c778a505fb9e71f1981ade447f2f9aedc4dfe`的tracked内容与批准前
+74ff34c逐字节一致。独立回退worktree `/tmp/p49-terminal-C01-reverted` 仅做
+故障/回退确认,未继续后续删除验证。相同audit命令再次exit1,两份完整stdout
+逐字节相等;证明不是C01删除造成的清单漂移。回退后全量:
+
+```text
+python -m pytest tests -vv -p no:cacheprovider
+1343 passed, 1 skipped in 25.19s
+EXIT=0
+C01 total=1344 passed=1343 skipped=1 removed=0 added=0 changed=0
+C01-reverted total=1344 passed=1343 skipped=1 removed=0 added=0 changed=0
+REVERT all tracked files equal approval commit 74ff34c; git diff empty
+AUDIT before/after revert stdout byte-identical; both exit=1, two INCOMPLETE
+```
+
+逐nodeid证明/诊断程序见 `execution/C01-stop-proof.json`,回退复跑原文见
+`execution/C01-reverted/`。批准的4个拟删测试本轮一个也未删除。
+
+候选处置(未执行):由设计方明确将项4已批准新增的GerritSubmitError同步到
+权威归属登记、SPECS及其机械桥,并按实际完整集合更新计数,保留集合等价
+护栏;同步后先复跑完整审计再重新执行C01。不能只抬计数、不补册,不能把
+当前实现换成历史源码以掩盖新增能力。本轮不自行改冻结表或审计判据。
+
+### 36.4 停点
+
+C01 **REVERTED**;C02-C13 **NOT_STARTED**;D **NOT_STARTED**。
+第一项门禁转红后,bridge/其它后续设计门禁、31入口、import-all、删除后
+名字复扫、打包安装/入口help均 **NOT_RUN**。没有冒称残留只剩允许类别,
+没有生成DONE收口文档。PR-02的C10实现仍待执行,不是放弃控制。
+本轮新增停止项1(PHASE2-03);保留本轮人工批准与11条历史键登记,等待设计方
+对上述清单同步缺口裁决。不得在失败组内修补后继续。
