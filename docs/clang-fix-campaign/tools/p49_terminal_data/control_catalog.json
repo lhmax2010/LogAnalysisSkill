@@ -955,5 +955,224 @@
     "source": "v1.2 §4",
     "status": "NOT_RUN",
     "reason": "Scanner not implemented or authorized in A0 segment 1; positive same-package proxy and near-miss remain due."
+  },
+  {
+    "control_id": "CTRL-E4-KIND-GITLINK",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[GITLINK]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-SYMLINK",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[SYMLINK]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-IMPORTABLE_BINARY",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[IMPORTABLE_BINARY]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-PTH",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[PTH]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-BINARY",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[BINARY]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-PY_SOURCE",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[PY_SOURCE]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-PACKAGING",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[PACKAGING]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-CI_CONFIG",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[CI_CONFIG]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-SHELL",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[SHELL]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-BUILD",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[BUILD]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-DOC",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[DOC]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-KIND-OTHER_TEXT",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[OTHER_TEXT]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-UNKNOWN-MODE",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2 total classifier",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_unknown_git_mode_is_blocked",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E4-ORDER-DOCS-MAKEFILE",
+    "group": "E4-ENTRY-CLASSIFIER",
+    "source": "Erratum4 E4-2 first match",
+    "test_nodeid": "tests/unit/test_terminal_scan.py::test_e4_first_match_wins[docs/Makefile-100644--BUILD]",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml",
+    "scope": "entry classifier only; no complete detector matrix or SEAL assertion"
+  },
+  {
+    "control_id": "CTRL-E5-1",
+    "group": "E5-CONTEXT-RESOLUTION",
+    "source": "Erratum5 E5-4",
+    "status": "NOT_RUN",
+    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "component_check": {
+      "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_release_absolute_import_stays_release",
+      "status": "PASS",
+      "exit_code": 0,
+      "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml"
+    }
+  },
+  {
+    "control_id": "CTRL-E5-1-prime",
+    "group": "E5-CONTEXT-RESOLUTION",
+    "source": "Erratum5 E5-4",
+    "status": "NOT_RUN",
+    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "component_check": {
+      "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_release_missing_name_falls_back_live",
+      "status": "PASS",
+      "exit_code": 0,
+      "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml"
+    }
+  },
+  {
+    "control_id": "CTRL-E5-2",
+    "group": "E5-CONTEXT-RESOLUTION",
+    "source": "Erratum5 E5-4",
+    "status": "NOT_RUN",
+    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "component_check": {
+      "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_live_absolute_import_stays_live",
+      "status": "PASS",
+      "exit_code": 0,
+      "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml"
+    }
+  },
+  {
+    "control_id": "CTRL-E5-3",
+    "group": "E5-CONTEXT-RESOLUTION",
+    "source": "Erratum5 E5-4",
+    "status": "NOT_RUN",
+    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "component_check": {
+      "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_path_can_cross_context",
+      "status": "PASS",
+      "exit_code": 0,
+      "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml"
+    }
+  },
+  {
+    "control_id": "CTRL-E5-4",
+    "group": "E5-CONTEXT-RESOLUTION",
+    "source": "Erratum5 E5-4",
+    "status": "NOT_RUN",
+    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "component_check": {
+      "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_duplicate_within_context_is_ambiguous",
+      "status": "PASS",
+      "exit_code": 0,
+      "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml"
+    }
   }
 ]

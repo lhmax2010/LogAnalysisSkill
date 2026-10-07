@@ -19,7 +19,7 @@
 | P4.9 skill-5 gerrit-submit | CLOSED | Gerrit-submit extraction, status locks, six-row terminal mapping, patch-version ledger | commits `f2bc050`/`31a91cb`/`a97c40b`/`0dfa5f1`/`a8620f1`/`d51145f`/`c6f734b`; 173 symbols + 4 module scopes; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | Triage-report extraction, gbs_report constraint closure, branch inventory, extraction-phase ledger | commits `bdb5a55`/`3dc0466`/`3da12a4`/`2cc3dd3`/`dfbbf3b`; 197 symbols + 4 module scopes; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | Step-0 plus all six skill extractions signed off | phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; next and only entry is the five-item terminal batch |
-| P4.9 terminal batch | A0_PART3_STOPPED_SCAN02 | Erratum4 SHA `e9b18793` admitted; SCAN-01 CLOSED by E4-1/E4-2; SCAN-02 OPEN: live/release duplicate module identities | `stage14_p49_terminal_batch/progress.md` §20; two packaging roots expose `ci_triage.quickbuild` as live shim and release implementation; no target selected, no new OBS; before-run PENDING_SEG3 |
+| P4.9 terminal batch | A0_PART3_STOPPED_SCAN03 | Erratum5 SHA `1c35df1c` admitted; SCAN-02 CLOSED by E5-1/2/3; SCAN-03 OPEN: E4 required recorder lacks nine-table capability mapping | `stage14_p49_terminal_batch/progress.md` §21; 846 entries (live736/release110), 85 duplicate-name resolution regressions; foundation only, no completion/new OBS; before-run PENDING_SEG3 |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -46,7 +46,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 skill-5 gerrit-submit | CLOSED | `f2bc050`, `31a91cb`, `a97c40b`, `0dfa5f1`, `a8620f1`, `d51145f`, `c6f734b` | frozen authority `../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`; result `stage12_p49_skill5_gerrit_submit/result.md`; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | `bdb5a55`, `3dc0466`, `3da12a4`, `2cc3dd3`, `dfbbf3b`, `9a74c0b` | frozen authority `../p49-skill6-triage-report-design-v1.8-FROZEN.md`; result `stage13_p49_skill6_triage_report/result.md`; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | step-0 + skills 1-6 | signed phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; P4.9 terminal five-item batch is the only next entry |
-| 14 P4.9 terminal batch | A0_PART3_STOPPED_SCAN02 | Plan `43a6aa6`; encoding `c79e893`; freeze `6601cfc`; observations `27fb460`; structure `8e1437d`; erratum3 `cbd3a22`; previous stop `a2f197b` | fixed code tree; erratum4 rules `e9b18793`, predicates `8271f1d0` unchanged; progress §20; SCAN-01 CLOSED/SCAN-02 OPEN; before-run PENDING_SEG3 |
+| 14 P4.9 terminal batch | A0_PART3_STOPPED_SCAN03 | Plan `43a6aa6`; encoding `c79e893`; freeze `6601cfc`; observations `27fb460`; structure `8e1437d`; erratum3 `cbd3a22`; erratum4 stop `c922480` | fixed code tree; erratum5 rules `1c35df1c`, predicates `8271f1d0` unchanged; progress §21; SCAN-01/02 CLOSED, SCAN-03 OPEN; before-run PENDING_SEG3 |
 
 ## Code-Ready Checkpoint
 

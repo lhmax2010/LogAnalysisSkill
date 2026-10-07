@@ -1,0 +1,14 @@
+{
+  "GITLINK": ["resolution"],
+  "SYMLINK": ["resolution"],
+  "IMPORTABLE_BINARY": ["provider"],
+  "PTH": ["resolution", "name_fallback"],
+  "BINARY": ["binary_record"],
+  "PY_SOURCE": ["provider", "candidates", "consumer_python", "resolution", "name_fallback"],
+  "PACKAGING": ["consumer_C7a", "interpreter", "name_fallback"],
+  "CI_CONFIG": ["consumer_C7b", "interpreter", "name_fallback"],
+  "SHELL": ["consumer_C7c", "interpreter", "name_fallback"],
+  "BUILD": ["consumer_C7d", "interpreter", "name_fallback"],
+  "DOC": ["doctest", "name_fallback"],
+  "OTHER_TEXT": ["interpreter", "name_fallback"]
+}

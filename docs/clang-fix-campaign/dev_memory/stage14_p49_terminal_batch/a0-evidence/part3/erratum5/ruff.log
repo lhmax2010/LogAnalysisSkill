@@ -1,0 +1,31 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_scan.py:7:1
+   |
+ 5 |   """
+ 6 |
+ 7 | / from __future__ import annotations
+ 8 | |
+ 9 | | import argparse
+10 | | import fnmatch
+11 | | import hashlib
+12 | | import json
+13 | | import os
+14 | | import shlex
+15 | | import stat
+16 | | import subprocess
+17 | | import tempfile
+18 | | import tomllib
+19 | | from collections import Counter, defaultdict
+20 | | from dataclasses import asdict, dataclass
+21 | | from pathlib import Path, PurePosixPath
+22 | | from typing import Any
+23 | |
+24 | | from terminal_predicates import canonical_hash, check_frozen_hashes, load_json
+   | |______________________________________________________________________________^
+25 |
+26 |   HEAD = "43a6aa625f27da46daba190657bf62256080c68e"
+   |
+help: Organize imports
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.

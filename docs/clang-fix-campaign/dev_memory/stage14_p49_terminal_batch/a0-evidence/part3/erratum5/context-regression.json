@@ -1,0 +1,2486 @@
+{
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "rules_sha256": "1c35df1cd9aeafc5511aefaa3bdd468b785af665205319d92cc6d30350be6939",
+  "prior_report_sha256": "47ec7efea9a8bf02414c4c16ef2c29cb4a8a41c4e487b32e384238fde772466e",
+  "duplicates": [
+    {
+      "module": "ci_triage",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage",
+          "source_context": ".",
+          "module": "ci_triage",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.__main__",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.__main__",
+          "source_context": ".",
+          "module": "ci_triage.__main__",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.__main__",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.__main__",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.batch_cli",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.batch_cli",
+          "source_context": ".",
+          "module": "ci_triage.batch_cli",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/batch_cli.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.batch_cli",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.batch_cli",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/batch_cli.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.cli",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.cli",
+          "source_context": ".",
+          "module": "ci_triage.cli",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/cli.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.cli",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.cli",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/cli.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.gbs_report",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.gbs_report",
+          "source_context": ".",
+          "module": "ci_triage.gbs_report",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/gbs_report.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.gbs_report",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.gbs_report",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gbs_report.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.gerrit",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.gerrit",
+          "source_context": ".",
+          "module": "ci_triage.gerrit",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/gerrit.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.gerrit",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.gerrit",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gerrit.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.orchestrator",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.orchestrator",
+          "source_context": ".",
+          "module": "ci_triage.orchestrator",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/orchestrator.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.orchestrator",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.orchestrator",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/orchestrator.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.quickbuild",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.quickbuild",
+          "source_context": ".",
+          "module": "ci_triage.quickbuild",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/quickbuild.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.quickbuild",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.quickbuild",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.quickbuild_log",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.quickbuild_log",
+          "source_context": ".",
+          "module": "ci_triage.quickbuild_log",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/quickbuild_log.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.quickbuild_log",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.quickbuild_log",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild_log.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.report",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.report",
+          "source_context": ".",
+          "module": "ci_triage.report",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/report.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.report",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.report",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/report.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.runner",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.runner",
+          "source_context": ".",
+          "module": "ci_triage.runner",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/runner.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.runner",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.runner",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/runner.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.sources",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.sources",
+          "source_context": ".",
+          "module": "ci_triage.sources",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/sources.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.sources",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.sources",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/sources.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.verify",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify",
+          "source_context": ".",
+          "module": "ci_triage.verify",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.verify",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.verify.build_verify",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.build_verify",
+          "source_context": ".",
+          "module": "ci_triage.verify.build_verify",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/verify/build_verify.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.build_verify",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.verify.build_verify",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/build_verify.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.verify.convergence",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.convergence",
+          "source_context": ".",
+          "module": "ci_triage.verify.convergence",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/verify/convergence.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.convergence",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.verify.convergence",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/convergence.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.verify.edit_spec_guard",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.edit_spec_guard",
+          "source_context": ".",
+          "module": "ci_triage.verify.edit_spec_guard",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.edit_spec_guard",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.verify.edit_spec_guard",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.verify.failure_classify",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.failure_classify",
+          "source_context": ".",
+          "module": "ci_triage.verify.failure_classify",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.failure_classify",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.verify.failure_classify",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.verify.gerrit_submit",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.gerrit_submit",
+          "source_context": ".",
+          "module": "ci_triage.verify.gerrit_submit",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.gerrit_submit",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.verify.gerrit_submit",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "ci_triage.verify.workspace",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.workspace",
+          "source_context": ".",
+          "module": "ci_triage.verify.workspace",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-ci-triage/scripts/ci_triage/verify/workspace.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:ci_triage.verify.workspace",
+          "source_context": "release-v1.4.0",
+          "module": "ci_triage.verify.workspace",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/workspace.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer",
+          "source_context": ".",
+          "module": "gbs_analyzer",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.__main__",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.__main__",
+          "source_context": ".",
+          "module": "gbs_analyzer.__main__",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.__main__",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.__main__",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer._utils",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils",
+          "source_context": ".",
+          "module": "gbs_analyzer._utils",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer._utils",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer._utils.command_parser",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils.command_parser",
+          "source_context": ".",
+          "module": "gbs_analyzer._utils.command_parser",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/command_parser.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils.command_parser",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer._utils.command_parser",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/command_parser.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer._utils.ctags_loader",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils.ctags_loader",
+          "source_context": ".",
+          "module": "gbs_analyzer._utils.ctags_loader",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/ctags_loader.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils.ctags_loader",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer._utils.ctags_loader",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/ctags_loader.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer._utils.semantic_classifier",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils.semantic_classifier",
+          "source_context": ".",
+          "module": "gbs_analyzer._utils.semantic_classifier",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils.semantic_classifier",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer._utils.semantic_classifier",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer._utils.source_to_object",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils.source_to_object",
+          "source_context": ".",
+          "module": "gbs_analyzer._utils.source_to_object",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/source_to_object.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer._utils.source_to_object",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer._utils.source_to_object",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/source_to_object.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.analyze",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.analyze",
+          "source_context": ".",
+          "module": "gbs_analyzer.analyze",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.analyze",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.analyze",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.error_clusters",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.error_clusters",
+          "source_context": ".",
+          "module": "gbs_analyzer.error_clusters",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/error_clusters.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.error_clusters",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.error_clusters",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/error_clusters.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.evidence",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence",
+          "source_context": ".",
+          "module": "gbs_analyzer.evidence",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.evidence",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.evidence._common",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence._common",
+          "source_context": ".",
+          "module": "gbs_analyzer.evidence._common",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/_common.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence._common",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.evidence._common",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/_common.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.evidence.base",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.base",
+          "source_context": ".",
+          "module": "gbs_analyzer.evidence.base",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.base",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.evidence.base",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.evidence.compile",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.compile",
+          "source_context": ".",
+          "module": "gbs_analyzer.evidence.compile",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/compile.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.compile",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.evidence.compile",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/compile.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.evidence.deps",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.deps",
+          "source_context": ".",
+          "module": "gbs_analyzer.evidence.deps",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/deps.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.deps",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.evidence.deps",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/deps.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.evidence.link",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.link",
+          "source_context": ".",
+          "module": "gbs_analyzer.evidence.link",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/link.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.link",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.evidence.link",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/link.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.evidence.router",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.router",
+          "source_context": ".",
+          "module": "gbs_analyzer.evidence.router",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/router.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.router",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.evidence.router",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/router.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.evidence.spec",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.spec",
+          "source_context": ".",
+          "module": "gbs_analyzer.evidence.spec",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/spec.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.evidence.spec",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.evidence.spec",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/spec.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.full_match",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.full_match",
+          "source_context": ".",
+          "module": "gbs_analyzer.full_match",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.full_match",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.full_match",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.packet_assembler",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.packet_assembler",
+          "source_context": ".",
+          "module": "gbs_analyzer.packet_assembler",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.packet_assembler",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.packet_assembler",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.quick_filter",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.quick_filter",
+          "source_context": ".",
+          "module": "gbs_analyzer.quick_filter",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/quick_filter.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.quick_filter",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.quick_filter",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/quick_filter.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.rank_causes",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.rank_causes",
+          "source_context": ".",
+          "module": "gbs_analyzer.rank_causes",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/rank_causes.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.rank_causes",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.rank_causes",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/rank_causes.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.scan_and_extract",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.scan_and_extract",
+          "source_context": ".",
+          "module": "gbs_analyzer.scan_and_extract",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.scan_and_extract",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.scan_and_extract",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.source_candidate_observation",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.source_candidate_observation",
+          "source_context": ".",
+          "module": "gbs_analyzer.source_candidate_observation",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidate_observation.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.source_candidate_observation",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.source_candidate_observation",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidate_observation.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.source_candidates",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.source_candidates",
+          "source_context": ".",
+          "module": "gbs_analyzer.source_candidates",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidates.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.source_candidates",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.source_candidates",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidates.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.tizen",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tizen",
+          "source_context": ".",
+          "module": "gbs_analyzer.tizen",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tizen",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.tizen",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.tizen.spec_minimal",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tizen.spec_minimal",
+          "source_context": ".",
+          "module": "gbs_analyzer.tizen.spec_minimal",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/spec_minimal.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tizen.spec_minimal",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.tizen.spec_minimal",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/spec_minimal.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.tracing",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tracing",
+          "source_context": ".",
+          "module": "gbs_analyzer.tracing",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tracing",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.tracing",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.tracing.logger",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tracing.logger",
+          "source_context": ".",
+          "module": "gbs_analyzer.tracing.logger",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tracing.logger",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.tracing.logger",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_analyzer.tracing.perf_report",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tracing.perf_report",
+          "source_context": ".",
+          "module": "gbs_analyzer.tracing.perf_report",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/perf_report.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_analyzer.tracing.perf_report",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_analyzer.tracing.perf_report",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/perf_report.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_build_skill",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_build_skill",
+          "source_context": ".",
+          "module": "gbs_build_skill",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build/scripts/gbs_build_skill/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_build_skill",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_build_skill",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_build_skill.__main__",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_build_skill.__main__",
+          "source_context": ".",
+          "module": "gbs_build_skill.__main__",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build/scripts/gbs_build_skill/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_build_skill.__main__",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_build_skill.__main__",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_build_skill.runner",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_build_skill.runner",
+          "source_context": ".",
+          "module": "gbs_build_skill.runner",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build/scripts/gbs_build_skill/runner.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_build_skill.runner",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_build_skill.runner",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/runner.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest",
+          "source_context": ".",
+          "module": "gbs_patch_suggest",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.__main__",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.__main__",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.__main__",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.__main__",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.__main__",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.analyzer_runner",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.analyzer_runner",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.analyzer_runner",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.analyzer_runner",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.analyzer_runner",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.cli",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.cli",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.cli",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.cli",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.cli",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.cluster_ingest",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.cluster_ingest",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.cluster_ingest",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.cluster_ingest",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.cluster_ingest",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.cluster_render",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.cluster_render",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.cluster_render",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.cluster_render",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.cluster_render",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.cluster_resolver",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.cluster_resolver",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.cluster_resolver",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_resolver.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.cluster_resolver",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.cluster_resolver",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_resolver.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.fix_all_ingest",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.fix_all_ingest",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.fix_all_ingest",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.fix_all_ingest",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.fix_all_ingest",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.fix_all_render",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.fix_all_render",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.fix_all_render",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.fix_all_render",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.fix_all_render",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.fix_all_resolver",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.fix_all_resolver",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.fix_all_resolver",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.fix_all_resolver",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.fix_all_resolver",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.formatter",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.formatter",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.formatter",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.formatter",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.formatter",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.ingest",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.ingest",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.ingest",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.ingest",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.ingest",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.multi_candidate_ingest",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.multi_candidate_ingest",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.multi_candidate_ingest",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.multi_candidate_ingest",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.multi_candidate_ingest",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.multi_candidate_render",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.multi_candidate_render",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.multi_candidate_render",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.multi_candidate_render",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.multi_candidate_render",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.render",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.render",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.render",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.render",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.render",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.resolver",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.resolver",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.resolver",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/resolver.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.resolver",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.resolver",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/resolver.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.skeleton_suppression",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.skeleton_suppression",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.skeleton_suppression",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/skeleton_suppression.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.skeleton_suppression",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.skeleton_suppression",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/skeleton_suppression.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.spec_toolchain_flag_ingest",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.spec_toolchain_flag_ingest",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.spec_toolchain_flag_ingest",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.spec_toolchain_flag_ingest",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.spec_toolchain_flag_ingest",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_ingest.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.spec_toolchain_flag_render",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.spec_toolchain_flag_render",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.spec_toolchain_flag_render",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.spec_toolchain_flag_render",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.spec_toolchain_flag_render",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_render.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_patch_suggest.spec_toolchain_flag_resolver",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.spec_toolchain_flag_resolver",
+          "source_context": ".",
+          "module": "gbs_patch_suggest.spec_toolchain_flag_resolver",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_resolver.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_patch_suggest.spec_toolchain_flag_resolver",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_patch_suggest.spec_toolchain_flag_resolver",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_resolver.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow",
+          "source_context": ".",
+          "module": "gbs_workflow",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.__main__",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.__main__",
+          "source_context": ".",
+          "module": "gbs_workflow.__main__",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.__main__",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.__main__",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/__main__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters._common",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters._common",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters._common",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/_common.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters._common",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters._common",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/_common.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters.base",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.base",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters.base",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/base.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.base",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters.base",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/base.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters.compile_error",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.compile_error",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters.compile_error",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.compile_error",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters.compile_error",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters.depsolve",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.depsolve",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters.depsolve",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/depsolve.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.depsolve",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters.depsolve",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/depsolve.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters.fallback",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.fallback",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters.fallback",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.fallback",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters.fallback",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters.linker_missing",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.linker_missing",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters.linker_missing",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.linker_missing",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters.linker_missing",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters.linker_undef",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.linker_undef",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters.linker_undef",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_undef.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.linker_undef",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters.linker_undef",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_undef.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters.patch_failed",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.patch_failed",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters.patch_failed",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/patch_failed.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.patch_failed",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters.patch_failed",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/patch_failed.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters.registry",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.registry",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters.registry",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/registry.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.registry",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters.registry",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/registry.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.suggesters.spec_script",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.spec_script",
+          "source_context": ".",
+          "module": "gbs_workflow.suggesters.spec_script",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.suggesters.spec_script",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.suggesters.spec_script",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    },
+    {
+      "module": "gbs_workflow.workflow",
+      "resolutions": [
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.workflow",
+          "source_context": ".",
+          "module": "gbs_workflow.workflow",
+          "targets": [
+            {
+              "context": ".",
+              "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py"
+            }
+          ],
+          "kind": "LOCAL"
+        },
+        {
+          "origin": "SCAN-02-regression:gbs_workflow.workflow",
+          "source_context": "release-v1.4.0",
+          "module": "gbs_workflow.workflow",
+          "targets": [
+            {
+              "context": "release-v1.4.0",
+              "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py"
+            }
+          ],
+          "kind": "LOCAL"
+        }
+      ]
+    }
+  ],
+  "real_import": {
+    "origin": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gbs_report.py:10",
+    "source_context": "release-v1.4.0",
+    "module": "ci_triage.quickbuild",
+    "targets": [
+      {
+        "context": "release-v1.4.0",
+        "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py"
+      }
+    ],
+    "kind": "LOCAL"
+  },
+  "scope": "ModuleIndex resolution only, not full consumer engine/closure"
+}

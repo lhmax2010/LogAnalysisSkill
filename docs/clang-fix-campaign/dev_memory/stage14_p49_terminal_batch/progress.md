@@ -1597,7 +1597,7 @@ APPEND_ONLY=PASS additions=39 deletions=0 insert_blocks=2
 
 ### 20.2 SCAN-02:全树同一点分名对应live与release两份文件
 
-**状态:OPEN。按本轮任务第2项的release歧义停止条款,在实现前只读核对时停止。**
+**状态:CLOSED(勘误5 E5-1/E5-2/E5-3,见§21.1)。以下保留当时停止证据。**
 未排除release,未自行决定“优先live”“优先快照”“就近源码根”或“两者都算”。
 不是OBS claim判红,也不是已有消费者引擎误报的实跑结论。
 
@@ -1707,3 +1707,186 @@ transition-map、proxy-count、intra-package-shim、item5-order,均未运行。
 `erratum4-preflight/intake.log:15`中的原始git diff上下文空行(` `)。
 不清洗证据字节或重算为别的输出;排除这个原始日志重跑exit=0。
 文档三文件的`git diff --check`亦exit=0。这是日志格式记录,不新增规格停止项。
+
+## 21. A0 第3段续二:勘误5入库、上下文基础与SCAN-03停止报告
+
+### 21.1 入库与SCAN-02关闭
+
+开场已读§20,分支`clang-fix-campaign`;`git pull --ff-only origin
+clang-fix-campaign`输出`Already up to date.`。此次批准的原件已在目标路径,
+未重写内容。入库前HEAD为`c92248088dad103a1e2185d871ab69f6cff7c784`。
+
+- 旧SHA-256:`e9b18793d3fea5755e886d55d0dbebdfc8a5d39374237fe0e05757a242ef6e9a`。
+- 新SHA-256:`1c35df1cd9aeafc5511aefaa3bdd468b785af665205319d92cc6d30350be6939`。
+- 批准来源:本轮FatTank授权勘误5;文件原字节hash与任务书写死值相等。
+- `a0-evidence/part3/erratum5/intake.log`保存完整`git diff --unified=3`;
+  同名`command.json`保存命令、原始程序、cwd、环境、exit与输入/输出hash。
+
+```text
+APPEND_ONLY=PASS additions=36 deletions=0 insert_blocks=2
+EXIT=0
+```
+
+两个insert分别位于旧第7行之后和旧EOF;所有旧行原字节保留。
+SCAN-02由E5-1(上下文/模块二元身份)、E5-2(本上下文优先及朝闭回退)、
+E5-3(release候选仍扫描,第4段admission裁REJECTED_NOT_SHIM)关闭。
+E5-3本段仅保留上下文和描述文件hash,未提前运行admission。
+
+### 21.2 已实现的基础能力,不冒充第1块完成
+
+新增`tools/terminal_scan.py`、`entry_registry.json`、`provider_registry.json`
+和`tests/unit/test_terminal_scan.py`。包含E4按序全函数分类、E5上下文及
+模块索引、精确固定tree/lstat/blob核对、原子JSON写入。工具不导入被观测
+代码,不运行OBS producer。独立工具环境为Python 3.12.3;工具依赖stdlib
+tomllib,声明Python 3.11+。未修改生产包的Python版本或依赖。
+
+**边界**:这两个JSON目前只是entry/provider required-detector输入,
+不是完整capability registry,也未宣称冻结。完整矩阵、五类解析层、
+消费者引擎和完成标记尚未实现。对新遇到的非已支持打包描述形态仍拒绝,
+不猜测源码根;当前固定树的两份pyproject均已实跑。
+
+所有采集在§9.2干净工作区与独立环境执行:
+
+```text
+cwd=/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6
+HEAD=43a6aa625f27da46daba190657bf62256080c68e
+tree=ca9331190e878af465e7968fe56e735585a5866e
+venv=/tmp/p49-a0-gate-seg2-43a6aa6
+PYTHONPATH/MYPYPATH unset; PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+```
+
+`manifest-input.json`与最终同字节的`manifest-final.json`是**清单输入证据**,
+不是可供SEAL消费的完成扫描。每条包含路径、git mode/OID、lstat、原字节
+SHA、条目类别、上下文;两份打包描述各含路径/hash/where/include/exclude。
+
+```text
+MANIFEST_INPUT entries=846 canonical=95459861ca4d8dafd4e028b3005faa5d9dc5a1d2a6ba98d4d918743c7c41f5a8
+{".": 736, "release-v1.4.0": 110}
+SCAN_COMPLETION=NOT_CREATED (detector matrix not yet run)
+EXIT=0
+```
+
+条目类别计数:DOC=431、OTHER_TEXT=123、CI_CONFIG=1、BINARY=4、
+PY_SOURCE=272、PACKAGING=2、BUILD=13;其它E4类别为0。
+release的110条全部在内,无排除、无修改。
+
+`context-regression.json`/`.log`逐个列出SCAN-02原报告的85个重名,
+每名各保留live/release解析结果。原例的ImportFrom直接从release源AST读取。
+
+```text
+DUPLICATES=85 RESOLUTIONS=170 REAL_IMPORT=PASS
+CONTEXT_COUNTS={".": 736, "release-v1.4.0": 110}
+REGRESSION_FALLBACK_EDGES=0
+REGRESSION_MODULE_IDENTITY_AMBIGUOUS=0
+FULL_CONSUMER_SCAN=NOT_RUN
+EXIT=0
+```
+
+上面的两个零**仅属于这组重名回归**。全树消费边/名字兜底尚未枚举,
+所以全量跨上下文回退边数、消费解析歧义数均为N/A,不以回归零值代替。
+模块索引自身无同上下文重复文件;这也不等价于全部引用无歧义。
+
+### 21.3 SCAN-03: E4 required detector与九类capability对账缺映射
+
+**状态:OPEN;发现后停止第1–5块后续实现与采集。**
+不是OBS claim红,也不是已经实现的12b-12检查器判红;这是接注册表时
+发现的权威规格未闭合,未伪造一个完整四方检查器的exit。
+
+**原文位置**(均为本次hash的冻结稿):
+
+| 位置 | 要求 |
+|---|---|
+| L2183、L2194,E4-2第5类 | BINARY的required detector为二进制记录器,完成记录即SCANNED |
+| L1290,12b-3c④ | 注册表与detector capability双向精确覆盖 |
+| L1298,12b-12 | 非consumer的(branch,owner)四方精确相等;并明文要求九类承担方与required_detectors(kind)对账 |
+| L571–592,§1.1b九类表 | 只有ledger.seg1、scan.module/reexport/inline/proxy_callable、resolve.dynamic_attr/import_redirect、provider.unsupported;无二进制记录器承担方/分支 |
+| L585–590 | 控制取材须来自该detector被指定承担的类别;新增能力必须先入权威表,实现方不得自选 |
+| L325–326、L2197 | consumer.*仅原子形态表;registry仅五种命名空间,E4不新增消费者形态 |
+
+**实测反例**:固定tree确有4个BINARY条目,见`scan03.log`完整路径与hash:
+
+```text
+docs/clang-fix-campaign/review/r14-delta/change_44.diff.gz
+docs/clang-fix-campaign/review/r14-delta/fix-1.diff.gz
+docs/clang-fix-campaign/review/r14-round2-delta/change_45.diff.gz
+docs/clang-fix-campaign/review/r14-round2-delta/fix_1_round2.diff.gz
+ACTUAL_BINARY_COUNT=4
+```
+
+按E4它们不是provider,不能塞到`provider.unsupported`并阻塞;
+按第5类又必须有实际记录器给SCANNED,不能把它们删出manifest。
+若自行新增例如`scan.binary_record`,它不在九类表中,12b-12差集不空;
+若把它当“无capability的工具辅助动作”而跳过九类对账,则自行给
+required detector增加了豁免。当前正文没有授权这两种选择。
+`scan03.command.json`内的诊断只打印权威表、实际条目和缺口,exit=0表示
+证据提取成功,**不表示四方对账通过**。未把binary_record伪装成任何现有能力。
+
+**候选,只供设计方裁决**:
+
+1. 为E4新增的记录/提取能力补齐权威承担方映射与capability分支,明确
+   required edge、正控制取材及四方对账覆盖域;不动consumer二十形态。
+2. 明确“扫描基础记录/提取动作”与“语义检出capability”的分界,
+   给前者独立的封闭登记、覆盖与证伪规则,再明文调整12b-3c/12b-12投影。
+   不能只是口头说它是辅助步骤,更不能免掉BINARY的SCANNED下界。
+
+两方案均保留release和全部条目。名字兜底/doctest提取等E4新增detector
+也应在裁决中一起核对,避免只给binary补一个临时特例。
+本轮未采用任何方案;未修改正文、未扩capability分支、未跳过12b-12。
+
+### 21.4 实测命令、控制目录和保留的失败记录
+
+以下`R=/home/linhao/Toolchain/development/LogAnalysisSkill`,
+`V=/tmp/p49-a0-gate-seg2-43a6aa6`;cwd与环境同§21.2。
+完整argv、环境、工具hash和原始输出在`part3/erratum5/*.command.json`/`.log`。
+
+```sh
+"$V/bin/python" -m pytest -q -o cache_dir=/tmp/p49-seg3-pytest "$R/tests/unit/test_terminal_scan.py" --junitxml="$R/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part3/erratum5/foundation-tests-final.xml"
+# 35 passed in 0.05s; EXIT=0
+"$V/bin/python" -m pytest -q -o cache_dir=/tmp/p49-seg3-pytest "$R/tests/unit/test_terminal_predicates.py" "$R/tests/unit/test_terminal_anchors.py"
+# 111 passed in 0.22s; EXIT=0; artificial-only, no OBS producer
+"$V/bin/python" -m ruff check "$R/docs/clang-fix-campaign/tools/terminal_scan.py" "$R/tests/unit/test_terminal_scan.py"
+# All checks passed!; EXIT=0
+"$V/bin/python" -m mypy --strict --python-version 3.12 --follow-imports=silent "$R/docs/clang-fix-campaign/tools/terminal_scan.py" "$R/tests/unit/test_terminal_scan.py"
+# Success: no issues found in 2 source files; EXIT=0
+```
+
+初次ruff因import排序exit=1;初次mypy沿用生产配置的Python3.10,报tomllib
+不可用及3处本工具类型标注错误,exit=1。保留`ruff.log`/`mypy.log`,后两者
+`*-final.log`为修正后的实测;类型检查明确针对隔离工具环境3.12,
+没有改生产配置、没有忽略错误。最初调用记录器时`python`命令不存在(exit127),
+未启动测试;随后使用`python3`并成功记录以上实跑。
+
+唯一`control_catalog.json`保留原96项不变,新增E4的12类别正例、未知mode、
+docs/Makefile先于DOC共14项PASS。E5五项登记为端到端NOT_RUN,各附resolver
+component PASS证据;**不能用直接调用resolve的单测冒充完整消费者边控制**。
+`CTRL-INTRA-PKG-PROXY`仍NOT_RUN。第2块原子20形态/near-miss未实现、未声称通过。
+
+### 21.5 交付边界与下一步
+
+`immutable.log`(exit=0)核验生产源码、release、P4.5 design、既有part2证据
+零diff;冻结canonical hash仍为:
+
+```text
+predicates.json canonical=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6
+measurement_exemptions.json canonical=4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+IMMUTABLE_AND_PRODUCTION_DIFF_EXIT=0
+```
+
+| 原任务块 | 本轮状态 |
+|---|---|
+| 1 扫描基础 | PARTIAL/STOPPED_SCAN03;输入846条与分类/上下文已取证;matrix、解析层与completion未完成 |
+| 2 消费者引擎 | NOT_RUN;完整形态控制/兜底计数N/A;E5仅resolver单测 |
+| 3 台账/候选 | NOT_RUN;三段条目数及四粒度计数N/A |
+| 4 八个claim | 全部NOT_RUN,没有新raw/verifier结论;item1-basis、seg1-staleness、seg2-form、commit-order、transition-map、proxy-count、intra-package-shim、item5-order均未运行 |
+| 5 改前实跑 | PENDING_SEG3;30场景未采集,文件hash N/A |
+| 生产全量pytest/mypy/ruff | 本轮未重跑;只报告§21.4具名工具/人工fixture检查,不借用历史全量结果 |
+
+本轮新增停止项**1条:SCAN-03 OPEN**;SCAN-02 CLOSED,其余既有关闭项不变。
+没有完成的整块,因此本次是**勘误入库+已验证基础中间态+停止报告commit**,
+不是第1块完成commit。待设计方裁决后从注册表能力映射继续。
+原有`.gitignore`修改、4份无关文档删除、其它untracked历史稿均不处理。
+提交不包含任何生产变更、冻结predicate改动或旧OBS产出改动;push后停止。
+
+暂存`git diff --cached --check`的exit=2仅指原始`intake.log`的git diff
+空白上下文行和`scan03.log`逐行引用的空原文行。不清洗原始输出;排除这两个
+日志后复跑exit=0。正文、工具、测试及其它登记文件没有空白错误。

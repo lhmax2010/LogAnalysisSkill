@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "-m",
+    "mypy",
+    "--strict",
+    "--follow-imports=silent",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_scan.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_scan.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-gate-seg2-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "path": "/tmp/p49-a0-gate-seg2-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 1,
+  "output_sha256": "46667e98853fe8c9dc499eaa368864cbbd23473f1e5207691d04344a5b0ddfd2",
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_scan.py": "d0266c1fe1c37e7faccecedc5f889bb4493c008a9565844c4bef405570bca05d",
+    "docs/clang-fix-campaign/tools/terminal_predicates.py": "a6e6399059f42d6c266a11361e9090111b2f1a0379cc5b03e9f75ee529745cef",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/entry_registry.json": "9ed0e8457455011c5e494459511e964ac75b8ee27f8c75fa331d5929659dd400",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/provider_registry.json": "942f38efc9e7e30790a9334dae484105ff71cce39916dd6400d7c0c6500e14b5",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "1c35df1cd9aeafc5511aefaa3bdd468b785af665205319d92cc6d30350be6939",
+    "tests/unit/test_terminal_scan.py": "79b42ca4531ff6e1595457c161b597e27f9a6a14510e2f51b209492abac260b9"
+  },
+  "scope": "E4/E5 scan foundation; no OBS producer; before-run PENDING_SEG3"
+}

@@ -1,0 +1,37 @@
+ACTUAL_BINARY={"context": ".", "entry_kind": "BINARY", "git_mode": "100644", "git_type": "blob", "lstat_mode": 33204, "oid": "eb6b0001f5e43d3b36d95c3e0801114d58cecc21", "path": "docs/clang-fix-campaign/review/r14-delta/change_44.diff.gz", "sha256": "e416c15f981ca0f1bdeb48a6e0b659201542acf13f7c60a94b2690b18410d43a", "size": 108660}
+ACTUAL_BINARY={"context": ".", "entry_kind": "BINARY", "git_mode": "100644", "git_type": "blob", "lstat_mode": 33204, "oid": "d14c9928a4b37c75763696df682e9586d39b35f8", "path": "docs/clang-fix-campaign/review/r14-delta/fix-1.diff.gz", "sha256": "d52bd33b52f2ef7d6449c0f0ec633c870add9b45dc1f929cef0a206eaea0319b", "size": 14726}
+ACTUAL_BINARY={"context": ".", "entry_kind": "BINARY", "git_mode": "100644", "git_type": "blob", "lstat_mode": 33204, "oid": "e8bdc4c20e539eef47260f3ab9947ff2693c72b5", "path": "docs/clang-fix-campaign/review/r14-round2-delta/change_45.diff.gz", "sha256": "fd6ff0eb8943cc15efd935d3ea65dde624ba1f67d3a357fc2d903f4770ab5e45", "size": 113250}
+ACTUAL_BINARY={"context": ".", "entry_kind": "BINARY", "git_mode": "100644", "git_type": "blob", "lstat_mode": 33204, "oid": "b45e1319d862e9e4e3794e724881e043ebcda3f2", "path": "docs/clang-fix-campaign/review/r14-round2-delta/fix_1_round2.diff.gz", "sha256": "b781b3b53bb825d7374cfa6c0108f11104de43745f6afc1317a39234f07ab257", "size": 3538}
+ACTUAL_BINARY_COUNT=4
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:571: **(三)不覆盖清单(九类,逐类声明承担方与 capability branch)**
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:572: 
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:573: | # | 类别 | 维度 | 由谁承担 | capability branch(v1.14 补,供 12b-12 机械比较) |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:574: |---|---|---|---|---|
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:575: | (a) | **step-0 自建 shim** | D1 | **第一段** | `ledger.seg1` |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:576: | (b) | **零定义→零定义,导出目标翻转** | D2 | **第一段** + **粒度②** | `ledger.seg1` + `scan.reexport` |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:577: | (b′) | **代理 shim:有定义→仍有定义** | D3 | **粒度④** | `scan.proxy_callable` |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:578: | (c) | **re-export binding 与内联 binding** | D4 | **第一段** + **粒度②③** | `ledger.seg1` + `scan.reexport` + `scan.inline` |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:579: | (d) | **登记抽取提交之外的后续提交所创建的 shim** | D1 | **`UNREGISTERED_CANDIDATE` + admission** | `scan.module` |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:580: | (e) | **已是 shim 的模块上、后续批次追加的 binding** | D4 | **粒度②**(**无 admission 兜底**) | `scan.reexport` |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:581: | (f) | **动态属性导出面** | D5 | 解析层 → `DYNAMIC_UNRESOLVED` | `resolve.dynamic_attr` |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:582: | (g) | **导入解析层重定向** | D6 | 解析层 → `DYNAMIC_UNRESOLVED` | `resolve.import_redirect` |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:583: | (h) | **无源可读的 provider 与运行时变异** | D7 | **`UNSUPPORTED` 分流** | `provider.unsupported` |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:584: 
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:585: > **本表兼作 12b-10 正控制的取材来源**:每个 detector 的正控制实例
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:586: > **须取自"该 detector 被指定为承担方"的类别**,**实现方不得自选**。
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:587: > **唯一合法的扩充次序**:**新形态须先进本表 / registry →
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:588: > 双向覆盖立即转红 → 再补正控制;实例目录不得先于本表扩充。**
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:589: > **`capability branch` 列属类三·就地列举**,是 **12b-12 四方对账**的键之一;
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:590: > **该列与 registry 的分支名不一致即红**。
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:591: > **命名空间(v1.27;甲 BLOCKER-3、丙 BLOCKER-2)**:本表分支全部在 `ledger.*` / `scan.*` / `resolve.*` / `provider.*` 内,
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:592: > **不含 `consumer.*`**;消费者形态分支(`consumer.*`)只由 §1.1 原子形态表登记、只进 `SEAL-16b` 对账。
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:593: 
+NINE_TABLE_NONCONSUMER_BRANCHES=["ledger.seg1", "provider.unsupported", "resolve.dynamic_attr", "resolve.import_redirect", "scan.inline", "scan.module", "scan.proxy_callable", "scan.reexport"]
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:326: 见 §1.1b 九类表与 `12b-10`)**不属于本表**;registry 中每个分支**恰属这五个命名空间之一**,前缀不在其中即红。
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:1290: | **12b-3c** | **注册表完备性四条**:①键 ⊇ 封闭 universe 全部 kind;②**查找未命中 = `UNSUPPORTED`(红)**,**永不得按空量词处理**;③**分类器须全函数**,未知 → `UNKNOWN_PROVIDER_KIND` 阻塞,**不得回落默认**;④**与 detector capability 双向精确覆盖** | **扫描期** |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:1298: | **12b-12** | **(v1.14 新增;三家 MAJOR)四方对账**——**以 `(capability_branch, detector_owner)` 为键**,下列四个来源**两两双向精确覆盖,差集非空即红**:①**独立参与点分类器的输出域**;②**capability registry 的分支集**;③**§1.1b 九类表的 `capability branch` 列与承担方列**;④**正控制/golden 实例目录的分支集**。**投影范围(v1.27;甲 BLOCKER-3、丙 BLOCKER-2)**:四方**只投影 `consumer.*` 以外的命名空间**;`consumer.*` 分支只进 `SEAL-16b`,两条断言从此不对同一分支集提相反要求。**缺的正是"九类承担方(detector 名)↔ registry `required_detectors`(kind)"这一边**——某 kind 被要求由 detector X 扫,而 X 在九类表中不承担任何类(或反之),**此前三处各自绿**。**本条是元规则(八) 在 P4.9 机制内的具名适用对象**;**与 `SEAL-16b` 五方覆盖的键不同,两条不互相替代**(见 `SEAL-16b`) | **A₀ 期** |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:2183: > | 5 | `BINARY` | 内容含 NUL 字节或不能按 UTF-8 解码 | 二进制记录器(逐个记入 B-8,§1.1 名字命中兜底的"二进制文件跳过并逐个记入") |
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:2194: > 二进制记录器对 `BINARY` 条目完成记录即为 `SCANNED`。
+docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md:2197: > 本勘误不新增消费者形态(`consumer.*` 仍为原子形态表二十个)、不减少任何条目、不改变 §1.1 的去处规则;
+SCAN-03: E4 requires a BINARY recorder; nine-table owner/branch mapping not specified.
+DIAGNOSTIC_ONLY: no invented branch, no four-way verifier PASS/FAIL, no completion marker.
