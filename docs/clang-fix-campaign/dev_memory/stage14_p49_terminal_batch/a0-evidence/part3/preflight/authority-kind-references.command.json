@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "rg",
+    "-n",
+    "provider|kind|required_detectors|注册表|TEXT|BINARY|非 Python|非Python",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "environment": {
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "PATH": "/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DX0p9c:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.930.61225-linux-x64/bin/linux-x86_64"
+  },
+  "exit_code": 0,
+  "output_sha256": "fd097b25ba9762d5bc8ba29af2bc1f712f03215f8c281e435252a54c53460d93",
+  "classification": "PREIMPLEMENTATION_READ_ONLY_DIAGNOSTIC_NOT_OBS"
+}

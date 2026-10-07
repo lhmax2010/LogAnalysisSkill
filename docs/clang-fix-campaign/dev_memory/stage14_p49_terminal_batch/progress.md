@@ -1450,3 +1450,108 @@ git diff上下文空行/输出尾空行,unit-tests.log的pytest失败堆栈尾�
 本轮停止报告**0条**,OPEN停止项**0条**;DIFF-01..04保持CLOSED。
 **§6改前实跑仍PENDING_SEG3**,等名字兜底/item5读取方全集。不运行OBS,
 不执行改前实跑,不启动生产改动。原有无关改动保持原样;commit+push后停止。
+
+## 19. A₀ 第3段:扫描注册表口径停止报告(2026-10-07)
+
+### 19.1 开场复核与取证边界
+
+本节为最新状态;第18节的零OPEN结论保留为上一轮历史。
+先读本文件(含§2.2交付映射与§2.3消费者控制),再执行
+`git pull --ff-only origin clang-fix-campaign`,exit=0,
+stdout=`Already up to date.`。本轮起点为上一段提交
+`cbd3a22ae6fdb6454ecc5a55254304f72a17ecd1`。
+
+只读核对仍在§9.2工作区与独立工具环境进行:
+
+- cwd: `/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6`
+- Python: `/tmp/p49-a0-gate-seg2-43a6aa6/bin/python`
+- HEAD: `43a6aa625f27da46daba190657bf62256080c68e`
+- tree: `ca9331190e878af465e7968fe56e735585a5866e`
+- `git status --porcelain=v1 --untracked-files=all`: 空输出,exit=0。
+
+证据目录为`a0-evidence/part3/preflight/`。每个`*.command.json`保存
+实际argv(含可复跑的完整`python -c`程序)、cwd、环境、exit与原始输出SHA;
+对应`*.log`是原始输出。诊断仅读取Git条目、文件元数据与冻结输入,
+**不是OBS producer,不是正式scan_manifest,没有completion marker**。
+工具/权威文档从主树绝对路径读取,未假称其存在于固定旧树。
+
+```text
+tree-and-pins exit=0
+tracked_leaf_count=846
+git_modes={"100644":845,"100755":1}
+py_suffix_leaf_count=272
+non_py_suffix_leaf_count=574
+authority-kind-references exit=0
+main-tracked-status exit=0
+```
+
+上述846只是`git ls-tree -rz --full-tree <tree>`的叶条目数,
+不是已完成manifest的条目数,也不是扫描处理集/适用性检查已通过。
+574是扩展名事实,**不把它推断成574个不受支持的Python provider**。
+`tree-and-pins.log`另记录以下实际存在的非Python文本样本的Git blob、
+lstat mode、大小及文件SHA: `README.md`、`pyproject.toml`、
+`.github/workflows/ci.yml`。三者均可UTF-8解码且无NUL。
+
+冻结输入实测值未变:
+
+| 输入 | 实际指纹 |
+|---|---|
+| v1.31-FROZEN(含勘误1–3),原字节SHA-256 | `7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200` |
+| predicates.json,canonical SHA-256 | `8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6` |
+| measurement_exemptions.json,canonical SHA-256 | `4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945` |
+
+### 19.2 SCAN-01:provider域与全树扫描条目域的注册表接口未定
+
+**状态:OPEN。阻塞第1块A03/A04/A10的注册表编码,尚未运行任何claim。**
+这是判据编码前的口径问题,不是claim红、不是已实跑扫描器的失败。
+下列行号均对应SHA为`7b8531fd...`的当前冻结稿。
+
+| 原文位置 | 冻结要求 | 需要裁决的接口 |
+|---|---|---|
+| §1.1b:L564–567 | 封闭artifact universe支持的provider仅为纯`.py`源文件、包目录(含`__init__.py`)、namespace portion;其余一律UNSUPPORTED、扩充走变更流程 | 未说明普通非provider文本是否属于这里的“其余”,以及它们在注册表中的kind如何表达 |
+| §1.1e:L1284–1288(12b-1/2/3/3b/3c) | 全部tracked entry无减法;适用性由外部冻结注册表计算;每行至少一个SCANNED;查表未命中为UNSUPPORTED,未知kind阻塞,禁止默认回落 | 必须为真实存在的非Python条目得到明确的kind与required_detectors,不能用缺键/空detector集合代替处理 |
+| §1.1:L357、L364–376、L420–423 | 全部tracked文本做名字兜底;文档排除也须逐条记账;C7a配置/C7b CI/C7c shell/C7d构建文件按各自类别扫描 | 它们明确在扫描输入面内,但不能直接套入三种Python provider种类;C7b的kind又依赖manifest分类 |
+
+因此不能在实现侧自行选择以下两种不等价读法:
+
+1. 将provider kind直接作为全部manifest条目的kind:上述README/TOML/YAML
+   不在封闭支持清单,不能自行给它们受支持的查表项;会使普通文本被按
+   非支持provider分流,而不是只按正文的文本消费规则处理。
+2. 将entry/file kind与provider kind拆为两个域:普通非provider文本仍可
+   做消费者/名字兜底扫描,但需要明确“非provider”的机械判定、注册表键、
+   required_detectors及两域关系。当前正文没有给出这个接口,实现方不能
+   自创NOT_A_PROVIDER豁免/默认TEXT分支,也不能偷偷扩consumer.*形态。
+
+**候选处理,由设计方裁决后实施:**
+
+- 方案A:明确区分完整manifest的entry/file kind与Python provider kind。
+  设计方给出非provider条目的闭合分类与适用性规则,说明它们通过哪个
+  detector满足12b-3b;保留三种支持provider及真正未知provider的
+  UNSUPPORTED红路。文档/配置不能被排除出manifest,零命中仍记账。
+- 方案B:若两域本来就共用同一个kind,按勘误流程扩充封闭kind表并逐类
+  指定required_detectors;同时明确哪些只是消费载体,不得因此把任意
+  非Python实现provider放行。不能仅补一个“其它均按TEXT”的默认分支。
+
+本轮不选择方案、不改权威或predicate、不落一个临时分类器来绕过缺口。
+完整检索证据为`authority-kind-references.*`,固定树实例为
+`tree-and-pins.*`。恢复点是**第1块注册表可编码性确认**,不是第2块。
+
+### 19.3 交付映射、未运行项与恢复条件
+
+§2.2既定路径保持不变,本轮没有移动交付物或引入第二份control catalog。
+
+| 本段块 / §2.2映射 | 当前状态 | 产物/证据 |
+|---|---|---|
+| 第1块:扫描基础,A03/A04/A10 | STOPPED_BEFORE_ENCODING | 仅19.1只读前置;scan_manifest/scan_matrix/completion未生成,不记SCANNED通过数 |
+| 第2块:消费者识别,A09 | NOT_RUN | 20形态控制/near-miss未运行;CTRL-INTRA-PKG-PROXY保持NOT_RUN |
+| 第3块:台账/候选,A05/A06 | NOT_RUN | 三段台账与四粒度候选未产出,计数N/A,不以0冒充扫描结果 |
+| 第4块:8个获准claim,A15/A17 | NOT_RUN | item1-basis/seg1-staleness/seg2-form/commit-order/transition-map/proxy-count/intra-package-shim/item5-order均无新producer运行、无新verifier结论 |
+| 第5块:§6改前实跑,A01 | PENDING_SEG3 | 30场景未采集,无改前文件hash;等待消费者引擎及item5读取方全集 |
+| 本轮测试/mypy/ruff | NOT_RUN,exit=N/A | 未改工具、测试或生产代码;不借用上一段197通过数作为本轮验证 |
+
+停止报告新增**1条(SCAN-01 OPEN)**,累计当前OPEN**1条**;
+PRED-01..05、DIFF-01..04继续CLOSED。不存在已完成的第3段实现块commit。
+本次只提交停止记录、原始诊断证据与INDEX,不把它命名或记账为扫描基础完成。
+既有OBS产出、三个差异门禁数据文件、冻结predicate/豁免及设计稿均不改;
+主树`.gitignore`修改、无关文档删除、untracked历史稿保持原样。
+push后停下,等待设计方澄清上述kind/适用性接口后续跑。

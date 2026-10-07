@@ -1,0 +1,48 @@
+100:> ①**解释器行兜底**(甲 朝开-1 反例 A):非 Python 文件中含解释器 token 的行都是参与点;模块位是变量或宏 → `DYNAMIC_UNRESOLVED`
+323:**`consumer.*` 是消费者形态分支的专用命名空间**,registry 中其余分支(`ledger.*` / `scan.*` / `resolve.*` / `provider.*`,
+327:**互斥全分区(v1.27;丙 BLOCKER-1)**:**先按文件类别分流**(Python 源 → C1–C6d、C8a、C8b;非 Python 文件 → C7a–C7d),
+340:> **非 Python 文件**:①**解释器行**(见下"解释器行兜底")每行一个参与点;②**名字命中兜底**(见下)产出的每一处命中。
+364:> - **非 Python 文件中的命中**:位于某条解释器命令内、**且该命令的代码来源判定已对该名字产生消费边**的 → 按该命令的形态计;
+374:> `scan_manifest` 中**全部非 Python 文本文件**(文档文件的非 doctest 行除外,按第 9 类记入 B-8;文档文件的定义见名字命中兜底)先做**命令切分**:
+398:> (非 Python 文件的"闭合值域证明"= 该变量/宏在同一文件或其显式 include 中的全部定义点;不可得即保持未决),**由 `SEAL-5` 与 §1.3 断言二计数**;
+420:| `C7a` | 7 | 非 Python 文件:`pyproject.toml` 的 `[project.scripts]` / `[project.gui-scripts]` / `[project.entry-points.*]`,`setup.cfg` 的 `[options.entry_points]` |
+421:| `C7b` | 7 | 非 Python 文件:CI 配置文件(文件集合 = `scan_manifest` 中 kind 为 CI 配置的条目)中的模块入口 |
+422:| `C7c` | 7 | 非 Python 文件:shell 脚本(`*.sh`,或 shebang 为 sh/bash 的无扩展名文件)中的模块入口;**不含 Python 源中的 subprocess 调用**(那归 `C8a`/`C8b`) |
+423:| `C7d` | 7 | 非 Python 文件:构建与打包文件 {`Makefile`, `GNUmakefile`, `*.mk`, `*.spec`, `Dockerfile`, `*.service`, `tox.ini`} 中的解释器行(v1.29 新增;甲 朝开-1、丙 朝开-2 的 `Makefile`/`.spec` 反例) |
+438:`C7*` 只取非 Python 文件,四者按文件类别分割。**边界 near-miss 并入 B-11 `MECH_FIVE_WAY` 组**:
+564:> **封闭 artifact universe**:**显式列出本批支持的 provider 类型**——
+567:> **扩充走变更流程**;**注册表键须覆盖本清单全部 kind**(12b-3c)。
+581:| (h) | **无源可读的 provider 与运行时变异** | D7 | **`UNSUPPORTED` 分流** | `provider.unsupported` |
+589:> **命名空间(v1.27;甲 BLOCKER-3、丙 BLOCKER-2)**:本表分支全部在 `ledger.*` / `scan.*` / `resolve.*` / `provider.*` 内,
+902:> > **`uncertainty_kinds` 为【机械导出的多值集合】,人工不得填写**
+904:> > **产出规则**:**`uncertainty_kinds` = 判据本轮【失败子句】按登记映射的像集**
+906:> > 在 §1.1e 登记它对应的 kind(类三·就地列举),
+913:> > ——否则实现者漏登记一个失败子句即可让该子句"不产生任何 kind",
+916:> > **A₀ 断言**:**记录的 `uncertainty_kinds` == 按失败子句重算的像集,不等即红**。
+919:> > 放宽到"许 ②",**全文没有任何机械断言核验 kind 与"判据为什么判不出"之间的
+923:> > **多类同现取交集(v1.16;三家同向)**:**合法输出域 = 全部命中 kind 的输出域
+924:> > 【交集】;任一 kind 禁 ② 则禁 ②;交集为空即继续阻塞**。
+927:> > | `uncertainty_kinds` 的成员 | 该项未决的原因 | 该成员的输出域 |
+963:> > **(三)若补入事实输入后判据判出的终态【落在 `uncertainty_kinds` 各成员
+1090:**多 span 契约**:`spans: [ (file, line_start, line_end, kind, guard) ]`。
+1091:- **`kind`**:`import_stmt`、`all_entry`、`inline_import`、`alias_assignment`、
+1123:| **SEAL-16b** | **消费者集合完整性门禁(v1.16 新立;v1.17 补结构化派生式与分支级正控制,丙 BLOCKER-4)**。**`CLOSED` 的派生式(类三,不得由自然语言判定)**:`CLOSED` ⟺ **该条目的全部消费者 capability branch 均已执行** ∧ **无 `FAILED` / `UNSUPPORTED` / `DYNAMIC_UNRESOLVED`** ∧ **每条调用边均带 provenance**;四项缺一即 `NOT_CLOSED`。**另立 `consumer_closure_registry`**,与 capability registry / §1.1 原子形态表 / 正控制目录、**以及由完整 tree / callsite 枚举器产出的【实际参与点集合】**做**五方双向精确覆盖**(v1.18 补第五方;丙 BLOCKER-7:**四者都是声明表,可以一致地漏掉同一种消费者形态**——互证不是外锚),差集非空即红;**对账键 = `(原子形态 ID, capability_branch)`**(v1.25 补;甲 BLOCKER-2。v1.26 按 §1.1 原子形态表确定:两者一一对应),五方的投影方式:①`consumer_closure_registry` —— 每条闭合记录覆盖的 (形态, 分支) 对;②capability registry —— **`consumer.*` 命名空间内的每个分支**声明支持的形态(须恰为去前缀后的同名形态;其余命名空间的分支不进入本条对账,v1.27);③§1.1 原子形态表 —— 逐行 (形态 ID, `consumer.<形态 ID>`);④正控制目录 —— 每条分支级正控制所属的 (形态, 分支);⑤实际参与点集合 —— 每个参与点经独立参与点分类器判定的 (形态, 分支);**参与点命中未登记形态、命中多个形态、或命中零个形态 → 阻塞;名字命中兜底中未得去处的命中同样阻塞**(v1.28);**投影须逐条可追溯到原记录**,不得只给投影后的集合;**与 `12b-12` 的分工**:本条管**消费者形态面**(§1.1 原子形态表),`12b-12` 管**不覆盖九类面**(§1.1b 九类表,键 `(capability_branch, detector_owner)`);两条共用 capability registry 与正控制目录,**按命名空间分投影(本条只取 `consumer.*`,`12b-12` 只取其余;v1.27),互不替代、不合并计数**;**每种消费者形态各配一条分支级正控制**;**另补构造式控制:删除一条注册边后必须红**。对每个进入 disposition 判据的条目,**其消费者集合须由 `scan_manifest` 全集 + 闭合调用图机械封闭**,封闭结果逐条落 B-8 的 `consumer_set_closure` 字段(**空记录即红**);**该字段的取值(`CLOSED` / `NOT_CLOSED`)是 `uncertainty_kinds` 上/下半归属的【唯一】依据,不得人工指定**;违例 fixture:**构造一个消费者集合未封闭的条目,其 `uncertainty_kinds` 必须落上半、② 必须被禁** | **admission 期** |
+1261:  **一个 `uncertainty_kind = CONSUMER_SET_COMPLETENESS` 却由人工补入消费者
+1263:  这是 v1.14 的后门形态);**以及一个消化后终态落在 `uncertainty_kinds` 交集输出域之外
+1286:| **12b-3** | **适用性由外部冻结注册表计算**;**detector 不得自报 `NOT_APPLICABLE`**;每格取 `SCANNED`/`FAILED`/`UNSUPPORTED`/`NOT_APPLICABLE`;**`FAILED` 与 `UNSUPPORTED` 阻塞**;**格级:缺记录即红** | **扫描期** |
+1288:| **12b-3c** | **注册表完备性四条**:①键 ⊇ 封闭 universe 全部 kind;②**查找未命中 = `UNSUPPORTED`(红)**,**永不得按空量词处理**;③**分类器须全函数**,未知 → `UNKNOWN_PROVIDER_KIND` 阻塞,**不得回落默认**;④**与 detector capability 双向精确覆盖** | **扫描期** |
+1293:| **12b-9** | **违例 fixture 十条**:①删掉一个输入条目;②注入语法错误文件;③扫描中途终止;④manifest 漏收一个仍在版本控制中的条目;⑤**把一条排除规则改宽,使其覆盖一个植入的已知 shim 实例——其候选资格不得消失、且该条目最终进入 `preseal_effective_inventory` 必须触发证伪转红**;**该 fixture 须跑完整条 admission 流水线至 SEAL-3 终态化**(v1.15:否则 fixture 自身在求值点之前完成,**它也恒绿**);⑥注册表把某 kind 错标为不需要任何 detector;⑦**逐条删除一条 required edge**;⑧**恒报 `SCANNED`、findings 恒空的 detector**;⑨**恒报大量假阳的 detector**;⑩**(v1.14 新增)把九类表某行的 `capability branch` 改成 registry 中不存在的名字**——**须被 12b-12 的四方对账捕获**;**十者都必须阻塞 seal** | **A₀ 期** |
+1296:| **12b-12** | **(v1.14 新增;三家 MAJOR)四方对账**——**以 `(capability_branch, detector_owner)` 为键**,下列四个来源**两两双向精确覆盖,差集非空即红**:①**独立参与点分类器的输出域**;②**capability registry 的分支集**;③**§1.1b 九类表的 `capability branch` 列与承担方列**;④**正控制/golden 实例目录的分支集**。**投影范围(v1.27;甲 BLOCKER-3、丙 BLOCKER-2)**:四方**只投影 `consumer.*` 以外的命名空间**;`consumer.*` 分支只进 `SEAL-16b`,两条断言从此不对同一分支集提相反要求。**缺的正是"九类承担方(detector 名)↔ registry `required_detectors`(kind)"这一边**——某 kind 被要求由 detector X 扫,而 X 在九类表中不承担任何类(或反之),**此前三处各自绿**。**本条是元规则(八) 在 P4.9 机制内的具名适用对象**;**与 `SEAL-16b` 五方覆盖的键不同,两条不互相替代**(见 `SEAL-16b`) | **A₀ 期** |
+1549:**排除规则登记与全函数分类器** + **冻结注册表(含完备性四条)** +
+1609:      **`uncertainty_kinds` 由判据失败子句机械导出,人工不得填写**;
+1649:- [ ] **`uncertainty_kinds` 为机械导出的多值集合**:由判据失败子句按登记映射产出,
+1676:- [ ] 其余承前:manifest 不做减法、格级缺记录即红、注册表完备性四条、
+1713:| **(43)** | **消化出口的 ¬∃ 判别法不自洽**:② 与 ① 依赖同一不可枚举空间上的同一否定存在,可由"人工补入消费者集合"抵达而三闸门全绿 | v1.14 | ✓ **v1.15 修**(`uncertainty_kind` 机械矩阵;完整性类未决下 ①② 均禁) |
+1722:| **(52)** | **`uncertainty_kind` 是人工单值必填字段,直接开闭"删测试资产"的门**;其上/下半划分依赖的"消费者集合完整性门禁"**全文仅两处叙述性出现,无编号/无断言/无记录/无 fixture**;六类不穷尽(producer 冲突、SEAL-10 两条路径无合法取值) | v1.15 | ✓ **v1.16 修**(改机械导出多值集合 + 立 `SEAL-16b` + 补两类 + 多类取交集) |
+1729:| **(59)** | **反向索引按【新名】查表,重命名类改写结构性漏对**:`uncertainty_kind` → `uncertainty_kinds` 之后旧名在规范正文残留四处,**DoD 的"必填"与 §1.1c 的"人工不得填写"构成一对互斥规范行** —— 正是事故 (25) 的形态,而断言(ii) 恰因重命名看不见它 | v1.16 | ✓ **v1.17 修**(`renames` 由 B-13 差集机械导出;待对账集 = 索引[新] ∪ 索引[旧];收口条件 = 索引[旧] 在 v(n) 输入面内为空) |
+1741:| **(71)** | **`SEAL-16b` 仍是新声明面**:`CLOSED` 无结构化派生式、判据子句 ID 全集与 kind 映射键集无覆盖断言、无分支级正控制 —— 实现者仍可把未闭合的消费者集合标为 `CLOSED` 而机械地得到较宽输出域 | v1.16 | ✓ **v1.17 修**(四项合取的 `CLOSED` 派生式 + `predicate_clause_ids == mapping.keys()` + `consumer_closure_registry` 四方覆盖 + 分支级正控制) |
+2005:- **注册表**:映射、hash、**完备性四条核验**、**与 capability 双向覆盖**;
+2023:  ⑩gitlink、⑪非 Python provider、⑫条件式导入
+2051:`LEDGER_PRESENT_NO_FINDING × ALREADY_REMOVED`、SEAL-6 的三条消化违例(人工直接写结论;完整性未决却产出 ②;终态越出 `uncertainty_kinds` 交集输出域)。
+2061:逐项结构化证据 `(claim, 判据, 命令, 输出)`、**`uncertainty_kinds`(机械导出的多值集合,人工不得填写;
+2064:**输出域核验(须落在 `uncertainty_kinds` 各成员输出域的【交集】内;

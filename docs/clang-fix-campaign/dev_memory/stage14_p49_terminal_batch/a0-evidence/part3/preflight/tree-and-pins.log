@@ -1,0 +1,51 @@
+{
+  "kind": "READ_ONLY_PREFLIGHT_NOT_SCAN_COMPLETION",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "worktree_clean": true,
+  "tracked_leaf_count": 846,
+  "git_modes": {
+    "100644": 845,
+    "100755": 1
+  },
+  "py_suffix_leaf_count": 272,
+  "non_py_suffix_leaf_count": 574,
+  "examples": [
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "git_type": "blob",
+      "oid": "4735ffbdfc94c43795b6e6dc59d9a23d6f56b42c",
+      "lstat_mode": "0o100664",
+      "size": 11821,
+      "utf8_decodes": true,
+      "has_nul": false,
+      "sha256": "3bb5c426731e3ca237d917946d4575eff978dedaf00dbda0b3c1a6ddcee54005"
+    },
+    {
+      "path": "pyproject.toml",
+      "mode": "100644",
+      "git_type": "blob",
+      "oid": "a89143be9cbb0258607ab5c5cacc400051f8f5e5",
+      "lstat_mode": "0o100664",
+      "size": 2465,
+      "utf8_decodes": true,
+      "has_nul": false,
+      "sha256": "125bfdd2a9eefe413ae63c5702455d15175d943d7ad099ddc168d605b1bbd24f"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "mode": "100644",
+      "git_type": "blob",
+      "oid": "2703c3f47bad811c71daa19a77d1ee21c7dc5359",
+      "lstat_mode": "0o100664",
+      "size": 1438,
+      "utf8_decodes": true,
+      "has_nul": false,
+      "sha256": "f5e85385d437ce1e28179aa07f1e7b37e4fd6f633b6dc4ede13be88ae8077f55"
+    }
+  ]
+}
+predicates.json canonical=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6
+measurement_exemptions.json canonical=4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+rules sha256=7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200

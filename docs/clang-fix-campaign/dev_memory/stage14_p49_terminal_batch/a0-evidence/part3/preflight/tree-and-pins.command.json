@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "-c",
+    "\nfrom collections import Counter\nfrom pathlib import Path\nimport hashlib\nimport json\nimport os\nimport subprocess\n\nroot = Path.cwd()\nmain = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\ndef git(*args):\n    return subprocess.check_output(['git', *args], cwd=root)\nhead = git('rev-parse', 'HEAD').decode().strip()\ntree = git('rev-parse', 'HEAD^{tree}').decode().strip()\nassert head == '43a6aa625f27da46daba190657bf62256080c68e'\nassert tree == 'ca9331190e878af465e7968fe56e735585a5866e'\nassert git('status', '--porcelain=v1', '--untracked-files=all') == b''\nentries = []\nfor row in git('ls-tree', '-rz', '--full-tree', tree).split(b'\\0'):\n    if not row:\n        continue\n    meta, name = row.split(b'\\t', 1)\n    mode, kind, oid = meta.decode().split()\n    entries.append({'path': os.fsdecode(name), 'mode': mode, 'git_type': kind, 'oid': oid})\nby_path = {row['path']: row for row in entries}\nsamples = ['README.md', 'pyproject.toml', '.github/workflows/ci.yml']\nshells = sorted(row['path'] for row in entries if row['path'].endswith('.sh'))\nif shells:\n    samples.append(shells[0])\nfacts = []\nfor name in samples:\n    entry = by_path[name]\n    path = root / name\n    data = path.read_bytes()\n    metadata = path.lstat()\n    facts.append({**entry, 'lstat_mode': oct(metadata.st_mode), 'size': metadata.st_size,\n                  'utf8_decodes': data.decode('utf-8') is not None,\n                  'has_nul': b'\\0' in data,\n                  'sha256': hashlib.sha256(data).hexdigest()})\nprint(json.dumps({'kind': 'READ_ONLY_PREFLIGHT_NOT_SCAN_COMPLETION',\n                  'head': head, 'tree': tree, 'worktree_clean': True,\n                  'tracked_leaf_count': len(entries),\n                  'git_modes': dict(sorted(Counter(row['mode'] for row in entries).items())),\n                  'py_suffix_leaf_count': sum(row['path'].endswith('.py') for row in entries),\n                  'non_py_suffix_leaf_count': sum(not row['path'].endswith('.py') for row in entries),\n                  'examples': facts}, ensure_ascii=False, indent=2))\ndata = main / 'docs/clang-fix-campaign/tools/p49_terminal_data'\nrules = main / 'docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md'\nassert hashlib.sha256(rules.read_bytes()).hexdigest() == '7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200'\nfor name in ('predicates.json', 'measurement_exemptions.json'):\n    payload = (data / name).read_bytes()\n    canonical = json.dumps(json.loads(payload), ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()\n    print(name + ' canonical=' + hashlib.sha256(canonical).hexdigest())\nprint('rules sha256=' + hashlib.sha256(rules.read_bytes()).hexdigest())\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "environment": {
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "PATH": "/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DX0p9c:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.930.61225-linux-x64/bin/linux-x86_64"
+  },
+  "exit_code": 0,
+  "output_sha256": "67eab211f29eda82edc1f67c2c53f8c33ae310f481e5b6bc59f34d74d084e1d0",
+  "classification": "PREIMPLEMENTATION_READ_ONLY_DIAGNOSTIC_NOT_OBS"
+}
