@@ -1,0 +1,21 @@
+diff --git a/docs/clang-fix-campaign/tools/symbol_audit.py b/docs/clang-fix-campaign/tools/symbol_audit.py
+index 5417a9a..fb1a0b2 100644
+--- a/docs/clang-fix-campaign/tools/symbol_audit.py
++++ b/docs/clang-fix-campaign/tools/symbol_audit.py
+@@ -68,7 +68,7 @@ EXACT_SURFACE_COUNTS = {
+     SKILL_BUILD_VERIFY: 29,
+     SKILL_EDIT_SPEC_GUARD: 12,
+     SKILL_BUILD_WORKSPACE: 4,
+-    SKILL_GERRIT_SUBMIT: 23,
++    SKILL_GERRIT_SUBMIT: 24,
+     SKILL_TRIAGE_GBS_REPORT: 21,
+     SKILL_TRIAGE_REPORT: 3,
+ }
+@@ -259,6 +259,7 @@ EDIT_SPEC_GUARD_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+ 
+ GERRIT_SUBMIT_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+     ("SubprocessRunner", ()),
++    ("GerritSubmitError", ()),
+     ("GerritSubmitOptions", ("ci_triage.cli",)),
+     ("GerritSubmitResult", ()),
+     ("ReleaseWorktreeResult", ()),

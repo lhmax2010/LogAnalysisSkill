@@ -3426,3 +3426,115 @@ checker与CI验证(含coverage),每条命令/env/exit/原文分别留档。其�
 文档checker的v1.5.2历史样本未入库;symbol的两个旧report拓扑fixture读取的
 当前旧址已是shim,固定43a6aa6该旧址也已是shim。未选择其它历史SHA替代,
 未改symbol_audit的负fixture或断言。C01尚未重启。
+
+### 37.2 提交后实跑结果(2026-10-07)
+
+本轮已推送的独立补登记提交:
+
+- `1cf3ee2bff7dcd0412fa4246ebc99af95de8873e`:GerritSubmitError入SPECS/正文,
+  精确顶层数24,集合等价/归属判据未改。
+- `787b8040245907c3c849d80478e30961d26a4ed2`:历史来源原文保留、当前表
+  与历史计数语境分开、ledger目标正文hash同步。不是C组提交。
+
+完整复跑锚定后者,工作树 `/tmp/p49-terminal-REG03b`,tree
+`1041a73fc09811b144b3851ea5819c95b012db6d`。独立venv沿用
+`/tmp/p49-a0-regression-43a6aa6`,Python3.12.3。原样CI工作流另由GitHub
+Actions在Python3.11实跑,与本地结果分列,不得互相替代。
+全部90条checker/控制的命令、实际/预期exit、逐项stdout链接见
+[门禁逐项表](a0-evidence/phase2/execution/REG03b/gate-results.md);
+原始argv/env/程序/输出hash见同目录 `checkers/commands.json`。
+
+```text
+python -m pytest tests/ -v -p pytest_cov --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80
+Required test coverage of 80% reached. Total coverage: 94.62%
+1343 passed, 1 skipped in 29.47s
+EXIT=0
+mypy <ci.yml列出的十个包>
+Success: no issues found in 88 source files
+EXIT=0
+ruff check .
+All checks passed!
+EXIT=0
+lint-imports --no-cache
+Contracts: 6 kept, 0 broken.
+EXIT=0
+python docs/clang-fix-campaign/tools/symbol_audit.py
+SUMMARY | 198 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+EXIT=0
+```
+
+bridge亦为198符号+4模块全绿,exit0。design.md主检查exit0。
+skill-4 check/admission/47个OUT_OF_SCOPE/22个per-binding、skill-6 ledger
+及branch_inventory 69/0、parser24/24、v1.7准入2/2均符合各自预期exit。
+skill-5准入与8个per-binding符合预期,但check未通过,详见PHASE2-06。
+terminal predicate冻结hash核对exit0;expected_diff正常exit0、各反向exit1;
+phase A投影正常exit0、两反向exit1。本轮未运行任何新OBS producer。
+
+nodeid机械集合证明(`REG03b/nodeid-proof.json`,生成命令与源码留档):
+
+```text
+NODEIDS baseline=1344 current=1344 removed=0 added=0 verdict_changes=0
+APPROVED_DELETIONS still_present_and_passed=4 deleted=0
+CHECKERS commands=90 unexpected=4
+```
+
+90项中86项符合预期,4条不符合预期。负控制虽输出MISMATCH,若红因错误或
+退出值不符则仍算FAIL,不能拿它抵销失败。已批准4个拟删测试全部仍通过。
+
+远端CI run `37612769455` (HEAD `787b804`):checkout/setup-python/系统依赖/
+Python依赖/Lint/Type check均success;Tests失败。状态API不提供成功步骤的
+数字exit,不伪造逐步exit0;失败步骤原文明确exit1。完整日志/状态在
+`REG03b/ci-log.log`、`ci-status.log`,读取命令与环境各有command.json。
+
+```text
+git ... fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +787b8040245907c3c849d80478e30961d26a4ed2:refs/remotes/origin/clang-fix-campaign
+ValueError: AUTHORITY_GIT_BLOB: fatal: path 'docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md' exists on disk, but not in '8e72c345afc18efd118dd5880cd8ebd6b96e7bb1'
+106 failed, 1237 passed, 1 skipped in 44.37s
+Process completed with exit code 1.
+```
+
+注意:上面git/错误行仅摘去CI时间前缀;全长原文以日志为准。
+`gh run view --log` exit0只表示下载成功,不是CI通过。
+
+### 37.3 新停止项(全部 OPEN,待裁决)
+
+PHASE2-03原“未登记异常类型”缺口已补录并经双道验证;不等于其要求的
+全门禁闸门已通过。本轮发现以下4组阻塞,不改生产、不放宽历史断言:
+
+| 编号 | 文件:行与实际失败 | 困难/边界 | 候选处置(未执行) |
+|---|---|---|---|
+| PHASE2-04 | `tools/symbol_audit.py:1773/:1827/:2039` 两个旧report拓扑fixture失效:duplicate-spec-root-mismatch实际exit0(预期1),twin-both-binary-key实际exit1(预期0) | 当前旧址是shim,`43a6aa6`旧址也是shim,均没有_attrs_to_map定义;不是“旧址文件缺失”。前轮明确禁止改此负fixture,只授权缺文件时取43a6aa6,不能擅选更早SHA | 设计方批准一个抽取前不可变拓扑输入及适用fixture范围;仅替换取证输入,保持二元组/skill-root断言。不能改断言接受definition-not-found作为正确红因 |
+| PHASE2-05 | `tools/check_design_doc.py:773-799` self-test exit1,37/38;historical-v1.5.2样本未入库 | `git ls-files`该样本空;主工作树同名untracked草稿不是获准输入,不得擅自纳入 | 确认并批准该历史样本的原字节/来源hash入库,或指定已有不可变输入;不跳过历史控制、不改expected_counts |
+| PHASE2-06 | `tools/design_drift_ledger.py:1046-1047` skill5 check exit2:`target design differs from the configured final corpus document`;数据文件`:2062/:2091-2093` | PHASE2-03正文已变更,目标hash已同步,但最后语料仍是原v1.3.2。该语料也参与原始diff/span/候选台账,不止一个目标hash | 批准对应语料与其源diff登记同步的口径,保留原历史Git锚,按既有规则复核台账;不得改成跳过字节比较,不得bootstrap从本次扫描反推期望集 |
+| PHASE2-07 | `.github/workflows/ci.yml:13` checkout默认浅历史;实跑日志第92行`--depth=1`,Tests exit1,106失败 | 不可变blob取证依赖8e72c345/cbd3a22等历史提交,浅克隆拿不到;本地完整仓库绿不能替代CI | 补齐CI历史输入(例如checkout fetch-depth:0)后原样复跑CI,保留blob hash与逐字包含校验,不回退读取当前正文、不放宽单测 |
+
+symbol两项失败原文:
+
+```text
+NEGATIVE_FIXTURE | duplicate-spec-root-mismatch | MISMATCH: definition _attrs_to_map not found in ci_triage/gbs_report.py
+EXIT=0 (expected=1)
+KEY_FIXTURE | twin-both-binary-key | ci_triage/gbs_report.py:_attrs_to_map | consumers=() | internal=() | MISMATCH: definition _attrs_to_map not found in ci_triage/gbs_report.py
+EXIT=1 (expected=0)
+```
+
+完整原文在 `REG03b/checkers/symbol-key-twin-both-binary-key.log`。
+固定43旧址的实际blob见 `REG03b/old-topology.log`;历史样本tracked查询见
+`historical-sample-tracked.log`;正文与语料的纯新增diff见 `corpus-diff.log`。
+没有改旧fixture、没有补一个伪造历史文件、没有重算候选/判据凑绿。
+
+### 37.4 本轮停点
+
+**STOPPED / 4组新停止项**。C01-C13 **NOT_RESTARTED**;D **NOT_STARTED**。
+不生成DONE收口文档,不声称名字残留复扫已通过;31入口/import-all/删除后
+名字复扫/打包入口help尚未作为本轮删除后验证运行(本轮没有删除)。
+补登记与证据保存均独立于C组,无需回退不存在的C组实施。
+
+`git diff --exit-code 6b456c9 HEAD -- 'tizen-*/scripts/**' tests <末终止冻结稿> <predicates.json> <measurement_exemptions.json>`
+为空且exit0,完整命令见 `REG03b/protected-zero-diff.command.json`。
+symbol_audit改动仅新增一个SPECS行与count23→24,完整diff在
+`REG03b/symbol-changes.log`,包括被禁止修改的负fixture在内的其它逻辑零改动。
+主工作树既有无关改动和untracked草稿均未处理。
+
+原始CI日志及原始git diff输出保留原字节(含尾随空格),因此包含这些证据的
+`git diff --cached --check` 返回2并报告日志空白;不清洗已取证stdout。
+手写文档/JSON单独的diff空白检查通过;这不是pytest或设计门禁结论。

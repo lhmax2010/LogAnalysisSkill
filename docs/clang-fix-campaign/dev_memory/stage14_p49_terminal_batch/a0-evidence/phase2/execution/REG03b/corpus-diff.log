@@ -1,0 +1,29 @@
+diff --git a/docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md b/docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md
+index 4a1af86..ed6d58c 100644
+--- a/docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md
++++ b/docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md
+@@ -85,12 +85,24 @@
+ 
+ ## §0 判据 dry-run(冻结前置,已完成)
+ 
++抽取期原始声明(逐字保留为历史来源,不作为末终止批次的现状计数):
++
++```text
+ 以下 23 行是本批唯一权威归属表,由
+ `tizen_gerrit_submit/gerrit_submit.py` 顶层 AST 机械生成:
++```
++
++> P4.9 末终止批次行为变更记录(PHASE2-03):`GerritSubmitError` 由
++> P4.9 末终止批次 commit A(5213c5d)按终止稿 §4 与勘误 1–3 新增,
++> 属行为变更记录,非抽取漂移。本表补录该类型;下文抽取时的实测记录
++> 保留其历史语境,不作为末终止批次现状计数。
++
++末终止批次补登记后的权威归属表如下:
+ 
+ | symbol | definition | owner |
+ |---|---|---|
+ | `SubprocessRunner` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
++| `GerritSubmitError` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+ | `GerritSubmitOptions` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+ | `GerritSubmitResult` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |
+ | `ReleaseWorktreeResult` | `tizen_gerrit_submit/gerrit_submit.py` | `skill/tizen_gerrit_submit` |

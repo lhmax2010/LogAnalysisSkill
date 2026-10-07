@@ -1,0 +1,31 @@
+ARTIFICIAL_PHASE_A_CONTROL=premature-item3; PRODUCTION_RUN=NO
+Traceback (most recent call last):
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_phase_controls.py", line 60, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_phase_controls.py", line 51, in main
+    run(load_gate(args.root), args.control)
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_phase_controls.py", line 32, in run
+    before, after = phase_a_pair(gate)
+                    ^^^^^^^^^^^^^^^^^^
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_phase_controls.py", line 25, in phase_a_pair
+    for row in gate.item3_projection():
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_expected_diff.py", line 689, in item3_projection
+    self.validate()
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_expected_diff.py", line 575, in validate
+    new = resolve_new(change["new"], row, self.sources)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_expected_diff.py", line 333, in resolve_new
+    sources.cite(recipe["source"])
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_expected_diff.py", line 140, in cite
+    text = self.read(ref["file"], ref["sha256"]).decode()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_expected_diff.py", line 110, in read
+    self.cache[file] = read_authority(self.root, TABLE_COMMIT, sha256, TABLE)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_authority.py", line 32, in read_authority
+    assert_contained(result.stdout, (root / path).read_bytes())
+  File "/tmp/p49-terminal-REG03/docs/clang-fix-campaign/tools/terminal_authority.py", line 21, in assert_contained
+    raise ValueError("CURRENT_AUTHORITY_MISSING_SOURCE: " + repr(line))
+ValueError: CURRENT_AUTHORITY_MISSING_SOURCE: b'\xe4\xbb\xa5\xe4\xb8\x8b 23 \xe8\xa1\x8c\xe6\x98\xaf\xe6\x9c\xac\xe6\x89\xb9\xe5\x94\xaf\xe4\xb8\x80\xe6\x9d\x83\xe5\xa8\x81\xe5\xbd\x92\xe5\xb1\x9e\xe8\xa1\xa8,\xe7\x94\xb1\n'
