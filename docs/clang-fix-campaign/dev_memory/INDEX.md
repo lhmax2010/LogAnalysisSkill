@@ -19,7 +19,7 @@
 | P4.9 skill-5 gerrit-submit | CLOSED | Gerrit-submit extraction, status locks, six-row terminal mapping, patch-version ledger | commits `f2bc050`/`31a91cb`/`a97c40b`/`0dfa5f1`/`a8620f1`/`d51145f`/`c6f734b`; 173 symbols + 4 module scopes; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | Triage-report extraction, gbs_report constraint closure, branch inventory, extraction-phase ledger | commits `bdb5a55`/`3dc0466`/`3da12a4`/`2cc3dd3`/`dfbbf3b`; 197 symbols + 4 module scopes; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | Step-0 plus all six skill extractions signed off | phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; next and only entry is the five-item terminal batch |
-| P4.9 terminal batch | E11_PHASE1_STOPPED_STAGE_DIFF_SCOPE | Rules `b9d72002` unchanged; PHASE1-01/02 CLOSED by approved prompt rulings | `stage14_p49_terminal_batch/progress.md` §29; 4 readers, item5 PASS, before30 PASS; whole repo1314 passed/1 skipped; mypy/ruff/lint green; PHASE1-03 OPEN (A/B staged exact-diff scope); production unchanged |
+| P4.9 terminal batch | E11_PHASE1_A_IMPLEMENTED | Rules `b9d72002` unchanged; PHASE1-01/02/03 CLOSED by approved prompt rulings | `stage14_p49_terminal_batch/progress.md` §30; A source-derived projection, two negative controls, after30 PASS; 1338 passed/1 skipped; B next, no deletions |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -46,7 +46,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 skill-5 gerrit-submit | CLOSED | `f2bc050`, `31a91cb`, `a97c40b`, `0dfa5f1`, `a8620f1`, `d51145f`, `c6f734b` | frozen authority `../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`; result `stage12_p49_skill5_gerrit_submit/result.md`; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | `bdb5a55`, `3dc0466`, `3da12a4`, `2cc3dd3`, `dfbbf3b`, `9a74c0b` | frozen authority `../p49-skill6-triage-report-design-v1.8-FROZEN.md`; result `stage13_p49_skill6_triage_report/result.md`; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | step-0 + skills 1-6 | signed phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; P4.9 terminal five-item batch is the only next entry |
-| 14 P4.9 terminal batch | E11_PHASE1_STOPPED_STAGE_DIFF_SCOPE | Plan `43a6aa6`; encoding `c79e893`; freeze `6601cfc`; observations `27fb460`; structure `8e1437d`; erratum3 `cbd3a22`; SCAN07 fix `72337e7`; erratum10 `8e72c34`; erratum11 `ab4779e` | rules `b9d72002`, predicates `8271f1d0` unchanged; [progress §29](stage14_p49_terminal_batch/progress.md#29-提示词裁决第一阶段前置取证与停止报告2026-10-07); SCAN-01..09 and PHASE1-01/02 CLOSED; item5 PASS/before-run DONE; [PHASE1-03](stage14_p49_terminal_batch/a0-evidence/phase1/prompt-rulings/stop-report.md) OPEN; A/B and phase2 not started; human approval required before deletion |
+| 14 P4.9 terminal batch | E11_PHASE1_A_IMPLEMENTED | Plan `43a6aa6`; predicate freeze `6601cfc`; erratum11 `ab4779e`; prerequisites `be73825` | rules `b9d72002`, predicates `8271f1d0` unchanged; [progress §30](stage14_p49_terminal_batch/progress.md#30-phase1-03裁决与commit-a六面timeout); PHASE1-01/02/03 CLOSED; A30 projected PASS,1338/1; B next; phase2/human approval before deletion remain |
 
 ## Code-Ready Checkpoint
 

@@ -95,7 +95,7 @@ def reader_results(
     return result
 
 
-def run_probe(root: Path, row: dict[str, Any], capture: Path) -> None:
+def run_probe(root: Path, row: dict[str, Any], capture: Path, *, after: bool = False) -> None:
     for source in sorted(root.glob("*/scripts"), reverse=True):
         sys.path.insert(0, str(source))
     fetch = importlib.import_module("tizen_gerrit_fetch.gerrit")
@@ -110,6 +110,7 @@ def run_probe(root: Path, row: dict[str, Any], capture: Path) -> None:
         raise ValueError(f"fixture path already exists, refusing overwrite: {directory}")
     directory.mkdir(parents=True)
     sid, surface, fault = row["id"], row["surface"], row["fault"]
+    timeout_kw = {"timeout": row["timeout"]} if after else {}
     if sid in {"DANGLING_SYMLINK", "LIVE_SYMLINK_TO_DIR"}:
         target = directory / "target"
         if sid == "LIVE_SYMLINK_TO_DIR":
@@ -174,14 +175,18 @@ def run_probe(root: Path, row: dict[str, Any], capture: Path) -> None:
         with patch.object(workspace, "datetime", clock), patch.object(Path, "write_text", write):
             if surface == "fetch-full":
                 result = fetch.fetch_source_for_commit(
-                    "fixture/project", COMMIT, destination, subprocess_runner=runner
+                    "fixture/project", COMMIT, destination, subprocess_runner=runner, **timeout_kw
                 )
             elif surface == "fetch-query":
-                result = fetch.query_change_for_commit(COMMIT, subprocess_runner=runner)
+                result = fetch.query_change_for_commit(
+                    COMMIT, subprocess_runner=runner, **timeout_kw
+                )
             elif surface == "fetch-git":
-                result = fetch._run_git(["git", "-C", str(destination), "status"], runner, env={})
+                result = fetch._run_git(
+                    ["git", "-C", str(destination), "status"], runner, env={}, **timeout_kw
+                )
             elif surface == "submit-git":
-                result = submit._run_git(destination, ["status"], runner)
+                result = submit._run_git(destination, ["status"], runner, **timeout_kw)
             elif surface == "submit-remote":
                 result = submit._target_warnings(
                     SimpleNamespace(project="fixture/project", base_commit=COMMIT),
@@ -193,14 +198,15 @@ def run_probe(root: Path, row: dict[str, Any], capture: Path) -> None:
                         git_ssh_command=None,
                     ),
                     runner,
+                    **timeout_kw,
                 )
             elif surface == "shared-git":
                 with patch.object(workspace.subprocess, "run", runner):
-                    result = workspace._run_git(["-C", str(destination), "status"])
+                    result = workspace._run_git(["-C", str(destination), "status"], **timeout_kw)
             elif surface == "shared-exclude":
                 with patch.object(workspace.subprocess, "run", runner):
                     result = workspace.mark_worktree_protected(
-                        handle, verification_id="fixture-v", failure_key="fixture-f"
+                        handle, verification_id="fixture-v", failure_key="fixture-f", **timeout_kw
                     )
             else:
                 raise ValueError(f"unsupported frozen surface: {surface}")
@@ -213,7 +219,16 @@ def run_probe(root: Path, row: dict[str, Any], capture: Path) -> None:
         write_json(capture / "outcome.json", outcome)
 
 
-def collect_before(root: Path, rules_root: Path, out: Path, item5_path: Path) -> None:
+def collect_before(
+    root: Path,
+    rules_root: Path,
+    out: Path,
+    item5_path: Path,
+    *,
+    code_root: Path | None = None,
+    before_path: Path | None = None,
+    phase: str = "FULL",
+) -> None:
     context = guard(root, rules_root)
     context["guard_sha256"] = context.pop("producer_sha256")
     context["collector_sha256"] = digest(Path(__file__))
@@ -223,6 +238,16 @@ def collect_before(root: Path, rules_root: Path, out: Path, item5_path: Path) ->
     names = readers_from_item5(item5)
     out.mkdir(parents=True, exist_ok=False)
     workspace = importlib.import_module("tizen_ci_shared.workspace")
+    selected_root = code_root or root
+    if workspace.__file__ is None or not Path(workspace.__file__).resolve().is_relative_to(
+        selected_root
+    ):
+        raise ValueError("reader module provenance differs from selected code tree")
+    context["code_root"] = str(selected_root)
+    context["code_sha256"] = {
+        str(path.relative_to(selected_root)): digest(path)
+        for path in sorted(selected_root.glob("*/scripts/**/*.py"))
+    }
     results, observations = {}, []
     for row in gate.manifest["scenarios"]:
         sid = row["id"]
@@ -234,7 +259,7 @@ def collect_before(root: Path, rules_root: Path, out: Path, item5_path: Path) ->
             "-B",
             str(Path(__file__).resolve()),
             "--root",
-            str(root),
+            str(selected_root),
             "--rules-root",
             str(rules_root),
             "--probe",
@@ -242,6 +267,8 @@ def collect_before(root: Path, rules_root: Path, out: Path, item5_path: Path) ->
             "--out",
             str(capture),
         ]
+        if code_root:
+            command.append("--after-probe")
         obs = gate.sources.fact(row["obs_ref"])
         # The original runner passed this exact controlled environment through
         # fetch_source_for_commit. Reuse it as input, not an output mask.
@@ -318,7 +345,8 @@ def collect_before(root: Path, rules_root: Path, out: Path, item5_path: Path) ->
                 shutil.rmtree(directory)
             if backup is not None:
                 backup.rename(directory)
-    write_json(out / "before.json", results)
+    result_path = out / ("after.json" if code_root else "before.json")
+    write_json(result_path, results)
     write_json(
         out / "execution.json",
         {
@@ -328,6 +356,22 @@ def collect_before(root: Path, rules_root: Path, out: Path, item5_path: Path) ->
         },
     )
     gate.validate_results(results, names)
+    if code_root:
+        if before_path is None:
+            raise ValueError("actual before evidence required")
+        gate.compare(load_json(before_path), results, names, phase=phase)
+        write_json(
+            out / "comparison.json",
+            {
+                "phase": phase,
+                "scenarios": len(results),
+                "before_sha256": digest(before_path),
+                "after_sha256": digest(result_path),
+                "excluded": gate.item3_projection() if phase == "A" else [],
+            },
+        )
+        print(f"AFTER=PASS phase={phase} scenarios={len(results)} sha256={digest(result_path)}")
+        return
     failures = []
     for row in gate.manifest["scenarios"]:
         sid = row["id"]
@@ -415,13 +459,25 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--probe", type=Path)
     parser.add_argument("--item5-output", type=Path)
+    parser.add_argument("--code-root", type=Path)
+    parser.add_argument("--before", type=Path)
+    parser.add_argument("--phase", choices=["A", "FULL"], default="FULL")
+    parser.add_argument("--after-probe", action="store_true")
     args = parser.parse_args()
     if args.probe:
-        run_probe(args.root, load_json(args.probe), args.out)
+        run_probe(args.root, load_json(args.probe), args.out, after=args.after_probe)
     else:
         if args.item5_output is None:
             parser.error("verified item5 output required")
-        collect_before(args.root, args.rules_root, args.out, args.item5_output)
+        collect_before(
+            args.root,
+            args.rules_root,
+            args.out,
+            args.item5_output,
+            code_root=args.code_root,
+            before_path=args.before,
+            phase=args.phase,
+        )
     return 0
 
 

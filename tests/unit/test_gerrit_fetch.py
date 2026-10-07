@@ -308,7 +308,7 @@ def parity_sha(payload: Mapping[str, Any]) -> str:
         pytest.param("not-found", GerritError, "GERRIT_CHANGE_NOT_FOUND", id="not-found"),
         pytest.param("ambiguous", GerritError, "GERRIT_CHANGE_AMBIGUOUS", id="ambiguous"),
         pytest.param("malformed-json", json.JSONDecodeError, None, id="malformed-json"),
-        pytest.param("timeout", subprocess.TimeoutExpired, None, id="timeout"),
+        pytest.param("timeout", GerritError, "FETCH_TIMEOUT", id="timeout"),
     ],
 )
 def test_fetch_source_query_outcomes_preserve_destination(
@@ -666,7 +666,7 @@ def test_fetch_source_git_interruption_propagates_and_leaves_state(
     error: BaseException
     if error_kind == "timeout":
         error = subprocess.TimeoutExpired([interrupt_at], timeout=1)
-        expected_exception: type[BaseException] = subprocess.TimeoutExpired
+        expected_exception: type[BaseException] = GerritError
     else:
         error = ControlledInterruption(case)
         expected_exception = ControlledInterruption
@@ -676,9 +676,14 @@ def test_fetch_source_git_interruption_propagates_and_leaves_state(
         interrupt_error=error,
     )
 
-    with pytest.raises(expected_exception):
+    with pytest.raises(expected_exception) as captured:
         fetch_source_for_commit(PROJECT, COMMIT, destination, subprocess_runner=runner)
 
+    if error_kind == "timeout":
+        assert isinstance(captured.value, GerritError)
+        assert captured.value.code == "FETCH_TIMEOUT"
+        assert str(captured.value) == str(error)
+        assert captured.value.__cause__ is error
     assert destination.is_dir()
     assert _stage_names(destination) == expected_stages
     assert (destination / ".git").is_dir()
@@ -735,7 +740,7 @@ def test_fetch_source_filesystem_errors_propagate(
         assert not destination.exists()
 
 
-def test_fetch_source_subprocess_calls_have_no_timeout(tmp_path: Path) -> None:
+def test_fetch_source_subprocess_calls_default_timeout_none(tmp_path: Path) -> None:
     destination = tmp_path / "src"
     runner = FakeRunner(destination)
 
@@ -749,7 +754,7 @@ def test_fetch_source_subprocess_calls_have_no_timeout(tmp_path: Path) -> None:
     assert result.status == "source_available"
     assert any(argv[0] == "ssh" for argv, _ in runner.calls)
     assert any(argv[0] == "git" for argv, _ in runner.calls)
-    assert all("timeout" not in kwargs for _, kwargs in runner.calls)
+    assert all("timeout" in kwargs and kwargs["timeout"] is None for _, kwargs in runner.calls)
 
 
 # Package-root API contract. These are skill tests, not legacy wiring tests.

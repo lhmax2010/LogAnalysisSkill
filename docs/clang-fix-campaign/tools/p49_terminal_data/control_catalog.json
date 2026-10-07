@@ -1,5 +1,31 @@
 [
   {
+    "control_id": "CTRL-PHASE1-03-NORMAL",
+    "group": "PHASE1-03",
+    "source": "approved prompt ruling: source-derived item3 projection for commit A",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/phase1/commit-a/projection-normal.log"
+  },
+  {
+    "control_id": "CTRL-PHASE1-03-PREMATURE-ITEM3",
+    "group": "PHASE1-03",
+    "source": "approved prompt ruling control 1",
+    "status": "PASS",
+    "expected_exit": 1,
+    "exit_code": 1,
+    "evidence": "a0-evidence/phase1/commit-a/projection-premature-item3.log"
+  },
+  {
+    "control_id": "CTRL-PHASE1-03-MISSING-ITEM4",
+    "group": "PHASE1-03",
+    "source": "approved prompt ruling control 2",
+    "status": "PASS",
+    "expected_exit": 1,
+    "exit_code": 1,
+    "evidence": "a0-evidence/phase1/commit-a/projection-missing-item4.log"
+  },
+  {
     "control_id": "CTRL-E11-READER-POSITIVE",
     "group": "E11-2-DEDICATED-READERS",
     "source": "v1.31-FROZEN appendix C E11-2",

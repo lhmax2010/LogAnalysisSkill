@@ -28,6 +28,14 @@ from tizen_ci_shared.workspace import release_worktree_protection
 SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
 
 
+class GerritSubmitError(RuntimeError):
+    """Gerrit submission failure with a stable error code."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
 @dataclass(frozen=True)
 class GerritSubmitOptions:
     verification_id: str
@@ -73,6 +81,7 @@ def gerrit_submit(
     options: GerritSubmitOptions,
     *,
     subprocess_runner: SubprocessRunner = subprocess.run,
+    timeout: float | None = None,
 ) -> GerritSubmitResult:
     """Validate a verified worktree and return a dry-run Gerrit push command."""
 
@@ -117,7 +126,7 @@ def gerrit_submit(
             reason="verified worktree is missing; refusing to fall back to patch files",
         )
 
-    mismatch = _verification_mismatch(record, worktree, subprocess_runner)
+    mismatch = _verification_mismatch(record, worktree, subprocess_runner, timeout=timeout)
     if mismatch is not None:
         return _record_result(
             action="rejected_verification_mismatch",
@@ -126,7 +135,7 @@ def gerrit_submit(
             options=options,
             reason=mismatch,
         )
-    dirty = _dirty_reason(worktree, subprocess_runner)
+    dirty = _dirty_reason(worktree, subprocess_runner, timeout=timeout)
     if dirty is not None:
         return _record_result(
             action="rejected_worktree_dirty",
@@ -136,7 +145,7 @@ def gerrit_submit(
             reason=dirty,
         )
 
-    warnings = _target_warnings(record, options, subprocess_runner)
+    warnings = _target_warnings(record, options, subprocess_runner, timeout=timeout)
     if options.submit_mode == "submit":
         return _record_result(
             action="rejected_submit_not_enabled",
@@ -248,10 +257,14 @@ def _verification_mismatch(
     record: VerificationRecord,
     worktree: Path,
     subprocess_runner: SubprocessRunner,
+    *,
+    timeout: float | None = None,
 ) -> str | None:
     try:
-        head = _git_stdout(worktree, ["rev-parse", "HEAD"], subprocess_runner)
-        tree = _git_stdout(worktree, ["rev-parse", "HEAD^{tree}"], subprocess_runner)
+        head = _git_stdout(worktree, ["rev-parse", "HEAD"], subprocess_runner, timeout=timeout)
+        tree = _git_stdout(
+            worktree, ["rev-parse", "HEAD^{tree}"], subprocess_runner, timeout=timeout
+        )
     except subprocess.CalledProcessError as exc:
         return f"failed to read verified git object: exit {exc.returncode}"
     if head != record.verified_commit_sha:
@@ -261,11 +274,15 @@ def _verification_mismatch(
     return None
 
 
-def _dirty_reason(worktree: Path, subprocess_runner: SubprocessRunner) -> str | None:
-    tracked = _run_git(worktree, ["diff", "--quiet", "HEAD", "--"], subprocess_runner)
+def _dirty_reason(
+    worktree: Path, subprocess_runner: SubprocessRunner, *, timeout: float | None = None
+) -> str | None:
+    tracked = _run_git(
+        worktree, ["diff", "--quiet", "HEAD", "--"], subprocess_runner, timeout=timeout
+    )
     if tracked.returncode != 0:
         return "tracked worktree changes exist after verified commit"
-    staged = _run_git(worktree, ["diff", "--cached", "--quiet"], subprocess_runner)
+    staged = _run_git(worktree, ["diff", "--cached", "--quiet"], subprocess_runner, timeout=timeout)
     if staged.returncode != 0:
         return "staged changes exist after verified commit"
     return None
@@ -275,6 +292,8 @@ def _target_warnings(
     record: VerificationRecord,
     options: GerritSubmitOptions,
     subprocess_runner: SubprocessRunner,
+    *,
+    timeout: float | None = None,
 ) -> list[str]:
     branch = _target_branch(options.submit_target)
     if branch is None:
@@ -287,7 +306,10 @@ def _target_warnings(
             text=True,
             capture_output=True,
             env=_subprocess_env(options.git_ssh_command),
+            timeout=timeout,
         )
+    except subprocess.TimeoutExpired:
+        return ["target_head_unknown:timeout"]
     except (OSError, subprocess.SubprocessError) as exc:
         return [f"target_head_unknown:{exc}"]
     if completed.returncode != 0:
@@ -326,15 +348,19 @@ def _push_command(record: VerificationRecord, options: GerritSubmitOptions) -> l
 
 
 def _remote_url(record: VerificationRecord, options: GerritSubmitOptions) -> str:
-    return f"ssh://{options.gerrit_user}@{options.gerrit_host}:{options.gerrit_port}/{record.project}"
+    return (
+        f"ssh://{options.gerrit_user}@{options.gerrit_host}:{options.gerrit_port}/{record.project}"
+    )
 
 
 def _git_stdout(
     worktree: Path,
     args: list[str],
     subprocess_runner: SubprocessRunner,
+    *,
+    timeout: float | None = None,
 ) -> str:
-    completed = _run_git(worktree, args, subprocess_runner, check=True)
+    completed = _run_git(worktree, args, subprocess_runner, check=True, timeout=timeout)
     return (completed.stdout or "").strip()
 
 
@@ -344,13 +370,18 @@ def _run_git(
     subprocess_runner: SubprocessRunner,
     *,
     check: bool = False,
+    timeout: float | None = None,
 ) -> subprocess.CompletedProcess[str]:
-    return subprocess_runner(
-        ["git", "-C", str(worktree), *args],
-        check=check,
-        text=True,
-        capture_output=True,
-    )
+    try:
+        return subprocess_runner(
+            ["git", "-C", str(worktree), *args],
+            check=check,
+            text=True,
+            capture_output=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise GerritSubmitError("GIT_TIMEOUT", str(exc)) from exc
 
 
 def _result(

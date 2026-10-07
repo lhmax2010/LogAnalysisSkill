@@ -220,7 +220,7 @@ def test_gerrit_submit_dry_run_returns_command_without_push(tmp_path: Path) -> N
     assert get_latest_status(db, record.failure_key) == GERRIT_READY
 
 
-def test_gerrit_submit_all_subprocess_paths_omit_timeout(tmp_path: Path) -> None:
+def test_gerrit_submit_all_subprocess_paths_default_timeout_none(tmp_path: Path) -> None:
     db, record, base_commit = _record(tmp_path)
     runner = SubmitRunner(target_head=base_commit)
 
@@ -230,21 +230,25 @@ def test_gerrit_submit_all_subprocess_paths_omit_timeout(tmp_path: Path) -> None
     assert len(runner.calls) == 5
     assert any(command[:2] == ["git", "ls-remote"] for command, _kwargs in runner.calls)
     assert any(command[:2] == ["git", "-C"] for command, _kwargs in runner.calls)
-    assert all("timeout" not in kwargs for _command, kwargs in runner.calls)
+    assert all(
+        "timeout" in kwargs and kwargs["timeout"] is None for _command, kwargs in runner.calls
+    )
     assert all("push" not in command for command, _kwargs in runner.calls)
     assert (Path(record.worktree_path) / PROTECTED_FILENAME).is_file()
 
 
-def test_run_git_propagates_timeout_expired_unchanged(tmp_path: Path) -> None:
+def test_run_git_maps_timeout_expired_without_changing_message(tmp_path: Path) -> None:
     timeout = subprocess.TimeoutExpired(["git", "status"], 7)
 
     def raise_timeout(*_args: Any, **_kwargs: Any) -> subprocess.CompletedProcess[str]:
         raise timeout
 
-    with pytest.raises(subprocess.TimeoutExpired) as captured:
+    with pytest.raises(_GERRIT_SUBMIT_MODULE.GerritSubmitError) as captured:
         _GERRIT_SUBMIT_MODULE._run_git(tmp_path, ["status"], raise_timeout)
 
-    assert captured.value is timeout
+    assert captured.value.__cause__ is timeout
+    assert captured.value.code == "GIT_TIMEOUT"
+    assert str(captured.value) == str(timeout)
 
 
 def test_gerrit_submit_record_not_found(tmp_path: Path) -> None:
@@ -395,7 +399,7 @@ def test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning(tmp_path
     )
 
     assert result.action == "dry_run_unverified_remote"
-    assert f"target_head_unknown:{timeout}" in result.warnings
+    assert "target_head_unknown:timeout" in result.warnings
     assert (Path(record.worktree_path) / PROTECTED_FILENAME).is_file()
 
 

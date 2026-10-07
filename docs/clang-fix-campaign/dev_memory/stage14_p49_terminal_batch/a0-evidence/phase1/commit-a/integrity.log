@@ -1,0 +1,7 @@
+CONTRACT_NODEID | tests/unit/test_gerrit_fetch.py::test_fetch_source_subprocess_calls_have_no_timeout -> tests/unit/test_gerrit_fetch.py::test_fetch_source_subprocess_calls_default_timeout_none
+CONTRACT_NODEID | tests/unit/test_tizen_gerrit_submit.py::test_gerrit_submit_all_subprocess_paths_omit_timeout -> tests/unit/test_tizen_gerrit_submit.py::test_gerrit_submit_all_subprocess_paths_default_timeout_none
+CONTRACT_NODEID | tests/unit/test_tizen_gerrit_submit.py::test_run_git_propagates_timeout_expired_unchanged -> tests/unit/test_tizen_gerrit_submit.py::test_run_git_maps_timeout_expired_without_changing_message
+NODEIDS old=1315 retained=1315 renamed=3 added=24 lost=0 changed_status=0
+PRODUCTION_DIFF=["tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py", "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py", "tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py"]
+PROTECTED_UNCHANGED=926
+FIXED_TREE_AND_BEFORE=PASS

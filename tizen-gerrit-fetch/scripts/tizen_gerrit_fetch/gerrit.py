@@ -34,6 +34,7 @@ def query_change_for_commit(
     commit_hash: str,
     *,
     subprocess_runner: SubprocessRunner = subprocess.run,
+    timeout: float | None = None,
 ) -> GerritChange:
     """Query Gerrit for a commit and find the exact patch set revision."""
 
@@ -54,7 +55,10 @@ def query_change_for_commit(
             check=True,
             capture_output=True,
             text=True,
+            timeout=timeout,
         )
+    except subprocess.TimeoutExpired as exc:
+        raise GerritError("FETCH_TIMEOUT", str(exc)) from exc
     except subprocess.CalledProcessError as exc:
         raise GerritError("GERRIT_QUERY_FAILED", f"gerrit query failed: {exc}") from exc
 
@@ -126,10 +130,13 @@ def fetch_source_for_commit(
     *,
     subprocess_runner: SubprocessRunner = subprocess.run,
     git_ssh_command: str | None = None,
+    timeout: float | None = None,
 ) -> SourceFetchResult:
     """Create a shallow checkout for the build commit."""
 
-    change = query_change_for_commit(commit_hash, subprocess_runner=subprocess_runner)
+    change = query_change_for_commit(
+        commit_hash, subprocess_runner=subprocess_runner, timeout=timeout
+    )
     remote_url = f"ssh://{GERRIT_HOST}:{GERRIT_PORT}/{project}"
     _reset_generated_source_dir(destination)
     destination.mkdir(parents=True, exist_ok=True)
@@ -139,11 +146,12 @@ def fetch_source_for_commit(
         env["GIT_SSH_COMMAND"] = git_ssh_command
 
     try:
-        _run_git(["git", "init", str(destination)], subprocess_runner, env=env)
+        _run_git(["git", "init", str(destination)], subprocess_runner, env=env, timeout=timeout)
         _run_git(
             ["git", "-C", str(destination), "remote", "add", "origin", remote_url],
             subprocess_runner,
             env=env,
+            timeout=timeout,
         )
         if change.status == "NEW":
             if change.matching_patchset is None:
@@ -164,11 +172,13 @@ def fetch_source_for_commit(
                 ],
                 subprocess_runner,
                 env=env,
+                timeout=timeout,
             )
             _run_git(
                 ["git", "-C", str(destination), "checkout", "--detach", "FETCH_HEAD"],
                 subprocess_runner,
                 env=env,
+                timeout=timeout,
             )
         else:
             try:
@@ -176,6 +186,7 @@ def fetch_source_for_commit(
                     ["git", "-C", str(destination), "fetch", "--depth", "1", "origin", commit_hash],
                     subprocess_runner,
                     env=env,
+                    timeout=timeout,
                 )
             except subprocess.CalledProcessError:
                 if not change.branch:
@@ -193,11 +204,13 @@ def fetch_source_for_commit(
                     ],
                     subprocess_runner,
                     env=env,
+                    timeout=timeout,
                 )
             _run_git(
                 ["git", "-C", str(destination), "checkout", "--detach", commit_hash],
                 subprocess_runner,
                 env=env,
+                timeout=timeout,
             )
     except subprocess.CalledProcessError as exc:
         return SourceFetchResult(
@@ -208,6 +221,8 @@ def fetch_source_for_commit(
             error=f"git command failed: {exc}",
         )
     except GerritError as exc:
+        if exc.code == "FETCH_TIMEOUT":
+            raise
         return SourceFetchResult(
             status=exc.code,
             src_root=destination,
@@ -229,8 +244,12 @@ def _run_git(
     subprocess_runner: SubprocessRunner,
     *,
     env: dict[str, str],
+    timeout: float | None = None,
 ) -> None:
-    subprocess_runner(command, check=True, text=True, env=env)
+    try:
+        subprocess_runner(command, check=True, text=True, env=env, timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        raise GerritError("FETCH_TIMEOUT", str(exc)) from exc
 
 
 def _reset_generated_source_dir(path: Path) -> None:

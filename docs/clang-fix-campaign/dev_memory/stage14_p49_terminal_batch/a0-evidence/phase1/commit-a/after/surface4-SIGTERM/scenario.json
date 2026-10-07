@@ -1,0 +1,25 @@
+{
+  "id": "surface4-SIGTERM",
+  "section": "§4",
+  "surface": "submit-remote",
+  "fault": "SIGTERM",
+  "timeout": null,
+  "fixture": {
+    "destination": "/tmp/p49-item4-vik56x9g/surface4-SIGTERM/destination"
+  },
+  "calls": [
+    {
+      "surface": "submit-remote",
+      "trace_ref": {
+        "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+        "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+        "pointer": "/observations/15/trace/0"
+      }
+    }
+  ],
+  "obs_ref": {
+    "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+    "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+    "pointer": "/observations/15"
+  }
+}

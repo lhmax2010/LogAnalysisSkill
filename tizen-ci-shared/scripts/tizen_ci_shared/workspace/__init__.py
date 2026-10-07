@@ -52,7 +52,9 @@ def write_workdir_marker(
     return marker_path
 
 
-def clean_repository_preserving_markers(worktree_path: Path) -> None:
+def clean_repository_preserving_markers(
+    worktree_path: Path, *, timeout: float | None = None
+) -> None:
     """Clean the disposable repository while retaining both authority markers."""
 
     _run_git(
@@ -65,7 +67,8 @@ def clean_repository_preserving_markers(worktree_path: Path) -> None:
             MARKER_FILENAME,
             "-e",
             PROTECTED_FILENAME,
-        ]
+        ],
+        timeout=timeout,
     )
 
 
@@ -109,12 +112,13 @@ def mark_worktree_protected(
     *,
     verification_id: str,
     failure_key: str,
+    timeout: float | None = None,
 ) -> None:
     """Protect a verified worktree from automatic cleanup until explicit release."""
 
     _verify_cleanup_handle(handle)
     path = Path(handle.path)
-    _exclude_private_files(path)
+    _exclude_private_files(path, timeout=timeout)
     protected = {
         "protected_reason": "GERRIT_READY",
         "verification_id": verification_id,
@@ -202,17 +206,24 @@ def _is_relative_to(path: Path, root: Path) -> bool:
     return True
 
 
-def _run_git(args: list[str]) -> None:
-    subprocess.run(["git", *args], check=True, text=True, capture_output=True)
+def _run_git(args: list[str], *, timeout: float | None = None) -> None:
+    try:
+        subprocess.run(["git", *args], check=True, text=True, capture_output=True, timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        raise WorkspaceViolation("GIT_TIMEOUT: " + str(exc)) from exc
 
 
-def _exclude_private_files(worktree_path: Path) -> None:
-    result = subprocess.run(
-        ["git", "-C", str(worktree_path), "rev-parse", "--git-path", "info/exclude"],
-        check=True,
-        text=True,
-        capture_output=True,
-    )
+def _exclude_private_files(worktree_path: Path, *, timeout: float | None = None) -> None:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(worktree_path), "rev-parse", "--git-path", "info/exclude"],
+            check=True,
+            text=True,
+            capture_output=True,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise WorkspaceViolation("GIT_TIMEOUT: " + str(exc)) from exc
     exclude_path = Path(result.stdout.strip())
     if not exclude_path.is_absolute():
         exclude_path = worktree_path / exclude_path

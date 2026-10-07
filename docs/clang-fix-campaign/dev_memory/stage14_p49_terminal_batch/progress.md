@@ -2951,10 +2951,84 @@ hash逐一相等,由`integrity.log`验证。既有产出未改写成新版本重
 
 | 编号 | 原文位置 | 困难/实测证据 | 待裁决候选 |
 |---|---|---|---|
-| PHASE1-03 OPEN | F §6:1526、§7:1568、E11-2:2487;terminal_expected_diff.py:667/687 | A只做timeout,B做悬空链接,但完整门禁立即要求全部终态差异。构造A结果exit1:`missing=['/exception_code','/exception_message','/exception_type']`;完整终态人工对照绿 | 明确A阶段期望投影,B完整终态;或明确累计门禁仅在B后检。不能自行提前做B、过滤最终登记或放宽精确相等 |
+| PHASE1-03 CLOSED,见§30 | F §6:1526、§7:1568、E11-2:2487;terminal_expected_diff.py:667/687 | 原冲突:分提交实施与即时完整终态门禁不相容,原构造证据保留 | 设计方提示词批准候选1:A按登记来源机械投影,排除项3字段必须保持改前;B完整终态。两负控制与A实际30场景均已实跑 |
 
 这是规格可满足性诊断,不是实际生产改后运行。停止项1条。
 前置:专用枚举/item5 PASS、30场景改前DONE、全仓及静态检查PASS。
 A/B均NOT_STARTED;第二阶段清单/归类/项2/OBS-5均NOT_STARTED。
 生产零改动;冻结稿、predicates/exemptions、expected_diff/manifest/schema与既有OBS
 零修改;无关dirty/untracked保持原样。提交前置与停止报告,push后等裁决。
+
+## 30. PHASE1-03裁决与commit A:六面timeout
+
+### 30.1 批准前提和投影
+
+设计方按轻量流程在提示词批准候选1;无勘误,不改F/冻结predicates/
+expected_diff/manifest/schema。投影只读登记项`new.source`:
+来源文件须为F且节为§3或E2-1,不将skill-5的§3.2误认为项3。
+投影不读取实际差异;排除字段与改前精确相等,其它登记必须兑现,
+未登记字段仍严格相等。B默认FULL,不使用投影。
+
+证据根`A=a0-evidence/phase1/commit-a/`。`item3-projection.json`
+保存每项完整来源file/hash/section/quote,机械结果:
+
+| 场景 | 路径 | 来源 |
+|---|---|---|
+| DANGLING_SYMLINK | /exception_type | F §3 预期差异 |
+| DANGLING_SYMLINK | /exception_code | F §3 预期差异 |
+| DANGLING_SYMLINK | /exception_message | F 附录C/E2-1 |
+
+人工控制仅假产出,不是OBS或改后实跑:
+
+```text
+projection-normal: PHASE_A=PASS; EXIT=0
+projection-premature-item3: GATE_REJECTED: DIFF_PATHS: extra=['/exception_type'] missing=[]; EXIT=1
+projection-missing-item4: GATE_REJECTED: DIFF_PATHS: extra=[] missing=['/calls/0/kwargs/timeout']; EXIT=1
+projection-tests: 103 passed in 5.30s; EXIT=0
+```
+
+原始逐命令stdout/exit/argv/env均在对应`.log`/`.command.json`,
+control_catalog登记两条必红与正常对照。PHASE1-03 CLOSED。
+
+### 30.2 实施与实际改后
+
+仅改三生产文件:skill-3 gerrit、skill-5 gerrit_submit、shared/workspace。
+六面timeout kw-only默认None,经调用链明确下传;只捕获TimeoutExpired:
+fetch用FETCH_TIMEOUT、submit git用GIT_TIMEOUT,消息str(exc);
+remote用固定warning;shared用`GIT_TIMEOUT: `+str(exc),不添code字段。
+新增GerritSubmitError(code,message);fetch外层不吞FETCH_TIMEOUT。
+SIGINT/SIGTERM未捕获,无清理/回滚新逻辑。项3判定与项5写入顺序未改。
+
+在`/tmp/p49-terminal-implementation-be73825`独立worktree只应用本轮三件
+生产diff,与主树逐文件hash核对;原固定43a6aa6仍干净、不改动。
+门禁采集cwd仍为固定树,改后模块从该实现副本导入;每次记录code_root与
+全部生产源码hash。非OBS producer,复用旧item3/4/5与旧before文件。
+
+`A/after/after.json` SHA:
+`828f4df93cd5b9cbddf59f429168f2d92c6413240ef3bb9b471f74c5486bbb6a`。
+`A/after-a.log`:
+
+```text
+AFTER=PASS phase=A scenarios=30 sha256=828f4df93cd5b9cbddf59f429168f2d92c6413240ef3bb9b471f74c5486bbb6a
+EXIT=0
+```
+
+`A/after/comparison.json`含before/after hash与排除来源清单。
+非修改源码的信号场景仍实际子进程注入。新增18个六面异常控制,
+既有query/git超时与默认timeout测试按新契约更新,不删原行为断言。
+三个测试名称随契约更新,旧→新映射逐条入`A/integrity.log`。
+
+### 30.3 验收与停点
+
+| 证据 | 命令范围 | 结果 |
+|---|---|---|
+| full-regression-final.log | pytest全tests,固定cwd+实现副本生产路径 | 1338 passed / 1 skipped,exit0 |
+| mypy-ci.log | CI生产10包 | 88 files无问题,exit0 |
+| mypy-tools.log | 修改的3个门禁工具,Python3.12 | 3 files无问题,exit0 |
+| ruff-code.log | 实现副本全仓 | All checks passed!,exit0 |
+| ruff-tools-tests.log | 主树本轮tools/tests | All checks passed!,exit0 |
+| lint-imports.log | 实现副本模块+同一.importlinter | 6 kept / 0 broken,exit0 |
+| integrity.log | 集合保留/代码副本相等/受保护输入/固定树 | PASS,exit0 |
+
+A提交后继续B;第二阶段尚未开始,任何新门禁红/OTHER/规格缺口即停报。
+轻量裁决不改变安全边界,全量最终登记保留,未启用任何忽略字段或掩码。

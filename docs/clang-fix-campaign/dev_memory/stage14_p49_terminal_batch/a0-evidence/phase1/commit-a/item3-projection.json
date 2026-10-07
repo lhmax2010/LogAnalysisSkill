@@ -1,0 +1,32 @@
+[
+  {
+    "scenario": "DANGLING_SYMLINK",
+    "path": "/exception_type",
+    "source": {
+      "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+      "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+      "section": "§3 预期差异",
+      "quote": ",字段值按 §6 标记值写法;v1.27 统一):**悬空 symlink 场景按 `DIFF_SET` 登记**:\n  `GerritError.code` 由 `{\"state\":\"ABSENT\"}` → `{\"state\":\"VALUE\",\"value\":\"SOURCE_DIR_UNSAFE\"}`;\n  异常类型由现状异常(值见 `OBS-1.item3-predicate`)→ `GerritError`;\n  **相邻的非悬空对照场景按 `NO_DIFF` 登记**;**其余输入的全部输出不变**;\n  **具体旧值由 `OBS-1.item3-predicate` 与 `expected_diff.json` 提供**;\n"
+    }
+  },
+  {
+    "scenario": "DANGLING_SYMLINK",
+    "path": "/exception_code",
+    "source": {
+      "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+      "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+      "section": "§3 预期差异",
+      "quote": ",字段值按 §6 标记值写法;v1.27 统一):**悬空 symlink 场景按 `DIFF_SET` 登记**:\n  `GerritError.code` 由 `{\"state\":\"ABSENT\"}` → `{\"state\":\"VALUE\",\"value\":\"SOURCE_DIR_UNSAFE\"}`;\n  异常类型由现状异常(值见 `OBS-1.item3-predicate`)→ `GerritError`;\n  **相邻的非悬空对照场景按 `NO_DIFF` 登记**;**其余输入的全部输出不变**;\n  **具体旧值由 `OBS-1.item3-predicate` 与 `expected_diff.json` 提供**;\n"
+    }
+  },
+  {
+    "scenario": "DANGLING_SYMLINK",
+    "path": "/exception_message",
+    "source": {
+      "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+      "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+      "section": "附录C/E2-1",
+      "quote": " 被改道进入\"改前已存在、本批未改\"的分支时,该分支产生的输出字段取何值**(DIFF-03)\n> 某场景因本批改动而进入一个改前就存在、且本批不改其文本的代码分支时,该分支产生的每个输出字段,其新值 =\n> **该分支对本场景输入的产出**,按下列方式确定(规则名 `EXISTING_BRANCH_OUTPUT`):\n> (i) 分支以 OBS producer 已锚定的源码位置为准(机械 selector,非行号);\n> (ii) 同一分支在改前已有至少一个相邻场景的观测实例(OBS 产出中的原始字段),用以证明该分支产出的形式;\n> (iii) 门禁按分支的产出规则代入本场景的 fixture 输入,算出精确期望值后**逐字比较**。\n> 登记写成\"由规则派生\":规则名 `EXISTING_BRANCH_OUTPUT` + 本勘误编号 + (i) 的锚点 + (ii) 的观测实例路径。\n> **本批唯一的适用实例 —— §3 悬空 symlink 场景**:分支 = ANCHOR-3 所在函数中抛出 `SOURCE_DIR_UNSAFE` 的分支;\n> 相邻观测 = `OBS-1.item3-predicate` 的 `LIVE_SYMLINK_TO_DIR` 场景;\n> 消息新值 = `\"source directory is a symlink: \" + str(<悬空场景的 destination 路径>)`(与该分支对 live symlink 的产出同一形式,只代入本场景路径);\n> `code` 新值 = `SOURCE_DIR_UNSAFE`、异常类型新值 = `GerritError`(§3 已规定);**旧消息**取 OBS 产出的原始字段。\n> 若门禁发现该分支在相邻场景的实际产出与上述形式不符,说明锚定或观测有误 → 停止报告,不得改用其它文案。\n\n"
+    }
+  }
+]

@@ -684,8 +684,28 @@ class Gate:
                 if m["exists"]:
                     require(re.fullmatch(r"[0-9a-f]{64}", m["sha256"]["value"]), "MARKER_HASH")
 
-    def compare(self, before: Any, after: Any, readers: Any) -> None:
+    def item3_projection(self) -> list[dict[str, Any]]:
+        """PHASE1-03: derive postponed fields from registered sources, never results."""
+        self.validate()
+        excluded = []
+        for sid, entry in self.expected["scenarios"].items():
+            for path, delta in entry.get("differences", {}).items():
+                source = delta["new"]["source"]
+                if source["file"] == DOC and (
+                    re.fullmatch(r"§3(?:\s.*)?", source["section"])
+                    or source["section"] == "附录C/E2-1"
+                ):
+                    excluded.append({"scenario": sid, "path": path, "source": source})
+        return excluded
+
+    def compare(self, before: Any, after: Any, readers: Any, *, phase: str = "FULL") -> None:
+        require(phase in {"A", "FULL"}, "UNKNOWN_PHASE")
         resolved = self.validate()
+        excluded = (
+            {(row["scenario"], row["path"]) for row in self.item3_projection()}
+            if phase == "A"
+            else set()
+        )
         self.validate_results(before, readers)
         self.validate_results(after, readers)
         for row in self.manifest["scenarios"]:
@@ -696,7 +716,25 @@ class Gate:
                         f"TIMEOUT_BEFORE_OUTCOME: {row['id']}/{field}",
                     )
         for sid, entry in self.expected["scenarios"].items():
-            compare_one(before[sid], after[sid], entry, resolved[sid])
+            if phase == "A" and entry["mode"] == "DIFF_SET":
+                active = {
+                    path: delta
+                    for path, delta in entry["differences"].items()
+                    if (sid, path) not in excluded
+                }
+                projected_entry = (
+                    {"mode": "DIFF_SET", "differences": active}
+                    if active
+                    else {"mode": "NO_DIFF", "reason": "PHASE1-03: item3 remains before"}
+                )
+                compare_one(
+                    before[sid],
+                    after[sid],
+                    projected_entry,
+                    {path: resolved[sid][path] for path in active},
+                )
+            else:
+                compare_one(before[sid], after[sid], entry, resolved[sid])
 
     def collect(
         self, runner: Callable[[dict[str, Any], list[str]], dict[str, Any]], readers: Any
@@ -740,16 +778,22 @@ def main() -> int:
     parser.add_argument("--before", type=Path)
     parser.add_argument("--after", type=Path)
     parser.add_argument("--item5-output", type=Path)
+    parser.add_argument("--phase", choices=["A", "FULL"], default="FULL")
+    parser.add_argument("--projection-output", type=Path)
     args = parser.parse_args()
     try:
         gate = load_gate(args.root, args.data)
         resolved = gate.validate()
+        if args.projection_output:
+            with args.projection_output.open("x", encoding="utf-8") as handle:
+                json.dump(gate.item3_projection(), handle, ensure_ascii=False, indent=2)
+                handle.write("\n")
         if args.command == "compare":
             require(
                 args.before and args.after and args.item5_output, "BOTH_RUNS_AND_ITEM5_REQUIRED"
             )
             readers = readers_from_item5(load_json(args.item5_output))
-            gate.compare(load_json(args.before), load_json(args.after), readers)
+            gate.compare(load_json(args.before), load_json(args.after), readers, phase=args.phase)
         entries = list(gate.expected["scenarios"].values())
         print(
             f"STRUCTURE_SOURCES=PASS scenarios={len(entries)} "

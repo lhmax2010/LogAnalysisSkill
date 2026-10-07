@@ -1,0 +1,4915 @@
+{
+  "DANGLING_SYMLINK": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "FileExistsError"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": "[Errno 17] File exists: '/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/destination'"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "capture_output": true,
+          "text": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": false,
+        "kind": "SYMLINK",
+        "symlink_target": {
+          "state": "VALUE",
+          "value": "/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/target"
+        },
+        "files": {}
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": false,
+        "kind": "SYMLINK",
+        "symlink_target": {
+          "state": "VALUE",
+          "value": "/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/target"
+        },
+        "files": {}
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/DANGLING_SYMLINK/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "LIVE_SYMLINK_TO_DIR": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "GerritError"
+    },
+    "exception_code": {
+      "state": "VALUE",
+      "value": "SOURCE_DIR_UNSAFE"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": "source directory is a symlink: /tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/destination"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "capture_output": true,
+          "text": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "SYMLINK",
+        "symlink_target": {
+          "state": "VALUE",
+          "value": "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/target"
+        },
+        "files": {}
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "SYMLINK",
+        "symlink_target": {
+          "state": "VALUE",
+          "value": "/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/target"
+        },
+        "files": {}
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/LIVE_SYMLINK_TO_DIR/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "REAL_DIR": {
+    "return_value": {
+      "state": "VALUE",
+      "value": {
+        "status": "source_available",
+        "src_root": "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination",
+        "remote_url": "ssh://review.tizen.org:29418/fixture/project",
+        "change": {
+          "project": "fixture/project",
+          "branch": "fixture",
+          "status": "MERGED",
+          "number": 1,
+          "subject": "",
+          "url": null,
+          "matching_patchset": null
+        },
+        "error": null
+      }
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "capture_output": true,
+          "text": true,
+          "timeout": null
+        }
+      },
+      {
+        "argv": [
+          "git",
+          "init",
+          "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {
+            "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+            "HOME": "/home/linhao",
+            "LANG": "en_US.UTF-8",
+            "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+          },
+          "timeout": null
+        }
+      },
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination",
+          "remote",
+          "add",
+          "origin",
+          "ssh://review.tizen.org:29418/fixture/project"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {
+            "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+            "HOME": "/home/linhao",
+            "LANG": "en_US.UTF-8",
+            "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+          },
+          "timeout": null
+        }
+      },
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination",
+          "fetch",
+          "--depth",
+          "1",
+          "origin",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {
+            "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+            "HOME": "/home/linhao",
+            "LANG": "en_US.UTF-8",
+            "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+          },
+          "timeout": null
+        }
+      },
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item3-vy6s9vtw/REAL_DIR/destination",
+          "checkout",
+          "--detach",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {
+            "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+            "HOME": "/home/linhao",
+            "LANG": "en_US.UTF-8",
+            "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+          },
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {}
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {}
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/REAL_DIR/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/REAL_DIR/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "ABSENT": {
+    "return_value": {
+      "state": "VALUE",
+      "value": {
+        "status": "source_available",
+        "src_root": "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+        "remote_url": "ssh://review.tizen.org:29418/fixture/project",
+        "change": {
+          "project": "fixture/project",
+          "branch": "fixture",
+          "status": "MERGED",
+          "number": 1,
+          "subject": "",
+          "url": null,
+          "matching_patchset": null
+        },
+        "error": null
+      }
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "capture_output": true,
+          "text": true,
+          "timeout": null
+        }
+      },
+      {
+        "argv": [
+          "git",
+          "init",
+          "/tmp/p49-item3-vy6s9vtw/ABSENT/destination"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {
+            "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+            "HOME": "/home/linhao",
+            "LANG": "en_US.UTF-8",
+            "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+          },
+          "timeout": null
+        }
+      },
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+          "remote",
+          "add",
+          "origin",
+          "ssh://review.tizen.org:29418/fixture/project"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {
+            "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+            "HOME": "/home/linhao",
+            "LANG": "en_US.UTF-8",
+            "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+          },
+          "timeout": null
+        }
+      },
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+          "fetch",
+          "--depth",
+          "1",
+          "origin",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {
+            "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+            "HOME": "/home/linhao",
+            "LANG": "en_US.UTF-8",
+            "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+          },
+          "timeout": null
+        }
+      },
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item3-vy6s9vtw/ABSENT/destination",
+          "checkout",
+          "--detach",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {
+            "PATH": "/tmp/p49-a0-baseline-v12-43a6aa6/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0DosvqA:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.917.62051-linux-x64/bin/linux-x86_64",
+            "HOME": "/home/linhao",
+            "LANG": "en_US.UTF-8",
+            "VIRTUAL_ENV": "/tmp/p49-a0-baseline-v12-43a6aa6"
+          },
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {}
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {}
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/ABSENT/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item3-vy6s9vtw/ABSENT/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface1-none": {
+    "return_value": {
+      "state": "VALUE",
+      "value": {
+        "project": "fixture/project",
+        "branch": "fixture",
+        "status": "MERGED",
+        "number": 1,
+        "subject": "",
+        "url": null,
+        "matching_patchset": null
+      }
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "capture_output": true,
+          "text": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface1-none/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface1-none/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface1-timeout": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "GerritError"
+    },
+    "exception_code": {
+      "state": "VALUE",
+      "value": "FETCH_TIMEOUT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": "Command '['ssh', '-p', '29418', 'review.tizen.org', 'gerrit', 'query', '--format=JSON', '--patch-sets', 'commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 0.125 seconds"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "capture_output": true,
+          "text": true,
+          "timeout": 0.125
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface1-timeout/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface1-timeout/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface1-SIGINT": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "KeyboardInterrupt"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": ""
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "capture_output": true,
+          "text": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface1-SIGINT/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface1-SIGINT/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -2
+    }
+  },
+  "surface1-SIGTERM": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "ssh",
+          "-p",
+          "29418",
+          "review.tizen.org",
+          "gerrit",
+          "query",
+          "--format=JSON",
+          "--patch-sets",
+          "commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        "kwargs": {
+          "check": true,
+          "capture_output": true,
+          "text": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface1-SIGTERM/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface1-SIGTERM/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -15
+    }
+  },
+  "surface2-none": {
+    "return_value": {
+      "state": "VALUE",
+      "value": null
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface2-none/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {},
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-none/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-none/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface2-timeout": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "GerritError"
+    },
+    "exception_code": {
+      "state": "VALUE",
+      "value": "FETCH_TIMEOUT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-timeout/destination', 'status']' timed out after 0.125 seconds"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface2-timeout/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {},
+          "timeout": 0.125
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-timeout/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-timeout/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface2-SIGINT": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "KeyboardInterrupt"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": ""
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface2-SIGINT/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {},
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-SIGINT/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-SIGINT/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -2
+    }
+  },
+  "surface2-SIGTERM": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface2-SIGTERM/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "env": {},
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-SIGTERM/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface2-SIGTERM/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -15
+    }
+  },
+  "surface3-none": {
+    "return_value": {
+      "state": "VALUE",
+      "value": {
+        "args": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface3-none/destination",
+          "status"
+        ],
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface3-none/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": false,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-none/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-none/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface3-timeout": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "GerritSubmitError"
+    },
+    "exception_code": {
+      "state": "VALUE",
+      "value": "GIT_TIMEOUT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-timeout/destination', 'status']' timed out after 0.125 seconds"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface3-timeout/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": false,
+          "text": true,
+          "capture_output": true,
+          "timeout": 0.125
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-timeout/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-timeout/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface3-SIGINT": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "KeyboardInterrupt"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": ""
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface3-SIGINT/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": false,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-SIGINT/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-SIGINT/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -2
+    }
+  },
+  "surface3-SIGTERM": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface3-SIGTERM/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": false,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-SIGTERM/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-SIGTERM/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -15
+    }
+  },
+  "surface4-none": {
+    "return_value": {
+      "state": "VALUE",
+      "value": []
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "VALUE",
+      "value": []
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "ls-remote",
+          "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+          "refs/heads/fixture"
+        ],
+        "kwargs": {
+          "check": false,
+          "text": true,
+          "capture_output": true,
+          "env": null,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface4-none/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface4-none/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface4-timeout": {
+    "return_value": {
+      "state": "VALUE",
+      "value": [
+        "target_head_unknown:timeout"
+      ]
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "VALUE",
+      "value": [
+        "target_head_unknown:timeout"
+      ]
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "ls-remote",
+          "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+          "refs/heads/fixture"
+        ],
+        "kwargs": {
+          "check": false,
+          "text": true,
+          "capture_output": true,
+          "env": null,
+          "timeout": 0.125
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface4-timeout/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface4-timeout/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface4-SIGINT": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "KeyboardInterrupt"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": ""
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "ls-remote",
+          "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+          "refs/heads/fixture"
+        ],
+        "kwargs": {
+          "check": false,
+          "text": true,
+          "capture_output": true,
+          "env": null,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface4-SIGINT/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface4-SIGINT/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -2
+    }
+  },
+  "surface4-SIGTERM": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "ls-remote",
+          "ssh://fixture-user@fixture.invalid:29418/fixture/project",
+          "refs/heads/fixture"
+        ],
+        "kwargs": {
+          "check": false,
+          "text": true,
+          "capture_output": true,
+          "env": null,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface4-SIGTERM/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface4-SIGTERM/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -15
+    }
+  },
+  "surface5-none": {
+    "return_value": {
+      "state": "VALUE",
+      "value": null
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface5-none/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "3bd1323595220e6505d467b8ec64054873579e928e8f044eef555924981a5e96",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "3bd1323595220e6505d467b8ec64054873579e928e8f044eef555924981a5e96",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "3bd1323595220e6505d467b8ec64054873579e928e8f044eef555924981a5e96"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-none/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-none/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface5-timeout": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "WorkspaceViolation"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": "GIT_TIMEOUT: Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-timeout/destination', 'status']' timed out after 0.125 seconds"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface5-timeout/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": 0.125
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "3bb21b014586db67d29b9b415abb6dfab72267c2541433c8d8558f5fb0a996c0",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "3bb21b014586db67d29b9b415abb6dfab72267c2541433c8d8558f5fb0a996c0",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "3bb21b014586db67d29b9b415abb6dfab72267c2541433c8d8558f5fb0a996c0"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-timeout/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-timeout/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface5-SIGINT": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "KeyboardInterrupt"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": ""
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface5-SIGINT/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "70632a0cdd6f7d4da78bb7e7c7cbc75dc48a3fb8b71e0e49a56628d2733c9c58",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "70632a0cdd6f7d4da78bb7e7c7cbc75dc48a3fb8b71e0e49a56628d2733c9c58",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "70632a0cdd6f7d4da78bb7e7c7cbc75dc48a3fb8b71e0e49a56628d2733c9c58"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-SIGINT/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-SIGINT/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -2
+    }
+  },
+  "surface5-SIGTERM": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface5-SIGTERM/destination",
+          "status"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "871f9ca982b836c1a2a44940e1be3c4c1f1de3442d997d2e7cf8a34200bae6e1",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "871f9ca982b836c1a2a44940e1be3c4c1f1de3442d997d2e7cf8a34200bae6e1",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "871f9ca982b836c1a2a44940e1be3c4c1f1de3442d997d2e7cf8a34200bae6e1"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-SIGTERM/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface5-SIGTERM/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -15
+    }
+  },
+  "surface6-none": {
+    "return_value": {
+      "state": "VALUE",
+      "value": null
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface6-none/destination",
+          "rev-parse",
+          "--git-path",
+          "info/exclude"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_protected": "f8b23f9d8e6c7a4b7e6bdd4c84fbf0f11402c0378c3a0706a732aebf39ff41fd",
+          ".ci_triage_workdir": "142ab31609905fa3b71a5a836ab4401e23d6dedffffeab2e1a661850214214a8",
+          ".git/info/exclude": "3e4969313bab8b06c233e5d1f0584f6ece3fb0b36b6014b879b5e6a86a7ed3e3",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_protected": "f8b23f9d8e6c7a4b7e6bdd4c84fbf0f11402c0378c3a0706a732aebf39ff41fd",
+          ".ci_triage_workdir": "142ab31609905fa3b71a5a836ab4401e23d6dedffffeab2e1a661850214214a8",
+          ".git/info/exclude": "3e4969313bab8b06c233e5d1f0584f6ece3fb0b36b6014b879b5e6a86a7ed3e3",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "142ab31609905fa3b71a5a836ab4401e23d6dedffffeab2e1a661850214214a8"
+      }
+    },
+    "protected_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "f8b23f9d8e6c7a4b7e6bdd4c84fbf0f11402c0378c3a0706a732aebf39ff41fd"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-none/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-none/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": true
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": true
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": true
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface6-timeout": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "WorkspaceViolation"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": "GIT_TIMEOUT: Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-timeout/destination', 'rev-parse', '--git-path', 'info/exclude']' timed out after 0.125 seconds"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface6-timeout/destination",
+          "rev-parse",
+          "--git-path",
+          "info/exclude"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": 0.125
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "6de970d7a37f400668bd5ba72be687ade1b48a699f6c33dc82600e0ba6806b17"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-timeout/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-timeout/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": 0
+    }
+  },
+  "surface6-SIGINT": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "KeyboardInterrupt"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": ""
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface6-SIGINT/destination",
+          "rev-parse",
+          "--git-path",
+          "info/exclude"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-SIGINT/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-SIGINT/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -2
+    }
+  },
+  "surface6-SIGTERM": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "ABSENT"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "ABSENT"
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface6-SIGTERM/destination",
+          "rev-parse",
+          "--git-path",
+          "info/exclude"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "f64d6ab99a64d3f109f36de21ed66c0dc028436605f6a6285c2cd7b540d33a8a",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "f64d6ab99a64d3f109f36de21ed66c0dc028436605f6a6285c2cd7b540d33a8a",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "f64d6ab99a64d3f109f36de21ed66c0dc028436605f6a6285c2cd7b540d33a8a"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-SIGTERM/readers/_exclude_private_files', 'rev-parse', '--git-path', 'info/exclude']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "ABSENT"
+          },
+          "exception_type": {
+            "state": "VALUE",
+            "value": "subprocess.CalledProcessError"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "VALUE",
+            "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface6-SIGTERM/readers/clean_repository_preserving_markers', 'clean', '-ffdx', '-e', '.ci_triage_workdir', '-e', '.ci_triage_protected']' returned non-zero exit status 128."
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -15
+    }
+  },
+  "EXCLUDE_INTERRUPTED": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "KeyboardInterrupt"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": ""
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface6-SIGINT/destination",
+          "rev-parse",
+          "--git-path",
+          "info/exclude"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec",
+          ".git/HEAD": "f6f2b945f6c411b02ba3da9c7ace88dcf71b6af65ba2e0d89aa82900042b5a10",
+          ".git/config": "cfe7ba1238c9a78be7535d7c63bcaf5a4d5011d46b07c9b45d3bbf7d6c312dfe",
+          ".git/description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+          ".git/hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+          ".git/hooks/commit-msg.sample": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437",
+          ".git/hooks/fsmonitor-watchman.sample": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0",
+          ".git/hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+          ".git/hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+          ".git/hooks/pre-commit.sample": "f9af7d95eb1231ecf2eba9770fedfa8d4797a12b02d7240e98d568201251244a",
+          ".git/hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+          ".git/hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+          ".git/hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+          ".git/hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+          ".git/hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+          ".git/hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+          ".git/hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+          ".git/hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+          ".git/info/exclude": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_workdir": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec",
+          ".git/HEAD": "f6f2b945f6c411b02ba3da9c7ace88dcf71b6af65ba2e0d89aa82900042b5a10",
+          ".git/config": "cfe7ba1238c9a78be7535d7c63bcaf5a4d5011d46b07c9b45d3bbf7d6c312dfe",
+          ".git/description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+          ".git/hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+          ".git/hooks/commit-msg.sample": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437",
+          ".git/hooks/fsmonitor-watchman.sample": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0",
+          ".git/hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+          ".git/hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+          ".git/hooks/pre-commit.sample": "f9af7d95eb1231ecf2eba9770fedfa8d4797a12b02d7240e98d568201251244a",
+          ".git/hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+          ".git/hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+          ".git/hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+          ".git/hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+          ".git/hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+          ".git/hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+          ".git/hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+          ".git/hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+          ".git/info/exclude": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "67852c52551c895f63a6e6c965805ead539a8970e23d5497c81521ca43bfe8ec"
+      }
+    },
+    "protected_marker": {
+      "exists": false,
+      "sha256": {
+        "state": "ABSENT"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "VALUE",
+            "value": null
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "VALUE",
+            "value": null
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": false
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": false
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -2
+    }
+  },
+  "MARKER_WRITE_INTERRUPTED": {
+    "return_value": {
+      "state": "ABSENT"
+    },
+    "exception_type": {
+      "state": "VALUE",
+      "value": "KeyboardInterrupt"
+    },
+    "exception_code": {
+      "state": "ABSENT"
+    },
+    "exception_message": {
+      "state": "VALUE",
+      "value": ""
+    },
+    "warnings": {
+      "state": "ABSENT"
+    },
+    "action": {
+      "state": "ABSENT"
+    },
+    "calls": [
+      {
+        "argv": [
+          "git",
+          "-C",
+          "/tmp/p49-item4-vik56x9g/surface6-none/destination",
+          "rev-parse",
+          "--git-path",
+          "info/exclude"
+        ],
+        "kwargs": {
+          "check": true,
+          "text": true,
+          "capture_output": true,
+          "timeout": null
+        }
+      }
+    ],
+    "destination": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_protected": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54",
+          ".ci_triage_workdir": "142ab31609905fa3b71a5a836ab4401e23d6dedffffeab2e1a661850214214a8",
+          ".git/HEAD": "f6f2b945f6c411b02ba3da9c7ace88dcf71b6af65ba2e0d89aa82900042b5a10",
+          ".git/config": "cfe7ba1238c9a78be7535d7c63bcaf5a4d5011d46b07c9b45d3bbf7d6c312dfe",
+          ".git/description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+          ".git/hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+          ".git/hooks/commit-msg.sample": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437",
+          ".git/hooks/fsmonitor-watchman.sample": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0",
+          ".git/hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+          ".git/hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+          ".git/hooks/pre-commit.sample": "f9af7d95eb1231ecf2eba9770fedfa8d4797a12b02d7240e98d568201251244a",
+          ".git/hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+          ".git/hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+          ".git/hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+          ".git/hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+          ".git/hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+          ".git/hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+          ".git/hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+          ".git/hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+          ".git/info/exclude": "d17b4c33116567207c9b26e434d1fd36d8653e99dec7cde1a03aae6ef1efba89",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "worktree": {
+      "state": "VALUE",
+      "value": {
+        "exists": true,
+        "kind": "DIRECTORY",
+        "symlink_target": {
+          "state": "ABSENT"
+        },
+        "files": {
+          ".ci_triage_protected": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54",
+          ".ci_triage_workdir": "142ab31609905fa3b71a5a836ab4401e23d6dedffffeab2e1a661850214214a8",
+          ".git/HEAD": "f6f2b945f6c411b02ba3da9c7ace88dcf71b6af65ba2e0d89aa82900042b5a10",
+          ".git/config": "cfe7ba1238c9a78be7535d7c63bcaf5a4d5011d46b07c9b45d3bbf7d6c312dfe",
+          ".git/description": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee",
+          ".git/hooks/applypatch-msg.sample": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7",
+          ".git/hooks/commit-msg.sample": "1f74d5e9292979b573ebd59741d46cb93ff391acdd083d340b94370753d92437",
+          ".git/hooks/fsmonitor-watchman.sample": "e0549964e93897b519bd8e333c037e51fff0f88ba13e086a331592bf801fa1d0",
+          ".git/hooks/post-update.sample": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5",
+          ".git/hooks/pre-applypatch.sample": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475",
+          ".git/hooks/pre-commit.sample": "f9af7d95eb1231ecf2eba9770fedfa8d4797a12b02d7240e98d568201251244a",
+          ".git/hooks/pre-merge-commit.sample": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53",
+          ".git/hooks/pre-push.sample": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a",
+          ".git/hooks/pre-rebase.sample": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3",
+          ".git/hooks/pre-receive.sample": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989",
+          ".git/hooks/prepare-commit-msg.sample": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619",
+          ".git/hooks/push-to-checkout.sample": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f",
+          ".git/hooks/sendemail-validate.sample": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92",
+          ".git/hooks/update.sample": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106",
+          ".git/info/exclude": "d17b4c33116567207c9b26e434d1fd36d8653e99dec7cde1a03aae6ef1efba89",
+          "sentinel": "284a9884f9f33011f699b0b612476319e5248bdb8227b42c8d87f6c16687a418"
+        }
+      }
+    },
+    "workdir_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "142ab31609905fa3b71a5a836ab4401e23d6dedffffeab2e1a661850214214a8"
+      }
+    },
+    "protected_marker": {
+      "exists": true,
+      "sha256": {
+        "state": "VALUE",
+        "value": "87c1f578e028105c6c36684cdffaee0863ed2459bcf45e872bba090e66cd3a54"
+      },
+      "readers": [
+        {
+          "reader": "_exclude_private_files",
+          "return_value": {
+            "state": "VALUE",
+            "value": null
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "clean_repository_preserving_markers",
+          "return_value": {
+            "state": "VALUE",
+            "value": null
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "is_protected",
+          "return_value": {
+            "state": "VALUE",
+            "value": true
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        },
+        {
+          "reader": "release_worktree_protection",
+          "return_value": {
+            "state": "VALUE",
+            "value": true
+          },
+          "exception_type": {
+            "state": "ABSENT"
+          },
+          "exception_code": {
+            "state": "ABSENT"
+          },
+          "exception_message": {
+            "state": "ABSENT"
+          }
+        }
+      ]
+    },
+    "exclude_completed": {
+      "state": "VALUE",
+      "value": true
+    },
+    "exit_code": {
+      "state": "VALUE",
+      "value": -2
+    }
+  }
+}

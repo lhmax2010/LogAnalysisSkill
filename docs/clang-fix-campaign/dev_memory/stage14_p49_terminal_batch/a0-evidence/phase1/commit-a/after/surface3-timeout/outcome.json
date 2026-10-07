@@ -1,0 +1,17 @@
+{
+  "return_value": {
+    "state": "ABSENT"
+  },
+  "exception_type": {
+    "state": "VALUE",
+    "value": "GerritSubmitError"
+  },
+  "exception_code": {
+    "state": "VALUE",
+    "value": "GIT_TIMEOUT"
+  },
+  "exception_message": {
+    "state": "VALUE",
+    "value": "Command '['git', '-C', '/tmp/p49-item4-vik56x9g/surface3-timeout/destination', 'status']' timed out after 0.125 seconds"
+  }
+}
