@@ -1,11 +1,12 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART3_E9_PARTIAL_STOPPED_SCAN07。更新日期: 2026-10-07。
+状态: A0_PART3_SCAN07_CLOSED_STOPPED_SCAN08。更新日期: 2026-10-07。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
-勘误9已核对原字节;DIFF-01..04、SCAN-01..06 CLOSED。第25节记录
-C7e局部实跑;E9-5缺四级候选全集,未做全量预检;扩展回归发现SCAN-07来源锚失配。
+勘误9已核对原字节;DIFF-01..04、SCAN-01..07 CLOSED。第26节落实
+SCAN-07不可变Git来源裁决,全仓1291 passed/1 skipped/0 failed。
+四级候选前置发现SCAN-08(匿名callable的lexical ID碰撞);E9-5仍未做全量预检。
 §6改前实跑仍为PENDING_SEG3。
 本轮未运行任何 producer或真实双跑;既有两项产出不变,生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
@@ -2446,3 +2447,134 @@ before_run=PENDING_SEG3,30场景未采集。未重跑生产全量,不宣称整�
 
 暂存diff空白检查exit2仅为`erratum8/tests-first.log:15`的pytest原始错误输出尾空格;
 不清洗原始证据。仅排除该原始日志后的`git diff --cached --check`为exit0。
+
+## 26. SCAN-07裁决落实与四级候选前置停止报告
+
+本轮无勘误。开场核对§25后,`git pull --ff-only origin clang-fix-campaign`
+返回`Already up to date.`;开始HEAD=`524e4153048132d66538e0aa1fec3cfdcc30dd78`。
+所有本轮取证/正式回归命令cwd仍为§9.2固定工作区,HEAD/tree不变。
+新证据目录(以下简称R):`a0-evidence/part3/scan07-resume/`。
+主工作树的既有`.gitignore`修改、四份无关文档删除及untracked历史稿未处理。
+
+### 26.1 已闭合裁决与输入保全
+
+| ID/映射 | 当前状态 | 实现/证据 |
+|---|---|---|
+| SCAN-07 / A01 | CLOSED | `terminal_expected_diff.Sources.read`按勘误3入库commit的blob读取DOC,旧SHA强核对;当前正文quote逐字存在及E4+生效范围检查;R/scan07-*.log |
+| C7E_VALUE_PROVENANCE / A09 | 已落实组件修正 | `terminal_import_linter.inspect`追加UNKNOWN_CAPABILITY记录后continue;保留section/key/parsed_values/source_rows,后续合法token继续解析;全仓测试包含其控制 |
+| A05/A06四级候选前置 | STOPPED_SCAN08 | R/stop-report.md;只做真实输入的ID可满足性探查,未交付台账或候选全集 |
+| E9-5 / A09 | NOT_RUN | 570条非Python文本范围确认;不能用部分候选声称全量 |
+
+SCAN-07的历史来源:
+
+```text
+commit=cbd3a22ae6fdb6454ecc5a55254304f72a17ecd1
+path=docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+sha256=7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200
+current_authority_sha256=b5c2dce6568b722a70ceb92ed7860ecda4417ca8895310df4bdbf7ae9158cec3
+scenarios=30
+UNCHANGED_REGISTRATIONS_VALID / CURRENT_QUOTES_PRESENT / LATER_SCOPES_CLEAR
+EXIT=0
+```
+
+每次读取当前权威,先核对附录C中E4起各勘误生效范围。当前E4..E9均不触及
+§3/4/5/6、勘误1..3或预期差异门禁。引用仍按旧blob的SHA/quote校验,
+另要求所有DOC quote在当前正文逐字存在。没有更新expected_diff的sha/quote,
+也没有改旧值、消息派生规则、predicates、exemptions或旧OBS。
+修复只改变文档寻址与增加防漂移检查,不放宽比较规则。
+
+构造式控制(命令/环境/脚本原文在R同名command.json):
+
+| R输出 | 人工控制 | 实际输出与exit |
+|---|---|---|
+| scan07-normal.log | 真实已登记30场景来源核验 | 上述三项PASS,exit0 |
+| scan07-quote.log | 篡改引用quote | `REJECTED: SOURCE_QUOTE`,exit1 |
+| scan07-current-quote.log | 旧blob不变,仅人工当前视图删除该quote | `REJECTED: CURRENT_SOURCE_QUOTE`,exit1 |
+| scan07-scope.log | 人工追加E10且生效范围含§6 | `REJECTED: LATER_ERRATUM_AFFECTS_DIFF: E10: §6。`,exit1 |
+
+单元测试另覆盖§3/4/5/6、勘误1..3/勘误2、预期差异门禁及缺scope的反例。
+上述控制及C7e继续收集控制已登记control_catalog;E9完整引擎控制及
+CTRL-INTRA-PKG-PROXY不改为PASS,仍待后续实际实现/运行。
+
+### 26.2 全仓回归与环境
+
+本轮执行不再只测扫描组件。独立环境为`/tmp/p49-a0-regression-43a6aa6`;
+系统`python3 -m venv`首次因ensurepip未安装失败,随后以既有`.venv`的pip
+`--python /tmp/p49-a0-regression-43a6aa6/bin/python3`安装到独立环境。
+没有向固定worktree执行editable install;生产路径从固定worktree的
+`sorted(glob('*/scripts'))`派生,完整PYTHONPATH在command.json中。
+测试文件来自主工作树当前tests(包含本轮工具测试),被采集代码固定43a6aa6;
+有测试按__file__取主树源码,故另对所有生产/release文件与固定树逐字节核验。
+没有把工具代码放进固定tree。软件版本完整见R/environment.log。
+
+可复现主命令(完整展开的argv/env/输入hash见command.json):
+
+```bash
+V=/tmp/p49-a0-regression-43a6aa6
+R=/home/linhao/Toolchain/development/LogAnalysisSkill
+cd /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6
+# 使用full-regression-final.command.json中记录的PYTHONPATH与隔离环境
+"$V/bin/python" -m pytest -vv -p no:cacheprovider "$R/tests"
+```
+
+```text
+collected 1292 items
+1291 passed, 1 skipped
+failed=0
+EXIT=0
+```
+
+| R原始输出 | 命令 | 实测 |
+|---|---|---|
+| full-regression.log; full-regression-final.log | 全仓pytest,逐nodeid | 两轮1291 passed/1 skipped/0 failed,exit0 |
+| ruff.log | `python -m ruff check`本轮两工具+两测试 | `All checks passed!`,exit0 |
+| mypy.log | `python -m mypy --python-version 3.12 --follow-imports=silent`同四文件,外置cache | `Success: no issues found in 4 source files`,exit0 |
+| py-compile.log | `python -X pycache_prefix=/tmp/p49-scan07-pycache -m py_compile`同四文件 | 空输出,exit0 |
+| integrity.log | 既有证据逐字节、生产/release对固定树、冻结输入hash及worktree检查 | 见原文,exit0 |
+
+今后每次冻结稿入库也必须复跑全仓测试并记录passed/failed,不再以局部扫描
+组件绿代替全仓回归。mypy/ruff本轮范围如表,不宣称它们是全仓静态检查。
+
+### 26.3 SCAN-08 OPEN:匿名callable候选ID无法唯一
+
+规范与原始见证见R/stop-report.md及R/anonymous-callable-id.json。
+F:1022-1028规定任一纯委托callable入候选;F:1038-1048的PROXY ID只有
+路径+lexical qualname且禁行号;F:1117要求全局唯一。固定树中
+`tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py:110/116`分别纯委托
+同包另两个模块,实参全为Name;编译器给两者同一个
+`analyze_buildlog.<locals>.<lambda>`。它们没有可用来区分的具名binding,
+不是同一binding的互斥producer。把宿主可变状态标为SCAN_UNRESOLVED也
+不能解决“每个candidate须先有唯一ID”的问题。
+
+按完整272 PY_SOURCE逐项检查,含release,结果:
+
+```text
+contexts={'.':736,'release-v1.4.0':110}
+lambda_sites=121
+direct_import_call_id_collision_groups=5
+non_python_text_entries=570
+EXIT=0
+```
+
+这里5是“direct-call且有导入来源的重名形状组”,不是5个已裁定shim或完整
+PROXY候选数。报告采用:110/:116简单实参的最小见证,不靠含复杂表达式的
+其它lambda推断纯度。探查用AST+compile取得code object,不执行被观测代码。
+探查结果SHA=`3fe6bade0f09a43efa483d5825b9a387ec7bd427addf3e7a112cd0fb26bd384e`。
+
+候选处理:设计方明定匿名callable的非行号唯一化规则,例如词法宿主+AST
+field/index路径,并明确名字形态及碰撞控制;或显式调整匿名callable发现域
+并给出覆盖承担方。两者都未实施。不能自行略过lambda、添加编号/hash或
+将不同callable合并以凑全集。停止报告计1项(SCAN-08)。
+
+### 26.4 未运行项与停点
+
+- A05三段shim_inventory和A06四级候选全集尚未交付,计数N/A。
+- 四级正控制/near-miss及CTRL-INTRA-PKG-PROXY尚未完成,不报通过数。
+- E9-5仍NOT_RUN,全量UNKNOWN/多去处/DYNAMIC_UNRESOLVED/跨上下文
+  回退边/MODULE_IDENTITY_AMBIGUOUS数均N/A,不写0。
+- scan_manifest仍只有既有输入枚举,没有发放detector完成标记或seal。
+- 原第3段第4块8个claim仍NOT_RUN;before_run=PENDING_SEG3,
+  30场景未采集。本轮没有运行任何OBS producer。
+- predicates canonical仍`8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6`;
+  exemptions仍`4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`。
+- 提交已授权修复、控制、原始证据与停止报告后push,等待SCAN-08裁决。

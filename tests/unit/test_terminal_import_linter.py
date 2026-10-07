@@ -146,8 +146,14 @@ def test_e9_parse_error_never_passes_names() -> None:
 
 
 def test_e9_ini_defaults_or_interpolation_not_given_guessed_provenance() -> None:
-    with pytest.raises(S.ScanError, match="C7E_VALUE_PROVENANCE"):
-        scan("[DEFAULT]\nroot_packages=sentinel\n[importlinter]\n")
+    result = scan(
+        "[DEFAULT]\nroot_packages=sentinel\n[importlinter]\n[importlinter:contract:c]\nmodules=a\n"
+    )
+    assert len(result["unknown_capabilities"]) == 1
+    assert result["unknown_capabilities"][0]["kind"] == "UNKNOWN_CAPABILITY"
+    assert result["unknown_capabilities"][0]["reason"] == "C7E_VALUE_PROVENANCE"
+    assert modules(result) == ["a"]
+    assert result["name_hits"][0]["status"] == "UNKNOWN_CAPABILITY"
 
 
 def test_e9_other_packaging_not_reclassified() -> None:

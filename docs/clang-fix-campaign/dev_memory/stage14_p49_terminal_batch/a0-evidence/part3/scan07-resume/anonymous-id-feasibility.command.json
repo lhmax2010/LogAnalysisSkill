@@ -1,0 +1,51 @@
+{
+  "argv": [
+    "/tmp/p49-a0-regression-43a6aa6/bin/python",
+    "/tmp/p49-anonymous-probe.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6",
+    "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+    "PYTHONPATH": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-build-verify/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-shared/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-ci-triage/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-convergence-judge/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-build/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-build-workflow/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-log-analysis/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gbs-patch-suggest/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-fetch/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-gerrit-submit/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-qb-discover/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6/tizen-triage-report/scripts",
+    "MYPYPATH": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 0,
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_diff_controls.py": "bc86742672bd950b33bbfe06a24734f98026b7f6696334c5c2a83a082c0d0c2c",
+    "docs/clang-fix-campaign/tools/terminal_import_linter.py": "c5e69b57f3b4ac2086ef6e57dbb2d892e70d66ad985a5b90957d70024a0af71e",
+    "docs/clang-fix-campaign/tools/terminal_registry.py": "6cbadbf742f4756b3707e2d9a2342623fd6ce8389e4fb90f1ba46a3459c5f74a",
+    "docs/clang-fix-campaign/tools/terminal_predicates.py": "a6e6399059f42d6c266a11361e9090111b2f1a0379cc5b03e9f75ee529745cef",
+    "docs/clang-fix-campaign/tools/terminal_expected_diff.py": "6d6623261d1c948722962c8dde6bca610b161e3f7f4676c45ba0723d65394f2e",
+    "docs/clang-fix-campaign/tools/terminal_scan.py": "147c64e60e6a785437e8b3f34020409c0bb7fedd041c0e5ccd8332b78ca6ee90",
+    "docs/clang-fix-campaign/tools/terminal_alias_preflight.py": "2107e11d9f08a1c6c2f826b6e9d1f4d43d4854dbbd158c1a869d3ab38af3118b",
+    "docs/clang-fix-campaign/tools/terminal_monitored_preflight.py": "da8f64b48a4f90fd5e86f48444f3e0365c156885f2baf614c6cf04f9ed5eccb8",
+    "tests/unit/test_terminal_import_linter.py": "e3fc882d929d19ee0da4a4736dd8d4ffed6932c28ff9edc97773ea308c43d387",
+    "tests/unit/test_terminal_anchors.py": "aaca5602466590ccdd79fccc3c03607d535cee299743b9c33dfcc40f96cc4624",
+    "tests/unit/test_terminal_scan.py": "a1a2a96e70f58efab3481e96b9913bbd26b0656fce705a35b5c509756bb0f081",
+    "tests/unit/test_terminal_alias_preflight.py": "52a300106ffdc8300ea60f3a23dfde164f1a632a99c92c437687e411a3532f57",
+    "tests/unit/test_terminal_predicates.py": "0559e83647d3be7e28ddafe5cc31e1aed5728100cd432e8435ffcd6a616daa20",
+    "tests/unit/test_terminal_registry.py": "ea496028b269e1bb1be1d9d0661683b8e1490f685347e590090950f2da1c8c77",
+    "tests/unit/test_terminal_monitored_preflight.py": "cd54fa1b565714294a1cc83345c101abbcabe2304530f779069754686d3e2a56",
+    "tests/unit/test_terminal_expected_diff.py": "c485d38b128963752c7982903c3ff28732da1159c8a72eee0790a1636ab4abd0",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/result_schema.json": "e23994a548a5ca0ac267b6d5e27bb1c712b0334219790ce38d89b8d294690360",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/capability_registry.json": "bfdcf02aaf80c869680f819b9737d71489971b355703543be516ff8ffdeb0989",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/entry_registry.json": "db49521e818088d1fe31c6f59a5ba4eefabecdb0ecfda645cc03f9f242b666a9",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/scenario_manifest.json": "f6ddf9d0a51c380ffce7dddf098d88d6367d72e3dded088380dfbc886e53f021",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/expected_diff.json": "907723ac26c04270c35a5445628dbcf0a4b02831948be012300baf090b25b5cb",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/control_catalog.json": "4a03ef0fb861d8076c04d49c367bfd30eb3d6bffc399115b06bb803d776fff1d",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/provider_registry.json": "942f38efc9e7e30790a9334dae484105ff71cce39916dd6400d7c0c6500e14b5",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "b5c2dce6568b722a70ceb92ed7860ecda4417ca8895310df4bdbf7ae9158cec3"
+  },
+  "output_sha256": "5b56f725f4e1d5d140a3812031af4afd6958d345f683aea98af461507f2676f3",
+  "scope": "SCAN-07 ruling, full repository regression, candidate/preflight preparation; no OBS producer or before-run",
+  "diagnostic_programs": {
+    "/tmp/p49-anonymous-probe.py": "\"\"\"Read-only candidate-ID feasibility evidence; no observed code is executed.\"\"\"\nimport ast\nimport hashlib\nimport json\nimport sys\nimport types\nfrom collections import Counter, defaultdict\nfrom pathlib import Path\n\nmain = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\nsys.path.insert(0,str(main/'docs/clang-fix-campaign/tools'))\nfrom terminal_scan import fixed_inputs, contexts, ModuleIndex, write_atomic\nfrom terminal_alias_preflight import Unit\n\nmanifest, files = fixed_inputs(Path.cwd(),main)\nindex = ModuleIndex(files,contexts(files))\nout = main/'docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part3/scan07-resume'\nrows=[]\ngroups=defaultdict(list)\nfor entry in manifest['entries']:\n    if entry['entry_kind'] != 'PY_SOURCE':\n        continue\n    path=entry['path']\n    identities=index.by_path.get(path,[])\n    module=identities[0][1] if len(identities)==1 else ''\n    unit=Unit(files[path].decode(),path,entry['context'],module,Path(path).name=='__init__.py')\n    # compile only obtains Python's own lexical names; none of this code runs.\n    codes=defaultdict(list)\n    def collect(code):\n        if code.co_name=='<lambda>':\n            codes[code.co_firstlineno].append(code.co_qualname)\n        for value in code.co_consts:\n            if isinstance(value,types.CodeType):\n                collect(value)\n    collect(compile(unit.tree,path,'exec',dont_inherit=True))\n    for node in ast.walk(unit.tree):\n        if not isinstance(node,ast.Lambda):\n            continue\n        direct_call=isinstance(node.body,ast.Call)\n        names=sorted(unit.bindings.resolve(node.body.func)) if direct_call else []\n        origin=[]\n        # Retain exact lexical import facts, without admitting the callable.\n        for imp in ast.walk(unit.tree):\n            if isinstance(imp,(ast.Import,ast.ImportFrom)):\n                for alias in imp.names:\n                    if any(name==alias.name or name.startswith(alias.name+'.') or\n                           (isinstance(imp,ast.ImportFrom) and name==f'{imp.module}.{alias.name}')\n                           for name in names):\n                        origin.append({'line':imp.lineno,'source':ast.get_source_segment(unit.source,imp)})\n        record={**unit.point(node),'module':module or None,'direct_call':direct_call,\n                'targets':names,'import_facts':origin,'python_qualnames':codes[node.lineno],\n                'argument_ast_kinds':([type(a).__name__ for a in node.body.args]+\n                                      [type(k.value).__name__ for k in node.body.keywords]) if direct_call else []}\n        rows.append(record)\n        if direct_call and len(names)==1 and origin and len(set(codes[node.lineno]))==1:\n            name=codes[node.lineno][0]\n            record['specified_id']=path+'#PROXY#'+name\n            groups[record['specified_id']].append(record)\ncollisions=[{'specified_id':key,'callables':value} for key,value in sorted(groups.items()) if len(value)>1]\nvalue={'head':manifest['head'],'tree':manifest['tree'],'rules_sha256':manifest['rules_sha256'],\n       'scope':'Anonymous-callable lexical-ID feasibility only; NOT candidate universe, E9-5, or OBS',\n       'python_entries':sum(e['entry_kind']=='PY_SOURCE' for e in manifest['entries']),\n       'non_python_text_entries':sum(e['entry_kind'] in {'DOC','OTHER_TEXT','BUILD','PACKAGING','CI_CONFIG','IMPORT_LINTER','PTH','SHELL'} for e in manifest['entries']),\n       'context_counts':dict(Counter(e['context'] for e in manifest['entries'])),\n       'lambda_sites':rows,'collision_groups':collisions}\ntarget=out/'anonymous-callable-id.json'\nassert not target.exists()\nwrite_atomic(target,value)\nprint('python_entries=',value['python_entries'],'non_python_text_entries=',value['non_python_text_entries'])\nprint('contexts=',value['context_counts'])\nprint('lambda_sites=',len(rows),'direct_import_call_id_collision_groups=',len(collisions))\nfor collision in collisions:\n    print(json.dumps(collision,ensure_ascii=False))\nprint('output_sha256=',hashlib.sha256(target.read_bytes()).hexdigest())\nprint('NO_OBS / NO_ADMISSION / NO_E9_5_COMPLETENESS_CLAIM')\n"
+  }
+}

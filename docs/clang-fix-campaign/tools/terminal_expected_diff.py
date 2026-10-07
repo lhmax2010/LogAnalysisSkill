@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import subprocess
+import unicodedata
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -21,6 +22,7 @@ from terminal_predicates import canonical, check_frozen_hashes, load_json
 DATA = Path(__file__).with_name("p49_terminal_data")
 DOC = "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md"
 DOC_HASH = "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200"
+DOC_COMMIT = "cbd3a22ae6fdb6454ecc5a55254304f72a17ecd1"
 TABLE = "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md"
 TABLE_HASH = "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27"
 OBS = "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/"
@@ -86,12 +88,31 @@ class Sources:
     def __init__(self, root: Path):
         self.root = root
         self.cache: dict[str, bytes] = {}
+        self.current_document: str | None = None
+
+    def current_authority(self) -> str:
+        if self.current_document is None:
+            text = (self.root / DOC).read_text()
+            check_later_errata(text)
+            self.current_document = text
+        return self.current_document
 
     def read(self, file: str, sha256: str) -> bytes:
         allowed = {DOC: DOC_HASH, TABLE: TABLE_HASH, **OBS_HASHES}
         require(allowed.get(file) == sha256, f"SOURCE_NOT_APPROVED: {file}")
         if file not in self.cache:
-            self.cache[file] = (self.root / file).read_bytes()
+            if file == DOC:
+                self.current_authority()
+                result = subprocess.run(
+                    ["git", "show", f"{DOC_COMMIT}:{DOC}"],
+                    cwd=self.root,
+                    check=False,
+                    capture_output=True,
+                )
+                require(result.returncode == 0, f"SOURCE_GIT_BLOB: {result.stderr.decode()}")
+                self.cache[file] = result.stdout
+            else:
+                self.cache[file] = (self.root / file).read_bytes()
         content = self.cache[file]
         require(hashlib.sha256(content).hexdigest() == sha256, f"SOURCE_HASH: {file}")
         return content
@@ -132,6 +153,7 @@ class Sources:
             "附录C/E3-1": ("**E3-1 ·", "**E3-2 ·"),
         }
         if ref["file"] == DOC:
+            require(ref["quote"] in self.current_authority(), "CURRENT_SOURCE_QUOTE")
             require(ref["section"] in bounds, "UNAPPROVED_SOURCE_SECTION")
             start, end = bounds[ref["section"]]
             body = start + text.split(start, 1)[1].split(end, 1)[0]
@@ -139,6 +161,35 @@ class Sources:
             require(ref["section"] == "§3.2⑥ timeout 单元格", "UNAPPROVED_TABLE_SECTION")
             body = text.split("⑥**结果映射表", 1)[1].split("**protected marker 写入顺序议题", 1)[0]
         require(ref["quote"] in body, "SOURCE_QUOTE_OUTSIDE_SECTION")
+
+
+def check_later_errata(text: str) -> list[dict[str, Any]]:
+    """SCAN-07: immutable E3 sources are valid only while later scopes exclude them."""
+    marker = "## 附录 C:冻结后勘误"
+    require(text.count(marker) == 1, "ERRATA_APPENDIX")
+    appendix = text.split(marker, 1)[1]
+    headings = list(re.finditer(r"^### 勘误 (\d+)\(", appendix, re.MULTILINE))
+    numbers = [int(h.group(1)) for h in headings]
+    require(numbers and numbers == list(range(1, len(numbers) + 1)), "ERRATA_SEQUENCE")
+    scopes = []
+    for i, heading in enumerate(headings):
+        number = int(heading.group(1))
+        if number < 4:
+            continue
+        end = headings[i + 1].start() if i + 1 < len(headings) else len(appendix)
+        block = appendix[heading.end() : end]
+        matches = re.findall(
+            r"^\*\*生效范围\*\*[:：]([^\n]*(?:\n(?!\s*\n|#)[^\n]+)*)", block, re.MULTILINE
+        )
+        require(len(matches) == 1 and matches[0].strip(), f"ERRATUM_SCOPE_MISSING: {number}")
+        scope = matches[0]
+        normalized = re.sub(r"[\s*`]", "", unicodedata.normalize("NFKC", scope))
+        forbidden = re.search(
+            r"§[3456](?!\d)|勘误(?:[123](?!\d)|[一二三])|预期差异门禁", normalized
+        )
+        require(forbidden is None, f"LATER_ERRATUM_AFFECTS_DIFF: E{number}: {scope}")
+        scopes.append({"erratum": number, "scope": scope})
+    return scopes
 
 
 def tagged(item: Any) -> dict[str, Any]:

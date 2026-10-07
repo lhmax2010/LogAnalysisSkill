@@ -36,6 +36,50 @@ def test_data_generation_is_reproducible_and_closed(gate: Any) -> None:
     assert B.source_report(manifest, expected) == (G.DATA / "expected_diff_sources.md").read_text()
 
 
+def test_scan07_git_blob_and_current_quotes(gate: Any) -> None:
+    import hashlib
+
+    old = gate.sources.read(G.DOC, G.DOC_HASH)
+    assert hashlib.sha256(old).hexdigest() == G.DOC_HASH
+    assert old != (ROOT / G.DOC).read_bytes()
+    assert [s["erratum"] for s in G.check_later_errata((ROOT / G.DOC).read_text())] == list(
+        range(4, 10)
+    )
+    gate.validate()
+
+
+def test_scan07_quote_tampering_is_red(gate: Any) -> None:
+    ref = copy.deepcopy(gate.manifest["rules"])
+    ref["quote"] += "NOT_APPROVED"
+    with pytest.raises(G.GateError, match="SOURCE_QUOTE"):
+        gate.sources.cite(ref)
+
+
+def test_scan07_current_quote_removal_is_red(monkeypatch: pytest.MonkeyPatch, gate: Any) -> None:
+    ref = gate.manifest["rules"]
+    original = Path.read_text
+
+    def read(path: Path, *args: Any, **kwargs: Any) -> str:
+        text = original(path, *args, **kwargs)
+        return text.replace(ref["quote"], "REMOVED_QUOTE") if path == ROOT / G.DOC else text
+
+    monkeypatch.setattr(Path, "read_text", read)
+    with pytest.raises(G.GateError, match="CURRENT_SOURCE_QUOTE"):
+        G.Sources(ROOT).cite(ref)
+
+
+@pytest.mark.parametrize("scope", ["§3", "§4", "§5", "§6", "勘误 1–3", "勘误 2", "预期差异门禁"])
+def test_scan07_later_scope_affecting_diff_is_red(scope: str) -> None:
+    text = (ROOT / G.DOC).read_text() + f"\n### 勘误 10(人工控制)\n\n**生效范围**:仅 {scope}。\n"
+    with pytest.raises(G.GateError, match="LATER_ERRATUM_AFFECTS_DIFF: E10"):
+        G.check_later_errata(text)
+
+
+def test_scan07_missing_scope_fails_closed() -> None:
+    with pytest.raises(G.GateError, match="ERRATUM_SCOPE_MISSING"):
+        G.check_later_errata((ROOT / G.DOC).read_text() + "\n### 勘误 10(人工控制)\n未登记范围。\n")
+
+
 @pytest.mark.parametrize("control", C.CONTROLS)
 def test_artificial_admission_control(gate: Any, control: str) -> None:
     if control == "normal":

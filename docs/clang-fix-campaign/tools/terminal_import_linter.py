@@ -128,6 +128,7 @@ def inspect(
     participants: list[dict[str, Any]] = []
     edges: list[dict[str, Any]] = []
     dynamic: list[dict[str, Any]] = []
+    unknown: list[dict[str, Any]] = []
     exclusions = []
     for row in rows:
         is_comment = row["role"] == "COMMENT"
@@ -162,7 +163,19 @@ def inspect(
                 actual = [v.strip() for v in parser[section][key].splitlines() if v.strip()]
                 located = [r["value"] for r in relevant if r["value"]]
                 if actual != located:
-                    raise ScanError(f"C7E_VALUE_PROVENANCE: {section}.{key}")
+                    unknown.append(
+                        {
+                            "path": path,
+                            "context": context,
+                            "section": section,
+                            "key": key,
+                            "kind": "UNKNOWN_CAPABILITY",
+                            "reason": "C7E_VALUE_PROVENANCE",
+                            "parsed_values": actual,
+                            "source_rows": relevant,
+                        }
+                    )
+                    continue
                 containers = (
                     parser[section].get("containers", "").splitlines() if contract(section) else []
                 )
@@ -262,6 +275,7 @@ def inspect(
         "module_edges": edges,
         "binding_edges": [],
         "dynamic_unresolved": dynamic,
+        "unknown_capabilities": unknown,
         "exclusions": exclusions,
         "name_hits": classified,
     }
@@ -315,6 +329,7 @@ def main() -> int:
     return int(
         any(
             r["parse_errors"]
+            or r["unknown_capabilities"]
             or any(
                 h["status"] in {"UNKNOWN_CAPABILITY", "MULTIPLE_DESTINATIONS"}
                 for h in r["name_hits"]

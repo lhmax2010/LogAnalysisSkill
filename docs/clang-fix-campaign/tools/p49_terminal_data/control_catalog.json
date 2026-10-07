@@ -1,5 +1,56 @@
 [
   {
+    "control_id": "CTRL-SCAN07-HISTORICAL-SOURCE",
+    "group": "SCAN07-RULING",
+    "source": "FatTank approved SCAN-07 option 2, 2026-10-07",
+    "test_nodeid": "tests/unit/test_terminal_expected_diff.py::test_scan07_git_blob_and_current_quotes",
+    "fixture_kind": "IMMUTABLE_GIT_SOURCE_NO_PRODUCER",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/scan07-resume/scan07-normal.log"
+  },
+  {
+    "control_id": "CTRL-SCAN07-QUOTE-TAMPER",
+    "group": "SCAN07-RULING",
+    "source": "SCAN-07 (a)",
+    "test_nodeid": "tests/unit/test_terminal_expected_diff.py::test_scan07_quote_tampering_is_red",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "RED_AS_EXPECTED",
+    "exit_code": 1,
+    "evidence": "a0-evidence/part3/scan07-resume/scan07-quote.log"
+  },
+  {
+    "control_id": "CTRL-SCAN07-CURRENT-QUOTE-MISSING",
+    "group": "SCAN07-RULING",
+    "source": "SCAN-07 (a), current authority independently checked",
+    "test_nodeid": "tests/unit/test_terminal_expected_diff.py::test_scan07_current_quote_removal_is_red",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "RED_AS_EXPECTED",
+    "exit_code": 1,
+    "evidence": "a0-evidence/part3/scan07-resume/scan07-current-quote.log"
+  },
+  {
+    "control_id": "CTRL-SCAN07-LATER-SCOPE",
+    "group": "SCAN07-RULING",
+    "source": "SCAN-07 (b)",
+    "test_nodeid": "tests/unit/test_terminal_expected_diff.py::test_scan07_later_scope_affecting_diff_is_red",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "status": "RED_AS_EXPECTED",
+    "exit_code": 1,
+    "evidence": "a0-evidence/part3/scan07-resume/scan07-scope.log"
+  },
+  {
+    "control_id": "CTRL-C7E-PROVENANCE-COLLECT-AND-CONTINUE",
+    "group": "E9-4-COMPONENT",
+    "source": "FatTank approved C7E_VALUE_PROVENANCE collection ruling, 2026-10-07",
+    "fixture_kind": "ARTIFICIAL_ONLY",
+    "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_ini_defaults_or_interpolation_not_given_guessed_provenance",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/part3/scan07-resume/full-regression.log",
+    "scope": "component: record UNKNOWN_CAPABILITY and still parse subsequent module slots; not full E9-5"
+  },
+  {
     "control_id": "CTRL-test_each_node_positive_negative[all]",
     "group": "NODE-LANGUAGE",
     "source": "v1.2 §1",

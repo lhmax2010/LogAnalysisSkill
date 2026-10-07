@@ -1,0 +1,6 @@
+scenarios= 30
+historic_commit= cbd3a22ae6fdb6454ecc5a55254304f72a17ecd1
+historic_sha256= 7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200
+current_sha256= b5c2dce6568b722a70ceb92ed7860ecda4417ca8895310df4bdbf7ae9158cec3
+[{"erratum": 4, "scope": "12b-1、12b-3、12b-3b、12b-3c 的实现与 §1.1b 封闭 universe 的适用面;不改变判定条件与其它事项。"}, {"erratum": 5, "scope": "§1.1 消费者识别与名字命中兜底的引用解析、候选的模块身份、§1.1c admission 证据;不改变判定条件与其它事项。"}, {"erratum": 6, "scope": "capability registry 的命名空间、12b-3c④、12b-12 投影与新增的 `entry.*` 三方对账;不新增消费者形态,不改变判定条件与其它事项。"}, {"erratum": 7, "scope": "§1.1 受监控名字集合与原子形态表;不改变判定条件与其它事项。"}, {"erratum": 8, "scope": "§1.1 参与点(新增 ②″、标注位置除外)与原子形态表;不改变判定条件与其它事项。"}, {"erratum": 9, "scope": "勘误 4 条目类别表、§1.1 原子形态表与非 Python 文件的名字兜底去处;不改变判定条件与其它事项。"}]
+UNCHANGED_REGISTRATIONS_VALID / CURRENT_QUOTES_PRESENT / LATER_SCOPES_CLEAR
