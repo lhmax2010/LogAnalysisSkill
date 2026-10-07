@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/build_terminal_diff_data.py",
+    "--check"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-gate-seg2-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  },
+  "path": "/tmp/p49-a0-gate-seg2-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 0,
+  "output_sha256": "7789b6515f40a60155f9c02e6b5678838a8ae2780e9b12aa9dabe2312e997a54",
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_expected_diff.py": "949c58f11dca0ec823ef1f325d9b1c10f8ffbdeace14a565850381d070bc9634",
+    "docs/clang-fix-campaign/tools/build_terminal_diff_data.py": "0e8bbd542abee85894dcd1a460ac65293b08b525e7f216e1498713bad69ca735",
+    "docs/clang-fix-campaign/tools/terminal_diff_controls.py": "bc86742672bd950b33bbfe06a24734f98026b7f6696334c5c2a83a082c0d0c2c",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/scenario_manifest.json": "f6ddf9d0a51c380ffce7dddf098d88d6367d72e3dded088380dfbc886e53f021",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/result_schema.json": "e23994a548a5ca0ac267b6d5e27bb1c712b0334219790ce38d89b8d294690360",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/expected_diff.json": "907723ac26c04270c35a5445628dbcf0a4b02831948be012300baf090b25b5cb",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+    "tests/unit/test_terminal_expected_diff.py": "ca6071aa89fbcabba36a592196eefe2d99cbde3cab9e12f2b9431b8c886dcf39"
+  },
+  "scope": "ERRATUM3_ARTIFICIAL_ONLY; real before-run PENDING_SEG3; no OBS producer execution"
+}

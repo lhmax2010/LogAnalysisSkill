@@ -20,7 +20,7 @@ from terminal_predicates import canonical, check_frozen_hashes, load_json
 
 DATA = Path(__file__).with_name("p49_terminal_data")
 DOC = "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md"
-DOC_HASH = "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e"
+DOC_HASH = "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200"
 TABLE = "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md"
 TABLE_HASH = "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27"
 OBS = "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/"
@@ -129,6 +129,7 @@ class Sources:
             "附录C/E1-2": ("**E1-2 ·", "**生效范围**"),
             "附录C/E2-1": ("**E2-1 ·", "**E2-2 ·"),
             "附录C/E2-2": ("**E2-2 ·", "**生效范围**"),
+            "附录C/E3-1": ("**E3-1 ·", "**E3-2 ·"),
         }
         if ref["file"] == DOC:
             require(ref["section"] in bounds, "UNAPPROVED_SOURCE_SECTION")
@@ -268,12 +269,6 @@ def readers_from_item5(output: dict[str, Any]) -> list[str]:
 
 def resolve_old(recipe: dict[str, Any], sources: Sources) -> dict[str, Any]:
     kind = recipe.get("kind")
-    if kind == "ABSENT_SECTION4":
-        fields(recipe, {"kind", "source"}, "old")
-        sources.cite(recipe["source"])
-        require(recipe["source"]["section"] == "§4 验收口径", "OLD_ABSENCE_AUTHORITY")
-        require('旧值为"不存在"' in recipe["source"]["quote"], "OLD_ABSENCE_QUOTE")
-        return dict(ABSENT)
     fields(recipe, {"kind", "ref"}, "old")
     fact = sources.fact(recipe["ref"])
     if kind == "OBS_ABSENT_TIMEOUT":
@@ -378,6 +373,21 @@ def compare_one(before: Any, after: Any, entry: dict[str, Any], resolved: dict[s
         require(equal(actual[path], resolved[path]), f"DIFF_VALUE: {path}")
 
 
+def timeout_outcome(observed: dict[str, Any]) -> dict[str, Any]:
+    """E3-2: project the archived outcome, including unchanged result fields."""
+    outcome = observed["outcome"]
+    exc = outcome["exception"].get("value", {})
+    return {
+        "return_value": outcome["return_value"],
+        "exception_type": value(exc["type"]) if "type" in exc else dict(ABSENT),
+        "exception_code": exc.get("code", dict(ABSENT)),
+        "exception_message": value(exc["message"]) if "message" in exc else dict(ABSENT),
+        "warnings": outcome["return_value"]
+        if observed["surface"] == "submit-remote"
+        else dict(ABSENT),
+    }
+
+
 class Gate:
     def __init__(self, manifest: Any, schema: Any, expected: Any, sources: Sources):
         self.manifest, self.schema, self.expected, self.sources = (
@@ -418,9 +428,21 @@ class Gate:
         require(set(self.expected["scenarios"]) == set(ids), "SCENARIO_REGISTRATION")
         resolved = {}
         for row in rows:
+            row_fields = {
+                "id",
+                "section",
+                "surface",
+                "fault",
+                "timeout",
+                "fixture",
+                "calls",
+                "obs_ref",
+            }
+            if row.get("fault") == "timeout":
+                row_fields.add("before_run")
             fields(
                 row,
-                {"id", "section", "surface", "fault", "timeout", "fixture", "calls", "obs_ref"},
+                row_fields,
                 "scenario",
             )
             fields(row["fixture"], {"destination"}, "fixture")
@@ -438,6 +460,35 @@ class Gate:
                     "SCENARIO_COORDINATES",
                 )
                 require(observed["scenario_id"] == sid, "OBS_SCENARIO_BINDING")
+                if fault == "timeout":
+                    require(row["obs_ref"]["file"] == OBS + "e1-item4/raw.json", "TIMEOUT_OBS_FILE")
+                    plan = row["before_run"]
+                    fields(
+                        plan, {"method", "pass_timeout", "injection_ref", "source"}, "before_run"
+                    )
+                    self.sources.cite(plan["source"])
+                    require(plan["source"]["section"] == "附录C/E3-1", "TIMEOUT_BEFORE_AUTHORITY")
+                    injection_ref = dict(row["obs_ref"])
+                    injection_ref["pointer"] += "/injection"
+                    require(
+                        plan["method"]
+                        == (
+                            "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，"
+                            "不传 timeout 参数"
+                        )
+                        and plan["pass_timeout"] is False
+                        and plan["injection_ref"] == injection_ref,
+                        "TIMEOUT_BEFORE_PLAN",
+                    )
+                    injection = self.sources.fact(injection_ref)
+                    require(
+                        injection["type"] == "TimeoutExpired"
+                        and injection["timeout"] == row["timeout"]
+                        and any(
+                            equal(call["argv"], injection["cmd"]) for call in observed["trace"]
+                        ),
+                        "TIMEOUT_INJECTION_BINDING",
+                    )
             elif sid in {"EXCLUDE_INTERRUPTED", "MARKER_WRITE_INTERRUPTED"}:
                 section = "§5(i)" if sid == "EXCLUDE_INTERRUPTED" else "§5(ii)"
                 require(
@@ -465,13 +516,16 @@ class Gate:
                 )
             entry = self.expected["scenarios"][row["id"]]
             check_mode(entry)
+            if row["fault"] == "timeout" and row["surface"] in SURFACES[:3]:
+                require(
+                    "/exception_message" not in entry.get("differences", {}),
+                    "UNCHANGED_TIMEOUT_MESSAGE_REGISTERED",
+                )
             deltas = {}
             for path, change in entry.get("differences", {}).items():
                 old = resolve_old(change["old"], self.sources)
                 new = resolve_new(change["new"], row, self.sources)
                 require(not equal(old, new), f"IMPOSSIBLE_NO_CHANGE: {path}")
-                if change["old"]["kind"] == "ABSENT_SECTION4":
-                    require(row["fault"] == "timeout", "ABSENT_ONLY_FOR_TIMEOUT_RESULT")
                 deltas[path] = {"old": old, "new": new}
             # Every observed call traverses one of the new optional signatures.
             kwpaths = {f"/calls/{i}/kwargs/timeout" for i in range(len(row["calls"]))}
@@ -494,15 +548,28 @@ class Gate:
                 if row["surface"] == "submit-remote":
                     allowed_results = {"/warnings", "/return_value"}
                 else:
-                    allowed_results = {"/exception_type", "/exception_message"}
+                    allowed_results = {"/exception_type"}
                     if row["surface"] in {"fetch-query", "fetch-git", "submit-git"}:
                         allowed_results.add("/exception_code")
+                    else:
+                        allowed_results.add("/exception_message")
             require(set(deltas) == kwpaths | allowed_results, "REGISTRATION_PATH_CLOSED_SET")
             for path in allowed_results:
                 delta = entry["differences"][path]
                 new = delta["new"]
                 if row["fault"] == "timeout":
-                    require(delta["old"]["kind"] == "ABSENT_SECTION4", "TIMEOUT_RESULT_OLD_SOURCE")
+                    expected_ref = dict(row["obs_ref"])
+                    if path in {"/warnings", "/return_value"}:
+                        suffix, old_kind = "/outcome/return_value", "OBS_STATE"
+                    else:
+                        field = path.removeprefix("/exception_")
+                        suffix = "/outcome/exception/value/" + field
+                        old_kind = "OBS_STATE" if field == "code" else "OBS_VALUE"
+                    expected_ref["pointer"] += suffix
+                    require(
+                        delta["old"] == {"kind": old_kind, "ref": expected_ref},
+                        "TIMEOUT_RESULT_OLD_SOURCE_BINDING",
+                    )
                     if row["surface"] == "submit-remote":
                         require(new["kind"] == "TIMEOUT_WARNING", "WARNING_SOURCE_KIND")
                     elif path == "/exception_message":
@@ -573,6 +640,13 @@ class Gate:
         resolved = self.validate()
         self.validate_results(before, readers)
         self.validate_results(after, readers)
+        for row in self.manifest["scenarios"]:
+            if row["fault"] == "timeout":
+                for field, old in timeout_outcome(self.sources.fact(row["obs_ref"])).items():
+                    require(
+                        equal(before[row["id"]][field], old),
+                        f"TIMEOUT_BEFORE_OUTCOME: {row['id']}/{field}",
+                    )
         for sid, entry in self.expected["scenarios"].items():
             compare_one(before[sid], after[sid], entry, resolved[sid])
 

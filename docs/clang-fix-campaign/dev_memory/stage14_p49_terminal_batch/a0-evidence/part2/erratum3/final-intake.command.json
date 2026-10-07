@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "-c",
+    "\nimport difflib, hashlib, subprocess\nfrom pathlib import Path\nroot = Path(\"/home/linhao/Toolchain/development/LogAnalysisSkill\")\npath = \"docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md\"\nold = subprocess.check_output([\"git\",\"-C\",str(root),\"show\",\"8e1437d:\"+path])\nnew = (root/path).read_bytes()\nassert hashlib.sha256(old).hexdigest() == \"73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e\"\nassert hashlib.sha256(new).hexdigest() == \"7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200\"\na,b=old.splitlines(keepends=True),new.splitlines(keepends=True)\nops=[x for x in difflib.SequenceMatcher(a=a,b=b,autojunk=False).get_opcodes() if x[0]!=\"equal\"]\nassert len(ops)==2 and all(x[0]==\"insert\" for x in ops),ops\nassert ops[0][1:3]==(5,5) and ops[1][1:3]==(len(a),len(a)),ops\nassert b[ops[0][3]].decode().startswith(\"> **已生效勘误:附录 C 勘误 3\")\nassert b\"### \" in b\"\".join(b[ops[1][3]:ops[1][4]])\nprint(\"OLD_SHA256=\"+hashlib.sha256(old).hexdigest())\nprint(\"NEW_SHA256=\"+hashlib.sha256(new).hexdigest())\nprint(\"APPEND_ONLY=PASS additions=\"+str(sum(x[4]-x[3] for x in ops))+\" deletions=0\")\nprint(subprocess.check_output([\"git\",\"-C\",str(root),\"diff\",\"--unified=3\",\"8e1437d\",\"--\",path],text=True))\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-gate-seg2-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  },
+  "path": "/tmp/p49-a0-gate-seg2-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 0,
+  "output_sha256": "076750ffdc3a15c7c314989151b2ab12f8f07c3dcf8fcc65dd966e2d7a9f9dd7",
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_expected_diff.py": "949c58f11dca0ec823ef1f325d9b1c10f8ffbdeace14a565850381d070bc9634",
+    "docs/clang-fix-campaign/tools/build_terminal_diff_data.py": "0e8bbd542abee85894dcd1a460ac65293b08b525e7f216e1498713bad69ca735",
+    "docs/clang-fix-campaign/tools/terminal_diff_controls.py": "bc86742672bd950b33bbfe06a24734f98026b7f6696334c5c2a83a082c0d0c2c",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/scenario_manifest.json": "f6ddf9d0a51c380ffce7dddf098d88d6367d72e3dded088380dfbc886e53f021",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/result_schema.json": "e23994a548a5ca0ac267b6d5e27bb1c712b0334219790ce38d89b8d294690360",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/expected_diff.json": "907723ac26c04270c35a5445628dbcf0a4b02831948be012300baf090b25b5cb",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+    "tests/unit/test_terminal_expected_diff.py": "ca6071aa89fbcabba36a592196eefe2d99cbde3cab9e12f2b9431b8c886dcf39"
+  },
+  "scope": "ERRATUM3_ARTIFICIAL_ONLY; real before-run PENDING_SEG3; no OBS producer execution"
+}

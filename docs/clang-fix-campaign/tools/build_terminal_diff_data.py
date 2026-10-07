@@ -105,9 +105,7 @@ def derive(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     text = sources.read(DOC, DOC_HASH).decode()
     # Anchored rows remain byte-for-byte authority quotes, not a second mapping table.
     rows = sources.timeout_cells()
-    old_absence = cite(
-        DOC, "§4 验收口径", next(line for line in text.splitlines() if '旧值为"不存在"' in line)
-    )
+    timeout_before = cite(DOC, "附录C/E3-1", text.split("**E3-1 ·", 1)[1].split("**E3-2 ·", 1)[0])
     symlink_source = cite(
         DOC,
         "§3 预期差异",
@@ -146,6 +144,16 @@ def derive(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
             "calls": calls,
             "obs_ref": ref(file, base),
         }
+        if fault == "timeout":
+            row["before_run"] = {
+                "method": (
+                    "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，"
+                    "不传 timeout 参数"
+                ),
+                "pass_timeout": False,
+                "injection_ref": ref(file, base + "/injection"),
+                "source": timeout_before,
+            }
         manifest["scenarios"].append(row)
         differences: dict[str, Any] = {}
         for i, _ in enumerate(calls):
@@ -187,12 +195,14 @@ def derive(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
                 "reason": "E2-1:用LIVE相邻观测验证消息形式,代入本场景destination。",
             }
         if fault == "timeout":
-            old = {"kind": "ABSENT_SECTION4", "source": old_absence}
             cell = cite(TABLE, "§3.2⑥ timeout 单元格", rows[SURFACES.index(surface)])
             if surface == "submit-remote":
                 for path in ("/warnings", "/return_value"):
                     differences[path] = {
-                        "old": old,
+                        "old": {
+                            "kind": "OBS_STATE",
+                            "ref": ref(file, base + "/outcome/return_value"),
+                        },
                         "new": {"kind": "TIMEOUT_WARNING", "source": e1},
                         "reason": "映射表ls-remote告警单元格与E1-2:保留告警返回形状,统一码值。",
                     }
@@ -205,13 +215,19 @@ def derive(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
                     else "WorkspaceViolation"
                 )
                 differences["/exception_type"] = {
-                    "old": old,
+                    "old": {
+                        "kind": "OBS_VALUE",
+                        "ref": ref(file, base + "/outcome/exception/value/type"),
+                    },
                     "new": {"kind": "LITERAL", "value": exc_type, "source": cell},
-                    "reason": "§4新可选timeout场景:按映射表该调用面的具名异常类型。",
+                    "reason": "E3-2:旧TimeoutExpired来自同场景outcome,新类型取映射表该调用面。",
                 }
                 if surface in {"fetch-query", "fetch-git", "submit-git"}:
                     differences["/exception_code"] = {
-                        "old": old,
+                        "old": {
+                            "kind": "OBS_STATE",
+                            "ref": ref(file, base + "/outcome/exception/value/code"),
+                        },
                         "new": {
                             "kind": "LITERAL",
                             "value": "GIT_TIMEOUT" if surface == "submit-git" else "FETCH_TIMEOUT",
@@ -219,18 +235,20 @@ def derive(root: Path) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
                         },
                         "reason": "映射表该调用面的具名异常code字段。",
                     }
-                differences["/exception_message"] = {
-                    "old": old,
-                    "new": {
-                        "kind": "DERIVED",
-                        "rule": "GIT_TIMEOUT_PREFIX_PLUS_EXC"
-                        if surface.startswith("shared-")
-                        else "TIMEOUT_MESSAGE_FROM_EXC",
-                        "source": e1,
-                        "inputs": {"injection": ref(file, base + "/injection")},
-                    },
-                    "reason": "E1-2:固定fixture构造TimeoutExpired,逐字比较派生消息。",
-                }
+                if surface.startswith("shared-"):
+                    differences["/exception_message"] = {
+                        "old": {
+                            "kind": "OBS_VALUE",
+                            "ref": ref(file, base + "/outcome/exception/value/message"),
+                        },
+                        "new": {
+                            "kind": "DERIVED",
+                            "rule": "GIT_TIMEOUT_PREFIX_PLUS_EXC",
+                            "source": e1,
+                            "inputs": {"injection": ref(file, base + "/injection")},
+                        },
+                        "reason": "E3-2/E1-2:同场景旧消息增加GIT_TIMEOUT:前缀,逐字比较。",
+                    }
         expected["scenarios"][sid] = (
             {"mode": "DIFF_SET", "differences": differences}
             if differences
@@ -266,11 +284,8 @@ def source_report(manifest: dict[str, Any], expected: dict[str, Any]) -> str:
     for row in manifest["scenarios"]:
         for path, delta in expected["scenarios"][row["id"]].get("differences", {}).items():
             old, new = delta["old"], delta["new"]
-            if "ref" in old:
-                r = old["ref"]
-                origin = r["file"].split("/part2/")[1] + "#" + r["pointer"]
-            else:
-                origin = "terminal §4: ABSENT (not representable before optional timeout)"
+            r = old["ref"]
+            origin = r["file"].split("/part2/")[1] + "#" + r["pointer"]
             target = new["source"]["section"]
             if new["kind"] == "DERIVED":
                 target += ": " + new["rule"]

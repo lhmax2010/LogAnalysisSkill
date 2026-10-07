@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "-c",
+    "\nimport hashlib,json,subprocess,sys\nfrom pathlib import Path\nroot=Path(\"/home/linhao/Toolchain/development/LogAnalysisSkill\")\ntools=root/\"docs/clang-fix-campaign/tools\"\nsys.path.insert(0,str(tools))\nfrom terminal_predicates import canonical\ndata=tools/\"p49_terminal_data\"\ndef previous(path):\n    return subprocess.check_output([\"git\",\"-C\",str(root),\"show\",\"8e1437d:\"+str(path.relative_to(root))])\ndef source_hash_only(obj):\n    if isinstance(obj,dict):\n        return {k:(\"APPROVED_DOC_SHA\" if k==\"sha256\" and obj.get(\"file\",\"\").endswith(\"p49-terminal-batch-design-v1.31-FROZEN.md\") else source_hash_only(v)) for k,v in obj.items()}\n    if isinstance(obj,list):\n        return [source_hash_only(v) for v in obj]\n    return obj\nmanifest=json.loads((data/\"scenario_manifest.json\").read_text())\nold_manifest=json.loads(previous(data/\"scenario_manifest.json\"))\nold_rows={r[\"id\"]:r for r in old_manifest[\"scenarios\"]}\nfor r in manifest[\"scenarios\"]:\n    old=old_rows[r[\"id\"]]\n    if r[\"fault\"]==\"timeout\":\n        assert set(r)-set(old)=={\"before_run\"}\n        r={k:v for k,v in r.items() if k!=\"before_run\"}\n    assert source_hash_only(r)==source_hash_only(old),r[\"id\"]\nold_expected=json.loads(previous(data/\"expected_diff.json\"))[\"scenarios\"]\nexpected=json.loads((data/\"expected_diff.json\").read_text())[\"scenarios\"]\nfor sid,entry in expected.items():\n    if not sid.endswith(\"-timeout\"):\n        assert source_hash_only(entry)==source_hash_only(old_expected[sid]),sid\nprint(\"NON_TIMEOUT_REGISTRATIONS=UNCHANGED (approved authority SHA reference updated)\")\nprint(\"MANIFEST_CHANGES=6 timeout before_run plans only (plus approved authority SHA)\")\nfor name in (\"result_schema.json\",\"predicates.json\",\"measurement_exemptions.json\"):\n    p=data/name\n    assert p.read_bytes()==previous(p),name\n    print(name+\": BYTE_IDENTICAL\")\ne=root/\"docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2\"\nfor subdir in (\"e1-item3\",\"e1-item4\",\"gate-structure\"):\n    for p in sorted((e/subdir).rglob(\"*\")):\n        if p.is_file():\n            assert p.read_bytes()==previous(p),p\nprint(\"EXISTING_OBS_AND_GATE_EVIDENCE=BYTE_IDENTICAL\")\npaths=[\"tizen-*/scripts/**\",\"ci_triage/\",\"release-v1.4.0/\",\"docs/clang-fix-campaign/design.md\"]\nassert not subprocess.check_output([\"git\",\"-C\",str(root),\"diff\",\"--name-only\",\"8e1437d\",\"--\",*paths])\nprint(\"PRODUCTION_P45_RELEASE_DIFF=EMPTY\")\nfor name in (\"scenario_manifest.json\",\"expected_diff.json\",\"result_schema.json\"):\n    obj=json.loads((data/name).read_text())\n    print(name+\" canonical_sha256=\"+hashlib.sha256(canonical(obj)).hexdigest())\nprint(\"scenarios=\"+str(len(expected))+\" registrations=\"+str(sum(len(e.get(\"differences\",{})) for e in expected.values())))\nfor r in manifest[\"scenarios\"]:\n    if r[\"fault\"]==\"timeout\":\n        print(r[\"id\"]+\" \"+r[\"surface\"]+\" fields=\"+json.dumps(list(expected[r[\"id\"]][\"differences\"])))\n        for path,diff in expected[r[\"id\"]][\"differences\"].items():\n            print(\"  \"+path+\" old=\"+diff[\"old\"][\"ref\"][\"file\"]+\"#\"+diff[\"old\"][\"ref\"][\"pointer\"])\nprint(\"REAL_BEFORE=PENDING_SEG3; OBS_PRODUCERS=NOT_RUN\")\n"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-gate-seg2-43a6aa6",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_ADDOPTS": null,
+    "PYTEST_PLUGINS": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"
+  },
+  "path": "/tmp/p49-a0-gate-seg2-43a6aa6/bin:/usr/bin:/bin",
+  "exit_code": 0,
+  "output_sha256": "ea20333edbeaa81187b8b000138f587ddb0857684aeaa2184ce43627ebd3c991",
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_expected_diff.py": "949c58f11dca0ec823ef1f325d9b1c10f8ffbdeace14a565850381d070bc9634",
+    "docs/clang-fix-campaign/tools/build_terminal_diff_data.py": "0e8bbd542abee85894dcd1a460ac65293b08b525e7f216e1498713bad69ca735",
+    "docs/clang-fix-campaign/tools/terminal_diff_controls.py": "bc86742672bd950b33bbfe06a24734f98026b7f6696334c5c2a83a082c0d0c2c",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/scenario_manifest.json": "f6ddf9d0a51c380ffce7dddf098d88d6367d72e3dded088380dfbc886e53f021",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/result_schema.json": "e23994a548a5ca0ac267b6d5e27bb1c712b0334219790ce38d89b8d294690360",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/expected_diff.json": "907723ac26c04270c35a5445628dbcf0a4b02831948be012300baf090b25b5cb",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+    "tests/unit/test_terminal_expected_diff.py": "ca6071aa89fbcabba36a592196eefe2d99cbde3cab9e12f2b9431b8c886dcf39"
+  },
+  "scope": "ERRATUM3_ARTIFICIAL_ONLY; real before-run PENDING_SEG3; no OBS producer execution"
+}

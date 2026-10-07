@@ -22,6 +22,7 @@ CONTROLS = (
     "empty-diff-set",
     "readers-empty",
     "readers-missing",
+    "unchanged-timeout-message",
 )
 ARTIFICIAL_READERS = ["ARTIFICIAL_READER_DO_NOT_USE_AS_ITEM5"]
 
@@ -77,15 +78,6 @@ def artificial_pair(gate: Gate) -> tuple[dict[str, Any], dict[str, Any]]:
             "exclude_completed": value(False),
             "exit_code": value(0),
         }
-        if scenario["fault"] == "timeout":
-            for field in (
-                "return_value",
-                "exception_type",
-                "exception_code",
-                "exception_message",
-                "warnings",
-            ):
-                obj[field] = dict(ABSENT)
         before[scenario["id"]] = obj
         changed = copy.deepcopy(obj)
         for call in changed["calls"]:
@@ -143,6 +135,16 @@ def run_control(gate: Gate, name: str) -> None:
         readers = []
     elif name == "readers-missing":
         readers = None
+    elif name == "unchanged-timeout-message":
+        delta = copy.deepcopy(
+            gate.expected["scenarios"]["surface5-timeout"]["differences"]["/exception_message"]
+        )
+        row = next(r for r in gate.manifest["scenarios"] if r["id"] == "surface1-timeout")
+        delta["old"]["ref"] = dict(row["obs_ref"])
+        delta["old"]["ref"]["pointer"] += "/outcome/exception/value/message"
+        delta["new"]["rule"] = "TIMEOUT_MESSAGE_FROM_EXC"
+        delta["new"]["inputs"]["injection"] = dict(row["before_run"]["injection_ref"])
+        gate.expected["scenarios"][row["id"]]["differences"]["/exception_message"] = delta
     elif name != "normal":
         raise GateError("UNKNOWN_CONTROL")
     gate.compare(before, after, readers)

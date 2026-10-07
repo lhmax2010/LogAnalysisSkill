@@ -1,0 +1,44 @@
+OLD_SHA256=73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e
+NEW_SHA256=7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200
+APPEND_ONLY=PASS additions=25 deletions=0
+diff --git a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+index c8a54d4..d76a534 100644
+--- a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
++++ b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+@@ -3,6 +3,7 @@
+ > **状态:FROZEN(2026-09-27,FatTank 批准)。** 交 Codex 按本稿实现。冻结后任何改动只走下面第 3 条的勘误流程。
+ > **已生效勘误:附录 C 勘误 1(2026-09-29,FatTank 批准)。** 勘误只追加在附录 C,不改动正文任何一行。
+ > **已生效勘误:附录 C 勘误 2(2026-10-07,FatTank 批准)。**
++> **已生效勘误:附录 C 勘误 3(2026-10-07,FatTank 批准)。**
+ > 冻结前的放行规则(v1.27 起,留作记录):
+ > 1. **落地核对**:三家只核对最新修订段所列改动是否按所写落地、有无改到别处;**不开新的审查面**;
+ > 2. **放行标准只看"朝开"**:仅当发现**会导致删错真实依赖或删掉行为型测试**的问题才阻止冻结;
+@@ -2133,3 +2134,27 @@ A/B 取值、**存在性检查证据(`lstat` 语义)**、**π 归一结果**、
+ > 除本条与 E1-1、E1-2 所列项外,其余字段一律精确相等;**仍有字段找不到来源时,停止报告,不得自行补来源**。
+ 
+ **生效范围**:仅 §6 登记;不改变任何 SEAL、判定条件、实现目标或其它事项。
++
++### 勘误 3(2026-10-07,FatTank 批准)—— 超时场景的"改前"一侧如何运行、旧值从哪来
++
++**触发**:设计方核对 A₀ 第 2 段门禁登记(commit `8e1437d`)时发现的空位,未等实现期停下:
++§4 验收口径写"超时场景旧值为'不存在'",而 `OBS-1.item4-anchors` 已在改前代码上以"测试替身在同一调用处抛出
++`subprocess.TimeoutExpired`"的方式观测到了超时场景的实际结果(异常类型 `TimeoutExpired`、消息为该异常文本、ls-remote
++告警为 `target_head_unknown:<异常文本>`)。门禁按"实际差异恰为登记差异"逐字比较,若改前一侧照此运行而登记写"不存在",必然判红;
++若改前一侧不运行,则残留状态等字段无从比较,超时场景的残留 parity 落空。
++
++**E3-1 · 超时场景的改前运行方式**
++> 改前一侧以**同一 fixture、同一调用处注入 `subprocess.TimeoutExpired`** 的方式运行;因改前签名没有 `timeout` 参数,
++> 调用时不传该参数(这一项差异按 E2-2 登记)。改后一侧传入 fixture 设定的超时值,由测试替身在同一调用处抛出同一异常。
++> 其余输入一律相同。
++
++**E3-2 · 超时场景的旧值来源**
++> 超时场景各结果字段的旧值取**改前一侧的实际运行结果**,与 `OBS-1.item4-anchors` 对同一场景的观测须逐字一致(不一致即停止报告);
++> **§4 验收口径中"旧值为'不存在'"一语,对超时场景改按本条执行**;勘误 1 E1-1 中"旧值……或 §4 规定的'不存在'"的后半句随之不再适用于超时场景。
++> 由此,超时场景只登记**确实变化**的字段:异常类型(`TimeoutExpired` → 映射表规定的具名类型)、错误码(无 → 映射表规定的码,
++> `WorkspaceViolation` 无错误码字段,不登记)、消息(仅当 E1-2 的规则使其改变时登记 —— shared 两面加 `GIT_TIMEOUT: ` 前缀;
++> fetch 两面与 submit `_run_git` 的消息按 E1-2 仍为 `str(exc)`,与改前相同,**不登记、须逐字相等**)、
++> ls-remote 的告警与返回值(`target_head_unknown:<异常文本>` → `target_head_unknown:timeout`),以及 E2-2 的 `timeout` 关键字。
++> 残留状态、marker、调用轨迹等其余字段改前改后须完全相等(对应 §4"残留不自动回滚")。
++
++**生效范围**:仅 §6 中超时场景的运行方式与登记;不改变映射表裁决、实现目标、SEAL 与判定条件。
+

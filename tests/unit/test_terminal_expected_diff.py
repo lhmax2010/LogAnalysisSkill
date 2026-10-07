@@ -145,10 +145,10 @@ def test_all_derived_message_rules_compare_full_strings(gate: Any, sid: str) -> 
     before, after = C.artificial_pair(gate)
     original = after[sid]["exception_message"]["value"]
     after[sid]["exception_message"]["value"] = original + " WRONG_SUFFIX"
-    with pytest.raises(G.GateError, match="DIFF_VALUE"):
+    with pytest.raises(G.GateError, match="DIFF_(PATHS|VALUE)"):
         gate.compare(before, after, C.ARTIFICIAL_READERS)
     after[sid]["exception_message"]["value"] = original[: len(original) // 2]
-    with pytest.raises(G.GateError, match="DIFF_VALUE"):
+    with pytest.raises(G.GateError, match="DIFF_(PATHS|VALUE)"):
         gate.compare(before, after, C.ARTIFICIAL_READERS)
 
 
@@ -263,9 +263,9 @@ def test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios(
 
 @pytest.mark.parametrize("mutation", ["wrong-rule", "wrong-field-literal", "wrong-observation"])
 def test_timeout_result_sources_bind_to_field_and_fixture(gate: Any, mutation: str) -> None:
-    differences = gate.expected["scenarios"]["surface1-timeout"]["differences"]
+    differences = gate.expected["scenarios"]["surface5-timeout"]["differences"]
     if mutation == "wrong-rule":
-        differences["/exception_message"]["new"]["rule"] = "GIT_TIMEOUT_PREFIX_PLUS_EXC"
+        differences["/exception_message"]["new"]["rule"] = "TIMEOUT_MESSAGE_FROM_EXC"
     elif mutation == "wrong-field-literal":
         differences["/exception_type"]["new"]["value"] = "FETCH_TIMEOUT"
     else:
@@ -300,4 +300,89 @@ def test_citation_must_be_the_correct_surface_cell_even_if_same_exception_type(g
     ]["source"]
     source["quote"] = gate.sources.timeout_cells()[1]
     with pytest.raises(G.GateError, match="MAPPING_SURFACE_BINDING"):
+        gate.validate()
+
+
+@pytest.mark.parametrize("number", range(1, 7))
+def test_e3_timeout_fields_and_old_values_match_same_observation(gate: Any, number: int) -> None:
+    sid = f"surface{number}-timeout"
+    row = next(r for r in gate.manifest["scenarios"] if r["id"] == sid)
+    deltas = gate.expected["scenarios"][sid]["differences"]
+    fields = (
+        {"/exception_type", "/exception_code"}
+        if number <= 3
+        else {"/return_value", "/warnings"}
+        if number == 4
+        else {"/exception_type", "/exception_message"}
+    )
+    assert set(deltas) == fields | {"/calls/0/kwargs/timeout"}
+    plan = row["before_run"]
+    assert plan["pass_timeout"] is False
+    assert plan["source"]["section"] == "附录C/E3-1"
+    assert plan["injection_ref"]["pointer"] == row["obs_ref"]["pointer"] + "/injection"
+    assert all(deltas[p]["old"]["ref"]["file"] == G.OBS + "e1-item4/raw.json" for p in fields)
+    assert all(
+        deltas[p]["old"]["ref"]["pointer"].startswith(row["obs_ref"]["pointer"] + "/outcome/")
+        for p in fields
+    )
+    before, after = C.artificial_pair(gate)
+    observed = gate.sources.fact(row["obs_ref"])["outcome"]
+    assert before[sid]["return_value"] == observed["return_value"]
+    if number != 4:
+        assert before[sid]["exception_type"] == G.value("TimeoutExpired")
+        assert before[sid]["exception_message"] == G.value(
+            observed["exception"]["value"]["message"]
+        )
+    if number <= 3:
+        assert before[sid]["exception_message"] == after[sid]["exception_message"]
+    gate.compare(before, after, C.ARTIFICIAL_READERS)
+
+
+@pytest.mark.parametrize("number", range(1, 7))
+def test_e3_old_source_cannot_borrow_another_timeout_scene(gate: Any, number: int) -> None:
+    sid = f"surface{number}-timeout"
+    field = "/return_value" if number == 4 else "/exception_type"
+    ref = gate.expected["scenarios"][sid]["differences"][field]["old"]["ref"]
+    other_index = 5 if number == 1 else 1
+    ref["pointer"] = ref["pointer"].replace(
+        f"/observations/{(number - 1) * 4 + 1}/", f"/observations/{other_index}/"
+    )
+    with pytest.raises(G.GateError, match="TIMEOUT_RESULT_OLD_SOURCE_BINDING"):
+        gate.validate()
+
+
+@pytest.mark.parametrize("number", range(1, 7))
+def test_e3_obsolete_absence_source_is_rejected(gate: Any, number: int) -> None:
+    sid = f"surface{number}-timeout"
+    field = "/return_value" if number == 4 else "/exception_type"
+    gate.expected["scenarios"][sid]["differences"][field]["old"] = {
+        "kind": "ABSENT_SECTION4",
+        "source": {},
+    }
+    with pytest.raises(G.GateError):
+        gate.validate()
+
+
+@pytest.mark.parametrize("number", [1, 2, 3])
+def test_e3_same_wrong_message_on_both_sides_cannot_hide_bad_before_input(
+    gate: Any, number: int
+) -> None:
+    before, after = C.artificial_pair(gate)
+    sid = f"surface{number}-timeout"
+    for frame in (before, after):
+        frame[sid]["exception_message"] = G.value("not the archived TimeoutExpired text")
+    with pytest.raises(G.GateError, match="TIMEOUT_BEFORE_OUTCOME"):
+        gate.compare(before, after, C.ARTIFICIAL_READERS)
+
+
+@pytest.mark.parametrize("mutation", ["missing", "pass-timeout", "different-injection"])
+def test_e3_before_run_plan_is_required_and_exact(gate: Any, mutation: str) -> None:
+    row = next(r for r in gate.manifest["scenarios"] if r["id"] == "surface1-timeout")
+    if mutation == "missing":
+        del row["before_run"]
+    elif mutation == "pass-timeout":
+        row["before_run"]["pass_timeout"] = True
+    else:
+        row["before_run"]["injection_ref"]["pointer"] = "/observations/5/injection"
+    with pytest.raises(G.GateError, match="CLOSED_FIELDS|TIMEOUT_BEFORE_PLAN"):
         gate.validate()

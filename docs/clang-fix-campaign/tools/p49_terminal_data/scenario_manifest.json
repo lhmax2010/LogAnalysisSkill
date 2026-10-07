@@ -3,7 +3,7 @@
   "before_run": "PENDING_SEG3",
   "rules": {
     "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
-    "sha256": "73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e",
+    "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
     "section": "§6",
     "quote": "## §6 [本批核心机制] 预期差异门禁"
   },
@@ -220,6 +220,21 @@
         "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
         "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
         "pointer": "/observations/1"
+      },
+      "before_run": {
+        "method": "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，不传 timeout 参数",
+        "pass_timeout": false,
+        "injection_ref": {
+          "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+          "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+          "pointer": "/observations/1/injection"
+        },
+        "source": {
+          "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+          "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+          "section": "附录C/E3-1",
+          "quote": " 超时场景的改前运行方式**\n> 改前一侧以**同一 fixture、同一调用处注入 `subprocess.TimeoutExpired`** 的方式运行;因改前签名没有 `timeout` 参数,\n> 调用时不传该参数(这一项差异按 E2-2 登记)。改后一侧传入 fixture 设定的超时值,由测试替身在同一调用处抛出同一异常。\n> 其余输入一律相同。\n\n"
+        }
       }
     },
     {
@@ -320,6 +335,21 @@
         "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
         "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
         "pointer": "/observations/5"
+      },
+      "before_run": {
+        "method": "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，不传 timeout 参数",
+        "pass_timeout": false,
+        "injection_ref": {
+          "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+          "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+          "pointer": "/observations/5/injection"
+        },
+        "source": {
+          "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+          "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+          "section": "附录C/E3-1",
+          "quote": " 超时场景的改前运行方式**\n> 改前一侧以**同一 fixture、同一调用处注入 `subprocess.TimeoutExpired`** 的方式运行;因改前签名没有 `timeout` 参数,\n> 调用时不传该参数(这一项差异按 E2-2 登记)。改后一侧传入 fixture 设定的超时值,由测试替身在同一调用处抛出同一异常。\n> 其余输入一律相同。\n\n"
+        }
       }
     },
     {
@@ -420,6 +450,21 @@
         "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
         "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
         "pointer": "/observations/9"
+      },
+      "before_run": {
+        "method": "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，不传 timeout 参数",
+        "pass_timeout": false,
+        "injection_ref": {
+          "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+          "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+          "pointer": "/observations/9/injection"
+        },
+        "source": {
+          "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+          "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+          "section": "附录C/E3-1",
+          "quote": " 超时场景的改前运行方式**\n> 改前一侧以**同一 fixture、同一调用处注入 `subprocess.TimeoutExpired`** 的方式运行;因改前签名没有 `timeout` 参数,\n> 调用时不传该参数(这一项差异按 E2-2 登记)。改后一侧传入 fixture 设定的超时值,由测试替身在同一调用处抛出同一异常。\n> 其余输入一律相同。\n\n"
+        }
       }
     },
     {
@@ -520,6 +565,21 @@
         "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
         "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
         "pointer": "/observations/13"
+      },
+      "before_run": {
+        "method": "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，不传 timeout 参数",
+        "pass_timeout": false,
+        "injection_ref": {
+          "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+          "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+          "pointer": "/observations/13/injection"
+        },
+        "source": {
+          "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+          "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+          "section": "附录C/E3-1",
+          "quote": " 超时场景的改前运行方式**\n> 改前一侧以**同一 fixture、同一调用处注入 `subprocess.TimeoutExpired`** 的方式运行;因改前签名没有 `timeout` 参数,\n> 调用时不传该参数(这一项差异按 E2-2 登记)。改后一侧传入 fixture 设定的超时值,由测试替身在同一调用处抛出同一异常。\n> 其余输入一律相同。\n\n"
+        }
       }
     },
     {
@@ -620,6 +680,21 @@
         "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
         "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
         "pointer": "/observations/17"
+      },
+      "before_run": {
+        "method": "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，不传 timeout 参数",
+        "pass_timeout": false,
+        "injection_ref": {
+          "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+          "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+          "pointer": "/observations/17/injection"
+        },
+        "source": {
+          "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+          "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+          "section": "附录C/E3-1",
+          "quote": " 超时场景的改前运行方式**\n> 改前一侧以**同一 fixture、同一调用处注入 `subprocess.TimeoutExpired`** 的方式运行;因改前签名没有 `timeout` 参数,\n> 调用时不传该参数(这一项差异按 E2-2 登记)。改后一侧传入 fixture 设定的超时值,由测试替身在同一调用处抛出同一异常。\n> 其余输入一律相同。\n\n"
+        }
       }
     },
     {
@@ -720,6 +795,21 @@
         "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
         "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
         "pointer": "/observations/21"
+      },
+      "before_run": {
+        "method": "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，不传 timeout 参数",
+        "pass_timeout": false,
+        "injection_ref": {
+          "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json",
+          "sha256": "7a8b93b5ffe31511c9e93da06441f41c817be4b341e079ac29aad2f7529cdfe2",
+          "pointer": "/observations/21/injection"
+        },
+        "source": {
+          "file": "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md",
+          "sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+          "section": "附录C/E3-1",
+          "quote": " 超时场景的改前运行方式**\n> 改前一侧以**同一 fixture、同一调用处注入 `subprocess.TimeoutExpired`** 的方式运行;因改前签名没有 `timeout` 参数,\n> 调用时不传该参数(这一项差异按 E2-2 登记)。改后一侧传入 fixture 设定的超时值,由测试替身在同一调用处抛出同一异常。\n> 其余输入一律相同。\n\n"
+        }
       }
     },
     {

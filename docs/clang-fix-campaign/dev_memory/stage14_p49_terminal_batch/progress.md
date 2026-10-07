@@ -4,8 +4,8 @@
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
-勘误2已核对原字节;DIFF-01..04 CLOSED。第17节记录第2段收尾裁决、
-预期差异门禁结构/登记/人工准入证伪;§6改前实跑为PENDING_SEG3。
+勘误3已核对原字节;DIFF-01..04 CLOSED。第18节记录E3-1/E3-2对超时场景
+运行计划、旧值来源与登记的修订;§6改前实跑仍为PENDING_SEG3。
 本轮未运行任何 producer或真实双跑;既有两项产出不变,生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
@@ -1313,3 +1313,140 @@ DIFF-01..04全部CLOSED;**本轮停止报告0条,当前OPEN停止项0条**。
 **挂账不是完成**:§6改前实跑PENDING_SEG3;依赖第3段名字兜底引擎、item5
 读取方全集及已核验的item5产物。真实双跑须与人工控制分开归档,不得复用人工
 磁盘/reader值。push后停止,不启动第3段或生产实施。
+
+## 18. 勘误3:超时场景的真实旧值与不变消息
+
+### 18.1 入库、触发原因与仅追加证据
+
+设计方在核对`8e1437d`时发现:§4的“超时场景旧值不存在”与item4已经采到的
+TimeoutExpired结果冲突。如果门禁改前实际注入异常,登记ABSENT必红;如果
+不运行改前一侧,残留parity无法取证。FatTank批准勘误3,不是实现方改判据。
+
+开工`git pull --ff-only origin clang-fix-campaign`: `Already up to date.`;
+HEAD=`8e1437d562517be7f3085e3da8f1f9e0072f04e6`。
+批准文件已位于目标路径,本轮原字节纳入,未重写正文或附件。
+
+| 版本 | SHA-256 |
+|---|---|
+| 勘误2后、勘误3前 | `73dad3c6f2f30541998a228cfb05f83718cd1273e2948b4d23b13d0941b6079e` |
+| 勘误3生效 | `7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200` |
+
+证据目录为`E/part2/erratum3/`,其中`final-intake.command.json`保存完整命令,
+`final-intake.log`含对`8e1437d`的原始`git diff --unified=3`与机械断言:
+
+```text
+APPEND_ONLY=PASS additions=25 deletions=0
+```
+
+两个insert区段分别为文首勘误2生效行之后的一行、附录C末尾勘误3;
+旧行全部原字节保留。权威文档/本报告的完整性由本次Git commit外部锚定,
+不在文件内记录自身SHA或本次commit的自指值。
+
+### 18.2 E3运行计划、旧值绑定与逐场景登记
+
+六个timeout场景新增封闭`before_run`对象:同一fixture、同一调用处注入
+`subprocess.TimeoutExpired`,不传timeout参数;保留原来的fixture超时值供
+改后使用。记录E3-1原文/文档SHA与同场景`injection_ref`。
+这是运行计划,**本轮没有执行改前实跑**。
+
+E3-2取代§4旧ABSENT来源:门禁拒绝`ABSENT_SECTION4`,每项结果旧值须使用
+`e1-item4/raw.json`中同一场景的精确outcome指针。远程告警由helper的
+`outcome/return_value`同时承载return_value和warnings;未新造OBS字段。
+比较前还校验超时旧结果的return/type/code/message/warnings投影与该观测
+逐字一致,防止改前/改后两侧同时写错不变消息而伪绿。
+
+| 场景 | 调用面 | 旧OBS行 | 全部登记字段(JSON Pointer) |
+|---|---|---|---|
+| surface1-timeout | fetch-query | observations/1 | `/calls/0/kwargs/timeout`, `/exception_type`, `/exception_code` |
+| surface2-timeout | fetch-git | observations/5 | `/calls/0/kwargs/timeout`, `/exception_type`, `/exception_code` |
+| surface3-timeout | submit-git | observations/9 | `/calls/0/kwargs/timeout`, `/exception_type`, `/exception_code` |
+| surface4-timeout | submit-remote | observations/13 | `/calls/0/kwargs/timeout`, `/warnings`, `/return_value` |
+| surface5-timeout | shared-run-git(manifest名shared-git) | observations/17 | `/calls/0/kwargs/timeout`, `/exception_type`, `/exception_message` |
+| surface6-timeout | shared-exclude | observations/21 | `/calls/0/kwargs/timeout`, `/exception_type`, `/exception_message` |
+
+前3面消息均为str(exc),**不登记**,出现该登记即
+`UNCHANGED_TIMEOUT_MESSAGE_REGISTERED`。shared两面无code登记,消息按E1-2
+逐字增加`GIT_TIMEOUT: `;remote旧列表的异常文本换为固定timeout告警码。
+timeout关键字仍按E2-2逐调用登记,不以全局掩码处理。
+
+`final-structure.log`(exit0):
+
+```text
+STRUCTURE_SOURCES=PASS scenarios=30 NO_DIFF=0 DIFF_SET=30 registrations=53
+REAL_BEFORE=PENDING_SEG3
+```
+
+53=38条kwargs+3条悬空链接结果+12条超时结果;较上轮56减少3条不变消息。
+完整来源清单已重新生成:
+[expected_diff_sources.md](../../tools/p49_terminal_data/expected_diff_sources.md)。
+`final-regeneration.log`: `REGISTRATION_DATA=MATCH scenarios=30`,exit0。
+第17节的56条与ABSENT说明是勘误前历史,由本节修订,历史证据不覆写。
+
+### 18.3 人工控制与门禁测试
+
+仍在§9.2干净工作区执行,HEAD=`43a6aa625f27da46daba190657bf62256080c68e`,
+tree=`ca9331190e878af465e7968fe56e735585a5866e`;复用独立工具环境
+`/tmp/p49-a0-gate-seg2-43a6aa6`,清除PYTHONPATH/MYPYPATH/pytest覆盖,禁自动插件。
+工具与数据从主树绝对路径只读加载,每份command.json记录实际argv、cwd、
+HEAD/tree、环境、exit、输入文件SHA和原始输出SHA。
+
+可复现(仓库根设置`T="$PWD/docs/clang-fix-campaign/tools"`,
+`P=/tmp/p49-a0-gate-seg2-43a6aa6/bin/python`):
+`env -u PYTHONPATH -u MYPYPATH "$P" "$T/terminal_diff_controls.py" <参数>`。
+
+| 控制 | 参数 | 实际exit | 原文要点 |
+|---|---|---:|---|
+| 正常对照 | normal | 0 | EXACT_DIFF=PASS |
+| ①额外变化 | extra-change | 1 | DIFF_PATHS: extra=['/action'] missing=[] |
+| ②漏改登记项 | missed-change | 1 | DIFF_PATHS: extra=[] missing=['/calls/0/kwargs/timeout'] |
+| ③空理由 | empty-reason | 1 | EMPTY_REASON |
+| ④不可能登记 | impossible-registration | 1 | REGISTRATION_PATH_CLOSED_SET |
+| ⑤缺mode/未知mode | missing-mode / unknown-mode | 各1 | MODE_MISSING_OR_UNKNOWN |
+| ⑥NO_DIFF带differences | no-diff-with-differences | 1 | CLOSED_FIELDS: NO_DIFF |
+| ⑦空DIFF_SET | empty-diff-set | 1 | EMPTY_DIFF_SET |
+| 读取方空/缺失 | readers-empty / readers-missing | 各1 | READERS_EMPTY_OR_MISSING |
+| E3新增:错误登记fetch消息变化 | unchanged-timeout-message | 1 | UNCHANGED_TIMEOUT_MESSAGE_REGISTERED |
+
+原始输出为`final-control-<参数>.log`,命令为同名command.json。七条规范控制、
+两个读取方控制与一个E3新增控制分别记账,不合并计数。
+
+| 验证 | 命令(参数完整形式见同名command.json) | exit与最终原文 |
+|---|---|---|
+| 门禁全体单元测试 | `python -m pytest tests/unit/test_terminal_expected_diff.py tests/unit/test_terminal_predicates.py tests/unit/test_terminal_anchors.py -vv` | 0;`197 passed in 3.82s`;final-unit-tests.* |
+| 结构与来源 | `python tools/terminal_expected_diff.py check` | 0;30/0/30/53;final-structure.* |
+| 生成物一致 | `python tools/build_terminal_diff_data.py --check` | 0;REGISTRATION_DATA=MATCH;final-regeneration.* |
+| ruff | 三工具+测试文件 | 0;All checks passed!;final-ruff.* |
+| mypy | 三工具+测试文件 | 0;Success: no issues found in 4 source files;final-mypy.* |
+| py_compile | 三工具+测试文件 | 0;空输出;final-py-compile.* |
+
+197=本门禁86+既有predicate/anchor人工测试111,不是新的生产全量基线。
+新增控制覆盖六面旧值/登记字段、六面错场景引用、六面旧ABSENT拒绝、
+三面双侧消息同时写错、运行计划缺失/传timeout/错注入处及CLI消息误登记。
+全部用人工对象和既有JSON,未调用producer或真实collector。
+
+首轮测试`196 passed,1 failed`:错场景负fixture把submit异常type指向remote
+无异常的字段,实际先红MISSING_POINTER,未命中预期的来源绑定红因。
+修为另一场景确实存在的同类型字段后通过,未放宽断言。ruff首跑两处行长,
+拆分字符串字面量后通过;失败原文保留`unit-tests.*`/`ruff.*`,最终看final-*。
+
+### 18.4 变更范围、完整性与停点
+
+`final-integrity.*` exit0确认:除权威SHA引用更新外,非超时登记未变;
+manifest仅六个超时场景增加before_run;result_schema原字节未变。
+生产源码/P4.5 design.md/release快照零diff;predicates与exemptions原字节未变;
+item3/item4全部原产物和上一轮gate-structure证据原字节未变。
+
+暂存区`git diff --cached --check` exit2仅指向本轮原始日志:final-intake.log的
+git diff上下文空行/输出尾空行,unit-tests.log的pytest失败堆栈尾空格。
+为保留证据原字节及输出SHA,不清洗日志;排除本轮`erratum3/*.log`后对
+源码/数据/文档重跑同一检查exit0。此为证据输出格式,不是规格停止项。
+
+| 文件 | canonical SHA-256 |
+|---|---|
+| scenario_manifest.json | `28fde83aa7889c41d312bed186b90f0690feeb0dff66bee4b2e52c293807b03f` |
+| expected_diff.json | `ef85c44523e9ed1fcdc62e9ab5fbda0d590f29bd54c71a6faa86bc0f3c214539` |
+| result_schema.json(未改) | `9def71e68aaa114f9f64cf03d2fbefc125f28bb80735055f41b5b412d8eeaf96` |
+
+本轮停止报告**0条**,OPEN停止项**0条**;DIFF-01..04保持CLOSED。
+**§6改前实跑仍PENDING_SEG3**,等名字兜底/item5读取方全集。不运行OBS,
+不执行改前实跑,不启动生产改动。原有无关改动保持原样;commit+push后停止。

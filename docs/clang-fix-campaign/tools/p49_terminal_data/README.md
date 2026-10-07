@@ -10,6 +10,9 @@ fields come from the gate's own paired execution, not OBS difference sources.
 Segment 2 structure, registration and artificial controls are complete; the real
 before-run is PENDING_SEG3, waiting for the item5 reader universe. No producer was
 rerun, and the frozen predicate/exemption JSON files remain unchanged.
+Erratum 3 updates only timeout scenario plans and registrations: old results now
+reference the same item4 outcome, not Section 4's superseded absence convention.
+Stage14 progress section 18 records the intake hash and revision evidence.
 
 ## Representation
 
@@ -87,8 +90,14 @@ Unlisted fields always compare exactly equal, with no normalization or masks.
 
 `expected_diff_sources.md` is a generated view of every registration, not a second
 authority. Each JSON recipe retains the original document quote/section/SHA or
-the archived OBS JSON Pointer/SHA. Timeout result absence comes only from Section
-4; missing old kwargs are checked on the exact archived call. The Section 5 OBS
+the archived OBS JSON Pointer/SHA. Under E3-1, before timeout runs inject the same
+TimeoutExpired at the same call with the same fixture, without passing timeout.
+Under E3-2, old timeout results come from that scenario's item4 outcome; the gate
+checks the entire projected before outcome, including unchanged messages.
+Fetch query/git and submit git messages remain equal and cannot be registered as
+differences. Shared git/exclude messages gain the E1-2 prefix; remote return and
+warning lists change to the fixed warning code. Missing old kwargs are checked
+on the exact archived call. The Section 5 OBS
 references establish only that kwarg's absence, not an observed marker-write
 interruption or reader result. Default/interruption timeout null is a real value,
 not the ABSENT tag. All derived strings are calculated from fixed fixture inputs
@@ -107,7 +116,9 @@ Replace `normal` with any of the following; each must exit 1:
 `extra-change`, `missed-change`, `empty-reason`, `impossible-registration`,
 `missing-mode`, `unknown-mode`, `no-diff-with-differences`, `empty-diff-set`,
 `readers-empty`, `readers-missing`. The missing/unknown-mode pair covers one of
-the seven normative controls. Stage14 progress section 17 records exact commands,
+the seven normative controls. The additional `unchanged-timeout-message` control
+must also exit 1: it registers an unchanged fetch timeout message as a change.
+Stage14 progress section 18 records the revised exact commands,
 exits and the final code/data hashes. No control invokes an OBS producer.
 
 ### Segment-3 Integration Boundary

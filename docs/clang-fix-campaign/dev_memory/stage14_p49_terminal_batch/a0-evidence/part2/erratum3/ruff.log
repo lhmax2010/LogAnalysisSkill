@@ -1,0 +1,23 @@
+E501 Line too long (102 > 100)
+   --> /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/build_terminal_diff_data.py:149:86
+    |
+147 |         if fault == "timeout":
+148 |             row["before_run"] = {
+149 |                 "method": "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，不传 timeout 参数",
+    |                                                                                                     ^^
+150 |                 "pass_timeout": False,
+151 |                 "injection_ref": ref(file, base + "/injection"),
+    |
+
+E501 Line too long (102 > 100)
+   --> /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_expected_diff.py:475:87
+    |
+473 |                     require(
+474 |                         plan["method"]
+475 |                         == "同一 fixture、同一调用处注入 subprocess.TimeoutExpired，不传 timeout 参数"
+    |                                                                                                      ^
+476 |                         and plan["pass_timeout"] is False
+477 |                         and plan["injection_ref"] == injection_ref,
+    |
+
+Found 2 errors.

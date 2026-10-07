@@ -1,0 +1,276 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /tmp/p49-a0-gate-seg2-43a6aa6/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+collecting ... collected 197 items
+
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_data_generation_is_reproducible_and_closed PASSED [  0%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[normal] PASSED [  1%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[extra-change] PASSED [  1%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[missed-change] PASSED [  2%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[empty-reason] PASSED [  2%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[impossible-registration] PASSED [  3%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[missing-mode] PASSED [  3%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[unknown-mode] PASSED [  4%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[no-diff-with-differences] PASSED [  4%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[empty-diff-set] PASSED [  5%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[readers-empty] PASSED [  5%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[readers-missing] PASSED [  6%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_artificial_admission_control[unchanged-timeout-message] PASSED [  6%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_no_diff_positive_and_negative_do_not_need_fake_registered_scenario PASSED [  7%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_registered_but_impossible_difference_cannot_pass_exact_set_comparison PASSED [  7%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[return_value] PASSED [  8%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[exception_type] PASSED [  8%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[exception_code] PASSED [  9%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[exception_message] PASSED [  9%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[warnings] PASSED [ 10%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[action] PASSED [ 10%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[calls] PASSED [ 11%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[destination] PASSED [ 11%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[worktree] PASSED [ 12%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[workdir_marker] PASSED [ 12%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[protected_marker] PASSED [ 13%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[exclude_completed] PASSED [ 13%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_every_result_field_is_required[exit_code] PASSED [ 14%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_undeclared_fields_are_rejected[extra] PASSED [ 14%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_undeclared_fields_are_rejected[calls] PASSED [ 15%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_undeclared_fields_are_rejected[marker] PASSED [ 15%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_undeclared_fields_are_rejected[reader] PASSED [ 16%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_runtime_readers_must_be_nonempty_unique_and_exact[replacement0] PASSED [ 16%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_runtime_readers_must_be_nonempty_unique_and_exact[None] PASSED [ 17%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_runtime_readers_must_be_nonempty_unique_and_exact[replacement2] PASSED [ 17%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_runtime_readers_must_be_nonempty_unique_and_exact[replacement3] PASSED [ 18%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_reader_results_may_not_be_omitted_or_changed PASSED [ 18%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_partial_marker_hashes_and_reader_exceptions_are_compared PASSED [ 19%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_all_derived_message_rules_compare_full_strings[DANGLING_SYMLINK] PASSED [ 19%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_all_derived_message_rules_compare_full_strings[surface1-timeout] PASSED [ 20%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_all_derived_message_rules_compare_full_strings[surface5-timeout] PASSED [ 20%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_no_path_or_nested_payload_mask PASSED [ 21%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_registration_fail_closed[missing-scenario] PASSED [ 21%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_registration_fail_closed[unknown-scenario] PASSED [ 22%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_registration_fail_closed[source-hash] PASSED [ 22%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_registration_fail_closed[empty-source] PASSED [ 23%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_registration_fail_closed[missing-kwarg] PASSED [ 23%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_registration_fail_closed[wrong-call-source] PASSED [ 24%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_item5_membership_extraction_not_reader_result_inference PASSED [ 24%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_injected_two_run_framework_runs_both_and_rejects_empty_readers_before_callbacks PASSED [ 25%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_absence_is_not_json_null_and_boolean_is_not_integer PASSED [ 25%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_snapshot_sources_remain_hash_identical PASSED [ 26%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[EXCLUDE_INTERRUPTED] PASSED [ 26%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[MARKER_WRITE_INTERRUPTED] PASSED [ 27%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[surface1-SIGINT] PASSED [ 27%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[surface6-SIGTERM] PASSED [ 28%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[LIVE_SYMLINK_TO_DIR] PASSED [ 28%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_timeout_result_sources_bind_to_field_and_fixture[wrong-rule] PASSED [ 29%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_timeout_result_sources_bind_to_field_and_fixture[wrong-field-literal] PASSED [ 29%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_timeout_result_sources_bind_to_field_and_fixture[wrong-observation] PASSED [ 30%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_wrong_live_message_stops_existing_branch_derivation PASSED [ 30%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_citation_must_be_the_correct_surface_cell_even_if_same_exception_type PASSED [ 31%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_timeout_fields_and_old_values_match_same_observation[1] PASSED [ 31%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_timeout_fields_and_old_values_match_same_observation[2] PASSED [ 32%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_timeout_fields_and_old_values_match_same_observation[3] PASSED [ 32%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_timeout_fields_and_old_values_match_same_observation[4] PASSED [ 33%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_timeout_fields_and_old_values_match_same_observation[5] PASSED [ 34%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_timeout_fields_and_old_values_match_same_observation[6] PASSED [ 34%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_old_source_cannot_borrow_another_timeout_scene[1] PASSED [ 35%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_old_source_cannot_borrow_another_timeout_scene[2] PASSED [ 35%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_old_source_cannot_borrow_another_timeout_scene[3] FAILED [ 36%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_old_source_cannot_borrow_another_timeout_scene[4] PASSED [ 36%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_old_source_cannot_borrow_another_timeout_scene[5] PASSED [ 37%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_old_source_cannot_borrow_another_timeout_scene[6] PASSED [ 37%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_obsolete_absence_source_is_rejected[1] PASSED [ 38%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_obsolete_absence_source_is_rejected[2] PASSED [ 38%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_obsolete_absence_source_is_rejected[3] PASSED [ 39%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_obsolete_absence_source_is_rejected[4] PASSED [ 39%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_obsolete_absence_source_is_rejected[5] PASSED [ 40%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_obsolete_absence_source_is_rejected[6] PASSED [ 40%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_same_wrong_message_on_both_sides_cannot_hide_bad_before_input[1] PASSED [ 41%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_same_wrong_message_on_both_sides_cannot_hide_bad_before_input[2] PASSED [ 41%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_same_wrong_message_on_both_sides_cannot_hide_bad_before_input[3] PASSED [ 42%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_before_run_plan_is_required_and_exact[missing] PASSED [ 42%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_before_run_plan_is_required_and_exact[pass-timeout] PASSED [ 43%]
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_before_run_plan_is_required_and_exact[different-injection] PASSED [ 43%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[all] PASSED [ 44%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[any] PASSED [ 44%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[not] PASSED [ 45%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[present] PASSED [ 45%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[eq] PASSED [ 46%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[ne] PASSED [ 46%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[eq_path] PASSED [ 47%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[in] PASSED [ 47%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[matches] PASSED [ 48%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[nonempty] PASSED [ 48%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[count] PASSED [ 49%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[count_eq] PASSED [ 49%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[set_eq] PASSED [ 50%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[subset] PASSED [ 50%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[seq_eq] PASSED [ 51%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[keys_eq] PASSED [ 51%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[forall] PASSED [ 52%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[exists] PASSED [ 52%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[implies] PASSED [ 53%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[sum_eq] PASSED [ 53%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[in_path] PASSED [ 54%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[union] PASSED [ 54%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[keys] PASSED [ 55%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[values] PASSED [ 55%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[$value] PASSED [ 56%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[$ref] PASSED [ 56%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[$file] PASSED [ 57%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_each_node_positive_negative[schema_closed] PASSED [ 57%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_node_catalog_covers_closed_language PASSED [ 58%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_registry_source_condition_coverage PASSED [ 58%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_all_artificial_claims_positive PASSED [ 59%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item1-basis] PASSED [ 59%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item2-scope] PASSED [ 60%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item3-predicate] PASSED [ 60%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item4-anchors] PASSED [ 61%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-1.item5-order] PASSED [ 61%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-2.seg1-staleness] PASSED [ 62%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-2.seg2-form] PASSED [ 62%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-3.commit-order] PASSED [ 63%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-3.transition-map] PASSED [ 63%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-4.owner-attribution] PASSED [ 64%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-5.entry-consumers] PASSED [ 64%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-6.proxy-count] PASSED [ 65%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-6.intra-package-shim] PASSED [ 65%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-7.falsification-samples] PASSED [ 66%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_claim_fact_mutation_red[OBS-7.class-c-projection] PASSED [ 67%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_assertion_four_controls[flip] PASSED [ 67%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_assertion_four_controls[subject] PASSED [ 68%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_assertion_four_controls[snapshot] PASSED [ 68%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_assertion_four_controls[roundtrip] PASSED [ 69%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_type_three_controls[empty] PASSED [ 69%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_type_three_controls[parse] PASSED [ 70%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_type_three_controls[unreasoned-exemption] PASSED [ 70%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_exemption_four_controls[wildcard] PASSED [ 71%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_exemption_four_controls[decision] PASSED [ 71%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_exemption_four_controls[gate] PASSED [ 72%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_exemption_four_controls[predicate] PASSED [ 72%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[required] PASSED [ 73%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[extra] PASSED [ 73%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[error] PASSED [ 74%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[short-circuit] PASSED [ 74%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_evaluation_five_controls[empty] PASSED [ 75%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_item3_all_inputs[dangling-absent] PASSED [ 75%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_item3_all_inputs[dangling-source] PASSED [ 76%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_item3_all_inputs[dangling-missing-value] PASSED [ 76%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_item3_all_inputs[dangling-other] PASSED [ 77%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_item3_all_inputs[live-old-counterexample] PASSED [ 77%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_item3_all_inputs[live-value] PASSED [ 78%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_item3_all_inputs[live-absent] PASSED [ 78%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_schema_four_groups[evidence] PASSED [ 79%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_schema_four_groups[map] PASSED [ 79%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_schema_four_groups[optional] PASSED [ 80%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_schema_four_groups[nested] PASSED [ 80%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_missing_option_is_red_for_entire_claim_not_just_low_level PASSED [ 81%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_json_pointer_arrays_missing_elements_and_scope_restoration PASSED [ 81%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node0] PASSED [ 82%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node1] PASSED [ 82%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node2] PASSED [ 83%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node3] PASSED [ 83%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node4] PASSED [ 84%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node5] PASSED [ 84%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node6] PASSED [ 85%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node7] PASSED [ 85%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node8] PASSED [ 86%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node9] PASSED [ 86%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_malformed_ast_fails_closed_even_in_skipped_branch[node10] PASSED [ 87%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_canonical_and_renderer_are_deterministic_and_separate PASSED [ 87%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_json_loader_rejects_duplicate_keys_and_invalid_json PASSED [ 88%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_file_operands_are_read_only_and_confined PASSED [ 88%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_unregistered_output_and_unknown_schema_fail_closed PASSED [ 89%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_union_requires_records_and_unique_discriminator PASSED [ 89%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_renderer_upgrade_does_not_change_predicate_hash PASSED [ 90%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_count_comparators_and_value_rhs PASSED [ 90%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_empty_exemption_list_is_enforced_at_batch_boundary PASSED [ 91%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_missing_reference_cannot_be_negated_to_green PASSED [ 91%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_approved_frozen_hashes PASSED [ 92%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_frozen_file_tampering_is_rejected[registry] PASSED [ 92%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_frozen_file_tampering_is_rejected[exemptions] PASSED [ 93%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_cli_cannot_override_freeze_pin PASSED [ 93%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_explicit_claim_selection_rejects_invalid[selection0] PASSED [ 94%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_explicit_claim_selection_rejects_invalid[selection1] PASSED [ 94%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_explicit_claim_selection_rejects_invalid[selection2] PASSED [ 95%]
+../LogAnalysisSkill/tests/unit/test_terminal_predicates.py::test_explicit_subset_keeps_full_registry_hash_and_does_not_green_omissions PASSED [ 95%]
+../LogAnalysisSkill/tests/unit/test_terminal_anchors.py::test_boolean_selector_counts_exact_shape[and-1] PASSED [ 96%]
+../LogAnalysisSkill/tests/unit/test_terminal_anchors.py::test_boolean_selector_counts_exact_shape[or-0] PASSED [ 96%]
+../LogAnalysisSkill/tests/unit/test_terminal_anchors.py::test_duplicate_selector_is_not_silently_chosen PASSED [ 97%]
+../LogAnalysisSkill/tests/unit/test_terminal_anchors.py::test_receiver_mismatch_is_reported_as_fact PASSED [ 97%]
+../LogAnalysisSkill/tests/unit/test_terminal_anchors.py::test_call_selector_not_line_number PASSED [ 98%]
+../LogAnalysisSkill/tests/unit/test_terminal_anchors.py::test_dangling_link_is_not_recorded_as_absent PASSED [ 98%]
+../LogAnalysisSkill/tests/unit/test_terminal_anchors.py::test_marker_hash_is_raw_byte_hash PASSED [ 99%]
+../LogAnalysisSkill/tests/unit/test_terminal_anchors.py::test_claim_allowlist_excludes_item5 PASSED [100%]
+
+=================================== FAILURES ===================================
+__________ test_e3_old_source_cannot_borrow_another_timeout_scene[3] ___________
+
+gate = <terminal_expected_diff.Gate object at 0x75c11c91c7d0>, number = 3
+
+    @pytest.mark.parametrize("number", range(1, 7))
+    def test_e3_old_source_cannot_borrow_another_timeout_scene(gate: Any, number: int) -> None:
+        sid = f"surface{number}-timeout"
+        field = "/return_value" if number == 4 else "/exception_type"
+        ref = gate.expected["scenarios"][sid]["differences"][field]["old"]["ref"]
+        ref["pointer"] = ref["pointer"].replace(
+            f"/observations/{(number - 1) * 4 + 1}/", f"/observations/{(number % 6) * 4 + 1}/"
+        )
+        with pytest.raises(G.GateError, match="TIMEOUT_RESULT_OLD_SOURCE_BINDING"):
+>           gate.validate()
+
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py:350: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_expected_diff.py:523: in validate
+    old = resolve_old(change["old"], self.sources)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_expected_diff.py:273: in resolve_old
+    fact = sources.fact(recipe["ref"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_expected_diff.py:102: in fact
+    return pointer(json.loads(self.read(ref["file"], ref["sha256"])), ref["pointer"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+obj = {'state': 'ABSENT'}
+path = '/observations/13/outcome/exception/value/type'
+
+    def pointer(obj: Any, path: str) -> Any:
+        require(path == "" or path.startswith("/"), f"JSON_POINTER: {path}")
+        for token in path.split("/")[1:]:
+            require(not re.search(r"~(?![01])", token), f"JSON_POINTER: {path}")
+            token = token.replace("~1", "/").replace("~0", "~")
+            if isinstance(obj, dict) and token in obj:
+                obj = obj[token]
+            elif isinstance(obj, list) and re.fullmatch(r"0|[1-9][0-9]*", token):
+                require(int(token) < len(obj), f"MISSING_POINTER: {path}")
+                obj = obj[int(token)]
+            else:
+>               raise GateError(f"MISSING_POINTER: {path}")
+E               terminal_expected_diff.GateError: MISSING_POINTER: /observations/13/outcome/exception/value/type
+
+../LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_expected_diff.py:77: GateError
+
+During handling of the above exception, another exception occurred:
+
+gate = <terminal_expected_diff.Gate object at 0x75c11c91c7d0>, number = 3
+
+    @pytest.mark.parametrize("number", range(1, 7))
+    def test_e3_old_source_cannot_borrow_another_timeout_scene(gate: Any, number: int) -> None:
+        sid = f"surface{number}-timeout"
+        field = "/return_value" if number == 4 else "/exception_type"
+        ref = gate.expected["scenarios"][sid]["differences"][field]["old"]["ref"]
+        ref["pointer"] = ref["pointer"].replace(
+            f"/observations/{(number - 1) * 4 + 1}/", f"/observations/{(number % 6) * 4 + 1}/"
+        )
+>       with pytest.raises(G.GateError, match="TIMEOUT_RESULT_OLD_SOURCE_BINDING"):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'TIMEOUT_RESULT_OLD_SOURCE_BINDING'
+E         Actual message: 'MISSING_POINTER: /observations/13/outcome/exception/value/type'
+
+../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py:349: AssertionError
+=========================== short test summary info ============================
+FAILED ../LogAnalysisSkill/tests/unit/test_terminal_expected_diff.py::test_e3_old_source_cannot_borrow_another_timeout_scene[3] - AssertionError: Regex pattern did not match.
+  Expected regex: 'TIMEOUT_RESULT_OLD_SOURCE_BINDING'
+  Actual message: 'MISSING_POINTER: /observations/13/outcome/exception/value/type'
+======================== 1 failed, 196 passed in 3.91s =========================

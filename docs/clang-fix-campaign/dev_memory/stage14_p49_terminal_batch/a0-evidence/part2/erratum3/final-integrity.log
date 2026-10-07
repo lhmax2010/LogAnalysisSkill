@@ -1,0 +1,36 @@
+NON_TIMEOUT_REGISTRATIONS=UNCHANGED (approved authority SHA reference updated)
+MANIFEST_CHANGES=6 timeout before_run plans only (plus approved authority SHA)
+result_schema.json: BYTE_IDENTICAL
+predicates.json: BYTE_IDENTICAL
+measurement_exemptions.json: BYTE_IDENTICAL
+EXISTING_OBS_AND_GATE_EVIDENCE=BYTE_IDENTICAL
+PRODUCTION_P45_RELEASE_DIFF=EMPTY
+scenario_manifest.json canonical_sha256=28fde83aa7889c41d312bed186b90f0690feeb0dff66bee4b2e52c293807b03f
+expected_diff.json canonical_sha256=ef85c44523e9ed1fcdc62e9ab5fbda0d590f29bd54c71a6faa86bc0f3c214539
+result_schema.json canonical_sha256=9def71e68aaa114f9f64cf03d2fbefc125f28bb80735055f41b5b412d8eeaf96
+scenarios=30 registrations=53
+surface1-timeout fetch-query fields=["/calls/0/kwargs/timeout", "/exception_type", "/exception_code"]
+  /calls/0/kwargs/timeout old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/1/trace/0/kwargs
+  /exception_type old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/1/outcome/exception/value/type
+  /exception_code old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/1/outcome/exception/value/code
+surface2-timeout fetch-git fields=["/calls/0/kwargs/timeout", "/exception_type", "/exception_code"]
+  /calls/0/kwargs/timeout old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/5/trace/0/kwargs
+  /exception_type old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/5/outcome/exception/value/type
+  /exception_code old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/5/outcome/exception/value/code
+surface3-timeout submit-git fields=["/calls/0/kwargs/timeout", "/exception_type", "/exception_code"]
+  /calls/0/kwargs/timeout old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/9/trace/0/kwargs
+  /exception_type old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/9/outcome/exception/value/type
+  /exception_code old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/9/outcome/exception/value/code
+surface4-timeout submit-remote fields=["/calls/0/kwargs/timeout", "/warnings", "/return_value"]
+  /calls/0/kwargs/timeout old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/13/trace/0/kwargs
+  /warnings old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/13/outcome/return_value
+  /return_value old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/13/outcome/return_value
+surface5-timeout shared-git fields=["/calls/0/kwargs/timeout", "/exception_type", "/exception_message"]
+  /calls/0/kwargs/timeout old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/17/trace/0/kwargs
+  /exception_type old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/17/outcome/exception/value/type
+  /exception_message old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/17/outcome/exception/value/message
+surface6-timeout shared-exclude fields=["/calls/0/kwargs/timeout", "/exception_type", "/exception_message"]
+  /calls/0/kwargs/timeout old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/21/trace/0/kwargs
+  /exception_type old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/21/outcome/exception/value/type
+  /exception_message old=docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part2/e1-item4/raw.json#/observations/21/outcome/exception/value/message
+REAL_BEFORE=PENDING_SEG3; OBS_PRODUCERS=NOT_RUN
