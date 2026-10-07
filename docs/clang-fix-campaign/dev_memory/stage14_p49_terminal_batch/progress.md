@@ -1,11 +1,11 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART3_STOPPED_SCAN06。更新日期: 2026-10-07。
+状态: A0_PART3_E9_PARTIAL_STOPPED_SCAN07。更新日期: 2026-10-07。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
-勘误8已核对原字节;DIFF-01..04、SCAN-01..05 CLOSED。第24节记录
-E8-6全树PY_SOURCE预检零阻塞;恢复第1块后遇SCAN-06(非入口配置名字无承接)。
+勘误9已核对原字节;DIFF-01..04、SCAN-01..06 CLOSED。第25节记录
+C7e局部实跑;E9-5缺四级候选全集,未做全量预检;扩展回归发现SCAN-07来源锚失配。
 §6改前实跑仍为PENDING_SEG3。
 本轮未运行任何 producer或真实双跑;既有两项产出不变,生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
@@ -2260,7 +2260,7 @@ JSON保留原文span、上下文、签名族与载荷失败原因。
 
 ### 24.3 SCAN-06:非入口工具配置的名字命中
 
-**状态:OPEN;本轮停止项1条。** Python预检通过后,恢复第1块required detector
+**状态:CLOSED,由勘误9 E9-1/E9-2解决,实测见§25。以下保留当轮停止事实。** Python预检通过后,恢复第1块required detector
 落地核对,在OTHER_TEXT名字兜底上发现真实输入没有合法形态/排除出口。
 详细原文行号、候选证明、四处命中与待裁决方案见 `E8/blockers.md`。
 
@@ -2318,6 +2318,131 @@ env -u PYTHONPATH -u MYPYPATH -u PYTEST_ADDOPTS -u PYTEST_PLUGINS \
 没有运行新增OBS,没有改既有OBS与设计正文,本轮不重跑生产全量测试。
 既有.gitignore改动、4份删除、其余untracked历史稿不动。
 提交仅勘误8原字节、预检工具/测试/证据、控制记账与progress/INDEX;push后停等裁决。
+
+## 25. 勘误9入库、C7e局部实跑与全量预检缺口
+
+本节 E9 = `a0-evidence/part3/erratum9/`。开场读取§24后,
+`git pull --ff-only origin clang-fix-campaign`输出`Already up to date.`。
+主分支基点为`8338889d2090cb660ddeaa16542e6721f4cac654`。
+本轮采集/测试均由独立环境在§9.2固定工作区运行,主工作树只提供批准后的
+工具/规则/测试,产物写回E9;没有把主树当作被测tree。
+
+### 25.1 原字节勘误与SCAN-06关闭
+
+收到新版已在目标路径,不重新拼装正文;`intake-and-registry.log`保存完整
+`git diff --unified=0 8338889 -- docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md`。
+
+```text
+old_sha256=66b33ef6c365c3da835529756d60ee43626768a0d361eb47dbeea86177f6db3c
+new_sha256=b5c2dce6568b722a70ceb92ed7860ecda4417ca8895310df4bdbf7ae9158cec3
+insertion_hunks=2 deleted_lines=0
+@@ -11,0 +12 @@
+@@ -2364,0 +2366,58 @@
+EXIT=0
+```
+
+两处分别是顶部勘误9状态行与附录C末尾58行;原文全部保留。
+SCAN-06 **CLOSED**,依据E9-1/E9-2:新增IMPORT_LINTER在BUILD后、DOC前;
+模块位归C7e、仅消费模块。原四处见证现均C7e,不把`check_convergence`
+binding误判为消费。旧E8见证文件不改,新的处理结果另存。
+
+### 25.2 A03/A04/A09工具与控制映射
+
+| 映射 | 本轮产出 | 边界 |
+|---|---|---|
+| A03/A04 | `terminal_scan.py`;`entry_registry.json`;`terminal_registry.py`;`capability_registry.json` | 13条目类别,24 consumer+8非consumer/entry旧分支+4 entry=36;E4/E6/E9正文机械生成required分支映射;不是实际detector矩阵完成 |
+| A09 | 新增`terminal_import_linter.py` | 从完整固定tree取IMPORT_LINTER条目,ConfigParser解析,逐token定位/解析/模块边;名字命中参数来自调用方,本轮仅接SCAN-06见证 |
+| A09 | `terminal_monitored_preflight.py` | 正文表形态计数由23同步24,包括C7e;未改Python参与点判据 |
+| A13 | `test_terminal_import_linter.py`;`control_catalog.json` | E9-4十项组件控制25个参数化用例;全引擎status仍NOT_RUN,component_check=PASS |
+| A05/A06 | 未产出 | 四级候选/三段台账缺口如§25.4;不得拿模块索引当候选 |
+
+控制十项:root_packages、layers兄弟、containers相对名、ignore_imports两端、
+wildcard、根/docs条目分类;near-miss为注释、name、未知键、binding只得模块边。
+另外测试非法节/INI、可选括号/冒号/多个container、闭合registry等边界。
+registry五方投影仍须结合真实全扫描记录,本轮没有发放SEAL-16b或12b-10通过。
+CTRL-INTRA-PKG-PROXY与E5端到端仍NOT_RUN,不改旧状态伪造补测。
+
+### 25.3 固定树.importlinter实跑
+
+命令原文/环境/exit在`import-linter-real.command.json`,完整stdout在同名log。
+可复现命令(输出另用/tmp避免覆盖证据):
+
+```bash
+R=/home/linhao/Toolchain/development/LogAnalysisSkill
+V=/tmp/p49-a0-gate-seg2-43a6aa6
+cd /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6
+env -u PYTHONPATH -u MYPYPATH -u PYTEST_ADDOPTS -u PYTEST_PLUGINS \
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONDONTWRITEBYTECODE=1 \
+  "$V/bin/python" "$R/docs/clang-fix-campaign/tools/terminal_import_linter.py" \
+  --root "$PWD" --rules-root "$R" \
+  --scan06-witness "$R/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part3/erratum8/scan06-witness.json" \
+  --output /tmp/p49-e9-import-linter-recheck.json
+```
+
+```text
+HEAD=43a6aa625f27da46daba190657bf62256080c68e
+TREE=ca9331190e878af465e7968fe56e735585a5866e
+manifest_entries=846; live=736; release-v1.4.0=110
+IMPORT_LINTER entries=1; tokens=49; module_edges=49; binding_edges=0
+resolution LOCAL=49; CROSS_CONTEXT_FALLBACK=0; MODULE_IDENTITY_AMBIGUOUS=0
+excluded_comment_lines=4; excluded_name_values=6
+C7e DYNAMIC_UNRESOLVED=0
+SCAN-06 hits=4, all C7e; EXIT=0
+```
+
+`import-linter-tokens.md`逐个列出49 token、源行列/节/键、解析结果、目标路径,
+另列4条注释与6条name排除。JSON保存manifest、全部原始解析事件与见证输入hash。
+`import-linter-real.json` SHA-256:
+`88b40069af9f0e777a14c7d71cfd54a940e8ff02be3f78dc7f9acae7c57e5776`。
+这里的fallback/歧义/动态0仅指C7e此次解析,不是全树消费者结果。
+
+### 25.4 E9-5输入缺口与SCAN-07停止报告
+
+**E9-5尚未执行全量预检,不是“预检为空”。** 非Python文本范围570条:
+DOC431 / OTHER_TEXT122 / BUILD13 / PACKAGING2 / CI_CONFIG1 / IMPORT_LINTER1;
+PTH和SHELL为0。每条记录见`non-python-preflight-inputs.json`,SHA-256:
+`07e4eb02c9e2c9ced6dbdab38991aa28acf20551efc4285307952eaa15093868`。
+按E9-5最后一句如实列缺:MODULE、REEXPORT+all/span/guard、INLINE+lexical scope、
+PROXY(含四种假阴形态)发现均没有完整产物。`shim_inventory.py`/`raw_findings.json`
+尚未实现;只有模块索引和SCAN-06单binding见证。完整名字/解释器兜底引擎亦未落地。
+不能用部分candidate发出570条目全量绿;UNKNOWN、多去处和全树新增动态计数均N/A。
+本缺口是已授权实现尚未完成,不是请求新增排除规则。
+
+**SCAN-07 OPEN:扩展回归暴露预期差异门禁的文档来源锚失配。**
+`terminal_expected_diff.py:23/:96`和`expected_diff.json:20`起仍钉勘误3
+`7b8531fd...`,路径已是当前`b5c2dce6...`正文。实际51条SOURCE_HASH失败。
+两文件相对8338889未改,旧66b33ef6也已不同于所钉hash;未重放旧提交全套测试。
+原文位置、失败nodeid、候选处置见`E9/stop-report.md`与`source-anchor-mismatch.json`。
+不自行更新旧来源锚或改为读取Git旧blob,待设计方确定寻址/同步口径。
+停止报告计**1条来源锚问题+1项候选前置缺口**,未收集到全树UNKNOWN结论。
+
+### 25.5 测试与保全
+
+| 命令(完整argv在同名command.json)/输出 | 实测 | 范围 |
+|---|---|---|
+| `python -m pytest -vv -p no:cacheprovider ...`;`scanner-regression.log` | 253 passed,exit0 | 扫描/注册/E7/E8/E9及判据/anchor人工fixture七文件 |
+| 同命令增加`test_terminal_expected_diff.py`;`tests-final.log` | 51 failed,288 passed,exit1 | 扩展八文件回归;所有失败均SOURCE_HASH,不是全绿 |
+| `python -m mypy --python-version 3.12 --follow-imports=silent --cache-dir=/tmp/p49-e9-mypy ...`;`mypy-verified.log` | Success: no issues found in 6 source files,exit0 | 4工具+2测试 |
+| `python -m ruff check ...`;`ruff-verified.log` | All checks passed!,exit0 | 同上6文件 |
+| `python -X pycache_prefix=/tmp/p49-e9-pycache -m py_compile ...`;`py-compile.log` | 空输出,exit0 | 同上6文件 |
+| 控制目录更新后同七文件pytest;`controls-post-catalog.log` | 253 passed,exit0 | 再验控制登记未破坏既有组件 |
+| `immutable.command.json` / `immutable.log` | exit0;旧证据376/376字节相等;受保护路径ZERO_DIFF | 入库仍2处追加/0删除,固定工作区clean |
+
+首次`controls-initial.log`的2 failed/73 passed为实现的箭头分词错误,修正后
+75/75及上述253/253绿;未改设计判据。首次mypy误沿仓库Python3.10配置检查
+tomllib且新测试缺类型标注,第二次暴露返回Any;补注解/cast并显式按既定A0环境
+Python3.12检查后绿。原失败输出不覆盖。主shell初用`python`曾exit127,改用
+python3启动记录器;被测解释器始终为独立环境。
+
+predicates canonical=`8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6`;
+measurement_exemptions canonical=`4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`。
+二者、旧OBS、旧E1–E8证据、生产与release未改;固定工作区无改动。
+第1块矩阵/completion未产出,第2–5块不继续;8个claim仍NOT_RUN,
+before_run=PENDING_SEG3,30场景未采集。未重跑生产全量,不宣称整体回归绿。
+本commit仅提交勘误原件、工具/注册/控制组件、证据与状态登记;既有.gitignore、
+4份文档删除及其它untracked草稿保持不动。push后停止。
+暂存区`git diff --cached --check`因pytest原始失败log/XML保留的尾空格返回2;
+不清洗原始证据。限定到工具/测试/正文/进度/INDEX时同检查空输出、exit0。
 
 暂存diff空白检查exit2仅为`erratum8/tests-first.log:15`的pytest原始错误输出尾空格;
 不清洗原始证据。仅排除该原始日志后的`git diff --cached --check`为exit0。

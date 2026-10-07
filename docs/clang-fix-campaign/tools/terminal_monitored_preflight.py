@@ -664,7 +664,7 @@ def main() -> int:
     manifest, files = fixed_inputs(args.root, args.rules_root)
     rules = (args.rules_root / RULES).read_text()
     forms = re.findall(r"^(?:> )?\| `(C[0-9]+[a-z]?)` \|", rules, re.MULTILINE)
-    if len(forms) != 23 or len(set(forms)) != 23 or not {"C9", "C8c", "C5f"} <= set(forms):
+    if len(forms) != 24 or len(set(forms)) != 24 or not {"C9", "C8c", "C5f", "C7e"} <= set(forms):
         raise ScanError("E8_ATOMIC_TABLE_PARSE")
     index = ModuleIndex(files, contexts(files))
     all_results: dict[str, list[Any]] = {

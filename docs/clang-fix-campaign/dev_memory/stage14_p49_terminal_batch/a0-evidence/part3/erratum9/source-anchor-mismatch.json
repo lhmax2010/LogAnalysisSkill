@@ -1,0 +1,267 @@
+{
+  "failed": 51,
+  "passed": 288,
+  "failure_kind": "SOURCE_HASH",
+  "pinned_sha256": "7b8531fdd9bcb4b2ecf8f3576eab6285f09f4b22fb1b212775939dbe72d19200",
+  "prior_doc_sha256": "66b33ef6c365c3da835529756d60ee43626768a0d361eb47dbeea86177f6db3c",
+  "current_doc_sha256": "b5c2dce6568b722a70ceb92ed7860ecda4417ca8895310df4bdbf7ae9158cec3",
+  "gate_and_registration_unchanged_since": "8338889",
+  "prior_full_suite_replayed": false,
+  "failed_tests": [
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_data_generation_is_reproducible_and_closed",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_artificial_admission_control[normal]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[return_value]",
+      "time": "0.014"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[exception_type]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[exception_code]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[exception_message]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[warnings]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[action]",
+      "time": "0.011"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[calls]",
+      "time": "0.011"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[destination]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[worktree]",
+      "time": "0.016"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[workdir_marker]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[protected_marker]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[exclude_completed]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_every_result_field_is_required[exit_code]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_undeclared_fields_are_rejected[extra]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_undeclared_fields_are_rejected[calls]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_undeclared_fields_are_rejected[marker]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_undeclared_fields_are_rejected[reader]",
+      "time": "0.016"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_reader_results_may_not_be_omitted_or_changed",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_partial_marker_hashes_and_reader_exceptions_are_compared",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_all_derived_message_rules_compare_full_strings[DANGLING_SYMLINK]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_all_derived_message_rules_compare_full_strings[surface1-timeout]",
+      "time": "0.015"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_all_derived_message_rules_compare_full_strings[surface5-timeout]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_no_path_or_nested_payload_mask",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_injected_two_run_framework_runs_both_and_rejects_empty_readers_before_callbacks",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[EXCLUDE_INTERRUPTED]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[MARKER_WRITE_INTERRUPTED]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[surface1-SIGINT]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[surface6-SIGTERM]",
+      "time": "0.016"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e2_2_kwarg_registration_is_not_limited_to_default_surface_scenarios[LIVE_SYMLINK_TO_DIR]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_wrong_live_message_stops_existing_branch_derivation",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_citation_must_be_the_correct_surface_cell_even_if_same_exception_type",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_timeout_fields_and_old_values_match_same_observation[1]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_timeout_fields_and_old_values_match_same_observation[2]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_timeout_fields_and_old_values_match_same_observation[3]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_timeout_fields_and_old_values_match_same_observation[4]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_timeout_fields_and_old_values_match_same_observation[5]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_timeout_fields_and_old_values_match_same_observation[6]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_old_source_cannot_borrow_another_timeout_scene[1]",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_old_source_cannot_borrow_another_timeout_scene[2]",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_old_source_cannot_borrow_another_timeout_scene[3]",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_old_source_cannot_borrow_another_timeout_scene[4]",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_old_source_cannot_borrow_another_timeout_scene[5]",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_old_source_cannot_borrow_another_timeout_scene[6]",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_same_wrong_message_on_both_sides_cannot_hide_bad_before_input[1]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_same_wrong_message_on_both_sides_cannot_hide_bad_before_input[2]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_same_wrong_message_on_both_sides_cannot_hide_bad_before_input[3]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_before_run_plan_is_required_and_exact[missing]",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_before_run_plan_is_required_and_exact[pass-timeout]",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.unit.test_terminal_expected_diff",
+      "name": "test_e3_before_run_plan_is_required_and_exact[different-injection]",
+      "time": "0.002"
+    }
+  ]
+}

@@ -1485,5 +1485,185 @@
       "test_nodeid": "tests/unit/test_terminal_alias_preflight.py::test_c5f_constructor_not_swallowed",
       "evidence": "a0-evidence/part3/erratum8/tests-preflight.log"
     }
+  },
+  {
+    "control_id": "CTRL-E9-ROOT-PACKAGES",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "模块位产生模块消费边",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_root_packages",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E9-LAYERS",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "同层分隔产生各自模块消费边",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_layers_siblings",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E9-CONTAINERS",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "相对层名按container解析",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_containers",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E9-IGNORE-IMPORTS",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "箭头两端各一条模块边",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_ignore_imports",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E9-WILDCARD",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "星号token保持C7e并落动态未决",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_wildcard",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E9-ENTRY-KIND",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "根和docs下.importlinter同归IMPORT_LINTER",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_entry_kind",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E9-COMMENT",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "注释无参与点无解释器行,第9类排除",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_comment_near_miss",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E9-NAME",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "显示name排除",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_name_near_miss",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E9-UNKNOWN-KEY",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "未授权键名字命中UNKNOWN_CAPABILITY",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_unknown_key_near_miss",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
+  },
+  {
+    "control_id": "CTRL-E9-BINDING",
+    "group": "E9-C7E",
+    "source": "Erratum9 E9-4",
+    "form": "C7e",
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "reason": "Full candidate/name/interpreter pipeline and SEAL-16b not run; C7e component verified.",
+    "requirement": "binding宿主命中仅MODULE边,无binding边",
+    "component_check": {
+      "status": "PASS",
+      "exit_code": 0,
+      "test_nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_binding_not_consumed",
+      "evidence": "a0-evidence/part3/erratum9/scanner-regression.log"
+    }
   }
 ]

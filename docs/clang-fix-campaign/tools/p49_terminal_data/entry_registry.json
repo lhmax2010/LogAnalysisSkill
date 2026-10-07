@@ -1,14 +1,83 @@
 {
-  "GITLINK": ["resolution"],
-  "SYMLINK": ["resolution"],
-  "IMPORTABLE_BINARY": ["provider"],
-  "PTH": ["resolution", "name_fallback"],
-  "BINARY": ["binary_record"],
-  "PY_SOURCE": ["provider", "candidates", "consumer_python", "resolution", "name_fallback"],
-  "PACKAGING": ["consumer_C7a", "interpreter", "name_fallback"],
-  "CI_CONFIG": ["consumer_C7b", "interpreter", "name_fallback"],
-  "SHELL": ["consumer_C7c", "interpreter", "name_fallback"],
-  "BUILD": ["consumer_C7d", "interpreter", "name_fallback"],
-  "DOC": ["doctest", "name_fallback"],
-  "OTHER_TEXT": ["interpreter", "name_fallback"]
+  "GITLINK": [
+    "resolve.dynamic_attr",
+    "resolve.import_redirect"
+  ],
+  "SYMLINK": [
+    "resolve.dynamic_attr",
+    "resolve.import_redirect"
+  ],
+  "IMPORTABLE_BINARY": [
+    "provider.unsupported"
+  ],
+  "PTH": [
+    "entry.name_backstop",
+    "resolve.dynamic_attr",
+    "resolve.import_redirect"
+  ],
+  "BINARY": [
+    "entry.binary_record"
+  ],
+  "PY_SOURCE": [
+    "consumer.C1",
+    "consumer.C2a",
+    "consumer.C2b",
+    "consumer.C3",
+    "consumer.C4",
+    "consumer.C5a",
+    "consumer.C5b",
+    "consumer.C5c",
+    "consumer.C5d",
+    "consumer.C5e",
+    "consumer.C5f",
+    "consumer.C6a",
+    "consumer.C6b",
+    "consumer.C6c",
+    "consumer.C6d",
+    "consumer.C8a",
+    "consumer.C8b",
+    "consumer.C8c",
+    "consumer.C9",
+    "entry.name_backstop",
+    "provider.unsupported",
+    "resolve.dynamic_attr",
+    "resolve.import_redirect",
+    "scan.inline",
+    "scan.module",
+    "scan.proxy_callable",
+    "scan.reexport"
+  ],
+  "PACKAGING": [
+    "consumer.C7a",
+    "entry.interpreter_line",
+    "entry.name_backstop"
+  ],
+  "CI_CONFIG": [
+    "consumer.C7b",
+    "entry.interpreter_line",
+    "entry.name_backstop"
+  ],
+  "SHELL": [
+    "consumer.C7c",
+    "entry.interpreter_line",
+    "entry.name_backstop"
+  ],
+  "BUILD": [
+    "consumer.C7d",
+    "entry.interpreter_line",
+    "entry.name_backstop"
+  ],
+  "IMPORT_LINTER": [
+    "consumer.C7e",
+    "entry.interpreter_line",
+    "entry.name_backstop"
+  ],
+  "DOC": [
+    "entry.doctest_extract",
+    "entry.name_backstop"
+  ],
+  "OTHER_TEXT": [
+    "entry.interpreter_line",
+    "entry.name_backstop"
+  ]
 }

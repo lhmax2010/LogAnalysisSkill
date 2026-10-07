@@ -31,8 +31,9 @@ finally:
         (".github/workflows/ci.yml", "100644", b"run: python -m pkg", "CI_CONFIG"),
         ("run.sh", "100755", b"echo test", "SHELL"),
         ("Makefile", "100644", b"all:\n\tpython -m pkg", "BUILD"),
+        (".importlinter", "100644", b"[importlinter]", "IMPORT_LINTER"),
         ("README.md", "100644", b"pkg", "DOC"),
-        (".importlinter", "100644", b"[importlinter]", "OTHER_TEXT"),
+        ("untyped", "100644", b"pkg", "OTHER_TEXT"),
     ],
     ids=S.ENTRY_KINDS,
 )
@@ -49,6 +50,7 @@ def test_e4_unknown_git_mode_is_blocked() -> None:
     ("path", "mode", "data", "kind"),
     [
         ("docs/Makefile", "100644", b"", "BUILD"),
+        ("docs/.importlinter", "100644", b"[importlinter]", "IMPORT_LINTER"),
         ("docs/setup.cfg", "100644", b"", "PACKAGING"),
         ("docs/a.sh", "100644", b"", "SHELL"),
         ("docs/a.spec", "100644", b"", "BUILD"),
@@ -157,8 +159,8 @@ def test_registry_closed_sets_and_nonempty_required_detectors() -> None:
     entries, providers = S.registry()
     assert tuple(entries) == S.ENTRY_KINDS
     assert set(providers) == set(S.PROVIDER_KINDS)
-    assert entries["BINARY"] == ["binary_record"]
-    assert entries["DOC"] == ["doctest", "name_fallback"]
+    assert entries["BINARY"] == ["entry.binary_record"]
+    assert entries["DOC"] == ["entry.doctest_extract", "entry.name_backstop"]
 
 
 def test_empty_detector_registry_is_not_a_vacuous_pass(monkeypatch: pytest.MonkeyPatch) -> None:

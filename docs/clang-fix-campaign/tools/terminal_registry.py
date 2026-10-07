@@ -1,4 +1,4 @@
-"""E6 projection helpers; scanner integration is pending the SCAN-04 ruling."""
+"""E6/E9 registry projections; registration alone does not prove scanner completion."""
 
 from __future__ import annotations
 
@@ -33,8 +33,8 @@ def authority(root: Path) -> dict[str, str]:
     if sha256(raw) != RULES_SHA:
         raise ScanError("RULES_HASH")
     text = raw.decode()
-    forms = re.findall(r"^\| `(C[0-9]+[a-z]?)` \|", text, re.MULTILINE)
-    if len(forms) != len(set(forms)) or len(forms) != 20:
+    forms = re.findall(r"^(?:> )?\| `(C[0-9]+[a-z]?)` \|", text, re.MULTILINE)
+    if len(forms) != len(set(forms)) or len(forms) != 24:
         raise ScanError("ATOMIC_TABLE_PARSE")
     nine = text.split("**(三)不覆盖清单", 1)[1].split("**兜底完整性**", 1)[0]
     table_rows = "\n".join(line for line in nine.splitlines() if line.startswith("|"))
@@ -53,6 +53,11 @@ def required_from_authority(root: Path) -> dict[str, list[str]]:
     text = (root / RULES).read_text()
     e4 = text.split("**E4-2", 1)[1].split("**E4-3", 1)[0]
     rows = re.findall(r"^> \| [0-9]+ \| `([A-Z_]+)` \|.*?\| ([^|]+) \|$", e4, re.MULTILINE)
+    e9 = text.split("**E9-1", 1)[1].split("**E9-2", 1)[0]
+    added = re.findall(r"^> \| 10a \| `([A-Z_]+)` \|.*?\| ([^|]+) \|$", e9, re.MULTILINE)
+    if len(added) != 1:
+        raise ScanError("E9_ENTRY_TABLE_PARSE")
+    rows[10:10] = added
     if tuple(kind for kind, _ in rows) != ENTRY_KINDS:
         raise ScanError("ENTRY_KIND_TABLE_PARSE")
     result: dict[str, list[str]] = {}
@@ -70,7 +75,7 @@ def required_from_authority(root: Path) -> dict[str, list[str]]:
             required.update(
                 b for b in domain if b.startswith("consumer.") and not b.startswith("consumer.C7")
             )
-        for form in ("C7a", "C7b", "C7c", "C7d"):
+        for form in ("C7a", "C7b", "C7c", "C7d", "C7e"):
             if f"{form} 识别" in description:
                 required.add(f"consumer.{form}")
         for branch, owner in ENTRY_OWNERS.items():

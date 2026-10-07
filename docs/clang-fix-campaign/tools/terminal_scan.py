@@ -27,7 +27,7 @@ from terminal_predicates import canonical_hash, check_frozen_hashes, load_json
 HEAD = "43a6aa625f27da46daba190657bf62256080c68e"
 TREE = "ca9331190e878af465e7968fe56e735585a5866e"
 RULES = "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md"
-RULES_SHA = "66b33ef6c365c3da835529756d60ee43626768a0d361eb47dbeea86177f6db3c"
+RULES_SHA = "b5c2dce6568b722a70ceb92ed7860ecda4417ca8895310df4bdbf7ae9158cec3"
 DATA = Path(__file__).with_name("p49_terminal_data")
 ENTRY_KINDS = (
     "GITLINK",
@@ -40,6 +40,7 @@ ENTRY_KINDS = (
     "CI_CONFIG",
     "SHELL",
     "BUILD",
+    "IMPORT_LINTER",
     "DOC",
     "OTHER_TEXT",
 )
@@ -122,6 +123,8 @@ def entry_kind(path: str, mode: str, data: bytes) -> str:
         ".service",
     }:
         return "BUILD"
+    if file.name == ".importlinter":
+        return "IMPORT_LINTER"
     if file.suffix in {".md", ".rst"} or (
         path.startswith("docs/") and mode != "100755" and not data.startswith(b"#!")
     ):

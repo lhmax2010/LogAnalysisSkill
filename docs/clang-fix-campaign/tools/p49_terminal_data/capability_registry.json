@@ -1,0 +1,170 @@
+[
+  {
+    "branch": "ledger.seg1",
+    "detector_owner": "第一段"
+  },
+  {
+    "branch": "scan.module",
+    "detector_owner": "UNREGISTERED_CANDIDATE + admission"
+  },
+  {
+    "branch": "scan.reexport",
+    "detector_owner": "粒度②"
+  },
+  {
+    "branch": "scan.inline",
+    "detector_owner": "粒度③"
+  },
+  {
+    "branch": "scan.proxy_callable",
+    "detector_owner": "粒度④"
+  },
+  {
+    "branch": "resolve.dynamic_attr",
+    "detector_owner": "解析层"
+  },
+  {
+    "branch": "resolve.import_redirect",
+    "detector_owner": "解析层"
+  },
+  {
+    "branch": "provider.unsupported",
+    "detector_owner": "provider 分类器"
+  },
+  {
+    "branch": "entry.binary_record",
+    "detector_owner": "二进制记录器"
+  },
+  {
+    "branch": "entry.name_backstop",
+    "detector_owner": "名字命中兜底"
+  },
+  {
+    "branch": "entry.interpreter_line",
+    "detector_owner": "解释器行兜底"
+  },
+  {
+    "branch": "entry.doctest_extract",
+    "detector_owner": "doctest 提取器"
+  },
+  {
+    "branch": "consumer.C1",
+    "detector_owner": "消费者识别",
+    "form": "C1"
+  },
+  {
+    "branch": "consumer.C4",
+    "detector_owner": "消费者识别",
+    "form": "C4"
+  },
+  {
+    "branch": "consumer.C5a",
+    "detector_owner": "消费者识别",
+    "form": "C5a"
+  },
+  {
+    "branch": "consumer.C2a",
+    "detector_owner": "消费者识别",
+    "form": "C2a"
+  },
+  {
+    "branch": "consumer.C2b",
+    "detector_owner": "消费者识别",
+    "form": "C2b"
+  },
+  {
+    "branch": "consumer.C3",
+    "detector_owner": "消费者识别",
+    "form": "C3"
+  },
+  {
+    "branch": "consumer.C6a",
+    "detector_owner": "消费者识别",
+    "form": "C6a"
+  },
+  {
+    "branch": "consumer.C6b",
+    "detector_owner": "消费者识别",
+    "form": "C6b"
+  },
+  {
+    "branch": "consumer.C5b",
+    "detector_owner": "消费者识别",
+    "form": "C5b"
+  },
+  {
+    "branch": "consumer.C5c",
+    "detector_owner": "消费者识别",
+    "form": "C5c"
+  },
+  {
+    "branch": "consumer.C5d",
+    "detector_owner": "消费者识别",
+    "form": "C5d"
+  },
+  {
+    "branch": "consumer.C5e",
+    "detector_owner": "消费者识别",
+    "form": "C5e"
+  },
+  {
+    "branch": "consumer.C6c",
+    "detector_owner": "消费者识别",
+    "form": "C6c"
+  },
+  {
+    "branch": "consumer.C6d",
+    "detector_owner": "消费者识别",
+    "form": "C6d"
+  },
+  {
+    "branch": "consumer.C8a",
+    "detector_owner": "消费者识别",
+    "form": "C8a"
+  },
+  {
+    "branch": "consumer.C8b",
+    "detector_owner": "消费者识别",
+    "form": "C8b"
+  },
+  {
+    "branch": "consumer.C7a",
+    "detector_owner": "消费者识别",
+    "form": "C7a"
+  },
+  {
+    "branch": "consumer.C7b",
+    "detector_owner": "消费者识别",
+    "form": "C7b"
+  },
+  {
+    "branch": "consumer.C7c",
+    "detector_owner": "消费者识别",
+    "form": "C7c"
+  },
+  {
+    "branch": "consumer.C7d",
+    "detector_owner": "消费者识别",
+    "form": "C7d"
+  },
+  {
+    "branch": "consumer.C9",
+    "detector_owner": "消费者识别",
+    "form": "C9"
+  },
+  {
+    "branch": "consumer.C8c",
+    "detector_owner": "消费者识别",
+    "form": "C8c"
+  },
+  {
+    "branch": "consumer.C5f",
+    "detector_owner": "消费者识别",
+    "form": "C5f"
+  },
+  {
+    "branch": "consumer.C7e",
+    "detector_owner": "消费者识别",
+    "form": "C7e"
+  }
+]

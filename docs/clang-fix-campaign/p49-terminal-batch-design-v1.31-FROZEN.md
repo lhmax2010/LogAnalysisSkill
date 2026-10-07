@@ -9,6 +9,7 @@
 > **已生效勘误:附录 C 勘误 6(2026-10-07,FatTank 批准)。**
 > **已生效勘误:附录 C 勘误 7(2026-10-07,FatTank 批准)。**
 > **已生效勘误:附录 C 勘误 8(2026-10-07,FatTank 批准)。**
+> **已生效勘误:附录 C 勘误 9(2026-10-07,FatTank 批准)。**
 > 冻结前的放行规则(v1.27 起,留作记录):
 > 1. **落地核对**:三家只核对最新修订段所列改动是否按所写落地、有无改到别处;**不开新的审查面**;
 > 2. **放行标准只看"朝开"**:仅当发现**会导致删错真实依赖或删掉行为型测试**的问题才阻止冻结;
@@ -2362,3 +2363,61 @@ A/B 取值、**存在性检查证据(`lstat` 语义)**、**π 归一结果**、
 另报告本勘误新增的 `DYNAMIC_UNRESOLVED` 条数(按 `C8c` 逃逸、经别名调用的载荷不可规范化、`C5f` 三类分列),供后续销账排期。
 
 **生效范围**:§1.1 参与点(新增 ②″、标注位置除外)与原子形态表;不改变判定条件与其它事项。
+
+### 勘误 9(2026-10-07,FatTank 批准)—— import-linter 配置 `.importlinter` 的承接,以及非 Python 条目的一次性全量预检
+
+**触发**:A₀ 第 3 段停止报告 SCAN-06(stage14 `progress.md` §24.3,`a0-evidence/part3/erratum8/blockers.md`):
+包 `tizen_convergence_judge` 的 re-export binding `check_convergence` 是粒度②候选,其模块名在 `.importlinter` 第 8/22/32/57 行命中;
+`.importlinter` 按勘误 4 属 `OTHER_TEXT`,命中处不是解释器命令、不是文档,按 §1.1 只能 `UNKNOWN_CAPABILITY`。
+该文件由 CI(`.github/workflows/ci.yml` 的 `lint-imports`)经 import-linter 读取:其中列出的模块被删除,或 `ignore_imports` 所列的导入消失
+(本文件设 `unmatched_ignore_imports_alerting = error`),CI 门禁即失败。故它是**真实消费者**,不能排除,须补形态。
+另:SCAN-06 是单见证停止,非 Python 条目的名字兜底尚未全量跑过 —— E9-5 要求一次性跑完。
+
+**E9-1 · 新增条目类别 `IMPORT_LINTER`(勘误 4 E4-2 表第 10a 类)**
+> | # | 条目类别 | 机械判据 | required detectors |
+> |---|---|---|---|
+> | 10a | `IMPORT_LINTER` | 文件名为 `.importlinter` | C7e 识别、解释器行兜底、名字命中兜底 |
+> 判定顺序位于第 10 类 `BUILD` 之后、第 11 类 `DOC` 之前(故 `docs/` 下的 `.importlinter` 也归本类,不按文档排除)。条目类别由十二个增为十三个;
+> 12b-3c 第一层的键集合按新表执行。`setup.cfg` 的 `[importlinter*]` 节与 `pyproject.toml` 的 `[tool.importlinter*]` 表**不在本勘误范围**,
+> 出现时其中的名字命中仍按 §1.1 为 `UNKNOWN_CAPABILITY`。
+
+**E9-2 · 新增原子形态 `C7e`(分支 `consumer.C7e`,所属类 7)**
+> | 形态 ID | 所属类 | 识别谓词(互斥) |
+> |---|---|---|
+> | `C7e` | 7 | 非 Python 文件:`IMPORT_LINTER` 条目中,下述"模块位"上的每个模块名 token |
+> **解析**:按 INI 语法(import-linter 读取该文件的方式)解析;只认节 `[importlinter]` 与 `[importlinter:contract:<id>]`。
+> **模块位(封闭键集合)**:`[importlinter]` 节的 `root_package`、`root_packages`;contract 节的 `layers`、`containers`、`modules`、
+> `source_modules`、`forbidden_modules`、`ignore_imports`。多行值逐行取;`layers` 每行按 `|` 与 `:` 切分为同层兄弟,去掉可选层的外层括号;
+> `ignore_imports` 每行按 `->` 切分为两侧,两侧各是一个 token。**每个 token 一个参与点**。
+> **名字解析**:模块名在 `.importlinter` 所在目录所属的打包上下文中解析(勘误 5;仓库根下即 live 上下文);
+> contract 节带 `containers` 时,其 `layers` 中的 token 相对于每个 container 解析(`<container>.<token>`,每个 container 各一条边)。
+> token 含通配符 `*` 或 `**` → `DYNAMIC_UNRESOLVED`,形态仍记 `C7e`。
+> **消费边含义**:指向所解析的**模块本身**(删除它会使 `lint-imports` 失败);`ignore_imports` 两侧各产生一条。
+> 这条边**不消费该模块内的任何 binding**:对 binding 级候选,模块名命中在此处按 `C7e` 计(已被参与点分类),不产生 binding 边。
+> **非模块位的命中**:
+> > 整行注释(首个非空白字符为 `#` 或 `;`)→ 不是参与点;其中的名字命中按第 9 类排除并记入 B-8;其中出现的解释器 token **不构成解释器行**;
+> > `name` 键的值(contract 的显示名)中的命中 → 按第 9 类排除并记入 B-8;
+> > 其它键、其它节、以及无法按 INI 解析的行中的命中 → `UNKNOWN_CAPABILITY`。
+> 互斥性:`C7e` 只取 `IMPORT_LINTER` 条目,与 `C7a`–`C7d` 按条目类别分割。
+
+**E9-3 · 计数与对账**
+> 原子形态由二十三个增为二十四个(新增 `C7e`);`SEAL-16b` 五方对账、`12b-10` 逐形态正控制、B-11 `MECH_FIVE_WAY` 按新表执行。
+> 勘误 6 E6-2:"C7e 识别"落到 `consumer.C7e`。`entry.*` 不变。
+
+**E9-4 · 控制**(登记进 `control_catalog.json`)
+> **正控制**:`.importlinter` 中 `root_packages = <sentinel>` → 产生到 `<sentinel>` 的消费边;`layers` 行 `a | <sentinel>` → 产生到 `<sentinel>` 的边;
+> `containers = pkg` 且 `layers` 行 `<leaf>` → 产生到 `pkg.<leaf>` 的边;`ignore_imports = x.y -> <sentinel>.z` → 产生到 `x.y` 与 `<sentinel>.z` 两条边;
+> `modules` 行 `<sentinel>.*` → `DYNAMIC_UNRESOLVED`;条目类别:根目录 `.importlinter` 与 `docs/.importlinter` 均判 `IMPORT_LINTER`。
+> **near-miss**:注释行 `# python -m <sentinel>` → 不是参与点、不是解释器行,按第 9 类记账;`name = ... <sentinel> ...` → 按第 9 类记账;
+> 未知键 `foo = <sentinel>` → 须 `UNKNOWN_CAPABILITY`;某 binding 级候选所在模块名在 `modules` 中命中 → 只产生模块边,该 binding 候选不因此被判为已消费。
+
+**已冻结判定条件的影响**:与勘误 7、8 相同 —— 若 `OBS-7.falsification-samples` 真实样本中出现 `C7e`,该 claim 判红并停止报告,本勘误不预改已冻结的判定条件。
+
+**E9-5 · 非 Python 条目一次性全量预检**(同 E7-3 的做法,扩到非 Python 条目)
+> 以 §1.1c 四级粒度产出的**全部** candidate 生成名字形态,对 `scan_manifest` 中全部非 `PY_SOURCE` 文本条目
+> (`PTH`、`PACKAGING`、`CI_CONFIG`、`SHELL`、`BUILD`、`IMPORT_LINTER`、`DOC`、`OTHER_TEXT`)跑名字命中兜底与解释器行兜底,
+> **收集全部 `UNKNOWN_CAPABILITY` 与多去处命中后一次性停止报告**,不得发现第一处即停。
+> 报告按条目类别分组,逐文件列出命中数、名字形态、所涉 candidate 与代表行;另报本勘误新增的 `DYNAMIC_UNRESOLVED` 条数。
+> 若 candidate 全集在此时尚不能完整产出,如实写明缺什么,不得以部分 candidate 的结果声称全量。
+
+**生效范围**:勘误 4 条目类别表、§1.1 原子形态表与非 Python 文件的名字兜底去处;不改变判定条件与其它事项。

@@ -1,0 +1,36 @@
+{
+  "manifest_entries": 846,
+  "contexts": {
+    ".": 736,
+    "release-v1.4.0": 110
+  },
+  "entry_kinds": {
+    "DOC": 431,
+    "OTHER_TEXT": 122,
+    "CI_CONFIG": 1,
+    "IMPORT_LINTER": 1,
+    "BINARY": 4,
+    "PY_SOURCE": 272,
+    "PACKAGING": 2,
+    "BUILD": 13
+  },
+  "tokens": 49,
+  "module_edges": 49,
+  "binding_edges": 0,
+  "excluded_comment_lines": 4,
+  "excluded_name_values": 6,
+  "c7e_dynamic_unresolved": 0,
+  "c7e_resolution_kinds": {
+    "LOCAL": 49
+  },
+  "scan06_hits": 4,
+  "full_preflight_unknown": null,
+  "full_preflight_multiple": null,
+  "full_preflight_dynamic_unresolved": null,
+  "full_preflight": "NOT_RUN_CANDIDATE_UNIVERSE_UNAVAILABLE"
+}
+NON_PY_TEXT_ENTRIES=570; candidate_universe=UNAVAILABLE; unknown/multiple/dynamic=N/A
+E9-4 controls=10; component=PASS; full_pipeline=NOT_RUN
+EXPANDED_REGRESSION 51 failed / 288 passed; all failures SOURCE_HASH; gate/data unchanged since 8338889
+predicates.json canonical=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6
+measurement_exemptions.json canonical=4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945

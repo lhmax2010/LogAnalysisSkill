@@ -1,0 +1,43 @@
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_scan.py:24: error: Cannot find implementation or library stub for module named "tomllib"  [import-not-found]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_scan.py:24: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:22: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:50: error: Function is missing a type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:54: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:54: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:56: error: Call to untyped function "modules" in typed context  [no-untyped-call]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:60: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:60: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:62: error: Call to untyped function "modules" in typed context  [no-untyped-call]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:66: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:66: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:68: error: Call to untyped function "modules" in typed context  [no-untyped-call]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:71: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:71: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:73: error: Call to untyped function "modules" in typed context  [no-untyped-call]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:78: error: Function is missing a type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:80: error: Call to untyped function "modules" in typed context  [no-untyped-call]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:87: error: Function is missing a type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:90: error: Call to untyped function "modules" in typed context  [no-untyped-call]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:94: error: Function is missing a type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:97: error: Call to untyped function "modules" in typed context  [no-untyped-call]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:103: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:103: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:109: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:109: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:115: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:115: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:117: error: Call to untyped function "modules" in typed context  [no-untyped-call]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:125: error: Function is missing a type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:130: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:130: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:134: error: Call to untyped function "modules" in typed context  [no-untyped-call]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:138: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:138: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:145: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:145: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:150: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:150: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:155: error: Function is missing a return type annotation  [no-untyped-def]
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:155: note: Use "-> None" if function does not return a value
+/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:163: error: Function is missing a type annotation  [no-untyped-def]
+Found 29 errors in 2 files (checked 6 source files)

@@ -1,0 +1,121 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /tmp/p49-a0-gate-seg2-43a6aa6/bin/python
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+collecting ... collected 75 items
+
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_root_packages PASSED [  1%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_layers_siblings PASSED [  2%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_containers PASSED [  4%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_ignore_imports FAILED [  5%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_wildcard[*] PASSED [  6%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_wildcard[**] PASSED [  8%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_entry_kind[.importlinter] PASSED [  9%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_entry_kind[docs/.importlinter] PASSED [ 10%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_comment_near_miss[# python -m sentinel] PASSED [ 12%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_comment_near_miss[  ; python -m sentinel] PASSED [ 13%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_name_near_miss PASSED [ 14%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_unknown_key_near_miss PASSED [ 16%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_binding_not_consumed PASSED [ 17%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_unknown_section[other] PASSED [ 18%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_unknown_section[importlinter:wrong:c] PASSED [ 20%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_unknown_section[importlinter:contract:] PASSED [ 21%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_colon_optional_multiline_and_multiple_containers PASSED [ 22%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_parse_error_never_passes_names PASSED [ 24%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_ini_defaults_or_interpolation_not_given_guessed_provenance PASSED [ 25%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_other_packaging_not_reclassified PASSED [ 26%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_registry_and_mapping PASSED [ 28%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_invalid_ignore_pair_fails_closed[a] PASSED [ 29%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_invalid_ignore_pair_fails_closed[a -> x -> sentinel] PASSED [ 30%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_invalid_ignore_pair_fails_closed[-> sentinel] PASSED [ 32%]
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_invalid_ignore_pair_fails_closed[a ->] FAILED [ 33%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[GITLINK] PASSED [ 34%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[SYMLINK] PASSED [ 36%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[IMPORTABLE_BINARY] PASSED [ 37%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[PTH] PASSED [ 38%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[BINARY] PASSED [ 40%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[PY_SOURCE] PASSED [ 41%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[PACKAGING] PASSED [ 42%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[CI_CONFIG] PASSED [ 44%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[SHELL] PASSED [ 45%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[BUILD] PASSED [ 46%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[IMPORT_LINTER] PASSED [ 48%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[DOC] PASSED [ 49%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_each_entry_kind[OTHER_TEXT] PASSED [ 50%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_unknown_git_mode_is_blocked PASSED [ 52%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[docs/Makefile-100644--BUILD] PASSED [ 53%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[docs/.importlinter-100644-[importlinter]-IMPORT_LINTER] PASSED [ 54%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[docs/setup.cfg-100644--PACKAGING] PASSED [ 56%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[docs/a.sh-100644--SHELL] PASSED [ 57%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[docs/a.spec-100644--BUILD] PASSED [ 58%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[docs/a.json-100644-{}-DOC] PASSED [ 60%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[docs/a.json-100755-{}-OTHER_TEXT] PASSED [ 61%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[docs/a.txt-100644-#!custom\n-OTHER_TEXT] PASSED [ 62%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[check-100755-#!/usr/bin/env python3\n-PY_SOURCE] PASSED [ 64%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[run-100755-#!/bin/bash\n-SHELL] PASSED [ 65%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[bad.py-100644-\xff-BINARY] PASSED [ 66%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[native.pyc-100644-\xff-IMPORTABLE_BINARY] PASSED [ 68%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e4_first_match_wins[paths.pth-100644-\x00-PTH] PASSED [ 69%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e5_release_absolute_import_stays_release PASSED [ 70%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e5_release_missing_name_falls_back_live PASSED [ 72%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e5_live_absolute_import_stays_live PASSED [ 73%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e5_path_can_cross_context PASSED [ 74%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e5_duplicate_within_context_is_ambiguous PASSED [ 76%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e5_missing_and_multiple_foreign_names_are_recorded PASSED [ 77%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_e5_nested_context_and_unmapped_path PASSED [ 78%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_registry_closed_sets_and_nonempty_required_detectors PASSED [ 80%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_empty_detector_registry_is_not_a_vacuous_pass PASSED [ 81%]
+../LogAnalysisSkill/tests/unit/test_terminal_scan.py::test_atomic_write_no_pending_file PASSED [ 82%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_namespaces_and_mapping PASSED [ 84%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_entry_projection_positive PASSED [ 85%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.binary_record] PASSED [ 86%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.doctest_extract] PASSED [ 88%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.interpreter_line] PASSED [ 89%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.name_backstop] PASSED [ 90%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_wrong_owner_is_red PASSED [ 92%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_missing_near_miss_projection_is_red PASSED [ 93%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_registry_shape_is_closed[duplicate] PASSED [ 94%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_registry_shape_is_closed[namespace] PASSED [ 96%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_three_domain_projection_union[None] PASSED [ 97%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_three_domain_projection_union[consumer] PASSED [ 98%]
+../LogAnalysisSkill/tests/unit/test_terminal_registry.py::test_e6_three_domain_projection_union[legacy] PASSED [100%]
+
+=================================== FAILURES ===================================
+____________________________ test_e9_ignore_imports ____________________________
+
+    def test_e9_ignore_imports():
+        result = scan("[importlinter:contract:c]\nignore_imports = x.y -> sentinel.z\n")
+>       assert modules(result) == ["x.y", "sentinel.z"]
+E       AssertionError: assert ['x.y'] == ['x.y', 'sentinel.z']
+E         
+E         Right contains one more item: 'sentinel.z'
+E         
+E         Full diff:
+E           [
+E               'x.y',
+E         -     'sentinel.z',
+E           ]
+
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:61: AssertionError
+________________ test_e9_invalid_ignore_pair_fails_closed[a ->] ________________
+
+value = 'a ->'
+
+    @pytest.mark.parametrize("value", ["a", "a -> x -> sentinel", "-> sentinel", "a ->"])
+    def test_e9_invalid_ignore_pair_fails_closed(value):
+>       with pytest.raises(S.ScanError, match="C7E_IGNORE_IMPORTS_ARITY"):
+E       Failed: DID NOT RAISE <class 'terminal_scan.ScanError'>
+
+../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py:150: Failed
+=========================== short test summary info ============================
+FAILED ../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_ignore_imports - AssertionError: assert ['x.y'] == ['x.y', 'sentinel.z']
+  
+  Right contains one more item: 'sentinel.z'
+  
+  Full diff:
+    [
+        'x.y',
+  -     'sentinel.z',
+    ]
+FAILED ../LogAnalysisSkill/tests/unit/test_terminal_import_linter.py::test_e9_invalid_ignore_pair_fails_closed[a ->] - Failed: DID NOT RAISE <class 'terminal_scan.ScanError'>
+========================= 2 failed, 73 passed in 0.16s =========================
