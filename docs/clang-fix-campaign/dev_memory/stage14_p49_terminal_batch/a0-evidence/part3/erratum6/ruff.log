@@ -1,0 +1,12 @@
+E501 Line too long (111 > 100)
+   --> /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_registry.py:113:101
+    |
+111 |     if {b for b, _ in expected} != mapped or actual != expected or tested != expected:
+112 |         raise ScanError(
+113 |             f"ENTRY_THREE_WAY: expected={sorted(expected)} registry={sorted(actual)} controls={sorted(tested)}"
+    |                                                                                                     ^^^^^^^^^^^
+114 |         )
+115 |     for branch, _ in expected:
+    |
+
+Found 1 error.

@@ -1,0 +1,4 @@
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_registry.py:9: error: Module "terminal_scan" does not explicitly export attribute "load_json"  [attr-defined]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_registry.py:61: error: Need type annotation for "required" (hint: "required: set[<type>] = ...")  [var-annotated]
+/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_registry.py:149: error: Returning Any from function declared to return "list[dict[str, Any]]"  [no-any-return]
+Found 3 errors in 1 file (checked 4 source files)

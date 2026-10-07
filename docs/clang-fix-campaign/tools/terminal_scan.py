@@ -27,7 +27,7 @@ from terminal_predicates import canonical_hash, check_frozen_hashes, load_json
 HEAD = "43a6aa625f27da46daba190657bf62256080c68e"
 TREE = "ca9331190e878af465e7968fe56e735585a5866e"
 RULES = "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md"
-RULES_SHA = "1c35df1cd9aeafc5511aefaa3bdd468b785af665205319d92cc6d30350be6939"
+RULES_SHA = "ccbe8923bdca5962189a458d0d7f51d32c8bb7e8af0f10fe592b2d478e4f2f0b"
 DATA = Path(__file__).with_name("p49_terminal_data")
 ENTRY_KINDS = (
     "GITLINK",

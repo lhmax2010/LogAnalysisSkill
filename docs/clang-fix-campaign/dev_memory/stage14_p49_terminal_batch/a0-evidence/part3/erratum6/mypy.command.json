@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/tmp/p49-a0-gate-seg2-43a6aa6/bin/python",
+    "-m",
+    "mypy",
+    "--strict",
+    "--python-version",
+    "3.12",
+    "--follow-imports=silent",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_scan.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_registry.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_scan.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/unit/test_terminal_registry.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-gate-seg2-43a6aa6",
+    "PATH": "/tmp/p49-a0-gate-seg2-43a6aa6/bin:/usr/bin:/bin",
+    "PYTHONPATH": null,
+    "MYPYPATH": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 1,
+  "input_sha256": {
+    "docs/clang-fix-campaign/tools/terminal_scan.py": "8cb72dd84fd26207544367b4160a78b1c32b5e58c09e25ba3d04950d34593cef",
+    "docs/clang-fix-campaign/tools/terminal_registry.py": "177b17a2a1a70207f9143092df3cfd09d5be9c6f257d946ad07bedb6084b2878",
+    "docs/clang-fix-campaign/tools/terminal_predicates.py": "a6e6399059f42d6c266a11361e9090111b2f1a0379cc5b03e9f75ee529745cef",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/entry_registry.json": "9ed0e8457455011c5e494459511e964ac75b8ee27f8c75fa331d5929659dd400",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/provider_registry.json": "942f38efc9e7e30790a9334dae484105ff71cce39916dd6400d7c0c6500e14b5",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json": "623c692c7f90da9e402d254f6497731b503530fba8063dbe00bb0d4481df4b7f",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/measurement_exemptions.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "docs/clang-fix-campaign/tools/p49_terminal_data/control_catalog.json": "347a5a3eee041ece6fa066721d1888645ee11411d68b257e2293d09a373f9e1e",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "ccbe8923bdca5962189a458d0d7f51d32c8bb7e8af0f10fe592b2d478e4f2f0b",
+    "tests/unit/test_terminal_registry.py": "ea496028b269e1bb1be1d9d0661683b8e1490f685347e590090950f2da1c8c77",
+    "tests/unit/test_terminal_scan.py": "79b42ca4531ff6e1595457c161b597e27f9a6a14510e2f51b209492abac260b9"
+  },
+  "output_sha256": "06eca47abf24b7e18077f0897176a542233b2337000b9018301159d8d3d46fe7",
+  "scope": "SCAN-04 preflight and retained foundation validation; no OBS producer or before-run"
+}

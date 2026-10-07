@@ -1,0 +1,75 @@
+TABLE_ROW=| `C1` | 1 | `Import` 的 alias 项且**无** `asname`;或 `ImportFrom` 且 `level == 0` |
+REJECTION=C1 | Call is not Import/ImportFrom
+TABLE_ROW=| `C4` | 4 | `Import` 的 alias 项且**有** `asname`(含 `import pkg.sub as alias`) |
+REJECTION=C4 | Call is not Import/ImportFrom
+TABLE_ROW=| `C5a` | 5 | `ImportFrom` 且 `level > 0` |
+REJECTION=C5a | Call is not Import/ImportFrom
+TABLE_ROW=| `C2a` | 2 | 调用 `importlib.import_module`,首参为字符串常量 |
+REJECTION=C2a | builtin compile is outside this closed callee family
+TABLE_ROW=| `C2b` | 2 | 调用 `importlib.import_module`,首参不是字符串常量 → 一律 `DYNAMIC_UNRESOLVED` |
+REJECTION=C2b | builtin compile is outside this closed callee family
+TABLE_ROW=| `C3` | 3 | 调用 {`monkeypatch.setattr`, `monkeypatch.delattr`, `unittest.mock.patch`, `unittest.mock.patch.dict`, `unittest.mock.patch.multiple`},**首参为字符串常量**;`unittest.mock.patch` / `.dict` / `.multiple` 首参不是字符串常量 → 落 `DYNAMIC_UNRESOLVED`,形态仍记 `C3` |
+REJECTION=C3 | builtin compile is outside this closed callee family
+TABLE_ROW=| `C6a` | 6 | 调用 {`monkeypatch.setattr`, `monkeypatch.delattr`},**首参不是字符串常量** |
+REJECTION=C6a | builtin compile is outside this closed callee family
+TABLE_ROW=| `C6b` | 6 | 调用 `unittest.mock.patch.object` |
+REJECTION=C6b | builtin compile is outside this closed callee family
+TABLE_ROW=| `C5b` | 5 | 调用内建 `__import__` |
+REJECTION=C5b | builtin compile is outside this closed callee family
+TABLE_ROW=| `C5c` | 5 | 调用 `runpy.run_module` |
+REJECTION=C5c | builtin compile is outside this closed callee family
+TABLE_ROW=| `C5d` | 5 | 调用 {`importlib.util.find_spec`, `importlib.util.spec_from_file_location`, `importlib.util.spec_from_loader`, `importlib.util.module_from_spec`, `importlib.util.resolve_name`} |
+REJECTION=C5d | builtin compile is outside this closed callee family
+TABLE_ROW=| `C5e` | 5 | 对 `sys.modules` 的下标访问(读/写/删)、调用 {`sys.modules.get`, `sys.modules.pop`, `sys.modules.setdefault`}、或 `in` / `not in` 比较右侧为 `sys.modules` |
+REJECTION=C5e | builtin compile is not a sys.modules operation
+TABLE_ROW=| `C6c` | 6 | 调用内建 {`setattr`, `delattr`},首参解析为模块对象 binding |
+REJECTION=C6c | builtin compile is outside this closed callee family
+TABLE_ROW=| `C6d` | 6 | 调用内建 {`getattr`, `hasattr`},首参解析为模块对象 binding;第二参为字符串常量 → 按静态属性访问解析,否则 → `DYNAMIC_UNRESOLVED` |
+REJECTION=C6d | builtin compile is outside this closed callee family
+TABLE_ROW=| `C8a` | 8 | 调用**进程启动族**,argv(或命令串)按解释器选项文法(见解释器行兜底)规范化后**匹配 `<python> -m X`**(含 `-mX`、`-Bm X` 等紧贴与组合写法;v1.31)。**进程启动族**(v1.28 补全;甲 朝开-1)= {`subprocess.run`, `subprocess.call`, `subprocess.check_call`, `subprocess.check_output`, `subprocess.getoutput`, `subprocess.getstatusoutput`, `subprocess.Popen`, `os.system`, `os.popen`, `os.execl`, `os.execle`, `os.execlp`, `os.execlpe`, `os.execv`, `os.execve`, `os.execvp`, `os.execvpe`, `os.spawnl`, `os.spawnle`, `os.spawnlp`, `os.spawnlpe`, `os.spawnv`, `os.spawnve`, `os.spawnvp`, `os.spawnvpe`, `os.posix_spawn`, `os.posix_spawnp`, `pty.spawn`, `asyncio.create_subprocess_exec`, `asyncio.create_subprocess_shell`} |
+REJECTION=C8a | builtin compile is outside this closed callee family
+TABLE_ROW=| `C8b` | 8 | 调用进程启动族,**不匹配 `<python> -m X`**(含一切其它命令);消费边从 argv 中的模块名或 `.py` 路径提取(如 `python path/X.py`、`python -c "import X"`),**argv 中无模块名或路径 → 该参与点不产生消费边,但照常记入 B-8**;argv 无法静态规范化 → `DYNAMIC_UNRESOLVED`,形态仍记 `C8b` |
+REJECTION=C8b | builtin compile is outside this closed callee family
+TABLE_ROW=| `C7a` | 7 | 非 Python 文件:`pyproject.toml` 的 `[project.scripts]` / `[project.gui-scripts]` / `[project.entry-points.*]`,`setup.cfg` 的 `[options.entry_points]` |
+REJECTION=C7a | PY_SOURCE is not non-Python input
+TABLE_ROW=| `C7b` | 7 | 非 Python 文件:CI 配置文件(文件集合 = `scan_manifest` 中 kind 为 CI 配置的条目)中的模块入口 |
+REJECTION=C7b | PY_SOURCE is not non-Python input
+TABLE_ROW=| `C7c` | 7 | 非 Python 文件:shell 脚本(`*.sh`,或 shebang 为 sh/bash 的无扩展名文件)中的模块入口;**不含 Python 源中的 subprocess 调用**(那归 `C8a`/`C8b`) |
+REJECTION=C7c | PY_SOURCE is not non-Python input
+TABLE_ROW=| `C7d` | 7 | 非 Python 文件:构建与打包文件 {`Makefile`, `GNUmakefile`, `*.mk`, `*.spec`, `Dockerfile`, `*.service`, `tox.ini`} 中的解释器行(v1.29 新增;甲 朝开-1、丙 朝开-2 的 `Makefile`/`.spec` 反例) |
+REJECTION=C7d | PY_SOURCE is not non-Python input
+{
+  "path": "docs/clang-fix-campaign/tools/check_design_doc.py",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "context": ".",
+  "entry_kind": "PY_SOURCE",
+  "source_sha256": "66e797e062cddfd02cbdb9c1e35c73e0c83edd10dedb337b51da0c5fd3d67b72",
+  "function": "_check_python_contracts",
+  "span": {
+    "line": 187,
+    "column": 12,
+    "end_line": 187,
+    "end_column": 66
+  },
+  "source": "compile(block.body, f\"<design.md:L{line_no}>\", \"exec\")",
+  "ast": "Call(func=Name(id='compile', ctx=Load()), args=[Attribute(value=Name(id='block', ctx=Load()), attr='body', ctx=Load()), JoinedStr(values=[Constant(value='<design.md:L'), FormattedValue(value=Name(id='line_no', ctx=Load()), conversion=-1), Constant(value='>')]), Constant(value='exec')], keywords=[])",
+  "binding": {
+    "is_global": true,
+    "is_referenced": true,
+    "is_assigned": false,
+    "is_imported": false,
+    "is_parameter": false,
+    "module_binding": null,
+    "wildcard_imports": 0
+  },
+  "resolved_name": "builtins.compile",
+  "matching_atomic_forms": [],
+  "status": "UNKNOWN_CAPABILITY",
+  "scope": "Targeted real-input preflight, not complete consumer engine or OBS claim"
+}
+CONTEXT_COUNTS={".": 736, "release-v1.4.0": 110}
+TRACKED_LEAVES=846
+SCANNED_BINARY_RECORDS=NOT_RUN (input contains 4 BINARY entries)
+FULL_CONSUMER_SCAN=NOT_RUN; FULL_FALLBACK_EDGES=N/A; FULL_AMBIGUITY=N/A; COMPLETION=ABSENT
+SCAN-04 UNKNOWN_CAPABILITY: builtins.compile; matched_forms=0; STOP

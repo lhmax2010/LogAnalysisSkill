@@ -1,11 +1,11 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART2_STRUCTURE_COMPLETE_PENDING_SEG3。更新日期: 2026-10-07。
+状态: A0_PART3_STOPPED_SCAN04。更新日期: 2026-10-07。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
-勘误3已核对原字节;DIFF-01..04 CLOSED。第18节记录E3-1/E3-2对超时场景
-运行计划、旧值来源与登记的修订;§6改前实跑仍为PENDING_SEG3。
+勘误6已核对原字节;DIFF-01..04、SCAN-01..03 CLOSED。第22节记录
+SCAN-04:固定tree内建compile参与点无形态承接;§6改前实跑仍为PENDING_SEG3。
 本轮未运行任何 producer或真实双跑;既有两项产出不变,生产实现未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
@@ -1788,7 +1788,7 @@ EXIT=0
 
 ### 21.3 SCAN-03: E4 required detector与九类capability对账缺映射
 
-**状态:OPEN;发现后停止第1–5块后续实现与采集。**
+**状态:CLOSED(勘误6 E6-1～E6-3);以下保留当时停止证据。**
 不是OBS claim红,也不是已经实现的12b-12检查器判红;这是接注册表时
 发现的权威规格未闭合,未伪造一个完整四方检查器的exit。
 
@@ -1890,3 +1890,161 @@ IMMUTABLE_AND_PRODUCTION_DIFF_EXIT=0
 暂存`git diff --cached --check`的exit=2仅指原始`intake.log`的git diff
 空白上下文行和`scan03.log`逐行引用的空原文行。不清洗原始输出;排除这两个
 日志后复跑exit=0。正文、工具、测试及其它登记文件没有空白错误。
+
+## 22. A0 第3段续三:勘误6入库与SCAN-04停止报告
+
+### 22.1 入库、SCAN-03关闭与中间态
+
+勘误6批准来源:FatTank本轮任务书。旧hash为
+`1c35df1cd9aeafc5511aefaa3bdd468b785af665205319d92cc6d30350be6939`,
+新hash为`ccbe8923bdca5962189a458d0d7f51d32c8bb7e8af0f10fe592b2d478e4f2f0b`。
+E6-1引入封闭四分支entry命名空间;E6-2规定entry kind到分支的映射;
+E6-3规定三组对账及其并集,据此关闭SCAN-03。判定条件、固定被观测tree不变。
+开场`git pull --ff-only origin clang-fix-campaign`输出`Already up to date.`;
+基点`5d61715d9df995bc07b5e612035b514c3d03d961`。交付原件已位于目标路径,
+直接采用其字节,没有重排或重写正文;与指定新hash完全一致。
+
+本轮证据目录为`a0-evidence/part3/erratum6/`。`intake.command.json`记录
+原始argv/环境/工具hash,`intake.log`保存相对上述Git基点的完整diff:
+
+```text
+APPEND_ONLY=PASS additions=41 deletions=0 insert_blocks=2
+```
+
+两个insert位置经旧版行序机械确认:旧行8之后的状态提示与旧EOF之后的勘误6。
+不以diff看起来相似代替原字节SHA校验。SCAN-03的历史报告保留于§21.3,
+当前状态已标CLOSED(E6-1～E6-3)。
+
+实施拆文件计划补充(A03/A04/A09/A10):`T/terminal_registry.py`承载三组对账
+与E4/E6机械映射;`T/terminal_python.py`与`T/terminal_commands.py`分别承载
+Python参与点与命令载荷解析,由`T/terminal_consumers.py`统一编排。
+候选检测在`T/terminal_candidates.py`,由`T/terminal_scan.py`与
+`T/shim_inventory.py`共用。对应新增测试为同名`U/test_terminal_*.py`。
+这些只是代码分文件,不减少§2.2任何交付与控制义务。
+本次仅保留`terminal_registry.py`及其人工fixture测试的部分实现;
+上述其它新模块未创建。`terminal_scan.py`只更新权威hash。
+
+E4/E6正文机械导出的12类分支映射保存为`entry-kind-branches.json`;
+六命名空间和32分支(consumer20/entry4/ledger1/provider1/resolve2/scan4)
+可由`registry-corrected.log`复核。该文件是**映射证据**,不是已经完成的
+B-8逐条detector矩阵。`load_registry`尚未接入扫描器,也未生成正式
+`capability_registry.json`;原entry/provider注册文件未改成假完成状态。
+
+### 22.2 SCAN-04:固定tree的内建compile参与点无原子形态承接
+
+**状态:OPEN;本轮新增停止项1条。** 不是OBS claim判红;是在实现/接线前,
+以真实输入做受监控调用闭集可满足性预检时发现的`UNKNOWN_CAPABILITY`。
+预检不是完整消费者识别引擎,没有声称跑完第1/2块。
+
+**权威位置**(当前ccbe8923正文):
+
+| 位置 | 原文要求 |
+|---|---|
+| L330–345,§1.1参与点与受监控名字 | 每个解析到受监控名字的Call均为参与点;内建集合明确含`compile` |
+| L350–354 | 零命中/多命中为`UNKNOWN_CAPABILITY`;不得最近形态归类;解除的唯一途径为勘误扩表 |
+| L407–426,原子形态表 | 封闭二十形态;无任何调用谓词承接内建`compile` |
+| E6-1/E6-3 | 新增entry分支只承接条目级检查,不新增consumer形态,不能借entry绕过上述阻塞 |
+
+**实测位置**:固定HEAD `43a6aa625f27da46daba190657bf62256080c68e`,tree
+`ca9331190e878af465e7968fe56e735585a5866e`中的
+`docs/clang-fix-campaign/tools/check_design_doc.py:187`,
+函数`_check_python_contracts`:
+
+```python
+compile(block.body, f"<design.md:L{line_no}>", "exec")
+```
+
+源码SHA `66e797e062cddfd02cbdb9c1e35c73e0c83edd10dedb337b51da0c5fd3d67b72`。
+AST为`Call(Name('compile'), ...)`;symtable实测global=True/referenced=True,
+assigned=False/imported=False/parameter=False;模块没有compile绑定,无星号导入。
+因此不是同名局部函数/参数遮蔽。它是live上下文的tracked PY_SOURCE,
+不因位于docs目录而豁免;Call也不是注释或提示语中的名字。
+
+`scan04-final.log`逐行打印二十形态及每条不匹配原因,`scan04.json`保存
+源码、AST、作用域与零命中结果;诊断程序全文保存在对应command.json中。
+它直接读取固定tree,没有import或执行被观测模块,没有调用OBS producer。
+
+```text
+TRACKED_LEAVES=846
+CONTEXT_COUNTS={".": 736, "release-v1.4.0": 110}
+SCAN-04 UNKNOWN_CAPABILITY: builtins.compile; matched_forms=0; STOP
+EXIT=1
+```
+
+**困难与候选裁决**:按现行规则必须阻塞,不能将compile放进`C5b`
+(封闭为`__import__`)或`C8b`(进程启动族),也不能未经形态承接就仅记为
+`DYNAMIC_UNRESOLVED`并继续。建议设计方依L354出勘误:新增承接compile
+的原子形态/capability,明确代码载荷非静态时的处理,配正控制与near-miss;
+并核对同一受监控闭集中exec/eval等是否也需同时处理。该建议不是实施规则,
+本轮没有采用、扩表、缩小受监控集合或人工放行。
+
+### 22.3 保留部分实现的验证与控制登记
+
+所有实跑cwd为§9.2干净工作区,HEAD/tree如上,隔离venv
+`/tmp/p49-a0-gate-seg2-43a6aa6`;运行前断言git status为空。
+清除PYTHONPATH/MYPYPATH/PYTEST_ADDOPTS/PYTEST_PLUGINS,
+禁自动加载pytest插件,设置PYTHONDONTWRITEBYTECODE=1。
+新工具以主工作树绝对路径加载并记录其hash;被观测输入仍固定为43a6aa6。
+以下R为主仓绝对路径,V为上述venv;完整命令/环境/exit/输出均落同目录。
+
+```sh
+"$V/bin/python" -m pytest -q -o cache_dir=/tmp/p49-seg3-pytest "$R/tests/unit/test_terminal_scan.py" "$R/tests/unit/test_terminal_registry.py" --junitxml="$R/docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/part3/erratum6/foundation-tests-final.xml"
+# 48 passed in 0.11s; EXIT=0 (35既有+13新增,人工fixture)
+"$V/bin/python" -m pytest -q -o cache_dir=/tmp/p49-seg3-pytest "$R/tests/unit/test_terminal_predicates.py" "$R/tests/unit/test_terminal_anchors.py"
+# 111 passed in 0.22s; EXIT=0; 无真实producer
+"$V/bin/python" -m ruff check "$R/docs/clang-fix-campaign/tools/terminal_scan.py" "$R/docs/clang-fix-campaign/tools/terminal_registry.py" "$R/tests/unit/test_terminal_scan.py" "$R/tests/unit/test_terminal_registry.py"
+# All checks passed!; EXIT=0
+"$V/bin/python" -m mypy --strict --python-version 3.12 --follow-imports=silent "$R/docs/clang-fix-campaign/tools/terminal_scan.py" "$R/docs/clang-fix-campaign/tools/terminal_registry.py" "$R/tests/unit/test_terminal_scan.py" "$R/tests/unit/test_terminal_registry.py"
+# Success: no issues found in 4 source files; EXIT=0
+```
+
+人工投影正常对照`registry-corrected.log`exit0;删除entry.binary_record的
+人工registry由`missing-entry.log`实测`ENTRY_THREE_WAY`且exit1。
+这些只验证登记集合比较,不是把人为标记当作detector执行证据。
+`control_catalog.json`新增E6八条实际detector控制及一条对账控制登记,
+均维持端到端NOT_RUN,最后一条附上述component红证据。E5五条的resolver
+证据保留但端到端仍NOT_RUN,停因由SCAN-03更新为SCAN-04。
+CTRL-INTRA-PKG-PROXY、20形态正控制/near-miss均未运行。
+
+目录登记更新后再次合并运行以上四个测试文件,
+`artificial-tests-final.log`为`159 passed in 0.32s; EXIT=0`;
+完整argv在同名command.json。它仍全是工具/人工fixture测试,
+不包含OBS producer和§6改前实跑。
+
+保留首跑失败与修正:registry-projection.log的NINE_TABLE_PARSE来自
+工具初版将表后说明的命名空间通配字样也读入表行;已限定Markdown表行。
+registry-projection-final.log虽exit0,但初版错误把BINARY括注中的
+“名字命中兜底”当作required detector;修正为只解析括注外的detector清单,
+补`BINARY == [entry.binary_record]`测试,最终以registry-corrected.log为准。
+这两项是本工具实现错误,不是设计裁决。首次ruff/mypy分别因长行、类型标注
+问题exit1,已修正并保留原始日志,以ruff-final/mypy-final的exit0为准。
+
+### 22.4 交付边界与未运行项
+
+| 项 | 本轮结果 |
+|---|---|
+| scan_manifest输入 | 846条;live736/release110;完整扫描矩阵未完成,completion不存在 |
+| 4个真实BINARY | 输入枚举可见;entry.binary_record的真实SCANNED尚未执行,不冒报通过 |
+| E5上下文 | 固定输入两上下文不变;上轮85重名resolver回归证据保留;本轮完整端到端未运行 |
+| 全树跨上下文回退边/歧义 | 均N/A,没有全树消费扫描输出;不得以resolver单测的0替代 |
+| 台账三段/候选四级 | NOT_RUN;计数N/A |
+| 8个claim | item1-basis、seg1-staleness、seg2-form、commit-order、transition-map、proxy-count、intra-package-shim、item5-order全部NOT_RUN |
+| §6改前30场景 | PENDING_SEG3;未采集,结果文件hash N/A |
+| 全量生产测试/mypy/ruff | 本轮未跑;上节只有具名工具与人工fixture检查,不是全仓验收 |
+
+`immutable.log`exit0:生产源码、release、P4.5 design.md、既有part2与
+erratum5证据均零diff。冻结canonical hashes仍为:
+
+```text
+predicates.json=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6
+measurement_exemptions.json=4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+IMMUTABLE_AND_PRODUCTION_DIFF_EXIT=0
+```
+
+没有整块完成,本次为**勘误6入库+保留中间态+SCAN-04停止报告commit**,
+不是第1块完成commit。push后等待设计方裁决,不继续第1–5块。
+无关.gitignore修改、4份文档删除、其它untracked稿件继续保留不处理。
+
+暂存`git diff --cached --check`的exit=2仅来自原始`intake.log:15`的
+git diff空白上下文行;为保留原始输出不清洗该日志。排除该日志后的
+`git diff --cached --check`须exit0,正文/工具/测试/登记文件不豁免。

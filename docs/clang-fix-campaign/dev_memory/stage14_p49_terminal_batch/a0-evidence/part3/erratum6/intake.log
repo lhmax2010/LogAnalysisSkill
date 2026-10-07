@@ -1,0 +1,59 @@
+diff --git a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+index 1bbd7d6..67dff36 100644
+--- a/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
++++ b/docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md
+@@ -6,6 +6,7 @@
+ > **已生效勘误:附录 C 勘误 3(2026-10-07,FatTank 批准)。**
+ > **已生效勘误:附录 C 勘误 4(2026-10-07,FatTank 批准)。**
+ > **已生效勘误:附录 C 勘误 5(2026-10-07,FatTank 批准)。**
++> **已生效勘误:附录 C 勘误 6(2026-10-07,FatTank 批准)。**
+ > 冻结前的放行规则(v1.27 起,留作记录):
+ > 1. **落地核对**:三家只核对最新修订段所列改动是否按所写落地、有无改到别处;**不开新的审查面**;
+ > 2. **放行标准只看"朝开"**:仅当发现**会导致删错真实依赖或删掉行为型测试**的问题才阻止冻结;
+@@ -2233,3 +2234,43 @@ A/B 取值、**存在性检查证据(`lstat` 语义)**、**π 归一结果**、
+ > ④同一上下文内构造两个文件导出同一点分名 → `MODULE_IDENTITY_AMBIGUOUS` 阻塞。
+ 
+ **生效范围**:§1.1 消费者识别与名字命中兜底的引用解析、候选的模块身份、§1.1c admission 证据;不改变判定条件与其它事项。
++
++### 勘误 6(2026-10-07,FatTank 批准)—— 勘误 4 引入的条目级检查在 capability 注册表中的位置与对账
++
++**触发**:A₀ 第 3 段停止报告 SCAN-03(stage14 `progress.md` §21.3)。勘误 4 的 required detectors 中,二进制记录器、名字命中兜底、
++解释器行兜底、doctest 提取器四项既不是 §1.1 原子形态(不属 `consumer.*`),也不在 §1.1b 九类表中(不属 `ledger/scan/resolve/provider`);
++12b-3c④ 要求注册表与 detector capability 双向精确覆盖,12b-12 要求非 consumer 分支四方精确相等 —— 这四项无处登记。
++
++**E6-1 · 新增命名空间 `entry.*`(封闭)**
++> capability registry 的命名空间由五个扩为六个:`consumer.*`、`ledger.*`、`scan.*`、`resolve.*`、`provider.*`、**`entry.*`**;
++> 前缀不在其中即红(替代 §1.1 原子形态表说明中"恰属这五个命名空间之一"的表述)。
++> `entry.*` 的分支封闭为四个,**扩充走勘误流程**:
++> | 分支 | 承担方 detector | 作用 |
++> |---|---|---|
++> | `entry.binary_record` | 二进制记录器 | 对 `BINARY` 条目逐个记录(路径、mode、blob hash)并判 `SCANNED` |
++> | `entry.name_backstop` | 名字命中兜底 | §1.1 名字命中兜底 |
++> | `entry.interpreter_line` | 解释器行兜底 | §1.1 解释器行兜底(含命令切分、选项文法、代码来源四类) |
++> | `entry.doctest_extract` | doctest 提取器 | 从 docstring 与文档文件提取 doctest 行,交给 Python 源规则 |
++
++**E6-2 · 勘误 4 表中 required detectors 与分支的对应**
++> 勘误 4 E4-2 表的 required detectors 一律按下列方式落到分支,不得另立:
++> "解析层" → `resolve.*`;"provider 分类器" → `provider.unsupported`(其承担方即 provider 分类器,判支持或不支持);
++> "四级粒度候选扫描" → `scan.module`/`scan.reexport`/`scan.inline`/`scan.proxy_callable`;
++> "消费者参与点识别"与"C7a–C7d 识别" → 对应的 `consumer.*` 原子形态分支;
++> "二进制记录器""名字命中兜底""解释器行兜底""doctest 提取器" → E6-1 的四个 `entry.*` 分支。
++
++**E6-3 · 对账分工**
++> - `consumer.*`:仍由 `SEAL-16b` 五方覆盖对账(不变);
++> - `ledger.*`/`scan.*`/`resolve.*`/`provider.*`:仍由 12b-12 四方对账(不变;投影不含 `consumer.*` 与 `entry.*`);
++> - **`entry.*`:新增三方双向精确覆盖** —— ①勘误 4 E4-2 表经 E6-2 落出的 `entry.*` 分支集合;②capability registry 中 `entry.*` 分支及其承担方;
++>   ③正控制目录中 `entry.*` 分支的控制 —— 两两差集为空,否则红;
++> - 12b-3c④"注册表与 detector capability 双向精确覆盖"按上述三组对账的并集判定,三组任一不空即红。
++> 由此 `BINARY` 条目的行级下界(12b-3b)由 `entry.binary_record` 承担,不被豁免。
++
++**E6-4 · 控制**(登记进 `control_catalog.json`,与其它控制分开计数)
++> 每个 `entry.*` 分支至少一条正控制与一条 near-miss:
++> `entry.binary_record` 正:一个 `.gz` 文件被记录并判 `SCANNED`;near-miss:一个纯文本文件不被路由到二进制记录器;
++> `entry.name_backstop`、`entry.interpreter_line`、`entry.doctest_extract`:取 §1.1 原子形态表末段已列的对应正控制与 near-miss,改登记到相应 `entry.*` 分支下;
++> 另加一条对账控制:从 registry 删去 `entry.binary_record` → 三方对账必红。
++
++**生效范围**:capability registry 的命名空间、12b-3c④、12b-12 投影与新增的 `entry.*` 三方对账;不新增消费者形态,不改变判定条件与其它事项。
+OLD_SHA256=1c35df1cd9aeafc5511aefaa3bdd468b785af665205319d92cc6d30350be6939
+NEW_SHA256=ccbe8923bdca5962189a458d0d7f51d32c8bb7e8af0f10fe592b2d478e4f2f0b
+APPEND_ONLY=PASS additions=41 deletions=0 insert_blocks=2

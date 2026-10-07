@@ -1,0 +1,30 @@
+{
+  "path": "docs/clang-fix-campaign/tools/check_design_doc.py",
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "context": ".",
+  "entry_kind": "PY_SOURCE",
+  "source_sha256": "66e797e062cddfd02cbdb9c1e35c73e0c83edd10dedb337b51da0c5fd3d67b72",
+  "function": "_check_python_contracts",
+  "span": {
+    "line": 187,
+    "column": 12,
+    "end_line": 187,
+    "end_column": 66
+  },
+  "source": "compile(block.body, f\"<design.md:L{line_no}>\", \"exec\")",
+  "ast": "Call(func=Name(id='compile', ctx=Load()), args=[Attribute(value=Name(id='block', ctx=Load()), attr='body', ctx=Load()), JoinedStr(values=[Constant(value='<design.md:L'), FormattedValue(value=Name(id='line_no', ctx=Load()), conversion=-1), Constant(value='>')]), Constant(value='exec')], keywords=[])",
+  "binding": {
+    "is_global": true,
+    "is_referenced": true,
+    "is_assigned": false,
+    "is_imported": false,
+    "is_parameter": false,
+    "module_binding": null,
+    "wildcard_imports": 0
+  },
+  "resolved_name": "builtins.compile",
+  "matching_atomic_forms": [],
+  "status": "UNKNOWN_CAPABILITY",
+  "scope": "Targeted real-input preflight, not complete consumer engine or OBS claim"
+}

@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/tmp/p49-e6-proof.py", line 35, in <module>
+    domain = R.authority(main)
+             ^^^^^^^^^^^^^^^^^
+  File "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/tools/terminal_registry.py", line 41, in authority
+    raise ScanError("NINE_TABLE_PARSE")
+terminal_scan.ScanError: NINE_TABLE_PARSE

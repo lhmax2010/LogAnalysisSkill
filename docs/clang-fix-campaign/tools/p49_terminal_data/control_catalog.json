@@ -1115,7 +1115,7 @@
     "group": "E5-CONTEXT-RESOLUTION",
     "source": "Erratum5 E5-4",
     "status": "NOT_RUN",
-    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "reason": "End-to-end consumer edge control stopped at SCAN-04; SCAN-03 closed by E6; only resolver unit exercised.",
     "component_check": {
       "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_release_absolute_import_stays_release",
       "status": "PASS",
@@ -1128,7 +1128,7 @@
     "group": "E5-CONTEXT-RESOLUTION",
     "source": "Erratum5 E5-4",
     "status": "NOT_RUN",
-    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "reason": "End-to-end consumer edge control stopped at SCAN-04; SCAN-03 closed by E6; only resolver unit exercised.",
     "component_check": {
       "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_release_missing_name_falls_back_live",
       "status": "PASS",
@@ -1141,7 +1141,7 @@
     "group": "E5-CONTEXT-RESOLUTION",
     "source": "Erratum5 E5-4",
     "status": "NOT_RUN",
-    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "reason": "End-to-end consumer edge control stopped at SCAN-04; SCAN-03 closed by E6; only resolver unit exercised.",
     "component_check": {
       "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_live_absolute_import_stays_live",
       "status": "PASS",
@@ -1154,7 +1154,7 @@
     "group": "E5-CONTEXT-RESOLUTION",
     "source": "Erratum5 E5-4",
     "status": "NOT_RUN",
-    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "reason": "End-to-end consumer edge control stopped at SCAN-04; SCAN-03 closed by E6; only resolver unit exercised.",
     "component_check": {
       "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_path_can_cross_context",
       "status": "PASS",
@@ -1167,12 +1167,107 @@
     "group": "E5-CONTEXT-RESOLUTION",
     "source": "Erratum5 E5-4",
     "status": "NOT_RUN",
-    "reason": "End-to-end consumer edge control pending SCAN-03 ruling; only resolver unit exercised.",
+    "reason": "End-to-end consumer edge control stopped at SCAN-04; SCAN-03 closed by E6; only resolver unit exercised.",
     "component_check": {
       "test_nodeid": "tests/unit/test_terminal_scan.py::test_e5_duplicate_within_context_is_ambiguous",
       "status": "PASS",
       "exit_code": 0,
       "evidence": "a0-evidence/part3/erratum5/foundation-tests-final.xml"
+    }
+  },
+  {
+    "control_id": "CTRL-E6-BINARY-POSITIVE",
+    "group": "E6-ENTRY-DETECTORS",
+    "source": "Erratum6 E6-4",
+    "branch": "entry.binary_record",
+    "detector_owner": "二进制记录器",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "requirement": ".gz recorded with path/mode/blob hash and SCANNED",
+    "reason": "Stopped at SCAN-04 before detector integration."
+  },
+  {
+    "control_id": "CTRL-E6-BINARY-NEAR-MISS",
+    "group": "E6-ENTRY-DETECTORS",
+    "source": "Erratum6 E6-4",
+    "branch": "entry.binary_record",
+    "detector_owner": "二进制记录器",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "requirement": "plain text not routed to binary recorder",
+    "reason": "Stopped at SCAN-04 before detector integration."
+  },
+  {
+    "control_id": "CTRL-E6-NAME-POSITIVE",
+    "group": "E6-ENTRY-DETECTORS",
+    "source": "Erratum6 E6-4; section 1.1 name-backstop controls",
+    "branch": "entry.name_backstop",
+    "detector_owner": "名字命中兜底",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "reason": "Stopped at SCAN-04 before detector integration."
+  },
+  {
+    "control_id": "CTRL-E6-NAME-NEAR-MISS",
+    "group": "E6-ENTRY-DETECTORS",
+    "source": "Erratum6 E6-4; section 1.1 name-backstop controls",
+    "branch": "entry.name_backstop",
+    "detector_owner": "名字命中兜底",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "reason": "Stopped at SCAN-04 before detector integration."
+  },
+  {
+    "control_id": "CTRL-E6-INTERPRETER-POSITIVE",
+    "group": "E6-ENTRY-DETECTORS",
+    "source": "Erratum6 E6-4; section 1.1 interpreter-line controls",
+    "branch": "entry.interpreter_line",
+    "detector_owner": "解释器行兜底",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "reason": "Stopped at SCAN-04 before detector integration."
+  },
+  {
+    "control_id": "CTRL-E6-INTERPRETER-NEAR-MISS",
+    "group": "E6-ENTRY-DETECTORS",
+    "source": "Erratum6 E6-4; section 1.1 interpreter-line controls",
+    "branch": "entry.interpreter_line",
+    "detector_owner": "解释器行兜底",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "reason": "Stopped at SCAN-04 before detector integration."
+  },
+  {
+    "control_id": "CTRL-E6-DOCTEST-POSITIVE",
+    "group": "E6-ENTRY-DETECTORS",
+    "source": "Erratum6 E6-4; section 1.1 doctest controls",
+    "branch": "entry.doctest_extract",
+    "detector_owner": "doctest 提取器",
+    "polarity": "POSITIVE",
+    "status": "NOT_RUN",
+    "reason": "Stopped at SCAN-04 before detector integration."
+  },
+  {
+    "control_id": "CTRL-E6-DOCTEST-NEAR-MISS",
+    "group": "E6-ENTRY-DETECTORS",
+    "source": "Erratum6 E6-4; section 1.1 doctest controls",
+    "branch": "entry.doctest_extract",
+    "detector_owner": "doctest 提取器",
+    "polarity": "NEAR_MISS",
+    "status": "NOT_RUN",
+    "reason": "Stopped at SCAN-04 before detector integration."
+  },
+  {
+    "control_id": "CTRL-E6-MISSING-BINARY-REGISTRY",
+    "group": "E6-ENTRY-RECONCILIATION",
+    "source": "Erratum6 E6-4",
+    "status": "NOT_RUN",
+    "reason": "Full registry/detector integration stopped at SCAN-04; artificial projection check only.",
+    "component_check": {
+      "status": "RED_AS_EXPECTED",
+      "exit_code": 1,
+      "evidence": "a0-evidence/part3/erratum6/missing-entry.log",
+      "test_nodeid": "tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.binary_record]"
     }
   }
 ]

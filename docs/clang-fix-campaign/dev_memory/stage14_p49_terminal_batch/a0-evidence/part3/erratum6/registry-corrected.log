@@ -1,0 +1,17 @@
+ARTIFICIAL_ENTRY_PROJECTION_NORMAL=GREEN pairs=4
+ARTIFICIAL_DROP_ENTRY_BINARY_RECORD=RED_AS_EXPECTED ENTRY_THREE_WAY: expected=[('entry.binary_record', '二进制记录器'), ('entry.doctest_extract', 'doctest 提取器'), ('entry.interpreter_line', '解释器行兜底'), ('entry.name_backstop', '名字命中兜底')] registry=[('entry.doctest_extract', 'doctest 提取器'), ('entry.interpreter_line', '解释器行兜底'), ('entry.name_backstop', '名字命中兜底')] controls=[('entry.binary_record', '二进制记录器'), ('entry.doctest_extract', 'doctest 提取器'), ('entry.interpreter_line', '解释器行兜底'), ('entry.name_backstop', '名字命中兜底')]
+GITLINK -> resolve.dynamic_attr,resolve.import_redirect
+SYMLINK -> resolve.dynamic_attr,resolve.import_redirect
+IMPORTABLE_BINARY -> provider.unsupported
+PTH -> entry.name_backstop,resolve.dynamic_attr,resolve.import_redirect
+BINARY -> entry.binary_record
+PY_SOURCE -> consumer.C1,consumer.C2a,consumer.C2b,consumer.C3,consumer.C4,consumer.C5a,consumer.C5b,consumer.C5c,consumer.C5d,consumer.C5e,consumer.C6a,consumer.C6b,consumer.C6c,consumer.C6d,consumer.C8a,consumer.C8b,entry.name_backstop,provider.unsupported,resolve.dynamic_attr,resolve.import_redirect,scan.inline,scan.module,scan.proxy_callable,scan.reexport
+PACKAGING -> consumer.C7a,entry.interpreter_line,entry.name_backstop
+CI_CONFIG -> consumer.C7b,entry.interpreter_line,entry.name_backstop
+SHELL -> consumer.C7c,entry.interpreter_line,entry.name_backstop
+BUILD -> consumer.C7d,entry.interpreter_line,entry.name_backstop
+DOC -> entry.doctest_extract,entry.name_backstop
+OTHER_TEXT -> entry.interpreter_line,entry.name_backstop
+NAMESPACES=consumer,entry,ledger,provider,resolve,scan
+BRANCH_COUNTS={"consumer": 20, "entry": 4, "ledger": 1, "provider": 1, "resolve": 2, "scan": 4}
+E6_ENTRY_POSITIVE_NEAR_MISS_DETECTORS=NOT_RUN
