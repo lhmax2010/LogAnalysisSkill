@@ -1,0 +1,1545 @@
+{
+  "head": "43a6aa625f27da46daba190657bf62256080c68e",
+  "tree": "ca9331190e878af465e7968fe56e735585a5866e",
+  "authority_sha256": "b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0",
+  "enumerator_sha256": "fe77d291c127f811d8ae49a4e3721154a09071b9bdd3e50774c4fe9d774a9126",
+  "protected_marker_readers": [
+    "test_protected_marker_is_transparent_to_real_git_dirty_checks",
+    "test_pass_writes_verification_record_and_commits_before_build",
+    "test_marker_write_exception_propagates_before_db_write_and_leaves_clean_copy",
+    "test_db_write_exception_propagates_after_marker_and_preserves_protected_copy",
+    "_record",
+    "test_gerrit_submit_all_subprocess_paths_omit_timeout",
+    "test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning",
+    "test_release_verified_worktree_removes_protection",
+    "test_release_verified_worktree_reports_not_protected",
+    "test_mark_worktree_protected_writes_audit_marker_and_is_status_transparent",
+    "clean_repository_preserving_markers",
+    "release_worktree_protection",
+    "is_protected",
+    "_exclude_private_files"
+  ],
+  "functions": [
+    {
+      "reader": "test_protected_marker_is_transparent_to_real_git_dirty_checks",
+      "file": "tests/integration/test_build_verify_real_git.py",
+      "qualname": "test_protected_marker_is_transparent_to_real_git_dirty_checks",
+      "lineno": 360,
+      "end_lineno": 372,
+      "arguments": "tmp_path: Path",
+      "source": "def test_protected_marker_is_transparent_to_real_git_dirty_checks(tmp_path: Path) -> None:\n    repo, base_commit = make_repo(\n        tmp_path,\n        {\"src/main.c\": \"int main(void) { return 0; }\\n\"},\n    )\n    handle = create_worktree(str(repo), base_commit, str(tmp_path / \"workspaces\"), 1)\n\n    mark_worktree_protected(handle, verification_id=\"verify-1\", failure_key=\"failure\")\n    copy = Path(handle.path)\n\n    assert (copy / PROTECTED_FILENAME).is_file()\n    assert git_stdout([\"status\", \"--porcelain\"], copy) == \"\"\n    assert git([\"diff\", \"--quiet\", \"HEAD\", \"--\"], copy, check=False).returncode == 0",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 370,
+          "col_offset": 19,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "test_pass_writes_verification_record_and_commits_before_build",
+      "file": "tests/unit/test_tizen_build_verify.py",
+      "qualname": "test_pass_writes_verification_record_and_commits_before_build",
+      "lineno": 208,
+      "end_lineno": 236,
+      "arguments": "tmp_path: Path",
+      "source": "def test_pass_writes_verification_record_and_commits_before_build(tmp_path: Path) -> None:\n    options = _options(tmp_path)\n    runner = GbsRunner(returncode=0, stdout=\"PASS\\n\")\n\n    result = build_verify(options, subprocess_runner=runner)\n\n    assert result.result == \"PASS\"\n    assert result.actual_changed_paths == [\"src/main.c\"]\n    assert result.verification_id is not None\n    assert result.verified_commit_sha\n    assert result.verified_tree_sha\n    record = get_record(options.state_db, result.verification_id)\n    assert record is not None\n    assert record.verified_commit_sha == result.verified_commit_sha\n    assert record.verified_tree_sha == result.verified_tree_sha\n    assert record.project == \"platform/test/demo\"\n    assert record.command_line == f\"gbs -c {options.gbs_conf} build -A armv7l --include-all\"\n    assert get_latest_status(options.state_db, record.failure_key) == \"GERRIT_READY\"\n    assert runner.events.index(\"commit\") < runner.events.index(\"gbs\")\n    assert Path(result.build_log or \"\").is_file()\n    assert (options.output_dir / \"audit\" / \"baseline_evidence.json\").is_file()\n    assert result.worktree_path is not None\n    assert (Path(result.worktree_path) / PROTECTED_FILENAME).is_file()\n    assert _git([\"status\", \"--porcelain\"], Path(result.worktree_path)) == \"\"\n    result_json = tmp_path / \"result.json\"\n    build_verify_to_json(result, result_json)\n    assert json.loads(result_json.read_text(encoding=\"utf-8\"))[\"actual_changed_paths\"] == [\n        \"src/main.c\"\n    ]",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 230,
+          "col_offset": 41,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "test_marker_write_exception_propagates_before_db_write_and_leaves_clean_copy",
+      "file": "tests/unit/test_tizen_build_verify.py",
+      "qualname": "test_marker_write_exception_propagates_before_db_write_and_leaves_clean_copy",
+      "lineno": 619,
+      "end_lineno": 637,
+      "arguments": "tmp_path: Path, monkeypatch: pytest.MonkeyPatch",
+      "source": "def test_marker_write_exception_propagates_before_db_write_and_leaves_clean_copy(\n    tmp_path: Path,\n    monkeypatch: pytest.MonkeyPatch,\n) -> None:\n    options = _options(tmp_path)\n\n    def fail_mark(*_args: object, **_kwargs: object) -> None:\n        raise RuntimeError(\"marker write failed\")\n\n    monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"mark_worktree_protected\", fail_mark)\n\n    with pytest.raises(RuntimeError, match=\"marker write failed\"):\n        build_verify(options, subprocess_runner=GbsRunner(returncode=0))\n\n    worktree = _worktree_path(options)\n    assert worktree.is_dir()\n    assert not (worktree / PROTECTED_FILENAME).exists()\n    assert _git([\"status\", \"--porcelain\"], worktree) == \"\"\n    assert get_latest_status(options.state_db, _failure_key(options)) is None",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 635,
+          "col_offset": 27,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "test_db_write_exception_propagates_after_marker_and_preserves_protected_copy",
+      "file": "tests/unit/test_tizen_build_verify.py",
+      "qualname": "test_db_write_exception_propagates_after_marker_and_preserves_protected_copy",
+      "lineno": 640,
+      "end_lineno": 658,
+      "arguments": "tmp_path: Path, monkeypatch: pytest.MonkeyPatch",
+      "source": "def test_db_write_exception_propagates_after_marker_and_preserves_protected_copy(\n    tmp_path: Path,\n    monkeypatch: pytest.MonkeyPatch,\n) -> None:\n    options = _options(tmp_path)\n\n    def fail_write(*_args: object, **_kwargs: object) -> str:\n        raise RuntimeError(\"db write failed\")\n\n    monkeypatch.setattr(_BUILD_VERIFY_MODULE, \"write_pass_record\", fail_write)\n\n    with pytest.raises(RuntimeError, match=\"db write failed\"):\n        build_verify(options, subprocess_runner=GbsRunner(returncode=0))\n\n    worktree = _worktree_path(options)\n    assert worktree.is_dir()\n    assert (worktree / PROTECTED_FILENAME).is_file()\n    assert _git([\"status\", \"--porcelain\"], worktree) == \"\"\n    assert get_latest_status(options.state_db, _failure_key(options)) is None",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 656,
+          "col_offset": 23,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "_record",
+      "file": "tests/unit/test_tizen_gerrit_submit.py",
+      "qualname": "_record",
+      "lineno": 129,
+      "end_lineno": 166,
+      "arguments": "tmp_path: Path",
+      "source": "def _record(tmp_path: Path) -> tuple[StateDatabase, VerificationRecord, str]:\n    repo, base_commit, verified_commit, verified_tree = _repo(tmp_path)\n    db = StateDatabase(tmp_path / \"state.sqlite3\")\n    failure_key = build_failure_key(\n        ci_system=\"quickbuild\",\n        build_id=\"1095003\",\n        project=\"platform/test/demo\",\n        branch=\"tizen\",\n        arch=\"standard-aarch64\",\n        spec_name=\"demo\",\n        base_commit=base_commit,\n    )\n    record = VerificationRecord(\n        verification_id=\"verify-1\",\n        result=\"PASS\",\n        timestamp=\"2026-07-08T00:00:00+00:00\",\n        failure_key=failure_key,\n        base_commit=base_commit,\n        verified_commit_sha=verified_commit,\n        verified_tree_sha=verified_tree,\n        canonical_diff_sha256=\"a\" * 64,\n        patch_sha256=\"b\" * 64,\n        edit_spec_sha256=\"c\" * 64,\n        project=\"platform/test/demo\",\n        branch=\"tizen\",\n        spec_name=\"demo\",\n        arch=\"standard-aarch64\",\n        gbs_conf_sha256=\"d\" * 64,\n        build_log_sha256=\"e\" * 64,\n        worktree_path=str(repo),\n        command_line=\"gbs -c conf build -A aarch64 --include-all\",\n    )\n    write_pass_record(db, record)\n    (repo / PROTECTED_FILENAME).write_text(\n        json.dumps({\"verification_id\": record.verification_id}),\n        encoding=\"utf-8\",\n    )\n    return db, record, base_commit",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 162,
+          "col_offset": 12,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "test_gerrit_submit_all_subprocess_paths_omit_timeout",
+      "file": "tests/unit/test_tizen_gerrit_submit.py",
+      "qualname": "test_gerrit_submit_all_subprocess_paths_omit_timeout",
+      "lineno": 223,
+      "end_lineno": 235,
+      "arguments": "tmp_path: Path",
+      "source": "def test_gerrit_submit_all_subprocess_paths_omit_timeout(tmp_path: Path) -> None:\n    db, record, base_commit = _record(tmp_path)\n    runner = SubmitRunner(target_head=base_commit)\n\n    result = gerrit_submit(_options(db, record.verification_id), subprocess_runner=runner)\n\n    assert result.action == \"dry_run\"\n    assert len(runner.calls) == 5\n    assert any(command[:2] == [\"git\", \"ls-remote\"] for command, _kwargs in runner.calls)\n    assert any(command[:2] == [\"git\", \"-C\"] for command, _kwargs in runner.calls)\n    assert all(\"timeout\" not in kwargs for _command, kwargs in runner.calls)\n    assert all(\"push\" not in command for command, _kwargs in runner.calls)\n    assert (Path(record.worktree_path) / PROTECTED_FILENAME).is_file()",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 235,
+          "col_offset": 41,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning",
+      "file": "tests/unit/test_tizen_gerrit_submit.py",
+      "qualname": "test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning",
+      "lineno": 385,
+      "end_lineno": 399,
+      "arguments": "tmp_path: Path",
+      "source": "def test_gerrit_submit_converts_ls_remote_timeout_to_unverified_warning(tmp_path: Path) -> None:\n    db, record, _base_commit = _record(tmp_path)\n    timeout = subprocess.TimeoutExpired([\"git\", \"ls-remote\"], 7)\n\n    result = gerrit_submit(\n        _options(db, record.verification_id),\n        subprocess_runner=SubmitRunner(\n            target_head=None,\n            ls_remote_exception=timeout,\n        ),\n    )\n\n    assert result.action == \"dry_run_unverified_remote\"\n    assert f\"target_head_unknown:{timeout}\" in result.warnings\n    assert (Path(record.worktree_path) / PROTECTED_FILENAME).is_file()",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 399,
+          "col_offset": 41,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "test_release_verified_worktree_removes_protection",
+      "file": "tests/unit/test_tizen_gerrit_submit.py",
+      "qualname": "test_release_verified_worktree_removes_protection",
+      "lineno": 497,
+      "end_lineno": 505,
+      "arguments": "tmp_path: Path",
+      "source": "def test_release_verified_worktree_removes_protection(tmp_path: Path) -> None:\n    db, record, _base_commit = _record(tmp_path)\n\n    result = release_verified_worktree(db, record.verification_id)\n\n    assert result.action == \"released\"\n    assert result.released is True\n    assert not (Path(record.worktree_path) / PROTECTED_FILENAME).exists()\n    assert exit_code_for_release(result) == 0",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 504,
+          "col_offset": 45,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "test_release_verified_worktree_reports_not_protected",
+      "file": "tests/unit/test_tizen_gerrit_submit.py",
+      "qualname": "test_release_verified_worktree_reports_not_protected",
+      "lineno": 520,
+      "end_lineno": 531,
+      "arguments": "tmp_path: Path",
+      "source": "def test_release_verified_worktree_reports_not_protected(tmp_path: Path) -> None:\n    db, record, _base_commit = _record(tmp_path)\n    marker = Path(record.worktree_path) / PROTECTED_FILENAME\n    marker.unlink()\n\n    result = release_verified_worktree(db, record.verification_id)\n\n    assert result.action == \"not_protected\"\n    assert result.released is False\n    assert result.worktree_path == record.worktree_path\n    assert exit_code_for_release(result) == 0\n    assert not marker.exists()",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 522,
+          "col_offset": 42,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "test_mark_worktree_protected_writes_audit_marker_and_is_status_transparent",
+      "file": "tests/unit/test_verify_workspace.py",
+      "qualname": "test_mark_worktree_protected_writes_audit_marker_and_is_status_transparent",
+      "lineno": 167,
+      "end_lineno": 187,
+      "arguments": "tmp_path: Path",
+      "source": "def test_mark_worktree_protected_writes_audit_marker_and_is_status_transparent(\n    tmp_path: Path,\n) -> None:\n    repo, head = _repo(tmp_path)\n    handle = create_worktree(str(repo), head, str(tmp_path / \"workspaces\"), 7)\n\n    mark_worktree_protected(\n        handle,\n        verification_id=\"verify-1\",\n        failure_key=\"quickbuild/1/project/branch/arch/pkg/base\",\n    )\n\n    protected_path = Path(handle.path) / PROTECTED_FILENAME\n    assert is_protected(handle.path)\n    protected = json.loads(protected_path.read_text(encoding=\"utf-8\"))\n    assert protected[\"verification_id\"] == \"verify-1\"\n    assert protected[\"failure_key\"] == \"quickbuild/1/project/branch/arch/pkg/base\"\n    assert _git([\"status\", \"--porcelain\"], Path(handle.path)).stdout == \"\"\n    assert _git([\"ls-files\", \"--others\", \"--exclude-standard\"], Path(handle.path)).stdout == \"\"\n\n    cleanup_worktree(handle)",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 179,
+          "col_offset": 41,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "clean_repository_preserving_markers",
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "qualname": "clean_repository_preserving_markers",
+      "lineno": 55,
+      "end_lineno": 69,
+      "arguments": "worktree_path: Path",
+      "source": "def clean_repository_preserving_markers(worktree_path: Path) -> None:\n    \"\"\"Clean the disposable repository while retaining both authority markers.\"\"\"\n\n    _run_git(\n        [\n            \"-C\",\n            str(worktree_path),\n            \"clean\",\n            \"-ffdx\",\n            \"-e\",\n            MARKER_FILENAME,\n            \"-e\",\n            PROTECTED_FILENAME,\n        ]\n    )",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 67,
+          "col_offset": 12,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "release_worktree_protection",
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "qualname": "release_worktree_protection",
+      "lineno": 130,
+      "end_lineno": 137,
+      "arguments": "worktree_path: str",
+      "source": "def release_worktree_protection(worktree_path: str) -> bool:\n    \"\"\"Remove a protected-worktree marker when a human confirms it is no longer needed.\"\"\"\n\n    path = Path(worktree_path).resolve() / PROTECTED_FILENAME\n    if not path.exists():\n        return False\n    path.unlink()\n    return True",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 133,
+          "col_offset": 43,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "is_protected",
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "qualname": "is_protected",
+      "lineno": 140,
+      "end_lineno": 143,
+      "arguments": "worktree_path: str | Path",
+      "source": "def is_protected(worktree_path: str | Path) -> bool:\n    \"\"\"Return whether a disposable worktree is protected from automatic cleanup.\"\"\"\n\n    return (Path(worktree_path) / PROTECTED_FILENAME).is_file()",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 143,
+          "col_offset": 34,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    },
+    {
+      "reader": "_exclude_private_files",
+      "file": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "qualname": "_exclude_private_files",
+      "lineno": 209,
+      "end_lineno": 230,
+      "arguments": "worktree_path: Path",
+      "source": "def _exclude_private_files(worktree_path: Path) -> None:\n    result = subprocess.run(\n        [\"git\", \"-C\", str(worktree_path), \"rev-parse\", \"--git-path\", \"info/exclude\"],\n        check=True,\n        text=True,\n        capture_output=True,\n    )\n    exclude_path = Path(result.stdout.strip())\n    if not exclude_path.is_absolute():\n        exclude_path = worktree_path / exclude_path\n    exclude_path.parent.mkdir(parents=True, exist_ok=True)\n    current = exclude_path.read_text(encoding=\"utf-8\") if exclude_path.exists() else \"\"\n    lines = set(current.splitlines())\n    missing = [\n        filename for filename in (MARKER_FILENAME, PROTECTED_FILENAME) if filename not in lines\n    ]\n    if missing:\n        with exclude_path.open(\"a\", encoding=\"utf-8\") as handle:\n            if current and not current.endswith(\"\\n\"):\n                handle.write(\"\\n\")\n            for filename in missing:\n                handle.write(f\"{filename}\\n\")",
+      "references": [
+        {
+          "kind": "Name",
+          "lineno": 223,
+          "col_offset": 51,
+          "source": "PROTECTED_FILENAME"
+        }
+      ],
+      "context": "."
+    }
+  ],
+  "scanned": [
+    {
+      "path": "docs/clang-fix-campaign/tools/branch_inventory.py",
+      "sha256": "ea9bef87e7466a51ecba1a4aaab018d3c53b53e3054eb20748c8823aae601453",
+      "readers": 0
+    },
+    {
+      "path": "docs/clang-fix-campaign/tools/check_design_doc.py",
+      "sha256": "66e797e062cddfd02cbdb9c1e35c73e0c83edd10dedb337b51da0c5fd3d67b72",
+      "readers": 0
+    },
+    {
+      "path": "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+      "sha256": "58ce6dd3175323f6e250d7797ce438ab9a725fd12e2cf1bbbef84f84c1b0a957",
+      "readers": 0
+    },
+    {
+      "path": "docs/clang-fix-campaign/tools/symbol_audit.py",
+      "sha256": "8ebb905f0c12f6327ef7f7cd7f746afb3673e1017aa1b06b2ffc6211f860463a",
+      "readers": 0
+    },
+    {
+      "path": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+      "sha256": "8f643af6359740ad431dae32308189abebaaa851cc580a309f05ce2511cb4d40",
+      "readers": 0
+    },
+    {
+      "path": "integrations/compiling_agent/log_analysis.py",
+      "sha256": "ed9be7e88a8c5f4f34ecbf8d5a9a3776e46fcbbae712272e2b5a606376a156ec",
+      "readers": 0
+    },
+    {
+      "path": "tests/e2e/test_build_workflow_e2e.py",
+      "sha256": "a48c8b821f28188801b91ffa72b6bcfe3bec11fbc5cfd9e7afafb45634e73160",
+      "readers": 0
+    },
+    {
+      "path": "tests/e2e/test_m8_wrapper_e2e.py",
+      "sha256": "59e3bfc26f1bde653f3d27a803d5600f1c5a404962f5d4411a79d59a17210c28",
+      "readers": 0
+    },
+    {
+      "path": "tests/functional/test_evidence_fixtures.py",
+      "sha256": "e30076b486da248072aa154cfed137ec56ad6c8fead5cac3388c376176818c65",
+      "readers": 0
+    },
+    {
+      "path": "tests/functional/test_full_match_fixtures.py",
+      "sha256": "0184b8739db6349bfdf048fb8e530eb9dbb19376d8fa7fe82aaa01700652fe4d",
+      "readers": 0
+    },
+    {
+      "path": "tests/functional/test_quick_filter_fixtures.py",
+      "sha256": "3f2307b6665d56289a65e3fb4693457d9889778e19d95b197c4e6151bf695402",
+      "readers": 0
+    },
+    {
+      "path": "tests/functional/test_rank_fixtures.py",
+      "sha256": "822a7729d602d03d40c729c04e0d6c26b8a60e522c825963f4a2296d582fe09f",
+      "readers": 0
+    },
+    {
+      "path": "tests/functional/test_scan_fixtures.py",
+      "sha256": "e6dfd0e9f69b3a5edd4896e574e31de72df1adf59af7b243912bee3a9f84a363",
+      "readers": 0
+    },
+    {
+      "path": "tests/functional/test_scan_realistic_perf.py",
+      "sha256": "2f3f0aefaaf2f261478c4c838be150cdc72b8ae19cc4cc16f8e3ef83c3620535",
+      "readers": 0
+    },
+    {
+      "path": "tests/functional/test_spec_fixtures.py",
+      "sha256": "26fe0a6754f334e9f8d390e0634b2b6c63f556bf21e1efe58efbffdacf6282a7",
+      "readers": 0
+    },
+    {
+      "path": "tests/integration/test_build_verify_real_git.py",
+      "sha256": "d85c2ac0ad64033ea4594c4f96c106586514fe8990a94b65eb76cabab8633a1c",
+      "readers": 1
+    },
+    {
+      "path": "tests/integration/test_gerrit_submit_real_git.py",
+      "sha256": "95b8e948821c6fd56cd8b84e0e5b07adbca0936a78934ea2d442e334e15887d6",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/suggesters/test_bw_m3_suggesters.py",
+      "sha256": "98156db1d90ef67a8f4dbcfd77fec2e27f0018ddf4c2df481f0560d086f38052",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/suggesters/test_depsolve.py",
+      "sha256": "a9b5a1471fc52e80071ad7d87cd433f0fead692a236994435882e954ee1ea98a",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_analyze_wrapper.py",
+      "sha256": "ba6d7c3c54a252768ca905d0baac0b78dd1097a1d73e070817afb6805b6ee946",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_build_runner.py",
+      "sha256": "ca8d8803e8b5bd33af5938f0e982a8888ff43bada78ba07eb5c4a2ec25b56913",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_build_verify_legacy_wiring.py",
+      "sha256": "d8e4d028f9ff87dfa087f3596ba1584ee8d6fe64942e66c40354272842b41ae8",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_campaign_reconcile.py",
+      "sha256": "349d48424a82c4c5253eb6e177b09cbd9ac024a419e769d2217e4b50e18a3467",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_campaign_repair_step.py",
+      "sha256": "a7ba6a5809f439bafd14645438f7398387019a3a5620b63316e26d92e09c9f73",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_campaign_state.py",
+      "sha256": "a2f1c760d670be193834fd70ec03794d042eaa299c0106ea1fc008834fe99fca",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_ci_triage.py",
+      "sha256": "d50ac414926edf0ab95fb02446020292b60422e3039d064815de9d035db3a5b9",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_ci_triage_entrypoints.py",
+      "sha256": "72d5786f15e5568a0db02de259bf3caaec767d8c6346c8a2970cf104681feff2",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_ci_triage_state.py",
+      "sha256": "e758865dbd36ac7fde4928f9383f90ae46c78487a941f98583d4aada7d5bfb32",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_command_parser.py",
+      "sha256": "79e81c0f01830082a93cacd0373c1ecc9a4237dc83211a8217c65ca2584fa880",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_convergence.py",
+      "sha256": "3ddc8fbb5f2bb2c5e29d8841528d45c706dfa3f16591bd9ee11ca3d668d548bc",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_ctags_loader.py",
+      "sha256": "058d3bdbfd13596f3e97107f5750a6083359cd8990fb367b36cc7b10afe64435",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_design_drift_ledger.py",
+      "sha256": "fccc4081315f933d55b1358f3177e068fd94c913ac3f363f6d3a59bc419db481",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_error_clusters.py",
+      "sha256": "9833e087b4245c0f507647d2b78bf898c8fcc23ee7613216e83aa959a995aaaa",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_evidence_base.py",
+      "sha256": "6717d1a526e44d832f0b2d52a21d2050633fa434c3c4fe01d198fbc97a083d58",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_evidence_collectors.py",
+      "sha256": "05780165515ada82d49c52c0069072c4443a61f45933cbe880358a459a0cc872",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_failure_classify.py",
+      "sha256": "60223b2f8c4e5dccf6f564e899e1c01cb0e5f08f28bb279e3b7599aa7626df24",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_fix_all_gold_validation.py",
+      "sha256": "b03e12b2f9e6f14bec2abad242c74588893c1b64ba64a68d50b606504861417a",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_full_match.py",
+      "sha256": "dcc853f6356b014fc1204203bd3434e4f32012f6d22a80153532eba3cc19a86a",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_gerrit_fetch.py",
+      "sha256": "03133096a541962e9744d0dc83bceeb1185d429573ac511446fd1ba2fc56c75b",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_package_metadata.py",
+      "sha256": "b3da0ba68484cf1f48cf98088627580268f8902376c7b5ee112a40fe203a1f58",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_packet_assembler.py",
+      "sha256": "4cdefa685dddaa6fff9933dd6d249a671e75c016e58f87dc37c3c5cc56f2f22c",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_patch_formatter.py",
+      "sha256": "401569f1393e9c3e9141d16e998201cf8e028449140e795a43bba7a084caed1e",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_patch_suggest.py",
+      "sha256": "129db6a67d106441d55f5f577f1126b8455b4a79bcb58c390d0d374957326598",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_perf_report.py",
+      "sha256": "437e86dddd8a375b5f71deb9e3571c066eb69e0952f661a82ffcba1e57ccd046",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_quick_filter.py",
+      "sha256": "4a074b07a7c084bbce08455da3bd6055cabba7ada642388669e2962d89ee7334",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_rank_causes.py",
+      "sha256": "379cfa32cf384384e18f5d03f29cc86db832bc9805fafae51609d7e5263814da",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_scan_and_extract.py",
+      "sha256": "9d5c7200fb537d7663212a84b55d6f65ebb1530f0ae88dd3027b169819591419",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_semantic_classifier.py",
+      "sha256": "f7c002271c69f44c78ef1bdcbe934f709084ab7d142337b24de81882bd1ea8d2",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_source_candidate_observation.py",
+      "sha256": "81d5fc82c03bb5ea308e3a7c60ee645ef3440c6642dce569e2d04b9dcf7fe16c",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_source_candidates.py",
+      "sha256": "455ca8276ac8b7ea7dc05412da18b062e1cc0b8ff00b6ddbb5c3033aca090918",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_source_to_object.py",
+      "sha256": "5933bc268c7c22db2574b33a2d3dcac8dd0302f3d400a3b7259ea4268ec22fd8",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_spec_minimal.py",
+      "sha256": "87eccd1aa50f05904159e62660f148b6ddf1a93ce6161a99446308dc720d07da",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_tizen_build_verify.py",
+      "sha256": "6442ffe2b81443bc21c3a103e169e0f0918f30d578a6e077d4d5a356bbc83546",
+      "readers": 3
+    },
+    {
+      "path": "tests/unit/test_tizen_gerrit_submit.py",
+      "sha256": "e4768e3048c45a9153fef421d53a1095534b22f3133fe87ea34fb885c6a54459",
+      "readers": 5
+    },
+    {
+      "path": "tests/unit/test_tizen_triage_report.py",
+      "sha256": "a6eb56ccaa7888f7b0442b516675e37f17273ec734a7cf46b34e330577bd4a4f",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_tracing_logger.py",
+      "sha256": "62f274e47c0bf7f408953ca088ce00ef9e5b4a1456fe35e978642dacebf5333b",
+      "readers": 0
+    },
+    {
+      "path": "tests/unit/test_verify_workspace.py",
+      "sha256": "c0083710d74ed41bcd34ce4b686e269aca6903feb18a0c684bb01e5f7004f825",
+      "readers": 1
+    },
+    {
+      "path": "tests/unit/test_workflow.py",
+      "sha256": "7c4ff26d64a55345732a2670c3e632dc83ebc3208a7adf9f34c6afe1d555af65",
+      "readers": 0
+    },
+    {
+      "path": "tizen-build-verify/scripts/tizen_build_verify/__init__.py",
+      "sha256": "7dbf2219c9baeaf78c5306fe3408f83bf3609395d5e002a4683a7ab99e3ea0a8",
+      "readers": 0
+    },
+    {
+      "path": "tizen-build-verify/scripts/tizen_build_verify/build_verify.py",
+      "sha256": "5a6ab48b9bafd01e464513b6450781fcffdcaaac3b39da911c45923e93093887",
+      "readers": 0
+    },
+    {
+      "path": "tizen-build-verify/scripts/tizen_build_verify/edit_spec_guard.py",
+      "sha256": "212779a84421b619ccac576c688a94370e593aef6656cf0eca4b2be57915526f",
+      "readers": 0
+    },
+    {
+      "path": "tizen-build-verify/scripts/tizen_build_verify/workspace.py",
+      "sha256": "c0e9aeb84b5068885b6be0bd6f2f6a936998d87b172d550331c2319bda8cb330",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/__init__.py",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/classify.py",
+      "sha256": "585cfc427519331c7f4f995ba1bc811aada635107cdb12281e53f0e31168a1ab",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/env.py",
+      "sha256": "22e9511833423c44c0afcc731fc6f55bd4c3e8e5b090a315627832c86e43c88b",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/quickbuild_http.py",
+      "sha256": "02d1b8754d119b8c50582fd3179394babe83254c18e83810b491a1b0df348a02",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/state/__init__.py",
+      "sha256": "015759a34f51d3223146bfff559ad43716d7a7ee30543f139c4e17f6c52bc8b1",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py",
+      "sha256": "afc049e204135017c9f457fea9c7237c7e3fded8f87a60885824510390f21fde",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py",
+      "sha256": "0cc7b5d11641074efbf60fc9da9827a03c3ed9d607bd842509c7fd5a8d4f8e86",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py",
+      "sha256": "84778014c1a2912418a660f0bfdd567215c06e38ef6dbbc833fb62b13d691fc1",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/types.py",
+      "sha256": "e3f495d405fc9a3ac6dde047f9b95a958a2ecbe55b68ca8ad520ed4d27d482ee",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-shared/scripts/tizen_ci_shared/workspace/__init__.py",
+      "sha256": "b34956e7f4dba2c29c93b870601dcef31605dcf9e96b615caa393e16668f05a6",
+      "readers": 4
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/__init__.py",
+      "sha256": "6edab91d3e383ff216ad6b5880ce483f44805dab66a793081f41013621e3acf7",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/__main__.py",
+      "sha256": "ab953621967867f6b069f07bbb7fff8f11f0284b30fadd618e2b18ce04eaaede",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/batch_cli.py",
+      "sha256": "f112a0e30eb317048632b76ea39dbcc8568cc59da2a6a5f35598b2cb1c4e35a9",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "sha256": "fc167c7ae10818097250c92973fe14ae279319aecb645f322951c40f3ebeb8c7",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/campaign_state.py",
+      "sha256": "305b9c66d4c43fad2cd083abf64b7d028c46bd8cd368ef5f633a1018c8984415",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/cli.py",
+      "sha256": "1eb0e074e99b00ed4cf35e479242bc7ffe00519a3cd6c9410d709494985270ee",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+      "sha256": "d2943904012b8f862caa0d3fca3637f0a92c80f3c34ee75cd408b4ec9e1c638e",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/gerrit.py",
+      "sha256": "f38b12edaf3ad04180f4eb9080e0db3e072dcf9c409fd63738d3b15ab481de45",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "sha256": "b2f65d64706bc78e3a04a59f784d05acca171f37d408c7281d6be658648b1cb8",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/previous_evidence.py",
+      "sha256": "d1bc12d9673a4fc53acea7d710dc8cf1c175c0baa7716ccbbbd310e3fedebcfc",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+      "sha256": "86dce8c04f17a7ba05239f46395e2a562bc996d57110063dc783438b8a98b1bc",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/quickbuild_log.py",
+      "sha256": "e892326508883371fe80d76bb7aa60ff60fdc81756987b3edbdcfde917cc47b4",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/report.py",
+      "sha256": "a00b371f373d3ecc1e8e9311f529fd4244b06907541c149b74214c81aa392873",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/runner.py",
+      "sha256": "c376627d1b3e60edcc7b75aedd7692d6504dbe1de5ba391d2feca0e7521543b0",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/sources.py",
+      "sha256": "b36774e8b0c0bc5e2d43193a1958da6e072d80a9c55b0563c32f4b8513e7af1a",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+      "sha256": "54f492be22c87a9e58be94535a1b22ea407eae30ffe4d49fd62932783081a18b",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      "sha256": "f0c17516dfe3633d0c4c4b87eeb894fea1bb13ecb148a5dc05f15605b4f0309a",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/convergence.py",
+      "sha256": "00a8728788fc77a9d31c6933c963c9f5052e89170a8593ca0b05db8c6d1e212f",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py",
+      "sha256": "b325839982d65dcfe33008037949ae12f857a0d6610aa23dbdf0bca78225b761",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+      "sha256": "f0f8e4d6e1769f0eccd667a15bcce4408f4585fab0f42688439b2e460753fabb",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+      "sha256": "187fb013ef922cb2d49cc131dc6b23ce05bacda4b35f552fdc16e855c03ba246",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/verify/workspace.py",
+      "sha256": "10067d2237ca07b8b0e1fa72ac6db8361d0d41725336a68026b7b305176838a5",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/run_ci_triage.py",
+      "sha256": "caac4e0a71ef85d72b8541ffb12552aa2eef8caacb08b772959e09ab8823f1aa",
+      "readers": 0
+    },
+    {
+      "path": "tizen-ci-triage/scripts/run_ci_triage_batch.py",
+      "sha256": "fc580deca953fd9ddbc58a76a5bb216f722018bcdceeb282815971d9e4e2efc3",
+      "readers": 0
+    },
+    {
+      "path": "tizen-convergence-judge/scripts/tizen_convergence_judge/__init__.py",
+      "sha256": "1927c862230853ca845e213037fe21aa1bf26bff7eed785e2b6e0fcc3d144595",
+      "readers": 0
+    },
+    {
+      "path": "tizen-convergence-judge/scripts/tizen_convergence_judge/convergence.py",
+      "sha256": "a7e758ba9d629c70f497d6b9075e8387dfc4bdea3206b3f8009af522ca9c6e21",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/__init__.py",
+      "sha256": "252ede5e189475337b16d3b8793bcec1d7dc820621f3d76cc692383106ad4c10",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/__main__.py",
+      "sha256": "92380c6707db28f05680103583c374381a38c244e0626e9798f803f929b1f1d1",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py",
+      "sha256": "04b97f86ccda79dfe22f986cdb48c4bb03a062ba65632702d7cb74b16340879d",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/_common.py",
+      "sha256": "ad8d0219fd8daf9038f6ddd6dadc5742185de287d8d5e26d729f0738b26c8575",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/base.py",
+      "sha256": "ad0a2e5993f97b7d9a5899946cf2e77f9e922edbb80c4f9ce04f7c1ddd192ca0",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py",
+      "sha256": "d996c1f0ec95114c89257c56b7e9f6e25fe84e05c0b4a302f90cad473472bb34",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/depsolve.py",
+      "sha256": "a7dd8b5998ac667e9c0193fd4e935e028f8366dc41bb8417856ef17ac4577d62",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py",
+      "sha256": "24fc290eb398c8a7f48c7510cfba08c49c70464ff38cf240abe90c98298c5dd8",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py",
+      "sha256": "4d80dcd0c3396107ed53d83544b148a5dc02d3e4f14d792f731afe02dbc92b7b",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_undef.py",
+      "sha256": "d0c22675d1b9fef39ff639b74cad3d955984829c135e8e04a0aa3f0d1103fbd7",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/patch_failed.py",
+      "sha256": "4e22f5d8847552d45531dafbaae52e162c1ecf42d389b6aab9816ddaa50b15ca",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/registry.py",
+      "sha256": "aede377758acc3e55b0579050a01716eeac18517cd6f4219183cbf643291b3dd",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py",
+      "sha256": "7d2d9eef577e9fdb42f5d8c9b9e9757cc4234c9569b5d1310565a48251f2d84e",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "sha256": "45a191589e6a7f95826e419afc355dcbb369b58e22e3222ecac8a9ad5b5237ed",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build-workflow/scripts/run_workflow.py",
+      "sha256": "7448b76bf9fc2dac2144151f5c98ae207a642d848ae50ac3fab9e3bf24466bbf",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build/scripts/gbs_build_skill/__init__.py",
+      "sha256": "4ecfb549336c385e5688d8ad8e32ec9924bf4077df0221e860c90bc368a548e6",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build/scripts/gbs_build_skill/__main__.py",
+      "sha256": "3149bc41aeb9d7889a3952783809a1c7504ecfde97f983398e7e32fae777ddb4",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build/scripts/gbs_build_skill/runner.py",
+      "sha256": "a445b71685c9a1d0807a2f21b6817554b1e93c4e917194015d8f9ebb0a3de676",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-build/scripts/run_build.py",
+      "sha256": "f7e60bc9655dff0e9725efb3eccdcc7ccbb67c418e68f77474ede870647b40af",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py",
+      "sha256": "0241c202d38a64fe3ceb52a86865e74380df2bec12d23e3e8da85f5de82f6b0d",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/__main__.py",
+      "sha256": "9b6205e2f045b9a85890731784f2420ace241a670f74f40a8d7f397eb3adcd3e",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/__init__.py",
+      "sha256": "8fb76a502cf892302434bb91aece91d97b42a6eaf87f29617640a8af1f118074",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/command_parser.py",
+      "sha256": "88fefcdbff2bc9176439eee72deb9d4244275b9515da2a378bdd810b88ace1d0",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/ctags_loader.py",
+      "sha256": "a103f3897cc6235d5d43b44b047fa5ccf9634afbf8ae377b91f56f941e4f9fa1",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py",
+      "sha256": "2d09017041bdec4e98e1c9cb98d390972e0c550968c5e6fb4b195fcc36b31b0b",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/source_to_object.py",
+      "sha256": "f1eba0d02c288b399a24339e73c1d07d9018653c748f31343bda9a96ce61682a",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "sha256": "3dc6ac48ffe141a50d6e7610116424517ac4950a2b8ac2764c8194cc02e287cf",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/error_clusters.py",
+      "sha256": "8eaa6b774f1cd8b31915505fc25960b19729a3f6f581f38c5459bbf031c3ae7f",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py",
+      "sha256": "73334e7c2eb4824106f316afd3e4148afe6682a0c0d9645f8cb26808b4f16daa",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/_common.py",
+      "sha256": "5503d944e8cccddbf9d06e8358ccf15e5dc7ed4208a92c7d0ea0816bcb224a86",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py",
+      "sha256": "86b2dedd3e5b6992142b1afaff49aedab3d29c5ffbdbfbef66a0959264d3039f",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/compile.py",
+      "sha256": "16ba707fa4c5d9539e30ef9e6d4411c80e2f6d8513769a6fa71b3d4dd1ea7ece",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/deps.py",
+      "sha256": "a26d42d5aa932b9d17d8b34818ed271c7fc4a834c7ac3d536f77d45bea83dd2f",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/link.py",
+      "sha256": "6dd0670b4780a08e4c42d0512e6b7f432b45a12bd7295adbbe953ebe581474f6",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/router.py",
+      "sha256": "1e76306c497b78ad4fe72f6479293d6fe2ea424dda9704b8bb8733d1d58bc5d5",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/spec.py",
+      "sha256": "5b61e503791e401be407302ae5e2bfef466a56793204c3832d43ea03c77824d9",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py",
+      "sha256": "41437ebffe123983ab3e12b3312183a837dc8a516347b4cfcb5517d1947c2fc7",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py",
+      "sha256": "586f20b6febfaf34eb47033d0929e478883abf58712909aebb5c560f0d4180d9",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/quick_filter.py",
+      "sha256": "9cabe8db9837c9985b26b20777cb12f8c2700bd437d31df371558683d8167482",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/rank_causes.py",
+      "sha256": "fa46712c9889265fec889151f71944a0ed8e35a36a5e3a4b8f5e21e92c04eec8",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py",
+      "sha256": "a6aba9a7c5a94f88b5c2ec461d407f0b353e799c2c94b3d43a8822e5609ef22e",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidate_observation.py",
+      "sha256": "d39aab315475491b9e0732e321db60265df61c437d0ea1171c80821f3f4e34f0",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidates.py",
+      "sha256": "66487133504decb9bb55199c5954f9859e148810c2c4feb5d886248939810204",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/__init__.py",
+      "sha256": "97f5313a3840ca89e3e765a32a10a191e27e7ebc587a0621894ae580a136e6ad",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/spec_minimal.py",
+      "sha256": "3518c1bdffe9b13b6f42ec67a94b052515bafdeeb1d0d5d2e5f0f824fcf6668b",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py",
+      "sha256": "ec37ddfa94d845c107ba471ae486660a41f7a8afff7e33200a702427e4eae1f9",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py",
+      "sha256": "8b9865bb1d3bbdd7af9033ad84acd9006000e0f0e52fbf77d0a9a50e3975fd16",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/perf_report.py",
+      "sha256": "bee9f227454cc391de51b6770847468438044d79f398d5b90c805c1a672387cf",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-log-analysis/scripts/run_analyzer.py",
+      "sha256": "158f784a5ead2f1eae96188b7e513cdbaf62f9fa34c53e1f8a25999dea7842b8",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__init__.py",
+      "sha256": "b4103df70fc2dc2ade7258c01456c648a4a1a005fc24926d81a12323698f1c23",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__main__.py",
+      "sha256": "d47cc900fbdbbdba9ada1390a6dfa7f25da9f1a77b04bc57bf34f76dbac7bbe7",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py",
+      "sha256": "8a9ff32fbf26e3fa2ed2fc66b5e000a8d342bd1238954e178bd180dc17df85ab",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py",
+      "sha256": "cb536897979fc5d0eb6db681115e92f3a32a4411af754b3d710ad6a514423d61",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_ingest.py",
+      "sha256": "45a562f7e05dc41057651e061d3fc71c8f10a32612d4e7eae556d0742c5737ab",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_render.py",
+      "sha256": "12b69522f88a819e7a6de6a1d554ce1be9081b73686eca88770af751964a2fa6",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_resolver.py",
+      "sha256": "5aba0ec355a04829fbccd0f4dfdf9449d4ec49b64b54ff52e68ced7aa4d4c981",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_ingest.py",
+      "sha256": "661f3300160044f8de47db2e87e4c1f9b877223b9bc42a44b7b9f54e28a657a0",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_render.py",
+      "sha256": "136f9a5b5011a174fe454a138e61e17802ea5ff883b124b50be754b0a19212ef",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py",
+      "sha256": "f647c6d5fd91ad4e2ace1e1f837298280ded926872a0ffe0f0a42cad63afb3ac",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      "sha256": "11ce06e84736c66764227c3446f0f7ae95dba87b28b518f59b9e023d3875f349",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/ingest.py",
+      "sha256": "b6be849ebf5579eb2d9ec7dae4448607b628f235d832b36659c9137ea7e372e4",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_ingest.py",
+      "sha256": "406849635d30fc543614c2c9bc225cc2d62754798e908b2e920da175804636f4",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_render.py",
+      "sha256": "4fed03b5af05bcf87022c4b36123da40981a7c4f96a6ed8a698383be42c04881",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/render.py",
+      "sha256": "c0771feffffdf9e578d8a8be5f4a8dda1fc3640498b6520f000491d243011cb4",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/resolver.py",
+      "sha256": "93a49024b67075b3fc9fd053925705c87688cda2fc6c04b979cd75ea79c649d2",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/skeleton_suppression.py",
+      "sha256": "95850c65db905a024d935bb415714811338492fcb606616e0fb840a75cc0b3b4",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_ingest.py",
+      "sha256": "ce18b8471d64ac857f48101ec33a0fff7233d80a11866d3ac675654d1066d9c1",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_render.py",
+      "sha256": "a641597b16f5092facbc0cd84989f9ed737c53b7a9fe65df6a521e99033a66db",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_resolver.py",
+      "sha256": "6e615c6141a654f10d05d094436c0e712c9868a0bf8cdba25c53d32c0affd0ff",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gbs-patch-suggest/scripts/run_patch_suggest.py",
+      "sha256": "8221544b018d967d66d61d37e4df5bee320e5aa79254436ccaacb7ec32a3f9b6",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/__init__.py",
+      "sha256": "466fcb8a82d99d22da596b82917ddd52e3d2fd46e7c7b92fb6ca120d4cc02263",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch/gerrit.py",
+      "sha256": "5df43c509fffe76ecaa37914fb07db0e86056a81b98f849321e390a43fd5d82a",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gerrit-submit/scripts/tizen_gerrit_submit/__init__.py",
+      "sha256": "e617d5bd21bef479075b4cfabd80bcff8bd477e300d67a2ccae0ac81cadebd26",
+      "readers": 0
+    },
+    {
+      "path": "tizen-gerrit-submit/scripts/tizen_gerrit_submit/gerrit_submit.py",
+      "sha256": "ead701d0e943f395225729be5daef94f53912002d97534f2309cc264e037107f",
+      "readers": 0
+    },
+    {
+      "path": "tizen-qb-discover/scripts/tizen_qb_discover/__init__.py",
+      "sha256": "c40b6691f51532e53a97ad2f3ec31758ece03977a944065793eb80172949b2da",
+      "readers": 0
+    },
+    {
+      "path": "tizen-qb-discover/scripts/tizen_qb_discover/sources.py",
+      "sha256": "c5fd0c5b1d715aedee508bbd69211e73e05ca4183f13ff303924f9053c5a5830",
+      "readers": 0
+    },
+    {
+      "path": "tizen-triage-report/scripts/tizen_triage_report/__init__.py",
+      "sha256": "d528eef63397a69c1602ba4f78f46b361a4ea4bdb9bc7f24d860e99a149423e8",
+      "readers": 0
+    },
+    {
+      "path": "tizen-triage-report/scripts/tizen_triage_report/gbs_report.py",
+      "sha256": "29d2bd3dab809d9467dcaaee6943aee7bf8f72e26d69a0dd56307e226165d6f8",
+      "readers": 0
+    },
+    {
+      "path": "tizen-triage-report/scripts/tizen_triage_report/report.py",
+      "sha256": "a8138cb73ffa23cd58cb073dbc95d7add94db0866202a3a42d9eb3b1b158602e",
+      "readers": 0
+    }
+  ],
+  "excluded_non_live": [
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/__main__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/batch_cli.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/cli.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gbs_report.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/gerrit.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/orchestrator.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/quickbuild_log.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/report.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/runner.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/sources.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/db.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/keys.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/state/records.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/build_verify.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/convergence.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/edit_spec_guard.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/gerrit_submit.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/ci_triage/verify/workspace.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/run_ci_triage.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-ci-triage/scripts/run_ci_triage_batch.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/__main__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/_common.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/base.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/compile_error.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/depsolve.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/fallback.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_missing.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/linker_undef.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/patch_failed.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/registry.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/suggesters/spec_script.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/gbs_workflow/workflow.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build-workflow/scripts/run_workflow.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/__main__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build/scripts/gbs_build_skill/runner.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-build/scripts/run_build.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/__main__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/command_parser.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/ctags_loader.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/semantic_classifier.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/_utils/source_to_object.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/analyze.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/error_clusters.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/_common.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/base.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/compile.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/deps.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/link.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/router.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/evidence/spec.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/full_match.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/packet_assembler.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/quick_filter.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/rank_causes.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/scan_and_extract.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidate_observation.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/source_candidates.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tizen/spec_minimal.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/logger.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/gbs_analyzer/tracing/perf_report.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-log-analysis/scripts/run_analyzer.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__init__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/__main__.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/analyzer_runner.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cli.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_ingest.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_render.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/cluster_resolver.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_ingest.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_render.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/fix_all_resolver.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/formatter.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/ingest.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_ingest.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/multi_candidate_render.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/render.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/resolver.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/skeleton_suppression.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_ingest.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_render.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/gbs_patch_suggest/spec_toolchain_flag_resolver.py",
+      "context": "release-v1.4.0"
+    },
+    {
+      "path": "release-v1.4.0/tizen-gbs-patch-suggest/scripts/run_patch_suggest.py",
+      "context": "release-v1.4.0"
+    }
+  ]
+}

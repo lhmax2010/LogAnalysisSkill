@@ -1,5 +1,45 @@
 [
   {
+    "control_id": "CTRL-E11-READER-POSITIVE",
+    "group": "E11-2-DEDICATED-READERS",
+    "source": "v1.31-FROZEN appendix C E11-2",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_protected_marker_readers.py::test_e11_new_name_and_attribute_reader_listed",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/phase1/erratum11/reader-controls.log"
+  },
+  {
+    "control_id": "CTRL-E11-READER-NEAR-MISS",
+    "group": "E11-2-DEDICATED-READERS",
+    "source": "v1.31-FROZEN appendix C E11-2",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_protected_marker_readers.py::test_e11_comment_string_and_signature_near_miss",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/phase1/erratum11/reader-controls.log"
+  },
+  {
+    "control_id": "CTRL-E11-READER-NO-SILENT-EXCLUSION",
+    "group": "E11-2-DEDICATED-READERS",
+    "source": "v1.31-FROZEN appendix C E11-2",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_protected_marker_readers.py::test_e11_tests_and_writers_not_silently_excluded",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/phase1/erratum11/reader-controls.log"
+  },
+  {
+    "control_id": "CTRL-E11-READER-NESTED-ASYNC",
+    "group": "E11-2-DEDICATED-READERS",
+    "source": "v1.31-FROZEN appendix C E11-2",
+    "fixture_kind": "ARTIFICIAL_ONLY_NO_OBS",
+    "test_nodeid": "tests/unit/test_terminal_protected_marker_readers.py::test_e11_nested_function_body_and_async_are_scanned",
+    "status": "PASS",
+    "exit_code": 0,
+    "evidence": "a0-evidence/phase1/erratum11/reader-controls.log"
+  },
+  {
     "control_id": "CTRL-test_e10_two_lambdas_unique_and_collision_red",
     "group": "E10-3-CALLABLE-IDENTITY",
     "source": "v1.31-FROZEN appendix C E10-1/E10-2/E10-3",

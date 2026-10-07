@@ -1,0 +1,7 @@
+predicates_canonical=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6
+exemptions_canonical=4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+Traceback (most recent call last):
+  File "/tmp/p49-e11-integrity.py", line 43, in <module>
+    assert len(old) == 1301 and len(new) == 1305
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

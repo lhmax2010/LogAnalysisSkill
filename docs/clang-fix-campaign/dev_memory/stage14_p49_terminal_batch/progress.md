@@ -1,14 +1,16 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: A0_PART3_E10_CLOSED_STOPPED_SCAN09。更新日期: 2026-10-07。
+状态: E11_PHASE1_STOPPED_READER_INVOCATION_AND_REGRESSION。更新日期: 2026-10-07。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
-勘误10已核对原字节;DIFF-01..04、SCAN-01..08 CLOSED。第27节落实
-E10编号/名字形态/局部admission证据组件,全仓1300 passed/1 skipped/0 failed。
-四级候选前置全树反查发现SCAN-09(行级span跨binding重复);E9-5仍未做全量预检。
-§6改前实跑仍为PENDING_SEG3。
-本轮未运行任何 producer或真实双跑;既有两项产出不变,生产实现未开始。
+勘误11已核对原字节及SCAN-07;DIFF-01..04、SCAN-01..09 CLOSED。
+SCAN-09按E11-5以“被勘误11取代”关闭,不是修复旧静态发现规则。
+当前执行计划以第28节两阶段计划为准,取代与其冲突的旧A0交付映射和前置。
+专用枚举实跑live177个PY_SOURCE,得到14个函数(含10个测试文件函数)。
+PHASE1-01:读取方调用契约未闭合;PHASE1-02:全仓1290 passed/1 skipped/14 failed,
+14处均为旧静态工具RULES_HASH。证据和候选裁决见第28节。
+§6改前实跑仍为PENDING_SEG3;item5未运行,既有两项OBS不变,生产A/B未开始。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
 ## 0. 权威、输入与记录边界
@@ -2640,7 +2642,10 @@ python_entries=272 context_counts={'.': 736, 'release-v1.4.0': 110}
 | `e10-collision-negative.log` | 正常不同序号绿;人为同序号后`SEAL-7`红,exit1 |
 | `callable-id-scan.log` | 固定树5组旧冲突唯一化,匿名碰撞0、定位未决0,exit0 |
 
-### 27.3 SCAN-09 OPEN:候选span的同型问题已一次收齐
+### 27.3 SCAN-09 CLOSED:被勘误11取代(E11-5)
+
+2026-10-07关闭;原发现与证据保留如下。以下“停止/未完成”是第27节当时的状态,
+不再构成A/B前置。该机制未修复,也未通过完整发现门禁,是E11显式停用。
 
 正式报告:`R/stop-report.md`。F:1015-1021/1042-1045要求逐binding候选;
 F:1097-1103及1118要求行级五字段span不能跨ID重复。真实旧址
@@ -2713,3 +2718,115 @@ EXIT=0
   exemptions仍`4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945`。
 - 不改既有OBS、expected_diff旧值/quote/消息派生规则或生产源码;
   无关dirty/untracked保持原样。提交本轮产物并push后停止等SCAN-09裁决。
+
+## 28. 勘误11:两阶段计划、专用枚举与停止报告(2026-10-07)
+
+### 28.1 入库与计划替换
+
+证据目录 `R=a0-evidence/phase1/erratum11/`。开场重新读取本文件,
+`git pull --ff-only origin clang-fix-campaign` 输出 `Already up to date.`。
+输入已由用户替换在权威路径,本轮未改其任何字节。
+
+| 项 | 实测输出/状态 | 证据 |
+|---|---|---|
+| 旧版SHA | `37862f4acdc330caa1ebb563885037814256746ae87663e51a64685fe21ccc01` | `R/admission.log` |
+| 勘误11 SHA | `b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0` | 同上 |
+| 原字节差异 | `hunks=2 additions=65 deletions=0` | 顶部状态行+附录C末尾;完整`git diff --unified=0`在同上 |
+| SCAN-07 | `SCAN07=PASS STRUCTURE_SOURCES=PASS scenarios=30`,exit0 | 同上;E11生效范围检查与当前quote逐字存在检查均运行 |
+| SCAN-09 | CLOSED,**被勘误11取代** | F E11-5;第27.3节原证据保留 |
+
+下表取代第2.2节及其它旧计划中与E11冲突的前置;旧记录不回写为“已通过”。
+
+| 阶段/顺序 | 交付与必须满足的前置 | 当前状态 |
+|---|---|---|
+| 第一阶段前置1 | E11-2专用AST枚举器及控制;复用item3/item4 PASS,产出item5且冻结verifier绿 | 枚举/控制完成;item5因PHASE1-01未运行 |
+| 第一阶段前置2 | 固定43a6aa6上§6全部30场景改前实跑,封闭schema/登记旧值一致 | `before_run=PENDING_SEG3`,未运行 |
+| 第一阶段前置3 | 全仓pytest+mypy(CI包)+ruff+lint-imports绿 | pytest红(PHASE1-02),不声称前置满足 |
+| 第一阶段A | 项4 timeout;改后登记差异逐项相等,其它字段相等,全仓绿后独立commit+push | NOT_STARTED |
+| 第一阶段B | 项3+项5;同样验收后独立commit+push | NOT_STARTED |
+| 第二阶段准备 | E11-3(a/b/c)登记删除清单+四类调用方表+E11-4范围/拟删nodeid理由;改前OBS-5绿 | NOT_STARTED;不进行删除 |
+| 第二阶段人工闸门 | 设计方审阅、FatTank批准上述清单后才开始C首组 | PENDING_APPROVAL |
+| C各组与D | 旧址宿主文件分组,改调用方+删壳同commit;删除后五项验证,失败整组回退并停;最后逐项收口 | 本轮不进入 |
+
+E11-2列明的旧scan_manifest、消费者引擎、四级候选全集、E9-5、SEAL、
+admission及其OBS均非A/B前置;E11-5停用项按“不适用”而非“验证完成”登记。
+已有工具保留,没有继续修SCAN-09。第二阶段遇OTHER也必须停报。
+
+### 28.2 专用AST枚举(仅枚举,非OBS判定)
+
+新增 `T/protected_marker_readers.py` 与
+`tests/unit/test_terminal_protected_marker_readers.py`。
+从固定tree的git blob枚举,用现有条目分类/打包上下文识别live PY_SOURCE,
+排除非live上下文,不排除tests;函数体只匹配Name/Attribute,
+按E11仅排除`mark_worktree_protected`,字符串/注释不匹配。
+输出 `R/B-1-anchors.json`,每个函数附路径、行号、签名、完整源区段及命中点。
+
+```text
+live_py_source=177 excluded_non_live=95 protected_marker_readers=14
+EXIT=0
+```
+
+4项人工控制全部通过:新增Name/Attribute函数、注释/字符串/签名near-miss、
+不擅自排除测试和其它写入方、嵌套/async函数体覆盖。
+`R/reader-controls.log`: `4 passed in 0.03s`,exit0。
+control_catalog登记为E11专用枚举控制,不恢复旧SEAL五方门禁。
+
+### 28.3 停止项(2项,不自行修订范围或放宽判据)
+
+正式报告: [stop-report.md](a0-evidence/phase1/erratum11/stop-report.md)。
+
+| 编号 | 原文/代码锚 | 困难与证据 | 待设计方裁决的候选 |
+|---|---|---|---|
+| PHASE1-01 OPEN | F E11-2②:2481-2483;predicates v1.2 B-1:192-208;F §6:1535-1539 | 枚举14函数,其中10个在tests内;`_record(tmp_path)`会新建repo并写完整marker,另有pytest fixture参数。现有条文未规定这些函数如何读取同一中断态。完整函数源与参数在B-1-anchors.json | 明确读取方作用域/角色及调用形态;或保留14项、逐项指定fixture绑定与副作用隔离。不得自行只取is_protected等生产函数,也不得用缺参TypeError伪造读取结果 |
+| PHASE1-02 OPEN | F E11-2③、E11-3(5)/E11-5;terminal_scan.py:30、terminal_registry.py:31-34 | 全仓14失败全为旧扫描器E10 RULES_SHA与E11文档不符;whole-repo-pytest.log保存全nodeid和traceback | 设计方明确旧静态工具转历史回归读取E10不可变blob,或允许机械更新pin继续以E11作历史规则载体;不自行skip/删测试/改hash |
+
+未产出item5 output/verifier结论;未执行30场景;未编写A/B生产实现;
+未进入第二阶段,OBS-5未运行。停止项不是claim判红,不伪造verifier结果。
+
+### 28.4 命令、实际结果与边界
+
+R中每个`*.command.json`记录完整argv、cwd、环境、固定HEAD/tree、输入hash与exit;
+对应`*.log`为未截断原始输出。运行环境沿独立环境
+`/tmp/p49-a0-regression-43a6aa6`,生产路径只由固定worktree的`*/scripts`派生。
+测试取本轮主树tests;没有editable install固定worktree。
+
+```bash
+V=/tmp/p49-a0-regression-43a6aa6
+M=/home/linhao/Toolchain/development/LogAnalysisSkill
+W=/home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6
+cd "$W"
+# 环境完整值见R/whole-repo-pytest.command.json
+"$V/bin/python" -m pytest "$M/tests" -vv -p no:cacheprovider
+```
+
+```text
+collected 1305 items
+14 failed, 1290 passed, 1 skipped in 23.36s
+EXIT=1
+```
+
+全仓红后立即停止后续实施;不把旧静态工具“非门禁”解释为可忽略全仓失败。
+CI包mypy、全仓ruff及lint-imports本轮未运行,不声称E11-2③通过。
+枚举器/新增测试的定向ruff已实跑`All checks passed!`,exit0;
+定向控制exit0不能替代全仓红。首个记录器启动用了环境不存在的`python`,
+shell exit127且未生成证据;改用`python3`启动记录器,受检命令仍为独立venv的python。
+本轮没有改冻结predicates/exemptions、expected_diff及既有OBS;
+生产/release零改动,旧草稿及无关dirty/untracked不处理。
+
+control_catalog落盘后复跑全仓,`R/whole-repo-final.log`原文:
+
+```text
+14 failed, 1290 passed, 1 skipped in 23.34s
+EXIT=1
+```
+
+`R/integrity-final.log`机械核对:1301旧nodeid全保留、新增4且全PASS,
+14个旧PASS转FAILED逐项列出;472份旧证据、6项受保护输入均与HEAD字节一致;
+233个生产/release文件与HEAD及固定43a6aa6逐字节一致。
+`INTEGRITY=PASS; REGRESSION=FAIL (14 existing statuses changed, not suppressed)`。
+完整性诊断首次`integrity.log`为exit1:nodeid解析用`\S+`漏掉参数中空格;
+修正诊断解析为整段nodeid后复跑exit0,未改pytest结果或任何门禁判据。
+定向ruff的命令与原文现已保存为`R/ruff-enumerator.*`,exit0。
+暂存区`git diff --cached --check`对pytest原始traceback日志报尾随空格(exit2);
+保持原始日志字节及其hash,不为格式检查清洗证据。排除`*.log`后的同项检查
+exit0;这不改变全仓pytest失败结论。

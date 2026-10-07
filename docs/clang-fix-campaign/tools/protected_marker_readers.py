@@ -1,0 +1,155 @@
+"""E11-2: enumerate Name/Attribute references in live PY_SOURCE function bodies.
+
+This produces the independent B-1 reader universe, not an OBS verdict. It does
+not import observed modules, invoke functions, or discard tests and writers
+other than the explicitly excluded mark_worktree_protected.
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+from typing import Any
+
+from terminal_predicates import check_frozen_hashes, load_json
+from terminal_scan import context_for, contexts, entry_kind
+from verify_anchors import HEAD, RULES_PATH, TREE
+
+RULES_HASH = "b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0"
+DATA = Path(__file__).with_name("p49_terminal_data")
+
+
+def functions(source: str, path: str) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+
+    class Visitor(ast.NodeVisitor):
+        def __init__(self) -> None:
+            self.scope: list[str] = []
+
+        def visit_ClassDef(self, node: ast.ClassDef) -> None:
+            self.scope.append(node.name)
+            self.generic_visit(node)
+            self.scope.pop()
+
+        def visit_FunctionDef(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
+            self.scope.append(node.name)
+            matches = [
+                child
+                for statement in node.body
+                for child in ast.walk(statement)
+                if (isinstance(child, ast.Name) and child.id == "PROTECTED_FILENAME")
+                or (isinstance(child, ast.Attribute) and child.attr == "PROTECTED_FILENAME")
+            ]
+            if matches and node.name != "mark_worktree_protected":
+                rows.append(
+                    {
+                        "reader": node.name,
+                        "file": path,
+                        "qualname": ".".join(self.scope),
+                        "lineno": node.lineno,
+                        "end_lineno": node.end_lineno,
+                        "arguments": ast.unparse(node.args),
+                        "source": ast.get_source_segment(source, node),
+                        "references": [
+                            {
+                                "kind": type(child).__name__,
+                                "lineno": child.lineno,
+                                "col_offset": child.col_offset,
+                                "source": ast.get_source_segment(source, child),
+                            }
+                            for child in sorted(matches, key=lambda n: (n.lineno, n.col_offset))
+                        ],
+                    }
+                )
+            self.generic_visit(node)
+            self.scope.pop()
+
+        visit_AsyncFunctionDef = visit_FunctionDef
+
+    Visitor().visit(ast.parse(source, filename=path))
+    return rows
+
+
+def collect(root: Path, rules_root: Path) -> dict[str, Any]:
+    def git(*args: str) -> bytes:
+        return subprocess.check_output(["git", *args], cwd=root)
+
+    if Path.cwd().resolve() != root.resolve():
+        raise ValueError("enumerator must run in the fixed observation worktree")
+    if git("rev-parse", "HEAD").decode().strip() != HEAD:
+        raise ValueError("HEAD differs")
+    if git("rev-parse", "HEAD^{tree}").decode().strip() != TREE:
+        raise ValueError("tree differs")
+    if git("status", "--porcelain=v1", "--untracked-files=all").strip():
+        raise ValueError("observation worktree is not clean")
+    rules = (rules_root / RULES_PATH).read_bytes()
+    if hashlib.sha256(rules).hexdigest() != RULES_HASH:
+        raise ValueError("erratum 11 authority differs")
+    check_frozen_hashes(
+        load_json(DATA / "predicates.json"), load_json(DATA / "measurement_exemptions.json")
+    )
+    files, modes = {}, {}
+    for record in git("ls-tree", "-rz", "--full-tree", TREE).split(b"\0"):
+        if not record:
+            continue
+        meta, raw_path = record.split(b"\t", 1)
+        mode, kind, blob = meta.decode().split()
+        path = raw_path.decode()
+        modes[path] = mode
+        if kind == "blob":
+            files[path] = git("cat-file", "blob", blob)
+    declarations = contexts(files)
+    rows, scanned, excluded = [], [], []
+    for path, data in sorted(files.items()):
+        if entry_kind(path, modes[path], data) != "PY_SOURCE":
+            continue
+        context = context_for(path, declarations).key
+        if context != ".":
+            excluded.append({"path": path, "context": context})
+            continue
+        if (root / path).read_bytes() != data:
+            raise ValueError(f"worktree bytes differ: {path}")
+        found = functions(data.decode("utf-8"), path)
+        rows.extend(dict(row, context=context) for row in found)
+        scanned.append(
+            {"path": path, "sha256": hashlib.sha256(data).hexdigest(), "readers": len(found)}
+        )
+    return {
+        "head": HEAD,
+        "tree": TREE,
+        "authority_sha256": RULES_HASH,
+        "enumerator_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "protected_marker_readers": [row["reader"] for row in rows],
+        "functions": rows,
+        "scanned": scanned,
+        "excluded_non_live": excluded,
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--rules-root", type=Path, required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    args = parser.parse_args()
+    result = collect(args.root, args.rules_root)
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    with args.out.open("x", encoding="utf-8") as handle:
+        json.dump(result, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+    for row in result["functions"]:
+        print(f"{row['file']}:{row['lineno']} | {row['qualname']}({row['arguments']})")
+    print(
+        f"live_py_source={len(result['scanned'])} "
+        f"excluded_non_live={len(result['excluded_non_live'])} "
+        f"protected_marker_readers={len(result['protected_marker_readers'])}"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

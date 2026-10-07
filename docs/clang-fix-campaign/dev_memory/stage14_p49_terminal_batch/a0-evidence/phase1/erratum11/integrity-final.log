@@ -1,0 +1,88 @@
+predicates_canonical=8271f1d000a73808f1fa9787b90e868dd99038098eab192b26372e4eeaf694f6
+exemptions_canonical=4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+{
+  "old_nodeids": 1301,
+  "new_nodeids": 1305,
+  "missing": [],
+  "added": [
+    "tests/unit/test_terminal_protected_marker_readers.py::test_e11_comment_string_and_signature_near_miss",
+    "tests/unit/test_terminal_protected_marker_readers.py::test_e11_nested_function_body_and_async_are_scanned",
+    "tests/unit/test_terminal_protected_marker_readers.py::test_e11_new_name_and_attribute_reader_listed",
+    "tests/unit/test_terminal_protected_marker_readers.py::test_e11_tests_and_writers_not_silently_excluded"
+  ],
+  "status_changes": [
+    {
+      "nodeid": "tests/unit/test_terminal_import_linter.py::test_e9_registry_and_mapping",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_namespaces_and_mapping",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_entry_projection_positive",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.binary_record]",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.doctest_extract]",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.interpreter_line]",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_missing_entry_projection_is_red[entry.name_backstop]",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_wrong_owner_is_red",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_missing_near_miss_projection_is_red",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_registry_shape_is_closed[duplicate]",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_registry_shape_is_closed[namespace]",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_three_domain_projection_union[None]",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_three_domain_projection_union[consumer]",
+      "old": "PASSED",
+      "new": "FAILED"
+    },
+    {
+      "nodeid": "tests/unit/test_terminal_registry.py::test_e6_three_domain_projection_union[legacy]",
+      "old": "PASSED",
+      "new": "FAILED"
+    }
+  ]
+}
+prior_evidence_unchanged=472 protected_inputs_unchanged=6 production_release_unchanged=233
+authority_sha256=b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0
+INTEGRITY=PASS; REGRESSION=FAIL (14 existing statuses changed, not suppressed)
