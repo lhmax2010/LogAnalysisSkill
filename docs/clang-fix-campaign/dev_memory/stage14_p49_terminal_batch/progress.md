@@ -3837,3 +3837,26 @@ D未开始,不得声称终止批次完成。原8项HISTORICAL_KEY与原负fixtur
 失败,mypy/ruff/lint退出0;31入口/205文件import/残留OTHER0/打包与5help通过。
 C09远端CI SUCCESS,Tests成功:
 https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37715508991 。
+
+回退提交 `63e9a7796ad6f2248c9ed16641e274bcd2679395` 已推送。独立干净树
+`/tmp/p49-terminal-C10STOP`复验,完整命令/env/逐nodeid/输出见
+`a0-evidence/phase2/execution/C10STOP/`:
+
+```text
+git diff --exit-code 0e6507e -- 'tizen-*/scripts/' tests/ docs/clang-fix-campaign/tools/
+(empty output); EXIT=0
+python -m pytest tests/ -v -p pytest_cov --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80
+1349 passed, 1 skipped in 30.97s; EXIT=0
+nodeids: base=1352 current=1350 lost=2(均在批准清单) changed={} added=[]; EXIT=0
+mypy docs/clang-fix-campaign/tools/symbol_audit.py: Success: no issues found in 1 source file; EXIT=0
+mypy: Success: no issues found in 107 source files; EXIT=0
+ruff check .: All checks passed!; EXIT=0
+lint-imports: Contracts: 6 kept, 0 broken.; EXIT=0
+```
+
+回退HEAD远端CI SUCCESS,包括Tests步骤:
+https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37715804408 。
+此处停止是履行新增失败回退协议,不是把C10标完成;失败版本与证据仍在Git中。
+release/P4.5 design/terminal冻结稿/predicates/exemptions本轮零diff;
+终止冻结稿sha256仍为`b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0`。
+主树原有无关改动保留。尚未建立D收口文档或改变五项义务为已全部销账。

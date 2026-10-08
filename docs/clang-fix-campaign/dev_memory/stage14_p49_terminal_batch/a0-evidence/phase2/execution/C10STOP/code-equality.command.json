@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--exit-code",
+    "0e6507e",
+    "--",
+    "tizen-*/scripts/",
+    "tests/",
+    "docs/clang-fix-campaign/tools/"
+  ],
+  "cwd": "/tmp/p49-terminal-C10STOP",
+  "head": "63e9a7796ad6f2248c9ed16641e274bcd2679395",
+  "tree": "fc2c236b29eae32b16c187c1d7e13f89761a2e96",
+  "exit_code": 0,
+  "environment": {
+    "VIRTUAL_ENV": "/tmp/p49-a0-regression-43a6aa6",
+    "PATH": "/tmp/p49-a0-regression-43a6aa6/bin:/usr/bin:/bin",
+    "PYTHONPATH": "/tmp/p49-terminal-C10STOP/tizen-build-verify/scripts:/tmp/p49-terminal-C10STOP/tizen-ci-shared/scripts:/tmp/p49-terminal-C10STOP/tizen-ci-triage/scripts:/tmp/p49-terminal-C10STOP/tizen-convergence-judge/scripts:/tmp/p49-terminal-C10STOP/tizen-gbs-build/scripts:/tmp/p49-terminal-C10STOP/tizen-gbs-build-workflow/scripts:/tmp/p49-terminal-C10STOP/tizen-gbs-log-analysis/scripts:/tmp/p49-terminal-C10STOP/tizen-gbs-patch-suggest/scripts:/tmp/p49-terminal-C10STOP/tizen-gerrit-fetch/scripts:/tmp/p49-terminal-C10STOP/tizen-gerrit-submit/scripts:/tmp/p49-terminal-C10STOP/tizen-qb-discover/scripts:/tmp/p49-terminal-C10STOP/tizen-triage-report/scripts",
+    "MYPYPATH": null,
+    "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "recorder_source": "import hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport subprocess\nimport sys\n\nmain = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\ngroup, name, *args = sys.argv[1:]\nroot = Path('/tmp/p49-terminal-' + group)\nout = main / 'docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase2/execution' / group\nout.mkdir(parents=True, exist_ok=True)\nvenv = Path('/tmp/p49-a0-regression-43a6aa6')\nenv = dict(os.environ)\nfor key in ('PYTHONPATH', 'MYPYPATH', 'PYTEST_ADDOPTS', 'PYTEST_PLUGINS'):\n    env.pop(key, None)\nenv.update(VIRTUAL_ENV=str(venv), PATH=str(venv/'bin')+':/usr/bin:/bin',\n    PYTEST_DISABLE_PLUGIN_AUTOLOAD='1', PYTHONDONTWRITEBYTECODE='1',\n    PYTHONPATH=os.pathsep.join(map(str, sorted(root.glob('*/scripts')))))\nargv = [a.replace('{root}',str(root)).replace('{venv}',str(venv)) for a in args]\ndef git(*args):\n    return subprocess.check_output(['git', *args], cwd=root, text=True).strip()\nassert not (out/(name+'.log')).exists(), name\nhead, tree = git('rev-parse','HEAD'), git('rev-parse','HEAD^{tree}')\ntracked_diff = git('diff','HEAD','--stat')\nassert not tracked_diff, tracked_diff\nresult = subprocess.run(argv, cwd=root, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)\nrecord = dict(argv=argv,cwd=str(root),head=head,tree=tree,exit_code=result.returncode,\n    environment={k:env.get(k) for k in ('VIRTUAL_ENV','PATH','PYTHONPATH','MYPYPATH','PYTEST_DISABLE_PLUGIN_AUTOLOAD','PYTHONDONTWRITEBYTECODE')},\n    recorder_source=Path(__file__).read_text(), output_sha256=hashlib.sha256(result.stdout).hexdigest())\nfor arg in argv:\n    p = Path(arg)\n    if arg.startswith('/tmp/') and p.suffix=='.py' and p.is_file():\n        record.setdefault('diagnostic_programs',{})[arg]=p.read_text()\n(out/(name+'.log')).write_bytes(result.stdout)\n(out/(name+'.command.json')).write_text(json.dumps(record,ensure_ascii=False,indent=2)+'\\n')\nsys.stdout.buffer.write(result.stdout)\nprint(f'GROUP={group} HEAD={head} EXIT={result.returncode}',flush=True)\nsys.exit(result.returncode)\n",
+  "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}
