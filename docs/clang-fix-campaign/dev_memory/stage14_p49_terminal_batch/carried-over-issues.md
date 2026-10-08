@@ -2,9 +2,10 @@
 
 PHASE2-04～07 基线裁决(2026-10-08):逐条按固定改前树 `43a6aa6` 原样实跑的90条命令对账。
 基线证据: `a0-evidence/phase2/execution/BASE43/checkers/commands.json`。
-本表当前侧取 `787b804` 的 REG03b 原始实跑;本轮未改checker及生产代码。
+本表当前侧取 `f196f55` 的 HASH08 原始实跑;历史输入已按PHASE2-08内容哈希定位。
 基线不符20条:仍遗留3条,当前已通过17条(固定树尚未引入的末批工具)。
-另有当前 skill5 ledger check 相对基线的新失败,不计入可放行遗留,见 progress PHASE2-08。
+skill5 ledger check 的回归已消除(exit0);90条比较 `regressions=[]`。
+当前证据: `a0-evidence/phase2/execution/HASH08/checkers/commands.json`。
 
 | 命令(在tools目录下,python执行) | 原预期exit | 43a6aa6 exit | 当前exit | 原因/状态 |
 |---|---|---|---|---|

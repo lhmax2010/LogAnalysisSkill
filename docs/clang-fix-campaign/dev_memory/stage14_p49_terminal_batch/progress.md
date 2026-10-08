@@ -3655,3 +3655,40 @@ EXIT=0
 提交后在独立工作树记录 `a0-evidence/phase2/execution/HASH08/`:
 历史blob定位结果、90项相对BASE43比较、全仓pytest逐nodeid、mypy/ruff/lint、
 远端CI。完整验收 **PENDING**;通过后才从C01重启,不预报通过。
+
+### 39.1 独立提交验证完成
+
+实现提交 `f196f5536b4e6b479320d182b8cd3fa558049712`,已push。
+干净工作树 `/tmp/p49-terminal-HASH08`,逐命令/环境/exit/原输出见
+`a0-evidence/phase2/execution/HASH08/`。实跑摘要:
+
+```text
+python3 /tmp/p49-checker-matrix.py /tmp/p49-terminal-HASH08 HASH08
+SUMMARY commands=90 unexpected=3 regressions=[]
+EXIT=0
+pytest tests/ -v -p pytest_cov --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80
+1351 passed, 1 skipped in 29.77s; coverage 94.62%; EXIT=0
+mypy: Success: no issues found in 114 source files; EXIT=0
+ruff check .: All checks passed!; EXIT=0
+lint-imports: Contracts: 6 kept, 0 broken.; EXIT=0
+history-proof: HISTORY_INPUTS=34 CONTROLS=4 RED_AS_EXPECTED; EXIT=0
+```
+
+两种变异在ledger/branch四次真实命令均exit2且HISTORY_NOT_FOUND;
+expected-diff两控制由新增单测覆盖。skill4 v1.12固定语料自然定位到
+`a8620f1`中相同sha的blob,34项各自commit/blob/hash见history-proof.log;
+这些commit是检索结果而非工具选择规则。
+远端 [CI 37713176965](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37713176965)
+整体success,Tests success;原始job/log见remote-ci及remote-ci-log。
+PHASE2-06/07/08均 **CLOSED**;20条遗留记录中17已解决、3仍carried,
+不把历史失败改称通过。用户既有无关工作树改动仍未纳入任何提交。
+
+## 40. C组逐组实施
+
+### 40.1 C01 第二次实施
+
+前置为§39.1本地及远端无新增失败。按已批准gate-package去除
+`ci_triage/verify/__init__.py`16条兼容绑定与其__all__,保留docstring和包。
+本组不删测试,不改业务逻辑。提交后五项验证记录到
+`a0-evidence/phase2/execution/C01R/`;结果 **PENDING**。
+只有本组验证通过才进入C02;新增失败/行为变化/OTHER即回退本组并停报。
