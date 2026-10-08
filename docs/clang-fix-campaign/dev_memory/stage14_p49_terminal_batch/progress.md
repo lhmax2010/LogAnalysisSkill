@@ -3731,3 +3731,13 @@ C01R/C02R/C03R此次机械转换三份全部相等,扫描范围和命中分类�
 `tests/unit/test_gerrit_fetch.py::test_legacy_module_reexports_implementation_and_types_by_identity`。
 skill副本三行类型import为真实依赖,原样保留。其它行为/包根测试不改。
 五项验证 `a0-evidence/phase2/execution/C04R/` **PENDING**。
+
+C04 `99add0d` 五项 **PASS**:1350/1,仅少批准Gerrit identity一例,其它nodeid
+状态不变;90 checkers regressions=[];mypy/ruff/lint exit0;smoke31/31;
+import-all211/211;residual HISTORICAL=7704/RELEASE=37/OTHER=0;
+wheel/install及5模块help exit0。
+
+### 40.5 C05
+
+删除sources.py登记的4绑定纯shim;真实实现qb-discover不动,无测试删除。
+五项验证 `a0-evidence/phase2/execution/C05R/` **PENDING**。
