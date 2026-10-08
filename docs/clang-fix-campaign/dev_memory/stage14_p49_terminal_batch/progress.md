@@ -3774,3 +3774,13 @@ import-all207/207;residual hits=13139/OTHER=0;wheel/install及5模块help exit0�
 删除verify/edit_spec_guard.py的12绑定纯shim;skill实现在原处保留,
 不合并EDIT_SPEC_SCHEMA,本组无测试删除。
 五项验证 `a0-evidence/phase2/execution/C08R/` **PENDING**。
+
+C08 `9da38e6` 五项 **PASS**:1349/1,累计只少获批2例,其它状态不变;
+90 checkers regressions=[];mypy/ruff/lint exit0;smoke31/31;
+import-all206/206;residual hits=15005/OTHER=0;wheel/install及5模块help exit0。
+
+### 40.9 C09
+
+删除verify/workspace.py的21绑定组合shim,shared与build-verify两侧真实实现
+不动,本组无测试删除。历史归属键保留,不将它们误作生产import。
+五项验证 `a0-evidence/phase2/execution/C09R/` **PENDING**。

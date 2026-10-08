@@ -1,0 +1,19 @@
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 61 files, 118 dependencies.
+------------------------------------
+
+application layers: orchestration -> skills -> shared KEPT
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+
+Contracts: 6 kept, 0 broken.
