@@ -1,6 +1,6 @@
 # Stage15 P1 EF-5 Environment Spike
 
-日期:2026-10-08。状态:**BLOCKED_REST_ACCESS**。
+日期:2026-10-08。状态:**BLOCKED_WEB_COOKIE**(REST仍BLOCKED)。
 权威:`../../design.md` v1.5.19-FROZEN §1.4 EF-5、§4.1
 qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 
@@ -192,3 +192,72 @@ exit=0
 ```
 
 生产包/业务测试/设计稿零改动。原有无关改动和历史草稿均未纳入提交。
+
+## 9. 网页只读续测
+
+本轮按FatTank指令转为Cookie网页观察,不再重试REST。不修改§7的历史实测记录。
+样本固定1069532;先确认SBS身份,再取状态字段/SBS_TARGET/arch及明确关联的TRIGGER。
+找不到父子对应关系时请FatTank提供上级号,不按时间或版本推测。
+
+脚本:`../../spikes/ef5_web_probe.py`;只读取同源`/build/<id>`及页面实际提供的
+overview/status/variables/steps/dependencies/changes只读路径。所有query、
+Wicket动作链接、REST、其它build号及跨源URL拒绝;不运行JS、不加载子资源,
+不提交表单、不跟随redirect。页面上的未访问链接仍逐项记账,不声称已读其字段。
+HTTP非200、登录/拒绝页立即结束,不记作业务字段缺失。
+
+Cookie只来自QB_COOKIE或本人终端getpass,未读取磁盘cookie文件;
+不输出请求头、不存Set-Cookie,服务端session/CSRF/隐藏值先脱敏再自检落盘。
+复用原Probe的发送前凭据拒绝检查;新增URL策略分派不改变旧REST白名单。
+
+私密输入启动命令(不含凭据):
+
+```sh
+env -u LD_LIBRARY_PATH -u LD_PRELOAD -u GTK_PATH -u GIO_MODULE_DIR gnome-terminal --wait --title='P1 EF-5 webpage read-only: private Cookie input' --working-directory=/home/linhao/Toolchain/development/LogAnalysisSkill -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python docs/clang-fix-campaign/spikes/ef5_web_probe.py --build-id 1069532 --output docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-01
+```
+
+### 9.1 本轮离线验收
+
+完整命令、exit、输出摘要在`evidence/web-validation/commands.json`,原文为同目录日志。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/spikes/test_ef5_web_probe.py -v
+Ran 6 tests in 0.083s
+OK
+exit=0
+$ .venv/bin/python docs/clang-fix-campaign/spikes/test_ef5_probe.py -v
+Ran 10 tests
+OK
+exit=0
+$ .venv/bin/ruff check docs/clang-fix-campaign/spikes/ef5_web_probe.py docs/clang-fix-campaign/spikes/test_ef5_web_probe.py docs/clang-fix-campaign/spikes/ef5_probe.py docs/clang-fix-campaign/spikes/test_ef5_probe.py
+All checks passed!
+exit=0
+$ .venv/bin/python -m mypy --follow-imports=silent docs/clang-fix-campaign/spikes/ef5_web_probe.py docs/clang-fix-campaign/spikes/ef5_probe.py
+Success: no issues found in 2 source files
+exit=0
+$ .venv/bin/python -m pytest tests/ -q
+1457 passed, 1 skipped in 27.17s
+exit=0
+```
+
+网页控制:只读白名单/动作拒绝、已知Cookie发送前拒绝、隐藏及session脱敏、
+Set-Cookie不落盘、登录/拒绝停机、只随本build明示标签链接(不猜上级)。
+初次静态检查的E501和未显式导出import已在spike内修正,未改生产包。
+
+### 9.2 人工闸门
+
+真实提交保持NOT_GRANTED。本轮只能整理页面可观察的触发参数,
+不打开触发入口、不发送触发请求。Cookie等待期间无网页实测结论,
+不能用离线控制或历史权限拒绝页代替SBS业务证据。
+
+### 9.3 本轮停点
+
+QB_COOKIE未设置。getpass终端启动后仍在等待输入,尚未创建`web-01/`;
+输出目录的创建位于读取Cookie之后、首个GET之前。已精确定位本次探测进程,
+用SIGINT结束等待;`gnome-terminal --wait`实测exit2。没有挂起的输入进程,
+没有网页请求或触发操作;不重用上一轮REST密码。
+非敏感记录见`evidence/web-input-attempt.json`。
+
+本轮只完成只读网页工具与离线验证,不是网页实测完成。SBS身份、状态字段全集、
+SBS_TARGET、arch、父子对应/accept全部PENDING,不能判字段不存在。
+恢复时需FatTank本人在§9命令的getpass输入Cookie;不得在聊天、命令行参数或文件中传递。
+若网页登录/拒绝则停止记录,如无明确TRIGGER关联则再请FatTank提供上级号。

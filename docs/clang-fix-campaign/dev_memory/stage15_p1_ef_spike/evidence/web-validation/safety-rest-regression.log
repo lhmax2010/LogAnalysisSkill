@@ -1,0 +1,15 @@
+test_credential_in_configuration_path_rejected_before_network (__main__.ProbeSafetyTests.test_credential_in_configuration_path_rejected_before_network) ... ok
+test_cross_origin_and_non_https_rejected (__main__.ProbeSafetyTests.test_cross_origin_and_non_https_rejected) ... ok
+test_failed_basic_probe_stops_subsequent_reads (__main__.ProbeSafetyTests.test_failed_basic_probe_stops_subsequent_reads) ... ok
+test_get_trigger_and_non_read_paths_are_blocked (__main__.ProbeSafetyTests.test_get_trigger_and_non_read_paths_are_blocked) ... ok
+test_html_hidden_password_and_sensitive_table_cells_redacted (__main__.ProbeSafetyTests.test_html_hidden_password_and_sensitive_table_cells_redacted) ... ok
+test_known_secret_check_rejects_unsanitized_text (__main__.ProbeSafetyTests.test_known_secret_check_rejects_unsanitized_text) ... ok
+test_redirects_never_followed (__main__.ProbeSafetyTests.test_redirects_never_followed) ... ok
+test_safe_reads_allowed (__main__.ProbeSafetyTests.test_safe_reads_allowed) ... ok
+test_server_side_xml_secrets_redacted_without_losing_sbs_target (__main__.ProbeSafetyTests.test_server_side_xml_secrets_redacted_without_losing_sbs_target) ... ok
+test_supplied_credentials_and_encodings_are_removed (__main__.ProbeSafetyTests.test_supplied_credentials_and_encodings_are_removed) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.026s
+
+OK

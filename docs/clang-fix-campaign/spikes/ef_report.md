@@ -1,6 +1,6 @@
 # P1 EF-5 Environment Report
 
-日期:2026-10-08。状态:**BLOCKED_REST_ACCESS**。
+日期:2026-10-08。状态:**BLOCKED_WEB_COOKIE**(历史REST拒绝未解决)。
 权威:`../design.md` v1.5.19-FROZEN §1.4 EF-5与§4.1。
 本报告不修改设计,不宣告EF-5关闭或P5Q开工门通过。
 进度与命令:[stage15 progress](../dev_memory/stage15_p1_ef_spike/progress.md)。
@@ -124,3 +124,54 @@ FatTank明确确认后才允许发送一次。本探测脚本没有POST或trigge
 恢复需:管理员确认REST访问前提、非敏感的有效configuration path、
 本人getpass提供可用Cookie(页面取证)、样本1069532对应的TRIGGER依据。
 未解决前EF-5保持OPEN,P5Q门不解除,真实提交仍为0次。
+
+## 网页只读续测(2026-10-08)
+
+以下为本轮结果,前文为历史REST实测,未覆盖或重跑。网页脚本
+`ef5_web_probe.py`仅使用QB_COOKIE/getpass,不使用Basic密码或磁盘cookie;
+严格GET白名单且禁redirect/JS/表单提交。样本仍为1069532。
+
+### 事实与设计影响
+
+| 项目 | 本轮观察到的事实与证据 | 对EF-5假设的影响 | 涉及段落 |
+|---|---|---|---|
+| 确认样本SBS身份 | 环境无QB_COOKIE,本人getpass输入尚未取得;等待已结束,无网页响应。`stage15/evidence/web-input-attempt.json` | 未能检验,不是否定SBS身份,不把权限/凭据问题当作字段缺失 | §1.4 EF-5③ |
+| 状态字段/SBS_TARGET/arch | 未取得业务HTML,无字段全集、回显位置或架构表示的实测结论 | 待核实,不能标成立或需改 | §1.4 EF-5③、§4.1 qb-result-fetch |
+| 上级TRIGGER/accept | 未取得任何关联页面,未推断上级build号 | 待核实,不能认定SBS自身PASS即足够,也不能认定必须accept | §1.4 EF-5④、§4.1 review-submit |
+
+上述`stage15/`指
+[stage15证据目录](../dev_memory/stage15_p1_ef_spike/evidence/)。
+离线安全验证与全仓回归不是环境实测:
+网页6项/旧探测器10项安全控制通过,mypy/ruff通过,全量1457 passed/1 skipped;
+命令、exit与原文见[web-validation](../dev_memory/stage15_p1_ef_spike/evidence/web-validation/)。
+不修改design.md,不解除P5Q门。
+
+### 触发参数清单与人工闸门
+
+本轮没有取得网页表单,故以下只是待采集项,**不是已核实可提交请求**:
+
+| 参数/对象 | 来源与状态 |
+|---|---|
+| 目标configuration | 待网页明确路径/ID,不能把build 1069532当作configuration ID |
+| SBS_TARGET(repo@commit) | 来自设计契约的待核实参数;网页名称、值、位置未取得 |
+| 其它变量/构建条件/请求参数 | 待只读构建变量与字段名证据;不能杜撰默认值 |
+
+未打开触发/取消/重跑入口。真实提交仍NOT_GRANTED,本轮提交0次;
+完整参数取得后须先打印并由FatTank指定目标及明确确认,当前未执行。
+EF-5②的提交响应与request_id→build_id映射仍没有实验结论。
+
+### 网页方式用于自动化的可行性
+
+**实测边界**:本轮未取得鉴权网页,目前没有任何信息可被宣称为已证实能稳定从网页获取。
+仅验证了本地工具对人工HTML样本能提取带源行号的可见文本、链接和脱敏表单字段名。
+要判断status/SBS_TARGET/per_arch_status/accepted的稳定性,还需该环境实际响应。
+
+**实现风险评估(不是QB实测事实)**:HTML布局、标签名称和链接路由可能随服务端升级变化;
+若业务标签依赖JS/Wicket动作链接,当前工具会拒绝而不是自动执行。
+后续自动化需逐项核实只读路由、页面类型和字段绑定,不能把空解析当成字段不存在。
+Cookie会话续期与登录页检测也是额外维护面。
+
+**相对REST的代价(推论)**:网页方案需要管理会话、请求多页、维护HTML解析与更广脱敏,
+且页面上的成功字样不能代替父子关联和accept语义证据;REST原本有结构化字段优势,
+但当前环境已实测拒绝其访问。网页只能作为待验证的候选取证路径,不是绕过权限,
+也不能凭只读页面证明真实提交的响应协议。是否改设计由设计方在取得实测后决定。

@@ -203,9 +203,12 @@ class Probe:
         path.write_text(text)
         path.chmod(0o600)
 
+    def check_url(self, url: str) -> None:
+        check_url(url, self.base_url)
+
     def get(self, name: str, path: str, auth: str) -> HttpResponse | None:
         url = normalize_quickbuild_url(self.base_url + path)
-        check_url(url, self.base_url)
+        self.check_url(url)
         # Never put a known credential in a URL, even if entered as a non-secret field.
         self.redactor.check(url)
         headers = {"User-Agent": "LogAnalysisSkill-EF5-read-only/1", "Accept": "*/*"}

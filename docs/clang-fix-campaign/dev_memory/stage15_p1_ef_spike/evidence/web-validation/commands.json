@@ -1,0 +1,67 @@
+[
+  {
+    "name": "safety-web",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "docs/clang-fix-campaign/spikes/test_ef5_web_probe.py",
+      "-v"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "sha256": "066775ff7567aa1734e7860ee0ed703972d83358829b2f322536cb01fe3e7cfd"
+  },
+  {
+    "name": "safety-rest-regression",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "docs/clang-fix-campaign/spikes/test_ef5_probe.py",
+      "-v"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "sha256": "efdc1edf2a0b70f00ed14d977ff0156aeb7514f6e63dd5ef2c1ccc91bfef2a86"
+  },
+  {
+    "name": "ruff",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "docs/clang-fix-campaign/spikes/ef5_web_probe.py",
+      "docs/clang-fix-campaign/spikes/test_ef5_web_probe.py",
+      "docs/clang-fix-campaign/spikes/ef5_probe.py",
+      "docs/clang-fix-campaign/spikes/test_ef5_probe.py"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+  },
+  {
+    "name": "mypy",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "mypy",
+      "--follow-imports=silent",
+      "docs/clang-fix-campaign/spikes/ef5_web_probe.py",
+      "docs/clang-fix-campaign/spikes/ef5_probe.py"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "sha256": "f9b031e5c45aa702cd4fef028d465551cb20a2c4698e0913c7b00766b20ac4d8"
+  },
+  {
+    "name": "pytest",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/",
+      "-q"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "sha256": "6fa41a956ebb13bd2a7cb011a9a7ebf0ea3a4b1e54566604002d9e87a95f2cf7"
+  }
+]

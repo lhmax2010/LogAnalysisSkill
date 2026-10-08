@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-08",
+  "build_id": "1069532",
+  "cookie_environment_available": false,
+  "credential_channel": "gnome-terminal getpass (no echo, no recording)",
+  "status": "WAIT_ENDED_BEFORE_CREDENTIAL_INPUT",
+  "terminal_wait_exit": 2,
+  "termination": "SIGINT to exact probe process, handled by probe",
+  "evidence_directory_before_interruption": "ABSENT: web-01",
+  "lifecycle": "Cookie read precedes evidence directory creation; directory creation precedes first GET",
+  "web_requests": 0,
+  "post_or_trigger_requests": 0,
+  "trigger_authorized": false,
+  "production_modified": false,
+  "credential_persisted": false
+}

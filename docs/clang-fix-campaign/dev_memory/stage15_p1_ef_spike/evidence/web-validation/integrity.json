@@ -1,0 +1,14 @@
+{
+  "commands": 5,
+  "all_exit_zero": true,
+  "raw_log_hashes_match": true,
+  "credential_headers_in_logs": 0,
+  "web_response_files": 0,
+  "limitation": "No Cookie was supplied; no real-response redaction claim is made.",
+  "script_sha256": {
+    "ef5_probe.py": "00c0f3b90d1ea8f6eaa9cd1b84f0bef2e0dbdba39a93c1ff7a4de35f95e63d26",
+    "ef5_web_probe.py": "60d76e36e6b237053961101c9522469c61dbe1f53eedc2784d00a0b34f35b21c",
+    "test_ef5_web_probe.py": "842732ee014e8f03274c2dc65dee5d823d0aafd8e8eddbcf1b95b4532f1675ab",
+    "test_ef5_probe.py": "d154a61e1a05194276ce346c9049734bb8a6dc74fdd7cf183daf294cecaebc77"
+  }
+}

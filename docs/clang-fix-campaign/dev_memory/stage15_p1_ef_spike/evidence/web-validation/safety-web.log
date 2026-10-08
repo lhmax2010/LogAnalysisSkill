@@ -1,0 +1,11 @@
+test_blocked_pages_stop_before_tabs (__main__.WebSafetyTests.test_blocked_pages_stop_before_tabs) ... ok
+test_cookie_cannot_enter_url_before_send (__main__.WebSafetyTests.test_cookie_cannot_enter_url_before_send) ... ok
+test_hidden_fields_session_ids_and_scripts_redacted (__main__.WebSafetyTests.test_hidden_fields_session_ids_and_scripts_redacted) ... ok
+test_only_literal_read_tabs_followed_no_parent_guesses (__main__.WebSafetyTests.test_only_literal_read_tabs_followed_no_parent_guesses) ... ok
+test_set_cookie_removed_before_evidence_and_no_auth_headers_archived (__main__.WebSafetyTests.test_set_cookie_removed_before_evidence_and_no_auth_headers_archived) ... ok
+test_whitelist_rejects_actions_queries_other_ids_and_origins (__main__.WebSafetyTests.test_whitelist_rejects_actions_queries_other_ids_and_origins) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.083s
+
+OK
