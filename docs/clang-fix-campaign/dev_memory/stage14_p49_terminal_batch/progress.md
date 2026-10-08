@@ -3752,3 +3752,15 @@ wheel/install及5模块help exit0。
 删除verify/convergence.py登记的8绑定纯shim;公共别名和skill中的真实定义
 均不动,同一性契约测试保留,无新删nodeid。
 五项验证 `a0-evidence/phase2/execution/C06R/` **PENDING**。
+
+C06 `b54e749` 五项 **PASS**:1350/1,累计只少获批1例;90 checkers
+regressions=[];mypy/ruff/lint exit0;smoke31/31;import-all209/209;
+residual hits=10196/OTHER=0;wheel/install及5模块help exit0。
+
+### 40.7 C07
+
+删除verify/build_verify.py的29绑定兼容壳;删除获批nodeid
+`tests/unit/test_build_verify_legacy_wiring.py::test_legacy_shims_preserve_all_migrated_symbol_identities`。
+该文件只有此唯一用例,无其它测试/fixture,故一并移除空宿主文件;
+其它skill行为、路径锚与包根测试原样保留。后续C08/C09不重复删该用例。
+五项验证 `a0-evidence/phase2/execution/C07R/` **PENDING**。
