@@ -21,7 +21,7 @@
 | P4.9 extraction phase | CLOSED | Step-0 plus all six skill extractions signed off | phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; next and only entry is the five-item terminal batch |
 | P4.9 terminal batch | CLOSED | PHASE2-09 fixed; C01-C13 verified; 13 hosts/183 bindings; 1349 passed/1 skipped | [final sign-off](../review/p49-terminal-closeout.md#最终签批) @ `9f02f3f`, 2026-10-08: designer verified, one external reviewer CLOSED with zero findings; [carried issues](stage14_p49_terminal_batch/carried-over-issues.md): 3 unchanged, handed to the subsequent phase |
 | P4.9 phase | CLOSED | Extraction and all five terminal obligations closed, 2026-10-08 | [phase ledger](../review/p49-extraction-phase-summary.md#p49-terminal-batch-ledger); [terminal sign-off](../review/p49-terminal-closeout.md#最终签批) @ `9f02f3f` |
-| P2 submission identity | DESIGN_REGISTERED | FatTank-approved change_47; design v1.5.19-FROZEN, implementation not started | [design](../design.md#42-内部模块接口); [change_47](../design_changes/change_47.md); pre-entry checks: design 0 problems, SQLite DDL valid and 22/22 invalid rows rejected, fixed submission key is 64 lowercase hex |
+| P2 submission identity | STOPPED_PENDING_RULING | Design/change_47 registered at `9b7754e`; implementation not started | [stage16 progress](stage16_p2_submission_identity/progress.md): pre-entry checks pass; P2-01 DoD depends on future P4/P5/P5R; real hook PENDING |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -49,6 +49,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 skill-6 triage-report | CLOSED | `bdb5a55`, `3dc0466`, `3da12a4`, `2cc3dd3`, `dfbbf3b`, `9a74c0b` | frozen authority `../p49-skill6-triage-report-design-v1.8-FROZEN.md`; result `stage13_p49_skill6_triage_report/result.md`; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | step-0 + skills 1-6 | signed phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; P4.9 terminal five-item batch is the only next entry |
 | 14 P4.9 terminal batch | CLOSED | A `5213c5d`; B `c1ea4ef`; approved package `74ff34c`; PHASE2-08 `f196f55`; C01-C13 validated through `de9099e`; D `9f02f3f` | [final sign-off](../review/p49-terminal-closeout.md#最终签批); [progress §43](stage14_p49_terminal_batch/progress.md#43-最终签批与-p49-关闭); designer verified and one external reviewer CLOSED with zero findings, 2026-10-08 |
+| 16 P2 submission identity | STOPPED_PENDING_RULING | Design registration `9b7754e` | [progress](stage16_p2_submission_identity/progress.md); P2-01 awaits explicit acceptance-phase ruling; no production/test changes |
 
 ## Code-Ready Checkpoint
 
