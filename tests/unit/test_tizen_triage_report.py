@@ -637,7 +637,7 @@ def test_default_gbs_report_arches_include_emulator_and_gcov() -> None:
     assert BatchTriageOptions().arches == DEFAULT_ARCHES
 
 
-# Package surface and legacy wiring.
+# Package surface.
 
 
 def test_triage_report_package_root_exports_only_public_api() -> None:
@@ -676,39 +676,3 @@ def test_triage_report_package_root_exports_only_public_api() -> None:
     assert set(package.__all__) == set(public)
     assert all(getattr(package, name) is value for name, value in public.items())
     assert all(not hasattr(package, name) for name in internal)
-
-
-def test_triage_report_legacy_shims_preserve_all_symbol_identities() -> None:
-    legacy_gbs = importlib.import_module("ci_triage.gbs_report")
-    skill_gbs = importlib.import_module("tizen_triage_report.gbs_report")
-    legacy_report = importlib.import_module("ci_triage.report")
-    skill_report = importlib.import_module("tizen_triage_report.report")
-    gbs_symbols = {
-        "DEFAULT_ARCHES",
-        "GbsReport",
-        "GbsReportPackage",
-        "_Anchor",
-        "_AnchorBuilder",
-        "_Cell",
-        "_CellBuilder",
-        "_IframeParser",
-        "_ReportTableParser",
-        "_Row",
-        "_Table",
-        "_attrs_to_map",
-        "_class_names",
-        "_looks_like_build_status_table",
-        "_normalize_text",
-        "_row_to_package",
-        "_status_from_anchor",
-        "download_gbs_package_buildlog",
-        "fetch_gbs_report",
-        "find_iframe_src",
-        "parse_gbs_report_packages",
-    }
-    report_symbols = {"TriageReportData", "_primary_location", "render_report"}
-
-    assert all(getattr(legacy_gbs, name) is getattr(skill_gbs, name) for name in gbs_symbols)
-    assert all(
-        getattr(legacy_report, name) is getattr(skill_report, name) for name in report_symbols
-    )

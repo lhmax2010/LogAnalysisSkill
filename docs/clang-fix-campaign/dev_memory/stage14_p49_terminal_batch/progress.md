@@ -3897,3 +3897,16 @@ residual hits=19816/OTHER=0;wheel/install及5模块help exit0。
 `tests/unit/test_tizen_gerrit_submit.py::test_legacy_shim_preserves_all_symbol_identities`,
 保留包根公开契约、分支/timeout/无push行为测试。旧MODULE_OWNERS键按原批准
 HISTORICAL_KEY保留不改。五项验证`execution/C11R/` **PENDING**。
+
+C11 `b2ec945` 五项 **PASS**:1350/1,累计只少获批3例,新增2控制保留且其余
+状态不变;90 checkers regressions=[];mypy(105files)/ruff/lint exit0;
+smoke31/31;import-all204/204;residual hits=21991/OTHER=0;
+wheel/install及5模块help exit0。C10远端CI SUCCESS见C10S/remote-ci.log。
+
+### 41.3 C12
+
+删除gbs_report.py的21绑定纯shim,triage-report真实实现与qb-discover同名件
+均不动。仅删除获批完整nodeid
+`tests/unit/test_tizen_triage_report.py::test_triage_report_legacy_shims_preserve_all_symbol_identities`;
+其包根/四fixture/arch/行为测试全部保留。旧拓扑fixture与bridge历史键按原
+批准保留,不改symbol_audit原1772行负fixture。五项验证`execution/C12R/` **PENDING**。
