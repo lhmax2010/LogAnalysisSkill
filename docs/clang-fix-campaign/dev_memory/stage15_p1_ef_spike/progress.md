@@ -1,6 +1,6 @@
 # Stage15 P1 EF-5 Environment Spike
 
-日期:2026-10-08。状态:**BLOCKED**(本轮本地COOKIE_HEADER_FORMAT拒绝,非服务端拒绝)。
+日期:2026-10-08。状态:**WEB_READ_PARTIAL**(本人在隔离浏览器登录后,只读探测3次GET均200;详见§11)。
 权威:`../../design.md` v1.5.19-FROZEN §1.4 EF-5、§4.1
 qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 
@@ -13,7 +13,9 @@ qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 4. 准备完整真实提交请求,等待FatTank指定目标并明确确认,未经确认不发出。
 
 凭据仅来自`QB_PASSWORD`/`QB_COOKIE`环境变量或本人终端getpass;
-不读磁盘cookie jar、不读浏览器凭据、不将秘密放到命令行/日志/Git。
+不读磁盘cookie jar、不读既有浏览器凭据、不将秘密放到命令行/日志/Git。
+本轮本人另授权新建隔离浏览器并手工登录,仅该临时会话的QuickBuild Cookie
+经匿名内存管道交给探测器;不导出storage state、不读取日常浏览器profile。
 HTTP只允许白名单只读URL,包括禁用重定向;即使GET也禁止`/rest/trigger`。
 脚本仅位于`../../spikes/`,不进入任何生产包。
 原有无关工作区改动不处理。
@@ -35,8 +37,8 @@ HTTP只允许白名单只读URL,包括禁用重定向;即使GET也禁止`/rest/t
 | 项目 | 状态 | 证据/下一步 |
 |---|---|---|
 | EF-5① Basic Auth/独立配置解析 | BLOCKED_REST_ACCESS | 匿名401;Basic GET版本/配置均500 AccessDeniedException;`evidence/authenticated-01/requests.json` |
-| EF-5③ SBS结果与绑定字段 | BLOCKED_REST_ACCESS_AND_PAGE_LOGIN | 样本1069532:REST均500,无Cookie的页面302到signin,未取得业务数据 |
-| EF-5④ 上级TRIGGER的accept | PENDING_BUILD_ID | 确认同一SBS对应关系后取证,不凭时间接近猜父子关系 |
+| EF-5③ SBS结果与绑定字段 | WEB_READ_PARTIAL | §11:1069532为SBS/TRIGGER,Successful;变量中BUILD_PKG_LIST含repo@commit,非SBS_TARGET字面 |
+| EF-5④ 上级TRIGGER的accept | PARTIAL | §11:该TRIGGER的SR_STATUS=ACCEPTED,Child Build明确列1069540;未读取子页,通过条件仍待核实 |
 | EF-5② 一次真实REST提交与映射 | WAITING_EXPLICIT_CONFIRMATION | 尚无目标/SBS_TARGET/参数确认;未发出提交 |
 
 只读脚本:`../../spikes/ef5_probe.py`。新证据将在本目录`evidence/`落盘,
@@ -314,3 +316,99 @@ Cookie只由可见gnome-terminal中的getpass输入;启动时对该子进程取�
 只读工具仍有GET白名单且禁redirect/JS/表单/触发;本轮无需、也未扩白名单。
 恢复需在getpass输入HTTP Cookie头的name=value配对内容,不是裸值/JSON/整条curl命令;
 勿在聊天或命令行传递凭据。本轮不对实际输入作重建或自动修正。
+
+## 11. 隔离浏览器手工登录与内存会话交接
+
+2026-10-08本人改用可见浏览器手工登录的方式,不再粘贴Cookie。
+只启动新的非持久Chromium context,不读取本人既有浏览器profile;
+使用已安装的Playwright/Chromium,临时文件限`/dev/shm`,关闭后清理。
+不录制HAR/trace/storage-state,不读取登录表单内容。
+本人登录后回配套终端按回车,最多等待600秒,未提前终止。
+Cookie由该context按QuickBuild URL筛选,经匿名stdin管道交给
+`ef5_browser_receiver.py`,只在内存组成header与脱敏字典,不用文件/环境变量传递。
+用户手工登录所需认证POST与后台探测分开;后者仍是原35d4052的GET-only工具。
+
+### 11.1 实际启动与取证
+
+```sh
+env -u LD_LIBRARY_PATH -u LD_PRELOAD -u GTK_PATH -u GIO_MODULE_DIR -u DEBUG -u PWDEBUG -u QB_COOKIE -u QB_PASSWORD TMPDIR=/dev/shm gnome-terminal --wait --title='QuickBuild manual login - press Enter after login (no secrets here)' --working-directory=/home/linhao/Toolchain/development/LogAnalysisSkill -- /home/linhao/.bun/bin/bun docs/clang-fix-campaign/spikes/ef5_browser_login.mjs /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/spikes/ef5_browser_receiver.py /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-browser-01
+```
+
+启动仅有`Failed to load module "canberra-gtk-module"`告警,浏览器正常显示。
+终端wait与子探测器均exit=0(后者见run.json)。
+`web-browser-01/run.json`原文摘录:
+
+```json
+"builds": {"1069532": "READ_PAGES_COLLECTED"},
+"exit_code": 0,
+"cookie_stored": false,
+"finished_at": "2026-10-08T10:07:34.775015+00:00",
+"requests": 3,
+"post_requests": 0,
+"trigger_authorized": false,
+"redaction_self_check": "PASS"
+```
+
+requests只计后台业务页面,不冒称包含本人浏览器登录/静态资源请求。
+`requests.json`逐条为`/build/1069532`、`/overview`、`/variables`,均GET/200;
+页面全文先脱敏后写入,附SHA与带行号的page.json,动作链接一律NOT_FOLLOWED。
+实跑时launcher SHA256=`f4b2eaab21b6fc8cfd55ed267ecfd384db5a26f574c1e47127091b4976df7c27`;
+实跑后补紧浏览器登录容器的普通页面query拒绝并加12项离线控制,未重新登录或请求。
+Python接收器仅修类型注解以通过mypy。后台取证核心文件未改:
+`ef5_web_probe.py=60d76e36e6b237053961101c9522469c61dbe1f53eedc2784d00a0b34f35b21c`;
+`ef5_probe.py=00c0f3b90d1ea8f6eaa9cd1b84f0bef2e0dbdba39a93c1ff7a4de35f95e63d26`。
+`find /dev/shm -maxdepth 1 -name 'ef5-browser-*'`退出0且空输出,临时会话已清理。
+
+### 11.2 结论与停点
+
+**WEB_READ_PARTIAL**。页面证明1069532是SBS/TRIGGER,而不是被假定的子构建。
+Summary为Successful、SR_STATUS为ACCEPTED(20260424.154027);
+Child Build明确列1069540,架构串standard-armv7l:aarch64:x86_64,结果SUCCESSFUL。
+Variables中BUILD_PKG_LIST/BUILD_PKG_LIST_MODIFY含repo@commit,没有SBS_TARGET字面。
+Artifacts两个下载链接、Build Log链接、Run the configuration入口均可见且未点击。
+Step Status实际链接是`step_status`,未在既有白名单,未读详情;子构建也未访问。
+三页逐页字段与证据行号见`../../spikes/ef_report.md`最后一节。
+不把READ_PAGES_COLLECTED等同WEB_READ_OK,也不由单一Successful/ACCEPTED样本
+断言复验的必要通过条件。缺步骤详情/子页实测/逐架构状态/目标映射与accept判据;
+真实触发仍NOT_GRANTED。浏览器已关闭,无持久Cookie,未更改design或P2-P4生产代码。
+
+### 11.3 离线验证
+
+```text
+$ env PYTHONPATH=docs/clang-fix-campaign/spikes .venv/bin/python -m unittest discover -s docs/clang-fix-campaign/spikes -p 'test_ef5*.py'
+Ran 18 tests in 0.113s
+OK
+exit=0
+$ /home/linhao/.bun/bin/bun docs/clang-fix-campaign/spikes/ef5_browser_login.mjs --policy-self-test
+Browser login allowlist: 12 controls PASS; build actions rejected.
+exit=0
+$ .venv/bin/mypy docs/clang-fix-campaign/spikes/ef5_browser_receiver.py docs/clang-fix-campaign/spikes/test_ef5_browser_receiver.py
+Success: no issues found in 2 source files
+exit=0
+$ .venv/bin/ruff check docs/clang-fix-campaign/spikes/ef5_browser_receiver.py docs/clang-fix-campaign/spikes/test_ef5_browser_receiver.py
+All checks passed!
+exit=0
+$ .venv/bin/python -m pytest -q
+1457 passed, 1 skipped in 30.39s
+exit=0
+```
+
+新增工具初次mypy曾报SimpleCookie不接受类型参数、测试list不变性报错;
+分别去掉多余类型参数、改用Sequence[Mapping]形参,无行为变更。
+ruff首次仅为import排序,已修复。原有无关工作树改动照旧不处理。
+
+最终复跑同一pytest命令exit=0,完整原文在`evidence/browser-pytest.log`,末行为
+`1457 passed, 1 skipped in 30.95s`。提交前用JSON解析requests逐项校验响应hash,
+并用SensitiveHTML/PageInventory复核敏感字段,实际输出:
+
+```text
+responses=3; SHA256_MATCH=3/3; GET_200=3/3; sensitive_fields=REDACTED_OR_EMPTY; auth_headers_archived=0
+probe_exit=0; cookie_stored=false; runtime_redaction_self_check=PASS
+```
+
+`git diff 35d4052 -- docs/clang-fix-campaign/spikes/ef5_probe.py docs/clang-fix-campaign/spikes/ef5_web_probe.py 'tizen-*/scripts/**' docs/clang-fix-campaign/design.md`
+退出0且空输出,确认只新增隔离登录脚手架与证据/报告,取证核心与生产代码未改。
+
+`git diff --cached --check`对服务器HTML的原有空白/CRLF报exit=2;
+保留脱敏响应原字节和已记录hash,不为格式检查改写取证文件。
+仅排除三份`*.response.txt`后对其余提交文件的同一检查exit=0、空输出。

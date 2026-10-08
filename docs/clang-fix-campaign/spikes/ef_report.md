@@ -207,3 +207,54 @@ exit=2
 EF-5②仍需另行指定目标及明确确认,本轮不执行。
 网页自动化可行性仍未得到环境证据,上一节风险评估仅为实现层推论。
 不修改design.md、不改变P2-P4代码、不解除P5Q开工门。
+
+## 隔离浏览器登录后实测(2026-10-08):WEB_READ_PARTIAL
+
+本人授权并在新建可见浏览器中手工登录。Cookie只由这个非持久会话取得,
+经匿名内存管道传入原有`ef5_web_probe.py`,不复制到聊天/命令行/环境变量/文件。
+浏览器使用本机已有Chromium,临时目录在`/dev/shm`,不使用日常profile;
+未启用HAR/trace/storage-state,取证结束即关闭并清理。登录由本人提交,
+与后台探测严格分开:以下请求统计只指后台业务页面探测,不含人工登录和静态资源。
+
+证据:[web-browser-01](../dev_memory/stage15_p1_ef_spike/evidence/web-browser-01/)。
+`run.json`记录结束于`2026-10-08T10:07:34.775015+00:00`,
+**3次GET、全部200、0 POST/构建操作、exit=0、脱敏自检PASS**。
+三个HTML响应在写入前均由原有PageRedactor处理;Set-Cookie不归档。
+
+### 页面覆盖
+
+| 页面 | HTTP | build状态 | 步骤 | 日志链接 | 产物列表 | trigger入口 |
+|---|---|---|---|---|---|---|
+| /build/1069532 | 200 | Successful; SR_STATUS=ACCEPTED(20260424.154027) | 仅Step Status入口,未读详情 | /build/1069532/log可见,未访问 | Artifacts列Download_URL与Manifest_URL,未打开产物 | Run the configuration按钮可见,未点击 |
+| /build/1069532/overview | 200 | 同上 | 同上 | 同上 | 同上 | 同上,未点击 |
+| /build/1069532/variables | 200 | 变量SR_STATUS=ACCEPTED;本页无Summary表 | 仅Step Status入口 | Build Log入口可见,未访问 | 无Artifacts表;有TARGET_SNAPSHOT_URL变量 | Run the configuration按钮可见,未点击 |
+
+实际步骤路由是`/build/1069532/step_status`,不是现有白名单的`/steps`;
+因此被记录为NOT_FOLLOWED,没有擅自扩白名单。`/log`、`/gbs_reports`、
+所有Wicket动作链接与子构建1069540同样未请求。
+
+### 事实、设计影响与缺口
+
+| 项目 | 实测事实与原文位置 | 对EF-5假设的影响 | 涉及段落 |
+|---|---|---|---|
+| 样本身份 | `01.response.txt:6/:679`配置为`root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/SBS/TRIGGER`;variables的BUILD_CATEGORY=SBS、QB_CUR_STEP=TRIGGER、QB_TRIGGER_ID=1069532 | 样本属于SBS流程的TRIGGER,不能当作子SBS实跑构建 | §1.4 EF-5③④ |
+| 状态与accept | `01.response.txt:915-945`完整Summary列Id/Status/Begin Date/Duration/Triggered By/#Dependents/#Dependencies/SR_STATUS;Status=Successful,SR_STATUS=ACCEPTED(20260424.154027);页面同时显示Ready to Accept操作按钮 | 网页可读取两个独立字段;按钮不是状态证据。单个样本不能证明accept是门2通过的必要条件 | §1.4 EF-5④、§4.1 qb-result-fetch |
+| 目标回显 | `03.response.txt:819`的BUILD_PKG_LIST与BUILD_PKG_LIST_MODIFY均为`platform/upstream/python3@7cbaf2d74f3428e706c6cae8b3b06b843d140379`;本次三页未出现SBS_TARGET变量名 | repo@commit形态得到证据,但设计变量名到环境实际变量的映射需核实,不能擅认二者等价 | §1.4 EF-5③、§4.1 qb-sbs-trigger/qb-result-fetch |
+| 架构与父子关系 | `01.response.txt:885-899`的Child Build明确链接1069540,Repository-Architecture=`standard-armv7l:aarch64:x86_64`,Build Result=SUCCESSFUL;variables中CHILD_CONFIGURATIONS同值 | 已有明确父子链接,不是时间推断;合并字符串不等于三架构逐项状态,尚缺子页独立取证 | §1.4 EF-5③④、§4.1 qb-result-fetch |
+| 触发入口 | `01.response.txt:689`的按钮title为Run the configuration,指向Wicket动作;没有打开 | 仅证明UI入口存在,不证明提交参数/协议可自动化 | §1.4 EF-5②、§4.1 qb-sbs-trigger |
+
+因此选**WEB_READ_PARTIAL**,不是WEB_READ_OK:缺步骤详情、子构建自身状态与
+逐架构结果、SBS_TARGET的明确字段映射、accept必要性判据。产物仅取得两个链接,
+未枚举实际文件;日志也仅取得链接。真实提交、request_id到build_id映射仍未执行。
+
+### 网页自动化可行性与下一停点
+
+本样本证实无JS的GET HTML可承载Summary、Variables、Artifacts链接和Child Build表。
+尚未证明跨版本稳定:路由已出现`step_status`与脚本假设不同的情况,且Wicket动作
+不能作为普通只读链接自动跟随。相对REST,需管理登录会话、逐页白名单、HTML
+字段定位与脱敏;REST拒绝事实不变,本轮没有重试REST或绕过其权限限制。
+
+下一步只读取证的明确对象是子构建1069540与页面实际步骤路由;需核实路由后
+再调整独立spike白名单。本轮会话已丢弃,不保留凭据以便后续暗中续跑。
+未读取触发表单,不把Variables页字段直接当成可提交参数。真实提交仍须另行
+完整请求确认。本轮不修改design.md、不改变P2-P4代码、不解除P5Q开工门。

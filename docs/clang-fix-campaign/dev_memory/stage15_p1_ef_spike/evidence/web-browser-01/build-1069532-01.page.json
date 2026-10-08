@@ -1,0 +1,716 @@
+{
+  "url": "https://quickbuild.tizen.org/build/1069532",
+  "visible_text": [
+    "6: QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/SBS/TRIGGER - TIZEN_Tizen_Tizen-Base-Toolchain_SBS_TRIGGER_20260424.002653",
+    "474: Please enable JavaScript in your browser.",
+    "479: Please Wait...",
+    "480: Loading...",
+    "493: ** IMPORTANT NOTICE ** Tizen Gerrit system will not be available due to System maintenance. (2026/03/28(Sat.) 08:00~17:00 KST) QB system may be unstable.",
+    "495: More...",
+    "498: GUIDE",
+    "500: TIZEN",
+    "504: Tizen",
+    "505: Tizen-Base",
+    "506: Tizen-Unified",
+    "507: Tizen-Base-Dev",
+    "508: Tizen-Unified-Dev",
+    "509: Tizen-Base-ASAN",
+    "510: Tizen-Rust",
+    "511: Tizen-Base-Toolchain",
+    "512: Tizen-Unified-Toolchain",
+    "513: Tizen-Base-X",
+    "514: Tizen-Unified-X",
+    "515: Tizen-Base-X-ASAN",
+    "516: Tizen-Unified-X-ASAN",
+    "517: Tizen-Base-SC",
+    "518: Tizen-Unified-SC",
+    "521: Tizen-10.1",
+    "522: Tizen-10.1-Base",
+    "523: Tizen-10.1-Unified",
+    "526: Tizen-10.0",
+    "527: Tizen-10.0-Base",
+    "528: Tizen-10.0-Unified",
+    "531: Tizen-9.0",
+    "532: Tizen-9.0-Base",
+    "533: Tizen-9.0-Unified",
+    "536: Tizen-8.0",
+    "537: Tizen-8.0-Base",
+    "538: Tizen-8.0-Unified",
+    "541: Tizen-7.0",
+    "542: Tizen-7.0-Base",
+    "543: Tizen-7.0-Unified",
+    "544: Tizen-7.0-Base-Hotfix",
+    "545: Tizen-7.0-Unified-Hotfix",
+    "548: Tizen-6.5",
+    "549: Tizen-6.5-Base",
+    "550: Tizen-6.5-Unified",
+    "553: Tizen-6.0",
+    "554: Tizen-6.0-Base",
+    "555: Tizen-6.0-Unified",
+    "558: Tizen-5.5",
+    "559: Tizen-5.5-Base",
+    "560: Tizen-5.5-Unified",
+    "563: Tizen-5.0",
+    "564: Tizen-5.0-Base",
+    "565: Tizen-5.0-Unified",
+    "568: Tizen-4.0",
+    "569: Tizen-4.0-Base",
+    "570: Tizen-4.0-Unified",
+    "581: Welcome!",
+    "581: Lin",
+    "583: Sign Out",
+    "586: Help",
+    "606: QuickBuild",
+    "614: Dashboards",
+    "618: Queue",
+    "622: My",
+    "649: root",
+    "654: CI_TIZEN",
+    "659: TIZEN",
+    "664: Tizen",
+    "669: Tizen-Base-Toolchain",
+    "674: SBS",
+    "679: TRIGGER",
+    "705: Configuration Overview",
+    "710: Build (id:1069532)",
+    "718: Pipelines",
+    "722: Children",
+    "743: TIZEN_Tizen_Tizen-Base-Toolchain_SBS_TRIGGER_20260424.002653",
+    "755: Ready to Accept",
+    "763: Recommend",
+    "798: Build Overview",
+    "803: Build Log",
+    "808: Step Status",
+    "813: Variables",
+    "818: GBS Reports",
+    "826: ◆ Variables",
+    "830: Name",
+    "831: Value",
+    "835: Build Package List",
+    "836: platform/upstream/python3@7cbaf2d74f3428e706c6cae8b3b06b843d140379",
+    "839: Build Type",
+    "840: Partial",
+    "843: Build Reference",
+    "844: Ref. Snapshot",
+    "847: Profile URL",
+    "848: http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260408.231829",
+    "851: Base URL",
+    "852: http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base/tizen-base_20260402.000326",
+    "855: Build Notes",
+    "859: Your Comments",
+    "869: ◆ Artifacts",
+    "873: Download_URL",
+    "874: http://download.tizen.org/SBS/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260424.002653",
+    "877: Manifest_URL",
+    "878: http://download.tizen.org/SBS/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260424.002653/builddata/manifest",
+    "885: ◆ Child Build",
+    "889: Repository-Architecture",
+    "890: QB Build URL",
+    "891: Build Result",
+    "892: Build Profiling",
+    "896: standard-armv7l:aarch64:x86_64",
+    "897: https://quickbuild.tizen.org/build/1069540",
+    "898: SUCCESSFUL",
+    "899: Link",
+    "911: Summary",
+    "916: Id",
+    "917: Status",
+    "919: Begin Date",
+    "920: Duration",
+    "921: Triggered By",
+    "923: #Dependents",
+    "924: #Dependencies",
+    "925: SR_STATUS",
+    "930: 1069532",
+    "931: Successful",
+    "933: 2026-04-24 00:26:54",
+    "935: 6 hours 15 minutes 34 seconds",
+    "937: dkson95 (Dongkyun)",
+    "940: 0",
+    "940: builds",
+    "943: 0",
+    "943: builds",
+    "945: ACCEPTED",
+    "945: (20260424.154027)",
+    "972: PMEase QuickBuild",
+    "972: ,",
+    "972: (This system follows the Privacy Policy specified in https://tizen.org/about/privacy-policy)",
+    "972: ,",
+    "973: 2022-01-29",
+    "973: ,",
+    "974: Open Source License for 'Tizen project'",
+    "978: Support",
+    "981: Report Bug or Enhancement"
+  ],
+  "links": [
+    {
+      "line": 495,
+      "href": "https://quickbuild.tizen.org/dashboard/84",
+      "text": "More... ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/84",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 498,
+      "href": "/dashboard/5",
+      "text": "GUIDE ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/5",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 505,
+      "href": "/dashboard/12",
+      "text": "Tizen-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/12",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 506,
+      "href": "/dashboard/13",
+      "text": "Tizen-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/13",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 507,
+      "href": "/dashboard/42",
+      "text": "Tizen-Base-Dev ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/42",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 508,
+      "href": "/dashboard/43",
+      "text": "Tizen-Unified-Dev ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/43",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 509,
+      "href": "/dashboard/56",
+      "text": "Tizen-Base-ASAN ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/56",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 510,
+      "href": "/dashboard/59",
+      "text": "Tizen-Rust ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/59",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 511,
+      "href": "/dashboard/61",
+      "text": "Tizen-Base-Toolchain ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/61",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 512,
+      "href": "/dashboard/62",
+      "text": "Tizen-Unified-Toolchain ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/62",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 513,
+      "href": "/dashboard/64",
+      "text": "Tizen-Base-X ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/64",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 514,
+      "href": "/dashboard/65",
+      "text": "Tizen-Unified-X ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/65",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 515,
+      "href": "/dashboard/66",
+      "text": "Tizen-Base-X-ASAN ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/66",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 516,
+      "href": "/dashboard/67",
+      "text": "Tizen-Unified-X-ASAN ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/67",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 517,
+      "href": "/dashboard/76",
+      "text": "Tizen-Base-SC ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/76",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 518,
+      "href": "/dashboard/75",
+      "text": "Tizen-Unified-SC ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/75",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 522,
+      "href": "/dashboard/88",
+      "text": "Tizen-10.1-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/88",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 523,
+      "href": "/dashboard/87",
+      "text": "Tizen-10.1-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/87",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 527,
+      "href": "/dashboard/79",
+      "text": "Tizen-10.0-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/79",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 528,
+      "href": "/dashboard/78",
+      "text": "Tizen-10.0-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/78",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 532,
+      "href": "/dashboard/71",
+      "text": "Tizen-9.0-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/71",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 533,
+      "href": "/dashboard/72",
+      "text": "Tizen-9.0-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/72",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 537,
+      "href": "/dashboard/57",
+      "text": "Tizen-8.0-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/57",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 538,
+      "href": "/dashboard/58",
+      "text": "Tizen-8.0-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/58",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 542,
+      "href": "/dashboard/4",
+      "text": "Tizen-7.0-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/4",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 543,
+      "href": "/dashboard/3",
+      "text": "Tizen-7.0-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/3",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 544,
+      "href": "/dashboard/16",
+      "text": "Tizen-7.0-Base-Hotfix ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/16",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 545,
+      "href": "/dashboard/17",
+      "text": "Tizen-7.0-Unified-Hotfix ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/17",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 549,
+      "href": "/dashboard/38",
+      "text": "Tizen-6.5-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/38",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 550,
+      "href": "/dashboard/39",
+      "text": "Tizen-6.5-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/39",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 554,
+      "href": "/dashboard/37",
+      "text": "Tizen-6.0-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/37",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 555,
+      "href": "/dashboard/36",
+      "text": "Tizen-6.0-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/36",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 559,
+      "href": "/dashboard/47",
+      "text": "Tizen-5.5-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/47",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 560,
+      "href": "/dashboard/34",
+      "text": "Tizen-5.5-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/34",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 564,
+      "href": "/dashboard/48",
+      "text": "Tizen-5.0-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/48",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 565,
+      "href": "/dashboard/28",
+      "text": "Tizen-5.0-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/28",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 569,
+      "href": "/dashboard/49",
+      "text": "Tizen-4.0-Base ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/49",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 570,
+      "href": "/dashboard/26",
+      "text": "Tizen-4.0-Unified ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard/26",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 583,
+      "href": "../wicket/page?6-1.ILinkListener-signOutLink",
+      "text": "Sign Out ",
+      "resolved_url": "https://quickbuild.tizen.org/wicket/page?6-1.ILinkListener-signOutLink",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 586,
+      "href": "http://wiki.pmease.com/display/qb11/Documentation+Home",
+      "text": "Help ",
+      "resolved_url": "http://wiki.pmease.com/display/qb11/Documentation+Home",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 587,
+      "href": "#",
+      "text": "",
+      "resolved_url": "https://quickbuild.tizen.org/build/1069532",
+      "decision": "ALLOW_READ"
+    },
+    {
+      "line": 596,
+      "href": "/",
+      "text": "QuickBuild ",
+      "resolved_url": "https://quickbuild.tizen.org/",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 614,
+      "href": "../dashboard",
+      "text": "Dashboards ",
+      "resolved_url": "https://quickbuild.tizen.org/dashboard",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 618,
+      "href": "../queue",
+      "text": "Queue ",
+      "resolved_url": "https://quickbuild.tizen.org/queue",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 622,
+      "href": "../my",
+      "text": "My ",
+      "resolved_url": "https://quickbuild.tizen.org/my",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 650,
+      "href": "javascript:void(0);",
+      "text": "",
+      "resolved_url": "javascript:void(0);",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 654,
+      "href": "2.latest",
+      "text": "CI_TIZEN ",
+      "resolved_url": "https://quickbuild.tizen.org/build/2.latest",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 655,
+      "href": "javascript:void(0);",
+      "text": "",
+      "resolved_url": "javascript:void(0);",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 659,
+      "href": "14.latest",
+      "text": "TIZEN ",
+      "resolved_url": "https://quickbuild.tizen.org/build/14.latest",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 660,
+      "href": "javascript:void(0);",
+      "text": "",
+      "resolved_url": "javascript:void(0);",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 664,
+      "href": "148.latest",
+      "text": "Tizen ",
+      "resolved_url": "https://quickbuild.tizen.org/build/148.latest",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 665,
+      "href": "javascript:void(0);",
+      "text": "",
+      "resolved_url": "javascript:void(0);",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 669,
+      "href": "1913.latest",
+      "text": "Tizen-Base-Toolchain ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1913.latest",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 670,
+      "href": "javascript:void(0);",
+      "text": "",
+      "resolved_url": "javascript:void(0);",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 674,
+      "href": "1918.latest",
+      "text": "SBS ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1918.latest",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 675,
+      "href": "javascript:void(0);",
+      "text": "",
+      "resolved_url": "javascript:void(0);",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 705,
+      "href": "../overview/1921",
+      "text": "Configuration Overview ",
+      "resolved_url": "https://quickbuild.tizen.org/overview/1921",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 710,
+      "href": "1069532",
+      "text": "Build (id:1069532) ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1069532",
+      "decision": "ALLOW_READ"
+    },
+    {
+      "line": 711,
+      "href": "javascript:void(0);",
+      "text": "",
+      "resolved_url": "javascript:void(0);",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 718,
+      "href": "../pipeline/1921",
+      "text": "Pipelines ",
+      "resolved_url": "https://quickbuild.tizen.org/pipeline/1921",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 722,
+      "href": "../children/1921",
+      "text": "Children ",
+      "resolved_url": "https://quickbuild.tizen.org/children/1921",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 772,
+      "href": "../wicket/page?6-1.ILinkListener-content-buildHead-first",
+      "text": "",
+      "resolved_url": "https://quickbuild.tizen.org/wicket/page?6-1.ILinkListener-content-buildHead-first",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 777,
+      "href": "../wicket/page?6-1.ILinkListener-content-buildHead-prev",
+      "text": "",
+      "resolved_url": "https://quickbuild.tizen.org/wicket/page?6-1.ILinkListener-content-buildHead-prev",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 782,
+      "href": "../wicket/page?6-1.ILinkListener-content-buildHead-next",
+      "text": "",
+      "resolved_url": "https://quickbuild.tizen.org/wicket/page?6-1.ILinkListener-content-buildHead-next",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 787,
+      "href": "../wicket/page?6-1.ILinkListener-content-buildHead-last",
+      "text": "",
+      "resolved_url": "https://quickbuild.tizen.org/wicket/page?6-1.ILinkListener-content-buildHead-last",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 798,
+      "href": "1069532/overview",
+      "text": "Build Overview ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1069532/overview",
+      "decision": "ALLOW_READ"
+    },
+    {
+      "line": 803,
+      "href": "1069532/log",
+      "text": "Build Log ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1069532/log",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 808,
+      "href": "1069532/step_status",
+      "text": "Step Status ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1069532/step_status",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 813,
+      "href": "1069532/variables",
+      "text": "Variables ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1069532/variables",
+      "decision": "ALLOW_READ"
+    },
+    {
+      "line": 818,
+      "href": "1069532/gbs_reports",
+      "text": "GBS Reports ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1069532/gbs_reports",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 874,
+      "href": "http://download.tizen.org/SBS/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260424.002653",
+      "text": "http://download.tizen.org/SBS/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260424.002653 ",
+      "resolved_url": "http://download.tizen.org/SBS/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260424.002653",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 878,
+      "href": "http://download.tizen.org/SBS/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260424.002653/builddata/manifest",
+      "text": "http://download.tizen.org/SBS/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260424.002653/builddata/manifest ",
+      "resolved_url": "http://download.tizen.org/SBS/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260424.002653/builddata/manifest",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 897,
+      "href": "https://quickbuild.tizen.org/build/1069540",
+      "text": "https://quickbuild.tizen.org/build/1069540 ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1069540",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 899,
+      "href": "https://quickbuild.tizen.org/build/1069540/build_profiling",
+      "text": "Link ",
+      "resolved_url": "https://quickbuild.tizen.org/build/1069540/build_profiling",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 940,
+      "href": "javascript:void(0);",
+      "text": "0 builds ",
+      "resolved_url": "javascript:void(0);",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 943,
+      "href": "javascript:void(0);",
+      "text": "0 builds ",
+      "resolved_url": "javascript:void(0);",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 972,
+      "href": "https://www.pmease.com/quickbuild",
+      "text": "PMEase QuickBuild ",
+      "resolved_url": "https://www.pmease.com/quickbuild",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 978,
+      "href": "https://www.pmease.com/quickbuild/support",
+      "text": "Support ",
+      "resolved_url": "https://www.pmease.com/quickbuild/support",
+      "decision": "NOT_FOLLOWED"
+    },
+    {
+      "line": 981,
+      "href": "http://track.pmease.com",
+      "text": "Report Bug or Enhancement ",
+      "resolved_url": "http://track.pmease.com",
+      "decision": "NOT_FOLLOWED"
+    }
+  ],
+  "form_fields_metadata_only": [
+    {
+      "line": 628,
+      "name": "id50_hf_0",
+      "type": "hidden",
+      "value": null
+    },
+    {
+      "line": 633,
+      "name": "input",
+      "type": "text",
+      "value": ""
+    }
+  ],
+  "forms_submitted": 0,
+  "javascript_executed": false
+}

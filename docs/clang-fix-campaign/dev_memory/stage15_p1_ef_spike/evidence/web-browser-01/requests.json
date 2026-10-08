@@ -1,0 +1,41 @@
+[
+  {
+    "method": "GET",
+    "url": "https://quickbuild.tizen.org/build/1069532",
+    "auth_mode": "cookie",
+    "location": null,
+    "www_authenticate": null,
+    "status": 200,
+    "content_type": "text/html;charset=utf-8",
+    "shape": "html",
+    "response": "build-1069532-01.response.txt",
+    "redacted_sha256": "055b131c96a339163e133091639b37f9e2d1ffa10d6a351564060fabf4f318c8",
+    "redaction_self_check": "PASS"
+  },
+  {
+    "method": "GET",
+    "url": "https://quickbuild.tizen.org/build/1069532/overview",
+    "auth_mode": "cookie",
+    "location": null,
+    "www_authenticate": null,
+    "status": 200,
+    "content_type": "text/html;charset=utf-8",
+    "shape": "html",
+    "response": "build-1069532-02.response.txt",
+    "redacted_sha256": "11cea002d0135655565a0dd24e96d32f230b4e199f5f080eac03f0a887eacfac",
+    "redaction_self_check": "PASS"
+  },
+  {
+    "method": "GET",
+    "url": "https://quickbuild.tizen.org/build/1069532/variables",
+    "auth_mode": "cookie",
+    "location": null,
+    "www_authenticate": null,
+    "status": 200,
+    "content_type": "text/html;charset=utf-8",
+    "shape": "html",
+    "response": "build-1069532-03.response.txt",
+    "redacted_sha256": "7ca60274ab37d4447ad5ae8d65e56242662071253c20fa6200501f42c0982e66",
+    "redaction_self_check": "PASS"
+  }
+]
