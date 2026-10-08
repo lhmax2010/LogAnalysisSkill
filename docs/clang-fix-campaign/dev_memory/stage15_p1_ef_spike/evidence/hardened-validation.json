@@ -1,0 +1,43 @@
+[
+  {
+    "name": "hardened-tests",
+    "command": [
+      ".venv/bin/python",
+      "docs/clang-fix-campaign/spikes/test_ef5_probe.py",
+      "-v"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "hardened-ruff",
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "docs/clang-fix-campaign/spikes/ef5_probe.py",
+      "docs/clang-fix-campaign/spikes/test_ef5_probe.py"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "hardened-mypy",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "mypy",
+      "--follow-imports=silent",
+      "docs/clang-fix-campaign/spikes/ef5_probe.py"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "regression",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/",
+      "-q"
+    ],
+    "exit": 0
+  }
+]

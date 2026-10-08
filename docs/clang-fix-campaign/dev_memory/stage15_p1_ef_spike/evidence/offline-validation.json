@@ -1,0 +1,32 @@
+[
+  {
+    "name": "offline-tests",
+    "command": [
+      ".venv/bin/python",
+      "docs/clang-fix-campaign/spikes/test_ef5_probe.py",
+      "-v"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "ruff",
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "docs/clang-fix-campaign/spikes/ef5_probe.py",
+      "docs/clang-fix-campaign/spikes/test_ef5_probe.py"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "mypy",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "mypy",
+      "--follow-imports=silent",
+      "docs/clang-fix-campaign/spikes/ef5_probe.py"
+    ],
+    "exit": 0
+  }
+]

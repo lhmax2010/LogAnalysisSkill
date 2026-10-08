@@ -1,0 +1,70 @@
+[
+  {
+    "path": "/html/head[0]/meta[0]/@http-equiv",
+    "value": "Content-Type"
+  },
+  {
+    "path": "/html/head[0]/meta[0]/@content",
+    "value": "text/html;charset=ISO-8859-1"
+  },
+  {
+    "path": "/html/head[0]/meta[0]",
+    "value": ""
+  },
+  {
+    "path": "/html/head[0]/title[1]",
+    "value": "Error 500 com.pmease.quickbuild.AccessDeniedException: Sorry, you are not allowed to access the system via RESTful API (client ip: 172.17.2.1)"
+  },
+  {
+    "path": "/html/body[1]/h2[0]",
+    "value": "HTTP ERROR 500 com.pmease.quickbuild.AccessDeniedException: Sorry, you are not allowed to access the system via RESTful API (client ip: 172.17.2.1)"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[0]/th[0]",
+    "value": "URI:"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[0]/td[1]",
+    "value": "/rest/builds/1069532/steps"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[1]/th[0]",
+    "value": "STATUS:"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[1]/td[1]",
+    "value": "500"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[2]/th[0]",
+    "value": "MESSAGE:"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[2]/td[1]",
+    "value": "com.pmease.quickbuild.AccessDeniedException: Sorry, you are not allowed to access the system via RESTful API (client ip: 172.17.2.1)"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[3]/th[0]",
+    "value": "SERVLET:"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[3]/td[1]",
+    "value": "com.pmease.quickbuild.rest.RestServlet-3026d191"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[4]/th[0]",
+    "value": "CAUSED BY:"
+  },
+  {
+    "path": "/html/body[1]/table[1]/tr[4]/td[1]",
+    "value": "com.pmease.quickbuild.AccessDeniedException: Sorry, you are not allowed to access the system via RESTful API (client ip: 172.17.2.1)"
+  },
+  {
+    "path": "/html/body[1]/h3[2]",
+    "value": "Caused by:"
+  },
+  {
+    "path": "/html/body[1]/pre[3]",
+    "value": "com.pmease.quickbuild.AccessDeniedException: Sorry, you are not allowed to access the system via RESTful API (client ip: 172.17.2.1)\n\tat com.pmease.quickbuild.rest.RestServlet.service(RestServlet.java:54)\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:790)\n\tat org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:799)\n\tat org.eclipse.jetty.servlet.ServletHandler$ChainEnd.doFilter(ServletHandler.java:1631)\n\tat com.pmease.quickbuild.Quickbuild$DisableTraceFilter.doFilter(Quickbuild.java:1304)\n\tat org.eclipse.jetty.servlet.FilterHolder.doFilter(FilterHolder.java:193)\n\tat org.eclipse.jetty.servlet.ServletHandler$Chain.doFilter(ServletHandler.java:1601)\n\tat org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:548)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:233)\n\tat org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:1624)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextHandle(ScopedHandler.java:233)\n\tat org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1440)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:188)\n\tat org.eclipse.jetty.servlet.ServletHandler.doScope(ServletHandler.java:501)\n\tat org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:1594)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.nextScope(ScopedHandler.java:186)\n\tat org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1355)\n\tat org.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141)\n\tat org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:146)\n\tat org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:127)\n\tat org.eclipse.jetty.server.Server.handle(Server.java:516)\n\tat org.eclipse.jetty.server.HttpChannel.lambda$handle$1(HttpChannel.java:487)\n\tat org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:732)\n\tat org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:479)\n\tat org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:277)\n\tat org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:311)\n\tat org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:105)\n\tat org.eclipse.jetty.io.ChannelEndPoint$1.run(ChannelEndPoint.java:104)\n\tat org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.runTask(EatWhatYouKill.java:338)\n\tat org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.doProduce(EatWhatYouKill.java:315)\n\tat org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.tryProduce(EatWhatYouKill.java:173)\n\tat org.eclipse.jetty.util.thread.strategy.EatWhatYouKill.run(EatWhatYouKill.java:131)\n\tat org.eclipse.jetty.util.thread.ReservedThreadExecutor$ReservedThread.run(ReservedThreadExecutor.java:409)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:883)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1034)\n\tat java.lang.Thread.run(Thread.java:750)\n"
+  }
+]

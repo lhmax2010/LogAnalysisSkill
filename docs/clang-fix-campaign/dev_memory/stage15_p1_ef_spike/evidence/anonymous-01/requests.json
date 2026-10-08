@@ -1,0 +1,15 @@
+[
+  {
+    "method": "GET",
+    "url": "https://quickbuild.tizen.org/rest/version",
+    "auth_mode": "anonymous",
+    "location": null,
+    "www_authenticate": "Basic realm=\"QuickBuild\"",
+    "status": 401,
+    "content_type": "text/plain; charset=utf-8",
+    "shape": "empty",
+    "response": "version-anonymous.response.txt",
+    "redacted_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "redaction_self_check": "PASS"
+  }
+]

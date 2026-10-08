@@ -1,0 +1,21 @@
+{
+  "runs": [
+    {
+      "run": "anonymous-01",
+      "requests": 1,
+      "hashes_match": true,
+      "collector_secret_self_check": "PASS",
+      "credential_headers_absent": true
+    },
+    {
+      "run": "authenticated-01",
+      "requests": 10,
+      "hashes_match": true,
+      "collector_secret_self_check": "PASS",
+      "credential_headers_absent": true
+    }
+  ],
+  "configuration_value_redacted": true,
+  "post_requests": 0,
+  "exit": 0
+}
