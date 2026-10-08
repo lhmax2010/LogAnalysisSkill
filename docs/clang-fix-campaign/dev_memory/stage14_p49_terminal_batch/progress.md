@@ -3538,3 +3538,85 @@ symbol_audit改动仅新增一个SPECS行与count23→24,完整diff在
 原始CI日志及原始git diff输出保留原字节(含尾随空格),因此包含这些证据的
 `git diff --cached --check` 返回2并报告日志空白;不清洗已取证stdout。
 手写文档/JSON单独的diff空白检查通过;这不是pytest或设计门禁结论。
+
+## 38. PHASE2-04～07 裁决执行与来源前检(2026-10-08)
+
+本轮 `git pull --ff-only`:Already up to date。按设计方新裁决,门禁对照固定
+`43a6aa625f27da46daba190657bf62256080c68e` 的90条原样命令,不再把基线已存在的
+失败误认本批回归。主工作树无关改动不处理,固定基线工作树起跑前status为空。
+基线完整argv/exit/原文/运行器源码在
+`a0-evidence/phase2/execution/BASE43/checkers/commands.json` 及其相邻90份日志。
+
+### 38.1 基线与遗留
+
+```text
+python /tmp/p49-checker-matrix.py /home/linhao/Toolchain/development/LogAnalysisSkill-a0-43a6aa6 BASE43
+SUMMARY commands=90 unexpected=20 regressions=BASELINE
+EXIT=0
+```
+
+运行器exit0表示基线采集完成,不是90条都通过。20条基线不符全部逐条登记
+在 [carried-over-issues.md](carried-over-issues.md),包含命令、基线与当前exit
+和原因。当前对照为REG03b (`787b804`,与本轮起点checker实现相同):
+
+- PHASE2-04 **CLOSED_AS_CARRIED**:duplicate-spec-root-mismatch 两树exit0
+  (预期1)、twin-both-binary-key 两树exit1(预期0);均因旧report已是shim。
+- PHASE2-05 **CLOSED_AS_CARRIED**:check_design_doc --self-test 两树exit1,
+  37/38,均缺未入库v1.5.2历史样本。未把untracked稿加入交付面。
+- 另17条在43a6aa6不存在的末批工具调用均exit2,当前均符合原预期。
+  按要求登记其基线事实,标RESOLVED,不冒充当前未修问题。
+- 当前仍OPEN_CARRIED **3条**;全部遗留登记行 **20条**。
+- skill5 ledger check基线exit0、当前exit2,仍是必须处理的回归,
+  不纳入非阻塞遗留。PHASE2-06尚未关闭。
+
+### 38.2 PHASE2-07 CI 输入补齐
+
+`.github/workflows/ci.yml` 仅在 checkout 增加 `with: fetch-depth: 0`,其它
+workflow步骤不动;无生产代码改动。用于使原样测试拿到已有的不可变Git
+blob,不更改blob hash或任何断言。提交后等待远端CI,以run的Tests实际结果
+判定PHASE2-07,不得用本地pytest代替。远端run以本提交SHA查询,未预填结果。
+
+### 38.3 PHASE2-08: skill-4 签批 tree 不含当前 ledger 必需语料
+
+状态 **OPEN / STOPPED**。改读取逻辑之前按已立“真实输入可满足性”要求
+枚举三批所有当前语料/目标路径,逐个向各自签批commit做git show并核hash:
+
+| 批次 | 签批commit | 语料+目标读取项 | 缺失/不符 |
+|---|---|---:|---:|
+| skill-4 | `8ed758801dcf61b2763b6d89212efe9042bf4b54` | 15 | 1 |
+| skill-5 | `81ada5408a0e05e86aa54346cdc0be822be4b608` | 7 | 0 |
+| skill-6 | `53e1bad73fa5df06b34e601abdb82f1d1e7c6328` | 10 | 0 |
+
+skill5目标hash按指定签批稿核对为0e2de5ff...f27,不是本轮补登记正文9c9e4c...937;
+这是取证前检,尚未修改工具或data。完整32项命令/exit/hash和生成程序见
+`a0-evidence/phase2/execution/BASE43/history-input-probe.json`。
+
+```text
+git cat-file -e 8ed7588:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md
+fatal: path 'docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md' exists on disk, but not in '8ed7588'
+EXIT=128
+```
+
+冲突位置:
+
+- 当前 `tools/design_drift_ledger.json:8047-8049` 强制该语料入序列,
+  hash=`c0f730ab378b97b1f0a5483e508c9003d864248c7225db2405c71e955f618408`。
+- 该路径在skill-4实现期更名后,直到skill-5的 `a8620f1` 才因三段版本规则
+  恢复入库;`git log -- <path>` 可复核。skill4签批时仅13份语料,当前14份。
+- 当前expected_matches为84项,签批旧data为83项;把整份data回退为签批版
+  会改期望集,违反本轮“断言、期望集、计数一律不改”。不能这样修。
+- 严格从8ed7588读现有全部语料会产生基线不存在的缺文件失败,也不能
+  将其算作carried-over。未实施该替换,未修改checker/数据/期望集。
+
+候选处置(未执行):只对此一语料批准
+`a8620f1ba7caea6ea083b042596830be54bd2fd6:<该路径>` 的不可变blob,
+保留当前钉定hash、14版序列与84个期望项;其余skill4稿仍取8ed7588。
+已向设计方请求这个单文件来源例外,未获回复前不自行选择。
+
+### 38.4 本轮边界
+
+本轮独立提交不属C组;落实基线、遗留记账与CI历史输入补齐。
+历史工具blob迁移/篡改引用负控制 **PENDING_PHASE2-08** (未声称已实现)。
+C01-C13未重启,D未开始;4个批准删除测试仍保留,未执行删除后残留/打包验证。
+先前冻结稿、predicates、OBS和全部判据保持原样。本轮新停止项1(PHASE2-08),
+它不是43a6aa6已有失败,不能按基线规则自动豁免。

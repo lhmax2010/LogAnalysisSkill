@@ -1,0 +1,536 @@
+{
+  "head": "2ab964a4a07d74b93a181c88a6161709f8be5ace",
+  "inputs": [
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.0-draft.md",
+      "expected_sha256": "a416fb0156f4311aa25c811fd7f0dec9b9410db762a5b9196cb7619a94e47efb",
+      "measured_sha256": "a416fb0156f4311aa25c811fd7f0dec9b9410db762a5b9196cb7619a94e47efb",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.0-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.1-draft.md",
+      "expected_sha256": "d372e5c0749358c26f2ae58cca44a93a321b52882a82bf40d799efa9157d36da",
+      "measured_sha256": "d372e5c0749358c26f2ae58cca44a93a321b52882a82bf40d799efa9157d36da",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.1-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.2-draft.md",
+      "expected_sha256": "2d6d5fb1d6dcf1b56d8e895f2ec3e0a72757de824c77c8915d857f436bea9e35",
+      "measured_sha256": "2d6d5fb1d6dcf1b56d8e895f2ec3e0a72757de824c77c8915d857f436bea9e35",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.2-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.3-draft.md",
+      "expected_sha256": "718042b5bbc0cf3910bb4fd73c1fa116dde024b65eb67b245cb8d99c527b815a",
+      "measured_sha256": "718042b5bbc0cf3910bb4fd73c1fa116dde024b65eb67b245cb8d99c527b815a",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.3-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.4-draft.md",
+      "expected_sha256": "7a1c8dea7050d0f5b193ce781718ecb2895a285f4db99c1c2d890111ecf42a00",
+      "measured_sha256": "7a1c8dea7050d0f5b193ce781718ecb2895a285f4db99c1c2d890111ecf42a00",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.4-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.5-draft.md",
+      "expected_sha256": "b1ab703f27693106a0bb9aa445daf97c9e7050e20ba0e7fff0221c7ce71eb938",
+      "measured_sha256": "b1ab703f27693106a0bb9aa445daf97c9e7050e20ba0e7fff0221c7ce71eb938",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.5-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.6-draft.md",
+      "expected_sha256": "af471e41733b869c40fb58120d9942d8fd0c09bb555f16f2aa6d9f59e966705b",
+      "measured_sha256": "af471e41733b869c40fb58120d9942d8fd0c09bb555f16f2aa6d9f59e966705b",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.6-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.7-draft.md",
+      "expected_sha256": "c719cea92c84af265faeb6cdd1336e59ff5b51f4841a921b70617b7828b19b88",
+      "measured_sha256": "c719cea92c84af265faeb6cdd1336e59ff5b51f4841a921b70617b7828b19b88",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.7-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.8-draft.md",
+      "expected_sha256": "47497e4367183ff9798a9356f7983e75feaca08075671233b0358f3488682bc6",
+      "measured_sha256": "47497e4367183ff9798a9356f7983e75feaca08075671233b0358f3488682bc6",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.8-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.9-draft.md",
+      "expected_sha256": "93bce9739b281898bc3dd6ce59f97b856477009afacee0a5b72a47b840f6b095",
+      "measured_sha256": "93bce9739b281898bc3dd6ce59f97b856477009afacee0a5b72a47b840f6b095",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.9-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.10-draft.md",
+      "expected_sha256": "84826bc21e5262c492a4701073beae8314b8d5a39b98035ca1f29b71e6b34e06",
+      "measured_sha256": "84826bc21e5262c492a4701073beae8314b8d5a39b98035ca1f29b71e6b34e06",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.10-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.11-draft.md",
+      "expected_sha256": "b0ffa4df1f5a1e6d23219d20c448d64369c5a926e0546289fbfdb41f26deb4ca",
+      "measured_sha256": "b0ffa4df1f5a1e6d23219d20c448d64369c5a926e0546289fbfdb41f26deb4ca",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.11-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
+      "expected_sha256": "c0f730ab378b97b1f0a5483e508c9003d864248c7225db2405c71e955f618408",
+      "measured_sha256": null,
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md"
+      ],
+      "exit_code": 128,
+      "stderr": "fatal: path 'docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md' exists on disk, but not in '8ed758801dcf61b2763b6d89212efe9042bf4b54'\n",
+      "matches": false
+    },
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
+      "expected_sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+      "measured_sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.1-FROZEN.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 4,
+      "role": "target",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md",
+      "expected_sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+      "measured_sha256": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 5,
+      "role": "corpus",
+      "commit": "81ada5408a0e05e86aa54346cdc0be822be4b608",
+      "file": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.0-draft.md",
+      "expected_sha256": "dd8ded7cc1a53412744829323ea35b93f7893fb441c70b0fd1d44896e3a5348c",
+      "measured_sha256": "dd8ded7cc1a53412744829323ea35b93f7893fb441c70b0fd1d44896e3a5348c",
+      "argv": [
+        "git",
+        "show",
+        "81ada5408a0e05e86aa54346cdc0be822be4b608:docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.0-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 5,
+      "role": "corpus",
+      "commit": "81ada5408a0e05e86aa54346cdc0be822be4b608",
+      "file": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.1-draft.md",
+      "expected_sha256": "96a9d07bb3dff67c7e5bd96f282ad3ae9c24f45322e57c1eea1b43a0fab71d6d",
+      "measured_sha256": "96a9d07bb3dff67c7e5bd96f282ad3ae9c24f45322e57c1eea1b43a0fab71d6d",
+      "argv": [
+        "git",
+        "show",
+        "81ada5408a0e05e86aa54346cdc0be822be4b608:docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.1-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 5,
+      "role": "corpus",
+      "commit": "81ada5408a0e05e86aa54346cdc0be822be4b608",
+      "file": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.2-draft.md",
+      "expected_sha256": "8315b74c4536038bf6306d503a57d79e45fc2f37f45ff4f11e020d802301fc38",
+      "measured_sha256": "8315b74c4536038bf6306d503a57d79e45fc2f37f45ff4f11e020d802301fc38",
+      "argv": [
+        "git",
+        "show",
+        "81ada5408a0e05e86aa54346cdc0be822be4b608:docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.2-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 5,
+      "role": "corpus",
+      "commit": "81ada5408a0e05e86aa54346cdc0be822be4b608",
+      "file": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md",
+      "expected_sha256": "e7e490daf680c11f69c8a775edb5573d6afe3dd00214a8df3b7a6244ac9b742f",
+      "measured_sha256": "e7e490daf680c11f69c8a775edb5573d6afe3dd00214a8df3b7a6244ac9b742f",
+      "argv": [
+        "git",
+        "show",
+        "81ada5408a0e05e86aa54346cdc0be822be4b608:docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 5,
+      "role": "corpus",
+      "commit": "81ada5408a0e05e86aa54346cdc0be822be4b608",
+      "file": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md",
+      "expected_sha256": "05d18f79e612b838430587c0de207c91c6b282b12990126c9a27f6da49776ad8",
+      "measured_sha256": "05d18f79e612b838430587c0de207c91c6b282b12990126c9a27f6da49776ad8",
+      "argv": [
+        "git",
+        "show",
+        "81ada5408a0e05e86aa54346cdc0be822be4b608:docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 5,
+      "role": "corpus",
+      "commit": "81ada5408a0e05e86aa54346cdc0be822be4b608",
+      "file": "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+      "expected_sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+      "measured_sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+      "argv": [
+        "git",
+        "show",
+        "81ada5408a0e05e86aa54346cdc0be822be4b608:docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 5,
+      "role": "target",
+      "commit": "81ada5408a0e05e86aa54346cdc0be822be4b608",
+      "file": "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md",
+      "expected_sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+      "measured_sha256": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+      "argv": [
+        "git",
+        "show",
+        "81ada5408a0e05e86aa54346cdc0be822be4b608:docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "corpus",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.0-draft.md",
+      "expected_sha256": "d55e64f9f2b39a9e86f18fda27ad592e24073f5fa50c0fbb196f70a4ced0613e",
+      "measured_sha256": "d55e64f9f2b39a9e86f18fda27ad592e24073f5fa50c0fbb196f70a4ced0613e",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.0-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "corpus",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.1-draft.md",
+      "expected_sha256": "ab5968b2d3c30e33135916c7e9e2c78406c9a96d76cc092e4a370cc052e9f99d",
+      "measured_sha256": "ab5968b2d3c30e33135916c7e9e2c78406c9a96d76cc092e4a370cc052e9f99d",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.1-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "corpus",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.2-draft.md",
+      "expected_sha256": "b304c4f977c58cd48441df7ed8af67ee038f62f82ad957e17ae9cfb4989d16ab",
+      "measured_sha256": "b304c4f977c58cd48441df7ed8af67ee038f62f82ad957e17ae9cfb4989d16ab",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.2-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "corpus",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.3-draft.md",
+      "expected_sha256": "46a66ee6cbb5892af395a0e336fab08e3ffd4d0d88455d68ccd0efa263713cef",
+      "measured_sha256": "46a66ee6cbb5892af395a0e336fab08e3ffd4d0d88455d68ccd0efa263713cef",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.3-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "corpus",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.4-draft.md",
+      "expected_sha256": "311cf49bd616213cedba203b93d463ebbc6ccf609e59e00f6fdd6bd2942be10b",
+      "measured_sha256": "311cf49bd616213cedba203b93d463ebbc6ccf609e59e00f6fdd6bd2942be10b",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.4-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "corpus",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.5-draft.md",
+      "expected_sha256": "73d70ccd349f5aa3f0714725016dd83db62c233351b31afa73f6d2ac1bf64eb0",
+      "measured_sha256": "73d70ccd349f5aa3f0714725016dd83db62c233351b31afa73f6d2ac1bf64eb0",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.5-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "corpus",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.6-draft.md",
+      "expected_sha256": "ca4377c347729f78332ca596c6ab2cbdc6f6751f463fd62fc75a11b45e81a2b9",
+      "measured_sha256": "ca4377c347729f78332ca596c6ab2cbdc6f6751f463fd62fc75a11b45e81a2b9",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.6-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "corpus",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.7-draft.md",
+      "expected_sha256": "95a535f61fb8ae9dad8d45ab57077199c5407df62668019ff1b3ad16fedb6784",
+      "measured_sha256": "95a535f61fb8ae9dad8d45ab57077199c5407df62668019ff1b3ad16fedb6784",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.7-draft.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "corpus",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.8-FROZEN.md",
+      "expected_sha256": "b7af458a505c47c28a9fecf038e1f9e28590dc4ba806d2ec6fe164c0419a9930",
+      "measured_sha256": "b7af458a505c47c28a9fecf038e1f9e28590dc4ba806d2ec6fe164c0419a9930",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.8-FROZEN.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    },
+    {
+      "skill": 6,
+      "role": "target",
+      "commit": "53e1bad73fa5df06b34e601abdb82f1d1e7c6328",
+      "file": "docs/clang-fix-campaign/p49-skill6-triage-report-design-v1.8-FROZEN.md",
+      "expected_sha256": "b7af458a505c47c28a9fecf038e1f9e28590dc4ba806d2ec6fe164c0419a9930",
+      "measured_sha256": "b7af458a505c47c28a9fecf038e1f9e28590dc4ba806d2ec6fe164c0419a9930",
+      "argv": [
+        "git",
+        "show",
+        "53e1bad73fa5df06b34e601abdb82f1d1e7c6328:docs/clang-fix-campaign/p49-skill6-triage-report-design-v1.8-FROZEN.md"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "matches": true
+    }
+  ],
+  "unmatched": [
+    {
+      "skill": 4,
+      "role": "corpus",
+      "commit": "8ed758801dcf61b2763b6d89212efe9042bf4b54",
+      "file": "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md",
+      "expected_sha256": "c0f730ab378b97b1f0a5483e508c9003d864248c7225db2405c71e955f618408",
+      "measured_sha256": null,
+      "argv": [
+        "git",
+        "show",
+        "8ed758801dcf61b2763b6d89212efe9042bf4b54:docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md"
+      ],
+      "exit_code": 128,
+      "stderr": "fatal: path 'docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md' exists on disk, but not in '8ed758801dcf61b2763b6d89212efe9042bf4b54'\n",
+      "matches": false
+    }
+  ],
+  "program": "import hashlib\nimport json\nfrom pathlib import Path\nimport subprocess\n\nroot = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')\nout = root / 'docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase2/execution/BASE43'\ntools = 'docs/clang-fix-campaign/tools/'\nrows = []\nfor skill, suffix, commit in (\n    (4, '', '8ed758801dcf61b2763b6d89212efe9042bf4b54'),\n    (5, '.skill5', '81ada5408a0e05e86aa54346cdc0be822be4b608'),\n    (6, '.skill6', '53e1bad73fa5df06b34e601abdb82f1d1e7c6328'),\n):\n    data_path = tools + f'design_drift_ledger{suffix}.json'\n    data = json.loads((root / data_path).read_text())\n    historical_data_raw = subprocess.check_output(['git', 'show', f'{commit}:{data_path}'], cwd=root)\n    historical_data = json.loads(historical_data_raw)\n    for role, items in (\n        ('corpus', data['version_corpus']),\n        ('target', [dict(path=data['target_design'], sha256=historical_data['target_sha256'])]),\n    ):\n        for item in items:\n            argv = ['git', 'show', f\"{commit}:{item['path']}\"]\n            proc = subprocess.run(argv, cwd=root, capture_output=True)\n            sha = hashlib.sha256(proc.stdout).hexdigest() if proc.returncode == 0 else None\n            row = dict(skill=skill, role=role, commit=commit, file=item['path'],\n                       expected_sha256=item['sha256'], measured_sha256=sha,\n                       argv=argv, exit_code=proc.returncode, stderr=proc.stderr.decode(),\n                       matches=sha == item['sha256'])\n            rows.append(row)\n            print(f\"skill{skill} {role} {item['path']} exit={proc.returncode} hash_match={row['matches']}\")\n    print(f\"skill{skill} current_versions={len(data['version_corpus'])} signoff_versions={len(historical_data['version_corpus'])}\")\n    print(f\"skill{skill} current_expected_patterns={len(data['expected_matches'])} signoff_expected_patterns={len(historical_data['expected_matches'])}\")\nmissing = [r for r in rows if not r['matches']]\nprint(f'INPUTS count={len(rows)} unmatched={len(missing)}')\n(out / 'history-input-probe.json').write_text(json.dumps(dict(\n    head=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),\n    inputs=rows, unmatched=missing, program=Path(__file__).read_text()),\n    ensure_ascii=False, indent=2) + '\\n')\n\nprior = root / 'docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase2/execution/REG03b/checkers/commands.json'\nbaseline = json.loads((out / 'checkers/commands.json').read_text())\ncurrent = {r['name']: r for r in json.loads(prior.read_text())['results']}\ntext = ['# P4.9 末终止批次遗留问题', '',\n        'PHASE2-04～07 基线裁决(2026-10-08):逐条按固定改前树 `43a6aa6` 原样实跑的90条命令对账。',\n        '基线证据: `a0-evidence/phase2/execution/BASE43/checkers/commands.json`。',\n        '本表当前侧取 `787b804` 的 REG03b 原始实跑;本轮未改checker及生产代码。',\n        '基线不符20条:仍遗留3条,当前已通过17条(固定树尚未引入的末批工具)。',\n        '另有当前 skill5 ledger check 相对基线的新失败,不计入可放行遗留,见 progress PHASE2-08。', '',\n        '| 命令(在tools目录下,python执行) | 原预期exit | 43a6aa6 exit | 当前exit | 原因/状态 |',\n        '|---|---|---|---|---|']\nfor b in baseline['results']:\n    if b['matched']:\n        continue\n    c = current[b['name']]\n    if b['name'] == 'design-doc-controls':\n        reason = 'OPEN_CARRIED: 未入库的v1.5.2历史样本;self-test 37/38。PHASE2-05按既有问题关闭。'\n    elif b['name'].startswith('symbol-'):\n        reason = 'OPEN_CARRIED: report旧址已是shim,无_attrs_to_map定义;两树红因相同。PHASE2-04按既有问题关闭,不改断言。'\n    else:\n        reason = 'RESOLVED: 固定树不存在此末批工具,python exit2;当前已实现且符合预期。'\n    command = ' '.join(x.removeprefix(tools) for x in b['argv'][1:])\n    text.append(f\"| `{command}` | {b['expected_exit']} | {b['exit_code']} | {c['exit_code']} | {reason} |\")\ntext += ['', '准许继承的边界仅为逐条基线不符项,不得扩到其它命令;已修复的末批门禁仍应保留其控制。',\n         'PHASE2-04/05关闭的是本批阻塞状态,并不宣称这三条历史控制已修好。']\n(root / 'docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/carried-over-issues.md').write_text('\\n'.join(text) + '\\n')\n"
+}
