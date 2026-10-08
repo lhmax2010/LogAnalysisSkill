@@ -2,17 +2,19 @@
 
 PHASE2-04～07 基线裁决(2026-10-08):逐条按固定改前树 `43a6aa6` 原样实跑的90条命令对账。
 基线证据: `a0-evidence/phase2/execution/BASE43/checkers/commands.json`。
-本表当前侧取 `0e6507e` 的 C09R 原始实跑;历史输入已按PHASE2-08内容哈希定位。
+本表当前侧取 `de9099ef51edad0f1f3cc920c109e7282da0a313` 的 C13R 原始实跑;
+历史输入已按PHASE2-08内容哈希定位。
 基线不符20条:仍遗留3条,当前已通过17条(固定树尚未引入的末批工具)。
 skill5 ledger check 的回归已消除(exit0);90条比较 `regressions=[]`。
-当前证据: `a0-evidence/phase2/execution/C09R/checkers/commands.json`。
-C10尝试新增工具mypy失败已回退,是新增回归而非本表豁免项,见progress §40.11。
+当前证据: `a0-evidence/phase2/execution/C13R/checkers/commands.json`。
+C10首次新增工具mypy失败已回退;PHASE2-09批准局部变量改名后,重做C10及
+后续组全部通过,见progress §41和C10S证据。该问题已修复,不是本表豁免项。
 
 | 命令(在tools目录下,python执行) | 原预期exit | 43a6aa6 exit | 当前exit | 原因/状态 |
 |---|---|---|---|---|
 | `check_design_doc.py --self-test` | 0 | 1 | 1 | OPEN_CARRIED: 未入库的v1.5.2历史样本;self-test 37/38。PHASE2-05按既有问题关闭。 |
-| `symbol_audit.py --negative-fixture duplicate-spec-root-mismatch` | 1 | 0 | 0 | OPEN_CARRIED: report旧址已是shim,无_attrs_to_map定义;两树红因相同。PHASE2-04按既有问题关闭,不改断言。 |
-| `symbol_audit.py --key-fixture twin-both-binary-key` | 0 | 1 | 1 | OPEN_CARRIED: report旧址已是shim,无_attrs_to_map定义;两树红因相同。PHASE2-04按既有问题关闭,不改断言。 |
+| `symbol_audit.py --negative-fixture duplicate-spec-root-mismatch` | 1 | 0 | 0 | OPEN_CARRIED: 固定树report旧址是shim,无_attrs_to_map定义;当前旧址已按批准删除,仍无该定义。原断言未改,同一预期在固定树已失败,不属新增回归。PHASE2-04按既有问题关闭。 |
+| `symbol_audit.py --key-fixture twin-both-binary-key` | 0 | 1 | 1 | OPEN_CARRIED: 固定树report旧址是shim,无_attrs_to_map定义;当前旧址已按批准删除,仍无该定义。原断言未改,同一预期在固定树已失败,不属新增回归。PHASE2-04按既有问题关闭。 |
 | `terminal_predicates.py p49_terminal_data/predicates.json` | 0 | 2 | 0 | RESOLVED: 固定树不存在此末批工具,python exit2;当前已实现且符合预期。 |
 | `terminal_expected_diff.py check` | 0 | 2 | 0 | RESOLVED: 固定树不存在此末批工具,python exit2;当前已实现且符合预期。 |
 | `terminal_diff_controls.py normal` | 0 | 2 | 0 | RESOLVED: 固定树不存在此末批工具,python exit2;当前已实现且符合预期。 |

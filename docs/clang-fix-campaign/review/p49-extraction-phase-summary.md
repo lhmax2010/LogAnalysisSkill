@@ -51,7 +51,7 @@ batch**, consisting of the five items and terminal clause below.
 
 | # | Blocking obligation | Required closure |
 |---|---|---|
-| 1 | Delete all legacy compatibility shims | One explicit final cleanup commit after behavior unification. First classify every caller/import as compatibility-shim use or real dependency and archive the evidence; if a real dependency is misclassified and removed as a shim, roll back. Then update callers and prove no legacy imports remain. |
+| 1 | Delete all legacy compatibility shims | After behavior unification, classify every caller/import as compatibility-shim use or real dependency and archive the evidence; if a real dependency is misclassified and removed as a shim, roll back. Then update callers and prove no unapproved legacy imports remain. E11 and the approved gate package replace the earlier single-cleanup-commit wording with C01-C13 atomic groups. |
 | 2 | Narrow tests that consume implementation-private symbols | Keep private names out of package-root APIs; remove or relocate test-only access in the final cleanup. |
 | 3 | Normalize dangling-symlink handling | Implement the frozen cross-skill outcome rather than preserving the current `FileExistsError` divergence. |
 | 4 | Unify timeout, cancellation, interruption, residual state, and result mapping | Implement and validate every row of skill-5 frozen §3.2 across gerrit-fetch, gerrit-submit, and shared workspace paths. |
@@ -62,6 +62,27 @@ Any unfinished item blocks P4.9 closure and may not be deferred, transferred,
 or silently relabeled. `EDIT_SPEC_SCHEMA` remains a named patch-suggest owner
 item outside this five-entry terminal ledger. BoolOp per-operand obligations
 remain a template-design question, not implementation debt.
+
+### Terminal Implementation Accounting (2026-10-08)
+
+Implementation evidence is complete; **terminal status is READY_FOR_REVIEW, not
+CLOSED**. Designer verification and one reviewer sign-off are pending. The
+terminal clause above is unchanged; none of the five obligations is handed off.
+Evidence root `E` below is
+`../dev_memory/stage14_p49_terminal_batch/a0-evidence/`.
+
+| # | Implementation conclusion | Commit / evidence |
+|---|---|---|
+| 1 | VERIFIED: all approved 13 hosts / 183 bindings handled in order; 11 whole shim modules deleted, 2 hosts retain their implementations. Real `quickbuild_log.FailedPackage` and skill gerrit type dependencies retained. Final residuals only HISTORICAL / RELEASE / individually registered HISTORICAL_KEY, OTHER=0. | C01-C13 through `de9099e`; `E/phase2/gate-package/deletion-inventory.json`; `E/phase2/execution/C13R/final-proof.log` and `residual.log.gz` |
+| 2 | VERIFIED: the approved scope distinguishes private from dunder and definition-module imports; existing legitimate private behavior tests retained. Exactly four approved legacy identity nodeids removed, two deletion-guard controls added, no other existing test function changed beyond approved import redirects. | `E/phase2/gate-package/item2-scope.final.json` and `proposed-test-deletions.json`; C04/C07/C11/C12; `E/phase2/execution/C13R/nodeids.log` and `final-proof.log` |
+| 3 | VERIFIED: dangling and live source symlinks reject with SOURCE_DIR_UNSAFE; query still precedes source reset. Full registered outcome comparison passes. | B `c1ea4ef`; `E/phase1/commit-b/after-b.log` and `after/comparison.json` |
+| 4 | VERIFIED: six surfaces use optional timeout=None with the approved exception/warning mapping, no interrupt catch or automatic residual cleanup; all registered deltas and every unregistered field compare exactly across 30 scenarios. | A `5213c5d`, B full comparison; `E/phase1/commit-a/after-a.log`; `E/phase1/commit-b/after-b.log`; SKILL contracts updated `f65949f` |
+| 5 | VERIFIED: frozen §5 decision B retains verify -> exclude -> protected marker write, with explicit rationale. Exclude interruption leaves protected marker absent; partial marker write preserves raw bytes and existing-reader results. Both failure-state tests pass, no order change or new deferral. | B `c1ea4ef`; `tests/unit/test_terminal_marker_failures.py`; `E/phase1/prompt-rulings/item5-verifier.log`; `E/phase1/commit-b/targeted.log` and full comparison |
+
+Full [terminal closeout](p49-terminal-closeout.md) records exact commands, raw
+outputs, CI, the PHASE2-09 repair, and the three carried baseline checker issues.
+Those issues are not new failures and are not additional terminal obligations;
+they remain explicitly open in the carried-over list rather than called green.
 
 ## Methodology Index
 

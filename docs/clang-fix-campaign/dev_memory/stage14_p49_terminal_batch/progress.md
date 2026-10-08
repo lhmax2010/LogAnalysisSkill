@@ -1,16 +1,17 @@
 # P4.9 末终止批次进度与实施前复述
 
-状态: E11_PHASE1_STOPPED_READER_INVOCATION_AND_REGRESSION。更新日期: 2026-10-07。
+状态: READY_FOR_REVIEW。更新日期: 2026-10-08。实现验收完成,等待设计方核验与一家评审签批;
+不在此提前宣布 P4.9 CLOSED。当前终态与证据导航见第42节。
 判定条件 v1.2 取代 v1.0/v1.1 作为编码来源,两旧版本保留。
 PRED-01..05 全部 CLOSED;编码已由设计方核对、FatTank 批准并于
 6601cfc 单独冻结(第12节)。第15节记录 item3/item4 首跑及 verifier PASS。
 勘误11已核对原字节及SCAN-07;DIFF-01..04、SCAN-01..09 CLOSED。
 SCAN-09按E11-5以“被勘误11取代”关闭,不是修复旧静态发现规则。
-当前执行计划以第28节两阶段计划为准,取代与其冲突的旧A0交付映射和前置。
-专用枚举实跑live177个PY_SOURCE,得到14个函数(含10个测试文件函数)。
-PHASE1-01:读取方调用契约未闭合;PHASE1-02:全仓1290 passed/1 skipped/14 failed,
-14处均为旧静态工具RULES_HASH。证据和候选裁决见第28节。
-§6改前实跑仍为PENDING_SEG3;item5未运行,既有两项OBS不变,生产A/B未开始。
+当前执行计划以E11两阶段和第29节以后批准的轻量裁决为准,取代冲突的旧A0
+前置。PHASE1-01/02已闭合:读取方为live非tests的4函数,item5判绿,
+30场景改前完成;A/B各自双跑通过。C01-C13已按审批包逐组验证完成。
+PHASE2-09已修复并复验;90 checker相对43a6aa6无新增失败,3条既有问题
+仍列carried-over-issues.md,不冒称全部历史控制已绿。旧停止记录作为历史保留。
 后续每个 commit 必须同步本文件的进度、证据、人工输入前提与挂账。
 
 ## 0. 权威、输入与记录边界
@@ -3921,3 +3922,70 @@ wheel/install及5模块help exit0。C11远端CI SUCCESS见C11R/remote-ci.log。
 删除report.py的3绑定纯shim;跨两个旧址的identity用例已在C12按批准删除,
 本组不再删测试。真实report实现、公开包根与历史MODULE_OWNERS键不改。
 五项验证`execution/C13R/` **PENDING**;全组通过后才准备D收口材料。
+
+C13 `de9099ef51edad0f1f3cc920c109e7282da0a313` 五项 **PASS**:
+1349 passed/1 skipped,累计只少获批4例,新增2控制,其余nodeid状态不变;
+90 checkers regressions=[];mypy(103files)/工具定向mypy/ruff/lint exit0;
+smoke31/31;import-all202/202;residual hits=24788/OTHER=0;
+wheel/install及5模块help exit0。原始输出及argv/env/hash见C13R各command.json。
+
+## 42. D 收口材料 / 实现终态待签批
+
+### 42.1 结论和边界
+
+五项义务逐项结论见[末批closeout](../../review/p49-terminal-closeout.md)与
+[阶段总账](../../review/p49-extraction-phase-summary.md#p49-terminal-batch-ledger)。
+A `5213c5d`落实项4;B `c1ea4ef`落实项3及项5的现状锁定;C01-C13落实
+项1/项2。D只归档证据与状态,不再改实现、不运行新OBS producer、不自行签批。
+人工输入:FatTank批准`74ff34c`原审批包13宿主/183绑定、4个完整nodeid及
+分组顺序;9个PENDING_REVIEW已按批准逐项处置,并未授予目录级豁免。
+
+`execution/C13R/final-proof.log`原始结论:
+
+```text
+hosts=13 bindings=183
+production_changes_exactly_approved_hosts=true
+other_existing_test_bodies_unchanged=true
+protected_input_files_unchanged=27
+base=1352 current=1350 lost=4 changed={} added=2
+PASSED=1349 SKIPPED=1
+HISTORICAL=24671 HISTORICAL_KEY=12 RELEASE=105 OTHER=0
+guard_and_control_semantics_unchanged=true
+FINAL_PROOF=PASS
+EXIT=0
+```
+
+以上字段摘自原JSON,不是新运行输出格式。全部13组的9项正向记录及90条
+checker比较也在该证明中按原始输出hash核对。真实依赖
+`quickbuild_log.FailedPackage`与skill gerrit的三类型import原字节保留;
+11个MODULE旧址已删除,2个BINDING宿主仅删批准转出,其def/class AST不变。
+release快照、P4.5 design、冻结predicate/exemption、既有OBS事实与审批包不改。
+
+### 42.2 精确相等与历史输出说明
+
+§6改前状态为**DONE**,证据`phase1/prompt-rulings/before-verified/before.json`,
+30场景逐条过schema/旧值/OBS一致性;A按PHASE1-03来源投影验收,B按完整登记。
+`phase1/commit-b/after-b.log`为`AFTER=PASS phase=FULL scenarios=30`,exit0。
+结构CLI仍打印旧提示`REAL_BEFORE=PENDING_SEG3`,它不读取实际双跑产物,
+不能作为本轮采集状态;真实完成状态只由上述采集器证据给出。
+
+精度澄清:§31曾简称“项5两场景登记仍NO_DIFF”,意指marker失败态字段不变。
+勘误2/E2-2已使经过新签名的调用各自登记timeout kwarg,所以当前完整清单是
+30个DIFF_SET、0个NO_DIFF、53条登记,不是两整场景NO_DIFF。marker存在状态、
+原字节sha256、每个读取方结果均在未登记字段内精确相等,无全局掩码或字段忽略。
+
+### 42.3 验证、挂账与停点
+
+本轮C10/C11/C12/C13分别为`1282005`/`b2ec945`/`8aed0b8`/`de9099e`。
+全仓基线从HASH08的1351/1,只删批准4例并新增2条护栏控制,成为1349/1。
+失败原文、变量改名diff、判据与测试原字节一致证明及重跑见C10R/C10S,
+不覆盖失败记录。PHASE2-09 **CLOSED_VERIFIED**,不是carried-over豁免。
+
+遗留表20条基线记录中17条已符合预期,仅3条OPEN_CARRIED,无新增失败;
+五项末批义务无新增DEFERRED。当前审计198 SYMBOL + 4 MODULE-SCOPE,
+bridge同量且差异0;这些当前门禁仍读当前文件。历史ledger按内容hash读原文,
+不以新计数或扫描结果修正期望集。
+
+远端CI逐组结果见C10S/C11R/C12R/C13R的`remote-ci.log`。最终实现验收
+已经完成,现在停下等待**设计方核验 + 一家评审**。D与本报告由所在Git commit
+外部锚定,文件内不写自身SHA;签批前不将READY_FOR_REVIEW改为CLOSED。
