@@ -1,0 +1,23 @@
+[
+  {
+    "name": "initial-targeted",
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/unit/test_derive_commit.py",
+      "-q"
+    ],
+    "exit": 1
+  },
+  {
+    "name": "initial-ruff",
+    "argv": [
+      ".venv/bin/ruff",
+      "check",
+      "tizen-ci-triage/scripts/ci_triage/derive_commit.py",
+      "tests/unit/test_derive_commit.py"
+    ],
+    "exit": 1
+  }
+]

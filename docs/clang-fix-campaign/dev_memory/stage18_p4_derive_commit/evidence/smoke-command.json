@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "env",
+    "-u",
+    "PYTHONPATH",
+    "-u",
+    "MYPYPATH",
+    "strace",
+    "-f",
+    "-e",
+    "trace=network",
+    "-o",
+    "docs/clang-fix-campaign/dev_memory/stage18_p4_derive_commit/evidence/network.trace",
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/dev_memory/stage18_p4_derive_commit/evidence/run_real_hook_derive.py"
+  ],
+  "exit": 0
+}

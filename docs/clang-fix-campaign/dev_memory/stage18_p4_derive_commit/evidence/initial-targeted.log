@@ -1,0 +1,33 @@
+F................                                                        [100%]
+=================================== FAILURES ===================================
+__ test_tree_parent_identities_message_snapshot_and_worktree_index_unchanged ___
+
+repo = (PosixPath('/tmp/pytest-of-linhao/pytest-17/test_tree_parent_identities_me0/repo'), '117b8ac7b07e6b56f3191d5f49ff82fc74234b4c', 'aa46aa785542bf2aabcad1a9534898b04eeb869b')
+
+    def test_tree_parent_identities_message_snapshot_and_worktree_index_unchanged(
+        repo: tuple[Path, str, str],
+    ) -> None:
+        path, tree, parent = repo
+        before = _snapshot(path)
+        assert _git(path, "write-tree") != tree
+        commit = _derive(repo)
+        assert _git(path, "rev-parse", f"{commit}^{{tree}}") == tree
+        assert _git(path, "rev-parse", f"{commit}^") == parent
+        assert _git(path, "show", "-s", "--format=%an <%ae>", commit) == AUTHOR
+        assert _git(path, "show", "-s", "--format=%cn <%ce>", commit) == COMMITTER
+        assert _git(path, "show", "-s", "--format=%aI", commit) == AUTHOR_DATE
+        assert _git(path, "show", "-s", "--format=%cI", commit) == COMMITTER_DATE
+        raw = subprocess.check_output(["git", "-C", str(path), "cat-file", "commit", commit])
+        assert raw.split(b"\n\n", 1)[1] == MESSAGE.encode()
+>       assert _snapshot(path) == before
+E       AssertionError: assert {'HEAD': b're.../master', ...} == {'HEAD': b're.../master', ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'index': b'DIRC\x00\x00\x00\x02\x00\x00\x00\x01j\xc7VR\x19\xaa\xa4\x86j\xc7VR\x19\xaa\xa4\x86\x00\x01\x03\x01\x00P4\x...9\xcf\x02\xe40\xaf\xeb\x8a\xb5}\n\x19g\xdc\xb2n\xb4\x0f4)\xe0\xc8\xf6\x95\x8eG8\xe6\xb2\x06\xd7l+\xac\xc7\xad\xd6\x9d'} != {'index': b'DIRC\x00\x00\x00\x02\x00\x00\x00\x01j\xc7VR\x19\xaa\xa4\x86j\xc7VR\x19\xaa\xa4\x86\x00\x01\x03\x01\x00P4\x...f\x04u}\xb7y,\xfcj\x00\x08source.c\x00\x00TREE\x00\x00\x00\x06\x00-1 0\nN\xe9/\x15\xc4\x857\xcd_\x9fr\xc6:xZ\\?!^\x04'}
+E         Use -v to get more diff
+
+tests/unit/test_derive_commit.py:94: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_derive_commit.py::test_tree_parent_identities_message_snapshot_and_worktree_index_unchanged
+1 failed, 16 passed in 0.58s

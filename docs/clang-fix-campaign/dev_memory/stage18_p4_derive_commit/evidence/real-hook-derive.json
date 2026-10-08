@@ -1,0 +1,145 @@
+{
+  "hook_path": "/home/linhao/gerrit-hook/commit-msg",
+  "hook_sha256": "3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50",
+  "change_id": "I8e91478cf9cd759b9b15412bb1b9dcb789ed8095",
+  "input_message": "Fix build error for clang compiler: missing include\n\nRestore declaration.\n",
+  "final_message": "Fix build error for clang compiler: missing include\n\nRestore declaration.\n\nChange-Id: I8e91478cf9cd759b9b15412bb1b9dcb789ed8095\n",
+  "actual_message": "Fix build error for clang compiler: missing include\n\nRestore declaration.\n\nChange-Id: I8e91478cf9cd759b9b15412bb1b9dcb789ed8095\n",
+  "trailers": [
+    "Change-Id: I8e91478cf9cd759b9b15412bb1b9dcb789ed8095"
+  ],
+  "commit": "394865306a0938d64042fffbfdb0c055e79bc928",
+  "input_tree": "117b8ac7b07e6b56f3191d5f49ff82fc74234b4c",
+  "actual_tree": "117b8ac7b07e6b56f3191d5f49ff82fc74234b4c",
+  "parent": "6388404c25f7d3501a4f8bceed1d8608c729974f",
+  "workspace_unchanged": true,
+  "index_unchanged": true,
+  "head_unchanged": true,
+  "index_sha256": "3458af25fcd22e2ab7e5d3f19fc954fb4ecac7848f2c76b886879692db16aab4",
+  "setup_and_observation_calls": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "init",
+        "-q"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "config",
+        "user.name",
+        "P4 smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "config",
+        "user.email",
+        "p4@invalid"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "add",
+        "source.c"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "commit",
+        "-qm",
+        "base"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "add",
+        "source.c"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "write-tree"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "cat-file",
+        "commit",
+        "394865306a0938d64042fffbfdb0c055e79bc928"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "rev-parse",
+        "394865306a0938d64042fffbfdb0c055e79bc928^{tree}"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "interpret-trailers",
+        "--parse"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/p4-real-hook-irag2gc0/repo",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0
+    }
+  ],
+  "exit": 0
+}

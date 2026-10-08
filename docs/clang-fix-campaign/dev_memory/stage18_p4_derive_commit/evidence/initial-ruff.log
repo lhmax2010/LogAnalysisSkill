@@ -1,0 +1,35 @@
+UP022 Prefer `capture_output` over sending `stdout` and `stderr` to `PIPE`
+  --> tizen-ci-triage/scripts/ci_triage/derive_commit.py:48:14
+   |
+46 |       command = ["git", "-C", str(worktree), "-c", "commit.gpgsign=false",
+47 |                  "-c", "i18n.commitEncoding=UTF-8"]
+48 |       commit = subprocess.run(
+   |  ______________^
+49 | |         [*command, "commit-tree", tree_sha, "-p", parent_sha],
+50 | |         input=message.encode("utf-8"), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+51 | |         env=env, check=True,
+52 | |     ).stdout.decode("ascii").strip()
+   | |_____^
+53 |       actual_tree = subprocess.run(
+54 |           [*command, "rev-parse", "--verify", f"{commit}^{{tree}}"],
+   |
+help: Replace with `capture_output` keyword argument
+
+UP022 Prefer `capture_output` over sending `stdout` and `stderr` to `PIPE`
+  --> tizen-ci-triage/scripts/ci_triage/derive_commit.py:53:19
+   |
+51 |           env=env, check=True,
+52 |       ).stdout.decode("ascii").strip()
+53 |       actual_tree = subprocess.run(
+   |  ___________________^
+54 | |         [*command, "rev-parse", "--verify", f"{commit}^{{tree}}"],
+55 | |         stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, check=True,
+56 | |     ).stdout.decode("ascii").strip()
+   | |_____^
+57 |       if actual_tree != tree_sha:
+58 |           raise RuntimeError(f"derived tree mismatch: expected={tree_sha} actual={actual_tree}")
+   |
+help: Replace with `capture_output` keyword argument
+
+Found 2 errors.
+No fixes available (2 hidden fixes can be enabled with the `--unsafe-fixes` option).

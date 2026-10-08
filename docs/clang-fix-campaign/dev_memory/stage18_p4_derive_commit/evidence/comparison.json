@@ -1,0 +1,44 @@
+{
+  "baseline_commit": "0910f34d6ae7b3819e4f156ab93e9d5c4e324294",
+  "baseline_tests": {
+    "passed": 1440,
+    "skipped": 1
+  },
+  "current_tests": {
+    "passed": 1457,
+    "skipped": 1
+  },
+  "missing_nodeids": [],
+  "changed_outcomes": [],
+  "added_nodeids": [
+    "tests.unit.test_derive_commit::test_ambient_git_routing_and_local_hooks_do_not_touch_worktree",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[author_date]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[author_identity]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[committer_date]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[committer_identity]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[message]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[parent_sha]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[tree_sha]",
+    "tests.unit.test_derive_commit::test_hook_identity_goes_to_final_trailer_without_auxiliary_line",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes0]",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes1]",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes2]",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes3]",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes4]",
+    "tests.unit.test_derive_commit::test_invalid_tree_leaves_worktree_and_index_unchanged",
+    "tests.unit.test_derive_commit::test_tree_parent_identities_message_snapshot_and_worktree_index_unchanged",
+    "tests.unit.test_derive_commit::test_tree_postcondition_is_enforced"
+  ],
+  "command_count": 94,
+  "exit_changes": [],
+  "carried_issues": [
+    "design-doc-controls",
+    "symbol-negative-duplicate-spec-root-mismatch",
+    "symbol-key-twin-both-binary-key"
+  ],
+  "tested_files": {
+    "tizen-ci-triage/scripts/ci_triage/derive_commit.py": "98c16408061a5d82cd926642f55d434b085a547428024f719377c6b775325f5e",
+    "tests/unit/test_derive_commit.py": "75d78180f8ff9eb0bf04d018f7190a5fce7cfa90a87495aa378690edaf4ceb34",
+    "docs/clang-fix-campaign/dev_memory/stage18_p4_derive_commit/evidence/run_real_hook_derive.py": "f7b4874767d3e98de96d359dde5a856b2503eaf1fa65e73b40f68e4ae2c3e024"
+  }
+}

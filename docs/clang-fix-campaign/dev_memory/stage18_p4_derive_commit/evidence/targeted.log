@@ -1,0 +1,27 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 17 items
+
+tests/unit/test_derive_commit.py::test_tree_parent_identities_message_snapshot_and_worktree_index_unchanged PASSED [  5%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[tree_sha] PASSED [ 11%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[parent_sha] PASSED [ 17%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[message] PASSED [ 23%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[author_identity] PASSED [ 29%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[committer_identity] PASSED [ 35%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[author_date] PASSED [ 41%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[committer_date] PASSED [ 47%]
+tests/unit/test_derive_commit.py::test_ambient_git_routing_and_local_hooks_do_not_touch_worktree PASSED [ 52%]
+tests/unit/test_derive_commit.py::test_invalid_tree_leaves_worktree_and_index_unchanged PASSED [ 58%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes0] PASSED [ 64%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes1] PASSED [ 70%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes2] PASSED [ 76%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes3] PASSED [ 82%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes4] PASSED [ 88%]
+tests/unit/test_derive_commit.py::test_tree_postcondition_is_enforced PASSED [ 94%]
+tests/unit/test_derive_commit.py::test_hook_identity_goes_to_final_trailer_without_auxiliary_line PASSED [100%]
+
+============================== 17 passed in 0.64s ==============================

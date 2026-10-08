@@ -522,3 +522,13 @@ design-doc-controls(1)、duplicate-spec-root-mismatch(0)、twin-both-binary-key(
 
 本轮未遇需另裁决的实现缺口。后续P3/P4原任务书未在当前会话、仓内任务文件
 与可见文本附件中找到,已请求补发;不以设计中的阶段摘要自行替代原任务范围。
+
+## 13. P4移交验收回执
+
+2026-10-08用户补发P3/P4任务后,stage18已实跑本阶段第5节移交P4的一项:
+真实登记hook生成Change-Id,组装最终message并derive,最终Git对象恰一个
+Change-Id trailer且没有X-Campaign-Submission-Key行。tree等式、工作区/index/HEAD
+不变、零网络调用一并通过。证据见
+`../stage18_p4_derive_commit/evidence/real-hook-derive.json`与同目录原始日志,
+收口见`../../review/p4-derive-commit-closeout.md`,状态READY_FOR_REVIEW。
+原第5节为移交时历史记录,本项现已接收验收;P5/P5R两项尚待各自阶段实施。
