@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import os
 import subprocess
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -87,9 +88,14 @@ def test_tree_parent_identities_message_snapshot_and_worktree_index_unchanged(
     assert _git(path, "rev-parse", f"{commit}^") == parent
     assert _git(path, "show", "-s", "--format=%an <%ae>", commit) == AUTHOR
     assert _git(path, "show", "-s", "--format=%cn <%ce>", commit) == COMMITTER
-    assert _git(path, "show", "-s", "--format=%aI", commit) == AUTHOR_DATE
-    assert _git(path, "show", "-s", "--format=%cI", commit) == COMMITTER_DATE
     raw = subprocess.check_output(["git", "-C", str(path), "cat-file", "commit", commit])
+    headers = raw.split(b"\n\n", 1)[0].decode().splitlines()
+    # Compare stored dates, not Git-version-dependent ISO display (Z versus +00:00).
+    for kind, identity, date in (
+        ("author", AUTHOR, AUTHOR_DATE), ("committer", COMMITTER, COMMITTER_DATE),
+    ):
+        timestamp = int(datetime.fromisoformat(date).timestamp())
+        assert f"{kind} {identity} {timestamp} +0000" in headers
     assert raw.split(b"\n\n", 1)[1] == MESSAGE.encode()
     assert _snapshot(path) == before
     assert _derive(repo) == commit

@@ -1,0 +1,40 @@
+{
+  "baseline_commit": "0910f34",
+  "command_count": 94,
+  "exit_changes": {},
+  "baseline_tests": {
+    "passed": 1440,
+    "skipped": 1,
+    "failed": 0
+  },
+  "current_tests": {
+    "passed": 1457,
+    "skipped": 1,
+    "failed": 0
+  },
+  "missing_nodeids": [],
+  "changed_outcomes": [],
+  "added_nodeids": [
+    "tests.unit.test_derive_commit::test_ambient_git_routing_and_local_hooks_do_not_touch_worktree",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[author_date]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[author_identity]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[committer_date]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[committer_identity]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[message]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[parent_sha]",
+    "tests.unit.test_derive_commit::test_each_derivation_input_participates_in_identity[tree_sha]",
+    "tests.unit.test_derive_commit::test_hook_identity_goes_to_final_trailer_without_auxiliary_line",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes0]",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes1]",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes2]",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes3]",
+    "tests.unit.test_derive_commit::test_invalid_parameters_refuse_before_git[changes4]",
+    "tests.unit.test_derive_commit::test_invalid_tree_leaves_worktree_and_index_unchanged",
+    "tests.unit.test_derive_commit::test_tree_parent_identities_message_snapshot_and_worktree_index_unchanged",
+    "tests.unit.test_derive_commit::test_tree_postcondition_is_enforced"
+  ],
+  "tested_files": {
+    "tizen-ci-triage/scripts/ci_triage/derive_commit.py": "98c16408061a5d82cd926642f55d434b085a547428024f719377c6b775325f5e",
+    "tests/unit/test_derive_commit.py": "836995178f2ffb0c2f9f89de994b12a692e163f8df00ab4284a4e7ce319b4631"
+  }
+}

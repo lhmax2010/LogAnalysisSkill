@@ -110,3 +110,38 @@ P2移交P4的义务已完成;P5 sandbox与P5R review端到端删缓存拒绝仍�
 前序P3远端CI success,run 37751385388,完整metadata在`evidence/p3-remote-ci.json`。
 P4独立提交与其远端CI由Git/GitHub外部锚定,推送后实查结果并给出run链接,
 文件内不自记提交SHA,不把P3 CI替代P4验收。
+
+## 7. 远端日期断言兼容性修正
+
+P4实现提交`9a65e0d`的首次远端CI(run 37752238528)结果:
+`1 failed, 1456 passed, 1 skipped in 48.30s`,Tests exit1;Lint/Type check通过。
+失败仅在本期新增测试的日期显示断言:
+`assert '2026-10-08T00:00:00Z' == '2026-10-08T00:00:00+00:00'`。
+远端Git为2.55.0,本机为2.43.0。原始日志与metadata保留于
+`evidence/initial-remote-ci.log`、`evidence/initial-remote-ci.json`。
+
+根因是测试把Git的ISO显示形式当作存储契约;两种显示代表相同UTC时间。
+修正只触及新增测试:从`cat-file commit`原始头逐字核对
+`author/committer <identity> <epoch seconds> +0000`,epoch由显式输入日期计算。
+仍验证身份、时间戳和时区,没有归一化生产消息、放宽tree或现场不变断言。
+生产`derive_commit.py`零改动,按轻量流程登记,不修改design.md。
+
+修正版本在干净工作树`/tmp/p4-ci-date-9a65e0d`重跑同一94命令集合,
+完整命令/exit/原始输出位于`evidence/ci-date/`。
+首次本机证据`current/`原样保留;补丁独立提交,不改写已经推送的P4提交。
+
+```sh
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p4-ci-date-9a65e0d docs/clang-fix-campaign/dev_memory/stage18_p4_derive_commit/evidence/ci-date
+```
+
+```text
+======================= 1457 passed, 1 skipped in 32.92s =======================
+Success: no issues found in 106 source files
+All checks passed!
+Contracts: 6 kept, 0 broken.
+completed=94 unexpected=3
+```
+
+四项主验收exit0;三条unexpected仍为原有checker遗留。
+`ci-date-comparison.json`:94条exit无变化,missing_nodeids/changed_outcomes为空,
+较P3基线仅增加原定17例,两个代码/测试文件摘要与实测工作树一致。

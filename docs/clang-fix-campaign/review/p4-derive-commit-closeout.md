@@ -65,3 +65,14 @@ P2移交本期的一项已销账;P5/P5R两项尚未实施,没有混作本期已�
   twin-both-binary-key,基线/当前exit分别1/1、0/0、1/1。未新增、未伪称已修。
 
 待设计方核验与评审,状态维持READY_FOR_REVIEW。
+
+## 远端验收补丁
+
+首次远端run 37752238528在新增测试的Git日期显示断言失败:
+Git 2.55.0显示UTC为`Z`,本机2.43.0显示`+00:00`,结果1 failed/1456 passed/1 skipped。
+补丁不改生产代码,日期断言改核对原始commit头的身份、epoch与时区,
+避免依赖显示版本。原始失败记录、原因与补丁复跑证据见
+[progress §7](../dev_memory/stage18_p4_derive_commit/progress.md#7-远端日期断言兼容性修正)。
+`current/`为首次本机记录,`ci-date/`为补丁后的独立完整复跑,不覆盖旧证据。
+补丁全量1457 passed/1 skipped,四项主验收exit0;94条exit与P3基线逐条不变,
+详见`ci-date-comparison.json`。补丁远端run单独核对,不以首次失败run冒充通过。
