@@ -569,11 +569,3 @@ def test_package_root_exports_only_public_api() -> None:
         assert getattr(tizen_gerrit_submit, name) is getattr(_GERRIT_SUBMIT_MODULE, name)
     for name in INTERNAL_SYMBOLS:
         assert not hasattr(tizen_gerrit_submit, name)
-
-
-# Legacy wiring: identity only, not a substitute for pre-shim parity.
-def test_legacy_shim_preserves_all_symbol_identities() -> None:
-    legacy = importlib.import_module("ci_triage.verify.gerrit_submit")
-
-    for name in (*PUBLIC_SYMBOLS, *INTERNAL_SYMBOLS):
-        assert getattr(legacy, name) is getattr(_GERRIT_SUBMIT_MODULE, name)

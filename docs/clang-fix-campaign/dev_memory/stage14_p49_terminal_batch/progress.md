@@ -3882,3 +3882,18 @@ release/P4.5 design/terminal冻结稿/predicates/exemptions本轮零diff;
 新fixture变量名独立,控制原文和获批删除判据不变。无新增测试删除,
 新增的两条防滥用测试沿用首次C10原字节。提交后E11-3(4)五项验证
 位于`execution/C10S/`,结果 **PENDING**;通过才推进C11。
+
+C10重做 `1282005` 五项 **PASS**:1351 passed/1 skipped,累计只少获批2例,
+新增2控制且其余状态不变;90 checkers regressions=[];mypy(106files)/
+工具定向mypy/ruff/lint exit0;smoke31/31;import-all205/205;
+residual hits=19816/OTHER=0;wheel/install及5模块help exit0。
+`fixture-fix-diff.log`仅两局部变量改名;`controls-unchanged.log`为空且exit0;
+`unapproved-deleted-shim.log`/`legacy-shim-residual-implementation.log`均exit1,
+分别报未获批缺失、非转出FunctionDef。PHASE2-09 **CLOSED_VERIFIED**。
+
+### 41.2 C11
+
+删除verify/gerrit_submit.py的23绑定纯shim。只删除获批完整nodeid
+`tests/unit/test_tizen_gerrit_submit.py::test_legacy_shim_preserves_all_symbol_identities`,
+保留包根公开契约、分支/timeout/无push行为测试。旧MODULE_OWNERS键按原批准
+HISTORICAL_KEY保留不改。五项验证`execution/C11R/` **PENDING**。

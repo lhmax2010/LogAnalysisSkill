@@ -1,0 +1,36 @@
+diff --git a/docs/clang-fix-campaign/tools/symbol_audit.py b/docs/clang-fix-campaign/tools/symbol_audit.py
+index 8e5f9f4..78d6af4 100644
+--- a/docs/clang-fix-campaign/tools/symbol_audit.py
++++ b/docs/clang-fix-campaign/tools/symbol_audit.py
+@@ -1790,24 +1790,24 @@ def _run_negative_fixture(name: str) -> int:
+     if name in {"unapproved-deleted-shim", "legacy-shim-residual-implementation"}:
+         repo_root = Path(__file__).resolve().parents[3]
+         sources = _fixture_sources(repo_root)
+-        spec = next(
++        module_spec = next(
+             item for item in SPECS
+             if isinstance(item, ModuleScopeSpec) and item.module == "classify.py"
+         )
+         if name == "unapproved-deleted-shim":
+-            spec = replace(spec, legacy_path="fixture-unapproved.py")
++            module_spec = replace(module_spec, legacy_path="fixture-unapproved.py")
+         else:
+             # An existing implementation must never pass the approved-absence arm.
+-            legacy_path = repo_root / spec.legacy_path
++            legacy_path = repo_root / module_spec.legacy_path
+             sources = tuple(item for item in sources if item.path != legacy_path)
+             legacy = _synthetic_source("fixture.legacy", "def leftover():\n    pass\n")
+             sources += (replace(legacy, path=legacy_path),)
+-        result = _audit_module_scope(
++        module_result = _audit_module_scope(
+             repo_root, sources,
+-            tuple(item for item in SPECS if isinstance(item, SymbolSpec)), spec,
++            tuple(item for item in SPECS if isinstance(item, SymbolSpec)), module_spec,
+         )
+-        print(f"NEGATIVE_FIXTURE | {name} | {result.verdict}")
+-        return 1 if result.reasons else 0
++        print(f"NEGATIVE_FIXTURE | {name} | {module_result.verdict}")
++        return 1 if module_result.reasons else 0
+     elif name == "skill-owner-shared-consumer":
+         consumers = {"tizen_ci_shared.types"}
+     elif name == "skill-owner-peer-skill-consumer":
