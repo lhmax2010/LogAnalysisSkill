@@ -3717,3 +3717,17 @@ residual HISTORICAL=6783/RELEASE=29/OTHER=0;wheel/install及5模块help exit0。
 只去runner中的discover_sibling_pythonpath兼容import,业务函数不动;
 规范定义shared/env不动,本地零Load证据沿用批准清单。无测试删除。
 五项验证 `a0-evidence/phase2/execution/C03R/` **PENDING**。
+
+C03 `ac26333` 五项 **PASS**:1351/1、lost=0/changed=0;90 checkers
+regressions=[];mypy/ruff/lint exit0;smoke31/31;import-all212/212;
+residual HISTORICAL=39741/RELEASE=33/OTHER=0;wheel/install及5模块help exit0。
+残留原始stdout从C01R起无损gzip保存(`residual.log.gz`),避免后续扫描反复
+嵌套历史输出;每份解压后hash必须等于相邻command.json的output_sha256。
+C01R/C02R/C03R此次机械转换三份全部相等,扫描范围和命中分类不改。
+
+### 40.4 C04
+
+删除旧gerrit.py15条兼容绑定;仅删除批准nodeid
+`tests/unit/test_gerrit_fetch.py::test_legacy_module_reexports_implementation_and_types_by_identity`。
+skill副本三行类型import为真实依赖,原样保留。其它行为/包根测试不改。
+五项验证 `a0-evidence/phase2/execution/C04R/` **PENDING**。

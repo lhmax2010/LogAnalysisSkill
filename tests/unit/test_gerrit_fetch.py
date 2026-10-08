@@ -834,34 +834,3 @@ def test_shared_gerrit_types_are_not_package_root_exports() -> None:
     assert GerritPatchSet is not None
     assert SourceFetchResult is not None
 
-
-# Legacy wiring: identity checks only, not a substitute for pre-shim parity.
-
-
-def test_legacy_module_reexports_implementation_and_types_by_identity() -> None:
-    from ci_triage import gerrit as legacy
-
-    implementation_symbols = (
-        "GERRIT_HOST",
-        "GERRIT_PORT",
-        "SubprocessRunner",
-        "GerritError",
-        "query_change_for_commit",
-        "parse_gerrit_query_output",
-        "change_from_query_obj",
-        "find_patchset_by_revision",
-        "fetch_source_for_commit",
-        "_run_git",
-        "_reset_generated_source_dir",
-        "_optional_int",
-    )
-    for symbol in implementation_symbols:
-        assert getattr(legacy, symbol) is getattr(gerrit, symbol)
-
-    shared_types = {
-        "GerritChange": GerritChange,
-        "GerritPatchSet": GerritPatchSet,
-        "SourceFetchResult": SourceFetchResult,
-    }
-    for symbol, shared_type in shared_types.items():
-        assert getattr(legacy, symbol) is shared_type
