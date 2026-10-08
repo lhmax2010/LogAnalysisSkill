@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from tizen_ci_shared.env import discover_sibling_pythonpath as discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import (
     DEFAULT_COOKIE_PATH,
     QuickBuildError,

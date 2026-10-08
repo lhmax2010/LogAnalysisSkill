@@ -3707,3 +3707,13 @@ venv --without-pip加已有pip --python安装,不改仓库或生产代码使其�
 删除登记的quickbuild.py纯shim(17绑定),将test_ci_triage的6个HTTP import
 直取shared/quickbuild_http;测试内容与断言不改。本组不删nodeid。
 五项验证记录位置 `a0-evidence/phase2/execution/C02R/`,结果 **PENDING**。
+
+C02 `1c42957` 五项 **PASS**:1351/1、lost=0/changed=0;90 checkers
+regressions=[];mypy/ruff/lint exit0;smoke31/31;import-all212/212;
+residual HISTORICAL=6783/RELEASE=29/OTHER=0;wheel/install及5模块help exit0。
+
+### 40.3 C03
+
+只去runner中的discover_sibling_pythonpath兼容import,业务函数不动;
+规范定义shared/env不动,本地零Load证据沿用批准清单。无测试删除。
+五项验证 `a0-evidence/phase2/execution/C03R/` **PENDING**。
