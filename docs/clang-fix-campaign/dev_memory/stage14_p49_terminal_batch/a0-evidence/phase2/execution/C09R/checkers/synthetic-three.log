@@ -1,0 +1,1 @@
+RELOCATION_SYNTHETIC | three | consumed=[('old.py', 'A', 'old-owner')] | produced=[('new.py', 'B', 'new-owner')] | output=[('new.py', 'B'), ('other.py', 'X')] | verdicts=("UNMAPPED_SOURCE: ('old.py', 'C', 'old-owner')",) | OK

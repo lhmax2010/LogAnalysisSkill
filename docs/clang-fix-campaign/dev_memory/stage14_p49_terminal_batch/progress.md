@@ -3784,3 +3784,21 @@ import-all206/206;residual hits=15005/OTHER=0;wheel/install及5模块help exit0�
 删除verify/workspace.py的21绑定组合shim,shared与build-verify两侧真实实现
 不动,本组无测试删除。历史归属键保留,不将它们误作生产import。
 五项验证 `a0-evidence/phase2/execution/C09R/` **PENDING**。
+
+C09 `0e6507e` 五项 **PASS**:1349/1,累计只少获批2例,其它状态不变;
+90 checkers regressions=[];mypy/ruff/lint exit0;smoke31/31;
+import-all205/205;residual hits=18319/OTHER=0;wheel/install及5模块help exit0。
+
+### 40.10 C10 / PR-02
+
+删除verify/failure_classify.py的13绑定兼容壳。module-scope判据只新增已批准
+的缺失状态:按内容hash读批准清单,逐项匹配MODULE旧址,同时确认不在Git索引且
+磁盘不存在(悬空symlink也拒绝)。旧址仍存在时保持原纯re-export结构检查,
+任何def/class或非转出语句仍红。不修改已有负fixture或归属/计数判据。
+
+新增两个人工负fixture及参数化测试:unapproved-deleted-shim、
+legacy-shim-residual-implementation,分别要求exit1与正确红因。
+PR-02的旧址键仍承担获批缺失状态查询,按PHASE2-01定义逐项登记HISTORICAL_KEY:
+symbol_audit.py原356行,来源为批准清单原字节hash;不是新的import/patch/入口,
+不是增加删除授权。加上既有11条键共12条登记,原8项裁决及负fixture未改。
+本组不删测试,新增2个防滥用测试。五项验证位置 `execution/C10R/` **PENDING**。
