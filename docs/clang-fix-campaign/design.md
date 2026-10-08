@@ -2,10 +2,12 @@
 
 ## 0. 元信息
 
-- 版本:**v1.5.18-FROZEN(实现输入版)**
-- 创建时间:2026-07-29 最近修订:2026-08-06
-- 状态:**Frozen**(2026-08-06,change_45 第二轮 delta 闭环裁决;Frozen 后
-  任何设计修改必须走 R1 并新建 `change_46.md` 或后续编号,禁止静默改写)
+- 版本:**v1.5.19-FROZEN(实现输入版)**
+- 创建时间:2026-07-29 最近修订:2026-10-08
+- 状态:**Frozen**(2026-08-06,change_45 第二轮 delta 闭环裁决;2026-10-08 经
+  change_47 R1 修订:EF-3 按规定关闭、Change-Id 改为 commit-msg hook 生成并按
+  submission_key 缓存复用,并收口 change_46 的 RD-1/2/5/6 措辞项;Frozen 后
+  任何设计修改必须走 R1 并新建 `change_48.md` 或后续编号,禁止静默改写)
 - **冻结裁决记录**:change_39 将 CK-API-01/CK-IDX-01 改为可执行规则,
   change_40 将 CK-API-01 的解析原语从 `ast.parse` 修正为
   `compile(..., "exec")`,使重复形参立规事故可被解释器直接拒绝;
@@ -223,9 +225,13 @@
 - [OPEN→已关闭] EF-2:**代码即答案**(edit_spec_guard.py:37-38 显式拒绝
   空 edits)= 判据 B。处置见 §4.1 基线复现(决策 D-6:改由
   gbs_build_skill + analyzer 组合完成,不改 build-verify)。
-- [OPEN] EF-3:Gerrit 对非 hook 确定性 Change-Id 的接受度(sandbox 实测)。
-  **应急方案(实测失败时)**:降级为 commit-msg hook 生成 Change-Id,
-  但以 submission_key 为键缓存入 state DB 复用,保住幂等;届时走 R1 变更。
+- [RESOLVED 2026-10-08] EF-3:**按团队规定,不得使用非 commit-msg hook
+  生成的 Change-Id**(FatTank 确认),确定性 Change-Id 方案不可用,必须经
+  Gerrit 的 commit-msg hook 生成。
+  按预案降级(change_47,R1):Change-Id 由 commit-msg hook **首次生成**后,
+  以 submission_key 为键写入 state DB 表 `campaign_change_ids`,此后一切重跑
+  **只读复用、永不重新生成**,保住 Gerrit 侧幂等与 A12 的 derived_commit_sha
+  可复算性。规则见 §3.4"Change-Id 来源",接口见 §4.2。
 - [OPEN→已关闭] EF-4:conf = 模板 + build 页 Variables 表两 URL
   (Base/Profile,已钉死具体 snapshot),三 arch 共用一份。**残项已完成
   (2026-07-30 实测)**:Open3D + gbs_llvm.conf,depsolve 通过、编译推进
@@ -322,7 +328,7 @@ flowchart TD
 
 | 模块 | 位置 | 职责 | 新/改 |
 |---|---|---|---|
-| submission_identity | ci_triage/submission_identity.py | submission_key、确定性 Change-Id | 新 |
+| submission_identity | ci_triage/submission_identity.py | submission_key;经 commit-msg hook 生成 Change-Id(纯生成,在业务仓库外的一次性临时仓库中执行 hook,不落库;落库与复用由 campaign_state.get_or_create_change_id 负责,v1.5.19) | 新 |
 | aggregate | ci_triage/aggregate.py | 三 arch record 聚合校验(§3.4 扩展绑定) | 新 |
 | derive_commit | ci_triage/derive_commit.py | commit-tree 派生 | 新 |
 | sandbox_submit | ci_triage/sandbox_submit.py + CLI | 聚合→policy→dirty→派生→白名单→push sandbox→写回 | 新 |
@@ -704,6 +710,23 @@ CREATE TABLE IF NOT EXISTS campaign_qb_events (
 );
 CREATE INDEX IF NOT EXISTS ix_qb_ev_req ON campaign_qb_events (request_seq, event_id);
 CREATE INDEX IF NOT EXISTS ix_qb_ev_build ON campaign_qb_events (qb_build_id);
+
+-- v1.5.19(change_47):Change-Id 缓存。一 submission_key 一行,首写即定,
+-- 不更新、不删除;取用规则见 §3.4"Change-Id 来源"。
+CREATE TABLE IF NOT EXISTS campaign_change_ids (
+  submission_key TEXT NOT NULL PRIMARY KEY
+                 CHECK (length(submission_key) = 64
+                        AND submission_key NOT GLOB '*[^0-9a-f]*'),
+  change_id      TEXT NOT NULL UNIQUE
+                 CHECK (length(change_id) = 41
+                        AND substr(change_id, 1, 1) = 'I'
+                        AND substr(change_id, 2) NOT GLOB '*[^0-9a-f]*'),
+  source         TEXT NOT NULL CHECK (source = 'commit_msg_hook'),
+  hook_sha256    TEXT NOT NULL
+                 CHECK (length(hook_sha256) = 64
+                        AND hook_sha256 NOT GLOB '*[^0-9a-f]*'),
+  created_at     TEXT NOT NULL      -- UTC ISO8601,与既有表口径一致
+);
 ```
 读取语义:任何 gate 字段 = 该 campaign_unit_key 下**最新**对应 event 的 payload
 (与既有 `get_latest_status_row` 的"取最新行"惯例一致);首写字段
@@ -830,7 +853,7 @@ arch 拒绝的 unit 允许为 NULL**),随即写入终态
 | `PUSH` | `ref`, `ref_class`(`sandbox`/`review`), `pushed_sha`, `result`(`ok`/`failed`), `url`(可空), `at` | 取最新一条;sandbox 与 review 各自独立取 |
 | `KB` | `kb_id`, `dedupe_hit`(bool), `status`(写入时恒为 `NEW`), `at` | 取最新一条 |
 | `REVIEW` | `outcome`(`pushed`/`manual`/`ineligible`), `review_url`(可空), `degraded`(bool), `qb_event_id`(可空), `at` | 取最新一条;`manual` 时 degraded 必为 true |
-| `CONVERGENCE` | `round_index`, `arch_norm`, **`invocation_event_id`:除 `reason='rebaselined'` 置 null 外一律必填**;与真实列同名同值,`append_event` 校验其指向同 unit/round/arch 的 BUILD_INVOCATION。**普通 `append_event` 禁止写 `result=PASS`;PASS 只能经 `link_verification_with_convergence` 原子 API 写入。** `result` ∈ {`PASS`,`FAIL`,`n_a`};`verdict` ∈ {`advance`,`stalled`,`regressed`,`denied`,`n_a`};`previous_basis` ∈ {`reproduce`,`prev_build`,`synthetic_zero`,`none`};`at` 必填。`reason` ∈ {`orphan_invocation`, `rebaselined`, `apply_failed`, `analyzer_failed`, `toolchain_failed`, `previous_evidence_missing`} → `result/verdict=n_a`;其余 build outcome 为 PASS/FAIL。字段规则:`rebaselined` 的 `invocation_event_id=null`,`actual_changed_paths=[]`,`previous_basis=none`,`verification_id=null`;d 补写及 apply/analyzer/toolchain/previous-missing 的 `actual_changed_paths=[]`(若 apply 已知实际路径则用确定性列表),`previous_basis=none`,`verification_id=null`;PASS 的 evidence null、verification_id 必填;FAIL 的 evidence path/hash 必填且 verification_id null。**未列出的 result/verdict/reason/previous_basis 组合一律 `PayloadSchemaError`,不得静默接受。** | 按 `(arch_norm)` 取 event_id 最大的一条;其 evidence binding 供下一轮作 previous |
+| `CONVERGENCE` | `round_index`, `arch_norm`, **`invocation_event_id`:除 `reason='rebaselined'` 置 null 外一律必填**;与真实列同名同值,`append_event` 校验其指向同 unit/round/arch 的 BUILD_INVOCATION。**普通 `append_event` 禁止写 `result=PASS`;PASS 只能经 `link_verification_with_convergence` 原子 API 写入。** `result` ∈ {`PASS`,`FAIL`,`n_a`};`verdict` ∈ {`advance`,`stalled`,`regressed`,`denied`,`n_a`};`previous_basis` ∈ {`reproduce`,`prev_build`,`synthetic_zero`,`none`};`at` 必填。`reason` ∈ {`orphan_invocation`, `rebaselined`, `apply_failed`, `analyzer_failed`, `toolchain_failed`, `previous_evidence_missing`} → `result/verdict=n_a`;其余 build outcome 为 PASS/FAIL。字段规则:`rebaselined` 的 `invocation_event_id=null`,`actual_changed_paths=[]`,`previous_basis=none`,`verification_id=null`;d 补写及 apply/analyzer/toolchain/previous-missing 的 `actual_changed_paths=[]`(若 apply 已知实际路径则用确定性列表),`previous_basis=none`,`verification_id=null`;PASS 的 evidence null、verification_id 必填;FAIL 的 evidence path/hash 必填且 verification_id null;**`result=n_a` 的各类事件 evidence 一律为 null**(v1.5.19 RD-2 总括)。**未列出的 result/verdict/reason/previous_basis 组合一律 `PayloadSchemaError`,不得静默接受。** | 按 `(arch_norm)` 取 event_id 最大的一条;其 evidence binding 供下一轮作 previous |
 | `SECONDARY_TARGET_ADOPTED` | `arch_norm`, **`adopted_fingerprint`(单数;Stage 1 为 primary singleton,全文统一用单数)**, **`baseline_error_count` / `current_error_count`**, **`baseline_truncated` / `current_truncated`**(均须为 false), `expected_reproduce_event_id`, `at` | 每 arch 至多一条;存在即豁免已用 |
 | `HELD_REASON`(枚举,非事件;v1.5.6 冻结) | `campaign_status_log.reason` 在 status==HELD_FOR_INVESTIGATION 时**必须**取自:`previous_evidence_missing`(仅此值可 rebaseline)/ `orphan_pass` / `aggregate_mismatch` / `edit_spec_rebind_mismatch` / `state_inconsistent` / `verification_mismatch` / `worktree_dirty` / `suppress_policy_recheck` / `link_mismatch` | 写入方:6a previous 校验、第 3 步对账、聚合校验、review-submit 重绑定、link 一致性校验;取用方:`campaign-rebaseline` |
 | `WORKSPACE_CLEANUP` / `WORKSPACE_RELEASE` | `paths[]`, `reason`;**`confirmed_by` 为可选字段,仅 `release_held_worktrees` 写入时必填**(v1.4.10:另两个 release API 不接收该入参,若列为无条件必填会被自己的 validator 拒绝) | 审计用 |
@@ -956,7 +979,39 @@ failure_key → 不同 Change-Id → Gerrit 重复 change**,这使"跨会话幂�
    verified_tree_sha=…)`
   = `sha256(f"{key}:{tree_sha}")`——**字节公式与既有实现完全一致
   (含 ":" 分隔符),不另立协议**。
-- `change_id = "I" + sha1(submission_key)`。
+- **Change-Id 来源(v1.5.19,change_47;EF-3:按规定不得使用非 hook
+  生成的 Change-Id)**:不再由 submission_key 哈希派生。规则:
+  ①**一个 submission_key 恰对应一个 Change-Id**,存于 `campaign_change_ids`
+  (主键 submission_key,change_id UNIQUE,append-only,无 update/delete);
+  ②**生成许可由 API 自行判定,不信调用方**:`get_or_create_change_id` 带
+  `campaign_unit_key`;表中已有 → 直接返回(跨 build 的同一修复因此复用同一值);
+  未命中时,**该 unit 已有任何 DERIVE 事件 → `StateInconsistent`**(无论调用方
+  是否传了 `generate`,且不调用 generate);未命中、无 DERIVE、`generate is None`
+  → `StateInconsistent`;未命中、无 DERIVE、给了 `generate` → 在事务外执行
+  `generate_change_id_via_hook`,随后在 `BEGIN IMMEDIATE` 写事务内**重查缓存与
+  DERIVE**:缓存已有 → 返回缓存值(丢弃新值);DERIVE 已出现 → `StateInconsistent`
+  (不插入);否则插入并返回。hook 执行不在写事务内;
+  **顺序不变式**:`campaign_change_ids` 的写入必须先于该 unit 首个 DERIVE 事件
+  落库(sandbox-submit 内顺序:取 Change-Id → 组装 message → derive → 写 DERIVE
+  → push),实现不得产生"已有 DERIVE 而无对应缓存行"的中间态;因此正常崩溃
+  重跑只会落在"无行无 DERIVE"(重新生成,未 push 过,无害)或"有行"(命中)
+  两种状态;
+  ③**调用方约定**:首次 sandbox-submit 传入 `generate`;其余取用(已有 DERIVE 后
+  的 sandbox 重推、review-submit、derived_commit_sha 复算)传 `generate=None`。
+  即使调用方传错,②的 API 内检查也保证不会在已有 DERIVE 的 unit 上生成新值;
+  未命中(状态库指错、缓存行被删)一律 `StateInconsistent`,不生成、不写库、
+  不 push——commit message 的 `Change-Id:` trailer 因而固定,A12 的
+  derived_commit_sha 复算不受影响;
+  ④hook 文件取自 config `gerrit_commit_msg_hook`,其 sha256 须等于
+  `gerrit_commit_msg_hook_sha256`(preflight 校验一次;每次生成时把校验过的
+  字节复制到临时目录后执行该副本,杜绝校验后被替换);生成失败的各形态
+  (见 §4.2 `generate_change_id_via_hook`)→ `CHANGE_ID_HOOK_FAILED`,
+  不写库、不 push;
+  ⑤`hook_sha256` 为**审计字段**:写入时记录生成该值所用 hook 的 sha256;
+  命中时**不与当前 config 比对**(Gerrit 侧 hook 升级不影响已有 Change-Id
+  的身份),新 sha256 只约束此后新生成的行;
+  ⑥`change_id` 列值一经写入即为该 submission_key 在 Gerrit 侧的唯一身份;
+  人工清库属带外操作,不在本设计内(清库后的取用按③ fail-closed)。
 
 ### 3.5 clang-knowledge-db 学习闭环子系统
 
@@ -1104,6 +1159,10 @@ python -m ci_triage sandbox-submit
   # ^sandbox/[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$
   # message_brief(v1.2.1,A12 配套):state DB 尚无存量时 --message-brief
   # 必填,缺失 → INVALID_ARGS;已有存量时忽略新传入值,一律复用存量
+  # **Change-Id(v1.5.19,change_47)**:组装 message 前取 Change-Id,顺序固定为
+  # 取 Change-Id → 组装 message → derive → 写 DERIVE → push(§3.4"Change-Id 来源"②);
+  # 该 unit 尚无 DERIVE 时传 generate,否则传 None;CHANGE_ID_HOOK_FAILED 与
+  # 取用时的 StateInconsistent 均 exit 4,不 push
   stdout JSON: { action, aggregate{...reasons[]}, policy_verdict,
                  change_id, derived_commit_sha, push{ref,result,url},
                  error_code|null }
@@ -1368,7 +1427,8 @@ python -m ci_triage campaign-repair-step   # v1.4.9 八步契约(取代 v1.4.3 �
   #      归属多命中已在上文仅写 HELD 后立即返回;以下公式**只适用于
   #      c 异常组与 clean 组共存**。对实际进入分组处理的组写入全部执行
   #      (clean 组 relink 与 d 补写照做),整体 branch 按
-  #      **state_inconsistent_held > orphan_pass_held(任一组触发 c)
+  #      **[state_inconsistent_held:在本局部公式内不可达,仅作防御性
+  #      保留,v1.5.19 RD-5] > orphan_pass_held(任一组触发 c)
   #      即 HELD,有异常先冻结,即便当前组已 link/relink 成功——
   #      exit 0 会把异常藏在成功后面)> 当前组 linked_already/relinked
   #      > proceed** 取值;**历史组 relink 永不抬升 branch**(v1.5.12
@@ -1398,7 +1458,8 @@ python -m ci_triage campaign-repair-step   # v1.4.9 八步契约(取代 v1.4.3 �
   #      invocation_event_id=receipt.event_id)后置 HELD(同 reason 同 arch)。
   #      随后在**计费前**检查 `<workspace-root>/iter_<round_index>`:
   #      无 protected marker 且无匹配 PASS record 才可经公开 workspace
-  #      API 安全清理;protected/PASS-bound/清理失败 → HELD 后 exit 4,
+  #      API 安全清理;protected/PASS-bound/清理失败 →
+  #      HELD(reason=state_inconsistent;v1.5.19 RD-6 点名)后 exit 4,
   #      **不得消费 invocation**(已知不能 build 的残留现场不白扣预算)。
   #      清理/确认无残留后再 `consume_build_invocation`
   #      (BEGIN IMMEDIATE;闸二)→ 持有
@@ -1517,8 +1578,8 @@ python -m ci_triage campaign-repair-step   # v1.4.9 八步契约(取代 v1.4.3 �
   #          "最近一次 build 结果"锚点**(旧的 n_a 事件因 event_id 更小
   #          自然不再被选中,**无需删除**——append-only 不改历史);
   #          随后状态由 HELD 迁回 REPAIR_ROUND_RUNNING。
-  #          **仅"该 arch 从未 build 过"才回退 REPRODUCE**
-  #          (那是正常首轮,不是完整性失败)
+  #          **仅"该 arch 无任何实质 build outcome"才回退 REPRODUCE**
+  #          (那是正常首轮,不是完整性失败;v1.5.19 RD-1 统一措辞)
   #      · **PASS→FAIL 的语义更正(v1.5.1,乙-M3;经 convergence.py 核对)**:
   #        **不得**断言"必被判 regressed"——`_regression_reason` 在新错误簇
   #        与 touched_files **无交集时返回 None**,进而落到 advance。
@@ -1700,12 +1761,19 @@ python -m ci_triage campaign-preflight    # v1.3.1 新增(A0 物理化)
     --sandbox-branch <ref> (--overview-id <n> | --source-build-id <n>)
   # 检查项含:**config 必填键**(gerrit_ssh_base / git 身份 / kb_db /
   # target_arches / qb_base_url / qb_username / qb_configuration_path /
-  # **campaign_workspace** / **clang_conf_path**)、
+  # **campaign_workspace** / **clang_conf_path** /
+  # **gerrit_commit_msg_hook** / **gerrit_commit_msg_hook_sha256**(v1.5.19))、
   # **conf 单一来源(v1.4.6)**:会话输入 conf、config.clang_conf_path、
   # 本命令 --conf 三者 realpath 必须完全一致,不一致即 PREFLIGHT_FAILED
   # (防"验证 A 文件、实际用 B 文件");
   # workspace_root 可用空间(≥ 阈值,防批量跑中途触发自动清理)、
   # gbs_patch_suggest 可导入(build-verify 硬依赖)、
+  # **commit-msg hook 文件(v1.5.19)**:config `gerrit_commit_msg_hook` 指向的
+  # 文件存在、可读,sha256 等于 `gerrit_commit_msg_hook_sha256`,且**冒烟一次**:
+  # 按 §4.2 `generate_change_id_via_hook` 的同一执行方式,用固定消息与固定
+  # submission_key 在一次性临时仓库中运行登记的 hook,须恰好产出一行合法
+  # Change-Id(不写 state DB、不访问 Gerrit)(hook 以 `sh` 执行,与下一项的
+  # Python 解释器检查无关)、
   # 解释器为 .venv/bin/python;凭据经环境变量(QB_PASSWORD / QB_COOKIE),
   # 值不回显;逐项检查并输出
   # 脱敏 JSON {checks:[{name,pass,evidence_redacted}]};任一失败 exit 4
@@ -1911,8 +1979,36 @@ def compute_submission_key(submission_identity_key, verified_tree_sha) -> str:
     ...
     # 直接委托既有 ci_triage.state.keys.build_submission_key(
     #   failure_key=submission_identity_key, verified_tree_sha=…),字节公式含 ":" 分隔
-def compute_change_id(submission_key) -> str:
-    ...  # "I"+40hex
+def generate_change_id_via_hook(*, hook_path: Path, hook_sha256: str,
+                                submission_key: str, message: str) -> str:
+    ...
+    # v1.5.19(change_47)。依次:
+    # 1 message 中任一行(含正文与 trailer)匹配 `(?im)^\s*change-id\s*:`
+    #   (整键不分大小写),或匹配 Gerrit 身份链接
+    #   `(?im)^\s*link\s*:\s*\S+/id/I[0-9a-f]{40}\s*$` → 拒(已有身份会被
+    #   标准 hook 保留或被 Gerrit 视同 Change-Id;普通 Link 不受影响);
+    # 2 读 hook 字节,sha256 ≠ hook_sha256 → 拒;
+    # 3 建一次性临时目录(业务仓库之外),内含 `repo/` 与空目录 `home/`:
+    #   在 `repo/` 中 `git init -q`;local config 写入 `user.name campaign`、
+    #   `user.email campaign@invalid`、`gerrit.createChangeId true`;
+    #   `git commit --allow-empty -q -m init` 使仓库同时具备 tree 与 HEAD
+    #   (消除对 hook 如何处理无 HEAD 的依赖);把校验过的 hook 字节写为
+    #   副本;消息文件 = message + 一行 `X-Campaign-Submission-Key:
+    #   <submission_key>`(仅作 hook 输入,使不同 submission_key 的输入必然
+    #   不同;**不进入最终 commit message**)。本步任一操作失败(含 git
+    #   不可执行、目录不可创建或不可写)→ 拒;
+    # 4 以 `repo/` 为 cwd,用 `sh` 运行 hook 副本,参数为消息文件路径;环境**只含**:
+    #   PATH、LANG、HOME 与 XDG_CONFIG_HOME 均指向临时目录下的 home/、
+    #   GIT_CONFIG_NOSYSTEM=1、GIT_CONFIG_GLOBAL=/dev/null(调用方的全局与系统
+    #   git 配置,例如 gerrit.reviewUrl,一律不生效;不继承 GIT_DIR/
+    #   GIT_INDEX_FILE 等任何其它变量);新进程组,30s 超时 → kill 进程组 → 拒;
+    #   子进程无法启动 → 拒;returncode ≠ 0 → 拒;
+    # 5 输出文件中匹配 `^Change-Id: I[0-9a-f]{40}\s*$` 的行须恰好一行
+    #   (strip 后长度 41),否则拒;返回该值;
+    # 6 finally 删除整个临时目录;删除失败只记 WARN,不改变返回结果(目录在
+    #   业务仓库之外,不含状态,残留无害)。
+    # "拒" = ChangeIdHookError(CHANGE_ID_HOOK_FAILED)。不访问 state DB,
+    # 不读写任何业务仓库。
 
 # module: campaign_state
 def ensure_schema(state_db) -> None:
@@ -2215,6 +2311,22 @@ def latest_qb_result(state_db, campaign_unit_key) -> dict | None:
     ...
     # **两级最新**:该 unit 中 request_seq 最大的请求 → 该请求内 event_id
     # 最大的 RESULT;旧请求迟到事件不参与
+def get_or_create_change_id(state_db, *, campaign_unit_key: str,
+                            submission_key: str, hook_sha256: str,
+                            generate: Callable[[], str] | None) -> str:
+    ...
+    # v1.5.19(change_47):
+    # 1 SELECT campaign_change_ids;命中 → 返回(不调用 generate,不比对
+    #   hook_sha256);
+    # 2 未命中且该 campaign_unit_key 已有任何 DERIVE 事件 → StateInconsistent
+    #   (不调用 generate,不写库);
+    # 3 未命中且 generate is None → StateInconsistent(不写库);
+    # 4 change_id = generate()(在写事务之外执行);
+    # 5 BEGIN IMMEDIATE:重查缓存——已有 → 返回缓存值;重查 DERIVE——已有 →
+    #   StateInconsistent(不插入);否则 INSERT (submission_key, change_id,
+    #   source='commit_msg_hook', hook_sha256 取入参值, created_at=<UTC ISO8601>);
+    #   change_id 与他行冲突(UNIQUE)→ StateInconsistent;COMMIT 后返回。
+    # 规则见 §3.4"Change-Id 来源"②③。不提供更新/删除 API。
 # --- campaign_lifecycle(v1.3.11:释放归属独立模块,非 derive_commit 注释)---
 # module: campaign_lifecycle
 def release_superseded_partial_round(state_db, campaign_unit_key,
@@ -2474,6 +2586,11 @@ REJECTED_SANDBOX_NOT_BOUND         触发前置不满足:状态未达 SANDBOX_PU
 REJECTED_QB_SUPERSEDED             qb_result 非该 unit 最新 QB 记录(v1.3)
 QB_SUBMIT_FAILED                   SBS REST 提交失败(v1.3)
 PREFLIGHT_FAILED                   campaign-preflight 任一检查失败(v1.3.1)
+CHANGE_ID_HOOK_FAILED              commit-msg hook 生成失败:message 已含
+                                   Change-Id 行或 Gerrit 身份 Link、hook sha256
+                                   不符、临时仓库准备失败、子进程无法启动、
+                                   超时、退出码非 0、输出非恰好一行合法
+                                   Change-Id;不写库、不 push(v1.5.19)
 REJECTED_WORKTREE_MISSING          verified copy 已不存在
 REJECTED_ARCH_NOT_ALLOWED          失败 arch 含非白名单(gcov/emulator/未知),
                                    unit 终止(发现阶段前置门)
@@ -2550,9 +2667,9 @@ review 失败不影响既有 sandbox 状态,报告区分"sandbox 成功 review �
 | 风险 | 影响 | 概率 | 缓解方案 |
 |---|---|---|---|
 | push 路径被绕过 | 高 | 低 | 白名单+聚合+TOCTOU 重校验+对抗测试组为合并门 |
-| 剩余 EF(EF-3/EF-5)与假设不符 | 中 | 低 | Phase 门物理压制;应急方案已备(EF-3 → 哈希配方 B;EF-5 → 契约回改点已预留) |
+| 剩余 EF(EF-5)与假设不符 | 中 | 低 | Phase 门物理压制;EF-5 契约回改点已预留(EF-3 已于 2026-10-08 关闭,见下行) |
 | 无人环修复质量 → 评审噪音 | 中 | 中 | A2 机器 gate + 门2 硬化 + suppress policy + convergence + Gerrit 终审 |
-| 确定性 Change-Id 被拒 | 中 | 低 | EF-3 实测;降级方案:hook 生成但按 submission_key 缓存复用(R1) |
+| 确定性 Change-Id 被拒 | 中 | **已发生** | EF-3 确认:团队规定不得使用非 hook 生成的 Change-Id;已按降级方案落地(change_47):hook 生成、按 submission_key 缓存复用,首写即定 |
 | 三 arch tree_sha 不等 | 中 | 低 | 聚合硬拒 fail-closed,出现即真实发现走 R1 |
 | **磁盘压力误清 worktree** | 高 | 中 | 依赖既有 protected marker(build-verify PASS 时写入)保留三 arch 副本;终态前不释放;`check_disk_and_maybe_cleanup` 默认阈值 5 GiB,campaign 批量跑(每包 `cp -a` 整仓 × 3 arch × N 轮)磁盘消耗大,**preflight 增加可用空间检查项**,报告汇总副本占用 |
 | KB 数据污染(seed 错/误 promote) | 中 | 低 | seed 开发者审定入库(PR 评审即 audit);promote 人工;溯源链可排查;demote 工具列后续 |
@@ -2563,7 +2680,7 @@ review 失败不影响既有 sandbox 状态,报告区分"sandbox 成功 review �
 ### 依赖关系总览(DAG)
 
 ```
-P1(spike: 剩余 EF-3 / EF-5)
+P1(spike: 剩余 EF-5)                # EF-3 已于 2026-10-08 关闭
 P2(identity) → P4(derive_commit)      # P2 不受 EF 阻塞(§0 改判)
 P3(aggregate)                       独立
 P4.5(gate state 模型 + suppress_policy 基础)   独立,可与 P2–P4 并行
@@ -2578,7 +2695,7 @@ P8.5(campaign-preflight)  独立(依赖 config 键定案,即本文档 §4/模板
 P5R, P6 → P10(生命周期状态机 + 报告)
 P5..P10, P8.5 → P11(剧本 + 对抗测试组含 TOCTOU)
 P11 → P12(e2e 单包真机)
-关键路径:P1 → P2 → P4 → P5 → P5Q → P5R → P10 → P11 → P12
+关键路径:P2 → P4 → P5 → P5Q → P5R → P10 → P11 → P12(P1/EF-5 只阻塞 P5Q,v1.5.19)
 可并行:P3、P4.5、P7、P8 随时;P6、P9 在对应 EF 结论后
 ```
 
@@ -2586,25 +2703,61 @@ P11 → P12(e2e 单包真机)
 禁令、dev_memory、checkpoint、Review Prompt、PR、R14 闭环)。
 
 ### Phase 1: EF 环境事实 spike
-- **目标**:实测钉死剩余 EF(**仅 EF-3 与 EF-5 四项**;EF-1/2/4/6 已关闭,结论见 §1.4)
-- **范围**:**EF-3**(Gerrit 确定性 Change-Id)+ **EF-5**(QB sandbox 复验触发与结果获取;结果中
+- **目标**:实测钉死剩余 EF(**仅 EF-5 四项**;EF-1/2/3/4/6 已关闭,结论见 §1.4)
+- **范围**:**EF-5**(QB sandbox 复验触发与结果获取;结果中
   repo@commit 绑定信息形态)。**EF-6 已关闭**,仅在 EF-5 实验中顺带观察
   sandbox 覆盖行为(原 EF-6 议题:分支命名约束、同 repo
   覆盖行为、QB 是否要求固定名)
 - **交付物**:docs/clang-fix-campaign/spikes/ef_report.md
-- **DoD 专项**:EF-3 与 EF-5 四项均有实测结论回填 §1.4;冲突触发 R1
+- **DoD 专项**:EF-5 四项均有实测结论回填 §1.4(EF-3 已按团队规定关闭,无实测项);冲突触发 R1
 - **预估代码量**:~0(spike 脚本不合并)
-- 注:EF-1/2/4/6 已关闭;剩余 EF-3(P5 门)、EF-5 四项(P5Q 门)。
-  **EF-3 不阻塞 P2**(P2 按主方案实现,拒收则按应急 B 换哈希配方,
-  函数签名不变)
+- 注:EF-1/2/3/4/6 已关闭(EF-3 于 2026-10-08 关闭,结论见 §1.4);
+  剩余 EF-5 四项(P5Q 门)。
 
 ### Phase 2: submission_identity(~250 行,无 EF 依赖)
 - 范围:build_campaign_unit_key(6 段)+ build_submission_identity_key(5 段)+ 委托既有
-  build_submission_key + compute_change_id;固定向量测试
-- **Phase 门**:EF-3 须在 **P5 首次真实 push 前**完成;拒收则按应急 B
-  换哈希配方,函数签名不变(R1 记录)
+  build_submission_key + **generate_change_id_via_hook**;另在 campaign_state 增
+  **get_or_create_change_id** 与 `campaign_change_ids` 表(v1.5.19,change_47);固定向量测试
+- **Phase 门**:EF-3 已关闭(2026-10-08),无剩余门
 - DoD 专项:[ ] 两个 key 的段数/成分断言(unit 含 build_id、identity 不含);[ ] 与既有
-  build_submission_key 的字节一致性测试(同输入同输出)
+  build_submission_key 的字节一致性测试(同输入同输出);
+  [ ] **Change-Id 缓存(v1.5.19)**:同一 submission_key 第二次取用不调用 generate、
+  返回值与首次逐字相等;并发两连接同时首取只落一行、两方返回同一值;
+  不同 submission_key 生成相同 change_id → StateInconsistent;首取后
+  hook_sha256、created_at 均已落库;改动 config 中的 hook sha256 后再取同一 key
+  → 仍返回原值且不报错;
+  [ ] **只读模式**:空表 + generate=None → StateInconsistent 且不写库;首取后删除
+  该行再以 generate=None 取 → StateInconsistent;review-submit 端到端:删行后
+  必须拒绝,不得重新生成、不得 push;
+  [ ] **hook 生成**(测试替身 hook,不访问真实 Gerrit):message 含 `Change-Id:`
+  行(含大小写变体)、sha256 不符、挂住超时(验证进程组被 kill 且无残留
+  临时目录)、退出码非 0 但写了合法一行、输出零行/两行/格式非法,各自 →
+  CHANGE_ID_HOOK_FAILED 且不写库;输出带 CRLF → 成功且落库为 41 字符;
+  校验通过后替换原 hook 文件 → 执行的仍是校验过的内容;执行前后业务仓库
+  `.git/objects` 计数不变;成功与失败两条路径临时目录均被删除;
+  [ ] `campaign_change_ids` 的 CHECK 约束:非法 change_id、非法 source、
+  submission_key 为 NULL/空串/非 64 位小写十六进制、非法 hook_sha256 插入均被拒;
+  先以 `build_submission_key` 固定向量确认其返回 64 位小写十六进制,不符即
+  [DESIGN_ISSUE] 停止;
+  [ ] previous 边界(RD-1):该 arch 只有 apply_failed/analyzer_failed 的 n_a 事件
+  → 回退 REPRODUCE 而非 HELD;
+  [ ] **生成许可由 API 判定**:unit 已有 DERIVE + 无缓存行 + 传入 generate →
+  StateInconsistent 且 generate 调用次数为 0、不写库;unit 无 DERIVE + 表中已有该
+  submission_key(跨 build 复用)→ 命中返回且 generate 调用次数为 0;generate
+  执行期间另一连接写入该 unit 的 DERIVE → 最终插入被拒(StateInconsistent);
+  sandbox 重推(已有 DERIVE)删行后 → 拒绝且不 push;
+  [ ] **X-Campaign-Submission-Key**:两个不同 submission_key、同一 message →
+  生成两个不同 Change-Id;derive 后的最终 commit message 不含该行,且恰好含一个
+  `Change-Id:` trailer;
+  [ ] **身份行拒绝**:`CHANGE-ID:`、`Change-ID:`、`change-id :` 与合法 Gerrit
+  `Link: …/id/I<40hex>` 各自 → CHANGE_ID_HOOK_FAILED;普通文档 Link 不被误拒;
+  [ ] **配置隔离**:调用方 HOME 含 `gerrit.reviewUrl` 与 `gerrit.createChangeId=false`、
+  调用方环境预设 GIT_DIR 指向业务仓库 → 仍生成合法 Change-Id,业务仓库配置未被读取;
+  [ ] **临时仓库准备失败**:PATH 中无 git、临时目录不可写 → CHANGE_ID_HOOK_FAILED
+  而非未捕获异常;临时目录删除失败 → 结果仍返回并记 WARN;
+  [ ] **真实 hook 冒烟**:用 FatTank 登记的 hook 文件(非替身)按 §4.2 方式在
+  一次性临时仓库中运行一次,输出恰好一行合法 Change-Id(不访问 Gerrit);另构造
+  一个未处理"无 HEAD"的 hook 变体,在空初始 commit 之后同样成功
 ### Phase 3: aggregate(~350 行,独立)
 - 范围:§3.4 绑定字段全量(spec_name/project/
   edit_spec_sha256/gbs_conf_sha256/归一化 arch 集合);reasons 含具体差异
@@ -2827,8 +2980,8 @@ P11 → P12(e2e 单包真机)
   输入应不可能(同实现);
   [ ] `denied` 短路:不做 convergence、verdict=denied、DENIED 终态;
   [ ] 任一侧 evidence 截断 → **禁止 adoption**;
-  [ ] 下一轮 previous 由 CONVERGENCE 事件取得;**该 arch 从未 build 过**
-  才回退 REPRODUCE(正常首轮,非完整性失败);
+  [ ] 下一轮 previous 由 CONVERGENCE 事件取得;**该 arch 无任何实质 build
+  outcome** 才回退 REPRODUCE(正常首轮,非完整性失败;v1.5.19 RD-1);
   [ ] **stdout/exit 契约**:build FAIL 的正常路径 **exit 0** 且 stdout 含
   result/verdict/adopted;stalled→STALLED、regressed→REGRESSED 状态写入;
   [ ] `append_event` 对 DERIVE/PUSH/KB/REVIEW 的必填字段校验;
@@ -3192,11 +3345,11 @@ tizen-ci-triage/scripts/ci_triage/;kb 数据 tizen-ci-triage/kb/;
 
 ---
 
-本文档为 **v1.5.18-FROZEN(实现输入版)**(2026-08-06;
+本文档为 **v1.5.19-FROZEN(实现输入版)**(2026-10-08;
 冻结裁决见 §0)。
 
-**EF 台账**:EF-1 / EF-2 / EF-4 / EF-6 **已关闭**(结论见 §1.4);
-剩余 EF-3(**P5 首次真实 push 前**)、EF-5 四项(**P5Q 开工前**)——
+**EF 台账**:EF-1 / EF-2 / EF-3 / EF-4 / EF-6 **已关闭**(结论见 §1.4);
+仅剩 EF-5 四项(**P5Q 开工前**)——
 均为 Phase 门,不阻塞设计冻结,也不阻塞首波 Phase。
 
 **重新冻结前置(已清零)**:§4 接口契约已与真实代码逐项对齐
@@ -3208,7 +3361,7 @@ change_39 已将冻结 API、索引、交叉引用与 Mermaid 四类机械闸门
 阶段闸门仍按 §0 冻结裁决执行,不得因设计已冻结而绕过。
 
 开发期间对本文档的任何修改必须走 R1 设计变更流程;下一个
-变更记录从 `change_46.md` 起,禁止直接覆盖本冻结契约。
+变更记录从 `change_48.md` 起,禁止直接覆盖本冻结契约。
 
 **闭环与变更记录**:cross_review_closure_v1.0 ~ v1.3.1.md(**六份**,设计收敛期);design_changes/change_1.md(代码视角首审)、change_2.md(双 key/表/
 契约纠偏)、change_3.md(可执行 SQL/QB 拆表/arch 白名单)、change_4.md
@@ -3288,7 +3441,12 @@ StateInconsistent(UNIQUE 探针实锤)/ReconcileResult 当前-历史双
 同轮、previous 锚点、reconcile/状态/错误码与 checker fence 修订)、
 `change_45.md`(**R14 第二轮 → v1.5.18**:纠正 change_44 处置记录强于
 正文的问题,D2/D3/D5/D6/D8/D9/D10 全部回填权威正文,明确 HELD
-恢复边,冻结 canonical 原子发布并要求每条 Closed 由正文 diff/grep 自证)。
+恢复边,冻结 canonical 原子发布并要求每条 Closed 由正文 diff/grep 自证)、
+`change_46.md`(R14 第二轮 NIT/MINOR 挂账;RD-1/2/5/6 已由 change_47 回填
+正文,RD-4 属评审台账措辞,B-NIT-1/2 留 P5 推送闸前)、
+`change_47.md`(**EF-3 关闭 → v1.5.19**:按规定不得使用非 hook 生成的 Change-Id,
+改为 commit-msg hook 生成 + `campaign_change_ids` 按 submission_key 缓存复用;
+收口 change_46 的 RD-1/2/5/6)。
 
 **本文档自 v1.5.6 起状态为「实现输入版」**:两方评审均判定"设计层可进入
 P4.5 spike",余下问题属实现细节。开发期间发现契约不可实现 → `[DESIGN_ISSUE]`

@@ -21,6 +21,7 @@
 | P4.9 extraction phase | CLOSED | Step-0 plus all six skill extractions signed off | phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; next and only entry is the five-item terminal batch |
 | P4.9 terminal batch | CLOSED | PHASE2-09 fixed; C01-C13 verified; 13 hosts/183 bindings; 1349 passed/1 skipped | [final sign-off](../review/p49-terminal-closeout.md#最终签批) @ `9f02f3f`, 2026-10-08: designer verified, one external reviewer CLOSED with zero findings; [carried issues](stage14_p49_terminal_batch/carried-over-issues.md): 3 unchanged, handed to the subsequent phase |
 | P4.9 phase | CLOSED | Extraction and all five terminal obligations closed, 2026-10-08 | [phase ledger](../review/p49-extraction-phase-summary.md#p49-terminal-batch-ledger); [terminal sign-off](../review/p49-terminal-closeout.md#最终签批) @ `9f02f3f` |
+| P2 submission identity | DESIGN_REGISTERED | FatTank-approved change_47; design v1.5.19-FROZEN, implementation not started | [design](../design.md#42-内部模块接口); [change_47](../design_changes/change_47.md); pre-entry checks: design 0 problems, SQLite DDL valid and 22/22 invalid rows rejected, fixed submission key is 64 lowercase hex |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
