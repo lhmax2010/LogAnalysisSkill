@@ -1,6 +1,6 @@
 # Stage15 P1 EF-5 Environment Spike
 
-日期:2026-10-08。状态:**BLOCKED_WEB_COOKIE**(REST仍BLOCKED)。
+日期:2026-10-08。状态:**BLOCKED**(本轮本地COOKIE_HEADER_FORMAT拒绝,非服务端拒绝)。
 权威:`../../design.md` v1.5.19-FROZEN §1.4 EF-5、§4.1
 qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 
@@ -261,3 +261,56 @@ QB_COOKIE未设置。getpass终端启动后仍在等待输入,尚未创建`web-0
 SBS_TARGET、arch、父子对应/accept全部PENDING,不能判字段不存在。
 恢复时需FatTank本人在§9命令的getpass输入Cookie;不得在聊天、命令行参数或文件中传递。
 若网页登录/拒绝则停止记录,如无明确TRIGGER关联则再请FatTank提供上级号。
+
+## 10. 本人到场后的网页重跑(35d4052原脚本)
+
+本轮仅EF-5,不修改P2-P4、生产代码、业务测试或design.md。
+`ef5_web_probe.py`及`ef5_probe.py`对35d4052的git diff为空,原字节未改。
+Cookie只由可见gnome-terminal中的getpass输入;启动时对该子进程取消QB_COOKIE
+环境变量以确保走getpass,不读取任何磁盘cookie文件。
+
+### 10.1 输入等待与实测退出
+
+北京时间2026-10-08 17:35:05首次启动(UTC09:35:05),明确允许等待10分钟。
+本轮**未发送SIGINT/TERM,未提前结束等待**;各次均由探测脚本自行exit2。
+第一次直接运行,第二次用runpy保留结束提示,均无web-02目录,原因不作推断。
+第三、四次用`evidence/web-02-launch.py`调用同一未修改的main,
+仅增加固定错误类别/TTY标记的记录,不打印异常原值、不采集Cookie长度或片段。
+最后核对时间UTC09:45:13。
+
+诊断两次的非敏感输出一致:
+
+```json
+{
+  "stdin_isatty": true,
+  "secret_recorded": false,
+  "error_category": "COOKIE_HEADER_FORMAT",
+  "error_type": "ValueError",
+  "exit": 2
+}
+```
+
+原始记录:`evidence/web-02-input-format-rejected.json`(保留前一次)与
+`evidence/web-02-launch.json`(最后一次)。对应脚本内固定错误文本:
+`QB_COOKIE must be a Cookie header: name=value; name2=value2`。
+该校验位于Redactor初始化,早于创建输出目录与首个GET;
+两次诊断均为格式拒绝,不推测输入中具体有什么,不把首次两次无诊断退出强归同因。
+
+启动命令与各次退出、脚本SHA、目录未创建证明、提交面检查见
+`evidence/web-02-attempts.json`及`evidence/web-02-integrity.json`。
+没有捕获终端输入/录屏/剪贴板,没有明文Cookie、Cookie片段或Set-Cookie落盘。
+
+### 10.2 逐页面证据与结论
+
+本轮HTTP请求0,HTTP响应0,成功读取页面0,POST/触发/修改0;
+未获取状态、步骤、日志链接、产物列表或trigger入口。**不能判断这些字段不存在**。
+
+| 计划页面 | 请求是否发出 | build状态 | 步骤 | 日志链接 | 产物列表 | trigger入口 |
+|---|---|---|---|---|---|---|
+| /build/1069532 | 否,本地凭据格式拒绝 | 未读取 | 未读取 | 未读取 | 未读取 | 未读取,未点击 |
+
+没有已读取的标签页,故不伪造标签页级响应或字段列表。
+结论:**BLOCKED**;阻塞类别是本地输入格式,不是QuickBuild拒绝。
+只读工具仍有GET白名单且禁redirect/JS/表单/触发;本轮无需、也未扩白名单。
+恢复需在getpass输入HTTP Cookie头的name=value配对内容,不是裸值/JSON/整条curl命令;
+勿在聊天或命令行传递凭据。本轮不对实际输入作重建或自动修正。

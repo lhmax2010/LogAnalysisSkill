@@ -1,0 +1,35 @@
+{
+  "probe_bytes_match_35d4052": true,
+  "script_sha256": {
+    "docs/clang-fix-campaign/spikes/ef5_web_probe.py": "60d76e36e6b237053961101c9522469c61dbe1f53eedc2784d00a0b34f35b21c",
+    "docs/clang-fix-campaign/spikes/ef5_probe.py": "00c0f3b90d1ea8f6eaa9cd1b84f0bef2e0dbdba39a93c1ff7a4de35f95e63d26"
+  },
+  "launcher_sha256": "afaffbb7b964273e08d8c0273d78e9d8dd605146e32ff068830ea1fd49d9faf6",
+  "diagnostic_records_match_closed_safe_schema": true,
+  "production_and_design_diff_empty": true,
+  "no_web_response_directory": true,
+  "checks": [
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/ruff",
+        "check",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-02-launch.py"
+      ],
+      "exit": 0,
+      "log": "launcher-ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "py_compile",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-02-launch.py"
+      ],
+      "exit": 0,
+      "log": "launcher-compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "limitation": "No HTTP response was obtained; there is no server-denial or page-field evidence."
+}

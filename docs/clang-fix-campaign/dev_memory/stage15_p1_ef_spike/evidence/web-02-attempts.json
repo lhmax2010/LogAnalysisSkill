@@ -1,0 +1,76 @@
+{
+  "source_commit": "35d4052",
+  "build_id": "1069532",
+  "wait_allowance_minutes": 10,
+  "agent_sent_interrupt": false,
+  "terminal_prefix": [
+    "env",
+    "-u",
+    "QB_COOKIE",
+    "-u",
+    "LD_LIBRARY_PATH",
+    "-u",
+    "LD_PRELOAD",
+    "-u",
+    "GTK_PATH",
+    "-u",
+    "GIO_MODULE_DIR",
+    "gnome-terminal",
+    "--wait"
+  ],
+  "working_directory": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "diagnostic_command": [
+    "env",
+    "-u",
+    "QB_COOKIE",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-02-launch.py"
+  ],
+  "final_observation_utc": "2026-10-08 09:45:13",
+  "attempts": [
+    {
+      "attempt": 1,
+      "launch_clock_utc": "2026-10-08 09:35:05",
+      "method": "direct original probe",
+      "exit": 2,
+      "output_directory_created": false,
+      "reason": "UNCLASSIFIED: no diagnostic wrapper"
+    },
+    {
+      "attempt": 2,
+      "launch_clock_utc": "2026-10-08 09:36:43",
+      "method": "runpy original probe; terminal acknowledgement after exit",
+      "exit": 2,
+      "output_directory_created": false,
+      "reason": "UNCLASSIFIED: original probe suppresses exception text"
+    },
+    {
+      "attempt": 3,
+      "launch_clock_utc": "2026-10-08 09:40:05",
+      "method": "allowlisted diagnostic launcher calls unchanged main",
+      "exit": 2,
+      "output_directory_created": false,
+      "reason": "COOKIE_HEADER_FORMAT",
+      "evidence": "web-02-input-format-rejected.json"
+    },
+    {
+      "attempt": 4,
+      "launch_clock_utc": "2026-10-08 09:43:45",
+      "method": "same diagnostic launcher, input guidance name=value",
+      "exit": 2,
+      "output_directory_created": false,
+      "reason": "COOKIE_HEADER_FORMAT",
+      "evidence": "web-02-launch.json"
+    }
+  ],
+  "requests": 0,
+  "responses": 0,
+  "pages_read": 0,
+  "post_trigger_modify_requests": 0,
+  "credential_values_recorded": false,
+  "cookie_read_from_disk": false,
+  "script_sha256": {
+    "docs/clang-fix-campaign/spikes/ef5_web_probe.py": "60d76e36e6b237053961101c9522469c61dbe1f53eedc2784d00a0b34f35b21c",
+    "docs/clang-fix-campaign/spikes/ef5_probe.py": "00c0f3b90d1ea8f6eaa9cd1b84f0bef2e0dbdba39a93c1ff7a4de35f95e63d26"
+  }
+}

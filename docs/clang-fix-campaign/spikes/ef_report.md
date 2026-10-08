@@ -1,6 +1,6 @@
 # P1 EF-5 Environment Report
 
-日期:2026-10-08。状态:**BLOCKED_WEB_COOKIE**(历史REST拒绝未解决)。
+日期:2026-10-08。结论:**BLOCKED**(最新网页重跑为本地Cookie格式拒绝,非服务端拒绝)。
 权威:`../design.md` v1.5.19-FROZEN §1.4 EF-5与§4.1。
 本报告不修改设计,不宣告EF-5关闭或P5Q开工门通过。
 进度与命令:[stage15 progress](../dev_memory/stage15_p1_ef_spike/progress.md)。
@@ -175,3 +175,35 @@ Cookie会话续期与登录页检测也是额外维护面。
 且页面上的成功字样不能代替父子关联和accept语义证据;REST原本有结构化字段优势,
 但当前环境已实测拒绝其访问。网页只能作为待验证的候选取证路径,不是绕过权限,
 也不能凭只读页面证明真实提交的响应协议。是否改设计由设计方在取得实测后决定。
+
+## 本人到场后的重跑结论(35d4052,2026-10-08)
+
+### BLOCKED: 本地Cookie头格式校验拒绝
+
+沿用35d4052探测脚本原字节,在可见终端通过getpass输入,不改白名单。
+明确允许10分钟等待;未由代理提前结束任何一次等待,各次脚本自行exit2。
+两次诊断重跑实测`stdin_isatty=true`、`error_category=COOKIE_HEADER_FORMAT`。
+固定脱敏错误说明(来自脚本常量,不是Cookie内容):
+
+```text
+QB_COOKIE must be a Cookie header: name=value; name2=value2
+exit=2
+```
+
+证据:[前一次诊断](../dev_memory/stage15_p1_ef_spike/evidence/web-02-input-format-rejected.json)、
+[最后一次诊断](../dev_memory/stage15_p1_ef_spike/evidence/web-02-launch.json)、
+[全部启动/退出记录](../dev_memory/stage15_p1_ef_spike/evidence/web-02-attempts.json)。
+初始化在GET前拒绝,web-02目录未创建。**请求0、响应0、已读页面0、POST/触发0**。
+未收到HTTP错误页,因此不能将本地错误写成QuickBuild服务端拒绝。
+
+| 页面 | HTTP请求 | build状态 | 步骤 | 日志链接 | 产物列表 | trigger入口 |
+|---|---|---|---|---|---|---|
+| 计划/build/1069532 | 未发出 | 未读取 | 未读取 | 未读取 | 未读取 | 未读取;未点击 |
+
+没有实际标签页响应可列。状态全集/SBS_TARGET/arch/TRIGGER对应关系/accept均待核实;
+不满足WEB_READ_OK或WEB_READ_PARTIAL的实际读取前提,也不能据此判字段不存在。
+
+对设计§1.4 EF-5③④及§4.1 qb-result-fetch的影响:**未能检验**,不能标为假设成立或需改;
+EF-5②仍需另行指定目标及明确确认,本轮不执行。
+网页自动化可行性仍未得到环境证据,上一节风险评估仅为实现层推论。
+不修改design.md、不改变P2-P4代码、不解除P5Q开工门。
