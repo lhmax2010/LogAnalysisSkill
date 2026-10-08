@@ -1,0 +1,14 @@
+{
+  "base": 1352,
+  "current": 1350,
+  "lost": [
+    "tests/unit/test_build_verify_legacy_wiring.py::test_legacy_shims_preserve_all_migrated_symbol_identities",
+    "tests/unit/test_gerrit_fetch.py::test_legacy_module_reexports_implementation_and_types_by_identity"
+  ],
+  "changed": {},
+  "added": [],
+  "counts": {
+    "PASSED": 1349,
+    "SKIPPED": 1
+  }
+}

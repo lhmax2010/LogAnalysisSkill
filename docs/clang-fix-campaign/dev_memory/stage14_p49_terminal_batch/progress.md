@@ -3764,3 +3764,13 @@ residual hits=10196/OTHER=0;wheel/install及5模块help exit0。
 该文件只有此唯一用例,无其它测试/fixture,故一并移除空宿主文件;
 其它skill行为、路径锚与包根测试原样保留。后续C08/C09不重复删该用例。
 五项验证 `a0-evidence/phase2/execution/C07R/` **PENDING**。
+
+C07 `f962093` 五项 **PASS**:1349/1,累计只少获批2例,其它状态不变;
+90 checkers regressions=[];mypy/ruff/lint exit0;smoke31/31;
+import-all207/207;residual hits=13139/OTHER=0;wheel/install及5模块help exit0。
+
+### 40.8 C08
+
+删除verify/edit_spec_guard.py的12绑定纯shim;skill实现在原处保留,
+不合并EDIT_SPEC_SCHEMA,本组无测试删除。
+五项验证 `a0-evidence/phase2/execution/C08R/` **PENDING**。
