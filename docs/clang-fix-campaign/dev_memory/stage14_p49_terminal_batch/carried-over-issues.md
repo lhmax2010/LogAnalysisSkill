@@ -10,6 +10,9 @@ skill5 ledger check 的回归已消除(exit0);90条比较 `regressions=[]`。
 C10首次新增工具mypy失败已回退;PHASE2-09批准局部变量改名后,重做C10及
 后续组全部通过,见progress §41和C10S证据。该问题已修复,不是本表豁免项。
 
+**移交后续阶段处理（2026-10-08）：以下三条 OPEN_CARRIED 保持原样,
+不视为已修复;P4.9 终止批次签批关闭不改变其命令、exit、原因或状态。**
+
 | 命令(在tools目录下,python执行) | 原预期exit | 43a6aa6 exit | 当前exit | 原因/状态 |
 |---|---|---|---|---|
 | `check_design_doc.py --self-test` | 0 | 1 | 1 | OPEN_CARRIED: 未入库的v1.5.2历史样本;self-test 37/38。PHASE2-05按既有问题关闭。 |

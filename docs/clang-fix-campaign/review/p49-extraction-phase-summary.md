@@ -57,6 +57,8 @@ batch**, consisting of the five items and terminal clause below.
 | 4 | Unify timeout, cancellation, interruption, residual state, and result mapping | Implement and validate every row of skill-5 frozen §3.2 across gerrit-fetch, gerrit-submit, and shared workspace paths. |
 | 5 | Decide protected-marker write order | Design review must explicitly choose reorder or retain-with-rationale for `_verify_cleanup_handle -> _exclude_private_files -> marker write`; “recorded” is not a decision. |
 
+**以上五项已由终止批次关闭，见 [p49-terminal-closeout.md](p49-terminal-closeout.md#最终签批)。P4.9 phase CLOSED（2026-10-08）。**
+
 **Terminal clause:** all five items must close within the P4.9 terminal work.
 Any unfinished item blocks P4.9 closure and may not be deferred, transferred,
 or silently relabeled. `EDIT_SPEC_SCHEMA` remains a named patch-suggest owner
@@ -65,8 +67,9 @@ remain a template-design question, not implementation debt.
 
 ### Terminal Implementation Accounting (2026-10-08)
 
-Implementation evidence is complete; **terminal status is READY_FOR_REVIEW, not
-CLOSED**. Designer verification and one reviewer sign-off are pending. The
+Implementation evidence is complete; **terminal status is CLOSED @ `9f02f3f`**.
+Designer verification passed and one external reviewer returned CLOSED with zero
+findings on 2026-10-08. The
 terminal clause above is unchanged; none of the five obligations is handed off.
 Evidence root `E` below is
 `../dev_memory/stage14_p49_terminal_batch/a0-evidence/`.

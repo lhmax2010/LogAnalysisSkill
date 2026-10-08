@@ -19,7 +19,8 @@
 | P4.9 skill-5 gerrit-submit | CLOSED | Gerrit-submit extraction, status locks, six-row terminal mapping, patch-version ledger | commits `f2bc050`/`31a91cb`/`a97c40b`/`0dfa5f1`/`a8620f1`/`d51145f`/`c6f734b`; 173 symbols + 4 module scopes; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | Triage-report extraction, gbs_report constraint closure, branch inventory, extraction-phase ledger | commits `bdb5a55`/`3dc0466`/`3da12a4`/`2cc3dd3`/`dfbbf3b`; 197 symbols + 4 module scopes; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | Step-0 plus all six skill extractions signed off | phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; next and only entry is the five-item terminal batch |
-| P4.9 terminal batch | READY_FOR_REVIEW | PHASE2-09 fixed; C01-C13 verified; 13 hosts/183 bindings; 1349 passed/1 skipped | [closeout](../review/p49-terminal-closeout.md); [progress §42](stage14_p49_terminal_batch/progress.md#42-d-收口材料--实现终态待签批); [carried issues](stage14_p49_terminal_batch/carried-over-issues.md): 3 still carried, no new failures; designer + one reviewer pending |
+| P4.9 terminal batch | CLOSED | PHASE2-09 fixed; C01-C13 verified; 13 hosts/183 bindings; 1349 passed/1 skipped | [final sign-off](../review/p49-terminal-closeout.md#最终签批) @ `9f02f3f`, 2026-10-08: designer verified, one external reviewer CLOSED with zero findings; [carried issues](stage14_p49_terminal_batch/carried-over-issues.md): 3 unchanged, handed to the subsequent phase |
+| P4.9 phase | CLOSED | Extraction and all five terminal obligations closed, 2026-10-08 | [phase ledger](../review/p49-extraction-phase-summary.md#p49-terminal-batch-ledger); [terminal sign-off](../review/p49-terminal-closeout.md#最终签批) @ `9f02f3f` |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -46,7 +47,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 skill-5 gerrit-submit | CLOSED | `f2bc050`, `31a91cb`, `a97c40b`, `0dfa5f1`, `a8620f1`, `d51145f`, `c6f734b` | frozen authority `../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`; result `stage12_p49_skill5_gerrit_submit/result.md`; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | `bdb5a55`, `3dc0466`, `3da12a4`, `2cc3dd3`, `dfbbf3b`, `9a74c0b` | frozen authority `../p49-skill6-triage-report-design-v1.8-FROZEN.md`; result `stage13_p49_skill6_triage_report/result.md`; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | step-0 + skills 1-6 | signed phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; P4.9 terminal five-item batch is the only next entry |
-| 14 P4.9 terminal batch | READY_FOR_REVIEW | A `5213c5d`; B `c1ea4ef`; approved package `74ff34c`; PHASE2-08 `f196f55`; C01-C13 validated through `de9099e` | [closeout](../review/p49-terminal-closeout.md); [progress §42](stage14_p49_terminal_batch/progress.md#42-d-收口材料--实现终态待签批); D materials prepared, final sign-off pending |
+| 14 P4.9 terminal batch | CLOSED | A `5213c5d`; B `c1ea4ef`; approved package `74ff34c`; PHASE2-08 `f196f55`; C01-C13 validated through `de9099e`; D `9f02f3f` | [final sign-off](../review/p49-terminal-closeout.md#最终签批); [progress §43](stage14_p49_terminal_batch/progress.md#43-最终签批与-p49-关闭); designer verified and one external reviewer CLOSED with zero findings, 2026-10-08 |
 
 ## Code-Ready Checkpoint
 
