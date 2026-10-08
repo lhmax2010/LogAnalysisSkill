@@ -9,10 +9,13 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+from historical_inputs import HistoricalInputError, read_pinned
 
 SCHEMA_VERSION = "clang-fix-campaign/design-drift-ledger/v1"
 VERSION_RE = re.compile(r"^v?(\d+)\.(\d+)(?:\.(\d+))?$")
@@ -38,6 +41,7 @@ class VersionDoc:
     lines: tuple[str, ...]
     excluded_sections: tuple[str, ...] = ("§5.4", "§5.5")
     dod_section: str = "§7"
+    content: bytes = b""
 
 
 @dataclass(frozen=True)
@@ -199,6 +203,8 @@ def _load_versions(data: dict[str, Any], repo_root: Path) -> tuple[VersionDoc, .
         version = raw.get("version")
         raw_path = raw.get("path")
         expected_sha = raw.get("sha256")
+        if not isinstance(expected_sha, str):
+            raise LedgerError("version corpus entry lacks SHA-256")
         if not isinstance(version, str) or not isinstance(raw_path, str):
             raise LedgerError("version corpus entry lacks version/path")
         path = repo_root / raw_path
@@ -208,8 +214,8 @@ def _load_versions(data: dict[str, Any], repo_root: Path) -> tuple[VersionDoc, .
                 f"{version}:{path} != {configured_version}:{configured_path}"
             )
         try:
-            content = path.read_bytes()
-        except OSError as exc:
+            content = read_pinned(repo_root, raw_path, expected_sha)
+        except (OSError, HistoricalInputError) as exc:
             raise LedgerError(f"missing version corpus file {path}: {exc}") from exc
         actual_sha = _sha256_bytes(content)
         if expected_sha != actual_sha:
@@ -224,26 +230,24 @@ def _load_versions(data: dict[str, Any], repo_root: Path) -> tuple[VersionDoc, .
                 tuple(content.decode("utf-8").splitlines()),
                 excluded_sections,
                 dod_section,
+                content,
             )
         )
     return tuple(documents)
 
 
 def _raw_diff(old: VersionDoc, new: VersionDoc) -> str:
-    completed = subprocess.run(
-        [
-            "git",
-            "diff",
-            "--no-index",
-            "--unified=0",
-            "--",
-            str(old.path),
-            str(new.path),
-        ],
-        check=False,
-        text=True,
-        capture_output=True,
-    )
+    # Candidate paths remain the registered paths; git diff consumes pinned bytes.
+    with tempfile.TemporaryDirectory(prefix="design-ledger-") as directory:
+        old_path, new_path = Path(directory) / "old", Path(directory) / "new"
+        old_path.write_bytes(old.content)
+        new_path.write_bytes(new.content)
+        completed = subprocess.run(
+            ["git", "diff", "--no-index", "--unified=0", "--", str(old_path), str(new_path)],
+            check=False,
+            text=True,
+            capture_output=True,
+        )
     if completed.returncode not in {0, 1}:
         raise LedgerError(
             f"git diff failed for v{old.version}->v{new.version}: {completed.stderr.strip()}"
@@ -911,10 +915,12 @@ def _target_doc(data: dict[str, Any], repo_root: Path) -> VersionDoc:
     raw_path = data.get("target_design")
     version = data.get("target_version")
     expected_sha = data.get("target_sha256")
+    if not isinstance(expected_sha, str):
+        raise LedgerError("target_sha256 missing")
     if not isinstance(raw_path, str) or not isinstance(version, str):
         raise LedgerError("target_design/target_version missing")
     path = repo_root / raw_path
-    content = path.read_bytes()
+    content = read_pinned(repo_root, raw_path, expected_sha)
     actual_sha = _sha256_bytes(content)
     if actual_sha != expected_sha:
         raise LedgerError(
@@ -928,6 +934,7 @@ def _target_doc(data: dict[str, Any], repo_root: Path) -> VersionDoc:
         tuple(content.decode("utf-8").splitlines()),
         excluded_sections,
         dod_section,
+        content,
     )
 
 
@@ -1018,7 +1025,7 @@ def _bootstrap(data_path: Path, repo_root: Path) -> int:
 
     target_path = repo_root / str(data["target_design"])
     target_content = target_path.read_bytes()
-    corpus_target = documents[-1].path.read_bytes()
+    corpus_target = documents[-1].content
     if target_content != corpus_target:
         raise LedgerError(
             "target design and final configured corpus document are not byte-identical"
@@ -1043,7 +1050,7 @@ def _run_check(data_path: Path, repo_root: Path) -> int:
         raise LedgerError(f"unexpected schema version: {data.get('schema_version')}")
     documents = _load_versions(data, repo_root)
     target = _target_doc(data, repo_root)
-    if target.path.read_bytes() != documents[-1].path.read_bytes():
+    if target.content != documents[-1].content:
         raise LedgerError("target design differs from the configured final corpus document")
     exported_count, retained_count, ignored_count = _check_candidate_ledger(
         data, documents, repo_root
@@ -1290,7 +1297,7 @@ def main(argv: list[str] | None = None) -> int:
             if args.value != "out-of-scope-misuse":
                 raise LedgerError("negative-fixture requires out-of-scope-misuse")
             return _negative_out_of_scope(data_path, repo_root)
-    except (LedgerError, OSError) as exc:
+    except (LedgerError, OSError, HistoricalInputError) as exc:
         print(f"DESIGN_DRIFT_LEDGER_ERROR: {exc}", file=sys.stderr)
         return 2
     raise AssertionError(f"unhandled action: {args.action}")

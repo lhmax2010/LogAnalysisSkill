@@ -3620,3 +3620,38 @@ EXIT=128
 C01-C13未重启,D未开始;4个批准删除测试仍保留,未执行删除后残留/打包验证。
 先前冻结稿、predicates、OBS和全部判据保持原样。本轮新停止项1(PHASE2-08),
 它不是43a6aa6已有失败,不能按基线规则自动豁免。
+
+## 39. PHASE2-08 内容哈希定位裁决(2026-10-08)
+
+PHASE2-08 **CLOSED_BY_RULING**:历史输入按数据文件中每个(path, SHA-256)
+在完整Git历史内定位blob,不再指定签批提交,不增逐文件例外。找不到或历史
+不完整即红。§38.3的签批提交缺语料问题由此解决,不是修改期望集。
+
+本独立提交(非C组)实现 `tools/historical_inputs.py`;接入
+`design_drift_ledger.py`、`branch_inventory.py` 的历史文档输入及
+`terminal_expected_diff.py` 的skill5历史映射表。实现侧AST枚举、当前
+symbol_audit/table_audit_bridge仍读当前代码/正文;OBS输入和产出不改。
+ledger原始diff改用找到的原字节,候选路径/span/断言保持原样。
+skill5 `target_sha256` 恢复为
+`0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27`;
+除此字段不改三批数据,不改期望集、版本数和计数。
+
+新增 `test_historical_inputs.py` 对每个改动工具核验错hash和错路径均红,
+并测试本地内容变异不影响历史读取、skill4 v1.12语料自然定位。
+定向预检实际输出:
+
+```text
+env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /tmp/p49-a0-regression-43a6aa6/bin/python -m pytest tests/unit/test_historical_inputs.py tests/unit/test_design_drift_ledger.py tests/unit/test_terminal_expected_diff.py -q
+112 passed in 4.98s
+EXIT=0
+/tmp/p49-a0-regression-43a6aa6/bin/python -m mypy docs/clang-fix-campaign/tools/historical_inputs.py docs/clang-fix-campaign/tools/design_drift_ledger.py docs/clang-fix-campaign/tools/branch_inventory.py docs/clang-fix-campaign/tools/terminal_expected_diff.py
+Success: no issues found in 4 source files
+EXIT=0
+/tmp/p49-a0-regression-43a6aa6/bin/python -m ruff check docs/clang-fix-campaign/tools/historical_inputs.py docs/clang-fix-campaign/tools/design_drift_ledger.py docs/clang-fix-campaign/tools/branch_inventory.py docs/clang-fix-campaign/tools/terminal_expected_diff.py tests/unit/test_design_drift_ledger.py tests/unit/test_historical_inputs.py
+All checks passed!
+EXIT=0
+```
+
+提交后在独立工作树记录 `a0-evidence/phase2/execution/HASH08/`:
+历史blob定位结果、90项相对BASE43比较、全仓pytest逐nodeid、mypy/ruff/lint、
+远端CI。完整验收 **PENDING**;通过后才从C01重启,不预报通过。

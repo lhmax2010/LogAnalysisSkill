@@ -13,6 +13,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from historical_inputs import HistoricalInputError, read_pinned
+
 SCHEMA_VERSION = "clang-fix-campaign/branch-inventory/v1"
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_DESIGN = REPO_ROOT / (
@@ -73,8 +75,8 @@ class BranchRow:
     external: bool
 
 
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def _sha256(content: bytes) -> str:
+    return hashlib.sha256(content).hexdigest()
 
 
 def _qualname(stack: list[str]) -> str:
@@ -219,9 +221,9 @@ def _markdown_table(section_text: str, header: list[str]) -> list[list[str]]:
     return rows
 
 
-def _parse_symbol_table(design: Path) -> dict[tuple[str, str], str]:
+def _parse_symbol_table(design_text: str) -> dict[tuple[str, str], str]:
     rows = _markdown_table(
-        _section(design.read_text(encoding="utf-8"), "§0"),
+        _section(design_text, "§0"),
         ["symbol", "definition", "owner"],
     )
     if not rows or rows[0] != ["symbol", "definition", "owner"]:
@@ -248,8 +250,8 @@ def _expected_symbol_table(inventories: tuple[ModuleInventory, ...]) -> dict[tup
     }
 
 
-def _parser_only(design: Path, inventories: tuple[ModuleInventory, ...]) -> None:
-    actual = _parse_symbol_table(design)
+def _parser_only(design_text: str, inventories: tuple[ModuleInventory, ...]) -> None:
+    actual = _parse_symbol_table(design_text)
     expected = _expected_symbol_table(inventories)
     missing = sorted(expected.keys() - actual.keys())
     extra = sorted(actual.keys() - expected.keys())
@@ -268,9 +270,9 @@ def _parser_only(design: Path, inventories: tuple[ModuleInventory, ...]) -> None
     )
 
 
-def _branch_rows(design: Path) -> tuple[BranchRow, ...]:
+def _branch_rows(design_text: str) -> tuple[BranchRow, ...]:
     rows = _markdown_table(
-        _section(design.read_text(encoding="utf-8"), "§5"),
+        _section(design_text, "§5"),
         ["契约句", "分支(代码锚)", "用例"],
     )
     if not rows or rows[0] != ["契约句", "分支(代码锚)", "用例"]:
@@ -399,17 +401,19 @@ def _inventory_payload(inventories: tuple[ModuleInventory, ...]) -> dict[str, An
     }
 
 
-def _check(design: Path, data_path: Path, inventories: tuple[ModuleInventory, ...]) -> None:
+def _check(
+    design: Path, data_path: Path, inventories: tuple[ModuleInventory, ...], content: bytes
+) -> None:
     data = _load_data(data_path)
     if data.get("target_design") != str(design.relative_to(REPO_ROOT)):
         raise InventoryError("data target_design does not match the checked design")
-    if data.get("target_sha256") != _sha256(design):
+    if data.get("target_sha256") != _sha256(content):
         raise InventoryError("data target_sha256 does not match the checked design")
     expected_modules = _inventory_payload(inventories)
     if data.get("modules") != expected_modules:
         raise InventoryError("stored module inventory differs from the AST scan")
 
-    rows = _branch_rows(design)
+    rows = _branch_rows(content.decode("utf-8"))
     _validate_external_bindings(rows)
     all_ids = {branch_id for inventory in inventories for branch_id in inventory.all_ids}
     referenced = {branch_id for row in rows for branch_id in row.local_ids}
@@ -447,7 +451,12 @@ def _check(design: Path, data_path: Path, inventories: tuple[ModuleInventory, ..
 
 
 def _admission_v17(snapshot: Path) -> int:
-    text = snapshot.read_text(encoding="utf-8")
+    ledger = json.loads(Path(__file__).with_name("design_drift_ledger.skill6.json").read_text())
+    path = snapshot.relative_to(REPO_ROOT).as_posix()
+    pins = [item for item in ledger["version_corpus"] if item["path"] == path]
+    if len(pins) != 1:
+        raise InventoryError(f"snapshot has no unique historical pin: {path}")
+    text = read_pinned(REPO_ROOT, path, pins[0]["sha256"]).decode("utf-8")
     defects = {
         "HANDWRITTEN_BOOL_COUNT": "实存 14 处" in text,
         "MISSING_V17_REVISION_BLOCK": "> **v1.7 修订" not in text,
@@ -501,13 +510,21 @@ def main(argv: list[str] | None = None) -> int:
         elif args.action == "inventory":
             _print_inventory(inventories)
         elif args.action == "parser-only":
-            _parser_only(design, inventories)
+            config = _load_data(data)
+            content = read_pinned(
+                REPO_ROOT, design.relative_to(REPO_ROOT).as_posix(), config["target_sha256"]
+            )
+            _parser_only(content.decode("utf-8"), inventories)
         elif args.action == "check":
-            _parser_only(design, inventories)
-            _check(design, data, inventories)
+            config = _load_data(data)
+            content = read_pinned(
+                REPO_ROOT, design.relative_to(REPO_ROOT).as_posix(), config["target_sha256"]
+            )
+            _parser_only(content.decode("utf-8"), inventories)
+            _check(design, data, inventories, content)
         else:
             return _admission_v17(snapshot)
-    except (InventoryError, OSError, SyntaxError) as exc:
+    except (InventoryError, OSError, SyntaxError, HistoricalInputError) as exc:
         print(f"ERROR | {exc}", file=sys.stderr)
         return 2
     return 0
