@@ -1,0 +1,120 @@
+{
+  "hook_path": "/home/linhao/gerrit-hook/commit-msg",
+  "hook_sha256": "3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50",
+  "input_message": "Fix! x\n",
+  "change_id": "I545bce8a248182290512b59d0b0d1a1629812e4c",
+  "trailers": [
+    "Change-Id: I545bce8a248182290512b59d0b0d1a1629812e4c"
+  ],
+  "calls": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/tmp/campaign-change-id-zmh2s3vx/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "user.name",
+        "campaign"
+      ],
+      "cwd": "/tmp/campaign-change-id-zmh2s3vx/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "user.email",
+        "campaign@invalid"
+      ],
+      "cwd": "/tmp/campaign-change-id-zmh2s3vx/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "gerrit.createChangeId",
+        "true"
+      ],
+      "cwd": "/tmp/campaign-change-id-zmh2s3vx/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "commit",
+        "--allow-empty",
+        "-q",
+        "-m",
+        "init"
+      ],
+      "cwd": "/tmp/campaign-change-id-zmh2s3vx/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "sh",
+        "/tmp/campaign-change-id-zmh2s3vx/commit-msg",
+        "/tmp/campaign-change-id-zmh2s3vx/message"
+      ],
+      "cwd": "/tmp/campaign-change-id-zmh2s3vx/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-zmh2s3vx/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    }
+  ],
+  "input_unchanged": true,
+  "hook_unchanged": true,
+  "temporary_removed": true,
+  "exit": 0
+}

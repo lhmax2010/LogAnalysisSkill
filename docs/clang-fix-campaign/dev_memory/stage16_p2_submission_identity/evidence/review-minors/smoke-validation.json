@@ -1,0 +1,38 @@
+{
+  "commands": [
+    {
+      "name": "targeted",
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/unit/test_submission_identity.py",
+        "tests/unit/test_campaign_change_ids.py",
+        "-v"
+      ],
+      "exit": 0,
+      "sha256": "a9c2eb352767ec6dc16174f2efc61619a1ea157ab9e39da23fe243e955f5118f"
+    },
+    {
+      "name": "real-hook",
+      "argv": [
+        "env",
+        "-u",
+        "PYTHONPATH",
+        "-u",
+        "MYPYPATH",
+        "strace",
+        "-f",
+        "-e",
+        "trace=network",
+        "-o",
+        "docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/network.trace",
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_real_hook.py"
+      ],
+      "exit": 0,
+      "sha256": "fb91bee9ef91a10e3e6e2aa088aae2970c3db31f599c15ddcfd5f2abb9f779db"
+    }
+  ],
+  "network_syscalls": 0
+}

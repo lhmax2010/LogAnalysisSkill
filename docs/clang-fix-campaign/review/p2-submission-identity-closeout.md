@@ -1,6 +1,6 @@
 # P2 Submission Identity Closeout
 
-日期:2026-10-08。状态:**READY_FOR_REVIEW**。本文件不是CLOSED签批。
+日期:2026-10-08。状态:**CLOSED**。最终签批及评审处置见文末。
 
 权威:[design.md](../design.md) v1.5.19-FROZEN,§3.4/§4.2/§7 Phase 2;
 [change_47](../design_changes/change_47.md)。阶段范围按设计方P2-01轻量裁决:
@@ -13,13 +13,14 @@
 | `9b7754e` | 原字节设计入库,DDL/CHECK/固定向量入库前验证 |
 | `3d48877` | submission_identity、新表及缓存API、组件测试与基线证据 |
 | `3e1ea18` | 实现远端CI成功与此前hook缺失的历史记录 |
-| 本收口提交 | 登记真实hook摘要、真实冒烟与HEAD变体证据、候审收口;由Git外部锚定,文件内不自记SHA |
+| `ec6c331` | 登记真实hook摘要、真实冒烟与HEAD变体证据、候审收口 |
+| 本签批提交 | 按设计方裁决处置4条次要意见,验证并登记CLOSED;由Git外部锚定,文件内不自记SHA |
 
 证据根目录记为
 `docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/`。
 下表相对路径均从该目录起算;测试函数均在`tests/unit/`。
 [progress](../dev_memory/stage16_p2_submission_identity/progress.md)保留逐步命令、输出与裁决,
-本轮最新记录见§10。
+真实hook补验见§10,最新评审处置/验证见§11,设计正文待同步见§12。
 
 ## Phase 2 DoD 逐条结论
 
@@ -43,7 +44,7 @@
 | 13 | FatTank登记真实hook在一次性仓库恰一行合法ID,不访问Gerrit;不处理无HEAD的变体在空初始commit后成功 | PASS | `real-hook/smoke.log`/`result.json`:真实与变体exit0;变体无初始commit负例exit1;`network.trace`/`network-check.json`:网络系统调用0;原hook、输入message不变,临时目录均删除 |
 
 结论:§7全部P2组件义务已验证,**本期实施PENDING为0**;
-上述三项端到端检查为获批移交,不计作已通过。状态维持READY_FOR_REVIEW。
+上述三项端到端检查为获批移交,不计作已通过。组件范围已按文末最终签批CLOSED。
 
 ## 真实Hook与HEAD变体
 
@@ -91,8 +92,8 @@ variant仅删除真实hook的无HEAD兜底,改为强制`git rev-parse --verify H
 证据:`comparison.json`中`missing_nodeids=[]`、`changed_outcomes=[]`;
 `baseline/pytest.xml`和`current/pytest.xml`保留逐例结果。
 
-本轮只补配置、证据脚本与文档;生产源码、现有测试、权威设计零改动。
-本轮实际重跑(命令及exit见`real-hook/validation.json`):
+`ec6c331`只补配置、证据脚本与文档;该提交生产源码、现有测试、权威设计零改动。
+该轮实际重跑(命令及exit见`real-hook/validation.json`):
 
 ```text
 $ env -u PYTHONPATH -u MYPYPATH .venv/bin/python -m pytest tests/unit/test_submission_identity.py tests/unit/test_campaign_change_ids.py tests/unit/test_campaign_state.py tests/unit/test_campaign_repair_step.py -v
@@ -148,4 +149,43 @@ success: `1410 passed, 1 skipped in 48.83s`;
 | `symbol_audit.py --key-fixture twin-both-binary-key` | 0 | 1 / 1 | fixture仍访问已删除的ci_triage/gbs_report.py定义;`symbol-key-twin-both-binary-key.log` |
 
 真实hook缺失项已在本轮关闭,没有替换为mock或skip。
-审查停点:**READY_FOR_REVIEW**,等待设计方核验及评审结论;本次不写最终签批。
+原`ec6c331`停点为READY_FOR_REVIEW;本轮签批如下。
+
+## 评审次要意见处置
+
+设计方2026-10-08轻量裁决,实现不修改design.md;待同步措辞登记于progress §12。
+
+| 意见 | 结论与证据 |
+|---|---|
+| 1 key前置校验 | DONE:两个入口拒绝非64位小写hex;换行注入/长度/大写各参数例在临时目录或generate之前失败;`review-minors/targeted.log` |
+| 2(a) unit存在性 | DONE:缓存miss时`_require_no_derive`先确认unit存在;空库missing-unit用例generate零调用、零写库;两个既有裸库用例补create_unit |
+| 2(b) 跨unit带外清库 | ACCEPTED_BOUNDARY:按裁决不修,见下节,不算已修复 |
+| 3 hook首行 | DONE:`fix! x`/`fixup! x`前置拒绝且mkdtemp零调用;大写`Fix! x`单测及真实hook通过,`review-minors/real-hook.json`/`real-hook.log` |
+| 4 真实hook | DONE:`ec6c331`已补真实hook及无HEAD变体;`real-hook/`为原证据,本轮大写正例另存`review-minors/` |
+
+最新验收:基线`d2c93b2`1410 passed/1 skipped → 1420 passed/1 skipped,新增10例;
+原1411个nodeid全保留且结果不变。`review-minors/comparison.json`:
+`missing_nodeids=[]`, `changed_outcomes=[]`, `exit_changes=[]`。
+两树各94条命令(90项既有门禁+4项验收)全部有原始日志与exit:
+`review-minors/{baseline,current}/commands.json`。
+pytest/mypy/ruff/lint-imports各exit0;双道198+4全绿;遗留仍为上表3条,无新增失败。
+定向69 passed,真实hook输出恰一个合法Change-Id、网络系统调用0。
+复现命令及输出原文见progress §11.1,本签批提交的远端CI结果由GitHub运行记录
+外部锚定,推送后单独回报其链接与结果。
+
+## 已知边界
+
+次要2(b)按设计方裁决不修:缓存按submission_key跨unit共享,DERIVE校验只查询
+当前传入的campaign_unit_key。若带外删除缓存行,其它unit已有DERIVE而当前unit
+没有DERIVE,当前unit仍可能重新生成Change-Id。本轮unit存在性检查不解决此场景,
+也不扩为跨unit的DERIVE检查。正常API为追加式缓存;不得把本轮组件保护描述为
+可以防任意带外清库。设计正文待同步事项已记入progress §12。
+
+## 最终签批
+
+| 签批方 | 日期 | 结论 |
+|---|---|---|
+| 设计方 | 2026-10-08 | 核验通过;4条次要按轻量裁决实施或登记边界 |
+| 外部评审 Claude Code | 2026-10-08 | CLOSED、零阻断,4条次要已处置;真实hook项由ec6c331闭合 |
+
+状态:**P2 CLOSED**。P4/P5/P5R三项获批端到端移交保持具名登记。

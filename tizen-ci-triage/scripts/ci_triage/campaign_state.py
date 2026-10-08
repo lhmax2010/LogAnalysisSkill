@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import sqlite3
 import subprocess
 from collections.abc import Callable, Iterator, Mapping, Sequence
@@ -339,6 +340,8 @@ def get_or_create_change_id(
     generate: Callable[[], str] | None,
 ) -> str:
     """Reuse the first identity; generate only before this unit's first DERIVE."""
+    if re.fullmatch(r"[0-9a-f]{64}", submission_key) is None:
+        raise StateInconsistent("submission_key must be 64 lowercase hexadecimal characters")
     conn = _connect(state_db)
     try:
         cached = _cached_change_id(conn, submission_key)
@@ -379,6 +382,7 @@ def _cached_change_id(conn: sqlite3.Connection, submission_key: str) -> str | No
 
 
 def _require_no_derive(conn: sqlite3.Connection, campaign_unit_key: str) -> None:
+    _require_unit(conn, campaign_unit_key)
     if conn.execute(
         "SELECT 1 FROM campaign_gate_events WHERE campaign_unit_key = ? "
         "AND event_type = 'DERIVE' LIMIT 1", (campaign_unit_key,),

@@ -96,6 +96,13 @@ def generate_change_id_via_hook(
     message: str,
 ) -> str:
     """Return only the hook-generated identity; never access business state/repos."""
+    if re.fullmatch(r"[0-9a-f]{64}", submission_key) is None:
+        raise ChangeIdHookError("submission_key must be 64 lowercase hexadecimal characters")
+    if re.match(r"^[a-z]+! ", message):
+        raise ChangeIdHookError(
+            "message first line matches ^[a-z]+! ; Gerrit hook skips Change-Id "
+            "for fixup!/squash!-style commits"
+        )
     if re.search(r"(?im)^\s*change-id\s*:", message) or re.search(
         r"(?im)^\s*link\s*:\s*\S+/id/I[0-9a-f]{40}\s*$",
         message,

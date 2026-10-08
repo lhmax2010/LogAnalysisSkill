@@ -5,9 +5,11 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
+from unittest.mock import Mock
 
 import pytest
 from ci_triage import campaign_state as state
+from ci_triage import submission_identity as identity
 from tizen_ci_shared.state import StateDatabase
 
 KEY = "a" * 64
@@ -69,6 +71,30 @@ def _get(db: StateDatabase, generate=None, **kwargs: object) -> str:
     values = dict(campaign_unit_key="unit", submission_key=KEY, hook_sha256=HOOK_SHA)
     values.update(kwargs)
     return state.get_or_create_change_id(db, generate=generate, **values)
+
+
+@pytest.mark.parametrize("key", [KEY + "\nChange-Id: injected", KEY[:-1], KEY.upper()])
+def test_invalid_submission_key_refuses_before_generation(
+    db: StateDatabase, monkeypatch: pytest.MonkeyPatch, key: str,
+) -> None:
+    generate = Mock(return_value=CHANGE_ID)
+    mkdtemp = Mock()
+    monkeypatch.setattr(identity.tempfile, "mkdtemp", mkdtemp)
+    with pytest.raises(state.StateInconsistent, match="64 lowercase hexadecimal"):
+        _get(db, generate, submission_key=key)
+    generate.assert_not_called()
+    mkdtemp.assert_not_called()
+    assert _rows(db) == []
+
+
+def test_missing_unit_refuses_before_generation(tmp_path: Path) -> None:
+    db = StateDatabase(tmp_path / "empty.sqlite3")
+    state.ensure_schema(db)
+    generate = Mock(return_value=CHANGE_ID)
+    with pytest.raises(state.StateInconsistent, match="campaign unit not found"):
+        _get(db, generate)
+    generate.assert_not_called()
+    assert _rows(db) == []
 
 
 def test_cached_identity_reused_across_builds_hook_upgrades_and_derive(db: StateDatabase) -> None:

@@ -1,0 +1,47 @@
+{
+  "baseline": "d2c93b24d0bd8fb1777ec97268c6b36ba0febbc3",
+  "baseline_tests": {
+    "passed": 1410,
+    "skipped": 1
+  },
+  "current_tests": {
+    "passed": 1420,
+    "skipped": 1
+  },
+  "missing_nodeids": [],
+  "changed_outcomes": [],
+  "added_nodeids": [
+    "tests.unit.test_campaign_change_ids::test_invalid_submission_key_refuses_before_generation[AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA]",
+    "tests.unit.test_campaign_change_ids::test_invalid_submission_key_refuses_before_generation[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]",
+    "tests.unit.test_campaign_change_ids::test_invalid_submission_key_refuses_before_generation[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\nChange-Id: injected]",
+    "tests.unit.test_campaign_change_ids::test_missing_unit_refuses_before_generation",
+    "tests.unit.test_submission_identity::test_autosquash_subject_check_is_case_sensitive",
+    "tests.unit.test_submission_identity::test_autosquash_subject_refuses_before_temporary_directory[fix! x]",
+    "tests.unit.test_submission_identity::test_autosquash_subject_refuses_before_temporary_directory[fixup! x]",
+    "tests.unit.test_submission_identity::test_invalid_submission_key_refuses_before_temporary_directory[BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB]",
+    "tests.unit.test_submission_identity::test_invalid_submission_key_refuses_before_temporary_directory[bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb]",
+    "tests.unit.test_submission_identity::test_invalid_submission_key_refuses_before_temporary_directory[bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\\nChange-Id: injected]"
+  ],
+  "command_count": 94,
+  "exit_changes": [],
+  "carried_issues": [
+    {
+      "name": "design-doc-controls",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "expected_exit": 0
+    },
+    {
+      "name": "symbol-negative-duplicate-spec-root-mismatch",
+      "baseline_exit": 0,
+      "current_exit": 0,
+      "expected_exit": 1
+    },
+    {
+      "name": "symbol-key-twin-both-binary-key",
+      "baseline_exit": 1,
+      "current_exit": 1,
+      "expected_exit": 0
+    }
+  ]
+}

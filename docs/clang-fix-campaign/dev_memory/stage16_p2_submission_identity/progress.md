@@ -1,9 +1,9 @@
 # Stage16 P2 submission identity
 
-日期: 2026-10-08。状态: **READY_FOR_REVIEW**。
+日期: 2026-10-08。状态: **CLOSED**。
 设计入库完成: `9b7754e`。P2-01已裁决:本阶段完成组件级验证。
 第2至4节保留上一轮停止时记录;第6/9节的hook缺失为历史记录。
-真实hook与HEAD变体已补验,当前结论见第8/10节。等待设计方核验与评审,不自行标CLOSED。
+真实hook与HEAD变体已补验。第8/10节保留候审记录;本轮评审处置与签批见第11节。
 
 ## 1. 权威与入库
 
@@ -440,3 +440,85 @@ APPROVED_TRANSFER,非已执行。既有三条checker问题的两树exit未变,�
 
 收口文档:[P2 submission identity closeout](../../review/p2-submission-identity-closeout.md)。
 当前状态仅**READY_FOR_REVIEW**,待设计方核验与评审签批。
+
+## 11. 评审次要意见处置与签批(2026-10-08)
+
+来源:设计方本轮轻量裁决;外部评审Claude Code结论CLOSED、零阻断、4条次要。
+本节更新当前状态,不改写第10节的候审历史。设计正文保持原字节,待同步项见第12节。
+
+| 意见 | 处置与验证 |
+|---|---|
+| 1 | 两API入口用`re.fullmatch(r"[0-9a-f]{64}", submission_key)`拒绝非法key,分别抛`ChangeIdHookError`/`StateInconsistent`;发生于读hook、建临时目录、连接DB及调用generate之前。两文件各覆盖换行注入、63位、大写三例;断言mkdtemp/generate未调用、缓存无写入 |
+| 2(a) | `_require_no_derive`先调用既有`_require_unit`;unit不存在则拒绝。空库+generate用例零调用/零缓存写入;两个原裸库测试函数通过`campaign_db`fixture补create_unit,原有hook失败/CRLF断言保留。缓存命中分支和生成后事务内再次检查顺序不变 |
+| 2(b) | 按裁决不修跨unit带外清库:共用submission_key的缓存被带外删除后,当前unit无DERIVE而其它unit有DERIVE时,当前unit仍可能重新生成。存在性检查不宣称解决这一边界;见收口“已知边界” |
+| 3 | hook入口拒绝首行匹配`^[a-z]+! `,错误明确说明Gerrit hook对fixup!/squash!类提交不生成Change-Id;`fix! x`/`fixup! x`均在mkdtemp前拒绝。`Fix! x`大小写正例有单测及真实hook实跑 |
+| 4 | `ec6c331`已完成真实hook与无HEAD变体补验,证据`evidence/real-hook/`;本轮不重写历史证据 |
+
+### 11.1 命令、结果与证据
+
+本轮证据根:`evidence/review-minors/`。基线`d2c93b2`,两个独立工作树分别为
+`/tmp/p2-review-baseline-d2c93b2`与`/tmp/p2-review-current-d2c93b2`。
+后者仅施加本轮2生产文件/2测试文件diff及取证脚本,不携带工作区原有改动。
+每树以自身`*/scripts`派生PYTHONPATH/MYPYPATH;精确命令、环境路径、exit与
+原始日志sha256记录在各自`commands.json`,全部日志原文随附。
+`tested.patch`锚定实测代码;`production-scope.json`证明只有3个既有函数体变更,
+定义集合不变、旧schema实现不变、design.md摘要仍为第1节钉值。
+
+复现全套命令(基线实际首跑使用等价的`/tmp/p2_validate.py`,其逐条argv在JSON内):
+
+```sh
+E=docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors
+.venv/bin/python "$E/run_validation.py" /tmp/p2-review-baseline-d2c93b2 "$E/baseline"
+.venv/bin/python "$E/run_validation.py" /tmp/p2-review-current-d2c93b2 "$E/current"
+.venv/bin/python -m pytest tests/unit/test_submission_identity.py tests/unit/test_campaign_change_ids.py -v
+env -u PYTHONPATH -u MYPYPATH strace -f -e trace=network -o "$E/network.trace" .venv/bin/python "$E/run_real_hook.py"
+```
+
+实测摘录:
+
+```text
+============================== 69 passed in 1.41s ==============================
+targeted: exit=0
+hook_sha256=3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50
+Change-Id: I545bce8a248182290512b59d0b0d1a1629812e4c
+subject='Fix! x'; valid_change_id_lines=1; input_unchanged=true; exit=0
+network_syscalls=0
+======================= 1420 passed, 1 skipped in 32.16s =======================
+pytest: exit=0 expected=0
+mypy: exit=0 expected=0
+ruff: exit=0 expected=0
+lint-imports: exit=0 expected=0
+completed=94 unexpected=3
+```
+
+最后一行保留既有失败,不解释为“全部checker符合期望”。`comparison.json`逐条对照:
+基线1410 passed/1 skipped,当前1420 passed/1 skipped;旧1411例全部仍在且结果不变,
+新增10例全通过;`missing_nodeids=[]`、`changed_outcomes=[]`、`exit_changes=[]`。
+90项既有设计门禁/控制+4项全仓验收在两树均实跑;三条遗留仍为
+design-doc-controls(1)、duplicate-spec-root-mismatch(0)、twin-both-binary-key(1),
+与原期望的偏差未新增。原因沿用closeout遗留表,没有放宽判据。
+双道审计仍198 SYMBOL + 4 MODULE-SCOPE,零差异;六条import契约全绿。
+真实hook调用与stdout原文见`real-hook.json`/`real-hook.log`,无网络证据见
+`network.trace`/`smoke-validation.json`;本机hook路径不成为CI单测前提。
+
+### 11.2 最终签批
+
+- 设计方:2026-10-08核验通过,本轮轻量裁决批准上述处置。
+- 外部评审:Claude Code,2026-10-08 CLOSED、零阻断;4条次要已按裁决处置。
+- P2状态:**CLOSED**。三项P4/P5/P5R移交仍按第5节执行,不冒称端到端已验。
+- 本签批提交与远端CI由Git/GitHub外部锚定,不在文件内自记本提交SHA;
+  推送后核验对应CI完成结果并在回报中给出链接,不拿旧CI替代本轮验收。
+
+## 12. 设计正文待同步
+
+本轮不修改`design.md`。供设计方下次修订§4.2时并入:
+
+| 条目 | 待同步措辞 |
+|---|---|
+| 次要1 | `generate_change_id_via_hook`与`get_or_create_change_id`入口先验证submission_key为64位小写十六进制,分别抛ChangeIdHookError/StateInconsistent;在临时目录/generate之前拒绝 |
+| 次要2(a) | 缓存未命中后的`_require_no_derive`先确认campaign_unit_key存在,不存在即StateInconsistent,不得调用generate;生成后事务内复查沿用此规则 |
+| 次要3 | hook前置拒绝补首行匹配`^[a-z]+! `,说明Gerrit hook跳过fixup!/squash!类提交;首行大写不属于该拒绝范围 |
+| 次要2(b) | DERIVE检查按传入unit执行,不扩成跨unit搜索;带外删除共享缓存行的跨unit场景不在本轮保护范围,按收口已知边界登记 |
+
+本轮未遇需另裁决的实现缺口。后续P3/P4原任务书未在当前会话、仓内任务文件
+与可见文本附件中找到,已请求补发;不以设计中的阶段摘要自行替代原任务范围。

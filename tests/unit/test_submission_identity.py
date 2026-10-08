@@ -7,10 +7,11 @@ import shutil
 import subprocess
 import time
 from pathlib import Path
+from unittest.mock import Mock
 
 import pytest
 from ci_triage import submission_identity as identity
-from ci_triage.campaign_state import ensure_schema, get_or_create_change_id
+from ci_triage.campaign_state import create_unit, get_or_create_change_id
 from tizen_ci_shared.state import StateDatabase
 from tizen_ci_shared.state.keys import build_submission_key
 
@@ -47,6 +48,52 @@ def temporary_dirs(monkeypatch: pytest.MonkeyPatch) -> list[Path]:
 
     monkeypatch.setattr(identity.tempfile, "mkdtemp", track)
     return paths
+
+
+@pytest.fixture
+def campaign_db(tmp_path: Path) -> StateDatabase:
+    db = StateDatabase(tmp_path / "db")
+    create_unit(
+        db, campaign_unit_key="unit", submission_identity_key="identity",
+        primary_arch="standard-aarch64", failed_arches=("standard-aarch64",),
+        toolchain_profile="profile", ci_evidence_ref="evidence.json",
+        ci_evidence_sha256="a" * 64, max_rounds=3, max_build_invocations=9,
+        ci_system="quickbuild", source_build_id="1", project="platform/a",
+        branch="tizen", spec_name="a", base_commit="a" * 40,
+    )
+    return db
+
+
+@pytest.mark.parametrize("key", [KEY + "\nChange-Id: injected", KEY[:-1], KEY.upper()])
+def test_invalid_submission_key_refuses_before_temporary_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, key: str,
+) -> None:
+    mkdtemp = Mock()
+    monkeypatch.setattr(identity.tempfile, "mkdtemp", mkdtemp)
+    with pytest.raises(identity.ChangeIdHookError, match="64 lowercase hexadecimal"):
+        identity.generate_change_id_via_hook(
+            hook_path=tmp_path / "absent", hook_sha256="0" * 64,
+            submission_key=key, message=MESSAGE,
+        )
+    mkdtemp.assert_not_called()
+
+
+@pytest.mark.parametrize("subject", ["fix! x", "fixup! x"])
+def test_autosquash_subject_refuses_before_temporary_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, subject: str,
+) -> None:
+    mkdtemp = Mock()
+    monkeypatch.setattr(identity.tempfile, "mkdtemp", mkdtemp)
+    with pytest.raises(identity.ChangeIdHookError, match="Gerrit hook skips Change-Id"):
+        identity.generate_change_id_via_hook(
+            hook_path=tmp_path / "absent", hook_sha256="0" * 64,
+            submission_key=KEY, message=subject + "\n\nBody",
+        )
+    mkdtemp.assert_not_called()
+
+
+def test_autosquash_subject_check_is_case_sensitive(tmp_path: Path) -> None:
+    assert _generate(_hook(tmp_path), message="Fix! x\n") == CHANGE_ID
 
 
 def test_keys_fixed_vectors_and_dimensions() -> None:
@@ -144,11 +191,11 @@ def test_hook_returns_only_id_without_mutating_message(
 def test_invalid_hook_output_does_not_write_cache(
     tmp_path: Path,
     temporary_dirs: list[Path],
+    campaign_db: StateDatabase,
     body: str,
 ) -> None:
     hook = _hook(tmp_path, body)
-    db = StateDatabase(tmp_path / "db")
-    ensure_schema(db)
+    db = campaign_db
     with pytest.raises(identity.ChangeIdHookError) as exc:
         get_or_create_change_id(
             db,
@@ -166,9 +213,11 @@ def test_invalid_hook_output_does_not_write_cache(
     assert temporary_dirs and all(not p.exists() for p in temporary_dirs)
 
 
-def test_crlf_output_is_stored_as_41_characters(tmp_path: Path) -> None:
+def test_crlf_output_is_stored_as_41_characters(
+    tmp_path: Path, campaign_db: StateDatabase,
+) -> None:
     hook = _hook(tmp_path, f"printf '\\r\\nChange-Id: {CHANGE_ID}\\r\\n' >> \"$1\"\n")
-    db = StateDatabase(tmp_path / "db")
+    db = campaign_db
     result = get_or_create_change_id(
         db,
         campaign_unit_key="unit",

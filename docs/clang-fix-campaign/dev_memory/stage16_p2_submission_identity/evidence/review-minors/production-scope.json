@@ -1,0 +1,13 @@
+{
+  "changed_definitions": {
+    "tizen-ci-triage/scripts/ci_triage/campaign_state.py": [
+      "get_or_create_change_id",
+      "_require_no_derive"
+    ],
+    "tizen-ci-triage/scripts/ci_triage/submission_identity.py": [
+      "generate_change_id_via_hook"
+    ]
+  },
+  "definition_sets_unchanged": true,
+  "design_sha256": "6623f9cae95dbc07bdc8a4408808813eb2b9a54057df82c51b8b9d0cdce11b16"
+}
