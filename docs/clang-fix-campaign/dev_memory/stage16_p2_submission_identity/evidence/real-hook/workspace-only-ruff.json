@@ -1,0 +1,36 @@
+{
+  "command": [
+    ".venv/bin/ruff",
+    "check",
+    "."
+  ],
+  "exit": 1,
+  "errors": 53,
+  "untracked_files": [
+    {
+      "path": "audit_four_sigs.py",
+      "git_ls_files": "",
+      "git_status": "?? audit_four_sigs.py\n",
+      "sha256": "10b6e6678c1eab270d7fd63c9be06c0fe1b89815ecdcf7765e1d746c88e1aa4b"
+    },
+    {
+      "path": "docs/clang-fix-campaign/hashobj2.py",
+      "git_ls_files": "",
+      "git_status": "?? docs/clang-fix-campaign/hashobj2.py\n",
+      "sha256": "e83981c8b629e976446c33d02fa4cbb424d1f5cffa7ea93057b10682dd504ead"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "git_ls_files": "",
+      "git_status": "?? docs/clang-fix-campaign/ident_check3.py\n",
+      "sha256": "f98e22107c6e2bc29bfa503632c2a9aae5872e1e84dd44198548e480e541f040"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "git_ls_files": "",
+      "git_status": "?? docs/clang-fix-campaign/norm_diff5.py\n",
+      "sha256": "451c42ffdcd69d9bacbfef81df013d54e1c8ea7251807ea1a58be4b99d1ca7fe"
+    }
+  ],
+  "disposition": "untouched; validate delivery in separate worktree"
+}

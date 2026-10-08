@@ -1,0 +1,6 @@
+hook_sha256=3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50
+Change-Id: I79e948ab08b03dc50822a0c798ba01c77a0c6360
+real_hook: valid_change_id_lines=1; initial_commits=1; initial_tree_entries=0; exit=0
+no_head_variant_without_initial_commit: exit=1; change_id_lines=0
+head_required_variant: Change-Id: I79e948ab08b03dc50822a0c798ba01c77a0c6360; exit=0
+original_hook_unchanged=true; input_message_unchanged=true; temporary_directories_removed=true

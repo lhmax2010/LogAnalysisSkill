@@ -1,8 +1,9 @@
 # Stage16 P2 submission identity
 
-日期: 2026-10-08。状态: **COMPONENTS_VERIFIED_HOOK_PENDING**。
+日期: 2026-10-08。状态: **READY_FOR_REVIEW**。
 设计入库完成: `9b7754e`。P2-01已裁决:本阶段完成组件级验证。
-第2至4节保留上一轮停止时记录,最新状态见第5节以后;真实hook仍为PENDING。
+第2至4节保留上一轮停止时记录;第6/9节的hook缺失为历史记录。
+真实hook与HEAD变体已补验,当前结论见第8/10节。等待设计方核验与评审,不自行标CLOSED。
 
 ## 1. 权威与入库
 
@@ -173,7 +174,7 @@ P2完成组件级验证,以下三项端到端检查不在P2实施:
 均StateInconsistent、generate调用0次且不写库;hook生成器仅返回Change-Id,
 不修改传入message。
 
-## 6. 真实hook登记与实施边界
+## 6. 真实hook登记与实施边界(此前缺失的历史记录)
 
 FatTank指定路径:`/home/linhao/gerrit-hook/commit-msg`。
 
@@ -300,9 +301,9 @@ SUMMARY | 198 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSI
 | 不同submission_key同message产生不同ID,hook要求HEAD可用 | PASS | `test_submission_key_is_hook_input_and_head_exists` |
 | 生成器只返回Change-Id、不修改传入message | PASS | `test_hook_returns_only_id_without_mutating_message` |
 | 最终derive消息 / sandbox重推 / review-submit端到端 | APPROVED_TRANSFER | 第5节移交清单,目标P4/P5/P5R |
-| FatTank登记的真实hook冒烟 | PENDING | 第6节,文件不存在;`real-hook-config.json`路径已登记,sha256=null,非伪造摘要 |
+| FatTank登记的真实hook冒烟与无HEAD兜底变体 | PASS | 第10节;`evidence/real-hook/result.json`:真实hook仅一行合法ID;变体无commit退出1、生成器空初始commit后退出0;网络系统调用0 |
 
-## 9. 提交与远端验收
+## 9. 提交与远端验收(此前组件验收的历史记录)
 
 实现提交:`3d48877ea13a129ce6e3868e59f9d45327371b41`,已推送。
 本地组件与回归已验收,真实hook仍PENDING,不声称P2完整CLOSED。
@@ -330,3 +331,112 @@ exit=0
 见`evidence/real-hook-presence.log`。测试配置`real-hook-config.json`保留sha256=null。
 本轮停在组件验收完成,等待该文件在当前执行机可读后计算真实摘要并补冒烟。
 三个移交项仍按第5节绑定后续阶段,不提前声称已通过。
+
+## 10. 真实hook补验与收口候审(2026-10-08)
+
+FatTank本轮确认文件已下载。实际文件为Gerrit Code Review 3.10.5的
+`commit-msg`,未修改原文件;配置`real-hook-config.json`已登记真实摘要并转VERIFIED。
+第6/9节及`evidence/real-hook-presence.log`保留旧时点证据,不覆盖为成功输出。
+
+```text
+$ sha256sum /home/linhao/gerrit-hook/commit-msg
+3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50  /home/linhao/gerrit-hook/commit-msg
+exit=0
+```
+
+### 10.1 实际执行与无网络证据
+
+仓库根执行(下列`E`仅为缩短命令,实际argv见`smoke.command.json`):
+
+```sh
+E=docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/real-hook
+env -u PYTHONPATH -u MYPYPATH strace -f -e trace=network -o "$E/network.trace" .venv/bin/python "$E/run_smoke.py"
+```
+
+原始输出(`smoke.log`,exit0):
+
+```text
+hook_sha256=3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50
+Change-Id: I79e948ab08b03dc50822a0c798ba01c77a0c6360
+real_hook: valid_change_id_lines=1; initial_commits=1; initial_tree_entries=0; exit=0
+no_head_variant_without_initial_commit: exit=1; change_id_lines=0
+head_required_variant: Change-Id: I79e948ab08b03dc50822a0c798ba01c77a0c6360; exit=0
+original_hook_unchanged=true; input_message_unchanged=true; temporary_directories_removed=true
+```
+
+`run_smoke.py`为本轮取证脚本,调用现有生产`generate_change_id_via_hook`。
+对`_run_isolated`只加观察包装并原样执行原函数,未替换命令或环境。
+在hook返回且清理前采集实际message,断言恰一行合法`Change-Id: I<40hex>`;
+执行副本摘要等于登记摘要。临时仓库`git rev-list --count HEAD`为`1`,
+`git ls-tree HEAD`为空;业务message输入不变,临时目录最终删除。
+`result.json`保存调用argv、隔离环境、实际hook输出、输入key与message。
+
+`strace -f -e trace=network`跟踪包含hook后代进程;完整`network.trace`非空,
+没有网络系统调用,`network-check.json`记录`network_syscalls=0, exit=0`。
+没有访问Gerrit。复现时Change-Id可随git时间身份改变,不将本轮ID当固定向量。
+
+### 10.2 无HEAD处理的变体
+
+从真实hook原字节派生临时副本,仅将HEAD存在性分支替换为:
+
+```sh
+refhash="$(git rev-parse --verify HEAD)" || exit 1
+```
+
+无初始commit的隔离仓库中运行该变体:exit1、无Change-Id行,
+stderr原文`fatal: Needed a single revision`。
+同一变体通过生产生成器调用:exit0、恰一行合法ID。
+`result.json`记录替换前后完整片段、变体sha256、负例stderr与成功现场;
+证明成功依赖已创建的空初始commit,不是变体自己兼容无HEAD。
+既有`test_submission_key_is_hook_input_and_head_exists`本轮同时复跑通过。
+
+### 10.3 本轮验证与改动边界
+
+命令、unset环境与exit全部存`evidence/real-hook/validation.json`,原始输出为同目录日志:
+
+```text
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/python -m pytest tests/unit/test_submission_identity.py tests/unit/test_campaign_change_ids.py tests/unit/test_campaign_state.py tests/unit/test_campaign_repair_step.py -v
+============================= 135 passed in 9.09s ==============================
+exit=0
+$ env -u PYTHONPATH -u MYPYPATH .venv/bin/python -m pytest tests/ -v --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80
+Required test coverage of 80% reached. Total coverage: 94.62%
+======================= 1410 passed, 1 skipped in 32.32s =======================
+exit=0
+$ .venv/bin/ruff check docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/real-hook/run_smoke.py
+All checks passed!
+exit=0
+```
+
+取证脚本初次ruff检查报一条E501(104>100);仅拆分相邻字符串字面量,
+未改取证语义,随后重跑冒烟和ruff通过。生产源码/单测/设计权威本轮零改动。
+design.md/change_47摘要仍分别为第1节钉值。本收口提交不自记自身SHA。
+
+补跑主工作树`ruff check .`时,四份既有untracked脚本报53条错误(exit1):
+`audit_four_sigs.py`、`docs/clang-fix-campaign/{hashobj2,ident_check3,norm_diff5}.py`。
+这四份未跟踪文件未改动、未入本提交;`workspace-only-ruff.json`记录其Git状态与摘要,
+`ruff.log`/`quality.json`保留失败原文与命令,不隐去失败。
+随后在`/tmp/p2-hook-closeout-3e1ea18`独立工作树检出`3e1ea18`,
+施加本轮待提交diff(不带主工作树杂项),按该树scripts根设置PYTHONPATH,
+重新实跑全部交付检查。命令/环境/exit见`clean-validation.json`,输出见`clean-*.log`:
+
+```text
+ruff: All checks passed!                                      exit=0
+mypy: Success: no issues found in 104 source files             exit=0
+lint-imports: Contracts: 6 kept, 0 broken.                     exit=0
+symbol_audit: SUMMARY | 198 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+exit=0
+bridge: SUMMARY | 198 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+exit=0
+======================= 1410 passed, 1 skipped in 31.25s =======================
+exit=0
+```
+
+上段前五项为原始日志对应行摘录加命令标签,非伪称一条命令的合成输出。
+独立树复验与主工作树pytest结果一致;未通过修改无关脚本或ruff配置取得绿。
+
+本阶段组件DoD全部通过,无剩余P2实施PENDING;三项端到端检查仍为第5节
+APPROVED_TRANSFER,非已执行。既有三条checker问题的两树exit未变,见
+`evidence/comparison.json`及收口文档遗留表,本轮不修改判据或历史输入。
+
+收口文档:[P2 submission identity closeout](../../review/p2-submission-identity-closeout.md)。
+当前状态仅**READY_FOR_REVIEW**,待设计方核验与评审签批。

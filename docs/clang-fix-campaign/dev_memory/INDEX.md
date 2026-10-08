@@ -21,7 +21,7 @@
 | P4.9 extraction phase | CLOSED | Step-0 plus all six skill extractions signed off | phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; next and only entry is the five-item terminal batch |
 | P4.9 terminal batch | CLOSED | PHASE2-09 fixed; C01-C13 verified; 13 hosts/183 bindings; 1349 passed/1 skipped | [final sign-off](../review/p49-terminal-closeout.md#最终签批) @ `9f02f3f`, 2026-10-08: designer verified, one external reviewer CLOSED with zero findings; [carried issues](stage14_p49_terminal_batch/carried-over-issues.md): 3 unchanged, handed to the subsequent phase |
 | P4.9 phase | CLOSED | Extraction and all five terminal obligations closed, 2026-10-08 | [phase ledger](../review/p49-extraction-phase-summary.md#p49-terminal-batch-ledger); [terminal sign-off](../review/p49-terminal-closeout.md#最终签批) @ `9f02f3f` |
-| P2 submission identity | COMPONENTS_VERIFIED_HOOK_PENDING | Design `9b7754e`; implementation `3d48877`; JSON keys, isolated hook generator, append-only Change-Id cache; P2-01 resolved | [stage16 progress](stage16_p2_submission_identity/progress.md): local/CI 1410 passed/1 skipped, 90 checker exits unchanged; [CI success](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37740889109); real hook file absent |
+| P2 submission identity | READY_FOR_REVIEW | Design `9b7754e`; implementation `3d48877`; P2-01 resolved; registered real hook and HEAD-required variant verified | [closeout](../review/p2-submission-identity-closeout.md); [progress](stage16_p2_submission_identity/progress.md#10-真实hook补验与收口候审2026-10-08): 1410 passed/1 skipped; zero network syscalls; three approved P4/P5/P5R transfers |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -49,7 +49,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 skill-6 triage-report | CLOSED | `bdb5a55`, `3dc0466`, `3da12a4`, `2cc3dd3`, `dfbbf3b`, `9a74c0b` | frozen authority `../p49-skill6-triage-report-design-v1.8-FROZEN.md`; result `stage13_p49_skill6_triage_report/result.md`; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | step-0 + skills 1-6 | signed phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; P4.9 terminal five-item batch is the only next entry |
 | 14 P4.9 terminal batch | CLOSED | A `5213c5d`; B `c1ea4ef`; approved package `74ff34c`; PHASE2-08 `f196f55`; C01-C13 validated through `de9099e`; D `9f02f3f` | [final sign-off](../review/p49-terminal-closeout.md#最终签批); [progress §43](stage14_p49_terminal_batch/progress.md#43-最终签批与-p49-关闭); designer verified and one external reviewer CLOSED with zero findings, 2026-10-08 |
-| 16 P2 submission identity | COMPONENTS_VERIFIED_HOOK_PENDING | Design `9b7754e`; implementation `3d48877`; local and remote CI verified | [progress](stage16_p2_submission_identity/progress.md#8-phase-2-dod-逐条对照当前); real hook PENDING; end-to-end checks transferred by P2-01 to P4/P5/P5R |
+| 16 P2 submission identity | READY_FOR_REVIEW | Design `9b7754e`; implementation `3d48877`; component DoD and real hook verified; awaiting review, not CLOSED | [closeout](../review/p2-submission-identity-closeout.md); [progress](stage16_p2_submission_identity/progress.md#8-phase-2-dod-逐条对照当前); P4/P5/P5R transfers and three unchanged checker issues explicitly retained |
 
 ## Code-Ready Checkpoint
 

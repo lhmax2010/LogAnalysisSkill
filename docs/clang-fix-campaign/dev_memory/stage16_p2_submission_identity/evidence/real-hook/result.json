@@ -1,0 +1,257 @@
+{
+  "source_commit": "3e1ea1863e4df2cd02c983d1cd3e3993d9959fd5",
+  "hook_path": "/home/linhao/gerrit-hook/commit-msg",
+  "hook_sha256": "3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50",
+  "submission_key": "f5c562aace6c90c83d29ef1e519a5dc46a549d7cc2d52479a1e61867fd8429ac",
+  "message_input": "Fix build error\n\nP2 real hook smoke.\n",
+  "real_change_id": "I79e948ab08b03dc50822a0c798ba01c77a0c6360",
+  "variant_change_id": "I79e948ab08b03dc50822a0c798ba01c77a0c6360",
+  "variant_sha256": "adac0d2c1dd80f1f480c11ea1c9bfe7e5e332e0d521828f37101e2a64ce9e878",
+  "variant_removed": "if git rev-parse --verify HEAD >/dev/null 2>&1; then\n  refhash=\"$(git rev-parse HEAD)\"\nelse\n  refhash=\"$(git hash-object -t tree /dev/null)\"\nfi\n",
+  "variant_added": "refhash=\"$(git rev-parse --verify HEAD)\" || exit 1\n",
+  "no_head_control": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": "fatal: Needed a single revision\n",
+    "change_id_lines": 0
+  },
+  "generator_calls": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/tmp/campaign-change-id-4czs790y/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "user.name",
+        "campaign"
+      ],
+      "cwd": "/tmp/campaign-change-id-4czs790y/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "user.email",
+        "campaign@invalid"
+      ],
+      "cwd": "/tmp/campaign-change-id-4czs790y/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "gerrit.createChangeId",
+        "true"
+      ],
+      "cwd": "/tmp/campaign-change-id-4czs790y/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "commit",
+        "--allow-empty",
+        "-q",
+        "-m",
+        "init"
+      ],
+      "cwd": "/tmp/campaign-change-id-4czs790y/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "sh",
+        "/tmp/campaign-change-id-4czs790y/commit-msg",
+        "/tmp/campaign-change-id-4czs790y/message"
+      ],
+      "cwd": "/tmp/campaign-change-id-4czs790y/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-4czs790y/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/tmp/campaign-change-id-0mdkmy4a/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "user.name",
+        "campaign"
+      ],
+      "cwd": "/tmp/campaign-change-id-0mdkmy4a/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "user.email",
+        "campaign@invalid"
+      ],
+      "cwd": "/tmp/campaign-change-id-0mdkmy4a/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "config",
+        "--local",
+        "gerrit.createChangeId",
+        "true"
+      ],
+      "cwd": "/tmp/campaign-change-id-0mdkmy4a/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "commit",
+        "--allow-empty",
+        "-q",
+        "-m",
+        "init"
+      ],
+      "cwd": "/tmp/campaign-change-id-0mdkmy4a/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    },
+    {
+      "argv": [
+        "sh",
+        "/tmp/campaign-change-id-0mdkmy4a/commit-msg",
+        "/tmp/campaign-change-id-0mdkmy4a/message"
+      ],
+      "cwd": "/tmp/campaign-change-id-0mdkmy4a/repo",
+      "env": {
+        "PATH": "/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.codex/tmp/arg0/codex-arg0bBwg5K:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/home/linhao/.local/bin:/home/linhao/.bun/bin:/home/linhao/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/linhao/.vscode/extensions/openai.chatgpt-26.1002.51308-linux-x64/bin/linux-x86_64",
+        "LANG": "en_US.UTF-8",
+        "HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "XDG_CONFIG_HOME": "/tmp/campaign-change-id-0mdkmy4a/home",
+        "GIT_CONFIG_NOSYSTEM": "1",
+        "GIT_CONFIG_GLOBAL": "/dev/null"
+      }
+    }
+  ],
+  "completed_hooks": [
+    {
+      "change_id_lines": [
+        "Change-Id: I79e948ab08b03dc50822a0c798ba01c77a0c6360"
+      ],
+      "message_after_hook": "Fix build error\n\nP2 real hook smoke.\n\nX-Campaign-Submission-Key: f5c562aace6c90c83d29ef1e519a5dc46a549d7cc2d52479a1e61867fd8429ac\nChange-Id: I79e948ab08b03dc50822a0c798ba01c77a0c6360\n",
+      "initial_commit_count": "1",
+      "initial_tree_listing": "",
+      "executed_hook_sha256": "3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50"
+    },
+    {
+      "change_id_lines": [
+        "Change-Id: I79e948ab08b03dc50822a0c798ba01c77a0c6360"
+      ],
+      "message_after_hook": "Fix build error\n\nP2 real hook smoke.\n\nX-Campaign-Submission-Key: f5c562aace6c90c83d29ef1e519a5dc46a549d7cc2d52479a1e61867fd8429ac\nChange-Id: I79e948ab08b03dc50822a0c798ba01c77a0c6360\n",
+      "initial_commit_count": "1",
+      "initial_tree_listing": "",
+      "executed_hook_sha256": "adac0d2c1dd80f1f480c11ea1c9bfe7e5e332e0d521828f37101e2a64ce9e878"
+    }
+  ],
+  "temporary_directories_removed": [
+    "/tmp/campaign-change-id-0mdkmy4a",
+    "/tmp/campaign-change-id-4czs790y"
+  ],
+  "hook_original_unchanged": true,
+  "input_message_unchanged": true,
+  "exit": 0
+}

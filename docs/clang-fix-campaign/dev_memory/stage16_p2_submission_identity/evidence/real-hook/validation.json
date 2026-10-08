@@ -1,0 +1,54 @@
+[
+  {
+    "name": "targeted",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/unit/test_submission_identity.py",
+      "tests/unit/test_campaign_change_ids.py",
+      "tests/unit/test_campaign_state.py",
+      "tests/unit/test_campaign_repair_step.py",
+      "-v"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "unset": [
+      "PYTHONPATH",
+      "MYPYPATH"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "full",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/",
+      "-v",
+      "--cov=gbs_analyzer",
+      "--cov-report=term-missing",
+      "--cov-fail-under=80"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "unset": [
+      "PYTHONPATH",
+      "MYPYPATH"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "harness-ruff",
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/real-hook/run_smoke.py"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "unset": [
+      "PYTHONPATH",
+      "MYPYPATH"
+    ],
+    "exit": 0
+  }
+]

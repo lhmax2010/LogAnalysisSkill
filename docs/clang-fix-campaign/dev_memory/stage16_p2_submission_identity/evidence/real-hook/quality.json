@@ -1,0 +1,30 @@
+[
+  {
+    "name": "mypy",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "mypy"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "unset": [
+      "PYTHONPATH",
+      "MYPYPATH"
+    ],
+    "exit": 0
+  },
+  {
+    "name": "ruff",
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "."
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "unset": [
+      "PYTHONPATH",
+      "MYPYPATH"
+    ],
+    "exit": 1
+  }
+]

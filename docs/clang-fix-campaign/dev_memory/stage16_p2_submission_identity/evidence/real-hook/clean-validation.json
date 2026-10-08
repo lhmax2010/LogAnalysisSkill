@@ -1,0 +1,77 @@
+[
+  {
+    "name": "ruff",
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "."
+    ],
+    "cwd": "/tmp/p2-hook-closeout-3e1ea18",
+    "PYTHONPATH": "/tmp/p2-hook-closeout-3e1ea18/tizen-build-verify/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-shared/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-triage/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-convergence-judge/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build-workflow/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-log-analysis/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-patch-suggest/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-fetch/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-submit/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-qb-discover/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-triage-report/scripts",
+    "MYPYPATH": null,
+    "exit": 0
+  },
+  {
+    "name": "mypy",
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "mypy"
+    ],
+    "cwd": "/tmp/p2-hook-closeout-3e1ea18",
+    "PYTHONPATH": "/tmp/p2-hook-closeout-3e1ea18/tizen-build-verify/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-shared/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-triage/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-convergence-judge/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build-workflow/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-log-analysis/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-patch-suggest/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-fetch/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-submit/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-qb-discover/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-triage-report/scripts",
+    "MYPYPATH": null,
+    "exit": 0
+  },
+  {
+    "name": "lint-imports",
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/lint-imports"
+    ],
+    "cwd": "/tmp/p2-hook-closeout-3e1ea18",
+    "PYTHONPATH": "/tmp/p2-hook-closeout-3e1ea18/tizen-build-verify/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-shared/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-triage/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-convergence-judge/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build-workflow/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-log-analysis/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-patch-suggest/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-fetch/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-submit/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-qb-discover/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-triage-report/scripts",
+    "MYPYPATH": null,
+    "exit": 0
+  },
+  {
+    "name": "symbol",
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "docs/clang-fix-campaign/tools/symbol_audit.py"
+    ],
+    "cwd": "/tmp/p2-hook-closeout-3e1ea18",
+    "PYTHONPATH": "/tmp/p2-hook-closeout-3e1ea18/tizen-build-verify/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-shared/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-triage/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-convergence-judge/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build-workflow/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-log-analysis/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-patch-suggest/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-fetch/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-submit/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-qb-discover/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-triage-report/scripts",
+    "MYPYPATH": null,
+    "exit": 0
+  },
+  {
+    "name": "bridge",
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "docs/clang-fix-campaign/tools/table_audit_bridge.py"
+    ],
+    "cwd": "/tmp/p2-hook-closeout-3e1ea18",
+    "PYTHONPATH": "/tmp/p2-hook-closeout-3e1ea18/tizen-build-verify/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-shared/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-triage/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-convergence-judge/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build-workflow/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-log-analysis/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-patch-suggest/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-fetch/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-submit/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-qb-discover/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-triage-report/scripts",
+    "MYPYPATH": null,
+    "exit": 0
+  },
+  {
+    "name": "pytest",
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/",
+      "-v",
+      "--cov=gbs_analyzer",
+      "--cov-report=term-missing",
+      "--cov-fail-under=80"
+    ],
+    "cwd": "/tmp/p2-hook-closeout-3e1ea18",
+    "PYTHONPATH": "/tmp/p2-hook-closeout-3e1ea18/tizen-build-verify/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-shared/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-ci-triage/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-convergence-judge/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-build-workflow/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-log-analysis/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gbs-patch-suggest/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-fetch/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-gerrit-submit/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-qb-discover/scripts:/tmp/p2-hook-closeout-3e1ea18/tizen-triage-report/scripts",
+    "MYPYPATH": null,
+    "exit": 0
+  }
+]

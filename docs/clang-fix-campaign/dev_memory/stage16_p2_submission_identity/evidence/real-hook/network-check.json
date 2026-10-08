@@ -1,0 +1,6 @@
+{
+  "command": "strace -f -e trace=network (full command in smoke.command.json)",
+  "network_syscalls": 0,
+  "trace_nonempty": true,
+  "exit": 0
+}

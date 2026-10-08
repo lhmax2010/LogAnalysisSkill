@@ -1,6 +1,8 @@
 {
   "gerrit_commit_msg_hook": "/home/linhao/gerrit-hook/commit-msg",
-  "gerrit_commit_msg_hook_sha256": null,
-  "status": "PENDING",
-  "reason": "FatTank-designated file does not exist on this machine; no digest or smoke result fabricated"
+  "gerrit_commit_msg_hook_sha256": "3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50",
+  "status": "VERIFIED",
+  "reason": "Real hook and HEAD-required variant passed through generate_change_id_via_hook; strace recorded zero network syscalls",
+  "evidence": "evidence/real-hook/result.json",
+  "network_evidence": "evidence/real-hook/network-check.json"
 }
