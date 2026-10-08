@@ -3802,3 +3802,38 @@ PR-02的旧址键仍承担获批缺失状态查询,按PHASE2-01定义逐项登�
 symbol_audit.py原356行,来源为批准清单原字节hash;不是新的import/patch/入口,
 不是增加删除授权。加上既有11条键共12条登记,原8项裁决及负fixture未改。
 本组不删测试,新增2个防滥用测试。五项验证位置 `execution/C10R/` **PENDING**。
+
+### 40.11 C10 回退 / PHASE2-09 停止报告
+
+C10尝试提交 `6e27fec28d0e9c41ad46a19140b0034ee1b25259` 未通过新增工具的
+定向类型检查,按批准协议回退该组并停止;不是既有问题,不纳入carried-over豁免。
+测试虽1351 passed/1 skipped(新增2控制),90条既有checker无新增失败,不能
+覆盖另一项类型检查的真实失败。两条新负fixture均exit1且红因正确,完整输出
+保留在 `execution/C10R/`;后续import-all/残留/打包未完成,不记PASS。
+
+同一命令在三棵干净树的实测(同venv,mypy2.4.0):
+
+```text
+/tmp/p49-a0-regression-43a6aa6/bin/mypy docs/clang-fix-campaign/tools/symbol_audit.py
+43a6aa6: Success: no issues found in 1 source file; EXIT=0
+0e6507e (C09): Success: no issues found in 1 source file; EXIT=0
+6e27fec (C10): Found 5 errors in 1 file (checked 1 source file); EXIT=1
+```
+
+原文位置(以失败commit `6e27fec` 为准):symbol_audit.py:1819/:1831/:1833/:1834。
+原因:本轮新增分支的`spec`/`result`被推断为ModuleScopeSpec/ModuleScopeResult,
+与同函数既有fixture分支的SymbolSpec/AuditResult复用名字冲突。这是实现方
+本轮引入的类型错误,不是设计冲突,不修改基线或期望集来放行。
+候选处置:在新分支改用独立`module_spec`/`module_result`后重新实施C10及其
+全部验证;**本轮没有实施该修复**,等待放行续跑。
+
+回退范围仅C10的classifier壳删除、审计工具/两控制测试/PR-02历史键登记;
+C09验证记录与C10失败记录保留。回退后生产、测试、工具与C09逐字节一致。
+执行状态 **STOPPED_NEW_REGRESSION**:C01-C09完成,C10回退,C11-C13未执行,
+D未开始,不得声称终止批次完成。原8项HISTORICAL_KEY与原负fixture未改。
+停止报告新增1条(PHASE2-09);遗留表仍20行/3项OPEN_CARRIED,本条不混入。
+
+最新完整通过组C09:全仓1349/1(批准4例已删2例,其余未删),90checker无新增
+失败,mypy/ruff/lint退出0;31入口/205文件import/残留OTHER0/打包与5help通过。
+C09远端CI SUCCESS,Tests成功:
+https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37715508991 。

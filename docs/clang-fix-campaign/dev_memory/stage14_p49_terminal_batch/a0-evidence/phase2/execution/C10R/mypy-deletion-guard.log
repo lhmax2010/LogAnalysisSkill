@@ -1,0 +1,6 @@
+docs/clang-fix-campaign/tools/symbol_audit.py:1819: error: Incompatible types in assignment (expression has type "SymbolSpec", variable has type "ModuleScopeSpec")  [assignment]
+docs/clang-fix-campaign/tools/symbol_audit.py:1831: error: Incompatible types in assignment (expression has type "AuditResult", variable has type "ModuleScopeResult")  [assignment]
+docs/clang-fix-campaign/tools/symbol_audit.py:1833: error: Dict entry 0 has incompatible type "tuple[str, Any]": "ModuleScopeSpec"; expected "tuple[str, str]": "SymbolSpec"  [dict-item]
+docs/clang-fix-campaign/tools/symbol_audit.py:1833: error: "ModuleScopeSpec" has no attribute "name"  [attr-defined]
+docs/clang-fix-campaign/tools/symbol_audit.py:1834: error: Argument 3 to "_audit_one" has incompatible type "ModuleScopeSpec"; expected "SymbolSpec"  [arg-type]
+Found 5 errors in 1 file (checked 1 source file)

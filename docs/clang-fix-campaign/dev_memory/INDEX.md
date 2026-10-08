@@ -19,7 +19,7 @@
 | P4.9 skill-5 gerrit-submit | CLOSED | Gerrit-submit extraction, status locks, six-row terminal mapping, patch-version ledger | commits `f2bc050`/`31a91cb`/`a97c40b`/`0dfa5f1`/`a8620f1`/`d51145f`/`c6f734b`; 173 symbols + 4 module scopes; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | Triage-report extraction, gbs_report constraint closure, branch inventory, extraction-phase ledger | commits `bdb5a55`/`3dc0466`/`3da12a4`/`2cc3dd3`/`dfbbf3b`; 197 symbols + 4 module scopes; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | Step-0 plus all six skill extractions signed off | phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; next and only entry is the five-item terminal batch |
-| P4.9 terminal batch | E11_PHASE2_EXECUTING | PHASE2-08 passed local/remote CI; C01-C04 five checks passed; C05 validating | [progress §40](stage14_p49_terminal_batch/progress.md#40-c组逐组实施); [carried issues](stage14_p49_terminal_batch/carried-over-issues.md): 20 baseline rows, 3 still carried; no new checker failures |
+| P4.9 terminal batch | STOPPED_NEW_REGRESSION | PHASE2-08 passed; C01-C09 verified/pushed; C10 reverted after new tool mypy failure | [progress §40.11](stage14_p49_terminal_batch/progress.md#4011-c10-回退--phase2-09-停止报告); [carried issues](stage14_p49_terminal_batch/carried-over-issues.md): 20 baseline rows, 3 still carried; C10 failure is not carried |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -46,7 +46,7 @@ second contract authority. Runtime behavior remains governed by
 | P4.9 skill-5 gerrit-submit | CLOSED | `f2bc050`, `31a91cb`, `a97c40b`, `0dfa5f1`, `a8620f1`, `d51145f`, `c6f734b` | frozen authority `../p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md`; result `stage12_p49_skill5_gerrit_submit/result.md`; final sign-off `../review/p49-skill5-closeout.md#最终签批` |
 | P4.9 skill-6 triage-report | CLOSED | `bdb5a55`, `3dc0466`, `3da12a4`, `2cc3dd3`, `dfbbf3b`, `9a74c0b` | frozen authority `../p49-skill6-triage-report-design-v1.8-FROZEN.md`; result `stage13_p49_skill6_triage_report/result.md`; final sign-off `../review/p49-skill6-closeout.md#最终签批` |
 | P4.9 extraction phase | CLOSED | step-0 + skills 1-6 | signed phase ledger `../review/p49-extraction-phase-summary.md#阶段签批`; P4.9 terminal five-item batch is the only next entry |
-| 14 P4.9 terminal batch | E11_PHASE2_EXECUTING | A `5213c5d`; B `c1ea4ef`; approved package `74ff34c`; PHASE2-08 `f196f55`; C01-C04 validated | [progress §40](stage14_p49_terminal_batch/progress.md#40-c组逐组实施); C05 validating; D not started |
+| 14 P4.9 terminal batch | STOPPED_NEW_REGRESSION | A `5213c5d`; B `c1ea4ef`; approved package `74ff34c`; PHASE2-08 `f196f55`; C01-C09 validated through `0e6507e` | [progress §40.11](stage14_p49_terminal_batch/progress.md#4011-c10-回退--phase2-09-停止报告); C10 reverted; C11-C13/D not started |
 
 ## Code-Ready Checkpoint
 
