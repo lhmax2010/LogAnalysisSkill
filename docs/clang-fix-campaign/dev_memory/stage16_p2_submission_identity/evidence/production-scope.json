@@ -1,0 +1,23 @@
+{
+  "existing_function_class_ast_changes": [],
+  "existing_definitions_unchanged": 93,
+  "existing_schema_objects_unchanged": 21,
+  "added_schema_objects": {
+    "sqlite_autoindex_campaign_change_ids_2": [
+      "index",
+      "campaign_change_ids",
+      null
+    ],
+    "sqlite_autoindex_campaign_change_ids_1": [
+      "index",
+      "campaign_change_ids",
+      null
+    ],
+    "campaign_change_ids": [
+      "table",
+      "campaign_change_ids",
+      "CREATE TABLE campaign_change_ids (\n  submission_key TEXT NOT NULL PRIMARY KEY\n                 CHECK (length(submission_key) = 64\n                        AND submission_key NOT GLOB '*[^0-9a-f]*'),\n  change_id      TEXT NOT NULL UNIQUE\n                 CHECK (length(change_id) = 41\n                        AND substr(change_id, 1, 1) = 'I'\n                        AND substr(change_id, 2) NOT GLOB '*[^0-9a-f]*'),\n  source         TEXT NOT NULL CHECK (source = 'commit_msg_hook'),\n  hook_sha256    TEXT NOT NULL\n                 CHECK (length(hook_sha256) = 64\n                        AND hook_sha256 NOT GLOB '*[^0-9a-f]*'),\n  created_at     TEXT NOT NULL\n)"
+    ]
+  },
+  "scope_check_note": "Initial check expected one sqlite_master object, incorrectly ignoring the new table primary-key/UNIQUE autoindexes. Corrected to check one added table plus its two implicit indexes; no production change."
+}

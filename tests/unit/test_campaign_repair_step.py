@@ -799,6 +799,24 @@ def test_non_campaign_record_is_reported_as_sorted_structured_warning(tmp_path: 
     ]
 
 
+@pytest.mark.parametrize("reason", ["apply_failed", "analyzer_failed"])
+def test_previous_only_na_outcomes_fall_back_to_reproduce(tmp_path: Path, reason: str) -> None:
+    fixture = _fixture(tmp_path)
+    invocation = consume_build_invocation(
+        fixture.db, UNIT_KEY, round_index=_ensure_round(fixture), arch_norm=ARCH_NORM,
+    )
+    append_event(
+        fixture.db, UNIT_KEY, "CONVERGENCE", _na_convergence(invocation.event_id, reason),
+    )
+
+    previous = resolve(fixture.db, UNIT_KEY, arch_norm=ARCH_NORM)
+
+    assert isinstance(previous, ResolvedEvidence)
+    assert previous.basis == "reproduce"
+    assert previous.evidence_path == str(fixture.evidence)
+    assert latest_status(fixture.db, UNIT_KEY) != HELD_FOR_INVESTIGATION
+
+
 def test_previous_resolver_handles_pass_and_na_history(tmp_path: Path) -> None:
     fixture = _fixture(tmp_path)
     first = consume_build_invocation(

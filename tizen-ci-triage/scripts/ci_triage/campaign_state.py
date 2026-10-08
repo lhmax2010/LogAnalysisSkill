@@ -13,7 +13,7 @@ import json
 import os
 import sqlite3
 import subprocess
-from collections.abc import Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -221,6 +221,21 @@ CREATE INDEX IF NOT EXISTS ix_qb_ev_req
   ON campaign_qb_events (request_seq, event_id);
 CREATE INDEX IF NOT EXISTS ix_qb_ev_build
   ON campaign_qb_events (qb_build_id);
+
+CREATE TABLE IF NOT EXISTS campaign_change_ids (
+  submission_key TEXT NOT NULL PRIMARY KEY
+                 CHECK (length(submission_key) = 64
+                        AND submission_key NOT GLOB '*[^0-9a-f]*'),
+  change_id      TEXT NOT NULL UNIQUE
+                 CHECK (length(change_id) = 41
+                        AND substr(change_id, 1, 1) = 'I'
+                        AND substr(change_id, 2) NOT GLOB '*[^0-9a-f]*'),
+  source         TEXT NOT NULL CHECK (source = 'commit_msg_hook'),
+  hook_sha256    TEXT NOT NULL
+                 CHECK (length(hook_sha256) = 64
+                        AND hook_sha256 NOT GLOB '*[^0-9a-f]*'),
+  created_at     TEXT NOT NULL
+);
 """
 
 
@@ -306,13 +321,69 @@ class ReconcileResult:
 
 
 def ensure_schema(state_db: StateDatabase) -> None:
-    """Create all seven additive campaign tables and their indexes."""
+    """Create the additive campaign tables and their indexes."""
 
     conn = state_db.connect()
     try:
         _ensure_schema_on_connection(conn)
     finally:
         conn.close()
+
+
+def get_or_create_change_id(
+    state_db: StateDatabase,
+    *,
+    campaign_unit_key: str,
+    submission_key: str,
+    hook_sha256: str,
+    generate: Callable[[], str] | None,
+) -> str:
+    """Reuse the first identity; generate only before this unit's first DERIVE."""
+    conn = _connect(state_db)
+    try:
+        cached = _cached_change_id(conn, submission_key)
+        if cached is not None:
+            return cached
+        _require_no_derive(conn, campaign_unit_key)
+        if generate is None:
+            raise StateInconsistent("Change-Id cache miss in read-only mode")
+    finally:
+        conn.close()
+
+    change_id = generate()
+    conn = _connect(state_db)
+    try:
+        with _immediate_transaction(conn):
+            cached = _cached_change_id(conn, submission_key)
+            if cached is not None:
+                return cached
+            _require_no_derive(conn, campaign_unit_key)
+            conn.execute(
+                "INSERT INTO campaign_change_ids "
+                "(submission_key, change_id, source, hook_sha256, created_at) "
+                "VALUES (?, ?, 'commit_msg_hook', ?, ?)",
+                (submission_key, change_id, hook_sha256, _now_iso8601()),
+            )
+        return change_id
+    except sqlite3.IntegrityError as exc:
+        raise StateInconsistent(f"Change-Id violated campaign constraints: {exc}") from exc
+    finally:
+        conn.close()
+
+
+def _cached_change_id(conn: sqlite3.Connection, submission_key: str) -> str | None:
+    row = conn.execute(
+        "SELECT change_id FROM campaign_change_ids WHERE submission_key = ?", (submission_key,),
+    ).fetchone()
+    return None if row is None else _text(row, "change_id")
+
+
+def _require_no_derive(conn: sqlite3.Connection, campaign_unit_key: str) -> None:
+    if conn.execute(
+        "SELECT 1 FROM campaign_gate_events WHERE campaign_unit_key = ? "
+        "AND event_type = 'DERIVE' LIMIT 1", (campaign_unit_key,),
+    ).fetchone() is not None:
+        raise StateInconsistent("Change-Id cache missing for a unit with DERIVE history")
 
 
 def create_unit(

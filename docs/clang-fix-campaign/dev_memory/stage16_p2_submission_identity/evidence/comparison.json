@@ -1,0 +1,27 @@
+{
+  "baseline": "f9dedce23459e9e01b9cd592df9eb3703da75ef4",
+  "checker_and_validation_commands": 94,
+  "exit_changes": [],
+  "carried_failures": [
+    {
+      "name": "design-doc-controls",
+      "exit": 1,
+      "expected": 0
+    },
+    {
+      "name": "symbol-negative-duplicate-spec-root-mismatch",
+      "exit": 0,
+      "expected": 1
+    },
+    {
+      "name": "symbol-key-twin-both-binary-key",
+      "exit": 1,
+      "expected": 0
+    }
+  ],
+  "baseline_tests": 1350,
+  "current_tests": 1411,
+  "missing_nodeids": [],
+  "changed_outcomes": [],
+  "added_tests": 61
+}

@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/unit/test_submission_identity.py",
+    "tests/unit/test_campaign_change_ids.py",
+    "tests/unit/test_campaign_state.py",
+    "tests/unit/test_campaign_repair_step.py",
+    "-v"
+  ],
+  "cwd": "/tmp/p2-validation-f9dedce",
+  "exit": 0,
+  "PYTHONPATH": "/tmp/p2-validation-f9dedce/tizen-build-verify/scripts:/tmp/p2-validation-f9dedce/tizen-ci-shared/scripts:/tmp/p2-validation-f9dedce/tizen-ci-triage/scripts:/tmp/p2-validation-f9dedce/tizen-convergence-judge/scripts:/tmp/p2-validation-f9dedce/tizen-gbs-build/scripts:/tmp/p2-validation-f9dedce/tizen-gbs-build-workflow/scripts:/tmp/p2-validation-f9dedce/tizen-gbs-log-analysis/scripts:/tmp/p2-validation-f9dedce/tizen-gbs-patch-suggest/scripts:/tmp/p2-validation-f9dedce/tizen-gerrit-fetch/scripts:/tmp/p2-validation-f9dedce/tizen-gerrit-submit/scripts:/tmp/p2-validation-f9dedce/tizen-qb-discover/scripts:/tmp/p2-validation-f9dedce/tizen-triage-report/scripts"
+}
