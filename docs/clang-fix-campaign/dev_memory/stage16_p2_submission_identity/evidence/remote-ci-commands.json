@@ -1,0 +1,34 @@
+[
+  {
+    "argv": [
+      "gh",
+      "run",
+      "view",
+      "37740889109",
+      "--json",
+      "status,conclusion,url,jobs,headSha"
+    ],
+    "exit": 0,
+    "output": "remote-ci.json"
+  },
+  {
+    "argv": [
+      "gh",
+      "run",
+      "view",
+      "37740889109",
+      "--log"
+    ],
+    "exit": 0,
+    "output": "remote-ci.log.gz",
+    "encoding": "gzip (lossless original output)"
+  },
+  {
+    "argv": [
+      "sha256sum",
+      "/home/linhao/gerrit-hook/commit-msg"
+    ],
+    "exit": 1,
+    "output": "real-hook-presence.log"
+  }
+]

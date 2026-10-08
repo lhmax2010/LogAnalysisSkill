@@ -304,5 +304,29 @@ SUMMARY | 198 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSI
 
 ## 9. 提交与远端验收
 
+实现提交:`3d48877ea13a129ce6e3868e59f9d45327371b41`,已推送。
 本地组件与回归已验收,真实hook仍PENDING,不声称P2完整CLOSED。
-实现提交推送后检查GitHub CI,结果另附外部run锚点与原始日志。
+
+远端CI: https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37740889109
+
+```text
+$ gh run watch 37740889109 --exit-status --interval 10
+test in 1m20s: success
+Lint: success
+Type check: success
+Tests: success
+exit=0
+```
+
+上段为状态摘要;未经改写的job metadata与完整输出已分别归档到
+`evidence/remote-ci.json`、`evidence/remote-ci.log.gz`(保留原始空白,无损压缩),获取命令及exit在
+`evidence/remote-ci-commands.json`。远端Tests输出原文:
+
+```text
+======================= 1410 passed, 1 skipped in 48.83s =======================
+```
+
+两台环境的全量计数一致。再次核查FatTank指定hook仍不存在(sha256sum exit1),
+见`evidence/real-hook-presence.log`。测试配置`real-hook-config.json`保留sha256=null。
+本轮停在组件验收完成,等待该文件在当前执行机可读后计算真实摘要并补冒烟。
+三个移交项仍按第5节绑定后续阶段,不提前声称已通过。
