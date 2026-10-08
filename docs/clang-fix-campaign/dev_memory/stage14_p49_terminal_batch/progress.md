@@ -3741,3 +3741,14 @@ wheel/install及5模块help exit0。
 
 删除sources.py登记的4绑定纯shim;真实实现qb-discover不动,无测试删除。
 五项验证 `a0-evidence/phase2/execution/C05R/` **PENDING**。
+
+C05 `d8e8d85` 五项 **PASS**:1350/1、累计只少获批1例;90 checkers
+regressions=[];mypy/ruff/lint exit0;smoke31/31;import-all210/210;
+residual HISTORICAL=9086/HISTORICAL_KEY=1/RELEASE=44/OTHER=0;
+wheel/install及5模块help exit0。
+
+### 40.6 C06
+
+删除verify/convergence.py登记的8绑定纯shim;公共别名和skill中的真实定义
+均不动,同一性契约测试保留,无新删nodeid。
+五项验证 `a0-evidence/phase2/execution/C06R/` **PENDING**。
