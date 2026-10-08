@@ -1,5 +1,19 @@
 [
   {
+    "file": "docs/clang-fix-campaign/tools/symbol_audit.py",
+    "line": 356,
+    "value": "tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py",
+    "exact_line": "        \"tizen-ci-triage/scripts/ci_triage/verify/failure_classify.py\",",
+    "usage": "PR-02 legacy-state key: exact approved deletion lookup, not an import/patch/entry",
+    "immutable_input": {
+      "file": "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/a0-evidence/phase2/gate-package/deletion-inventory.json",
+      "sha256": "4baa85bdf82177bf3d1290cd46e8d00ccba755b7424ec16eca707ca15dfee0e3"
+    },
+    "reason": "PR-02 explicitly requires per-path approved-deletion matching; retain this lookup key while deleting the compatibility file. Approval evidence is the unchanged gate package and progress section 36.1.",
+    "review_id": "PR-02",
+    "classification": "HISTORICAL_KEY"
+  },
+  {
     "file": "docs/clang-fix-campaign/tools/table_audit_bridge.py",
     "line": 37,
     "symbol": "create_worktree",

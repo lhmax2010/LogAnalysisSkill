@@ -387,6 +387,13 @@ closure stages:
 - 不改变行为和安全边界的实现缺口由设计方在提示词中裁决并记入progress.md。
 - 收口签批为设计方核验加一家评审。
 
+### 分组验证的工具自身问题修正
+
+来源:PHASE2-09(2026-10-08)。本组新增或修改的工具、测试代码自身的类型、
+lint、格式问题,若与删除行为及调用方改写无关,允许在同组内修正后重跑组验证。
+组证据须保留失败原文、修正diff与重跑结果,不必因此停止。由删除或调用方
+改写引起的失败仍按原规则回退该组并停止;此例外不许可行为变更或OTHER放行。
+
 ## Earlier Prelude
 
 `change_36.md` also records two earlier, separately numbered lessons: a human

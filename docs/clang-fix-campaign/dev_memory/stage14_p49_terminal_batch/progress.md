@@ -3862,3 +3862,23 @@ https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37715804408 。
 release/P4.5 design/terminal冻结稿/predicates/exemptions本轮零diff;
 终止冻结稿sha256仍为`b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0`。
 主树原有无关改动保留。尚未建立D收口文档或改变五项义务为已全部销账。
+
+## 41. PHASE2-09 裁决与 C10 续做
+
+2026-10-08 设计方轻量裁决批准按候选修复续做。§40.11的停止项
+**CLOSED_BY_RULING**:新fixture分支仅把`spec`/`result`改为独立的
+`module_spec`/`module_result`;`_approved_legacy_deletion`及两条控制不变。
+失败原文保留在`execution/C10R/mypy-deletion-guard.log`,43a6aa6/C09对照
+仍保留;修正diff与重跑记录落`execution/C10S/`,不覆盖第一次失败证据。
+按原批准范围恢复C10的13绑定壳删除及PR-02历史键登记。
+
+常设规则:若某组失败仅因本组新增或修改的工具/测试自身类型、lint、格式问题,
+且与删除行为及调用方改写无关,允许同组修正并重跑全部组验证,证据必须包括
+失败原文、修正diff和重跑结果,无需停止。删除或调用方改写导致的失败仍须
+回退该组并停报;行为变化和OTHER同样不能据此放行。本规则不改基线期望集。
+
+### 41.1 C10 重做
+
+新fixture变量名独立,控制原文和获批删除判据不变。无新增测试删除,
+新增的两条防滥用测试沿用首次C10原字节。提交后E11-3(4)五项验证
+位于`execution/C10S/`,结果 **PENDING**;通过才推进C11。

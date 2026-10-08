@@ -10,12 +10,15 @@ build-verify, gerrit-submit, and triage-report.
 from __future__ import annotations
 
 import ast
+import json
 import re
 import subprocess
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 from pathlib import Path
+
+from historical_inputs import read_pinned
 
 
 @dataclass(frozen=True)
@@ -1507,6 +1510,28 @@ def _pure_reexport_reasons(source: SourceFile, import_root: str) -> tuple[str, .
     return tuple(reasons)
 
 
+def _approved_legacy_deletion(repo_root: Path, legacy_path: str) -> bool:
+    # FatTank approved this exact inventory (PR-02); local edits cannot widen it.
+    inventory = json.loads(read_pinned(
+        repo_root,
+        "docs/clang-fix-campaign/dev_memory/stage14_p49_terminal_batch/"
+        "a0-evidence/phase2/gate-package/deletion-inventory.json",
+        "4baa85bdf82177bf3d1290cd46e8d00ccba755b7424ec16eca707ca15dfee0e3",
+    ))
+    approved = {
+        entry["path"] for entry in inventory["entries"]
+        if entry["scope"] == "MODULE"
+    }
+    if legacy_path not in approved:
+        return False
+    path = repo_root / legacy_path
+    tracked = subprocess.run(
+        ["git", "ls-files", "--error-unmatch", legacy_path],
+        cwd=repo_root, check=False, capture_output=True,
+    )
+    return tracked.returncode == 1 and not path.exists() and not path.is_symlink()
+
+
 def _audit_module_scope(
     repo_root: Path,
     sources: tuple[SourceFile, ...],
@@ -1563,7 +1588,10 @@ def _audit_module_scope(
             None,
         )
         if legacy_source is None:
-            reasons.append(f"legacy shim {spec.legacy_path} not found")
+            if not _approved_legacy_deletion(repo_root, spec.legacy_path):
+                reasons.append(
+                    f"legacy shim {spec.legacy_path} not found or not an approved deletion"
+                )
         else:
             reasons.extend(_pure_reexport_reasons(legacy_source, spec.import_root))
     else:
@@ -1759,7 +1787,28 @@ def run(repo_root: Path) -> int:
 
 def _run_negative_fixture(name: str) -> int:
     registered = dict(REGISTERED_SKILL_ROOTS)
-    if name == "skill-owner-shared-consumer":
+    if name in {"unapproved-deleted-shim", "legacy-shim-residual-implementation"}:
+        repo_root = Path(__file__).resolve().parents[3]
+        sources = _fixture_sources(repo_root)
+        module_spec = next(
+            item for item in SPECS
+            if isinstance(item, ModuleScopeSpec) and item.module == "classify.py"
+        )
+        if name == "unapproved-deleted-shim":
+            module_spec = replace(module_spec, legacy_path="fixture-unapproved.py")
+        else:
+            # An existing implementation must never pass the approved-absence arm.
+            legacy_path = repo_root / module_spec.legacy_path
+            sources = tuple(item for item in sources if item.path != legacy_path)
+            legacy = _synthetic_source("fixture.legacy", "def leftover():\n    pass\n")
+            sources += (replace(legacy, path=legacy_path),)
+        module_result = _audit_module_scope(
+            repo_root, sources,
+            tuple(item for item in SPECS if isinstance(item, SymbolSpec)), module_spec,
+        )
+        print(f"NEGATIVE_FIXTURE | {name} | {module_result.verdict}")
+        return 1 if module_result.reasons else 0
+    elif name == "skill-owner-shared-consumer":
         consumers = {"tizen_ci_shared.types"}
     elif name == "skill-owner-peer-skill-consumer":
         registered["skill/fake_peer"] = "fake_peer_skill"
