@@ -23,6 +23,7 @@
 | P4.9 phase | CLOSED | Extraction and all five terminal obligations closed, 2026-10-08 | [phase ledger](../review/p49-extraction-phase-summary.md#p49-terminal-batch-ledger); [terminal sign-off](../review/p49-terminal-closeout.md#最终签批) @ `9f02f3f` |
 | P1 EF-5 environment spike | BLOCKED_REST_ACCESS | Read-only probe: anonymous 401; Basic REST 500 AccessDeniedException; sample 1069532 page requires login; no POST | [stage15 progress](stage15_p1_ef_spike/progress.md#7-本人getpass实测结果与最终停点); [EF report](../spikes/ef_report.md); SBS/accept conclusions pending, input safety warning recorded |
 | P2 submission identity | CLOSED | Design `9b7754e`; implementation `3d48877`; real hook `ec6c331`; review minors addressed | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批), 2026-10-08; [progress](stage16_p2_submission_identity/progress.md#11-评审次要意见处置与签批2026-10-08): 1420 passed/1 skipped; no new gate failures; three P4/P5/P5R transfers retained |
+| P3 aggregate | READY_FOR_REVIEW | Added aggregate_verifications; six binding fields, exact arch whitelist/set, detailed reasons; existing APIs unchanged | [closeout](../review/p3-aggregate-closeout.md); [progress](stage17_p3_aggregate/progress.md): 1440 passed/1 skipped; no new gate failures |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -52,6 +53,7 @@ second contract authority. Runtime behavior remains governed by
 | 14 P4.9 terminal batch | CLOSED | A `5213c5d`; B `c1ea4ef`; approved package `74ff34c`; PHASE2-08 `f196f55`; C01-C13 validated through `de9099e`; D `9f02f3f` | [final sign-off](../review/p49-terminal-closeout.md#最终签批); [progress §43](stage14_p49_terminal_batch/progress.md#43-最终签批与-p49-关闭); designer verified and one external reviewer CLOSED with zero findings, 2026-10-08 |
 | 15 P1 EF-5 spike | BLOCKED_REST_ACCESS | Read-only spike only; design.md unchanged; private input completed, REST access refused | [progress](stage15_p1_ef_spike/progress.md); [report](../spikes/ef_report.md); real submission awaits FatTank target and explicit confirmation |
 | 16 P2 submission identity | CLOSED | Designer verified; Claude Code CLOSED, zero blockers, four minor findings disposed, 2026-10-08 | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批); [progress](stage16_p2_submission_identity/progress.md#12-设计正文待同步); P4/P5/P5R transfers, cross-unit cache deletion boundary and three unchanged checker issues retained |
+| 17 P3 aggregate | READY_FOR_REVIEW | Additive aggregate module and 20 focused tests | [progress](stage17_p3_aggregate/progress.md); [closeout](../review/p3-aggregate-closeout.md); 1440 passed/1 skipped, 90 design gates with no new failures |
 
 ## Code-Ready Checkpoint
 

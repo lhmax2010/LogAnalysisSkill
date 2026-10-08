@@ -1,0 +1,46 @@
+{
+  "baseline_commit": "7bbccc984fcf7fbaebb746f737b0350d6a0f342b",
+  "baseline_tests": {
+    "passed": 1420,
+    "skipped": 1
+  },
+  "current_tests": {
+    "passed": 1440,
+    "skipped": 1
+  },
+  "missing_nodeids": [],
+  "changed_outcomes": [],
+  "added_nodeids": [
+    "tests.unit.test_aggregate::test_all_field_differences_are_reported_without_short_circuit",
+    "tests.unit.test_aggregate::test_arch_set_must_include_each_target",
+    "tests.unit.test_aggregate::test_arch_whitelist_does_not_strip_profiles[]",
+    "tests.unit.test_aggregate::test_arch_whitelist_does_not_strip_profiles[armv7l]",
+    "tests.unit.test_aggregate::test_arch_whitelist_does_not_strip_profiles[emulator-armv7l]",
+    "tests.unit.test_aggregate::test_arch_whitelist_does_not_strip_profiles[standard-riscv64]",
+    "tests.unit.test_aggregate::test_arch_whitelist_does_not_strip_profiles[standard_gcov-armv7l]",
+    "tests.unit.test_aggregate::test_consistent_aggregate_binds_real_columns_without_writing",
+    "tests.unit.test_aggregate::test_duplicate_id_cannot_supply_missing_arch",
+    "tests.unit.test_aggregate::test_each_binding_mismatch_reports_concrete_values[base_commit]",
+    "tests.unit.test_aggregate::test_each_binding_mismatch_reports_concrete_values[edit_spec_sha256]",
+    "tests.unit.test_aggregate::test_each_binding_mismatch_reports_concrete_values[gbs_conf_sha256]",
+    "tests.unit.test_aggregate::test_each_binding_mismatch_reports_concrete_values[project]",
+    "tests.unit.test_aggregate::test_each_binding_mismatch_reports_concrete_values[spec_name]",
+    "tests.unit.test_aggregate::test_each_binding_mismatch_reports_concrete_values[verified_tree_sha]",
+    "tests.unit.test_aggregate::test_exactly_three_records_required[ids0]",
+    "tests.unit.test_aggregate::test_exactly_three_records_required[ids1]",
+    "tests.unit.test_aggregate::test_exactly_three_records_required[ids2]",
+    "tests.unit.test_aggregate::test_missing_id_is_not_silently_dropped",
+    "tests.unit.test_aggregate::test_non_pass_record_is_rejected_defensively"
+  ],
+  "command_count": 94,
+  "exit_changes": [],
+  "carried_issues": [
+    "design-doc-controls",
+    "symbol-negative-duplicate-spec-root-mismatch",
+    "symbol-key-twin-both-binary-key"
+  ],
+  "tested_files": {
+    "tizen-ci-triage/scripts/ci_triage/aggregate.py": "57733f1b819b73067d17cf273dd15a380fc51b3619515c25ad44a9cfe33df894",
+    "tests/unit/test_aggregate.py": "836094301f9fcc3674a966a8eebdcf621a18bdb155b7c5baa8aac31dfae51576"
+  }
+}
