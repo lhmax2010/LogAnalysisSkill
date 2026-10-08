@@ -3843,7 +3843,7 @@ https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37715508991 。
 `a0-evidence/phase2/execution/C10STOP/`:
 
 ```text
-git diff --exit-code 0e6507e -- 'tizen-*/scripts/' tests/ docs/clang-fix-campaign/tools/
+git diff --exit-code 0e6507e -- ':(glob)tizen-*/scripts/**' tests/ docs/clang-fix-campaign/tools/
 (empty output); EXIT=0
 python -m pytest tests/ -v -p pytest_cov --cov=gbs_analyzer --cov-report=term-missing --cov-fail-under=80
 1349 passed, 1 skipped in 30.97s; EXIT=0
@@ -3857,6 +3857,8 @@ lint-imports: Contracts: 6 kept, 0 broken.; EXIT=0
 回退HEAD远端CI SUCCESS,包括Tests步骤:
 https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37715804408 。
 此处停止是履行新增失败回退协议,不是把C10标完成;失败版本与证据仍在Git中。
+回退源码比较采用Git显式glob路径规范,复跑记录为C10STOP/code-equality-explicit-glob;
+原code-equality记录保留,不以含糊的目录通配写法作为生产范围证明。
 release/P4.5 design/terminal冻结稿/predicates/exemptions本轮零diff;
 终止冻结稿sha256仍为`b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0`。
 主树原有无关改动保留。尚未建立D收口文档或改变五项义务为已全部销账。
