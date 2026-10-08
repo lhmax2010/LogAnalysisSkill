@@ -3910,3 +3910,14 @@ wheel/install及5模块help exit0。C10远端CI SUCCESS见C10S/remote-ci.log。
 `tests/unit/test_tizen_triage_report.py::test_triage_report_legacy_shims_preserve_all_symbol_identities`;
 其包根/四fixture/arch/行为测试全部保留。旧拓扑fixture与bridge历史键按原
 批准保留,不改symbol_audit原1772行负fixture。五项验证`execution/C12R/` **PENDING**。
+
+C12 `8aed0b8` 五项 **PASS**:1349/1,累计只少获批4例,新增2控制保留且其余
+状态不变;90 checkers regressions=[];mypy(104files)/工具定向mypy/ruff/lint
+exit0;smoke31/31;import-all203/203;residual hits=23821/OTHER=0;
+wheel/install及5模块help exit0。C11远端CI SUCCESS见C11R/remote-ci.log。
+
+### 41.4 C13
+
+删除report.py的3绑定纯shim;跨两个旧址的identity用例已在C12按批准删除,
+本组不再删测试。真实report实现、公开包根与历史MODULE_OWNERS键不改。
+五项验证`execution/C13R/` **PENDING**;全组通过后才准备D收口材料。
