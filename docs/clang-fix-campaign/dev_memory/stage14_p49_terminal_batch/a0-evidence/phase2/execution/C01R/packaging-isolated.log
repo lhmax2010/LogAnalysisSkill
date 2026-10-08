@@ -1,0 +1,13 @@
+{"argv": ["/tmp/p49-a0-regression-43a6aa6/bin/python", "-m", "pip", "wheel", "--no-deps", "--wheel-dir", "/tmp/p49-wheel-hvkx47yg", "."], "cwd": "/tmp/p49-terminal-C01R", "exit": 0, "stdout": "Processing ./.\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Getting requirements to build wheel: started\n  Getting requirements to build wheel: finished with status 'done'\n  Preparing metadata (pyproject.toml): started\n  Preparing metadata (pyproject.toml): finished with status 'done'\nBuilding wheels for collected packages: gbs-analyzer\n  Building wheel for gbs-analyzer (pyproject.toml): started\n  Building wheel for gbs-analyzer (pyproject.toml): finished with status 'done'\n  Created wheel for gbs-analyzer: filename=gbs_analyzer-1.3.0-py3-none-any.whl size=234357 sha256=155d8579a9de07b64471ad0bfc0ca89291d2c2111ac42bc82eca22c683a30deb\n  Stored in directory: /tmp/pip-ephem-wheel-cache-oh05uy0h/wheels/8b/1a/74/99754ab58a49e1287fda5c693970403c91a69660cb2566c34b\nSuccessfully built gbs-analyzer\n", "stderr": ""}
+WHEEL_SHA256 155d8579a9de07b64471ad0bfc0ca89291d2c2111ac42bc82eca22c683a30deb
+{"argv": ["/tmp/p49-a0-regression-43a6aa6/bin/python", "-m", "venv", "/tmp/p49-wheel-hvkx47yg/install"], "cwd": "/tmp/p49-terminal-C01R", "exit": 1, "stdout": "The virtual environment was not created successfully because ensurepip is not\navailable.  On Debian/Ubuntu systems, you need to install the python3-venv\npackage using the following command.\n\n    apt install python3.12-venv\n\nYou may need to use sudo with that command.  After installing the python3-venv\npackage, recreate your virtual environment.\n\nFailing command: /tmp/p49-wheel-hvkx47yg/install/bin/python3.12\n\n", "stderr": ""}
+Traceback (most recent call last):
+  File "/tmp/p49-post-delete.py", line 182, in <module>
+    elif command=='packaging': packaging()
+                               ^^^^^^^^^^^
+  File "/tmp/p49-post-delete.py", line 160, in packaging
+    run([sys.executable,'-m','venv',str(envpath)])
+  File "/tmp/p49-post-delete.py", line 26, in run
+    assert p.returncode==0,argv
+           ^^^^^^^^^^^^^^^
+AssertionError: ['/tmp/p49-a0-regression-43a6aa6/bin/python', '-m', 'venv', '/tmp/p49-wheel-hvkx47yg/install']

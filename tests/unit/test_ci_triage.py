@@ -20,14 +20,6 @@ from ci_triage.orchestrator import (
     CiTriageOrchestrator,
     _manifest_error,
 )
-from ci_triage.quickbuild import (
-    HttpResponse,
-    PackageBuildLog,
-    QuickBuildError,
-    derive_package_buildlog_url,
-    download_full_log,
-    normalize_quickbuild_url,
-)
 from ci_triage.quickbuild_log import (
     QuickBuildLogError,
     match_pkg_key,
@@ -36,6 +28,14 @@ from ci_triage.quickbuild_log import (
     select_failed_package,
 )
 from ci_triage.runner import TriageOptions, TriageResult, _safe_pkg_dir, run_triage
+from tizen_ci_shared.quickbuild_http import (
+    HttpResponse,
+    PackageBuildLog,
+    QuickBuildError,
+    derive_package_buildlog_url,
+    download_full_log,
+    normalize_quickbuild_url,
+)
 from tizen_ci_shared.types import GerritChange, SourceFetchResult
 from tizen_qb_discover.sources import FailedBuild, QuickBuildSource
 from tizen_triage_report.gbs_report import DEFAULT_ARCHES, GbsReportPackage

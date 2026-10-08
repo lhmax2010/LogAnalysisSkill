@@ -3692,3 +3692,18 @@ PHASE2-06/07/08均 **CLOSED**;20条遗留记录中17已解决、3仍carried,
 本组不删测试,不改业务逻辑。提交后五项验证记录到
 `a0-evidence/phase2/execution/C01R/`;结果 **PENDING**。
 只有本组验证通过才进入C02;新增失败/行为变化/OTHER即回退本组并停报。
+
+C01 `f8a289a` 五项 **PASS**:full-tests 1351/1,nodeids lost=0/changed=0;
+90 checkers regressions=[];mypy/ruff/lint exit0;31/31 smoke;213/213 live
+Python files import(包含工具/测试的独立解释器加载);residual 853 HISTORICAL,
+OTHER=0;wheel构建和新venv安装exit0,console_scripts=0,另5个安装后模块入口
+--help均exit0。命令和输出在C01R对应日志。
+打包环境两次准备失败原样保留:禁build-isolation时缺setuptools(固定43原样
+同exit2,BASEENV日志),系统缺ensurepip。最终采用pyproject声明的隔离构建,
+venv --without-pip加已有pip --python安装,不改仓库或生产代码使其通过。
+
+### 40.2 C02
+
+删除登记的quickbuild.py纯shim(17绑定),将test_ci_triage的6个HTTP import
+直取shared/quickbuild_http;测试内容与断言不改。本组不删nodeid。
+五项验证记录位置 `a0-evidence/phase2/execution/C02R/`,结果 **PENDING**。
