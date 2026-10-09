@@ -36,18 +36,26 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     rows = json.load(sys.stdin)
-    probe = WebProbe(BASE, args.output, cookie_header(rows), {"1069532"})
+    probe = WebProbe(BASE, args.output, cookie_header(rows), {"1069532", "1069540"})
     for row in rows:
         probe.redactor.remember(str(row["value"]))
-    result = probe.inspect_build("1069532")
-    code = 0 if result == "READ_PAGES_COLLECTED" else 4
+    results: dict[str, str] = {}
+    for build_id, paths in (
+        ("1069532", ("/build/1069532/step_status",)),
+        ("1069540", ("/build/1069540", "/build/1069540/overview",
+                     "/build/1069540/variables", "/build/1069540/step_status")),
+    ):
+        results[build_id] = probe.inspect_build(build_id, paths, follow_links=False)
+        if results[build_id] != "READ_PAGES_COLLECTED":
+            break
+    code = 0 if all(result == "READ_PAGES_COLLECTED" for result in results.values()) else 4
     probe.finish({
-        "builds": {"1069532": result}, "exit_code": code,
+        "builds": results, "exit_code": code,
         "auth_mode": "isolated_manual_browser_cookie_in_memory",
         "cookie_stored": False, "trigger_confirmation": "NOT_GRANTED",
         "automatic_parent_inference": False,
     })
-    print(json.dumps({"result": result, "exit_code": code}), flush=True)
+    print(json.dumps({"results": results, "exit_code": code}), flush=True)
     return code
 
 

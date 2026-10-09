@@ -12,7 +12,9 @@ function loginRequestAllowed(method, target) {
   const url = new URL(target);
   if (url.origin !== base) return false;
   const login = /^\/signin\/?$/.test(url.pathname);
-  const document = ['/','/overview/0','/build/1069532','/favicon.ico'].includes(url.pathname)
+  const document = ['/','/overview/0','/build/1069532','/favicon.ico',
+    '/build/1069540', '/build/1069540/overview', '/build/1069540/variables',
+    '/build/1069532/step_status', '/build/1069540/step_status'].includes(url.pathname)
     && !url.search && !url.hash;
   return (method === 'POST' && login) || (method === 'GET'
     && (login || document || url.pathname.startsWith('/wicket/resource/')));
@@ -23,13 +25,17 @@ if (process.argv.includes('--policy-self-test')) {
     ['GET', '/build/1069532', true], ['GET', '/wicket/resource/site.css', true],
     ['POST', '/build/1069532', false], ['GET', '/build/1069532?0-run', false],
     ['GET', '/rest/trigger', false], ['GET', '/wicket/page?0-run', false],
-    ['GET', '/build/1069532/cancel', false], ['GET', '/build/1069540', false],
+    ['GET', '/build/1069532/cancel', false], ['GET', '/build/1069540', true],
+    ['GET', '/build/1069540/overview', true], ['GET', '/build/1069540/variables', true],
+    ['GET', '/build/1069532/step_status', true], ['GET', '/build/1069540/step_status', true],
+    ['GET', '/build/1069540?0-run', false], ['POST', '/build/1069540', false],
+    ['GET', '/build/1069540/log', false], ['GET', '/build/1069540/cancel', false],
     ['DELETE', '/signin', false], ['GET', 'https://other.invalid/', false],
   ];
   for (const [method, path, expected] of cases) {
     assert.equal(loginRequestAllowed(method, new URL(path, base).href), expected);
   }
-  console.log('Browser login allowlist: 12 controls PASS; build actions rejected.');
+  console.log(`Browser login allowlist: ${cases.length} controls PASS; build actions rejected.`);
   process.exit(0);
 }
 let browser;

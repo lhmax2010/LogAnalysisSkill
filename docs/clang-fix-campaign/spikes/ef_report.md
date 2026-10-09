@@ -258,3 +258,41 @@ EF-5②仍需另行指定目标及明确确认,本轮不执行。
 再调整独立spike白名单。本轮会话已丢弃,不保留凭据以便后续暗中续跑。
 未读取触发表单,不把Variables页字段直接当成可提交参数。真实提交仍须另行
 完整请求确认。本轮不修改design.md、不改变P2-P4代码、不解除P5Q开工门。
+
+## 五路径补测与追加脱敏(2026-10-09)
+
+**累计仍为WEB_READ_PARTIAL;本轮为BLOCKED_LOCAL_HANDOFF,没有新页面事实。**
+白名单已精确补入指定五个GET,后台只跑固定队列,不自动跟随其它链接;
+动作链接、/log、REST与POST继续拒绝。隔离浏览器已启动并等待10分钟,
+未由代理提前结束。启动器最终exit=2,会话交接未完成,探测目录未产生。
+后台请求0,不是QuickBuild返回权限拒绝,也不能据此认定本人没有登录。
+本人认证/静态资源请求不在后台统计内。会话已关闭,未保存Cookie。
+见[本轮启动记录](../dev_memory/stage15_p1_ef_spike/evidence/browser02-launch.json)。
+
+| 新增页面 | 本轮请求/HTTP | Status与SR_STATUS | 架构/步骤/关联/目标变量 |
+|---|---|---|---|
+| /build/1069540 | 未发出,无响应 | 未读取 | 未读取,不能用父页Child Build摘要代替子页 |
+| /build/1069540/overview | 未发出,无响应 | 未读取 | 未读取 |
+| /build/1069540/variables | 未发出,无响应 | 未读取 | SBS_TARGET及其它目标变量、父子关联变量均待实测 |
+| /build/1069532/step_status | 未发出,无响应 | 不作结论 | 父构建步骤列表及每步状态待实测 |
+| /build/1069540/step_status | 未发出,无响应 | 不作结论 | 子构建步骤列表、每步状态及逐架构独立状态待实测 |
+
+历史三页已补做身份脱敏:Welcome!后的登录显示名与Triggered By账号均替换
+为`<USER>`(HTML源码写`&lt;USER&gt;`),响应与派生page.json同步更新,
+requests.json中的redacted_sha256已重算。源行号与业务数据不变,没有重新GET。
+新旧hash、3页的2/2/1个身份字段见
+[重脱敏记录](../dev_memory/stage15_p1_ef_spike/evidence/browser02-archive-redaction.json)。
+旧提交的历史内容未重写;当前树的三页与派生JSON已按新规则处理。
+
+以下是业务规则,不由本次探测决定,stage15已分别登记**待人工裁定(FatTank)**:
+
+1. 通过判据是只看Successful,还是必须ACCEPTED。
+2. SBS_TARGET与BUILD_PKG_LIST是否等价。
+
+因此仍缺:子构建1069540的自身状态与变量实测、父子步骤详情、各架构是否有
+独立状态、明确关联字段与目标变量证据;再加上述两项人工裁定。
+此前1069532的Successful/ACCEPTED与子链接事实保留,不拿来补齐本轮空缺。
+技术上白名单与脱敏准备已完成,下一轮只读采集仍需本人登录并完成终端确认。
+离线24项、浏览器策略20项通过;全仓1457 passed/1 skipped,mypy/ruff通过,
+这些不是线上页面证据。详情见[stage15 §12](../dev_memory/stage15_p1_ef_spike/progress.md#12-五路径补测与身份脱敏2026-10-09)。
+本轮不重试REST、不读取触发表单、不修改design.md或P2-P4代码。

@@ -6,6 +6,8 @@ import argparse
 import json
 import re
 import sys
+from dataclasses import dataclass, field
+from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
@@ -16,20 +18,136 @@ from tizen_ci_shared.quickbuild_http import DEFAULT_QUICKBUILD_BASE_URL, _raise_
 READ_PAGE = re.compile(
     r"/build/([0-9]+)(?:/(?:overview|status|variables|steps|dependencies|changes))?/?"
 )
+EXTRA_READ_PATHS = frozenset({
+    "/build/1069540", "/build/1069540/overview", "/build/1069540/variables",
+    "/build/1069532/step_status", "/build/1069540/step_status",
+})
 SECRET_NAME = re.compile(
     r"password|passwd|secret|token|credential|authorization|cookie|session|csrf|xsrf", re.I
 )
 
 
-def check_page_url(url: str, base_url: str, build_ids: set[str]) -> None:
+def check_page_url(url: str, base_url: str, build_ids: set[str], method: str = "GET") -> None:
     parts, base = urlsplit(url), urlsplit(base_url)
     match = READ_PAGE.fullmatch(parts.path)
+    extra = parts.path in EXTRA_READ_PATHS
+    build_id = parts.path.split("/")[2] if extra else (match[1] if match else None)
+    # The new child receives only its four explicitly authorized paths, not every old tab.
+    allowed = extra or (match is not None and build_id != "1069540")
     if (
-        parts.scheme != "https" or parts.netloc != base.netloc or parts.username
-        or parts.query or parts.fragment or match is None or match[1] not in build_ids
+        method != "GET" or parts.scheme != "https" or parts.netloc != base.netloc
+        or parts.username or parts.query or parts.fragment or not allowed
+        or build_id not in build_ids
         or "?" in url or "#" in url
     ):
         raise ValueError("outside the explicit read-only build-page allowlist")
+
+
+@dataclass
+class _UserCell:
+    tag: str
+    start: int
+    end: int = 0
+    text: list[str] = field(default_factory=list)
+
+
+@dataclass
+class _UserTable:
+    cells: list[_UserCell] = field(default_factory=list)
+    active: _UserCell | None = None
+    user_column: int | None = None
+
+
+class _UserFields(HTMLParser):
+    """Locate identity-bearing HTML spans without replacing names in business fields."""
+
+    def __init__(self, source: str):
+        super().__init__(convert_charrefs=False)
+        self.source = source
+        self.offsets = [0]
+        for line in source.splitlines(keepends=True):
+            self.offsets.append(self.offsets[-1] + len(line))
+        self.tags: list[str] = []
+        self.tables: list[_UserTable] = []
+        self.spans: list[tuple[int, int]] = []
+        self.welcome: tuple[int, int] | None = None
+
+    def source_offset(self) -> int:
+        line, column = self.getpos()
+        return self.offsets[line - 1] + column
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "table":
+            self.tables.append(_UserTable())
+        if self.tables:
+            table = self.tables[-1]
+            if tag == "tr":
+                table.cells = []
+            if tag in {"th", "td"}:
+                raw_tag = self.get_starttag_text()
+                if raw_tag is None:
+                    raise ValueError("Missing HTML source tag")
+                table.active = _UserCell(tag, self.source_offset() + len(raw_tag))
+                table.cells.append(table.active)
+        if tag not in {"area", "base", "br", "col", "embed", "hr", "img", "input",
+                       "link", "meta", "param", "source", "track", "wbr"}:
+            self.tags.append(tag)
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+        self.handle_endtag(tag)
+
+    def handle_data(self, data: str) -> None:
+        if self.tables and self.tables[-1].active is not None:
+            self.tables[-1].active.text.append(data)
+        greeting = re.match(r"\s*Welcome!\s*", data)
+        if greeting and self.tags and self.tags[-1] in {"span", "div"}:
+            self.welcome = (len(self.tags), self.source_offset() + greeting.end())
+
+    def handle_entityref(self, name: str) -> None:
+        self.handle_data(unescape(f"&{name};"))
+
+    def handle_charref(self, name: str) -> None:
+        self.handle_data(unescape(f"&#{name};"))
+
+    def handle_endtag(self, tag: str) -> None:
+        if self.welcome and len(self.tags) == self.welcome[0] and self.tags[-1] == tag:
+            self.spans.append((self.welcome[1], self.source_offset()))
+            self.welcome = None
+        if self.tables:
+            table = self.tables[-1]
+            if tag in {"td", "th"} and table.active is not None:
+                table.active.end = self.source_offset()
+                table.active = None
+            if tag == "tr":
+                labels = [" ".join("".join(cell.text).split()) for cell in table.cells]
+                if "Triggered By" in labels:
+                    index = labels.index("Triggered By")
+                    if table.cells[index].tag == "th":
+                        table.user_column = index
+                    elif index + 1 < len(table.cells):
+                        cell = table.cells[index + 1]
+                        self.spans.append((cell.start, cell.end))
+                elif table.user_column is not None and table.user_column < len(table.cells):
+                    cell = table.cells[table.user_column]
+                    if cell.tag == "td":
+                        self.spans.append((cell.start, cell.end))
+            if tag == "table":
+                self.tables.pop()
+        if tag in self.tags:
+            del self.tags[len(self.tags) - 1 - self.tags[::-1].index(tag):]
+
+
+def redact_user_fields(text: str) -> str:
+    parsed = _UserFields(text)
+    parsed.feed(text)
+    for start, end in sorted(set(parsed.spans), reverse=True):
+        if end < start:
+            raise ValueError("Invalid user field span")
+        # Keep evidence source line numbers stable; HTML escapes render literally as <USER>.
+        replacement = "&lt;USER&gt;" + "\n" * text[start:end].count("\n")
+        text = text[:start] + replacement + text[end:]
+    return text
 
 
 class PageInventory(HTMLParser):
@@ -82,6 +200,7 @@ class PageInventory(HTMLParser):
 
 class PageRedactor(Redactor):
     def redact(self, text: str) -> str:
+        text = redact_user_fields(text)
         parsed = PageInventory()
         parsed.feed(text)
         for value in parsed.secret_values:
@@ -112,8 +231,10 @@ class WebProbe(Probe):
     def check_url(self, url: str) -> None:
         check_page_url(url, self.base_url, self.build_ids)
 
-    def inspect_build(self, build_id: str) -> str:
-        pending = [self.base_url + f"/build/{build_id}"]
+    def inspect_build(
+        self, build_id: str, paths: tuple[str, ...] | None = None, *, follow_links: bool = True,
+    ) -> str:
+        pending = [self.base_url + path for path in (paths or (f"/build/{build_id}",))]
         visited: set[str] = set()
         while pending:
             url = pending.pop(0)
@@ -151,8 +272,8 @@ class WebProbe(Probe):
                 except ValueError:
                     decision = "NOT_FOLLOWED"
                 else:
-                    decision = "ALLOW_READ"
-                    if target not in visited and target not in pending:
+                    decision = "ALLOW_READ" if follow_links else "ALLOW_READ_NOT_FOLLOWED"
+                    if follow_links and target not in visited and target not in pending:
                         pending.append(target)
                 decisions.append({**link, "resolved_url": target, "decision": decision})
             self.save_json(self.output / (name + ".page.json"), {

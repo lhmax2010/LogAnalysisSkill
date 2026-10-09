@@ -10,12 +10,71 @@ from pathlib import Path
 from unittest.mock import patch
 
 from ef5_probe import HttpResponse
-from ef5_web_probe import PageRedactor, WebProbe, check_page_url
+from ef5_web_probe import EXTRA_READ_PATHS, PageInventory, PageRedactor, WebProbe, check_page_url
 
 BASE = "https://quickbuild.tizen.org"
 
 
 class WebSafetyTests(unittest.TestCase):
+    def test_five_exact_paths_only_and_no_post(self) -> None:
+        ids = {"1069532", "1069540"}
+        self.assertEqual(len(EXTRA_READ_PATHS), 5)
+        for path in EXTRA_READ_PATHS:
+            check_page_url(BASE + path, BASE, ids)
+            for method in ("POST", "PUT", "DELETE", "HEAD"):
+                with self.subTest(path=path, method=method), self.assertRaises(ValueError):
+                    check_page_url(BASE + path, BASE, ids, method)
+        for path in ("/build/1069540/steps", "/build/1069540/status",
+                     "/build/1069540/dependencies", "/build/1069540/changes",
+                     "/build/1069540/log", "/build/1069532/log",
+                     "/build/1069540/step_status/", "/build/1069540/overview/",
+                     "/build/1069541/step_status", "/build/1069540/rerun",
+                     "/build/1069540/cancel", "/build/1069540?0-run",
+                     "/wicket/page?0-1.ILinkListener-run", "/rest/builds/1069540"):
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                check_page_url(BASE + path, BASE, ids)
+
+    def test_user_fields_redacted_without_changing_business_text(self) -> None:
+        raw = ('<span><span>Welcome! <span>Alice &amp; Team</span></span></span>\n'
+               '<table><tr><th>Status</th><th>Triggered By</th><th>SR_STATUS</th></tr>\n'
+               '<tr><td>Successful</td><td><a href="/user/alice">alice (Alice)</a></td>'
+               '<td>ACCEPTED</td></tr></table>\n<p>RepoAlice@abc</p>')
+        safe = PageRedactor("", "", "SID=fixture-only").redact(raw)
+        self.assertNotIn('Team', safe)
+        self.assertNotIn('/user/alice', safe)
+        self.assertNotIn('alice (Alice)', safe)
+        self.assertEqual(safe.count('&lt;USER&gt;'), 2)
+        for value in ('Successful', 'ACCEPTED', 'RepoAlice@abc', 'Triggered By'):
+            self.assertIn(value, safe)
+        self.assertEqual(safe.count('\n'), raw.count('\n'))
+        self.assertEqual(PageRedactor("", "", "SID=fixture-only").redact(safe), safe)
+        parsed = PageInventory()
+        parsed.feed(safe)
+        self.assertEqual(sum(line.count('<USER>') for line in parsed.lines), 2)
+
+    def test_user_fields_key_value_and_missing_column(self) -> None:
+        raw = ('<div>Welcome! Bob</div><table><tr><td>Triggered By</td><td>bob</td>'
+               '</tr></table><table><tr><th>Status</th></tr><tr><td>BobRepo</td></tr>'
+               '</table>')
+        safe = PageRedactor("", "", "SID=fixture-only").redact(raw)
+        self.assertEqual(safe.count('&lt;USER&gt;'), 2)
+        self.assertIn('BobRepo', safe)
+
+    def test_explicit_paths_do_not_expand_via_links(self) -> None:
+        with tempfile.TemporaryDirectory() as d:
+            p = WebProbe(BASE, Path(d) / "out", "SID=fixture-only", {"1069532"})
+
+            def get(name, path, auth):
+                text = '<a href="/build/1069532/overview">Overview</a>'
+                (p.output / (name + ".response.txt")).write_text(text)
+                return HttpResponse(200, BASE + path, text.encode())
+
+            with patch.object(p, "get", side_effect=get) as fetch:
+                self.assertEqual(p.inspect_build("1069532", ("/build/1069532/step_status",),
+                                                 follow_links=False), 'READ_PAGES_COLLECTED')
+            self.assertEqual([call.args[1] for call in fetch.call_args_list],
+                             ['/build/1069532/step_status'])
+
     def test_whitelist_rejects_actions_queries_other_ids_and_origins(self) -> None:
         for path in ("/build/123", "/build/123/variables", "/build/123/dependencies"):
             check_page_url(BASE + path, BASE, {"123"})

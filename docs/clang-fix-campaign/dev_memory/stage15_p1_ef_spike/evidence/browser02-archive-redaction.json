@@ -1,0 +1,25 @@
+{
+  "policy": "WELCOME_TRIGGERED_BY_USER_V1",
+  "network_requests": 0,
+  "pages": [
+    {
+      "response": "build-1069532-01.response.txt",
+      "old_sha256": "055b131c96a339163e133091639b37f9e2d1ffa10d6a351564060fabf4f318c8",
+      "redacted_sha256": "a4a3850c7e9ae3516fcb3978e2502749f6c72033b4cba7bd62bd073537a111f4",
+      "user_fields": 2
+    },
+    {
+      "response": "build-1069532-02.response.txt",
+      "old_sha256": "11cea002d0135655565a0dd24e96d32f230b4e199f5f080eac03f0a887eacfac",
+      "redacted_sha256": "af382b7cc6b563452f2a2a911cce0d8828eb2c621557b411d1d179ca5dd05b52",
+      "user_fields": 2
+    },
+    {
+      "response": "build-1069532-03.response.txt",
+      "old_sha256": "7ca60274ab37d4447ad5ae8d65e56242662071253c20fa6200501f42c0982e66",
+      "redacted_sha256": "d65cdbb41e62c4eb97613d64934adefe0b4b1261a80ef68f6128e69a95844f2f",
+      "user_fields": 1
+    }
+  ],
+  "line_numbers_preserved": true
+}

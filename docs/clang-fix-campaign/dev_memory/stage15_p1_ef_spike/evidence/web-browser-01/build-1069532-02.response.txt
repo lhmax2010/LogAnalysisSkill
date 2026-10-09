@@ -578,7 +578,7 @@ function closeDialog(dialogPath) {var wcall=wicketAjaxGet('../../wicket/page?7-1
 		
 		<div id="header" class="flex pb-2">
 			<div id="topnav" class="ml-auto piped-links text-xs">
-				<span><span>Welcome! <span>Lin</span></span></span>
+				<span><span>Welcome! &lt;USER&gt;</span></span>
 				
 				<a href="../../wicket/page?7-1.ILinkListener-signOutLink">Sign Out</a>
 				
@@ -934,7 +934,7 @@ function closeDialog(dialogPath) {var wcall=wicketAjaxGet('../../wicket/page?7-1
 							<td>
 	<span id="id77">6 hours 15 minutes 34 seconds</span>
 </td>
-							<td>dkson95 (Dongkyun)</td>
+							<td>&lt;USER&gt;</td>
 							
 							<td >
 								<a style="cursor:pointer;" id="id60" href="javascript:void(0);"><span>0</span> builds</a>

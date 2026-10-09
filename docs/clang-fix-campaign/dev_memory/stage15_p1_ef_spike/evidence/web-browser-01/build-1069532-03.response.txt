@@ -568,7 +568,7 @@ function closeDialog(dialogPath) {var wcall=wicketAjaxGet('../../wicket/page?8-1
 		
 		<div id="header" class="flex pb-2">
 			<div id="topnav" class="ml-auto piped-links text-xs">
-				<span><span>Welcome! <span>Lin</span></span></span>
+				<span><span>Welcome! &lt;USER&gt;</span></span>
 				
 				<a href="../../wicket/page?8-1.ILinkListener-signOutLink">Sign Out</a>
 				

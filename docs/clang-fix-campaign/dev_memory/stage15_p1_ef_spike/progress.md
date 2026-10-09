@@ -1,6 +1,7 @@
 # Stage15 P1 EF-5 Environment Spike
 
-日期:2026-10-08。状态:**WEB_READ_PARTIAL**(本人在隔离浏览器登录后,只读探测3次GET均200;详见§11)。
+日期:2026-10-09。状态:**WEB_READ_PARTIAL**(累计;§11为既有3次GET/200)。
+本轮补测:**BLOCKED_LOCAL_HANDOFF**,未完成会话交接,后台请求0;详见§12。
 权威:`../../design.md` v1.5.19-FROZEN §1.4 EF-5、§4.1
 qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 
@@ -412,3 +413,91 @@ probe_exit=0; cookie_stored=false; runtime_redaction_self_check=PASS
 `git diff --cached --check`对服务器HTML的原有空白/CRLF报exit=2;
 保留脱敏响应原字节和已记录hash,不为格式检查改写取证文件。
 仅排除三份`*.response.txt`后对其余提交文件的同一检查exit=0、空输出。
+
+## 12. 五路径补测与身份脱敏(2026-10-09)
+
+### 12.1 范围与实跑停点
+
+本轮仅新增本人指定的GET:子构建1069540的根页/overview/variables/step_status,
+以及父构建1069532的step_status。1069540不继承其它旧标签白名单;
+Wicket动作、/log、REST、POST与触发均拒绝。后台使用固定五路径队列,
+`follow_links=False`,不沿其它合法或非法链接扩展请求。
+手工登录仍仅允许原有浏览器signin认证;不自动填写或读取登录表单。
+
+启动命令同§11.1,仅输出目录改为`evidence/web-browser-02`。
+实际在可见gnome-terminal启动隔离Chromium,10分钟确认窗口未提前终止。
+最终`gnome-terminal --wait`实测exit=2,stdout为空;
+只有启动时既有`canberra-gtk-module`告警。没有生成web-browser-02目录,
+因此**后台业务GET=0、已取得的新页面=0、后台POST=0**。
+不能据此认定本人登录失败或QuickBuild拒绝,也不能把未读字段写成不存在。
+没有记录登录表单、Cookie或浏览器原始错误;人工认证/资源请求不计入后台统计。
+会话已关闭,`find /dev/shm -maxdepth 1 -name 'ef5-browser-*'`退出0、空输出。
+证据:`evidence/browser02-launch.json`。后台新取证仍需本人登录并完成终端确认后重跑。
+
+### 12.2 脱敏与历史三页更新
+
+PageRedactor新增结构化规则:Welcome!后显示名、Triggered By表头对应列或
+键值行的账号,在写盘前替换为`<USER>`(HTML源码使用`&lt;USER&gt;`)。
+不对名字做全局子串替换,保留业务字段和HTML源行号。
+归档工具先校验原hash,再同步更新响应、page.json与requests.json的hash;
+全部校验通过才写盘。不重新请求历史页面,不改变当时链接的NOT_FOLLOWED决定。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/spikes/ef5_redact_archive.py --archive docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-browser-01 --report docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/browser02-archive-redaction.json
+exit=0; network_requests=0; pages=3; user_fields=2/2/1; line_numbers_preserved=true
+```
+
+原文JSON与新旧hash完整对照:`evidence/browser02-archive-redaction.json`。
+复核命令以requests的hash逐项验响应,以_UserFields验每处均为USER,
+并以PageInventory重解析结果逐项比对page.json.visible_text,实际输出:
+
+```text
+build-1069532-01.response.txt user_fields=2 all_USER=PASS hash=PASS derived_json=PASS
+build-1069532-02.response.txt user_fields=2 all_USER=PASS hash=PASS derived_json=PASS
+build-1069532-03.response.txt user_fields=1 all_USER=PASS hash=PASS derived_json=PASS
+new_probe_output_exists= False
+exit=0
+```
+
+这是当前树的重脱敏,不是历史重写;43dbca0中的旧内容仍在Git历史中。
+
+### 12.3 验证
+
+```text
+$ env PYTHONPATH=docs/clang-fix-campaign/spikes .venv/bin/python -m unittest discover -s docs/clang-fix-campaign/spikes -p 'test_ef5*.py'
+Ran 24 tests in 0.121s
+OK
+exit=0
+$ /home/linhao/.bun/bin/bun docs/clang-fix-campaign/spikes/ef5_browser_login.mjs --policy-self-test
+Browser login allowlist: 20 controls PASS; build actions rejected.
+exit=0
+$ .venv/bin/mypy docs/clang-fix-campaign/spikes/ef5_web_probe.py docs/clang-fix-campaign/spikes/ef5_browser_receiver.py docs/clang-fix-campaign/spikes/ef5_redact_archive.py
+Success: no issues found in 3 source files
+exit=0
+$ .venv/bin/ruff check docs/clang-fix-campaign/spikes/ef5_web_probe.py docs/clang-fix-campaign/spikes/ef5_browser_receiver.py docs/clang-fix-campaign/spikes/ef5_redact_archive.py docs/clang-fix-campaign/spikes/test_ef5_redact_archive.py docs/clang-fix-campaign/spikes/test_ef5_web_probe.py
+All checks passed!
+exit=0
+$ .venv/bin/python -m py_compile docs/clang-fix-campaign/spikes/ef5_web_probe.py docs/clang-fix-campaign/spikes/ef5_browser_receiver.py docs/clang-fix-campaign/spikes/ef5_redact_archive.py
+(空输出)
+exit=0
+$ .venv/bin/python -m pytest -q
+1457 passed, 1 skipped in 33.87s
+exit=0
+```
+
+全仓原文:`evidence/browser02-pytest.log`。离线控制不是环境实测。
+工具自测初次发现HTMLParser已有offset属性与辅助方法重名、单测过度限定
+可见文本分块,已修正;归档第一次遇到空href锚与历史links过滤不一致,
+在写入前拒绝,随后按原提取器的非空href规则对账并补控制;ruff仅修格式。
+均未涉及生产行为、白名单放宽或设计变更。
+
+### 12.4 待人工裁定
+
+| 议题 | 状态 | 裁定方 | 本批边界 |
+|---|---|---|---|
+| 复验通过只看Successful,还是必须ACCEPTED | 待人工裁定 | FatTank | 分别记录Status与SR_STATUS,不由样本推断通过规则 |
+| SBS_TARGET与BUILD_PKG_LIST是否等价 | 待人工裁定 | FatTank | 只记录变量原名与回显,不代换或宣称等价 |
+
+结论累计仍WEB_READ_PARTIAL,依据仅是§11历史三页;
+本轮五页未取得,子构建自身状态、逐架构状态、步骤详情、关联变量仍待实测。
+不重试REST、不读触发表单、不修改design.md或P2-P4代码,不解除P5Q前置闸门。
