@@ -38,6 +38,7 @@ from ci_triage.campaign_repair_step import (
     campaign_repair_step,
 )
 from ci_triage.runner import TriageOptions, run_triage
+from ci_triage.sandbox_submit import SandboxSubmitOptions, invalid_outcome, sandbox_submit
 from ci_triage.suppress_policy import PolicyInputError, SourceKind, evaluate
 
 EXIT_SUCCESS = 0
@@ -185,6 +186,8 @@ def main(
 ) -> int:
     if argv is None:
         argv = sys.argv[1:]
+    if argv and argv[0] == "sandbox-submit":
+        return _main_sandbox_submit(argv[1:], stdout=stdout)
     if argv and argv[0] == "suppress-policy":
         return _main_suppress_policy(argv[1:], stdout=stdout, stderr=stderr)
     if argv and argv[0] == "build-verify":
@@ -396,6 +399,23 @@ def _campaign_cli_error_payload(reason: str) -> dict[str, object]:
         "invocations_used": 0,
         "error_code": "INVALID_ARGS",
     }
+
+
+def _main_sandbox_submit(argv: list[str], *, stdout: TextIO) -> int:
+    parser = _CampaignRepairStepParser(prog="ci_triage sandbox-submit")
+    parser.add_argument("--verification-ids", required=True)
+    parser.add_argument("--state-db", type=Path, required=True)
+    parser.add_argument("--config", type=Path, required=True)
+    parser.add_argument("--sandbox-branch", required=True)
+    parser.add_argument("--message-brief")
+    parser.add_argument("--edit-source-kind", choices=("t1_cherry_pick", "generated", "suppress"))
+    try:
+        args = parser.parse_args(argv)
+        result = sandbox_submit(SandboxSubmitOptions(**vars(args)))
+    except _CampaignCliArgumentError as exc:
+        result = invalid_outcome(str(exc))
+    print(json.dumps(result.payload, sort_keys=True), file=stdout)
+    return result.exit_code
 
 
 def _main_suppress_policy(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:

@@ -14,7 +14,6 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlsplit
 
 import yaml
 from tizen_build_verify import BuildVerifyOptions, BuildVerifyResult, build_verify
@@ -31,6 +30,7 @@ from tizen_ci_shared.workspace import (
 )
 from tizen_convergence_judge import ConvergenceResult, check_convergence
 
+from ci_triage._campaign_workspace import _StepError, _unit_hash, _validate_source_identity
 from ci_triage.campaign_state import (
     ARCH_RAW_TO_NORM,
     HELD_FOR_INVESTIGATION,
@@ -134,14 +134,6 @@ class _CampaignConfig:
     campaign_workspace: Path
     clang_conf_path: Path
     wall_timeout: int
-
-
-class _StepError(RuntimeError):
-    def __init__(self, code: str, reason: str, exit_code: int) -> None:
-        super().__init__(reason)
-        self.code = code
-        self.reason = reason
-        self.exit_code = exit_code
 
 
 def campaign_repair_step(
@@ -780,49 +772,6 @@ def _build_options(
     )
 
 
-def _validate_source_identity(
-    src_clean: Path,
-    unit: Unit,
-    *,
-    subprocess_runner: SubprocessRunner,
-) -> None:
-    try:
-        head = _git_stdout(src_clean, ["rev-parse", "HEAD"], subprocess_runner)
-        origin = _git_stdout(src_clean, ["remote", "get-url", "origin"], subprocess_runner)
-    except (OSError, subprocess.CalledProcessError) as exc:
-        raise _StepError(
-            REJECTED_IDENTITY_MISMATCH,
-            f"source identity could not be read: {exc}",
-            EXIT_REJECTED,
-        ) from exc
-    if head != unit.base_commit or _normalize_project(origin) != unit.project:
-        raise _StepError(
-            REJECTED_IDENTITY_MISMATCH,
-            "source HEAD or origin does not match campaign unit",
-            EXIT_REJECTED,
-        )
-    marker = src_clean / ".campaign_clone"
-    try:
-        marker_value: Any = json.loads(marker.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise _StepError(
-            REJECTED_IDENTITY_MISMATCH,
-            f"campaign clone marker is unreadable: {exc}",
-            EXIT_REJECTED,
-        ) from exc
-    expected = {
-        "unit_key": unit.campaign_unit_key,
-        "project": unit.project,
-        "base_commit": unit.base_commit,
-    }
-    if marker_value != expected:
-        raise _StepError(
-            REJECTED_IDENTITY_MISMATCH,
-            "campaign clone marker does not match campaign unit",
-            EXIT_REJECTED,
-        )
-
-
 def _prepare_build_workspace(
     options: CampaignRepairStepOptions,
     *,
@@ -1267,10 +1216,6 @@ def _workspace_root(config: _CampaignConfig, unit_key: str, arch_norm: str) -> P
     return config.campaign_workspace / _unit_hash(unit_key) / arch_norm
 
 
-def _unit_hash(unit_key: str) -> str:
-    return hashlib.sha256(unit_key.encode("utf-8")).hexdigest()[:12]
-
-
 def _failure_key(unit: Unit, arch_raw: str) -> str:
     return build_failure_key(
         ci_system=unit.ci_system,
@@ -1285,34 +1230,6 @@ def _failure_key(unit: Unit, arch_raw: str) -> str:
 
 def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def _git_stdout(
-    cwd: Path,
-    args: list[str],
-    subprocess_runner: SubprocessRunner,
-) -> str:
-    completed = subprocess_runner(
-        ["git", "-C", str(cwd), *args],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return (completed.stdout or "").strip()
-
-
-def _normalize_project(remote: str) -> str:
-    value = remote.strip()
-    if "://" in value:
-        path = urlsplit(value).path
-    elif ":" in value and "@" in value.split(":", 1)[0]:
-        path = value.split(":", 1)[1]
-    else:
-        path = value
-    normalized = path.strip("/")
-    if normalized.startswith("git/"):
-        normalized = normalized[4:]
-    return normalized.removesuffix(".git")
 
 
 def _now() -> str:

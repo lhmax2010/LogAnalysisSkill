@@ -464,7 +464,10 @@ SPECS: tuple[SymbolSpec | ModuleScopeSpec, ...] = (
         ("§3.2",),
         SHARED_WORKSPACE,
         "shared/workspace",
-        ("ci_triage.campaign_repair_step", "tizen_build_verify.workspace"),
+        (
+            "ci_triage.campaign_repair_step", "ci_triage.sandbox_submit",
+            "tizen_build_verify.workspace",
+        ),
         ("cleanup_disposable_copy",),
     ),
     SymbolSpec(

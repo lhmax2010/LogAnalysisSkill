@@ -604,7 +604,7 @@ P5 中的每一次 git 调用都使用下面的环境与覆盖,包括 src_clean 
 
 **`diff` 类命令**一律加 `--no-ext-diff --no-textconv`。
 
-**配置安全检查**:对被检查的仓库执行 `git config --get-regexp <键模式>`(带上述环境),只要出现下列任一键就不通过,
+**配置安全检查**:对被检查的仓库执行 `git config --show-scope --get-regexp <键模式>`,只统计来源不是命令行(scope=command)的条目;git 低于 2.26 时按不通过处理(带上述环境),只要出现下列任一键就不通过,
 错误码 `REJECTED_UNSAFE_GIT_CONFIG`(新增),exit 4,不写 HELD,stdout `reason` 列出命中的键名(不回显值)。
 `--get-regexp` 无命中时返回 1 且无输出,这种情况视为通过。键名大小写不敏感。
 
@@ -823,6 +823,7 @@ P5 不调用任何释放 API。成功后三份副本的保护标记全部保持(
 25. **HELD 退化守卫**:用包装把 `arch_norm` 强制置 None 后调用 `append_status` 写 `state_inconsistent`,断言抛 `PayloadSchemaError`。
     同时断言 sandbox-submit 的 HELD 路径不会走到这个分支,即第 5、13、14、17 例的 HELD 行都已真正提交。
 26. **stdout 快照**:8 种 action 各一份。
+27. **P5-C4-01 配置来源**:全新仓库带全部 `-c` 覆盖时通过;本地设置 `core.fsmonitor` 或 `credential.helper` 仍拒绝;`include.path` 引入含 `core.sshCommand` 的文件拒绝;包装模拟 git 2.25 时拒绝。
 
 ### 6.4 移交加固
 

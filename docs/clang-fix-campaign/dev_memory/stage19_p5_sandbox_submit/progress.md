@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-09。状态:**BLOCKED_P5_C4_01**,C0-C2已推送且远端CI通过;C3本地全部门禁通过(无新增失败),随本提交交付。C4规格预检发现§4.4配置查询自命中,未写C4生产代码,待裁定(§14)。
+日期:2026-10-09。状态:**C4_LOCAL_VERIFIED**,C0-C3已推送且远端CI通过;C4最终本地门禁无新增失败(§16),推送后核验CI,之后C5。
 
 ## 1. 权威、批准与基线
 
@@ -16,7 +16,7 @@
 - `git fetch origin clang-fix-campaign` exit 0后,HEAD与origin/clang-fix-campaign
   均为`cd7f8ddac8c05af0eaa99714ef171668d905f983`。
 - 不访问真实Gerrit,不做真实sandbox推送。未来测试仅使用本地仓库和本地裸仓库。
-- C0未修改生产代码、测试或检查器。C1实施§5四项加固,见§7;C2见§11/12;C3见§13;C4-C5未开展。
+- C0未修改生产代码、测试或检查器。C1实施§5四项加固,见§7;C2见§11/12;C3见§13;C4见§15/16,C5随后进行。
 
 ## 2. 计划与进度
 
@@ -25,8 +25,8 @@
 | C0 | 文件名与标题冻结;附录A照录同步design.md v1.5.20;检查器与通用门禁 | `38c076f`;本地94命令无新增失败;远端CI SUCCESS |
 | C1 | §5四项加固与§6.4,真实hook本机passed | `8c89de4`;本地1527 passed/1 skipped;94命令无新增失败;远端CI SUCCESS(§8) |
 | C2 | suppress_policy、CLI、§6.1 | `1f3141e`;定向174 passed;全量1701 passed/1 skipped;94命令无新增失败;远端CI SUCCESS |
-| C3 | gate_view、latest_policy_for_round、lookup_change_id、§6.2 | 定向23 passed;全量1724 passed/1 skipped;94命令无新增失败;本提交推送后核验CI |
-| C4 | 共用unit hash/src_clean、Git安全环境、sandbox_submit、CLI、§6.3 | BLOCKED_P5_C4_01;只做真实本地输入规格预检,未写生产代码 |
+| C3 | gate_view、latest_policy_for_round、lookup_change_id、§6.2 | `68338dc`;定向23 passed;全量1724 passed/1 skipped;94命令无新增失败;远端CI SUCCESS |
+| C4 | 共用unit hash/src_clean、Git安全环境、sandbox_submit、CLI、§6.3 | LOCAL_VERIFIED;新增121例,1845 passed/1 skipped;94命令无新增失败;推送后核验CI |
 | C5 | READY_FOR_REVIEW收口、规则与用例双向表、已知限制、真实hook原文 | NOT_STARTED |
 
 每个提交均须通过§6.5,相对cd7f8dd无新增设计门禁失败,独立推送并核验远端CI。
@@ -650,7 +650,7 @@ exit=0
 
 ## 14. P5-C4-01停止报告:配置安全检查命中自身覆盖
 
-**状态:OPEN,涉及安全检查边界,等待设计方裁定。** C3实现与验收已完成;
+**状态:CLOSED,设计方P5-C4-01裁定见§15。** 以下保留停止时的事实。C3实现与验收已完成;
 C4只做冻结后真实输入的规格可满足性检验,未改生产代码、未改冻结稿、未豁免任何键。
 
 ### 原文位置与冲突
@@ -696,3 +696,117 @@ exit=0
    并验证配置枚举本身不执行危险配置对应的程序。
 
 未自行选择,未开始C4/C5。C2-01/02裁定继续有效,没有以本问题改回任何判定。
+
+## 15. P5-C4-01裁定与实施
+
+设计方轻量裁定(不出勘误),原文:
+
+1. 配置安全检查改为执行 git config --show-scope --get-regexp <键模式>(仍带 §4.4 的统一环境与 -c 覆盖)。只统计 scope 不是 "command" 的条目:命令行 -c 注入的覆盖不计,local、worktree 及经 include 引入的条目照常判定。名单与"无命中返回 1 视为通过"的规则不变。
+2. 运行前检查 git 版本,低于 2.26(不支持 --show-scope)时 fail-closed:exit 4 REJECTED_UNSAFE_GIT_CONFIG,reason 注明 git 版本过低。
+3. 冻结稿 §4.4"配置安全检查"一段,在"执行 git config --get-regexp <键模式>"处改为"执行 git config --show-scope --get-regexp <键模式>,只统计来源不是命令行(scope=command)的条目;git 低于 2.26 时按不通过处理";其余文字不变。progress 记录改前与改后的 sha256。
+4. §6.3 补用例:全新仓库在带全部 -c 覆盖时通过检查;仓库本地设置 core.fsmonitor 或 credential.helper 时仍被拒;经 include.path 引入、含 core.sshCommand 的文件被拒;用包装把 git 版本模拟为 2.25 时被拒。
+5. 另记一项供收口评审:suppress_policy 引用了 tizen_build_verify.edit_spec_guard 的私有函数 _validate_target_path 与 _locate_edit,并在 symbol_audit 中登记。C5 收口文档的"已知事项"中单独列出,写明引用原因与可选替代(提为公开接口或在本模块内实现同一定位规则),本轮不改。
+6. 文档变更随 C4 一并提交。继续实施 C4,完成后照原格式回报;之后进行 C5。
+
+冻结稿改前SHA256:`a6177cbd2426dec2d42404277bd68b63f758d8b6d78fab827fa9b49259b91f3e`。
+改后SHA256:`432f0e62b1f836622012559c3c35e3cd57021423786d18da337d096c0d2de95b`。
+修改范围:§4.4查询句、§6.3第27项配置来源用例。无其它设计改动。
+
+C3远端CI:commit `68338dc6c631bd3954f53939a38d11b4993b9e33`,
+[run 37907980980](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37907980980),SUCCESS。
+C5须登记私有接口已知事项,本轮保留C2的调用关系和审计登记。
+
+## 16. C4实现与验证记录
+
+### 实现细节(不改行为或安全边界)
+
+- 共用私有模块`ci_triage/_campaign_workspace.py`:从repair-step移入五个定义,
+  `_StepError`、`_unit_hash`、`_validate_source_identity`、`_git_stdout`、
+  `_normalize_project`;旧调用点直接导入。`test_repair_primitives_moved_without_source_changes`
+  对`68338dc`旧源与新模块逐定义AST source segment逐字比较,不是仅比较AST语义。
+- gate_view与round policy查询抽出连接级内部原语;原公共API仍保持原连接/事务行为。
+  TOCTOU通过同一只读连接的StateDatabase适配器再次调用aggregate_verifications,
+  不另开快照。SubmitSnapshot增加git配置和已经解析的edit_spec作为运行载荷,
+  不增加状态库字段或重新读取未绑定内容。
+- Git配置查询使用`--null --name-only`承载scope/key成对结果;不读取/回显配置值,
+  其余P5-C4-01判定不变。真实Git实跑确认NUL交替scope/key形态,多行值反例、
+  worktree作用域与include均有测试。无命中返回1、版本不足/查询失败朝闭拒绝。
+- 按既定消费关系补`symbol_audit`中is_protected的`ci_triage.sandbox_submit`
+  declared consumer;无owner、判据或期望值变更。单靠新增调用未同步时审计实报
+  `MISMATCH: undeclared consumer ci_triage.sandbox_submit`,已按实测补登记。
+- §6.3第21项同名远端夹具使用本地仓库中的`remote.ssh://unused.example/project.url`
+  配置,目标仍为本地裸仓库,在枚举拒绝前不会建立SSH连接。绝对路径作为remote名
+  被Git警告并忽略,不能用来构造该拒绝分支。两形式独立复现实验:
+  [C4-remote-name-preflight.py](evidence/C4-remote-name-preflight.py),exit 0;
+  absolute: listed_same_name=false; ssh: listed_same_name=true。无需修改设计。
+- 真实不可写远端用本地裸仓库objects目录去掉写权限验证,恢复权限后重跑;
+  timeout、TOCTOU与崩溃窗口才使用相应桩。只访问本地Git,未触及真实Gerrit。
+- 开发过程中3个夹具外键构造失败已改为显式带外SQL,子模块夹具补检出对应提交,
+  一个测试的Path导入缺失已补齐。未修改生产契约或既有断言来消除失败。
+
+### 定向与覆盖
+
+测试文件`tests/unit/test_sandbox_submit.py`、`tests/unit/test_sandbox_git.py`。
+§6.3逐项规则与测试对应关系在C5收口表登记。覆盖正常/幂等/补账、缓存丢失、
+参数/选定/四锁、聚合/重绑定/policy、副本现场与src、TOCTOU同快照、A12、
+hook、推送失败恢复、隐式路径、九个崩溃窗口、环境隔离、HELD锁内落库、
+全部action逐字段快照、P5-C4-01及共用化等价。
+
+首轮干净工作树回归(配置值NUL封装及两条附加控制之前):
+`1843 passed, 1 skipped`;94条命令仅三项历史期望不符,与cd7f8dd相同。
+保留原始输出于[evidence/C4-initial/commands.json](evidence/C4-initial/commands.json)。
+最终版本须以[evidence/C4/commands.json](evidence/C4/commands.json)及后续比较为准,
+不以首轮结果代替最后改动后的全量实测。
+
+### C4最终门禁
+
+完整命令、环境、exit与原始输出hash:
+[evidence/C4/commands.json](evidence/C4/commands.json)。源码/测试与干净工作树
+逐字节一致,比较输出含8个改动文件hash。
+
+```text
+$ .venv/bin/python -m pytest tests/unit/test_sandbox_submit.py tests/unit/test_sandbox_git.py -q
+121 passed in 19.01s
+exit=0
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-c4-68338dc docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C4
+pytest: exit=0 expected=0
+mypy: exit=0 expected=0
+ruff: exit=0 expected=0
+lint-imports: exit=0 expected=0
+symbol: exit=0 expected=0
+bridge: exit=0 expected=0
+design-doc: exit=0 expected=0
+completed=94 unexpected=3
+exit=0
+======================= 1845 passed, 1 skipped in 57.28s =======================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C4 /tmp/p5-c4-68338dc
+{
+  "baseline_commit": "cd7f8dd",
+  "command_count": 94,
+  "exit_changes": {},
+  "baseline_tests": {"passed": 1496, "skipped": 1},
+  "current_tests": {"passed": 1845, "skipped": 1},
+  "missing_nodeids": [],
+  "changed_outcomes": {}
+}
+added_nodeids=349; identical_tested_sources=8
+baseline_comparison=PASS
+exit=0
+
+C3_retained=1725 missing=0 outcome_changes=0 C4_added=121
+exit=0
+SUMMARY | 198 SYMBOL OK | 4 MODULE-SCOPE OK (48 SYMBOLS COVERED) | 0 MISMATCH | 0 INCOMPLETE
+SUMMARY | 198 SYMBOL OK | 4 MODULE-SCOPE OK | 0 MISSING_FROM_INVENTORY | 0 MISSING_FROM_BODY | 0 OWNER_MISMATCH | 0 PARSE_ERROR
+```
+
+逐nodeid证据为C3/C4各自`pytest.xml`,集合比较未删除、未改旧用例结果。
+三条历史期望不符仍为design-doc-controls、symbol-negative-duplicate-spec-root-mismatch、
+symbol-key-twin-both-binary-key;基线exit分别1/0/1,当前相同,不重设期望。
+真实hook原文(`C4/pytest.log:72`):
+
+```text
+tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive PASSED [  3%]
+```
+
+本轮停止报告条目数0;P5-C4-01已闭合。远端CI不以本地结果冒充,推送后另补锚。
