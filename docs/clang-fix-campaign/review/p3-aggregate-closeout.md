@@ -1,7 +1,7 @@
 # P3 Aggregate Closeout
 
-日期:2026-10-09。状态:**FIXES_APPLIED**,未自行签批CLOSED。
-首次实现证据保留;本轮PM裁决见末尾“评审修复”。
+日期:2026-10-09。状态:**CLOSED**,PM核对通过,FatTank批准签收。
+首次实现及评审修复证据保留;签收记录见末尾“最终签收”。
 
 权威:`../design.md` v1.5.19-FROZEN §3.4/§4.2/§7 Phase 3。
 基线`7bbccc9`;本期新增`ci_triage/aggregate.py`与`tests/unit/test_aggregate.py`,
@@ -41,12 +41,12 @@
 
 遗留:沿P2的三项checker既有问题(设计文档self-test历史样本缺失、
 两个symbol fixture仍指向已删除旧址),两树exit分别1/0/1,无新增。
-不放宽这些检查、不把它们记作已修复。待设计方核验与评审。
+不放宽这些检查、不把它们记作已修复。此处为首次候审记录,最终状态见末尾签收。
 
 ## 评审修复
 
 按2026-10-09 PM轻量裁决执行;design.md零修改,待P5设计修订统一同步。
-单家评审P3可签收,本轮修复后仅标FIXES_APPLIED,等待设计方核验。
+单家评审P3可签收,修复提交时标FIXES_APPLIED;后续PM核对与批准见末尾签收。
 
 | 发现 | 处置 | 证据(stage17) |
 |---|---|---|
@@ -63,3 +63,18 @@
 [progress §5-6](../dev_memory/stage17_p3_aggregate/progress.md#5-评审修复与pm轻量裁决2026-10-09)。
 先行P4远端success已存`p4-remote-ci.json`/`.log`;P3本提交CI在推送后独立核验,
 由GitHub run外部锚定并在交付回报给出,不以P4 CI替代。
+
+## 最终签收
+
+| 项目 | 日期 | 记录 |
+|---|---|---|
+| 签收commit | 2026-10-09 | `f12154b`,P3评审修复后的版本 |
+| 单家评审结论 | 2026-10-09登记 | P3可签收;保留该原结论,不追加第二轮评审 |
+| 修复commit | 2026-10-09 | `f12154b`:branch绑定、七字段逐记录非空校验及对应测试 |
+| PM核对结论 | 2026-10-09 | 已核对修复与裁定一致,通过 |
+| FatTank批准 | 2026-10-09 | 批准P3签收,不再进行第二轮评审 |
+
+**状态:P3 CLOSED @ `f12154b`。** 本文档签收登记提交由Git外部锚定,不自记SHA。
+该版本[远端CI](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37879938085)
+success;原验证证据保留,本次纯文档登记未重新运行代码验收。
+设计正文待同步清单仍由stage17 §6登记,待P5设计修订统一并入design.md。

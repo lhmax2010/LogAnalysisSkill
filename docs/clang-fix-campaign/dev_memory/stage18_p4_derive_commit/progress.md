@@ -1,7 +1,7 @@
 # Stage18 P4 derive_commit
 
-日期:2026-10-09。状态:**FIXES_APPLIED**,待设计方核验,不自行标CLOSED。
-§1-7保留首次实现及其历史验收;本轮评审裁决与证据见§8-9。
+日期:2026-10-09。状态:**CLOSED**,PM核对通过,FatTank批准签收。
+§1-7保留首次实现及其历史验收;评审裁决与证据见§8-9,最终签收见§10。
 
 ## 1. 权威、范围与计划
 
@@ -219,8 +219,21 @@ comparison.json钉定受验四文件SHA,提交前与主树逐字节比对。
 2. §3.4/§4.2 campaign_state:DERIVE payload两日期复用同一正则,拒绝非法形态。
 3. §4.2 derive_commit:仓库发现上界为worktree.resolve().parent,非仓库根由Git
    check=True拒绝,不得向上层仓库写对象。
-4. §7 Phase 4:真实hook移交断言纳入integration pytest;缺配置/文件/hash不符可skip,
-   但skip不算完成验证,本机必须有passed原文证据。
+4. §7 Phase 4:真实hook移交断言纳入integration pytest;skip不算完成验证,
+   本机必须有passed原文证据。签收版本缺配置/文件/hash不符均skip;
+   **P5待实施**:hash不符改为fail,仅缺配置或文件仍skip(见stage16 §5)。
 5. P2 hook的createChangeId保持现状,不采always;首行`^[a-z]+! `的前置拒绝继续有效。
+6. **P5待实施**:COMMIT_DATE_RE增加re.ASCII,在正则之外用datetime.fromisoformat
+   解析校验,拒绝不存在的日期;derive和状态库DERIVE写入两处同步(见stage16 §5)。
 
 以上是PM本轮直接裁决的待同步文本,本轮design.md零diff,未推进P5实现。
+
+## 10. 最终签收(2026-10-09)
+
+- 单家评审原结论:P4需修改;不改写为原评审直接通过。
+- 签收版本与修复commit:`2ba0e0d`;PM已核对修复与裁定一致。
+- FatTank已批准签收,按轻量流程不再进行第二轮评审。
+- 状态:**P4 CLOSED**;详见[最终签收](../../review/p4-derive-commit-closeout.md#最终签收)。
+- P2→P4最终消息移交项完成,本机真实hook PASSED证据保留。
+- 新增两项P5加固统一登记在[stage16 §5](../stage16_p2_submission_identity/progress.md#5-p2-01裁决与移交清单),
+  本节只确认移交;§9明确区分当前已实现与P5尚未实施,本次不改代码或design.md。

@@ -1,7 +1,7 @@
 # P4 Derive Commit Closeout
 
-日期:2026-10-09。状态:**FIXES_APPLIED**,未自行签批CLOSED。
-首次实现的验收记录保留;本轮PM裁决与新增证据见末尾“评审修复”。
+日期:2026-10-09。状态:**CLOSED**,PM核对通过,FatTank批准签收。
+首次实现及评审修复证据保留;签收记录见末尾“最终签收”。
 
 权威:`../design.md` v1.5.19-FROZEN §3.4/§4.2/§7 Phase 4。
 基线为P3 `0910f34`;本期只新增`ci_triage/derive_commit.py`及测试/取证/记账,
@@ -65,7 +65,7 @@ P2移交本期的一项已销账;P5/P5R两项尚未实施,没有混作本期已�
 - 三条既有checker问题沿用P2/P3:design-doc-controls、duplicate-spec-root-mismatch、
   twin-both-binary-key,基线/当前exit分别1/1、0/0、1/1。未新增、未伪称已修。
 
-待设计方核验与评审,状态维持READY_FOR_REVIEW。
+此处为首次候审记录,当时状态READY_FOR_REVIEW;最终状态见末尾签收。
 
 ## 远端验收补丁
 
@@ -80,7 +80,7 @@ Git 2.55.0显示UTC为`Z`,本机2.43.0显示`+00:00`,结果1 failed/1456 passed/
 
 ## 评审修复
 
-2026-10-09按PM轻量裁决落实;状态FIXES_APPLIED,不修改design.md,
+2026-10-09按PM轻量裁决落实;修复提交时状态FIXES_APPLIED,不修改design.md,
 待P5设计修订统一同步。此前READY_FOR_REVIEW为历史停点。
 
 | 发现 | 处置 | 证据路径(stage18) |
@@ -99,3 +99,24 @@ Git 2.55.0显示UTC为`Z`,本机2.43.0显示`+00:00`,结果1 failed/1456 passed/
 [progress §8](../dev_memory/stage18_p4_derive_commit/progress.md#8-评审修复与pm轻量裁决2026-10-09)
 及`evidence/review-fixes/comparison.json`。本提交远端CI由GitHub run外部锚定,
 推送后实查并在交付回报给出链接。
+
+## 最终签收
+
+| 项目 | 日期 | 记录 |
+|---|---|---|
+| 签收commit | 2026-10-09 | `2ba0e0d`,P4评审修复后的版本 |
+| 单家评审结论 | 2026-10-09登记 | P4需修改;按PM裁定修复后由PM核对,不冒称原评审直接通过或进行第二轮评审 |
+| 修复commit | 2026-10-09 | `2ba0e0d`:日期格式与UTC、仓库查找边界、真实hook integration用例 |
+| PM核对结论 | 2026-10-09 | 已核对修复与裁定一致,通过 |
+| FatTank批准 | 2026-10-09 | 批准P4签收,不再进行第二轮评审 |
+
+**状态:P4 CLOSED @ `2ba0e0d`。** 本文档签收登记提交由Git外部锚定,不自记SHA。
+该版本[远端CI](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37879648575)
+success;真实hook本机PASSED证据保留,skip不作已验证。
+
+签收同时将两项加固移交P5,统一登记在
+[stage16 §5移交清单](../dev_memory/stage16_p2_submission_identity/progress.md#5-p2-01裁决与移交清单):
+日期增加re.ASCII与datetime.fromisoformat解析,派生及状态库写入同步;
+真实hook摘要不符由skip改fail,配置/文件不存在仍skip。
+**这两项尚未实施**,不把当前正则匹配或摘要不符skip记成已加固。
+设计待同步措辞见stage18 §9;本次不改design.md、不改代码。

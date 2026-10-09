@@ -162,13 +162,17 @@ review-submit/sandbox-submit/derive实现:只有campaign_state现存的身份字
 ## 5. P2-01裁决与移交清单
 
 来源:2026-10-08用户传达设计方轻量裁决,不修改设计稿。
-P2完成组件级验证,以下三项端到端检查不在P2实施:
+P2完成组件级验证,原三项端到端检查不在P2实施。
+2026-10-09 P3/P4签收时,按FatTank批准在同一清单追加两项P5加固;
+新增项仅登记、尚未实施,不影响已批准的P2/P3/P4签收。
 
 | 移交检查 | 目标阶段 | 关门要求 |
 |---|---|---|
-| derive后最终commit message不含X-Campaign-Submission-Key且恰好一个Change-Id trailer | P4 | 真实derive实现后验证最终commit消息 |
+| derive后最终commit message不含X-Campaign-Submission-Key且恰好一个Change-Id trailer | P4 | 已完成,见§13回执;P4 CLOSED @ `2ba0e0d` |
 | sandbox重推(已有DERIVE)删缓存行后拒绝且不push | P5 | sandbox-submit端到端,不得以API测试代替 |
 | review-submit删缓存行后拒绝、不重新生成、不push | P5R | review-submit端到端,不得以API测试代替 |
+| COMMIT_DATE_RE增加re.ASCII,正则之外用datetime.fromisoformat解析校验,拒绝不存在的日期 | P5 | PENDING;derive派生与campaign_state的DERIVE写入校验同步实施,两处均验证ASCII与实际日期有效性 |
+| 真实hook integration测试的hook sha256不符由skip改为fail | P5 | PENDING;配置或hook文件不存在仍skip,hash不符必须fail;skip不算已验证 |
 
 本阶段保留:已有DERIVE而无缓存,无论generate=None或提供生成函数,
 均StateInconsistent、generate调用0次且不写库;hook生成器仅返回Change-Id,
@@ -511,7 +515,7 @@ design-doc-controls(1)、duplicate-spec-root-mismatch(0)、twin-both-binary-key(
 
 ## 12. 设计正文待同步
 
-本轮不修改`design.md`。供设计方下次修订§4.2时并入:
+本轮不修改`design.md`。供设计方在P5设计修订§4.2时并入:
 
 | 条目 | 待同步措辞 |
 |---|---|
@@ -519,6 +523,11 @@ design-doc-controls(1)、duplicate-spec-root-mismatch(0)、twin-both-binary-key(
 | 次要2(a) | 缓存未命中后的`_require_no_derive`先确认campaign_unit_key存在,不存在即StateInconsistent,不得调用generate;生成后事务内复查沿用此规则 |
 | 次要3 | hook前置拒绝补首行匹配`^[a-z]+! `,说明Gerrit hook跳过fixup!/squash!类提交;首行大写不属于该拒绝范围 |
 | 次要2(b) | DERIVE检查按传入unit执行,不扩成跨unit搜索;带外删除共享缓存行的跨unit场景不在本轮保护范围,按收口已知边界登记 |
+
+2026-10-09签收对账:上述三项措辞补充与已知边界均保留。
+P3裁定完整清单见[stage17 §6](../stage17_p3_aggregate/progress.md#6-设计正文待同步p5设计修订时),
+P4裁定及签收新增的P5加固见[stage18 §9](../stage18_p4_derive_commit/progress.md#9-设计正文待同步p5设计修订时)。
+P5实施移交统一由本文件§5登记;不要把设计措辞待同步或新加固登记当成已完成实现。
 
 本轮未遇需另裁决的实现缺口。后续P3/P4原任务书未在当前会话、仓内任务文件
 与可见文本附件中找到,已请求补发;不以设计中的阶段摘要自行替代原任务范围。
@@ -530,5 +539,6 @@ design-doc-controls(1)、duplicate-spec-root-mismatch(0)、twin-both-binary-key(
 Change-Id trailer且没有X-Campaign-Submission-Key行。tree等式、工作区/index/HEAD
 不变、零网络调用一并通过。证据见
 `../stage18_p4_derive_commit/evidence/real-hook-derive.json`与同目录原始日志,
-收口见`../../review/p4-derive-commit-closeout.md`,状态READY_FOR_REVIEW。
+收口见`../../review/p4-derive-commit-closeout.md`;当时状态READY_FOR_REVIEW,
+现经PM核对与FatTank批准,2026-10-09签收为CLOSED @ `2ba0e0d`。
 原第5节为移交时历史记录,本项现已接收验收;P5/P5R两项尚待各自阶段实施。
