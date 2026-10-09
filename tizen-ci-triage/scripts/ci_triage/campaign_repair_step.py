@@ -68,6 +68,7 @@ REJECTED_CONF_DRIFT = "REJECTED_CONF_DRIFT"
 REJECTED_STATE_INCONSISTENT = "REJECTED_STATE_INCONSISTENT"
 REJECTED_ORPHAN_PASS_HELD = "REJECTED_ORPHAN_PASS_HELD"
 CAMPAIGN_STATE_BUSY = "CAMPAIGN_STATE_BUSY"
+WORKSPACE_FS_UNSUPPORTED = "WORKSPACE_FS_UNSUPPORTED"
 
 REPAIR_ROUND_RUNNING = "REPAIR_ROUND_RUNNING"
 ROUNDS_EXHAUSTED = "ROUNDS_EXHAUSTED"
@@ -1157,6 +1158,7 @@ def _materialize_canonical_edit_spec(path: Path, raw: bytes, digest: str) -> Non
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
         _verify_canonical_edit_spec(path, digest)
+        _fsync_edit_spec_parent(path)
         return
     descriptor, temporary_name = tempfile.mkstemp(
         dir=path.parent,
@@ -1172,9 +1174,24 @@ def _materialize_canonical_edit_spec(path: Path, raw: bytes, digest: str) -> Non
         try:
             os.link(temporary_path, path)
         except FileExistsError:
-            _verify_canonical_edit_spec(path, digest)
+            pass
+        except OSError as exc:
+            raise _StepError(WORKSPACE_FS_UNSUPPORTED, str(exc), EXIT_TOOLING) from exc
     finally:
         temporary_path.unlink(missing_ok=True)
+    _verify_canonical_edit_spec(path, digest)
+    _fsync_edit_spec_parent(path)
+
+
+def _fsync_edit_spec_parent(path: Path) -> None:
+    try:
+        descriptor = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as exc:
+        raise _StepError(WORKSPACE_FS_UNSUPPORTED, str(exc), EXIT_TOOLING) from exc
 
 
 def _verify_canonical_edit_spec(path: Path, digest: str) -> None:

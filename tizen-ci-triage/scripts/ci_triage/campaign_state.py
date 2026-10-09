@@ -29,11 +29,14 @@ from tizen_convergence_judge.convergence import (
     primary_fingerprint as _primary_fingerprint,
 )
 
-from ci_triage.derive_commit import COMMIT_DATE_RE
+from ci_triage.derive_commit import validate_commit_date
 
 CAMPAIGN_SCHEMA_VERSION = "campaign/v1"
 HELD_FOR_INVESTIGATION = "HELD_FOR_INVESTIGATION"
 REJECTED_ARCH_NOT_ALLOWED = "REJECTED_ARCH_NOT_ALLOWED"
+_IMMUTABLE_DERIVE_FIELDS = (
+    "message_brief", "author_identity", "committer_identity", "author_date", "committer_date",
+)
 
 ARCH_RAW_TO_NORM = {
     "standard-aarch64": "aarch64",
@@ -2103,8 +2106,12 @@ def _validate_derive(payload: Mapping[str, object]) -> None:
     _require_nonempty_strings(payload, tuple(keys))
     for field in ("author_date", "committer_date"):
         value = payload[field]
-        if not isinstance(value, str) or COMMIT_DATE_RE.fullmatch(value) is None:
+        if not isinstance(value, str):
             raise PayloadSchemaError(f"{field} must be ISO 8601 with an explicit timezone")
+        try:
+            validate_commit_date(value, field)
+        except ValueError as exc:
+            raise PayloadSchemaError(str(exc)) from exc
 
 
 def _validate_push(payload: Mapping[str, object]) -> None:
@@ -2281,12 +2288,11 @@ def _validate_immutable_derive_fields(
         "WHERE campaign_unit_key = ? AND event_type = 'DERIVE' ORDER BY event_id",
         (campaign_unit_key,),
     ).fetchall()
-    immutable = ("message_brief", "author_identity", "author_date", "committer_date")
     for row in rows:
         existing = json.loads(_text(row, "payload_json"))
         if not isinstance(existing, dict):
             raise StateInconsistent("stored DERIVE payload is not an object")
-        if any(existing.get(key) != payload.get(key) for key in immutable):
+        if any(existing.get(key) != payload.get(key) for key in _IMMUTABLE_DERIVE_FIELDS):
             raise StateInconsistent("DERIVE first-write identity fields changed")
 
 

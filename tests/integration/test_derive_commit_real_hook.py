@@ -14,10 +14,7 @@ from ci_triage.submission_identity import generate_change_id_via_hook
 pytestmark = pytest.mark.integration
 
 
-def test_registered_real_hook_then_derive(tmp_path: Path) -> None:
-    config_path = Path(__file__).resolve().parents[2] / (
-        "docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/real-hook-config.json"
-    )
+def _registered_hook(config_path: Path) -> tuple[Path, str, bytes]:
     if not config_path.is_file():
         pytest.skip("P2 real hook configuration is absent; not verified")
     config = json.loads(config_path.read_text())
@@ -27,7 +24,15 @@ def test_registered_real_hook_then_derive(tmp_path: Path) -> None:
     hook_bytes = hook.read_bytes()
     digest = hashlib.sha256(hook_bytes).hexdigest()
     if digest != config["gerrit_commit_msg_hook_sha256"]:
-        pytest.skip("P2 registered real hook SHA256 mismatch; not verified")
+        pytest.fail("P2 registered real hook SHA256 mismatch; not verified")
+    return hook, digest, hook_bytes
+
+
+def test_registered_real_hook_then_derive(tmp_path: Path) -> None:
+    config_path = Path(__file__).resolve().parents[2] / (
+        "docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/real-hook-config.json"
+    )
+    hook, digest, hook_bytes = _registered_hook(config_path)
     repo, home = tmp_path / "repo", tmp_path / "home"
     repo.mkdir()
     home.mkdir()
@@ -76,3 +81,26 @@ def test_registered_real_hook_then_derive(tmp_path: Path) -> None:
     assert (repo / ".git/index").read_bytes() == before_index
     assert (repo / "source.c").read_bytes() == before_worktree
     assert hook.read_bytes() == hook_bytes
+
+
+def test_real_hook_digest_mismatch_is_failure(tmp_path: Path) -> None:
+    hook = tmp_path / "commit-msg"
+    hook.write_text("exit 0\n")
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({
+        "gerrit_commit_msg_hook": str(hook), "gerrit_commit_msg_hook_sha256": "0" * 64,
+    }))
+    with pytest.raises(pytest.fail.Exception, match="SHA256 mismatch"):
+        _registered_hook(config)
+
+
+@pytest.mark.parametrize("missing", ["config", "hook"])
+def test_missing_real_hook_inputs_remain_skip(tmp_path: Path, missing: str) -> None:
+    config = tmp_path / "config.json"
+    if missing == "hook":
+        config.write_text(json.dumps({
+            "gerrit_commit_msg_hook": str(tmp_path / "absent"),
+            "gerrit_commit_msg_hook_sha256": "0" * 64,
+        }))
+    with pytest.raises(pytest.skip.Exception, match="absent; not verified"):
+        _registered_hook(config)

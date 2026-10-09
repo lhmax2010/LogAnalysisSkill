@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-09。状态:**C0_VALIDATED**,P5-C0-01已关闭,本地门禁通过,待本提交推送后远端CI核验。
+日期:2026-10-09。状态:**C1_VALIDATED**,C0已推送且远端CI成功;C1本地门禁无新增失败,待推送后远端CI核验。
 
 ## 1. 权威、批准与基线
 
@@ -14,14 +14,14 @@
 - `git fetch origin clang-fix-campaign` exit 0后,HEAD与origin/clang-fix-campaign
   均为`cd7f8ddac8c05af0eaa99714ef171668d905f983`。
 - 不访问真实Gerrit,不做真实sandbox推送。未来测试仅使用本地仓库和本地裸仓库。
-- 本轮未修改生产代码、测试或检查器。未开展C1-C5。
+- C0未修改生产代码、测试或检查器。C1仅实施§5四项加固,见§7;C2-C5未开展。
 
 ## 2. 计划与进度
 
 | 提交 | 范围 | 状态 |
 |---|---|---|
-| C0 | 文件名与标题冻结;附录A照录同步design.md v1.5.20;检查器与通用门禁 | 本地94命令无新增失败;本提交外部锚定,远端CI待推送 |
-| C1 | §5四项加固与§6.4,真实hook本机passed | NOT_STARTED |
+| C0 | 文件名与标题冻结;附录A照录同步design.md v1.5.20;检查器与通用门禁 | `38c076f`;本地94命令无新增失败;远端CI SUCCESS |
+| C1 | §5四项加固与§6.4,真实hook本机passed | 本地1527 passed/1 skipped;94命令无新增失败;本提交外部锚定,远端CI待推送 |
 | C2 | suppress_policy、CLI、§6.1 | NOT_STARTED |
 | C3 | gate_view、latest_policy_for_round、lookup_change_id、§6.2 | NOT_STARTED |
 | C4 | 共用unit hash/src_clean、Git安全环境、sandbox_submit、CLI、§6.3 | NOT_STARTED |
@@ -95,8 +95,8 @@ baseline=cd7f8dd
 ## 5. 挂账
 
 - P5-C0-01已关闭,当前未闭合停止报告条目数0。
-- P2移交的已有DERIVE删缓存拒绝推送以及P4两项加固均待后续对应提交,
-  不把计划登记记作完成。
+- P4移交的两项加固已由C1实现并实跑;P2移交的已有DERIVE删缓存拒绝推送
+  仍待C4,不把计划登记记作完成。
 
 ## 6. P5-C0-01设计方裁定与落实
 
@@ -178,3 +178,99 @@ symbol-negative-duplicate-spec-root-mismatch=0、symbol-key-twin-both-binary-key
 changed_outcomes=[]、added_nodeids=[];同时钉定实际受验两份设计文档hash。
 设计Python签名代码未改变,无需变更签名夹具;checker、生产和测试diff均为空。
 远端CI在提交推送后核验,其run以GitHub外部锚定,回报并在下一提交记入。
+
+## 7. C1四项加固与§6.4实测
+
+C0远端核验命令与输出(exit 0):
+
+```text
+$ gh run view 37899082560 --json status,conclusion,url,headSha
+{"conclusion":"success","headSha":"38c076fa0c1da4b18a83b66bb258fd59c28f7bc3","status":"completed","url":"https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37899082560"}
+```
+
+C1变更边界为三个生产模块与四个测试文件,无其它API扩展,冻结稿与design.md
+不变。实现细节:共享日期校验函数留在已有依赖方向的derive_commit模块;
+首次写入的DERIVE字段集合提为campaign_state内部常量,供后续gate_view复用。
+这些放置选择不增加行为或安全规则。
+
+| 设计规则 | 实现 | 验收用例(相对tests/) |
+|---|---|---|
+| §5日期加固/§6.4① | `COMMIT_DATE_RE`加re.ASCII;统一`validate_commit_date`先正则再fromisoformat;Z在解析时转换+00:00;derive/state共用 | `unit/test_derive_commit.py::test_non_ascii_or_impossible_dates_refuse_before_git_and_payload`(两个字段各四反例);`test_real_dates_with_timezone_can_derive`(Z/+08:00) |
+| §5真实hook/§6.4② | hash不符pytest.fail;缺配置/文件仍skip | `integration/test_derive_commit_real_hook.py::test_real_hook_digest_mismatch_is_failure`;`test_missing_real_hook_inputs_remain_skip`;`test_registered_real_hook_then_derive`本机PASSED |
+| §5目录fsync/§6.4③ | 新建/预存/竞争三成功路径校验hash后fsync父目录;link与目录fsync失败为WORKSPACE_FS_UNSUPPORTED、exit 5 | `unit/test_campaign_repair_step.py::test_edit_spec_all_success_paths_fsync_parent`;`test_conflicting_edit_spec_never_fsyncs_parent`;`test_edit_spec_filesystem_failure_is_uncounted_and_retryable`(canonical/build两份×EPERM/EXDEV/ENOTSUP/fsync四故障) |
+| §5身份不可变/§6.4④ | 首次写入不可变集合加入committer_identity,其余四项保持 | `unit/test_campaign_change_ids.py::test_all_derive_identity_fields_are_immutable`(五字段独立负例,拒绝后仍一条DERIVE) |
+
+目录故障用例断言:失败两次均没有BUILD_INVOCATION、builder零调用;canonical
+失败没有round,build副本失败保留既有round但不计构建;清除故障可重试PASS;
+成功后三份原字节相同、临时文件无残留。既有publication-failure用例原来
+预期OSError,按本次明文新契约改断言为WORKSPACE_FS_UNSUPPORTED/exit 5,
+nodeid不变,未删除用例。
+
+开发中新增immutable测试曾误把latest_event的事件信封当payload,导致五个
+新增用例失败;改为读取`original["payload"]`后通过。未修改生产API迁就测试,
+与设计冲突无关。定向复跑命令及实际输出(exit 0):
+
+```text
+$ .venv/bin/python -m pytest tests/unit/test_derive_commit.py tests/unit/test_campaign_change_ids.py tests/unit/test_campaign_repair_step.py tests/integration/test_derive_commit_real_hook.py -q
+148 passed in 5.28s
+```
+
+干净验证树`/tmp/p5-c1-38c076f`基于C0,只应用本次七份源码/测试diff。
+命令、环境、exit与原始输出在`evidence/C1/commands.json`及各同名log;
+`evidence/C1/pytest.xml`记录逐nodeid结果。实跑命令(exit 0):
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-c1-38c076f docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C1
+```
+
+实际输出摘录:
+
+```text
+======================= 1527 passed, 1 skipped in 35.08s =======================
+Success: no issues found in 106 source files
+All checks passed!
+Contracts: 6 kept, 0 broken.
+pytest: exit=0 expected=0
+mypy: exit=0 expected=0
+ruff: exit=0 expected=0
+lint-imports: exit=0 expected=0
+completed=94 unexpected=3
+```
+
+相对cd7f8dd的三条既有设计门禁异常与§6完全一致,没有新增失败。比较命令
+与输出(exit 0;结构化结果在`evidence/C1-comparison.json`):
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C1 /tmp/p5-c1-38c076f
+{
+  "baseline_commit": "cd7f8dd",
+  "command_count": 94,
+  "exit_changes": {},
+  "baseline_tests": {
+    "passed": 1496,
+    "skipped": 1
+  },
+  "current_tests": {
+    "passed": 1527,
+    "skipped": 1
+  },
+  "missing_nodeids": [],
+  "changed_outcomes": {}
+}
+added_nodeids=31; identical_tested_sources=7
+baseline_comparison=PASS
+```
+
+比较器只比较已保存结果,不重设任何期望;七文件主树/验证树逐字相等并记录
+hash。新增31个用例均passed,原1497个nodeid无缺失/状态改变。
+真实hook配置沿用P2,本机文件与P2登记sha256一致,没有访问Gerrit:
+
+```text
+$ sha256sum /home/linhao/gerrit-hook/commit-msg
+3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50  /home/linhao/gerrit-hook/commit-msg
+$ rg -n 'test_registered_real_hook_then_derive' docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C1/pytest.log
+72:tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive PASSED [  4%]
+```
+
+两命令exit 0。远端CI仍按提交后的外部run核验,不能以本地结果替代;
+远端缺hook时skip不充当真实hook通过证据,上面的本机PASSED才是该项验收。

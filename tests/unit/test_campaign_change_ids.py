@@ -67,6 +67,26 @@ def _rows(db: StateDatabase) -> list[dict[str, object]]:
         conn.close()
 
 
+@pytest.mark.parametrize("field", [
+    "message_brief", "author_identity", "committer_identity", "author_date", "committer_date",
+])
+def test_all_derive_identity_fields_are_immutable(db: StateDatabase, field: str) -> None:
+    _derive(db)
+    original = state.latest_event(db, "unit", "DERIVE")
+    assert original is not None
+    payload = dict(original["payload"])
+    payload[field] = "2026-10-09T00:00:00Z" if field.endswith("date") else "changed"
+    with pytest.raises(state.StateInconsistent, match="first-write identity fields changed"):
+        state.append_event(db, "unit", "DERIVE", payload)
+    conn = db.connect()
+    try:
+        assert conn.execute(
+            "SELECT COUNT(*) FROM campaign_gate_events WHERE event_type = 'DERIVE'"
+        ).fetchone()[0] == 1
+    finally:
+        conn.close()
+
+
 def _get(db: StateDatabase, generate=None, **kwargs: object) -> str:
     values = dict(campaign_unit_key="unit", submission_key=KEY, hook_sha256=HOOK_SHA)
     values.update(kwargs)

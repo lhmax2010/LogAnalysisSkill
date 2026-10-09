@@ -5,9 +5,21 @@ from __future__ import annotations
 import os
 import re
 import subprocess
+from datetime import datetime
 from pathlib import Path
 
-COMMIT_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})$")
+COMMIT_DATE_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})$", re.ASCII,
+)
+
+
+def validate_commit_date(value: str, label: str) -> None:
+    if COMMIT_DATE_RE.fullmatch(value) is None:
+        raise ValueError(f"{label} must be ISO 8601 with an explicit timezone")
+    try:
+        datetime.fromisoformat(value[:-1] + "+00:00" if value.endswith("Z") else value)
+    except ValueError as exc:
+        raise ValueError(f"{label} must be a real ISO 8601 date with an explicit timezone") from exc
 
 
 def _identity(value: str) -> tuple[str, str]:
@@ -34,8 +46,7 @@ def derive(
         if re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", value) is None:
             raise ValueError(f"{label} must be a full lowercase Git object ID")
     for label, value in (("author_date", author_date), ("committer_date", committer_date)):
-        if COMMIT_DATE_RE.fullmatch(value) is None:
-            raise ValueError(f"{label} must be ISO 8601 with an explicit timezone")
+        validate_commit_date(value, label)
 
     # Ambient Git routing/configuration must not redirect writes to another repository.
     env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}

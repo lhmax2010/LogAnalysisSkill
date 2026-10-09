@@ -1,0 +1,57 @@
+{
+  "baseline_commit": "cd7f8dd",
+  "command_count": 94,
+  "exit_changes": {},
+  "baseline_tests": {
+    "passed": 1496,
+    "skipped": 1
+  },
+  "current_tests": {
+    "passed": 1527,
+    "skipped": 1
+  },
+  "missing_nodeids": [],
+  "changed_outcomes": {},
+  "added_nodeids": [
+    "tests.integration.test_derive_commit_real_hook::test_missing_real_hook_inputs_remain_skip[config]",
+    "tests.integration.test_derive_commit_real_hook::test_missing_real_hook_inputs_remain_skip[hook]",
+    "tests.integration.test_derive_commit_real_hook::test_real_hook_digest_mismatch_is_failure",
+    "tests.unit.test_campaign_change_ids::test_all_derive_identity_fields_are_immutable[author_date]",
+    "tests.unit.test_campaign_change_ids::test_all_derive_identity_fields_are_immutable[author_identity]",
+    "tests.unit.test_campaign_change_ids::test_all_derive_identity_fields_are_immutable[committer_date]",
+    "tests.unit.test_campaign_change_ids::test_all_derive_identity_fields_are_immutable[committer_identity]",
+    "tests.unit.test_campaign_change_ids::test_all_derive_identity_fields_are_immutable[message_brief]",
+    "tests.unit.test_campaign_repair_step::test_conflicting_edit_spec_never_fsyncs_parent[existing]",
+    "tests.unit.test_campaign_repair_step::test_conflicting_edit_spec_never_fsyncs_parent[race]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_all_success_paths_fsync_parent[existing]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_all_success_paths_fsync_parent[new]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_all_success_paths_fsync_parent[race]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_filesystem_failure_is_uncounted_and_retryable[ENOTSUP-build]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_filesystem_failure_is_uncounted_and_retryable[ENOTSUP-canonical]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_filesystem_failure_is_uncounted_and_retryable[EPERM-build]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_filesystem_failure_is_uncounted_and_retryable[EPERM-canonical]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_filesystem_failure_is_uncounted_and_retryable[EXDEV-build]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_filesystem_failure_is_uncounted_and_retryable[EXDEV-canonical]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_filesystem_failure_is_uncounted_and_retryable[directory_fsync-build]",
+    "tests.unit.test_campaign_repair_step::test_edit_spec_filesystem_failure_is_uncounted_and_retryable[directory_fsync-canonical]",
+    "tests.unit.test_derive_commit::test_non_ascii_or_impossible_dates_refuse_before_git_and_payload[2026-02-30T00:00:00+00:00-author_date]",
+    "tests.unit.test_derive_commit::test_non_ascii_or_impossible_dates_refuse_before_git_and_payload[2026-02-30T00:00:00+00:00-committer_date]",
+    "tests.unit.test_derive_commit::test_non_ascii_or_impossible_dates_refuse_before_git_and_payload[2026-13-01T00:00:00Z-author_date]",
+    "tests.unit.test_derive_commit::test_non_ascii_or_impossible_dates_refuse_before_git_and_payload[2026-13-01T00:00:00Z-committer_date]",
+    "tests.unit.test_derive_commit::test_non_ascii_or_impossible_dates_refuse_before_git_and_payload[\\u0662\\u0660\\u0662\\u0666-\\u0661\\u0660-\\u0660\\u0668T\\u0660\\u0660:\\u0660\\u0660:\\u0660\\u0660Z-author_date]",
+    "tests.unit.test_derive_commit::test_non_ascii_or_impossible_dates_refuse_before_git_and_payload[\\u0662\\u0660\\u0662\\u0666-\\u0661\\u0660-\\u0660\\u0668T\\u0660\\u0660:\\u0660\\u0660:\\u0660\\u0660Z-committer_date]",
+    "tests.unit.test_derive_commit::test_non_ascii_or_impossible_dates_refuse_before_git_and_payload[\\uff12\\uff10\\uff12\\uff16-\\uff11\\uff10-\\uff10\\uff18T\\uff10\\uff10:\\uff10\\uff10:\\uff10\\uff10Z-author_date]",
+    "tests.unit.test_derive_commit::test_non_ascii_or_impossible_dates_refuse_before_git_and_payload[\\uff12\\uff10\\uff12\\uff16-\\uff11\\uff10-\\uff10\\uff18T\\uff10\\uff10:\\uff10\\uff10:\\uff10\\uff10Z-committer_date]",
+    "tests.unit.test_derive_commit::test_real_dates_with_timezone_can_derive[2026-10-08T00:00:00Z]",
+    "tests.unit.test_derive_commit::test_real_dates_with_timezone_can_derive[2026-10-08T08:00:00+08:00]"
+  ],
+  "tested_source_sha256": {
+    "tests/integration/test_derive_commit_real_hook.py": "cea379e322f8b733b64922ea42003f6177d1fbce2da17dfaae68e3004fc5aad4",
+    "tests/unit/test_campaign_change_ids.py": "a7b00a42190b915d09a41b8e9d81b2f1720bf2d1efd72c0641489fa8ae5253a2",
+    "tests/unit/test_campaign_repair_step.py": "53de6ae524b7b02d95df5a71e4efd85697d11694bb7180978a523d08d50cc9b8",
+    "tests/unit/test_derive_commit.py": "bac2da473b5ebf237f781fa278a8f4c9e4ba58b4ad17f480b3979d890b497905",
+    "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py": "d63da6aeb971cf11750b6a4f97a0c303edad529c274738ab39fb71aeec5abecb",
+    "tizen-ci-triage/scripts/ci_triage/campaign_state.py": "5c4cd85629e7c220e55493863b04fb6dba1df59e11a49cc7eac04113a2dcefad",
+    "tizen-ci-triage/scripts/ci_triage/derive_commit.py": "85265e38bef100e41b8a4d29e99fd44d0417febddecc64fbfe1ec64f0084dbd0"
+  }
+}

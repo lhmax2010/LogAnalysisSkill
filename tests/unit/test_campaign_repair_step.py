@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import errno
 import fcntl
 import hashlib
 import json
 import os
+import stat
 import subprocess
 import sys
 from collections.abc import Callable
@@ -1115,13 +1117,15 @@ def test_canonical_publish_failure_never_leaves_partial_target(
 
     monkeypatch.setattr(repair_step.os, "link", fail_link)
 
-    with pytest.raises(OSError, match="injected publish failure"):
+    with pytest.raises(repair_step._StepError, match="injected publish failure") as caught:
         repair_step._materialize_canonical_edit_spec(
             target,
             raw,
             hashlib.sha256(raw).hexdigest(),
         )
 
+    assert caught.value.code == repair_step.WORKSPACE_FS_UNSUPPORTED
+    assert caught.value.exit_code == 5
     assert not target.exists()
     assert list(target.parent.glob(f".{target.name}.*.tmp")) == []
 
@@ -1152,6 +1156,126 @@ def test_canonical_publish_race_accepts_only_matching_existing_bytes(
     monkeypatch.setattr(repair_step.os, "link", publish_conflict)
     with pytest.raises(repair_step._StepError, match="canonical edit_spec conflicts"):
         repair_step._materialize_canonical_edit_spec(target, raw, digest)
+
+
+@pytest.mark.parametrize("publication", ["new", "existing", "race"])
+def test_edit_spec_all_success_paths_fsync_parent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, publication: str,
+) -> None:
+    target = tmp_path / "edit_spec.json"
+    raw = b'{"edits": []}\n'
+    if publication == "existing":
+        target.write_bytes(raw)
+    elif publication == "race":
+        def competing_link(source, destination):
+            Path(destination).write_bytes(Path(source).read_bytes())
+            raise FileExistsError
+        monkeypatch.setattr(repair_step.os, "link", competing_link)
+    real_fsync = os.fsync
+    synced_parents = []
+
+    def observed_fsync(fd):
+        if stat.S_ISDIR(os.fstat(fd).st_mode):
+            assert target.read_bytes() == raw
+            assert os.fstat(fd).st_ino == target.parent.stat().st_ino
+            synced_parents.append(fd)
+        return real_fsync(fd)
+
+    monkeypatch.setattr(repair_step.os, "fsync", observed_fsync)
+    repair_step._materialize_canonical_edit_spec(target, raw, hashlib.sha256(raw).hexdigest())
+    assert len(synced_parents) == 1
+    assert target.read_bytes() == raw
+    assert not list(tmp_path.glob(".*.tmp"))
+
+
+@pytest.mark.parametrize("publication", ["existing", "race"])
+def test_conflicting_edit_spec_never_fsyncs_parent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, publication: str,
+) -> None:
+    target = tmp_path / "edit_spec.json"
+    raw = b"expected"
+    if publication == "existing":
+        target.write_bytes(b"other")
+    else:
+        def competing_link(source, destination):
+            Path(destination).write_bytes(b"other")
+            raise FileExistsError
+        monkeypatch.setattr(repair_step.os, "link", competing_link)
+    real_fsync = os.fsync
+
+    def observed_fsync(fd):
+        assert not stat.S_ISDIR(os.fstat(fd).st_mode)
+        return real_fsync(fd)
+
+    monkeypatch.setattr(repair_step.os, "fsync", observed_fsync)
+    with pytest.raises(repair_step._StepError, match="canonical edit_spec conflicts"):
+        repair_step._materialize_canonical_edit_spec(target, raw, hashlib.sha256(raw).hexdigest())
+    assert target.read_bytes() == b"other"
+
+
+@pytest.mark.parametrize("site", ["canonical", "build"])
+@pytest.mark.parametrize("failure", ["EPERM", "EXDEV", "ENOTSUP", "directory_fsync"])
+def test_edit_spec_filesystem_failure_is_uncounted_and_retryable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, site: str, failure: str,
+) -> None:
+    fixture = _fixture(tmp_path)
+    unit_root = fixture.workspace / repair_step._unit_hash(UNIT_KEY)
+    canonical = unit_root / "rounds/round_1/edit_spec.json"
+    build = unit_root / ARCH_NORM / "out/round_1/edit_spec.json"
+    target = canonical if site == "canonical" else build
+    original_link, original_fsync = os.link, os.fsync
+    injected = []
+    builds = []
+    builder = _pass_builder(fixture)
+
+    def counted_builder(options):
+        builds.append(options)
+        return builder(options)
+
+    def failing_link(source, destination):
+        if Path(destination) == target and failure != "directory_fsync":
+            injected.append(failure)
+            raise OSError(getattr(errno, failure), "injected link failure")
+        return original_link(source, destination)
+
+    def failing_fsync(fd):
+        if (failure == "directory_fsync" and stat.S_ISDIR(os.fstat(fd).st_mode)
+                and target.parent.exists() and os.fstat(fd).st_ino == target.parent.stat().st_ino):
+            injected.append(failure)
+            raise OSError(errno.EIO, "injected parent fsync failure")
+        return original_fsync(fd)
+
+    monkeypatch.setattr(repair_step.os, "link", failing_link)
+    monkeypatch.setattr(repair_step.os, "fsync", failing_fsync)
+    for _ in range(2):
+        outcome = campaign_repair_step(fixture.options, build_verify_fn=counted_builder)
+        assert outcome.exit_code == 5
+        assert outcome.result.error_code == repair_step.WORKSPACE_FS_UNSUPPORTED
+        assert outcome.result.invocations_used == 0
+        assert builds == []
+        conn = fixture.db.connect()
+        try:
+            assert conn.execute("SELECT COUNT(*) FROM campaign_rounds").fetchone()[0] == (
+                0 if site == "canonical" else 1
+            )
+            assert conn.execute(
+                "SELECT COUNT(*) FROM campaign_gate_events WHERE event_type = 'BUILD_INVOCATION'"
+            ).fetchone()[0] == 0
+        finally:
+            conn.close()
+        assert target.exists() == (failure == "directory_fsync")
+        if target.exists():
+            assert target.read_bytes() == fixture.edit_spec.read_bytes()
+        assert not list(target.parent.glob(".*.tmp"))
+    assert len(injected) == 2
+    monkeypatch.setattr(repair_step.os, "link", original_link)
+    monkeypatch.setattr(repair_step.os, "fsync", original_fsync)
+    recovered = campaign_repair_step(fixture.options, build_verify_fn=counted_builder)
+    assert recovered.exit_code == 0
+    assert recovered.result.result == "PASS"
+    assert recovered.result.invocations_used == 1
+    assert len(builds) == 1
+    assert canonical.read_bytes() == build.read_bytes() == fixture.edit_spec.read_bytes()
 
 
 def test_previous_resolver_fails_closed_for_missing_substantive_file(tmp_path: Path) -> None:

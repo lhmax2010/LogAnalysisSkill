@@ -25,6 +25,10 @@ MESSAGE = (
 INVALID_DATES = (
     "2026-10-08 00:00:00", "2 days ago", "2026-10-08T00:00:00", "2 days ago +0800",
 )
+INVALID_CALENDAR_DATES = (
+    "２０２６-１０-０８T００:００:００Z", "٢٠٢٦-١٠-٠٨T٠٠:٠٠:٠٠Z",
+    "2026-13-01T00:00:00Z", "2026-02-30T00:00:00+00:00",
+)
 
 
 def _git(repo: Path, *args: str) -> str:
@@ -235,6 +239,31 @@ def test_derive_payload_accepts_explicit_timezone(date: str) -> None:
     _validate_derive(dict(message_brief="Fix", author_identity=AUTHOR,
                           committer_identity=COMMITTER, author_date=date, committer_date=date,
                           derived_commit_sha="a" * 40, verified_tree_sha="b" * 40))
+
+
+@pytest.mark.parametrize("field", ["author_date", "committer_date"])
+@pytest.mark.parametrize("date", INVALID_CALENDAR_DATES)
+def test_non_ascii_or_impossible_dates_refuse_before_git_and_payload(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, field: str, date: str,
+) -> None:
+    run = Mock()
+    monkeypatch.setattr(derive_commit.subprocess, "run", run)
+    with pytest.raises(ValueError, match=field):
+        _derive((tmp_path, "a" * 40, "b" * 40), **{field: date})
+    run.assert_not_called()
+    payload = dict(message_brief="Fix", author_identity=AUTHOR, committer_identity=COMMITTER,
+                   author_date=AUTHOR_DATE, committer_date=COMMITTER_DATE,
+                   derived_commit_sha="a" * 40, verified_tree_sha="b" * 40)
+    payload[field] = date
+    with pytest.raises(PayloadSchemaError, match=field):
+        _validate_derive(payload)
+    run.assert_not_called()
+
+
+@pytest.mark.parametrize("date", ["2026-10-08T00:00:00Z", "2026-10-08T08:00:00+08:00"])
+def test_real_dates_with_timezone_can_derive(repo: tuple[Path, str, str], date: str) -> None:
+    commit = _derive(repo, author_date=date, committer_date=date)
+    assert _git(repo[0], "rev-parse", f"{commit}^{{tree}}") == repo[1]
 
 
 def test_timezone_does_not_change_derived_sha(
