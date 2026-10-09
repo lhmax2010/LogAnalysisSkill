@@ -49,13 +49,14 @@ def test_consistent_aggregate_binds_real_columns_without_writing(
     assert result.base_commit == "a" * 40
     assert result.spec_name == "example"
     assert result.project == "platform/example"
+    assert result.branch == "tizen"
     assert result.edit_spec_sha256 == "e" * 64
     assert result.gbs_conf_sha256 == "f" * 64
     assert _dump(db) == before
 
 
 @pytest.mark.parametrize("field", [
-    "verified_tree_sha", "base_commit", "spec_name", "project",
+    "verified_tree_sha", "base_commit", "spec_name", "project", "branch",
     "edit_spec_sha256", "gbs_conf_sha256",
 ])
 def test_each_binding_mismatch_reports_concrete_values(
@@ -71,7 +72,7 @@ def test_each_binding_mismatch_reports_concrete_values(
     assert f"{field}='different-value'" in result.reasons[0]
     assert "verification_id='v1' arch='standard-armv7l'" in result.reasons[0]
     assert all(getattr(result, name) is None for name in (
-        "verified_tree_sha", "base_commit", "spec_name", "project",
+        "verified_tree_sha", "base_commit", "spec_name", "project", "branch",
         "edit_spec_sha256", "gbs_conf_sha256",
     ))
     assert _dump(db) == before
@@ -146,3 +147,38 @@ def test_all_field_differences_are_reported_without_short_circuit(
     assert any("spec_name='other'" in r for r in result.reasons)
     assert any("project='other/project'" in r for r in result.reasons)
     assert any("verified_tree_sha='" + "c" * 40 + "'" in r for r in result.reasons)
+
+
+def test_only_branch_mismatch_rejects_otherwise_consistent_records(
+    tmp_path: Path, records: tuple[VerificationRecord, ...],
+) -> None:
+    changed = (records[0], records[1], replace(records[2], branch="other-branch"))
+    result = aggregate.aggregate_verifications(["v0", "v1", "v2"], _store(tmp_path, changed))
+    assert not result.ok and result.branch is None
+    assert len(result.reasons) == 1
+    assert "verification_id='v2' arch='standard-x86_64' branch='other-branch'" in result.reasons[0]
+    assert "branch='tizen'" in result.reasons[0]
+
+
+@pytest.mark.parametrize("field", [
+    "verified_tree_sha", "base_commit", "spec_name", "project", "branch",
+    "edit_spec_sha256", "gbs_conf_sha256",
+])
+@pytest.mark.parametrize("empty", ["", " \t "])
+def test_all_three_empty_bindings_report_each_record(
+    tmp_path: Path, records: tuple[VerificationRecord, ...], field: str, empty: str,
+) -> None:
+    changed = tuple(replace(record, **{field: empty}) for record in records)
+    db = _store(tmp_path, changed)
+    before = _dump(db)
+    result = aggregate.aggregate_verifications(["v0", "v1", "v2"], db)
+    assert not result.ok
+    assert len(result.reasons) == 3
+    for record, reason in zip(changed, result.reasons, strict=True):
+        assert f"verification_id={record.verification_id!r}" in reason
+        assert f"{field}={empty!r} must be nonempty after strip" in reason
+    assert all(getattr(result, name) is None for name in (
+        "verified_tree_sha", "base_commit", "spec_name", "project", "branch",
+        "edit_spec_sha256", "gbs_conf_sha256",
+    ))
+    assert _dump(db) == before

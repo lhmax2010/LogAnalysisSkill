@@ -1,0 +1,46 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 36 items
+
+tests/unit/test_aggregate.py::test_consistent_aggregate_binds_real_columns_without_writing PASSED [  2%]
+tests/unit/test_aggregate.py::test_each_binding_mismatch_reports_concrete_values[verified_tree_sha] PASSED [  5%]
+tests/unit/test_aggregate.py::test_each_binding_mismatch_reports_concrete_values[base_commit] PASSED [  8%]
+tests/unit/test_aggregate.py::test_each_binding_mismatch_reports_concrete_values[spec_name] PASSED [ 11%]
+tests/unit/test_aggregate.py::test_each_binding_mismatch_reports_concrete_values[project] PASSED [ 13%]
+tests/unit/test_aggregate.py::test_each_binding_mismatch_reports_concrete_values[branch] PASSED [ 16%]
+tests/unit/test_aggregate.py::test_each_binding_mismatch_reports_concrete_values[edit_spec_sha256] PASSED [ 19%]
+tests/unit/test_aggregate.py::test_each_binding_mismatch_reports_concrete_values[gbs_conf_sha256] PASSED [ 22%]
+tests/unit/test_aggregate.py::test_arch_whitelist_does_not_strip_profiles[standard_gcov-armv7l] PASSED [ 25%]
+tests/unit/test_aggregate.py::test_arch_whitelist_does_not_strip_profiles[emulator-armv7l] PASSED [ 27%]
+tests/unit/test_aggregate.py::test_arch_whitelist_does_not_strip_profiles[armv7l] PASSED [ 30%]
+tests/unit/test_aggregate.py::test_arch_whitelist_does_not_strip_profiles[standard-riscv64] PASSED [ 33%]
+tests/unit/test_aggregate.py::test_arch_whitelist_does_not_strip_profiles[] PASSED [ 36%]
+tests/unit/test_aggregate.py::test_arch_set_must_include_each_target PASSED [ 38%]
+tests/unit/test_aggregate.py::test_exactly_three_records_required[ids0] PASSED [ 41%]
+tests/unit/test_aggregate.py::test_exactly_three_records_required[ids1] PASSED [ 44%]
+tests/unit/test_aggregate.py::test_exactly_three_records_required[ids2] PASSED [ 47%]
+tests/unit/test_aggregate.py::test_missing_id_is_not_silently_dropped PASSED [ 50%]
+tests/unit/test_aggregate.py::test_duplicate_id_cannot_supply_missing_arch PASSED [ 52%]
+tests/unit/test_aggregate.py::test_non_pass_record_is_rejected_defensively PASSED [ 55%]
+tests/unit/test_aggregate.py::test_all_field_differences_are_reported_without_short_circuit PASSED [ 58%]
+tests/unit/test_aggregate.py::test_only_branch_mismatch_rejects_otherwise_consistent_records PASSED [ 61%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[-verified_tree_sha] PASSED [ 63%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[-base_commit] PASSED [ 66%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[-spec_name] PASSED [ 69%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[-project] PASSED [ 72%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[-branch] PASSED [ 75%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[-edit_spec_sha256] PASSED [ 77%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[-gbs_conf_sha256] PASSED [ 80%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[ \t -verified_tree_sha] PASSED [ 83%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[ \t -base_commit] PASSED [ 86%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[ \t -spec_name] PASSED [ 88%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[ \t -project] PASSED [ 91%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[ \t -branch] PASSED [ 94%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[ \t -edit_spec_sha256] PASSED [ 97%]
+tests/unit/test_aggregate.py::test_all_three_empty_bindings_report_each_record[ \t -gbs_conf_sha256] PASSED [100%]
+
+============================== 36 passed in 0.34s ==============================

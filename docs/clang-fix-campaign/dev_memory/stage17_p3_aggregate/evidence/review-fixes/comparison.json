@@ -1,0 +1,60 @@
+{
+  "baseline_commit": "4a6873d",
+  "command_count": 94,
+  "exit_changes": {},
+  "baseline_tests": {
+    "passed": 1457,
+    "skipped": 1
+  },
+  "current_tests": {
+    "passed": 1496,
+    "skipped": 1
+  },
+  "missing_nodeids": [],
+  "changed_outcomes": [],
+  "added_nodeids": [
+    "tests.integration.test_derive_commit_real_hook::test_registered_real_hook_then_derive",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[ \\t -base_commit]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[ \\t -branch]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[ \\t -edit_spec_sha256]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[ \\t -gbs_conf_sha256]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[ \\t -project]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[ \\t -spec_name]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[ \\t -verified_tree_sha]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[-base_commit]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[-branch]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[-edit_spec_sha256]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[-gbs_conf_sha256]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[-project]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[-spec_name]",
+    "tests.unit.test_aggregate::test_all_three_empty_bindings_report_each_record[-verified_tree_sha]",
+    "tests.unit.test_aggregate::test_each_binding_mismatch_reports_concrete_values[branch]",
+    "tests.unit.test_aggregate::test_only_branch_mismatch_rejects_otherwise_consistent_records",
+    "tests.unit.test_derive_commit::test_derive_payload_accepts_explicit_timezone[2026-10-08T00:00:00+00:00]",
+    "tests.unit.test_derive_commit::test_derive_payload_accepts_explicit_timezone[2026-10-08T00:00:00Z]",
+    "tests.unit.test_derive_commit::test_derive_payload_accepts_explicit_timezone[2026-10-08T08:00:00+08:00]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2 days ago +0800-author_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2 days ago +0800-committer_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2 days ago-author_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2 days ago-committer_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2026-10-08 00:00:00-author_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2026-10-08 00:00:00-committer_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2026-10-08T00:00:00-author_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2026-10-08T00:00:00-committer_date]",
+    "tests.unit.test_derive_commit::test_explicit_timezone_sha_snapshot_is_unchanged",
+    "tests.unit.test_derive_commit::test_inner_directory_cannot_write_objects_in_outer_repository",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2 days ago +0800-author_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2 days ago +0800-committer_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2 days ago-author_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2 days ago-committer_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2026-10-08 00:00:00-author_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2026-10-08 00:00:00-committer_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2026-10-08T00:00:00-author_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2026-10-08T00:00:00-committer_date]",
+    "tests.unit.test_derive_commit::test_timezone_does_not_change_derived_sha"
+  ],
+  "tested_files": {
+    "tizen-ci-triage/scripts/ci_triage/aggregate.py": "f8bba1b702950341467205e29e69f3f9f1adbdb3717dcd57815da1043ebf9748",
+    "tests/unit/test_aggregate.py": "fbb5f45f023429aebcb9448140ff5f02f1384abdd3de4ada082b154e97d157e0"
+  }
+}

@@ -1,6 +1,7 @@
 # P3 Aggregate Closeout
 
-日期:2026-10-08。状态:**READY_FOR_REVIEW**,未自行签批CLOSED。
+日期:2026-10-09。状态:**FIXES_APPLIED**,未自行签批CLOSED。
+首次实现证据保留;本轮PM裁决见末尾“评审修复”。
 
 权威:`../design.md` v1.5.19-FROZEN §3.4/§4.2/§7 Phase 3。
 基线`7bbccc9`;本期新增`ci_triage/aggregate.py`与`tests/unit/test_aggregate.py`,
@@ -41,3 +42,24 @@
 遗留:沿P2的三项checker既有问题(设计文档self-test历史样本缺失、
 两个symbol fixture仍指向已删除旧址),两树exit分别1/0/1,无新增。
 不放宽这些检查、不把它们记作已修复。待设计方核验与评审。
+
+## 评审修复
+
+按2026-10-09 PM轻量裁决执行;design.md零修改,待P5设计修订统一同步。
+单家评审P3可签收,本轮修复后仅标FIXES_APPLIED,等待设计方核验。
+
+| 发现 | 处置 | 证据(stage17) |
+|---|---|---|
+| branch未绑定 | 加入_BINDING_FIELDS和AggregateResult,任意reason时branch=None | `evidence/review-fixes/targeted.log`:原参数化branch/仅branch不同/全一致返回值 |
+| 共同空值被相等性放行 | 七字段逐record非空(strip判空),每空值reason带ID和字段名;不做hex校验 | 同上七字段乘空串/空白串,每组恰三条原因,无数据库写入 |
+| 拒绝摘要一致性 | branch与原摘要统一在失败时None,其它字段/arch/records语义不变 | 同上各字段负例;生产diff仅绑定、判空、返回branch |
+
+命令:`.venv/bin/python -m pytest tests/unit/test_aggregate.py -v`,
+36 passed,exit0。全仓先行P4的1480/1→本轮1496/1(+16);
+相对固定4a6873d共增39项(含P4的23项),原1458 nodeid全部保留且结果不变。
+全仓/mypy/ruff/lint-imports各exit0;90项既有设计门禁与基线逐条相同,
+三条历史偏差保留。证据:`current/commands.json`、各日志、`comparison.json`;
+完整复现命令与PM“设计正文待同步”清单见
+[progress §5-6](../dev_memory/stage17_p3_aggregate/progress.md#5-评审修复与pm轻量裁决2026-10-09)。
+先行P4远端success已存`p4-remote-ci.json`/`.log`;P3本提交CI在推送后独立核验,
+由GitHub run外部锚定并在交付回报给出,不以P4 CI替代。

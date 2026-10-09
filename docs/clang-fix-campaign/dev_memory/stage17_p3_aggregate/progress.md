@@ -1,6 +1,7 @@
 # Stage17 P3 aggregate
 
-日期:2026-10-08。状态:**READY_FOR_REVIEW**。
+日期:2026-10-09。状态:**FIXES_APPLIED**,待设计方核验,不自行标CLOSED。
+§1-4保留首次实现及其历史验收;本轮评审裁决与证据见§5-6。
 
 ## 1. 权威与范围
 
@@ -82,3 +83,72 @@ design-doc-controls(1)、duplicate-spec-root-mismatch(0)、twin-both-binary-key(
 本提交及推送后的远端CI由Git/GitHub外部锚定,文件内不自记SHA;
 必须在对应run完成后回报结果,不以P2的CI替代本期验证。
 现有三条工具遗留不归本阶段修复;P4/P5/P5R移交归属不变。
+
+## 5. 评审修复与PM轻量裁决(2026-10-09)
+
+单家评审结论P3可签收,PM另明确下列修复;按本轮裁定实施并等复核,
+不自行CLOSED,本轮design.md不改。
+
+| 发现/裁决 | 处置 | 用例 |
+|---|---|---|
+| 绑定字段缺branch | _BINDING_FIELDS及AggregateResult均增加branch;任何reason存在时branch与其它摘要一同None | 原逐字段负例加入branch;`test_only_branch_mismatch_rejects_otherwise_consistent_records`独立负例;全一致正例检查返回branch |
+| 全部记录共同空值可绕过相等性检查 | 七字段逐记录strip判空,每个空值独立reason带verification_id与字段名;不短路、不改写record或数据库 | `test_all_three_empty_bindings_report_each_record`七字段乘空串/空白串,逐条断言三个reason |
+| 不做hex格式校验 | 仅非空与原值一致性,不增格式正则或摘要长度约束 | aggregate生产diff;现有非绑定字段差异及arch规则保持原样 |
+
+本轮只改aggregate模块与其测试。七字段为verified_tree_sha/base_commit/spec_name/
+project/branch/edit_spec_sha256/gbs_conf_sha256;strip仅用于判空,不把不同原值归一化。
+任意原有拒绝原因也使所有绑定摘要为None;records保留原对象与指定顺序。
+未改get_record/schema/其它API,未接入新入口;仓内没有其它AggregateResult构造方。
+
+### 5.1 实跑与回归
+
+先行P4修复`2ba0e0d`建立1480/1;本轮P3再增16例,合计1496/1。
+以指定固定基线`4a6873d`重新采集的1457/1作门禁与旧nodeid比较,
+基线原文复用stage18本轮`evidence/review-fixes/baseline/`(不是抄历史数)。
+候选干净工作树`/tmp/p3-review-fixes-2ba0e0d`,只复制aggregate模块与测试;
+取证目录`evidence/review-fixes/`,完整命令/环境/exit/hash在`current/commands.json`。
+
+```sh
+R=docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py
+E=docs/clang-fix-campaign/dev_memory/stage17_p3_aggregate/evidence/review-fixes
+P4=docs/clang-fix-campaign/dev_memory/stage18_p4_derive_commit/evidence/review-fixes
+.venv/bin/python "$R" /tmp/p3-review-fixes-2ba0e0d "$E/current"
+.venv/bin/python -m pytest tests/unit/test_aggregate.py -v
+.venv/bin/python "$P4/compare_validation.py" "$P4/baseline" "$E/current" /tmp/p3-review-fixes-2ba0e0d tizen-ci-triage/scripts/ci_triage/aggregate.py tests/unit/test_aggregate.py
+```
+
+```text
+============================== 36 passed in 0.34s ==============================
+======================= 1496 passed, 1 skipped in 32.43s =======================
+Success: no issues found in 106 source files
+All checks passed!
+Contracts: 6 kept, 0 broken.
+completed=94 unexpected=3
+```
+
+定向、全仓、mypy、ruff、lint-imports各exit0;90项既有设计门禁按原期望实跑,
+相对4a6873d的94命令exit_changes={},missing_nodeids=[]、changed_outcomes=[],
+详见`comparison.json`(含受验源码摘要)。三条既有偏差仍为design-doc-controls=1、
+duplicate-spec-root-mismatch=0、twin-both-binary-key=1,无新增,未改判据或期望。
+`targeted.log`为定向原文;`current/pytest.log`中真实hook integration再次PASSED。
+未碰design.md/P2/hook配置,没有本裁决之外的API行为变化。
+
+先行P4远端CI已完成:
+`gh run view 37879648575 --json databaseId,headSha,status,conclusion,url,jobs` exit0,
+headSha=`2ba0e0d9bf18f430c71d1813b508d18e63e0e8ed`,conclusion=success,
+Lint/Type check/Tests全部success;原文`p4-remote-ci.json`及`p4-remote-ci.log`。
+远端原文为`1479 passed, 2 skipped in 35.69s`,真实hook用例SKIPPED;
+该skip不算验证,其完成证据是本机定向和全仓的PASSED,不混用两种环境。
+链接:https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37879648575 。
+P3自身远端CI须在本独立提交推送后检查,交付回报给出对应run,不以P4成功替代。
+
+## 6. 设计正文待同步(P5设计修订时)
+
+1. §3.4聚合绑定与§4.2 aggregate:真实列映射的绑定字段增加branch,
+   AggregateResult增加branch;任意不符时包括branch在内的全部摘要字段None。
+2. 七个绑定字段在每条record上必须strip后非空;空值逐条reason,包含
+   verification_id和字段名。相等性比较仍取原值,不增加hex格式校验。
+3. §7 Phase 3 DoD:逐字段不符参数化增加branch,另有仅branch不同负例;
+   各字段三条共同空串必须拒绝,并覆盖空白串与逐记录原因完整性。
+
+以上为PM直接裁定的待同步内容,本轮不修改设计正文,不开始P5实现。

@@ -11,7 +11,7 @@ from ci_triage.campaign_state import ARCH_NORMS, ARCH_RAW_TO_NORM, REJECTED_ARCH
 
 _MISMATCH = "REJECTED_ARCH_AGGREGATE_MISMATCH"
 _BINDING_FIELDS = (
-    "verified_tree_sha", "base_commit", "spec_name", "project",
+    "verified_tree_sha", "base_commit", "spec_name", "project", "branch",
     "edit_spec_sha256", "gbs_conf_sha256",
 )
 
@@ -23,6 +23,7 @@ class AggregateResult:
     base_commit: str | None
     spec_name: str | None
     project: str | None
+    branch: str | None
     edit_spec_sha256: str | None
     gbs_conf_sha256: str | None
     records: tuple[VerificationRecord, ...]
@@ -60,6 +61,12 @@ def aggregate_verifications(ids: Sequence[str], state_db: StateDatabase) -> Aggr
         )
 
     for field in _BINDING_FIELDS:
+        for record in records:
+            if not getattr(record, field).strip():
+                reasons.append(
+                    f"{_MISMATCH}: verification_id={record.verification_id!r} "
+                    f"{field}={getattr(record, field)!r} must be nonempty after strip"
+                )
         if len({getattr(record, field) for record in records}) > 1:
             details_text = "; ".join(
                 f"verification_id={record.verification_id!r} arch={record.arch!r} "
@@ -75,6 +82,7 @@ def aggregate_verifications(ids: Sequence[str], state_db: StateDatabase) -> Aggr
         base_commit=first.base_commit if first else None,
         spec_name=first.spec_name if first else None,
         project=first.project if first else None,
+        branch=first.branch if first else None,
         edit_spec_sha256=first.edit_spec_sha256 if first else None,
         gbs_conf_sha256=first.gbs_conf_sha256 if first else None,
         records=tuple(records), reasons=tuple(reasons),
