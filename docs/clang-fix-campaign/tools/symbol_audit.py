@@ -247,12 +247,12 @@ BUILD_VERIFY_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
 
 EDIT_SPEC_GUARD_SYMBOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("EDIT_SPEC_SCHEMA", ()),
-    ("EditSpecViolation", ("tizen_build_verify.build_verify",)),
+    ("EditSpecViolation", ("ci_triage.suppress_policy", "tizen_build_verify.build_verify")),
     ("_LocatedEdit", ()),
-    ("validate_edit_spec", ("tizen_build_verify.build_verify",)),
+    ("validate_edit_spec", ("ci_triage.suppress_policy", "tizen_build_verify.build_verify")),
     ("_validate_schema", ()),
-    ("_validate_target_path", ()),
-    ("_locate_edit", ()),
+    ("_validate_target_path", ("ci_triage.suppress_policy",)),
+    ("_locate_edit", ("ci_triage.suppress_policy",)),
     ("_find_old_from_line", ()),
     ("_find_unique_old", ()),
     ("_line_starts", ()),

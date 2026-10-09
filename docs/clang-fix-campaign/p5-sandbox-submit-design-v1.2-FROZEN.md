@@ -71,7 +71,7 @@ SourceKind = Literal["t1_cherry_pick", "generated", "suppress"]
 class PolicyHit:
     edit_index: int     # 触及该处的 edit 下标;判不出时为 -1(见 2.7)
     file: str           # edit_spec 中的原样路径
-    kind: str           # 2.4 的 kind 枚举
+    kind: str           # 2.4 的 kind 枚举,或移除类规则名 werror_removed / pragma_pop_removed / target_removed / pure_deletion(字段取值见 progress P5-C2-02)
     token: str | None   # 命中的选项、pragma flag 或 "命令名 名称"
     scope: str          # 2.5 的 scope 枚举;非作用域类为 "n/a"
     rule: str           # "forbidden" | "suppress"
@@ -719,7 +719,7 @@ P5 不调用任何释放 API。成功后三份副本的保护标记全部保持(
    - 跨文件抵消:`strict/CMakeLists.txt` 去掉 `add_compile_options(-Werror)`,同时 `other/CMakeLists.txt` 新增同样一行 → forbidden(规则退化回合计比较时必须变红);
    - 测试声明从一个 CMakeLists 搬到另一个 → forbidden;
    - `-Werror` 从全局移入单 target,forbidden;
-   - `-Werror` 从单 target 移到同文件的全局,allowed;从 target A 移到全局、同时删掉 target B 的,allowed;
+   - `-Werror` 从单 target 移到同文件的全局,allowed;从 target A 移到全局、同时删掉 target B 的,forbidden(非全局减少 2 大于全局增加 1);
    - 只删 `#pragma GCC diagnostic pop` → forbidden(`pragma_pop_removed`);把 push、ignored、pop 整段一起删除 → allowed;
    - `add_test(real COMMAND real)` 改为 `add_test(dummy COMMAND true)`,forbidden;
    - 只重命名 target,forbidden;
@@ -734,6 +734,7 @@ P5 不调用任何释放 API。成功后三份副本的保护标记全部保持(
 8. **`PolicyInputError`**:old 找不到、路径逃逸、非法 source_kind。
 9. **CLI 端到端**:allowed 与 forbidden 各一例,stdout 与 `asdict(evaluate(...))` 逐字段相等;exit 码 0、4、2 各一例。
 10. **确定性**:同一输入调用两次结果相等;打乱 `edits[]` 顺序后,除 `edit_index` 外结果相等;edit 改变长度导致后续位置偏移时,判定不变。
+11. **P5-C2-02 hit 输出形状**:`pure_deletion`、`werror_removed`、`pragma_pop_removed`、`target_removed` 的 kind、token、scope、count 逐字段符合该裁定;`werror_removed` 的 count 至少覆盖 `g<0` 与 `n>g≥0` 两种情形。
 
 ### 6.2 gate_view 与只读查询
 

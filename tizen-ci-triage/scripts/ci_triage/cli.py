@@ -5,9 +5,10 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import asdict
 from json import JSONDecodeError
 from pathlib import Path
-from typing import NoReturn, TextIO
+from typing import NoReturn, TextIO, cast
 
 from tizen_build_verify import (
     BuildVerifyOptions,
@@ -37,6 +38,7 @@ from ci_triage.campaign_repair_step import (
     campaign_repair_step,
 )
 from ci_triage.runner import TriageOptions, run_triage
+from ci_triage.suppress_policy import PolicyInputError, SourceKind, evaluate
 
 EXIT_SUCCESS = 0
 EXIT_FAILED = 1
@@ -183,6 +185,8 @@ def main(
 ) -> int:
     if argv is None:
         argv = sys.argv[1:]
+    if argv and argv[0] == "suppress-policy":
+        return _main_suppress_policy(argv[1:], stdout=stdout, stderr=stderr)
     if argv and argv[0] == "build-verify":
         return _main_build_verify(argv[1:], stderr=stderr, extra_pythonpath=extra_pythonpath)
     if argv and argv[0] == "check-convergence":
@@ -392,6 +396,29 @@ def _campaign_cli_error_payload(reason: str) -> dict[str, object]:
         "invocations_used": 0,
         "error_code": "INVALID_ARGS",
     }
+
+
+def _main_suppress_policy(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
+    parser = _CampaignRepairStepParser(prog="ci_triage suppress-policy")
+    parser.add_argument("action", choices=("check",))
+    parser.add_argument("--edit-spec", type=Path, required=True)
+    parser.add_argument("--src-root", type=Path, required=True)
+    parser.add_argument("--source-kind", choices=("t1_cherry_pick", "generated", "suppress"),
+                        default="generated")
+    try:
+        args = parser.parse_args(argv)
+        result = evaluate(
+            _read_json(args.edit_spec), args.src_root, cast(SourceKind, args.source_kind),
+        )
+    except (ValueError, OSError, PolicyInputError) as exc:
+        print(json.dumps({"error_code": "INVALID_ARGS", "reason": str(exc)}, sort_keys=True),
+              file=stdout)
+        return 2
+    print(json.dumps(asdict(result), sort_keys=True), file=stdout)
+    if result.verdict == "forbidden":
+        print("REJECTED_SUPPRESS_POLICY", file=stderr)
+        return 4
+    return 0
 
 
 def _read_json(path: Path) -> dict[str, object]:
