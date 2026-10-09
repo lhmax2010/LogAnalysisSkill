@@ -43,6 +43,8 @@ let profile;
 let terminal;
 let deadline;
 try {
+  console.log('先在浏览器里登录，登录后回到本终端按回车。');
+  console.log('等待上限 10 分钟；不要在终端粘贴 Cookie 或密码。仅采集白名单只读页面。');
   const { chromium } = await import(pathToFileURL(playwrightPath).href);
   if (tmpdir() !== '/dev/shm') throw new Error('RAM-only temporary directory required');
   profile = await mkdtemp('/dev/shm/ef5-browser-');

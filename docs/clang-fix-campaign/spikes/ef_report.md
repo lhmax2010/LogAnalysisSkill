@@ -296,3 +296,40 @@ requests.json中的redacted_sha256已重算。源行号与业务数据不变,没
 离线24项、浏览器策略20项通过;全仓1457 passed/1 skipped,mypy/ruff通过,
 这些不是线上页面证据。详情见[stage15 §12](../dev_memory/stage15_p1_ef_spike/progress.md#12-五路径补测与身份脱敏2026-10-09)。
 本轮不重试REST、不读取触发表单、不修改design.md或P2-P4代码。
+
+## 五路径再次到场重跑(2026-10-09):BLOCKED
+
+本次按`f507201`的五路径原白名单重新启动隔离浏览器,启动前已在可见终端
+写明“先在浏览器里登录，登录后回到本终端按回车。”等待上限仍600000ms,
+没有提前结束,没有由代理代按回车。启动器最终自行exit=2,没有完成取证交接。
+**后台业务请求0、响应0、POST/触发0**;人工浏览器登录与静态资源不计入该数字。
+Cookie未写入文件、日志、证据或聊天。页面抓取器未运行,故本轮没有新增HTML
+可做字段分析或脱敏;既有`<USER>`写盘前规则和三页历史重脱敏结果保持不变。
+
+证据:[web-browser-02/launch.json](../dev_memory/stage15_p1_ef_spike/evidence/web-browser-02/launch.json)。
+这是退出后补写的启动记录,不是页面采集成功记录;没有`run.json`或响应文件。
+启动时只收到GTK模块告警,退出时工具收到空输出;未取得QuickBuild拒绝响应,
+因此错误类别只记`LOCAL_HANDOFF_NOT_COMPLETED`,不推断具体认证失败原因。
+
+| 本次预定页面 | 实际请求 | Status/SR_STATUS | 步骤/逐架构状态 | 日志/产物/trigger |
+|---|---|---|---|---|
+| /build/1069532/step_status | 0 | 未读取 | 未读取 | 未读取;无点击 |
+| /build/1069540 | 0 | 未读取 | 未读取 | 未读取;无点击 |
+| /build/1069540/overview | 0 | 未读取 | 未读取 | 未读取;无点击 |
+| /build/1069540/variables | 0 | 未读取 | 目标变量与关联字段未读取 | 未读取;无点击 |
+| /build/1069540/step_status | 0 | 未读取 | 未读取 | 未读取;无点击 |
+
+本次结论选**BLOCKED**,不是WEB_READ_OK或一次新的WEB_READ_PARTIAL。
+累计历史证据仍为WEB_READ_PARTIAL,仅依据先前1069532三页,不补齐本轮缺口。
+仍缺:1069540自身Status与SR_STATUS、架构是否有各自状态、父子步骤列表及每步
+状态、子页中的父子关联字段、SBS_TARGET或其它目标变量回显。实际产物文件
+清单未枚举,日志只有历史入口且仍禁止访问。真实触发和request_id映射未执行。
+
+对§1.4 EF-5③④及§4.1 qb-result-fetch:**本轮没有新事实,不能更新假设判断**。
+网页自动化可行性评估保持原有部分可读结论;会话交接尚未完成不等于页面字段缺失。
+Successful是否足够或必须ACCEPTED、SBS_TARGET与BUILD_PKG_LIST是否等价,
+继续**待人工裁定(FatTank)**,不由探测器决定。
+
+离线24项与浏览器策略20项通过;全仓`1457 passed, 1 skipped`,mypy/ruff通过。
+命令与原文见[stage15 §13](../dev_memory/stage15_p1_ef_spike/progress.md#13-本人到场后的五路径重跑2026-10-09)。
+design.md、P2-P4代码、白名单和凭据处理均未修改,不重试REST、不读触发表单。

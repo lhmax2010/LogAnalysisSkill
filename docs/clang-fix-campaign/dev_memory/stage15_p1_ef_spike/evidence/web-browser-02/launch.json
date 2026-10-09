@@ -1,0 +1,47 @@
+{
+  "record_type": "POST_EXIT_LAUNCH_OBSERVATION_NOT_PAGE_CAPTURE",
+  "recorded_after_exit_at": "2026-10-09T10:32:12+08:00",
+  "base_commit": "f507201",
+  "conclusion": "BLOCKED",
+  "category": "LOCAL_HANDOFF_NOT_COMPLETED",
+  "server_rejection_observed": false,
+  "manual_login_success_known": false,
+  "launch_mode": "visible_gnome_terminal_and_isolated_nonpersistent_chromium",
+  "pre_launch_instruction": "先在浏览器里登录，登录后回到本终端按回车。",
+  "login_wait_timeout_ms": 600000,
+  "terminated_early_by_agent": false,
+  "agent_sent_enter": false,
+  "observed_running_elapsed": "08:45",
+  "terminal_exit_code": 2,
+  "terminal_start_output": [
+    "# Failed to load module \"canberra-gtk-module\"",
+    "# Failed to load module \"canberra-gtk-module\""
+  ],
+  "terminal_completion_output": "",
+  "terminal_internal_stdout_recorded": false,
+  "probe_output_directory_existed_before_this_record": false,
+  "probe_run_json_exists": false,
+  "probe_get_requests": 0,
+  "responses": 0,
+  "probe_post_requests": 0,
+  "probe_build_actions": 0,
+  "request_count_scope": "backend_business_pages_only_not_manual_signin_or_browser_resources",
+  "planned_get_paths": [
+    "/build/1069532/step_status",
+    "/build/1069540",
+    "/build/1069540/overview",
+    "/build/1069540/variables",
+    "/build/1069540/step_status"
+  ],
+  "follow_links": false,
+  "cookie_stored": false,
+  "cookie_printed": false,
+  "trigger_authorized": false,
+  "temporary_browser_directories_after_exit": [],
+  "script_sha256": {
+    "ef5_browser_login.mjs": "c40a5a4884088773fba45d0f26659eb0bc99e8bd5408ca3d58f1bd7f19b09280",
+    "ef5_browser_receiver.py": "eaa5d52ee9e21a310933ef0814de82d42a028bb5ac83ea38bd35604228eb2845",
+    "ef5_web_probe.py": "e283f4ae91b811b249b6056f9f1c9682fcd92b870e1f74bc73859aee0258d125"
+  },
+  "protected_files_diff_exit": 0
+}

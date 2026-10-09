@@ -1,7 +1,7 @@
 # Stage15 P1 EF-5 Environment Spike
 
 日期:2026-10-09。状态:**WEB_READ_PARTIAL**(累计;§11为既有3次GET/200)。
-本轮补测:**BLOCKED_LOCAL_HANDOFF**,未完成会话交接,后台请求0;详见§12。
+最新重跑:**BLOCKED**(本地会话交接未完成),后台请求0;详见§13。
 权威:`../../design.md` v1.5.19-FROZEN §1.4 EF-5、§4.1
 qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 
@@ -501,3 +501,69 @@ exit=0
 结论累计仍WEB_READ_PARTIAL,依据仅是§11历史三页;
 本轮五页未取得,子构建自身状态、逐架构状态、步骤详情、关联变量仍待实测。
 不重试REST、不读触发表单、不修改design.md或P2-P4代码,不解除P5Q前置闸门。
+
+## 13. 本人到场后的五路径重跑(2026-10-09)
+
+### 13.1 启动与实测结果
+
+基于`f507201`,只在启动器的浏览器启动之前增加中文提示:
+“先在浏览器里登录，登录后回到本终端按回车。”
+另提示等待上限10分钟,不要在终端粘贴Cookie或密码。
+后台固定五路径、`follow_links=False`、600000ms等待、凭据内存管道与
+写盘前`<USER>`脱敏逻辑均未改动。实际启动命令:
+
+```bash
+env -u LD_LIBRARY_PATH -u LD_PRELOAD -u GTK_PATH -u GIO_MODULE_DIR -u DEBUG -u PWDEBUG -u QB_COOKIE -u QB_PASSWORD TMPDIR=/dev/shm gnome-terminal --wait --title='QuickBuild 登录后回到此终端按回车（勿粘贴凭据）' --working-directory=/home/linhao/Toolchain/development/LogAnalysisSkill -- /home/linhao/.bun/bin/bun docs/clang-fix-campaign/spikes/ef5_browser_login.mjs /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/spikes/ef5_browser_receiver.py /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-browser-02
+```
+
+代理没有发送终端回车、没有提前结束等待。可见进程在实测elapsed=08:45时
+仍运行,之后自行结束,`gnome-terminal --wait`的实际exit=2。
+启动输出仅有两条`Failed to load module "canberra-gtk-module"`;
+结束时工具收到空输出。没有浏览器原始错误或凭据输出。
+终端窗口内部stdout未另行录制;不能把通用exit=2解释成已确定的登录失败原因。
+
+结束后`test -f .../web-browser-02/run.json` exit=1,无运行结果;
+该目录在取证期间未产生。**后台GET=0、响应=0、POST=0、构建操作=0**,
+未取得登录拒绝页或服务端错误页,不能判为QuickBuild拒绝访问。
+`find /dev/shm -maxdepth 1 -name 'ef5-browser-*' -print` exit=0、空输出,
+临时会话已清理。随后仅在目标目录写入本次启动记录
+`evidence/web-browser-02/launch.json`,不是伪造`run.json`或页面响应。
+记录中包括启动器及取证脚本SHA256、预定五路径、实际exit与统计边界。
+
+本轮结论:**BLOCKED(LOCAL_HANDOFF_NOT_COMPLETED)**。
+累计历史结论仍为WEB_READ_PARTIAL,来源是§11已经成功的三页,与本轮失败分列。
+仍缺子构建自身Status/SR_STATUS、逐架构独立状态、父子步骤与逐步状态、
+子页关联字段、SBS_TARGET或候选目标变量实测;产物文件清单与日志内容未读取。
+§12.4两项业务规则继续待FatTank裁定,不由本轮推断。
+
+### 13.2 本轮离线验证与范围
+
+```text
+$ /home/linhao/.bun/bin/bun docs/clang-fix-campaign/spikes/ef5_browser_login.mjs --policy-self-test
+Browser login allowlist: 20 controls PASS; build actions rejected.
+exit=0
+$ env PYTHONPATH=docs/clang-fix-campaign/spikes .venv/bin/python -m unittest discover -s docs/clang-fix-campaign/spikes -p 'test_ef5*.py'
+....................page: HTTP 200; html; evidence=page.response.txt
+....
+----------------------------------------------------------------------
+Ran 24 tests in 0.116s
+
+OK
+exit=0
+$ .venv/bin/mypy docs/clang-fix-campaign/spikes/ef5_web_probe.py docs/clang-fix-campaign/spikes/ef5_browser_receiver.py docs/clang-fix-campaign/spikes/ef5_redact_archive.py
+Success: no issues found in 3 source files
+exit=0
+$ .venv/bin/ruff check docs/clang-fix-campaign/spikes/ef5_web_probe.py docs/clang-fix-campaign/spikes/ef5_browser_receiver.py docs/clang-fix-campaign/spikes/ef5_redact_archive.py docs/clang-fix-campaign/spikes/test_ef5_redact_archive.py docs/clang-fix-campaign/spikes/test_ef5_web_probe.py
+All checks passed!
+exit=0
+$ bash -o pipefail -c '.venv/bin/python -m pytest -q | tee docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/browser02-rerun-pytest.log'
+1457 passed, 1 skipped in 27.10s
+exit=0
+$ git diff --exit-code -- docs/clang-fix-campaign/design.md 'tizen-*/scripts/**'
+(空输出)
+exit=0
+```
+
+全仓原始输出:`evidence/browser02-rerun-pytest.log`。单测中的HTTP 200来自
+人工fixture,不是线上请求。本轮不重试REST、不读取触发表单、不访问/log,
+不修改design.md或P2-P4代码。原有无关工作树改动照旧不处理。
