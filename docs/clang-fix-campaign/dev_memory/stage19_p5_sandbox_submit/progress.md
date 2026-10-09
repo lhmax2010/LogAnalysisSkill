@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-09。状态:**C4_LOCAL_VERIFIED**,C0-C3已推送且远端CI通过;C4最终本地门禁无新增失败(§16),推送后核验CI,之后C5。
+日期:2026-10-09。状态:**READY_FOR_REVIEW**,C0-C4已推送且远端CI通过;C5收口与复验见§17。未自行标CLOSED。
 
 ## 1. 权威、批准与基线
 
@@ -26,8 +26,8 @@
 | C1 | §5四项加固与§6.4,真实hook本机passed | `8c89de4`;本地1527 passed/1 skipped;94命令无新增失败;远端CI SUCCESS(§8) |
 | C2 | suppress_policy、CLI、§6.1 | `1f3141e`;定向174 passed;全量1701 passed/1 skipped;94命令无新增失败;远端CI SUCCESS |
 | C3 | gate_view、latest_policy_for_round、lookup_change_id、§6.2 | `68338dc`;定向23 passed;全量1724 passed/1 skipped;94命令无新增失败;远端CI SUCCESS |
-| C4 | 共用unit hash/src_clean、Git安全环境、sandbox_submit、CLI、§6.3 | LOCAL_VERIFIED;新增121例,1845 passed/1 skipped;94命令无新增失败;推送后核验CI |
-| C5 | READY_FOR_REVIEW收口、规则与用例双向表、已知限制、真实hook原文 | NOT_STARTED |
+| C4 | 共用unit hash/src_clean、Git安全环境、sandbox_submit、CLI、§6.3 | `33fcf68`;新增121例,1845 passed/1 skipped;94命令无新增失败;远端CI SUCCESS |
+| C5 | READY_FOR_REVIEW收口、规则与用例双向表、已知限制、真实hook原文 | 本提交外部锚定;状态READY_FOR_REVIEW,最终门禁见§17 |
 
 每个提交均须通过§6.5,相对cd7f8dd无新增设计门禁失败,独立推送并核验远端CI。
 三条既有checker遗留不伪称已修;本次新增失败不能算作历史遗留。
@@ -810,3 +810,62 @@ tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_the
 ```
 
 本轮停止报告条目数0;P5-C4-01已闭合。远端CI不以本地结果冒充,推送后另补锚。
+
+C4推送与远端核验原文:
+
+```text
+$ git push origin clang-fix-campaign
+68338dc..33fcf68  clang-fix-campaign -> clang-fix-campaign
+exit=0
+$ gh run view 37912146491 --json headSha,status,conclusion,url
+{"conclusion":"success","headSha":"33fcf68241b4ada6fcfd8b03df8d026ef14d82a8","status":"completed","url":"https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37912146491"}
+exit=0
+```
+
+## 17. C5收口
+
+[p5-sandbox-submit-closeout.md](../../review/p5-sandbox-submit-closeout.md)
+状态READY_FOR_REVIEW,含§6.1/6.2/6.3/6.4规则与真实用例名映射、§2.5/2.8
+已知限制、P5-C4-01私有接口事项、真实hook PASSED原文与各阶段证据。
+原有3项checker遗留未改。本次无新行为/安全边界裁决请求;§16非语义实现细节
+已逐项登记。C5只改文档与证据,无生产/测试代码变化。
+
+映射检查使用ast枚举四文件(test_suppress_policy/test_campaign_gate_view/
+test_sandbox_submit/test_sandbox_git)的test函数,与收口表中的反引号用例名集合
+相减;再对tests/所有测试函数检查表内名字存在性。命令实跑输出:
+
+```text
+new_module_test_functions=83 missing_from_mapping=[] unknown_test_names=[]
+exit=0
+```
+
+最终独立复跑(完整原文见[evidence/C5/commands.json](evidence/C5/commands.json)
+及同目录log,比较见[evidence/C5-comparison.json](evidence/C5-comparison.json)):
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-c5-33fcf68 docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C5
+pytest: exit=0 expected=0
+mypy: exit=0 expected=0
+ruff: exit=0 expected=0
+lint-imports: exit=0 expected=0
+symbol: exit=0 expected=0
+bridge: exit=0 expected=0
+design-doc: exit=0 expected=0
+completed=94 unexpected=3
+exit=0
+======================= 1845 passed, 1 skipped in 57.36s =======================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C5 /tmp/p5-c5-33fcf68
+exit_changes={}; missing_nodeids=[]; changed_outcomes={}
+added_nodeids=349; identical_tested_sources=0
+baseline_comparison=PASS
+exit=0
+C4_to_C5 nodeids=1846 added=0 missing=0 outcome_changes=0
+exit=0
+
+tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive PASSED [  3%]
+```
+
+C5新增测试0;真实hook本机passed,不是skip。C0-C4远端均SUCCESS,
+C5推送后的远端结果由交付回报外部锚定,不在尚未产生的本提交中预填成功。
+状态保持READY_FOR_REVIEW,等待设计方核验/评审,不自行CLOSED。
