@@ -25,6 +25,7 @@
 | P2 submission identity | CLOSED | Design `9b7754e`; implementation `3d48877`; real hook `ec6c331`; review minors addressed | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批), 2026-10-08; [progress](stage16_p2_submission_identity/progress.md#11-评审次要意见处置与签批2026-10-08): 1420 passed/1 skipped; no new gate failures; three P4/P5/P5R transfers retained |
 | P3 aggregate | CLOSED | `f12154b`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p3-aggregate-closeout.md#最终签收); [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09): 1496 passed/1 skipped, design synchronization retained for P5 |
 | P4 derive_commit | CLOSED | `2ba0e0d`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09): 1480 passed/1 skipped, real hook PASSED; new P5 hardening in stage16 transfer list |
+| P5 sandbox-submit | C0_VALIDATED | P5-C0-01 closed; design checker 0 problems; 1496 passed/1 skipped | [progress](stage19_p5_sandbox_submit/progress.md#6-p5-c0-01设计方裁定与落实); 94 command exits unchanged vs cd7f8dd, remote CI after push |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -56,6 +57,7 @@ second contract authority. Runtime behavior remains governed by
 | 16 P2 submission identity | CLOSED | Designer verified; Claude Code CLOSED, zero blockers, four minor findings disposed, 2026-10-08 | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批); [progress](stage16_p2_submission_identity/progress.md#12-设计正文待同步); P4/P5/P5R transfers, cross-unit cache deletion boundary and three unchanged checker issues retained |
 | 17 P3 aggregate | CLOSED | Accepted `f12154b`, 2026-10-09; single reviewer: P3 acceptable; PM verified fixes, FatTank approved | [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09); [final acceptance](../review/p3-aggregate-closeout.md#最终签收); design text synchronization deferred to P5 |
 | 18 P4 derive_commit | CLOSED | Accepted `2ba0e0d`, 2026-10-09; single reviewer: changes needed; PM verified fixes, FatTank approved | [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09); [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [P5 transfers](stage16_p2_submission_identity/progress.md#5-p2-01裁决与移交清单), not yet implemented |
+| 19 P5 sandbox-submit | C0_VALIDATED | C0 v1.5.20 synchronization and P5 freeze; no production/checker changes | [progress](stage19_p5_sandbox_submit/progress.md); P5-C0-01 CLOSED, 94 exits unchanged, C1-C5 not started |
 
 ## Code-Ready Checkpoint
 

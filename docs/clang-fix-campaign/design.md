@@ -2,7 +2,8 @@
 
 ## 0. 元信息
 
-- 版本:**v1.5.19-FROZEN(实现输入版)**
+- 版本:**v1.5.20-FROZEN(实现输入版)**
+- v1.5.20 变更记录:P2-P5 落地裁定见 §4.4,按 P5 冻结设计附录 A 同步。
 - 创建时间:2026-07-29 最近修订:2026-10-08
 - 状态:**Frozen**(2026-08-06,change_45 第二轮 delta 闭环裁决;2026-10-08 经
   change_47 R1 修订:EF-3 按规定关闭、Change-Id 改为 commit-msg hook 生成并按
@@ -193,6 +194,7 @@
   Change-Id 保 Gerrit 侧幂等)。命名约束已按 EF-6 关闭(使用者指定 + 权限保证);QB 对固定分支名的要求随 EF-5 观察,
   若需按包细分则升版走 R1。commit message
   `Fix build error for clang compiler: <brief>` + 溯源 trailer。
+  (v1.5.20:commit message 格式以 §4.4 第 11 条为准。)
 - [ASSUMPTION] A6:kb 数据 `tizen-ci-triage/kb/`;代码 ci_triage.kb 模块。
 - [ASSUMPTION] A7:git 走 subprocess 参数列表,不引入 GitPython。
 - [ASSUMPTION] A8:campaign 文档树 `docs/clang-fix-campaign/` 命名空间。
@@ -760,6 +762,7 @@ standard-aarch64 → aarch64   standard-armv7l → armv7l   standard-x86_64 → 
 **归一化后**的 arch 集合恰为目标集合 {aarch64, armv7l, x86_64}。
 任一不符 → REJECTED_ARCH_AGGREGATE_MISMATCH,reasons 逐项列出具体差异
 (如 `arch1 tree=abc… arch2 tree=def…`)。
+(v1.5.20:绑定字段与非空要求以 §4.4 第 5–6 条为准。)
 
 **campaign unit gate 状态记录(v1.2,写入 state DB,单一真相源,A13)**:
 `reproduced` + basis 摘要、`fix_strategy_initial/final`、
@@ -1146,6 +1149,7 @@ target 级作用域(`target_compile_options(<t> PRIVATE …)` 或等效
 per-target 变量);源内 pragma ignored(计 suppress,记 policy hit)。
 **gate 联动(A2)**:final=suppress ⇒ sandbox only(即使 allowed);
 final ∈ {code, cherry_pick} ⇒ 具 review 资格。
+(v1.5.20:检测规则的可执行定义见 P5 设计文件第 2 节;计数逐文件比较,见 §4.4 第 20 条。)
 
 ## 4. 接口契约(冻结,开发阶段不得修改)
 
@@ -1167,6 +1171,7 @@ python -m ci_triage sandbox-submit
                  change_id, derived_commit_sha, push{ref,result,url},
                  error_code|null }
   exit: 0 成功;2 参数错;4 校验拒绝(聚合/policy/白名单/dirty);5 push 失败
+  # v1.5.20:参数、流程、输出与退出码以 P5 设计文件第 4 节 为准(§4.4 第 10–14、17、19 条)
 
 python -m ci_triage campaign-release-worktrees   # v1.3.12 新增(人显式释放)
     --state-db <path> --campaign-unit-key <key> --confirmed-by <who>
@@ -1251,6 +1256,7 @@ python -m ci_triage campaign-repair-step   # v1.4.9 八步契约(取代 v1.4.3 �
   #        · `iter_index` **由 round_index 派生**,workspace_root 由
   #          `(unit_hash, arch_norm)` 派生(§4.2 布局),**不接受外部指定**
   #      任一不符 → REJECTED_IDENTITY_MISMATCH(exit 4),**不计费、不 build**
+  # v1.5.20:发布后父目录 fsync;link 不可用 → WORKSPACE_FS_UNSUPPORTED(§4.4 第 16 条)
   #   3) **联合对账(v1.5.9,B1 重排——含孤儿 PASS reconciliation 与
   #      孤儿 invocation 补写;v1.4.6:**必须排在预算消费之前**——
   #      否则"已有 PASS 的重试不计费"这条与计费顺序自相矛盾)**:
@@ -1778,6 +1784,7 @@ python -m ci_triage campaign-preflight    # v1.3.1 新增(A0 物理化)
   # 值不回显;逐项检查并输出
   # 脱敏 JSON {checks:[{name,pass,evidence_redacted}]};任一失败 exit 4
   # (PREFLIGHT_FAILED)。剧本 A0 = 调用本命令并贴输出,不自行散文校验
+  # v1.5.20:gerrit_ssh_base 须为 ssh://(§4.4 第 18 条)
   exit: 0;2;4
 
 python -m ci_triage qb-sbs-trigger        # v1.3 新增
@@ -2009,6 +2016,7 @@ def generate_change_id_via_hook(*, hook_path: Path, hook_sha256: str,
     #   业务仓库之外,不含状态,残留无害)。
     # "拒" = ChangeIdHookError(CHANGE_ID_HOOK_FAILED)。不访问 state DB,
     # 不读写任何业务仓库。
+    # v1.5.20:见 §4.4
 
 # module: campaign_state
 def ensure_schema(state_db) -> None:
@@ -2394,16 +2402,19 @@ def gate_view(state_db, campaign_unit_key) -> GateView:
     # 首写字段 = A12 四要素(message_brief/身份/日期);**edit_spec_ref 与
     # edit_spec_sha256 不属首写字段**——它们按 round 变化,权威来源是
     # `campaign_rounds`(v1.3.9 修正)
+    # v1.5.20:见 §4.4
 # module: aggregate
 def aggregate_verifications(ids, state_db) -> AggregateResult:
     ...
     # { ok, verified_tree_sha, base_commit, spec_name, project,
     #   edit_spec_sha256, gbs_conf_sha256, records[], reasons[] }  # 字段名同真实 record 列
+    # v1.5.20:见 §4.4
 # module: derive_commit
 def derive(worktree: Path, tree_sha, parent_sha, message,
            author_identity, committer_identity,
            author_date, committer_date) -> str:
     ...
+    # v1.5.20:见 §4.4
     # worktree 来源:三份 verification record 中**主 arch(CI 失败 arch)那份**
     # 的既有 worktree_path 列;不作为 CLI 参数(减少可伪造入参)。
     # **保留期的执行机制(v1.3.5 关键修正)**:文档纪律不足以保留——
@@ -2514,6 +2525,7 @@ def toctou_recheck(record, worktree) -> bool:
 def check_push_ref(ref) -> RefClass:
     ...  # RefClass{SANDBOX|REVIEW|FORBIDDEN}
     # sandbox-submit 与 review-submit 共用的推送 ref 校验器(v1.2.2 更名)
+    # v1.5.20:见 §4.4
 # module: reproduce
 def check(evidence_ci, evidence_local, *, package, arch_norm,
           toolchain_profile) -> ReproduceResult:
@@ -2528,6 +2540,7 @@ def evaluate(edit_spec, src_root,
     ...
     # { verdict, fix_strategy_final, hits[] };source_kind 仅参与四步序
     # 第 3 步,信任分析见 §3.7
+    # v1.5.20:见 §4.4
 # module: review_submit
 def validate_qb_gate(state_db, campaign_unit_key, qb_result_path, *,
                      allow_manual: bool = False) -> QbGateResult:
@@ -2627,6 +2640,9 @@ REVIEW_MANUAL                      降级路径:仅打印命令未 push(v1.3.2)
 REJECTED_REVIEW_GATE               A2 gate 不满足(如 final=suppress)
 PUSH_FAILED / NOT_REPRODUCED / ROUNDS_EXHAUSTED /
 DIFF_CONVERT_UNSUPPORTED / KB_SCHEMA_INVALID / INVALID_ARGS   (沿用)
+WORKSPACE_FS_UNSUPPORTED  edit_spec 发布所需的硬链接或目录 fsync 不可用(v1.5.20)
+REJECTED_ROUND_SUPERSEDED  传入记录不属于最新 round(v1.5.20)
+REJECTED_UNSAFE_GIT_CONFIG  仓库本地配置含 URL 改写或可执行命令类键(v1.5.20)
 ```
 
 物理底线(不可配置):只推 derived_commit(tree == 聚合校验过的
@@ -2634,6 +2650,49 @@ verified_tree_sha);ref 白名单外一律拒;force 仅 sandbox;聚合不齐不 p
 worktree 缺失/dirty 不 push;**refs/for 无 QB 绑定证据不 push**;
 forbidden suppress 形态任何 ref 都不 push;push 前 TOCTOU 重校验
 (record↔worktree 绑定在 push 动作紧前重验)。
+
+### 4.4 v1.5.20 修订:P2–P5 落地裁定
+
+本节汇总 P2、P3、P4 收口时的裁定,以及 P5 设计引入的契约变化。
+P5 模块(suppress_policy、gate_view、sandbox_submit)的权威契约见 `p5-sandbox-submit-design-v1.x-FROZEN.md`,
+与本文其它章节冲突时以该文件为准。
+
+**submission_identity(P2)**
+1. `generate_change_id_via_hook` 与 `get_or_create_change_id` 入口先校验 submission_key 为 64 位小写十六进制,
+   分别抛 `ChangeIdHookError` / `StateInconsistent`;在创建临时目录或调用 generate 之前拒绝。
+2. 缓存未命中后先确认 campaign_unit_key 存在,不存在即 `StateInconsistent`,不得调用 generate;生成后事务内复查沿用此规则。
+3. 首行匹配 `^[a-z]+! ` 的消息在调用 hook 前拒绝(Gerrit hook 对 fixup!/squash! 类提交不生成 Change-Id);首行大写不在拒绝范围。
+   `gerrit.createChangeId` 保持 `true`,不改为 `always`。
+4. 已知边界:DERIVE 检查只针对传入的 unit;跨 unit 带外删除共享缓存行不在保护范围。
+
+**aggregate(P3)**
+5. 绑定字段增加 `branch`,`AggregateResult` 同步增加该字段;任一不符时全部绑定字段为 None。
+6. 七个绑定字段在每条记录上 strip 后必须非空,空值逐条进入 reasons;相等性比较原值,不做 hex 格式校验。
+
+**derive_commit(P4)**
+7. author_date / committer_date 必须匹配 `^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})$`(`re.ASCII`),
+   且能解析为真实日期(`Z` 换成 `+00:00` 后用 `fromisoformat` 解析);不符即拒,不运行 git。DERIVE 事件写入使用同一校验。git 环境固定 `TZ=UTC`。
+8. 仓库查找上界为 `worktree.resolve().parent`,传入目录不是仓库根时报错,不得写入上层仓库。
+9. DERIVE 首写不可变字段为 message_brief、author_identity、committer_identity、author_date、committer_date(补入 committer_identity)。
+
+**sandbox-submit(P5)**
+10. 新增可选参数 `--edit-source-kind`,该 round 无 POLICY 时必填;已有存量时复用存量。
+11. commit message 固定为 `Fix build error for clang compiler: <brief>`、一个空行、`Change-Id: <id>` 三部分,不加其它 trailer;
+    溯源信息只保存在 state DB 与 KB 记录中。
+12. `fix_strategy_initial` 由 edit_source_kind 固定映射:t1_cherry_pick→cherry_pick,generated→code,suppress→suppress。
+    POLICY 事件增加 `rules_version` 字段,规则升级后已有未推送单元若结论变化即挂起,须人工重置。
+13. 调用方选错记录(未链接、跨 unit、跨 round、非最新 round、状态不允许)只拒绝,不写 HELD;选定之后的绑定异常按 §4.2 拒绝矩阵进入 HELD。
+    HELD 行的 arch_norm 按 P5 设计文件第 4.2 节 的规则填写。
+14. 推送只更新显式给出的那一条 sandbox ref。P5 的所有 git 调用:禁用系统与全局配置,无条件设 `GIT_SSH_COMMAND`,限定传输协议为 file 与 ssh,
+    用 `-c` 覆盖 hooksPath、fsmonitor、askPass、credential.helper、followTags、recurseSubmodules、gpgSign、pushOption;推送加 `--no-verify`。
+    仓库本地配置中出现 URL 改写或可执行命令类键时拒绝(名单见 P5 设计文件第 4.4 节)。
+15. `toctou_recheck`、`check_push_ref` 的签名与返回结构、`gate_view` 的字段集与一致快照要求,以 P5 设计文件为准。
+16. 新增错误码 `WORKSPACE_FS_UNSUPPORTED`:edit_spec 发布时 `os.link` 或父目录 fsync 不可用,exit 5。
+    canonical 发布失败不建 round、不计费;build 副本发布失败不计费。各成功路径都在返回前对父目录 fsync。
+17. 新增错误码 `REJECTED_ROUND_SUPERSEDED`:sandbox-submit 传入的记录不属于该 unit 的最新 round。
+18. `gerrit_ssh_base` 非 `ssh://` 时,campaign-preflight 必须报 `PREFLIGHT_FAILED`(本地路径只供测试)。
+19. 新增错误码 `REJECTED_UNSAFE_GIT_CONFIG`:被检查仓库的本地配置含 URL 改写或可执行命令类键,exit 4,不写 HELD。
+20. suppress policy 的全部计数规则逐文件比较,不允许跨文件抵消;合法的跨文件搬动须走人工。
 
 ## 5. 非功能性需求
 
@@ -2772,6 +2831,7 @@ P11 → P12(e2e 单包真机)
   (含 A12 message/身份/日期与 edit_source_kind 的存取);
   suppress_policy.evaluate 完整实现(§3.7 四步序含 source_kind 参数 +
   全部 forbidden/allowed/suppress 检测形态)+ 独立 CLI 接线
+  (v1.5.20:suppress_policy 与 gate_view 两项未在本阶段交付,已移交 P5 实施,DoD 条目随之移交,见 §4.4 与 P5 设计文件第 0.1 节。)
 - **边界与并行性(v1.2.2 定案)**:gate 记录中 derived_commit_sha/
   change_id 等字段在本 Phase 仅为 schema 字符串定义,计算逻辑属 P2/P4,
   P5 才接线——故与 P2–P4 无依赖可并行;本 Phase 提供纯 CRUD
@@ -3008,6 +3068,7 @@ P11 → P12(e2e 单包真机)
 - 范围:组装 P2/P3/P4 + **调用 P4.5 的 policy 与 gate 记录 API**
   (自身不再实现);分支名校验;A12 四要素首次写入/复用断言;
   message_brief 首次必填规则;幂等;toctou_recheck 接入
+  (v1.5.20:并入 P4.5 未交付的 suppress_policy 与 gate_view,见 P5 设计文件第 0.1 节。)
 - DoD 专项:[ ] protected marker 在三 arch PASS 后均存在;[ ] **聚合成功组
   在 P5 阶段仍受保护**的断言(v1.3.11:partial 释放、终态释放、崩溃幂等
   三条已移交 P10/P11——P5 只在三 arch 聚合成功后运行,接触不到
@@ -3345,7 +3406,7 @@ tizen-ci-triage/scripts/ci_triage/;kb 数据 tizen-ci-triage/kb/;
 
 ---
 
-本文档为 **v1.5.19-FROZEN(实现输入版)**(2026-10-08;
+本文档为 **v1.5.20-FROZEN(实现输入版)**(2026-10-08;
 冻结裁决见 §0)。
 
 **EF 台账**:EF-1 / EF-2 / EF-3 / EF-4 / EF-6 **已关闭**(结论见 §1.4);
