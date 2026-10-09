@@ -1,6 +1,7 @@
 # P4 Derive Commit Closeout
 
-日期:2026-10-08。状态:**READY_FOR_REVIEW**,未自行签批CLOSED。
+日期:2026-10-09。状态:**FIXES_APPLIED**,未自行签批CLOSED。
+首次实现的验收记录保留;本轮PM裁决与新增证据见末尾“评审修复”。
 
 权威:`../design.md` v1.5.19-FROZEN §3.4/§4.2/§7 Phase 4。
 基线为P3 `0910f34`;本期只新增`ci_triage/derive_commit.py`及测试/取证/记账,
@@ -76,3 +77,25 @@ Git 2.55.0显示UTC为`Z`,本机2.43.0显示`+00:00`,结果1 failed/1456 passed/
 `current/`为首次本机记录,`ci-date/`为补丁后的独立完整复跑,不覆盖旧证据。
 补丁全量1457 passed/1 skipped,四项主验收exit0;94条exit与P3基线逐条不变,
 详见`ci-date-comparison.json`。补丁远端run单独核对,不以首次失败run冒充通过。
+
+## 评审修复
+
+2026-10-09按PM轻量裁决落实;状态FIXES_APPLIED,不修改design.md,
+待P5设计修订统一同步。此前READY_FOR_REVIEW为历史停点。
+
+| 发现 | 处置 | 证据路径(stage18) |
+|---|---|---|
+| 日期接受相对/无时区输入 | 唯一COMMIT_DATE_RE,derive与DERIVE payload共用;非法输入在Git前拒绝 | `evidence/review-fixes/targeted.log`:两字段四类非法输入均通过;PayloadSchemaError对应校验 |
+| 环境TZ导致不确定性 | Git env固定UTC,Shanghai/UTC同SHA;带偏移固定SHA与改前一致 | 同上timezone与sha_snapshot测试 |
+| 普通子目录向上发现仓库 | GIT_CEILING_DIRECTORIES=resolve().parent,CalledProcessError且outer对象数量/字节不变 | 同上inner_directory测试 |
+| 真实hook未纳pytest | 新integration用例复用P2配置与hash,原脚本保留;最终message/tree/现场断言全部通过 | 同上`test_registered_real_hook_then_derive PASSED`;`current/pytest.log`同样PASSED |
+| createChangeId=always建议 | 不采纳,P2已拒绝`^[a-z]+! `首行并说明原因,维持原hook契约 | progress §8/§9,submission_identity无diff |
+
+真实hook缺配置/文件或hash不符时skip。**skip不算已验证**;
+本机实跑为passed,不是skipped,完整log见上表。远端缺私有hook时的skip不替代此证据。
+本次40项定向exit0;全仓1457/1→1480/1(+23),mypy/ruff/lint-imports各exit0。
+相对固定4a6873d,94命令exit无变化,既有用例无缺失/结果变化;
+90门禁的三条历史偏差原样保留。完整命令与对照在
+[progress §8](../dev_memory/stage18_p4_derive_commit/progress.md#8-评审修复与pm轻量裁决2026-10-09)
+及`evidence/review-fixes/comparison.json`。本提交远端CI由GitHub run外部锚定,
+推送后实查并在交付回报给出链接。

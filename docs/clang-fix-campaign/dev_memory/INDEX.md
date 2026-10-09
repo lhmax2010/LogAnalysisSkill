@@ -24,7 +24,7 @@
 | P1 EF-5 environment spike | WEB_READ_PARTIAL | Historical 3 GETs/200 retained; latest five-path rerun BLOCKED, 0 probe requests after full login wait | [stage15 progress](stage15_p1_ef_spike/progress.md#13-本人到场后的五路径重跑2026-10-09); [EF report](../spikes/ef_report.md); Successful/ACCEPTED rule and target-variable equivalence await FatTank |
 | P2 submission identity | CLOSED | Design `9b7754e`; implementation `3d48877`; real hook `ec6c331`; review minors addressed | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批), 2026-10-08; [progress](stage16_p2_submission_identity/progress.md#11-评审次要意见处置与签批2026-10-08): 1420 passed/1 skipped; no new gate failures; three P4/P5/P5R transfers retained |
 | P3 aggregate | READY_FOR_REVIEW | Added aggregate_verifications; six binding fields, exact arch whitelist/set, detailed reasons; existing APIs unchanged | [closeout](../review/p3-aggregate-closeout.md); [progress](stage17_p3_aggregate/progress.md): 1440 passed/1 skipped; no new gate failures |
-| P4 derive_commit | READY_FOR_REVIEW | Added detached commit-tree derivation; exact tree/message/identity checks; real-hook P2 handoff verified | [closeout](../review/p4-derive-commit-closeout.md); [progress](stage18_p4_derive_commit/progress.md): 1457 passed/1 skipped; no new gate failures; workspace/index unchanged |
+| P4 derive_commit | FIXES_APPLIED | PM review fixes: strict timezone dates, UTC environment, repository ceiling, real-hook integration test | [closeout](../review/p4-derive-commit-closeout.md); [progress](stage18_p4_derive_commit/progress.md#8-评审修复与pm轻量裁决2026-10-09): 1480 passed/1 skipped; real hook PASSED, 94 exits unchanged vs 4a6873d |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -55,7 +55,7 @@ second contract authority. Runtime behavior remains governed by
 | 15 P1 EF-5 spike | WEB_READ_PARTIAL | Chinese pre-launch instruction; 10-minute isolated login rerun ended exit 2; 24 offline/20 browser controls and 1457/1 regression green | [progress](stage15_p1_ef_spike/progress.md#13-本人到场后的五路径重跑2026-10-09); [report](../spikes/ef_report.md); web-browser-02 records BLOCKED/0 requests, two business decisions pending FatTank, P2-P4 unchanged |
 | 16 P2 submission identity | CLOSED | Designer verified; Claude Code CLOSED, zero blockers, four minor findings disposed, 2026-10-08 | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批); [progress](stage16_p2_submission_identity/progress.md#12-设计正文待同步); P4/P5/P5R transfers, cross-unit cache deletion boundary and three unchanged checker issues retained |
 | 17 P3 aggregate | READY_FOR_REVIEW | Additive aggregate module and 20 focused tests | [progress](stage17_p3_aggregate/progress.md); [closeout](../review/p3-aggregate-closeout.md); 1440 passed/1 skipped, 90 design gates with no new failures |
-| 18 P4 derive_commit | READY_FOR_REVIEW | Additive derive module and 17 focused tests; real hook final-message handoff passed | [progress](stage18_p4_derive_commit/progress.md); [closeout](../review/p4-derive-commit-closeout.md); 1457 passed/1 skipped; P5/P5R remain deferred to their own phases |
+| 18 P4 derive_commit | FIXES_APPLIED | 40 focused tests; real-hook final-message test PASSED locally; skip is not verification | [progress](stage18_p4_derive_commit/progress.md); [closeout](../review/p4-derive-commit-closeout.md); 1480 passed/1 skipped, design text synchronization deferred to P5 |
 
 ## Code-Ready Checkpoint
 

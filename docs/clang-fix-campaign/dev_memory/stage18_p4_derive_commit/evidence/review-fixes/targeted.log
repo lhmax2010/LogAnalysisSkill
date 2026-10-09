@@ -1,0 +1,50 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 40 items
+
+tests/unit/test_derive_commit.py::test_tree_parent_identities_message_snapshot_and_worktree_index_unchanged PASSED [  2%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[tree_sha] PASSED [  5%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[parent_sha] PASSED [  7%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[message] PASSED [ 10%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[author_identity] PASSED [ 12%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[committer_identity] PASSED [ 15%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[author_date] PASSED [ 17%]
+tests/unit/test_derive_commit.py::test_each_derivation_input_participates_in_identity[committer_date] PASSED [ 20%]
+tests/unit/test_derive_commit.py::test_ambient_git_routing_and_local_hooks_do_not_touch_worktree PASSED [ 22%]
+tests/unit/test_derive_commit.py::test_invalid_tree_leaves_worktree_and_index_unchanged PASSED [ 25%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes0] PASSED [ 27%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes1] PASSED [ 30%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes2] PASSED [ 32%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes3] PASSED [ 35%]
+tests/unit/test_derive_commit.py::test_invalid_parameters_refuse_before_git[changes4] PASSED [ 37%]
+tests/unit/test_derive_commit.py::test_tree_postcondition_is_enforced PASSED [ 40%]
+tests/unit/test_derive_commit.py::test_hook_identity_goes_to_final_trailer_without_auxiliary_line PASSED [ 42%]
+tests/unit/test_derive_commit.py::test_invalid_dates_refuse_before_git[2026-10-08 00:00:00-author_date] PASSED [ 45%]
+tests/unit/test_derive_commit.py::test_invalid_dates_refuse_before_git[2026-10-08 00:00:00-committer_date] PASSED [ 47%]
+tests/unit/test_derive_commit.py::test_invalid_dates_refuse_before_git[2 days ago-author_date] PASSED [ 50%]
+tests/unit/test_derive_commit.py::test_invalid_dates_refuse_before_git[2 days ago-committer_date] PASSED [ 52%]
+tests/unit/test_derive_commit.py::test_invalid_dates_refuse_before_git[2026-10-08T00:00:00-author_date] PASSED [ 55%]
+tests/unit/test_derive_commit.py::test_invalid_dates_refuse_before_git[2026-10-08T00:00:00-committer_date] PASSED [ 57%]
+tests/unit/test_derive_commit.py::test_invalid_dates_refuse_before_git[2 days ago +0800-author_date] PASSED [ 60%]
+tests/unit/test_derive_commit.py::test_invalid_dates_refuse_before_git[2 days ago +0800-committer_date] PASSED [ 62%]
+tests/unit/test_derive_commit.py::test_derive_payload_rejects_invalid_dates[2026-10-08 00:00:00-author_date] PASSED [ 65%]
+tests/unit/test_derive_commit.py::test_derive_payload_rejects_invalid_dates[2026-10-08 00:00:00-committer_date] PASSED [ 67%]
+tests/unit/test_derive_commit.py::test_derive_payload_rejects_invalid_dates[2 days ago-author_date] PASSED [ 70%]
+tests/unit/test_derive_commit.py::test_derive_payload_rejects_invalid_dates[2 days ago-committer_date] PASSED [ 72%]
+tests/unit/test_derive_commit.py::test_derive_payload_rejects_invalid_dates[2026-10-08T00:00:00-author_date] PASSED [ 75%]
+tests/unit/test_derive_commit.py::test_derive_payload_rejects_invalid_dates[2026-10-08T00:00:00-committer_date] PASSED [ 77%]
+tests/unit/test_derive_commit.py::test_derive_payload_rejects_invalid_dates[2 days ago +0800-author_date] PASSED [ 80%]
+tests/unit/test_derive_commit.py::test_derive_payload_rejects_invalid_dates[2 days ago +0800-committer_date] PASSED [ 82%]
+tests/unit/test_derive_commit.py::test_derive_payload_accepts_explicit_timezone[2026-10-08T00:00:00Z] PASSED [ 85%]
+tests/unit/test_derive_commit.py::test_derive_payload_accepts_explicit_timezone[2026-10-08T00:00:00+00:00] PASSED [ 87%]
+tests/unit/test_derive_commit.py::test_derive_payload_accepts_explicit_timezone[2026-10-08T08:00:00+08:00] PASSED [ 90%]
+tests/unit/test_derive_commit.py::test_timezone_does_not_change_derived_sha PASSED [ 92%]
+tests/unit/test_derive_commit.py::test_explicit_timezone_sha_snapshot_is_unchanged PASSED [ 95%]
+tests/unit/test_derive_commit.py::test_inner_directory_cannot_write_objects_in_outer_repository PASSED [ 97%]
+tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive PASSED [100%]
+
+============================== 40 passed in 0.74s ==============================

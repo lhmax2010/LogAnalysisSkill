@@ -1,0 +1,46 @@
+{
+  "baseline_commit": "4a6873d",
+  "command_count": 94,
+  "exit_changes": {},
+  "baseline_tests": {
+    "passed": 1457,
+    "skipped": 1
+  },
+  "current_tests": {
+    "passed": 1480,
+    "skipped": 1
+  },
+  "missing_nodeids": [],
+  "changed_outcomes": [],
+  "added_nodeids": [
+    "tests.integration.test_derive_commit_real_hook::test_registered_real_hook_then_derive",
+    "tests.unit.test_derive_commit::test_derive_payload_accepts_explicit_timezone[2026-10-08T00:00:00+00:00]",
+    "tests.unit.test_derive_commit::test_derive_payload_accepts_explicit_timezone[2026-10-08T00:00:00Z]",
+    "tests.unit.test_derive_commit::test_derive_payload_accepts_explicit_timezone[2026-10-08T08:00:00+08:00]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2 days ago +0800-author_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2 days ago +0800-committer_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2 days ago-author_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2 days ago-committer_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2026-10-08 00:00:00-author_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2026-10-08 00:00:00-committer_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2026-10-08T00:00:00-author_date]",
+    "tests.unit.test_derive_commit::test_derive_payload_rejects_invalid_dates[2026-10-08T00:00:00-committer_date]",
+    "tests.unit.test_derive_commit::test_explicit_timezone_sha_snapshot_is_unchanged",
+    "tests.unit.test_derive_commit::test_inner_directory_cannot_write_objects_in_outer_repository",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2 days ago +0800-author_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2 days ago +0800-committer_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2 days ago-author_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2 days ago-committer_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2026-10-08 00:00:00-author_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2026-10-08 00:00:00-committer_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2026-10-08T00:00:00-author_date]",
+    "tests.unit.test_derive_commit::test_invalid_dates_refuse_before_git[2026-10-08T00:00:00-committer_date]",
+    "tests.unit.test_derive_commit::test_timezone_does_not_change_derived_sha"
+  ],
+  "tested_files": {
+    "tizen-ci-triage/scripts/ci_triage/derive_commit.py": "8e04e1ae389914d26fb49c2983616315308d7478971f63d332e8c384c83fb90f",
+    "tizen-ci-triage/scripts/ci_triage/campaign_state.py": "c4f53f324c6f97bb5ca3f056126d0ff5e6631c2259b16ec8d1c264b47f5d0fcf",
+    "tests/unit/test_derive_commit.py": "130052fd45fba5a5d9f1d70765a05380b83e0723206c3f0bf8b99d8544e0a6f1",
+    "tests/integration/test_derive_commit_real_hook.py": "530f1af19fb6bd5237541e8308b902ee1ecd0a3b6d0719f8c7490e6087af9d92"
+  }
+}

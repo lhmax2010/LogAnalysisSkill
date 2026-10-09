@@ -7,6 +7,8 @@ import re
 import subprocess
 from pathlib import Path
 
+COMMIT_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})$")
+
 
 def _identity(value: str) -> tuple[str, str]:
     match = re.fullmatch(r"([^<>\r\n]+) <([^<>\r\n]+)>", value)
@@ -31,8 +33,9 @@ def derive(
     for label, value in (("tree_sha", tree_sha), ("parent_sha", parent_sha)):
         if re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", value) is None:
             raise ValueError(f"{label} must be a full lowercase Git object ID")
-    if not author_date or not committer_date:
-        raise ValueError("author_date and committer_date must be explicit")
+    for label, value in (("author_date", author_date), ("committer_date", committer_date)):
+        if COMMIT_DATE_RE.fullmatch(value) is None:
+            raise ValueError(f"{label} must be ISO 8601 with an explicit timezone")
 
     # Ambient Git routing/configuration must not redirect writes to another repository.
     env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
@@ -42,6 +45,7 @@ def derive(
         "GIT_COMMITTER_NAME": committer_name, "GIT_COMMITTER_EMAIL": committer_email,
         "GIT_AUTHOR_DATE": author_date, "GIT_COMMITTER_DATE": committer_date,
         "GIT_NO_REPLACE_OBJECTS": "1", "GIT_NO_LAZY_FETCH": "1",
+        "TZ": "UTC", "GIT_CEILING_DIRECTORIES": str(worktree.resolve().parent),
     })
     command = ["git", "-C", str(worktree), "-c", "commit.gpgsign=false",
                "-c", "i18n.commitEncoding=UTF-8"]

@@ -1,6 +1,7 @@
 # Stage18 P4 derive_commit
 
-日期:2026-10-08。状态:**READY_FOR_REVIEW**。
+日期:2026-10-09。状态:**FIXES_APPLIED**,待设计方核验,不自行标CLOSED。
+§1-7保留首次实现及其历史验收;本轮评审裁决与证据见§8-9。
 
 ## 1. 权威、范围与计划
 
@@ -145,3 +146,81 @@ completed=94 unexpected=3
 四项主验收exit0;三条unexpected仍为原有checker遗留。
 `ci-date-comparison.json`:94条exit无变化,missing_nodeids/changed_outcomes为空,
 较P3基线仅增加原定17例,两个代码/测试文件摘要与实测工作树一致。
+
+## 8. 评审修复与PM轻量裁决(2026-10-09)
+
+单家评审结论P4需修改;以下按本轮PM明确裁决执行,不改design.md。
+
+| 发现/裁决 | 处置与验收 |
+|---|---|
+| Git接受相对日期/无时区日期,结果可能依赖环境 | `derive_commit.COMMIT_DATE_RE`唯一正则,严格fullmatch指定ISO 8601带时区形态;derive失败抛ValueError且零subprocess;campaign_state._validate_derive复用同一正则,拒绝为PayloadSchemaError |
+| 继承TZ及向上查找仓库的边界 | 两次Git调用均显式TZ=UTC、GIT_CEILING_DIRECTORIES=worktree.resolve().parent;inner普通子目录不能写入outer对象库,check=True抛CalledProcessError |
+| 真实hook证据只在独立脚本 | 断言主体迁写为`tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive`,integration marker;读取P2原配置及hash,原evidence脚本保留原字节 |
+| 建议createChangeId=always | **不采纳**。P2对首行`^[a-z]+! `已有显式拒绝和成因报错,保持现状;未修改submission_identity或hook参数 |
+
+正则位于编排层`ci_triage.derive_commit`,campaign_state同层复用,不改变shared/skill
+依赖契约。只有PM明确授权的DERIVE日期校验被收紧;其它事件/schema/API无改动。
+日期按指定正则检查形态,不另增设计外格式或时区规则。
+
+定向共40项,包括两日期各自四个非法输入且subprocess.run未调用、
+payload同样拒绝、Z/UTC/非零偏移正例、TZ=Asia/Shanghai与UTC同SHA、
+上层对象数量及原字节不变、既有快照、真实hook。
+修复前原derive实跑固定向量得SHA=`dd37c1d8fbcc4685bdc174b67569e82eab3c4405`,
+parent=`760d5d7be3b5dbfa088f8c348097f059ee53c006`,空tree=`4b825dc642cb6eb9a060e54bf8d69288fbee4904`;
+固定身份、消息、带时区日期及该SHA已固化在`test_explicit_timezone_sha_snapshot_is_unchanged`,
+修复后通过,未改既有带时区对象结果。
+
+真实hook配置:`stage16_p2_submission_identity/real-hook-config.json`,
+SHA256=`3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50`。
+本机定向及全仓均为**PASSED,不是SKIPPED**。缺配置/文件或hash不符时明确skip;
+**skip不算已验证**,远端若无私人hook文件,不能以其skip替代本机实测。
+断言涵盖最终唯一Change-Id trailer/无辅助行、tree相等、工作区/index/HEAD不变、
+生成ID不修改业务对象库、hook文件原字节不变。
+
+### 8.1 实跑证据
+
+证据根:`evidence/review-fixes/`。基线干净树`/tmp/p34-review-baseline-4a6873d`,
+候选干净树`/tmp/p4-review-fixes-89a45b0`,只复制本轮四个生产/测试文件。
+主树无关草稿及旧文档删除未带入。实际命令:
+
+```sh
+R=docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py
+E=docs/clang-fix-campaign/dev_memory/stage18_p4_derive_commit/evidence/review-fixes
+.venv/bin/python "$R" /tmp/p34-review-baseline-4a6873d "$E/baseline"
+.venv/bin/python "$R" /tmp/p4-review-fixes-89a45b0 "$E/current"
+.venv/bin/python -m pytest tests/unit/test_derive_commit.py tests/integration/test_derive_commit_real_hook.py -v
+.venv/bin/python "$E/compare_validation.py" "$E/baseline" "$E/current" /tmp/p4-review-fixes-89a45b0 tizen-ci-triage/scripts/ci_triage/derive_commit.py tizen-ci-triage/scripts/ci_triage/campaign_state.py tests/unit/test_derive_commit.py tests/integration/test_derive_commit_real_hook.py
+```
+
+```text
+============================== 40 passed in 0.74s ==============================
+tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive PASSED [100%]
+======================= 1480 passed, 1 skipped in 33.03s =======================
+Success: no issues found in 106 source files
+All checks passed!
+Contracts: 6 kept, 0 broken.
+completed=94 unexpected=3
+```
+
+各命令的完整argv、路径环境、exit、原始输出与hash在`baseline/commands.json`、
+`current/commands.json`及同目录日志;定向exit0原文`targeted.log`。
+比较脚本exit0,产物`comparison.json`:94条exit_changes={}、missing_nodeids=[]、
+changed_outcomes=[],基线1457/1→1480/1,新增23项。90条既有设计门禁无新增失败,
+三条历史偏差仍design-doc-controls=1、duplicate-spec-root-mismatch=0、
+twin-both-binary-key=1,不修改判据/期望,不把它们写成全绿。
+初次ruff仅新增测试与证据比较器的长行E501,已换行修正;最终ruff exit0。
+comparison.json钉定受验四文件SHA,提交前与主树逐字节比对。
+远端CI须以本修复提交对应run核验,在交付回报列出链接与结果,不以旧run替代。
+
+## 9. 设计正文待同步(P5设计修订时)
+
+1. §4.2 derive_commit:author_date/committer_date必须匹配PM指定带时区ISO 8601正则,
+   不合格ValueError且不运行Git;env固定TZ=UTC。
+2. §3.4/§4.2 campaign_state:DERIVE payload两日期复用同一正则,拒绝非法形态。
+3. §4.2 derive_commit:仓库发现上界为worktree.resolve().parent,非仓库根由Git
+   check=True拒绝,不得向上层仓库写对象。
+4. §7 Phase 4:真实hook移交断言纳入integration pytest;缺配置/文件/hash不符可skip,
+   但skip不算完成验证,本机必须有passed原文证据。
+5. P2 hook的createChangeId保持现状,不采always;首行`^[a-z]+! `的前置拒绝继续有效。
+
+以上是PM本轮直接裁决的待同步文本,本轮design.md零diff,未推进P5实现。

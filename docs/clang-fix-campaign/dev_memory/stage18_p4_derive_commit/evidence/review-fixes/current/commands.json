@@ -1,0 +1,1312 @@
+{
+  "python": "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+  "PYTHONPATH": [
+    "/tmp/p4-review-fixes-89a45b0/tizen-build-verify/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-ci-shared/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-ci-triage/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-convergence-judge/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gbs-build/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gbs-build-workflow/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gbs-log-analysis/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gbs-patch-suggest/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gerrit-fetch/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gerrit-submit/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-qb-discover/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-triage-report/scripts"
+  ],
+  "MYPYPATH": [
+    "/tmp/p4-review-fixes-89a45b0/tizen-build-verify/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-ci-shared/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-ci-triage/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-convergence-judge/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gbs-build/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gbs-build-workflow/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gbs-log-analysis/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gbs-patch-suggest/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gerrit-fetch/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-gerrit-submit/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-qb-discover/scripts",
+    "/tmp/p4-review-fixes-89a45b0/tizen-triage-report/scripts"
+  ],
+  "results": [
+    {
+      "name": "pytest",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/",
+        "-v",
+        "--cov=gbs_analyzer",
+        "--cov-report=term-missing",
+        "--cov-fail-under=80",
+        "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage18_p4_derive_commit/evidence/review-fixes/current/pytest.xml"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "af5a5adc48fbd6e8c3fcd6de480ea8c94995b62cf889c7abbe9239547216135e"
+    },
+    {
+      "name": "mypy",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "mypy"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "e4831d3dfc91583c9acc8600e3dc57cf4cd84986bafb3ca533dcc0aa17f965aa"
+    },
+    {
+      "name": "ruff",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "name": "lint-imports",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/lint-imports"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "30aab4943af62088ca059a77f0edba3d421ba562e14375fa21f34a1ed8871b5e"
+    },
+    {
+      "name": "symbol",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "017df3993cd94fc0f1e7c4e1821ce7160a8f43f91a6a357346163051ac99b760"
+    },
+    {
+      "name": "bridge",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "8557b37af1905944b8eef23be5b9214c8f2b42efc137431a6b815aa7b37d0148"
+    },
+    {
+      "name": "design-doc",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "cf943b2962ddfcf7edb62afe4d5dfaa6fd54c15b48756861b99689635c34519d"
+    },
+    {
+      "name": "design-doc-controls",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "--self-test"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 0,
+      "sha256": "1f668a121dd58989bd4a624df56acd2af8f254426ab3cc316881c66d286c6dbc"
+    },
+    {
+      "name": "symbol-negative-skill-owner-shared-consumer",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--negative-fixture",
+        "skill-owner-shared-consumer"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "464546f148395fbc07ad20525c7be5d60b37b635f614bb823f55ea47e5a0f8c4"
+    },
+    {
+      "name": "symbol-negative-skill-owner-peer-skill-consumer",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--negative-fixture",
+        "skill-owner-peer-skill-consumer"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "29f09c41d85cf393bc84013fbac9acd259a0101bb52da862f397116c5a666e48"
+    },
+    {
+      "name": "symbol-negative-duplicate-spec-root-mismatch",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--negative-fixture",
+        "duplicate-spec-root-mismatch"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 1,
+      "sha256": "fe953a1f52b9225553b5366c24820f69aab36d769230ab0ebf73419eed5ab8ce"
+    },
+    {
+      "name": "symbol-negative-twin-both-name-only",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--negative-fixture",
+        "twin-both-name-only"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "1b9b0a3206734d59223adb1bbde2609bf735e1778a82c615a1b8c98054a0c066"
+    },
+    {
+      "name": "symbol-negative-import-binding-legacy-alias",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--negative-fixture",
+        "import-binding-legacy-alias"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "e6e832b7adfd062d349af91892d1e1429f803bd28513ef5236766d707d4d9194"
+    },
+    {
+      "name": "symbol-key-source-twin-only",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--key-fixture",
+        "source-twin-only"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "ef880c6ce97cf610e242b61b3e4a60adf565d8a486b19cf913a7bfa43938158b"
+    },
+    {
+      "name": "symbol-key-twin-both-binary-key",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--key-fixture",
+        "twin-both-binary-key"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 0,
+      "sha256": "c6eec011957b0ed0f343ac5c155546cf8df4390f0866510ff5e400f358947233"
+    },
+    {
+      "name": "symbol-binding-regression-lock",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--binding-fixture",
+        "regression-lock"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "8135d884b61112f049c2bc76400fd13d6fd988cb6f72220954af9b99a1fd3580"
+    },
+    {
+      "name": "symbol-binding-aliased-import",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--binding-fixture",
+        "aliased-import"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "055d29a820830b05bc98528386a31123524e77ecd4250fa0604247d74b24dec6"
+    },
+    {
+      "name": "symbol-binding-same-name-import",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--binding-fixture",
+        "same-name-import"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "799a269e997403e769d8ebcbc2c744c32ce34da0e7c8c01b042684cd206db890"
+    },
+    {
+      "name": "symbol-binding-planned-run-git",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--binding-fixture",
+        "planned-run-git"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "83f2fe3b4b9a3f2e8748348155076376049a3052d3e089058a94a99c93795cd9"
+    },
+    {
+      "name": "symbol-surface",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/symbol_audit.py",
+        "--surface-fixture",
+        "mixed-case-alias"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "3a550a2c38ec3cf32f9b1cc5ce8f92fa055a2542739b6e09e3026a23e9535afb"
+    },
+    {
+      "name": "bridge-binary",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--key-fixture",
+        "twin-both-binary-key"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "824d3b970dfd3eaf76653316ebe2a3de7120cc50ecf6f4ba7e3588440341aa76"
+    },
+    {
+      "name": "bridge-name-only",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--negative-fixture",
+        "twin-both-name-only"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "a9eeb5969615fced67fab522b8617c587442d1b745b3a71313de77a9e3a42482"
+    },
+    {
+      "name": "relocation-missing-destination",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--relocation-negative",
+        "missing-destination"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "c6f84978735bf9931e1f5bfeb41cecf0cda3d8e1033927940647cd9071ff318e"
+    },
+    {
+      "name": "relocation-wrong-definition",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--relocation-negative",
+        "wrong-definition"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "f71b2d6f74cec7a5933718b8dbb0ea4478f41dc8de37290fcf99f203d9be35bd"
+    },
+    {
+      "name": "relocation-wrong-owner",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--relocation-negative",
+        "wrong-owner"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "e8420b1184a90df6b8e63b4538b72e1e0d4ac2cee35a64aa8a0a30052093a6c7"
+    },
+    {
+      "name": "relocation-source-remains",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--relocation-negative",
+        "source-remains"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "ed899a5c0a39929282a86d6dd64816068eb6c98efaa9aaae89c5208a2518d17c"
+    },
+    {
+      "name": "relocation-mapping-contract",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--relocation-negative",
+        "mapping-contract"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "9f21a2bd6b75da9cb497f1ffcf769b1d49177cd8418e285eeedfa05d000656ed"
+    },
+    {
+      "name": "relocation-source-table-mismatch",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--relocation-negative",
+        "source-table-mismatch"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "d867c0709333e6b9a11f4fcac127b7988dcfaa3903c8533c48bd056709165068"
+    },
+    {
+      "name": "synthetic-one",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--relocation-synthetic",
+        "one"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "ab201bf15b64d1a0f9b1b4c38784222f03ff964edf632fb6ba419668cfb213fe"
+    },
+    {
+      "name": "synthetic-two",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--relocation-synthetic",
+        "two"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "c23398c1a89fe9517afb697972ced1837b267e97ea198f3796903b452418218c"
+    },
+    {
+      "name": "synthetic-three",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/table_audit_bridge.py",
+        "--relocation-synthetic",
+        "three"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "42eaba7c78a53e95d63721c38f5a7baa3470fd817548d64c489a7b764bf058c3"
+    },
+    {
+      "name": "ledger4-check",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "check",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "a96d2580623e5a3658bb7fcfc6b506f033235f8b3e86042f15023876e8acd611"
+    },
+    {
+      "name": "ledger4-admission",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "admission-v19",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "2d1e45f33ddcf3c0cebe4e7d378f229364944c9928b5069c1aed48767a1b86b9"
+    },
+    {
+      "name": "ledger4-out-of-scope",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-fixture",
+        "out-of-scope-misuse",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "2b62046200904e989bcaa3b43205081d082e1ebf4e3cbde2361723408be86b1b"
+    },
+    {
+      "name": "ledger4-B-MIGRATION-MODES",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-MIGRATION-MODES",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "5ffd4b519b785f3e9baf1980450a1568234302678016b60580986e37944edfb0"
+    },
+    {
+      "name": "ledger4-B-PYTHONPATH-PARITY",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-PYTHONPATH-PARITY",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "0ebfdf9e6aca226db5bbfed7a335cca60af4c4f3bbcece3ccd77ca70f5b54d07"
+    },
+    {
+      "name": "ledger4-B-SYMBOL-TOTAL",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-SYMBOL-TOTAL",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "5ec81dcc64f4a5aa1f5cbbd9bf028486bd620d1ec07eaa6a37806ddb8ff651de"
+    },
+    {
+      "name": "ledger4-B-INCOMPLETE-GUARDS",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-INCOMPLETE-GUARDS",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "d623f70f00d8d52cc0242e5fd3be87b6bafbb54939101c857d1ced4c766eb795"
+    },
+    {
+      "name": "ledger4-B-EXCEPTION-NEGATIVES",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-EXCEPTION-NEGATIVES",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "274d3e1b6784cfdb627cd942ecce899889732b001d8d5b16c2ee03a1c987ac0b"
+    },
+    {
+      "name": "ledger4-B-EXCEPTION-CONFIG",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-EXCEPTION-CONFIG",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "f4f89f97f390483a973b5a6dcf71b5968d56cc85b595937509db09b2b5428bc4"
+    },
+    {
+      "name": "ledger4-B-TWIN-COUNT",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-TWIN-COUNT",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "c150912102787f235ac6b94b355397d83266ff8b7d1d1bee7c985f92f80e22e2"
+    },
+    {
+      "name": "ledger4-B-BRANCH-ARCH",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-BRANCH-ARCH",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "09601015c771a65c21a7f24a1392016908b292c769cc7cb3a241cda6db49741a"
+    },
+    {
+      "name": "ledger4-B-PRE-SHIM",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-PRE-SHIM",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "caa97d0451dc9b8c13f3451c5c2995e86ce659ec5cc01cc2efbcd6c189146de1"
+    },
+    {
+      "name": "ledger4-B-POST-SHIM",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-POST-SHIM",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "61f3383f4cb4178cefa223edc65eea85d959bd8acb1341a1103f9389de3441ea"
+    },
+    {
+      "name": "ledger4-B-DELIVERY",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-DELIVERY",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "3d91b2053565520f7605033771edb09666a63b330332d78ad7ff68d7fbcb3c38"
+    },
+    {
+      "name": "ledger4-B-SUBPROCESS-BLIND-SPOT",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-SUBPROCESS-BLIND-SPOT",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "3e4837ddceaed0f32205e84c8ef9301fafec0ba20dcc42ec23dbe7a133cc6df3"
+    },
+    {
+      "name": "ledger4-B-MECHANICAL-SYNC",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-MECHANICAL-SYNC",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "1e7a8bf8bebeef7146717aa67da9b37894fd8f668888ee5a90e47b453123e28e"
+    },
+    {
+      "name": "ledger4-B-RELOCATION-NEGATIVES",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-RELOCATION-NEGATIVES",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "4fcf3a9a7679d25c49db3cbd6056c51db86a16f8b09b1118fc9716379bf5d425"
+    },
+    {
+      "name": "ledger4-B-SPECS-SEMANTICS",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-SPECS-SEMANTICS",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "35f1fd3b55b73464425848b9baf1bd1cdfd4c2c37d3b5003bd696c38caa17e7d"
+    },
+    {
+      "name": "ledger4-B-GUARD-EQUALITY",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-GUARD-EQUALITY",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "2d3368e6dd510c70c3d1980814e40e72835b94adefd055ba70f7e6038abaf33b"
+    },
+    {
+      "name": "ledger4-B-PARITY-FREEZE",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-PARITY-FREEZE",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "b39ae3586c1a3258f98a427dd4b469b89a0aa0e7d51ab1716f533d7114c0c5d3"
+    },
+    {
+      "name": "ledger4-B-LEDGER-EXECUTION",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-LEDGER-EXECUTION",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "decfdcf40099819b2698c9ae693320232835806db422aed8e85b93e4213d6413"
+    },
+    {
+      "name": "ledger4-B-RAW-DIFF",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-RAW-DIFF",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "3555484026bc8948715af5666956261071335b56af4cf6a70aae620b2fd4d96c"
+    },
+    {
+      "name": "ledger4-B-EXPECTED-MATCHES",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-EXPECTED-MATCHES",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "037b54f4b5923d49152a774fdf6a4636a75194335a421ba1ba7adf901bc232f3"
+    },
+    {
+      "name": "ledger4-B-X-PRESERVE",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-X-PRESERVE",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "88678e626e3930d52fd2323aba3a3acd708f812df8181f3f2ae031ac16bde779"
+    },
+    {
+      "name": "ledger4-B-CORPUS-REFERENCE",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-CORPUS-REFERENCE",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "f8f1418d2bb021c3744d0ce90963bde535398f1c17abba8119c57646e9fe7569"
+    },
+    {
+      "name": "ledger5-check",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "check",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "e1ca8e4b5c012d829cb963e6e8f54dc17f6327c28546544552090b1a2af07983"
+    },
+    {
+      "name": "ledger5-admission",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "admission",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "ae244eed5e5fb04fa6ec907cb632e25c776fdd1fa32309c27909ae664d42002e"
+    },
+    {
+      "name": "ledger5-out-of-scope",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-fixture",
+        "out-of-scope-misuse",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "a48b4b56b4cc4bc90e4e3040549e7228379bf071e6790147a135dcccd1443df1"
+    },
+    {
+      "name": "ledger5-B-BRANCH-DOD",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-BRANCH-DOD",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "017ec6097dcc7bfc5262248e20c32157c11af9d8326ddfa32b738244e1bdca83"
+    },
+    {
+      "name": "ledger5-B-BRANCH-FABRICATION",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-BRANCH-FABRICATION",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "7b7affb16bc3422532496d520a4de973e006621a16280acee82fbb0f5146e944"
+    },
+    {
+      "name": "ledger5-B-TIMEOUT-BRANCH-LOCK",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-TIMEOUT-BRANCH-LOCK",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "a67e89889be17862c8e4f4abd6d635a161e60da1621b7ebace131dfda2fe7da8"
+    },
+    {
+      "name": "ledger5-B-TIMEOUT-TWO-PATHS",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-TIMEOUT-TWO-PATHS",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "121c873d6d4a6da423c410d1ccc2b53b90141e55c11e2de97979c273ea107e67"
+    },
+    {
+      "name": "ledger5-B-RESULT-MAPPING",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-RESULT-MAPPING",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "47ced5f05110f1c6319679fd227291ef5bcff5cc8b19ca3889684b04c59186d9"
+    },
+    {
+      "name": "ledger5-B-PRIVATE-COUNT",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-PRIVATE-COUNT",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "5a9a68e54acf1f666e8058a12d40f4359d01541cb8a3f80a1a958f802943e19e"
+    },
+    {
+      "name": "ledger5-B-GATE-MEMBERS",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-GATE-MEMBERS",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "4cdde071e10d87747a6e4e34020329b1b8fe98ddb955f020f26cd788f02a6358"
+    },
+    {
+      "name": "ledger5-B-GATE-CONTROLS",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-GATE-CONTROLS",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill5.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "8790592ee7e200287fcd6d21f019dc08cfb3ffff4458a64e67ff3ebf5235aa08"
+    },
+    {
+      "name": "ledger6-check",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "check",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill6.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "87a5ffe928963b976d0cf2e355c14611638d24a723aa55127e83a9fcbb5c2084"
+    },
+    {
+      "name": "ledger6-out-of-scope",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-fixture",
+        "out-of-scope-misuse",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill6.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "d293275f0ee7da0a422d98d3ea415da0abe3a2c145cb2d25daccffc6b5ea1c40"
+    },
+    {
+      "name": "ledger6-B-SYMBOL-PARSER",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-SYMBOL-PARSER",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill6.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "044fddbcdefa414f6ce6c287ec5c34c2c27f28f18be7f3ca714a2a45e752ad31"
+    },
+    {
+      "name": "ledger6-B-CONSTRAINT-CLOSE",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-CONSTRAINT-CLOSE",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill6.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "a0363ff66c4c994f6e45347ace7c887ebb41b720165c2f9f8da32c68c3ba4c49"
+    },
+    {
+      "name": "ledger6-B-TWIN-CLOSE",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-TWIN-CLOSE",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill6.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "26387cda85bf6d12c66419f7f0bac7cb9adba54914f4ac710fbd0210105c0200"
+    },
+    {
+      "name": "ledger6-B-TEST-PARITY",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-TEST-PARITY",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill6.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "975eea08a01b198fd3674ef3a849237cba83193814a8c4fdea72f463e623db07"
+    },
+    {
+      "name": "ledger6-B-BRANCH-INVENTORY",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.py",
+        "negative-binding",
+        "B-BRANCH-INVENTORY",
+        "--data",
+        "docs/clang-fix-campaign/tools/design_drift_ledger.skill6.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "e960bb27e6c8e6a54f29c2da71911d76da1ec78431a6ceebcb0fcf9ce65c8e7b"
+    },
+    {
+      "name": "branch-check",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/branch_inventory.py",
+        "check"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "9bd946d858d3bb29d8d4385d2bef7059190c0a03d85467ae401d7ccc8b7f0392"
+    },
+    {
+      "name": "branch-parser-only",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/branch_inventory.py",
+        "parser-only"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "86926ea5cb73f2c90dbeb98762bad313c3509be08757a7bed976781e6b562b20"
+    },
+    {
+      "name": "branch-admission-v17",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/branch_inventory.py",
+        "admission-v17"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "1abd2455c19ba4159eb4523b22b4ff7115cfdc53fd9628458eff365e2e2b5abb"
+    },
+    {
+      "name": "terminal-predicates",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_predicates.py",
+        "docs/clang-fix-campaign/tools/p49_terminal_data/predicates.json"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "01edf00ca2cd6a81ad979ff9690fe2213497ade15c7c63953c604af27299905c"
+    },
+    {
+      "name": "terminal-expected-diff",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_expected_diff.py",
+        "check"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "5d18aa66acef2b3284d12a3f683f9efe9f736828282575b61414c86fa472caaa"
+    },
+    {
+      "name": "terminal-diff-normal",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "normal"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "6836df14ee40530ec73f96ddac0c38d52d448aef8dbd215a545405291ca3673c"
+    },
+    {
+      "name": "terminal-diff-extra-change",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "extra-change"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "76a0f354a731c1c8c5982b44369e3c48c1793081ce589460ed2f3d758e8eb37e"
+    },
+    {
+      "name": "terminal-diff-missed-change",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "missed-change"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "78286f15d09cc8f7422374f6fb11e5a88e80af883f171ea29cd8747f6bfc779e"
+    },
+    {
+      "name": "terminal-diff-empty-reason",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "empty-reason"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "437ac14a88ebdaa2025b659805a659d9c821dce973987ab421cfbc54a0fa3f68"
+    },
+    {
+      "name": "terminal-diff-impossible-registration",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "impossible-registration"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "92bfb671007166dda12758fec2ddabbd8f03298ff0773f78542df02d1674b2f7"
+    },
+    {
+      "name": "terminal-diff-missing-mode",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "missing-mode"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "29acb2e43df1492863707ccaf65fc8686d4b4b0219f38386044e769e59b2d30a"
+    },
+    {
+      "name": "terminal-diff-unknown-mode",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "unknown-mode"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "81d3fd5243dd2dc602c19cb5793e120cd4458d6c0533dc1a5338b09cd6c9f7b9"
+    },
+    {
+      "name": "terminal-diff-no-diff-with-differences",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "no-diff-with-differences"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "41556063d77de5ef7c980ab9abae2280764e40cef04ee420e36ca2db4a76b012"
+    },
+    {
+      "name": "terminal-diff-empty-diff-set",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "empty-diff-set"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "85fcf8fc7fa6285a72f493c1f96823d4f89c83c5062d2d2f2dcdbc1b306e3547"
+    },
+    {
+      "name": "terminal-diff-readers-empty",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "readers-empty"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "79fbc4d7198c11d8dc13d6d86ee688979327b06e69c1edf470eeefb11ceaa53a"
+    },
+    {
+      "name": "terminal-diff-readers-missing",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "readers-missing"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "05ffaa8b3dd9695054ade26f46b42a7cb77fed6c3e013343a104a0900fc029c2"
+    },
+    {
+      "name": "terminal-diff-unchanged-timeout-message",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_diff_controls.py",
+        "unchanged-timeout-message"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "791c798cbc41be2b282dd992c66c4b50207bc5af9cfbe88e24bd0647d022be83"
+    },
+    {
+      "name": "terminal-phase-normal",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_phase_controls.py",
+        "normal"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 0,
+      "expected_exit": 0,
+      "sha256": "9f668d35c8669c8d91acb026656bcf9ccf99afad306b16dce711033fa914ea2d"
+    },
+    {
+      "name": "terminal-phase-premature-item3",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_phase_controls.py",
+        "premature-item3"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "897b4ddd3f464e2c03d322eae2bebf03addea021bb5d2081db09616ddfe515b7"
+    },
+    {
+      "name": "terminal-phase-missing-item4",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/terminal_phase_controls.py",
+        "missing-item4"
+      ],
+      "cwd": "/tmp/p4-review-fixes-89a45b0",
+      "exit": 1,
+      "expected_exit": 1,
+      "sha256": "957fe4bd2dba40b61fb7aa32060a5a14fa28f0ca1552032eef2d108bbf5b2630"
+    }
+  ]
+}

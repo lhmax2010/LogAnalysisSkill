@@ -9,6 +9,7 @@ from unittest.mock import Mock
 
 import pytest
 from ci_triage import derive_commit
+from ci_triage.campaign_state import PayloadSchemaError, _validate_derive
 from ci_triage.submission_identity import generate_change_id_via_hook
 
 AUTHOR = "Campaign Author <author@invalid>"
@@ -20,6 +21,9 @@ MESSAGE = (
     "Fix build error for clang compiler: missing include\n"
     "\nRestore the declaration required by clang.\n"
     f"\nChange-Id: {CHANGE_ID}\n"
+)
+INVALID_DATES = (
+    "2026-10-08 00:00:00", "2 days ago", "2026-10-08T00:00:00", "2 days ago +0800",
 )
 
 
@@ -200,3 +204,93 @@ def test_hook_identity_goes_to_final_trailer_without_auxiliary_line(
                               input=actual, text=True, capture_output=True, check=True).stdout
     assert trailers.splitlines() == [f"Change-Id: {change_id}"]
     assert "X-Campaign-Submission-Key" not in actual
+
+
+@pytest.mark.parametrize("field", ["author_date", "committer_date"])
+@pytest.mark.parametrize("date", INVALID_DATES)
+def test_invalid_dates_refuse_before_git(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, field: str, date: str,
+) -> None:
+    run = Mock()
+    monkeypatch.setattr(derive_commit.subprocess, "run", run)
+    with pytest.raises(ValueError, match=f"{field} must be ISO 8601"):
+        _derive((tmp_path, "a" * 40, "b" * 40), **{field: date})
+    run.assert_not_called()
+
+
+@pytest.mark.parametrize("field", ["author_date", "committer_date"])
+@pytest.mark.parametrize("date", INVALID_DATES)
+def test_derive_payload_rejects_invalid_dates(field: str, date: str) -> None:
+    payload = dict(message_brief="Fix", author_identity=AUTHOR, committer_identity=COMMITTER,
+                   author_date=AUTHOR_DATE, committer_date=COMMITTER_DATE,
+                   derived_commit_sha="a" * 40, verified_tree_sha="b" * 40)
+    payload[field] = date
+    with pytest.raises(PayloadSchemaError, match=f"{field} must be ISO 8601"):
+        _validate_derive(payload)
+
+
+@pytest.mark.parametrize("date", ["2026-10-08T00:00:00Z", AUTHOR_DATE,
+                                  "2026-10-08T08:00:00+08:00"])
+def test_derive_payload_accepts_explicit_timezone(date: str) -> None:
+    _validate_derive(dict(message_brief="Fix", author_identity=AUTHOR,
+                          committer_identity=COMMITTER, author_date=date, committer_date=date,
+                          derived_commit_sha="a" * 40, verified_tree_sha="b" * 40))
+
+
+def test_timezone_does_not_change_derived_sha(
+    repo: tuple[Path, str, str], monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = subprocess.run
+    calls = []
+
+    def run(command, **kwargs):
+        calls.append(kwargs["env"])
+        return original(command, **kwargs)
+
+    monkeypatch.setattr(derive_commit.subprocess, "run", run)
+    monkeypatch.setenv("TZ", "Asia/Shanghai")
+    first = _derive(repo)
+    monkeypatch.setenv("TZ", "UTC")
+    assert _derive(repo) == first
+    assert len(calls) == 4
+    assert all(env["TZ"] == "UTC" for env in calls)
+    assert all(env["GIT_CEILING_DIRECTORIES"] == str(repo[0].resolve().parent) for env in calls)
+
+
+def test_explicit_timezone_sha_snapshot_is_unchanged(tmp_path: Path) -> None:
+    _git(tmp_path, "init", "-q", "--object-format=sha1")
+    tree = subprocess.check_output(
+        ["git", "-C", str(tmp_path), "mktree"], input=b"",
+    ).decode().strip()
+    raw_parent = (f"tree {tree}\nauthor Initial <initial@invalid> 1791417600 +0000\n"
+                  "committer Initial <initial@invalid> 1791417600 +0000\n\nroot\n")
+    parent = subprocess.check_output(
+        ["git", "-C", str(tmp_path), "hash-object", "-t", "commit", "-w", "--stdin"],
+        input=raw_parent.encode(),
+    ).decode().strip()
+    message = f"Fix build error for clang compiler: snapshot\n\nChange-Id: {CHANGE_ID}\n"
+    assert _derive((tmp_path, tree, parent), message=message,
+                   author_date="2026-10-08T08:00:00+08:00",
+                   committer_date="2026-10-08T01:00:00Z") == (
+        "dd37c1d8fbcc4685bdc174b67569e82eab3c4405"
+    )
+
+
+def test_inner_directory_cannot_write_objects_in_outer_repository(
+    repo: tuple[Path, str, str],
+) -> None:
+    outer, tree, parent = repo
+    inner = outer / "inner"
+    inner.mkdir()
+    objects = outer / ".git/objects"
+    before = {
+        str(p.relative_to(objects)): p.read_bytes() for p in objects.rglob("*") if p.is_file()
+    }
+    count_before = _git(outer, "count-objects", "-v")
+    with pytest.raises(subprocess.CalledProcessError):
+        _derive((inner, tree, parent))
+    assert _git(outer, "count-objects", "-v") == count_before
+    after = {
+        str(p.relative_to(objects)): p.read_bytes() for p in objects.rglob("*") if p.is_file()
+    }
+    assert after == before

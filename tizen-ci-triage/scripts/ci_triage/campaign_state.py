@@ -29,6 +29,8 @@ from tizen_convergence_judge.convergence import (
     primary_fingerprint as _primary_fingerprint,
 )
 
+from ci_triage.derive_commit import COMMIT_DATE_RE
+
 CAMPAIGN_SCHEMA_VERSION = "campaign/v1"
 HELD_FOR_INVESTIGATION = "HELD_FOR_INVESTIGATION"
 REJECTED_ARCH_NOT_ALLOWED = "REJECTED_ARCH_NOT_ALLOWED"
@@ -2099,6 +2101,10 @@ def _validate_derive(payload: Mapping[str, object]) -> None:
     }
     _require_keys(payload, keys)
     _require_nonempty_strings(payload, tuple(keys))
+    for field in ("author_date", "committer_date"):
+        value = payload[field]
+        if not isinstance(value, str) or COMMIT_DATE_RE.fullmatch(value) is None:
+            raise PayloadSchemaError(f"{field} must be ISO 8601 with an explicit timezone")
 
 
 def _validate_push(payload: Mapping[str, object]) -> None:
