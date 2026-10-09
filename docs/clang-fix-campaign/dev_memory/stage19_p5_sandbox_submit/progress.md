@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-09。状态:**C2_LOCAL_PASSED**,C0/C1已推送;P5-C2-01/02已按裁定关闭(§9/11),C2本地全部门禁无新增失败,本提交推送后核验远端CI。
+日期:2026-10-09。状态:**BLOCKED_P5_C4_01**,C0-C2已推送且远端CI通过;C3本地全部门禁通过(无新增失败),随本提交交付。C4规格预检发现§4.4配置查询自命中,未写C4生产代码,待裁定(§14)。
 
 ## 1. 权威、批准与基线
 
@@ -16,7 +16,7 @@
 - `git fetch origin clang-fix-campaign` exit 0后,HEAD与origin/clang-fix-campaign
   均为`cd7f8ddac8c05af0eaa99714ef171668d905f983`。
 - 不访问真实Gerrit,不做真实sandbox推送。未来测试仅使用本地仓库和本地裸仓库。
-- C0未修改生产代码、测试或检查器。C1实施§5四项加固,见§7;C2见§11/12;C3-C5未开展。
+- C0未修改生产代码、测试或检查器。C1实施§5四项加固,见§7;C2见§11/12;C3见§13;C4-C5未开展。
 
 ## 2. 计划与进度
 
@@ -24,9 +24,9 @@
 |---|---|---|
 | C0 | 文件名与标题冻结;附录A照录同步design.md v1.5.20;检查器与通用门禁 | `38c076f`;本地94命令无新增失败;远端CI SUCCESS |
 | C1 | §5四项加固与§6.4,真实hook本机passed | `8c89de4`;本地1527 passed/1 skipped;94命令无新增失败;远端CI SUCCESS(§8) |
-| C2 | suppress_policy、CLI、§6.1 | 定向174 passed;全量1701 passed/1 skipped;94命令相对cd7f8dd无新增失败;推送后核验CI |
-| C3 | gate_view、latest_policy_for_round、lookup_change_id、§6.2 | NOT_STARTED |
-| C4 | 共用unit hash/src_clean、Git安全环境、sandbox_submit、CLI、§6.3 | NOT_STARTED |
+| C2 | suppress_policy、CLI、§6.1 | `1f3141e`;定向174 passed;全量1701 passed/1 skipped;94命令无新增失败;远端CI SUCCESS |
+| C3 | gate_view、latest_policy_for_round、lookup_change_id、§6.2 | 定向23 passed;全量1724 passed/1 skipped;94命令无新增失败;本提交推送后核验CI |
+| C4 | 共用unit hash/src_clean、Git安全环境、sandbox_submit、CLI、§6.3 | BLOCKED_P5_C4_01;只做真实本地输入规格预检,未写生产代码 |
 | C5 | READY_FOR_REVIEW收口、规则与用例双向表、已知限制、真实hook原文 | NOT_STARTED |
 
 每个提交均须通过§6.5,相对cd7f8dd无新增设计门禁失败,独立推送并核验远端CI。
@@ -573,3 +573,126 @@ exit=0
 `C1_retained=1528 missing=0 outcome_changes=0 C2_added=174`。
 本轮无待裁决问题,未访问真实Gerrit。远端CI结果随后续进度记录补锚,
 不能以本地验收代称远端已通过。
+
+C2推送后远端核验原文:
+
+```text
+$ gh run view 37907289971 --json headSha,status,conclusion,url
+{"conclusion":"success","headSha":"1f3141ea43255afa34f2dc8118e92405998e189c","status":"completed","url":"https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/37907289971"}
+exit=0
+```
+
+## 13. C3只读门禁视图
+
+- 新增GateView、gate_view、latest_policy_for_round、lookup_change_id。
+- 实现细节:新接口以SQLite只读URI连接已有state DB,不执行schema初始化或生成
+  Change-Id;gate_view显式BEGIN,所有unit/event/QB查询在同一连接、同一事务。
+  无事件的reproduce_by_arch用空mapping,其余可空payload为None。
+- 抽出原latest_qb_result的SQL与行转换为连接级内部原语,公共API行为不变;
+  DERIVE读取侧使用C1同一不可变字段集合,没有另立枚举。
+- §6.2映射(测试文件`tests/unit/test_campaign_gate_view.py`):
+  1 reproduced六组合与最新primary覆盖;2各事件event_id排序/PUSH分ref_class;
+  3 QB两级最新不回退;4五字段独立冲突与写入侧committer拒绝;
+  5第二连接在查询原语间写入且快照不变;6空unit/不存在unit;
+  7按round筛POLICY、缓存命中/未命中只读。
+
+```text
+$ .venv/bin/python -m pytest tests/unit/test_campaign_gate_view.py -q
+23 passed in 0.46s
+exit=0
+$ .venv/bin/ruff check tizen-ci-triage/scripts/ci_triage/campaign_state.py tests/unit/test_campaign_gate_view.py
+All checks passed!
+exit=0
+$ .venv/bin/mypy tizen-ci-triage/scripts/ci_triage
+Success: no issues found in 15 source files
+exit=0
+```
+
+全量证据:[evidence/C3/commands.json](evidence/C3/commands.json)(命令、环境、exit、
+原输出hash)、同目录原始log及pytest.xml。代码测试与干净工作树字节相同。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-c3-1f3141e docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C3
+pytest: exit=0 expected=0
+mypy: exit=0 expected=0
+ruff: exit=0 expected=0
+lint-imports: exit=0 expected=0
+symbol: exit=0 expected=0
+bridge: exit=0 expected=0
+design-doc: exit=0 expected=0
+completed=94 unexpected=3
+exit=0
+======================= 1724 passed, 1 skipped in 36.77s =======================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C3 /tmp/p5-c3-1f3141e
+{
+  "baseline_commit": "cd7f8dd",
+  "command_count": 94,
+  "exit_changes": {},
+  "baseline_tests": {
+    "passed": 1496,
+    "skipped": 1
+  },
+  "current_tests": {
+    "passed": 1724,
+    "skipped": 1
+  },
+  "missing_nodeids": [],
+  "changed_outcomes": {}
+}
+added_nodeids=228; identical_tested_sources=2
+baseline_comparison=PASS
+exit=0
+```
+
+三项历史门禁问题与C2及固定基线相同,未修改期望值。C3新增23例,既有API测试
+保留;远端CI于本提交推送后核验,回报结果不冒充提交前已取得。
+
+## 14. P5-C4-01停止报告:配置安全检查命中自身覆盖
+
+**状态:OPEN,涉及安全检查边界,等待设计方裁定。** C3实现与验收已完成;
+C4只做冻结后真实输入的规格可满足性检验,未改生产代码、未改冻结稿、未豁免任何键。
+
+### 原文位置与冲突
+
+权威文件`p5-sandbox-submit-design-v1.2-FROZEN.md`:
+
+- `:584`与`:595-603`要求每次git调用(包含config)均带全部`-c`覆盖,
+  其中含`core.fsmonitor=false`、`core.askPass=`、`credential.helper=`。
+- `:607-613`要求`git config --get-regexp`出现禁用键即拒绝,名单恰含上面三键,
+  没有排除命令注入的配置来源。
+- 真实git会把命令行`-c`配置一同输出;全新仓库也必命中,正常路径不能通过。
+  若实现自行跳过这三键,又会漏掉仓库内真正的危险配置,不能自行放行。
+
+### 实测(无网络,仅临时本地git仓库)
+
+可复现脚本完整记录环境、八个覆盖与键模式:
+[evidence/C4-config-preflight.py](evidence/C4-config-preflight.py)。
+对照只移除命令行覆盖,使用同一个仓库和同一环境。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C4-config-preflight.py
+fresh_local_repository=True
+git_config_with_section_4_4_overrides: exit=0
+stdout='core.fsmonitor false\ncore.askpass \ncredential.helper \n'
+stderr=''
+same_repository_without_command_overrides: exit=1
+stdout=''
+exit=0
+
+$ .venv/bin/ruff check docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/C4-config-preflight.py
+All checks passed!
+exit=0
+```
+
+脚本exit 0表示复现实验完成,不是配置门禁绿;设计要求下前三行必导致拒绝。
+
+### 候选处置(均未实施)
+
+1. 配置查询加来源/作用域输出,机械排除本工具注入的command-scope安全覆盖;
+   对仓库自身(含include/worktree配置)的同名键仍拒绝。须由设计明确精确过滤规则,
+   并补“干净仓库通过/仓库同名键即使值与覆盖相同仍拒绝/不可借来源隐藏”的控制。
+2. 只读配置枚举命令不带这三条重叠覆盖,其余命令仍全带;须设计方明确批准该例外,
+   并验证配置枚举本身不执行危险配置对应的程序。
+
+未自行选择,未开始C4/C5。C2-01/02裁定继续有效,没有以本问题改回任何判定。

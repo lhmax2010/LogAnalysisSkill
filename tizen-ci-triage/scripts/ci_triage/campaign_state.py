@@ -315,6 +315,19 @@ class InvocationReceipt:
 
 
 @dataclass(frozen=True)
+class GateView:
+    reproduced: bool
+    reproduce_by_arch: Mapping[str, Mapping[str, object]]
+    policy: Mapping[str, object] | None
+    derive: Mapping[str, object] | None
+    sandbox_push: Mapping[str, object] | None
+    review_push: Mapping[str, object] | None
+    kb: Mapping[str, object] | None
+    review: Mapping[str, object] | None
+    qb_result: Mapping[str, object] | None
+
+
+@dataclass(frozen=True)
 class ReconcileResult:
     branch: str
     current_verification_id: str | None
@@ -573,6 +586,89 @@ def latest_reproduce(
     finally:
         conn.close()
     return _event_from_row(row) if row is not None else None
+
+
+def gate_view(state_db: StateDatabase, campaign_unit_key: str) -> GateView:
+    """Read all gate decisions from one explicit SQLite snapshot."""
+    conn = _read_connection(state_db)
+    try:
+        conn.execute("BEGIN")
+        unit = _require_unit(conn, campaign_unit_key)
+        rows = _gate_rows_on_connection(conn, campaign_unit_key)
+        latest: dict[str, Mapping[str, object]] = {}
+        reproduce: dict[str, Mapping[str, object]] = {}
+        first_derive: Mapping[str, object] | None = None
+        for row in rows:
+            event_type = _text(row, "event_type")
+            payload = _payload_from_row(row)
+            if event_type == "DERIVE":
+                if first_derive is not None and any(
+                    first_derive.get(key) != payload.get(key)
+                    for key in _IMMUTABLE_DERIVE_FIELDS
+                ):
+                    raise StateInconsistent("DERIVE first-write identity fields changed")
+                first_derive = payload
+            if event_type == "REPRODUCE":
+                reproduce[_text(row, "arch_norm")] = {
+                    key: payload[key]
+                    for key in ("outcome", "evidence_local", "evidence_sha256")
+                }
+            elif event_type == "PUSH":
+                latest[f"PUSH:{payload['ref_class']}"] = payload
+            else:
+                latest[event_type] = payload
+        primary = ARCH_RAW_TO_NORM.get(unit.primary_arch or "")
+        reproduced = ARCH_NORMS.issubset(reproduce) and (
+            reproduce.get(primary or "", {}).get("outcome") == "matched"
+        )
+        qb = _qb_result_on_connection(conn, campaign_unit_key)
+        conn.commit()
+        return GateView(
+            reproduced, reproduce, latest.get("POLICY"), latest.get("DERIVE"),
+            latest.get("PUSH:sandbox"), latest.get("PUSH:review"), latest.get("KB"),
+            latest.get("REVIEW"), qb,
+        )
+    finally:
+        conn.close()
+
+
+def latest_policy_for_round(
+    state_db: StateDatabase, campaign_unit_key: str, round_index: int,
+) -> Mapping[str, object] | None:
+    conn = _read_connection(state_db)
+    try:
+        row = conn.execute(
+            "SELECT payload_json FROM campaign_gate_events WHERE campaign_unit_key = ? "
+            "AND event_type = 'POLICY' AND round_index = ? ORDER BY event_id DESC LIMIT 1",
+            (campaign_unit_key, round_index),
+        ).fetchone()
+        return _payload_from_row(row) if row is not None else None
+    finally:
+        conn.close()
+
+
+def lookup_change_id(state_db: StateDatabase, submission_key: str) -> str | None:
+    conn = _read_connection(state_db)
+    try:
+        return _cached_change_id(conn, submission_key)
+    finally:
+        conn.close()
+
+
+def _read_connection(state_db: StateDatabase) -> sqlite3.Connection:
+    conn = sqlite3.connect(state_db.path.resolve().as_uri() + "?mode=ro", uri=True)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout=5000")
+    return conn
+
+
+def _gate_rows_on_connection(
+    conn: sqlite3.Connection, campaign_unit_key: str,
+) -> list[sqlite3.Row]:
+    return conn.execute(
+        "SELECT * FROM campaign_gate_events WHERE campaign_unit_key = ? ORDER BY event_id",
+        (campaign_unit_key,),
+    ).fetchall()
 
 
 def adopt_secondary_target_with_convergence(
@@ -1713,17 +1809,23 @@ def latest_qb_result(
 ) -> dict[str, object] | None:
     conn = _connect(state_db)
     try:
-        row = conn.execute(
-            "SELECT ev.* FROM campaign_qb_requests AS req "
-            "JOIN campaign_qb_events AS ev ON ev.request_seq = req.request_seq "
-            "WHERE req.campaign_unit_key = ? "
-            "AND req.request_seq = (SELECT MAX(request_seq) FROM campaign_qb_requests "
-            "WHERE campaign_unit_key = ?) AND ev.event_type = 'RESULT' "
-            "ORDER BY ev.event_id DESC LIMIT 1",
-            (campaign_unit_key, campaign_unit_key),
-        ).fetchone()
+        return _qb_result_on_connection(conn, campaign_unit_key)
     finally:
         conn.close()
+
+
+def _qb_result_on_connection(
+    conn: sqlite3.Connection, campaign_unit_key: str,
+) -> dict[str, object] | None:
+    row = conn.execute(
+        "SELECT ev.* FROM campaign_qb_requests AS req "
+        "JOIN campaign_qb_events AS ev ON ev.request_seq = req.request_seq "
+        "WHERE req.campaign_unit_key = ? "
+        "AND req.request_seq = (SELECT MAX(request_seq) FROM campaign_qb_requests "
+        "WHERE campaign_unit_key = ?) AND ev.event_type = 'RESULT' "
+        "ORDER BY ev.event_id DESC LIMIT 1",
+        (campaign_unit_key, campaign_unit_key),
+    ).fetchone()
     if row is None:
         return None
     return {key: row[key] for key in row.keys()}

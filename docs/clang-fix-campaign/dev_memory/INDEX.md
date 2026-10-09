@@ -25,7 +25,7 @@
 | P2 submission identity | CLOSED | Design `9b7754e`; implementation `3d48877`; real hook `ec6c331`; review minors addressed | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批), 2026-10-08; [progress](stage16_p2_submission_identity/progress.md#11-评审次要意见处置与签批2026-10-08): 1420 passed/1 skipped; no new gate failures; three P4/P5/P5R transfers retained |
 | P3 aggregate | CLOSED | `f12154b`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p3-aggregate-closeout.md#最终签收); [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09): 1496 passed/1 skipped, design synchronization retained for P5 |
 | P4 derive_commit | CLOSED | `2ba0e0d`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09): 1480 passed/1 skipped, real hook PASSED; new P5 hardening in stage16 transfer list |
-| P5 sandbox-submit | C2_LOCAL_PASSED | C0 `38c076f`; C1 `8c89de4` CI success; C2-01/02 CLOSED, 174 new tests passed | [progress](stage19_p5_sandbox_submit/progress.md#12-c2实现与验证); 1701 passed/1 skipped, no new gate failures, remote CI checked after push |
+| P5 sandbox-submit | BLOCKED_P5_C4_01 | C2 `1f3141e` CI success; C3 1724 passed/1 skipped, no new gate failures | [stop report](stage19_p5_sandbox_submit/progress.md#14-p5-c4-01停止报告配置安全检查命中自身覆盖); C4 safety config query matches its own mandatory overrides |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -57,7 +57,7 @@ second contract authority. Runtime behavior remains governed by
 | 16 P2 submission identity | CLOSED | Designer verified; Claude Code CLOSED, zero blockers, four minor findings disposed, 2026-10-08 | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批); [progress](stage16_p2_submission_identity/progress.md#12-设计正文待同步); P4/P5/P5R transfers, cross-unit cache deletion boundary and three unchanged checker issues retained |
 | 17 P3 aggregate | CLOSED | Accepted `f12154b`, 2026-10-09; single reviewer: P3 acceptable; PM verified fixes, FatTank approved | [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09); [final acceptance](../review/p3-aggregate-closeout.md#最终签收); design text synchronization deferred to P5 |
 | 18 P4 derive_commit | CLOSED | Accepted `2ba0e0d`, 2026-10-09; single reviewer: changes needed; PM verified fixes, FatTank approved | [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09); [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [P5 transfers](stage16_p2_submission_identity/progress.md#5-p2-01裁决与移交清单), not yet implemented |
-| 19 P5 sandbox-submit | C2_LOCAL_PASSED | C2 policy/CLI and two rulings together; C0/C1 pushed | [progress](stage19_p5_sandbox_submit/progress.md#12-c2实现与验证); 174 targeted, 1701 full passed/1 skipped, 94 exits unchanged from fixed baseline |
+| 19 P5 sandbox-submit | BLOCKED_P5_C4_01 | C3 snapshot/queries: +23 tests, 1724 passed/1 skipped, 94 exits unchanged | [progress](stage19_p5_sandbox_submit/progress.md#13-c3只读门禁视图); C4 preflight conflict recorded in section 14, no C4 implementation |
 
 ## Code-Ready Checkpoint
 
