@@ -1,6 +1,6 @@
 # P5 sandbox-submit 收口
 
-日期:2026-10-10。状态:**READY_FOR_REVIEW**。代码评审修复已落地,未自行签批CLOSED。
+日期:2026-10-10。状态:**READY_FOR_REVIEW**。两轮代码评审修复已落地,待设计方核对签收,未自行签批CLOSED。
 
 ## 1. 权威与提交
 
@@ -20,7 +20,9 @@ design.md已按附录A.3照录同步至v1.5.21,检查器0 problem,不改变检�
 | C5(首轮收口) | 72a5806 | 本文初版、progress、INDEX、复验 | 1845 passed / 1 skipped |
 | 评审文档同步 | c71aa3c | v1.3.1原字节入库、design.md v1.5.21 | checker 0 problem |
 | 评审代码修复 | f9a6bc5 | 附录D、D-02用例与变异、完整回归 | 1927 passed / 1 skipped |
-| 评审收口更新 | 本次提交由Git外部锚定,不自记SHA | 本文、progress、INDEX、复验 | 见§7 |
+| 第一轮评审收口 | e61b6f7 | 本文、progress、INDEX、复验 | 1927 passed / 1 skipped |
+| 第二轮代码修复 | 37e27b1 | 格式兼容、归属查找、递归深度;新增10例 | 1937 passed / 1 skipped |
+| 第二轮收口更新 | 本次提交由Git外部锚定,不自记SHA | 本文、progress、INDEX、复验 | 见§7.2 |
 
 全程未访问真实Gerrit,未做真实业务推送。远端写入测试均为临时本地裸仓库。
 原同名远端拒绝测试在传输前即拒绝。新增竞态测试使用SSH形状remote,但以本地
@@ -42,6 +44,7 @@ Python包装直接执行git-upload-pack/receive-pack,预期/错误两端均为�
 | 全量集合不缩小、既有门禁无新增失败 | DONE | 各C阶段commands.json、pytest.xml及comparison.json;固定基线cd7f8dd |
 | v1.3.1按值识别、生成器表达式、真实路径归组 | DONE | §3.1新增12-16行、§7变异原文;POLICY_RULES_VERSION=p5-policy/v2 |
 | v1.3.1隔离传输、缩短读事务、统一异常出口 | DONE | §3.3新增28-30行;两端ref、锁与无额外写库断言 |
+| 第二轮设计方三条裁定 | DONE | §7.2逐条处置,sha1参数记录/格式不等拒绝、2000命令同hit、64/65/2000层与CLI |
 | 收口状态与已知事项 | READY_FOR_REVIEW | §4限制完整登记,由设计方核验与评审决定签批 |
 
 ## 3. 规则条目与用例双向映射
@@ -80,6 +83,8 @@ Python包装直接执行git-upload-pack/receive-pack,预期/错误两端均为�
 | §6.1.14真实路径分类/别名归组与重叠 | `test_review_symlink_category_and_grouping`; `test_review_alias_overlap`; `test_review_alias_nonoverlap_and_real_docs` |
 | §6.1.15跨模块定位等价 | `test_review_guard_location_equivalence` |
 | §6.1.16规则版本 | `test_review_policy_version` |
+| 第二轮2-1命令归属表/2000命令/输出不变 | `test_review2_cmake_2000_commands` |
+| 第二轮2-2深度边界/CLI/RecursionError兜底 | `test_review2_genex_depth`; `test_review2_genex_deep_cli`; `test_review2_genex_recursion_error_fails_closed` |
 
 ### 3.2 §6.2只读视图
 
@@ -127,6 +132,7 @@ Python包装直接执行git-upload-pack/receive-pack,预期/错误两端均为�
 | §6.3.28隔离传输/对象路径/格式/重建/清理 | `test_review_transport_config_race`; `test_review_transport_objects_path`; `test_review_transport_residue_recreated`; `test_review_transport_sha256`; `test_review_transport_cleanup_warning_does_not_change_result` |
 | §6.3.29路径与架构守卫、PolicyInputError、读事务范围 | `test_review_toctou_record_path_same_tree`; `test_review_toctou_policy_input_error`; `test_review_toctou_transaction_ends_before_copies` |
 | §6.3.30 CLI统一异常出口、锁释放、成功后补账 | `test_review_cli_unexpected_database_error` |
+| 第二轮F1 sha1 init无object-format/格式拒绝/清理 | `test_review2_transport_sha1_omits_object_format`; `test_review2_transport_format_rejects`; `test_review_transport_sha256` |
 | §1共用化等价 | `test_repair_primitives_moved_without_source_changes`; R:`test_source_identity_joint_check_rejects_each_mismatch` |
 
 ### 3.4 §6.4移交加固
@@ -236,11 +242,13 @@ C5自己的CI须在本提交推送后核验并回报,此处不预填结果。
 
 ## 6. 评审请求
 
-请核对实现与v1.3.1及P5-D-02一致,尤其是CMake按值识别/生成器表达式、真实路径归组、
-隔离传输裸仓库、TOCTOU事务范围与CLI无额外写库;核对§7变异证据并确认§4限制可接受。
-本文件只提交READY_FOR_REVIEW,不代表设计方或评审已签批。
+代码评审两轮已用满。本次按轻量流程由设计方核对第二轮三条裁定的落实与证据后签收,
+不再安排第三轮代码评审。冻结稿不变,已知限制见§4,第二轮处置见§7.2。
+本文件只提交READY_FOR_REVIEW,不代表设计方已经签批。
 
 ## 7. 代码评审修订
+
+### 7.1 第一轮
 
 Claude Code、ChatGPT代码评审结论为需修改;按FatTank提供的v1.3.1附录D实施。
 文档同步提交`c71aa3c`,以下代码/测试及D-02文档修订统一在`f9a6bc5`。
@@ -340,3 +348,93 @@ code_to_closeout nodeids=1928 added=0 missing=0 outcome_changes=0 PASS
 原文与逐nodeid结果:[review-closeout](../dev_memory/stage19_p5_sandbox_submit/evidence/review-closeout),
 比较:[review-closeout-comparison.json](../dev_memory/stage19_p5_sandbox_submit/evidence/review-closeout-comparison.json)。
 真实hook与SHA-256传输用例再次PASSED;94条门禁无新增失败,3条历史异常不变。
+
+### 7.2 第二轮
+
+结论:Claude Code可签收(一次要、一建议);ChatGPT需修改(一重要)。设计方直接裁定,
+三项均在`37e27b1`落实。冻结稿零diff,SHA仍为§1所列83383877值,规则版本保持v2。
+
+| 发现/裁定 | 处置 | 用例与证据 |
+|---|---|---|
+| 重要F1:sha1传输init无条件传--object-format | sha1省略,sha256显式指定,其它格式ValueError;创建后读取传输仓库格式比较,不等ValueError;两者均经_TransportFailure并清理 | `test_review2_transport_sha1_omits_object_format`记录argv;`test_review2_transport_format_rejects`两case断言原因、push=0、远端空、目录清理;既有sha256用例PASSED |
+| 次要2-1:参数归属重复遍历命令 | 建{id(参数):命令}索引,查询结果不变 | `test_review2_cmake_2000_commands`:同一夹具与完整hit快照,改前1.356749秒/改后0.051016秒;二者均一条count=2000 |
+| 建议2-2:递归嵌套无界 | 显式depth,第65层抛generator expression too deep,出口捕获ValueError和RecursionError并记cmake_genex_unparsed | `test_review2_genex_depth`64正常、65/2000拒绝;`test_review2_genex_deep_cli`子进程exit 4且无traceback;`test_review2_genex_recursion_error_fails_closed`模拟兜底 |
+
+证据:[review-round2/before](../dev_memory/stage19_p5_sandbox_submit/evidence/review-round2/before)、
+[review-round2/after](../dev_memory/stage19_p5_sandbox_submit/evidence/review-round2/after),
+含精确命令、代码/测试SHA、原始输出、JUnit结果。新旧测试文件SHA相同,hit全字段相同。
+性能改前已低于5秒,不虚称该例旧实现必红。本机git 2.43.0,以init调用记录验证参数契约,
+不将其表述为真实git 2.26二进制实跑。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2/run_targeted.py before .
+8 failed, 2 passed, 365 deselected in 5.59s
+pytest_exit=1
+recorder_exit=0
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2/run_targeted.py after .
+10 passed, 365 deselected in 1.26s
+pytest_exit=0
+recorder_exit=0
+same_test_source_sha256=PASS; same_hit_payload=PASS
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-round2-code docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-code
+pytest / mypy / ruff / lint-imports / symbol / bridge / design-doc: exit=0
+completed=94 unexpected=3
+exit=0
+================== 1937 passed, 1 skipped in 65.66s (0:01:05) ==================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-code /tmp/p5-round2-code
+exit_changes={}; missing_nodeids=[]; changed_outcomes={}
+added_nodeids=441; identical_tested_sources=4
+baseline_comparison=PASS
+exit=0
+round1_to_round2 old_nodeids=1928 new_nodeids=1938 added=10 missing=[] outcome_changes={} PASS
+```
+
+新增10例全部通过,既有1928个nodeid与结果全部保留。94条门禁的3条历史异常仍与
+cd7f8dd一致,无新增失败。完整命令/exit原文:
+[review-round2-code/commands.json](../dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-code/commands.json);
+[基线比较](../dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-code-comparison.json)。
+
+真实hook本机passed原文(同目录pytest.log:72):
+
+```text
+tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive PASSED [  3%]
+```
+
+第二轮代码CI实测(exit 0):
+
+```text
+$ gh run view 38019264989 --json status,conclusion,url,headSha
+{"conclusion":"success","headSha":"37e27b1d8fc4d531a131e7c9c356e418e2804ec7","status":"completed","url":"https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38019264989"}
+```
+
+[代码CI SUCCESS](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38019264989)。
+独立文档提交的CI在推送后核验,不在本文件预填结果。
+
+独立收口复验(干净工作树37e27b1,只复制本文修订):
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-round2-closeout docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-closeout
+pytest / mypy / ruff / lint-imports / symbol / bridge / design-doc: exit=0
+completed=94 unexpected=3
+exit=0
+================== 1937 passed, 1 skipped in 68.61s (0:01:08) ==================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-closeout /tmp/p5-round2-closeout
+exit_changes={}; missing_nodeids=[]; changed_outcomes={}
+added_nodeids=441; identical_tested_sources=0
+baseline_comparison=PASS
+exit=0
+code_to_closeout nodeids=1938 added=0 missing=0 outcome_changes=0 PASS
+```
+
+原文及逐nodeid:[review-round2-closeout](../dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-closeout);
+[比较](../dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-closeout-comparison.json)。
+真实hook再次PASSED;3条历史异常不变。映射表实跑:
+`mapped_functions=120 required_functions=111`,
+`missing_from_table=[]`, `unknown_in_table=[]`, `rule_test_mapping=PASS`;
+可复现命令见[progress §19](../dev_memory/stage19_p5_sandbox_submit/progress.md#19-代码评审第二轮)。
+
+本次收口仅文档与证据,状态保持READY_FOR_REVIEW,未自行CLOSED。

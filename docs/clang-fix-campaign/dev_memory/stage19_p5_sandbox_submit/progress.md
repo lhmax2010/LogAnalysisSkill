@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-10。状态:**REVIEW_ROUND2_IN_PROGRESS**。第一轮修复与收口已推送;第二轮按设计方三条裁定实施,基线1927 passed/1 skipped。未自行标CLOSED。
+日期:2026-10-10。状态:**READY_FOR_REVIEW**。第二轮三条裁定在37e27b1落实,1937 passed/1 skipped,代码CI通过。两轮评审已用满,待设计方核对签收,未自行标CLOSED。
 
 ## 1. 权威、批准与基线
 
@@ -1198,3 +1198,88 @@ tests/unit/test_sandbox_submit.py::test_review_transport_sha256 PASSED   [ 46%]
 冻结稿diff为空,实测SHA256仍为上述值。代码/Markdown的diff --check通过;
 失败log/xml保留pytest原始空白,不改证据。无新的规范缺口,无额外行为或安全边界裁决。
 推送后核验CI,在独立收口文档提交登记代码提交与结果;状态不自行CLOSED。
+
+### 代码提交与CI
+
+代码/测试提交`37e27b1d8fc4d531a131e7c9c356e418e2804ec7`已独立推送。
+CI原文(exit 0):
+
+```text
+$ gh run view 38019264989 --json status,conclusion,url,headSha
+{"conclusion":"success","headSha":"37e27b1d8fc4d531a131e7c9c356e418e2804ec7","status":"completed","url":"https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38019264989"}
+```
+
+[代码CI](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38019264989)通过。
+收口文档§7.2逐条登记发现、处置、提交及证据,§3补用例映射。
+状态READY_FOR_REVIEW,由设计方核对后签收;没有新增第三轮代码评审。
+
+### 独立收口复验
+
+干净工作树`/tmp/p5-round2-closeout`固定在37e27b1,只复制收口文档修订,
+源码与测试均为已提交版本。完整命令/环境/原始输出:
+[review-round2-closeout](evidence/review-round2-closeout);
+[与固定基线比较](evidence/review-round2-closeout-comparison.json)。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-round2-closeout docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-closeout
+pytest: exit=0 expected=0
+mypy: exit=0 expected=0
+ruff: exit=0 expected=0
+lint-imports: exit=0 expected=0
+symbol: exit=0 expected=0
+bridge: exit=0 expected=0
+design-doc: exit=0 expected=0
+completed=94 unexpected=3
+exit=0
+================== 1937 passed, 1 skipped in 68.61s (0:01:08) ==================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-closeout /tmp/p5-round2-closeout
+exit_changes={}; missing_nodeids=[]; changed_outcomes={}
+added_nodeids=441; identical_tested_sources=0
+baseline_comparison=PASS
+exit=0
+code_to_closeout nodeids=1938 added=0 missing=0 outcome_changes=0 PASS
+exit=0
+```
+
+identical_tested_sources=0表示相对HEAD无未提交的源码/测试,不是漏跑。
+后一个对照调用compare_validation.py的outcomes解析两轮pytest.xml,逐nodeid结果完全相等。
+本轮pytest.log:72真实hook、:907 SHA-256传输再次PASSED,未skip。
+
+映射表机械检查命令与输出(exit 0):
+
+```bash
+.venv/bin/python - <<'PY'
+import ast
+import re
+from pathlib import Path
+doc = Path('docs/clang-fix-campaign/review/p5-sandbox-submit-closeout.md').read_text()
+table = doc.split('## 3.', 1)[1].split('## 4.', 1)[0]
+names = set(re.findall(r'`(test_\w+)(?:\[[^`]*\])?`', table))
+def tests(path):
+    return {n.name for n in ast.walk(ast.parse(path.read_text()))
+            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and n.name.startswith('test_')}
+paths = [Path('tests/unit') / name for name in (
+    'test_suppress_policy.py', 'test_campaign_gate_view.py',
+    'test_sandbox_submit.py', 'test_sandbox_git.py')]
+required = set().union(*(tests(path) for path in paths))
+all_names = set().union(*(tests(path) for path in Path('tests').rglob('*.py')))
+print(f'mapped_functions={len(names)} required_functions={len(required)}')
+print(f'missing_from_table={sorted(required-names)}')
+print(f'unknown_in_table={sorted(names-all_names)}')
+assert not required-names and not names-all_names
+print('rule_test_mapping=PASS')
+PY
+```
+
+```text
+mapped_functions=120 required_functions=111
+missing_from_table=[]
+unknown_in_table=[]
+rule_test_mapping=PASS
+```
+
+冻结稿仍为83383877f6b8c0deac8606d29fec8a446c1e5520813e714f881855886f888d3b,
+本次文档提交不改任何代码/测试/规则。提交自身由Git外部锚定,
+推送后核验其CI并回报,此处不预填结果。

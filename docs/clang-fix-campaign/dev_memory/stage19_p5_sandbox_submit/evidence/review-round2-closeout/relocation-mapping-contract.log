@@ -1,0 +1,3 @@
+RELOCATION_NEGATIVE | mapping-contract/missing | UNMAPPED_SOURCE: production mapping omits ('ci_triage/verify/workspace.py', '_copy_repository', 'build-verify'); RELOCATION_MAPPING_NOT_EXACT: production mapping must contain exactly 3 frozen pairs
+RELOCATION_NEGATIVE | mapping-contract/non-exact | RELOCATION_MAPPING_NOT_EXACT: production mapping must contain exactly 3 frozen pairs
+RELOCATION_NEGATIVE | mapping-contract/non-bijective | RELOCATION_NOT_BIJECTIVE: duplicate destination; RELOCATION_MAPPING_NOT_EXACT: production mapping must contain exactly 3 frozen pairs
