@@ -1,6 +1,6 @@
 # P1 EF-5 Environment Report
 
-日期:2026-10-10。最新结论:**WEB_READ_PARTIAL**(web-cookie-02:7 GET全部200,POST 0;子构建状态、关联、变量与两页步骤可读,逐架构独立状态及配置prompt未读到)。历史记录保留,最新事实见文末。
+日期:2026-10-10。累计结论:**WEB_READ_PARTIAL**。本轮为RBS/TRIGGER本地HTML离线解析,网络请求0;Base运行表单已取得,提交响应/新build ID获取方式仍未取得。历史SBS样本记录保留,最新事实与FatTank裁定见文末。
 权威:`../design.md` v1.5.19-FROZEN §1.4 EF-5与§4.1。
 本报告不修改设计,不宣告EF-5关闭或P5Q开工门通过。
 进度与命令:[stage15 progress](../dev_memory/stage15_p1_ef_spike/progress.md)。
@@ -614,3 +614,131 @@ Successful规则已由FatTank裁定,不需等待ACCEPTED作为子构建通过条
 
 验证:离线43项全绿(较上轮新增2项),全仓1937 passed/1 skipped,
 mypy与ruff全绿;命令及exit见stage15 §16.3及web-cookie-02-validation/。
+
+## RBS运行表单离线解析(2026-10-10)
+
+### 新裁定与取证范围
+
+FatTank 2026-10-10新裁定:复验改用**RBS/TRIGGER**,Base-Toolchain和Unified-Toolchain
+按包所属工程各设一项;目标为**BUILD_PKG_LIST**(显示名Build Package List,
+git_path@commit_id一行一个)。工具永远不点Accept/Ready to Accept,
+`ILinkListener-content-buildHead-promote`列入禁止名单;正式快照合入由人Accept。
+Run先进入Specify Build Options,最终提交才开跑,此流程为FatTank截图确认,
+本轮不通过执行来验证。工具未来显式填写每个字段,不能沿用默认值。
+
+登录由P5Q设计改为终端提示账号密码、工具登录、会话只存内存,不再手抄Cookie;
+不申请REST权限。sandbox推送不会自动触发QB,构建仅由工具显式提交RBS表单发起;
+此项依据FatTank给出的团队代码说明,本轮未重新审查团队仓库。
+P12首次真实推送后仍须观察是否有自发构建,作为挂账观察项。
+子构建Successful即通过的既有裁定仍有效,不得与人工Accept混为同一门槛。
+
+本轮唯一输入是FatTank另存的`/tmp/qb_rbs_trigger_form.html`,
+文件先前缺失时已停止,本轮确认存在后继续。**网络请求0,未构造请求,未执行JS,
+未提交表单,未加载外部脚本或其它资源**。原文件只在内存处理,不复制入库、不删除。
+归档:[rbs-form-01](../dev_memory/stage15_p1_ef_spike/evidence/rbs-form-01/)。
+先用PageRedactor及USER规则脱敏;所有已有hidden value定点改为`<REDACTED>`,
+会话/token/csrf值也遮蔽。HTML以`&lt;REDACTED&gt;`安全编码,JSON为`<REDACTED>`。
+没有value属性的hidden仍如实记缺省,不捏造原值。写后逐字节自检,行号保留。
+
+所有下列位置均指`rbs-form-01/form.redacted.html`。完整机器结构、各select全部选项、
+onchange原文、按钮信息与证据行在`form.json`;本节只描述保存页面的事实。
+
+### 表单与工程
+
+| 表单/信息 | 实际内容 | 来源 |
+|---|---|---|
+| title/配置完整路径 | QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER | form.redacted.html:6 |
+| 页面标题 | Specify Build Options | form.redacted.html:718 |
+| PROJECT_NAME | Tizen-Base-Toolchain,只读展示,无HTML name | form.redacted.html:729、:735 |
+| 快速搜索表单idd3b | method=post;action=page?50-2.IFormSubmitListener-quicksearch | form.redacted.html:615 |
+| 运行表单idd3d | method=post;action=page?50-2.IFormSubmitListener-form;multipart/form-data;UTF-8 | form.redacted.html:720 |
+
+两条action都是Wicket IFormSubmitListener动作,仅保存文本,没有构造请求。
+表单method=post不等于本轮执行过POST。Unified-Toolchain运行表单未取得,
+不能从Base页面推断其URL、ID或字段默认值。
+
+### 字段表
+
+为了可读,下表HTML name的`P(n)`精确展开为
+`editor:content:basicProperties:n:property:editor:editor`,不是实际发送的字符串。
+form.json逐项保存完整HTML name。必填栏“未见”仅表示没有HTML required/红星标记,
+不保证服务端允许为空。所有默认值只作观察,**未来自动化必须显式填写**。
+
+| 标签 | HTML name | 类型 | 必填标记 | 当前默认/全部选项 | 联动/源行 |
+|---|---|---|---|---|---|
+| PROJECT_NAME | 无 | 只读显示 | 未见 | Tizen-Base-Toolchain | 无输入;:729/:735 |
+| BUILD_TYPE | P(1):wrapper:select | select | 星号:758 | 默认0=Full;选项0 Full、1 Partial | onchange;:759 |
+| REPO_TYPE | P(2):wrapper:select | select | 星号:784 | 默认/唯一0=ALL | onchange;:785 |
+| BUILD_REFERENCE | P(3):wrapper:select | select | 星号:809 | 默认1=Ref. Snapshot;选项0 Live、1 Ref. Snapshot、2 Snapshot Number | onchange;:810 |
+| SNAPSHOT_NUM | P(4):wrapper:select | select | 星号:836 | 默认/唯一0=tizen-base-toolchain_20260924.094908 | onchange;:837 |
+| PROJECT_BRANCH | P(5):wrapper:select | select | 星号:861 | 默认/唯一0=tizen_base | onchange;:862 |
+| Immediate Stop With Error | P(6):checkbox | checkbox | 未见 | checked;没有value属性 | onchange;:885 |
+| CHILD_CONFIGURATIONS | P(7):palette:recorder / :choices / :selection | hidden+双列表 | 未见 | recorder已遮蔽;Available空,Selected显示standard-armv7l:aarch64:x86_64 | recorder onchange;:907/:921/:936/:937 |
+| Build Package List | P(8):wrapper:input | textarea | 未见 | 空 | onchange;:964 |
+| Add Package List | P(9):wrapper:input | textarea | 未见 | 空 | onchange;:987 |
+| Remove Package List | P(10):wrapper:input | textarea | 未见 | 空 | onchange;:1010 |
+| TARGET_IMAGE | P(11):palette:recorder / :choices / :selection | hidden+双列表 | 未见 | recorder已遮蔽;Available/Selected均空 | recorder onchange;:1033/:1047/:1062 |
+| BUILD NOTES | P(12):wrapper:input | textarea | 未见 | 空 | onchange;:1089 |
+| 运行表单辅助hidden(无标签) | idd3d_hf_0 | hidden | 未见 | 原HTML无value属性 | 无;:720 |
+| 搜索辅助hidden(无标签) | idd3b_hf_0 | hidden | 未见 | 原HTML无value属性 | 无;:615 |
+| 搜索输入(无标签) | input | text | 未见 | 空 | 无字段onchange;:620 |
+
+共19个实际HTML控件(搜索2、运行17),另有PROJECT_NAME只读项。
+两个双列表各有recorder/choices/selection三个控件,不能按一项漏计其提交名。
+本页未读到radio。Build Package List帮助文字:969列出git_path@commit id及两行示例;
+它对应业务BUILD_PKG_LIST是FatTank裁定,不是从动态HTML name推测出的变量名。
+
+### 字段联动与双列表提交载体
+
+上表12个可编辑业务项都存在`onchange`中的`wicketAjaxPost`,URL形态为
+`page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-...`。
+原文逐字段保存在form.json的events,包含解码后的URL及源行号。
+这是**发生字段change时注册了服务端回调**的静态证据,没有执行change。
+**未读到BUILD_REFERENCE回调是否刷新SNAPSHOT_NUM、或其它回调刷新的目标字段**;
+保存HTML没有对应Ajax响应,不得用“通常如此”补齐。
+
+CHILD_CONFIGURATIONS的隐藏记录字段为
+`editor:content:basicProperties:7:property:editor:editor:palette:recorder`(:907)。
+可见选择器`...:palette:choices`(:921)及`...:palette:selection`(:936)
+在:918/:933被明确标为`Wicket.Form.excludeFromAjaxSerialization.<id>='true'`;
+Palette.add/remove/moveUp/moveDown把recorder的id作为第三参(:925至:928)。
+所以可确认页面的记录载体及Ajax排除关系,不是把显示名直接当作HTML提交名。
+**实际POST未执行**,不宣称两个select永远不会出现在任何正常表单POST中。
+
+Selected项:937的可见option.value为
+`7374616e646172642d61726d76376c3a616172636836343a7838365f3634`,
+十六进制解码为显示文本`standard-armv7l:aarch64:x86_64`。
+脚本在内存核对了原recorder是单个hex值且等于此option.value,仅落布尔证明和
+`<REDACTED>`占位,未另存隐藏原值。该样本只有一项,**多项分隔/拼接规则未取得**;
+外部palette.js(:108)未加载,不能猜逗号或冒号是通用控件序列化分隔符。
+TARGET_IMAGE原recorder为空的形态已记录,实际隐藏值仍遮蔽。
+
+### 按钮表
+
+form.json记录全部25个button/按钮式a。下列各项均**没有name和value属性**,
+显示文字为空者不把CSS class臆写成可见标签。URL均为脱敏后的页面文本,没有请求。
+
+| 按钮/显示文字 | 类型与动作形态 | name/value | 来源 |
+|---|---|---|---|
+| Ok | type=submit;onclick禁用按钮、改文案Please wait...、closest('form').submit();无字面URL,所属form action为page?50-2.IFormSubmitListener-form | 均未见 | form.redacted.html:1109;action:720 |
+| Cancel | a,href=page?50-2.ILinkListener-form-cancel | 均未见 | form.redacted.html:1110 |
+| CHILD_CONFIGURATIONS四个无文字按钮 | type=button;CSS add/remove/up/down;onclick分别Palette.add/remove/moveUp/moveDown,无URL | 均未见 | form.redacted.html:925/:926/:927/:928 |
+| TARGET_IMAGE四个无文字按钮 | 同上,作用于自身choices/selection/recorder | 均未见 | form.redacted.html:1051/:1052/:1053/:1054 |
+| 快速搜索两个无文字按钮 | :617为button,:621为submit;未见onclick URL,搜索form action在:615 | 均未见 | form.redacted.html:617/:621 |
+| 复制配置图标(显示文字空) | title=Copy this configuration to be under specified configuration;未见内联onclick URL,非本轮动作 | 均未见 | form.redacted.html:679 |
+| 导航菜单TIZEN/Tizen/Tizen-10.1/Tizen-10.0/Tizen-9.0/Tizen-8.0/Tizen-7.0/Tizen-6.5/Tizen-6.0/Tizen-5.5/Tizen-5.0/Tizen-4.0 | 12个button,未见内联onclick URL,不属于运行表单字段 | 均未见 | form.redacted.html:487/:491/:508/:513/:518/:523/:528/:535/:540/:545/:550/:555 |
+
+禁止名单另登记`ILinkListener-content-buildHead-promote`(FatTank裁定),
+不是本保存页里观察到它被执行。全程没有Accept、Run、Ok、Cancel或任何其它操作。
+
+### 结论与未取得项
+
+离线解析完成,网络请求为0,不把本轮标成一次新在线验证。
+已有Base RBS运行表单的字段、选项、必填标记、回调和按钮形态;
+观察值不能自动成为P5Q的参数选择规则,Unified工程仍待取证。
+
+**仍未取得：提交后的响应形态、新构建号如何获得。**
+这两项需后续一次经FatTank明确确认的真实提交;本轮没有请求授权也没有提交。
+Ajax服务端刷新目标、多选recorder通用编码也未取得,不能由本页静态结构反推。
+P5Q设计稿需落实新配置/业务变量/账号密码内存会话/永不Accept/显式填写规则;
+本轮不改design.md、P2-P5代码或冻结稿。验收命令与日志见stage15 §17。

@@ -1304,18 +1304,24 @@ rule_test_mapping=PASS
 
 本清单承接P5签收,不表示P5Q已开工或EF-5已关闭。
 事实来源为[EF报告](../../spikes/ef_report.md)与
-[stage15 §15](../stage15_p1_ef_spike/progress.md#15-cookie文件只读续跑2026-10-10);
-Cookie续跑取得子构建首页GET/200,随后本地write校验停止,累计证据仍为WEB_READ_PARTIAL。
+[stage15 §16/§17](../stage15_p1_ef_spike/progress.md#17-rbs运行表单离线解析与新裁定2026-10-10);
+网页续跑已读到子状态、父子关联、变量与步骤;本轮离线取得Base工程RBS运行表单。
+累计证据仍为部分可读,不以旧SBS样本代替RBS真实提交验证。
 
 | 移交项 | 状态与后续要求 | 依据/目标阶段 |
 |---|---|---|
-| EF-5网页读取缺口 | 部分可读:子构建1069540首页已读到Status=Successful;SR_STATUS、逐架构独立状态、步骤详情、目标变量映射仍未读到,不得从父页摘要补齐 | stage15 §15/EF报告;本轮write阶段BLOCKED,P5Q前置核实未完成 |
+| EF-5网页读取缺口 | SBS样本Status/关联/变量/两页步骤已读到;逐架构独立状态仍未读到。Base RBS表单已离线解析,尚无真实提交响应/新build ID获取方式及Unified表单证据 | stage15 §16/§17/EF报告;RBS真实提交仍须后续明确批准 |
 | QuickBuild通过判据 | 已裁定:子构建Status=Successful即通过,不要求SR_STATUS=ACCEPTED;qb_pass_requires_accept默认false,campaign启动时冻结入库,后续配置变更只影响新campaign | FatTank 2026-10-10 裁定;P5Q设计稿落实,本批不改代码 |
-| 目标变量等价性 | 已明确:SBS_TARGET为设计内部名称;QuickBuild实际使用BUILD_PKG_LIST / BUILD_PKG_LIST_MODIFY / 其它变量待取证后再定,不得擅自认定等价 | FatTank 2026-10-10 裁定;stage15 Cookie取证/P5Q |
-| QuickBuild接入方式 | 已裁定:不申请REST权限;P5Q网页Cookie自动触发,结果同样网页Cookie读取;REST/Basic Auth方案由P5Q设计稿替换,本轮取证仍只读 | FatTank 2026-10-10 裁定;P5Q设计稿落实,本批不改design.md |
+| 复验配置 | 使用RBS/TRIGGER,不是SBS/TRIGGER;按包所属工程为Tizen-Base-Toolchain与Tizen-Unified-Toolchain各设一条配置项,不猜Unified配置URL/ID | FatTank 2026-10-10 新裁定1;P5Q设计稿落实 |
+| 目标变量 | BUILD_PKG_LIST,网页显示名Build Package List,git_path@commit_id一行一个;SBS_TARGET仅设计内部名称,不宣称与BUILD_PKG_LIST_MODIFY等价 | FatTank 2026-10-10 新裁定2;Base表单HTML name见stage15 §17,动态索引不是变量业务名 |
+| QuickBuild接入与登录 | 不申请REST权限;触发/读取均走网页会话。P5Q在FatTank终端提示输入账号密码,工具登录后会话仅内存、不落盘,不再要求手抄浏览器Cookie | FatTank 2026-10-10 新裁定7,取代手工Cookie前提;本轮只登记,不实现登录/不改design.md |
+| Accept安全边界 | 合入正式快照必须由人点Accept;工具永远不点Accept/Ready to Accept;ILinkListener-content-buildHead-promote列入永久禁止名单 | FatTank 2026-10-10 新裁定3;不改变子构建Successful通过判据 |
+| Run与表单填写 | Run先进入Specify Build Options(/wicket/page?NN),最终提交才开跑(FatTank截图确认);工具显式填写每个字段,不依赖表单默认值 | FatTank 2026-10-10 新裁定4/5;本轮离线HTML不推断提交后行为 |
+| sandbox推送与QB触发 | sandbox git push不自动触发QB;仅工具显式提交RBS表单发起构建。依据为FatTank提供的团队quickbuild-sandbox-branch只含git push、无QB交互的说明,本轮不冒充代码复核 | FatTank 2026-10-10 新裁定6;P12首次真实推送后观察有无自发QB构建,挂账待实测 |
 | 远端ref实时校验 | 须复用P5的隔离传输与git统一环境,不得退回主副本直接传输或另起不受控Git环境 | P5 `sandbox_submit`/`sandbox_git`,第二轮修复37e27b1;P5Q |
 | 首次真实Gerrit sandbox推送 | 仍按EF-6放在P12,不因P5签收提前执行;本批测试仅使用本地仓库与本地裸仓库 | design.md §1.4 EF-6 / Phase 12;P12 |
 
 P5签收时仅登记移交;上述2026-10-10裁定与后续取证见
-[stage15 §14/§15](../stage15_p1_ef_spike/progress.md#14-fattank-2026-10-10裁定),
-不因未来Cookie触发方案而放宽本轮只读边界,真实Gerrit首次推送仍在P12。
+[stage15 §14/§17](../stage15_p1_ef_spike/progress.md#17-rbs运行表单离线解析与新裁定2026-10-10),
+本轮零QuickBuild网络请求,不因未来自动登录/表单触发方案而放宽授权,
+真实Gerrit首次推送仍在P12。

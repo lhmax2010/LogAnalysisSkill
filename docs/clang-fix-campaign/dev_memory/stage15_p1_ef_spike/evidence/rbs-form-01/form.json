@@ -1,0 +1,1683 @@
+{
+  "network_requests": 0,
+  "javascript_executed": false,
+  "forms_submitted": 0,
+  "forbidden_action_tokens": [
+    "ILinkListener-content-buildHead-promote"
+  ],
+  "titles": [
+    {
+      "text": "QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER",
+      "source": "form.redacted.html:6"
+    }
+  ],
+  "forms": [
+    {
+      "id": "idd3b",
+      "source": "form.redacted.html:615",
+      "method": "post",
+      "action": {
+        "value": "page?50-2.IFormSubmitListener-quicksearch",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      },
+      "enctype": null,
+      "fields": [
+        {
+          "label": null,
+          "label_source": null,
+          "source": "form.redacted.html:615",
+          "html_name": "idd3b_hf_0",
+          "id": "idd3b_hf_0",
+          "type": "hidden",
+          "palette_role": null,
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": null,
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": []
+        },
+        {
+          "label": null,
+          "label_source": null,
+          "source": "form.redacted.html:620",
+          "html_name": "input",
+          "id": "idd20",
+          "type": "text",
+          "palette_role": null,
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": "",
+          "value_attribute_present": true,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": []
+        }
+      ],
+      "read_only_fields": [],
+      "palettes": []
+    },
+    {
+      "id": "idd3d",
+      "source": "form.redacted.html:720",
+      "method": "post",
+      "action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      },
+      "enctype": "multipart/form-data",
+      "fields": [
+        {
+          "label": null,
+          "label_source": null,
+          "source": "form.redacted.html:720",
+          "html_name": "idd3d_hf_0",
+          "id": "idd3d_hf_0",
+          "type": "hidden",
+          "palette_role": null,
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": null,
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": []
+        },
+        {
+          "label": "BUILD_TYPE",
+          "label_source": "form.redacted.html:749",
+          "source": "form.redacted.html:759",
+          "html_name": "editor:content:basicProperties:1:property:editor:editor:wrapper:select",
+          "id": "idd77",
+          "type": "select",
+          "palette_role": null,
+          "required_marker_observed": true,
+          "required_sources": [
+            "form.redacted.html:758"
+          ],
+          "default": [
+            "0"
+          ],
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [
+            {
+              "text": "Full",
+              "value": "0",
+              "selected": true,
+              "disabled": false,
+              "source": "form.redacted.html:760"
+            },
+            {
+              "text": "Partial",
+              "value": "1",
+              "selected": false,
+              "disabled": false,
+              "source": "form.redacted.html:761"
+            }
+          ],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idd77')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd77') != null;}.bind(this));",
+              "source": "form.redacted.html:759",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "REPO_TYPE",
+          "label_source": "form.redacted.html:775",
+          "source": "form.redacted.html:785",
+          "html_name": "editor:content:basicProperties:2:property:editor:editor:wrapper:select",
+          "id": "idd79",
+          "type": "select",
+          "palette_role": null,
+          "required_marker_observed": true,
+          "required_sources": [
+            "form.redacted.html:784"
+          ],
+          "default": [
+            "0"
+          ],
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [
+            {
+              "text": "ALL",
+              "value": "0",
+              "selected": true,
+              "disabled": false,
+              "source": "form.redacted.html:786"
+            }
+          ],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idd79')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd79') != null;}.bind(this));",
+              "source": "form.redacted.html:785",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "BUILD_REFERENCE",
+          "label_source": "form.redacted.html:800",
+          "source": "form.redacted.html:810",
+          "html_name": "editor:content:basicProperties:3:property:editor:editor:wrapper:select",
+          "id": "idd7b",
+          "type": "select",
+          "palette_role": null,
+          "required_marker_observed": true,
+          "required_sources": [
+            "form.redacted.html:809"
+          ],
+          "default": [
+            "1"
+          ],
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [
+            {
+              "text": "Live",
+              "value": "0",
+              "selected": false,
+              "disabled": false,
+              "source": "form.redacted.html:811"
+            },
+            {
+              "text": "Ref. Snapshot",
+              "value": "1",
+              "selected": true,
+              "disabled": false,
+              "source": "form.redacted.html:812"
+            },
+            {
+              "text": "Snapshot Number",
+              "value": "2",
+              "selected": false,
+              "disabled": false,
+              "source": "form.redacted.html:813"
+            }
+          ],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idd7b')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd7b') != null;}.bind(this));",
+              "source": "form.redacted.html:810",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "SNAPSHOT_NUM",
+          "label_source": "form.redacted.html:827",
+          "source": "form.redacted.html:837",
+          "html_name": "editor:content:basicProperties:4:property:editor:editor:wrapper:select",
+          "id": "idd7d",
+          "type": "select",
+          "palette_role": null,
+          "required_marker_observed": true,
+          "required_sources": [
+            "form.redacted.html:836"
+          ],
+          "default": [
+            "0"
+          ],
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [
+            {
+              "text": "tizen-base-toolchain_20260924.094908",
+              "value": "0",
+              "selected": true,
+              "disabled": false,
+              "source": "form.redacted.html:838"
+            }
+          ],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idd7d')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd7d') != null;}.bind(this));",
+              "source": "form.redacted.html:837",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "PROJECT_BRANCH",
+          "label_source": "form.redacted.html:852",
+          "source": "form.redacted.html:862",
+          "html_name": "editor:content:basicProperties:5:property:editor:editor:wrapper:select",
+          "id": "idd7f",
+          "type": "select",
+          "palette_role": null,
+          "required_marker_observed": true,
+          "required_sources": [
+            "form.redacted.html:861"
+          ],
+          "default": [
+            "0"
+          ],
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [
+            {
+              "text": "tizen_base",
+              "value": "0",
+              "selected": true,
+              "disabled": false,
+              "source": "form.redacted.html:863"
+            }
+          ],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idd7f')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd7f') != null;}.bind(this));",
+              "source": "form.redacted.html:862",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "Immediate Stop With Error",
+          "label_source": "form.redacted.html:877",
+          "source": "form.redacted.html:885",
+          "html_name": "editor:content:basicProperties:6:property:editor:editor:checkbox",
+          "id": "idd81",
+          "type": "checkbox",
+          "palette_role": null,
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": {
+            "checked": true,
+            "value_attribute": null
+          },
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idd81')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd81') != null;}.bind(this));",
+              "source": "form.redacted.html:885",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "CHILD_CONFIGURATIONS",
+          "label_source": "form.redacted.html:897",
+          "source": "form.redacted.html:907",
+          "html_name": "editor:content:basicProperties:7:property:editor:editor:palette:recorder",
+          "id": "idd84",
+          "type": "hidden",
+          "palette_role": "recorder",
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": "<REDACTED>",
+          "value_attribute_present": true,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd84')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd84') != null;}.bind(this));",
+              "source": "form.redacted.html:907",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "CHILD_CONFIGURATIONS",
+          "label_source": "form.redacted.html:897",
+          "source": "form.redacted.html:921",
+          "html_name": "editor:content:basicProperties:7:property:editor:editor:palette:choices",
+          "id": "idd85",
+          "type": "select",
+          "palette_role": "choices",
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": [],
+          "value_attribute_present": false,
+          "multiple": true,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onfocus",
+              "code": "Wicket.Palette.choicesOnFocus('idd85','idd86','idd84');",
+              "source": "form.redacted.html:921",
+              "server_callback": false,
+              "urls": [],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            },
+            {
+              "event": "ondblclick",
+              "code": "Wicket.Palette.add('idd85','idd86','idd84');",
+              "source": "form.redacted.html:921",
+              "server_callback": false,
+              "urls": [],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "CHILD_CONFIGURATIONS",
+          "label_source": "form.redacted.html:897",
+          "source": "form.redacted.html:936",
+          "html_name": "editor:content:basicProperties:7:property:editor:editor:palette:selection",
+          "id": "idd86",
+          "type": "select",
+          "palette_role": "selection",
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": [],
+          "value_attribute_present": false,
+          "multiple": true,
+          "disabled": false,
+          "options": [
+            {
+              "text": "standard-armv7l:aarch64:x86_64",
+              "value": "7374616e646172642d61726d76376c3a616172636836343a7838365f3634",
+              "selected": false,
+              "disabled": false,
+              "source": "form.redacted.html:937"
+            }
+          ],
+          "events": [
+            {
+              "event": "onfocus",
+              "code": "Wicket.Palette.selectionOnFocus('idd85','idd86','idd84');",
+              "source": "form.redacted.html:936",
+              "server_callback": false,
+              "urls": [],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            },
+            {
+              "event": "ondblclick",
+              "code": "Wicket.Palette.remove('idd85','idd86','idd84');",
+              "source": "form.redacted.html:936",
+              "server_callback": false,
+              "urls": [],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "Build Package List",
+          "label_source": "form.redacted.html:954",
+          "source": "form.redacted.html:964",
+          "html_name": "editor:content:basicProperties:8:property:editor:editor:wrapper:input",
+          "id": "idd88",
+          "type": "textarea",
+          "palette_role": null,
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": "",
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd88')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd88') != null;}.bind(this));",
+              "source": "form.redacted.html:964",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "Add Package List",
+          "label_source": "form.redacted.html:977",
+          "source": "form.redacted.html:987",
+          "html_name": "editor:content:basicProperties:9:property:editor:editor:wrapper:input",
+          "id": "idd8a",
+          "type": "textarea",
+          "palette_role": null,
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": "",
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd8a')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd8a') != null;}.bind(this));",
+              "source": "form.redacted.html:987",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "Remove Package List",
+          "label_source": "form.redacted.html:1000",
+          "source": "form.redacted.html:1010",
+          "html_name": "editor:content:basicProperties:10:property:editor:editor:wrapper:input",
+          "id": "idd8c",
+          "type": "textarea",
+          "palette_role": null,
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": "",
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd8c')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd8c') != null;}.bind(this));",
+              "source": "form.redacted.html:1010",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "TARGET_IMAGE",
+          "label_source": "form.redacted.html:1023",
+          "source": "form.redacted.html:1033",
+          "html_name": "editor:content:basicProperties:11:property:editor:editor:palette:recorder",
+          "id": "idd8f",
+          "type": "hidden",
+          "palette_role": "recorder",
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": "<REDACTED>",
+          "value_attribute_present": true,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd8f')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd8f') != null;}.bind(this));",
+              "source": "form.redacted.html:1033",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "TARGET_IMAGE",
+          "label_source": "form.redacted.html:1023",
+          "source": "form.redacted.html:1047",
+          "html_name": "editor:content:basicProperties:11:property:editor:editor:palette:choices",
+          "id": "idd90",
+          "type": "select",
+          "palette_role": "choices",
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": [],
+          "value_attribute_present": false,
+          "multiple": true,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onfocus",
+              "code": "Wicket.Palette.choicesOnFocus('idd90','idd91','idd8f');",
+              "source": "form.redacted.html:1047",
+              "server_callback": false,
+              "urls": [],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            },
+            {
+              "event": "ondblclick",
+              "code": "Wicket.Palette.add('idd90','idd91','idd8f');",
+              "source": "form.redacted.html:1047",
+              "server_callback": false,
+              "urls": [],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "TARGET_IMAGE",
+          "label_source": "form.redacted.html:1023",
+          "source": "form.redacted.html:1062",
+          "html_name": "editor:content:basicProperties:11:property:editor:editor:palette:selection",
+          "id": "idd91",
+          "type": "select",
+          "palette_role": "selection",
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": [],
+          "value_attribute_present": false,
+          "multiple": true,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onfocus",
+              "code": "Wicket.Palette.selectionOnFocus('idd90','idd91','idd8f');",
+              "source": "form.redacted.html:1062",
+              "server_callback": false,
+              "urls": [],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            },
+            {
+              "event": "ondblclick",
+              "code": "Wicket.Palette.remove('idd90','idd91','idd8f');",
+              "source": "form.redacted.html:1062",
+              "server_callback": false,
+              "urls": [],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        },
+        {
+          "label": "BUILD NOTES",
+          "label_source": "form.redacted.html:1079",
+          "source": "form.redacted.html:1089",
+          "html_name": "editor:content:basicProperties:12:property:editor:editor:wrapper:input",
+          "id": "idd93",
+          "type": "textarea",
+          "palette_role": null,
+          "required_marker_observed": false,
+          "required_sources": [],
+          "default": "",
+          "value_attribute_present": false,
+          "multiple": false,
+          "disabled": false,
+          "options": [],
+          "events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd93')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd93') != null;}.bind(this));",
+              "source": "form.redacted.html:1089",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ]
+        }
+      ],
+      "read_only_fields": [
+        {
+          "label": "PROJECT_NAME",
+          "source": "form.redacted.html:729",
+          "value": "Tizen-Base-Toolchain",
+          "value_source": "form.redacted.html:732",
+          "html_name": null,
+          "type": "read_only_display"
+        }
+      ],
+      "palettes": [
+        {
+          "label": "CHILD_CONFIGURATIONS",
+          "type": "dual-list",
+          "source": "form.redacted.html:907",
+          "recorder_name": "editor:content:basicProperties:7:property:editor:editor:palette:recorder",
+          "recorder_value": "<REDACTED>",
+          "recorder_events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd84')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd84') != null;}.bind(this));",
+              "source": "form.redacted.html:907",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ],
+          "members": [
+            {
+              "name": "editor:content:basicProperties:7:property:editor:editor:palette:recorder",
+              "id": "idd84",
+              "source": "form.redacted.html:907",
+              "options": []
+            },
+            {
+              "name": "editor:content:basicProperties:7:property:editor:editor:palette:choices",
+              "id": "idd85",
+              "source": "form.redacted.html:921",
+              "options": []
+            },
+            {
+              "name": "editor:content:basicProperties:7:property:editor:editor:palette:selection",
+              "id": "idd86",
+              "source": "form.redacted.html:936",
+              "options": [
+                {
+                  "text": "standard-armv7l:aarch64:x86_64",
+                  "value": "7374616e646172642d61726d76376c3a616172636836343a7838365f3634",
+                  "selected": false,
+                  "disabled": false,
+                  "source": "form.redacted.html:937"
+                }
+              ]
+            }
+          ],
+          "excluded_from_ajax_serialization": [
+            {
+              "html_name": "editor:content:basicProperties:7:property:editor:editor:palette:choices",
+              "id": "idd85",
+              "source": "form.redacted.html:918"
+            },
+            {
+              "html_name": "editor:content:basicProperties:7:property:editor:editor:palette:selection",
+              "id": "idd86",
+              "source": "form.redacted.html:933"
+            }
+          ],
+          "actual_submission": "NOT_PERFORMED",
+          "multi_value_serialization": "NOT_OBSERVED; external palette.js was not loaded"
+        },
+        {
+          "label": "TARGET_IMAGE",
+          "type": "dual-list",
+          "source": "form.redacted.html:1033",
+          "recorder_name": "editor:content:basicProperties:11:property:editor:editor:palette:recorder",
+          "recorder_value": "<REDACTED>",
+          "recorder_events": [
+            {
+              "event": "onchange",
+              "code": "var wcall=wicketAjaxPost('page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd8f')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd8f') != null;}.bind(this));",
+              "source": "form.redacted.html:1033",
+              "server_callback": true,
+              "urls": [
+                {
+                  "value": "page?50-2.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder",
+                  "wicket_action": true,
+                  "listeners": [
+                    "IBehaviorListener"
+                  ],
+                  "permanently_forbidden": false
+                }
+              ],
+              "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+            }
+          ],
+          "members": [
+            {
+              "name": "editor:content:basicProperties:11:property:editor:editor:palette:recorder",
+              "id": "idd8f",
+              "source": "form.redacted.html:1033",
+              "options": []
+            },
+            {
+              "name": "editor:content:basicProperties:11:property:editor:editor:palette:choices",
+              "id": "idd90",
+              "source": "form.redacted.html:1047",
+              "options": []
+            },
+            {
+              "name": "editor:content:basicProperties:11:property:editor:editor:palette:selection",
+              "id": "idd91",
+              "source": "form.redacted.html:1062",
+              "options": []
+            }
+          ],
+          "excluded_from_ajax_serialization": [
+            {
+              "html_name": "editor:content:basicProperties:11:property:editor:editor:palette:choices",
+              "id": "idd90",
+              "source": "form.redacted.html:1044"
+            },
+            {
+              "html_name": "editor:content:basicProperties:11:property:editor:editor:palette:selection",
+              "id": "idd91",
+              "source": "form.redacted.html:1059"
+            }
+          ],
+          "actual_submission": "NOT_PERFORMED",
+          "multi_value_serialization": "NOT_OBSERVED; external palette.js was not loaded"
+        }
+      ]
+    }
+  ],
+  "buttons": [
+    {
+      "source": "form.redacted.html:487",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "TIZEN",
+      "title": null,
+      "class": "dropbtn",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:491",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:508",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-10.1",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:513",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-10.0",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:518",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-9.0",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:523",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-8.0",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:528",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-7.0",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:535",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-6.5",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:540",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-6.0",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:545",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-5.5",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:550",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-5.0",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:555",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Tizen-4.0",
+      "title": null,
+      "class": "dropbtn-sub",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:617",
+      "tag": "button",
+      "type": "button",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "btn btn-xs btn-outline-light btn-icon",
+      "form_id": "idd3b",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-quicksearch",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:621",
+      "tag": "button",
+      "type": "submit",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "btn btn-xs btn-icon",
+      "form_id": "idd3b",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-quicksearch",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:679",
+      "tag": "button",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": "Copy this configuration to be under specified configuration",
+      "class": "btn btn-sm btn-ghost btn-square btn-secondary ml-2",
+      "form_id": null,
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": null
+    },
+    {
+      "source": "form.redacted.html:925",
+      "tag": "button",
+      "type": "button",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "button add",
+      "form_id": "idd3d",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [
+        {
+          "event": "onclick",
+          "code": "Wicket.Palette.add('idd85','idd86','idd84');",
+          "source": "form.redacted.html:925",
+          "server_callback": false,
+          "urls": [],
+          "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+        }
+      ],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:926",
+      "tag": "button",
+      "type": "button",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "button remove",
+      "form_id": "idd3d",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [
+        {
+          "event": "onclick",
+          "code": "Wicket.Palette.remove('idd85','idd86','idd84');",
+          "source": "form.redacted.html:926",
+          "server_callback": false,
+          "urls": [],
+          "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+        }
+      ],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:927",
+      "tag": "button",
+      "type": "button",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "button up",
+      "form_id": "idd3d",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [
+        {
+          "event": "onclick",
+          "code": "Wicket.Palette.moveUp('idd85','idd86','idd84');",
+          "source": "form.redacted.html:927",
+          "server_callback": false,
+          "urls": [],
+          "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+        }
+      ],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:928",
+      "tag": "button",
+      "type": "button",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "button down",
+      "form_id": "idd3d",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [
+        {
+          "event": "onclick",
+          "code": "Wicket.Palette.moveDown('idd85','idd86','idd84');",
+          "source": "form.redacted.html:928",
+          "server_callback": false,
+          "urls": [],
+          "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+        }
+      ],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:1051",
+      "tag": "button",
+      "type": "button",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "button add",
+      "form_id": "idd3d",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [
+        {
+          "event": "onclick",
+          "code": "Wicket.Palette.add('idd90','idd91','idd8f');",
+          "source": "form.redacted.html:1051",
+          "server_callback": false,
+          "urls": [],
+          "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+        }
+      ],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:1052",
+      "tag": "button",
+      "type": "button",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "button remove",
+      "form_id": "idd3d",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [
+        {
+          "event": "onclick",
+          "code": "Wicket.Palette.remove('idd90','idd91','idd8f');",
+          "source": "form.redacted.html:1052",
+          "server_callback": false,
+          "urls": [],
+          "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+        }
+      ],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:1053",
+      "tag": "button",
+      "type": "button",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "button up",
+      "form_id": "idd3d",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [
+        {
+          "event": "onclick",
+          "code": "Wicket.Palette.moveUp('idd90','idd91','idd8f');",
+          "source": "form.redacted.html:1053",
+          "server_callback": false,
+          "urls": [],
+          "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+        }
+      ],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:1054",
+      "tag": "button",
+      "type": "button",
+      "name": null,
+      "value": null,
+      "text": "",
+      "title": null,
+      "class": "button down",
+      "form_id": "idd3d",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [
+        {
+          "event": "onclick",
+          "code": "Wicket.Palette.moveDown('idd90','idd91','idd8f');",
+          "source": "form.redacted.html:1054",
+          "server_callback": false,
+          "urls": [],
+          "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+        }
+      ],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:1109",
+      "tag": "button",
+      "type": "submit",
+      "name": null,
+      "value": null,
+      "text": "Ok",
+      "title": null,
+      "class": "btn btn-sm",
+      "form_id": "idd3d",
+      "href": {
+        "value": "",
+        "wicket_action": false,
+        "listeners": [],
+        "permanently_forbidden": false
+      },
+      "events": [
+        {
+          "event": "onclick",
+          "code": "$(this).addClass('disabled').attr('disabled', 'disabled');$(this).children().html('Please wait...');$(this).closest('form').submit(); return false;",
+          "source": "form.redacted.html:1109",
+          "server_callback": false,
+          "urls": [],
+          "refreshed_fields": "NOT_OBSERVED_IN_SAVED_HTML"
+        }
+      ],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    },
+    {
+      "source": "form.redacted.html:1110",
+      "tag": "a",
+      "type": null,
+      "name": null,
+      "value": null,
+      "text": "Cancel",
+      "title": null,
+      "class": "btn btn-sm btn-link",
+      "form_id": "idd3d",
+      "href": {
+        "value": "page?50-2.ILinkListener-form-cancel",
+        "wicket_action": true,
+        "listeners": [
+          "ILinkListener"
+        ],
+        "permanently_forbidden": false
+      },
+      "events": [],
+      "form_action": {
+        "value": "page?50-2.IFormSubmitListener-form",
+        "wicket_action": true,
+        "listeners": [
+          "IFormSubmitListener"
+        ],
+        "permanently_forbidden": false
+      }
+    }
+  ],
+  "external_scripts_not_loaded": [
+    {
+      "src": "/jquery/jquery-1.5.1.min.js?v=1701391813000",
+      "source": "form.redacted.html:26"
+    },
+    {
+      "src": "/jquery/jquery-ui-1.8.11.custom.min.js?v=1701391813000",
+      "source": "form.redacted.html:27"
+    },
+    {
+      "src": "/jquery/plugins/jquery.align.js?v=1701391813000",
+      "source": "form.redacted.html:28"
+    },
+    {
+      "src": "/jquery/plugins/jquery.tooltip.js?v=1701391813000",
+      "source": "form.redacted.html:29"
+    },
+    {
+      "src": "/jquery/plugins/jquery.popup.js?v=1701391813000",
+      "source": "form.redacted.html:30"
+    },
+    {
+      "src": "/jquery/plugins/jquery.center.js?v=1701391813000",
+      "source": "form.redacted.html:31"
+    },
+    {
+      "src": "/jquery/plugins/jquery.fancytip.js?v=1701391813000",
+      "source": "form.redacted.html:32"
+    },
+    {
+      "src": "/jquery/plugins/jquery.ui.layout.js?v=1701391813000",
+      "source": "form.redacted.html:33"
+    },
+    {
+      "src": "/jquery/colorpicker/js/colorpicker.js?v=1701391813000",
+      "source": "form.redacted.html:34"
+    },
+    {
+      "src": "/datetimepicker/flatpickr.min.js?v=1701391813000",
+      "source": "form.redacted.html:35"
+    },
+    {
+      "src": "/scripts/autosize.js?v=1701391813000",
+      "source": "form.redacted.html:36"
+    },
+    {
+      "src": "/scripts/clipboard.min.js?v=1701391813000",
+      "source": "form.redacted.html:37"
+    },
+    {
+      "src": "/scripts/main.js?v=1701391813000",
+      "source": "form.redacted.html:38"
+    },
+    {
+      "src": "/codemirror/codemirror.js?v=1701391813000",
+      "source": "form.redacted.html:39"
+    },
+    {
+      "src": "/codemirror/mode/groovy/groovy.js?v=1701391813000",
+      "source": "form.redacted.html:40"
+    },
+    {
+      "src": "/codemirror/mode/css/css.js?v=1701391813000",
+      "source": "form.redacted.html:41"
+    },
+    {
+      "src": "/codemirror/addon/edit/matchbrackets.js?v=1701391813000",
+      "source": "form.redacted.html:42"
+    },
+    {
+      "src": "/codemirror/addon/display/placeholder.js?v=1701391813000",
+      "source": "form.redacted.html:43"
+    },
+    {
+      "src": "/ckeditor/ckeditor.js?v=1701391813000",
+      "source": "form.redacted.html:44"
+    },
+    {
+      "src": "/jquery/plugins/jquery.truncate.js?v=1701391813000",
+      "source": "form.redacted.html:45"
+    },
+    {
+      "src": "resource/org.apache.wicket.markup.html.WicketEventReference/wicket-event-ver-1782798879210.js",
+      "source": "form.redacted.html:46"
+    },
+    {
+      "src": "resource/org.apache.wicket.ajax.WicketAjaxReference/wicket-ajax-ver-1782798879210.js",
+      "source": "form.redacted.html:47"
+    },
+    {
+      "src": "resource/org.apache.wicket.extensions.markup.html.form.palette.Palette/palette-ver-1782798879214.js",
+      "source": "form.redacted.html:108"
+    }
+  ],
+  "inline_ajax_scripts": [
+    {
+      "code": "\n/*<![CDATA[*/\nWicket.Ajax.baseUrl=\"wicket/page?49\";\n/*]]>*/\n",
+      "source": "form.redacted.html:48"
+    },
+    {
+      "code": "\n/*<![CDATA[*/\nfunction ajaxRefresh() {\n\tif ($('.ui-dialog').is(':visible')) {\n\t\tsetTimeout(ajaxRefresh, 5000);\n\t} else {\n\t\tvar wcall=wicketAjaxGet('page?50-2.IBehaviorListener.0-&action=ajaxRefresh',function() { }.bind(this),function() { }.bind(this), function() {return true;}.bind(this));\n\t}\n}\n/*]]>*/\n",
+      "source": "form.redacted.html:419"
+    },
+    {
+      "code": "\n/*<![CDATA[*/\nfunction onDrop(dragFrom, dropTo) {var wcall=wicketAjaxGet('page?50-2.IBehaviorListener.1-&action=dragDrop&dragFrom=' + encodeURIComponent(dragFrom) + '&dropTo=' + encodeURIComponent(dropTo),function() { }.bind(this),function() { }.bind(this), function() {return true;}.bind(this));}\n/*]]>*/\n",
+      "source": "form.redacted.html:435"
+    },
+    {
+      "code": "\n/*<![CDATA[*/\nfunction loadPopup(triggerPath) {var wcall=wicketAjaxGet('page?50-2.IBehaviorListener.1-&action=loadPopup&triggerPath=' + encodeURIComponent(triggerPath),function() { }.bind(this),function() { }.bind(this), function() {return true;}.bind(this));}\n/*]]>*/\n",
+      "source": "form.redacted.html:440"
+    },
+    {
+      "code": "\n/*<![CDATA[*/\nfunction unloadPopup(triggerPath) {var wcall=wicketAjaxGet('page?50-2.IBehaviorListener.1-&action=unloadPopup&triggerPath=' + encodeURIComponent(triggerPath),function() { }.bind(this),function() { }.bind(this), function() {return true;}.bind(this));}\n/*]]>*/\n",
+      "source": "form.redacted.html:445"
+    },
+    {
+      "code": "\n/*<![CDATA[*/\nfunction closeDialog(dialogPath) {var wcall=wicketAjaxGet('page?50-2.IBehaviorListener.1-&action=closeDialog&dialogPath=' + encodeURIComponent(dialogPath),function() { }.bind(this),function() { }.bind(this), function() {return true;}.bind(this));}\n/*]]>*/\n",
+      "source": "form.redacted.html:450"
+    }
+  ],
+  "not_observed": [
+    "response after submission",
+    "how a new build ID is obtained",
+    "server-side refresh targets after field changes"
+  ],
+  "hidden_palette_value_shapes": [
+    {
+      "source": "form.redacted.html:907",
+      "html_name": "editor:content:basicProperties:7:property:editor:editor:palette:recorder",
+      "empty": false,
+      "single_hex_value": true,
+      "matches_visible_option_value": true,
+      "hex_decodes_to_visible_option_text": true,
+      "raw_hidden_value": "<REDACTED>",
+      "multi_value_delimiter": "NOT_OBSERVED"
+    },
+    {
+      "source": "form.redacted.html:1033",
+      "html_name": "editor:content:basicProperties:11:property:editor:editor:palette:recorder",
+      "empty": true,
+      "single_hex_value": false,
+      "matches_visible_option_value": false,
+      "hex_decodes_to_visible_option_text": false,
+      "raw_hidden_value": "<REDACTED>",
+      "multi_value_delimiter": "NOT_OBSERVED"
+    }
+  ],
+  "redacted_sha256": "66dad8500ab37c8be9ce981ef61048aea0a4fef2378b25666288b0a7147bad58",
+  "redaction_self_check": "PASS",
+  "identity_spans_masked": 1
+}

@@ -1,8 +1,8 @@
 # Stage15 P1 EF-5 Environment Spike
 
-日期:2026-10-10。状态:**WEB_READ_PARTIAL**(最新web-cookie-02)。
-最新实跑:7 GET全部HTTP 200,POST 0;子状态/关联/变量/两页步骤可读,
-逐架构独立状态与配置prompt未读到,详见§16;§15停机记录保留。
+日期:2026-10-10。状态:**WEB_READ_PARTIAL**(累计结论;最新rbs-form-01为离线解析)。
+最新取证:Base工程RBS运行表单,2个form/19个控件/25个按钮,网络请求0,详见§17。
+§16的在线续跑7 GET/200与§15停机记录保留;未取得提交响应与新build ID获取方式。
 权威:`../../design.md` v1.5.19-FROZEN §1.4 EF-5、§4.1
 qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 
@@ -20,7 +20,8 @@ qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 经匿名内存管道交给探测器;不导出storage state、不读取日常浏览器profile。
 HTTP只允许白名单只读URL,包括禁用重定向;即使GET也禁止`/rest/trigger`。
 以上为前轮授权记录;2026-10-10改用本人导出的Cookie文件,当前边界见§14/§15,
-不再运行浏览器转交,不再申请REST权限。
+不再运行浏览器转交,不再申请REST权限。§17登记的新P5Q登录裁定取代手工Cookie前提;
+本轮只处理已保存HTML,不实现或执行登录。
 脚本仅位于`../../spikes/`,不进入任何生产包。
 原有无关工作区改动不处理。
 
@@ -797,3 +798,164 @@ exit=0 (ruff.log)
 普通但不属于批准ID的配置页NOT_FOLLOWED。既有登录页立即停、越界零网络、
 诊断无原始异常/凭据、Cookie与USER脱敏、CRLF原字节自检控制全部保留通过。
 全仓生产用例集合未变化;spike unittest独立计数,不混入1937。
+
+## 17. RBS运行表单离线解析与新裁定(2026-10-10)
+
+### 17.1 FatTank裁定与执行边界
+
+开工复核§14及之后记录。本轮输入先前不存在时已停止;FatTank通知文件放好后,
+确认`/tmp/qb_rbs_trigger_form.html`存在并继续。当前分支clang-fix-campaign,
+实现前HEAD=179ce3e;不处理.gitignore、docs四文件删除及历史草稿等无关既有改动。
+
+FatTank 2026-10-10新裁定逐项登记,同步stage19 §21移交表:
+
+1. QB复验用RBS/TRIGGER,不是SBS/TRIGGER;按包所属工程为Tizen-Base-Toolchain与
+   Tizen-Unified-Toolchain分别设置配置项,不凭Base样本推断Unified配置ID/URL。
+2. 目标变量为BUILD_PKG_LIST,显示名Build Package List,格式git_path@commit_id,
+   一行一个。这是业务裁定,不是由动态HTML索引猜变量名,不宣称MODIFY等价。
+3. 合入正式快照须有人Accept;工具永远不点Accept/Ready to Accept,
+   `ILinkListener-content-buildHead-promote`列入永久禁止名单。
+   子构建Successful即通过与人工合入不是同一门槛,§14的默认false裁定继续有效。
+4. Run先进入Specify Build Options(/wicket/page?NN),最终提交才开跑,
+   依据FatTank截图确认;本轮不执行动作来验证此流程。
+5. 自动触发时工具显式填写每个字段,不依赖表单默认值;下表默认值只作为观察。
+6. sandbox git push不会自动触发QB,仅工具显式提交RBS表单发起构建。
+   来源是FatTank对团队quickbuild-sandbox-branch代码的说明,本轮未另行复核该仓库。
+   P12首次真实推送后仍须观察有无自发QB构建,挂账待实测。
+7. P5Q改为在FatTank终端提示输入账号密码,工具登录并仅内存保存会话,不落盘,
+   不再要求手抄浏览器Cookie;P5Q设计稿落实。本轮不实现登录、不改design.md。
+
+只新增spikes下离线解析器及测试,没有浏览器、HTTP或外部JS执行。
+原HTML只在内存读取、先脱敏再归档,不复制原文件、不删除、不改变原字节。
+既有PageRedactor/USER规则加hidden value定点遮蔽及session/token/csrf遮蔽;
+不把隐藏业务值全局替换而破坏其它可见选项。短显示名用词边界避免误改JS标识符。
+
+### 17.2 实跑与脱敏证据
+
+唯一实际解析命令(不是网络探测):
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/spikes/ef5_rbs_form.py --input /tmp/qb_rbs_trigger_form.html --output docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/rbs-form-01
+{"network_requests": 0, "forms": 2, "redaction_self_check": "PASS", "redacted_sha256": "66dad8500ab37c8be9ce981ef61048aea0a4fef2378b25666288b0a7147bad58", "original_unchanged": true}
+exit=0
+```
+
+证据:[form.redacted.html](evidence/rbs-form-01/form.redacted.html)、
+[form.json](evidence/rbs-form-01/form.json)。CLI安装socket审计拒绝钩子,
+不执行HTML内任何脚本,GET=0/POST=0/HTTP状态码不适用。写后read_bytes与待写字节比较,
+再次脱敏自检及原文件未变检查均通过;行号保留。
+
+内存复核实测输出(验证方法另见rbs-form-01-validation/README.md):
+
+```text
+archive_byte_equal=PASS; redacted_sha256=66dad8500ab37c8be9ce981ef61048aea0a4fef2378b25666288b0a7147bad58
+hidden_inputs=4; hidden_values_masked=2; hidden_without_value=2
+credential_and_identity_scan=PASS; checked_files=9; original_unchanged=PASS
+network_requests=0; forms_submitted=0; external_scripts_loaded=0; javascript_executed=false
+forms=2; controls=19; buttons=25
+```
+
+9个扫描文件为本轮HTML/JSON、5份验收日志、报告与stage19进度(当时已生成);
+原始值仅内存比对,不写入命令/日志。JSESSIONID_8810值与登录显示名均未落档。
+两个没有value属性的辅助hidden保留缺省事实,其余value均为REDACTED。
+
+### 17.3 字段、联动与按钮
+
+以下源行均为`evidence/rbs-form-01/form.redacted.html`。
+:6标题路径为root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER;
+:718标题Specify Build Options。PROJECT_NAME在:729/:735只读显示Tizen-Base-Toolchain。
+搜索form(:615)method=post/action=page?50-2.IFormSubmitListener-quicksearch;
+运行form(:720)method=post/action=page?50-2.IFormSubmitListener-form。
+这只是HTML属性,并非已发POST;两条均标记为Wicket动作URL。
+
+`P(n)`只用于缩短下表,展开为`editor:content:basicProperties:n:property:editor:editor`;
+form.json保留完整name。必填“未见”表示无HTML required/红星,不是服务端允许为空的断言。
+
+| 标签 | HTML name | 类型 | 必填/默认 | 联动/源行 |
+|---|---|---|---|---|
+| PROJECT_NAME | 无 | 只读 | 未见/Tizen-Base-Toolchain | 无;:729/:735 |
+| BUILD_TYPE | P(1):wrapper:select | select | 星号/0 Full;全部0 Full、1 Partial | onchange;:759 |
+| REPO_TYPE | P(2):wrapper:select | select | 星号/0 ALL,唯一选项 | onchange;:785 |
+| BUILD_REFERENCE | P(3):wrapper:select | select | 星号/1 Ref. Snapshot;全部0 Live、1 Ref. Snapshot、2 Snapshot Number | onchange;:810 |
+| SNAPSHOT_NUM | P(4):wrapper:select | select | 星号/0 tizen-base-toolchain_20260924.094908,唯一选项 | onchange;:837 |
+| PROJECT_BRANCH | P(5):wrapper:select | select | 星号/0 tizen_base,唯一选项 | onchange;:862 |
+| Immediate Stop With Error | P(6):checkbox | checkbox | 未见/checked;无value属性 | onchange;:885 |
+| CHILD_CONFIGURATIONS | P(7):palette:recorder/choices/selection | hidden+双列表 | 未见/hidden遮蔽;Available空,Selected一项standard-armv7l:aarch64:x86_64 | recorder onchange;:907/:921/:936/:937 |
+| Build Package List | P(8):wrapper:input | textarea | 未见/空 | onchange;:964 |
+| Add Package List | P(9):wrapper:input | textarea | 未见/空 | onchange;:987 |
+| Remove Package List | P(10):wrapper:input | textarea | 未见/空 | onchange;:1010 |
+| TARGET_IMAGE | P(11):palette:recorder/choices/selection | hidden+双列表 | 未见/hidden遮蔽;两列表均空 | recorder onchange;:1033/:1047/:1062 |
+| BUILD NOTES | P(12):wrapper:input | textarea | 未见/空 | onchange;:1089 |
+| 运行辅助hidden(无标签) | idd3d_hf_0 | hidden | 未见/无value属性 | 无;:720 |
+| 搜索辅助hidden(无标签) | idd3b_hf_0 | hidden | 未见/无value属性 | 无;:615 |
+| 搜索输入(无标签) | input | text | 未见/空 | 无字段onchange;:620 |
+
+19个实际控件=搜索2+运行17,另有PROJECT_NAME只读项;没有radio。
+12个业务项均挂onchange/wicketAjaxPost,URL为IBehaviorListener.0-form-editor-content-...
+形态。只有回调注册证据,**没有BUILD_REFERENCE刷新SNAPSHOT_NUM的响应证据**,
+全部服务端刷新目标如实记NOT_OBSERVED_IN_SAVED_HTML。
+
+CHILD_CONFIGURATIONS记录字段为P(7):palette:recorder(:907),两个可见select在
+:918/:933被excludeFromAjaxSerialization排除,Palette调用第三参是recorder id(:925-928)。
+内存验证当前hidden为单个hex且与:937可见option.value相同,解码等于显示文本;
+hidden原值不另存。可见option.value及全部选项在JSON中保留。
+只取得单项形态,多项分隔/拼接规则未知,外部palette.js(:108)没有加载。
+未执行正常POST,不据Ajax排除断言select绝不会进入普通POST。
+
+| 按钮 | name/value | 动作/源行 |
+|---|---|---|
+| Ok | 均未见 | submit;closest(form).submit(),无onclick字面URL;:1109,所属form action:720 |
+| Cancel | 均未见 | a;page?50-2.ILinkListener-form-cancel;:1110 |
+| CHILD_CONFIGURATIONS四个无文字按钮 | 均未见 | Palette.add/remove/moveUp/moveDown,无URL;:925/:926/:927/:928 |
+| TARGET_IMAGE四个无文字按钮 | 均未见 | 同上,不同recorder;:1051/:1052/:1053/:1054 |
+| 搜索两个无文字按钮 | 均未见 | button/submit,无onclick URL;:617/:621,form action:615 |
+| 复制配置图标(文字空) | 均未见 | title=Copy this configuration to be under specified configuration;无内联URL;:679 |
+| 导航菜单12个button | 均未见 | TIZEN/Tizen/Tizen-10.1/10.0/9.0/8.0/7.0/6.5/6.0/5.5/5.0/4.0;:487/:491/:508/:513/:518/:523/:528/:535/:540/:545/:550/:555 |
+
+25个按钮/按钮式链接全部见form.json;不把图标CSS类当显示文本,不推断外部JS行为。
+**仍未取得：提交后的响应形态、新构建号如何获得。**
+两项均待后续一次FatTank明确批准的真实提交。本轮不请求、不提交,累计仍WEB_READ_PARTIAL。
+另挂账:Unified表单、逐架构独立状态、Ajax刷新目标、多项palette编码,P12推送观察。
+不再把已裁定的BUILD_PKG_LIST当作业务待决项,不把默认观察值变成参数裁决。
+
+### 17.4 验收与交付边界
+
+日志:[rbs-form-01-validation](evidence/rbs-form-01-validation/)。实际输出:
+
+```text
+$ env PYTHONPATH=docs/clang-fix-campaign/spikes .venv/bin/python -m unittest discover -s docs/clang-fix-campaign/spikes -p 'test_ef5*.py' -v
+Ran 52 tests in 0.457s
+OK
+exit=0 (offline.log; 既有43+新增9)
+$ .venv/bin/python -m pytest -q
+1937 passed, 1 skipped in 76.69s (0:01:16)
+exit=0 (pytest.log)
+$ .venv/bin/mypy
+Success: no issues found in 110 source files
+exit=0 (mypy.log)
+$ .venv/bin/mypy --follow-imports=silent docs/clang-fix-campaign/spikes/ef5_rbs_form.py
+Success: no issues found in 1 source file
+exit=0 (spike-mypy.log)
+```
+
+全树ruff在/tmp/ef5-rbs-form-179ce3e干净工作树(HEAD=179ce3e),复制本轮两个新增
+spike文件后执行,避免把主树无关草稿纳入本次检查:
+
+```text
+$ /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/ruff check .
+All checks passed!
+exit=0 (ruff.log)
+```
+
+新增控制覆盖hidden/identity/session脱敏、短身份名不误改动作名、未引号会话URL、
+表单字段/选项/红星、双列表、AJAX/按钮只解析、原字节/原文件不变、拒绝覆盖、
+源行号与fail-closed诊断/网络拒绝。生产用例未新增,1937/1不混计spike控制。
+本轮只提交spikes、stage15证据/进度、stage19移交与INDEX;design.md、P2-P5代码、
+测试和冻结稿不改。遗留工作树改动及历史草稿不入库。
+
+最终暂存扫描实际输出:`staged_secret_and_identity_scan=PASS; files=14`;
+`scope=docs_spikes_and_evidence_only; staged_bytes_equal_worktree=PASS`。
+全量`git diff --cached --check`因保存HTML的原始CRLF/尾部空白exit2;
+仅排除form.redacted.html后exit0。保留取证原空白,不为格式检查改写HTML。
+`git diff --cached --numstat -- 'tizen-*' tests docs/clang-fix-campaign/design.md '*FROZEN*'`
+空输出、exit0,交付范围符合要求。
