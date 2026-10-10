@@ -242,7 +242,16 @@ CREATE TABLE IF NOT EXISTS campaign_change_ids (
                         AND hook_sha256 NOT GLOB '*[^0-9a-f]*'),
   created_at     TEXT NOT NULL
 );
-"""
+
+CREATE TABLE IF NOT EXISTS campaign_qb_profiles (
+  branch          TEXT NOT NULL PRIMARY KEY,   -- campaign_units.branch
+  profile_json    TEXT NOT NULL,               -- 规范化 JSON(键排序、紧凑分隔符、ensure_ascii=False)
+  profile_sha256  TEXT NOT NULL
+                  CHECK (length(profile_sha256) = 64
+                         AND profile_sha256 NOT GLOB '*[^0-9a-f]*'),
+  created_at      TEXT NOT NULL
+);
+"""  # noqa: E501 -- Keep the frozen campaign_qb_profiles DDL verbatim.
 
 
 class CampaignStateError(RuntimeError):
@@ -823,6 +832,28 @@ def append_status(
     reason: str | None = None,
     arch_norm: str | None = None,
 ) -> None:
+    _validate_status(status, reason, arch_norm)
+    conn = _connect(state_db)
+    try:
+        with _immediate_transaction(conn):
+            _append_status_on_connection(conn, campaign_unit_key, status, reason, arch_norm)
+    finally:
+        conn.close()
+
+
+def _append_status_on_connection(
+    conn: sqlite3.Connection,
+    campaign_unit_key: str,
+    status: str,
+    reason: str | None = None,
+    arch_norm: str | None = None,
+) -> None:
+    _validate_status(status, reason, arch_norm)
+    _require_unit(conn, campaign_unit_key)
+    _insert_status_row(conn, campaign_unit_key, status, reason, arch_norm)
+
+
+def _validate_status(status: str, reason: str | None, arch_norm: str | None) -> None:
     if not status:
         raise PayloadSchemaError("status must be non-empty")
     if arch_norm is not None:
@@ -835,13 +866,6 @@ def append_status(
         and arch_norm is None
     ):
         raise PayloadSchemaError(f"HELD reason {reason!r} requires arch_norm")
-    conn = _connect(state_db)
-    try:
-        with _immediate_transaction(conn):
-            _require_unit(conn, campaign_unit_key)
-            _insert_status_row(conn, campaign_unit_key, status, reason, arch_norm)
-    finally:
-        conn.close()
 
 
 def latest_status(state_db: StateDatabase, campaign_unit_key: str) -> str | None:
@@ -1667,33 +1691,47 @@ def create_qb_request(
     conn = _connect(state_db)
     try:
         with _immediate_transaction(conn):
-            _require_unit(conn, campaign_unit_key)
-            existing = conn.execute(
-                "SELECT request_seq, campaign_unit_key, sbs_target "
-                "FROM campaign_qb_requests WHERE request_id = ?",
-                (request_id,),
-            ).fetchone()
-            if existing is not None:
-                if (
-                    _text(existing, "campaign_unit_key") != campaign_unit_key
-                    or _text(existing, "sbs_target") != sbs_target
-                ):
-                    raise StateInconsistent("request_id is already bound to different input")
-                return int(existing["request_seq"])
-            cursor = conn.execute(
-                "INSERT INTO campaign_qb_requests "
-                "(request_id, campaign_unit_key, sbs_target, created_at) VALUES (?, ?, ?, ?)",
-                (request_id, campaign_unit_key, sbs_target, _now_iso8601()),
+            return _create_qb_request_on_connection(
+                conn, campaign_unit_key, request_id=request_id, sbs_target=sbs_target,
             )
-            request_seq = _lastrowid(cursor)
-            conn.execute(
-                "INSERT INTO campaign_qb_events "
-                "(request_seq, event_type, degraded, created_at) VALUES (?, 'SUBMITTED', 0, ?)",
-                (request_seq, _now_iso8601()),
-            )
-            return request_seq
     finally:
         conn.close()
+
+
+def _create_qb_request_on_connection(
+    conn: sqlite3.Connection,
+    campaign_unit_key: str,
+    *,
+    request_id: str,
+    sbs_target: str,
+) -> int:
+    if not request_id or not sbs_target:
+        raise ValueError("request_id and sbs_target are required")
+    _require_unit(conn, campaign_unit_key)
+    existing = conn.execute(
+        "SELECT request_seq, campaign_unit_key, sbs_target "
+        "FROM campaign_qb_requests WHERE request_id = ?",
+        (request_id,),
+    ).fetchone()
+    if existing is not None:
+        if (
+            _text(existing, "campaign_unit_key") != campaign_unit_key
+            or _text(existing, "sbs_target") != sbs_target
+        ):
+            raise StateInconsistent("request_id is already bound to different input")
+        return int(existing["request_seq"])
+    cursor = conn.execute(
+        "INSERT INTO campaign_qb_requests "
+        "(request_id, campaign_unit_key, sbs_target, created_at) VALUES (?, ?, ?, ?)",
+        (request_id, campaign_unit_key, sbs_target, _now_iso8601()),
+    )
+    request_seq = _lastrowid(cursor)
+    conn.execute(
+        "INSERT INTO campaign_qb_events "
+        "(request_seq, event_type, degraded, created_at) VALUES (?, 'SUBMITTED', 0, ?)",
+        (request_seq, _now_iso8601()),
+    )
+    return request_seq
 
 
 def append_qb_event(
@@ -1717,69 +1755,131 @@ def append_qb_event(
     conn = _connect(state_db)
     try:
         with _immediate_transaction(conn):
-            request = conn.execute(
-                "SELECT request_seq FROM campaign_qb_requests WHERE request_seq = ?",
-                (request_seq,),
-            ).fetchone()
-            if request is None:
-                raise StateInconsistent("QB event references a missing request")
-            if event_type == "BUILD_BOUND":
-                if not qb_build_id:
-                    raise PayloadSchemaError("BUILD_BOUND requires qb_build_id")
-                if any(
-                    value is not None
-                    for value in (
-                        status,
-                        accepted,
-                        sbs_target_echo,
-                        per_arch_status_json,
-                        qb_result_sha256,
-                        qb_result_ref,
-                    )
-                ):
-                    raise PayloadSchemaError("BUILD_BOUND may not contain result fields")
-                existing_ids = {
-                    _text(row, "qb_build_id")
-                    for row in conn.execute(
-                        "SELECT qb_build_id FROM campaign_qb_events "
-                        "WHERE request_seq = ? AND event_type = 'BUILD_BOUND'",
-                        (request_seq,),
-                    ).fetchall()
-                }
-                if existing_ids and existing_ids != {qb_build_id}:
-                    raise StateInconsistent("QB request is already bound to another build")
-            else:
-                if not status or not sbs_target_echo or not qb_result_sha256:
-                    raise PayloadSchemaError(
-                        "RESULT requires status, sbs_target_echo, and qb_result_sha256"
-                    )
-                bound = conn.execute(
-                    "SELECT 1 FROM campaign_qb_events WHERE request_seq = ? "
-                    "AND event_type = 'BUILD_BOUND' AND (? IS NULL OR qb_build_id = ?) LIMIT 1",
-                    (request_seq, qb_build_id, qb_build_id),
-                ).fetchone()
-                if bound is None:
-                    raise StateInconsistent("RESULT requires an existing valid build binding")
-            cursor = conn.execute(
-                "INSERT INTO campaign_qb_events "
-                "(request_seq, event_type, qb_build_id, status, accepted, "
-                "sbs_target_echo, per_arch_status_json, qb_result_sha256, qb_result_ref, "
-                "degraded, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (
-                    request_seq,
-                    event_type,
-                    qb_build_id,
-                    status,
-                    int(accepted) if accepted is not None else None,
-                    sbs_target_echo,
-                    per_arch_status_json,
-                    qb_result_sha256,
-                    qb_result_ref,
-                    int(degraded),
-                    _now_iso8601(),
-                ),
+            return _append_qb_event_on_connection(
+                conn,
+                request_seq=request_seq,
+                event_type=event_type,
+                qb_build_id=qb_build_id,
+                status=status,
+                accepted=accepted,
+                sbs_target_echo=sbs_target_echo,
+                per_arch_status_json=per_arch_status_json,
+                qb_result_sha256=qb_result_sha256,
+                qb_result_ref=qb_result_ref,
+                degraded=degraded,
             )
-            return _lastrowid(cursor)
+    finally:
+        conn.close()
+
+
+def _append_qb_event_on_connection(
+    conn: sqlite3.Connection,
+    *,
+    request_seq: int,
+    event_type: str,
+    qb_build_id: str | None = None,
+    status: str | None = None,
+    accepted: bool | None = None,
+    sbs_target_echo: str | None = None,
+    per_arch_status_json: str | None = None,
+    qb_result_sha256: str | None = None,
+    qb_result_ref: str | None = None,
+    degraded: bool = False,
+) -> int:
+    if event_type == "SUBMITTED":
+        raise PayloadSchemaError("SUBMITTED can only be written by create_qb_request")
+    if event_type not in {"BUILD_BOUND", "RESULT"}:
+        raise PayloadSchemaError(f"unsupported QB event_type: {event_type!r}")
+    request = conn.execute(
+        "SELECT request_seq FROM campaign_qb_requests WHERE request_seq = ?",
+        (request_seq,),
+    ).fetchone()
+    if request is None:
+        raise StateInconsistent("QB event references a missing request")
+    if event_type == "BUILD_BOUND":
+        if not qb_build_id:
+            raise PayloadSchemaError("BUILD_BOUND requires qb_build_id")
+        if any(
+            value is not None
+            for value in (
+                status,
+                accepted,
+                sbs_target_echo,
+                per_arch_status_json,
+                qb_result_sha256,
+                qb_result_ref,
+            )
+        ):
+            raise PayloadSchemaError("BUILD_BOUND may not contain result fields")
+        existing_ids = {
+            _text(row, "qb_build_id")
+            for row in conn.execute(
+                "SELECT qb_build_id FROM campaign_qb_events "
+                "WHERE request_seq = ? AND event_type = 'BUILD_BOUND'",
+                (request_seq,),
+            ).fetchall()
+        }
+        if existing_ids and existing_ids != {qb_build_id}:
+            raise StateInconsistent("QB request is already bound to another build")
+    else:
+        if not status or not sbs_target_echo or not qb_result_sha256:
+            raise PayloadSchemaError(
+                "RESULT requires status, sbs_target_echo, and qb_result_sha256"
+            )
+        bound = conn.execute(
+            "SELECT 1 FROM campaign_qb_events WHERE request_seq = ? "
+            "AND event_type = 'BUILD_BOUND' AND (? IS NULL OR qb_build_id = ?) LIMIT 1",
+            (request_seq, qb_build_id, qb_build_id),
+        ).fetchone()
+        if bound is None:
+            raise StateInconsistent("RESULT requires an existing valid build binding")
+    cursor = conn.execute(
+        "INSERT INTO campaign_qb_events "
+        "(request_seq, event_type, qb_build_id, status, accepted, "
+        "sbs_target_echo, per_arch_status_json, qb_result_sha256, qb_result_ref, "
+        "degraded, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (
+            request_seq,
+            event_type,
+            qb_build_id,
+            status,
+            int(accepted) if accepted is not None else None,
+            sbs_target_echo,
+            per_arch_status_json,
+            qb_result_sha256,
+            qb_result_ref,
+            int(degraded),
+            _now_iso8601(),
+        ),
+    )
+    return _lastrowid(cursor)
+
+
+def _insert_qb_profile_on_connection(
+    conn: sqlite3.Connection, branch: str, *, profile_json: str,
+) -> None:
+    """Store the caller's canonical profile bytes without reserializing them."""
+    conn.execute(
+        "INSERT INTO campaign_qb_profiles "
+        "(branch, profile_json, profile_sha256, created_at) VALUES (?, ?, ?, ?) "
+        "ON CONFLICT(branch) DO NOTHING",
+        (branch, profile_json, hashlib.sha256(profile_json.encode("utf-8")).hexdigest(),
+         _now_iso8601()),
+    )
+    row = conn.execute(
+        "SELECT profile_json FROM campaign_qb_profiles WHERE branch = ?", (branch,),
+    ).fetchone()
+    if row is None or row["profile_json"] != profile_json:
+        raise StateInconsistent("QuickBuild profile is already frozen with different content")
+
+
+def qb_profile(state_db: StateDatabase, branch: str) -> dict[str, Any] | None:
+    conn = _read_connection(state_db)
+    try:
+        row = conn.execute(
+            "SELECT * FROM campaign_qb_profiles WHERE branch = ?", (branch,),
+        ).fetchone()
+        return dict(row) if row is not None else None
     finally:
         conn.close()
 

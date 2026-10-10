@@ -1,0 +1,5 @@
+create_qb_request: public_signature=IDENTICAL; transaction_body_AST=IDENTICAL
+append_qb_event: public_signature=IDENTICAL; transaction_body_AST=IDENTICAL
+append_status: public_signature=IDENTICAL; transaction_body_AST=IDENTICAL
+legacy_test_file: AST_IDENTICAL except one required table-set addition; no test body relaxed
+frozen_sha256=UNCHANGED

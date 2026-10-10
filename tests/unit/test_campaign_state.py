@@ -225,6 +225,7 @@ def test_ensure_schema_creates_exact_campaign_tables_and_required_guards(
         "campaign_qb_requests",
         "campaign_qb_events",
         "campaign_change_ids",
+        "campaign_qb_profiles",
     }
     assert index_sql is not None
     normalized_index = " ".join(str(index_sql[0]).split())
