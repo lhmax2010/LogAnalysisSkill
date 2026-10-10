@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-10。状态:**READY_FOR_REVIEW**。第二轮三条裁定在37e27b1落实,1937 passed/1 skipped,代码CI通过。两轮评审已用满,待设计方核对签收,未自行标CLOSED。
+日期:2026-10-10。状态:**CLOSED**。设计方已核对37e27b1与第二轮三条裁定一致,FatTank批准签收。最终验收1937 passed/1 skipped、94条无新增失败;两轮代码评审已用满,不再评审。P4.5遗留suppress_policy与gate_view已在P5交付。
 
 ## 1. 权威、批准与基线
 
@@ -1283,3 +1283,36 @@ rule_test_mapping=PASS
 冻结稿仍为83383877f6b8c0deac8606d29fec8a446c1e5520813e714f881855886f888d3b,
 本次文档提交不改任何代码/测试/规则。提交自身由Git外部锚定,
 推送后核验其CI并回报,此处不预填结果。
+
+## 20. 最终签收(2026-10-10)
+
+- FatTank已批准:设计方核对`37e27b1`与第二轮三条裁定一致。
+- 设计链为v1.2-FROZEN → v1.3.1,包含实施裁定C0-01、C2-01、C2-02、C4-01、D-02;
+  各次变更及hash仍保留在前节,本次不改冻结稿或design.md。
+- 第一轮Claude Code、ChatGPT代码评审结论为需修改,全部发现由`f9a6bc5`修复,
+  文档同步`c71aa3c`、收口`e61b6f7`。
+- 第二轮Claude Code可签收(一次要、一建议),ChatGPT需修改(一重要),
+  三条由`37e27b1`修复,收口`b0ecda4`。两轮已用满,不再评审。
+- 最终验收沿用§19已归档实测:1937 passed / 1 skipped,94条相对cd7f8dd无新增失败,
+  3条历史异常保持原样。代码CI及收口CI均SUCCESS,链接见
+  [最终签收](../../review/p5-sandbox-submit-closeout.md#8-最终签收)。
+- P4.5遗留的`suppress_policy`已由C2 `1f3141e`交付,`gate_view`已由C3 `68338dc`交付,
+  并通过后续评审修复与最终验收;不再列为待实施项。
+- 状态:**P5 CLOSED**。本次只改签收与移交文档,不以签收登记冒充新一轮实测。
+
+## 21. P5Q移交清单
+
+本清单承接P5签收,不表示P5Q已开工或EF-5已关闭。
+事实来源为[EF报告](../../spikes/ef_report.md)与
+[stage15 §13](../stage15_p1_ef_spike/progress.md#13-本人到场后的五路径重跑2026-10-09);
+最近一次五路径重跑BLOCKED/0请求,累计证据仍为WEB_READ_PARTIAL。
+
+| 移交项 | 状态与后续要求 | 依据/目标阶段 |
+|---|---|---|
+| EF-5网页读取缺口 | 仍为部分可读;仍缺子构建状态、逐架构状态、步骤详情、目标变量映射,不得从既有父构建页面推断补齐 | stage15/EF报告;P5Q前置核实 |
+| QuickBuild通过判据 | 待FatTank裁定:Successful是否足够,还是必须ACCEPTED;本批不代作业务判断 | FatTank;P5Q |
+| 目标变量等价性 | 待FatTank裁定:SBS_TARGET与BUILD_PKG_LIST是否等价;未确认前不得按等价映射 | FatTank;P5Q |
+| 远端ref实时校验 | 须复用P5的隔离传输与git统一环境,不得退回主副本直接传输或另起不受控Git环境 | P5 `sandbox_submit`/`sandbox_git`,第二轮修复37e27b1;P5Q |
+| 首次真实Gerrit sandbox推送 | 仍按EF-6放在P12,不因P5签收提前执行;本批测试仅使用本地仓库与本地裸仓库 | design.md §1.4 EF-6 / Phase 12;P12 |
+
+本次仅登记,不新增网页请求、真实推送或业务规则裁决;既有EF-5证据与人工闸门保持原样。

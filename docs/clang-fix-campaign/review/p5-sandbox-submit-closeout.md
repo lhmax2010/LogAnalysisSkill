@@ -1,6 +1,6 @@
 # P5 sandbox-submit 收口
 
-日期:2026-10-10。状态:**READY_FOR_REVIEW**。两轮代码评审修复已落地,待设计方核对签收,未自行签批CLOSED。
+日期:2026-10-10。状态:**CLOSED**。设计方已核对37e27b1与第二轮三条裁定一致,FatTank批准签收;两轮代码评审已用满,不再评审。签收记录见§8。
 
 ## 1. 权威与提交
 
@@ -22,7 +22,7 @@ design.md已按附录A.3照录同步至v1.5.21,检查器0 problem,不改变检�
 | 评审代码修复 | f9a6bc5 | 附录D、D-02用例与变异、完整回归 | 1927 passed / 1 skipped |
 | 第一轮评审收口 | e61b6f7 | 本文、progress、INDEX、复验 | 1927 passed / 1 skipped |
 | 第二轮代码修复 | 37e27b1 | 格式兼容、归属查找、递归深度;新增10例 | 1937 passed / 1 skipped |
-| 第二轮收口更新 | 本次提交由Git外部锚定,不自记SHA | 本文、progress、INDEX、复验 | 见§7.2 |
+| 第二轮收口更新 | b0ecda4 | 本文、progress、INDEX、复验 | 见§7.2 |
 
 全程未访问真实Gerrit,未做真实业务推送。远端写入测试均为临时本地裸仓库。
 原同名远端拒绝测试在传输前即拒绝。新增竞态测试使用SSH形状remote,但以本地
@@ -45,7 +45,10 @@ Python包装直接执行git-upload-pack/receive-pack,预期/错误两端均为�
 | v1.3.1按值识别、生成器表达式、真实路径归组 | DONE | §3.1新增12-16行、§7变异原文;POLICY_RULES_VERSION=p5-policy/v2 |
 | v1.3.1隔离传输、缩短读事务、统一异常出口 | DONE | §3.3新增28-30行;两端ref、锁与无额外写库断言 |
 | 第二轮设计方三条裁定 | DONE | §7.2逐条处置,sha1参数记录/格式不等拒绝、2000命令同hit、64/65/2000层与CLI |
-| 收口状态与已知事项 | READY_FOR_REVIEW | §4限制完整登记,由设计方核验与评审决定签批 |
+| 收口状态与已知事项 | CLOSED | §4限制保留;设计方核对、FatTank批准,最终签收见§8 |
+
+P4.5遗留的`suppress_policy`与`gate_view`已在P5交付,分别锚定C2 `1f3141e`
+与C3 `68338dc`;评审修订与最终验收见§7/§8,不再作为未完成项移交。
 
 ## 3. 规则条目与用例双向映射
 
@@ -240,11 +243,11 @@ C5的真实hook同样在pytest.log:72显示PASSED。映射表机器复核:
 headSha=`33fcf68241b4ada6fcfd8b03df8d026ef14d82a8`,conclusion=`success`。
 C5自己的CI须在本提交推送后核验并回报,此处不预填结果。
 
-## 6. 评审请求
+## 6. 评审与签收流程
 
-代码评审两轮已用满。本次按轻量流程由设计方核对第二轮三条裁定的落实与证据后签收,
+代码评审两轮已用满。设计方已核对第二轮三条裁定的落实与证据,FatTank批准签收,
 不再安排第三轮代码评审。冻结稿不变,已知限制见§4,第二轮处置见§7.2。
-本文件只提交READY_FOR_REVIEW,不代表设计方已经签批。
+§7保留当时READY_FOR_REVIEW的取证记录,当前状态以§8最终签收为准。
 
 ## 7. 代码评审修订
 
@@ -437,4 +440,26 @@ code_to_closeout nodeids=1938 added=0 missing=0 outcome_changes=0 PASS
 `missing_from_table=[]`, `unknown_in_table=[]`, `rule_test_mapping=PASS`;
 可复现命令见[progress §19](../dev_memory/stage19_p5_sandbox_submit/progress.md#19-代码评审第二轮)。
 
-本次收口仅文档与证据,状态保持READY_FOR_REVIEW,未自行CLOSED。
+第二轮收口提交b0ecda4仅含文档与证据,当时保持READY_FOR_REVIEW;最终签收见下节。
+
+## 8. 最终签收
+
+日期:2026-10-10。批准依据为FatTank本轮签收通知,不是实现方自行关闭。
+
+| 项目 | 签收记录 |
+|---|---|
+| 设计冻结与修订链 | v1.2-FROZEN(C0 `38c076f`) → v1.3.1(文档同步`c71aa3c`);实施裁定P5-C0-01、P5-C2-01、P5-C2-02、P5-C4-01、P5-D-02均已登记并落实,详见stage19 progress |
+| 第一轮代码评审 | Claude Code、ChatGPT结论为需修改;全部发现由`f9a6bc5`修复,收口证据`e61b6f7`,逐项见§7.1 |
+| 第二轮代码评审 | Claude Code可签收(一次要、一建议),ChatGPT需修改(一重要);设计方三条裁定由`37e27b1`修复,收口证据`b0ecda4`,逐项见§7.2 |
+| 设计方核对 | 已核对`37e27b1`与第二轮三条裁定一致;第一轮全部发现与第二轮三条均已修复 |
+| 最终验收 | 1937 passed / 1 skipped;94条验收相对cd7f8dd无新增失败,3条历史异常不变;原始输出见§7.2及review-round2-closeout |
+| FatTank批准 | 已批准P5签收;代码评审两轮已用满,不再评审 |
+
+最终代码版本`37e27b1`,收口证据版本`b0ecda4`。两者CI均通过:
+[代码CI](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38019264989)、
+[收口CI](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38019591063)。
+本次只登记签收,不修改代码、测试、冻结设计或历史验收输出。
+
+状态:**P5 CLOSED**。P4.5遗留的`suppress_policy`与`gate_view`已在P5交付。
+P5Q移交事项集中于[stage19 §21](../dev_memory/stage19_p5_sandbox_submit/progress.md#21-p5q移交清单),
+EF-5缺口与两项业务裁定仍未关闭;真实Gerrit sandbox首次推送仍按EF-6放在P12。
