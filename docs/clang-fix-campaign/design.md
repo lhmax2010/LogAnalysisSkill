@@ -2,7 +2,8 @@
 
 ## 0. 元信息
 
-- 版本:**v1.5.21-FROZEN(实现输入版)**
+- 版本:**v1.5.22-FROZEN(实现输入版)**
+- v1.5.22 变更记录:P5Q 复验触发改为 RBS 网页表单,见 §4.5,按 P5Q 冻结设计附录 A 同步。
 - v1.5.21 变更记录:P5 代码评审修订见 §4.4 第 21–24 条,按 P5 v1.3.1 附录 A.3 同步。
 - v1.5.20 变更记录:P2-P5 落地裁定见 §4.4,按 P5 冻结设计附录 A 同步。
 - 创建时间:2026-07-29 最近修订:2026-10-08
@@ -246,6 +247,7 @@
   request_id→build_id 的确定性映射(设计已双态兼容,映射方式须实测定案)
   ③SBS build 页的状态字段/SBS_TARGET 回显/arch 覆盖 ④"accepting SBS"
   语义:门 2 PASS 判据 = SBS build 自身 PASS 还是须被母 TRIGGER accept。
+(v1.5.22)按 §4.5 第 8 条处理。
 - [OPEN→已关闭] EF-6:分支用户由使用者指定且权限保证;覆盖微测并入
   P12 首次真实 push;QB 侧固定名问题随 EF-5 实验一并观察。
 
@@ -730,6 +732,15 @@ CREATE TABLE IF NOT EXISTS campaign_change_ids (
                         AND hook_sha256 NOT GLOB '*[^0-9a-f]*'),
   created_at     TEXT NOT NULL      -- UTC ISO8601,与既有表口径一致
 );
+
+CREATE TABLE IF NOT EXISTS campaign_qb_profiles (
+  branch          TEXT NOT NULL PRIMARY KEY,   -- campaign_units.branch
+  profile_json    TEXT NOT NULL,               -- 规范化 JSON(键排序、紧凑分隔符、ensure_ascii=False)
+  profile_sha256  TEXT NOT NULL
+                  CHECK (length(profile_sha256) = 64
+                         AND profile_sha256 NOT GLOB '*[^0-9a-f]*'),
+  created_at      TEXT NOT NULL
+);
 ```
 读取语义:任何 gate 字段 = 该 campaign_unit_key 下**最新**对应 event 的 payload
 (与既有 `get_latest_status_row` 的"取最新行"惯例一致);首写字段
@@ -737,6 +748,7 @@ CREATE TABLE IF NOT EXISTS campaign_change_ids (
 REJECTED_STATE_INCONSISTENT。并发:单写者串行(多包并行 Out of Scope);
 迁移:仅新增表,不 ALTER 既有表;`schema_version` 列随行落库,
 未来变更以新表 + 版本号处理,不改历史行。
+(v1.5.22:新增 `campaign_qb_profiles`)
 
 **聚合校验绑定字段(v1.3.3 按真实 record 列改定)**:字段映射(设计名 →
 `verification_records` 真实列):`package` → **`spec_name`**;
@@ -1080,9 +1092,9 @@ derived_commit_sha 则直接置 SANDBOX_PUSHED;review 幂等 = Change-Id
 | SANDBOX_PUSHING | sandbox-submit 启动 | derived_commit_sha | → SANDBOX_PUSHED / SANDBOX_PUSH_FAILED(可重入:重跑 sandbox-submit,幂等锚点接管) |
 | SANDBOX_PUSHED | push 成功或幂等命中 | push_result + Gerrit sandbox ref | → KB_APPENDED |
 | KB_APPENDED | kb append 成功或 dedupe 命中 | kb id | → QB_REQUESTED(v1.3:自动触发) |
-| QB_REQUESTED | REST 提交成功,request_id/request_seq 已知(qb_build_id 可未知) | request_id, request_seq | → QB_TRIGGERED(qb_build_id 确定后)/ QB_SUBMIT_FAILED(可重入) |
+| QB_REQUESTED | 提交意图已落库(SUBMITTED 已写),尚未确认构建 | request_id, request_seq | → QB_TRIGGERED(qb_build_id 确定后)/ QB_SUBMIT_FAILED(可重入) |
 | QB_TRIGGERED | qb_build_id 已知并落 BUILD_BOUND 事件 | qb_build_id | → SANDBOX_QB_PENDING |
-| SANDBOX_QB_PENDING | 等待 QB 复验(campaign 内终态) | — | 【qb-result-fetch 驱动】→ SANDBOX_QB_PASS / SANDBOX_QB_FAILED(终,报告+人工) |
+| SANDBOX_QB_PENDING | 等待 QB 复验(campaign 内终态) | — | 【qb-result-fetch 驱动】→ SANDBOX_QB_PASS / SANDBOX_QB_FAILED(终,报告+人工)(可经显式 `--retrigger` 开新 request;旧 request 与其事件永不覆盖) |
 | SANDBOX_QB_PASS | fetch/降级结果过 A11 绑定与 PASS 判据(v1.3.1:含 accept 参数化与 per_arch 可选校验;降级记 degraded) | qb_result_ref | → REVIEW_PUSHING(若 A2 gate 通过)/ REVIEW_INELIGIBLE(终:suppress 或 gate 不满足,报告标注) |
 | REVIEW_PUSHING | review-submit 执行 | — | → REVIEW_PUSHED(终)/ REVIEW_PUSH_FAILED(可重入,Change-Id 幂等) |
 | REVIEW_PUSHED | refs/for 成功 | review_url | 终态 |
@@ -1098,6 +1110,20 @@ derived_commit_sha 则直接置 SANDBOX_PUSHED;review 幂等 = Change-Id
 
 (NOT_REPRODUCED / DENIED / STALLED / REGRESSED / ROUNDS_EXHAUSTED /
 SANDBOX_QB_FAILED / REVIEW_INELIGIBLE 均为带 skip_reason 的终态,进报告。)
+
+(v1.5.22)P5Q 转移行,照录 P5Q 设计文件第 6.3 节:
+
+| 从 | 触发 | 到 |
+|---|---|---|
+| SANDBOX_PUSHED / KB_APPENDED / QB_SUBMIT_FAILED | qb-trigger 第 8 步 | QB_REQUESTED |
+| SANDBOX_QB_FAILED、QB_REQUESTED(未绑定) | 带 `--retrigger` 的 qb-trigger 第 8 步(新 request) | QB_REQUESTED |
+| QB_REQUESTED | 提交确定未放行 | QB_SUBMIT_FAILED |
+| QB_REQUESTED | 落点 build 且核对通过,或人工绑定成功 | QB_TRIGGERED |
+| QB_TRIGGERED | fetch 读到非终态 | SANDBOX_QB_PENDING |
+| QB_TRIGGERED / SANDBOX_QB_PENDING | fetch 读到 PASS | SANDBOX_QB_PASS |
+| QB_TRIGGERED / SANDBOX_QB_PENDING | fetch 读到终态失败 | SANDBOX_QB_FAILED |
+
+QB_TRIGGERED 首次读取即终态时直接迁到 SANDBOX_QB_PASS / SANDBOX_QB_FAILED。KB_APPENDED 尚由 P8 实现;P5Q 期间从 SANDBOX_PUSHED 直接进入 QB_REQUESTED。SANDBOX_QB_FAILED 仍是修复循环意义上的终态,只能经显式 `--retrigger` 开新 request,旧 request 与其事件永不覆盖。
 
 **QB 触发幂等与 retrigger(v1.3)**:QB 状态枚举——非终态
 {QUEUED, RUNNING, WAITING};终态成功 {PASS};终态失败
@@ -1788,6 +1814,7 @@ python -m ci_triage campaign-preflight    # v1.3.1 新增(A0 物理化)
   # v1.5.20:gerrit_ssh_base 须为 ssh://(§4.4 第 18 条)
   exit: 0;2;4
 
+(v1.5.22)本命令契约以 P5Q 设计文件第 4、5 节为准。
 python -m ci_triage qb-sbs-trigger        # v1.3 新增
     --verification-ids <id1,id2,id3> --state-db <path> --config <path>
     [--retrigger]
@@ -1798,6 +1825,7 @@ python -m ci_triage qb-sbs-trigger        # v1.3 新增
   stdout JSON: { sbs_target, request_id, request_seq, qb_build_id|null, error_code|null }
   exit: 0;2;4 校验拒绝;5 提交失败(QB_SUBMIT_FAILED)
 
+(v1.5.22)本命令契约以 P5Q 设计文件第 4、5 节为准。
 python -m ci_triage qb-result-fetch       # v1.3 新增
     (--request-id <id> | --qb-build-id <id>) --state-db <path>
   # **--qb-build-id 的 request 归属(v1.4.10)**:经 BUILD_BOUND 事件反查
@@ -1824,6 +1852,7 @@ python -m ci_triage review-submit
   # 装配(降级),比对逻辑不变
   # 校验链(gate 字段一律从 state DB 读取,A13):
   #   1 聚合重校验
+(v1.5.22)人工降级判据与 qb_result schema 按 §4.5 第 10、11 条。
   #   2 A11 绑定(v1.3 第一方化):qb_result 对应记录须为该 unit 在
   #     state DB 中的**最新** QB 记录(否则 REJECTED_QB_SUPERSEDED);
   #     **权威源为 DB 的 RESULT 事件字段**(status/accepted/sbs_target_echo/
@@ -2336,6 +2365,7 @@ def get_or_create_change_id(state_db, *, campaign_unit_key: str,
     #   source='commit_msg_hook', hook_sha256 取入参值, created_at=<UTC ISO8601>);
     #   change_id 与他行冲突(UNIQUE)→ StateInconsistent;COMMIT 后返回。
     # 规则见 §3.4"Change-Id 来源"②③。不提供更新/删除 API。
+def qb_profile(state_db, branch: str) -> dict | None: ...  # v1.5.22:只读,按 campaign_units.branch 取冻结的复验参数
 # --- campaign_lifecycle(v1.3.11:释放归属独立模块,非 derive_commit 注释)---
 # module: campaign_lifecycle
 def release_superseded_partial_round(state_db, campaign_unit_key,
@@ -2590,7 +2620,7 @@ REJECTED_VERIFICATION_MISMATCH     (沿用)
 REJECTED_SUPPRESS_POLICY           forbidden 形态命中
 REJECTED_QB_NOT_VERIFIED           无 QB 结果或 status≠PASS
 REJECTED_QB_BINDING_MISMATCH       sbs_target_echo 与 state DB 存量不符
-                                   (A11 v1.3 第一方绑定)
+                                   (A11 v1.3 第一方绑定);含请求标记、目标行、TRIGGER_ID、配置路径、FAIL_FAST 回显
 REJECTED_STATE_INCONSISTENT        gate 字段存量与现场重推不一致,或
                                    derived_commit_sha 复算不等(篡改信号)
 REJECTED_ORPHAN_PASS_HELD          campaign-owned PASS 无唯一 invocation 槽、
@@ -2598,7 +2628,21 @@ REJECTED_ORPHAN_PASS_HELD          campaign-owned PASS 无唯一 invocation 槽�
 REJECTED_SANDBOX_NOT_BOUND         触发前置不满足:状态未达 SANDBOX_PUSHED /
                                    push_ref 缺失 / 远端 ref ≠ derived_commit(v1.3)
 REJECTED_QB_SUPERSEDED             qb_result 非该 unit 最新 QB 记录(v1.3)
-QB_SUBMIT_FAILED                   SBS REST 提交失败(v1.3)
+QB_SUBMIT_FAILED                   提交意图已落库但提交请求确定未放行(v1.5.22)
+REJECTED_QB_PROJECT_NOT_READY     unit.branch 无对应工程配置,或该工程未启用
+REJECTED_QB_PARAMS_CHANGED        当前配置或表单读回值与本 campaign 已冻结的复验参数不符
+REJECTED_QB_SNAPSHOT_UNAVAILABLE  SNAPSHOT_NUM 无选中项,或冻结值已不在下拉框中
+REJECTED_QB_FORM_CHANGED          配置页/表单结构与已取证结构不符,或提交前读回指纹变化
+REJECTED_QB_FORM_MISMATCH         填表后读回值与要求值不等,或要求的下拉选项不存在
+REJECTED_QB_REQUEST_PENDING       --retrigger 被拒:最新请求的构建仍在运行或已通过;
+                                  或 review-submit 人工降级时存在未出结果的复验请求
+QB_SUBMIT_UNCERTAIN               提交请求已放行,无法确定是否已产生构建;状态保持 QB_REQUESTED
+QB_LOGIN_TIMEOUT                  登录窗口超时未完成登录
+QB_LOGIN_ABORTED                  登录窗口被关闭
+QB_BROWSER_UNAVAILABLE            Node/Playwright/Chromium 不可用,/dev/shm 不可用,或代理异常退出(提交放行前)
+QB_RESULT_UNRECOGNIZED            构建状态文字或页面结构无法识别,不写 RESULT
+QB_FETCH_FAILED                   读取页面失败(非 200、重定向、构建号不符、登录失效、代理异常),不写 RESULT
+QB_EVIDENCE_REDACTION_FAILED      证据写后脱敏自检失败,证据删除,不写 RESULT
 PREFLIGHT_FAILED                   campaign-preflight 任一检查失败(v1.3.1)
 CHANGE_ID_HOOK_FAILED              commit-msg hook 生成失败:message 已含
                                    Change-Id 行或 Gerrit 身份 Link、hook sha256
@@ -2653,7 +2697,7 @@ worktree 缺失/dirty 不 push;**refs/for 无 QB 绑定证据不 push**;
 forbidden suppress 形态任何 ref 都不 push;push 前 TOCTOU 重校验
 (record↔worktree 绑定在 push 动作紧前重验)。
 
-### 4.4 v1.5.20 修订:P2–P5 落地裁定
+### 4.4 v1.5.20–v1.5.21 修订:P2–P5 落地裁定
 
 本节汇总 P2、P3、P4 收口时的裁定,以及 P5 设计引入的契约变化。
 P5 模块(suppress_policy、gate_view、sandbox_submit)的权威契约见 `p5-sandbox-submit-design-v1.x-FROZEN.md`,
@@ -2699,6 +2743,24 @@ P5 模块(suppress_policy、gate_view、sandbox_submit)的权威契约见 `p5-sa
 22. 新增错误码 `INTERNAL_ERROR`:sandbox-submit 遇到意外异常时由 CLI 层统一输出,exit 5,不写数据库。
 23. suppress policy 规则版本升为 `p5-policy/v2`:cmake 选项与段关键字按 CMake 参数值识别(含转义、续行、列表展开),生成器表达式须为完整表达式、输出部分递归检查、计算型与未列名表达式判 forbidden;源码中数字分隔符与游离单引号不再屏蔽后续文本;pragma 前缀识别 BOM、二合字母与 `\v` `\f`;文件分类按符号链接解析后的真实路径。
 24. 已有 `p5-policy/v1` POLICY 事件的未推送单元,重跑时若结论变化按第 12 条挂起,须人工重置。
+
+### 4.5 v1.5.22 修订:P5Q 复验触发改为 RBS 网页表单
+
+P5Q 模块(qb_browser_agent、qb_browser、qb_redact、qb-trigger、qb-result-fetch)的权威契约见 `p5q-qb-trigger-design-v1.x-FROZEN.md`,与本文其它章节冲突时以该文件为准。
+
+1. 不使用 QuickBuild REST 接口与 Basic Auth;QB_PASSWORD 不再使用。复验触发由工具驱动独立浏览器窗口在 RBS/TRIGGER 配置的运行表单上填表提交;登录由人在该窗口完成;凭据可信边界为浏览器与专用代理进程,协议事件中的请求头与请求体在适配层立即丢弃;所有请求经逐跳拦截,WebSocket 与 Worker 类目标一律阻断。
+2. 复验流水线为 RBS/TRIGGER(非 SBS),按 campaign_units.branch 选择 QuickBuild 工程;命令 `qb-sbs-trigger` 更名为 `qb-trigger`。
+3. 目标行写入表单 Build Package List,格式 `仓库路径@commit`,只写一行;表字段 `sbs_target` 保留原名,语义为该行。
+4. 每次提交在 BUILD NOTES 写入请求标记 `clang-fix-campaign request=<request_id>`;构建与请求只凭回显的请求标记、目标行、子构建 TRIGGER_ID、配置路径与页面构建号对应。
+5. `SUBMITTED` 事件语义改为"提交意图已落库,即将放行提交";意图先于放行写入。提交一旦放行,不存在"确定失败"结论;无法确定是否已提交时不自动重提。`QB_SUBMIT_FAILED` 只表示意图已落库但提交确定未放行。
+6. 通过判据为子构建 Status 精确等于 `Successful`,且子构建回显 `FAIL_FAST=yes`、架构为 `standard-armv7l:aarch64:x86_64`、逐架构状态为空;`qb_pass_requires_accept` 默认 false,与其它复验参数一起在每个 state DB、每个 branch 首次触发时冻结于新表 `campaign_qb_profiles`,P5R 按 unit.branch 从该表读取。
+7. 工具永远不点 Ready to Accept;推送 sandbox 分支不会自动触发 QuickBuild 构建,P12 首次真实推送后观察确认。
+8. EF-5:①REST 探活不再需要;③SBS 构建只读取证与 RBS 表单结构证据已取得,RBS 构建页完整字段映射由 P5Q 设计文件第 9.4 节第 1 步确定,确定后 P5Q 的 qb-trigger 才开工;④accept 语义已由 FatTank 裁定;②真实提交的响应形态移入 P5Q 收口前的确认提交(P5Q 设计文件第 9.4 节第 2 步),不再作为 P5Q 开工门。
+9. campaign-preflight 取消 QB REST 探针与 QB_PASSWORD/QB_COOKIE 检查,改为检查 Node、Playwright 模块、Chromium 路径与 /dev/shm 可用。
+10. review-submit 的人工装配降级判据收紧为:最新 request 完全不存在 RESULT 行,**且**该 unit 最新状态不属于 {QB_REQUESTED, QB_TRIGGERED, SANDBOX_QB_PENDING};处于这三个状态表示存在未出结果的复验请求,一律 exit 4 `REJECTED_QB_REQUEST_PENDING`,不得降级、不得打印 push 命令。复验请求确已失效(QuickBuild 侧构建丢失或永久无法读取)时,由人用 `--retrigger` 产生新 request,或按 R2 带外处置后再降级。降级仅作为 P5R 的工具故障通道,不作为复验未完成通道。
+11. qb_result 文件 schema 以 P5Q 设计文件第 5.4 节为准。review-submit 接受该 schema:`per_arch_status` 为 null 与数据库 NULL 表示未提供独立架构状态,不启动逐架构校验,非空映射才按架构校验;`accepted` 可空,冻结参数要求 Accept 时只有数据库 accepted=1 才通过,NULL 与 0 均不通过。"已有 RESULT 而校验失败不得降级"不变。
+12. 同一 request 已有终态 RESULT 后,状态不变而 accepted 等判定字段变化时,追加新的 RESULT,最新 RESULT 为权威;状态改变视为状态不一致。
+13. 新增 `campaign_state` 按连接写入的内部原语;P5Q 的每个写入点在一个事务内完成。
 
 ## 5. 非功能性需求
 
@@ -3080,7 +3142,8 @@ P11 → P12(e2e 单包真机)
   三条已移交 P10/P11——P5 只在三 arch 聚合成功后运行,接触不到
   "第三 arch FAIL → 下一 round" 的时点);白名单负例、幂等命中、policy 拒绝、push 失败降级、
   重跑 message_brief 不变性用例
-### Phase 5Q: qb-sbs-trigger + qb-result-fetch(~450 行,依赖 P5、P4.5、P1[EF-5 残余])
+### Phase 5Q: qb-trigger + qb-result-fetch
+(v1.5.22)范围与 DoD 以 P5Q 设计文件第 0.3、9 节为准。
 - **范围**:SBS REST 提交(XML 构造 + Basic Auth,密码仅 QB_PASSWORD 环境
   变量);sandbox 绑定硬 gate(含提交紧前远端 ref 实时解析);
   QB_REQUESTED/QB_TRIGGERED 双态与 retrigger 追加语义(§3.6);
@@ -3091,6 +3154,7 @@ P11 → P12(e2e 单包真机)
   PASS/终态失败均不自动重提);[ ] --retrigger 追加不覆盖断言;
   [ ] echo 比对负例;[ ] 凭据不出现在任何输出的断言(trace/stdout 扫描)
 ### Phase 5R: review-submit CLI(~450 行,依赖 P5、**P4.5**、**P5Q**)
+(v1.5.22)人工降级判据与 qb_result schema 按 §4.5 第 10、11 条。
 - 范围:review_submit 全链路(gate 字段一律 state DB 读取 + final 现场
   重推交叉核对——复用 P4.5 的 evaluate;qb_result v1.3 schema 校验
   (echo/最新记录/status);A11 第一方绑定;TOCTOU;push refs/for;状态写回)
@@ -3148,6 +3212,7 @@ P11 → P12(e2e 单包真机)
   损坏 JSONL fail-closed + **T1 fetch URL 不信任 gerrit_url 的断言** +
   change_ref 格式负例 + normalizer_version 往返 + T2 排序稳定性
 ### Phase 8.5: campaign-preflight CLI(~250 行,独立)
+(v1.5.22)探针项按 §4.5 第 9 条调整。
 - **范围**:§4.1 preflight 契约全量;凭据经环境变量、输出脱敏;
   Gerrit SSH 与 QB REST 探针的子进程执行与结果解析
 - **DoD 专项**:[ ] 每项检查的独立正负例;[ ] 凭据值不出现在任何
@@ -3412,11 +3477,12 @@ tizen-ci-triage/scripts/ci_triage/;kb 数据 tizen-ci-triage/kb/;
 
 ---
 
-本文档为 **v1.5.21-FROZEN(实现输入版)**(2026-10-10;
+本文档为 **v1.5.22-FROZEN(实现输入版)**(2026-10-10;
 冻结裁决见 §0)。
 
 **EF 台账**:EF-1 / EF-2 / EF-3 / EF-4 / EF-6 **已关闭**(结论见 §1.4);
 仅剩 EF-5 四项(**P5Q 开工前**)——
+(v1.5.22)EF-5 按 §4.5 第 8 条处理,不再作为 P5Q 开工门。
 均为 Phase 门,不阻塞设计冻结,也不阻塞首波 Phase。
 
 **重新冻结前置(已清零)**:§4 接口契约已与真实代码逐项对齐

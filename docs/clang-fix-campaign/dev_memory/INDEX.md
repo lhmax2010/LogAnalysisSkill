@@ -26,6 +26,7 @@
 | P3 aggregate | CLOSED | `f12154b`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p3-aggregate-closeout.md#最终签收); [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09): 1496 passed/1 skipped, design synchronization retained for P5 |
 | P4 derive_commit | CLOSED | `2ba0e0d`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09): 1480 passed/1 skipped, real hook PASSED; new P5 hardening in stage16 transfer list |
 | P5 sandbox-submit | CLOSED | Designer verified `37e27b1`, FatTank approved, 2026-10-10; both review rounds resolved, no further review; P4.5 suppress_policy and gate_view delivered in P5 | [final acceptance](../review/p5-sandbox-submit-closeout.md#8-最终签收); 1937 passed/1 skipped, 94 gates no new failure; [P5Q handoff](stage19_p5_sandbox_submit/progress.md#21-p5q移交清单): EF-5 partial, FatTank business rulings recorded, first real sandbox push remains P12 |
+| P5Q qb-trigger / qb-result-fetch | C0_COMPLETE | Frozen v1.2 original bytes registered; appendix A and C0-01 synchronized to design v1.5.22; C1 not started | [stage20 progress](stage20_p5q_qb_trigger/progress.md#9-c0验收2026-10-10): design 0 problem; 1937/1 regression; mypy/ruff pass; true-browser evidence and appendix C pending C2 |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -58,6 +59,7 @@ second contract authority. Runtime behavior remains governed by
 | 17 P3 aggregate | CLOSED | Accepted `f12154b`, 2026-10-09; single reviewer: P3 acceptable; PM verified fixes, FatTank approved | [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09); [final acceptance](../review/p3-aggregate-closeout.md#最终签收); design text synchronization deferred to P5 |
 | 18 P4 derive_commit | CLOSED | Accepted `2ba0e0d`, 2026-10-09; single reviewer: changes needed; PM verified fixes, FatTank approved | [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09); [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [P5 transfers](stage16_p2_submission_identity/progress.md#5-p2-01裁决与移交清单), not yet implemented |
 | 19 P5 sandbox-submit | CLOSED | Accepted code `37e27b1`, closeout `b0ecda4`; designer verified, FatTank approved, 2026-10-10; P4.5 suppress_policy/gate_view delivered | [final acceptance](../review/p5-sandbox-submit-closeout.md#8-最终签收); [progress](stage19_p5_sandbox_submit/progress.md#20-最终签收2026-10-10); 1937/1, 94 gates no new failure; [P5Q handoff](stage19_p5_sandbox_submit/progress.md#21-p5q移交清单), no third review |
+| 20 P5Q QuickBuild trigger | C0_COMPLETE | Baseline 26e9e3d; C0 docs only, commit externally anchored; C0-01 CLOSED | [plan/rulings](stage20_p5q_qb_trigger/progress.md); frozen hash 0a3f5e0b..., appendix 13 clauses/DDL/7 transitions exact; 14 error codes registered, SQLite CHECK negatives rejected; C1-C6 not started |
 
 ## Code-Ready Checkpoint
 

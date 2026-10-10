@@ -1,0 +1,14 @@
+appendix_A_section_4.5: byte_equal=true; clauses=13
+campaign_qb_profiles_DDL: byte_equal=true
+state_transitions: byte_equal=true; rows=7
+guidance/signature/external_references/C0-01: PASS
+error_code_registration: 14/14; new=13
+missing_new_error_code_control: RED_AS_EXPECTED ['[ERRCODE] QB_LOGIN_TIMEOUT 未登记于 §4.3']
+sqlite=3.45.1; complete_campaign_DDL=PASS; valid_profile_insert=PASS
+profile_sha256/empty: CHECK_REJECTED
+profile_sha256/short: CHECK_REJECTED
+profile_sha256/long: CHECK_REJECTED
+profile_sha256/uppercase: CHECK_REJECTED
+profile_sha256/nonhex: CHECK_REJECTED
+profile_sha256/unicode: CHECK_REJECTED
+transcription_and_in_memory_DDL=PASS; repository_DB_writes=0

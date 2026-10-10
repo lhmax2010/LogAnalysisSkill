@@ -1302,7 +1302,8 @@ rule_test_mapping=PASS
 
 ## 21. P5Q移交清单
 
-本清单承接P5签收,不表示P5Q已开工或EF-5已关闭。
+本清单承接P5签收,已移交[stage20 P5Q](../stage20_p5q_qb_trigger/progress.md)。
+stage20的C0文档与验收已完成,C0-01获批关闭,未实施C1,不表示EF-5已关闭。
 事实来源为[EF报告](../../spikes/ef_report.md)与
 [stage15 §16/§17](../stage15_p1_ef_spike/progress.md#17-rbs运行表单离线解析与新裁定2026-10-10);
 网页续跑已读到子状态、父子关联、变量与步骤;本轮离线取得Base工程RBS运行表单。
@@ -1310,11 +1311,14 @@ rule_test_mapping=PASS
 
 | 移交项 | 状态与后续要求 | 依据/目标阶段 |
 |---|---|---|
+| 本表全部移交项 | 已移交stage20;C0完成,C0-01已关闭;C1-C6计划与真机闸门见该stage,不影响P5 CLOSED | P5Q v1.2-FROZEN;stage20 §2/§5/§8/§9 |
 | EF-5网页读取缺口 | SBS样本Status/关联/变量/两页步骤已读到;逐架构独立状态仍未读到。Base RBS表单已离线解析,尚无真实提交响应/新build ID获取方式及Unified表单证据 | stage15 §16/§17/EF报告;RBS真实提交仍须后续明确批准 |
 | QuickBuild通过判据 | 已裁定:子构建Status=Successful即通过,不要求SR_STATUS=ACCEPTED;qb_pass_requires_accept默认false,campaign启动时冻结入库,后续配置变更只影响新campaign | FatTank 2026-10-10 裁定;P5Q设计稿落实,本批不改代码 |
 | 复验配置 | 使用RBS/TRIGGER,不是SBS/TRIGGER;按包所属工程为Tizen-Base-Toolchain与Tizen-Unified-Toolchain各设一条配置项,不猜Unified配置URL/ID | FatTank 2026-10-10 新裁定1;P5Q设计稿落实 |
 | 目标变量 | BUILD_PKG_LIST,网页显示名Build Package List,git_path@commit_id一行一个;SBS_TARGET仅设计内部名称,不宣称与BUILD_PKG_LIST_MODIFY等价 | FatTank 2026-10-10 新裁定2;Base表单HTML name见stage15 §17,动态索引不是变量业务名 |
-| QuickBuild接入与登录 | 不申请REST权限;触发/读取均走网页会话。P5Q在FatTank终端提示输入账号密码,工具登录后会话仅内存、不落盘,不再要求手抄浏览器Cookie | FatTank 2026-10-10 新裁定7,取代手工Cookie前提;本轮只登记,不实现登录/不改design.md |
+| QuickBuild接入与登录 | 已移交stage20,以P5Q冻结稿取代终端账号密码方案:FatTank在弹出的浏览器窗口登录,自动检测登录完成;可信边界为浏览器+专用Node代理,适配层立即丢弃请求头/体,不落盘/不传Python | FatTank 2026-10-10冻结裁定;P5Q第0.1/0.5节,stage15历史取证不改写 |
+| Ref. Snapshot基准冻结 | 已移交stage20;首次触发时取表单当时选中值,按campaign×工程冻结,冻结值下架拒绝新触发,已有终态RESULT不受影响;每次读取核回显 | FatTank 2026-10-10裁定;P5Q第0.5/2.2节 |
+| RBS取证与失败样本 | 已移交stage20 C2;父1193467/子1193469与失败父1186372,先核实RBS路径;第9.4节第1/1.5步完成才能C3 | 附录C待填,不得用SBS样本代补;C6真实提交仍需FatTank另行确认 |
 | Accept安全边界 | 合入正式快照必须由人点Accept;工具永远不点Accept/Ready to Accept;ILinkListener-content-buildHead-promote列入永久禁止名单 | FatTank 2026-10-10 新裁定3;不改变子构建Successful通过判据 |
 | Run与表单填写 | Run先进入Specify Build Options(/wicket/page?NN),最终提交才开跑(FatTank截图确认);工具显式填写每个字段,不依赖表单默认值 | FatTank 2026-10-10 新裁定4/5;本轮离线HTML不推断提交后行为 |
 | sandbox推送与QB触发 | sandbox git push不自动触发QB;仅工具显式提交RBS表单发起构建。依据为FatTank提供的团队quickbuild-sandbox-branch只含git push、无QB交互的说明,本轮不冒充代码复核 | FatTank 2026-10-10 新裁定6;P12首次真实推送后观察有无自发QB构建,挂账待实测 |
