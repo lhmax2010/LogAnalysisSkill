@@ -1,0 +1,46 @@
+test_foreign_cookie_empty_and_header_injection_rejected (test_ef5_browser_receiver.BrowserReceiverTests.test_foreign_cookie_empty_and_header_injection_rejected) ... ok
+test_structured_cookie_roundtrip_and_redaction (test_ef5_browser_receiver.BrowserReceiverTests.test_structured_cookie_roundtrip_and_redaction) ... ok
+test_archival_provenance_must_match (test_ef5_cookie_probe.CookieProbeTests.test_archival_provenance_must_match) ... ok
+test_configuration_unsafe_links_not_followed (test_ef5_cookie_probe.CookieProbeTests.test_configuration_unsafe_links_not_followed) ... ok
+test_cookie_load_failure_has_no_requests_or_exception_text (test_ef5_cookie_probe.CookieProbeTests.test_cookie_load_failure_has_no_requests_or_exception_text) ... ok
+test_credential_in_url_rejected_before_send (test_ef5_cookie_probe.CookieProbeTests.test_credential_in_url_rejected_before_send) ... ok
+test_file_loader_privacy_order_permissions_and_conditional_pages (test_ef5_cookie_probe.CookieProbeTests.test_file_loader_privacy_order_permissions_and_conditional_pages) ... ok
+test_http_error_body_not_archived (test_ef5_cookie_probe.CookieProbeTests.test_http_error_body_not_archived) ... ok
+test_login_page_stops_all_followup_and_is_not_archived (test_ef5_cookie_probe.CookieProbeTests.test_login_page_stops_all_followup_and_is_not_archived) ... ok
+test_missing_cookie_is_diagnostic (test_ef5_cookie_probe.CookieProbeTests.test_missing_cookie_is_diagnostic) ... ok
+test_missing_or_ambiguous_configuration_link_not_guessed (test_ef5_cookie_probe.CookieProbeTests.test_missing_or_ambiguous_configuration_link_not_guessed) ... ok
+test_network_failure_reports_page_index_without_raw_error (test_ef5_cookie_probe.CookieProbeTests.test_network_failure_reports_page_index_without_raw_error) ... ok
+test_outside_allowlist_or_wicket_never_calls_network (test_ef5_cookie_probe.CookieProbeTests.test_outside_allowlist_or_wicket_never_calls_network) ... ok
+test_permission_denial_stops (test_ef5_cookie_probe.CookieProbeTests.test_permission_denial_stops) ... ok
+test_redact_failure_sanitizes_diagnostic (test_ef5_cookie_probe.CookieProbeTests.test_redact_failure_sanitizes_diagnostic) ... ok
+test_redirect_to_login_never_followed (test_ef5_cookie_probe.CookieProbeTests.test_redirect_to_login_never_followed) ... ok
+test_variables_action_not_followed_and_no_path_guessed (test_ef5_cookie_probe.CookieProbeTests.test_variables_action_not_followed_and_no_path_guessed) ... ok
+test_write_failure_sanitizes_diagnostic (test_ef5_cookie_probe.CookieProbeTests.test_write_failure_sanitizes_diagnostic) ... ok
+test_credential_in_configuration_path_rejected_before_network (test_ef5_probe.ProbeSafetyTests.test_credential_in_configuration_path_rejected_before_network) ... ok
+test_cross_origin_and_non_https_rejected (test_ef5_probe.ProbeSafetyTests.test_cross_origin_and_non_https_rejected) ... ok
+test_failed_basic_probe_stops_subsequent_reads (test_ef5_probe.ProbeSafetyTests.test_failed_basic_probe_stops_subsequent_reads) ... ok
+test_get_trigger_and_non_read_paths_are_blocked (test_ef5_probe.ProbeSafetyTests.test_get_trigger_and_non_read_paths_are_blocked) ... ok
+test_html_hidden_password_and_sensitive_table_cells_redacted (test_ef5_probe.ProbeSafetyTests.test_html_hidden_password_and_sensitive_table_cells_redacted) ... ok
+test_known_secret_check_rejects_unsanitized_text (test_ef5_probe.ProbeSafetyTests.test_known_secret_check_rejects_unsanitized_text) ... ok
+test_redirects_never_followed (test_ef5_probe.ProbeSafetyTests.test_redirects_never_followed) ... ok
+test_safe_reads_allowed (test_ef5_probe.ProbeSafetyTests.test_safe_reads_allowed) ... ok
+test_server_side_xml_secrets_redacted_without_losing_sbs_target (test_ef5_probe.ProbeSafetyTests.test_server_side_xml_secrets_redacted_without_losing_sbs_target) ... ok
+test_supplied_credentials_and_encodings_are_removed (test_ef5_probe.ProbeSafetyTests.test_supplied_credentials_and_encodings_are_removed) ... ok
+test_bad_hash_rejected_without_writing (test_ef5_redact_archive.ArchiveTests.test_bad_hash_rejected_without_writing) ... ok
+test_html_and_derived_json_updated_together (test_ef5_redact_archive.ArchiveTests.test_html_and_derived_json_updated_together) ... ok
+test_blocked_pages_stop_before_tabs (test_ef5_web_probe.WebSafetyTests.test_blocked_pages_stop_before_tabs) ... ok
+test_cookie_cannot_enter_url_before_send (test_ef5_web_probe.WebSafetyTests.test_cookie_cannot_enter_url_before_send) ... ok
+test_explicit_paths_do_not_expand_via_links (test_ef5_web_probe.WebSafetyTests.test_explicit_paths_do_not_expand_via_links) ... ok
+test_five_exact_paths_only_and_no_post (test_ef5_web_probe.WebSafetyTests.test_five_exact_paths_only_and_no_post) ... ok
+test_hidden_fields_session_ids_and_scripts_redacted (test_ef5_web_probe.WebSafetyTests.test_hidden_fields_session_ids_and_scripts_redacted) ... ok
+test_only_literal_read_tabs_followed_no_parent_guesses (test_ef5_web_probe.WebSafetyTests.test_only_literal_read_tabs_followed_no_parent_guesses) ... ok
+test_set_cookie_removed_before_evidence_and_no_auth_headers_archived (test_ef5_web_probe.WebSafetyTests.test_set_cookie_removed_before_evidence_and_no_auth_headers_archived) ... page: HTTP 200; html; evidence=page.response.txt
+ok
+test_user_fields_key_value_and_missing_column (test_ef5_web_probe.WebSafetyTests.test_user_fields_key_value_and_missing_column) ... ok
+test_user_fields_redacted_without_changing_business_text (test_ef5_web_probe.WebSafetyTests.test_user_fields_redacted_without_changing_business_text) ... ok
+test_whitelist_rejects_actions_queries_other_ids_and_origins (test_ef5_web_probe.WebSafetyTests.test_whitelist_rejects_actions_queries_other_ids_and_origins) ... ok
+
+----------------------------------------------------------------------
+Ran 40 tests in 0.309s
+
+OK

@@ -1304,15 +1304,18 @@ rule_test_mapping=PASS
 
 本清单承接P5签收,不表示P5Q已开工或EF-5已关闭。
 事实来源为[EF报告](../../spikes/ef_report.md)与
-[stage15 §13](../stage15_p1_ef_spike/progress.md#13-本人到场后的五路径重跑2026-10-09);
-最近一次五路径重跑BLOCKED/0请求,累计证据仍为WEB_READ_PARTIAL。
+[stage15 §15](../stage15_p1_ef_spike/progress.md#15-cookie文件只读续跑2026-10-10);
+Cookie续跑取得子构建首页GET/200,随后本地write校验停止,累计证据仍为WEB_READ_PARTIAL。
 
 | 移交项 | 状态与后续要求 | 依据/目标阶段 |
 |---|---|---|
-| EF-5网页读取缺口 | 仍为部分可读;仍缺子构建状态、逐架构状态、步骤详情、目标变量映射,不得从既有父构建页面推断补齐 | stage15/EF报告;P5Q前置核实 |
-| QuickBuild通过判据 | 待FatTank裁定:Successful是否足够,还是必须ACCEPTED;本批不代作业务判断 | FatTank;P5Q |
-| 目标变量等价性 | 待FatTank裁定:SBS_TARGET与BUILD_PKG_LIST是否等价;未确认前不得按等价映射 | FatTank;P5Q |
+| EF-5网页读取缺口 | 部分可读:子构建1069540首页已读到Status=Successful;SR_STATUS、逐架构独立状态、步骤详情、目标变量映射仍未读到,不得从父页摘要补齐 | stage15 §15/EF报告;本轮write阶段BLOCKED,P5Q前置核实未完成 |
+| QuickBuild通过判据 | 已裁定:子构建Status=Successful即通过,不要求SR_STATUS=ACCEPTED;qb_pass_requires_accept默认false,campaign启动时冻结入库,后续配置变更只影响新campaign | FatTank 2026-10-10 裁定;P5Q设计稿落实,本批不改代码 |
+| 目标变量等价性 | 已明确:SBS_TARGET为设计内部名称;QuickBuild实际使用BUILD_PKG_LIST / BUILD_PKG_LIST_MODIFY / 其它变量待取证后再定,不得擅自认定等价 | FatTank 2026-10-10 裁定;stage15 Cookie取证/P5Q |
+| QuickBuild接入方式 | 已裁定:不申请REST权限;P5Q网页Cookie自动触发,结果同样网页Cookie读取;REST/Basic Auth方案由P5Q设计稿替换,本轮取证仍只读 | FatTank 2026-10-10 裁定;P5Q设计稿落实,本批不改design.md |
 | 远端ref实时校验 | 须复用P5的隔离传输与git统一环境,不得退回主副本直接传输或另起不受控Git环境 | P5 `sandbox_submit`/`sandbox_git`,第二轮修复37e27b1;P5Q |
 | 首次真实Gerrit sandbox推送 | 仍按EF-6放在P12,不因P5签收提前执行;本批测试仅使用本地仓库与本地裸仓库 | design.md §1.4 EF-6 / Phase 12;P12 |
 
-本次仅登记,不新增网页请求、真实推送或业务规则裁决;既有EF-5证据与人工闸门保持原样。
+P5签收时仅登记移交;上述2026-10-10裁定与后续取证见
+[stage15 §14/§15](../stage15_p1_ef_spike/progress.md#14-fattank-2026-10-10裁定),
+不因未来Cookie触发方案而放宽本轮只读边界,真实Gerrit首次推送仍在P12。

@@ -1,7 +1,7 @@
 # Stage15 P1 EF-5 Environment Spike
 
-日期:2026-10-09。状态:**WEB_READ_PARTIAL**(累计;§11为既有3次GET/200)。
-最新重跑:**BLOCKED**(本地会话交接未完成),后台请求0;详见§13。
+日期:2026-10-10。状态:**WEB_READ_PARTIAL**(累计;历史§11及本轮子构建首页)。
+最新实跑:**BLOCKED**(第1页write自检CRLF误报),GET 1次/HTTP 200,POST 0;详见§15。
 权威:`../../design.md` v1.5.19-FROZEN §1.4 EF-5、§4.1
 qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 
@@ -18,6 +18,8 @@ qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 本轮本人另授权新建隔离浏览器并手工登录,仅该临时会话的QuickBuild Cookie
 经匿名内存管道交给探测器;不导出storage state、不读取日常浏览器profile。
 HTTP只允许白名单只读URL,包括禁用重定向;即使GET也禁止`/rest/trigger`。
+以上为前轮授权记录;2026-10-10改用本人导出的Cookie文件,当前边界见§14/§15,
+不再运行浏览器转交,不再申请REST权限。
 脚本仅位于`../../spikes/`,不进入任何生产包。
 原有无关工作区改动不处理。
 
@@ -567,3 +569,113 @@ exit=0
 全仓原始输出:`evidence/browser02-rerun-pytest.log`。单测中的HTTP 200来自
 人工fixture,不是线上请求。本轮不重试REST、不读取触发表单、不访问/log,
 不修改design.md或P2-P4代码。原有无关工作树改动照旧不处理。
+
+## 14. FatTank 2026-10-10裁定
+
+1. QuickBuild通过判据已裁定:子构建Status=Successful即通过,
+   不要求SR_STATUS=ACCEPTED。`qb_pass_requires_accept`默认false,
+   campaign启动时冻结入库,以后修改配置只影响新campaign。
+   此行为由P5Q设计稿落实,本轮只登记,不改生产代码或design.md。
+2. SBS_TARGET是设计内部名称。QuickBuild实际填写BUILD_PKG_LIST /
+   BUILD_PKG_LIST_MODIFY / 其它变量,待本次取证后再定,不得擅自认定等价。
+3. 不申请REST权限。P5Q触发与结果读取均改走网页Cookie,
+   REST/Basic Auth方案由P5Q设计稿替换。本轮不触发、不读取触发表单,
+   不修改design.md,不将未来自动触发裁定当成本轮写操作授权。
+
+以上取代§12.4/§13中相关待决状态;历史实测记录不改写。
+stage19 §21同步本裁定;P5已CLOSED,与本轮EF-5取证状态分开。
+
+## 15. Cookie文件只读续跑(2026-10-10)
+
+计划:新增--cookie-file(默认/tmp/quickbuild_cookies.json),复用shared的
+load_cookie_jar,凭据仅内存使用,不复制/输出/落入证据;记录权限位但不按权限拒绝。
+不再使用浏览器转交。发送前凭据拒绝检查、PageRedactor与USER脱敏继续有效。
+
+请求顺序固定为1069540根页、overview、variables、step_status,
+然后1069532/step_status。仅额外允许从既有1069532归档页找到的普通配置页链接,
+以及配置页实际提供的普通变量页链接,各一次;不猜路径。
+禁止POST、Wicket动作、/log、REST、触发/接受入口、redirect跟随。
+每个失败仅记录固定类别、阶段与HTTP码,不保存异常原文或错误响应正文。
+
+离线控制通过后实跑一次,证据目录evidence/web-cookie-01/;
+读取不到的事实记未读到,不借父页摘要填补子页。结果及验收随后追加。
+
+### 15.1 实跑与停点
+
+命令与输出原文:
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/spikes/ef5_web_probe.py --cookie-file /tmp/quickbuild_cookies.json --output docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-cookie-01
+{"conclusion": "BLOCKED", "diagnostic": {"stage": "write", "page_index": 1, "error_category": "WRITE_FAILED", "http_status": 200}, "requests": 1, "http_statuses": [200], "post_requests": 0}
+exit=4
+```
+
+Cookie权限0600,只读且仅内存使用;未使用QB_COOKIE/getpass/浏览器转交。
+本轮仅第一GET,没有重试、POST、REST、/log、Wicket动作、redirect跟随或触发。
+原run.json/requests.json保留停机事实。实跑脚本SHA:
+b602aa767e14c56e09fd8911724a403431666c0ea66b048b70be68b67327fb88。
+
+根因是本地写后校验用read_text隐式把CRLF转换为LF,并非登录失效:
+首响应写前已经PageRedactor脱敏,实测384个CRLF;回读规范化后与待写文本不等。
+修复仅将回读改为read_bytes().decode("utf-8"),不放宽字节相等或脱敏检查,
+新增CRLF回归控制。没有以修复后的工具重跑网络,已询问是否允许继续余下页面,
+在获准前保持停止。
+
+首响应SHA256:
+69c8b2f269fbff08f3fa3be5b43d390660e96adabb2d5231da416288154f06cb。
+离线自检PASS、身份片段2处均USER,无额外网络:
+`evidence/web-cookie-01/offline-integrity.json`;
+`01.offline-page.json`从已经脱敏的01.response.txt派生,未覆盖原证据。
+
+| 页面 | HTTP/请求 | 事实/源行 |
+|---|---|---|
+| 1069540根页 | 200/1 GET | 01.response.txt:831 ID、:832 Successful;SR_STATUS未读到;:841/:844依赖计数0,无明确1069532关联字段 |
+| 1069540/overview | 未请求 | 未读到 |
+| 1069540/variables | 未请求 | 含@的变量原名/值、目标映射与父子一致性未读到 |
+| 1069540/step_status | 未请求 | 步骤与逐架构独立状态未读到;首页:6组合架构标题不能替代 |
+| 1069532/step_status | 未请求 | 步骤与每步状态未读到 |
+| 配置页及变量页 | 未请求 | 旧1069532归档:6/:679完整路径SBS/TRIGGER,:705普通../overview/1921链接;本轮NOT_FOLLOWED,未读prompt/默认值 |
+
+本轮结论BLOCKED(write);网页累计仍PARTIAL。完整五项事实、设计影响与源行号
+见[ef_report](../../spikes/ef_report.md#cookie文件只读取证2026-10-10)。
+
+### 15.2 验证
+
+命令在仓库根执行,输出日志位于evidence/web-cookie-validation/:
+
+```text
+$ env PYTHONPATH=docs/clang-fix-campaign/spikes .venv/bin/python -m unittest discover -s docs/clang-fix-campaign/spikes -p 'test_ef5*.py' -v
+Ran 41 tests in 0.328s
+OK
+exit=0 (offline-crlf.log)
+$ .venv/bin/python -m pytest -q
+1937 passed, 1 skipped in 59.82s
+exit=0 (pytest.log)
+$ .venv/bin/mypy
+Success: no issues found in 110 source files
+exit=0 (mypy.log)
+$ .venv/bin/mypy --follow-imports=silent docs/clang-fix-campaign/spikes/ef5_web_probe.py
+Success: no issues found in 1 source file
+exit=0 (spike-mypy.log)
+```
+
+全树ruff在干净工作树/tmp/ef5-cookie-1f0ca30(HEAD=1f0ca30)复制本轮两脚本后执行,
+不将主树既有无关未跟踪草稿当成本次代码:
+
+```text
+$ /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/ruff check .
+All checks passed!
+exit=0 (ruff-final.log)
+```
+
+初次静态检查仅import排序/长行与局部path变量重用的类型问题,均在spike内修复。
+CRLF控制首次新增时长行E501见ruff.log,修正后ruff-final.log通过。
+生产回归集合不变;新增17项spike控制单列(既有24项),不混称为生产新增用例。
+COOKIE_EXPIRED停后续、越界/动作零网络、配置NOT_FOLLOWED、固定阶段诊断、
+Cookie/服务端会话/隐藏值不出现在stdout或证据、USER脱敏、CRLF逐字节控制均通过。
+本轮不改生产源码、tests/、design.md或冻结稿;原有无关工作树改动不处理。
+
+提交前对本轮18个文件用内存Cookie值做扫描,实际输出:
+`precommit_secret_scan=PASS; files=18; response_hash_unchanged=PASS; network_requests=0`。
+源响应保留服务器空白和CRLF,git diff --check对其CSS缩进报space-before-tab;
+只排除01.response.txt后对其余暂存文件检查exit0,不为格式检查改写取证文件。

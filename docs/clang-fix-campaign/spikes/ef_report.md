@@ -1,6 +1,6 @@
 # P1 EF-5 Environment Report
 
-日期:2026-10-08。结论:**BLOCKED**(最新网页重跑为本地Cookie格式拒绝,非服务端拒绝)。
+日期:2026-10-10。最新结论:**BLOCKED**(Cookie文件续跑在第1页write自检停止,HTTP 200,非Cookie失效或服务端拒绝)。累计网页证据仍为部分可读;历史记录保留,最新事实见文末。
 权威:`../design.md` v1.5.19-FROZEN §1.4 EF-5与§4.1。
 本报告不修改设计,不宣告EF-5关闭或P5Q开工门通过。
 进度与命令:[stage15 progress](../dev_memory/stage15_p1_ef_spike/progress.md)。
@@ -333,3 +333,66 @@ Successful是否足够或必须ACCEPTED、SBS_TARGET与BUILD_PKG_LIST是否等�
 离线24项与浏览器策略20项通过;全仓`1457 passed, 1 skipped`,mypy/ruff通过。
 命令与原文见[stage15 §13](../dev_memory/stage15_p1_ef_spike/progress.md#13-本人到场后的五路径重跑2026-10-09)。
 design.md、P2-P4代码、白名单和凭据处理均未修改,不重试REST、不读触发表单。
+
+## Cookie文件只读取证(2026-10-10)
+
+### FatTank裁定与设计影响
+
+| FatTank 2026-10-10裁定 | 状态与设计影响 |
+|---|---|
+| 子构建Status=Successful即通过,不要求SR_STATUS=ACCEPTED | 已裁定;qb_pass_requires_accept默认false,在campaign启动时冻结入库,配置变更仅影响新campaign;由P5Q设计稿落实 |
+| SBS_TARGET是设计内部名称 | QuickBuild实际填写BUILD_PKG_LIST / BUILD_PKG_LIST_MODIFY / 其它变量待取证后再定,不能擅自认定等价 |
+| 不申请REST权限;触发和结果读取均走网页Cookie | REST/Basic Auth前提需改,涉及design.md §1.4 EF-5与§4.1 qb-sbs-trigger/qb-result-fetch;由P5Q设计稿替换,本轮不改design.md、不执行触发 |
+
+### 实跑与逐页事实
+
+本轮只执行一次Cookie探测入口。Cookie由shared load_cookie_jar读取,
+权限位0600,不复制文件、不输出值、不落盘请求头。仅GET 1次、HTTP 200,
+POST=0、redirect跟随=0、触发=0。第1页已通过登录检查并完成写前脱敏,
+但写后校验以read_text读取时把CRLF转为LF,导致字节相等检查误报。
+run.json如实为BLOCKED/stage=write/page_index=1/WRITE_FAILED;
+不是鉴权失败,后续页面均未请求。
+
+证据根:[web-cookie-01](../dev_memory/stage15_p1_ef_spike/evidence/web-cookie-01/)。
+首张响应01.response.txt已保留,未重取或改写;修复后仅离线复核凭据与USER脱敏,
+生成01.offline-page.json与offline-integrity.json,不覆盖原run.json/requests.json。
+修正为按原字节回读,补CRLF离线控制通过。已询问是否允许不重取第一页而继续剩余页面;
+在获准前不再发请求。
+
+| 顺序/页面 | 请求/HTTP | 读到的事实与源行号 |
+|---|---|---|
+| 1 /build/1069540 | GET/200 | 01.response.txt:6为SBS/build及组合架构标题;:831为1069540,:832为Successful;:841/:844的Dependents/Dependencies均0 |
+| 2 /build/1069540/overview | 未请求 | 未读到;第1页write停机,不能用首页代称该URL已读取 |
+| 3 /build/1069540/variables | 未请求 | 未读到变量原名/值、SR_STATUS或目标映射 |
+| 4 /build/1069540/step_status | 未请求 | 未读到步骤列表及逐步/逐架构状态 |
+| 5 /build/1069532/step_status | 未请求 | 未读到父构建步骤列表及逐步状态 |
+| 条件项 /overview/1921 | 未请求 | 已归档1069532页:705有普通Configuration Overview链接../overview/1921;本轮因前序停止而NOT_FOLLOWED,非猜路径 |
+| 条件项配置变量页 | 未请求 | 尚无配置页响应,没有枚举或猜测变量页URL |
+
+逐项结论(仅对实际所读页面成立):
+
+1. **子构建状态**:1069540首页Status=Successful(:818/:832)。SR_STATUS未读到,
+   变量页未请求。Triggered By已替换为USER(:838),不用于关联推断。
+   首页未读到明确指向1069532的父子关联字段;只见Dependents/Dependencies数值0,
+   不能把这些计数解释为不存在父子关系。历史父页摘要不补齐此缺口。
+2. **逐架构独立状态**:未读到。首页:6/:736只有
+   standard-armv7l:aarch64:x86_64组合字符串,不等于各架构独立状态。
+3. **两个构建步骤**:均未读到。首页:793只有Step Status入口,不能代替步骤详情。
+4. **含@的变量与父子比对**:1069540变量页未请求,原名/值及与1069532对应变量的
+   一致性均未读到/未确定。不能用旧父页BUILD_PKG_LIST或BUILD_PKG_LIST_MODIFY替代。
+5. **配置与prompt**:历史1069532归档页:6/:679显示
+   root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/SBS/TRIGGER,
+   :705明确配置页链接;这只是链接来源,不是本轮配置页实测。
+   运行时prompt变量名、默认值及“运行前会弹出变量页”说明均未读到。
+   Run the configuration/Ready to Accept入口均未请求,不推断其点击行为。
+
+### 结论与影响
+
+本次结论:**BLOCKED**,停在write阶段第1页。Cookie网页可读已得到HTTP 200与
+真实子构建Successful字段支持;其余字段仍不足,不能宣告WEB_READ_OK或EF-5完成。
+按FatTank已裁定的通过规则,该页观察到的Successful满足本次样本的状态条件,
+但不证明目标绑定、逐架构覆盖或P5Q整体流程已验证。
+
+网页自动化仍有结构变化与会话有效期风险;本轮只多取得子构建首页,
+没有取得配置prompt与变量页,不能据此推断自动触发参数或稳定解析契约。
+涉及P5Q待落实的设计段落同上,不改design.md、不改P2-P5代码/冻结稿。

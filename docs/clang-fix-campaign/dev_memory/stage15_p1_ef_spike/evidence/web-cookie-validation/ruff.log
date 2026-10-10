@@ -1,0 +1,12 @@
+E501 Line too long (101 > 100)
+   --> docs/clang-fix-campaign/spikes/test_ef5_cookie_probe.py:132:101
+    |
+130 |         body = "<html>\r\n<p>Successful</p>\r\n</html>\r\n"
+131 |         self.write_archive("<span>TRIGGER</span>")
+132 |         with patch.object(self.probe.opener, "open", side_effect=[Response(body) for _ in range(5)]):
+    |                                                                                                     ^
+133 |             code, run = self.run_probe()
+134 |         self.assertEqual(code, 0)
+    |
+
+Found 1 error.

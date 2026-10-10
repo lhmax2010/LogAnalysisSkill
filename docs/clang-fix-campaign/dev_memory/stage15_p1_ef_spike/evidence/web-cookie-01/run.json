@@ -1,0 +1,22 @@
+{
+  "conclusion": "BLOCKED",
+  "diagnostic": {
+    "stage": "write",
+    "page_index": 1,
+    "error_category": "WRITE_FAILED",
+    "http_status": 200
+  },
+  "exit_code": 4,
+  "cookie_file_mode": "0600",
+  "cookie_stored": false,
+  "auth_mode": "cookie_file_in_memory",
+  "requests": 1,
+  "http_statuses": [
+    200
+  ],
+  "post_requests": 0,
+  "trigger_authorized": false,
+  "redirects_followed": 0,
+  "configuration_links": [],
+  "redaction_self_check": "PASS"
+}

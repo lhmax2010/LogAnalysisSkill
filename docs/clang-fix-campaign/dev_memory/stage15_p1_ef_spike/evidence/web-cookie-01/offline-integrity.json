@@ -1,0 +1,20 @@
+{
+  "network_requests": 0,
+  "original_run_unchanged": true,
+  "raw_exceptions_recorded": false,
+  "credential_self_check": "PASS",
+  "identity_spans": 2,
+  "user_fields_redacted": true,
+  "response_sha256": "69c8b2f269fbff08f3fa3be5b43d390660e96adabb2d5231da416288154f06cb",
+  "response_crlf_count": 384,
+  "failure_cause": "READ_TEXT_NEWLINE_NORMALIZATION",
+  "probe_sha256_at_attempt": "b602aa767e14c56e09fd8911724a403431666c0ea66b048b70be68b67327fb88",
+  "configuration_link": {
+    "decision": "NOT_FOLLOWED",
+    "line": 705,
+    "url": "https://quickbuild.tizen.org/overview/1921",
+    "reason": "RUN_STOPPED_BEFORE_OPTIONAL_FETCH",
+    "source": "build-1069532-01.response.txt",
+    "source_sha256": "a4a3850c7e9ae3516fcb3978e2502749f6c72033b4cba7bd62bd073537a111f4"
+  }
+}
