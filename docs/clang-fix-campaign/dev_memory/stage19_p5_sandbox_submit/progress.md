@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-09。状态:**READY_FOR_REVIEW**,C0-C4已推送且远端CI通过;C5收口与复验见§17。未自行标CLOSED。
+日期:2026-10-10。状态:**REVIEW_FIXES_IN_PROGRESS**。C0-C5已推送;本轮按v1.3.1修订,见§18。未自行标CLOSED。
 
 ## 1. 权威、批准与基线
 
@@ -869,3 +869,46 @@ tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_the
 C5新增测试0;真实hook本机passed,不是skip。C0-C4远端均SUCCESS,
 C5推送后的远端结果由交付回报外部锚定,不在尚未产生的本提交中预填成功。
 状态保持READY_FOR_REVIEW,等待设计方核验/评审,不自行CLOSED。
+
+## 18. 代码评审修订
+
+2026-10-10:Claude Code、ChatGPT代码评审结论均为需修改。FatTank提供
+`p5-sandbox-submit-design-v1.3.1.md`,取代v1.2冻结稿;v1.3草稿保持不动、不入库。
+上一轮因v1.3.1文件未到位停止,本轮实测文件已到位,批准SHA完全一致:
+
+```text
+$ sha256sum docs/clang-fix-campaign/p5-sandbox-submit-design-v1.3.1.md
+f027f8b4057d4d617f9265968765f01940ce1396e588a65b28e95326e89258e6  docs/clang-fix-campaign/p5-sandbox-submit-design-v1.3.1.md
+exit=0
+```
+
+文档原字节不改;附录A.3四条与错误码照录至design.md v1.5.21。
+修复前HEAD=72a5806,全量1845 passed/1 skipped;门禁对照基线仍为cd7f8dd。
+提交顺序:文档同步 → 代码与测试 → READY_FOR_REVIEW收口,逐个推送。
+
+| 附录D事项 | 对应契约 | 落实状态 |
+|---|---|---|
+| 数字分隔符与游离单引号 | §2.3、§6.1.13 | 待实现与变异验证 |
+| BOM、二合字母、垂直空白pragma | §2.3/2.4、§6.1.13 | 待实现 |
+| CMake值解码/列表/括号参数 | §2.3、§6.1.12 | 待实现与旧逻辑变异验证 |
+| 生成器表达式整体/递归/闭集 | v1.3.1补充、§2.3 | 待实现 |
+| 真实文件归组分类/alias_overlap | §2.2、§6.1.14 | 待实现 |
+| 隔离传输与git版本无关对象库路径 | §4.4、§6.3.28 | 待实现 |
+| CLI意外异常统一出口 | §4.1、§6.3.30 | 待实现 |
+| TOCTOU路径/架构变异守卫 | §6.3.29 | 待实现与变异验证 |
+| 读事务仅1/2/3/6、PolicyInputError归因 | §4.3第12步 | 待实现 |
+| 定位跨模块等价/已知限制/规则v2 | §2.8、§6.1.15/16 | 待实现与收口登记 |
+
+测试仅使用本地Git与裸仓库;不访问真实Gerrit。所有变异在隔离工作树做,
+保存失败原文后恢复,不拿错误实现作为交付。
+
+文档同步验证:
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md
+== check_design_doc: docs/clang-fix-campaign/design.md ==
+-- OK: 0 problem --
+exit=0
+```
+
+首次调用漏传路径得到usage/exit 2,补齐显式路径后如上通过,未改检查器。

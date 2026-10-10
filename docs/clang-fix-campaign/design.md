@@ -2,7 +2,8 @@
 
 ## 0. 元信息
 
-- 版本:**v1.5.20-FROZEN(实现输入版)**
+- 版本:**v1.5.21-FROZEN(实现输入版)**
+- v1.5.21 变更记录:P5 代码评审修订见 §4.4 第 21–24 条,按 P5 v1.3.1 附录 A.3 同步。
 - v1.5.20 变更记录:P2-P5 落地裁定见 §4.4,按 P5 冻结设计附录 A 同步。
 - 创建时间:2026-07-29 最近修订:2026-10-08
 - 状态:**Frozen**(2026-08-06,change_45 第二轮 delta 闭环裁决;2026-10-08 经
@@ -2643,6 +2644,7 @@ DIFF_CONVERT_UNSUPPORTED / KB_SCHEMA_INVALID / INVALID_ARGS   (沿用)
 WORKSPACE_FS_UNSUPPORTED  edit_spec 发布所需的硬链接或目录 fsync 不可用(v1.5.20)
 REJECTED_ROUND_SUPERSEDED  传入记录不属于最新 round(v1.5.20)
 REJECTED_UNSAFE_GIT_CONFIG  仓库本地配置含 URL 改写或可执行命令类键(v1.5.20)
+INTERNAL_ERROR  sandbox-submit 意外异常的统一出口,exit 5,不写数据库(v1.5.21)
 ```
 
 物理底线(不可配置):只推 derived_commit(tree == 聚合校验过的
@@ -2693,6 +2695,10 @@ P5 模块(suppress_policy、gate_view、sandbox_submit)的权威契约见 `p5-sa
 18. `gerrit_ssh_base` 非 `ssh://` 时,campaign-preflight 必须报 `PREFLIGHT_FAILED`(本地路径只供测试)。
 19. 新增错误码 `REJECTED_UNSAFE_GIT_CONFIG`:被检查仓库的本地配置含 URL 改写或可执行命令类键,exit 4,不写 HELD。
 20. suppress policy 的全部计数规则逐文件比较,不允许跨文件抵消;合法的跨文件搬动须走人工。
+21. sandbox-submit 的 ls-remote 与 push 只在每次新建的隔离传输裸仓库中执行;该仓库经 alternates 读取主副本对象,不继承主副本的配置、hook 与远端定义(P5 设计文件第 4.4 节)。
+22. 新增错误码 `INTERNAL_ERROR`:sandbox-submit 遇到意外异常时由 CLI 层统一输出,exit 5,不写数据库。
+23. suppress policy 规则版本升为 `p5-policy/v2`:cmake 选项与段关键字按 CMake 参数值识别(含转义、续行、列表展开),生成器表达式须为完整表达式、输出部分递归检查、计算型与未列名表达式判 forbidden;源码中数字分隔符与游离单引号不再屏蔽后续文本;pragma 前缀识别 BOM、二合字母与 `\v` `\f`;文件分类按符号链接解析后的真实路径。
+24. 已有 `p5-policy/v1` POLICY 事件的未推送单元,重跑时若结论变化按第 12 条挂起,须人工重置。
 
 ## 5. 非功能性需求
 
@@ -3406,7 +3412,7 @@ tizen-ci-triage/scripts/ci_triage/;kb 数据 tizen-ci-triage/kb/;
 
 ---
 
-本文档为 **v1.5.20-FROZEN(实现输入版)**(2026-10-08;
+本文档为 **v1.5.21-FROZEN(实现输入版)**(2026-10-10;
 冻结裁决见 §0)。
 
 **EF 台账**:EF-1 / EF-2 / EF-3 / EF-4 / EF-6 **已关闭**(结论见 §1.4);

@@ -1,10 +1,12 @@
-# P5 sandbox-submit 设计(v1.2,FROZEN)
+# P5 sandbox-submit 设计(v1.3.1,代码评审修订稿)
 
 - 阶段:Phase 5(安全阶段,三家评审)
 - 上位文档:`docs/clang-fix-campaign/design.md` v1.5.19-FROZEN。本文只写 P5 的接口、行为与验收;
   与 design.md 冲突处以本文为准,冲突点全部列在附录 A,随 P5 第一个提交同步进 design.md(升 v1.5.20)。
 - 输入基线:`origin/clang-fix-campaign` @ `cd7f8dd`(P2/P3/P4 已 CLOSED)。
-- 两轮评审的修改与采纳来源见附录 B(第一轮)与附录 C(第二轮)。两轮评审已用满,v1.2 经 FatTank 批准后即冻结。
+- 两轮设计评审的修改与采纳来源见附录 B(第一轮)与附录 C(第二轮)。v1.2 于实施前冻结,实施中四项小裁定见 stage19 progress。
+- v1.3 是代码评审(Claude Code、ChatGPT)后的修订,修改与采纳来源见附录 D;由修复提交的第二轮代码评审一并核对。
+- v1.3.1 补两项实施前停止报告的裁定(生成器表达式拼接、git 版本),见附录 D 末尾。
 
 ---
 
@@ -56,7 +58,7 @@ design.md §7 把 P5 写成"调用 P4.5 的 policy 与 gate 记录 API(自身不
 - **时间格式**:`YYYY-MM-DDTHH:MM:SS+00:00`,UTC,秒级,由 `datetime.now(timezone.utc).replace(microsecond=0).isoformat()` 生成。
 - **ARCH_ORDER**:`("aarch64", "armv7l", "x86_64")`。凡需要在多个 arch 中选一个时,按此顺序取第一个。
 - **WHOLESALE_NAMES**:`{"everything", "all", "extra", "pedantic"}`,§2 三处共用这一份。
-- **POLICY_RULES_VERSION**:`"p5-policy/v1"`。规则有任何改动都必须升这个版本号。
+- **POLICY_RULES_VERSION**:`"p5-policy/v2"`(v1.3 起;v1 为 v1.2 实现)。规则有任何改动都必须升这个版本号。
 
 ---
 
@@ -104,6 +106,10 @@ def evaluate(edit_spec: Mapping[str, object], src_root: Path,
 2. 用与 `edit_spec_guard` 相同的定位规则求出每个 edit 的 `[start, end)`,按 start 从大到小依次替换为 new,得到"编辑后内容"。
    同时记录每个 edit 在编辑前内容中的区间,以及其 new 在编辑后内容中的区间。
 3. 未被任何 edit 触及的文件不参与判定。
+4. **按真实文件归组与分类**:每个 edit 的目标路径先经 `edit_spec_guard` 的路径校验,再解析符号链接,得到真实文件相对于 `src_root` 的路径。
+   - 文件分类(2.3.1)一律按真实路径判断,edit 中书写的路径只用于 hit 留痕;
+   - 指向同一真实文件的 edit(无论用哪个别名书写)合并为同一文件处理;
+   - 经不同别名书写、且在编辑前内容中区间重叠的两个 edit,产生 `alias_overlap` hit(forbidden),因为应用顺序会有歧义。
 
 ### 2.3 词法:哪些文本算"活动文本"
 
@@ -123,7 +129,31 @@ def evaluate(edit_spec: Mapping[str, object], src_root: Path,
 - **块注释**:`#[` 加若干 `=` 加 `[` 开始,对应的 `]` 加同样数量的 `=` 加 `]` 结束。
 - **引号参数与括号参数**:引号参数 `"…"`(支持 `\` 转义)与括号参数 `[=*[ … ]=*]` 都是活动文本。
   其中的括号和 `#` 不参与括号配对,也不开始注释,但其中的选项照常识别。
-  每个参数还要求出它的**值**:引号参数去掉两端引号并处理 CMake 转义;括号参数去掉定界符;未加引号的参数取原文。
+  每个参数还要求出它的**值**,规则与 CMake 语言一致:
+  - 引号参数:去掉两端引号;`\` 加换行是续行,连同换行一起删除;`\n` `\r` `\t` `\;` 按 CMake 含义解码;其余 `\<字符>` 解码为该字符本身(如 `\-` 解码为 `-`);
+  - 括号参数:去掉定界符;紧跟开括号的第一个换行一并去掉;内容不做转义;
+  - 未加引号的参数:按上面同样的转义规则解码,再按未转义的 `;` 拆成多个**元素**(CMake 列表展开)。
+
+**cmake 的选项与关键字一律在"值"上识别**,不在原始文本上识别:
+- 2.3.2 的 token 正则在每个参数值(未加引号参数为每个元素)上匹配;
+- 段关键字(2.5)按元素判断,`PRIVATE;PUBLIC;-Wno-x` 这种未加引号参数会展开成三个元素,`-Wno-x` 属于 `PUBLIC` 段;
+- 每个元素保留其所属参数在原文中的区间,用于 hit 定位与"实例在哪个命令内"的判断;
+- 注释仍按原文识别,注释中的内容不产生任何参数。
+
+**cmake 生成器表达式**:参数值(未加引号参数为每个元素)中出现 `$<` 时,按以下规则处理,不满足即计一个 `cmake_genex_unparsed` 实例(forbidden),scope 按该参数所在位置正常判定:
+
+1. **整体规则**:含生成器表达式的元素必须恰好是**一个完整的生成器表达式**,从元素第一个字符 `$<` 开始,到与之配对的最后一个字符 `>` 结束,前后不得有任何其它文本。
+   `-$<1:w>`、`-W$<1:no-error>`、`$<1:->w`、`-Wno-$<…>` 这类表达式与普通文本在同一元素内拼接的写法一律不满足,因为生成阶段会拼出静态看不到的选项。
+2. **名字规则**:表达式名字属于下列计算型集合时一律不满足:
+   `LOWER_CASE` `UPPER_CASE` `MAKE_C_IDENTIFIER` `JOIN` `REMOVE_DUPLICATES` `FILTER` `LIST` `STRING` `GENEX_EVAL` `TARGET_GENEX_EVAL` `TARGET_PROPERTY` `SHELL_PATH`。
+3. **输出部分递归**:满足前两条的表达式,其"输出部分"按如下方式取出,并把每一段当作一个新元素,递归套用第 1、2 条:
+   - `$<条件:输出>`(条件为 `0`、`1` 或另一个生成器表达式):输出部分为冒号后的文本;条件部分本身不扫描选项,但条件部分里的表达式同样要满足第 2 条;
+   - `$<IF:条件,真值,假值>`:真值与假值两段,按顶层逗号切分;
+   - `BOOL` `AND` `OR` `NOT` `STREQUAL` `EQUAL` `VERSION_*` `*_COMPILER_ID` `*_COMPILER_VERSION` `COMPILE_LANGUAGE` `CONFIG` `PLATFORM_ID` 等只输出 `0`/`1` 的表达式:没有输出部分;
+   - `BUILD_INTERFACE` `INSTALL_INTERFACE`:冒号后的文本为输出部分;
+   - 其它未列出的表达式名:不满足,计 `cmake_genex_unparsed`。
+   输出部分内按未转义的 `;` 再拆成多个元素。不含 `$<` 的元素照常按 2.3.2 扫描选项。
+4. 据此,`$<$<C_COMPILER_ID:Clang>:-Wno-x>` 与 `"$<$<C_COMPILER_ID:Clang>:-Wno-x;-Wno-y>"` 照常识别出 `-Wno-x`(与 `-Wno-y`),按所在位置判定作用域。
 
 **automake、build_other、spec:**
 - 先做续行拼接:行尾 `\` 与紧随的换行一起删除。删除前后的位置要能对应回原文。
@@ -133,6 +163,11 @@ def evaluate(edit_spec: Mapping[str, object], src_root: Path,
 - 先做续行拼接,规则同上。
 - `//` 与 `/* */` 注释不算活动文本。
 - 字符串字面量与字符字面量不算活动文本,唯一例外是 `_Pragma(...)` 的参数,见 2.4。
+- **单引号的识别**:
+  - 位于数字字面量内部的 `'` 是数字分隔符,不是字符字面量的开始(如 `0xFFFF'FFFF`、`1'000`、`0b1010'1010`)。判断方法:从 `'` 向前回溯到当前 pp-number 的起点,起点是数字,或是 `.` 后跟数字;且 `'` 后紧跟字母、数字或 `_`;
+  - 其余 `'` 开始一个字符字面量。若在同一行内(续行拼接之后)找不到配对的 `'`,这个 `'` 视为游离字符,只屏蔽它自身,不屏蔽后续文本;
+  - 双引号字符串的规则不变。
+- **文件开头的 BOM**(U+FEFF)按空白处理;垂直制表符 `\v` 与换页符 `\f` 也按行内空白处理。
 
 #### 2.3.1 文件分类
 
@@ -175,10 +210,13 @@ def evaluate(edit_spec: Mapping[str, object], src_root: Path,
 | `pragma_unparsed` | 见下方 | **forbidden** |
 | `pragma_pop` | pragma 语法第 3 条中的 `pop` | 只参与"移除"判定(2.6) |
 | `target_decl` | cmake 中 `add_executable` / `add_library` / `add_test` 命令 | 只参与"移除"判定(2.6) |
+| `cmake_genex_unparsed` | 见 2.3 的计算型生成器表达式 | **forbidden** |
+| `alias_overlap` | 见 2.2 第 4 条 | **forbidden**(token 为两个别名的书写路径,按字典序以空格连接;scope="n/a";count=1) |
 
 **pragma 文本的来源**(只在 `source` 文件的活动文本中识别):
 
-- **指令形式**:以 `#` 开头(前面只允许空白)、续行拼接后的整行。去掉 `#` 与 `pragma` 关键字后,剩余部分即 pragma 文本。
+- **指令形式**:行首(前面只允许空格、`\t`、`\v`、`\f`,文件开头还允许 BOM)为 `#` 或二合字母 `%:`,其后可有同样的空白,再接 `pragma` 关键字;续行拼接后的整行去掉这些前缀后,剩余部分即 pragma 文本。
+  三合字母 `??=` 不识别:GCC 与 Clang 在默认的 `gnu` 标准下不处理三合字母(写入已知限制)。
 - **运算符形式**:`_Pragma ( <参数> )`。参数必须是单个普通字符串字面量。
   按 C 标准"去字符串化"得到 pragma 文本:去掉两端引号,把 `\"` 换成 `"`、`\\` 换成 `\`。
   去字符串化后若仍含其它反斜杠转义(如 `\42`),整条视为无法解析。
@@ -239,7 +277,7 @@ def evaluate(edit_spec: Mapping[str, object], src_root: Path,
 | 规则 | 判定(在同一文件内) | hit 的 rule |
 |---|---|---|
 | 抑制(`wno_flag` `wno_error_flag` `pragma_suppress`) | 某键编辑后次数多于编辑前 | scope 允许时为 `suppress`,否则 `forbidden` |
-| 整类形态(`wno_error_all` `wno_wholesale` `w_all_off` `pragma_wholesale` `pragma_unparsed`) | 某键编辑后次数多于编辑前 | `forbidden` |
+| 整类形态(`wno_error_all` `wno_wholesale` `w_all_off` `pragma_wholesale` `pragma_unparsed` `cmake_genex_unparsed`) | 某键编辑后次数多于编辑前 | `forbidden` |
 | `werror_removed` | 对每个 werror token(`-Werror` 或某个 `-Werror=<name>`):`global_or_ambiguous` 键减少;或其它 scope 的减少总数大于 `global_or_ambiguous` 键的增加数 | `forbidden` |
 | `pragma_pop_removed` | `pragma_pop` 的减少数大于全部 `pragma_suppress` 键减少数之和 | `forbidden` |
 | `target_removed` | 某个 `target_decl` 键编辑后次数少于编辑前 | `forbidden` |
@@ -283,7 +321,11 @@ def evaluate(edit_spec: Mapping[str, object], src_root: Path,
 - 纯删行的修复(包括删掉未使用变量的整行)会被 `pure_deletion` 拦下,须走人工;
 - 新增调用一个在本次 edit 之外定义的抑制宏(如 `SUPPRESS_WARNING("-Wfoo")`)不会被识别,只有宏定义处的 `_Pragma` 会被识别;
 - 跨文件搬动 `-Werror` 或 target 声明会被拦下,须走人工;
-- `doc` 类文件不做识别。若某仓库把编译选项放进 `.md`/`.rst` 再读入,不会被检出。
+- `doc` 类文件不做识别。若某仓库把编译选项放进 `.md`/`.rst` 再读入,不会被检出;
+- 跨命令用变量拼接出的选项(如 `set(A "-Wno" "-unused")` 再 `add_compile_options(${A})`)不在检测范围,两段都不构成选项 token;
+- 三合字母 `??=pragma` 不识别(见 2.4);
+- suppress_policy 复用 `tizen_build_verify.edit_spec_guard` 的私有函数 `_validate_target_path`、`_locate_edit`(已在符号审计中登记)。
+  若这两个函数的定位语义改变,须同步更新 6.1 的跨模块等价用例。
 
 ### 2.9 独立 CLI
 
@@ -352,10 +394,14 @@ stdout JSON:{ action, status, aggregate{ok,verified_tree_sha,base_commit,reasons
               policy_verdict, fix_strategy_final, change_id, derived_commit_sha,
               push{ref,result,url}, reused{message_brief,edit_source_kind},
               held{reason,arch_norm,scope}, surviving_worktrees[], error_code|null, reason|null }
-exit:0 成功;2 参数错;4 校验拒绝 / HELD / 忙;5 推送失败
+exit:0 成功;2 参数错;4 校验拒绝 / HELD / 忙;5 推送失败或内部错误
 ```
 
 - `action` ∈ `pushed` | `already_pushed` | `rejected` | `held` | `worktree_lost` | `push_failed` | `invalid_args` | `busy`。
+- **意外异常**:流程中出现 `_Reject` 以外的异常(如数据库错误、`PayloadSchemaError`、本地 git 超时)时,CLI 层统一捕获:
+  - `CampaignStateBusy` → action=`busy`,`CAMPAIGN_STATE_BUSY`,exit 4;
+  - 其余 → action=`rejected`,error_code=`INTERNAL_ERROR`(新增),exit 5,`reason` 为异常类型与消息;完整 traceback 写 stderr;
+  - 这一层**不写数据库**,不补写 PUSH(failed)。推送已成功而记账失败时,重跑按 4.5 补账,Change-Id 不变。
 - 不适用的字段输出 null,数组输出 `[]`;字段集合固定,每个 action 都有快照测试。
 - `held.scope` ∈ `copy` | `unit` | null:表示 HELD 是由某份副本的问题引起,还是 unit 级问题。
 - `push.url` 回显实际使用的远端地址。
@@ -540,7 +586,10 @@ class TocTouResult:
 def toctou_recheck(state_db, snapshot: SubmitSnapshot, *, src_clean: Path) -> TocTouResult: ...
 ```
 
-按顺序逐项核对,第一个不符即返回。数据库读取全部在同一读事务内完成。
+按顺序逐项核对,第一个不符即返回。
+第 1、2、3、6 项只读数据库,在同一读事务内完成(按 1、2、3、6 的顺序);读事务结束后,再依次执行第 4、5、7、8、9、10 项。
+这样读事务内不运行 git、policy 重算或派生。
+`evaluate` 抛 `PolicyInputError` 时,与第 6 步一致,归为 `edit_spec_rebind_mismatch`。
 
 | 项 | 核对内容 | 不符时 |
 |---|---|---|
@@ -559,7 +608,7 @@ def toctou_recheck(state_db, snapshot: SubmitSnapshot, *, src_clean: Path) -> To
 
 **第 13 步 远端读取、记账与推送**
 
-0. **远端读取**:用 4.4 的环境执行 `git ls-remote --exit-code <remote> <sandbox ref>`:
+0. **远端读取**:在 4.4 的**隔离传输仓库**中执行 `git ls-remote --exit-code <remote> <sandbox ref>`:
    - 返回 0:记 `R` 为远端 sha;
    - 返回 2:记 `R = None`;
    - 其余返回码或超时:按本步第 4 项处理。
@@ -572,7 +621,7 @@ def toctou_recheck(state_db, snapshot: SubmitSnapshot, *, src_clean: Path) -> To
 3. **推送**:`R != derived`:
    - 若最新状态不是 `SANDBOX_PUSHING`,先写 `SANDBOX_PUSHING`;
    - 紧接着对主副本再做一次配置安全检查(防止在第 12 步之后被改),不通过则 exit 4 `REJECTED_UNSAFE_GIT_CONFIG`,不 push;
-   - 执行 4.4 的推送命令;
+   - 在隔离传输仓库中执行 4.4 的推送命令;
    - 成功后再执行一次第 0 项的 ls-remote,远端 sha 必须等于 `derived`。
 4. **推送失败**:以下任一情况:第 0 项读取失败;推送命令失败或超时;推后 ls-remote 失败;推后 sha 不等。处理:
    - 追加 PUSH(`result="failed"`,`pushed_sha=derived`);
@@ -618,15 +667,29 @@ P5 中的每一次 git 调用都使用下面的环境与覆盖,包括 src_clean 
 这份名单是纵深防御。即使名单不全,上面的环境变量与 `-c` 覆盖仍然生效。
 该检查分别在三处执行:第 5 步对 src_clean,第 7 步对三份副本,第 11 步对主副本;第 12、13 步再各复查一次。
 
+**隔离传输仓库**(第 13 步的 ls-remote 与 push 只在这里执行,不在主副本上执行):
+
+主副本的仓库本地配置可能被改写,例如新增一个名字恰好等于 `<remote>` 字符串的具名远端,让 push 实际写到别处。
+检查与执行之间总有时间窗,所以远端操作不读取主副本的任何配置。
+1. 每次运行在 `<campaign_ws>/<unit_hash>/.transport/` 新建一个空的裸仓库:目录已存在时先整体删除;`git init --bare`,对象格式与主副本相同(取自主副本的 `git rev-parse --show-object-format`)。
+2. 把主副本对象库的真实路径写入 `objects/info/alternates`。主副本对象库路径由 `git -C <主副本> rev-parse --git-path objects` 取得;
+   输出为相对路径时,按主副本目录解析为绝对路径,再取真实路径(解析符号链接)后写入。不使用 `--path-format=absolute`(git 2.31 才支持),
+   使 P5 的 git 版本下限保持为 2.26,与配置安全检查一致。
+   这样传输仓库能读到 derived commit 及其全部历史对象,但不继承主副本的配置、hook 与远端定义。
+3. 推送前执行 `git --git-dir=<传输仓库> cat-file -e <derived>^{commit}`,确认对象可见;不可见时按第 13 步第 4 项推送失败处理。
+4. 传输仓库的命令同样使用本节的环境变量与全部 `-c` 覆盖。
+5. 运行结束(含异常)时删除传输仓库目录;删除失败只写 stderr 警告,不改变结果。下次运行会先删除再新建。
+
 **推送命令:**
 
 ```
-git -C <主副本> <上述 -c 覆盖> push --porcelain --no-verify --no-follow-tags --recurse-submodules=no \
+git --git-dir=<传输仓库> <上述 -c 覆盖> push --porcelain --no-verify --no-follow-tags --recurse-submodules=no \
     <remote> +<derived>:<sandbox ref>
 ```
 
 - 除这一条 refspec 外,不得推送任何 ref。
-- 上述环境、覆盖与检查都是硬要求,不依赖仓库配置。
+- 上述环境、覆盖、检查与隔离传输都是硬要求,不依赖仓库配置。
+- 第 11 步与 TOCTOU 第 10 项对主副本的远端地址检查保留,作为纵深防御。
 - 强制推送(`+`)只用于 sandbox ref。
 
 ### 4.5 崩溃窗口与重跑
@@ -735,6 +798,27 @@ P5 不调用任何释放 API。成功后三份副本的保护标记全部保持(
 9. **CLI 端到端**:allowed 与 forbidden 各一例,stdout 与 `asdict(evaluate(...))` 逐字段相等;exit 码 0、4、2 各一例。
 10. **确定性**:同一输入调用两次结果相等;打乱 `edits[]` 顺序后,除 `edit_index` 外结果相等;edit 改变长度导致后续位置偏移时,判定不变。
 11. **P5-C2-02 hit 输出形状**:`pure_deletion`、`werror_removed`、`pragma_pop_removed`、`target_removed` 的 kind、token、scope、count 逐字段符合该裁定;`werror_removed` 的 count 至少覆盖 `g<0` 与 `n>g≥0` 两种情形。
+12. **v1.3 cmake 按值识别**(每例都必须在"退回原文扫描"时变红):
+    - `add_compile_options("-\` 加换行加 `w")` → `w_all_off`,forbidden;
+    - `add_compile_options("-Wno\-everything")` → `wno_wholesale`,forbidden;
+    - `target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)` → 段为 PUBLIC,forbidden;
+    - 括号参数开头换行后接 `PUBLIC` 的写法 → forbidden;
+    - `target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")` → `cmake_genex_unparsed`,forbidden;
+    - 拼接写法 `add_compile_options("-$<1:w>")`、`add_compile_options("-W$<1:no-error>")`、`add_compile_options("$<1:->w")`、`target_compile_options(t PRIVATE -Wno-$<1:x>)` → `cmake_genex_unparsed`,forbidden;
+    - `$<IF:$<BOOL:1>,-w,>` → 识别出 `-w`,forbidden;未列出名字的表达式(如 `$<TARGET_FILE:x>`)出现在选项命令中 → `cmake_genex_unparsed`;
+    - 对照(仍 allowed):`target_compile_options(t PRIVATE -Wno-x)`、`$<$<C_COMPILER_ID:Clang>:-Wno-x>`、`"$<$<C_COMPILER_ID:Clang>:-Wno-x;-Wno-y>"`、`"PRIVATE" -Wno-x`、注释中的 `$<LOWER_CASE:…>` 不计。
+    - git 版本:隔离传输的对象库路径解析在 `--git-path objects` 返回相对路径与绝对路径两种情况下都正确(桩)。
+13. **v1.3 source 单引号与 pragma 前缀**:
+    - 参数化:前缀 `0xFFFF'FFFF` / `1'000` / `0b1010'1010` / `#if 0` 块中的 `don't`,分别乘以新增 `#pragma GCC diagnostic ignored "-Wall"`、`#pragma GCC system_header`、`__pragma(x)`、`#pragma clang diagnostic ignored "-Wunused-variable"`,前三种 forbidden,第四种 allowed 且 final=suppress;
+    - 同一行内 `0xFF'FF; _Pragma("GCC system_header")` → forbidden;
+    - BOM、`%:pragma`、`\v`、`\f` 前缀的 `system_header` → forbidden;
+    - 对照:`char c = '\'';`、注释与字符串中的同样文本 → 零 hit。
+14. **v1.3 符号链接**:
+    - `AUTHORS.md -> CMakeLists.txt`,经 `AUTHORS.md` 新增 `add_compile_options(-w)` → forbidden;
+    - 两个别名在编辑前区间重叠 → `alias_overlap`,forbidden;
+    - 同类别别名、真正的文档修改 → 按真实文件正常判定。
+15. **跨模块等价**:同一 edit_spec 分别经 `edit_spec_guard` 定位与经 suppress_policy 重建,得到的替换区间逐字相等。
+16. **规则版本**:`rules_version == "p5-policy/v2"`。
 
 ### 6.2 gate_view 与只读查询
 
@@ -824,6 +908,18 @@ P5 不调用任何释放 API。成功后三份副本的保护标记全部保持(
     同时断言 sandbox-submit 的 HELD 路径不会走到这个分支,即第 5、13、14、17 例的 HELD 行都已真正提交。
 26. **stdout 快照**:8 种 action 各一份。
 27. **P5-C4-01 配置来源**:全新仓库带全部 `-c` 覆盖时通过;本地设置 `core.fsmonitor` 或 `credential.helper` 仍拒绝;`include.path` 引入含 `core.sshCommand` 的文件拒绝;包装模拟 git 2.25 时拒绝。
+28. **v1.3 隔离传输**(每例断言预期远端与另一个裸仓库的 ref 变化,并断言非 sandbox ref 不出现):
+    - TOCTOU 之后、第 13 步第 0 项之前(桩),以及第 13 步推送之前(桩),分别在主副本新增 `remote.<remote 字符串>.url`、`remote.<remote 字符串>.pushurl` 指向另一个裸仓库 → 推送仍只写到预期远端;
+    - 传输仓库的 alternates 指向主副本对象库,`cat-file -e` 能看到 derived;把主副本对象库路径改坏(桩)→ exit 5,push 调用 0 次;
+    - 运行结束后 `.transport/` 不存在;预置一个残留的 `.transport/`(含伪造 config)→ 被删除重建,伪造 config 不生效;
+    - sha256 对象格式的主副本(若本机 git 支持)→ 传输仓库格式相同,推送成功。
+29. **v1.3 TOCTOU**:
+    - 首次聚合后、TOCTOU 前,把某条 verification 的 `worktree_path` 改到另一份 tree 与保护标记都相同的副本 → HELD(`verification_mismatch`),arch 为该副本,push 调用 0 次;删除该项检查的变异必须使本例失败;
+    - TOCTOU 中 `evaluate` 抛 `PolicyInputError`(桩)→ HELD(`edit_spec_rebind_mismatch`);
+    - 读事务只覆盖第 1、2、3、6 项:在第 4 项执行期间用另一连接写入一条事件(桩),断言写入成功且 TOCTOU 结论不变。
+30. **v1.3 意外异常**:分别在 POLICY、DERIVE、PUSH 事件写入与 HELD 状态写入时注入 `sqlite3.OperationalError`(桩),以及注入 `CampaignStateBusy`:
+    - 断言 stdout 为一份字段集合固定的 JSON,exit 码与 error_code 符合 4.1,锁已释放;
+    - 推送成功后、PUSH 记账前注入异常:不出现 PUSH(failed);重跑补账,Change-Id 不变。
 
 ### 6.4 移交加固
 
@@ -930,6 +1026,20 @@ C0 完成后运行既有设计文档检查器,零问题方可继续。
 
 ---
 
+### A.3 v1.3 追加同步(修复提交照录,design.md 升 v1.5.21)
+
+在 design.md §4.4 末尾追加以下四条(原文照录):
+
+> 21. sandbox-submit 的 ls-remote 与 push 只在每次新建的隔离传输裸仓库中执行;该仓库经 alternates 读取主副本对象,不继承主副本的配置、hook 与远端定义(P5 设计文件第 4.4 节)。
+> 22. 新增错误码 `INTERNAL_ERROR`:sandbox-submit 遇到意外异常时由 CLI 层统一输出,exit 5,不写数据库。
+> 23. suppress policy 规则版本升为 `p5-policy/v2`:cmake 选项与段关键字按 CMake 参数值识别(含转义、续行、列表展开),生成器表达式须为完整表达式、输出部分递归检查、计算型与未列名表达式判 forbidden;源码中数字分隔符与游离单引号不再屏蔽后续文本;pragma 前缀识别 BOM、二合字母与 `\v` `\f`;文件分类按符号链接解析后的真实路径。
+> 24. 已有 `p5-policy/v1` POLICY 事件的未推送单元,重跑时若结论变化按第 12 条挂起,须人工重置。
+
+§4.3 错误码表再增加一行:`INTERNAL_ERROR  sandbox-submit 意外异常的统一出口,exit 5,不写数据库(v1.5.21)`。
+§0 元信息版本行改为 v1.5.21-FROZEN,变更记录追加一行指向 §4.4 第 21–24 条。设计文档检查器须 0 problem。
+
+---
+
 ## 附录 B:v1.0 → v1.1 修改记录(第一轮评审;表中步骤编号为 v1.1 编号)
 
 按严重程度排列。"来源"中:GPT = ChatGPT,CC = Claude Code,K = Kimi。
@@ -985,3 +1095,30 @@ C0 完成后运行既有设计文档检查器,零问题方可继续。
 | 建议 | 用例同步:第二轮各发现均有对应用例,包括退化守卫(跳过配置检查后标记文件仍不存在,证明环境覆盖本身有效) | 三家 | 采用 |
 
 v1.1 → v1.2 之后不再安排第三轮评审:两轮已用满轻量流程的上限,第二轮各发现都局限在已重写的段落内,不涉及流程骨架。
+
+## 附录 D:v1.2 → v1.3 修改记录(代码评审)
+
+评审方:Claude Code、ChatGPT。两家结论均为"需修改"。按严重程度排列。
+
+| 级别 | 修改 | 来源 | 采纳说明 |
+|---|---|---|---|
+| 阻断 | 源码中 `0xFFFF'FFFF` 这类数字分隔符被当成字符字面量开头,之后直到下一个单引号的全部文本被屏蔽,其中的 pragma 全部漏检(实测 `system_header` 被放行)。改为识别数字分隔符;找不到同行配对的单引号视为游离字符,只屏蔽自身(2.3) | CC | 采用 CC 的"同行闭合"方案,另加数字分隔符的显式识别。仅用同行闭合时,同一行内的 `0xFF'FF; _Pragma(...)` 仍会被屏蔽 |
+| 阻断 | pragma 前缀只认空格与 tab,BOM、`%:`、`\v`、`\f` 开头的 `system_header` 被放行(GPT 已用 GCC 实测)(2.3、2.4) | GPT | 采用 GPT 方案;三合字母不处理,写入已知限制 |
+| 阻断 | cmake 选项在原始文本上扫描,与"按值识别"的设计不一致:引号内续行、`\-` 转义、未加引号参数的 `;` 列表展开、括号参数开头换行都能绕过(2.3) | GPT | 采用"在值上识别"的方案,这本来就是 v1.2 的设计要求,实现偏离。计算型生成器表达式新设 `cmake_genex_unparsed`(forbidden)。GPT 提议"能确定则求值",不采用:条件类表达式照常按值识别,计算型一律禁止,更简单,误杀面可控 |
+| 阻断 | 文件按 edit 中书写的路径分类,`AUTHORS.md -> CMakeLists.txt` 的别名可以把 cmake 修改伪装成文档修改(2.2) | GPT | 采用:按真实路径分类与归组;跨别名重叠新设 `alias_overlap`(forbidden),不抛输入错误,避免把单元挂成 `edit_spec_rebind_mismatch` |
+| 阻断 | TOCTOU 之后在主副本新增一个名字等于远端地址字符串的具名远端,push 会写到别的仓库(GPT 实测)。改为 ls-remote 与 push 只在每次新建的隔离裸仓库中执行,经 alternates 读对象(4.4) | GPT | 采纳 GPT"隔离传输"的方向。具体机制用 alternates 而非复制对象:不需要 `uploadpack.allowAnySHA1InWant`,也不读取主副本配置。原有远端地址检查保留作纵深防御 |
+| 重要 | 意外异常(数据库错误等)逃出 CLI,没有 JSON 与规范退出码。CLI 层统一捕获,新增 `INTERNAL_ERROR`(exit 5),不写数据库(4.1) | GPT、CC | GPT 定为 exit 5,CC 定为 exit 4。取 exit 5:属可重试的运行故障,与"推送失败"同类;不补写 PUSH(failed)(GPT 的提醒) |
+| 重要 | TOCTOU 中"记录的副本路径与架构"一项被删除后测试仍全绿(GPT 变异实测)。补用例(6.3 第 29 条) | GPT | 采用 |
+| 次要 | TOCTOU 读事务内运行 git、policy 与派生;改为只把 4 项数据库读取放进读事务(4.3 第 12 步) | CC | 采用;顺序改为 1、2、3、6 在事务内,其余在事务后 |
+| 建议 | TOCTOU 中 `PolicyInputError` 的挂起原因与第 6 步不一致,统一为 `edit_spec_rebind_mismatch` | CC | 采用 |
+| 建议 | 跨命令变量拼接出的选项写入已知限制;私有函数复用加一条跨模块等价用例 | CC | 采用 |
+| 建议 | 规则版本升为 `p5-policy/v2`;已有 v1 POLICY 的未推送单元按既有规则处理 | 自补 | 规则行为有变化,按 §1 必须升版本 |
+
+第 2、3、4 节中 sandbox 主流程、gate_view、C1 加固,两家均为零发现(除上表各项)。
+
+**v1.3.1 补充(实施前停止报告的裁定)**
+
+| 级别 | 修改 | 来源 | 采纳说明 |
+|---|---|---|---|
+| 阻断 | 条件类生成器表达式与普通文本在同一参数内拼接(如 `"-$<1:w>"` 生成 `-w`),v1.3 仍会漏检。改为"整体规则":含生成器表达式的元素必须恰好是一个完整表达式;输出部分递归检查;未列出的表达式名一律禁止(2.3) | ChatGPT | 采纳其"不得仅因名称豁免"的方向,具体化为"整体 + 递归 + 名单外禁止"三条可执行规则;保留 `$<$<C_COMPILER_ID:Clang>:-Wno-x>` 这一 GCC/Clang 兼容写法的允许对照 |
+| 次要 | 隔离传输取对象库路径用了 `--path-format=absolute`(git 2.31 起),与配置安全检查的下限 2.26 不一致,会使 2.26–2.30 上每次推送失败。改用版本无关的 `--git-path objects` 并自行解析为绝对路径(4.4) | Claude Code | 采用其候选甲:保持 2.26 下限,不提高环境要求 |
