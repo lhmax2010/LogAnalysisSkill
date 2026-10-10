@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from dataclasses import asdict
 from pathlib import Path
 
@@ -43,6 +44,121 @@ def _whole(repo, file, before, after):
 
 def _evaluate(repo, after, file="CMakeLists.txt", before="# baseline\n", source="generated"):
     return evaluate(_spec([_whole(repo, file, before, after)]), repo, source)
+
+
+def test_review2_cmake_2000_commands(repo):
+    text = "".join(
+        f"target_compile_options(target_{index} PRIVATE -Wno-unused-variable)\n"
+        for index in range(2000)
+    )
+    spec = _spec([_whole(repo, "CMakeLists.txt", "# baseline\n", text)])
+    start = time.perf_counter()
+    result = evaluate(spec, repo, "generated")
+    elapsed = time.perf_counter() - start
+    print(f"commands=2000 elapsed_seconds={elapsed:.6f} hits={result.hits!r}")
+    assert result.verdict == "allowed" and result.fix_strategy_final == "suppress"
+    assert result.hits == (
+        PolicyHit(
+            0,
+            "CMakeLists.txt",
+            "wno_flag",
+            "-Wno-unused-variable",
+            "target_private",
+            "suppress",
+            2000,
+        ),
+    )
+    assert elapsed < 5
+
+
+@pytest.mark.parametrize("depth", [64, 65, 2000])
+def test_review2_genex_depth(repo, depth):
+    expression = "$<1:" * depth + "-Wno-x" + ">" * depth
+    result = _evaluate(repo, f'target_compile_options(t PRIVATE "{expression}")\n')
+    if depth == 64:
+        assert (result.verdict, result.fix_strategy_final) == ("allowed", "suppress")
+        assert result.hits == (
+            PolicyHit(0, "CMakeLists.txt", "wno_flag", "-Wno-x", "target_private", "suppress", 1),
+        )
+    else:
+        assert result.verdict == "forbidden" and result.fix_strategy_final is None
+        assert len(result.hits) == 1
+        assert result.hits[0].kind == "cmake_genex_unparsed"
+        with pytest.raises(ValueError, match="^generator expression too deep$"):
+            policy_module._genex_outputs(expression, frozenset())
+
+
+@pytest.mark.parametrize("depth", [65, 2000])
+def test_review2_genex_deep_cli(repo, depth):
+    expression = "$<1:" * depth + "-Wno-x" + ">" * depth
+    spec = _spec(
+        [
+            _whole(
+                repo,
+                "CMakeLists.txt",
+                "# baseline\n",
+                f'target_compile_options(t PRIVATE "{expression}")\n',
+            )
+        ]
+    )
+    path = repo / "edit.json"
+    path.write_text(json.dumps(spec))
+    root = Path(__file__).resolve().parents[2]
+    env = dict(
+        os.environ, PYTHONPATH=os.pathsep.join(str(p) for p in sorted(root.glob("*/scripts")))
+    )
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "ci_triage",
+            "suppress-policy",
+            "check",
+            "--edit-spec",
+            str(path),
+            "--src-root",
+            str(repo),
+        ],
+        env=env,
+        text=True,
+        capture_output=True,
+        timeout=30,
+    )
+    assert result.returncode == 4
+    payload = json.loads(result.stdout)
+    assert payload["verdict"] == "forbidden"
+    assert len(payload["hits"]) == 1 and payload["hits"][0]["kind"] == "cmake_genex_unparsed"
+    assert result.stderr == "REJECTED_SUPPRESS_POLICY\n"
+
+
+def test_review2_genex_recursion_error_fails_closed(repo, monkeypatch):
+    def recursive(*args, **kwargs):
+        raise RecursionError("fixture recursion limit")
+
+    monkeypatch.setattr(policy_module, "_genex_outputs", recursive)
+    spec = _spec(
+        [
+            _whole(
+                repo,
+                "CMakeLists.txt",
+                "# baseline\n",
+                "target_compile_options(t PRIVATE $<1:-Wno-x>)\n",
+            )
+        ]
+    )
+    path = repo / "edit.json"
+    path.write_text(json.dumps(spec))
+    stdout, stderr = io.StringIO(), io.StringIO()
+    code = main(
+        ["suppress-policy", "check", "--edit-spec", str(path), "--src-root", str(repo)],
+        stdout=stdout,
+        stderr=stderr,
+    )
+    assert code == 4
+    result = json.loads(stdout.getvalue())
+    assert result["verdict"] == "forbidden"
+    assert result["hits"] and all(hit["kind"] == "cmake_genex_unparsed" for hit in result["hits"])
+    assert stderr.getvalue() == "REJECTED_SUPPRESS_POLICY\n"
 
 
 @pytest.mark.parametrize(

@@ -832,7 +832,15 @@ def _transport(s: SubmitSnapshot, unit_root: Path) -> Iterator[Path]:
                 shutil.rmtree(path)
             source = s.derive_inputs.worktree
             object_format = s.git.run(source, "rev-parse", "--show-object-format").stdout.strip()
-            s.git.run(None, "init", "--bare", f"--object-format={object_format}", str(path))
+            if object_format not in {"sha1", "sha256"}:
+                raise ValueError("unsupported object format")
+            format_args = ("--object-format=sha256",) if object_format == "sha256" else ()
+            s.git.run(None, "init", "--bare", *format_args, str(path))
+            transport_format = s.git.run(
+                None, "rev-parse", "--show-object-format", git_dir=path
+            ).stdout.strip()
+            if transport_format != object_format:
+                raise ValueError("transport object format mismatch")
             objects = Path(s.git.run(source, "rev-parse", "--git-path", "objects").stdout.strip())
             objects = (source / objects).resolve()
             (path / "objects/info/alternates").write_text(str(objects) + "\n", encoding="utf-8")

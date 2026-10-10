@@ -1,0 +1,3209 @@
+commands=2000 elapsed_seconds=1.334396 hits=(PolicyHit(edit_index=0, file='CMakeLists.txt', kind='wno_flag', token='-Wno-unused-variable', scope='target_private', rule='suppress', count=2000),)
+..FFFFFFFF
+=================================== FAILURES ===================================
+_________________________ test_review2_genex_depth[65] _________________________
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-113/test_review2_genex_depth_65_0')
+depth = 65
+
+    @pytest.mark.parametrize("depth", [64, 65, 2000])
+    def test_review2_genex_depth(repo, depth):
+        expression = "$<1:" * depth + "-Wno-x" + ">" * depth
+        result = _evaluate(repo, f'target_compile_options(t PRIVATE "{expression}")\n')
+        if depth == 64:
+            assert (result.verdict, result.fix_strategy_final) == ("allowed", "suppress")
+            assert result.hits == (
+                PolicyHit(0, "CMakeLists.txt", "wno_flag", "-Wno-x", "target_private", "suppress", 1),
+            )
+        else:
+>           assert result.verdict == "forbidden" and result.fix_strategy_final is None
+E           AssertionError: assert ('allowed' == 'forbidden'
+E             
+E             - forbidden
+E             + allowed)
+
+tests/unit/test_suppress_policy.py:84: AssertionError
+________________________ test_review2_genex_depth[2000] ________________________
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-113/test_review2_genex_depth_2000_0')
+depth = 2000
+
+    @pytest.mark.parametrize("depth", [64, 65, 2000])
+    def test_review2_genex_depth(repo, depth):
+        expression = "$<1:" * depth + "-Wno-x" + ">" * depth
+>       result = _evaluate(repo, f'target_compile_options(t PRIVATE "{expression}")\n')
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_suppress_policy.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_suppress_policy.py:46: in _evaluate
+    return evaluate(_spec([_whole(repo, file, before, after)]), repo, source)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:762: in evaluate
+    for hit in _file_hits(
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:654: in _file_hits
+    old, new = _instances(before, category), _instances(after, category)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:577: in _instances
+    return _cmake_instances(text)
+           ^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:401: in _cmake_instances
+    values = _genex_outputs(arg.value, arg.escaped_semicolons)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:387: in _genex_outputs
+    for output in _genex_outputs(*element)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:386: in _genex_outputs
+    for element in _list_elements(*part)
+                   ^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:200: in _list_elements
+    _value_slice(value, escaped, left + 1, right)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = '$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$<1:$...>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+escaped = frozenset(), start = 0, end = 5206
+
+    def _value_slice(
+        value: str,
+        escaped: frozenset[int],
+        start: int,
+        end: int,
+    ) -> tuple[str, frozenset[int]]:
+>       return value[start:end], frozenset(i - start for i in escaped if start <= i < end)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded
+
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:194: RecursionError
+_______________________ test_review2_genex_deep_cli[65] ________________________
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-113/test_review2_genex_deep_cli_650')
+depth = 65
+
+    @pytest.mark.parametrize("depth", [65, 2000])
+    def test_review2_genex_deep_cli(repo, depth):
+        expression = "$<1:" * depth + "-Wno-x" + ">" * depth
+        spec = _spec(
+            [
+                _whole(
+                    repo,
+                    "CMakeLists.txt",
+                    "# baseline\n",
+                    f'target_compile_options(t PRIVATE "{expression}")\n',
+                )
+            ]
+        )
+        path = repo / "edit.json"
+        path.write_text(json.dumps(spec))
+        root = Path(__file__).resolve().parents[2]
+        env = dict(
+            os.environ, PYTHONPATH=os.pathsep.join(str(p) for p in sorted(root.glob("*/scripts")))
+        )
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "ci_triage",
+                "suppress-policy",
+                "check",
+                "--edit-spec",
+                str(path),
+                "--src-root",
+                str(repo),
+            ],
+            env=env,
+            text=True,
+            capture_output=True,
+            timeout=30,
+        )
+>       assert result.returncode == 4
+E       assert 0 == 4
+E        +  where 0 = CompletedProcess(args=['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '-m', 'ci_triage', 'sup..., "scope": "target_private", "token": "-Wno-x"}], "rules_version": "p5-policy/v2", "verdict": "allowed"}\n', stderr='').returncode
+
+tests/unit/test_suppress_policy.py:127: AssertionError
+______________________ test_review2_genex_deep_cli[2000] _______________________
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-113/test_review2_genex_deep_cli_200')
+depth = 2000
+
+    @pytest.mark.parametrize("depth", [65, 2000])
+    def test_review2_genex_deep_cli(repo, depth):
+        expression = "$<1:" * depth + "-Wno-x" + ">" * depth
+        spec = _spec(
+            [
+                _whole(
+                    repo,
+                    "CMakeLists.txt",
+                    "# baseline\n",
+                    f'target_compile_options(t PRIVATE "{expression}")\n',
+                )
+            ]
+        )
+        path = repo / "edit.json"
+        path.write_text(json.dumps(spec))
+        root = Path(__file__).resolve().parents[2]
+        env = dict(
+            os.environ, PYTHONPATH=os.pathsep.join(str(p) for p in sorted(root.glob("*/scripts")))
+        )
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "ci_triage",
+                "suppress-policy",
+                "check",
+                "--edit-spec",
+                str(path),
+                "--src-root",
+                str(repo),
+            ],
+            env=env,
+            text=True,
+            capture_output=True,
+            timeout=30,
+        )
+>       assert result.returncode == 4
+E       AssertionError: assert 1 == 4
+E        +  where 1 = CompletedProcess(args=['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '-m', 'ci_triage', 'sup...                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRecursionError: maximum recursion depth exceeded\n').returncode
+
+tests/unit/test_suppress_policy.py:127: AssertionError
+_______________ test_review2_genex_recursion_error_fails_closed ________________
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-113/test_review2_genex_recursion_e0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bb921d61f40>
+
+    def test_review2_genex_recursion_error_fails_closed(repo, monkeypatch):
+        def recursive(*args, **kwargs):
+            raise RecursionError("fixture recursion limit")
+    
+        monkeypatch.setattr(policy_module, "_genex_outputs", recursive)
+        spec = _spec(
+            [
+                _whole(
+                    repo,
+                    "CMakeLists.txt",
+                    "# baseline\n",
+                    "target_compile_options(t PRIVATE $<1:-Wno-x>)\n",
+                )
+            ]
+        )
+        path = repo / "edit.json"
+        path.write_text(json.dumps(spec))
+        stdout, stderr = io.StringIO(), io.StringIO()
+>       code = main(
+            ["suppress-policy", "check", "--edit-spec", str(path), "--src-root", str(repo)],
+            stdout=stdout,
+            stderr=stderr,
+        )
+
+tests/unit/test_suppress_policy.py:152: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-ci-triage/scripts/ci_triage/cli.py:200: in main
+    return _main_suppress_policy(argv[1:], stdout=stdout, stderr=stderr)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/cli.py:448: in _main_suppress_policy
+    result = evaluate(
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:762: in evaluate
+    for hit in _file_hits(
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:654: in _file_hits
+    old, new = _instances(before, category), _instances(after, category)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:577: in _instances
+    return _cmake_instances(text)
+           ^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/suppress_policy.py:401: in _cmake_instances
+    values = _genex_outputs(arg.value, arg.escaped_semicolons)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = ('target_compile_options', frozenset()), kwargs = {}
+
+    def recursive(*args, **kwargs):
+>       raise RecursionError("fixture recursion limit")
+E       RecursionError: fixture recursion limit
+
+tests/unit/test_suppress_policy.py:136: RecursionError
+_______________ test_review2_transport_sha1_omits_object_format ________________
+
+campaign = <test_sandbox_submit.Campaign object at 0x7bb922044ef0>
+
+    def test_review2_transport_sha1_omits_object_format(campaign):
+        c = campaign
+        result = c.run()
+        assert result.exit_code == 0 and result.payload["action"] == "pushed"
+        init_calls = [call for call in c.calls if "init" in call]
+>       assert len(init_calls) == 1
+E       AssertionError: assert 3 == 1
+E        +  where 3 = len([['git', 'init', '-q'], ['git', 'commit', '--allow-empty', '-q', '-m', 'init'], ['git', '-c', 'core.hooksPath=/dev/null', '-c', 'core.fsmonitor=false', '-c', ...]])
+
+tests/unit/test_sandbox_submit.py:365: AssertionError
+_ test_review2_transport_format_rejects[sha1-sha256-transport object format mismatch] _
+
+campaign = <test_sandbox_submit.Campaign object at 0x7bb921d59e80>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bb922f8a600>
+source_format = 'sha1', transport_format = 'sha256'
+reason = 'transport object format mismatch'
+
+    @pytest.mark.parametrize(
+        "source_format,transport_format,reason",
+        [
+            ("sha1", "sha256", "transport object format mismatch"),
+            ("unsupported", None, "unsupported object format"),
+        ],
+    )
+    def test_review2_transport_format_rejects(
+        campaign, monkeypatch, source_format, transport_format, reason
+    ):
+        c = campaign
+        original = submit.SandboxGit.run
+        observed = []
+    
+        def run(self, cwd, *args, **kwargs):
+            if args == ("rev-parse", "--show-object-format"):
+                if kwargs.get("git_dir") is not None:
+                    path = kwargs["git_dir"]
+                    assert path.is_dir()
+                    observed.append("transport")
+                    value = transport_format
+                else:
+                    assert cwd == c.copies[0]
+                    observed.append("source")
+                    value = source_format
+                return subprocess.CompletedProcess(args, 0, value + "\n", "")
+            return original(self, cwd, *args, **kwargs)
+    
+        monkeypatch.setattr(submit.SandboxGit, "run", run)
+        result = c.run()
+>       assert result.exit_code == 5 and result.payload["error_code"] == "PUSH_FAILED"
+E       AssertionError: assert (0 == 5)
+E        +  where 0 = SandboxSubmitOutcome(exit_code=0, payload={'action': 'pushed', 'status': 'SANDBOX_PUSHED', 'aggregate': {'ok': True, '...d': {'reason': None, 'arch_norm': None, 'scope': None}, 'surviving_worktrees': [], 'error_code': None, 'reason': None}).exit_code
+
+tests/unit/test_sandbox_submit.py:404: AssertionError
+_ test_review2_transport_format_rejects[unsupported-None-unsupported object format] _
+
+campaign = <test_sandbox_submit.Campaign object at 0x7bb922f895e0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7bb922f88cb0>
+source_format = 'unsupported', transport_format = None
+reason = 'unsupported object format'
+
+    @pytest.mark.parametrize(
+        "source_format,transport_format,reason",
+        [
+            ("sha1", "sha256", "transport object format mismatch"),
+            ("unsupported", None, "unsupported object format"),
+        ],
+    )
+    def test_review2_transport_format_rejects(
+        campaign, monkeypatch, source_format, transport_format, reason
+    ):
+        c = campaign
+        original = submit.SandboxGit.run
+        observed = []
+    
+        def run(self, cwd, *args, **kwargs):
+            if args == ("rev-parse", "--show-object-format"):
+                if kwargs.get("git_dir") is not None:
+                    path = kwargs["git_dir"]
+                    assert path.is_dir()
+                    observed.append("transport")
+                    value = transport_format
+                else:
+                    assert cwd == c.copies[0]
+                    observed.append("source")
+                    value = source_format
+                return subprocess.CompletedProcess(args, 0, value + "\n", "")
+            return original(self, cwd, *args, **kwargs)
+    
+        monkeypatch.setattr(submit.SandboxGit, "run", run)
+        result = c.run()
+        assert result.exit_code == 5 and result.payload["error_code"] == "PUSH_FAILED"
+>       assert result.payload["reason"] == reason
+E       assert "Command '['g...t status 128." == 'unsupported object format'
+E         
+E         - unsupported object format
+E         + Command '['git', '-c', 'core.hooksPath=/dev/null', '-c', 'core.fsmonitor=false', '-c', 'core.askPass=', '-c', 'credential.helper=', '-c', 'push.followTags=false', '-c', 'push.recurseSubmodules=no', '-c', 'push.gpgSign=false', '-c', 'push.pushOption=', 'init', '--bare', '--object-format=unsupported', '/tmp/pytest-of-linhao/pytest-113/test_review2_transport_format_1/workspace/a541f06e0299/.transport']' returned non-zero exit status 128.
+
+tests/unit/test_sandbox_submit.py:405: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_suppress_policy.py::test_review2_genex_depth[65] - Ass...
+FAILED tests/unit/test_suppress_policy.py::test_review2_genex_depth[2000] - R...
+FAILED tests/unit/test_suppress_policy.py::test_review2_genex_deep_cli[65] - ...
+FAILED tests/unit/test_suppress_policy.py::test_review2_genex_deep_cli[2000]
+FAILED tests/unit/test_suppress_policy.py::test_review2_genex_recursion_error_fails_closed
+FAILED tests/unit/test_sandbox_submit.py::test_review2_transport_sha1_omits_object_format
+FAILED tests/unit/test_sandbox_submit.py::test_review2_transport_format_rejects[sha1-sha256-transport object format mismatch]
+FAILED tests/unit/test_sandbox_submit.py::test_review2_transport_format_rejects[unsupported-None-unsupported object format]
+8 failed, 2 passed, 365 deselected in 5.70s

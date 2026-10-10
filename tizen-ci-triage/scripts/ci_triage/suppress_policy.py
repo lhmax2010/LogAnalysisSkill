@@ -342,9 +342,12 @@ def _top_separators(value: str, separator: str) -> list[int]:
     return result
 
 
-def _genex_outputs(value: str, escaped: frozenset[int]) -> list[str]:
+def _genex_outputs(value: str, escaped: frozenset[int], *, depth: int = 0) -> list[str]:
     if "$<" not in value:
         return [value]
+    depth += 1
+    if depth > 64:
+        raise ValueError("generator expression too deep")
     if not value.startswith("$<") or not value.endswith(">"):
         raise ValueError("generator expression concatenation")
     body, protected = _value_slice(value, escaped, 2, len(value) - 1)
@@ -359,7 +362,7 @@ def _genex_outputs(value: str, escaped: frozenset[int]) -> list[str]:
     )
     if name in {"0", "1"} or name.startswith("$<"):
         if name.startswith("$<"):
-            _genex_outputs(name, frozenset())
+            _genex_outputs(name, frozenset(), depth=depth)
         outputs = [(payload, protected)]
     elif name == "IF" or boolean:
         separators = [-1] + _top_separators(payload, ",") + [len(payload)]
@@ -370,11 +373,11 @@ def _genex_outputs(value: str, escaped: frozenset[int]) -> list[str]:
         if name == "IF":
             if len(parts) != 3:
                 raise ValueError("invalid IF generator expression")
-            _genex_outputs(*parts[0])
+            _genex_outputs(*parts[0], depth=depth)
             outputs = parts[1:]
         else:
             for part in parts:
-                _genex_outputs(*part)
+                _genex_outputs(*part, depth=depth)
             return []
     elif name in {"BUILD_INTERFACE", "INSTALL_INTERFACE"}:
         outputs = [(payload, protected)]
@@ -384,22 +387,23 @@ def _genex_outputs(value: str, escaped: frozenset[int]) -> list[str]:
         output
         for part in outputs
         for element in _list_elements(*part)
-        for output in _genex_outputs(*element)
+        for output in _genex_outputs(*element, depth=depth)
     ]
 
 
 def _cmake_instances(text: str) -> list[_Instance]:
     arguments, commands = _cmake(text)
+    command_by_argument = {id(arg): cmd for cmd in commands for arg in cmd.arguments}
     result = []
     for arg in arguments:
         if arg.punctuation:
             continue
-        command = next((cmd for cmd in commands if any(a is arg for a in cmd.arguments)), None)
+        command = command_by_argument.get(id(arg))
         start, end = (command.start, command.end) if command else (arg.start, arg.end)
         scope = _cmake_scope(command, arg)
         try:
             values = _genex_outputs(arg.value, arg.escaped_semicolons)
-        except ValueError:
+        except (ValueError, RecursionError):
             result.append(_Instance("cmake_genex_unparsed", arg.value, scope, start, end))
             continue
         for value in values:

@@ -357,6 +357,58 @@ def test_review_transport_cleanup_warning_does_not_change_result(campaign, monke
     assert not path.exists()
 
 
+def test_review2_transport_sha1_omits_object_format(campaign):
+    c = campaign
+    result = c.run()
+    assert result.exit_code == 0 and result.payload["action"] == "pushed"
+    init_calls = [call for call in c.calls if "init" in call and "--bare" in call]
+    assert len(init_calls) == 1
+    assert not any(arg.startswith("--object-format") for arg in init_calls[0])
+    assert (
+        git(c.remote, "rev-parse", "refs/heads/sandbox/test")
+        == (result.payload["derived_commit_sha"])
+    )
+    assert not (c.unit_root / ".transport").exists()
+
+
+@pytest.mark.parametrize(
+    "source_format,transport_format,reason",
+    [
+        ("sha1", "sha256", "transport object format mismatch"),
+        ("unsupported", None, "unsupported object format"),
+    ],
+)
+def test_review2_transport_format_rejects(
+    campaign, monkeypatch, source_format, transport_format, reason
+):
+    c = campaign
+    original = submit.SandboxGit.run
+    observed = []
+
+    def run(self, cwd, *args, **kwargs):
+        if args == ("rev-parse", "--show-object-format"):
+            if kwargs.get("git_dir") is not None:
+                path = kwargs["git_dir"]
+                assert path.is_dir()
+                observed.append("transport")
+                value = transport_format
+            else:
+                assert cwd == c.copies[0]
+                observed.append("source")
+                value = source_format
+            return subprocess.CompletedProcess(args, 0, value + "\n", "")
+        return original(self, cwd, *args, **kwargs)
+
+    monkeypatch.setattr(submit.SandboxGit, "run", run)
+    result = c.run()
+    assert result.exit_code == 5 and result.payload["error_code"] == "PUSH_FAILED"
+    assert result.payload["reason"] == reason
+    assert observed == (["source", "transport"] if transport_format else ["source"])
+    assert not c.pushes() and git(c.remote, "for-each-ref") == ""
+    assert not (c.unit_root / ".transport").exists()
+    assert json.loads(c.events()[-1][1])["result"] == "failed"
+
+
 def test_review_transport_sha256(tmp_path, monkeypatch):
     probe = subprocess.run(
         ["git", "init", "--bare", "--object-format=sha256", str(tmp_path / "probe")],

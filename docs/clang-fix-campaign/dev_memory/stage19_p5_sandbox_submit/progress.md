@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-10。状态:**READY_FOR_REVIEW**。文档同步c71aa3c、代码修复f9a6bc5已推送且CI成功;P5-D-02已闭合,新基线1927 passed/1 skipped。未自行标CLOSED。
+日期:2026-10-10。状态:**REVIEW_ROUND2_IN_PROGRESS**。第一轮修复与收口已推送;第二轮按设计方三条裁定实施,基线1927 passed/1 skipped。未自行标CLOSED。
 
 ## 1. 权威、批准与基线
 
@@ -1093,3 +1093,108 @@ exit=0
 [review-closeout/commands.json](evidence/review-closeout/commands.json)、同目录log/xml;
 [review-closeout-comparison.json](evidence/review-closeout-comparison.json)记录基线逐项比较。
 本次收口提交仅文档/证据,源码与测试零diff;推送后核验该提交CI并在交付回报给链接。
+
+## 19. 代码评审第二轮
+
+### 裁定与范围
+
+Claude Code可签收(一次要、一建议),ChatGPT需修改(一重要)。设计方按轻量流程
+直接裁定下列三条,不改设计规则,不修改冻结稿。代码评审两轮已用满,
+修复后由设计方核对签收,不自行标CLOSED、不追加第三轮代码评审。
+
+1. F1 git 2.26兼容:主副本sha1时init不传--object-format;sha256仅传
+   --object-format=sha256;其它值ValueError("unsupported object format")。
+   新传输仓库用--git-dir及rev-parse --show-object-format核对实际格式,
+   不等则ValueError("transport object format mismatch")。两错误经_TransportFailure,
+   清理目录且push=0。保留sha256用例,新增sha1调用记录与不匹配控制。
+2. 2-1命令归属:先构造{id(参数): 命令}再查询,不改分类/计数。
+   2000条target_compile_options夹具evaluate<5秒,改前改后hit完全相同。
+3. 2-2嵌套深度:_genex_outputs显式depth,超过64层
+   ValueError("generator expression too deep");现有出口产生cmake_genex_unparsed,
+   调用处另兜底RecursionError。深度64正常、65/2000 forbidden;独立CLI不能traceback退出。
+
+生产范围仅sandbox_submit.py和suppress_policy.py,测试仅对应两文件。
+冻结稿SHA256前后必须保持:
+`83383877f6b8c0deac8606d29fec8a446c1e5520813e714f881855886f888d3b`。
+基线HEAD=e61b6f7,全量1927 passed/1 skipped;94门禁固定对照仍为cd7f8dd。
+提交顺序:代码/测试/本节证据 → 收口文档更新;逐个推送,各自核验CI。
+所有远端写入测试只使用本地临时裸仓库,不访问真实Gerrit。
+
+### 改前取证与定向验证
+
+使用同一批新增测试在原实现与修复实现上实跑,两测试文件的SHA相同。
+完整命令、源码/测试hash、stdout及逐case结果位于
+[review-round2/before](evidence/review-round2/before)与
+[review-round2/after](evidence/review-round2/after)。before-first为测试开发首轮留档,
+当时init筛选误含真实hook的临时仓库初始化及message="init",已加--bare限定,
+重跑before后sha1用例确实红于--object-format断言,不把测试自身错误当成修复证据。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2/run_targeted.py before .
+commands=2000 elapsed_seconds=1.356749 hits=(PolicyHit(edit_index=0, file='CMakeLists.txt', kind='wno_flag', token='-Wno-unused-variable', scope='target_private', rule='suppress', count=2000),)
+8 failed, 2 passed, 365 deselected in 5.59s
+pytest_exit=1
+recorder_exit=0
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2/run_targeted.py after .
+commands=2000 elapsed_seconds=0.051016 hits=(PolicyHit(edit_index=0, file='CMakeLists.txt', kind='wno_flag', token='-Wno-unused-variable', scope='target_private', rule='suppress', count=2000),)
+10 passed, 365 deselected in 1.26s
+pytest_exit=0
+recorder_exit=0
+same_test_source_sha256=PASS; same_hit_payload=PASS
+
+$ .venv/bin/python -m pytest tests/unit/test_suppress_policy.py tests/unit/test_sandbox_submit.py tests/unit/test_sandbox_git.py -q
+387 passed in 27.25s
+exit=0
+```
+
+性能测试改前已低于5秒,如实作为性能对照而非旧实现必红控制。
+保留完整hit字段/数量断言,不以耗时改善替代行为等价。深度按实际进入的生成器表达式
+计层,普通字符串叶节点不增加层数,覆盖所有递归分支。
+git兼容性证据是调用记录:sha1 init不带--object-format;本机非git 2.26二进制,
+不声称完成真实git 2.26环境实跑。
+
+完整验收前首次调度早于git worktree checkout完成,runner因缺C13R/commands.json
+退出1(未开始任何checker);等待worktree完成后重新复制四文件,再次启动全部94条。
+这是调度错误,未改门禁或降低判据;最终完整结果以下节为准。
+
+### 完整门禁与回归
+
+独立工作树`/tmp/p5-round2-code`基于e61b6f7,只复制本轮四个源码/测试文件及证据脚本。
+本机git version 2.43.0。新旧fixture比较、全命令argv/环境/exit、逐nodeid与原文均留档。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-round2-code docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-code
+pytest: exit=0 expected=0
+mypy: exit=0 expected=0
+ruff: exit=0 expected=0
+lint-imports: exit=0 expected=0
+symbol: exit=0 expected=0
+bridge: exit=0 expected=0
+design-doc: exit=0 expected=0
+completed=94 unexpected=3
+exit=0
+================== 1937 passed, 1 skipped in 65.66s (0:01:05) ==================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2-code /tmp/p5-round2-code
+exit_changes={}; missing_nodeids=[]; changed_outcomes={}
+added_nodeids=441; identical_tested_sources=4
+baseline_comparison=PASS
+exit=0
+round1_to_round2 old_nodeids=1928 new_nodeids=1938 added=10 missing=[] outcome_changes={} PASS
+exit=0
+```
+
+证据:[review-round2-code/commands.json](evidence/review-round2-code/commands.json)、
+[基线比较](evidence/review-round2-code-comparison.json)。原1928个nodeid及结果全部保留,
+新增10个case全绿。94条相对cd7f8dd无新增失败,仍为原3条历史异常,不改判据或期望。
+真实hook与保留的sha256用例本机均为PASSED:
+
+```text
+tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive PASSED [  3%]
+tests/unit/test_sandbox_submit.py::test_review_transport_sha256 PASSED   [ 46%]
+```
+
+冻结稿diff为空,实测SHA256仍为上述值。代码/Markdown的diff --check通过;
+失败log/xml保留pytest原始空白,不改证据。无新的规范缺口,无额外行为或安全边界裁决。
+推送后核验CI,在独立收口文档提交登记代码提交与结果;状态不自行CLOSED。

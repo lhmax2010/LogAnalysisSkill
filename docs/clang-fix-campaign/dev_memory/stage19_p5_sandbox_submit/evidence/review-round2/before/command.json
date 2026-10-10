@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/unit/test_suppress_policy.py",
+    "tests/unit/test_sandbox_submit.py",
+    "-q",
+    "-s",
+    "-k",
+    "review2",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-round2/before/pytest.xml"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "PYTHONPATH": "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-build-verify/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-ci-shared/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-ci-triage/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-convergence-judge/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-build/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-build-workflow/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-log-analysis/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gbs-patch-suggest/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gerrit-fetch/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-gerrit-submit/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-discover/scripts:/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-triage-report/scripts",
+  "exit": 1,
+  "sha256": {
+    "tests/unit/test_suppress_policy.py": "125fe259d0fe863e4f09861cae274dacbfa341e338d42fb59fe3e963f677513d",
+    "tests/unit/test_sandbox_submit.py": "1edb07eb7d76a98cd0fa79de3e6d370cfbfcf84c231e525d46bbd3a423cffaad",
+    "tizen-ci-triage/scripts/ci_triage/suppress_policy.py": "98aebd58c65111c12d1af67fd6796217362b040864e21363d7e28740fa7c337a",
+    "tizen-ci-triage/scripts/ci_triage/sandbox_submit.py": "78aff2cfe58dc1fc055861401d07b4b815e5e36f993a9c2e86b5e5b60939a8cb"
+  }
+}
