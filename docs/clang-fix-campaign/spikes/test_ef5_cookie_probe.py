@@ -85,7 +85,7 @@ class CookieProbeTests(unittest.TestCase):
             '<script>var sessionId = "script-session-private-987654";</script>'
             '<a href="/log">Log</a><a href="/run">Run the configuration</a></html>'
         )
-        responses = [Response(body) for _ in range(5)] + [
+        responses = [Response(body) for _ in COOKIE_READ_PATHS] + [
             Response('<a href="../variables/1921">Variables</a>'), Response(),
         ]
         from tizen_ci_shared.quickbuild_http import load_cookie_jar
@@ -96,7 +96,7 @@ class CookieProbeTests(unittest.TestCase):
         load.assert_called_once_with(self.cookie_file)
         self.assertEqual(code, 0)
         self.assertEqual(run["cookie_file_mode"], "0644")
-        self.assertEqual(run["requests"], 7)
+        self.assertEqual(run["requests"], 8)
         self.assertEqual(run["post_requests"], 0)
         self.assertEqual(run["redaction_self_check"], "PASS")
         expected = [BASE + path for path in COOKIE_READ_PATHS]
@@ -129,11 +129,11 @@ class CookieProbeTests(unittest.TestCase):
     def test_crlf_response_is_verified_as_bytes_without_normalizing_newlines(self):
         body = "<html>\r\n<p>Successful</p>\r\n</html>\r\n"
         self.write_archive("<span>TRIGGER</span>")
-        responses = [Response(body) for _ in range(5)]
+        responses = [Response(body) for _ in COOKIE_READ_PATHS]
         with patch.object(self.probe.opener, "open", side_effect=responses):
             code, run = self.run_probe()
         self.assertEqual(code, 0)
-        self.assertEqual(run["requests"], 5)
+        self.assertEqual(run["requests"], 6)
         saved = (self.probe.output / "01.response.txt").read_bytes()
         self.assertEqual(saved, body.encode())
         self.assertEqual(self.probe.records[0]["redacted_sha256"],
@@ -159,18 +159,19 @@ class CookieProbeTests(unittest.TestCase):
                 )
                 self.assertEqual(item["decision"], "NOT_FOLLOWED")
         self.write_archive('<a href="../wicket/page?1-run">Configuration Overview</a>')
-        with patch.object(self.probe.opener, "open", side_effect=[Response() for _ in range(5)]) \
+        with patch.object(self.probe.opener, "open",
+                          side_effect=[Response() for _ in COOKIE_READ_PATHS]) \
                 as send:
             code, run = self.run_probe()
-        self.assertEqual((code, send.call_count), (0, 5))
+        self.assertEqual((code, send.call_count), (0, 6))
         self.assertEqual(run["configuration_links"][0]["decision"], "NOT_FOLLOWED")
 
     def test_variables_action_not_followed_and_no_path_guessed(self):
-        responses = [Response() for _ in range(5)]
+        responses = [Response() for _ in COOKIE_READ_PATHS]
         responses.append(Response('<a href="../wicket/page?1-variables">Variables</a>'))
         with patch.object(self.probe.opener, "open", side_effect=responses) as send:
             code, run = self.run_probe()
-        self.assertEqual((code, send.call_count), (0, 6))
+        self.assertEqual((code, send.call_count), (0, 7))
         self.assertEqual(run["configuration_links"][1]["decision"], "NOT_FOLLOWED")
 
     def test_missing_or_ambiguous_configuration_link_not_guessed(self):
@@ -274,10 +275,43 @@ class CookieProbeTests(unittest.TestCase):
 
     def test_archival_provenance_must_match(self):
         self.archive.write_text("tampered")
-        with patch.object(self.probe.opener, "open", side_effect=[Response() for _ in range(5)]):
+        with patch.object(self.probe.opener, "open",
+                          side_effect=[Response() for _ in COOKIE_READ_PATHS]):
             code, run = self.run_probe()
         self.assertEqual(code, 4)
         self.assertEqual(run["diagnostic"]["error_category"], "ARCHIVE_HASH_MISMATCH")
+
+    def test_second_run_exact_allowlist_and_iframe_external_links_never_followed(self):
+        self.assertEqual(COOKIE_READ_PATHS, (
+            "/build/1069540", "/build/1069540/overview", "/build/1069540/variables",
+            "/build/1069540/step_status", "/build/1069540/html_report",
+            "/build/1069532/step_status",
+        ))
+        body = (
+            f'<iframe src="https://download.tizen.org/report?session={SECRET}"></iframe>'
+            '<iframe src="/log"></iframe>'
+            '<a href="https://download.tizen.org/report">External report</a>'
+            '<a href="/build/1069540?2.ILinkListener-run">Run the configuration</a>'
+        )
+        self.write_archive("<span>TRIGGER</span>")
+        responses = [Response(body) for _ in COOKIE_READ_PATHS]
+        with patch.object(self.probe.opener, "open", side_effect=responses) as send:
+            code, run = self.run_probe()
+        self.assertEqual((code, send.call_count, run["post_requests"]), (0, 6, 0))
+        page = json.loads((self.probe.output / "05.page.json").read_text())
+        self.assertEqual(len(page["iframes"]), 2)
+        self.assertTrue(all(row["decision"] == "NOT_FOLLOWED" for row in page["iframes"]))
+        self.assertTrue(all(row["decision"] == "NOT_FOLLOWED" for row in page["links"]))
+
+    def test_other_configuration_is_not_authorized_by_an_ordinary_link(self):
+        self.write_archive('<a href="../overview/1922">Configuration Overview</a>')
+        with patch.object(self.probe.opener, "open",
+                          side_effect=[Response() for _ in COOKIE_READ_PATHS]) as send:
+            code, run = self.run_probe()
+        self.assertEqual((code, send.call_count), (0, 6))
+        self.assertEqual(run["configuration_links"][0]["decision"], "NOT_FOLLOWED")
+        self.assertEqual(run["configuration_links"][0]["reason"],
+                         "CONFIGURATION_NOT_APPROVED")
 
 
 if __name__ == "__main__":

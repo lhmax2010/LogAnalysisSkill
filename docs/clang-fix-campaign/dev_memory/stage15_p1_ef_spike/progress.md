@@ -1,7 +1,8 @@
 # Stage15 P1 EF-5 Environment Spike
 
-日期:2026-10-10。状态:**WEB_READ_PARTIAL**(累计;历史§11及本轮子构建首页)。
-最新实跑:**BLOCKED**(第1页write自检CRLF误报),GET 1次/HTTP 200,POST 0;详见§15。
+日期:2026-10-10。状态:**WEB_READ_PARTIAL**(最新web-cookie-02)。
+最新实跑:7 GET全部HTTP 200,POST 0;子状态/关联/变量/两页步骤可读,
+逐架构独立状态与配置prompt未读到,详见§16;§15停机记录保留。
 权威:`../../design.md` v1.5.19-FROZEN §1.4 EF-5、§4.1
 qb-sbs-trigger/qb-result-fetch。设计稿不改动。
 
@@ -679,3 +680,120 @@ Cookie/服务端会话/隐藏值不出现在stdout或证据、USER脱敏、CRLF�
 `precommit_secret_scan=PASS; files=18; response_hash_unchanged=PASS; network_requests=0`。
 源响应保留服务器空白和CRLF,git diff --check对其CSS缩进报space-before-tab;
 只排除01.response.txt后对其余暂存文件检查exit0,不为格式检查改写取证文件。
+
+## 16. Cookie文件第二次只读续跑(2026-10-10)
+
+### 16.1 授权、计划与执行
+
+开工已复核§14裁定与web-cookie-01原始停机记录,git pull --ff-only输出
+Already up to date。FatTank批准本轮重新按序读取6个构建页面,
+新增的html_report只记iframe与外站URL形态,不跟随。
+配置页固定为归档证实的/overview/1921,另只可跟随该页实际存在的普通Variables链接。
+工具仍用shared load_cookie_jar,不浏览器交接、不输出Cookie。
+
+实现只改spikes下探测器与离线测试:扩充cookie模式顺序、记录iframe的NOT_FOLLOWED、
+拒绝归档中与本轮批准ID不同的配置页。原浏览器工具白名单未扩展。
+先跑离线控制43项全绿,随后仅运行一次实际命令:
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/spikes/ef5_web_probe.py --cookie-file /tmp/quickbuild_cookies.json --output docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-cookie-02
+{"conclusion": "WEB_READ_PARTIAL", "diagnostic": null, "requests": 7, "http_statuses": [200, 200, 200, 200, 200, 200, 200], "post_requests": 0}
+exit=0
+```
+
+Cookie文件权限0600;无重试、POST、重定向跟随、REST、/log、Wicket动作或真实触发。
+全部响应先脱敏后落盘,原始字节回读相等,run.json redaction_self_check=PASS。
+配置页未含普通Variables链接,NOT_FOLLOWED/NO_LITERAL_LINK,没有猜URL。
+web-cookie-01与web-browser-01原证据保持零diff。
+
+### 16.2 逐页事实、结论与挂账
+
+以下源文件均在[evidence/web-cookie-02](evidence/web-cookie-02/),
+每页SHA与GET记录见requests.json,诊断见run.json。字段的完整步骤表、变量名清单
+见[ef_report最新节](../../spikes/ef_report.md#cookie文件第二次只读取证2026-10-10)。
+
+| 页面 | 请求/HTTP | 实际字段/源行 |
+|---|---|---|
+| 1069540根页 | GET/200 | 01.response.txt:831 ID/:832 Successful;未读到SR_STATUS |
+| 1069540/overview | GET/200 | 02.response.txt:831 ID/:832 Successful |
+| 1069540/variables | GET/200 | 03.response.txt:804,45个变量;TRIGGER_ID=1069532、BUILD_PKG_LIST目标值、组合架构 |
+| 1069540/step_status | GET/200 | 04.response.txt:816起21个步骤/容器节点,逐项successful或skipped |
+| 1069540/html_report | GET/200 | 05.response.txt:805为/download/1069540/html/HTML REPORT/index.html iframe,NOT_FOLLOWED |
+| 1069532/step_status | GET/200 | 06.response.txt:831起19个步骤/容器节点;:1189明确Triggered build链接1069540 |
+| /overview/1921 | GET/200 | 07.response.txt:6配置路径;:895/:905/:926为父构建1069532及ACCEPTED时间 |
+| 配置变量页 | 未请求 | 无普通Variables链接;NOT_FOLLOWED,没有猜路径 |
+
+五项事实核对:
+
+1. 1069540 Status=Successful(01.response.txt:832、02.response.txt:832),
+   子页SR_STATUS未读到。TRIGGER_ID=1069532(03.response.txt:804)是明确子页关联,
+   QB_TRIGGER_ID=1069540为自身;子页未读到父构建直接链接。
+   父步骤页06.response.txt:1189另有Triggered build指向1069540,不是用父摘要补子状态。
+2. 三个架构名只出现在组合字符串(03.response.txt:804、04.response.txt:726、
+   05.response.txt:731);EACH_GBS_BUILD_STATUS为空。三个架构各自独立状态均未读到。
+   iframe不加载,外站download.tizen.org等一律无请求。
+3. 全部步骤已逐项提取:子21项、父19项(均包含master/容器节点),完整名称与状态
+   源行对保存在facts.json及报告表;重复Update_Trigger_Description保留,skipped不冒充通过。
+4. 子页唯一含@值的变量为BUILD_PKG_LIST:
+   `platform/upstream/python3@7cbaf2d74f3428e706c6cae8b3b06b843d140379`
+   (03.response.txt:804),与web-browser-01/build-1069532-03.response.txt:819同名变量
+   逐字相等。子页BUILD_PKG_LIST_MODIFY与SBS_TARGET未读到;
+   父归档确有MODIFY且值相同,但不是同名父子比较或业务等价裁定。
+   全部45个变量名与脱敏值见facts.json/报告,不取父值填子空值。
+5. 配置实际完整路径为root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/SBS/TRIGGER
+   (07.response.txt:6);prompt变量定义/名称/默认值和运行前弹窗说明均未读到。
+   :699的Run the configuration为Wicket按钮,没有点击或请求;
+   06.response.txt:745的Ready to Accept亦只记录。
+
+离线结构解析由HTMLParser读取已脱敏的表格/步骤span,不做网络;
+facts.json记录源SHA、45个变量原序、含@的精确比对和21/19个步骤名称/状态/行号。
+校验输出原文:
+
+```text
+credential_scan=PASS; original_hashes=PASS; identity_spans= 19
+child_variable_count= 45
+exact_equal=true (BUILD_PKG_LIST)
+```
+
+19处身份片段包含本轮7页及用于比对的3页父归档,均为USER;Cookie值仅内存扫描。
+原始脱敏响应不规范化空白或换行,保留服务器行号。
+
+本次结论WEB_READ_PARTIAL,无失败阶段。仍挂账:各架构独立状态、配置prompt及默认值、
+QuickBuild实际触发变量的选择(待FatTank裁定)。子SR_STATUS本轮未读到,
+但按§14裁定不是通过的必要条件。真实触发继续未授权。
+不宣告EF-5 CLOSED或P5Q开工门通过;design.md、P2-P5代码与冻结稿不改。
+
+### 16.3 验收
+
+日志目录[evidence/web-cookie-02-validation](evidence/web-cookie-02-validation/)。
+命令及实际输出:
+
+```text
+$ env PYTHONPATH=docs/clang-fix-campaign/spikes .venv/bin/python -m unittest discover -s docs/clang-fix-campaign/spikes -p 'test_ef5*.py' -v
+Ran 43 tests in 0.349s
+OK
+exit=0 (offline.log; 上轮41,本轮新增2项)
+$ .venv/bin/python -m pytest -q
+1937 passed, 1 skipped in 57.41s
+exit=0 (pytest.log)
+$ .venv/bin/mypy
+Success: no issues found in 110 source files
+exit=0 (mypy.log)
+$ .venv/bin/mypy --follow-imports=silent docs/clang-fix-campaign/spikes/ef5_web_probe.py
+Success: no issues found in 1 source file
+exit=0 (spike-mypy.log)
+```
+
+全树ruff在干净工作树/tmp/ef5-cookie-02-42c6d27(HEAD=42c6d27)复制本轮两个
+spike文件后执行,不纳入主树无关的未跟踪草稿:
+
+```text
+$ /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/ruff check .
+All checks passed!
+exit=0 (ruff.log)
+```
+
+新增两个控制:精确六路径顺序及iframe/外站/动作链接零跟随;
+普通但不属于批准ID的配置页NOT_FOLLOWED。既有登录页立即停、越界零网络、
+诊断无原始异常/凭据、Cookie与USER脱敏、CRLF原字节自检控制全部保留通过。
+全仓生产用例集合未变化;spike unittest独立计数,不混入1937。

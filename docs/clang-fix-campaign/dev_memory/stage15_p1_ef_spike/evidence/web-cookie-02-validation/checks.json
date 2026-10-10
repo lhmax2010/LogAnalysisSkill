@@ -1,0 +1,35 @@
+{
+  "exit_code": 0,
+  "credential_scan": "PASS",
+  "files_checked": 27,
+  "request_order": "PASS",
+  "GET": 7,
+  "HTTP_200": 7,
+  "POST": 0,
+  "raw_response_hashes": "PASS",
+  "old_evidence_bytes_unchanged": "PASS",
+  "child_variables": 45,
+  "child_steps": 21,
+  "parent_steps": 19,
+  "script_sha256": "be9583caf39b969967e201e41755684422024598580e127d0e5069b39e030955",
+  "offline_tests": {
+    "exit_code": 0,
+    "tests": 43
+  },
+  "pytest": {
+    "exit_code": 0,
+    "passed": 1937,
+    "skipped": 1
+  },
+  "mypy": {
+    "exit_code": 0,
+    "files": 110
+  },
+  "spike_mypy": {
+    "exit_code": 0
+  },
+  "ruff": {
+    "exit_code": 0
+  },
+  "ruff_worktree": "/tmp/ef5-cookie-02-42c6d27"
+}

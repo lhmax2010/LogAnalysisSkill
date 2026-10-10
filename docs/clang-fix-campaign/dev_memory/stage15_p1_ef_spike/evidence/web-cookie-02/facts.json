@@ -1,0 +1,558 @@
+{
+  "derivation": "OFFLINE_ONLY_FROM_REDACTED_HTML",
+  "source_sha256": {
+    "web-cookie-02/01.response.txt": "a17518e1427323099304c1223ac8b89f0d143d13c75a860ac36febc177b9dabf",
+    "web-cookie-02/02.response.txt": "54c4bd10f67b214bb439c2129c1ab794a4dcab76b280eec85442b4e876e7a73c",
+    "web-cookie-02/03.response.txt": "23ac6bb70f2547b6acedf5c78c3c16f96fe2161238f288b7e80a0c26d2e4f77f",
+    "web-cookie-02/04.response.txt": "d7d9f389d04f889d4a2e7abe83faa31458390d3240ab4edd3a4c80a8dd7094e4",
+    "web-cookie-02/05.response.txt": "8ee52771555d5d4ceed8ea717d8311a7e1e4ebadc71bd9a2df3ccf4f8bf26fe8",
+    "web-cookie-02/06.response.txt": "9e71f7bb2798e351d7f15558b706fffc5f8745d3d9b974ad334491ad24373904",
+    "web-cookie-02/07.response.txt": "79b7a06c8fe4ab0bb45a045ab5f1eb56906e68bfa8d2854d8de3151a4f4b978e",
+    "web-browser-01/build-1069532-01.response.txt": "a4a3850c7e9ae3516fcb3978e2502749f6c72033b4cba7bd62bd073537a111f4",
+    "web-browser-01/build-1069532-02.response.txt": "af382b7cc6b563452f2a2a911cce0d8828eb2c621557b411d1d179ca5dd05b52",
+    "web-browser-01/build-1069532-03.response.txt": "d65cdbb41e62c4eb97613d64934adefe0b4b1261a80ef68f6128e69a95844f2f"
+  },
+  "child_variables": [
+    {
+      "name": "ARCHITECTURE",
+      "display_name": "",
+      "value": "armv7l:aarch64:x86_64",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "BUILD_CATEGORY",
+      "display_name": "",
+      "value": "SBS",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "BUILD_HOME",
+      "display_name": "",
+      "value": "/home/tizenbuild",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "BUILD_META_PATH",
+      "display_name": "",
+      "value": "/home/tizenbuild/build_meta",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "BUILD_PKG_LIST",
+      "display_name": "",
+      "value": "platform/upstream/python3@7cbaf2d74f3428e706c6cae8b3b06b843d140379",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "BUILD_PKG_LIST_FILE",
+      "display_name": "",
+      "value": "/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-101_8811/BUILD_PKG_LIST_FILE",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "BUILD_PKG_LIST_READ_FROM_FILE",
+      "display_name": "",
+      "value": "",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "BUILD_REFERENCE",
+      "display_name": "",
+      "value": "Ref. Snapshot",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "CHILD_CONFIGURATIONS",
+      "display_name": "",
+      "value": "standard-armv7l:aarch64:x86_64",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "CHILD_CONFIGURATIONS_FIX",
+      "display_name": "",
+      "value": "standard-armv7l:aarch64:x86_64",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "DIVISION",
+      "display_name": "",
+      "value": "TIZEN",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "DOCKER_NAME",
+      "display_name": "",
+      "value": "gbsbuild_ip-192-168-56-101_8811",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "EACH_GBS_BUILD_STATUS",
+      "display_name": "",
+      "value": "",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "ENABLE_PROFILING",
+      "display_name": "",
+      "value": "yes",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "ENV",
+      "display_name": "",
+      "value": "export QB_SCRIPTS='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-101_8811/master/QB-Scripts'\nexport WORKSPACE='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-101_8811'\nexport REPO_ARCH='standard-armv7l:aarch64:x86_64'\nexport REPOSITORY='standard'\nexport ARCHITECTURE='armv7l:aarch64:x86_64'\nexport TARGET_SNAPSHOT_URL=''\nexport ALL_CHILD_CONFIG='standard-armv7l:aarch64:x86_64'\nexport QB_CUR_STEP='BUILD'\nexport META_PACKAGES_COMMIT_ID=''\nexport FIXED_VARIABLES_FILE='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-101_8811/variable_files/fixed_variables.yaml'\nexport BUILD_PKG_LIST_FILE='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-101_8811/BUILD_PKG_LIST_FILE'\nexport CHILD_CONFIGURATIONS='standard-armv7l:aarch64:x86_64'\nexport USE_BRANCH_POLICY='false'\nexport FAIL_FAST='yes'\nexport QB_TRIGGER_ID='1069540'\nexport IMAGE_BUILD_ID=''\nexport DOCKER_NAME='gbsbuild_ip-192-168-56-101_8811'\n",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "FAIL_FAST",
+      "display_name": "Immediate Stop With Error",
+      "value": "yes",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "FIXED_VARIABLES_FILE",
+      "display_name": "",
+      "value": "/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-101_8811/variable_files/fixed_variables.yaml",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "GBSBUILD_WORKSPACE",
+      "display_name": "",
+      "value": "/data/workspace/gbsbuild-ROOT/",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "HTML_REPORT_REPO",
+      "display_name": "",
+      "value": "HTML_REPORT_REPO",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "IMAGE_BUILD_ID",
+      "display_name": "IMAGE_BUILD_ID",
+      "value": "",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "KS_NAME",
+      "display_name": "",
+      "value": "",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "MASTER_AGENT_NODE",
+      "display_name": "",
+      "value": "qbsource:8909",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "META_PACKAGES_COMMIT_ID",
+      "display_name": "",
+      "value": "",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "META_PROFILE",
+      "display_name": "",
+      "value": "/home/tizenbuild/build_meta/TIZEN/Tizen/Tizen-Base-Toolchain",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "PROJECT_NAME",
+      "display_name": "",
+      "value": "Tizen-Base-Toolchain",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "QB_CUR_STEP",
+      "display_name": "",
+      "value": "BUILD",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "QB_SCRIPTS",
+      "display_name": "",
+      "value": "/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-101_8811/master/QB-Scripts",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "QB_SCRIPTS_BRANCH",
+      "display_name": "",
+      "value": "master",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "QB_SCRIPTS_ORG_REPO",
+      "display_name": "",
+      "value": "qbmaster.prod.infra.tizen.org:/home/tizenbuild/QB-Scripts.git",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "QB_TRIGGER_ID",
+      "display_name": "",
+      "value": "1069540",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "REPOSITORY",
+      "display_name": "",
+      "value": "standard",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "REPO_ARCH",
+      "display_name": "",
+      "value": "standard-armv7l:aarch64:x86_64",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "REPO_TYPE",
+      "display_name": "",
+      "value": "ALL",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "SNAPSHOT_NUM_URL",
+      "display_name": "",
+      "value": "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260408.231829",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "TARGET_IMAGE",
+      "display_name": "",
+      "value": "",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "TARGET_IMAGE_FIX",
+      "display_name": "",
+      "value": "",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "TARGET_SNAPSHOT_URL",
+      "display_name": "",
+      "value": "",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "TIZEN_VERSION",
+      "display_name": "",
+      "value": "Tizen",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "TRIGGER_ID",
+      "display_name": "",
+      "value": "1069532",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "USER_DEFINED_GBS_BUILD_CMD",
+      "display_name": "",
+      "value": "timeout 6h gbs build --threads=30 --define \"jobs 8\" --define \"_smp_mflags -j8\" --define \"_costomized_smp_mflags -j20\" --baselibs --clean-once --style=tar",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "USE_BRANCH_POLICY",
+      "display_name": "",
+      "value": "false",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "USE_NGBS",
+      "display_name": "",
+      "value": "true",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "VAR_FILE_TRANSFER",
+      "display_name": "",
+      "value": "",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "WORKSPACE",
+      "display_name": "",
+      "value": "/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-101_8811",
+      "source": "03.response.txt:804"
+    },
+    {
+      "name": "stepRetried",
+      "display_name": "",
+      "value": "0",
+      "source": "03.response.txt:804"
+    }
+  ],
+  "child_at_value_comparison": [
+    {
+      "child": {
+        "name": "BUILD_PKG_LIST",
+        "display_name": "",
+        "value": "platform/upstream/python3@7cbaf2d74f3428e706c6cae8b3b06b843d140379",
+        "source": "03.response.txt:804"
+      },
+      "parent": {
+        "name": "BUILD_PKG_LIST",
+        "display_name": "",
+        "value": "platform/upstream/python3@7cbaf2d74f3428e706c6cae8b3b06b843d140379",
+        "source": "build-1069532-03.response.txt:819"
+      },
+      "exact_equal": true
+    }
+  ],
+  "parent_BUILD_PKG_LIST_MODIFY": {
+    "name": "BUILD_PKG_LIST_MODIFY",
+    "display_name": "Build Package List",
+    "value": "platform/upstream/python3@7cbaf2d74f3428e706c6cae8b3b06b843d140379",
+    "source": "build-1069532-03.response.txt:819"
+  },
+  "steps": {
+    "04.response.txt": [
+      {
+        "name": "master",
+        "name_line": 818,
+        "status": "successful",
+        "status_line": 816
+      },
+      {
+        "name": "TRIGGER",
+        "name_line": 868,
+        "status": "skipped",
+        "status_line": 866
+      },
+      {
+        "name": "BUILD_ABS",
+        "name_line": 909,
+        "status": "skipped",
+        "status_line": 907
+      },
+      {
+        "name": "BUILD",
+        "name_line": 950,
+        "status": "successful",
+        "status_line": 948
+      },
+      {
+        "name": "Enable_SWAP",
+        "name_line": 996,
+        "status": "successful",
+        "status_line": 994
+      },
+      {
+        "name": "Update_Trigger_Description",
+        "name_line": 1043,
+        "status": "successful",
+        "status_line": 1041
+      },
+      {
+        "name": "Sync",
+        "name_line": 1094,
+        "status": "successful",
+        "status_line": 1092
+      },
+      {
+        "name": "Sync_Clean_Workspace",
+        "name_line": 1140,
+        "status": "successful",
+        "status_line": 1138
+      },
+      {
+        "name": "Sync_Copy_Src_from_Src_Server",
+        "name_line": 1187,
+        "status": "successful",
+        "status_line": 1185
+      },
+      {
+        "name": "Build",
+        "name_line": 1241,
+        "status": "successful",
+        "status_line": 1239
+      },
+      {
+        "name": "Build_GBS",
+        "name_line": 1287,
+        "status": "successful",
+        "status_line": 1285
+      },
+      {
+        "name": "Update_Trigger_Description",
+        "name_line": 1334,
+        "status": "successful",
+        "status_line": 1332
+      },
+      {
+        "name": "Publish",
+        "name_line": 1388,
+        "status": "successful",
+        "status_line": 1386
+      },
+      {
+        "name": "NGBS_HTML_REPORT",
+        "name_line": 1438,
+        "status": "successful",
+        "status_line": 1436
+      },
+      {
+        "name": "Create NGBS build report",
+        "name_line": 1484,
+        "status": "successful",
+        "status_line": 1482
+      },
+      {
+        "name": "NGBS HTML REPORT",
+        "name_line": 1531,
+        "status": "successful",
+        "status_line": 1529
+      },
+      {
+        "name": "Publish_Each_Build",
+        "name_line": 1581,
+        "status": "successful",
+        "status_line": 1579
+      },
+      {
+        "name": "Publish_HTML_Report",
+        "name_line": 1628,
+        "status": "skipped",
+        "status_line": 1626
+      },
+      {
+        "name": "Publish_Build_Profiling_Report",
+        "name_line": 1665,
+        "status": "skipped",
+        "status_line": 1663
+      },
+      {
+        "name": "SNAPSHOT",
+        "name_line": 1712,
+        "status": "skipped",
+        "status_line": 1710
+      },
+      {
+        "name": "IMAGE",
+        "name_line": 1753,
+        "status": "skipped",
+        "status_line": 1751
+      }
+    ],
+    "06.response.txt": [
+      {
+        "name": "master",
+        "name_line": 833,
+        "status": "successful",
+        "status_line": 831
+      },
+      {
+        "name": "TRIGGER",
+        "name_line": 883,
+        "status": "successful",
+        "status_line": 881
+      },
+      {
+        "name": "Change_Variable_To_File",
+        "name_line": 929,
+        "status": "successful",
+        "status_line": 927
+      },
+      {
+        "name": "Chk_Abnormal_Input_Variables",
+        "name_line": 976,
+        "status": "successful",
+        "status_line": 974
+      },
+      {
+        "name": "Update_Meta_for_RBS",
+        "name_line": 1023,
+        "status": "skipped",
+        "status_line": 1021
+      },
+      {
+        "name": "Src_Server_Sync",
+        "name_line": 1060,
+        "status": "successful",
+        "status_line": 1058
+      },
+      {
+        "name": "Parallel_Build",
+        "name_line": 1111,
+        "status": "successful",
+        "status_line": 1109
+      },
+      {
+        "name": "Trigger_Each_Build?REPO_ARCHS=standard-armv7l:aarch64:x86_64",
+        "name_line": 1157,
+        "status": "successful",
+        "status_line": 1155
+      },
+      {
+        "name": "Src_Server_Clear",
+        "name_line": 1209,
+        "status": "successful",
+        "status_line": 1207
+      },
+      {
+        "name": "AggregateReport",
+        "name_line": 1260,
+        "status": "successful",
+        "status_line": 1258
+      },
+      {
+        "name": "PublishGBSReport?REPO_ARCHS=standard-armv7l:aarch64:x86_64",
+        "name_line": 1306,
+        "status": "successful",
+        "status_line": 1304
+      },
+      {
+        "name": "PublishProfilingReport?REPO_ARCHS=standard-armv7l:aarch64:x86_64",
+        "name_line": 1353,
+        "status": "skipped",
+        "status_line": 1351
+      },
+      {
+        "name": "BUILD_ABS",
+        "name_line": 1400,
+        "status": "skipped",
+        "status_line": 1398
+      },
+      {
+        "name": "BUILD",
+        "name_line": 1441,
+        "status": "skipped",
+        "status_line": 1439
+      },
+      {
+        "name": "SNAPSHOT",
+        "name_line": 1482,
+        "status": "successful",
+        "status_line": 1480
+      },
+      {
+        "name": "Update_Trigger_Description",
+        "name_line": 1528,
+        "status": "successful",
+        "status_line": 1526
+      },
+      {
+        "name": "Snapshot_Create",
+        "name_line": 1575,
+        "status": "successful",
+        "status_line": 1573
+      },
+      {
+        "name": "Trigger_Image_Create",
+        "name_line": 1626,
+        "status": "successful",
+        "status_line": 1624
+      },
+      {
+        "name": "IMAGE",
+        "name_line": 1680,
+        "status": "skipped",
+        "status_line": 1678
+      }
+    ]
+  },
+  "cookie_scan": "PASS",
+  "identity_spans_checked": 19
+}

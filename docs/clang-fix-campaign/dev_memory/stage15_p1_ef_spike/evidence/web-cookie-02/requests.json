@@ -1,0 +1,72 @@
+[
+  {
+    "page_index": 1,
+    "url": "https://quickbuild.tizen.org/build/1069540",
+    "method": "GET",
+    "status": 200,
+    "response": "01.response.txt",
+    "page": "01.page.json",
+    "redacted_sha256": "a17518e1427323099304c1223ac8b89f0d143d13c75a860ac36febc177b9dabf",
+    "redaction_self_check": "PASS"
+  },
+  {
+    "page_index": 2,
+    "url": "https://quickbuild.tizen.org/build/1069540/overview",
+    "method": "GET",
+    "status": 200,
+    "response": "02.response.txt",
+    "page": "02.page.json",
+    "redacted_sha256": "54c4bd10f67b214bb439c2129c1ab794a4dcab76b280eec85442b4e876e7a73c",
+    "redaction_self_check": "PASS"
+  },
+  {
+    "page_index": 3,
+    "url": "https://quickbuild.tizen.org/build/1069540/variables",
+    "method": "GET",
+    "status": 200,
+    "response": "03.response.txt",
+    "page": "03.page.json",
+    "redacted_sha256": "23ac6bb70f2547b6acedf5c78c3c16f96fe2161238f288b7e80a0c26d2e4f77f",
+    "redaction_self_check": "PASS"
+  },
+  {
+    "page_index": 4,
+    "url": "https://quickbuild.tizen.org/build/1069540/step_status",
+    "method": "GET",
+    "status": 200,
+    "response": "04.response.txt",
+    "page": "04.page.json",
+    "redacted_sha256": "d7d9f389d04f889d4a2e7abe83faa31458390d3240ab4edd3a4c80a8dd7094e4",
+    "redaction_self_check": "PASS"
+  },
+  {
+    "page_index": 5,
+    "url": "https://quickbuild.tizen.org/build/1069540/html_report",
+    "method": "GET",
+    "status": 200,
+    "response": "05.response.txt",
+    "page": "05.page.json",
+    "redacted_sha256": "8ee52771555d5d4ceed8ea717d8311a7e1e4ebadc71bd9a2df3ccf4f8bf26fe8",
+    "redaction_self_check": "PASS"
+  },
+  {
+    "page_index": 6,
+    "url": "https://quickbuild.tizen.org/build/1069532/step_status",
+    "method": "GET",
+    "status": 200,
+    "response": "06.response.txt",
+    "page": "06.page.json",
+    "redacted_sha256": "9e71f7bb2798e351d7f15558b706fffc5f8745d3d9b974ad334491ad24373904",
+    "redaction_self_check": "PASS"
+  },
+  {
+    "page_index": 7,
+    "url": "https://quickbuild.tizen.org/overview/1921",
+    "method": "GET",
+    "status": 200,
+    "response": "07.response.txt",
+    "page": "07.page.json",
+    "redacted_sha256": "79b7a06c8fe4ab0bb45a045ab5f1eb56906e68bfa8d2854d8de3151a4f4b978e",
+    "redaction_self_check": "PASS"
+  }
+]

@@ -36,8 +36,9 @@ EXTRA_READ_PATHS = frozenset({
 })
 COOKIE_READ_PATHS = (
     "/build/1069540", "/build/1069540/overview", "/build/1069540/variables",
-    "/build/1069540/step_status", "/build/1069532/step_status",
+    "/build/1069540/step_status", "/build/1069540/html_report", "/build/1069532/step_status",
 )
+COOKIE_CONFIG_PATH = "/overview/1921"
 CONFIG_ARCHIVE = (
     Path(__file__).resolve().parents[1]
     / "dev_memory/stage15_p1_ef_spike/evidence/web-browser-01"
@@ -178,6 +179,7 @@ class PageInventory(HTMLParser):
         super().__init__()
         self.lines: list[str] = []
         self.links: list[dict[str, object]] = []
+        self.frames: list[dict[str, object]] = []
         self.inputs: list[dict[str, object]] = []
         self.secret_values: list[str] = []
         self.link: dict[str, object] | None = None
@@ -202,6 +204,9 @@ class PageInventory(HTMLParser):
         if tag == "a":
             self.link = {"line": self.getpos()[0], "href": a.get("href"), "text": ""}
             self.links.append(self.link)
+        if tag == "iframe":
+            self.frames.append({"line": self.getpos()[0], "src": a.get("src"),
+                                "decision": "NOT_FOLLOWED"})
 
     def handle_data(self, data: str) -> None:
         if self.skip:
@@ -480,6 +485,7 @@ class CookieFileProbe:
         page = {
             "url": url, "visible_text": parsed.lines,
             "links": [{**link, "decision": "NOT_FOLLOWED"} for link in parsed.links],
+            "iframes": parsed.frames,
             "form_fields_metadata_only": parsed.inputs,
             "forms_submitted": 0, "javascript_executed": False,
         }
@@ -510,6 +516,9 @@ class CookieFileProbe:
         self.redactor.check(text)
         source_url = DEFAULT_QUICKBUILD_BASE_URL + "/build/1069532"
         decision = select_read_link(text, source_url, "configuration overview")
+        if (decision["decision"] == "ALLOW_READ"
+                and decision["url"] != DEFAULT_QUICKBUILD_BASE_URL + COOKIE_CONFIG_PATH):
+            decision.update(decision="NOT_FOLLOWED", reason="CONFIGURATION_NOT_APPROVED")
         decision.update({"source": archive.name, "source_sha256": digest,
                          "purpose": "configuration"})
         self.configuration.append(decision)

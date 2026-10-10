@@ -1,6 +1,6 @@
 # P1 EF-5 Environment Report
 
-日期:2026-10-10。最新结论:**BLOCKED**(Cookie文件续跑在第1页write自检停止,HTTP 200,非Cookie失效或服务端拒绝)。累计网页证据仍为部分可读;历史记录保留,最新事实见文末。
+日期:2026-10-10。最新结论:**WEB_READ_PARTIAL**(web-cookie-02:7 GET全部200,POST 0;子构建状态、关联、变量与两页步骤可读,逐架构独立状态及配置prompt未读到)。历史记录保留,最新事实见文末。
 权威:`../design.md` v1.5.19-FROZEN §1.4 EF-5与§4.1。
 本报告不修改设计,不宣告EF-5关闭或P5Q开工门通过。
 进度与命令:[stage15 progress](../dev_memory/stage15_p1_ef_spike/progress.md)。
@@ -396,3 +396,221 @@ run.json如实为BLOCKED/stage=write/page_index=1/WRITE_FAILED;
 网页自动化仍有结构变化与会话有效期风险;本轮只多取得子构建首页,
 没有取得配置prompt与变量页,不能据此推断自动触发参数或稳定解析契约。
 涉及P5Q待落实的设计段落同上,不改design.md、不改P2-P5代码/冻结稿。
+
+## Cookie文件第二次只读取证(2026-10-10)
+
+### 请求与边界
+
+FatTank已批准续跑。新目录[web-cookie-02](../dev_memory/stage15_p1_ef_spike/evidence/web-cookie-02/)
+与web-cookie-01分开,本次按新白名单重新读取首页,未覆盖或重写旧证据。
+实跑exit=0,**7 GET / 7个HTTP 200 / POST 0 / redirect跟随0**。
+Cookie仅内存,文件权限0600;写前PageRedactor与USER脱敏,写后按原始字节校验。
+配置页来源仍为web-browser-01/build-1069532-01.response.txt:705,
+归档SHA校验通过;仅允许该链接对应的/overview/1921。
+该页没有普通Variables链接,条件变量页记NOT_FOLLOWED/NO_LITERAL_LINK。
+不请求Wicket动作、/log、REST、Run/Accept入口或iframe/外站。
+
+下表及后文的短文件名均相对于web-cookie-02;父变量页比较明确使用web-browser-01归档,
+不将父页摘要当作子页字段。每页原字节脱敏SHA见requests.json;
+facts.json为离线HTML解析结果,保留源SHA、原行号、变量全部值与逐字比较结果。
+
+| 顺序/页面 | 请求/HTTP | 读到的字段与源位置 |
+|---|---|---|
+| /build/1069540 | GET/200 | 01.response.txt:831为ID,:832为Status=Successful;:841/:844依赖计数均0 |
+| /build/1069540/overview | GET/200 | 02.response.txt:831/:832同样明确ID及Successful |
+| /build/1069540/variables | GET/200 | 03.response.txt:804有45个变量,含BUILD_PKG_LIST、TRIGGER_ID、REPO_ARCH |
+| /build/1069540/step_status | GET/200 | 04.response.txt:816起21个步骤/容器节点及其状态,见下表 |
+| /build/1069540/html_report | GET/200 | 05.response.txt:805只有报告iframe入口;未加载其内容 |
+| /build/1069532/step_status | GET/200 | 06.response.txt:831起19个步骤/容器节点;:1189直接链接Triggered build 1069540 |
+| /overview/1921 | GET/200 | 07.response.txt:6配置完整路径;:895/:905/:926为1069532条目及其SR_STATUS |
+| 配置变量页(条件项) | 未请求 | 07.page.json及run.json:无普通Variables链接,NOT_FOLLOWED;不猜路径 |
+
+### 1. 子构建状态与父子关联
+
+- Status=Successful:01.response.txt:818为字段名,:831为1069540,:832为值;
+  02.response.txt:818/:831/:832独立重复观察。符合FatTank已裁定的子构建通过条件,
+  但不单独证明目标或逐架构绑定。
+- **子构建SR_STATUS未读到**:01至05页的实际HTML/可见字段没有该名称;
+  不据此推断服务端不存在此字段。
+- 子页明确关联字段是`TRIGGER_ID=1069532`(03.response.txt:804),
+  同页`QB_TRIGGER_ID=1069540`不能误当父ID。
+  04.response.txt:868的TRIGGER是本构建步骤名(skipped),不单独充当父ID证据。
+  子页未读到直接指向/build/1069532的链接。
+- 另在实际读取的父步骤页06.response.txt:1189,`Triggered build:`后链接
+  `/build/1069540`,与子页TRIGGER_ID对应。不是凭时间、版本或Triggered By推断。
+- 配置页07.response.txt:895/:905/:926明确展示**父构建**1069532的
+  `SR_STATUS=ACCEPTED (20260424.154027)`;这是父字段,不填作子SR_STATUS,
+  也不改变FatTank“不要求ACCEPTED”的通过裁定。
+
+### 2. 各架构独立状态与报告边界
+
+| 架构 | 读到的位置 | 独立状态 |
+|---|---|---|
+| standard-armv7l | 03.response.txt:804的REPO_ARCH/CHILD_CONFIGURATIONS;04.response.txt:726标题;05.response.txt:731标题 | 未读到 |
+| aarch64 | 同上,位于同一冒号分隔字符串 | 未读到 |
+| x86_64 | 同上,位于同一冒号分隔字符串 | 未读到 |
+
+03.response.txt:804中`ARCHITECTURE=armv7l:aarch64:x86_64`,
+`REPO_ARCH=standard-armv7l:aarch64:x86_64`,`EACH_GBS_BUILD_STATUS`值为空。
+06.response.txt:1157/:1306/:1353的三个步骤名也使用组合REPO_ARCHS,
+不能把单个步骤状态拆成三份独立架构状态。
+
+05.response.txt:805的iframe原路径形态是
+`/download/1069540/html/HTML REPORT/index.html`,相对本机站点,**NOT_FOLLOWED**。
+05.page.json显式记录iframe与普通链接均未跟随;外站帮助/支持链接
+(05.response.txt:576/:822/:828/:831)同样未请求。
+03.response.txt:804的SNAPSHOT_NUM_URL含`http://download.tizen.org/snapshots/...`,
+只记录变量中的URL,不访问。未执行JavaScript或加载任何子资源,
+因此报告内可能存在的逐架构状态仍为未读到,不是宣称不存在。
+
+### 3. 两个构建步骤与每步状态
+
+以下保留页面全部步骤/容器节点(包含master及重复出现的Update_Trigger_Description),
+不合并、不把skipped改写为通过。行号列依次为“名称 / 状态”。
+
+| 1069540步骤名 | 原状态 | 源文件:行号(名称 / 状态) |
+|---|---|---|
+| master | successful | 04.response.txt:818 / :816 |
+| TRIGGER | skipped | 04.response.txt:868 / :866 |
+| BUILD_ABS | skipped | 04.response.txt:909 / :907 |
+| BUILD | successful | 04.response.txt:950 / :948 |
+| Enable_SWAP | successful | 04.response.txt:996 / :994 |
+| Update_Trigger_Description | successful | 04.response.txt:1043 / :1041 |
+| Sync | successful | 04.response.txt:1094 / :1092 |
+| Sync_Clean_Workspace | successful | 04.response.txt:1140 / :1138 |
+| Sync_Copy_Src_from_Src_Server | successful | 04.response.txt:1187 / :1185 |
+| Build | successful | 04.response.txt:1241 / :1239 |
+| Build_GBS | successful | 04.response.txt:1287 / :1285 |
+| Update_Trigger_Description | successful | 04.response.txt:1334 / :1332 |
+| Publish | successful | 04.response.txt:1388 / :1386 |
+| NGBS_HTML_REPORT | successful | 04.response.txt:1438 / :1436 |
+| Create NGBS build report | successful | 04.response.txt:1484 / :1482 |
+| NGBS HTML REPORT | successful | 04.response.txt:1531 / :1529 |
+| Publish_Each_Build | successful | 04.response.txt:1581 / :1579 |
+| Publish_HTML_Report | skipped | 04.response.txt:1628 / :1626 |
+| Publish_Build_Profiling_Report | skipped | 04.response.txt:1665 / :1663 |
+| SNAPSHOT | skipped | 04.response.txt:1712 / :1710 |
+| IMAGE | skipped | 04.response.txt:1753 / :1751 |
+
+| 1069532步骤名 | 原状态 | 源文件:行号(名称 / 状态) |
+|---|---|---|
+| master | successful | 06.response.txt:833 / :831 |
+| TRIGGER | successful | 06.response.txt:883 / :881 |
+| Change_Variable_To_File | successful | 06.response.txt:929 / :927 |
+| Chk_Abnormal_Input_Variables | successful | 06.response.txt:976 / :974 |
+| Update_Meta_for_RBS | skipped | 06.response.txt:1023 / :1021 |
+| Src_Server_Sync | successful | 06.response.txt:1060 / :1058 |
+| Parallel_Build | successful | 06.response.txt:1111 / :1109 |
+| Trigger_Each_Build?REPO_ARCHS=standard-armv7l:aarch64:x86_64 | successful | 06.response.txt:1157 / :1155 |
+| Src_Server_Clear | successful | 06.response.txt:1209 / :1207 |
+| AggregateReport | successful | 06.response.txt:1260 / :1258 |
+| PublishGBSReport?REPO_ARCHS=standard-armv7l:aarch64:x86_64 | successful | 06.response.txt:1306 / :1304 |
+| PublishProfilingReport?REPO_ARCHS=standard-armv7l:aarch64:x86_64 | skipped | 06.response.txt:1353 / :1351 |
+| BUILD_ABS | skipped | 06.response.txt:1400 / :1398 |
+| BUILD | skipped | 06.response.txt:1441 / :1439 |
+| SNAPSHOT | successful | 06.response.txt:1482 / :1480 |
+| Update_Trigger_Description | successful | 06.response.txt:1528 / :1526 |
+| Snapshot_Create | successful | 06.response.txt:1575 / :1573 |
+| Trigger_Image_Create | successful | 06.response.txt:1626 / :1624 |
+| IMAGE | skipped | 06.response.txt:1680 / :1678 |
+
+### 4. 变量与逐字比对
+
+子变量页全部45行位于同一HTML物理行03.response.txt:804,
+按`Name / Display Name / Value`表列解析(表头:801),不是全文名字搜索。
+其中**值含@的变量只有BUILD_PKG_LIST**:
+
+```text
+platform/upstream/python3@7cbaf2d74f3428e706c6cae8b3b06b843d140379
+```
+
+与web-browser-01/build-1069532-03.response.txt:819中同名BUILD_PKG_LIST
+的解码后单元格文本逐字相等(`facts.json:child_at_value_comparison`,exact_equal=true)。
+父归档原SHA=d65cdbb41e62c4eb97613d64934adefe0b4b1261a80ef68f6128e69a95844f2f,
+本轮离线校验通过,未重取父变量页。
+
+子页**BUILD_PKG_LIST_MODIFY未读到**,故不能做它的同名父子比较;
+父归档:819确有BUILD_PKG_LIST_MODIFY(显示名Build Package List),
+值与上面相同。该单样本不证明BUILD_PKG_LIST与BUILD_PKG_LIST_MODIFY具有同一输入语义,
+更不自行认定它们与SBS_TARGET等价。子变量页SBS_TARGET也未读到。
+
+全部变量名原序如下;脱敏后的全部值见facts.json的child_variables与03.response.txt,
+空单元格保留为空,未用父页补值:
+
+```text
+ARCHITECTURE
+BUILD_CATEGORY
+BUILD_HOME
+BUILD_META_PATH
+BUILD_PKG_LIST
+BUILD_PKG_LIST_FILE
+BUILD_PKG_LIST_READ_FROM_FILE
+BUILD_REFERENCE
+CHILD_CONFIGURATIONS
+CHILD_CONFIGURATIONS_FIX
+DIVISION
+DOCKER_NAME
+EACH_GBS_BUILD_STATUS
+ENABLE_PROFILING
+ENV
+FAIL_FAST
+FIXED_VARIABLES_FILE
+GBSBUILD_WORKSPACE
+HTML_REPORT_REPO
+IMAGE_BUILD_ID
+KS_NAME
+MASTER_AGENT_NODE
+META_PACKAGES_COMMIT_ID
+META_PROFILE
+PROJECT_NAME
+QB_CUR_STEP
+QB_SCRIPTS
+QB_SCRIPTS_BRANCH
+QB_SCRIPTS_ORG_REPO
+QB_TRIGGER_ID
+REPOSITORY
+REPO_ARCH
+REPO_TYPE
+SNAPSHOT_NUM_URL
+TARGET_IMAGE
+TARGET_IMAGE_FIX
+TARGET_SNAPSHOT_URL
+TIZEN_VERSION
+TRIGGER_ID
+USER_DEFINED_GBS_BUILD_CMD
+USE_BRANCH_POLICY
+USE_NGBS
+VAR_FILE_TRANSFER
+WORKSPACE
+stepRetried
+```
+
+### 5. 配置页与运行时prompt
+
+07.response.txt:6实际标题给出完整路径:
+`root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/SBS/TRIGGER`;
+:659至:689为面包屑,:759为配置ID 1921。
+页中未读到变量定义、运行时prompt标记、prompt变量名/默认值,
+也未读到“运行前会弹出变量页”的文字。没有普通Variables链接,
+所以条件变量页未请求;不能解释成此配置没有变量或不提示填写。
+
+:699可见`Run the configuration`按钮title,其onclick指向Wicket动作,
+**未点击、未请求**;06.response.txt:745的Ready to Accept同样只记录不操作。
+不从按钮名称或配置近期构建信息推断Run后会发生什么。
+
+### 结论与P5Q影响
+
+本次为**WEB_READ_PARTIAL**,无停机诊断,并非BLOCKED。
+子构建Status、直接父子关联、目标样本回显、两页步骤及其状态均可从只读HTML取得。
+但独立架构状态、子SR_STATUS、配置prompt及默认值未读到;
+实际触发变量的选择仍待FatTank裁定,任何真实触发继续不在本轮授权内。
+Successful规则已由FatTank裁定,不需等待ACCEPTED作为子构建通过条件。
+
+对design.md §1.4 EF-5/§4.1的影响:Cookie网页结果读取获得更完整的正向证据,
+但不能宣称P5Q需要的全部状态与触发参数已齐;REST/Basic Auth替换仍由P5Q设计稿落实。
+静态HTML中的Wicket结构、变量表及步骤标记可能变动,解析应保留缺字段/会话过期的
+显式失败通道。没有加载iframe就无法评价其内容的稳定性。
+本轮不改design.md、P2-P5代码或冻结稿。
+
+验证:离线43项全绿(较上轮新增2项),全仓1937 passed/1 skipped,
+mypy与ruff全绿;命令及exit见stage15 §16.3及web-cookie-02-validation/。
