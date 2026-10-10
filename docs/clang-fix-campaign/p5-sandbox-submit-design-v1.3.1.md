@@ -805,7 +805,8 @@ P5 不调用任何释放 API。成功后三份副本的保护标记全部保持(
     - 括号参数开头换行后接 `PUBLIC` 的写法 → forbidden;
     - `target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")` → `cmake_genex_unparsed`,forbidden;
     - 拼接写法 `add_compile_options("-$<1:w>")`、`add_compile_options("-W$<1:no-error>")`、`add_compile_options("$<1:->w")`、`target_compile_options(t PRIVATE -Wno-$<1:x>)` → `cmake_genex_unparsed`,forbidden;
-    - `$<IF:$<BOOL:1>,-w,>` → 识别出 `-w`,forbidden;未列出名字的表达式(如 `$<TARGET_FILE:x>`)出现在选项命令中 → `cmake_genex_unparsed`;
+    - `$<IF:$<BOOL:1>,-w,>` → 识别出 `-w`,forbidden,为新旧实现均判 forbidden 的回归对照,不要求退回旧实现时变红;未列出名字的表达式(如 `$<TARGET_FILE:x>`)出现在选项命令中 → `cmake_genex_unparsed`;
+    - IF 输出部分递归反例:引号参数 `add_compile_options("$<IF:$<BOOL:1>,-\` 加换行加 `w,>")` → `w_all_off`;`add_compile_options("$<IF:$<BOOL:1>,-Wno\-everything,>")` → `wno_wholesale`;`add_compile_options($<IF:$<BOOL:1>,-$<1:w>,>)` → `cmake_genex_unparsed`。三例均 forbidden,退回原文扫描时须变红(漏检);若旧实现实测仍能拦下,改列回归对照并在 progress 说明,不必再停(P5-D-02)。
     - 对照(仍 allowed):`target_compile_options(t PRIVATE -Wno-x)`、`$<$<C_COMPILER_ID:Clang>:-Wno-x>`、`"$<$<C_COMPILER_ID:Clang>:-Wno-x;-Wno-y>"`、`"PRIVATE" -Wno-x`、注释中的 `$<LOWER_CASE:…>` 不计。
     - git 版本:隔离传输的对象库路径解析在 `--git-path objects` 返回相对路径与绝对路径两种情况下都正确(桩)。
 13. **v1.3 source 单引号与 pragma 前缀**:

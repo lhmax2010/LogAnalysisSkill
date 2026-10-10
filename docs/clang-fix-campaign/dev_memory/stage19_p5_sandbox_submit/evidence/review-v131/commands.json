@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "pytest",
+    "/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py",
+    "-q",
+    "-k",
+    "review_cmake_value_rejection"
+  ],
+  "PYTHONPATH": "/tmp/p5-v131-old-policy/tizen-ci-triage/scripts",
+  "exit": 1,
+  "test_sha256": "f9e955127662fab18aec365b2d72358d1d0550bdd303102e8233ad2b8a8a86a1"
+}

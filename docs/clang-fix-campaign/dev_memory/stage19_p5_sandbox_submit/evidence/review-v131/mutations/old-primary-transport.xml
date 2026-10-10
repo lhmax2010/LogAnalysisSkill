@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="1.415" timestamp="2026-10-10T10:13:05.538935+08:00" hostname="linhao-linux"><testcase classname="tests.unit.test_sandbox_submit" name="test_review_transport_config_race[url-after-toctou]" time="0.268"><failure message="AssertionError: assert '' == 'refs/heads/s...15cc4cc796c1c'&#10;  &#10;  - refs/heads/sandbox/test 681e02b6249a770b32e744555b215cc4cc796c1c">campaign = &lt;test_sandbox_submit.Campaign object at 0x753c3c2d84a0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x753c3c2d84d0&gt;
+when = 'after-toctou', key = 'url'
+
+    @pytest.mark.parametrize("when", ["after-toctou", "before-push"])
+    @pytest.mark.parametrize("key", ["url", "pushurl"])
+    def test_review_transport_config_race(campaign, monkeypatch, when, key):
+        c = campaign
+        remote = _local_ssh_config(c)
+        other = c.root / "wrong-remote.git"
+        git(c.root, "init", "--bare", str(other))
+        injected = False
+    
+        def inject():
+            nonlocal injected
+            git(c.copies[0], "config", f"remote.{remote}.{key}", str(other))
+            assert remote in git(c.copies[0], "remote").splitlines()
+            injected = True
+    
+        if when == "after-toctou":
+            original = submit.toctou_recheck
+    
+            def checked(*args, **kwargs):
+                result = original(*args, **kwargs)
+                assert result.ok
+                inject()
+                return result
+    
+            monkeypatch.setattr(submit, "toctou_recheck", checked)
+        else:
+            run = submit.SandboxGit.run
+    
+            def before_push(self, cwd, *args, **kwargs):
+                if args and args[0] == "push":
+                    inject()
+                return run(self, cwd, *args, **kwargs)
+    
+            monkeypatch.setattr(submit.SandboxGit, "run", before_push)
+        result = c.run()
+        assert injected and result.exit_code == 0
+&gt;       assert git(c.remote, "for-each-ref", "--format=%(refname) %(objectname)") == (
+            "refs/heads/sandbox/test " + result.payload["derived_commit_sha"]
+        )
+E       AssertionError: assert '' == 'refs/heads/s...15cc4cc796c1c'
+E         
+E         - refs/heads/sandbox/test 681e02b6249a770b32e744555b215cc4cc796c1c
+
+tests/unit/test_sandbox_submit.py:269: AssertionError</failure></testcase><testcase classname="tests.unit.test_sandbox_submit" name="test_review_transport_config_race[url-before-push]" time="0.327"><failure message="AssertionError: assert '' == 'refs/heads/s...a63030492383b'&#10;  &#10;  - refs/heads/sandbox/test 6bad4d6089810c9239bc0d5d539a63030492383b">campaign = &lt;test_sandbox_submit.Campaign object at 0x753c3c2db2f0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x753c3c2daae0&gt;
+when = 'before-push', key = 'url'
+
+    @pytest.mark.parametrize("when", ["after-toctou", "before-push"])
+    @pytest.mark.parametrize("key", ["url", "pushurl"])
+    def test_review_transport_config_race(campaign, monkeypatch, when, key):
+        c = campaign
+        remote = _local_ssh_config(c)
+        other = c.root / "wrong-remote.git"
+        git(c.root, "init", "--bare", str(other))
+        injected = False
+    
+        def inject():
+            nonlocal injected
+            git(c.copies[0], "config", f"remote.{remote}.{key}", str(other))
+            assert remote in git(c.copies[0], "remote").splitlines()
+            injected = True
+    
+        if when == "after-toctou":
+            original = submit.toctou_recheck
+    
+            def checked(*args, **kwargs):
+                result = original(*args, **kwargs)
+                assert result.ok
+                inject()
+                return result
+    
+            monkeypatch.setattr(submit, "toctou_recheck", checked)
+        else:
+            run = submit.SandboxGit.run
+    
+            def before_push(self, cwd, *args, **kwargs):
+                if args and args[0] == "push":
+                    inject()
+                return run(self, cwd, *args, **kwargs)
+    
+            monkeypatch.setattr(submit.SandboxGit, "run", before_push)
+        result = c.run()
+        assert injected and result.exit_code == 0
+&gt;       assert git(c.remote, "for-each-ref", "--format=%(refname) %(objectname)") == (
+            "refs/heads/sandbox/test " + result.payload["derived_commit_sha"]
+        )
+E       AssertionError: assert '' == 'refs/heads/s...a63030492383b'
+E         
+E         - refs/heads/sandbox/test 6bad4d6089810c9239bc0d5d539a63030492383b
+
+tests/unit/test_sandbox_submit.py:269: AssertionError</failure></testcase><testcase classname="tests.unit.test_sandbox_submit" name="test_review_transport_config_race[pushurl-after-toctou]" time="0.346"><failure message="AssertionError: assert (True and 5 == 0)&#10; +  where 5 = SandboxSubmitOutcome(exit_code=5, payload={'action': 'push_failed', 'status': 'SANDBOX_PUSH_FAILED', 'aggregate': {'ok...: None, 'scope': None}, 'surviving_worktrees': [], 'error_code': 'PUSH_FAILED', 'reason': 'pushed remote sha differs'}).exit_code">campaign = &lt;test_sandbox_submit.Campaign object at 0x753c3c2d8230&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x753c3c2db3b0&gt;
+when = 'after-toctou', key = 'pushurl'
+
+    @pytest.mark.parametrize("when", ["after-toctou", "before-push"])
+    @pytest.mark.parametrize("key", ["url", "pushurl"])
+    def test_review_transport_config_race(campaign, monkeypatch, when, key):
+        c = campaign
+        remote = _local_ssh_config(c)
+        other = c.root / "wrong-remote.git"
+        git(c.root, "init", "--bare", str(other))
+        injected = False
+    
+        def inject():
+            nonlocal injected
+            git(c.copies[0], "config", f"remote.{remote}.{key}", str(other))
+            assert remote in git(c.copies[0], "remote").splitlines()
+            injected = True
+    
+        if when == "after-toctou":
+            original = submit.toctou_recheck
+    
+            def checked(*args, **kwargs):
+                result = original(*args, **kwargs)
+                assert result.ok
+                inject()
+                return result
+    
+            monkeypatch.setattr(submit, "toctou_recheck", checked)
+        else:
+            run = submit.SandboxGit.run
+    
+            def before_push(self, cwd, *args, **kwargs):
+                if args and args[0] == "push":
+                    inject()
+                return run(self, cwd, *args, **kwargs)
+    
+            monkeypatch.setattr(submit.SandboxGit, "run", before_push)
+        result = c.run()
+&gt;       assert injected and result.exit_code == 0
+E       AssertionError: assert (True and 5 == 0)
+E        +  where 5 = SandboxSubmitOutcome(exit_code=5, payload={'action': 'push_failed', 'status': 'SANDBOX_PUSH_FAILED', 'aggregate': {'ok...: None, 'scope': None}, 'surviving_worktrees': [], 'error_code': 'PUSH_FAILED', 'reason': 'pushed remote sha differs'}).exit_code
+
+tests/unit/test_sandbox_submit.py:268: AssertionError</failure></testcase><testcase classname="tests.unit.test_sandbox_submit" name="test_review_transport_config_race[pushurl-before-push]" time="0.337"><failure message="AssertionError: assert (True and 5 == 0)&#10; +  where 5 = SandboxSubmitOutcome(exit_code=5, payload={'action': 'push_failed', 'status': 'SANDBOX_PUSH_FAILED', 'aggregate': {'ok...: None, 'scope': None}, 'surviving_worktrees': [], 'error_code': 'PUSH_FAILED', 'reason': 'pushed remote sha differs'}).exit_code">campaign = &lt;test_sandbox_submit.Campaign object at 0x753c3c323650&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x753c3c3231d0&gt;
+when = 'before-push', key = 'pushurl'
+
+    @pytest.mark.parametrize("when", ["after-toctou", "before-push"])
+    @pytest.mark.parametrize("key", ["url", "pushurl"])
+    def test_review_transport_config_race(campaign, monkeypatch, when, key):
+        c = campaign
+        remote = _local_ssh_config(c)
+        other = c.root / "wrong-remote.git"
+        git(c.root, "init", "--bare", str(other))
+        injected = False
+    
+        def inject():
+            nonlocal injected
+            git(c.copies[0], "config", f"remote.{remote}.{key}", str(other))
+            assert remote in git(c.copies[0], "remote").splitlines()
+            injected = True
+    
+        if when == "after-toctou":
+            original = submit.toctou_recheck
+    
+            def checked(*args, **kwargs):
+                result = original(*args, **kwargs)
+                assert result.ok
+                inject()
+                return result
+    
+            monkeypatch.setattr(submit, "toctou_recheck", checked)
+        else:
+            run = submit.SandboxGit.run
+    
+            def before_push(self, cwd, *args, **kwargs):
+                if args and args[0] == "push":
+                    inject()
+                return run(self, cwd, *args, **kwargs)
+    
+            monkeypatch.setattr(submit.SandboxGit, "run", before_push)
+        result = c.run()
+&gt;       assert injected and result.exit_code == 0
+E       AssertionError: assert (True and 5 == 0)
+E        +  where 5 = SandboxSubmitOutcome(exit_code=5, payload={'action': 'push_failed', 'status': 'SANDBOX_PUSH_FAILED', 'aggregate': {'ok...: None, 'scope': None}, 'surviving_worktrees': [], 'error_code': 'PUSH_FAILED', 'reason': 'pushed remote sha differs'}).exit_code
+
+tests/unit/test_sandbox_submit.py:268: AssertionError</failure></testcase></testsuite></testsuites>

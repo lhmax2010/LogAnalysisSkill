@@ -10,6 +10,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 import pytest
+from ci_triage import suppress_policy as policy_module
 from ci_triage.cli import main
 from ci_triage.suppress_policy import (
     POLICY_RULES_VERSION,
@@ -42,6 +43,212 @@ def _whole(repo, file, before, after):
 
 def _evaluate(repo, after, file="CMakeLists.txt", before="# baseline\n", source="generated"):
     return evaluate(_spec([_whole(repo, file, before, after)]), repo, source)
+
+
+@pytest.mark.parametrize(
+    "text,kind",
+    [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ],
+)
+def test_review_cmake_value_rejection(repo, text, kind):
+    result = _evaluate(repo, text + "\n")
+    assert result.verdict == "forbidden"
+    assert any(hit.kind == kind and hit.rule == "forbidden" for hit in result.hits)
+
+
+def test_review_if_literal_regression(repo):
+    result = _evaluate(repo, "add_compile_options($<IF:$<BOOL:1>,-w,>)\n")
+    assert result.verdict == "forbidden"
+    assert result.hits == (
+        PolicyHit(0, "CMakeLists.txt", "w_all_off", "-w", "n/a", "forbidden", 1),
+    )
+
+
+@pytest.mark.parametrize(
+    "text,kind",
+    [
+        ('add_compile_options("$<IF:$<BOOL:1>,-\\\nw,>")', "w_all_off"),
+        (r'add_compile_options("$<IF:$<BOOL:1>,-Wno\-everything,>")', "wno_wholesale"),
+        ("add_compile_options($<IF:$<BOOL:1>,-$<1:w>,>)", "cmake_genex_unparsed"),
+    ],
+)
+def test_review_if_recursive_rejection(repo, text, kind):
+    result = _evaluate(repo, text + "\n")
+    assert result.verdict == "forbidden"
+    assert any(hit.kind == kind and hit.rule == "forbidden" for hit in result.hits)
+
+
+@pytest.mark.parametrize(
+    "args,tokens",
+    [
+        ("PRIVATE -Wno-x", ["-Wno-x"]),
+        ("PRIVATE $<$<C_COMPILER_ID:Clang>:-Wno-x>", ["-Wno-x"]),
+        ('PRIVATE "$<$<C_COMPILER_ID:Clang>:-Wno-x;-Wno-y>"', ["-Wno-x", "-Wno-y"]),
+        ('"PRIVATE" -Wno-x', ["-Wno-x"]),
+        ("[[\nPRIVATE]] -Wno-x", ["-Wno-x"]),
+        (r"PRIVATE -Wno\-x", ["-Wno-x"]),
+        (r'PRIVATE "-Wno-x\;-Wno-y"', ["-Wno-x", "-Wno-y"]),
+        ("PRIVATE $<BUILD_INTERFACE:$<1:-Wno-x>>", ["-Wno-x"]),
+        ("PRIVATE $<IF:$<BOOL:1>,-Wno-x,-Wno-y>", ["-Wno-x", "-Wno-y"]),
+    ],
+)
+def test_review_cmake_value_allowed(repo, args, tokens):
+    result = _evaluate(repo, f"target_compile_options(t {args})\n# $<LOWER_CASE:-W>\n")
+    assert result.verdict == "allowed"
+    assert [hit.token for hit in result.hits] == tokens
+    assert all(hit.scope == "target_private" for hit in result.hits)
+
+
+@pytest.mark.parametrize(
+    "expression",
+    [
+        "$<0:$<LOWER_CASE:-W>>",
+        "$<$<LOWER_CASE:x>:-Wno-x>",
+        "$<IF:$<BOOL:1>,-$<1:w>,>",
+        "$<1:-Wno-x>$<1:-Wno-y>",
+        "$<1:-Wno-x",
+        "$<BOOL:$<TARGET_PROPERTY:x>>",
+        "$<IF:1,-Wno-x>",
+    ],
+)
+def test_review_genex_nested_closed_rules(repo, expression):
+    result = _evaluate(repo, f'target_compile_options(t PRIVATE "{expression}")\n')
+    assert result.verdict == "forbidden"
+    assert result.hits[0].kind == "cmake_genex_unparsed"
+
+
+@pytest.mark.parametrize("prefix", ["0xFFFF'FFFF", "1'000", "0b1010'1010", "#if 0\ndon't\n#endif"])
+@pytest.mark.parametrize(
+    "pragma,verdict,final",
+    [
+        ('#pragma GCC diagnostic ignored "-Wall"', "forbidden", None),
+        ("#pragma GCC system_header", "forbidden", None),
+        ("__pragma(x)", "forbidden", None),
+        ('#pragma clang diagnostic ignored "-Wunused-variable"', "allowed", "suppress"),
+    ],
+)
+def test_review_source_apostrophes(repo, prefix, pragma, verdict, final):
+    result = _evaluate(repo, prefix + "\n" + pragma + "\n", file="source.cpp")
+    assert (result.verdict, result.fix_strategy_final) == (verdict, final)
+    assert result.hits
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        '0xFF\'FF; _Pragma("GCC system_header")',
+        "\ufeff#pragma GCC system_header",
+        "%:pragma GCC system_header",
+        "\v#pragma GCC system_header",
+        "\f#pragma GCC system_header",
+    ],
+)
+def test_review_pragma_prefixes_and_inline_separator(repo, text):
+    result = _evaluate(repo, text + "\n", file="source.cpp")
+    assert result.verdict == "forbidden"
+    assert result.hits[0].kind == "pragma_wholesale"
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        r"char c = '\'';",
+        '// 0xFF\'FF; _Pragma("GCC system_header")',
+        r"""const char *s = "0xFF'FF; _Pragma(\"GCC system_header\")";""",
+        "/* \ufeff%:pragma GCC system_header */",
+    ],
+)
+def test_review_source_apostrophe_near_misses(repo, text):
+    assert _evaluate(repo, text + "\n", file="source.cpp").hits == ()
+
+
+def test_review_symlink_category_and_grouping(repo):
+    (repo / "CMakeLists.txt").write_text("# baseline\n")
+    (repo / "AUTHORS.md").symlink_to("CMakeLists.txt")
+    result = evaluate(
+        _spec([dict(file="AUTHORS.md", old="# baseline", new="add_compile_options(-w)")]),
+        repo,
+        "generated",
+    )
+    assert result.verdict == "forbidden"
+    assert result.hits[0].file == "AUTHORS.md"
+    assert result.hits[0].kind == "w_all_off"
+
+
+def test_review_alias_overlap(repo):
+    (repo / "CMakeLists.txt").write_text("# baseline\n")
+    (repo / "alias.cmake").symlink_to("CMakeLists.txt")
+    edits = [
+        dict(file=name, old="# baseline", new="# other")
+        for name in ("alias.cmake", "CMakeLists.txt")
+    ]
+    result = evaluate(_spec(edits), repo, "generated")
+    assert result.hits == (
+        PolicyHit(
+            0, "alias.cmake", "alias_overlap", "CMakeLists.txt alias.cmake", "n/a", "forbidden", 1
+        ),
+    )
+    assert result.verdict == "forbidden"
+
+
+def test_review_alias_nonoverlap_and_real_docs(repo):
+    (repo / "CMakeLists.txt").write_text("add_compile_options(-Werror)\n# second\n")
+    (repo / "alias.cmake").symlink_to("CMakeLists.txt")
+    edits = [
+        dict(file="alias.cmake", old="add_compile_options(-Werror)", new="# move"),
+        dict(file="CMakeLists.txt", old="# second", new="add_compile_options(-Werror)"),
+    ]
+    assert evaluate(_spec(edits), repo, "generated").hits == ()
+    (repo / "README.md").write_text("before")
+    (repo / "alias.txt").symlink_to("README.md")
+    assert (
+        evaluate(_spec([dict(file="alias.txt", old="before", new="-w")]), repo, "generated").hits
+        == ()
+    )
+
+
+def test_review_guard_location_equivalence(repo, monkeypatch):
+    from tizen_build_verify import edit_spec_guard as guard
+
+    (repo / "CMakeLists.txt").write_text("# first\n# repeated\n# repeated\n")
+    spec = _spec(
+        [
+            dict(file="CMakeLists.txt", old="# first", new="# longer first"),
+            dict(file="CMakeLists.txt", old="# repeated", new="# last", line=3),
+        ]
+    )
+    expected, actual = [], []
+    locate = guard._locate_edit
+
+    def record(target, bucket):
+        def call(*args):
+            found = target(*args)
+            bucket.append((str(found.file_path), found.start, found.end))
+            return found
+
+        return call
+
+    monkeypatch.setattr(guard, "_locate_edit", record(locate, expected))
+    guard.validate_edit_spec(spec, str(repo))
+    monkeypatch.setattr(guard, "_locate_edit", locate)
+    monkeypatch.setattr(policy_module, "_locate_edit", record(locate, actual))
+    assert evaluate(spec, repo, "generated").verdict == "allowed"
+    assert expected == actual
+    assert json.dumps(expected).encode() == json.dumps(actual).encode()
+
+
+def test_review_policy_version(repo):
+    assert _evaluate(repo, "# changed\n").rules_version == "p5-policy/v2"
 
 
 @pytest.mark.parametrize(

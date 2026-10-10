@@ -37,6 +37,7 @@ class SandboxGit:
         *args: str,
         check: bool = True,
         remote: bool = False,
+        git_dir: Path | None = None,
     ) -> subprocess.CompletedProcess[str]:
         env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
         env.update(
@@ -49,6 +50,8 @@ class SandboxGit:
         command = ["git"]
         if cwd is not None:
             command += ["-C", str(cwd)]
+        if git_dir is not None:
+            command += ["--git-dir=" + str(git_dir)]
         for override in OVERRIDES:
             command += ["-c", override]
         command += list(args)

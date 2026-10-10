@@ -1,0 +1,46 @@
+{
+  "old": {
+    "module": "/tmp/p5-v131-old-policy/tizen-ci-triage/scripts/ci_triage/suppress_policy.py",
+    "result": {
+      "fix_strategy_final": null,
+      "hits": [
+        {
+          "count": 1,
+          "edit_index": 0,
+          "file": "CMakeLists.txt",
+          "kind": "w_all_off",
+          "rule": "forbidden",
+          "scope": "n/a",
+          "token": "-w"
+        }
+      ],
+      "rules_version": "p5-policy/v1",
+      "verdict": "forbidden"
+    },
+    "exit": 0,
+    "module_sha256": "bcae7942a1a6158f856785fd1c9e66c8a50a7eeeb1fe91a7bd81c19b5b97337e"
+  },
+  "current": {
+    "module": "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-ci-triage/scripts/ci_triage/suppress_policy.py",
+    "result": {
+      "fix_strategy_final": null,
+      "hits": [
+        {
+          "count": 1,
+          "edit_index": 0,
+          "file": "CMakeLists.txt",
+          "kind": "w_all_off",
+          "rule": "forbidden",
+          "scope": "n/a",
+          "token": "-w"
+        }
+      ],
+      "rules_version": "p5-policy/v2",
+      "verdict": "forbidden"
+    },
+    "exit": 0,
+    "module_sha256": "e15bfc603bb5614f9686ecef14ec8cd338a7b921bc4d3cbf41b0c2d90018214d"
+  },
+  "same_behavior_except_version": true,
+  "case": "add_compile_options($<IF:$<BOOL:1>,-w,>)\n"
+}

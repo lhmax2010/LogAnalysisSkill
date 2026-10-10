@@ -25,7 +25,7 @@
 | P2 submission identity | CLOSED | Design `9b7754e`; implementation `3d48877`; real hook `ec6c331`; review minors addressed | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批), 2026-10-08; [progress](stage16_p2_submission_identity/progress.md#11-评审次要意见处置与签批2026-10-08): 1420 passed/1 skipped; no new gate failures; three P4/P5/P5R transfers retained |
 | P3 aggregate | CLOSED | `f12154b`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p3-aggregate-closeout.md#最终签收); [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09): 1496 passed/1 skipped, design synchronization retained for P5 |
 | P4 derive_commit | CLOSED | `2ba0e0d`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09): 1480 passed/1 skipped, real hook PASSED; new P5 hardening in stage16 transfer list |
-| P5 sandbox-submit | REVIEW_FIXES_IN_PROGRESS | v1.3.1 review revision, input SHA verified | [closeout](../review/p5-sandbox-submit-closeout.md); [progress](stage19_p5_sandbox_submit/progress.md#18-代码评审修订); no self-approval |
+| P5 sandbox-submit | REVIEW_FIXES_IN_PROGRESS | c71aa3c docs pushed; P5-D-02 resolved, code and mutation verification complete | [closeout](../review/p5-sandbox-submit-closeout.md); [progress](stage19_p5_sandbox_submit/progress.md#18-代码评审修订); no self-approval |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -57,7 +57,7 @@ second contract authority. Runtime behavior remains governed by
 | 16 P2 submission identity | CLOSED | Designer verified; Claude Code CLOSED, zero blockers, four minor findings disposed, 2026-10-08 | [final sign-off](../review/p2-submission-identity-closeout.md#最终签批); [progress](stage16_p2_submission_identity/progress.md#12-设计正文待同步); P4/P5/P5R transfers, cross-unit cache deletion boundary and three unchanged checker issues retained |
 | 17 P3 aggregate | CLOSED | Accepted `f12154b`, 2026-10-09; single reviewer: P3 acceptable; PM verified fixes, FatTank approved | [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09); [final acceptance](../review/p3-aggregate-closeout.md#最终签收); design text synchronization deferred to P5 |
 | 18 P4 derive_commit | CLOSED | Accepted `2ba0e0d`, 2026-10-09; single reviewer: changes needed; PM verified fixes, FatTank approved | [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09); [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [P5 transfers](stage16_p2_submission_identity/progress.md#5-p2-01裁决与移交清单), not yet implemented |
-| 19 P5 sandbox-submit | REVIEW_FIXES_IN_PROGRESS | C0-C5 complete; appendix D review fixes in progress | [closeout](../review/p5-sandbox-submit-closeout.md); [progress](stage19_p5_sandbox_submit/progress.md#18-代码评审修订); inherited checker expectations unchanged |
+| 19 P5 sandbox-submit | REVIEW_FIXES_IN_PROGRESS | C0-C5 complete; v1.3.1 fixes in final validation, P5-D-02 closed | [closeout](../review/p5-sandbox-submit-closeout.md); [progress](stage19_p5_sandbox_submit/progress.md#18-代码评审修订); inherited checker expectations unchanged |
 
 ## Code-Ready Checkpoint
 

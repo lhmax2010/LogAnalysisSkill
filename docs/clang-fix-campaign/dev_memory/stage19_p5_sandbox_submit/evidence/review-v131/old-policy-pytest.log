@@ -1,0 +1,289 @@
+FFFFFFFFF.F                                                              [100%]
+=================================== FAILURES ===================================
+__ test_review_cmake_value_rejection[add_compile_options("-\\\nw")-w_all_off] __
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject0')
+text = 'add_compile_options("-\\\nw")', kind = 'w_all_off'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+_ test_review_cmake_value_rejection[add_compile_options("-Wno\\-everything")-wno_wholesale] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject1')
+text = 'add_compile_options("-Wno\\-everything")', kind = 'wno_wholesale'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+_ test_review_cmake_value_rejection[target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)-wno_flag] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject2')
+text = 'target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)'
+kind = 'wno_flag'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+_ test_review_cmake_value_rejection[target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)-wno_flag] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject3')
+text = 'target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)'
+kind = 'wno_flag'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+_ test_review_cmake_value_rejection[target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")-cmake_genex_unparsed] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject4')
+text = 'target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")'
+kind = 'cmake_genex_unparsed'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+_ test_review_cmake_value_rejection[add_compile_options("-$<1:w>")-cmake_genex_unparsed] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject5')
+text = 'add_compile_options("-$<1:w>")', kind = 'cmake_genex_unparsed'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+_ test_review_cmake_value_rejection[add_compile_options("-W$<1:no-error>")-cmake_genex_unparsed] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject6')
+text = 'add_compile_options("-W$<1:no-error>")', kind = 'cmake_genex_unparsed'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+_ test_review_cmake_value_rejection[add_compile_options("$<1:->w")-cmake_genex_unparsed] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject7')
+text = 'add_compile_options("$<1:->w")', kind = 'cmake_genex_unparsed'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+_ test_review_cmake_value_rejection[target_compile_options(t PRIVATE -Wno-$<1:x>)-cmake_genex_unparsed] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject8')
+text = 'target_compile_options(t PRIVATE -Wno-$<1:x>)'
+kind = 'cmake_genex_unparsed'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+_ test_review_cmake_value_rejection[target_compile_options(t PRIVATE $<TARGET_FILE:x>)-cmake_genex_unparsed] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-72/test_review_cmake_value_reject10')
+text = 'target_compile_options(t PRIVATE $<TARGET_FILE:x>)'
+kind = 'cmake_genex_unparsed'
+
+    @pytest.mark.parametrize("text,kind", [
+        ('add_compile_options("-\\\nw")', "w_all_off"),
+        (r'add_compile_options("-Wno\-everything")', "wno_wholesale"),
+        ("target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)", "wno_flag"),
+        ("target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)", "wno_flag"),
+        ('target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-$<1:w>")', "cmake_genex_unparsed"),
+        ('add_compile_options("-W$<1:no-error>")', "cmake_genex_unparsed"),
+        ('add_compile_options("$<1:->w")', "cmake_genex_unparsed"),
+        ("target_compile_options(t PRIVATE -Wno-$<1:x>)", "cmake_genex_unparsed"),
+        ("add_compile_options($<IF:$<BOOL:1>,-w,>)", "w_all_off"),
+        ("target_compile_options(t PRIVATE $<TARGET_FILE:x>)", "cmake_genex_unparsed"),
+    ])
+    def test_review_cmake_value_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+/tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py:63: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[add_compile_options("-\\\nw")-w_all_off]
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[add_compile_options("-Wno\\-everything")-wno_wholesale]
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[target_compile_options(t PRIVATE PUBLIC;-Wno-unused-variable)-wno_flag]
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[target_compile_options(t PRIVATE [[\nPUBLIC]] -Wno-x)-wno_flag]
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[target_compile_options(t PRIVATE "$<LOWER_CASE:-W>")-cmake_genex_unparsed]
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[add_compile_options("-$<1:w>")-cmake_genex_unparsed]
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[add_compile_options("-W$<1:no-error>")-cmake_genex_unparsed]
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[add_compile_options("$<1:->w")-cmake_genex_unparsed]
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[target_compile_options(t PRIVATE -Wno-$<1:x>)-cmake_genex_unparsed]
+FAILED ../../../../../tmp/p5-v131-old-policy/tests/unit/test_suppress_policy.py::test_review_cmake_value_rejection[target_compile_options(t PRIVATE $<TARGET_FILE:x>)-cmake_genex_unparsed]
+10 failed, 1 passed, 220 deselected in 0.18s

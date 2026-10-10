@@ -1,0 +1,75 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_review_if_recursive_rejection[add_compile_options("$<IF:$<BOOL:1>,-\\\nw,>")-w_all_off] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-95/test_review_if_recursive_rejec0')
+text = 'add_compile_options("$<IF:$<BOOL:1>,-\\\nw,>")', kind = 'w_all_off'
+
+    @pytest.mark.parametrize(
+        "text,kind",
+        [
+            ('add_compile_options("$<IF:$<BOOL:1>,-\\\nw,>")', "w_all_off"),
+            (r'add_compile_options("$<IF:$<BOOL:1>,-Wno\-everything,>")', "wno_wholesale"),
+            ("add_compile_options($<IF:$<BOOL:1>,-$<1:w>,>)", "cmake_genex_unparsed"),
+        ],
+    )
+    def test_review_if_recursive_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+tests/unit/test_suppress_policy.py:87: AssertionError
+_ test_review_if_recursive_rejection[add_compile_options("$<IF:$<BOOL:1>,-Wno\\-everything,>")-wno_wholesale] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-95/test_review_if_recursive_rejec1')
+text = 'add_compile_options("$<IF:$<BOOL:1>,-Wno\\-everything,>")'
+kind = 'wno_wholesale'
+
+    @pytest.mark.parametrize(
+        "text,kind",
+        [
+            ('add_compile_options("$<IF:$<BOOL:1>,-\\\nw,>")', "w_all_off"),
+            (r'add_compile_options("$<IF:$<BOOL:1>,-Wno\-everything,>")', "wno_wholesale"),
+            ("add_compile_options($<IF:$<BOOL:1>,-$<1:w>,>)", "cmake_genex_unparsed"),
+        ],
+    )
+    def test_review_if_recursive_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+tests/unit/test_suppress_policy.py:87: AssertionError
+_ test_review_if_recursive_rejection[add_compile_options($<IF:$<BOOL:1>,-$<1:w>,>)-cmake_genex_unparsed] _
+
+repo = PosixPath('/tmp/pytest-of-linhao/pytest-95/test_review_if_recursive_rejec2')
+text = 'add_compile_options($<IF:$<BOOL:1>,-$<1:w>,>)'
+kind = 'cmake_genex_unparsed'
+
+    @pytest.mark.parametrize(
+        "text,kind",
+        [
+            ('add_compile_options("$<IF:$<BOOL:1>,-\\\nw,>")', "w_all_off"),
+            (r'add_compile_options("$<IF:$<BOOL:1>,-Wno\-everything,>")', "wno_wholesale"),
+            ("add_compile_options($<IF:$<BOOL:1>,-$<1:w>,>)", "cmake_genex_unparsed"),
+        ],
+    )
+    def test_review_if_recursive_rejection(repo, text, kind):
+        result = _evaluate(repo, text + "\n")
+>       assert result.verdict == "forbidden"
+E       AssertionError: assert 'allowed' == 'forbidden'
+E         
+E         - forbidden
+E         + allowed
+
+tests/unit/test_suppress_policy.py:87: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_suppress_policy.py::test_review_if_recursive_rejection[add_compile_options("$<IF:$<BOOL:1>,-\\\nw,>")-w_all_off]
+FAILED tests/unit/test_suppress_policy.py::test_review_if_recursive_rejection[add_compile_options("$<IF:$<BOOL:1>,-Wno\\-everything,>")-wno_wholesale]
+FAILED tests/unit/test_suppress_policy.py::test_review_if_recursive_rejection[add_compile_options($<IF:$<BOOL:1>,-$<1:w>,>)-cmake_genex_unparsed]
+3 failed, 231 deselected in 0.11s

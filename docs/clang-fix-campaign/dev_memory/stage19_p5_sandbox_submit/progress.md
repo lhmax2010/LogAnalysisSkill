@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-10。状态:**REVIEW_FIXES_IN_PROGRESS**。C0-C5已推送;本轮按v1.3.1修订,见§18。未自行标CLOSED。
+日期:2026-10-10。状态:**REVIEW_FIXES_IN_PROGRESS**。文档同步c71aa3c已推送;P5-D-02关闭变异验收冲突,继续修复与验收。未自行标CLOSED。
 
 ## 1. 权威、批准与基线
 
@@ -888,16 +888,16 @@ exit=0
 
 | 附录D事项 | 对应契约 | 落实状态 |
 |---|---|---|
-| 数字分隔符与游离单引号 | §2.3、§6.1.13 | 待实现与变异验证 |
-| BOM、二合字母、垂直空白pragma | §2.3/2.4、§6.1.13 | 待实现 |
-| CMake值解码/列表/括号参数 | §2.3、§6.1.12 | 待实现与旧逻辑变异验证 |
-| 生成器表达式整体/递归/闭集 | v1.3.1补充、§2.3 | 待实现 |
-| 真实文件归组分类/alias_overlap | §2.2、§6.1.14 | 待实现 |
-| 隔离传输与git版本无关对象库路径 | §4.4、§6.3.28 | 待实现 |
-| CLI意外异常统一出口 | §4.1、§6.3.30 | 待实现 |
-| TOCTOU路径/架构变异守卫 | §6.3.29 | 待实现与变异验证 |
-| 读事务仅1/2/3/6、PolicyInputError归因 | §4.3第12步 | 待实现 |
-| 定位跨模块等价/已知限制/规则v2 | §2.8、§6.1.15/16 | 待实现与收口登记 |
+| 数字分隔符与游离单引号 | §2.3、§6.1.13 | DONE; test_review_source_apostrophes / near_misses |
+| BOM、二合字母、垂直空白pragma | §2.3/2.4、§6.1.13 | DONE; test_review_pragma_prefixes_and_inline_separator |
+| CMake值解码/列表/括号参数 | §2.3、§6.1.12 | DONE; 新实现绿,旧原文扫描10例全红 |
+| 生成器表达式整体/递归/闭集 | v1.3.1补充、§2.3 | DONE; IF三反旧实现全红,字面回归对照两边绿 |
+| 真实文件归组分类/alias_overlap | §2.2、§6.1.14 | DONE; 真实分类、重叠与不重叠别名测试 |
+| 隔离传输与git版本无关对象库路径 | §4.4、§6.3.28 | DONE; 四种竞态旧传输全红,对象路径/sha256/残留/清理测试 |
+| CLI意外异常统一出口 | §4.1、§6.3.30 | DONE; 四注入点乘两异常,零额外写库、释放锁、补账 |
+| TOCTOU路径/架构变异守卫 | §6.3.29 | DONE; 删守卫变异红,修复后绿 |
+| 读事务仅1/2/3/6、PolicyInputError归因 | §4.3第12步 | DONE; 事务外第二连接写入成功,错误归因测试 |
+| 定位跨模块等价/已知限制/规则v2 | §2.8、§6.1.15/16 | DONE; 定位等价与版本测试,限制随独立收口提交登记 |
 
 测试仅使用本地Git与裸仓库;不访问真实Gerrit。所有变异在隔离工作树做,
 保存失败原文后恢复,不拿错误实现作为交付。
@@ -912,3 +912,139 @@ exit=0
 ```
 
 首次调用漏传路径得到usage/exit 2,补齐显式路径后如上通过,未改检查器。
+
+### REVIEW-V131-01:旧实现已有拒绝的IF样本无法作为退化必红证据
+
+- 原文:设计稿§6.1第12条:801要求每例在退回原文扫描时变红;
+  同条:808指定`$<IF:$<BOOL:1>,-w,>`识别`-w`并forbidden。
+- 事实:未改的旧实现(c71aa3c中的policy,与72a5806相同)已经识别该字面`-w`。
+  与当前修复实现逐字段比较,除rules_version外结果完全相同,均为forbidden、
+  w_all_off、count=1。不能用版本号差异或不相关断言冒充本例的行为退化证据。
+- 证据:[if-survivor.json](evidence/review-v131/if-survivor.json)、
+  [失败原文](evidence/review-v131/old-policy-pytest.log)、
+  [命令与exit](evidence/review-v131/commands.json)、
+  [复现实验](evidence/review-v131/probe_old_policy.py)。旧实现位于独立worktree,
+  主工作树没有被旧逻辑覆盖;当前policy复跑231 passed,exit 0。
+- 实测命令与摘录:
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-v131/probe_old_policy.py
+same_behavior_except_version: true
+10 failed, 1 passed, 220 deselected in 0.18s
+old_pytest_exit=1
+exit=0
+
+$ .venv/bin/python -m pytest tests/unit/test_suppress_policy.py -q
+231 passed in 1.38s
+exit=0
+```
+
+- 候选1(建议):该字面IF样本保留为新旧都必须绿的行为回归对照;
+  "退回原文扫描必红"仅要求本轮新增识别能力的反例。另补IF输出内含转义/续行
+  的反例验证递归,不修改生产判定。
+- 候选2:设计方提供替换的IF反例,明确其在旧原文扫描下应漏检且新实现拒绝。
+- 未自行调整验收文本/标DONE。停止报告条目数1。代码、测试未提交,保留中间态。
+  sandbox旧测试首轮120 passed/1 failed,唯一失败为预期硬编码p5-policy/v1尚未
+  按批准的v2升级;已定位,停止时尚未修改。完整94门禁与代码提交CI尚未执行。
+  传输/CLI/TOCTOU初步实现尚未完成新用例和全量验证,不作完成声明。
+
+文档提交`c71aa3ceb86f861d9fc5ddad7e574165333c1cc9`已推送,远端CI:
+https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38014808074
+`status=completed, conclusion=success`。v1.3草稿未入库,design.md检查0 problem。
+
+### P5-D-02裁定(轻量流程)
+
+设计方采纳候选处置,只改验收归类,规则不变。REVIEW-V131-01现为CLOSED。
+字面`$<IF:$<BOOL:1>,-w,>`列为新旧都forbidden的回归对照,不要求旧实现红。
+另补IF输出内续行的`-w`、经转义的`-Wno-everything`、拼接`-$<1:w>`三例,
+预期分别w_all_off、wno_wholesale、cmake_genex_unparsed。若旧实现能拦下,
+按裁定记回归对照,不再停止。变异须留实测原文,不借rules_version制造假红。
+
+设计稿仅§6.1第12条指定位置改动,随代码提交。SHA256(exit 0):
+
+```text
+before=f027f8b4057d4d617f9265968765f01940ce1396e588a65b28e95326e89258e6
+after=83383877f6b8c0deac8606d29fec8a446c1e5520813e714f881855886f888d3b
+```
+
+定向首轮376 passed/exit 0。开发期间ruff报12项(行长、导入顺序、zip.strict),
+mypy报elements缺类型注解1项,已修正,两者复跑exit 0。旧版本字符串断言按批准
+规则版本更新为v2,拒绝行为断言不变。全量与变异结果以本节后续证据为准。
+
+### 修复实现与最终实测
+
+非语义实现细节登记:
+
+- CMake的解码值同时携带转义分号位置,列表拆分不把转义分号当分隔符;
+  同一原参数拆出的值用对象身份识别作用域位置,保留原命令区间映射。
+- 隔离传输的异常包装仅覆盖git/文件操作,数据库写入在包装之外;
+  防止推送成功后的记账异常被误记为PUSH(failed)。清理异常只向stderr告警,
+  不改变已取得的结果;下一次重建残留传输目录。
+- 竞态用例用SSH形状的remote加本地进程包装调用git-upload-pack/receive-pack,
+  两端都是tmp_path裸仓库,不联网、不访问真实Gerrit。
+- 证据脚本显式ruff初报13项(导入/行长),已格式化且复跑All checks passed,
+  判据、变异与输出不变。不是生产逻辑或安全边界裁决。
+
+变异仅在`/tmp/p5-v131-review`执行,旧源码来自`72a5806`不可变blob;
+脚本finally按字节恢复两文件,失败原文、精确argv/cwd/PYTHONPATH与被测源码hash
+见[evidence/review-v131/mutations/commands.json](evidence/review-v131/mutations/commands.json)。
+三条IF样本旧实现均漏检,没有追加改列的回归对照。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-v131/run_mutations.py /tmp/p5-v131-review
+current: exit=0, failed=0, passed=60
+old-raw-cmake: exit=1, failed=10, passed=0
+old-if-recursion: exit=1, failed=3, passed=0
+old-if-literal-control: exit=0, failed=0, passed=1
+removed-path-guard: exit=1, failed=1, passed=0
+old-primary-transport: exit=1, failed=4, passed=0
+exact_source_restoration=PASS
+restored-policy: exit=0, failed=0, passed=60
+restored-sandbox: exit=0, failed=0, passed=23
+exit=0
+```
+
+restored-sandbox选择器包含22个新增case与1个既有review-ref case,不把它重复计入新增。
+评审前1845/1,本轮新增82(策略60、sandbox22);原1846个nodeid及结果全部保留。
+最终证据为`review-code-final/`,较早`review-code/`未含最后1个清理告警测试,
+作为开发轮次留档,不替代最终结果。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-v131-review docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-code-final
+pytest: exit=0 expected=0
+mypy: exit=0 expected=0
+ruff: exit=0 expected=0
+lint-imports: exit=0 expected=0
+symbol: exit=0 expected=0
+bridge: exit=0 expected=0
+design-doc: exit=0 expected=0
+completed=94 unexpected=3
+exit=0
+================== 1927 passed, 1 skipped in 63.25s (0:01:03) ==================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-code-final /tmp/p5-v131-review
+exit_changes={}; missing_nodeids=[]; changed_outcomes={}
+added_nodeids=431; identical_tested_sources=6
+baseline_comparison=PASS
+exit=0
+C5_to_review nodeids_before=1846 nodeids_after=1928 added=82 missing=0 outcome_changes=0 PASS
+exit=0
+```
+
+全命令及exit原文:[review-code-final/commands.json](evidence/review-code-final/commands.json);
+逐nodeid见同目录pytest.xml,比较见[review-code-final-comparison.json](evidence/review-code-final-comparison.json)。
+3项既有异常与cd7f8dd逐条同exit:design-doc-controls=1、
+symbol-negative-duplicate-spec-root-mismatch=0、symbol-key-twin-both-binary-key=1。
+无新增失败,未放宽任何门禁判据。
+
+真实hook本机结果([pytest.log:72](evidence/review-code-final/pytest.log#L72)):
+
+```text
+tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive PASSED [  3%]
+```
+
+sha256对象格式用例亦PASSED,不是skip。代码提交及收口提交各自推送后核验CI,
+结果在后续登记与交付回报中锚定。当前无未解决停止报告项,仍不自行签批CLOSED。
+
+`git diff --cached --check`对pytest失败原文的log/xml报尾随空白(exit 2),
+保留原始证据字节,不对输出做格式化;源码、测试与Markdown范围的check为exit 0。

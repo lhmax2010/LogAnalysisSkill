@@ -1,0 +1,34 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________________ test_review_toctou_record_path_same_tree ___________________
+
+campaign = <test_sandbox_submit.Campaign object at 0x759cbb9edaf0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x759cbb1d1370>
+
+    def test_review_toctou_record_path_same_tree(campaign, monkeypatch):
+        c = campaign
+        clone = c.unit_root / "same-tree-protected"
+        shutil.copytree(c.copies[1], clone)
+        assert git(clone, "rev-parse", "HEAD^{tree}") == c.tree
+        assert submit.is_protected(clone)
+        original = submit.toctou_recheck
+    
+        def changed(*args, **kwargs):
+            c.sql(
+                "UPDATE verification_records SET worktree_path=? WHERE verification_id='v1'",
+                (str(clone),),
+            )
+            return original(*args, **kwargs)
+    
+        monkeypatch.setattr(submit, "toctou_recheck", changed)
+        result = c.run()
+>       assert result.payload["action"] == "held"
+E       AssertionError: assert 'pushed' == 'held'
+E         
+E         - held
+E         + pushed
+
+tests/unit/test_sandbox_submit.py:399: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_sandbox_submit.py::test_review_toctou_record_path_same_tree
+1 failed, 130 deselected in 0.38s

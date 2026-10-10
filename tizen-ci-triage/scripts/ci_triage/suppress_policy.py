@@ -17,14 +17,21 @@ from tizen_build_verify.edit_spec_guard import (
 )
 
 SourceKind = Literal["t1_cherry_pick", "generated", "suppress"]
-POLICY_RULES_VERSION = "p5-policy/v1"
+POLICY_RULES_VERSION = "p5-policy/v2"
 WHOLESALE_NAMES = frozenset({"everything", "all", "extra", "pedantic"})
 _OPTION = re.compile(r"(?<![A-Za-z0-9_\-])-(?:W[A-Za-z0-9_+.=#\-]*|w)(?![A-Za-z0-9_+.=#\-])")
 _BRACKET = re.compile(r"\[(=*)\[")
 _RAW_STRING = re.compile(r'R"([^ ()\\\t\r\n]{0,16})\(')
 _GLOBAL = "global_or_ambiguous"
 _SUPPRESS = {"wno_flag", "wno_error_flag", "pragma_suppress"}
-_WHOLESALE = {"wno_error_all", "wno_wholesale", "w_all_off", "pragma_wholesale", "pragma_unparsed"}
+_WHOLESALE = {
+    "wno_error_all",
+    "wno_wholesale",
+    "w_all_off",
+    "pragma_wholesale",
+    "pragma_unparsed",
+    "cmake_genex_unparsed",
+}
 _ALLOWED_SCOPES = {"target_private", "target_property", "target_variable", "source_local"}
 
 
@@ -70,6 +77,7 @@ class _Argument:
     start: int
     end: int
     punctuation: bool = False
+    escaped_semicolons: frozenset[int] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -155,8 +163,46 @@ def _bracket_end(text: str, start: int) -> tuple[int, str] | None:
     return end, text[match.end() : stop if stop >= 0 else len(text)]
 
 
-def _cmake(text: str) -> tuple[str, list[_Command]]:
-    active = list(text)
+def _cmake_value(raw: str) -> tuple[str, frozenset[int]]:
+    value: list[str] = []
+    escaped = set()
+    index = 0
+    while index < len(raw):
+        if raw[index] == "\\" and index + 1 < len(raw):
+            index += 1
+            if raw.startswith("\r\n", index):
+                index += 2
+                continue
+            if raw[index] == "\n":
+                index += 1
+                continue
+            if raw[index] == ";":
+                escaped.add(len(value))
+            value.append({"n": "\n", "r": "\r", "t": "\t"}.get(raw[index], raw[index]))
+        else:
+            value.append(raw[index])
+        index += 1
+    return "".join(value), frozenset(escaped)
+
+
+def _value_slice(
+    value: str,
+    escaped: frozenset[int],
+    start: int,
+    end: int,
+) -> tuple[str, frozenset[int]]:
+    return value[start:end], frozenset(i - start for i in escaped if start <= i < end)
+
+
+def _list_elements(value: str, escaped: frozenset[int]) -> list[tuple[str, frozenset[int]]]:
+    boundaries = [-1] + [i for i, char in enumerate(value) if char == ";" and i not in escaped]
+    return [
+        _value_slice(value, escaped, left + 1, right)
+        for left, right in zip(boundaries, boundaries[1:] + [len(value)], strict=True)
+    ]
+
+
+def _cmake(text: str) -> tuple[list[_Argument], list[_Command]]:
     tokens: list[_Argument] = []
     index = 0
     while index < len(text):
@@ -168,39 +214,43 @@ def _cmake(text: str) -> tuple[str, list[_Command]]:
             bracket = _bracket_end(text, index + 1)
             end = bracket[0] if bracket else text.find("\n", index)
             end = len(text) if end < 0 else end
-            _blank(active, index, end)
             index = end
             continue
         if char in "()":
             tokens.append(_Argument(char, index, index + 1, True))
             index += 1
             continue
-        start, value = index, ""
+        start = index
         bracket = _bracket_end(text, index)
+        elements: list[tuple[str, frozenset[int]]]
         if bracket:
             index, value = bracket
+            value = re.sub(r"^\r?\n", "", value, count=1)
+            elements = [(value, frozenset())]
         else:
+            quoted = False
+            raw = ""
             while index < len(text) and not text[index].isspace() and text[index] not in "()":
                 if text[index] == '"':
+                    quoted = True
                     end = _quoted_end(text, index)
-                    raw = (
+                    raw += (
                         text[index + 1 : end - 1] if text[end - 1] == '"' else text[index + 1 : end]
-                    )
-                    raw = re.sub(r"\\\r?\n", "", raw)
-                    value += re.sub(
-                        r"\\(.)",
-                        lambda m: {"n": "\n", "r": "\r", "t": "\t"}.get(m[1], m[1]),
-                        raw,
-                        flags=re.S,
                     )
                     index = end
                 elif text[index] == "\\" and index + 1 < len(text):
-                    value += text[index : index + 2]
-                    index += 2
+                    end = index + (3 if text.startswith("\\\r\n", index) else 2)
+                    raw += text[index:end]
+                    index = end
                 else:
-                    value += text[index]
+                    raw += text[index]
                     index += 1
-        tokens.append(_Argument(value, start, index))
+            value, escaped = _cmake_value(raw)
+            elements = [(value, escaped)] if quoted else _list_elements(value, escaped)
+        tokens.extend(
+            _Argument(value, start, index, escaped_semicolons=escaped)
+            for value, escaped in elements
+        )
 
     commands = []
     index = 0
@@ -231,16 +281,14 @@ def _cmake(text: str) -> tuple[str, list[_Command]]:
             )
         )
         index = stop + 1
-    return "".join(active), commands
+    return tokens, commands
 
 
-def _cmake_scope(command: _Command | None, position: int) -> str:
+def _cmake_scope(command: _Command | None, argument: _Argument) -> str:
     if command is None:
         return _GLOBAL
     args = command.arguments
-    current = next(
-        (index for index, arg in enumerate(args) if arg.start <= position < arg.end), None
-    )
+    current = next((index for index, arg in enumerate(args) if arg is argument), None)
     if current is None:
         return _GLOBAL
     if command.name == "target_compile_options":
@@ -274,6 +322,118 @@ def _cmake_scope(command: _Command | None, position: int) -> str:
     return _GLOBAL
 
 
+def _top_separators(value: str, separator: str) -> list[int]:
+    depth, index = 0, 0
+    result = []
+    while index < len(value):
+        if value.startswith("$<", index):
+            depth += 1
+            index += 2
+            continue
+        if value[index] == ">":
+            depth -= 1
+            if depth < 0:
+                raise ValueError("unbalanced generator expression")
+        elif value[index] == separator and depth == 0:
+            result.append(index)
+        index += 1
+    if depth:
+        raise ValueError("unbalanced generator expression")
+    return result
+
+
+def _genex_outputs(value: str, escaped: frozenset[int]) -> list[str]:
+    if "$<" not in value:
+        return [value]
+    if not value.startswith("$<") or not value.endswith(">"):
+        raise ValueError("generator expression concatenation")
+    body, protected = _value_slice(value, escaped, 2, len(value) - 1)
+    colons = _top_separators(body, ":")
+    split = colons[0] if colons else len(body)
+    name = body[:split]
+    payload, protected = _value_slice(body, protected, split + 1, len(body))
+    boolean = re.fullmatch(
+        r"BOOL|AND|OR|NOT|STREQUAL|EQUAL|VERSION_[A-Z_]+|[A-Z_]+_COMPILER_ID|"
+        r"[A-Z_]+_COMPILER_VERSION|COMPILE_LANGUAGE|CONFIG|PLATFORM_ID",
+        name,
+    )
+    if name in {"0", "1"} or name.startswith("$<"):
+        if name.startswith("$<"):
+            _genex_outputs(name, frozenset())
+        outputs = [(payload, protected)]
+    elif name == "IF" or boolean:
+        separators = [-1] + _top_separators(payload, ",") + [len(payload)]
+        parts = [
+            _value_slice(payload, protected, left + 1, right)
+            for left, right in zip(separators[:-1], separators[1:], strict=True)
+        ]
+        if name == "IF":
+            if len(parts) != 3:
+                raise ValueError("invalid IF generator expression")
+            _genex_outputs(*parts[0])
+            outputs = parts[1:]
+        else:
+            for part in parts:
+                _genex_outputs(*part)
+            return []
+    elif name in {"BUILD_INTERFACE", "INSTALL_INTERFACE"}:
+        outputs = [(payload, protected)]
+    else:
+        raise ValueError("unlisted or computational generator expression")
+    return [
+        output
+        for part in outputs
+        for element in _list_elements(*part)
+        for output in _genex_outputs(*element)
+    ]
+
+
+def _cmake_instances(text: str) -> list[_Instance]:
+    arguments, commands = _cmake(text)
+    result = []
+    for arg in arguments:
+        if arg.punctuation:
+            continue
+        command = next((cmd for cmd in commands if any(a is arg for a in cmd.arguments)), None)
+        start, end = (command.start, command.end) if command else (arg.start, arg.end)
+        scope = _cmake_scope(command, arg)
+        try:
+            values = _genex_outputs(arg.value, arg.escaped_semicolons)
+        except ValueError:
+            result.append(_Instance("cmake_genex_unparsed", arg.value, scope, start, end))
+            continue
+        for value in values:
+            for token in _OPTION.finditer(value):
+                kind = _option_kind(token[0])
+                if kind:
+                    token_scope = (
+                        "n/a"
+                        if kind
+                        in {
+                            "wno_error_all",
+                            "wno_wholesale",
+                            "w_all_off",
+                        }
+                        else scope
+                    )
+                    result.append(_Instance(kind, token[0], token_scope, start, end))
+    for command in commands:
+        if command.name in {"add_executable", "add_library", "add_test"}:
+            args = command.arguments
+            offset = 1 if command.name == "add_test" and args and args[0].value == "NAME" else 0
+            if len(args) > offset:
+                result.append(
+                    _Instance(
+                        "target_decl",
+                        command.name + " " + args[offset].value,
+                        "n/a",
+                        command.start,
+                        command.end,
+                    )
+                )
+    return result
+
+
 def _splice(text: str) -> tuple[str, list[int]]:
     removed = {
         index
@@ -304,7 +464,22 @@ def _source_masks(text: str) -> tuple[str, str]:
             end = len(text) if end < 0 else end + 2
             _blank(comments, index, end)
             _blank(code, index, end)
-        elif text[index] in "\"'":
+        elif text[index] == "'":
+            # A pp-number starts at a token boundary; apostrophes can be separators.
+            prefix = text[:index]
+            number = re.search(
+                r"(?<![A-Za-z0-9_.])(?:[0-9]|\.[0-9])(?:[A-Za-z0-9_.']|[eEpP][+-])*\Z",
+                prefix,
+            )
+            if number and re.match(r"[A-Za-z0-9_]", text[index + 1 : index + 2]):
+                end = index + 1
+            else:
+                line_end = text.find("\n", index)
+                limit = len(text) if line_end < 0 else line_end
+                closed = _quoted_end(text[:limit], index)
+                end = closed if closed > index + 1 and text[closed - 1] == "'" else index + 1
+                _blank(code, index, end)
+        elif text[index] == '"':
             end = _quoted_end(text, index)
             _blank(code, index, end)
         else:
@@ -338,9 +513,13 @@ def _pragma(body: str, raw: str, start: int, end: int) -> _Instance | None:
 def _source_instances(text: str) -> list[_Instance]:
     comments, code = _source_masks(text)
     instances = []
-    for match in re.finditer(r"^[ \t]*#[ \t]*pragma\b[^\n]*", code, re.M):
+    if code.startswith("\ufeff"):
+        code = " " + code[1:]
+        comments = " " + comments[1:]
+    prefix = r"^[ \t\v\f]*(?:#|%:)[ \t\v\f]*pragma\b"
+    for match in re.finditer(prefix + r"[^\n]*", code, re.M):
         raw = comments[match.start() : match.end()]
-        body = re.sub(r"^[ \t]*#[ \t]*pragma\b", "", raw).strip()
+        body = re.sub(prefix, "", raw).strip()
         instance = _pragma(body, raw, match.start(), match.end())
         if instance:
             instances.append(instance)
@@ -394,17 +573,16 @@ def _option_kind(token: str) -> str | None:
 def _instances(text: str, category: str) -> list[_Instance]:
     if category == "doc":
         return []
+    if category == "cmake":
+        return _cmake_instances(text)
     positions = list(range(len(text)))
     if category in {"source", "automake", "build_other", "spec"}:
         text, positions = _splice(text)
-    commands: list[_Command] = []
     if category == "source":
         result = _source_instances(text)
     else:
         active = text
-        if category == "cmake":
-            active, commands = _cmake(text)
-        elif category in {"automake", "build_other", "spec"}:
+        if category in {"automake", "build_other", "spec"}:
             chars = list(text)
             for comment in re.finditer(r"(?<!\S)#[^\n]*", text):
                 _blank(chars, comment.start(), comment.end())
@@ -416,12 +594,7 @@ def _instances(text: str, category: str) -> list[_Instance]:
                 continue
             start, end = token.span()
             scope = _GLOBAL
-            if category == "cmake":
-                command = next((cmd for cmd in commands if cmd.start <= start < cmd.end), None)
-                scope = _cmake_scope(command, start)
-                if command:
-                    start, end = command.start, command.end
-            elif category == "automake":
+            if category == "automake":
                 line = active[active.rfind("\n", 0, start) + 1 : start]
                 assignment = re.match(
                     r"\s*([^\s=:+?]+)_(?:CFLAGS|CXXFLAGS|CPPFLAGS)\s*[:+?]?=", line
@@ -431,21 +604,6 @@ def _instances(text: str, category: str) -> list[_Instance]:
             if kind in {"wno_error_all", "wno_wholesale", "w_all_off"}:
                 scope = "n/a"
             result.append(_Instance(kind, token[0], scope, start, end))
-        for command in commands:
-            if command.name not in {"add_executable", "add_library", "add_test"}:
-                continue
-            args = command.arguments
-            offset = 1 if command.name == "add_test" and args and args[0].value == "NAME" else 0
-            if len(args) > offset:
-                result.append(
-                    _Instance(
-                        "target_decl",
-                        command.name + " " + args[offset].value,
-                        "n/a",
-                        command.start,
-                        command.end,
-                    )
-                )
     return [
         _Instance(
             item.kind, item.token, item.scope, positions[item.start], positions[item.end - 1] + 1
@@ -466,7 +624,23 @@ def _hit_index(instances: Sequence[_Instance], spans: Sequence[tuple[int, int, i
     )
 
 
-def _file_hits(before: str, edits: list[_Edit]) -> list[PolicyHit]:
+def _file_hits(before: str, edits: list[_Edit], category: str) -> list[PolicyHit]:
+    overlaps = [
+        PolicyHit(
+            min(left.index, right.index),
+            left.file if left.index < right.index else right.file,
+            "alias_overlap",
+            " ".join(sorted((left.file, right.file))),
+            "n/a",
+            "forbidden",
+            1,
+        )
+        for i, left in enumerate(edits)
+        for right in edits[i + 1 :]
+        if left.file != right.file and left.start < right.end and right.start < left.end
+    ]
+    if overlaps:
+        return overlaps
     after = before
     for edit in sorted(edits, key=lambda item: item.start, reverse=True):
         after = after[: edit.start] + edit.new + after[edit.end :]
@@ -477,7 +651,6 @@ def _file_hits(before: str, edits: list[_Edit]) -> list[PolicyHit]:
         new_spans.append((edit.start + delta, edit.start + delta + len(edit.new), edit.index))
         delta += len(edit.new) - (edit.end - edit.start)
     file = min(edit.file for edit in edits)
-    category = _category(file)
     old, new = _instances(before, category), _instances(after, category)
     old_count, new_count = Counter(item.key for item in old), Counter(item.key for item in new)
     hits = []
@@ -578,7 +751,7 @@ def evaluate(
             raise PolicyInputError("unsupported source_kind")
         by_file: dict[Path, list[_Edit]] = defaultdict(list)
         for index, edit in enumerate(cast(list[dict[str, Any]], edit_spec["edits"])):
-            path = _validate_target_path(edit["file"], src_root.resolve())
+            path = _validate_target_path(edit["file"], src_root.resolve()).resolve()
             located = _locate_edit(path, edit["old"], edit.get("line"))
             by_file[path].append(
                 _Edit(index, edit["file"], located.start, located.end, edit["new"])
@@ -586,7 +759,11 @@ def evaluate(
         hits = [
             hit
             for path, edits in by_file.items()
-            for hit in _file_hits(path.read_text(encoding="utf-8", errors="surrogateescape"), edits)
+            for hit in _file_hits(
+                path.read_text(encoding="utf-8", errors="surrogateescape"),
+                edits,
+                _category(path.relative_to(src_root.resolve()).as_posix()),
+            )
         ]
     except EditSpecViolation as exc:
         raise PolicyInputError(str(exc)) from exc

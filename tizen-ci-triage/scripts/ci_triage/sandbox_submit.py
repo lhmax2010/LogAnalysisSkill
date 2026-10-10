@@ -6,8 +6,10 @@ import fcntl
 import hashlib
 import json
 import re
+import shutil
 import sqlite3
 import subprocess
+import sys
 import unicodedata
 from collections.abc import Iterator, Mapping
 from contextlib import ExitStack, contextmanager
@@ -386,12 +388,7 @@ class _SnapshotDatabase(StateDatabase):
         return {name: str(row[name]) for name in names} if row else None
 
 
-def toctou_recheck(
-    state_db: StateDatabase,
-    snapshot: SubmitSnapshot,
-    *,
-    src_clean: Path,
-) -> TocTouResult:
+def _recheck_database(state_db: StateDatabase, snapshot: SubmitSnapshot) -> AggregateResult:
     s = snapshot
     conn = state._read_connection(state_db)
     try:
@@ -427,14 +424,6 @@ def toctou_recheck(
                     "record path/arch changed",
                     state.ARCH_RAW_TO_NORM[old.arch],
                 )
-        _copies(aggregate, s.git, full=True)
-        # Rehash the file, but retain the originally parsed bytes for policy evaluation.
-        try:
-            digest = hashlib.sha256(Path(s.round_.edit_spec_ref).read_bytes()).hexdigest()
-            if digest != s.round_.edit_spec_sha256:
-                raise _held("edit_spec_rebind_mismatch", "round file changed")
-        except OSError as exc:
-            raise _held("edit_spec_rebind_mismatch", str(exc)) from exc
         view = state._gate_view_on_connection(conn, unit.campaign_unit_key)
         policy = state._policy_on_connection(conn, unit.campaign_unit_key, s.round_.round_index)
         if (
@@ -444,8 +433,35 @@ def toctou_recheck(
             or state._cached_change_id(conn, s.submission_key) != s.change_id
         ):
             raise _held("state_inconsistent", "gate or Change-Id snapshot changed")
-        _source(s.git, src_clean, unit)
-        verdict = evaluate(s.edit_spec, src_clean, cast(SourceKind, s.policy["edit_source_kind"]))
+        return aggregate
+    finally:
+        conn.close()
+
+
+def toctou_recheck(
+    state_db: StateDatabase,
+    snapshot: SubmitSnapshot,
+    *,
+    src_clean: Path,
+) -> TocTouResult:
+    s = snapshot
+    try:
+        aggregate = _recheck_database(state_db, s)
+        _copies(aggregate, s.git, full=True)
+        # Rehash the file, but retain the originally parsed bytes for policy evaluation.
+        try:
+            digest = hashlib.sha256(Path(s.round_.edit_spec_ref).read_bytes()).hexdigest()
+            if digest != s.round_.edit_spec_sha256:
+                raise _held("edit_spec_rebind_mismatch", "round file changed")
+        except OSError as exc:
+            raise _held("edit_spec_rebind_mismatch", str(exc)) from exc
+        _source(s.git, src_clean, s.unit)
+        try:
+            verdict = evaluate(
+                s.edit_spec, src_clean, cast(SourceKind, s.policy["edit_source_kind"])
+            )
+        except PolicyInputError as exc:
+            raise _held("edit_spec_rebind_mismatch", str(exc)) from exc
         if (verdict.verdict, verdict.fix_strategy_final) != (
             s.policy["verdict"],
             s.policy["fix_strategy_final"],
@@ -459,7 +475,6 @@ def toctou_recheck(
         return TocTouResult(False, exc.code, exc.held, exc.arch, exc.detail)
     except (
         state.StateInconsistent,
-        PolicyInputError,
         ValueError,
         OSError,
         subprocess.SubprocessError,
@@ -467,8 +482,6 @@ def toctou_recheck(
         return TocTouResult(
             False, "REJECTED_STATE_INCONSISTENT", "state_inconsistent", None, str(exc)
         )
-    finally:
-        conn.close()
 
 
 def sandbox_submit(options: SandboxSubmitOptions) -> SandboxSubmitOutcome:
@@ -722,7 +735,7 @@ def sandbox_submit(options: SandboxSubmitOptions) -> SandboxSubmitOutcome:
                 held=checked.held_reason,
                 arch=checked.held_arch,
             )
-        _publish(db, snapshot, ref, payload)
+        _publish(db, snapshot, ref, payload, config.workspace / _unit_hash(unit.campaign_unit_key))
         return SandboxSubmitOutcome(5 if payload["action"] == "push_failed" else 0, payload)
     except _Reject as exc:
         payload.update(error_code=exc.code, reason=exc.detail)
@@ -759,15 +772,37 @@ def sandbox_submit(options: SandboxSubmitOptions) -> SandboxSubmitOutcome:
         locks.close()
 
 
+class _TransportFailure(RuntimeError):
+    """A transport operation failed, as distinct from a bookkeeping failure."""
+
+
+@contextmanager
+def _transport_errors() -> Iterator[None]:
+    try:
+        yield
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        raise _TransportFailure(str(exc)) from exc
+
+
 def _remote_sha(git: SandboxGit, path: Path, remote: str, ref: str) -> str | None:
-    result = git.run(path, "ls-remote", "--exit-code", remote, ref, check=False, remote=True)
-    if result.returncode == 2:
-        return None
-    result.check_returncode()
-    rows = [line.split("\t") for line in result.stdout.splitlines()]
-    if len(rows) != 1 or len(rows[0]) != 2 or rows[0][1] != ref:
-        raise ValueError("unexpected ls-remote response")
-    return rows[0][0]
+    with _transport_errors():
+        result = git.run(
+            None,
+            "ls-remote",
+            "--exit-code",
+            remote,
+            ref,
+            check=False,
+            remote=True,
+            git_dir=path,
+        )
+        if result.returncode == 2:
+            return None
+        result.check_returncode()
+        rows = [line.split("\t") for line in result.stdout.splitlines()]
+        if len(rows) != 1 or len(rows[0]) != 2 or rows[0][1] != ref:
+            raise ValueError("unexpected ls-remote response")
+        return rows[0][0]
 
 
 def _push_event(db: StateDatabase, s: SubmitSnapshot, ref: str, result: str) -> None:
@@ -786,35 +821,88 @@ def _push_event(db: StateDatabase, s: SubmitSnapshot, ref: str, result: str) -> 
     )
 
 
-def _publish(db: StateDatabase, s: SubmitSnapshot, ref: str, payload: dict[str, Any]) -> None:
-    key, path = s.unit.campaign_unit_key, s.derive_inputs.worktree
+@contextmanager
+def _transport(s: SubmitSnapshot, unit_root: Path) -> Iterator[Path]:
+    path = unit_root / ".transport"
     try:
-        remote_sha = _remote_sha(s.git, path, s.remote, ref)
-        if remote_sha == s.derived:
-            view = state.gate_view(db, key)
-            status = state.latest_status(db, key)
-            recorded = view.sandbox_push is not None and all(
-                view.sandbox_push.get(k) == v
-                for k, v in (
-                    ("ref", ref),
-                    ("pushed_sha", s.derived),
-                    ("result", "ok"),
-                )
+        with _transport_errors():
+            if path.is_symlink() or path.is_file():
+                path.unlink()
+            elif path.exists():
+                shutil.rmtree(path)
+            source = s.derive_inputs.worktree
+            object_format = s.git.run(source, "rev-parse", "--show-object-format").stdout.strip()
+            s.git.run(None, "init", "--bare", f"--object-format={object_format}", str(path))
+            objects = Path(s.git.run(source, "rev-parse", "--git-path", "objects").stdout.strip())
+            objects = (source / objects).resolve()
+            (path / "objects/info/alternates").write_text(str(objects) + "\n", encoding="utf-8")
+        yield path
+    finally:
+        try:
+            if path.exists():
+                shutil.rmtree(path)
+        except OSError as exc:
+            print(f"warning: transport cleanup failed: {exc}", file=sys.stderr)
+
+
+def _publish(
+    db: StateDatabase,
+    s: SubmitSnapshot,
+    ref: str,
+    payload: dict[str, Any],
+    unit_root: Path,
+) -> None:
+    try:
+        with _transport(s, unit_root) as transport:
+            _publish_in_transport(db, s, ref, payload, transport)
+    except _TransportFailure as exc:
+        _push_event(db, s, ref, "failed")
+        state.append_status(db, s.unit.campaign_unit_key, "SANDBOX_PUSH_FAILED")
+        payload.update(
+            action="push_failed",
+            status="SANDBOX_PUSH_FAILED",
+            error_code="PUSH_FAILED",
+            reason=str(exc),
+        )
+        payload["push"]["result"] = "failed"
+
+
+def _publish_in_transport(
+    db: StateDatabase,
+    s: SubmitSnapshot,
+    ref: str,
+    payload: dict[str, Any],
+    transport: Path,
+) -> None:
+    key, path = s.unit.campaign_unit_key, s.derive_inputs.worktree
+    remote_sha = _remote_sha(s.git, transport, s.remote, ref)
+    if remote_sha == s.derived:
+        view = state.gate_view(db, key)
+        status = state.latest_status(db, key)
+        recorded = view.sandbox_push is not None and all(
+            view.sandbox_push.get(k) == v
+            for k, v in (
+                ("ref", ref),
+                ("pushed_sha", s.derived),
+                ("result", "ok"),
             )
-            payload["action"] = (
-                "already_pushed" if recorded and status == "SANDBOX_PUSHED" else "pushed"
-            )
-            if not recorded:
-                _push_event(db, s, ref, "ok")
-            if status != "SANDBOX_PUSHED":
-                state.append_status(db, key, "SANDBOX_PUSHED")
-        else:
-            if state.latest_status(db, key) != "SANDBOX_PUSHING":
-                state.append_status(db, key, "SANDBOX_PUSHING")
-            payload["status"] = "SANDBOX_PUSHING"
-            _safe(s.git, path)
+        )
+        payload["action"] = (
+            "already_pushed" if recorded and status == "SANDBOX_PUSHED" else "pushed"
+        )
+        if not recorded:
+            _push_event(db, s, ref, "ok")
+        if status != "SANDBOX_PUSHED":
+            state.append_status(db, key, "SANDBOX_PUSHED")
+    else:
+        if state.latest_status(db, key) != "SANDBOX_PUSHING":
+            state.append_status(db, key, "SANDBOX_PUSHING")
+        payload["status"] = "SANDBOX_PUSHING"
+        _safe(s.git, path)
+        with _transport_errors():
+            s.git.run(None, "cat-file", "-e", s.derived + "^{commit}", git_dir=transport)
             s.git.run(
-                path,
+                None,
                 "push",
                 "--porcelain",
                 "--no-verify",
@@ -823,21 +911,12 @@ def _publish(db: StateDatabase, s: SubmitSnapshot, ref: str, payload: dict[str, 
                 s.remote,
                 f"+{s.derived}:{ref}",
                 remote=True,
+                git_dir=transport,
             )
-            if _remote_sha(s.git, path, s.remote, ref) != s.derived:
+            if _remote_sha(s.git, transport, s.remote, ref) != s.derived:
                 raise ValueError("pushed remote sha differs")
-            _push_event(db, s, ref, "ok")
-            state.append_status(db, key, "SANDBOX_PUSHED")
-            payload["action"] = "pushed"
-        payload.update(status="SANDBOX_PUSHED")
-        payload["push"]["result"] = "ok"
-    except (OSError, subprocess.SubprocessError, ValueError) as exc:
-        _push_event(db, s, ref, "failed")
-        state.append_status(db, key, "SANDBOX_PUSH_FAILED")
-        payload.update(
-            action="push_failed",
-            status="SANDBOX_PUSH_FAILED",
-            error_code="PUSH_FAILED",
-            reason=str(exc),
-        )
-        payload["push"]["result"] = "failed"
+        _push_event(db, s, ref, "ok")
+        state.append_status(db, key, "SANDBOX_PUSHED")
+        payload["action"] = "pushed"
+    payload.update(status="SANDBOX_PUSHED")
+    payload["push"]["result"] = "ok"

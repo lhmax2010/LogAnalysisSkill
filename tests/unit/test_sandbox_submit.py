@@ -4,8 +4,11 @@ import fcntl
 import hashlib
 import io
 import json
+import shlex
 import shutil
+import sqlite3
 import subprocess
+import sys
 from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
@@ -26,7 +29,7 @@ def git(path, *args):
 
 
 class Campaign:
-    def __init__(self, root, monkeypatch):
+    def __init__(self, root, monkeypatch, object_format="sha1"):
         self.root = root
         self.key = "sandbox-unit"
         self.db = StateDatabase(root / "state.sqlite3")
@@ -34,7 +37,7 @@ class Campaign:
         self.unit_root = self.ws / submit._unit_hash(self.key)
         self.src = self.unit_root / "src"
         self.src.mkdir(parents=True)
-        git(self.src, "init", "-q")
+        git(self.src, "init", "-q", f"--object-format={object_format}")
         git(self.src, "config", "user.name", "Test")
         git(self.src, "config", "user.email", "test@example.com")
         (self.src / "file.c").write_text("int value = 1;\n")
@@ -138,7 +141,7 @@ class Campaign:
         self.remote_base = root / "remotes"
         self.remote = self.remote_base / "project"
         self.remote.mkdir(parents=True)
-        git(self.remote, "init", "--bare", "-q")
+        git(self.remote, "init", "--bare", "-q", f"--object-format={object_format}")
         self.hook = root / "commit-msg"
         self.hook.write_text(
             '#!/bin/sh\nprintf "\\nChange-Id: I'
@@ -206,6 +209,348 @@ class Campaign:
 
     def hooks(self):
         return [c for c in self.calls if c[0] == "sh"]
+
+
+def _local_ssh_config(c):
+    # Emulate only the SSH process boundary, never a network connection.
+    script = c.root / "local_ssh.py"
+    script.write_text(
+        "import os, shlex, sys\n"
+        "if '-G' in sys.argv: sys.exit(1)\n"
+        "command = shlex.split(sys.argv[-1])\n"
+        "assert command[0] in ('git-upload-pack', 'git-receive-pack')\n"
+        f"os.execvp(command[0], [command[0], {str(c.remote)!r}])\n"
+    )
+    config = yaml.safe_load(c.config.read_text())
+    config.update(
+        gerrit_ssh_base="ssh://unused.example",
+        git_ssh_command=f"{shlex.quote(sys.executable)} {shlex.quote(str(script))}",
+    )
+    c.config.write_text(yaml.safe_dump(config))
+    return "ssh://unused.example/project"
+
+
+@pytest.mark.parametrize("when", ["after-toctou", "before-push"])
+@pytest.mark.parametrize("key", ["url", "pushurl"])
+def test_review_transport_config_race(campaign, monkeypatch, when, key):
+    c = campaign
+    remote = _local_ssh_config(c)
+    other = c.root / "wrong-remote.git"
+    git(c.root, "init", "--bare", str(other))
+    injected = False
+
+    def inject():
+        nonlocal injected
+        git(c.copies[0], "config", f"remote.{remote}.{key}", str(other))
+        assert remote in git(c.copies[0], "remote").splitlines()
+        injected = True
+
+    if when == "after-toctou":
+        original = submit.toctou_recheck
+
+        def checked(*args, **kwargs):
+            result = original(*args, **kwargs)
+            assert result.ok
+            inject()
+            return result
+
+        monkeypatch.setattr(submit, "toctou_recheck", checked)
+    else:
+        run = submit.SandboxGit.run
+
+        def before_push(self, cwd, *args, **kwargs):
+            if args and args[0] == "push":
+                inject()
+            return run(self, cwd, *args, **kwargs)
+
+        monkeypatch.setattr(submit.SandboxGit, "run", before_push)
+    result = c.run()
+    assert injected and result.exit_code == 0
+    assert git(c.remote, "for-each-ref", "--format=%(refname) %(objectname)") == (
+        "refs/heads/sandbox/test " + result.payload["derived_commit_sha"]
+    )
+    assert git(other, "for-each-ref") == ""
+    assert not (c.unit_root / ".transport").exists()
+    for command in c.calls:
+        if "push" in command or "ls-remote" in command and "--exit-code" in command:
+            assert "--git-dir=" + str(c.unit_root / ".transport") in command
+
+
+@pytest.mark.parametrize("path_mode", ["relative", "absolute", "symlink", "bad"])
+def test_review_transport_objects_path(campaign, monkeypatch, path_mode):
+    c = campaign
+    original = submit.SandboxGit.run
+    checked = []
+    expected = (c.copies[0] / ".git/objects").resolve()
+    alias = c.copies[0] / "objects-alias"
+    if path_mode == "symlink":
+        alias.symlink_to(expected, target_is_directory=True)
+
+    def run(self, cwd, *args, **kwargs):
+        if args == ("rev-parse", "--git-path", "objects"):
+            assert cwd == c.copies[0]
+            path = {
+                "relative": ".git/objects",
+                "absolute": str(expected),
+                "symlink": "objects-alias",
+                "bad": str(c.root / "no-objects"),
+            }[path_mode]
+            return subprocess.CompletedProcess(args, 0, path + "\n", "")
+        if args[:2] == ("cat-file", "-e"):
+            actual = (kwargs["git_dir"] / "objects/info/alternates").read_text().strip()
+            assert actual == (str(c.root / "no-objects") if path_mode == "bad" else str(expected))
+            checked.append(args[2])
+        return original(self, cwd, *args, **kwargs)
+
+    monkeypatch.setattr(submit.SandboxGit, "run", run)
+    result = c.run()
+    assert len(checked) == 1
+    assert not any("--path-format=absolute" in call for call in c.calls)
+    if path_mode == "bad":
+        assert result.exit_code == 5 and result.payload["error_code"] == "PUSH_FAILED"
+        assert not c.pushes() and git(c.remote, "for-each-ref") == ""
+    else:
+        assert result.exit_code == 0
+        assert checked == [result.payload["derived_commit_sha"] + "^{commit}"]
+    assert not (c.unit_root / ".transport").exists()
+
+
+def test_review_transport_residue_recreated(campaign, monkeypatch):
+    c = campaign
+    path = c.unit_root / ".transport"
+    git(c.root, "init", "--bare", str(path))
+    git(path, "config", "url./wrong.insteadOf", str(c.remote))
+    (path / "residue").write_text("must disappear")
+    remote_sha = submit._remote_sha
+    reads = []
+
+    def read(git_runner, transport, remote, ref):
+        assert transport == path
+        assert not (path / "residue").exists()
+        assert "insteadOf" not in (path / "config").read_text()
+        reads.append(transport)
+        return remote_sha(git_runner, transport, remote, ref)
+
+    monkeypatch.setattr(submit, "_remote_sha", read)
+    assert c.run().exit_code == 0
+    assert len(reads) == 2 and not path.exists()
+
+
+def test_review_transport_cleanup_warning_does_not_change_result(campaign, monkeypatch, capsys):
+    c = campaign
+    path = c.unit_root / ".transport"
+    remove = shutil.rmtree
+
+    def fail_cleanup(target, *args, **kwargs):
+        if Path(target) == path:
+            raise OSError("fixture cleanup failure")
+        return remove(target, *args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(shutil, "rmtree", fail_cleanup)
+        first = c.run()
+    assert first.exit_code == 0 and first.payload["action"] == "pushed"
+    assert "warning: transport cleanup failed: fixture cleanup failure" in capsys.readouterr().err
+    assert path.is_dir()
+    second = c.run()
+    assert second.exit_code == 0 and second.payload["action"] == "already_pushed"
+    assert not path.exists()
+
+
+def test_review_transport_sha256(tmp_path, monkeypatch):
+    probe = subprocess.run(
+        ["git", "init", "--bare", "--object-format=sha256", str(tmp_path / "probe")],
+        capture_output=True,
+    )
+    if probe.returncode:
+        pytest.skip("git lacks sha256 object support")
+    c = Campaign(tmp_path, monkeypatch, "sha256")
+    remote_sha = submit._remote_sha
+    formats = []
+
+    def read(git_runner, path, remote, ref):
+        formats.append(git(path, "rev-parse", "--show-object-format"))
+        return remote_sha(git_runner, path, remote, ref)
+
+    monkeypatch.setattr(submit, "_remote_sha", read)
+    result = c.run()
+    assert result.exit_code == 0 and formats == ["sha256", "sha256"]
+    assert len(result.payload["derived_commit_sha"]) == 64
+    assert not (c.unit_root / ".transport").exists()
+
+
+def test_review_toctou_record_path_same_tree(campaign, monkeypatch):
+    c = campaign
+    clone = c.unit_root / "same-tree-protected"
+    shutil.copytree(c.copies[1], clone)
+    assert git(clone, "rev-parse", "HEAD^{tree}") == c.tree
+    assert submit.is_protected(clone)
+    original = submit.toctou_recheck
+
+    def changed(*args, **kwargs):
+        c.sql(
+            "UPDATE verification_records SET worktree_path=? WHERE verification_id='v1'",
+            (str(clone),),
+        )
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(submit, "toctou_recheck", changed)
+    result = c.run()
+    assert result.payload["action"] == "held"
+    assert result.payload["held"]["reason"] == "verification_mismatch"
+    assert result.payload["held"]["arch_norm"] == "armv7l"
+    assert not c.pushes()
+
+
+def test_review_toctou_policy_input_error(campaign, monkeypatch):
+    evaluate = submit.evaluate
+    calls = 0
+
+    def fail_second(*args):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise submit.PolicyInputError("fixture changed source")
+        return evaluate(*args)
+
+    monkeypatch.setattr(submit, "evaluate", fail_second)
+    result = campaign.run()
+    assert result.payload["held"]["reason"] == "edit_spec_rebind_mismatch"
+    assert not campaign.pushes()
+
+
+def test_review_toctou_transaction_ends_before_copies(campaign, monkeypatch):
+    c = campaign
+    connections = []
+    read = state._read_connection
+    original = submit._copies
+    in_toctou = False
+
+    def capture(*args):
+        conn = read(*args)
+        if in_toctou:
+            connections.append(conn)
+        return conn
+
+    def copies(*args, **kwargs):
+        if in_toctou:
+            assert connections
+            for conn in connections:
+                with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+                    conn.execute("SELECT 1")
+            state.append_event(
+                c.db,
+                c.key,
+                "POLICY",
+                dict(
+                    round_index=1,
+                    verdict="allowed",
+                    hits=[],
+                    fix_strategy_initial="code",
+                    fix_strategy_final="code",
+                    edit_source_kind="generated",
+                    rules_version="p5-policy/v2",
+                ),
+            )
+        return original(*args, **kwargs)
+
+    recheck = submit.toctou_recheck
+
+    def wrapped(*args, **kwargs):
+        nonlocal in_toctou
+        in_toctou = True
+        try:
+            return recheck(*args, **kwargs)
+        finally:
+            in_toctou = False
+
+    monkeypatch.setattr(state, "_read_connection", capture)
+    monkeypatch.setattr(submit, "_copies", copies)
+    monkeypatch.setattr(submit, "toctou_recheck", wrapped)
+    assert c.run().exit_code == 0
+    assert sum(kind == "POLICY" for kind, _ in c.events()) == 2
+
+
+def _run_cli(c):
+    output, errors = io.StringIO(), io.StringIO()
+    code = cli.main(
+        [
+            "sandbox-submit",
+            "--verification-ids",
+            "v0,v1,v2",
+            "--state-db",
+            str(c.db.path),
+            "--config",
+            str(c.config),
+            "--sandbox-branch",
+            "sandbox/test",
+            "--message-brief",
+            "correct value",
+            "--edit-source-kind",
+            "generated",
+        ],
+        stdout=output,
+        stderr=errors,
+    )
+    assert len(output.getvalue().splitlines()) == 1
+    return code, json.loads(output.getvalue()), errors.getvalue()
+
+
+@pytest.mark.parametrize("point", ["POLICY", "DERIVE", "PUSH", "HELD"])
+@pytest.mark.parametrize("exception", [sqlite3.OperationalError, state.CampaignStateBusy])
+def test_review_cli_unexpected_database_error(campaign, monkeypatch, point, exception):
+    c = campaign
+    original_event, original_status = state.append_event, state.append_status
+    writes_at_failure = None
+    statuses_at_failure = None
+
+    def fail():
+        nonlocal writes_at_failure, statuses_at_failure
+        writes_at_failure, statuses_at_failure = c.events(), c.statuses()
+        raise exception("fixture write failure")
+
+    def event(db, key, kind, *args, **kwargs):
+        if kind == point:
+            fail()
+        return original_event(db, key, kind, *args, **kwargs)
+
+    def status(db, key, kind, *args, **kwargs):
+        if point == "HELD" and kind == state.HELD_FOR_INVESTIGATION:
+            fail()
+        return original_status(db, key, kind, *args, **kwargs)
+
+    if point == "HELD":
+        c.sql("UPDATE verification_records SET base_commit='different' WHERE verification_id='v0'")
+    with monkeypatch.context() as patch:
+        patch.setattr(state, "append_event", event)
+        patch.setattr(state, "append_status", status)
+        code, payload, errors = _run_cli(c)
+    busy = exception is state.CampaignStateBusy
+    assert code == (4 if busy else 5)
+    expected = submit.empty_payload()
+    expected.update(
+        action="busy" if busy else "rejected",
+        error_code="CAMPAIGN_STATE_BUSY" if busy else "INTERNAL_ERROR",
+        reason=exception.__name__ + ": fixture write failure",
+    )
+    assert payload == expected
+    assert "Traceback" in errors and exception.__name__ in errors
+    assert c.events() == writes_at_failure and c.statuses() == statuses_at_failure
+    for lock_path in [
+        c.unit_root / ".sandbox_submit.lock",
+        *[c.unit_root / arch / ".repair_step.lock" for arch in submit.ARCH_ORDER],
+    ]:
+        with lock_path.open("a+") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    assert not (c.unit_root / ".transport").exists()
+    if point == "PUSH":
+        assert not any(kind == "PUSH" for kind, _ in c.events())
+        pushed = git(c.remote, "rev-parse", "refs/heads/sandbox/test")
+        message = git(c.remote, "show", "-s", "--format=%B", pushed)
+        retried = c.run()
+        assert retried.exit_code == 0 and not c.pushes() and not c.hooks()
+        assert retried.payload["derived_commit_sha"] == pushed
+        assert retried.payload["change_id"] in message
 
 
 @pytest.fixture
@@ -651,7 +996,7 @@ def test_stored_gate_tampering_is_held(campaign, kind):
     if kind == "policy":
         assert (
             "previous-version" in result.payload["reason"]
-            and "p5-policy/v1" in result.payload["reason"]
+            and "p5-policy/v2" in result.payload["reason"]
         )
 
 
@@ -1076,7 +1421,7 @@ def test_all_action_json_snapshots(campaign, monkeypatch, action):
     elif action == "push_failed":
 
         def failure(*args):
-            raise ValueError("fixture read failure")
+            raise submit._TransportFailure("fixture read failure")
 
         monkeypatch.setattr(submit, "_remote_sha", failure)
     lock = (c.unit_root / ".sandbox_submit.lock").open("a+")

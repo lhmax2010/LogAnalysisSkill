@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.381" timestamp="2026-10-10T10:13:04.984852+08:00" hostname="linhao-linux"><testcase classname="tests.unit.test_sandbox_submit" name="test_review_toctou_record_path_same_tree" time="0.282"><failure message="AssertionError: assert 'pushed' == 'held'&#10;  &#10;  - held&#10;  + pushed">campaign = &lt;test_sandbox_submit.Campaign object at 0x759cbb9edaf0&gt;
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x759cbb1d1370&gt;
+
+    def test_review_toctou_record_path_same_tree(campaign, monkeypatch):
+        c = campaign
+        clone = c.unit_root / "same-tree-protected"
+        shutil.copytree(c.copies[1], clone)
+        assert git(clone, "rev-parse", "HEAD^{tree}") == c.tree
+        assert submit.is_protected(clone)
+        original = submit.toctou_recheck
+    
+        def changed(*args, **kwargs):
+            c.sql(
+                "UPDATE verification_records SET worktree_path=? WHERE verification_id='v1'",
+                (str(clone),),
+            )
+            return original(*args, **kwargs)
+    
+        monkeypatch.setattr(submit, "toctou_recheck", changed)
+        result = c.run()
+&gt;       assert result.payload["action"] == "held"
+E       AssertionError: assert 'pushed' == 'held'
+E         
+E         - held
+E         + pushed
+
+tests/unit/test_sandbox_submit.py:399: AssertionError</failure></testcase></testsuite></testsuites>
