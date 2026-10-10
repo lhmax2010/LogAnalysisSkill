@@ -1,13 +1,14 @@
 # P5 sandbox-submit 收口
 
-日期:2026-10-09。状态:**READY_FOR_REVIEW**。未自行签批CLOSED。
+日期:2026-10-10。状态:**READY_FOR_REVIEW**。代码评审修复已落地,未自行签批CLOSED。
 
 ## 1. 权威与提交
 
-权威:[P5 v1.2-FROZEN](../p5-sandbox-submit-design-v1.2-FROZEN.md),
-包含P5-C0-01、P5-C2-01、P5-C2-02、P5-C4-01轻量裁定;
-现SHA256:`432f0e62b1f836622012559c3c35e3cd57021423786d18da337d096c0d2de95b`。
-design.md已按附录A同步至v1.5.20,外部章节引用使用“第x节”,不改变检查器。
+权威:[P5 v1.3.1](../p5-sandbox-submit-design-v1.3.1.md),取代v1.2冻结稿,
+包含附录D及P5-D-02验收归类裁定。批准输入SHA256:
+`f027f8b4057d4d617f9265968765f01940ce1396e588a65b28e95326e89258e6`;
+P5-D-02后SHA256:`83383877f6b8c0deac8606d29fec8a446c1e5520813e714f881855886f888d3b`。
+design.md已按附录A.3照录同步至v1.5.21,检查器0 problem,不改变检查器。
 
 | 提交 | SHA | 范围 | 全量结果 |
 |---|---|---|---|
@@ -16,10 +17,14 @@ design.md已按附录A同步至v1.5.20,外部章节引用使用“第x节”,不
 | C2 | 1f3141e | 全文件suppress_policy与CLI | 1701 passed / 1 skipped |
 | C3 | 68338dc | gate_view与只读查询 | 1724 passed / 1 skipped |
 | C4 | 33fcf68 | sandbox-submit、CLI、共用化、Git安全边界 | 1845 passed / 1 skipped |
-| C5 | 本收口提交由Git外部锚定,不自记SHA | 本文、progress、INDEX、最终复验 | 见§5 |
+| C5(首轮收口) | 72a5806 | 本文初版、progress、INDEX、复验 | 1845 passed / 1 skipped |
+| 评审文档同步 | c71aa3c | v1.3.1原字节入库、design.md v1.5.21 | checker 0 problem |
+| 评审代码修复 | f9a6bc5 | 附录D、D-02用例与变异、完整回归 | 1927 passed / 1 skipped |
+| 评审收口更新 | 本次提交由Git外部锚定,不自记SHA | 本文、progress、INDEX、复验 | 见§7 |
 
 全程未访问真实Gerrit,未做真实业务推送。远端写入测试均为临时本地裸仓库。
-同名远端拒绝测试仅在本地配置SSH形式的名字,在任何传输发生前即被拒绝。
+原同名远端拒绝测试在传输前即拒绝。新增竞态测试使用SSH形状remote,但以本地
+Python包装直接执行git-upload-pack/receive-pack,预期/错误两端均为临时裸仓库,不联网。
 
 ## 2. DoD结论
 
@@ -35,6 +40,8 @@ design.md已按附录A同步至v1.5.20,外部章节引用使用“第x节”,不
 | P2移交的sandbox重推删缓存 | DONE | `test_deleted_cache_rejects_without_regeneration`:HELD primary arch、hook=0、push=0、缓存不重建 |
 | 三架构保护标记保持 | DONE | `test_normal_path_and_idempotent_rerun`:全部保护文件仍在 |
 | 全量集合不缩小、既有门禁无新增失败 | DONE | 各C阶段commands.json、pytest.xml及comparison.json;固定基线cd7f8dd |
+| v1.3.1按值识别、生成器表达式、真实路径归组 | DONE | §3.1新增12-16行、§7变异原文;POLICY_RULES_VERSION=p5-policy/v2 |
+| v1.3.1隔离传输、缩短读事务、统一异常出口 | DONE | §3.3新增28-30行;两端ref、锁与无额外写库断言 |
 | 收口状态与已知事项 | READY_FOR_REVIEW | §4限制完整登记,由设计方核验与评审决定签批 |
 
 ## 3. 规则条目与用例双向映射
@@ -66,6 +73,13 @@ design.md已按附录A同步至v1.5.20,外部章节引用使用“第x节”,不
 | §6.1.9独立CLI | `test_cli_stdout_exactly_matches_evaluate`; `test_cli_subprocess_exit_codes`; `test_cli_invalid_input_has_exit_two` |
 | §6.1.10确定性与位置映射 | `test_determinism_reordering_length_changes_and_no_mutation`; `test_new_span_mapping_continuations_line_anchor_and_doc_mixture`; `test_sort_order_and_minimal_touching_edit` |
 | §6.1.11 C2-02逐字段输出 | `test_werror_removed_count_and_fixed_fields`; `test_werror_removed_once_per_token_with_both_count_terms`; `test_target_removed_fixed_fields`; `test_pop_removal_fixed_fields_and_suppression_removal_offset`; `test_pure_deletion_fixed_fields`; `test_multiple_removals_use_declared_output_shape`; `test_removed_instance_old_interval_not_new_interval` |
+| §6.1.12按值解码、列表、括号参数、genex整体/递归/闭集 | `test_review_cmake_value_rejection`; `test_review_cmake_value_allowed`; `test_review_genex_nested_closed_rules`; `test_review_if_recursive_rejection` |
+| §6.1.12 P5-D-02字面IF回归对照(非退化必红) | `test_review_if_literal_regression` |
+| §6.1.12对象库路径相对/绝对(归传输验收) | S:`test_review_transport_objects_path` |
+| §6.1.13数字分隔符、游离单引号、pragma前缀 | `test_review_source_apostrophes`; `test_review_pragma_prefixes_and_inline_separator`; `test_review_source_apostrophe_near_misses` |
+| §6.1.14真实路径分类/别名归组与重叠 | `test_review_symlink_category_and_grouping`; `test_review_alias_overlap`; `test_review_alias_nonoverlap_and_real_docs` |
+| §6.1.15跨模块定位等价 | `test_review_guard_location_equivalence` |
+| §6.1.16规则版本 | `test_review_policy_version` |
 
 ### 3.2 §6.2只读视图
 
@@ -110,6 +124,9 @@ design.md已按附录A同步至v1.5.20,外部章节引用使用“第x节”,不
 | §6.3.25 HELD架构与锁内写入 | `test_held_requires_arch_and_lock_remains_held_during_write`; `test_deleted_cache_rejects_without_regeneration`; `test_stored_gate_tampering_is_held`; `test_copy_scene_is_held_with_arch`; `test_toctou_each_snapshot_component` |
 | §6.3.26全部action快照 | `test_all_action_json_snapshots`; `test_cli_snapshot_and_malformed_args` |
 | §6.3.27 C4-01来源/版本 | `test_include_and_old_git_reject_via_command`; T:`test_fresh_repository_ignores_only_command_overrides`; `test_local_config_rejected_even_when_overridden`; `test_include_config_rejected`; `test_old_git_rejected_before_scope_query`; `test_worktree_scope_is_not_exempt`; `test_multiline_config_value_never_echoed` |
+| §6.3.28隔离传输/对象路径/格式/重建/清理 | `test_review_transport_config_race`; `test_review_transport_objects_path`; `test_review_transport_residue_recreated`; `test_review_transport_sha256`; `test_review_transport_cleanup_warning_does_not_change_result` |
+| §6.3.29路径与架构守卫、PolicyInputError、读事务范围 | `test_review_toctou_record_path_same_tree`; `test_review_toctou_policy_input_error`; `test_review_toctou_transaction_ends_before_copies` |
+| §6.3.30 CLI统一异常出口、锁释放、成功后补账 | `test_review_cli_unexpected_database_error` |
 | §1共用化等价 | `test_repair_primitives_moved_without_source_changes`; R:`test_source_identity_joint_check_rejects_each_mismatch` |
 
 ### 3.4 §6.4移交加固
@@ -137,18 +154,23 @@ design.md已按附录A同步至v1.5.20,外部章节引用使用“第x节”,不
 8. doc类不识别;仓库若从.md/.rst读取编译选项则不会被检出。
 9. rules_version升级若改变结论,已有POLICY与本轮重算不一致将挂起,
    即使单元尚未推送;须人工重置,不以版本号一致替代结论比较。
+10. 跨命令变量拼接,如`set(A "-Wno" "-unused")`后`add_compile_options(${A})`,
+    不在识别范围,两个片段本身都不是完整选项token。
+11. 三合字母`??=pragma`不识别;已支持BOM、二合字母`%:`及垂直空白,不扩大至三合字母。
 
 **P5-C4-01指定私有接口事项:**`suppress_policy`引用
 `tizen_build_verify.edit_spec_guard._validate_target_path`和`_locate_edit`,
 两个消费方均已在symbol_audit登记。原因是策略重绑定必须复用与实际edit应用相同的
 路径安全与定位规则,避免两套定位语义漂移。可选后续方案为把原语提为公开接口,
 或在策略模块内实现同一定位规则并增加等价回归;本轮不选择、不修改接口。
+本轮按v1.3.1新增`test_review_guard_location_equivalence`,比较实际替换区间及生成内容;
+今后定位语义变化须同步维护此测试。
 
 P2的跨unit带外删除共享缓存行仍是既有边界,本批只销sandbox重推所属unit的移交项。
 review-submit对应移交仍归P5R;真实SSH/sandbox推送、P8.5预检不以本地裸仓库测试冒充。
 3个既有checker遗留保持原样,不因本次收口消失,详见§5比较与stage14遗留表。
 
-## 5. 验收与证据
+## 5. 初版验收与证据(历史)
 
 统一证据根:[stage19/evidence](../dev_memory/stage19_p5_sandbox_submit/evidence)。
 每阶段commands.json保存完整argv、cwd、PYTHONPATH/MYPYPATH、exit及原始输出hash;
@@ -214,6 +236,107 @@ C5自己的CI须在本提交推送后核验并回报,此处不预填结果。
 
 ## 6. 评审请求
 
-请核对实现与冻结稿及轻量裁定一致,尤其是策略全文件比较、缓存/DERIVE顺序、
-TOCTOU读事务、Git配置来源过滤和唯一sandbox ref推送;确认已知限制可接受。
+请核对实现与v1.3.1及P5-D-02一致,尤其是CMake按值识别/生成器表达式、真实路径归组、
+隔离传输裸仓库、TOCTOU事务范围与CLI无额外写库;核对§7变异证据并确认§4限制可接受。
 本文件只提交READY_FOR_REVIEW,不代表设计方或评审已签批。
+
+## 7. 代码评审修订
+
+Claude Code、ChatGPT代码评审结论为需修改;按FatTank提供的v1.3.1附录D实施。
+文档同步提交`c71aa3c`,以下代码/测试及D-02文档修订统一在`f9a6bc5`。
+证据根:[review-code-final](../dev_memory/stage19_p5_sandbox_submit/evidence/review-code-final),
+[mutations](../dev_memory/stage19_p5_sandbox_submit/evidence/review-v131/mutations)。
+
+| 发现/来源 | 处置 | 实测证据 |
+|---|---|---|
+| 原文扫描漏CMake转义、续行、列表、括号参数 | 解码参数值后识别,保留位置映射与转义分号 | `old-raw-cmake.log`:旧实现10 failed;新用例全绿 |
+| 生成器表达式拼接/计算型/未列名与递归输出 | 整体闭集解析,IF各输出递归;不可解释一律cmake_genex_unparsed | `old-if-recursion.log`:3 failed;`old-if-literal-control.log`:1 passed |
+| source数字分隔符与游离单引号误吞后续内容 | pp-number分隔符不进字符字面量;单引号无同一行闭合仅跳本字符 | pytest.log中§6.1.13参数化正反全绿 |
+| pragma前缀漏识别 | 支持首字符BOM、%:、垂直制表和换页 | `test_review_pragma_prefixes_and_inline_separator`全绿 |
+| symlink文档别名可绕过实际文件类型 | resolve后分类/归组,跨别名区间重叠以alias_overlap拒绝 | §6.1.14三函数全绿 |
+| 主副本remote配置竞态改变传输目标 | 每次重建bare传输目录,对象格式一致,alternates真实路径,cat-file预检 | `old-primary-transport.log`:4 failed;新实现两端ref断言通过 |
+| CLI意外异常缺统一JSON出口 | Busy=4,其他INTERNAL_ERROR=5,traceback到stderr,catch不写库 | 四注入点乘两异常共8例通过,锁释放、无PUSH(failed)、重跑补账 |
+| TOCTOU事务包围耗时文件/git/hook | 读事务仅1/2/3/6,关闭连接后执行其它检查 | 第二连接事件写入成功;结论不变 |
+| TOCTOU PolicyInputError归因 | HELD(edit_spec_rebind_mismatch) | 独立注入测试通过 |
+| 同tree同保护标记的路径替换缺实证 | 保留路径/架构守卫并做删除变异 | `removed-path-guard.log`:1 failed,实际pushed而应held |
+| 私有定位接口/规则版本 | 加跨模块等价;升p5-policy/v2;限制见§4 | §6.1.15/16通过 |
+
+P5-D-02仅调整验收归类:字面IF样本是新旧均forbidden的回归对照。
+三新增IF样本(续行、转义、拼接)旧实现都漏检,无需再次改列;不以版本字段差异冒充退化。
+变异源码来自`72a5806`,运行于隔离树,finally恢复精确字节;脚本/命令/退出码/失败原文全部入库。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-v131/run_mutations.py /tmp/p5-v131-review
+current: exit=0, failed=0, passed=60
+old-raw-cmake: exit=1, failed=10, passed=0
+old-if-recursion: exit=1, failed=3, passed=0
+old-if-literal-control: exit=0, failed=0, passed=1
+removed-path-guard: exit=1, failed=1, passed=0
+old-primary-transport: exit=1, failed=4, passed=0
+exact_source_restoration=PASS
+restored-policy: exit=0, failed=0, passed=60
+restored-sandbox: exit=0, failed=0, passed=23
+exit=0
+```
+
+review selector中的sandbox 23含一个既有review-ref case,本轮实际新增22,另策略新增60。
+总计新增82,全量1845/1变为1927/1,旧nodeid与结果零缺失。
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-v131-review docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-code-final
+pytest / mypy / ruff / lint-imports / symbol / bridge / design-doc: exit=0
+completed=94 unexpected=3
+exit=0
+================== 1927 passed, 1 skipped in 63.25s (0:01:03) ==================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-code-final /tmp/p5-v131-review
+exit_changes={}; missing_nodeids=[]; changed_outcomes={}
+added_nodeids=431; identical_tested_sources=6
+baseline_comparison=PASS
+exit=0
+C5_to_review nodeids_before=1846 nodeids_after=1928 added=82 missing=0 outcome_changes=0 PASS
+```
+
+94条逐命令exit与原输出hash见`review-code-final/commands.json`,基线比较见
+[review-code-final-comparison.json](../dev_memory/stage19_p5_sandbox_submit/evidence/review-code-final-comparison.json)。
+3项历史异常与§5相同,无新增失败;没有修改检查器判据或期望。
+
+**真实hook本机passed原文**(`review-code-final/pytest.log:72`,不是skip):
+
+```text
+tests/integration/test_derive_commit_real_hook.py::test_registered_real_hook_then_derive PASSED [  3%]
+```
+
+SHA-256对象格式用例亦PASSED。所有传输测试仅使用本地仓库,未访问真实Gerrit。
+
+映射表按§3四个新模块测试文件的AST函数全集与表内函数名集合双向比较:
+`new_module_test_functions=105 missing_from_mapping=[] unknown_test_names=[]`,exit 0。
+不存在缺用例名或虚构用例名。
+
+远端CI:
+- 文档同步[c71aa3c run 38014808074](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38014808074):SUCCESS。
+- 代码修复[f9a6bc5 run 38016194029](https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38016194029):SUCCESS。
+
+本收口更新为单独文档/证据提交,不改代码或测试。其远端CI由推送后的交付回报锚定,
+不在未发生时预填成功;状态维持READY_FOR_REVIEW,等待设计方与评审签批。
+
+收口独立复验(干净工作树HEAD=f9a6bc5):
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-v131-closeout docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-closeout
+pytest / mypy / ruff / lint-imports / symbol / bridge / design-doc: exit=0
+completed=94 unexpected=3
+exit=0
+================== 1927 passed, 1 skipped in 67.19s (0:01:07) ==================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-closeout /tmp/p5-v131-closeout
+exit_changes={}; missing_nodeids=[]; changed_outcomes={}
+added_nodeids=431; identical_tested_sources=0
+baseline_comparison=PASS
+exit=0
+code_to_closeout nodeids=1928 added=0 missing=0 outcome_changes=0 PASS
+```
+
+原文与逐nodeid结果:[review-closeout](../dev_memory/stage19_p5_sandbox_submit/evidence/review-closeout),
+比较:[review-closeout-comparison.json](../dev_memory/stage19_p5_sandbox_submit/evidence/review-closeout-comparison.json)。
+真实hook与SHA-256传输用例再次PASSED;94条门禁无新增失败,3条历史异常不变。

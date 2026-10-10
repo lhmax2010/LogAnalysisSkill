@@ -1,6 +1,6 @@
 # Stage19 P5 sandbox-submit
 
-日期:2026-10-10。状态:**REVIEW_FIXES_IN_PROGRESS**。文档同步c71aa3c已推送;P5-D-02关闭变异验收冲突,继续修复与验收。未自行标CLOSED。
+日期:2026-10-10。状态:**READY_FOR_REVIEW**。文档同步c71aa3c、代码修复f9a6bc5已推送且CI成功;P5-D-02已闭合,新基线1927 passed/1 skipped。未自行标CLOSED。
 
 ## 1. 权威、批准与基线
 
@@ -1048,3 +1048,48 @@ sha256对象格式用例亦PASSED,不是skip。代码提交及收口提交各自
 
 `git diff --cached --check`对pytest失败原文的log/xml报尾随空白(exit 2),
 保留原始证据字节,不对输出做格式化;源码、测试与Markdown范围的check为exit 0。
+
+### 评审修复提交与收口
+
+代码与测试提交`f9a6bc5a95077dc16f1382357dfbcb660d44982b`已推送:
+
+```text
+$ gh run view 38016194029 --json status,conclusion,url
+{"conclusion":"success","status":"completed","url":"https://github.com/lhmax2010/LogAnalysisSkill/actions/runs/38016194029"}
+exit=0
+```
+
+收口文档保持READY_FOR_REVIEW,更新权威至v1.3.1,附录D逐项处置在§7;
+§3双向表覆盖§6.1.12-16/§6.3.28-30,§4补跨命令变量与三合字母限制及私有定位等价义务。
+按与首轮相同的AST/反引号函数名集合检查复跑:
+
+```text
+new_module_test_functions=105 missing_from_mapping=[] unknown_test_names=[]
+exit=0
+```
+
+本轮只有批准的D-02验收文字修订;不改任何其它设计规则,无新增停止报告项。
+工作区既有不相关改动、v1.3草稿保持原样,未入提交。
+
+从修复提交建立干净工作树后独立收口复验:
+
+```text
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage16_p2_submission_identity/evidence/review-minors/run_validation.py /tmp/p5-v131-closeout docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-closeout
+pytest / mypy / ruff / lint-imports / symbol / bridge / design-doc: exit=0
+completed=94 unexpected=3
+exit=0
+================== 1927 passed, 1 skipped in 67.19s (0:01:07) ==================
+
+$ .venv/bin/python docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/compare_validation.py docs/clang-fix-campaign/dev_memory/stage19_p5_sandbox_submit/evidence/review-closeout /tmp/p5-v131-closeout
+exit_changes={}; missing_nodeids=[]; changed_outcomes={}
+added_nodeids=431; identical_tested_sources=0
+baseline_comparison=PASS
+exit=0
+code_to_closeout nodeids=1928 added=0 missing=0 outcome_changes=0 PASS
+exit=0
+```
+
+真实hook与SHA-256传输用例再次PASSED。全部原文在
+[review-closeout/commands.json](evidence/review-closeout/commands.json)、同目录log/xml;
+[review-closeout-comparison.json](evidence/review-closeout-comparison.json)记录基线逐项比较。
+本次收口提交仅文档/证据,源码与测试零diff;推送后核验该提交CI并在交付回报给链接。
