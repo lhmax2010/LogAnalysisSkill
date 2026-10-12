@@ -75,6 +75,20 @@ def test_node_browser_redaction_and_response_interception() -> None:
 
 
 @pytest.mark.integration
+def test_node_c2b_configuration_source_checks() -> None:
+    command, env = node_command()
+    result = subprocess.run(
+        [*command, str(ROOT / "tests/node/test_p5q_c2b_config_source.mjs"), *browser_paths()],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    print(result.stdout)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.integration
 def test_node_h_diagnostic_normal_and_control() -> None:
     command, env = node_command()
     paths = browser_paths()

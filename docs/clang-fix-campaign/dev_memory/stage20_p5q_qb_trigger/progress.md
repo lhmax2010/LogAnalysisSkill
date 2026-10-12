@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2B_04_REDACTION_VERIFIED;LIVE04_NOT_STARTED**。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2B_04_READY_FOR_LIVE04;WAITING_FOR_CHAT_START**。
 当前轮基线33b1540;P5Q-C2B-04裁定及实施见§20。§18/§19保留历史停点。
 先修身份脱敏并单独提交推送,再完成配置来源五项核对;live-04须等待新的聊天“开始”。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
@@ -1418,3 +1418,53 @@ QB_BROWSER_UNAVAILABLE后浏览器与临时目录均清理。307/308未到下一
 `0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`;
 live-03两页/run.json哈希与§19.5逐项一致,目录零diff。
 新停止报告0条。第一步单独提交推送后才实施第二步取证入口变更。
+
+### 20.4 第二步:仅取证入口的配置来源核对
+
+第一步提交`6028356`已推送。第二步仅改spike、离线测试和记账,生产代码不改。
+`spikes/p5q_c2b_config_source.mjs`对本会话实际read返回且已归档的脱敏HTML做
+DOMParser解析,不执行其中脚本、不请求其中链接。五项逐项保存至run.json:
+`overview_link`、`sibling_tabs`、`breadcrumb`、`copy_path`、`build_name`。
+复制路径只取`onCopyClipboardLinkDomReady`的字面参数,绑定同页breadcrumb中的
+实际元素id,不执行该脚本。构建名来自`.build-header .text-2xl`。
+
+`register_config`不再接受人工给定overview_id/path,而是
+`{"command":"register_config","source_path":"/build/1193467"}`。
+source_path必须命中本进程内刚归档的主页,并保存文件名、HTTP200、sha256与五项结果;
+任一核对不符抛`CONFIGURATION_SOURCE_MISMATCH`并关浏览器停止。
+只有通过者可进入代理的只读配置集合;读配置页后再次核对面包屑与复制路径,
+不通过不能继续form_evidence。live-03候选1917未硬编码、未登记、未请求。
+
+离线夹具独立使用配置id7654,未复用或修补live-03。Node用DOMParser解析合成HTML,
+不导航且所有请求拒绝。27/27(含顶层测试),涵盖五项正例、多级相对overview、
+20种缺失/重复/不一致负例、配置页两项正反、新鲜主页面来源限制。
+pytest新增1个Node集成入口,没有修改已有生产API。原取证脚本自测20/20,
+network_requests=0。证据:`evidence/C2b/c2b-04-config/`。
+
+| 命令 | exit | 结果 / 日志 |
+|---|---|---|
+| Node tests/node/test_p5q_c2b_config_source.mjs PW CHROMIUM | 0 | 27/27;config-source.log |
+| Node docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs --self-test .venv/bin/python | 0 | 20/20,network_requests=0;evidence-self-test.log |
+| .venv/bin/python -m pytest -q | 0 | 2165 passed,1 skipped,112.56s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+
+Node/PW/CHROMIUM为§20.3同一组本机路径。Ruff树
+`2190a240bec5c3280b8faa4737daa05a7c897c3e`,导出
+`/tmp/p5q-c2b-04-config-lint-J0T8rL`,之后仅补文档/日志。
+全量再次包含Node单元、四组本机安全及登录重试;第一步生产安全原始日志见§20.3。
+相对第一步新增1 pytest用例,累计本轮+10;原2155通过集合不缩小,skip仍1。
+相对`6028356`生产代码零diff;相对本轮开工`33b1540`,冻结稿、design.md、
+live-03目录均零diff。新增停止报告0条。尚无真机配置ID与五项核对结果,
+不将离线7654夹具当作真实配置。准备提交推送后等待live-04人工开始。
+
+### 20.5 第三步:live-04 等待新的人工开始
+
+状态`NOT_STARTED / WAITING_FOR_CHAT_START`。必须发送
+“准备弹出 QuickBuild 登录窗口,请回复'开始'”并等新回复后启动。
+不得把§19旧的“开始”复用于本次;本轮无QuickBuild请求,无新页面证据。
+配置ID五项的真实页结果、配置页两项核对、子页字段形态、联动callback/action/
+版本号/选项变化仍为NOT_COLLECTED,form_action_releases本轮为0。
+不把离线夹具结果当作真机取证通过,不进入C3。

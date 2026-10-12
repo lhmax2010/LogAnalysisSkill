@@ -9,6 +9,9 @@ import {
   Agent, AgentError, callbackURL, canonical, checkRedacted, createRuntime,
   ORIGIN, pathShape, redactDOM, validateForm,
 } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import {
+  configurationDOM, configurationPageChecks, parentConfigurationChecks, parentRegistration,
+} from './p5q_c2b_config_source.mjs';
 
 const [playwright, chromium, directory, python, mode = 'full'] = process.argv.slice(2);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -30,6 +33,7 @@ let postRedirect = false;
 let deniedDocumentAfterRedirect = false;
 const loginPostResponses = new Set();
 let wrapperDenied = 0;
+const parentPages = new Map();
 
 export function diagnosticStopReason({ redirect, deniedDocument, lastRequest, now, loginResponseCount }) {
   if (!redirect && loginResponseCount >= 5) return 'LOGIN_POST_LIMIT_NO_REDIRECT';
@@ -301,19 +305,31 @@ try {
         const saved = await archive(response.html_redacted, `${String(++sequence).padStart(2, '0')}.response.html`);
         const record = { path: input.path, status: response.status, ...saved };
         report.pages.push(record);
+        if (/^\/build\/\d+$/.test(input.path)) {
+          const facts = await runtime.page.evaluate(configurationDOM, response.html_redacted);
+          const source = { ...record, facts };
+          parentPages.set(input.path, source);
+          report.configuration_sources ??= [];
+          report.configuration_sources.push({ ...source, ...parentConfigurationChecks(facts) });
+        }
+        if (/^\/overview\/\d+$/.test(input.path)) {
+          const facts = await runtime.page.evaluate(configurationDOM, response.html_redacted);
+          report.configuration_page = { ...record, facts, ...configurationPageChecks(facts) };
+          if (!report.configuration || input.path !== `/overview/${report.configuration.overview_id}`
+            || !report.configuration_page.passed) throw new AgentError('CONFIGURATION_SOURCE_MISMATCH');
+        }
         emit(record);
       } else if (input.command === 'register_config') {
-        // Explicit evidence-only registration; the operator derives it from the
-        // archived parent's breadcrumb and verifies the configuration title.
-        if (!Number.isSafeInteger(input.overview_id) || input.overview_id <= 0
-          || input.configuration_path !== 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER') throw new AgentError('EVIDENCE_COMMAND_INVALID');
-        const project = { overview_id: input.overview_id, configuration_path: input.configuration_path, project_name: 'Tizen-Base-Toolchain' };
-        agent.projects.set(input.overview_id, project);
-        agent.policy.overviewIds.add(String(input.overview_id));
+        // Only a freshly archived parent response can authorize registration.
+        let project;
+        try { project = parentRegistration(parentPages.get(input.source_path)); }
+        catch { throw new AgentError('CONFIGURATION_SOURCE_MISMATCH'); }
+        agent.projects.set(project.overview_id, project);
+        agent.policy.overviewIds.add(String(project.overview_id));
         report.configuration = project;
-        emit({ registered: input.overview_id });
+        emit({ registered: project.overview_id, source: project.source });
       } else if (input.command === 'form_evidence') {
-        if (!report.configuration) throw new AgentError('EVIDENCE_COMMAND_INVALID');
+        if (!report.configuration || !report.configuration_page?.passed) throw new AgentError('EVIDENCE_COMMAND_INVALID');
         current = `/overview/${report.configuration.overview_id}`;
         await call({ command: 'open_form', overview_id: report.configuration.overview_id });
         current = '/wicket/page';

@@ -10,6 +10,14 @@ source checks and a new explicit chat start. No configuration id is registered
 from live-03. The copy-path string may be a source for production open_form path
 verification; this is recorded only, with no production open_form change.
 
+Offline preparation: redaction fix `6028356` (full2164/1, Node120+29,
+safety4/4); configuration-source fixture27/27 and diagnostic self-test20/20.
+The evidence entry requires a freshly archived parent response and records all
+five checks before registering an id. It rechecks the configuration page's
+breadcrumb and copy-path string before form_evidence. These are fixture results,
+not live results. live-04 login, pages, configuration checks and form callbacks
+remain NOT_COLLECTED until a new explicit chat start.
+
 Status: **PARTIAL / STOPPED_CONFIG_LINK_SOURCE**. Latest session is live-03,
 after registration commit `3013899`. Login succeeded; the parent main page and
 variables page were collected. Historical live-01/live-02/live-02b/live-02c
