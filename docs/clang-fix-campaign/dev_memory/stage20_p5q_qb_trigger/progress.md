@@ -1,8 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2b STOPPED_LOGIN**。
-当前轮基线ae32593;P5Q-C2B-01裁定见§17,四组本机安全测试已从头重跑全绿。
-单次真实浏览器登录返回QB_LOGIN_ABORTED;未重试,没有构建页读取、表单操作或构建提交。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2b STOPPED_DIAGNOSTIC_LOGIN**。
+当前轮基线48e8fba;P5Q-C2B-02裁定及诊断见§18。§17四组安全前置通过的历史记录保留。
+live-02等待600秒后QB_LOGIN_TIMEOUT,未观测登录POST;没有登记生产规则或启动live-03。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
 是既有无关改动,不处理、不纳入本次交付;其余历史草稿也不纳入。
@@ -28,7 +28,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;C2b STOPPED_LOGIN:§17四组本机安全前置通过,真机登录返回QB_LOGIN_ABORTED,未重试 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;C2b STOPPED_DIAGNOSTIC_LOGIN:§18诊断超时,未观测登录POST/落点;第二步登记和第三步取证NOT_RUN |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -813,3 +813,131 @@ run.json仅保存协议适配后的元数据,无请求头/请求体/凭据键;
 全部生产源码、design.md及冻结稿零diff。未处理既有.gitignore与docs四处删除,
 未入库其它未跟踪草稿。当前提交只闭合本机安全前置并保存真实登录停点,
 不声明C2b完成,提交SHA由Git外部锚定。
+
+## 18. 实施裁定 P5Q-C2B-02
+
+设计方出具,FatTank已批准,立即执行;冻结稿不改。以下裁定原文照录:
+
+【裁定原文】
+原因:48e8fba 真机登录 POST 返回 302 后,13 条请求(1 Script、12 Document)被放行规则拒绝(都已通过帧归属检查),只存了路径形态 <other>。<other> 不能区分带查询的 /、路径带 ;jsessionid=、http 降级、外站或新路径。冻结稿 §3.4 要求实测登记登录落点,却没有提供取证通道,这是设计缺口,不是实现错误。EF5 用 Playwright 路由拦截,看不到重定向中间跳,所以它的 /、/overview/0 结论与本次不矛盾。
+偏离冻结稿一处:登记的登录落点允许"查询为空或纯数字 ^\d+$"(Wicket 页版本号),冻结稿原文是"空查询"。仅限登录阶段,仅限登记的精确路径。
+
+【第一步 诊断登录:一次人工登录,生产放行规则不改】
+1. 只改取证脚本 docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs,生产代理不改。输出到新目录 evidence/C2b/live-02,live-01 原样保留。
+2. 在已有的 allow 包装里,对"所有被拒请求"和"登录阶段的所有 Document 请求(放行或拒绝)"额外记录:序号、相对毫秒、方法、protocol、host、脱敏后的 path、脱敏后的 query、resource_type、response_status、是否重定向跳(只记 true/false)、allowed。
+3. 脱敏规则写成一个独立函数,先跑本机自测再上真机:
+   - path:每段中的 ;名=值 改为 ;名=<REDACTED>。段长超过 64,或含连续 16 位以上十六进制、类 base64 串,则整段改为 <TOKEN>。
+   - query:整串匹配 ^\d+(-\d+)?$,或 Wicket 监听器形态 ^\d+(-\d+)?\.?I[A-Za-z]+Listener[.0-9-]*-?[A-Za-z0-9:_-]*$,原样保留;否则按 & 拆开,每项写成"键=<REDACTED len=N>",键名不匹配 [A-Za-z0-9_.:-]{1,64} 的写成 <KEY>。
+   - host 原样记录。
+   - 不读取、不记录请求头、请求体、响应头(含 Location、Set-Cookie)、响应体,不输出原始协议事件。
+   - 自测至少覆盖:/;jsessionid=abc、/x?jsessionid=abc、/?1、/?0-1.ILinkListener-x、/?token=abc&v=2、超长段、十六进制段。
+4. 用 Playwright 只读监听记录:主帧导航(地址同样脱敏)、页面 close、浏览器 disconnected,都带相对毫秒。另记 trace 中 DENIED 总数与包装内拒绝数,两者不等时注明差额是帧归属拒绝。
+5. 写盘前后用 qb_redact 检查 run.json 字节:不得含 JSESSIONID_8810=,不得含 jsessionid= 后紧跟非 <REDACTED> 的内容,不得含登录显示名。检查失败就删除文件,报 QB_EVIDENCE_REDACTION_FAILED 并停止。
+6. 自动结束:只发 login 命令。登录 POST 收到 302 之后,出现被拒的 Document 且其后 5 秒无新请求,或者三条件登录成功,两者先到其一,脚本就自行关闭浏览器,状态记为 DIAGNOSTIC_DONE,并如实记录是哪一种。诊断这一步无论结果如何都不读任何页面。
+7. 启动前在终端只打印固定提示:"已打开 QuickBuild 登录窗口,请在窗口中登录;登录后页面若显示被拦截属预期,请不要关闭窗口,工具会自动关闭。"FatTank 只在窗口里登录,不回终端。
+8. 停止条件不变:WORKER_BLOCKED、NEW_PAGE、runtime.failure 立即停止,不重试。
+
+【第二步 按事先批准的范围登记:诊断结果完全落在下列范围内才执行,任何一项超出就停止报告,不改生产代码】
+1. 登录落点(登录阶段的 Document):同源 https、GET;路径是字面路径,只含 [A-Za-z0-9/_-],不含 ;,不以 /rest/、/build/、/wicket/ 开头;查询为空或 ^\d+$。按观察到的精确路径登记,最多 3 个;超过 3 个就停止。
+2. 同源静态资源(Script、Stylesheet、Image、Font):按精确路径登记,不按前缀;扩展名限于 js、css、png、gif、svg、ico、woff、woff2、ttf;查询为空或 ^v=\d+$。只有当它阻断登录三条件时才登记;不阻断的保持拒绝,只记录。
+3. 必须停止报告的情形:同主机的 http 降级;路径带 ;jsessionid;登录落点链中出现外站 Document;落点查询不是空或纯数字。外站资源一律不放行;如果它不阻断登录,记为"被拒但不阻断"。
+4. 生产改动只限于三处:Policy.allow 的登录分支、新增一个静态资源精确路径表、pathShape 增加 / 和已登记的落点路径。
+5. 单元测试:每个登记项都要有正例;反例覆盖同路径其它查询、POST、带 ;jsessionid=、read/idle 阶段、http、外站;冻结稿 §9.3 的"未登记落点被拦截"用例继续通过。
+6. 这一步单独提交并推送。全量验收:pytest、mypy、ruff、lint-imports、check_design_doc。生产放行规则改了,所以 Node 四组本机安全测试要从头重跑,必须 4/4。
+
+【第三步 完整 C2b 真机:第二次人工登录,输出到 live-03,沿用第一步的增强记录】
+1. login:三条件成功快照入证。登录成功后再出现的拒绝只记录,不再追加登记。如果登记后登录仍然失败,停止报告,不进入第二轮登记循环。本任务人工登录最多两次。
+2. 按原 C2b 顺序只读:1193467、1193469;失败样本 1186372 及其子构建;从已归档父构建的面包屑得到 RBS/TRIGGER 的 overview_id,核对配置标题后 register_config,再读配置页。overview_id 不得猜测。
+3. form_evidence:只做 BUILD_TYPE Full→Partial→Full,记录回调地址、action、版本号、选项变化。不点 Ok,不提交,form_action_releases 必须为 0,然后 close。
+4. 停止条件不变:WORKER_BLOCKED、NEW_PAGE、runtime.failure 立即停止,记录触发页面的路径形态,不重试绕过。
+
+【收尾】
+appendix-c.md 按实测逐项填写,每项注明来源文件和行号,未取得的保持 NOT_COLLECTED。progress §18 写明每一步的实际结果和停点。提交并推送后汇报:提交号、诊断观察到的落点和静态资源清单(脱敏后)、是否在批准范围内、登记了哪些项、三条件结果、各页面是否取得、表单联动结果、release 次数、验收结果。完成或停止后都不进入 C3。
+
+### 18.1 第一步实施记录
+
+基线48e8fba;live-01原样保留。只改spike取证脚本,生产放行规则与冻结稿未改。
+新增独立redactAddress、诊断模式、自主结束、导航/关闭观察、run.json写前写后自检;
+只包装生产适配后的metadata,未新增原始协议事件监听,未读取请求/响应头或网络载荷。
+相对时间从进程启动计;query的len按原始值字符数计,不解码或输出值。
+类base64串保守按连续至少16个base64/base64url字母表字符识别;只影响脱敏,
+不用于放行判断。无法从脱敏值确认的登记前提不得猜测。
+
+本机自测命令(exit=0,零网络):
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs --self-test .venv/bin/python
+```
+
+[c2b-02-redaction-selftest.log](evidence/C2b/c2b-02-redaction-selftest.log):
+13 passed。覆盖指定7类及base64/非法键/页版本范围,另有cookie赋值、
+未脱敏session赋值、登录显示名3条拒绝控制。首轮本机自检的附加正则误拒了
+裁定规定的`<REDACTED len=N>`形式,已在真机启动前修正并完整重跑通过;
+qb_redact本身未改。静态无submit/Ok/启动覆盖测试仍通过。
+
+诊断命令(exit=1,仅一次会话):
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome \
+  docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-02 \
+  .venv/bin/python diagnostic
+```
+
+实际结果:[live-02/run.json](evidence/C2b/live-02/run.json)。只发login,等待上限600秒;
+GET /signin=200,没有POST,没有302或被拒Document。未触发两个DIAGNOSTIC_DONE条件,
+由原有登录时限以QB_LOGIN_TIMEOUT结束,不是提前关闭。页面close相对600469ms,
+browser disconnected相对600478ms;浏览器/profile均已清理。
+
+| 诊断项 | 实测及源行 |
+|---|---|
+| 登录落点 | NOT_COLLECTED;仅初始https://quickbuild.tizen.org/signin、空查询,run.json:779/823 |
+| 唯一被拒资源 | GET https://quickbuild.tizen.org/ckeditor/ckeditor.js,query=`v=<REDACTED len=13>`,Script,非重定向;run.json:807 |
+| 拒绝三方计数 | trace DENIED=1,包装拒绝=1,帧归属拒绝差额=0;run.json:861 |
+| 新增安全停止项 | WORKER_BLOCKED=0,NEW_PAGE=0,runtime_failure=null;run.json:851/858 |
+| 登录三条件 | 未取得成功快照;主帧仅/signin,另两项没有单独保存测量值,不脑补;run.json:822/845 |
+| 放行与页面 | form_action_releases=0,released=false,pages=[];run.json:10/859 |
+
+请求阶段47条GET(46允许/1拒绝),POST=0;响应阶段38条HTTP200。
+为浏览器拦截观测数,不是服务器实收数。未读构建页、配置页或表单。
+写前/写后qb_redact检查均通过,无请求头/请求体、Cookie、原始事件或登录显示名落盘。
+
+### 18.2 第二步准入与停点
+
+**NOT_RUN / INSUFFICIENT_OBSERVATION**。没有登录POST/302/落点链,不能判定待登记
+落点是否完全位于批准范围内。仅观察到同源JS路径不能证明它阻断登录三条件,
+亦不能从脱敏后的v值长度推断其内容为纯数字。因此不登记该脚本、不改生产放行。
+没有观测到http降级、会话路径参数或外站Document,但不把“未观测”说成落点链已验证。
+本轮登记项=0,无第二轮登记循环。停止项1:诊断登录未完成,不是新增设计裁决。
+
+### 18.3 第三步
+
+NOT_RUN。live-03未创建,没有第二次人工登录;1193467/1193469、1186372及其子构建、
+RBS overview_id与配置页全部NOT_COLLECTED。BUILD_TYPE联动未执行,未设置提交地址,
+未点Ok、未触发构建。附录C见[appendix-c.md](evidence/C2b/appendix-c.md);
+所有缺失项保持NOT_COLLECTED,C3不启动。
+
+### 18.4 验收与提交范围
+
+| 命令 | exit | 实测 |
+|---|---|---|
+| .venv/bin/python -m pytest -q | 0 | [c2b-02-pytest.log](evidence/C2b/c2b-02-pytest.log):2154 passed,1 skipped;与48e8fba一致 |
+| .venv/bin/mypy | 0 | [c2b-02-mypy.log](evidence/C2b/c2b-02-mypy.log):113 source files |
+| .venv/bin/ruff check .(完整待提交树导出) | 0 | [c2b-02-ruff.log](evidence/C2b/c2b-02-ruff.log):All checks passed! |
+| .venv/bin/lint-imports | 0 | [c2b-02-lint-imports.log](evidence/C2b/c2b-02-lint-imports.log):6 kept,0 broken |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | [c2b-02-design-check.log](evidence/C2b/c2b-02-design-check.log):0 problem |
+| git diff --cached --check | 0 | 空输出 |
+
+Ruff检查对象为暂存树`bb3d3355e72930d81e9425443757c04ded7777b2`,
+以`git archive <tree> | tar -x -C /tmp/p5q-c2b-02-lint-lXZiaE`导出,
+再在该目录用仓库`.venv/bin/ruff check .`检查。沿§17的范围隔离方式,
+不处理用户无关未跟踪历史脚本;此后仅补本节与Ruff日志,代码未变。
+
+本次唯一可执行文件改动为spike取证脚本;新增自测13项,pytest用例数未变。
+生产代理、冻结稿、design.md与live-01均零diff。冻结稿SHA256仍为
+`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
+第二步未准入、生产放行规则未改,其要求的Node四组安全测试本轮未重跑,
+不以§17的历史4/4冒充本轮实跑。停止状态随诊断证据提交,不标C2b完成。

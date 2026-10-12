@@ -1,10 +1,47 @@
 # C2b Appendix C Evidence Status
 
-Status: **BLOCKED_LOGIN / NOT_COLLECTED**. C2B-01 corrected the fixture;
+Status: **BLOCKED_DIAGNOSTIC_LOGIN / NOT_COLLECTED**. Latest C2B-02 diagnostic
+results are below; the C2B-01 session is preserved as historical evidence.
+C2B-01 corrected the fixture;
 all four local safety groups passed before the single live browser session.
 See [safety-c2b-01.log](safety-c2b-01.log) and progress section 17.
 The live session stopped with QB_LOGIN_ABORTED. No retry, build-page read,
 configuration read or form interaction followed. The frozen appendix is unchanged.
+
+## C2B-02 Diagnostic (Latest)
+
+Only `login` was issued, with a 600-second timeout. Neither successful login nor
+the POST-302/denied-Document/5-second-quiet ending condition occurred. The agent
+ended with `QB_LOGIN_TIMEOUT`; this is not `DIAGNOSTIC_DONE`.
+
+| Item | Actual fact and source |
+|---|---|
+| Initial document | `https://quickbuild.tizen.org/signin`, empty query, GET, HTTP 200; live-02/run.json:779 |
+| Post-login landing | NOT_COLLECTED. No login POST/302 or rejected Document observed |
+| Rejected static resource | `https://quickbuild.tizen.org/ckeditor/ckeditor.js`, GET Script, query `v=<REDACTED len=13>`, redirect_hop=false; live-02/run.json:807 |
+| Main-frame navigation | Only `/signin`, 2085ms; live-02/run.json:823 |
+| Automatic close | page_close 600469ms; browser_disconnected 600478ms; live-02/run.json:831 |
+| Login response | QB_LOGIN_TIMEOUT; live-02/run.json:845 |
+| Login three-condition snapshot | NOT_COLLECTED; only the navigation observation above is available |
+| Denial reconciliation | trace 1 / allow wrapper 1 / frame-ownership difference 0; live-02/run.json:861 |
+| Safety stops | No WORKER_BLOCKED/NEW_PAGE; runtime_failure=null; live-02/run.json:851/858 |
+| Cleanup and release | browser_closed/profile_removed=true; action release=0, released=false; live-02/run.json:849/859 |
+
+Request-stage observations: 47 GET (46 allowed, 1 denied), POST 0. Observed
+responses: 38 x HTTP 200. These are interception counts, not server receipt counts.
+The report passed independent qb_redact byte checks before and after writing.
+
+**Registration decision: NOT_RUN, insufficient observation.** No landing chain
+was captured, so its compliance with the approved scope cannot be established.
+The rejected same-origin script is not proven to block login. Its masked query
+length does not prove a numeric version value. It remains denied; no resource or
+landing was registered, and production rules remain unchanged. No downgrade,
+session path or foreign Document was observed, which is not proof of an unobserved
+post-login chain's safety.
+
+Step 3 / live-03 was not started. All build/configuration facts and form linkage
+below remain NOT_COLLECTED. No second login, no Ok click, no build submission.
+Previous live-01 evidence is unchanged and does not substitute for this diagnostic.
 
 ## Local Safety Prerequisite
 

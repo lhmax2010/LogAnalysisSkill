@@ -1,17 +1,23 @@
 // Dedicated C2b evidence entry. No launch overrides and no build submission.
 import { createHash } from 'node:crypto';
+import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
 import {
   Agent, AgentError, callbackURL, canonical, checkRedacted, createRuntime,
   ORIGIN, pathShape, redactDOM, validateForm,
 } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
-const [playwright, chromium, directory, python] = process.argv.slice(2);
+const [playwright, chromium, directory, python, mode = 'full'] = process.argv.slice(2);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-const report = { status: 'RUNNING', commands: [], pages: [], traffic: [], stop: null };
+const report = { status: 'RUNNING', mode, commands: [], pages: [], traffic: [], diagnostics: [], events: [], stop: null };
+const started = performance.now();
+const elapsed = () => Math.round(performance.now() - started);
+const identities = new Set();
+const prompt = '已打开 QuickBuild 登录窗口,请在窗口中登录;登录后页面若显示被拦截属预期,请不要关闭窗口,工具会自动关闭。\n';
+const previousPrompt = '已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n';
 let runtime;
 let agent;
 let current = '/signin';
@@ -19,13 +25,87 @@ let operation = 'login';
 let stopped = false;
 let actionReleases = 0;
 let sequence = 0;
+let lastRequest = 0;
+let post302 = false;
+let deniedDocumentAfter302 = false;
+let wrapperDenied = 0;
+
+// Only URL components supplied by the production metadata adapter enter here.
+export function redactAddress(path, query) {
+  const maskedPath = path.split('/').map(segment => {
+    if (segment.length > 64 || /[a-fA-F0-9]{16,}/.test(segment)
+      || /[A-Za-z0-9+_-]{16,}={0,2}/.test(segment)) return '<TOKEN>';
+    return segment.replace(/;([^;=]+)=([^;]*)/g, ';$1=<REDACTED>');
+  }).join('/');
+  let maskedQuery = query;
+  if (query && !/^\d+(-\d+)?$/.test(query)
+    && !/^\d+(-\d+)?\.?I[A-Za-z]+Listener[.0-9-]*-?[A-Za-z0-9:_-]*$/.test(query)) {
+    maskedQuery = query.split('&').map(part => {
+      const equals = part.indexOf('=');
+      const key = equals < 0 ? part : part.slice(0, equals);
+      const value = equals < 0 ? '' : part.slice(equals + 1);
+      return `${/^[A-Za-z0-9_.:-]{1,64}$/.test(key) ? key : '<KEY>'}=<REDACTED len=${[...value].length}>`;
+    }).join('&');
+  }
+  return { path: maskedPath, query: maskedQuery };
+}
+
+function checkedReport(raw, interpreter = python, knownIdentities = [...identities]) {
+  const result = spawnSync(interpreter, ['-c',
+    'import json,re,sys; from ci_triage.qb_redact import PageRedactor; d=json.load(sys.stdin); r=PageRedactor(); r.identities.update(d["identities"]); raw=d["raw"].encode("utf-8"); r.check_bytes(raw); assert not re.search(rb"jsessionid=(?!<REDACTED(?:>| len=\\d+>))",raw,re.I)'],
+  { input: JSON.stringify({ raw, identities: knownIdentities }), encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
+  if (result.status !== 0) throw new AgentError('QB_EVIDENCE_REDACTION_FAILED');
+}
+
+async function selfTest(interpreter) {
+  const cases = [
+    ['session-path', '/;jsessionid=abc', '', '/;jsessionid=<REDACTED>', ''],
+    ['session-query', '/x', 'jsessionid=abc', '/x', 'jsessionid=<REDACTED len=3>'],
+    ['page-number', '/', '1', '/', '1'],
+    ['listener', '/', '0-1.ILinkListener-x', '/', '0-1.ILinkListener-x'],
+    ['query-values', '/', 'token=abc&v=2', '/', 'token=<REDACTED len=3>&v=<REDACTED len=1>'],
+    ['long-segment', '/' + 'x'.repeat(65), '', '/<TOKEN>', ''],
+    ['hex-segment', '/0123456789abcdef', '', '/<TOKEN>', ''],
+    ['base64-segment', '/QWxhZGRpbjpvcGVuIHNlc2FtZQ==', '', '/<TOKEN>', ''],
+    ['bad-key', '/', 'bad%20key=abc', '/', '<KEY>=<REDACTED len=3>'],
+    ['page-range', '/', '1-2', '/', '1-2'],
+  ];
+  for (const [name, path, query, expectedPath, expectedQuery] of cases) {
+    const value = redactAddress(path, query);
+    assert.deepEqual(value, { path: expectedPath, query: expectedQuery });
+    checkedReport(JSON.stringify(value), interpreter, []);
+    emit({ test: name, result: 'PASS' });
+  }
+  for (const [name, raw, users] of [
+    ['cookie-assignment-rejected', '{"path":"JSESSIONID_8810=synthetic"}', []],
+    ['session-assignment-rejected', '{"path":"/;jsessionid=synthetic"}', []],
+    ['display-name-rejected', '{"path":"/synthetic-user"}', ['synthetic-user']],
+  ]) {
+    assert.throws(() => checkedReport(raw, interpreter, users), { code: 'QB_EVIDENCE_REDACTION_FAILED' });
+    emit({ test: name, result: 'PASS' });
+  }
+  emit({ self_tests: 13, passed: 13, network_requests: 0 });
+}
 
 function emit(row) { process.stdout.write(JSON.stringify(row) + '\n'); }
 async function persist() {
-  await writeFile(`${directory}/run.json`, JSON.stringify({ ...report,
+  const traceDenied = runtime?.trace.filter(row => row.action === 'DENIED').length ?? 0;
+  const raw = JSON.stringify({ ...report,
     trace: runtime?.trace ?? [], runtime_failure: runtime?.failure ?? null,
     form_action_releases: actionReleases, released: runtime?.policy.released ?? false,
-  }, null, 2) + '\n');
+    trace_denied_count: traceDenied, wrapper_denied_count: wrapperDenied,
+    frame_ownership_denied_count: traceDenied - wrapperDenied,
+    denied_count_note: 'trace DENIED minus allow-wrapper denials are frame-ownership denials',
+  }, null, 2) + '\n';
+  const path = `${directory}/run.json`;
+  try {
+    checkedReport(raw);
+    await writeFile(path, raw);
+    checkedReport(await readFile(path, 'utf8'));
+  } catch {
+    await unlink(path).catch(() => {});
+    throw new AgentError('QB_EVIDENCE_REDACTION_FAILED');
+  }
 }
 function stop(reason) {
   if (stopped) return;
@@ -74,17 +154,50 @@ async function formRecord(label) {
   return record;
 }
 
+function diagnosticDone(reason) {
+  if (stopped || report.status === 'DIAGNOSTIC_DONE') return;
+  report.status = 'DIAGNOSTIC_DONE';
+  report.diagnostic_end = { reason, relative_ms: elapsed() };
+  void runtime.close();
+}
+
+async function rememberLoginNames() {
+  // Read-only locator observation; no page script, input or navigation.
+  try {
+    const labels = await runtime.page.getByText(/^Welcome!\s*/).allTextContents();
+    for (const text of labels) {
+      const name = text.replace(/^\s*Welcome!\s*/, '').trim();
+      if (name && name !== '<USER>') identities.add(name);
+    }
+  } catch { /* A closing page has no remaining DOM to observe. */ }
+}
+
+if (playwright === '--self-test') { await selfTest(chromium); process.exit(0); }
+
 await mkdir(directory, { recursive: true });
 if (existsSync(`${directory}/run.json`)) {
   emit({ error: 'EVIDENCE_ALREADY_EXISTS' });
   process.exit(1);
 }
 try {
+  if (!['full', 'diagnostic'].includes(mode)) throw new AgentError('EVIDENCE_COMMAND_INVALID');
+  process.stderr.write(prompt);
   runtime = await createRuntime(playwright, chromium);
   agent = new Agent(runtime);
+  runtime.page.on('framenavigated', frame => {
+    if (frame !== runtime.page.mainFrame()) return;
+    try {
+      const url = new URL(frame.url());
+      report.events.push({ event: 'main_frame_navigation', relative_ms: elapsed(),
+        protocol: url.protocol, host: url.host, ...redactAddress(url.pathname, url.search.slice(1)) });
+    } catch { stop('QB_EVIDENCE_REDACTION_FAILED'); }
+  });
+  runtime.page.on('close', () => report.events.push({ event: 'page_close', relative_ms: elapsed() }));
+  runtime.browser.on('disconnected', () => report.events.push({ event: 'browser_disconnected', relative_ms: elapsed() }));
   const push = runtime.trace.push.bind(runtime.trace);
   runtime.trace.push = (...rows) => {
     const length = push(...rows);
+    if (rows.some(row => row.action === 'DENIED')) lastRequest = elapsed();
     if (rows.some(row => ['WORKER_BLOCKED', 'NEW_PAGE'].includes(row.action))) stop('LIVE_TARGET_FAIL_CLOSED');
     return length;
   };
@@ -92,6 +205,17 @@ try {
   const allow = runtime.policy.allow.bind(runtime.policy);
   runtime.policy.allow = (metadata, requestId) => {
     const permitted = allow(metadata, requestId);
+    if (metadata.response_status === null) lastRequest = elapsed();
+    if (!permitted) wrapperDenied += 1;
+    if (!permitted || (runtime.policy.phase === 'login' && metadata.resource_type === 'Document')) {
+      report.diagnostics.push({ sequence: report.diagnostics.length + 1, relative_ms: elapsed(),
+        phase: runtime.policy.phase, method: metadata.method, protocol: metadata.protocol,
+        host: metadata.host, ...redactAddress(metadata.path, metadata.query),
+        resource_type: metadata.resource_type, response_status: metadata.response_status,
+        redirect_hop: metadata.redirect_source !== null, allowed: permitted });
+    }
+    if (runtime.policy.phase === 'login' && metadata.method === 'POST' && metadata.response_status === 302) post302 = true;
+    if (post302 && !permitted && metadata.resource_type === 'Document' && metadata.response_status === null) deniedDocumentAfter302 = true;
     const shape = pathShape(metadata.path);
     const staticPath = /^\/(?:styles|jquery|scripts|datetimepicker|codemirror|wicket\/resource|images)\/[A-Za-z0-9_./~-]+$/.test(metadata.path);
     report.traffic.push({ operation, phase: runtime.policy.phase, method: metadata.method,
@@ -101,17 +225,39 @@ try {
       && /IFormSubmitListener-form$/.test(metadata.query)) actionReleases += 1;
     return permitted;
   };
-  const watchdog = setInterval(() => { if (runtime.failure) stop(runtime.failure); }, 25);
+  const watchdog = setInterval(() => {
+    if (runtime.failure) stop(runtime.failure);
+    if (mode === 'diagnostic' && !stopped && deniedDocumentAfter302 && elapsed() - lastRequest >= 5000) {
+      diagnosticDone('POST_302_DENIED_DOCUMENT_QUIET_5S');
+    }
+  }, 25);
+  const nameWatch = setInterval(() => { void rememberLoginNames(); }, 500);
   try {
-    const result = await call({ command: 'login', login_timeout_seconds: 600, projects: [] });
+    report.commands.push({ command: 'login', login_timeout_seconds: 600 });
+    const stderrWrite = process.stderr.write;
+    process.stderr.write = function (chunk, ...args) {
+      if (chunk === previousPrompt) return true;
+      return stderrWrite.call(this, chunk, ...args);
+    };
+    let result;
+    try { result = await agent.command({ command: 'login', login_timeout_seconds: 600, projects: [] }); }
+    finally { process.stderr.write = stderrWrite; }
+    report.login_response = result;
+    check();
+    if (report.status !== 'DIAGNOSTIC_DONE') {
+    if (!result.ok) throw new AgentError(result.error);
+    await rememberLoginNames();
     const url = new URL(runtime.page.url());
-    report.login = { ok: result.ok, path: url.pathname, empty_query: url.search === '',
+    report.login = { ok: result.ok, ...redactAddress(url.pathname, url.search.slice(1)), empty_query: url.search === '',
       not_signin: url.pathname !== '/signin',
       password_inputs: await runtime.page.locator('input[type=password]').count(),
       sign_out_links: await runtime.page.getByRole('link', { name: 'Sign Out', exact: true }).count() };
     check();
-    emit({ login: report.login });
+    if (mode === 'diagnostic') diagnosticDone('LOGIN_THREE_CONDITIONS');
+    else emit({ login: report.login });
+    }
     await persist();
+    if (mode === 'full') {
     const lines = createInterface({ input: process.stdin, crlfDelay: Infinity });
     for await (const line of lines) {
       const input = JSON.parse(line);
@@ -168,14 +314,16 @@ try {
       check();
       await persist();
     }
-  } finally { clearInterval(watchdog); }
+    }
+  } finally { clearInterval(watchdog); clearInterval(nameWatch); }
 } catch (error) {
   stop(error instanceof AgentError ? error.code : 'EVIDENCE_RUNTIME_ERROR');
 } finally {
   if (runtime) await runtime.close();
   report.browser_closed = !runtime || !runtime.browser.isConnected();
   report.profile_removed = !runtime || !existsSync(runtime.profile);
-  await persist();
+  try { await persist(); }
+  catch { report.status = 'STOPPED'; report.stop = { reason: 'QB_EVIDENCE_REDACTION_FAILED' }; }
   emit({ status: report.status, stop: report.stop, browser_closed: report.browser_closed,
     profile_removed: report.profile_removed, released: runtime?.policy.released ?? false });
   if (report.status === 'STOPPED') process.exitCode = 1;
