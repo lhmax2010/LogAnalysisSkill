@@ -1,8 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2b STOPPED_LOCAL_FIXTURE**。
-当前轮C2b基线09e14c5;§16本机安全测试首组停止,后三组与真机尚未执行。
-本轮仅本机合成HTTPS;没有QuickBuild/Gerrit请求、真实登录、表单操作或构建提交。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2b STOPPED_LOGIN**。
+当前轮基线ae32593;P5Q-C2B-01裁定见§17,四组本机安全测试已从头重跑全绿。
+单次真实浏览器登录返回QB_LOGIN_ABORTED;未重试,没有构建页读取、表单操作或构建提交。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
 是既有无关改动,不处理、不纳入本次交付;其余历史草稿也不纳入。
@@ -28,15 +28,15 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE:见§14及§15修正;C2b STOPPED_LOCAL_FIXTURE:见§16,未满足真机前的四组安全前置 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;C2b STOPPED_LOGIN:§17四组本机安全前置通过,真机登录返回QB_LOGIN_ABORTED,未重试 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
 | C6 | 第9.4节第2步确认的真实提交与收口文档 | C5 + FatTank明确确认;NOT_STARTED |
 
 C2真机取证与冻结稿假设不符时按R1修订,不得直接继续C3。
-C0授权不含实现;C1已完成。本轮仅授权C2a离线实现与本机about:blank能力验证,
-不含C2b-C6、人工登录、真实站点填表/联动/提交。
+C0授权不含实现;C1/C2a已完成。本轮C2b授权浏览器人工登录、只读与BUILD_TYPE联动取证,
+不授权表单提交、真实构建或C3-C6。遇到§17新增停止条件立即停止,不重试。
 
 ## 3. FatTank裁定(2026-10-10)
 
@@ -715,3 +715,101 @@ Ruff按既有方式检查全部待交付树,不改工作树无关草稿的53个�
 命令`git archive <tree> | tar -x -C <目录>`,导出完成后用仓库.venv/bin/ruff在该目录检查。
 此后只更新本文与证据。冻结稿、design.md、全部生产源码零diff;未改凭据、未开真机。
 本提交仅保存离线夹具、原始失败和进度,不声明C2b完成。提交SHA由Git外部锚定。
+
+## 17. 实施裁定 P5Q-C2B-01
+
+设计方出具、FatTank批准,立即执行;冻结稿与生产代码不改。
+§16.1停点的夹具条件由本裁定关闭,不把旧日志改写为通过。
+原因:Worker/SharedWorker启动暂停、攻击HTTP及WS握手均零时,关闭被暂停目标失败
+可按冻结第3.1节关闭整个浏览器并报QB_BROWSER_UNAVAILABLE;原夹具额外要求
+runtime.failure为空与该fail-closed契约不符。
+
+- Worker/WebSocket组:攻击HTTP与WS握手必须均为零;另满足(a)目标成功关闭且
+  runtime.failure为空,或(b)runtime.failure=QB_BROWSER_UNAVAILABLE且浏览器已关闭、
+  临时目录已删除。任何其它failure仍失败。逐项记录实际分支及两种Worker的
+  Target.closeTarget成功/失败/异常类别。测试观察器不改CDP返回值或异常;
+  分支(b)在测试finally清理之前断言,不得由测试清理动作证明代理已关闭。
+- 其它三组判据不变,四组从头完整重跑;四组全绿才允许真机只读与表单联动。
+- 真机read/open_form/字段取证一旦出现WORKER_BLOCKED、NEW_PAGE或runtime.failure,
+  立即停止,记录触发页面路径形态及trace,不重试绕过。
+- 第二、三步沿原C2b任务:单次浏览器人工登录;按顺序只读取证;仅BUILD_TYPE
+  Full→Partial→Full,不点Ok、不提交、不产生构建。完成或停点后均不进入C3。
+
+### 17.1 本轮实跑
+
+完整命令沿§16.1,exit=0,原文[safety-c2b-01.log](evidence/C2b/safety-c2b-01.log)。
+四组从头重跑,summary=4/ passed=4/ failed=0,network=loopback-only。
+
+| 组 | 实测 |
+|---|---|
+| Worker/WebSocket | 分支(b);shared_worker closeTarget success=true;worker closeTarget异常类别Error。runtime.failure=QB_BROWSER_UNAVAILABLE;浏览器已关闭、临时目录已删除;攻击HTTP=0/WS握手=0 |
+| 307/308 | 各自仅第一跳到达,合法302的/build/999第二跳正常到达 |
+| 逐跳 | REST/promote/外站的第二跳均零;307登录POST重放零 |
+| 凭据隔离 | 合成cookie/auth/password均实际到达本地服务器;代理输出与适配层异常输出均无合成值,用户显示名已<USER>脱敏 |
+
+原始失败safety-first.log保留。新增pytest本机integration包装,无运行环境时显式skip;
+新增静态用例钉死取证脚本无submit命令、Ok点击、submitUrl设置及启动覆盖参数。
+真机专用入口为docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs,
+原样调用生产createRuntime/Agent,不传testOptions;仅观察已脱敏HTML与协议适配后的元数据。
+WORKER_BLOCKED/NEW_PAGE即关闭;runtime.failure由watchdog及每步检查立即关闭。
+页面归档前后分别由qb_redact检查,不保存Cookie或原始协议事件。
+
+### 17.2 真机登录停点
+
+实跑入口命令(exit=1):
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome \
+  docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-01 \
+  .venv/bin/python
+```
+
+只发login命令,等待配置600秒;代理返回QB_LOGIN_ABORTED而非超时。
+记录[run.json](evidence/C2b/live-01/run.json),逐项源行号见
+[appendix-c.md](evidence/C2b/appendix-c.md)。实测GET /signin为200;
+人工登录POST为302;后续Document请求被拒。最终浏览器关闭、profile删除,
+runtime_failure=null,没有WORKER_BLOCKED/NEW_PAGE。不推断是谁关闭页面或关闭成因。
+
+请求阶段共60条:GET 59(允许46/拒绝13),POST 1(人工登录,允许);
+响应阶段38条200与1条302。上述是拦截观察数,非服务器实收数,字体重复尝试单计。
+拒绝13条=Script 1 + Document 12,均只存path shape `<other>`;
+未保留实际host/path/query,不能据此宣称具体落点、白名单缺项或静态文件名。
+登录三条件成功快照未取得;不能把302说成已登录。
+
+没有任何read/open_form/字段命令;pages=[];form_action_releases=0,released=false。
+第二步1193467/子构建/1186372/其子构建/配置页均NOT_COLLECTED;
+第三步BUILD_TYPE联动NOT_RUN。没有猜overview_id,未用SBS补RBS,未发起构建。
+按停止-报告保留现场元数据,不重试、不放宽判据。当前停止项1(真机登录未完成),
+尚不能证实具体冻结假设不符;先报告事实,等待下一步授权。C3不启动。
+
+### 17.3 停点验收
+
+| 命令 | exit | 原始输出/结论 |
+|---|---:|---|
+| .venv/bin/python -m pytest -q | 0 | [pytest-c2b-01.log](evidence/C2b/pytest-c2b-01.log):2154 passed,1 skipped in 103.38s;基线2152/1,新增2,无新skip |
+| .venv/bin/mypy | 0 | [mypy-c2b-01.log](evidence/C2b/mypy-c2b-01.log):Success: no issues found in 113 source files |
+| .venv/bin/ruff check .(完整待交付树导出) | 0 | [ruff-c2b-01.log](evidence/C2b/ruff-c2b-01.log):All checks passed! |
+| .venv/bin/lint-imports | 0 | [lint-imports-c2b-01.log](evidence/C2b/lint-imports-c2b-01.log):6 kept,0 broken |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | [design-check-c2b-01.log](evidence/C2b/design-check-c2b-01.log):0 problem |
+| Node安全入口,§16.1原命令 | 0 | [safety-c2b-01.log](evidence/C2b/safety-c2b-01.log):4/4;全量pytest新增integration包装再次实际运行通过 |
+| Node --check docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs | 0 | 空输出 |
+| git diff --cached --check | 0 | 空输出 |
+
+新增用例:tests/unit/test_qb_browser_node.py中的test_node_c2b_local_https_safety与
+test_c2b_evidence_entry_is_not_a_submit_or_launch_override_path。本机均passed,非skip。
+前者不访问外部网络,后者只读源码;真实站点脚本不进入pytest执行。
+
+Ruff完整待交付树e5816ee65ca183e6756aaab4b9b81b345e9d61be导出到
+/tmp/p5q-c2b-01-lint-NMwly7,命令git archive <tree> | tar -x -C <目录>,
+再用仓库.venv/bin/ruff检查该目录全部内容。沿§16既有处理,不修改/排除/暂存
+用户无关草稿;此后仅补本节与ruff日志,代码未变。
+run.json仅保存协议适配后的元数据,无请求头/请求体/凭据键;
+`jq`递归键检查结果true,exit=0。没有登录页原文、Cookie或会话文件归档。
+
+冻结稿sha256仍为0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950;
+全部生产源码、design.md及冻结稿零diff。未处理既有.gitignore与docs四处删除,
+未入库其它未跟踪草稿。当前提交只闭合本机安全前置并保存真实登录停点,
+不声明C2b完成,提交SHA由Git外部锚定。

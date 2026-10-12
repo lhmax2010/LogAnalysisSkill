@@ -95,6 +95,52 @@ def test_node_h_diagnostic_normal_and_control() -> None:
 
 
 @pytest.mark.integration
+def test_node_c2b_local_https_safety() -> None:
+    command, env = node_command()
+    paths = browser_paths()
+    if not shutil.which("openssl"):
+        pytest.skip("openssl unavailable for synthetic local C2b TLS certificate")
+    result = subprocess.run(
+        [*command, str(ROOT / "tests/node/p5q_c2b_safety.mjs"), *paths],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    rows = [json.loads(line) for line in result.stdout.splitlines()]
+    summary = next(row for row in rows if "summary" in row)
+    assert summary["passed"] == 4 and summary["failed"] == 0
+    worker = next(row for row in rows if row.get("group") == "worker-websocket")
+    assert worker["details"]["branch"] in {"a:targets_closed", "b:browser_fail_closed"}
+    assert worker["details"]["attackHTTP"] == worker["details"]["websocketHandshakes"] == 0
+    assert {row["type"] for row in worker["observations"]["closeTarget"]} == {
+        "worker", "shared_worker"
+    }
+    print(result.stdout)
+
+
+def test_c2b_evidence_entry_is_not_a_submit_or_launch_override_path() -> None:
+    source = (ROOT / "docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs").read_text()
+    assert "command: 'submit'" not in source
+    assert "submitUrl" not in source
+    assert "name: 'Ok'" not in source
+    assert "createRuntime(playwright, chromium)" in source
+    assert "launchArgs" not in source
+    assert "WORKER_BLOCKED" in source and "NEW_PAGE" in source
+    assert "if (runtime.failure) stop(runtime.failure)" in source
+    assert "check_written" in source
+    for relative in (
+        "tizen-ci-triage/scripts/ci_triage/qb_browser.py",
+        "tizen-ci-triage/scripts/ci_triage/cli.py",
+    ):
+        production = (ROOT / relative).read_text()
+        assert "--host-resolver-rules" not in production
+        assert "--ignore-certificate-errors-spki-list" not in production
+        assert "p5q_c2b_evidence" not in production
+
+
+@pytest.mark.integration
 @pytest.mark.parametrize("mode", ["normal", "exception", "signal"])
 def test_node_profile_cleanup(mode: str) -> None:
     command, env = node_command()

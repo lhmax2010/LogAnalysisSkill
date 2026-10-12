@@ -1,0 +1,979 @@
+{
+  "status": "STOPPED",
+  "commands": [
+    {
+      "command": "login"
+    }
+  ],
+  "pages": [],
+  "traffic": [
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/signin",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/signin",
+      "resource_type": "Document",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/css/smoothness/jquery-ui-1.8.11.custom.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/colorpicker/css/colorpicker.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/webfonts.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/base.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/codemirror.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/theme/eclipse.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/theme/dracula.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/datetimepicker/flatpickr.min.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/pages.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/themes.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/jquery-1.5.1.min.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/jquery-ui-1.8.11.custom.min.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.align.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.tooltip.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.popup.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.center.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.fancytip.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.ui.layout.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/colorpicker/js/colorpicker.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/datetimepicker/flatpickr.min.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/autosize.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/clipboard.min.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/main.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/codemirror.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/mode/groovy/groovy.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/mode/css/css.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/addon/edit/matchbrackets.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/addon/display/placeholder.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.truncate.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/com.pmease.quickbuild.web.page.BasePage/custom-ver-1701391813000.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/org.apache.wicket.markup.html.WicketEventReference/wicket-event-ver-1782798879210.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/org.apache.wicket.ajax.WicketAjaxReference/wicket-ajax-ver-1782798879210.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/colorpicker/css/colorpicker.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/codemirror.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/theme/eclipse.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/css/smoothness/jquery-ui-1.8.11.custom.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/webfonts.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/base.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/theme/dracula.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/datetimepicker/flatpickr.min.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/themes.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/com.pmease.quickbuild.web.page.BasePage/custom-ver-1701391813000.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/pages.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/jquery-ui-1.8.11.custom.min.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.align.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/jquery-1.5.1.min.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.tooltip.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.popup.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.center.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.fancytip.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.ui.layout.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/colorpicker/js/colorpicker.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/datetimepicker/flatpickr.min.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/autosize.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/clipboard.min.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/main.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/codemirror.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/mode/groovy/groovy.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/mode/css/css.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/addon/edit/matchbrackets.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/addon/display/placeholder.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.truncate.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/org.apache.wicket.markup.html.WicketEventReference/wicket-event-ver-1782798879210.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/org.apache.wicket.ajax.WicketAjaxReference/wicket-ajax-ver-1782798879210.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-700-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-400-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-600-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-500-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-700-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-400-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-600-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-500-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-700-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-400-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-600-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-500-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-700-normal.woff2",
+      "resource_type": "Font",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-600-normal.woff2",
+      "resource_type": "Font",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-400-normal.woff2",
+      "resource_type": "Font",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-500-normal.woff2",
+      "resource_type": "Font",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/favicon-32x32.png",
+      "resource_type": "Other",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/favicon-32x32.png",
+      "resource_type": "Other",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "POST",
+      "path": "/signin",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "POST",
+      "path": "/signin",
+      "resource_type": "Document",
+      "response_status": 302,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    }
+  ],
+  "stop": {
+    "reason": "QB_LOGIN_ABORTED",
+    "operation": "login",
+    "path_shape": "/signin"
+  },
+  "browser_closed": true,
+  "profile_removed": true,
+  "trace": [
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    }
+  ],
+  "runtime_failure": null,
+  "form_action_releases": 0,
+  "released": false
+}

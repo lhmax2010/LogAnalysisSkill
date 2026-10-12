@@ -3,6 +3,7 @@ import { createHash, X509Certificate } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { createServer } from 'node:https';
 import { createServer as createPlainServer } from 'node:http';
+import { existsSync } from 'node:fs';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { Agent, createRuntime, ORIGIN } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
@@ -88,7 +89,8 @@ async function run(name, action) {
     details = { error: 'LOCAL_SAFETY_ASSERTION_FAILED', assertion: error instanceof assert.AssertionError ? error.message.split('\n')[0] : 'runtime failure' };
   } finally {
     await runtime.close();
-    const row = { group: name, ok, requests: received.slice(start), handshakes: upgrades.slice(wsStart), trace: runtime.trace, details };
+    const row = { group: name, ok, requests: received.slice(start), handshakes: upgrades.slice(wsStart), trace: runtime.trace, details,
+      ...(runtime.safetyObservations ? { observations: runtime.safetyObservations } : {}) };
     results.push(row);
     const output = JSON.stringify(row);
     if (Object.values(synthetic).some(value => output.includes(value))) throw new Error('SYNTHETIC_CREDENTIAL_LEAK');
@@ -99,6 +101,32 @@ async function run(name, action) {
 
 try {
   const worker = await run('worker-websocket', async runtime => {
+    const targets = new Map();
+    const destroyed = new Set();
+    const closes = [];
+    const root = runtime.guards.root;
+    root.on('Target.targetCreated', ({ targetInfo }) => targets.set(targetInfo.targetId, targetInfo.type));
+    root.on('Target.targetDestroyed', ({ targetId }) => destroyed.add(targetId));
+    root.on('Target.attachedToTarget', ({ targetInfo }) => targets.set(targetInfo.targetId, targetInfo.type));
+    // Observe both browser sessions, including autoAttachRelated's session.
+    // The original CDP result/exception is returned unchanged to the guard.
+    const prototype = Object.getPrototypeOf(root);
+    const send = prototype.send;
+    prototype.send = async function (method, params) {
+      if (method !== 'Target.closeTarget') return send.call(this, method, params);
+      const entry = { targetId: params.targetId };
+      closes.push(entry);
+      try {
+        const result = await send.call(this, method, params);
+        entry.outcome = result.success ? 'success' : 'failure';
+        entry.success = result.success;
+        return result;
+      } catch (error) {
+        entry.outcome = 'exception'; entry.category = error.name;
+        throw error;
+      }
+    };
+    try {
     runtime.policy.phase = 'read';
     await runtime.page.goto(ORIGIN + '/build/1');
     const start = received.length;
@@ -113,14 +141,30 @@ try {
       globalThis.localSockets = [new WebSocket('wss://quickbuild.tizen.org/socket'), new WebSocket(`ws://127.0.0.1:${plainPort}/socket`)];
     }, { plainPort: plain.address().port });
     await wait(1000);
+    const deadline = Date.now() + 5000;
+    while (runtime.failure && (runtime.browser.isConnected() || existsSync(runtime.profile)) && Date.now() < deadline) await wait(50);
+    const closeTarget = closes.map(({ targetId, ...entry }) => ({ type: targets.get(targetId) ?? 'unknown', ...entry }));
+    runtime.safetyObservations = { closeTarget, failure: runtime.failure,
+      browserClosed: !runtime.browser.isConnected(), temporaryDirectoryRemoved: !existsSync(runtime.profile) };
     assert.equal(received.length, start, 'worker attack request reached server');
     assert.equal(upgrades.length, 0, 'WebSocket handshake reached server');
     const workers = runtime.trace.filter(row => row.action === 'WORKER_BLOCKED');
     assert.ok(workers.some(row => row.type === 'worker' && row.paused), 'Worker not paused');
     assert.ok(workers.some(row => row.type === 'shared_worker' && row.paused), 'SharedWorker not paused');
     assert.ok(runtime.trace.filter(row => row.action === 'WEBSOCKET_DENIED').length >= 2, 'both WebSocket attempts must reach the context guard');
-    assert.equal(runtime.failure, null);
-    return { attackHTTP: 0, websocketHandshakes: 0, workers };
+    for (const type of ['worker', 'shared_worker']) assert.ok(closeTarget.some(row => row.type === type), `${type} closeTarget not observed`);
+    let branch;
+    if (runtime.failure === null) {
+      assert.ok(closes.every(row => row.outcome === 'success' && destroyed.has(row.targetId)), 'worker target not successfully closed');
+      branch = 'a:targets_closed';
+    } else {
+      assert.equal(runtime.failure, 'QB_BROWSER_UNAVAILABLE');
+      assert.equal(runtime.browser.isConnected(), false, 'fail-closed browser still connected');
+      assert.equal(existsSync(runtime.profile), false, 'fail-closed profile still exists');
+      branch = 'b:browser_fail_closed';
+    }
+    return { attackHTTP: 0, websocketHandshakes: 0, branch, workers };
+    } finally { prototype.send = send; }
   });
   if (!worker) process.exitCode = 1;
   if (worker) {

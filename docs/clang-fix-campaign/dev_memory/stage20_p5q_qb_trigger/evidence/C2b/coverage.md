@@ -45,3 +45,32 @@ separate blocker; regression greens do not certify the four-group prerequisite.
 Ruff snapshot `93c73f09a60381deed4e7c31c801f193ef7a8804` was fully exported to
 `/tmp/p5q-c2b-lint-RL8iHh` before checking. Unrelated dirty-tree scripts were not
 modified, staged or granted exclusions. Production and frozen-document diff is zero.
+
+## C2B-01 Ruling And Complete Rerun
+
+The preceding sections describe the preserved first-run stop, not the current verdict.
+The approved ruling replaces the extra null-failure assertion with two branches:
+targets successfully closed with no failure, or QB_BROWSER_UNAVAILABLE with the
+browser closed and the profile removed by the production agent. The latter is
+checked before test-finally cleanup. CDP closeTarget results/exceptions are observed
+without changing what the production guard receives.
+
+[safety-c2b-01.log](safety-c2b-01.log), same full Node command as progress 16.1,
+exit 0: all four groups rerun, 4 passed / 0 failed.
+
+| Group | Actual result |
+|---|---|
+| Worker/WebSocket | branch b, attack HTTP 0 / WS handshake 0; shared_worker closeTarget success=true; worker closeTarget exception category Error; failure QB_BROWSER_UNAVAILABLE; browser closed / profile removed before test cleanup |
+| 307/308 | Both legal destination second hops blocked; 302 positive reached /build/999 |
+| Per-hop | REST, promote and external-origin redirect second hops 0; 307 POST replay 0 |
+| Credentials | Actual synthetic cookie/auth/password observed only at local server; redacted agent response and adapter-exception output contain none of their values |
+
+The safety script is now wrapped by pytest's explicit local integration test
+`test_node_c2b_local_https_safety`. Missing Node/Playwright/Chromium/display/openssl
+is an explicit skip, never a safety pass. A separate static test checks the evidence
+entry cannot issue a build submission or pass launch overrides to production.
+
+Live entry: `docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs`, unchanged
+production Agent/createRuntime with no test options. It stops on any WORKER_BLOCKED,
+NEW_PAGE or runtime.failure; archives only pre-redacted HTML after independent Python
+checks, then checks the written bytes again. Live results are separate in appendix-c.md.
