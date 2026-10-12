@@ -1,8 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2b STOPPED_DIAGNOSTIC_LOGIN**。
-当前轮基线48e8fba;P5Q-C2B-02裁定及诊断见§18。§17四组安全前置通过的历史记录保留。
-live-02等待600秒后QB_LOGIN_TIMEOUT,未观测登录POST;没有登记生产规则或启动live-03。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2b STOPPED_LOGIN_SCOPE**。
+当前轮基线6ead9a4;P5Q-C2B-02补充见§18.5。§17四组安全前置通过的历史记录保留。
+live-02b捕获/signin登录POST=200,没有302;后续/wicket/page登录POST被拒,
+超出本轮GET落点登记范围。600秒后QB_LOGIN_TIMEOUT;未登记规则或启动live-03。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
 是既有无关改动,不处理、不纳入本次交付;其余历史草稿也不纳入。
@@ -941,3 +942,127 @@ Ruff检查对象为暂存树`bb3d3355e72930d81e9425443757c04ded7777b2`,
 `0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
 第二步未准入、生产放行规则未改,其要求的Node四组安全测试本轮未重跑,
 不以§17的历史4/4冒充本轮实跑。停止状态随诊断证据提交,不标C2b完成。
+
+### 18.5 实施裁定 P5Q-C2B-02 补充
+
+设计方出具,FatTank已批准,立即执行。冻结稿与生产代码不改;
+P5Q-C2B-02原裁定第二、三步和收尾要求全部不变。
+
+【原因】
+live-02 中 GET /signin 返回 200,之后 600 秒内没有登录 POST,由登录时限结束。工具没有问题,是没有人工登录。另外,脱敏把 v= 的值也遮掉了,导致无法判断 /ckeditor/ckeditor.js 的查询是否符合“v=纯数字”。
+
+【补充内容】
+1. 重跑第一步诊断,输出到新目录 evidence/C2b/live-02b。live-01、live-02 原样保留。
+2. 弹窗前,先在本聊天里发一句“准备弹出 QuickBuild 登录窗口,请回复'开始'”,等 FatTank 回复“开始”后再启动诊断命令。登录时限仍为 600 秒,终端固定提示不变。
+3. 脱敏规则改一处:查询中键名恰好为 v、值匹配 ^\d{1,16}$ 的项保留原值,其它规则不变。自测新增两条:v=1701391813000 保留;v=abc123 遮蔽。全部自测通过后才上真机。
+4. 诊断中如果仍然没有登录 POST,就停止报告,不再重试。
+5. 诊断一旦拿到 302 之后的落点链,就严格按原裁定第二步的批准范围判断:在范围内就登记,提交并推送,四组本机安全测试从头跑满 4/4,然后进入第三步(第二次人工登录,输出 live-03,同样先在聊天里等 FatTank 回复“开始”);超出范围就停止报告。
+6. 第三步读表单页时,如果有静态资源被拒(例如 ckeditor),只记录,不登记;如果因此导致 BUILD NOTES 或其它字段的读取、设值失败,停止报告。
+
+【汇报】
+提交号;live-02b 观察到的完整落点链(脱敏后);ckeditor 查询值;是否在批准范围内;登记了哪些项;四组安全测试结果;三条件结果;各页面是否取得;表单联动结果;release 次数;验收结果。完成或停止后都不进入 C3。
+
+#### 本轮准备
+
+已核对冻结哈希未变。仅在spike的查询脱敏函数中加入小写键`v`与1至16位数字的
+精确例外,其余键和值保持脱敏;新增两条自测,同步既有混合query用例的预期。
+生产代码、冻结稿、live-01与live-02不改。准备时状态:AWAITING_LOGIN_START;
+收到本轮聊天回复“开始”之前不创建浏览器、不发送真机请求。
+
+离线验收(exit均为0):
+
+```text
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs --self-test .venv/bin/python
+15 passed; network_requests=0
+.venv/bin/python -m pytest -q tests/unit/test_qb_browser_node.py::test_c2b_evidence_entry_is_not_a_submit_or_launch_override_path
+1 passed in 0.01s
+```
+
+自测原文:[c2b-02b-redaction-selftest.log](evidence/C2b/c2b-02b-redaction-selftest.log)。
+准备及下述诊断结果、停点随本轮一同提交。
+
+#### live-02b 实测与登记判定
+
+发出聊天等待提示后,FatTank回复“重新弹QB窗口”,据此启动本轮唯一一次诊断。
+终端提示沿裁定原文,超时600秒;只发login,未发read/open_form/fill。
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome \
+  docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-02b \
+  .venv/bin/python diagnostic
+```
+
+exit=1,STOPPED/QB_LOGIN_TIMEOUT;不是DIAGNOSTIC_DONE。
+证据:[live-02b/run.json](evidence/C2b/live-02b/run.json),SHA256
+`7c634c97c4dd780f9ee6af843a7086e4009080372f0e001e1821f79458ad4728`。
+写前/写后qb_redact字节自检通过。未保存凭据、请求/响应头、响应正文或原始协议事件。
+
+下表网络地址均为`https://quickbuild.tizen.org`;全部redirect_hop=false。
+这是本轮完整Document观测链,未取得302之后的落点链:
+
+| 相对毫秒 | 观测 | 结果 | 源行(run.json) |
+|---|---|---|---|
+| 474 / 1469 | GET /signin,空query | 放行 / HTTP200 | 852/866 |
+| 38966 / 39449 | POST /signin?0-1.IFormSubmitListener-content-form | 放行 / HTTP200,不是302 | 894/908 |
+| 57776 | POST /wicket/page?1-1.IFormSubmitListener-content-form | 拒绝,没有网络响应状态 | 964 |
+
+主帧导航依次为`/signin`(1475ms)、
+`/signin?0-1.IFormSubmitListener-content-form`(39455ms)、
+`chrome-error://chromewebdata/`(57794ms,本地错误页,不记成外站网络请求);
+见run.json:980/988/996。未读取页面正文,不推断POST=200的认证含义或原因。
+
+| 被拒静态资源 | query(脱敏后) | 次数 | 源行 |
+|---|---|---|---|
+| /ckeditor/ckeditor.js | v=1701391813000 | 2 | run.json:880/922 |
+| /images/fonts/bootstrap-icons.woff2 | 8d200481aa7f02a2d63a331fc782cfaf=<REDACTED len=0> | 1 | run.json:936 |
+| /images/fonts/bootstrap-icons.woff | 8d200481aa7f02a2d63a331fc782cfaf=<REDACTED len=0> | 1 | run.json:950 |
+
+准入结论:**STOPPED_LOGIN_SCOPE / 登记0项**。
+`ckeditor`的同源、路径、扩展名与query格式符合静态登记的形态限制,
+但未证明其阻断登录三条件,不登记。字体query不是空或`v=纯数字`,不放行。
+后续`POST /wicket/page`既不是获准登记的GET落点,又在明确排除的/wicket/路径下;
+不得通过本轮登记放开这一请求。没有302落点链,不以live-01或推断补齐。
+停止后未重试、未执行第二步生产改动或第三步live-03。
+
+请求阶段51 GET(47允许/4拒绝)、2 POST尝试(1允许/1拒绝),响应阶段40 x HTTP200,
+HTTP302=0。均为浏览器拦截观测,非服务器实收计数。
+trace DENIED=5、包装拒绝=5、帧归属差额=0(run.json:1053)。
+WORKER_BLOCKED=0、NEW_PAGE=0、runtime_failure=null;
+page_close=600478ms,browser_disconnected=600492ms,浏览器/profile均已清理。
+三条件成功快照未取得;1193467/1193469、1186372及其子构建、RBS配置页均NOT_COLLECTED。
+BUILD_TYPE联动NOT_RUN,form_action_releases=0,released=false(run.json:1051)。
+附录C同步上述事实;冻结稿、生产代码、live-01/live-02保持原样,C3不启动。
+
+#### 本轮验收
+
+| 命令 | exit | 实测与证据 |
+|---|---|---|
+| .venv/bin/python -m pytest -q | 0 | [c2b-02b-pytest.log](evidence/C2b/c2b-02b-pytest.log):2154 passed,1 skipped,103.18s;用例集合未改 |
+| .venv/bin/mypy | 0 | [c2b-02b-mypy.log](evidence/C2b/c2b-02b-mypy.log):113 source files |
+| .venv/bin/ruff check .(完整待提交树导出) | 0 | [c2b-02b-ruff.log](evidence/C2b/c2b-02b-ruff.log):All checks passed! |
+| .venv/bin/lint-imports | 0 | [c2b-02b-lint-imports.log](evidence/C2b/c2b-02b-lint-imports.log):6 kept,0 broken |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | [c2b-02b-design-check.log](evidence/C2b/c2b-02b-design-check.log):0 problem |
+
+四组安全测试虽未进入第二步生产登记,仍单独完整重跑并归档,不使用历史结果:
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  tests/node/p5q_c2b_safety.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome
+```
+
+exit=0,[c2b-02b-safety.log](evidence/C2b/c2b-02b-safety.log):4 passed/0 failed,
+loopback-only。Worker/WebSocket为分支b,attackHTTP=0、握手=0,
+shared_worker closeTarget成功,worker closeTarget异常类别Error,
+QB_BROWSER_UNAVAILABLE且browser/profile已清理。307/308、逐跳、凭据隔离均通过。
+此处全部为本地合成数据,不属于第二次QuickBuild人工登录。
+
+Ruff导出树`5929bf3a589e5034d320cb4ba44982deb33b0cd8`,目录
+`/tmp/p5q-c2b-02b-lint-5x1W5E`;沿§18.4方法执行全树检查,
+不处理工作区无关历史草稿。此后只追加本节与验收日志,代码未变。
+本轮提交范围:spike脱敏例外、自测、progress/INDEX/附录C与新证据。
+第二、三步NOT_RUN;保持STOPPED_LOGIN_SCOPE,等待设计方核对,不自动重试或进入C3。

@@ -44,6 +44,7 @@ export function redactAddress(path, query) {
       const equals = part.indexOf('=');
       const key = equals < 0 ? part : part.slice(0, equals);
       const value = equals < 0 ? '' : part.slice(equals + 1);
+      if (key === 'v' && /^\d{1,16}$/.test(value)) return part;
       return `${/^[A-Za-z0-9_.:-]{1,64}$/.test(key) ? key : '<KEY>'}=<REDACTED len=${[...value].length}>`;
     }).join('&');
   }
@@ -63,7 +64,9 @@ async function selfTest(interpreter) {
     ['session-query', '/x', 'jsessionid=abc', '/x', 'jsessionid=<REDACTED len=3>'],
     ['page-number', '/', '1', '/', '1'],
     ['listener', '/', '0-1.ILinkListener-x', '/', '0-1.ILinkListener-x'],
-    ['query-values', '/', 'token=abc&v=2', '/', 'token=<REDACTED len=3>&v=<REDACTED len=1>'],
+    ['query-values', '/', 'token=abc&v=2', '/', 'token=<REDACTED len=3>&v=2'],
+    ['numeric-version', '/', 'v=1701391813000', '/', 'v=1701391813000'],
+    ['nonnumeric-version', '/', 'v=abc123', '/', 'v=<REDACTED len=6>'],
     ['long-segment', '/' + 'x'.repeat(65), '', '/<TOKEN>', ''],
     ['hex-segment', '/0123456789abcdef', '', '/<TOKEN>', ''],
     ['base64-segment', '/QWxhZGRpbjpvcGVuIHNlc2FtZQ==', '', '/<TOKEN>', ''],
@@ -84,7 +87,7 @@ async function selfTest(interpreter) {
     assert.throws(() => checkedReport(raw, interpreter, users), { code: 'QB_EVIDENCE_REDACTION_FAILED' });
     emit({ test: name, result: 'PASS' });
   }
-  emit({ self_tests: 13, passed: 13, network_requests: 0 });
+  emit({ self_tests: 15, passed: 15, network_requests: 0 });
 }
 
 function emit(row) { process.stdout.write(JSON.stringify(row) + '\n'); }

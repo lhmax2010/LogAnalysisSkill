@@ -1,0 +1,1057 @@
+{
+  "status": "STOPPED",
+  "mode": "diagnostic",
+  "commands": [
+    {
+      "command": "login",
+      "login_timeout_seconds": 600
+    }
+  ],
+  "pages": [],
+  "traffic": [
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/signin",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/signin",
+      "resource_type": "Document",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/css/smoothness/jquery-ui-1.8.11.custom.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/colorpicker/css/colorpicker.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/webfonts.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/base.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/codemirror.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/theme/eclipse.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/theme/dracula.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/datetimepicker/flatpickr.min.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/pages.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/themes.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/jquery-1.5.1.min.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/jquery-ui-1.8.11.custom.min.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.align.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.tooltip.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.popup.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.center.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.fancytip.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.ui.layout.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/colorpicker/js/colorpicker.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/datetimepicker/flatpickr.min.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/autosize.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/clipboard.min.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/main.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/codemirror.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/mode/groovy/groovy.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/mode/css/css.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/addon/edit/matchbrackets.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/addon/display/placeholder.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.truncate.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/com.pmease.quickbuild.web.page.BasePage/custom-ver-1701391813000.css",
+      "resource_type": "Stylesheet",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/org.apache.wicket.markup.html.WicketEventReference/wicket-event-ver-1782798879210.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/org.apache.wicket.ajax.WicketAjaxReference/wicket-ajax-ver-1782798879210.js",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/colorpicker/css/colorpicker.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/codemirror.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/theme/eclipse.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/webfonts.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/css/smoothness/jquery-ui-1.8.11.custom.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/base.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/theme/dracula.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/datetimepicker/flatpickr.min.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/themes.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/com.pmease.quickbuild.web.page.BasePage/custom-ver-1701391813000.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/styles/pages.css",
+      "resource_type": "Stylesheet",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/jquery-ui-1.8.11.custom.min.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.align.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/jquery-1.5.1.min.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.tooltip.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.popup.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.center.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.fancytip.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/colorpicker/js/colorpicker.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.ui.layout.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/datetimepicker/flatpickr.min.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/autosize.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/clipboard.min.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/scripts/main.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/codemirror.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/mode/groovy/groovy.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/mode/css/css.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/addon/edit/matchbrackets.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/codemirror/addon/display/placeholder.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/jquery/plugins/jquery.truncate.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/org.apache.wicket.markup.html.WicketEventReference/wicket-event-ver-1782798879210.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/wicket/resource/org.apache.wicket.ajax.WicketAjaxReference/wicket-ajax-ver-1782798879210.js",
+      "resource_type": "Script",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-700-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-400-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-600-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-500-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-700-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-400-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-600-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-500-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-700-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-400-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-600-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-500-normal.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-700-normal.woff2",
+      "resource_type": "Font",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-400-normal.woff2",
+      "resource_type": "Font",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-600-normal.woff2",
+      "resource_type": "Font",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/inter-latin-500-normal.woff2",
+      "resource_type": "Font",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/favicon-32x32.png",
+      "resource_type": "Other",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/favicon-32x32.png",
+      "resource_type": "Other",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "POST",
+      "path": "/signin",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "POST",
+      "path": "/signin",
+      "resource_type": "Document",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "<other>",
+      "resource_type": "Script",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/bootstrap-icons.woff2",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/fonts/bootstrap-icons.woff",
+      "resource_type": "Font",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/favicon-32x32.png",
+      "resource_type": "Other",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "GET",
+      "path": "/images/favicon-32x32.png",
+      "resource_type": "Other",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "operation": "login",
+      "phase": "login",
+      "method": "POST",
+      "path": "/wicket/page",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": false
+    }
+  ],
+  "diagnostics": [
+    {
+      "sequence": 1,
+      "relative_ms": 474,
+      "phase": "login",
+      "method": "GET",
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/signin",
+      "query": "",
+      "resource_type": "Document",
+      "response_status": null,
+      "redirect_hop": false,
+      "allowed": true
+    },
+    {
+      "sequence": 2,
+      "relative_ms": 1469,
+      "phase": "login",
+      "method": "GET",
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/signin",
+      "query": "",
+      "resource_type": "Document",
+      "response_status": 200,
+      "redirect_hop": false,
+      "allowed": true
+    },
+    {
+      "sequence": 3,
+      "relative_ms": 1488,
+      "phase": "login",
+      "method": "GET",
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/ckeditor/ckeditor.js",
+      "query": "v=1701391813000",
+      "resource_type": "Script",
+      "response_status": null,
+      "redirect_hop": false,
+      "allowed": false
+    },
+    {
+      "sequence": 4,
+      "relative_ms": 38966,
+      "phase": "login",
+      "method": "POST",
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/signin",
+      "query": "0-1.IFormSubmitListener-content-form",
+      "resource_type": "Document",
+      "response_status": null,
+      "redirect_hop": false,
+      "allowed": true
+    },
+    {
+      "sequence": 5,
+      "relative_ms": 39449,
+      "phase": "login",
+      "method": "POST",
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/signin",
+      "query": "0-1.IFormSubmitListener-content-form",
+      "resource_type": "Document",
+      "response_status": 200,
+      "redirect_hop": false,
+      "allowed": true
+    },
+    {
+      "sequence": 6,
+      "relative_ms": 39466,
+      "phase": "login",
+      "method": "GET",
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/ckeditor/ckeditor.js",
+      "query": "v=1701391813000",
+      "resource_type": "Script",
+      "response_status": null,
+      "redirect_hop": false,
+      "allowed": false
+    },
+    {
+      "sequence": 7,
+      "relative_ms": 39476,
+      "phase": "login",
+      "method": "GET",
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/images/fonts/bootstrap-icons.woff2",
+      "query": "8d200481aa7f02a2d63a331fc782cfaf=<REDACTED len=0>",
+      "resource_type": "Font",
+      "response_status": null,
+      "redirect_hop": false,
+      "allowed": false
+    },
+    {
+      "sequence": 8,
+      "relative_ms": 39487,
+      "phase": "login",
+      "method": "GET",
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/images/fonts/bootstrap-icons.woff",
+      "query": "8d200481aa7f02a2d63a331fc782cfaf=<REDACTED len=0>",
+      "resource_type": "Font",
+      "response_status": null,
+      "redirect_hop": false,
+      "allowed": false
+    },
+    {
+      "sequence": 9,
+      "relative_ms": 57776,
+      "phase": "login",
+      "method": "POST",
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/wicket/page",
+      "query": "1-1.IFormSubmitListener-content-form",
+      "resource_type": "Document",
+      "response_status": null,
+      "redirect_hop": false,
+      "allowed": false
+    }
+  ],
+  "events": [
+    {
+      "event": "main_frame_navigation",
+      "relative_ms": 1475,
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/signin",
+      "query": ""
+    },
+    {
+      "event": "main_frame_navigation",
+      "relative_ms": 39455,
+      "protocol": "https:",
+      "host": "quickbuild.tizen.org",
+      "path": "/signin",
+      "query": "0-1.IFormSubmitListener-content-form"
+    },
+    {
+      "event": "main_frame_navigation",
+      "relative_ms": 57794,
+      "protocol": "chrome-error:",
+      "host": "chromewebdata",
+      "path": "/",
+      "query": ""
+    },
+    {
+      "event": "page_close",
+      "relative_ms": 600478
+    },
+    {
+      "event": "browser_disconnected",
+      "relative_ms": 600492
+    }
+  ],
+  "stop": {
+    "reason": "QB_LOGIN_TIMEOUT",
+    "operation": "login",
+    "path_shape": "/signin"
+  },
+  "login_response": {
+    "ok": false,
+    "error": "QB_LOGIN_TIMEOUT"
+  },
+  "browser_closed": true,
+  "profile_removed": true,
+  "trace": [
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    }
+  ],
+  "runtime_failure": null,
+  "form_action_releases": 0,
+  "released": false,
+  "trace_denied_count": 5,
+  "wrapper_denied_count": 5,
+  "frame_ownership_denied_count": 0,
+  "denied_count_note": "trace DENIED minus allow-wrapper denials are frame-ownership denials"
+}
