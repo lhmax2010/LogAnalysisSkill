@@ -1,0 +1,2 @@
+{"group":"worker-websocket","ok":false,"requests":[{"group":"worker-websocket","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WEBSOCKET_DENIED"},{"action":"WEBSOCKET_DENIED"},{"action":"WORKER_BLOCKED","type":"worker","paused":true}],"details":{"error":"LOCAL_SAFETY_ASSERTION_FAILED","assertion":"Expected values to be strictly equal:"}}
+{"summary":1,"passed":0,"failed":1,"network":"loopback-only","temporaryDirectoryRemoved":true}

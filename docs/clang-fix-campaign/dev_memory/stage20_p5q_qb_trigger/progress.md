@@ -1,8 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2A-04_COMPLETE;C2b NOT_STARTED**。
-当前轮按§15完成P5Q-C2A-04;基线ca43b5d,2152 passed/1 skipped。§14的证据保留。
-本轮只使用归档HTML与本地合成数据;不访问QuickBuild/Gerrit,不进入C2b。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2b STOPPED_LOCAL_FIXTURE**。
+当前轮C2b基线09e14c5;§16本机安全测试首组停止,后三组与真机尚未执行。
+本轮仅本机合成HTTPS;没有QuickBuild/Gerrit请求、真实登录、表单操作或构建提交。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
 是既有无关改动,不处理、不纳入本次交付;其余历史草稿也不纳入。
@@ -28,7 +28,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE:见§14及§15修正;C2b NOT_STARTED,真机前须完成第9.3节指定HTTPS夹具的四组安全子集 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE:见§14及§15修正;C2b STOPPED_LOCAL_FIXTURE:见§16,未满足真机前的四组安全前置 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -653,3 +653,65 @@ Node内部计数不重复加入pytest总数,本机Node/浏览器包装没有skip
 冻结稿SHA256仍为0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950。
 design.md、检查器、P2-P5未改。本轮无新增停止报告项。提交由Git外部锚定。
 C2b及§14挂账不变;按任务完成后停止,不进入真机部分。
+
+## 16. C2b 本机安全前置与停止记录
+
+基线09e14c5。冻结稿sha256实测仍为
+0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950。
+先读本进度、冻结第9.3/9.4节及C2a现有测试;四组覆盖/缺口已先登记到
+[coverage.md](evidence/C2b/coverage.md),未拿旧loopback结果代替本次HTTPS准入。
+
+新增tests/node/p5q_c2b_safety.mjs,仅测试入口传主机解析与证书SPKI参数;
+生产createRuntime/Policy/拦截器原样复用。假服务器仅绑定127.0.0.1,
+quickbuild.tizen.org与外站重定向对照域名均映射到该服务器,其它DNS拒绝。
+四组按顺序运行,首个失败后停止,不运行余组。
+
+### 16.1 P5Q-C2B-01: 新增夹具过约束停点
+
+实跑命令(exit=1):
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  tests/node/p5q_c2b_safety.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome
+```
+
+原始结果:[safety-first.log](evidence/C2b/safety-first.log)。首组Worker/WebSocket:
+- 服务器实际仅收到初始GET /build/1;攻击HTTP=0,WS握手=0。
+- trace:shared_worker与worker均WORKER_BLOCKED、paused=true;两次WEBSOCKET_DENIED。
+- 夹具FAIL,输出为LOCAL_SAFETY_ASSERTION_FAILED / Expected values to be strictly equal:。
+  对照已记录请求与trace、逐条核对断言,停在`assert.equal(runtime.failure, null)`;
+  createRuntime的失效关闭标志只能取QB_BROWSER_UNAVAILABLE。原日志未保存异常的
+  actual/expected与触发关闭的底层原因,不把源码推断冒充额外采集事实。
+- 临时证书/profile目录清理完成。后三组307/308、逐跳拦截、凭据隔离NOT_RUN。
+
+**口径核查**:上述“runtime.failure必须为null”是本轮夹具额外添加的条件,
+不是冻结第3.1节/第9.3节的明确验收条文。冻结稿允许无法可靠阻止目标时关闭整个浏览器;
+本次没有请求越界证据,也尚未坐实生产缺陷。应修正夹具为实测目标关闭及请求清单判据,
+同时记录失败原文与具体关闭事件,不可将额外条件冒称设计要求。
+按任务“任一失败即停止报告”,本轮不删断言重跑、不进入余组/真机,不改生产代码。
+
+### 16.2 附录C与后续状态
+
+[appendix-c.md](evidence/C2b/appendix-c.md)显式登记NOT_COLLECTED,无真实字段结论。
+真实浏览器没有启动;1193467/1193469/1186372及其子构建均未读取;
+未推测overview_id,未open_form/设BUILD_TYPE/点Ok。真实请求数0。
+待本机四组全部满足后才能继续第9.4节;本次没有C3开工许可。
+通用回归单列归档,不将其绿灯当作四组安全前置通过。
+
+### 16.3 停点提交的通用回归
+
+| 命令 | exit | 实测 |
+|---|---:|---|
+| .venv/bin/python -m pytest -q | 0 | 2152 passed,1 skipped;[pytest.log](evidence/C2b/pytest.log) |
+| .venv/bin/mypy | 0 | 113 source files;[mypy.log](evidence/C2b/mypy.log) |
+| .venv/bin/ruff check .(完整暂存树导出) | 0 | All checks passed;[ruff-clean-tree.log](evidence/C2b/ruff-clean-tree.log) |
+| C2b安全子集独立Node入口(§16.1完整命令) | 1 | 1组执行/0通过/1夹具失败;3组NOT_RUN;[safety-first.log](evidence/C2b/safety-first.log) |
+
+新增Node安全入口尚未接入pytest自动包装,单独记录其非零结果;不能以pytest绿覆盖它。
+Ruff按既有方式检查全部待交付树,不改工作树无关草稿的53个既有错误;
+导出树93c73f09a60381deed4e7c31c801f193ef7a8804,目录/tmp/p5q-c2b-lint-RL8iHh。
+命令`git archive <tree> | tar -x -C <目录>`,导出完成后用仓库.venv/bin/ruff在该目录检查。
+此后只更新本文与证据。冻结稿、design.md、全部生产源码零diff;未改凭据、未开真机。
+本提交仅保存离线夹具、原始失败和进度,不声明C2b完成。提交SHA由Git外部锚定。
