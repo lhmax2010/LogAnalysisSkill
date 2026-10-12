@@ -1,9 +1,95 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { createRuntime, redactDOM, ORIGIN } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, createRuntime, redactDOM, ORIGIN } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
 const [playwright, chromium] = process.argv.slice(2);
+const archive = new URL('../../docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-cookie-02/', import.meta.url);
+
+test('C2A-04 build identity from archived HTML, with all network denied', async t => {
+  const runtime = await createRuntime(playwright, chromium, {
+    launchArgs: ['--no-proxy-server', '--host-resolver-rules=MAP * ~NOTFOUND'],
+  });
+  runtime.policy.allow = () => false;
+  let path;
+  // Navigation is replaced only in this offline fixture; DOM evaluation is real Chromium.
+  const page = {
+    goto: async () => ({ status: () => 200, request: () => ({ redirectedFrom: () => null }) }),
+    url: () => ORIGIN + path,
+    evaluate: (...args) => runtime.page.evaluate(...args),
+  };
+  const agent = new Agent({ ...runtime, page });
+  const load = async (file, requested) => {
+    path = requested;
+    await runtime.page.setContent(readFileSync(new URL(file, archive), 'utf8'));
+  };
+  try {
+    for (const [file, requested] of [
+      ['01.response.txt', '/build/1069540'],
+      ['03.response.txt', '/build/1069540/variables'],
+      ['04.response.txt', '/build/1069540/step_status'],
+    ]) await t.test(`archive ${file} ${requested}`, async () => {
+      await load(file, requested);
+      assert.equal((await agent.read(path)).status, 200);
+    });
+    for (const spelling of ['Id', 'ID']) await t.test(`navigation spelling ${spelling}`, async () => {
+      await load('03.response.txt', '/build/1069540/variables');
+      await runtime.page.evaluate(value => {
+        document.querySelector('.tab-BuildPage .nav-link span').textContent = `Build (${value}:1069540)`;
+      }, spelling);
+      assert.equal((await agent.read(path)).status, 200);
+    });
+    await t.test('Summary Id resolved by column, not fixed position', async () => {
+      await load('01.response.txt', '/build/1069540');
+      await runtime.page.evaluate(() => {
+        const table = document.querySelector('.build-summary table');
+        for (const row of [table.tHead.rows[0], table.tBodies[0].rows[0]]) row.append(row.cells[0]);
+      });
+      assert.equal((await agent.read(path)).status, 200);
+    });
+    for (const mutation of [
+      'duplicate-nav', 'missing-nav', 'wrong-nav', 'missing-summary', 'duplicate-summary',
+      'missing-id-column', 'duplicate-id-column', 'different-summary-id', 'missing-first-row',
+    ]) await t.test(`reject ${mutation}`, async () => {
+      await load('01.response.txt', '/build/1069540');
+      await runtime.page.evaluate(kind => {
+        const nav = document.querySelector('.tab-BuildPage .nav-link');
+        const summary = document.querySelector('.build-summary');
+        const id = summary.querySelector('thead th');
+        if (kind === 'duplicate-nav') nav.after(nav.cloneNode(true));
+        if (kind === 'missing-nav') nav.remove();
+        if (kind === 'wrong-nav') nav.textContent = 'Build (id:1069532)';
+        if (kind === 'missing-summary') summary.remove();
+        if (kind === 'duplicate-summary') summary.after(summary.cloneNode(true));
+        if (kind === 'missing-id-column') id.textContent = 'Other';
+        if (kind === 'duplicate-id-column') id.after(id.cloneNode(true));
+        if (kind === 'different-summary-id') summary.querySelector('tbody td').textContent = '1069532';
+        if (kind === 'missing-first-row') summary.querySelector('tbody tr').remove();
+        document.title = 'Build #1069540'; // A matching title cannot rescue invalid sources.
+      }, mutation);
+      await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
+    });
+    await t.test('both homepage sources agree but differ from requested id', async () => {
+      await load('01.response.txt', '/build/1069532');
+      await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
+    });
+    for (const mutation of ['missing', 'duplicate', 'wrong']) await t.test(`subpage ${mutation} navigation`, async () => {
+      await load('03.response.txt', '/build/1069540/variables');
+      await runtime.page.evaluate(kind => {
+        const nav = document.querySelector('.tab-BuildPage .nav-link');
+        if (kind === 'missing') nav.remove();
+        if (kind === 'duplicate') nav.after(nav.cloneNode(true));
+        if (kind === 'wrong') nav.textContent = 'Build (id:1069532)';
+        document.title = 'Build #1069540';
+      }, mutation);
+      await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
+    });
+    assert.equal(runtime.page.url(), 'about:blank');
+    console.log('C2A-04 archived pages: page.setContent only; browser request policy denies every request');
+  } finally { await runtime.close(); }
+});
+
 test('real browser DOM redaction with identities, hidden values, URL and recorder', async () => {
   const runtime = await createRuntime(playwright, chromium, {
     launchArgs: ['--no-proxy-server', '--host-resolver-rules=MAP * ~NOTFOUND'],

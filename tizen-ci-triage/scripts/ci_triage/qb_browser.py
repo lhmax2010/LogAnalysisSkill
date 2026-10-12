@@ -12,9 +12,10 @@ from ci_triage.qb_redact import PageRedactor
 
 
 class QbBrowserError(RuntimeError):
-    def __init__(self, code: str) -> None:
+    def __init__(self, code: str, *, released: bool | None = None) -> None:
         super().__init__(code)
         self.code = code
+        self.released = released
 
 
 def _sensitive_key(value: object) -> bool:
@@ -38,7 +39,7 @@ def _unknown() -> dict[str, Any]:
     }
 
 
-def decode_response(raw: str, *, submit_sent: bool) -> dict[str, Any]:
+def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[str, Any]:
     """Map only the frozen response table; never echo an agent payload in errors."""
     try:
         response = json.loads(raw)
@@ -47,9 +48,36 @@ def decode_response(raw: str, *, submit_sent: bool) -> dict[str, Any]:
             return _unknown()
         raise QbBrowserError("QB_BROWSER_UNAVAILABLE") from None
     if _sensitive_key(response):
+        if submit_sent:
+            return _unknown()
         raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
     if not isinstance(response, dict) or type(response.get("ok")) is not bool:
+        if submit_sent:
+            return _unknown()
         raise QbBrowserError("INTERNAL_ERROR")
+    if submit_sent:
+        if response["ok"]:
+            build_id = response.get("build_id")
+            valid_build = (
+                response.get("landed") == "build"
+                and isinstance(build_id, str)
+                and build_id.isascii()
+                and build_id.isdecimal()
+            )
+            valid_unknown = (
+                response.get("landed") == "unknown"
+                and isinstance(response.get("observed"), str)
+                and isinstance(response.get("messages"), list)
+                and all(isinstance(message, str) for message in response["messages"])
+            )
+            if (
+                response.get("released") is not True
+                or not (valid_build or valid_unknown)
+                or "html_redacted" in response
+            ):
+                return _unknown()
+        elif response.get("released") is not False or not isinstance(response.get("error"), str):
+            return _unknown()
     if response["ok"]:
         if "html_redacted" in response:
             html = response["html_redacted"]
@@ -58,10 +86,6 @@ def decode_response(raw: str, *, submit_sent: bool) -> dict[str, Any]:
             PageRedactor().check_bytes(html.encode("utf-8"))
         return response
     code = response.get("error")
-    if code == "AGENT_PHASE":
-        if submit_sent:
-            return _unknown()
-        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
     if code == "QB_FORM_VALUE_UNAVAILABLE":
         mapped = (
             "REJECTED_QB_SNAPSHOT_UNAVAILABLE"
@@ -74,8 +98,13 @@ def decode_response(raw: str, *, submit_sent: bool) -> dict[str, Any]:
             "QB_FORM_READBACK_MISMATCH": "REJECTED_QB_FORM_MISMATCH",
             "QB_LOGIN_TIMEOUT": "QB_LOGIN_TIMEOUT",
             "QB_LOGIN_ABORTED": "QB_LOGIN_ABORTED",
+            "AGENT_PHASE": "QB_BROWSER_UNAVAILABLE",
+            "QB_BROWSER_UNAVAILABLE": "QB_BROWSER_UNAVAILABLE",
+            "QB_EVIDENCE_REDACTION_FAILED": "QB_EVIDENCE_REDACTION_FAILED",
         }.get(code if isinstance(code, str) else "", "INTERNAL_ERROR")
-    raise QbBrowserError(mapped)
+        if command == "read" and code in ("QB_READ_REDIRECTED", "QB_READ_ID_MISMATCH"):
+            mapped = "QB_FETCH_FAILED"
+    raise QbBrowserError(mapped, released=False if submit_sent else None)
 
 
 class QbBrowser:
@@ -111,20 +140,20 @@ class QbBrowser:
     def command(self, command: str, **fields: Any) -> dict[str, Any]:
         process = self.process
         if process is None or process.stdin is None or process.stdout is None:
+            if command == "submit":
+                return _unknown()
             raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
         if _sensitive_key(fields):
             raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
-        sent = False
         try:
             process.stdin.write(
                 json.dumps({"command": command, **fields}, ensure_ascii=False) + "\n"
             )
             process.stdin.flush()
-            sent = True
             raw = process.stdout.readline()
-        except (OSError, UnicodeError):
+        except (OSError, UnicodeError, ValueError):
             raw = ""
-        return decode_response(raw, submit_sent=sent and command == "submit")
+        return decode_response(raw, submit_sent=command == "submit", command=command)
 
     def login(self) -> dict[str, Any]:
         return self.command(

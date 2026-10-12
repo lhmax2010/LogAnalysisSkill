@@ -82,7 +82,7 @@ export class Policy {
       m.method === 'GET' && ['/signin', '/', '/overview/0'].includes(m.path) && !m.query
       || m.method === 'POST' && m.path === '/signin'
       && /^\d+-\d*\.?IFormSubmitListener-[A-Za-z0-9:_-]+$/.test(m.query));
-    if (this.refresh.has(url) && ['GET', 'POST'].includes(m.method)) return true;
+    if (this.refresh.has(url) && m.method === 'GET') return true;
     if (['read', 'open_form', 'fill'].includes(this.phase)
       && m.method === 'GET' && this.readonly(m.path) && !m.query) return true;
     if (this.phase === 'open_form') {
@@ -439,15 +439,25 @@ export class Agent {
     this.policy.refresh = new Set(values.map((value) => new URL(value.replaceAll('&amp;', '&'), this.page.url()).href)
       .filter((value) => new URL(value).origin === ORIGIN));
   }
-  async buildId() {
-    return this.page.evaluate(() => {
-      const cells = [...document.querySelectorAll('td, th')];
-      const ids = cells.filter((cell) => cell.textContent.trim() === 'Id')
-        .map((cell) => cell.nextElementSibling?.textContent.trim()).filter(Boolean);
-      if (ids.length) return ids.length === 1 ? ids[0] : null;
-      const matches = [...document.title.matchAll(/#(\d+)\b/g)];
-      return matches.length === 1 ? matches[0][1] : null;
-    });
+  async buildId(path) {
+    return this.page.evaluate((homepage) => {
+      const labels = [...document.querySelectorAll('.nav-link')]
+        .map((label) => label.textContent.trim().match(/^Build \((?:id|Id|ID):(\d+)\)$/))
+        .filter(Boolean);
+      if (labels.length !== 1) return null;
+      const id = labels[0][1];
+      if (!homepage) return id;
+      const summaries = [...document.querySelectorAll('.build-summary')]
+        .filter((box) => box.querySelector('.box-head')?.textContent.trim() === 'Summary');
+      if (summaries.length !== 1) return null;
+      const tables = summaries[0].querySelectorAll('table');
+      if (tables.length !== 1) return null;
+      const columns = [...tables[0].querySelectorAll('thead th')];
+      const indices = columns.flatMap((cell, index) => cell.textContent.trim() === 'Id' ? [index] : []);
+      if (indices.length !== 1) return null;
+      const cells = tables[0].tBodies[0]?.rows[0]?.cells;
+      return cells?.[indices[0]]?.textContent.trim() === id ? id : null;
+    }, /^\/build\/\d+$/.test(path));
   }
   async read(path) {
     if (typeof path !== 'string' || !this.policy.readonly(path)) throw new AgentError('AGENT_PHASE');
@@ -456,7 +466,7 @@ export class Agent {
     const response = await this.page.goto(expected);
     if (this.page.url() !== expected || response?.request().redirectedFrom()) throw new AgentError('QB_READ_REDIRECTED');
     const id = path.match(/^\/build\/(\d+)/)?.[1];
-    if (id && await this.buildId() !== id) throw new AgentError('QB_READ_ID_MISMATCH');
+    if (id && await this.buildId(path) !== id) throw new AgentError('QB_READ_ID_MISMATCH');
     await this.registerRefresh();
     let html;
     try { html = await this.page.evaluate(redactDOM); } catch { throw new AgentError('QB_EVIDENCE_REDACTION_FAILED'); }
@@ -567,12 +577,18 @@ export class Agent {
     if (fingerprint(actual) !== expectedFingerprint) throw new AgentError('QB_FORM_CHANGED');
     this.policy.submitUrl = form.action;
     try {
-      await this.page.getByRole('button', { name: 'Ok', exact: true }).click({ timeout: 60000 });
-      await this.page.waitForLoadState('load', { timeout: 60000 });
+      await this.page.getByRole('button', { name: 'Ok', exact: true }).click({ timeout: 60000, noWaitAfter: true });
+      const deadline = Date.now() + 10000;
+      while (!this.policy.released && Date.now() < deadline) {
+        if (this.runtime.failure || this.page.isClosed()) throw new AgentError('QB_BROWSER_UNAVAILABLE');
+        await sleep(Math.min(50, Math.max(0, deadline - Date.now())));
+      }
       if (!this.policy.released) throw new AgentError('QB_FORM_CHANGED');
+      // Fetch releases before Chromium starts navigating; the old form is already loaded.
+      await this.page.waitForURL((url) => url.href !== form.base, { waitUntil: 'load', timeout: 60000 });
       const url = new URL(this.page.url());
       const id = url.pathname.match(/^\/build\/(\d+)$/)?.[1];
-      if (url.origin === ORIGIN && id && await this.buildId() === id) return { landed: 'build', build_id: id, released: true };
+      if (url.origin === ORIGIN && id && await this.buildId(url.pathname) === id) return { landed: 'build', build_id: id, released: true };
     } catch (error) { if (!this.policy.released) throw error; }
     return { landed: 'unknown', observed: pathShape(new URL(this.page.url()).pathname), messages: [], released: this.policy.released };
   }

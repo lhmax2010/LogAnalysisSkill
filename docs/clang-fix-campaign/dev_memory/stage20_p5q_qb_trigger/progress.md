@@ -1,8 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2b NOT_STARTED**。
-当前轮按§14以诊断/正常/去Fetch对照验证h,3/3通过;原“取不到引用”要求已作废,
-a-g既有通过证据保留。代理/驱动/假代理与离线测试已交付;未访问QuickBuild/Gerrit。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2A-04_COMPLETE;C2b NOT_STARTED**。
+当前轮按§15完成P5Q-C2A-04;基线ca43b5d,2152 passed/1 skipped。§14的证据保留。
+本轮只使用归档HTML与本地合成数据;不访问QuickBuild/Gerrit,不进入C2b。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
 是既有无关改动,不处理、不纳入本次交付;其余历史草稿也不纳入。
@@ -28,7 +28,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE:见§14;C2b NOT_STARTED,真机前须完成第9.3节指定HTTPS夹具的四组安全子集 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE:见§14及§15修正;C2b NOT_STARTED,真机前须完成第9.3节指定HTTPS夹具的四组安全子集 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -600,3 +600,56 @@ design.md/检查器/P2-P5未改。C2a本轮停止报告0项。
 继续挂账:第9.3节完整假QuickBuild页面流程及指定HTTPS夹具的安全子集,
 C2b真机只读/联动、附录C实测、后续C3-C6。已有loopback探针不冒充真实站点取证。
 按本轮停点,不登录、不进入C2b、不触发构建;完成后等待下一任务。
+
+## 15. 实施裁定 P5Q-C2A-04
+
+设计方核对ca43b5d后的三项修正。原因:冻结稿第3.6节“子页用页面标题中的构建号”
+与真实归档页面不符;第3.5节错误映射表漏列读取类与浏览器不可用。冻结稿不改。
+
+1. 所有build页从导航标签`/^Build \((?:id|Id|ID):(\d+)\)$/`取唯一数字;
+   主页另从唯一Summary表thead的唯一Id列取tbody首行同列值。主页两处、子页导航
+   均须等于请求id;缺失/重复/不等均QB_READ_ID_MISMATCH。不再用title的#数字。
+   正例直接用web-cookie-02的01/03/04.response.txt原文page.setContent,零外网。
+2. QB_BROWSER_UNAVAILABLE及QB_EVIDENCE_REDACTION_FAILED同名映射;
+   read的QB_READ_REDIRECTED/QB_READ_ID_MISMATCH映射QB_FETCH_FAILED,其余表外INTERNAL_ERROR。
+   submit错误应答仅在released严格为布尔false时抛QbBrowserError并携带released=False;
+   缺失/true/非布尔、非法应答或进程异常一律unknown,不得当作确定未提交。
+   符合既有协议的成功build落点仍保留;含凭据键的应答丢弃,不向调用方返回原载荷。
+3. 点击Ok后先等实际请求的policy.released,至多10秒;未放行才作未放行处理。
+   放行后至多60秒等导航完成,不把旧表单已load误作新导航完成。refresh精确地址仅GET。
+
+### 15.1 逐项落实与离线测试
+
+| 修正 | 实现 | 证据/结果 |
+|---|---|---|
+| 构建号身份 | qb_browser_agent.mjs buildId/read/submit;nav-link唯一匹配,Summary列查找,删除title回退 | 01/03/04原文正例;Id/ID大小写;Id列移位;主页/子页缺失、重复、不等;匹配title不能救活错误。19个浏览器子用例全绿 |
+| 映射与放行状态 | qb_browser.py decode_response/QbBrowser.command/QbBrowserError.released | 完整映射;read限定;false/true/null/0/1/字符串/对象/数组;缺字段、非法JSON、非法结构、进程退出/写入失败/关闭管道/解码异常;合法成功落点保留。驱动96/96 |
+| 提交时序与refresh | qb_browser_agent.mjs submit/Policy.allow | 请求延迟150ms放行后才等导航;实际10秒未放行返回released=false并撤销action;放行后导航超时为unknown;refresh GET绿/POST红。Node单元57/57 |
+
+原始日志:[offline.log](evidence/C2a-04/offline.log)。命令为:
+`.venv/bin/pytest -q -s tests/unit/test_qb_browser.py tests/unit/test_qb_browser_node.py`,
+exit=0,102 passed。其中Python驱动96(基线31,新增65),Node包装6(数量不变)。
+Node内部单元57(原53+4);浏览器22(原2+19子用例+1入口);
+h诊断/正常/去Fetch对照3/3、清理normal/exception/SIGTERM 3/3仍绿。
+Node内部计数不重复加入pytest总数,本机Node/浏览器包装没有skip。
+
+归档页面仅page.setContent,测试策略拒绝所有请求并关闭DNS解析;其余浏览器夹具仅loopback。
+没有登录、QuickBuild/Gerrit访问或真实触发。首次驱动测试94绿/2红是新增夹具忘记登录前置,
+修正夹具后全绿,没有改动阶段机;说明见[证据索引](evidence/C2a-04/README.md)。
+
+### 15.2 完整验收与停点
+
+| 命令 | exit | 实测摘要与证据 |
+|---|---:|---|
+| .venv/bin/python -m pytest -q | 0 | 2152 passed,1 skipped;[pytest.log](evidence/C2a-04/pytest.log) |
+| .venv/bin/mypy | 0 | 113 source files;[mypy.log](evidence/C2a-04/mypy.log) |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;[lint-imports.log](evidence/C2a-04/lint-imports.log) |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;[design-check.log](evidence/C2a-04/design-check.log) |
+| .venv/bin/ruff check .(完整暂存树导出) | 0 | All checks passed;[ruff-clean-tree.log](evidence/C2a-04/ruff-clean-tree.log) |
+
+基线2087/1增加65,无新skip。主工作树ruff仍因4个无关未跟踪脚本报53错(exit=1),
+文件清单与完整待交付树导出方式见证据索引;[原文](evidence/C2a-04/ruff-working-tree.log)保留,
+未修改草稿、未放宽lint配置。无关.gitignore和文档删除未入提交。
+冻结稿SHA256仍为0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950。
+design.md、检查器、P2-P5未改。本轮无新增停止报告项。提交由Git外部锚定。
+C2b及§14挂账不变;按任务完成后停止,不进入真机部分。

@@ -22,20 +22,41 @@ ROOT = Path(__file__).resolve().parents[2]
         ("QB_LOGIN_TIMEOUT", None, "QB_LOGIN_TIMEOUT"),
         ("QB_LOGIN_ABORTED", None, "QB_LOGIN_ABORTED"),
         ("AGENT_PHASE", None, "QB_BROWSER_UNAVAILABLE"),
+        ("QB_BROWSER_UNAVAILABLE", None, "QB_BROWSER_UNAVAILABLE"),
+        ("QB_EVIDENCE_REDACTION_FAILED", None, "QB_EVIDENCE_REDACTION_FAILED"),
         ("UNKNOWN", None, "INTERNAL_ERROR"),
-        ("QB_READ_ID_MISMATCH", None, "INTERNAL_ERROR"),
-        ("QB_READ_REDIRECTED", None, "INTERNAL_ERROR"),
+        ("QB_READ_ID_MISMATCH", None, "QB_FETCH_FAILED"),
+        ("QB_READ_REDIRECTED", None, "QB_FETCH_FAILED"),
     ],
 )
 def test_frozen_error_mapping(error, field, expected):
     with pytest.raises(QbBrowserError) as caught:
         decode_response(
-            json.dumps({"ok": False, "error": error, "field": field}), submit_sent=False
+            json.dumps({"ok": False, "error": error, "field": field}),
+            submit_sent=False,
+            command="read",
         )
     assert caught.value.code == expected
 
 
-@pytest.mark.parametrize("raw", ["", "not json", '{"ok":false,"error":"AGENT_PHASE"}'])
+@pytest.mark.parametrize(
+    "raw",
+    [
+        "",
+        "not json",
+        "null",
+        "[]",
+        "true",
+        '{"ok":0}',
+        '{"ok":false,"error":"AGENT_PHASE"}',
+        '{"ok":false,"error":[],"released":false}',
+        '{"ok":false,"released":false}',
+        '{"ok":true,"released":false,"landed":"build","build_id":"12"}',
+        '{"ok":true,"released":true,"landed":"build","build_id":"wrong"}',
+        '{"ok":true,"landed":"build","build_id":"12"}',
+        '{"ok":true,"released":true}',
+    ],
+)
 def test_sent_submit_ambiguous_reply_is_unknown(raw):
     assert decode_response(raw, submit_sent=True) == {
         "ok": True,
@@ -48,13 +69,64 @@ def test_sent_submit_ambiguous_reply_is_unknown(raw):
 
 @pytest.mark.parametrize("key", ["cookie", "Cookie", "set-cookie", "Authorization"])
 @pytest.mark.parametrize("sent", [False, True])
-def test_sensitive_key_is_always_rejected(key, sent):
+def test_sensitive_reply_is_always_discarded(key, sent):
+    raw = json.dumps({"ok": True, "nested": [{key: "fixture-secret"}]})
+    if sent:
+        result = decode_response(raw, submit_sent=True)
+        assert result["landed"] == "unknown"
+        assert "fixture-secret" not in json.dumps(result)
+        assert key not in result
+        return
     with pytest.raises(QbBrowserError) as caught:
-        decode_response(
-            json.dumps({"ok": True, "nested": [{key: "fixture-secret"}]}), submit_sent=sent
-        )
+        decode_response(raw, submit_sent=False)
     assert caught.value.code == "QB_BROWSER_UNAVAILABLE"
     assert "fixture-secret" not in str(caught.value)
+
+
+@pytest.mark.parametrize("error", ["QB_READ_REDIRECTED", "QB_READ_ID_MISMATCH"])
+def test_read_error_mapping_is_scoped_to_read(error):
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(
+            json.dumps({"ok": False, "error": error}), submit_sent=False, command="fill"
+        )
+    assert caught.value.code == "INTERNAL_ERROR"
+    assert caught.value.released is None
+
+
+@pytest.mark.parametrize(
+    "error,expected",
+    [
+        ("QB_FORM_CHANGED", "REJECTED_QB_FORM_CHANGED"),
+        ("AGENT_PHASE", "QB_BROWSER_UNAVAILABLE"),
+        ("QB_BROWSER_UNAVAILABLE", "QB_BROWSER_UNAVAILABLE"),
+        ("QB_EVIDENCE_REDACTION_FAILED", "QB_EVIDENCE_REDACTION_FAILED"),
+        ("UNKNOWN", "INTERNAL_ERROR"),
+    ],
+)
+@pytest.mark.parametrize("released", [False, True, None, 0, 1, "false", {}, []])
+def test_submit_error_only_explicit_boolean_false_proves_not_released(error, expected, released):
+    raw = json.dumps({"ok": False, "error": error, "released": released})
+    if released is False:
+        with pytest.raises(QbBrowserError) as caught:
+            decode_response(raw, submit_sent=True, command="submit")
+        assert caught.value.code == expected
+        assert caught.value.released is False
+    else:
+        assert decode_response(raw, submit_sent=True, command="submit")["landed"] == "unknown"
+
+
+def test_submit_verified_build_and_unknown_landing_preserved():
+    for response in (
+        {"ok": True, "released": True, "landed": "build", "build_id": "12"},
+        {
+            "ok": True,
+            "released": True,
+            "landed": "unknown",
+            "observed": "/wicket/page",
+            "messages": ["safe message"],
+        },
+    ):
+        assert decode_response(json.dumps(response), submit_sent=True) == response
 
 
 @pytest.mark.parametrize(
@@ -72,7 +144,7 @@ def test_html_independent_redaction_check(html):
 
 def test_redacted_html_and_palette_recorder_preserved():
     html = (
-        '<span>Welcome! &lt;USER&gt;</span>'
+        "<span>Welcome! &lt;USER&gt;</span>"
         '<input type="hidden" name="a:palette:recorder" value="6162">'
     )
     assert (
@@ -184,6 +256,59 @@ def test_driver_bad_agent_reply_after_submit(fake, response):
         browser.command("open_form", overview_id=42)
         browser.command("fill", fields={})
         assert browser.command("submit", fingerprint="fixture")["landed"] == "unknown"
+
+
+@pytest.mark.parametrize("released", [False, True, None, 0, "false"])
+def test_driver_preserves_submit_release_evidence(fake, released):
+    config, script, _, _ = fake
+    script.write_text(
+        json.dumps(
+            [{"ok": True}] * 3 + [{"ok": False, "error": "QB_FORM_CHANGED", "released": released}]
+        )
+    )
+    with QbBrowser(config) as browser:
+        browser.login()
+        browser.command("open_form", overview_id=42)
+        browser.command("fill", fields={})
+        if released is False:
+            with pytest.raises(QbBrowserError) as caught:
+                browser.command("submit", fingerprint="fixture")
+            assert caught.value.code == "REJECTED_QB_FORM_CHANGED"
+            assert caught.value.released is False
+        else:
+            assert browser.command("submit", fingerprint="fixture")["landed"] == "unknown"
+
+
+def test_driver_read_error_mapping(fake):
+    config, script, _, _ = fake
+    script.write_text(json.dumps([{"ok": True}, {"ok": False, "error": "QB_READ_ID_MISMATCH"}]))
+    with QbBrowser(config) as browser, pytest.raises(QbBrowserError) as caught:
+        browser.login()
+        browser.command("read", path="/build/12")
+    assert caught.value.code == "QB_FETCH_FAILED"
+
+
+@pytest.mark.parametrize("failure", ["missing-process", "broken-pipe", "closed-pipe", "decode"])
+def test_submit_process_failure_cannot_claim_not_released(fake, monkeypatch, failure):
+    config, script, _, _ = fake
+    browser = QbBrowser(config)
+    if failure == "missing-process":
+        assert browser.command("submit", fingerprint="fixture")["landed"] == "unknown"
+        return
+    script.write_text("[]")
+    with browser:
+
+        def fail(*_args):
+            if failure == "closed-pipe":
+                raise ValueError("closed pipe")
+            if failure == "decode":
+                raise UnicodeError("invalid bytes")
+            raise BrokenPipeError("broken pipe")
+
+        with monkeypatch.context() as patch:
+            stream = browser.process.stdout if failure == "decode" else browser.process.stdin
+            patch.setattr(stream, "readline" if failure == "decode" else "write", fail)
+            assert browser.command("submit", fingerprint="fixture")["landed"] == "unknown"
 
 
 def test_python_production_launcher_never_passes_probe_switches():

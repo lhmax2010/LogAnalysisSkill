@@ -63,6 +63,13 @@ test('exact run and exact refresh registrations, no prefix acceptance', () => {
   assert.equal(p.allow(meta(refresh.slice(ORIGIN.length))), true);
   assert.equal(p.allow(meta(refresh.slice(ORIGIN.length) + '0')), false);
 });
+test('registered refresh allows GET but never POST', () => {
+  const p = policy('read');
+  const path = '/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh';
+  p.refresh.add(ORIGIN + path);
+  assert.equal(p.allow(meta(path, 'GET')), true);
+  assert.equal(p.allow(meta(path, 'POST')), false);
+});
 test('one callback per field, old version and other field denied', () => {
   const p = policy('fill'); p.beginField(callback);
   assert.equal(p.allow(meta(callback.slice(ORIGIN.length) + 'x', 'POST')), false);
@@ -172,6 +179,62 @@ test('failed fill and fingerprint mismatch invalidate form until new open', asyn
   assert.equal(a.policy.released, false);
   assert.equal((await a.command({ command: 'submit' })).error, 'AGENT_PHASE');
   await a.command({ command: 'open_form' }); assert.equal(a.state, 'form');
+});
+
+function submission() {
+  const p = new Policy();
+  const f = form();
+  let location = f.base;
+  const page = {
+    isClosed: () => false, url: () => location,
+    getByRole: () => ({ click: async () => {} }),
+    waitForLoadState: () => assert.fail('old form load state cannot prove submission navigation'),
+    waitForURL: async (predicate, options) => {
+      assert.equal(p.released, true, 'must wait for actual request release first');
+      assert.deepEqual(options, { waitUntil: 'load', timeout: 60000 });
+      assert.equal(predicate(new URL(f.base)), false);
+      location = ORIGIN + '/build/12';
+      assert.equal(predicate(new URL(location)), true);
+    },
+  };
+  const a = new Agent({ policy: p, page }); a.state = 'filled';
+  a.currentProject = { project_name: 'Tizen' }; a.snapshot = async () => f;
+  a.buildId = async path => { assert.equal(path, '/build/12'); return '12'; };
+  return { a, p, page, input: { command: 'submit', fingerprint: fingerprint(readback(f, 'Tizen')) } };
+}
+test('delayed submit request is awaited before navigation, never false not_released', async () => {
+  const { a, p, page, input } = submission();
+  let pending;
+  page.getByRole = (_role, name) => ({ click: async options => {
+    assert.deepEqual(name, { name: 'Ok', exact: true });
+    assert.equal(options.noWaitAfter, true);
+    pending = setTimeout(() => {
+      assert.equal(p.allow(meta(action.slice(ORIGIN.length), 'POST')), true);
+    }, 150);
+  } });
+  try {
+    const started = Date.now();
+    assert.deepEqual(await a.command(input), { ok: true, landed: 'build', build_id: '12', released: true });
+    assert.ok(Date.now() - started >= 150);
+  } finally { clearTimeout(pending); }
+});
+test('no request release by ten-second deadline rejects and never waits for navigation', async () => {
+  const { a, page, input } = submission();
+  page.waitForURL = () => assert.fail('not released');
+  const started = Date.now();
+  assert.deepEqual(await a.command(input), { ok: false, error: 'QB_FORM_CHANGED', released: false });
+  assert.ok(Date.now() - started >= 10000);
+  assert.equal(a.policy.submitUrl, null);
+});
+test('released submit navigation timeout is unknown, not definite failure', async () => {
+  const { a, p, page, input } = submission();
+  page.getByRole = () => ({ click: async () => { p.allow(meta(action.slice(ORIGIN.length), 'POST')); } });
+  page.waitForURL = async (_predicate, options) => {
+    assert.equal(p.released, true); assert.equal(options.timeout, 60000);
+    throw new Error('synthetic navigation timeout');
+  };
+  const reply = await a.command(input);
+  assert.equal(reply.ok, true); assert.equal(reply.released, true); assert.equal(reply.landed, 'unknown');
 });
 test('read checks exact URL and build id and returns actual HTTP status', async () => {
   let redirect = null;

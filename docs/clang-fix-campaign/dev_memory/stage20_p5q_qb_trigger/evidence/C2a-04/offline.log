@@ -1,0 +1,106 @@
+................................................................................................✔ permanent deny external download (4.913362ms)
+✔ permanent deny http (0.106918ms)
+✔ permanent deny websocket (0.100087ms)
+✔ permanent deny rest (0.067631ms)
+✔ permanent deny log (0.276344ms)
+✔ permanent deny html report (0.110449ms)
+✔ permanent deny artifact (0.053897ms)
+✔ permanent deny promote (0.071319ms)
+✔ permanent deny cancel (0.110052ms)
+✔ permanent deny stop (0.122093ms)
+✔ permanent deny rerun (0.04305ms)
+✔ permanent deny delete (0.041624ms)
+✔ permanent deny abort (0.054793ms)
+✔ permanent deny form cancel (0.031786ms)
+✔ permanent deny 307 (0.034149ms)
+✔ permanent deny 308 (0.030196ms)
+✔ allow idle GET /styles/main.css?v=7 (0.08495ms)
+✔ allow login GET /signin (0.038513ms)
+✔ allow login POST /signin?12-1.IFormSubmitListener-form (0.053929ms)
+✔ allow login GET / (0.026244ms)
+✔ allow login GET /overview/0 (0.022891ms)
+✔ allow read GET /build/1 (0.053274ms)
+✔ allow read GET /build/1/overview (0.03752ms)
+✔ allow read GET /build/1/variables (0.024642ms)
+✔ allow read GET /build/1/step_status (0.027426ms)
+✔ allow read GET /overview/1921 (0.046879ms)
+✔ allow open_form GET /wicket/page?50 (0.032219ms)
+✔ allow fill GET /wicket/page?50-3 (1.082696ms)
+✔ unregistered denied /build/1?x=1 (0.055918ms)
+✔ unregistered denied /overview/1922 (0.035216ms)
+✔ unregistered denied /styles/x?Listener=x (0.047776ms)
+✔ unregistered denied /styles/x?v=a (0.026676ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-dragDrop (0.025024ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-loadPopup (0.019073ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-unloadPopup (0.018135ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-quicksearch (0.017956ms)
+✔ stage-specific navigation never escapes phase (0.118351ms)
+✔ exact run and exact refresh registrations, no prefix acceptance (0.059171ms)
+✔ registered refresh allows GET but never POST (0.035403ms)
+✔ one callback per field, old version and other field denied (0.06954ms)
+✔ stop in value not listener component is allowed (0.029666ms)
+✔ callback shape fails closed (0.437462ms)
+✔ two form instances each have exactly one release, response does not consume it (0.122482ms)
+✔ 302 next hop is judged independently and 307/308 preserve released (0.074823ms)
+✔ protocol adapter forwards only metadata even when request contains credentials (0.456194ms)
+✔ frame ownership is closed and descendants revoked on detach/navigation (0.107436ms)
+✔ form exact label/role closure and project identity (0.462043ms)
+✔ readback records text/checkbox/select/palette and validates recorder (0.60661ms)
+✔ failed fill and fingerprint mismatch invalidate form until new open (0.422836ms)
+✔ delayed submit request is awaited before navigation, never false not_released (152.374503ms)
+✔ no request release by ten-second deadline rejects and never waits for navigation (10001.061414ms)
+✔ released submit navigation timeout is unknown, not definite failure (1.258074ms)
+✔ read checks exact URL and build id and returns actual HTTP status (0.930441ms)
+✔ source guards: no HTTP client, credential extraction, debug switch, or login interactions (1.74897ms)
+✔ every command outside its permitted phase rejects before any method call (0.504668ms)
+✔ read remains available after submit but navigation invalidates the old form (0.239882ms)
+✔ fill reads current callbacks and freezes selected snapshot without setting it (2.284251ms)
+ℹ tests 57
+ℹ suites 0
+ℹ pass 57
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10227.029849
+
+.▶ C2A-04 build identity from archived HTML, with all network denied
+  ✔ archive 01.response.txt /build/1069540 (45.981084ms)
+  ✔ archive 03.response.txt /build/1069540/variables (16.006693ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (27.510016ms)
+  ✔ navigation spelling Id (20.128083ms)
+  ✔ navigation spelling ID (16.987849ms)
+  ✔ Summary Id resolved by column, not fixed position (15.489432ms)
+  ✔ reject duplicate-nav (10.959056ms)
+  ✔ reject missing-nav (8.522884ms)
+  ✔ reject wrong-nav (9.929884ms)
+  ✔ reject missing-summary (10.063239ms)
+  ✔ reject duplicate-summary (9.782661ms)
+  ✔ reject missing-id-column (10.690207ms)
+  ✔ reject duplicate-id-column (10.083073ms)
+  ✔ reject different-summary-id (11.01032ms)
+  ✔ reject missing-first-row (8.95397ms)
+  ✔ both homepage sources agree but differ from requested id (8.24318ms)
+  ✔ subpage missing navigation (10.294214ms)
+  ✔ subpage duplicate navigation (8.930517ms)
+  ✔ subpage wrong navigation (9.07752ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 build identity from archived HTML, with all network denied (785.968913ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (382.999681ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/favicon.ico","/build/301"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (821.026904ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1992.550086
+
+.{"summary": 3, "passed": 3, "failed": 0, "networkScope": "synthetic-loopback-only"}
+.{"mode": "normal", "removed": true}
+.{"mode": "exception", "removed": true}
+.{"mode": "signal", "removed": true}
+.
+102 passed in 36.68s
