@@ -34,6 +34,150 @@ let deniedDocumentAfterRedirect = false;
 const loginPostResponses = new Set();
 let wrapperDenied = 0;
 const parentPages = new Map();
+let readNavigation = null;
+
+export function idStructureDOM() {
+  const navigation = [...document.querySelectorAll('.nav-link')]
+    .map(node => node.textContent.trim()).filter(text => text.startsWith('Build ('));
+  const boxes = [...document.querySelectorAll('.build-summary')];
+  return {
+    ready_state: document.readyState,
+    navigation_count: navigation.length,
+    navigation_labels: navigation.slice(0, 10),
+    build_summary_count: boxes.length,
+    build_summaries: boxes.map(box => {
+      const heads = [...box.querySelectorAll('.box-head')].map(node => node.textContent.trim());
+      const result = { box_heads: heads };
+      if (heads.includes('Summary')) {
+        const tables = [...box.querySelectorAll('table')];
+        result.table_count = tables.length;
+        result.tables = tables.map(table => {
+          const columns = [...table.querySelectorAll('thead th')].map(node => node.textContent.trim());
+          const indices = columns.flatMap((text, index) => text === 'Id' ? [index] : []);
+          const rows = [...table.querySelectorAll('tbody tr')];
+          return { thead_th: columns, tbody_rows: rows.length,
+            id_column_index: indices.length === 1 ? indices[0] : null,
+            first_row_id: indices.length === 1 ? rows[0]?.cells[indices[0]]?.textContent.trim() ?? null : null };
+        });
+      }
+      return result;
+    }),
+  };
+}
+
+function requireReadLocation(page, path, navigation) {
+  if (!navigation || navigation.status !== 200) throw new AgentError('QB_READ_HTTP_STATUS');
+  if (navigation.redirected || navigation.url !== ORIGIN + path || page.url() !== ORIGIN + path) {
+    throw new AgentError('QB_READ_REDIRECTED');
+  }
+}
+
+async function readWithDiagnostics(input, send, page, navigation, guard, saveSample) {
+  const response = await send(input);
+  guard();
+  requireReadLocation(page, input.path, navigation());
+  if (response.ok) {
+    if (response.status !== 200) throw new AgentError('QB_READ_HTTP_STATUS');
+    return { ...response, ...(/^\/build\/\d+(?:\/variables)?$/.test(input.path)
+      ? { id_verified: true, verification: 'VERIFIED' } : {}) };
+  }
+  if (response.error !== 'QB_READ_ID_MISMATCH' || !/^\/build\/\d+(?:\/variables)?$/.test(input.path)) {
+    throw new AgentError(response.error);
+  }
+  const samples = [];
+  for (const index of [0, 1]) {
+    if (index) {
+      const deadline = Date.now() + 3000;
+      while (Date.now() < deadline) {
+        guard();
+        requireReadLocation(page, input.path, navigation());
+        await sleep(Math.min(50, Math.max(0, deadline - Date.now())));
+      }
+    }
+    guard();
+    requireReadLocation(page, input.path, navigation());
+    const url = new URL(page.url());
+    const sample = { sample: index + 1, relative_ms: elapsed(),
+      main_frame: { protocol: url.protocol, host: url.host, ...redactAddress(url.pathname, url.search.slice(1)) },
+      ...await page.evaluate(idStructureDOM) };
+    guard();
+    saveSample(sample);
+    samples.push(sample);
+  }
+  let html;
+  try { html = checkRedacted(await page.evaluate(redactDOM)); }
+  catch { throw new AgentError('QB_EVIDENCE_REDACTION_FAILED'); }
+  guard();
+  requireReadLocation(page, input.path, navigation());
+  return { status: 200, html_redacted: html, id_verified: false, verification: 'ID_UNVERIFIED', id_samples: samples };
+}
+
+function requireVerifiedSource(source) {
+  if (!source || source.id_verified !== true) throw new AgentError('ID_UNVERIFIED_SOURCE');
+  return source;
+}
+
+async function childIdsFromVerifiedSource(source, page) {
+  requireVerifiedSource(source);
+  return page.evaluate(html => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const ids = [];
+    for (const heading of doc.querySelectorAll('h3')) {
+      if (heading.textContent.replace(/^\s*◆\s*/, '').trim() !== 'Child Build') continue;
+      const table = heading.nextElementSibling;
+      if (table?.tagName !== 'TABLE') continue;
+      for (const link of table.querySelectorAll('a[href]')) {
+        const match = /^https:\/\/quickbuild\.tizen\.org\/build\/(\d+)$/.exec(link.getAttribute('href'));
+        if (match && !ids.includes(match[1])) ids.push(match[1]);
+      }
+    }
+    return ids;
+  }, source.html_redacted);
+}
+
+async function collectRead(input) {
+  const requestedId = /^\/build\/(\d+)/.exec(input.path)?.[1];
+  if (requestedId && !['1193467', '1193469', '1186372'].includes(requestedId)) {
+    const parent = requireVerifiedSource(parentPages.get('/build/1186372'));
+    if (!parent.child_build_ids.includes(requestedId)) throw new AgentError('EVIDENCE_COMMAND_INVALID');
+  }
+  readNavigation = null;
+  const diagnostic = { path: input.path, samples: [] };
+  const response = await readWithDiagnostics(input, command => call(command, true), runtime.page,
+    () => readNavigation, check, sample => {
+      checkedReport(JSON.stringify(sample));
+      if (!diagnostic.samples.length) (report.id_diagnostics ??= []).push(diagnostic);
+      diagnostic.samples.push(sample);
+    });
+  const suffix = response.id_verified === false ? '.id-unverified.response.html' : '.response.html';
+  const saved = await archive(response.html_redacted, `${String(++sequence).padStart(2, '0')}${suffix}`);
+  const record = { path: input.path, status: response.status, ...saved,
+    ...(response.id_verified !== undefined ? { id_verified: response.id_verified, verification: response.verification } : {}) };
+  report.pages.push(record);
+  if (response.id_verified === false) {
+    parentPages.delete(input.path);
+    diagnostic.file = saved.file;
+    if (input.path === '/build/1186372') report.skipped_children = { source_path: input.path, reason: 'ID_UNVERIFIED' };
+    emit(record);
+    if (/^\/build\/1193467(?:\/variables)?$/.test(input.path)) throw new AgentError('QB_READ_ID_MISMATCH');
+    return;
+  }
+  if (/^\/build\/\d+$/.test(input.path)) {
+    const facts = await runtime.page.evaluate(configurationDOM, response.html_redacted);
+    const childIds = await childIdsFromVerifiedSource({ ...record, html_redacted: response.html_redacted }, runtime.page);
+    const source = { ...record, facts, child_build_ids: childIds };
+    parentPages.set(input.path, source);
+    (report.configuration_sources ??= []).push({ ...source, ...parentConfigurationChecks(facts) });
+    record.child_build_ids = childIds;
+  }
+  if (/^\/overview\/\d+$/.test(input.path)) {
+    const facts = await runtime.page.evaluate(configurationDOM, response.html_redacted);
+    report.configuration_page = { ...record, facts, ...configurationPageChecks(facts) };
+    if (!report.configuration || input.path !== `/overview/${report.configuration.overview_id}`
+      || !report.configuration_page.passed) throw new AgentError('CONFIGURATION_SOURCE_MISMATCH');
+  }
+  emit(record);
+}
 
 export function diagnosticStopReason({ redirect, deniedDocument, lastRequest, now, loginResponseCount }) {
   if (!redirect && loginResponseCount >= 5) return 'LOGIN_POST_LIMIT_NO_REDIRECT';
@@ -112,6 +256,113 @@ async function selfTest(interpreter) {
   emit({ self_tests: 20, passed: 20, network_requests: 0 });
 }
 
+async function idSelfTest(pw, chrome, interpreter) {
+  const browserRuntime = await createRuntime(pw, chrome);
+  browserRuntime.policy.allow = () => false;
+  let networkRequests = 0;
+  browserRuntime.page.on('request', () => { networkRequests += 1; });
+  let path;
+  let navigations = 0;
+  let lateSummary = false;
+  const summary = '<div class="build-summary"><div class="box-head">Summary</div><table>'
+    + '<thead><tr><th>Status</th><th>Id</th><th>Triggered By</th></tr></thead>'
+    + '<tbody><tr><td>NON_ID_CELL</td><td>1193469</td><td>Fixture User</td></tr></tbody></table></div>';
+  const header = '<span>Welcome! Fixture User</span><a class="nav-link">Build (id:1193469)</a>';
+  const page = {
+    goto: async () => {
+      navigations += 1;
+      if (lateSummary) await browserRuntime.page.evaluate(html => {
+        setTimeout(() => document.body.insertAdjacentHTML('beforeend', html), 1000);
+      }, summary);
+      return { status: () => 200, request: () => ({ redirectedFrom: () => null }) };
+    },
+    url: () => ORIGIN + path,
+    evaluate: (...args) => browserRuntime.page.evaluate(...args),
+  };
+  const testAgent = new Agent({ ...browserRuntime, page });
+  testAgent.state = 'ready';
+  const navigation = () => ({ status: 200, url: ORIGIN + path, redirected: false });
+  let tests = 0;
+  const pass = name => { tests += 1; emit({ test: name, result: 'PASS' }); };
+  try {
+    for (const name of ['two-build-labels', 'no-summary', 'late-summary']) {
+      path = name === 'two-build-labels' ? '/build/1193469/variables' : '/build/1193469';
+      lateSummary = name === 'late-summary';
+      await browserRuntime.page.setContent(header + (name === 'two-build-labels'
+        ? '<a class="nav-link">Build (Id:999)</a>' + summary : ''));
+      const beforeRequests = networkRequests;
+      const beforeNavigations = navigations;
+      const samples = [];
+      const result = await readWithDiagnostics({ command: 'read', path },
+        input => testAgent.command(input), page, navigation, () => {
+          assert.equal(browserRuntime.failure, null);
+        }, sample => samples.push(sample));
+      assert.equal(result.id_verified, false);
+      assert.equal(result.verification, 'ID_UNVERIFIED');
+      assert.equal(samples.length, 2);
+      assert.ok(samples[1].relative_ms - samples[0].relative_ms >= 3000);
+      assert.equal(samples[0].ready_state, 'complete');
+      assert.equal(samples[0].main_frame.path, path);
+      assert.equal(samples[0].navigation_count, name === 'two-build-labels' ? 2 : 1);
+      assert.equal(samples[0].build_summary_count, name === 'two-build-labels' ? 1 : 0);
+      assert.equal(samples[1].build_summary_count, name === 'no-summary' ? 0 : 1);
+      if (samples[1].build_summary_count) {
+        assert.deepEqual(samples[1].build_summaries, [{ box_heads: ['Summary'], table_count: 1, tables: [{
+          thead_th: ['Status', 'Id', 'Triggered By'], tbody_rows: 1, id_column_index: 1, first_row_id: '1193469',
+        }] }]);
+      }
+      assert.ok(!JSON.stringify(samples).includes('NON_ID_CELL'));
+      assert.ok(!JSON.stringify(samples).includes('Fixture User'));
+      assert.ok(!result.html_redacted.includes('Fixture User'));
+      checkedReport(JSON.stringify(samples), interpreter, ['Fixture User']);
+      checkedReport(JSON.stringify({ html: result.html_redacted }), interpreter, ['Fixture User']);
+      assert.equal(navigations - beforeNavigations, 1); // Only the original production read, no retry.
+      assert.equal(networkRequests, beforeRequests);
+      assert.throws(() => parentRegistration(requireVerifiedSource(result)), { code: 'ID_UNVERIFIED_SOURCE' });
+      await assert.rejects(childIdsFromVerifiedSource(result, page), { code: 'ID_UNVERIFIED_SOURCE' });
+      emit({ fixture: name, id_verified: false, samples, diagnostic_requests: networkRequests - beforeRequests });
+      lateSummary = false;
+      await browserRuntime.page.setContent(header + summary);
+      path = '/build/1193469';
+      const next = await readWithDiagnostics({ command: 'read', path }, input => testAgent.command(input),
+        page, navigation, () => {}, () => assert.fail('verified next read must not diagnose'));
+      assert.equal(next.id_verified, true);
+      pass(name);
+    }
+    for (const [name, observation, response, code] of [
+      ['non-200', { ...navigation(), status: 403 }, { ok: false, error: 'QB_READ_ID_MISMATCH' }, 'QB_READ_HTTP_STATUS'],
+      ['redirect', { ...navigation(), redirected: true }, { ok: false, error: 'QB_READ_REDIRECTED' }, 'QB_READ_REDIRECTED'],
+      ['browser-failure', navigation(), { ok: false, error: 'QB_BROWSER_UNAVAILABLE' }, 'QB_BROWSER_UNAVAILABLE'],
+      ['redaction-failure', navigation(), { ok: false, error: 'QB_EVIDENCE_REDACTION_FAILED' }, 'QB_EVIDENCE_REDACTION_FAILED'],
+    ]) {
+      await assert.rejects(readWithDiagnostics({ command: 'read', path }, async () => response,
+        page, () => observation, () => {}, () => assert.fail('must stop without diagnosis')), { code });
+      pass(name);
+    }
+    let guards = 0;
+    await assert.rejects(readWithDiagnostics({ command: 'read', path },
+      async () => ({ ok: false, error: 'QB_READ_ID_MISMATCH' }), page, navigation, () => {
+        if (++guards === 4) throw new AgentError('QB_BROWSER_UNAVAILABLE');
+      }, () => {}), { code: 'QB_BROWSER_UNAVAILABLE' });
+    pass('fail-closed-during-diagnostic-wait');
+    await browserRuntime.page.setContent('<a class="nav-link">Build (id:1193469)</a>'.repeat(11)
+      + summary.replace('<th>Status</th>', '<th>Id</th>'));
+    const capped = await browserRuntime.page.evaluate(idStructureDOM);
+    assert.equal(capped.navigation_count, 11);
+    assert.equal(capped.navigation_labels.length, 10);
+    assert.equal(capped.build_summaries[0].tables[0].id_column_index, null);
+    assert.equal(capped.build_summaries[0].tables[0].first_row_id, null);
+    pass('ten-label-cap-and-nonunique-id-no-cell-text');
+    const childPage = '<h3>Child Build</h3><table><tr><td>'
+      + '<a href="https://quickbuild.tizen.org/build/1193469">child</a></td></tr></table>';
+    assert.deepEqual(await childIdsFromVerifiedSource({ id_verified: true, html_redacted: childPage }, page), ['1193469']);
+    pass('verified-child-id-source');
+    assert.equal(networkRequests, 0);
+    assert.equal(browserRuntime.page.url(), 'about:blank');
+    emit({ self_tests: tests, passed: tests, network_requests: networkRequests, fixture_navigation: 'stubbed original read only' });
+  } finally { await browserRuntime.close(); }
+}
+
 function emit(row) { process.stdout.write(JSON.stringify(row) + '\n'); }
 async function persist() {
   const traceDenied = runtime?.trace.filter(row => row.action === 'DENIED').length ?? 0;
@@ -158,12 +409,14 @@ async function archive(html, name) {
   if (after.status !== 0) throw new AgentError('QB_EVIDENCE_REDACTION_FAILED');
   return { file: name, sha256: createHash('sha256').update(await readFile(path)).digest('hex') };
 }
-async function call(input) {
+async function call(input, allowIdMismatch = false) {
   check();
   report.commands.push({ command: input.command, ...(input.path ? { path: input.path } : {}) });
   const result = await agent.command(input);
   check();
-  if (!result.ok) throw new AgentError(result.error);
+  if (!result.ok && !(allowIdMismatch && input.command === 'read' && result.error === 'QB_READ_ID_MISMATCH')) {
+    throw new AgentError(result.error);
+  }
   return result;
 }
 async function formRecord(label) {
@@ -199,6 +452,7 @@ async function rememberLoginNames() {
 }
 
 if (playwright === '--self-test') { await selfTest(chromium); process.exit(0); }
+if (playwright === '--id-self-test') { await idSelfTest(chromium, directory, python); process.exit(0); }
 
 await mkdir(directory, { recursive: true });
 if (existsSync(`${directory}/run.json`)) {
@@ -210,6 +464,16 @@ try {
   process.stderr.write(prompt);
   runtime = await createRuntime(playwright, chromium);
   agent = new Agent(runtime);
+  runtime.page.on('response', response => {
+    if (operation !== 'read') return;
+    try {
+      const request = response.request();
+      if (!request.isNavigationRequest() || request.frame() !== runtime.page.mainFrame()) return;
+      readNavigation = { status: response.status(), url: response.url(), redirected: request.redirectedFrom() !== null };
+      if (readNavigation.redirected || readNavigation.status >= 300 && readNavigation.status < 400) stop('QB_READ_REDIRECTED');
+      else if (readNavigation.status !== 200) stop('QB_READ_HTTP_STATUS');
+    } catch { stop('QB_BROWSER_UNAVAILABLE'); }
+  });
   runtime.page.on('framenavigated', frame => {
     if (frame !== runtime.page.mainFrame()) return;
     try {
@@ -301,28 +565,11 @@ try {
       if (input.command === 'read') {
         if (!/^\/(?:build\/\d+(?:\/(?:variables|step_status))?|overview\/\d+)$/.test(input.path)) throw new AgentError('EVIDENCE_COMMAND_INVALID');
         current = input.path;
-        const response = await call(input);
-        const saved = await archive(response.html_redacted, `${String(++sequence).padStart(2, '0')}.response.html`);
-        const record = { path: input.path, status: response.status, ...saved };
-        report.pages.push(record);
-        if (/^\/build\/\d+$/.test(input.path)) {
-          const facts = await runtime.page.evaluate(configurationDOM, response.html_redacted);
-          const source = { ...record, facts };
-          parentPages.set(input.path, source);
-          report.configuration_sources ??= [];
-          report.configuration_sources.push({ ...source, ...parentConfigurationChecks(facts) });
-        }
-        if (/^\/overview\/\d+$/.test(input.path)) {
-          const facts = await runtime.page.evaluate(configurationDOM, response.html_redacted);
-          report.configuration_page = { ...record, facts, ...configurationPageChecks(facts) };
-          if (!report.configuration || input.path !== `/overview/${report.configuration.overview_id}`
-            || !report.configuration_page.passed) throw new AgentError('CONFIGURATION_SOURCE_MISMATCH');
-        }
-        emit(record);
+        await collectRead(input);
       } else if (input.command === 'register_config') {
         // Only a freshly archived parent response can authorize registration.
         let project;
-        try { project = parentRegistration(parentPages.get(input.source_path)); }
+        try { project = parentRegistration(requireVerifiedSource(parentPages.get(input.source_path))); }
         catch { throw new AgentError('CONFIGURATION_SOURCE_MISMATCH'); }
         agent.projects.set(project.overview_id, project);
         agent.policy.overviewIds.add(String(project.overview_id));

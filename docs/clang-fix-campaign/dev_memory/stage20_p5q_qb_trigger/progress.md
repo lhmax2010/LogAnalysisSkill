@@ -1,8 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2B_LIVE04_PARTIAL;STOPPED_READ_ID_MISMATCH**。
-当前轮基线33b1540;P5Q-C2B-04裁定及实施见§20。§18/§19保留历史停点。
-身份脱敏与取证入口已分别推送6028356/47a1f8e;新“开始”后live-04在子主页构建号核对停下。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2B_LIVE05_READY;WAITING_FOR_CHAT_START**。
+当前轮基线35795e9;P5Q-C2B-05裁定及实施见§21。§18至§20保留历史停点。
+身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
+本轮仅补取证通道,未放宽生产判据。live-05须等待聊天中新的“开始”,尚未请求。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -29,7 +30,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§19.5 live-03三条件登录成功,父主页/变量页已取;配置普通链接在标签而非指定面包屑,停止报告;其余NOT_COLLECTED,C3不启动 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§20.5 live-04子主页核对停点由§21批准补诊断通道;live-05待新的开始指令,其余NOT_COLLECTED,C3不启动 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -1564,3 +1565,88 @@ live-04主页面ILinkListener、signOutLink、dependentLink、onCopyClipboardLin
 冻结sha256仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
 生产代码、测试、spikes、design.md、冻结稿与live-03零diff。
 P5Q-C2B-05仍OPEN;验收绿不销掉真机失败,不重试,等待设计方裁定。
+
+## 21. 实施裁定 P5Q-C2B-05
+
+### 21.1 裁定原文
+
+设计方出具,FatTank已批准,立即执行;冻结稿与生产代码不改。
+
+```text
+原因:live-04 中 /build/1193469 返回 HTTP 200,无重定向,主帧已到达该地址,约 0.5 秒后生产构建号核对失败(QB_READ_ID_MISMATCH)。核对需同时满足"导航栏恰好一个 Build (id:N)""恰好一个 Summary 区块""Summary 表恰好一列 Id 且值为 N"。生产 read 在核对失败时直接抛错,页面没有进入脱敏和归档,无法判断是子构建页结构不同还是 Summary 异步加载。这是取证通道缺口,不是实现错误。
+另记一项次要问题,本轮不处理:页面自动刷新请求带有 Wicket 追加的 &random= 随机参数,与登记的精确刷新地址永远不匹配,全部被拒。只读取证不需要自动刷新,保持拒绝。C4 设计核对时再决定是删除刷新登记,还是去掉 random 后再匹配。
+```
+
+§20.5的P5Q-C2B-05取证通道停点由本裁定关闭;这不表示已查明构建号失败原因。
+live-01至live-04保持原样。刷新random议题登记为C4待核,本轮不改规则或补放行。
+
+### 21.2 实施与离线取证
+
+代码变更只在`spikes/p5q_c2b_evidence.mjs`。真实浏览器、生产Agent/read/buildId、
+生产redactDOM及Python字节自检均复用,生产模块与冻结稿不改。
+
+- 仅对`/build/N`与`/build/N/variables`的`QB_READ_ID_MISMATCH`开放诊断。
+  立即一次、至少3秒后一次,其间不导航、不刷新、不重发read;守护检查持续有效。
+- 只采主帧脱敏地址、readyState、导航标签总数与前10条、build-summary数量/标题、
+  Summary表数/表头/行数及唯一Id列的首行文字。其它单元格文字不进入结构证据。
+- HTTP200、无重定向、当前地址逐字匹配仍为前提。浏览器失败、目标阻断、
+  非200、重定向、脱敏失败照旧停止。两次结构记录均经写前字节检查,
+  页面经生产redactDOM及既有写前/写后检查后存为`*.id-unverified.response.html`。
+- 页面元数据明确写`id_verified=false / ID_UNVERIFIED`;配置登记和子构建ID提取
+  均先检查已核验来源。延迟出现Summary也不自动把先前失败页升级为已核验。
+  1193467主页与变量任一失败仍停止;1186372主页失败则记跳过子构建。
+- 离线自测嵌入同一脚本`--id-self-test`,不新增生产参数或另一测试文件。
+  about:blank上setContent三夹具:导航两个Build标签、无Summary、Summary延迟出现。
+  原始read的goto为桩,buildId与redactDOM是真实浏览器DOM执行;三例各采两次后
+  可继续下一次合法read,额外导航0、网络请求0、未核验来源两种用途均拒绝。
+
+`evidence/C2b/c2b-05-preparation/id-self-test.log`首跑exit0,10/10:
+三夹具+非200/重定向/浏览器失败/脱敏失败四停止控制+等待期fail-closed+
+10标签上限/多Id列不取值+已核验Child Build来源。原始结构样本逐条入日志。
+自测只含合成身份和数据,没有登录或QuickBuild请求。完整验收见§21.4。
+
+### 21.3 live-05计划与人工闸门
+
+状态`WAITING_FOR_CHAT_START`;本轮尚未启动live-05,未复用任何旧“开始”。
+离线验收完成后在聊天发“准备弹出 QuickBuild 登录窗口,请回复'开始'”,
+收到新的“开始”才运行600秒登录。按裁定顺序:
+
+1. login三条件;1193467主页/变量必须核验通过。
+2. 1193469主页/变量,允许ID_UNVERIFIED并继续。
+3. 1186372主页/变量;仅主页已核验才用其Child Build来源读取子构建两页,
+   未核验则记跳过,不能猜子构建ID。
+4. 从本轮1193467执行C2B-04五项检查后register_config,读配置页并作两项检查。
+5. 仅BUILD_TYPE Full→Partial→Full;不点Ok、不提交,action release必须0,然后close。
+
+任何原有停止条件触发立即停止,不重试绕过。各页面、结构样本、配置和表单事实
+只以live-05实际归档为准,目前均NOT_COLLECTED。不进入C3。
+
+### 21.4 取证准备验收
+
+所有命令在本工作树执行,退出码均实测为0。证据目录
+`evidence/C2b/c2b-05-preparation/`;新增10项嵌入式Node自测单列,
+pytest用例集合没有增删,不把Node断言数计入pytest总数。
+
+| 命令 | exit | 结果 / 日志 |
+|---|---|---|
+| Node spikes/p5q_c2b_evidence.mjs --id-self-test PW CHROMIUM .venv/bin/python | 0 | 10/10,network_requests=0;id-self-test.log |
+| Node spikes/p5q_c2b_evidence.mjs --self-test .venv/bin/python | 0 | 20/20,network_requests=0;self-test.log |
+| .venv/bin/python -m pytest -q | 0 | 2165 passed,1 skipped,168.53s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+
+上表spikes脚本完整路径为`docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs`。
+Node=`env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code`;
+PW=`/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs`;
+CHROMIUM=`/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome`。
+全量pytest包含既有Node单元、真实浏览器、四组本机安全、配置来源、登录重试及
+取证入口静态限制测试;本轮未改生产放行规则,没有QuickBuild实跑。
+
+Ruff对`git write-tree`所得`d4e987a1d27d13496c9f57fb4fe8a22ddd546316`的
+完整`git archive`导出`/tmp/p5q-c2b-05-lint-QDXbQl`运行,之后仅补文档和日志。
+无关`.gitignore`和docs四个删除文件仍未处理,未纳入暂存树。
+冻结sha256仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
+生产源码、design.md、冻结稿、live-01至live-04均零diff。
+新增停止报告0条;§20.5原因待live-05诊断,不以离线夹具推断真机原因。

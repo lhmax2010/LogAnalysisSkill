@@ -4,6 +4,22 @@ Status: **PARTIAL / STOPPED_READ_ID_MISMATCH**. Latest session: live-04,
 after redaction fix `6028356` and evidence-source checks `47a1f8e`.
 This document records observations, not permission to start C3.
 
+## C2B-05 Preparation (No New Live Evidence)
+
+The approved C2B-05 evidence-only diagnostic channel is implemented in the spike,
+not in production read. Its offline fixtures pass (10/10, network requests=0;
+`c2b-05-preparation/id-self-test.log`). Duplicate Build labels, absent Summary,
+and delayed Summary each produce two samples, at least three seconds apart.
+Unverified pages cannot supply a configuration or child build id; no non-Id
+cell text is recorded in the structure samples. The previous failure cause is
+not inferred from these synthetic fixtures.
+
+live-05 has not started and requires a fresh chat "开始". Its pages, diagnostics,
+configuration checks and form observations remain NOT_COLLECTED. Existing
+live-01 through live-04 artifacts are unchanged. Exact refresh requests carrying
+an appended random query remain rejected; that issue is deferred to C4 design
+verification, not changed by this evidence channel.
+
 ## C2B-04 live-04 (Latest)
 
 A fresh chat start preceded the single browser login for this session. GET
