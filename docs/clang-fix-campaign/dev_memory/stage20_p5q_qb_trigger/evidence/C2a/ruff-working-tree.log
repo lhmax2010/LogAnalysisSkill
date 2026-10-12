@@ -1,0 +1,55 @@
+audit_four_sigs.py:4:1: E401 [*] Multiple imports on one line
+audit_four_sigs.py:4:1: I001 [*] Import block is un-sorted or un-formatted
+audit_four_sigs.py:27:17: E701 Multiple statements on one line (colon)
+audit_four_sigs.py:34:8: E701 Multiple statements on one line (colon)
+audit_four_sigs.py:35:23: E701 Multiple statements on one line (colon)
+audit_four_sigs.py:48:55: E702 Multiple statements on one line (semicolon)
+audit_four_sigs.py:48:66: E702 Multiple statements on one line (semicolon)
+audit_four_sigs.py:54:57: E702 Multiple statements on one line (semicolon)
+docs/clang-fix-campaign/hashobj2.py:7:1: E401 [*] Multiple imports on one line
+docs/clang-fix-campaign/hashobj2.py:7:1: I001 [*] Import block is un-sorted or un-formatted
+docs/clang-fix-campaign/hashobj2.py:22:25: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/hashobj2.py:29:12: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/hashobj2.py:42:23: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/hashobj2.py:43:23: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/hashobj2.py:47:21: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/hashobj2.py:53:15: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/ident_check3.py:12:1: E401 [*] Multiple imports on one line
+docs/clang-fix-campaign/ident_check3.py:12:1: I001 [*] Import block is un-sorted or un-formatted
+docs/clang-fix-campaign/ident_check3.py:62:16: B007 Loop control variable `t` not used within loop body
+docs/clang-fix-campaign/ident_check3.py:62:19: B007 Loop control variable `sec` not used within loop body
+docs/clang-fix-campaign/ident_check3.py:69:26: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/ident_check3.py:71:16: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/ident_check3.py:95:23: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/ident_check3.py:96:23: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/ident_check3.py:105:26: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/ident_check3.py:108:26: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/ident_check3.py:111:24: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/ident_check3.py:113:12: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/ident_check3.py:114:23: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/ident_check3.py:114:36: E702 Multiple statements on one line (semicolon)
+docs/clang-fix-campaign/ident_check3.py:115:56: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/ident_check3.py:116:16: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/ident_check3.py:118:12: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/ident_check3.py:119:30: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/ident_check3.py:125:34: E702 Multiple statements on one line (semicolon)
+docs/clang-fix-campaign/ident_check3.py:144:53: E702 Multiple statements on one line (semicolon)
+docs/clang-fix-campaign/ident_check3.py:146:50: E702 Multiple statements on one line (semicolon)
+docs/clang-fix-campaign/ident_check3.py:157:78: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/norm_diff5.py:12:1: E401 [*] Multiple imports on one line
+docs/clang-fix-campaign/norm_diff5.py:12:1: I001 [*] Import block is un-sorted or un-formatted
+docs/clang-fix-campaign/norm_diff5.py:33:26: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/norm_diff5.py:35:24: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/norm_diff5.py:37:12: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/norm_diff5.py:39:24: E702 Multiple statements on one line (semicolon)
+docs/clang-fix-campaign/norm_diff5.py:42:16: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/norm_diff5.py:49:12: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/norm_diff5.py:50:20: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/norm_diff5.py:52:17: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/norm_diff5.py:53:46: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/norm_diff5.py:56:28: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/norm_diff5.py:59:26: E701 Multiple statements on one line (colon)
+docs/clang-fix-campaign/norm_diff5.py:65:23: E741 Ambiguous variable name: `l`
+docs/clang-fix-campaign/norm_diff5.py:66:23: E741 Ambiguous variable name: `l`
+Found 53 errors.
+[*] 8 fixable with the `--fix` option (2 hidden fixes can be enabled with the `--unsafe-fixes` option).

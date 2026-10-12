@@ -51,6 +51,11 @@ def parse_qb_config(value: object) -> dict[str, Any]:
     if qb.get("base_url") != BASE_URL:
         raise QbConfigError("qb.base_url must be https://quickbuild.tizen.org")
     browser = _mapping(qb.get("browser"), "qb.browser")
+    if (
+        type(browser.get("login_timeout_seconds")) is not int
+        or browser["login_timeout_seconds"] <= 0
+    ):
+        raise QbConfigError("qb.browser.login_timeout_seconds must be a positive integer")
     for key in ("node", "playwright_module", "chromium"):
         path = Path(_text(browser.get(key), f"qb.browser.{key}"))
         if not path.is_absolute() or not path.exists():

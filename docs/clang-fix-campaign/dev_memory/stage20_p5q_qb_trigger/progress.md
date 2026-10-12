@@ -1,7 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-10。状态:**C1_COMPLETE / P5Q-C0-01 CLOSED;C2 NOT_STARTED**。
-当前轮仅C1离线模块、状态库原语与测试,不涉及浏览器/QuickBuild请求或真实推送。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2b NOT_STARTED**。
+当前轮按§14以诊断/正常/去Fetch对照验证h,3/3通过;原“取不到引用”要求已作废,
+a-g既有通过证据保留。代理/驱动/假代理与离线测试已交付;未访问QuickBuild/Gerrit。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
 是既有无关改动,不处理、不纳入本次交付;其余历史草稿也不纳入。
@@ -27,14 +28,15 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C1;NOT_STARTED |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE:见§14;C2b NOT_STARTED,真机前须完成第9.3节指定HTTPS夹具的四组安全子集 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
 | C6 | 第9.4节第2步确认的真实提交与收口文档 | C5 + FatTank明确确认;NOT_STARTED |
 
 C2真机取证与冻结稿假设不符时按R1修订,不得直接继续C3。
-C0授权不含实现;本轮单独授权C1,不含C2-C6、登录、浏览器填表、表单联动或真实提交。
+C0授权不含实现;C1已完成。本轮仅授权C2a离线实现与本机about:blank能力验证,
+不含C2b-C6、人工登录、真实站点填表/联动/提交。
 
 ## 3. FatTank裁定(2026-10-10)
 
@@ -320,3 +322,281 @@ frozen_sha256=UNCHANGED
 第9.1节的假代理/CLI错误码输出、profile变化时代理零启动、全部触发/结果事务业务链、
 代理应答敏感键拒收分别仍归C2/C3/C4;不能以本轮组件测试冒充这些集成验收。
 Git提交推送仅交付代码与证据,不访问QuickBuild、不启动浏览器、不读取真实凭据。
+
+## 11. C2a能力验证与停止报告(2026-10-10)
+
+### 11.1 范围与权威
+
+开工HEAD为`d1f09cc`,分支`clang-fix-campaign`。冻结稿sha256再次实测为
+`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`,未改动。
+先读本进度与冻结稿§3/§9.2,按“真实输入验证规格可满足性”先查新目标拦截。
+Playwright使用spike已有路径(1.58.2),Chromium为145.0.7632.6。
+PATH未找到独立node;离线探针用VS Code的`ELECTRON_RUN_AS_NODE=1`运行,
+实际Node版本24.21.0。此方式仅用于能力取证,不冒充生产Node启动交付。
+
+### 11.2 P5Q-C2A-01 历史停止报告:已由§12批准裁定替代
+
+- 原文位置:冻结稿:180(§3.1新窗口执行前关闭,不得以创建后关闭替代)、
+  :216(§3.4第三拦截面)、:576(验收第11条)。
+- 方法:先装浏览器级`Target.setAutoAttach`与另一CDP会话的
+  `Target.autoAttachRelated`,均`waitForDebuggerOnStart=true`;两者使用独立会话,
+  避免后者取消前者。测试只用about:blank与内存Blob,代理侧不恢复任何新目标。
+- 最小反例:opener执行`window.open('about:blank')`,继而对返回窗口
+  `document.write`一个把opener布尔标记设为true的脚本。
+- 实测:弹窗事件`waitingForDebugger=true`,但`popupRan=true`;
+  同样设置下Worker标记为false。立即调用`Target.closeTarget`返回success=true,
+  弹窗脚本仍已执行。不能以关闭成功判定“执行前阻断”成功。
+- 证据与完整命令:[C2a/README.md](evidence/C2a/README.md);
+  最小复现:[target_pause_probe.mjs](evidence/C2a/target_pause_probe.mjs)。
+
+| 控制 | 原始输出 | exit | 结论 |
+|---|---|---|---|
+| baseline:不加暂停,验证样本确实能执行 | [baseline](evidence/C2a/target-pause-baseline.log) | 0 | workerRan=true,popupRan=true |
+| hold:启动暂停,不恢复 | [hold](evidence/C2a/target-pause-hold.log) | 1 | workerRan=false,popupRan=true,执行前阻断失败 |
+| close:挂接回调立即关闭,不恢复 | [close](evidence/C2a/target-pause-close.log) | 1 | closeTarget成功但popupRan=true,执行前阻断失败 |
+
+三次`PROFILE_REMOVED=true`;每次页面请求仅`blob:1`,HTTP(S)/WS(S)均零,
+未访问QuickBuild/Gerrit/外部页面,未读凭据、未加载日常profile。
+日志只记录固定标签、布尔值、协议方法结果及运行版本,未开启协议调试输出。
+
+困难:本机栈的Target启动暂停不能保证初始同源弹窗文档不被opener同步执行;
+这是真实反例,不等同于证明所有可能的Chromium实现路径均不可行。
+候选处置:请设计方裁定窗口创建前拒绝的补充机制及防绕过验收;
+不能直接采用事后关闭,也不擅自注入window.open覆写或降低冻结的安全边界。
+本轮停止报告1条,不自行关闭。
+
+### 11.3 尚未交付与验收边界
+
+本轮只新增能力探针/原始日志/说明,更新进度与INDEX。生产源码、既有测试、
+冻结稿、design.md、检查器均零修改;原有无关工作树改动保持原样。
+
+- HTTP逐跳Fetch请求/响应拦截:未实现,不得记PASS。
+- WebSocket:`BrowserContext.routeWebSocket`拒绝路由已在探针安装;
+  未执行WebSocket安全验收,不得记PASS。
+- 新目标:上述两种CDP拦截均实测,弹窗执行前阻断失败。
+- Python驱动/假代理/login_timeout校验/§9.2完整用例:停止后未开始。
+- 正常/异常/SIGTERM清理矩阵、完整pytest/mypy/ruff/lint-imports:
+  本轮未跑,不借用C1的2041/1作为本轮结果。
+- C2a验收未完成,未提交C2a完成commit、未推送;C2b与真实安全子集未开始。
+
+### 11.4 同任务再次下发后的复核(2026-10-10)
+
+本轮先重读§11,核对HEAD仍为`d1f09cc`,冻结稿sha256仍与§11.1完全相同。
+任务再次要求执行前阻断、做不到即停,未包含解除P5Q-C2A-01的设计裁定。
+没有据此自行放宽拦截规则。
+
+按[C2a/README.md](evidence/C2a/README.md)的同一完整命令重跑`close`模式,
+不修改探针,输出另存[target-pause-close-recheck.log](evidence/C2a/target-pause-close-recheck.log),
+不覆盖首次取证。原始结果:exit=1,`waitingForDebugger=true`,
+`closeResults=[{"success":true}]`,`workerRan=false`,`popupRan=true`,
+`EXPECTATION=FAIL`,`PROFILE_REMOVED=true`。
+页面请求仍只有`blob:1`,未访问QuickBuild/Gerrit/外部页面。
+
+P5Q-C2A-01仍OPEN,没有新增停止条目。需要设计方裁定补充的窗口创建前
+拒绝机制及验收口径;生产代码、冻结稿与既有测试仍未改动。
+未运行完整交付验收,未提交/推送,未进入C2b。
+
+## 12. 实施裁定 P5Q-C2A-01(2026-10-10,FatTank已批准)
+
+设计方裁定:冻结稿§3.1/§3.4的新窗口与弹窗执行前阻断改为根本不允许创建。
+冻结稿原字节不改。原因是暂停中的弹窗仍可被opener同步执行脚本,
+暂停后关闭不满足执行前阻断。§11旧探针只保留历史记录,不再复跑或作为验收依据。
+
+1. 主机制:Chromium启动参数加`--block-new-web-contents`。
+2. 纵深:在任何页面脚本之前注入不可再改写的`window.open`,恒返回null,
+   首个导航前装好。
+3. 保留浏览器级自动挂接与Worker类目标启动即暂停;仍出现任何新页面目标,
+   视为机制失效,关闭整个浏览器并以QB_BROWSER_UNAVAILABLE停止。
+4. 附带探针在浏览器级CDP会话启用请求拦截,实测弹窗/Worker请求覆盖;
+   能则加为额外拦截层,不能只记录,不得冒称生效。
+5. 新探针使用本机Chromium和仅绑定loopback的假服务器,以服务器实收清单
+   与新页面目标数为判据:window.open同源页、about:blank同步写脚本fetch、
+   脚本点击target=_blank链接、脚本提交target=_blank表单、Worker与SharedWorker
+   fetch均须无请求且无新页面目标;去掉窗口防护的a/b对照必须能触发请求。
+6. a-e任一失败即汇总新探针逐项结果并停止,不降级为事后关闭。
+   全部通过才继续C2a原任务,不进入C2b。
+
+裁定已收到并按要求在新探针落实,不再请求重复确认。
+
+### 12.1 新探针与实装API
+
+新增`tests/node/p5q_creation_probe.mjs`,仅本机loopback假服务器、合成HTML与Blob。
+完整命令、原始输出、脚本hash和环境见
+[creation-probe-report.md](evidence/C2a/creation-probe-report.md)。
+最终原始日志:[creation-probe-layered.log](evidence/C2a/creation-probe-layered.log),exit=1。
+
+- 主机制:`--block-new-web-contents`,由`Browser.getBrowserCommandLine`证实存在。
+- 纵深:`BrowserContext.addInitScript`首个导航前登记,Object.defineProperty
+  固定window.open恒null、不可写、不可配置;页面中实读描述符。
+- 去掉Playwright默认`--disable-popup-blocking`再测,排除反向参数;
+  实际启动记录为blockNewWebContents=true、disablePopupBlocking=false。
+- 浏览器级`Target.setAutoAttach`与另一个会话`Target.autoAttachRelated`,均启动暂停;
+  browser会话承接SharedWorker,related会话承接Worker,从不恢复。
+- `Target.setDiscoverTargets`观察到新page即`browser.close()`;
+  该处置是失败兜底,不算禁止创建成功。
+- 浏览器级`Fetch.enable`/`Fetch.requestPaused`/`Fetch.failRequest`附带探针
+  证实覆盖弹窗/Worker/SharedWorker目标请求(3/3,服务器均未收到),
+  已作为额外层加入最终保护组;不替代page目标数断言。
+- `BrowserContext.routeWebSocket`拒绝路由已安装,尚无完整WebSocket专项验收。
+
+### 12.2 逐项结果
+
+| 项目 | 目标请求实收 | 新page目标 | 结果 |
+|---|---:|---:|---|
+| a:window.open同源页面 | 0 | 0 | PASS |
+| b:about:blank后同步写入fetch脚本 | 0 | 0 | PASS |
+| c:脚本click target=_blank链接 | 0 | 1 | FAIL,关闭整个浏览器 |
+| d:脚本submit target=_blank表单(GET) | 0 | 1 | FAIL,关闭整个浏览器 |
+| e:Worker fetch | 0 | 0 | PASS |
+| e:SharedWorker fetch | 0 | 0 | PASS |
+| f-a:无防护观察对照 | 1 | 1 | PASS,确实收到/probe/a |
+| f-b:无防护观察对照 | 1 | 1 | PASS,确实收到/probe/b |
+
+总计8项,6通过/2失败。正常fixture/favicon请求不冒称为0,逐条列于原始日志。
+附带Fetch探针3种来源均拦到且服务器未收到;仅请求阶段的已测事实,
+不声称307/308响应或全部重定向已验证。测试过程全部临时profile已删除。
+
+### 12.3 P5Q-C2A-02 历史停止报告:已由§13批准裁定替代
+
+这不是§11旧探针复跑:当前无window.open调用的两条原生路径c/d仍新建page目标,
+即使block参数存在、window.open不可改写,且已排除反向默认参数。
+按裁定a-e任一失败即停,停止后续生产实现。新目标触发关闭整个浏览器,
+但“请求没到服务器”不能替代“没有创建新page”,故不降级放行。
+
+此前未加入浏览器级Fetch时,SharedWorker还曾有一次请求先到达服务器,
+见`creation-probe-no-default-disable.log`;保留该失败,不抹掉竞态迹象。
+按裁定加入已实测有效的额外Fetch层后,最终e项通过,c/d仍失败。
+
+已批准的P5Q-C2A-01裁定登记完毕;本轮新的停止条目1条(P5Q-C2A-02)。
+冻结稿/design.md/生产代码/既有测试未改,旧探针未复跑。
+JS语法检查exit0,完整pytest/mypy/ruff/lint-imports尚未运行,
+代理/驱动/假代理未实现,未提交/推送C2a完成commit,未进入C2b。
+
+## 13. 实施裁定 P5Q-C2A-02(2026-10-12,FatTank已批准)
+
+本节记录设计方提示词裁定,不修改冻结稿。威胁模型为“任何未经判定的请求
+到达QuickBuild”,不是“浏览器内是否出现新页面目标”。§12的停止条目按本裁定关闭,
+旧实跑原文保留,不作为本轮通过的证据。
+
+1. 浏览器级CDP会话上的`Fetch.enable`/`Fetch.requestPaused`/`Fetch.failRequest`
+   升为必需主拦截层,首个导航前装好,覆盖所有目标。请求逐跳判定与响应307/308
+   终止均在此层。frameId不属于当前工作页帧树或无法归属时一律拒绝。
+   页面级拦截只可作第二层。
+2. 保留`--block-new-web-contents`、不可改写的window.open恒null、上下文级
+   WebSocket拒绝、Worker类目标启动即暂停。任何新page仍关闭整个浏览器,
+   以QB_BROWSER_UNAVAILABLE停止,不允许继续运行。
+3. c/d改为三项同时成立:服务器实收请求0(含新页文档);新页脚本请求0;
+   检测新page后关闭浏览器并报QB_BROWSER_UNAVAILABLE。不再要求新page数0。
+4. 新增g:同源blob页面通过_blank链接打开,脚本尝试fetch/ws/wss;
+   服务器HTTP0、WebSocket握手0,随后关闭浏览器。新增h:rel=opener的_blank
+   链接点击后,opener经window.open('', name)或其它路径尝试取得引用并写脚本;
+   须取不到引用且服务器实收0。任一不满足即停止,不得降级。
+5. a/b/e/f标准不变,与c/d/g/h一并重跑归档。全部通过才继续C2a原任务,
+   不进入C2b。所有探针使用本地假服务器与合成数据,零外网。
+
+本轮首先实施帧归属与a-h新探针;结果与完整命令随后登记,不预记PASS。
+
+### 13.1 实跑结果与停止报告: h引用结果未取得
+
+完整命令、逐项结果与原始日志hash见
+[request-boundary-report.md](evidence/C2a/request-boundary-report.md)。
+新探针为`tests/node/p5q_request_boundary_probe.mjs`。
+
+- a/b均恒null、服务器0、新page0;Worker/SharedWorker均服务器0、新page0。
+- c/d/g均服务器HTTP0与WS握手0、新page1、浏览器关闭并标记QB_BROWSER_UNAVAILABLE,
+  按新判据通过;不再沿用旧的“新page必须0”。
+- 无防护f-a/f-b实际收到攻击请求;另加无防护g,HTTP1、ws/wss握手各1。
+- h保护组:服务器0、新page1、已关闭;但`FIXTURE_INTERRUPTED`且
+  `referenceAttempts=[]`,未取得window.open/命名查找/frames的引用尝试结果。
+  改为普通同源h页面后仍相同;无防护对照经message.source取得引用并产生HTTP请求。
+  这是取证不足,不是已证明保护组获得引用或发生请求逃逸。不能将零请求直接
+  代替“取不到引用”的独立断言,也未为取证推迟立即关闭。
+- a-h集合exit1:10/11通过(含附加g对照);h补充对照exit1:1/2通过。
+  JS语法检查exit0;临时profile与证书均已删除。
+
+停止条目1项(h取证),不重复请求确认P5Q-C2A-02。候选后续取证方向:
+设计方确认能同时保留立即关闭与证明引用不可取得的观察口径,
+或补充不依赖关闭后页面回传的独立观察方式;本轮不自行把h改为仅验网络计数。
+此处不声称现有实现无法做到请求安全,只报告本次证明未闭合。
+
+浏览器级Fetch请求/响应层、Page事件帧集合、上下文WebSocket拒绝与新目标暂停/关闭
+均已落实到探针,尚非生产代理交付。完整pytest/mypy/ruff/lint-imports尚未跑;
+冻结稿、design.md、生产代码及既有测试未改,未进入C2b。
+
+## 14. 实施裁定 P5Q-C2A-03(2026-10-12,FatTank已批准)
+
+冻结稿原字节不改。威胁模型为“任何未经判定的请求到达QuickBuild”。
+§13.1的h停点由本裁定关闭,“取不到引用”的要求作废,不再请求确认。
+
+1. 仅探针诊断模式关闭“发现新page立即关闭浏览器”;其它保护全部保留:
+   block-new-web-contents、window.open不可改写恒null、浏览器级Fetch与帧归属、
+   上下文routeWebSocket、Worker启动暂停。
+2. h1为rel=opener的_blank链接打开同源blob页面,该页postMessage给opener,
+   后者经message.source取得引用。h2在10秒内反复经引用发起fetch、XHR、
+   表单提交、location导航、ws/wss。所有目标均为本地假服务器。
+   服务器HTTP0与WS握手0为判据;引用及每次尝试结果只作记录,
+   页面console经Runtime.consoleAPICalled实时归档,不依赖关闭后的回传。
+3. 正常模式开启全部保护,同场景必须关闭浏览器并报QB_BROWSER_UNAVAILABLE,
+   服务器实收0。诊断开关仅限探针入口,Python驱动与生产CLI不得传入,须有静态断言。
+4. 对照组在诊断模式下再去掉浏览器级Fetch,必须实际收到h2请求。
+   a-g既有结果保留,本轮不重复运行。h通过后继续完整C2a;否则逐项报告并停止,
+   不降级,不进入C2b。
+
+本节裁定先于实现登记。下列结果均来自本次实跑,不以历史结果替代。
+
+### 14.1 h最终验收
+
+完整命令、测试对应与边界见[completion.md](evidence/C2a/completion.md),
+原始实时console转录及服务器请求清单见[h-final.log](evidence/C2a/h-final.log)。
+
+| 模式 | HTTP(整个h窗口) | WS握手 | 引用记录 | console记录 | 判定 |
+|---|---:|---:|---:|---:|---|
+| 诊断:仅关闭新page立即关闭机制 | 0 | 0 | 20 | 221 | PASS |
+| 正常:全部保护 | 0 | 0 | 0 | 1 | PASS;关闭浏览器,QB_BROWSER_UNAVAILABLE |
+| 诊断去Fetch对照 | 80 | 0 | 20 | 221 | PASS;确有HTTP到服务器 |
+
+exit=0,3/3。诊断/对照各在10秒窗口尝试fetch、fetch-eval、XHR、表单、location、
+ws/wss各20次。引用确实取得,不作拒绝条件;INVOKED是尝试,不冒称请求已到达。
+保护组fetch后续转录REJECTED;正常组在取得引用回报前关闭,只见launch。
+最终夹具图标改为内联,HTTP断言包含窗口内全部路径,没有排除favicon凑零。
+所有临时profile与证书均已删。a-g按裁定保留§13通过结果,未重跑。
+
+探针直接调用生产installGuards;诊断开关仅测试入口传入。
+两个主拦截条件为浏览器级Fetch逐跳判定与当前工作页frameId集合归属;
+Page.getFrameTree初始化,Page.frameAttached/Detached/Navigated维护,无归属即拒绝。
+WebSocket由context.routeWebSocket拒绝;Worker由Target.setAutoAttach/
+autoAttachRelated启动暂停后关闭。block-new-web-contents与不可改写window.open保留;
+新page正常模式触发全浏览器关闭。API清单见completion表。
+
+### 14.2 实现与测试范围
+
+- 新增正式qb_browser_agent.mjs、qb_browser.py;qb_config补正整数超时校验。
+- 新增Python假代理,记录逐条命令;驱动参数列表固定、不经shell,嵌套凭据键拒收,
+  HTML再自检。已登录后的read可在提交后执行;导航离开表单使旧表单不可再提交。
+- Node离线单元53项;真实DOM脱敏与307/308/302测试2项;正常/异常/SIGTERM清理3项;
+  h三组3项。Python协议31项、配置59项(其中9项新增),Node包装6个pytest用例(含h)。
+- 包含第9.2节全部组:永久禁止/各阶段/逐字段/阶段机/适配器/清理/静态断言。
+  不将Node内部用例重复加进pytest总数;本机无Node/PW跳过。
+- 实现细节登记:login协议负载附配置超时与启用工程的id/path/name,无凭据;
+  pyproject仅加.mjs包数据,确保安装后驱动邻接的代理文件存在;无新Python依赖。
+  测试使用VSCode内置Node,不替换生产配置的Node路径。
+
+### 14.3 验收与挂账
+
+| 命令 | exit | 输出/证据 |
+|---|---:|---|
+| .venv/bin/python -m pytest -q | 0 | 2087 passed,1 skipped;[pytest-final.log](evidence/C2a/pytest-final.log) |
+| .venv/bin/pytest -q -s tests/unit/test_qb_browser_node.py tests/unit/test_qb_browser.py tests/unit/test_qb_config.py | 0 | 96 passed;[offline-final.log](evidence/C2a/offline-final.log) |
+| .venv/bin/mypy | 0 | 113 source files;[mypy.log](evidence/C2a/mypy.log) |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;[lint-imports.log](evidence/C2a/lint-imports.log) |
+| check_design_doc.py design.md | 0 | 0 problem;[design-check.log](evidence/C2a/design-check.log) |
+| ruff check .(干净暂存树导出) | 0 | All checks passed;[ruff-clean-tree.log](evidence/C2a/ruff-clean-tree.log) |
+
+基线2041/1增加46个pytest用例。主工作树ruff扫到4个无关未跟踪历史脚本的53个错误;
+不改这些草稿、不放宽配置,对完整待交付树导出重跑通过。无关.gitignore/文档删除保留。
+冻结稿SHA256仍为0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950,
+design.md/检查器/P2-P5未改。C2a本轮停止报告0项。
+
+继续挂账:第9.3节完整假QuickBuild页面流程及指定HTTPS夹具的安全子集,
+C2b真机只读/联动、附录C实测、后续C3-C6。已有loopback探针不冒充真实站点取证。
+按本轮停点,不登录、不进入C2b、不触发构建;完成后等待下一任务。

@@ -51,6 +51,7 @@ include = [
 
 [tool.setuptools.package-data]
 gbs_analyzer = ["patterns/*.yaml", "patterns/*.json", "patterns/*.md"]
+ci_triage = ["*.mjs"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

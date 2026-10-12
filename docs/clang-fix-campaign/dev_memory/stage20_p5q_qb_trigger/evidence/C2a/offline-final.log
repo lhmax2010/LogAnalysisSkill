@@ -1,0 +1,80 @@
+✔ permanent deny external download (4.867755ms)
+✔ permanent deny http (0.08613ms)
+✔ permanent deny websocket (0.064206ms)
+✔ permanent deny rest (0.068514ms)
+✔ permanent deny log (0.247684ms)
+✔ permanent deny html report (0.096388ms)
+✔ permanent deny artifact (0.0528ms)
+✔ permanent deny promote (0.04773ms)
+✔ permanent deny cancel (0.084922ms)
+✔ permanent deny stop (0.116813ms)
+✔ permanent deny rerun (0.047951ms)
+✔ permanent deny delete (0.040953ms)
+✔ permanent deny abort (0.040838ms)
+✔ permanent deny form cancel (0.05877ms)
+✔ permanent deny 307 (0.054101ms)
+✔ permanent deny 308 (0.035159ms)
+✔ allow idle GET /styles/main.css?v=7 (0.195236ms)
+✔ allow login GET /signin (0.038849ms)
+✔ allow login POST /signin?12-1.IFormSubmitListener-form (0.055054ms)
+✔ allow login GET / (0.068103ms)
+✔ allow login GET /overview/0 (0.027578ms)
+✔ allow read GET /build/1 (0.05496ms)
+✔ allow read GET /build/1/overview (0.036745ms)
+✔ allow read GET /build/1/variables (0.024654ms)
+✔ allow read GET /build/1/step_status (0.023056ms)
+✔ allow read GET /overview/1921 (0.033139ms)
+✔ allow open_form GET /wicket/page?50 (0.028356ms)
+✔ allow fill GET /wicket/page?50-3 (0.031899ms)
+✔ unregistered denied /build/1?x=1 (0.043471ms)
+✔ unregistered denied /overview/1922 (0.044951ms)
+✔ unregistered denied /styles/x?Listener=x (0.025647ms)
+✔ unregistered denied /styles/x?v=a (0.709257ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-dragDrop (0.037168ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-loadPopup (0.021342ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-unloadPopup (0.019595ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-quicksearch (0.018437ms)
+✔ stage-specific navigation never escapes phase (0.1178ms)
+✔ exact run and exact refresh registrations, no prefix acceptance (0.074693ms)
+✔ one callback per field, old version and other field denied (0.076138ms)
+✔ stop in value not listener component is allowed (0.030569ms)
+✔ callback shape fails closed (0.42675ms)
+✔ two form instances each have exactly one release, response does not consume it (0.112089ms)
+✔ 302 next hop is judged independently and 307/308 preserve released (0.059971ms)
+✔ protocol adapter forwards only metadata even when request contains credentials (0.344653ms)
+✔ frame ownership is closed and descendants revoked on detach/navigation (0.128337ms)
+✔ form exact label/role closure and project identity (0.586749ms)
+✔ readback records text/checkbox/select/palette and validates recorder (0.585843ms)
+✔ failed fill and fingerprint mismatch invalidate form until new open (0.40813ms)
+✔ read checks exact URL and build id and returns actual HTTP status (0.277855ms)
+✔ source guards: no HTTP client, credential extraction, debug switch, or login interactions (0.444965ms)
+✔ every command outside its permitted phase rejects before any method call (0.203939ms)
+✔ read remains available after submit but navigation invalidates the old form (0.092934ms)
+✔ fill reads current callbacks and freezes selected snapshot without setting it (1.136484ms)
+ℹ tests 53
+ℹ suites 0
+ℹ pass 53
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 75.497493
+
+.✔ real browser DOM redaction with identities, hidden values, URL and recorder (520.041841ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/favicon.ico","/build/301"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (838.106985ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1360.59703
+
+.{"summary": 3, "passed": 3, "failed": 0, "networkScope": "synthetic-loopback-only"}
+.{"mode": "normal", "removed": true}
+.{"mode": "exception", "removed": true}
+.{"mode": "signal", "removed": true}
+...........................................................................................
+96 passed in 25.67s

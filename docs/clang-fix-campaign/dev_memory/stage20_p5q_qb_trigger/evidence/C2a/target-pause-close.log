@@ -1,0 +1,4 @@
+{"node":"24.21.0","chromium":"145.0.7632.6","mode":"close"}
+{"phase":"secondary_held","mode":"close","workerRan":false,"popupRan":true,"requestSchemes":{"blob:":1},"closeResults":[{"success":true}],"events":[{"channel":"browser","type":"page","isPopup":false,"waitingForDebugger":false},{"channel":"related","type":"page","waitingForDebugger":false},{"channel":"browser","type":"page","isPopup":true,"waitingForDebugger":true},{"channel":"related","type":"worker","waitingForDebugger":true}]}
+EXPECTATION=FAIL
+PROFILE_REMOVED=true

@@ -144,6 +144,20 @@ def test_rule6_requires_boolean(config, value):
         parse_qb_config(config)
 
 
+@pytest.mark.parametrize("value", [0, -1, 1.5, "600", None, True, False])
+def test_browser_login_timeout_requires_positive_integer(config, value):
+    config["browser"]["login_timeout_seconds"] = value
+    with pytest.raises(QbConfigError) as error:
+        parse_qb_config(config)
+    assert error.value.code == "INVALID_ARGS"
+
+
+@pytest.mark.parametrize("value", [1, 600])
+def test_browser_login_timeout_positive(config, value):
+    config["browser"]["login_timeout_seconds"] = value
+    assert parse_qb_config(config)["browser"]["login_timeout_seconds"] == value
+
+
 @pytest.mark.parametrize("branch", ["tizen", "missing"])
 def test_project_not_ready(config, branch):
     with pytest.raises(QbProjectNotReady) as error:
