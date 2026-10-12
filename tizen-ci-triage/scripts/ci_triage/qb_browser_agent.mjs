@@ -52,6 +52,14 @@ export class Policy {
     this.lastActivity = Date.now();
     this.active = new Set();
     this.fieldFinished = false;
+    this.loginPostCount = 0;
+    this.loginPostsClosed = false;
+    this.loginPostRequests = new Set();
+  }
+  get phase() { return this._phase; }
+  set phase(value) {
+    if (this._phase === 'login' && value !== 'login') this.loginPostsClosed = true;
+    this._phase = value;
   }
   readonly(path) {
     return /^\/build\/\d+(?:\/(overview|variables|step_status))?$/.test(path)
@@ -69,6 +77,9 @@ export class Policy {
   invalidate() { this.runUrl = null; this.submitUrl = null; this.endField(); }
   allow(m, requestId = '') {
     const url = `${m.protocol}//${m.host}${m.path}${m.query ? `?${m.query}` : ''}`;
+    // Close both login channels even when the redirect itself is denied (307/308).
+    if (this.loginPostRequests.has(requestId)
+      && m.response_status >= 300 && m.response_status < 400) this.loginPostsClosed = true;
     if (m.protocol !== 'https:' || m.host !== 'quickbuild.tizen.org'
       || m.resource_type === 'WebSocket' || m.path.startsWith('/rest/')
       || DESTRUCTIVE.test(m.query) || /ILinkListener-form-cancel/i.test(m.query)
@@ -78,10 +89,16 @@ export class Policy {
     if (m.response_status !== null) return this.active.has(requestId);
     if (m.method === 'GET' && STATIC.some((path) => m.path.startsWith(path))
       && (!m.query || /^v=\d+$/.test(m.query)) && !/Listener/i.test(m.query)) return true;
-    if (this.phase === 'login') return (
-      m.method === 'GET' && ['/signin', '/', '/overview/0'].includes(m.path) && !m.query
-      || m.method === 'POST' && m.path === '/signin'
-      && /^\d+-\d*\.?IFormSubmitListener-[A-Za-z0-9:_-]+$/.test(m.query));
+    if (this.phase === 'login') {
+      if (m.method === 'GET' && ['/signin', '/', '/overview/0'].includes(m.path) && !m.query) return true;
+      if (this.loginPostsClosed || m.method !== 'POST'
+        || !['/signin', '/wicket/page'].includes(m.path)
+        || m.query.match(/^\d+-\d+\.IFormSubmitListener-content-form$/)?.[0] !== m.query) return false;
+      this.loginPostRequests.add(requestId);
+      this.loginPostCount += 1;
+      if (this.loginPostCount >= 5) this.loginPostsClosed = true;
+      return true;
+    }
     if (this.refresh.has(url) && m.method === 'GET') return true;
     if (['read', 'open_form', 'fill'].includes(this.phase)
       && m.method === 'GET' && this.readonly(m.path) && !m.query) return true;
@@ -195,7 +212,7 @@ export async function installGuards(browser, context, page, policy, onStop, trac
 export function pathShape(path) {
   if (/^\/build\/\d+(?:\/(overview|variables|step_status))?$/.test(path)) return path.replace(/\d+/, '<id>');
   if (/^\/overview\/\d+$/.test(path)) return '/overview/<id>';
-  if (path === '/wicket/page' || path === '/signin') return path;
+  if (path === '/' || path === '/wicket/page' || path === '/signin') return path;
   return '<other>';
 }
 

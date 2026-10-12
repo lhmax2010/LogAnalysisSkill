@@ -141,6 +141,29 @@ def test_c2b_evidence_entry_is_not_a_submit_or_launch_override_path() -> None:
 
 
 @pytest.mark.integration
+def test_node_login_retry_and_five_attempt_limit() -> None:
+    command, env = node_command()
+    paths = browser_paths()
+    if not shutil.which("openssl"):
+        pytest.skip("openssl unavailable for synthetic login-retry TLS certificate")
+    result = subprocess.run(
+        [*command, str(ROOT / "tests/node/p5q_login_retry.mjs"), *paths],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    rows = [json.loads(line) for line in result.stdout.splitlines()]
+    assert {row["scenario"] for row in rows if "scenario" in row} == {
+        "retry-success", "five-failure-limit"
+    }
+    summary = next(row for row in rows if "summary" in row)
+    assert summary["passed"] == summary["expected"] == 2
+    print(result.stdout)
+
+
+@pytest.mark.integration
 @pytest.mark.parametrize("mode", ["normal", "exception", "signal"])
 def test_node_profile_cleanup(mode: str) -> None:
     command, env = node_command()

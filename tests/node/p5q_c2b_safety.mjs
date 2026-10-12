@@ -28,7 +28,7 @@ const redirectMap = new Map([
   ['/build/302', [302, '/build/999']], ['/build/301', [302, '/rest/trigger']],
   ['/build/303', [302, '/wicket/page?1-1.ILinkListener-content-buildHead-promote']],
   ['/build/304', [302, 'https://download.tizen.org/build/999']],
-  ['/signin?7-1.IFormSubmitListener-first', [307, '/signin?7-1.IFormSubmitListener-second']],
+  ['/signin?7-1.IFormSubmitListener-content-form', [307, '/wicket/page?8-1.IFormSubmitListener-content-form']],
 ]);
 const minimal = '<!doctype html><link rel="icon" href="data:,"><title>LOCAL C2b safety fixture</title>';
 const reply = async (request, response) => {
@@ -46,9 +46,9 @@ const reply = async (request, response) => {
   response.setHeader('Content-Type', 'text/html; charset=utf-8');
   if (url === '/signin' && request.method === 'GET') {
     response.setHeader('Set-Cookie', `JSESSIONID_8810=${synthetic.cookie}; Path=/; Secure; HttpOnly`);
-    response.end(`${minimal}<form method="POST" action="/signin?1-1.IFormSubmitListener-form">
+    response.end(`${minimal}<form method="POST" action="/signin?1-1.IFormSubmitListener-content-form">
       <input name="password" type="password"><button>Local Sign In</button></form>`);
-  } else if (url === '/signin?1-1.IFormSubmitListener-form') {
+  } else if (url === '/signin?1-1.IFormSubmitListener-content-form') {
     response.writeHead(302, { Location: '/overview/0' }); response.end();
   } else if (url === '/overview/0') {
     response.end(`${minimal}<a href="/unused">Sign Out</a>`);
@@ -194,8 +194,8 @@ try {
         runtime.policy.phase = 'login';
         await runtime.page.goto(ORIGIN + '/signin');
         const start = received.length;
-        await runtime.page.evaluate(() => fetch('/signin?7-1.IFormSubmitListener-first', { method: 'POST', body: 'synthetic' }).catch(() => {}));
-        assert.deepEqual(received.slice(start).map(row => [row.method, row.path]), [['POST', '/signin?7-1.IFormSubmitListener-first']], '307 replay POST reached server');
+        await runtime.page.evaluate(() => fetch('/signin?7-1.IFormSubmitListener-content-form', { method: 'POST', body: 'synthetic' }).catch(() => {}));
+        assert.deepEqual(received.slice(start).map(row => [row.method, row.path]), [['POST', '/signin?7-1.IFormSubmitListener-content-form']], '307 replay POST reached server');
         return { forbiddenSecondHops: 0, postReplay: 0 };
       });
       if (!hops) process.exitCode = 1;

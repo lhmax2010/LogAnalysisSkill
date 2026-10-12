@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { Agent, AgentError, Policy, FrameOwnership, adaptProtocol, ORIGIN, FIELDS,
-  canonical, fingerprint, callbackURL, readback, validateForm } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+  canonical, fingerprint, callbackURL, readback, validateForm, pathShape } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
 function meta(path, method = 'GET', extra = {}) {
   return { ...adaptProtocol({ requestId: 'r', frameId: 'main', resourceType: 'Document',
@@ -32,13 +32,99 @@ for (const [name, path, extra] of [
 
 for (const [phase, path, method] of [
   ['idle', '/styles/main.css?v=7', 'GET'], ['login', '/signin', 'GET'],
-  ['login', '/signin?12-1.IFormSubmitListener-form', 'POST'],
+  ['login', '/signin?12-1.IFormSubmitListener-content-form', 'POST'],
   ['login', '/', 'GET'], ['login', '/overview/0', 'GET'],
   ['read', '/build/1', 'GET'], ['read', '/build/1/overview', 'GET'],
   ['read', '/build/1/variables', 'GET'], ['read', '/build/1/step_status', 'GET'],
   ['read', '/overview/1921', 'GET'], ['open_form', '/wicket/page?50', 'GET'],
   ['fill', '/wicket/page?50-3', 'GET'],
 ]) test(`allow ${phase} ${method} ${path}`, () => assert.equal(policy(phase).allow(meta(path, method)), true));
+
+for (const path of ['/signin', '/wicket/page']) {
+  test(`login channel exact positive ${path}`, () => {
+    assert.equal(policy('login').allow(meta(`${path}?0-1.IFormSubmitListener-content-form`, 'POST'), 'login'), true);
+  });
+  for (const query of ['0-1.IFormSubmitListener-form', '0-1.IFormSubmitListener-content-formx',
+    '0-1.IFormSubmitListener-content-form&x=1', '0-.IFormSubmitListener-content-form',
+    '0-1IFormSubmitListener-content-form', '0-1.IFormSubmitListener-content-form\n']) {
+    test(`login channel query rejected ${path} ${JSON.stringify(query)}`, () => {
+      // Pass the metadata query directly so URL parsing cannot strip the newline.
+      assert.equal(policy('login').allow(meta(path, 'POST', { query }), 'login'), false);
+    });
+  }
+  test(`login submission GET rejected ${path}`, () => {
+    assert.equal(policy('login').allow(meta(`${path}?0-1.IFormSubmitListener-content-form`)), false);
+  });
+  for (const phase of ['read', 'open_form', 'fill', 'submit', 'idle']) {
+    test(`login submission rejected in ${phase} ${path}`, () => {
+      assert.equal(policy(phase).allow(meta(`${path}?0-1.IFormSubmitListener-content-form`, 'POST')), false);
+    });
+  }
+}
+test('other login submission paths rejected', () => {
+  for (const path of ['/', '/signin/extra', '/wicket/page/extra', '/build/1']) {
+    assert.equal(policy('login').allow(meta(`${path}?0-1.IFormSubmitListener-content-form`, 'POST')), false);
+  }
+});
+for (const status of [300, 301, 302, 303, 304, 307, 308, 399]) {
+  test(`login ${status} closes both channels, preserving redirect GET rules`, () => {
+    const p = policy('login');
+    const post = meta('/signin?0-1.IFormSubmitListener-content-form', 'POST');
+    assert.equal(p.allow(post, 'login'), true); p.active.add('login');
+    assert.equal(p.allow({ ...post, response_status: status }, 'login'), ![307, 308].includes(status));
+    assert.equal(p.loginPostsClosed, true);
+    for (const path of ['/signin', '/wicket/page']) {
+      assert.equal(p.allow(meta(`${path}?1-1.IFormSubmitListener-content-form`, 'POST'), 'retry'), false);
+    }
+    assert.equal(p.allow(meta('/')), true);
+    assert.equal(p.allow(meta('/unregistered-landing')), false);
+    assert.equal(p.allow(meta('/?1')), false);
+    p.phase = 'idle'; p.phase = 'login';
+    assert.equal(p.allow(post, 'again'), false);
+  });
+}
+test('five request-stage login releases close permanently; responses do not count', () => {
+  const p = policy('login');
+  for (let attempt = 1; attempt <= 5; attempt++) {
+    const id = `login-${attempt}`;
+    const post = meta(`${attempt % 2 ? '/signin' : '/wicket/page'}?${attempt}-1.IFormSubmitListener-content-form`, 'POST');
+    assert.equal(p.allow(post, id), true); p.active.add(id);
+    assert.equal(p.loginPostCount, attempt);
+    assert.equal(p.allow({ ...post, response_status: 200 }, id), true);
+    p.active.delete(id);
+    assert.equal(p.loginPostCount, attempt);
+    assert.equal(p.loginPostsClosed, attempt === 5);
+  }
+  for (const path of ['/signin', '/wicket/page']) {
+    assert.equal(p.allow(meta(`${path}?6-1.IFormSubmitListener-content-form`, 'POST'), 'six'), false);
+  }
+  p.phase = 'idle'; p.phase = 'login';
+  assert.equal(p.allow(meta('/signin?7-1.IFormSubmitListener-content-form', 'POST')), false);
+  assert.equal(p.loginPostCount, 5);
+});
+test('leaving login permanently closes channels even after HTTP200', () => {
+  const p = policy('login');
+  const post = meta('/signin?0-1.IFormSubmitListener-content-form', 'POST');
+  assert.equal(p.allow(post, 'login'), true); p.active.add('login');
+  assert.equal(p.allow({ ...post, response_status: 200 }, 'login'), true);
+  assert.equal(p.loginPostsClosed, false);
+  p.phase = 'idle'; p.phase = 'login';
+  assert.equal(p.allow(post, 'retry'), false);
+});
+test('rejected requests and unrelated responses do not consume the login allowance', () => {
+  const p = policy('login');
+  for (let i = 0; i < 6; i++) assert.equal(p.allow(meta('/signin?1-1.IFormSubmitListener-form', 'POST')), false);
+  assert.equal(p.allow(meta('/overview/0', 'GET', { response_status: 302 }), 'other'), false);
+  assert.equal(p.loginPostCount, 0); assert.equal(p.loginPostsClosed, false);
+});
+test('root path shape and static restrictions remain explicit', () => {
+  assert.equal(pathShape('/'), '/');
+  for (const path of ['/ckeditor/ckeditor.js?v=1701391813000',
+    '/images/fonts/bootstrap-icons.woff2?8d200481aa7f02a2d63a331fc782cfaf',
+    '/images/fonts/bootstrap-icons.woff?8d200481aa7f02a2d63a331fc782cfaf']) {
+    assert.equal(policy('login').allow(meta(path)), false);
+  }
+});
 
 for (const path of ['/build/1?x=1', '/overview/1922', '/styles/x?Listener=x', '/styles/x?v=a',
   '/wicket/page?1-1.IBehaviorListener-dragDrop', '/wicket/page?1-1.IBehaviorListener-loadPopup',

@@ -1,9 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2b STOPPED_LOGIN_SCOPE**。
-当前轮基线6ead9a4;P5Q-C2B-02补充见§18.5。§17四组安全前置通过的历史记录保留。
-live-02b捕获/signin登录POST=200,没有302;后续/wicket/page登录POST被拒,
-超出本轮GET落点登记范围。600秒后QB_LOGIN_TIMEOUT;未登记规则或启动live-03。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2B-03_STEP1_COMPLETE;AWAITING_LOGIN_START**。
+当前轮基线1e3cf4b;P5Q-C2B-03裁定及实施见§19。§18.5保留live-02b历史停点。
+本轮只实现并离线验证登录重试通道;第一步验收/推送后等聊天“开始”才启动live-02c。
+尚未启动live-02c/live-03,C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
 是既有无关改动,不处理、不纳入本次交付;其余历史草稿也不纳入。
@@ -29,7 +29,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;C2b STOPPED_DIAGNOSTIC_LOGIN:§18诊断超时,未观测登录POST/落点;第二步登记和第三步取证NOT_RUN |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§19 C2B-03第一步全绿,等待聊天启动确认;live-02c/live-03尚未启动,C3不启动 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -1066,3 +1066,109 @@ Ruff导出树`5929bf3a589e5034d320cb4ba44982deb33b0cd8`,目录
 不处理工作区无关历史草稿。此后只追加本节与验收日志,代码未变。
 本轮提交范围:spike脱敏例外、自测、progress/INDEX/附录C与新证据。
 第二、三步NOT_RUN;保持STOPPED_LOGIN_SCOPE,等待设计方核对,不自动重试或进入C3。
+
+## 19. 实施裁定 P5Q-C2B-03
+
+设计方出具,FatTank已批准,立即执行。冻结稿不改。裁定原文如下:
+
+【裁定原文】
+原因:live-02b 中,人工第一次登录 POST /signin?0-1.IFormSubmitListener-content-form 返回 200(停在登录页,不是 302);人工第二次提交时,Wicket 已把登录页变成带页号的页面,表单发往 POST /wicket/page?1-1.IFormSubmitListener-content-form,被登录阶段规则拒绝,浏览器进入错误页,最终超时。冻结稿 §3.4 只按"一次登录成功"设计,没有覆盖输错后重试,这是设计缺口;实现按冻结规则拒绝,是正确的。
+偏离冻结稿两处,仅限登录阶段:(1) 新增 POST /wicket/page 作为登录重试提交路径;(2) 原 POST /signin 的查询从宽松的任意监听器名,收紧为只认登录表单 content-form。
+
+【第一步 生产改动:只改登录分支,单独提交】
+1. 登录阶段的人工登录提交只允许以下两条,查询都必须完全匹配 ^\d+-\d+\.IFormSubmitListener-content-form$:
+   - POST /signin
+   - POST /wicket/page
+   其它监听器名(包括运行表单的 -form)、其它路径、GET 方式一律拒绝。
+2. 通道关闭条件(Policy 内状态,只增不减):
+   - 登录阶段任一登录 POST 的响应为 3xx 时,两条登录提交通道立即永久关闭;其后的跳转 GET 仍按既有落点规则判定。
+   - 请求阶段累计放行 5 次登录 POST 后关闭,第 6 次拒绝。
+   - 离开登录阶段后,两条通道不可用。
+   登录 POST 响应 200 时不推断认证结果,login 继续按三条件轮询。
+3. pathShape 增加 /,原样显示。其它放行规则、静态资源规则、落点规则一律不变;ckeditor 与 bootstrap-icons 字体继续保持拒绝。
+4. 源码静态断言不变:login 实现不点击、不输入、不提交。
+5. 单元测试:
+   - 正例:两条路径各一。
+   - 反例:-form 监听器、多余后缀、GET、其它路径、3xx 响应之后再提交、第 6 次提交、read/open_form/fill/submit/idle 阶段各一。
+   - 冻结稿 §9.3 的"未登记落点被拦截"和"人工点击前无 /signin POST"继续通过。
+6. 本机集成测试(假登录服务器,测试脚本模拟人工点击,代理不点):
+   - 第一次 POST /signin 返回 200,重新渲染的登录页表单 action 为 /wicket/page?1-1.IFormSubmitListener-content-form;
+   - 第二次 POST 放行,服务器返回 302 到 /,三条件成立,login 成功;
+   - 之后再 POST /wicket/page?2-1.IFormSubmitListener-content-form 被拒,服务器实收为零。
+   另加一例:连续 6 次失败提交,服务器只收到 5 次。
+7. 全量验收:pytest、mypy、ruff(完整待提交树)、lint-imports、check_design_doc;Node 四组本机安全测试从头跑满 4/4。全绿后提交并推送,再进入第二步。
+
+【第二步 重跑诊断:输出 live-02c】
+沿用 P5Q-C2B-02 第一步及其补充的全部要求(诊断记录、脱敏、自动结束、聊天里等 FatTank 回复"开始"、600 秒时限)。live-01、live-02、live-02b 原样保留。在聊天提示里加一句:"若登录页提示失败,可直接在窗口里重新输入再登录。"
+- 拿到 3xx 之后的落点链,就严格按 P5Q-C2B-02 第二步的批准范围判断:在范围内就登记,提交并推送,四组安全测试再跑 4/4,然后进入第三步;超出范围就停止报告。
+- 5 次登录提交都没有出现 3xx,或者没有登录 POST,停止报告,不再重试。
+
+【第三步 完整 C2b 真机:输出 live-03】
+与 P5Q-C2B-02 第三步及其补充第 6 条完全相同,同样先在聊天里等 FatTank 回复"开始"。本裁定内人工登录最多两次(live-02c 一次,live-03 一次)。
+
+【汇报】
+各步提交号;登录重试通道的测试结果;四组安全测试结果;live-02c 的完整 Document 链(脱敏后,含每次登录 POST 的响应码);是否在批准范围内;登记了哪些项;三条件结果;各页面是否取得;表单联动结果;release 次数;验收结果。完成或停止后都不进入 C3。
+
+### 19.1 第一步实现
+
+Policy新增只增不减的loginPostCount、loginPostsClosed与已放行登录请求ID集合;
+只按请求阶段计数。响应阶段按该集合关闭通道,包括随后仍被既有规则拒绝的307/308。
+第5次的正常响应仍由既有active集合放行,不把响应误算成第6次。
+离开login的phase转换关闭通道,再设回login不重置预算或关闭标记。
+查询使用裁定原正则且要求匹配文本等于整个query,避免JavaScript的`$`在末尾换行前匹配。
+这些只是落实完全匹配与单调状态的实现细节,不另增放行种类。
+
+生产修改仅Policy的登录状态/判定与pathShape('/')。Agent.login、协议适配、帧归属、
+三拦截面、静态资源与落点规则不改。原安全夹具的登录-form/-first/-second监听器
+机械同步为content-form;307重放及凭据隔离的服务器实收判据不改。
+新增tests/node/p5q_login_retry.mjs与pytest包装;测试入口独占TLS证书/本地解析覆盖,
+不向生产驱动传入测试参数,不访问真实QuickBuild/Gerrit。
+
+### 19.2 验收进度
+
+| 验收 | exit | 实测与证据 |
+|---|---|---|
+| Node单元 | 0 | [node-unit.log](evidence/C2b/c2b-03-step1/node-unit.log):96 passed/0 failed;原57新增39 |
+| 本机登录重试集成 | 0 | [login-retry.log](evidence/C2b/c2b-03-step1/login-retry.log):2/2,loopback-only |
+| Node四组安全 | 0 | [safety.log](evidence/C2b/c2b-03-step1/safety.log):4/4,loopback-only |
+| .venv/bin/python -m pytest -q | 0 | [pytest.log](evidence/C2b/c2b-03-step1/pytest.log):2155 passed,1 skipped,106.56s;基线2154/1新增1个集成入口 |
+| .venv/bin/mypy | 0 | [mypy.log](evidence/C2b/c2b-03-step1/mypy.log):113 source files |
+| .venv/bin/ruff check .(完整待提交树) | 0 | [ruff.log](evidence/C2b/c2b-03-step1/ruff.log):All checks passed! |
+| .venv/bin/lint-imports | 0 | [lint-imports.log](evidence/C2b/c2b-03-step1/lint-imports.log):6 kept,0 broken |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | [design-check.log](evidence/C2b/c2b-03-step1/design-check.log):0 problem |
+
+Node命令(均使用本机既有运行时,无新增依赖):
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code --test tests/node/test_qb_browser_agent.mjs
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  tests/node/p5q_login_retry.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  tests/node/p5q_c2b_safety.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome
+```
+
+登录重试假服务器实收链:GET /signin=200 -> POST /signin=200 ->
+POST /wicket/page=302 -> GET /=200;三条件成立,之后再POST的服务器实收=0。
+六次失败提交场景服务器实收POST恰5条,均200,第6条被拦;
+两个场景的browser/profile均删除,未放行运行表单,代理login无交互的静态断言未改且通过。
+
+四组安全从头重跑:Worker/WebSocket分支b,攻击HTTP=0、WS=0,
+shared_worker closeTarget成功、worker closeTarget异常类别Error,
+QB_BROWSER_UNAVAILABLE且浏览器/目录清理通过;307/308、逐跳、凭据隔离均绿。
+
+Ruff检查树`e6a43fc977752f56e3f33bd070276a976d990325`,用git archive导出到
+`/tmp/p5q-c2b-03-lint-gQk1q1`,在该目录执行仓库.venv/bin/ruff check .;
+后续仅新增本节/INDEX及日志,代码未变。无关历史草稿与用户既有改动不处理。
+冻结哈希仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`;
+design.md、live-01/live-02/live-02b零diff。
+
+### 19.3 第二、三步状态
+
+AWAITING_LOGIN_START。第一步提交/推送后在聊天请求“开始”,此前不连接真实QuickBuild。
+live-02c尚未运行,完整Document链、登录响应、三条件与落点准入为NOT_COLLECTED;
+未追加落点或静态资源登记。live-03未运行,页面与BUILD_TYPE联动仍NOT_COLLECTED。
+不得把假服务器成功替代真机证据。C3不启动。
