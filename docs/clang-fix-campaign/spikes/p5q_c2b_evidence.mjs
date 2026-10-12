@@ -1,10 +1,14 @@
 // Dedicated C2b evidence entry. No launch overrides and no build submission.
 import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, unlink, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createInterface } from 'node:readline';
+import { PassThrough } from 'node:stream';
+import { fileURLToPath } from 'node:url';
 import {
   Agent, AgentError, callbackURL, canonical, checkRedacted, createRuntime,
   ORIGIN, pathShape, redactDOM, validateForm,
@@ -24,7 +28,7 @@ const previousPrompt = '已打开 QuickBuild 登录窗口,请在窗口中登录;
 let runtime;
 let agent;
 let current = '/signin';
-let operation = 'login';
+let operation = 'handshake';
 let stopped = false;
 let actionReleases = 0;
 let sequence = 0;
@@ -35,6 +39,45 @@ const loginPostResponses = new Set();
 let wrapperDenied = 0;
 const parentPages = new Map();
 let readNavigation = null;
+let channel;
+
+function commandChannel(input, onEnd) {
+  const lines = createInterface({ input, crlfDelay: Infinity, terminal: false });
+  const iterator = lines[Symbol.asyncIterator]();
+  let ended = false;
+  let receivedClose = false;
+  let disposed = false;
+  // EOF can arrive while login is running or before a queued close is consumed.
+  lines.on('line', line => {
+    try { if (JSON.parse(line)?.command === 'close') receivedClose = true; }
+    catch { /* The command loop rejects malformed input without logging it. */ }
+  });
+  const inputEnded = () => {
+    if (ended) return;
+    ended = true;
+    if (!disposed && !receivedClose) onEnd('EVIDENCE_STDIN_CLOSED');
+  };
+  input.once('end', inputEnded);
+  input.once('close', inputEnded);
+  return {
+    iterator,
+    async handshake(reply) {
+      const first = await iterator.next();
+      if (first.done || ended) throw new AgentError('EVIDENCE_STDIN_CLOSED');
+      let input;
+      try { input = JSON.parse(first.value); }
+      catch { throw new AgentError('EVIDENCE_COMMAND_INVALID'); }
+      if (canonical(input) !== '{"command":"ping"}') throw new AgentError('EVIDENCE_COMMAND_INVALID');
+      await reply({ pong: true });
+      if (ended) throw new AgentError('EVIDENCE_STDIN_CLOSED');
+    },
+    dispose() {
+      disposed = true;
+      input.off('end', inputEnded); input.off('close', inputEnded);
+      lines.close(); input.pause();
+    },
+  };
+}
 
 export function idStructureDOM() {
   const navigation = [...document.querySelectorAll('.nav-link')]
@@ -253,7 +296,97 @@ async function selfTest(interpreter) {
       lastRequest: 0, now: 0, loginResponseCount: 0, ...changes }), expected);
     emit({ test: name, result: 'PASS' });
   }
-  emit({ self_tests: 20, passed: 20, network_requests: 0 });
+  const scratch = await mkdtemp(join(tmpdir(), 'p5q-evidence-channel-'));
+  try {
+    const result = spawnSync(process.execPath, [fileURLToPath(import.meta.url),
+      'unused-playwright', 'unused-chromium', scratch, interpreter, 'full'],
+    { input: '', encoding: 'utf8', timeout: 30000 });
+    assert.equal(result.status, 1);
+    assert.equal(result.stderr, '');
+    const output = JSON.parse(result.stdout.trim());
+    const saved = JSON.parse(await readFile(join(scratch, 'run.json'), 'utf8'));
+    for (const row of [output, saved]) {
+      assert.equal(row.status, 'STOPPED');
+      assert.equal(row.stop.reason, 'EVIDENCE_STDIN_CLOSED');
+      assert.equal(row.browser_closed, true);
+      assert.equal(row.profile_removed, true);
+    }
+    assert.deepEqual(saved.commands, []);
+    assert.deepEqual(saved.traffic, []);
+    emit({ test: 'stdin-eof-before-close-stops', result: 'PASS' });
+    const waiting = spawn(process.execPath, [fileURLToPath(import.meta.url),
+      'unused-playwright', 'unused-chromium', join(scratch, 'waiting'), interpreter, 'full'],
+    { stdio: ['pipe', 'pipe', 'pipe'], timeout: 30000 });
+    let waitingOutput = '';
+    let errors = '';
+    waiting.stdout.on('data', chunk => { waitingOutput += chunk; });
+    waiting.stderr.on('data', chunk => { errors += chunk; });
+    const finished = new Promise((resolve, reject) => {
+      waiting.once('close', resolve); waiting.once('error', reject);
+    });
+    try {
+      await sleep(100);
+      assert.equal(waitingOutput, '');
+      assert.equal(errors, '');
+      // A non-ping first command must be rejected before attempting browser setup.
+      waiting.stdin.write('{"command":"read"}\n');
+      assert.equal(await finished, 1);
+      assert.equal(errors, '');
+      const rejected = JSON.parse(waitingOutput.trim());
+      assert.equal(rejected.status, 'STOPPED');
+      assert.equal(rejected.stop.reason, 'EVIDENCE_COMMAND_INVALID');
+      const record = JSON.parse(await readFile(join(scratch, 'waiting', 'run.json'), 'utf8'));
+      assert.deepEqual(record.commands, []);
+      assert.deepEqual(record.traffic, []);
+    } finally {
+      if (waiting.exitCode === null) { waiting.kill(); await finished; }
+    }
+  } finally { await rm(scratch, { recursive: true, force: true }); }
+  const stream = new PassThrough();
+  const ends = [];
+  const replies = [];
+  const testChannel = commandChannel(stream, reason => ends.push(reason));
+  let browserStarts = 0;
+  try {
+    const startup = testChannel.handshake(row => replies.push(row)).then(() => {
+      assert.deepEqual(replies, [{ pong: true }]);
+      browserStarts += 1;
+    });
+    await sleep(50);
+    assert.equal(browserStarts, 0);
+    assert.deepEqual(replies, []);
+    stream.write('{"command":"ping"}\n');
+    await startup;
+    assert.deepEqual(replies, [{ pong: true }]);
+    assert.equal(browserStarts, 1);
+    stream.end();
+    await testChannel.iterator.next();
+    assert.deepEqual(ends, ['EVIDENCE_STDIN_CLOSED']);
+    const normal = new PassThrough();
+    const cleanEnds = [];
+    const clean = commandChannel(normal, reason => cleanEnds.push(reason));
+    try {
+      normal.end('{"command":"close"}\n');
+      assert.equal((await clean.iterator.next()).value, '{"command":"close"}');
+      assert.equal((await clean.iterator.next()).done, true);
+      assert.deepEqual(cleanEnds, []);
+    } finally { clean.dispose(); }
+    const failing = new PassThrough();
+    const failureEnds = [];
+    const failureChannel = commandChannel(failing, reason => failureEnds.push(reason));
+    try {
+      failing.write('{"command":"read"}\n');
+      await assert.rejects(async () => {
+        for await (const line of failureChannel.iterator) {
+          assert.equal(JSON.parse(line).command, 'read');
+          throw new AgentError('QB_READ_REDIRECTED');
+        }
+      }, { code: 'QB_READ_REDIRECTED' });
+      assert.deepEqual(failureEnds, []);
+    } finally { failureChannel.dispose(); }
+    emit({ test: 'no-ping-no-browser', result: 'PASS' });
+  } finally { testChannel.dispose(); }
+  emit({ self_tests: 22, passed: 22, network_requests: 0 });
 }
 
 async function idSelfTest(pw, chrome, interpreter) {
@@ -461,8 +594,19 @@ if (existsSync(`${directory}/run.json`)) {
 }
 try {
   if (!['full', 'diagnostic'].includes(mode)) throw new AgentError('EVIDENCE_COMMAND_INVALID');
+  channel = commandChannel(process.stdin, stop);
+  await channel.handshake(row => new Promise((resolve, reject) => {
+    process.stdout.write(JSON.stringify(row) + '\n', error => {
+      if (error) reject(new AgentError('EVIDENCE_STDIN_CLOSED'));
+      else resolve();
+    });
+  }));
+  if (stopped) throw new AgentError('EVIDENCE_STDIN_CLOSED');
+  report.channel = { ping_received: true, pong_sent: true };
+  operation = 'login';
   process.stderr.write(prompt);
   runtime = await createRuntime(playwright, chromium);
+  check();
   agent = new Agent(runtime);
   runtime.page.on('response', response => {
     if (operation !== 'read') return;
@@ -555,8 +699,7 @@ try {
     }
     await persist();
     if (mode === 'full') {
-    const lines = createInterface({ input: process.stdin, crlfDelay: Infinity });
-    for await (const line of lines) {
+    for await (const line of channel.iterator) {
       const input = JSON.parse(line);
       check();
       if (input.command === 'close') { report.status = 'COLLECTED'; break; }
@@ -606,11 +749,13 @@ try {
       check();
       await persist();
     }
+    if (report.status === 'RUNNING') stop('EVIDENCE_STDIN_CLOSED');
     }
   } finally { clearInterval(watchdog); clearInterval(nameWatch); }
 } catch (error) {
   stop(error instanceof AgentError ? error.code : 'EVIDENCE_RUNTIME_ERROR');
 } finally {
+  channel?.dispose();
   if (runtime) await runtime.close();
   report.browser_closed = !runtime || !runtime.browser.isConnected();
   report.profile_removed = !runtime || !existsSync(runtime.profile);

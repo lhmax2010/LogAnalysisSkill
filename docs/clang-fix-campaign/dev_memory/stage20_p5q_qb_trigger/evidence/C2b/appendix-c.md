@@ -13,6 +13,13 @@ tool reported stdin closed when sending the first read command. This is a launch
 error, not an identity or QuickBuild failure. See `live-05/README.md` for the
 verbatim error and preserved raw report status.
 
+By the approved pre-live-06 supplement (progress21.7), live-05's preserved
+`RUNNING` is precisely an input EOF without a close command, now classified as
+`STOPPED / EVIDENCE_STDIN_CLOSED`. Its run.json is not rewritten. The evidence
+entry now requires ping/pong before any browser startup and records unexpected
+EOF explicitly. live-06 remains pending a fresh chat start; no new live facts
+are implied by this preparation.
+
 | Requested item | Result | Source |
 |---|---|---|
 | 1193467 main/variables | NOT_COLLECTED; first read never reached process | run.json:4; :10 |

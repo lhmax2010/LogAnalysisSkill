@@ -1,10 +1,10 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2B_LIVE05_INCOMPLETE;EXECUTION_STDIN_CLOSED**。
-当前轮基线610397d;P5Q-C2B-05裁定及实施见§21。§18至§20保留历史停点。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2B_LIVE06_READY;WAITING_FOR_CHAT_START**。
+当前轮基线b7a7cc8;P5Q-C2B-05裁定及实施见§21。§18至§20保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
-本轮仅补取证通道,未放宽生产判据。新“开始”后live-05登录通过,
-但执行方未以PTY保持stdin,读取命令未送达;已清理并停止,见§21.5。
+本轮仅补取证通道,未放宽生产判据。live-05的启动错误见§21.5;
+live-06前按补充要求增加ping/pong与EOF停态,见§21.7,尚未启动真机。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -31,7 +31,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§21.5 live-05登录成功但stdin已关,执行方启动错误;构建页/诊断/配置/表单未取得,C3不启动 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§21.7握手/EOF停态完成,§21.8验收通过;live-06待新的开始,构建页/诊断/配置/表单待取,C3不启动 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -1724,3 +1724,71 @@ Ruff树`89e3aaf8efd09405244489db8f83f6e3332f3eda`,完整git archive导出
 10/10仍为本次未改脚本的证据,不得替代未取得的真机结构采样。
 冻结sha256仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
 验收通过不消除执行停点,不宣告C2b完成,不进入C3。
+
+### 21.7 live-06前补充:命令通道握手与EOF停态
+
+用户批准的补充要求:
+
+1. stdin在未收到close命令时结束,状态必须为STOPPED,
+   原因为EVIDENCE_STDIN_CLOSED,浏览器照常清理。
+   live-05的run.json不改,appendix-c说明其RUNNING实际就是这种情况。
+2. 弹窗前先等待`{"command":"ping"}`,回复`{"pong":true}`之后才启动浏览器/login;
+   驱动未取得pong不能弹窗或请FatTank登录。新增提前EOF与无ping不启动浏览器两项
+   离线自测。全量验收后提交推送;live-06用新目录,按C2B-05原顺序,
+   弹窗前仍在聊天等待新的“开始”。生产代码与冻结稿不改。
+
+实现只改`spikes/p5q_c2b_evidence.mjs`。握手和后续命令共用从启动时建立的
+同一个readline迭代器,登录期间也监听底层输入流end/close。
+未收到close的真实EOF立即走现有stop/cleanup/persist,退出1。
+正常close不会被EOF覆盖;命令执行失败造成的迭代器主动关闭不是输入EOF,
+仍保留原有读取/安全失败原因。握手只认首条完整ping对象,其它首条命令拒绝;
+pong写出后再弹窗,run.json记录ping_received/pong_sent两个布尔值。
+
+离线自测加入原`--self-test`,20→22项:
+
+- 实际脚本子进程stdin立即EOF:stdout与run.json均STOPPED+
+  EVIDENCE_STDIN_CLOSED,commands/traffic均空,没有浏览器提示,exit1。
+- stdin保持打开且未ping时无输出/无弹窗提示,非ping首条命令在实际子进程
+  拒绝且无login/traffic;流夹具另验证ping→pong→启动回调的顺序、握手后EOF、
+  正常close后EOF不误报,以及命令失败不被误报为EOF。子进程用不存在的浏览器
+  模块路径,若误尝试初始化会使断言失败,不可能访问QuickBuild。
+
+新增子进程夹具时曾有局部变量output重名,Node在解析阶段exit1;
+原文保留`live-06-preparation/self-test-syntax-failure.log`。
+已将该夹具变量改为waitingOutput,重跑22/22、network_requests=0;
+不涉及生产规则或真机请求。原ID诊断自测仍单列10项,不混计pytest总数。
+
+**live-06驱动计划:**以`exec_command(tty=true)`保持命令通道;新“开始”之后
+启动脚本,先发ping并确认pong,之后才等待窗口人工登录。
+输出新目录`evidence/C2b/live-06/`,不覆盖live-05;只按§21.3顺序读取与联动,
+不得预发read或form命令,release须0。当前尚未启动,所有真机项仍NOT_COLLECTED。
+
+### 21.8 live-06准备验收
+
+日志目录`evidence/C2b/live-06-preparation/`。仅spike代码变更;
+生产源码、tests、冻结稿、design.md与live-05目录均零diff。
+
+| 命令 | exit | 结果 / 日志 |
+|---|---|---|
+| Node spikes/p5q_c2b_evidence.mjs --self-test .venv/bin/python | 0 | 22/22,network_requests=0;self-test.log |
+| Node spikes/p5q_c2b_evidence.mjs --id-self-test PW CHROMIUM .venv/bin/python | 0 | 10/10,network_requests=0;id-self-test.log |
+| .venv/bin/python -m pytest -q | 0 | 2165 passed,1 skipped,114.48s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+
+Node/PW/CHROMIUM及脚本完整路径同§21.4。pytest用例未增删,新增两项仅计入
+脚本离线自测;全量包含既有Node单元、四组本机安全、登录重试和配置来源检查。
+第一次全量136.36s同样2165/1,日志`pytest-before-eof-refinement.log`;
+区分底层输入EOF与主动迭代关闭之后再次全量,以上表最终版本结果为准。
+Ruff树`9222aab7ec14f791a0f74cf79d6082ec76dfbd7e`,完整git archive导出
+`/tmp/p5q-live-06-lint-SiFTve`,之后仅补文档/日志。
+
+sha256复核:
+
+- 冻结稿:`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
+- live-05/run.json:`349a86d65c707cf615d14123a18b928e0d9b380506950355c4cbab8215259027`。
+
+本轮没有QuickBuild请求。两项补充完成后提交推送,live-06仍须新的聊天开始指令;
+不将离线成功当作真机取证完成,不进入C3。
