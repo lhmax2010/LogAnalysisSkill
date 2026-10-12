@@ -1,9 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2B_LIVE03_PARTIAL;STOPPED_CONFIG_LINK_SOURCE**。
-当前轮基线1e3cf4b;P5Q-C2B-03裁定及实施见§19。§18.5保留live-02b历史停点。
-本轮只实现并离线验证登录重试通道;第一步验收/推送后等聊天“开始”才启动live-02c。
-尚未启动live-02c/live-03,C3不启动。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2B_04_REDACTION_VERIFIED;LIVE04_NOT_STARTED**。
+当前轮基线33b1540;P5Q-C2B-04裁定及实施见§20。§18/§19保留历史停点。
+先修身份脱敏并单独提交推送,再完成配置来源五项核对;live-04须等待新的聊天“开始”。
+live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
 是既有无关改动,不处理、不纳入本次交付;其余历史草稿也不纳入。
@@ -1351,3 +1351,70 @@ WS握手=0,shared_worker closeTarget成功/worker异常Error,
 live-03两页、run.json、observations.json分别复跑PageRedactor.check_written全部通过。
 冻结sha256仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
 待设计方处置P5Q-C2B-04,不以门禁绿冒充真机取证完成。
+
+## 20. 实施裁定 P5Q-C2B-04
+
+设计方出具,FatTank已批准,2026-10-12。冻结稿不改。
+§19.5的配置链接来源停止项由本裁定关闭;不等同于真机取证完成。
+
+### 20.1 裁定原文
+
+原因一:RBS/TRIGGER 父构建页的面包屑中,TRIGGER 是当前项(无链接),上级都是 N.latest 形式,取不到配置 ID。原裁定"从面包屑取 overview_id"是设计方的错误假设。
+原因二:live-03 的归档页里,ILinkListener、signOutLink、dependentLink 等代码字符串被替换成 <USER>。生产 redactDOM 对登录显示名做子串替换,事后检查也按子串;Python qb_redact 用单词边界,两边规则不一致。显示名较短且是常见词片段时,会改坏页面内容(包括变量值与包名,如 Linux-PAM),后续结果读取的回显核对会因此失配。定为重要级,先修再取证。
+
+### 20.2 执行边界与顺序
+
+1. 身份替换与写前/写后残留检查统一为前后均非`[A-Za-z0-9_]`;
+   凭据secrets仍按子串替换/检查。两端共用`tests/fixtures/qb_redaction_vectors.json`。
+   全量pytest/mypy/ruff(完整待提交树)/lint-imports/design检查、Node单元和
+   四组本机安全全部通过后,单独提交推送。
+2. 仅取证入口核对新鲜父页的Configuration Overview唯一链接、pipeline/children同号、
+   完整面包屑与当前TRIGGER、复制路径脚本参数、构建名前缀;五项全部通过才登记。
+   配置页再次核对面包屑与复制路径,任一不符停止。不改生产open_form。
+3. live-04启动前重新在聊天请求“开始”。顺序:login;1193467主页/变量;
+   1193469主页/变量;1186372主页/变量及其Child Build子页/变量;
+   登记并读配置页;仅BUILD_TYPE Full→Partial→Full;close。
+   不读步骤页,不点Ok/submit,form_action_releases必须为0。
+   WORKER_BLOCKED/NEW_PAGE/runtime.failure或拒绝导致取证失败立即停止,不重试。
+
+live-03页面存在显示名子串误替换,只作参考,不作为字段形态证据。
+原始live-03目录全部原样保留;附录C中历史摘录不用于新字段形态核验。
+复制路径字符串可作为生产open_form核对配置路径的来源,本轮仅记录,不改生产该逻辑。
+
+### 20.3 第一步:脱敏修复与离线验收
+
+实现:JS在页面内对显示名构造转义后的ASCII边界正则,同一规则用于替换与残留检查;
+Python共用`_identity_pattern`用于替换、check_bytes及check_written。
+凭据类处理没有修改。共用六组向量覆盖短名、Triggered By行/列、多词名、
+正则字面量与ASCII边界、cookie/token/session子串清除;另有三条凭据残留负例。
+Python定向28 passed(原19,+9)。浏览器侧六个共享向量为Node内部子用例,
+不与pytest计数混算。
+
+证据目录:`evidence/C2b/c2b-04-redaction/`。目前只运行离线测试,live-04未启动。
+
+| 命令 | exit | 结果 / 日志 |
+|---|---|---|
+| .venv/bin/python -m pytest -q | 0 | 2164 passed,1 skipped,143.13s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+| Node --test tests/node/test_qb_browser_agent.mjs | 0 | 120/120;node-unit.log |
+| Node tests/node/test_qb_browser_runtime.mjs PW CHROMIUM | 0 | 29/29,含共享六向量;node-runtime.log |
+| Node tests/node/p5q_c2b_safety.mjs PW CHROMIUM | 0 | 4/4,loopback-only;safety.log |
+
+Node=`env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code`;
+PW=`/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs`;
+CHROMIUM=`/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome`。
+Ruff树`e4c82d0f39c6d6d2aa8b7ba4df5fe4698e25aed1`,
+`git archive`导出`/tmp/p5q-c2b-04-lint-vKAlyx`后运行仓库venv的ruff;
+之后仅补文档/日志。原2155通过集合无删除,+9=2164,仍只有原1 skip。
+
+四组从头重跑:Worker/WebSocket为b:browser_fail_closed,攻击HTTP=0、
+WS握手=0,shared_worker closeTarget成功/worker异常Error,
+QB_BROWSER_UNAVAILABLE后浏览器与临时目录均清理。307/308未到下一跳,
+302对照到达;逐跳禁止地址/POST重放服务器实收0;凭据隔离通过。
+没有QuickBuild或其它外网取证请求。冻结sha256仍为
+`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`;
+live-03两页/run.json哈希与§19.5逐项一致,目录零diff。
+新停止报告0条。第一步单独提交推送后才实施第二步取证入口变更。

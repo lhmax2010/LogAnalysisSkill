@@ -110,6 +110,30 @@ test('real browser DOM redaction with identities, hidden values, URL and recorde
   } finally { await runtime.close(); }
 });
 
+test('C2B-04 shared identity boundary and credential vectors', async t => {
+  const vectors = JSON.parse(readFileSync(new URL('../fixtures/qb_redaction_vectors.json', import.meta.url), 'utf8'));
+  const runtime = await createRuntime(playwright, chromium, {
+    launchArgs: ['--no-proxy-server', '--host-resolver-rules=MAP * ~NOTFOUND'],
+  });
+  runtime.policy.allow = () => false;
+  try {
+    for (const vector of vectors) await t.test(vector.name, async () => {
+      await runtime.page.setContent(vector.html);
+      const html = await runtime.page.evaluate(redactDOM);
+      const decoded = await runtime.page.evaluate(value => {
+        const box = document.createElement('textarea'); box.innerHTML = value; return box.value;
+      }, html);
+      for (const value of [...vector.preserved, ...vector.masked]) assert.ok(decoded.includes(value), value);
+      for (const value of vector.secrets) assert.ok(!decoded.includes(value), value);
+      for (const value of vector.identities) {
+        const pattern = new RegExp(`(?<![A-Za-z0-9_])${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![A-Za-z0-9_])`);
+        assert.doesNotMatch(decoded, pattern);
+      }
+    });
+    assert.equal(runtime.page.url(), 'about:blank');
+  } finally { await runtime.close(); }
+});
+
 test('browser Fetch response 307/308 denied, 302 next-hop judged before server receives', async () => {
   const received = [];
   const server = createServer((request, response) => {

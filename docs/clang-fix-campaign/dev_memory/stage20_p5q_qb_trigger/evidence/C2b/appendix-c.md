@@ -1,5 +1,15 @@
 # C2b Appendix C Evidence Status
 
+## C2B-04 Evidence Correction
+
+**live-03 页面存在显示名子串误替换,只作参考,不作为字段形态证据**。
+The archived live-03 files remain byte-for-byte unchanged. The historical excerpts
+below are reference only, not field-shape evidence. Replacement evidence from
+live-04 is NOT_COLLECTED pending the approved redaction fix, five configuration
+source checks and a new explicit chat start. No configuration id is registered
+from live-03. The copy-path string may be a source for production open_form path
+verification; this is recorded only, with no production open_form change.
+
 Status: **PARTIAL / STOPPED_CONFIG_LINK_SOURCE**. Latest session is live-03,
 after registration commit `3013899`. Login succeeded; the parent main page and
 variables page were collected. Historical live-01/live-02/live-02b/live-02c

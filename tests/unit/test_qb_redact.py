@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from html import unescape
 from pathlib import Path
 
@@ -24,6 +25,44 @@ SECRETS = [
     "cookie-private",
     "JSESSIONID_8810=",
 ]
+VECTORS = json.loads(
+    (Path(__file__).parents[1] / "fixtures/qb_redaction_vectors.json").read_text()
+)
+
+
+@pytest.mark.parametrize("vector", VECTORS, ids=lambda vector: vector["name"])
+def test_shared_identity_boundaries_and_secret_substrings(vector, tmp_path):
+    redactor = PageRedactor()
+    safe = redactor.redact(vector["html"])
+    visible = unescape(safe)
+    for value in vector["preserved"] + vector["masked"]:
+        assert value in visible
+    for value in vector["secrets"]:
+        assert value not in visible
+    path = tmp_path / "safe.html"
+    path.write_bytes(safe.encode())
+    redactor.check_bytes(path.read_bytes())
+    redactor.check_written(path)
+    for identity in vector["identities"]:
+        with pytest.raises(EvidenceRedactionError):
+            redactor.check_bytes((safe + " " + identity + "-PAM").encode())
+        path.write_bytes((safe + " " + identity).encode())
+        with pytest.raises(EvidenceRedactionError):
+            redactor.check_written(path)
+        assert not path.exists()
+
+
+@pytest.mark.parametrize("secret", ["CookieFixture", "TokenFixture", "SessionFixture"])
+def test_secret_residual_self_check_remains_substring(secret, tmp_path):
+    redactor = PageRedactor()
+    redactor.secrets.add(secret)
+    path = tmp_path / "unsafe.html"
+    path.write_bytes(f"<p>x{secret}x</p>".encode())
+    with pytest.raises(EvidenceRedactionError):
+        redactor.check_bytes(path.read_bytes())
+    with pytest.raises(EvidenceRedactionError):
+        redactor.check_written(path)
+    assert not path.exists()
 
 
 def test_redact_roundtrip_and_raw_written_scan(tmp_path: Path, capsys):

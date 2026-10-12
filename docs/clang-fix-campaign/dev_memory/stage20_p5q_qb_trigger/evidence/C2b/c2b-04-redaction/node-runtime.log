@@ -1,0 +1,41 @@
+▶ C2A-04 build identity from archived HTML, with all network denied
+  ✔ archive 01.response.txt /build/1069540 (1752.745799ms)
+  ✔ archive 03.response.txt /build/1069540/variables (84.695045ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (75.174696ms)
+  ✔ navigation spelling Id (21.372969ms)
+  ✔ navigation spelling ID (18.71832ms)
+  ✔ Summary Id resolved by column, not fixed position (17.684879ms)
+  ✔ reject duplicate-nav (10.435364ms)
+  ✔ reject missing-nav (9.706051ms)
+  ✔ reject wrong-nav (9.586972ms)
+  ✔ reject missing-summary (9.412056ms)
+  ✔ reject duplicate-summary (9.69889ms)
+  ✔ reject missing-id-column (10.362934ms)
+  ✔ reject duplicate-id-column (11.847324ms)
+  ✔ reject different-summary-id (10.405732ms)
+  ✔ reject missing-first-row (9.164613ms)
+  ✔ both homepage sources agree but differ from requested id (8.430784ms)
+  ✔ subpage missing navigation (11.473509ms)
+  ✔ subpage duplicate navigation (11.738924ms)
+  ✔ subpage wrong navigation (101.906127ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 build identity from archived HTML, with all network denied (12277.620151ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (495.57539ms)
+▶ C2B-04 shared identity boundary and credential vectors
+  ✔ short-display-name (19.812107ms)
+  ✔ triggered-by-row (7.920755ms)
+  ✔ triggered-by-column (11.437573ms)
+  ✔ multiword (6.425678ms)
+  ✔ literal-regex-and-ascii-boundaries (4.741337ms)
+  ✔ secrets-remain-substrings (8.973094ms)
+✔ C2B-04 shared identity boundary and credential vectors (538.96675ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/build/301"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (1633.598268ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15007.774713

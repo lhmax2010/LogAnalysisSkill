@@ -23,6 +23,10 @@ VALUE_ATTR = re.compile(r"""(?is)(\svalue\s*=\s*)(?:"[^"]*"|'[^']*'|[^\s>]+)""")
 HEADERS = re.compile(r"(?im)^\s*(?:set-cookie|cookie|authorization)\s*:[^\r\n]*")
 
 
+def _identity_pattern(value: str) -> re.Pattern[str]:
+    return re.compile(r"(?<![A-Za-z0-9_])" + re.escape(value) + r"(?![A-Za-z0-9_])")
+
+
 class EvidenceRedactionError(ValueError):
     code = "QB_EVIDENCE_REDACTION_FAILED"
 
@@ -228,7 +232,7 @@ class PageRedactor:
             text = text.replace(value, MASK)
         for identity in sorted(self.identities, key=len, reverse=True):
             for spelling in {identity, escape(identity)}:
-                text = re.sub(r"(?<!\w)" + re.escape(spelling) + r"(?!\w)", "&lt;USER&gt;", text)
+                text = _identity_pattern(spelling).sub("&lt;USER&gt;", text)
         # The post-write contract excludes the cookie assignment itself, not just its value.
         text = re.sub(r"(?i)JSESSIONID_8810\s*=", "redacted_session:", text)
         self.check_bytes(text.encode("utf-8"))
@@ -244,8 +248,11 @@ class PageRedactor:
         if (
             b"jsessionid_8810=" in raw.lower()
             or any(value in visible for value in self.secrets)
-            or any(identity.encode("utf-8") in raw for identity in self.identities)
-            or any(identity in decoded for identity in self.identities)
+            or any(
+                _identity_pattern(identity).search(content)
+                for identity in self.identities
+                for content in (text, decoded)
+            )
             or HEADERS.search(text)
             or fields.invalid_hidden
             or any(value not in {"", "<REDACTED>"} for value in fields.secrets)

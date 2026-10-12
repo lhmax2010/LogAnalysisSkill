@@ -1,0 +1,50 @@
+[
+  {
+    "name": "short-display-name",
+    "html": "<span>Welcome! Lin</span><p>ILinkListener signOutLink dependentLink Linux-PAM onCopyClipboardLinkDomReady</p><p>Lin Lin-PAM xLin Linx _Lin Lin_ 1Lin Lin1</p>",
+    "preserved": ["ILinkListener", "signOutLink", "dependentLink", "Linux-PAM", "onCopyClipboardLinkDomReady", "xLin Linx _Lin Lin_ 1Lin Lin1"],
+    "masked": ["Welcome! <USER>", "<USER> <USER>-PAM"],
+    "identities": ["Lin"],
+    "secrets": []
+  },
+  {
+    "name": "triggered-by-row",
+    "html": "<table><tr><td>Triggered By</td><td><a>Lin</a></td></tr></table><p>Lin-PAM Linux-PAM</p>",
+    "preserved": ["Linux-PAM"],
+    "masked": ["<USER>-PAM"],
+    "identities": ["Lin"],
+    "secrets": []
+  },
+  {
+    "name": "triggered-by-column",
+    "html": "<table><tr><th>Id</th><th>Triggered By</th></tr><tr><td>123</td><td>Lin</td></tr></table><p>ILinkListener Lin</p>",
+    "preserved": ["123", "ILinkListener"],
+    "masked": ["ILinkListener <USER>"],
+    "identities": ["Lin"],
+    "secrets": []
+  },
+  {
+    "name": "multiword",
+    "html": "<span>Welcome! Lin Hao</span><p>Lin Hao Lin Hao-PAM xLin Hao Lin Haox Lin</p>",
+    "preserved": ["xLin Hao Lin Haox Lin"],
+    "masked": ["Welcome! <USER>", "<USER> <USER>-PAM"],
+    "identities": ["Lin Hao"],
+    "secrets": []
+  },
+  {
+    "name": "literal-regex-and-ascii-boundaries",
+    "html": "<span>Welcome! L.in</span><p>L.in Lin xL.in L.inx \u00e9L.in\u00e9</p>",
+    "preserved": ["Lin xL.in L.inx"],
+    "masked": ["Welcome! <USER>", "\u00e9<USER>\u00e9"],
+    "identities": ["L.in"],
+    "secrets": []
+  },
+  {
+    "name": "secrets-remain-substrings",
+    "html": "<span>Welcome! Lin</span><input type=\"hidden\" name=\"csrf_token\" value=\"TokenFixture\"><input type=\"hidden\" name=\"x:palette:recorder\" value=\"61,62\"><a href=\"/x;jsessionid=SessionFixture\">link</a><p>JSESSIONID_8810=CookieFixture</p><p>xTokenFixturex xSessionFixturex xCookieFixturex Linux-PAM</p>",
+    "preserved": ["61,62", "Linux-PAM"],
+    "masked": ["Welcome! <USER>", "x<REDACTED>x x<REDACTED>x x<REDACTED>x"],
+    "identities": ["Lin"],
+    "secrets": ["TokenFixture", "SessionFixture", "CookieFixture", "JSESSIONID_8810="]
+  }
+]

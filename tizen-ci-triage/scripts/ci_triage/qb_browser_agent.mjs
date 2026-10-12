@@ -267,6 +267,7 @@ export function redactDOM() {
   const assignment = /[\w-]*(?:token|csrf|xsrf|session)[\w-]*["']?\s*[:=]\s*(?:"([^"]*)"|'([^']*)'|([^?&;\s<>"'`)\]}]+))/gi;
   const escaped = (value) => { const div = document.createElement('div'); div.textContent = value; return div.innerHTML; };
   const decode = (value) => { const box = document.createElement('textarea'); box.innerHTML = value; return box.value; };
+  const identityPattern = (value) => new RegExp(`(?<![A-Za-z0-9_])${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![A-Za-z0-9_])`, 'g');
   for (const match of decode(html).matchAll(assignment)) remember(secrets, match[1] ?? match[2] ?? match[3]);
   for (const value of [...secrets].sort((a, b) => b.length - a.length)) {
     for (const spelling of new Set([value, escaped(value), encodeURIComponent(value), JSON.stringify(value).slice(1, -1)])) {
@@ -274,11 +275,12 @@ export function redactDOM() {
     }
   }
   for (const value of [...identities].sort((a, b) => b.length - a.length)) {
-    for (const spelling of new Set([value, escaped(value)])) html = html.split(spelling).join('&lt;USER&gt;');
+    for (const spelling of new Set([value, escaped(value)])) html = html.replace(identityPattern(spelling), '&lt;USER&gt;');
   }
   html = html.replace(/^\s*(?:set-cookie|cookie|authorization)\s*:[^\r\n]*/gim, '&lt;REDACTED&gt;')
     .replace(/JSESSIONID_8810\s*=/gi, 'redacted_session:');
-  if ([...secrets, ...identities].some((value) => value && decode(html).includes(value))
+  if ([...secrets].some((value) => value && decode(html).includes(value))
+    || [...identities].some((value) => identityPattern(value).test(decode(html)))
     || /JSESSIONID_8810\s*=/i.test(html)) throw new Error('QB_EVIDENCE_REDACTION_FAILED');
   return html;
 }
