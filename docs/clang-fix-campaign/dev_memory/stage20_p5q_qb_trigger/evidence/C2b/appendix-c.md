@@ -1,8 +1,33 @@
 # C2b Appendix C Evidence Status
 
-Status: **PARTIAL / STOPPED_READ_ID_MISMATCH**. Latest session: live-04,
-after redaction fix `6028356` and evidence-source checks `47a1f8e`.
+Status: **PARTIAL / LIVE05_INCOMPLETE_EXECUTION_STDIN_CLOSED**. Latest session:
+live-05 (login only); latest build-page evidence remains live-04.
 This document records observations, not permission to start C3.
+
+## C2B-05 live-05 (Latest Session)
+
+A fresh chat start preceded login. One human POST /signin returned302,
+/dashboard returned200, and all three login conditions passed
+(`live-05/run.json:1236`). The assistant launched without a PTY; the execution
+tool reported stdin closed when sending the first read command. This is a launch
+error, not an identity or QuickBuild failure. See `live-05/README.md` for the
+verbatim error and preserved raw report status.
+
+| Requested item | Result | Source |
+|---|---|---|
+| 1193467 main/variables | NOT_COLLECTED; first read never reached process | run.json:4; :10 |
+| 1193469 main/variables | NOT_COLLECTED | run.json:4; :10 |
+| 1186372 main/variables and its child | NOT_COLLECTED; child id not obtained | run.json:4; :10 |
+| ID_UNVERIFIED samples | NOT_COLLECTED; no build page read, not an empty-facts result | run.json:10 |
+| Configuration id and five parent/two config checks | NOT_COLLECTED; not backfilled from live-04 | run.json:4 |
+| Form callbacks/action/version/options | NOT_COLLECTED; no open_form or field changes | run.json:4 |
+| Release / cleanup | 0 / false; browser and profile removed | run.json:1245; :1295 |
+
+All source references in this table are within `live-05/`. No page HTML was
+archived. No runtime failure or WORKER_BLOCKED/NEW_PAGE occurred. The nine
+denials were two Script, two Font and five dashboard XHR; no rules were changed.
+No automatic retry follows. Existing live artifacts remain unchanged, and the
+cause of live-04's identity mismatch is still unobserved.
 
 ## C2B-05 Preparation (No New Live Evidence)
 
@@ -14,13 +39,13 @@ Unverified pages cannot supply a configuration or child build id; no non-Id
 cell text is recorded in the structure samples. The previous failure cause is
 not inferred from these synthetic fixtures.
 
-live-05 has not started and requires a fresh chat "开始". Its pages, diagnostics,
-configuration checks and form observations remain NOT_COLLECTED. Existing
+At preparation time live-05 had not started and required a fresh chat "开始".
+Its subsequent login-only execution stop is recorded above. Existing
 live-01 through live-04 artifacts are unchanged. Exact refresh requests carrying
 an appended random query remain rejected; that issue is deferred to C4 design
 verification, not changed by this evidence channel.
 
-## C2B-04 live-04 (Latest)
+## C2B-04 live-04 (Latest Build Evidence)
 
 A fresh chat start preceded the single browser login for this session. GET
 /signin returned200, the human login POST returned302, /dashboard returned200.

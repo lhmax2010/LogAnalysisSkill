@@ -1,9 +1,10 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2B_LIVE05_READY;WAITING_FOR_CHAT_START**。
-当前轮基线35795e9;P5Q-C2B-05裁定及实施见§21。§18至§20保留历史停点。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2B_LIVE05_INCOMPLETE;EXECUTION_STDIN_CLOSED**。
+当前轮基线610397d;P5Q-C2B-05裁定及实施见§21。§18至§20保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
-本轮仅补取证通道,未放宽生产判据。live-05须等待聊天中新的“开始”,尚未请求。
+本轮仅补取证通道,未放宽生产判据。新“开始”后live-05登录通过,
+但执行方未以PTY保持stdin,读取命令未送达;已清理并停止,见§21.5。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -30,7 +31,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§20.5 live-04子主页核对停点由§21批准补诊断通道;live-05待新的开始指令,其余NOT_COLLECTED,C3不启动 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§21.5 live-05登录成功但stdin已关,执行方启动错误;构建页/诊断/配置/表单未取得,C3不启动 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -1650,3 +1651,76 @@ Ruff对`git write-tree`所得`d4e987a1d27d13496c9f57fb4fe8a22ddd546316`的
 冻结sha256仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
 生产源码、design.md、冻结稿、live-01至live-04均零diff。
 新增停止报告0条;§20.5原因待live-05诊断,不以离线夹具推断真机原因。
+
+### 21.5 live-05实跑:登录成功,执行通道关闭
+
+取证脚本准备提交`610397d`已推送;本轮收到FatTank新的“开始”后才启动,
+未复用旧授权。完整命令:
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome \
+  docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-05 \
+  .venv/bin/python full
+```
+
+**执行方启动错误,不是设计缺口:**exec_command未指定`tty=true`,没有保持stdin。
+登录成功返回后,发送首条`read /build/1193467`的write_stdin被工具拒绝,原文:
+
+```text
+write_stdin failed: stdin is closed for this session; rerun exec_command with tty=true to keep stdin open
+```
+
+命令未到代理;`live-05/run.json:4`只有login,`:10`的pages为空。
+登录600秒上限没有提前终止;GET /signin200,一次人工POST /signin302,
+跳转/dashboard200。三条件成立:非signin,password_inputs=0,sign_out_links=1,
+query为空(`run.json:1236`)。browser_closed/profile_removed均true(:1245),
+runtime_failure=null(:1294),WORKER_BLOCKED/NEW_PAGE=0,没有被拒后绕过或自动重试。
+
+原始run.json的status=RUNNING/stop=null保持不改;stdin EOF结束命令循环,
+finally清理后进程exit0。该exit不代表取证完成,本批状态明确为
+`INCOMPLETE / EXECUTION_STDIN_CLOSED`,不得记COLLECTED。说明及原始工具错误
+登记在`live-05/README.md`。下一次需以PTY保持stdin,等待新的开始并使用新证据目录,
+不能覆盖本次run.json;不涉及任何生产规则变更。
+
+| live-05项目 | 实际状态 / 证据 |
+|---|---|
+| login | 三条件通过,run.json:1236 |
+| 1193467主页/变量 | NOT_COLLECTED,read未送达 |
+| 1193469主页/变量 | NOT_COLLECTED,未请求 |
+| 1186372主页/变量及其子构建 | NOT_COLLECTED,未请求/未取子ID |
+| ID_UNVERIFIED两次结构事实 | NOT_COLLECTED,没有读过任何构建页 |
+| 配置ID与五项/两项检查 | NOT_COLLECTED,不从live-04回填 |
+| Full→Partial→Full、callback/action/version/options | NOT_COLLECTED,未打开表单 |
+| release | form_action_releases=0,released=false,run.json:1295 |
+
+请求阶段GET64(55允许/9拒绝),POST1(仅人工登录);响应200共43、302共1。
+拒绝9项:ckeditor Script2、bootstrap-icons Font2、dashboard XHR5;
+trace与wrapper各9,帧归属拒绝差额0。以上为浏览器拦截观测,不是服务器实收计数。
+冻结稿与生产代码不改,没有Ok/submit/Accept操作,不进入C3。
+run.json sha256=`349a86d65c707cf615d14123a18b928e0d9b380506950355c4cbab8215259027`。
+写前写后检查及PageRedactor.check_written复检通过。新增执行停点1项,
+设计矛盾0项;本轮未取得构建号失败原因,不作结构或生产修复结论。
+
+### 21.6 live-05归档验收
+
+本次只提交证据与文档,代码/测试零改动。复跑日志目录
+`evidence/C2b/c2b-05-live-validation/`:
+
+| 命令 | exit | 结果 / 日志 |
+|---|---|---|
+| .venv/bin/python -m pytest -q | 0 | 2165 passed,1 skipped,152.34s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+| PageRedactor.check_written(live-05/run.json) | 0 | PASS;redaction-check.log |
+
+Ruff树`89e3aaf8efd09405244489db8f83f6e3332f3eda`,完整git archive导出
+`/tmp/p5q-c2b-05-live-lint-PDdUV1`后运行,之后仅补文档/日志。
+全量含Node单元、四组本机安全、登录重试与配置来源测试;§21.4离线诊断
+10/10仍为本次未改脚本的证据,不得替代未取得的真机结构采样。
+冻结sha256仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
+验收通过不消除执行停点,不宣告C2b完成,不进入C3。
