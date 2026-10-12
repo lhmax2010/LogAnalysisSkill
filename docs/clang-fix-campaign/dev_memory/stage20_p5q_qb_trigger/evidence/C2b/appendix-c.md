@@ -1,12 +1,104 @@
 # C2b Appendix C Evidence Status
 
+Status: **PARTIAL / STOPPED_READ_ID_MISMATCH**. Latest session: live-04,
+after redaction fix `6028356` and evidence-source checks `47a1f8e`.
+This document records observations, not permission to start C3.
+
+## C2B-04 live-04 (Latest)
+
+A fresh chat start preceded the single browser login for this session. GET
+/signin returned200, the human login POST returned302, /dashboard returned200.
+The three conditions passed: non-signin, password_inputs=0, sign_out_links=1,
+empty query (live-04/run.json:1673). No terminal credentials or cookies stored.
+
+### Pages And Appendix Fields
+
+| Item | Actual result | Source |
+|---|---|---|
+| Parent1193467 main and variables | HTTP200; both archived after identity verification | live-04/run.json:23; :29 |
+| Child1193469 main | HTTP200 Document then QB_READ_ID_MISMATCH; no HTML returned/archived | live-04/run.json:19; :1648; :1665 |
+| Child1193469 variables, path suffix, Status, TRIGGER_ID, BUILD_PKG_LIST, FAIL_FAST, EACH_GBS_BUILD_STATUS | NOT_COLLECTED; not inferred from parent | live-04/run.json commands |
+| Failed sample1186372 and its child | NOT_COLLECTED; no request after stop | live-04/run.json commands |
+| Configuration id from parent | 1917, all five checks true; not registered before stop | live-04/run.json:1682; :1722 |
+| Configuration page title and its breadcrumb/copy checks | NOT_COLLECTED; /overview/1917 not requested | live-04/run.json commands |
+| Child Build columns | Repository-Architecture / QB Build URL / Build Result / Build Profiling | live-04/01.response.html:882 |
+| Child Build row | Exactly standard-armv7l:aarch64:x86_64; child1193469; Build Result=FAILED | live-04/01.response.html:890; :891; :892 |
+| Parent Status | Failed; this does not establish a successful sample or child status | live-04/01.response.html:925 |
+| Per-architecture status | NOT_COLLECTED; the parent row is one colon-joined architecture string | live-04/01.response.html:890 |
+| Steps pages | NOT_COLLECTED; excluded from the latest C2B-04 read order | progress20.2 |
+| Form Full -> Partial -> Full | NOT_COLLECTED; no open_form/fill/submit | live-04/run.json commands |
+| Form callback/action/version/options changes | NOT_COLLECTED | live-04/run.json commands |
+| Release / cleanup | form_action_releases=0, released=false, browser/profile removed | live-04/run.json:1733; :1843 |
+
+### Configuration Source Checks
+
+| Approved check | Actual result | Source |
+|---|---|---|
+| One Configuration Overview tab link | ../overview/1917, exact relative shape | live-04/01.response.html:696; :698 |
+| Matching Pipelines and Children ids | ../pipeline/1917 and ../children/1917 | live-04/01.response.html:711; :715 |
+| Breadcrumb path; last TRIGGER current | root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER; no link on TRIGGER | live-04/01.response.html:640; :672 |
+| Copy-path literal matches | Same full configuration path, onCopyClipboardLinkDomReady parameter | live-04/01.response.html:93 |
+| Build-name prefix | TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261009.072553 | live-04/01.response.html:736 |
+
+All five are from the freshly archived parent (run.json:1722), not live-03.
+The build-page title is `QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER - TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261009.072553`
+(01.response.html:4). It is not the unread configuration-page title.
+Copy-path strings may be a source for production open_form path checks; recorded
+only, with no change to production open_form in this ruling.
+
+### Parent Variable Mapping
+
+All rows are at live-04/02.response.html:808. Empty label means the actual middle
+cell is empty. Values below are observations from an existing build, not future
+submission defaults or assertions about the unread child variables.
+
+| Form field | Variable name | Display label | Actual value |
+|---|---|---|---|
+| Build Package List | BUILD_PKG_LIST_MODIFY | Build Package List | Four git_path@commit rows, separated by br: ncurses/pam/libtirpc/qemu-accel |
+| BUILD NOTES | BUILD_NOTES | BUILD NOTES | Empty string |
+| BUILD_TYPE | BUILD_TYPE | Empty | Full |
+| BUILD_REFERENCE | BUILD_REFERENCE | Empty | Live |
+| SNAPSHOT_NUM | SNAPSHOT_NUM | Empty | do not need select |
+| PROJECT_BRANCH | PROJECT_BRANCH | Empty | tizen_base |
+| Immediate Stop With Error | FAIL_FAST | Immediate Stop With Error | yes |
+| CHILD_CONFIGURATIONS | CHILD_CONFIGURATIONS | Empty | standard-armv7l:aarch64:x86_64 |
+
+### Stop And Denials
+
+One unresolved stop: **P5Q-C2B-05 / QB_READ_ID_MISMATCH** on child1193469.
+The main frame reached /build/1193469 at125744ms and closed at126290ms; browser
+disconnected at126568ms (run.json:1648). Production read rejects before returning
+redacted HTML. No child DOM or candidate id values were archived, so the evidence
+does not distinguish a missing/duplicate/different id or a timing issue. No
+selector change, retry, workaround or extra request was made. A diagnostic path
+preserving the rejection needs a further ruling before collecting these facts.
+
+Denied requests: ckeditor script5, bootstrap-icons woff/woff2 total8, idle XHR8.
+The ckeditor query is v=1701391813000 (run.json:1351); none was registered.
+trace DENIED=wrapper_denied=21; frame-ownership difference0; WORKER_BLOCKED=0,
+NEW_PAGE=0, runtime_failure=null. Thus this is a read check failure, not target
+interception failure. These denials alone do not establish why the id check failed.
+Request-stage observations: GET82 (61allowed/21denied), POST1allowed (human login
+only); observed responses200 x49 and302 x1. These are interception counts, not
+server-receipt measurements. Form action releases0; no build submission.
+
+### Validation
+
+Evidence-only commit, no production/test/spike changes. Full regression:
+2165 passed/1 skipped (177.67s), mypy113 files, ruff complete staged tree,
+lint-imports6 kept/0 broken and design checker0 problems. Local safety rerun4/4;
+all exit0. Logs: c2b-04-live-validation/. Both archived pages and run.json passed
+the raw-byte redaction recheck; listener/copy function names remain intact.
+Frozen design and live-03 are unchanged. Passing offline gates does not resolve
+the live read-id stop.
+
 ## C2B-04 Evidence Correction
 
 **live-03 页面存在显示名子串误替换,只作参考,不作为字段形态证据**。
 The archived live-03 files remain byte-for-byte unchanged. The historical excerpts
-below are reference only, not field-shape evidence. Replacement evidence from
-live-04 is NOT_COLLECTED pending the approved redaction fix, five configuration
-source checks and a new explicit chat start. No configuration id is registered
+below are reference only, not field-shape evidence. Replacement parent-page
+evidence from live-04 is recorded above; the child/configuration/form evidence
+remains NOT_COLLECTED after the read-id stop. No configuration id was registered
 from live-03. The copy-path string may be a source for production open_form path
 verification; this is recorded only, with no production open_form change.
 
@@ -14,16 +106,15 @@ Offline preparation: redaction fix `6028356` (full2164/1, Node120+29,
 safety4/4); configuration-source fixture27/27 and diagnostic self-test20/20.
 The evidence entry requires a freshly archived parent response and records all
 five checks before registering an id. It rechecks the configuration page's
-breadcrumb and copy-path string before form_evidence. These are fixture results,
-not live results. live-04 login, pages, configuration checks and form callbacks
-remain NOT_COLLECTED until a new explicit chat start.
+breadcrumb and copy-path string before form_evidence. Fixture results do not
+substitute for the separately recorded live-04 results above.
 
-Status: **PARTIAL / STOPPED_CONFIG_LINK_SOURCE**. Latest session is live-03,
+Historical status: **PARTIAL / STOPPED_CONFIG_LINK_SOURCE** for live-03,
 after registration commit `3013899`. Login succeeded; the parent main page and
 variables page were collected. Historical live-01/live-02/live-02b/live-02c
 evidence and the frozen appendix remain unchanged.
 
-## C2B-03 Full Session live-03 (Latest)
+## C2B-03 Full Session live-03 (Historical Reference Only)
 
 FatTank replied with a separate chat start for the second session. The existing
 production agent and evidence entry were run unchanged, with a 600-second login
