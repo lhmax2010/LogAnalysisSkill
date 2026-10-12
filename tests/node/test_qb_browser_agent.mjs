@@ -40,6 +40,47 @@ for (const [phase, path, method] of [
   ['fill', '/wicket/page?50-3', 'GET'],
 ]) test(`allow ${phase} ${method} ${path}`, () => assert.equal(policy(phase).allow(meta(path, method)), true));
 
+for (const query of ['', '0', '123']) {
+  test(`registered login landing accepts query ${JSON.stringify(query)}`, () => {
+    const p = policy('login');
+    assert.equal(p.allow(meta('/dashboard', 'GET', { query }), 'landing'), true);
+    p.active.add('landing');
+    assert.equal(p.allow(meta('/dashboard', 'GET', { query, response_status: 200 }), 'landing'), true);
+  });
+}
+for (const query of ['v=1', '1-2', '1&x=2', 'x=1', '1\n', '1.IBehaviorListener-x']) {
+  test(`registered login landing rejects query ${JSON.stringify(query)}`, () => {
+    assert.equal(policy('login').allow(meta('/dashboard', 'GET', { query })), false);
+  });
+}
+for (const [name, path, method, extra] of [
+  ['post', '/dashboard', 'POST', {}],
+  ['session path', '/dashboard;jsessionid=fixture', 'GET', {}],
+  ['suffix', '/dashboard/extra', 'GET', {}],
+  ['unregistered', '/unregistered-landing', 'GET', {}],
+  ['http', '/dashboard', 'GET', { protocol: 'http:' }],
+  ['foreign', '/dashboard', 'GET', { host: 'example.invalid' }],
+  ['script', '/dashboard', 'GET', { resource_type: 'Script' }],
+  ['ckeditor remains denied', '/ckeditor/ckeditor.js?v=1701391813000', 'GET', { resource_type: 'Script' }],
+  ['font remains denied', '/images/fonts/bootstrap-icons.woff2?8d200481aa7f02a2d63a331fc782cfaf', 'GET', { resource_type: 'Font' }],
+]) test(`registered login landing boundary ${name}`, () => {
+  assert.equal(policy('login').allow(meta(path, method, extra)), false);
+});
+for (const phase of ['read', 'open_form', 'fill', 'submit', 'idle']) {
+  test(`registered landing unavailable outside login: ${phase}`, () => {
+    for (const query of ['', '1']) assert.equal(policy(phase).allow(meta('/dashboard', 'GET', { query })), false);
+  });
+}
+test('registered landing after login redirect does not reopen the POST channels', () => {
+  const p = policy('login');
+  const post = meta('/signin?0-1.IFormSubmitListener-content-form', 'POST');
+  assert.equal(p.allow(post, 'login'), true); p.active.add('login');
+  assert.equal(p.allow({ ...post, response_status: 302 }, 'login'), true);
+  assert.equal(p.allow(meta('/dashboard')), true);
+  assert.equal(p.allow(meta('/wicket/page?1-1.IFormSubmitListener-content-form', 'POST')), false);
+  assert.equal(pathShape('/dashboard'), '/dashboard');
+});
+
 for (const path of ['/signin', '/wicket/page']) {
   test(`login channel exact positive ${path}`, () => {
     assert.equal(policy('login').allow(meta(`${path}?0-1.IFormSubmitListener-content-form`, 'POST'), 'login'), true);

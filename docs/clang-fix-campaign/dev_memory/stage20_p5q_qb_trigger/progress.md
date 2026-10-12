@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2B-03_STEP1_COMPLETE;AWAITING_LOGIN_START**。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2B-03_LANDING_REGISTERED;AWAITING_LIVE03_START**。
 当前轮基线1e3cf4b;P5Q-C2B-03裁定及实施见§19。§18.5保留live-02b历史停点。
 本轮只实现并离线验证登录重试通道;第一步验收/推送后等聊天“开始”才启动live-02c。
 尚未启动live-02c/live-03,C3不启动。
@@ -29,7 +29,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§19 C2B-03第一步全绿,等待聊天启动确认;live-02c/live-03尚未启动,C3不启动 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§19 live-02c诊断完成,按批准范围精确登记/dashboard;live-03待第二次聊天启动确认,C3不启动 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -1166,9 +1166,88 @@ Ruff检查树`e6a43fc977752f56e3f33bd070276a976d990325`,用git archive导出到
 冻结哈希仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`;
 design.md、live-01/live-02/live-02b零diff。
 
-### 19.3 第二、三步状态
+### 19.3 第二步诊断与批准范围内登记
 
-AWAITING_LOGIN_START。第一步提交/推送后在聊天请求“开始”,此前不连接真实QuickBuild。
-live-02c尚未运行,完整Document链、登录响应、三条件与落点准入为NOT_COLLECTED;
-未追加落点或静态资源登记。live-03未运行,页面与BUILD_TYPE联动仍NOT_COLLECTED。
-不得把假服务器成功替代真机证据。C3不启动。
+第一步已独立提交并推送`0c06f15`。FatTank在聊天回复“开始”后,
+仅启动一次live-02c诊断(600秒上限),只发login,不读构建/配置/表单。
+spike按本裁定识别已放行登录POST的全部3xx响应,以及5个已放行登录请求
+均有非3xx响应时停止;不在响应尚未观测时推断“没有3xx”。
+`--self-test .venv/bin/python`共20项通过(exit0,network_requests=0),含原15项脱敏
+与新增5项停止条件;[原文](evidence/C2b/c2b-03-diagnostic-selftest.log)。
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome \
+  docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-02c \
+  .venv/bin/python diagnostic
+```
+
+exit0,DIAGNOSTIC_DONE。完整Document链(均https://quickbuild.tizen.org):
+
+| 请求 | 请求/响应相对毫秒 | 实测 | 证据 |
+|---|---|---|---|
+| GET /signin,空query | 592 / 1575 | allowed / HTTP200 | live-02c/run.json:807 / :821 |
+| POST /signin?0-1.IFormSubmitListener-content-form | 61135 / 61535 | allowed / HTTP302 | live-02c/run.json:849 / :863 |
+| GET /dashboard,空query | 61539 | redirect_hop=true,旧规则拒绝,无响应 | live-02c/run.json:877 |
+
+唯一被拒静态资源为Script `/ckeditor/ckeditor.js?v=1701391813000`
+(1593ms,live-02c/run.json:835)。该资源未证明阻断三条件,继续拒绝,不登记。
+本轮没有观测到bootstrap-icons请求;此前拒绝规则不变。
+
+66547ms满足POST_3XX_DENIED_DOCUMENT_QUIET_5S,工具自行关闭浏览器;
+66553ms page_close / 66562ms disconnected。login应答QB_LOGIN_ABORTED是诊断
+主动关闭的后果,不记作人工关闭或认证失败;三条件成功快照尚未取得。
+请求阶段GET48(46allowed/2denied),POST1allowed;响应阶段HTTP200共38,
+HTTP302共1。以上是拦截观测数,不是服务端实收证明。
+trace DENIED=2,包装拒绝=2,帧归属差额=0;WORKER_BLOCKED=0、NEW_PAGE=0,
+runtime_failure=null;browser/profile均清理;form_action_releases=0,released=false。
+
+报告写前/写后qb_redact检查通过,原始字节sha256:
+`4dba9db4693d8df0ba7e18a22e3b270d67d78e8cd3380f7be57954bcd1f333b6`。
+历史live-01/live-02/live-02b不改。
+
+**准入判断:在预先批准范围内。** `/dashboard`是同源HTTPS、GET、Document,
+字面精确路径符合[A-Za-z0-9/_-],无分号、不在三个禁止前缀内,观测query为空。
+只新增这一条精确登录落点(1<=3),按原批准范围接收空query或全串纯数字;
+不把整个落点前缀或其它路径放开。只改Policy.allow登录分支与pathShape。
+静态资源新增登记0项,旧规则不改;新规则不允许POST/其它阶段/非Document。
+观察到的路径数与已注册路径数均为1,无超范围项,不启动追加登记循环。
+
+### 19.4 登记后验收与第三步人工闸门
+
+登记后全部门禁通过。Node新增24项边界控制(总120),
+覆盖空/数字query正例、其它query/POST/分号路径/后缀/外站/http/非Document/
+read-open_form-fill-submit-idle反例,3xx关闭POST后仍允许登记GET,
+以及ckeditor/字体继续拒绝。四组本机安全从头完整重跑。
+
+本轮日志目录为`evidence/C2b/c2b-03-landing/`;
+Node命令与§19.2相同(本轮node-unit与safety日志为新实跑,不复用旧日志)。
+
+| 命令/验收 | exit | 实测 / 原始日志 |
+|---|---|---|
+| Node --test tests/node/test_qb_browser_agent.mjs | 0 | 120 passed/0 failed;node-unit.log |
+| Node tests/node/p5q_c2b_safety.mjs(§19.2同一本机路径参数) | 0 | 4/4,loopback-only;safety.log |
+| .venv/bin/python -m pytest -q | 0 | 2155 passed,1 skipped,104.49s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+
+Worker组仍走b:shared_worker closeTarget成功、worker异常类别Error,
+QB_BROWSER_UNAVAILABLE后浏览器/目录已清理;攻击HTTP=0、WS握手=0。
+307/308未到下一跳,302正控制到达;逐跳禁止地址/POST重放服务器实收0;
+凭据隔离组通过。登录重试2/2集成也在本轮全量pytest内重跑。
+pytest用例集合与第一步相同,Node内部子用例由96增至120,不混算为pytest新增。
+
+Ruff检查树`71c088761dc0359b55c9d2e24ab6a97e4d6b18d9`,
+`git archive`导出到`/tmp/p5q-c2b-03-landing-lint-1433dj`后执行
+仓库`.venv/bin/ruff check .`;之后仅补文档/日志,代码不变。
+设计冻结哈希仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`;
+design.md与live-01/live-02/live-02b零diff。新增停止报告0项。
+
+live-03尚未运行。须登记提交推送完成后,再次在聊天请求“开始”并等待回复;
+不得把本次live-02c的“开始”复用于第二次人工登录。本裁定共两次会话,
+已使用1次,剩余1次。页面/变量/Child Build/配置与BUILD_TYPE联动均NOT_COLLECTED,
+form_action_releases=0。冻结稿/design.md不改,不进入C3。

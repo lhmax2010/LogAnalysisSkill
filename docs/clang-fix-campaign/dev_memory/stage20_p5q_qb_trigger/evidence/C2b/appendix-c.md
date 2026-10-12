@@ -1,14 +1,54 @@
 # C2b Appendix C Evidence Status
 
-Status: **BLOCKED_LOGIN_SCOPE / NOT_COLLECTED**. Latest C2B-02 supplemental
-diagnostic is live-02b; live-01/live-02 remain unchanged historical evidence.
+Status: **LANDING_REGISTERED / AWAITING_LIVE03_START**. Latest diagnostic is
+live-02c. Historical live-01/live-02/live-02b evidence remains unchanged.
+No successful login snapshot or build/configuration/form page has been collected.
+The frozen appendix is unchanged.
+
+## C2B-03 Diagnostic live-02c (Latest)
+
+The chat start gate was honored. Only login was issued. All Document requests
+below have protocol HTTPS and host quickbuild.tizen.org:
+
+| Complete Document chain | Actual result | Source |
+|---|---|---|
+| GET /signin, empty query | Allowed, HTTP200; 592/1575ms | live-02c/run.json:807, :821 |
+| POST /signin?0-1.IFormSubmitListener-content-form | Allowed, HTTP302; 61135/61535ms | live-02c/run.json:849, :863 |
+| GET /dashboard, empty query | redirect_hop=true, denied by previous rule; 61539ms | live-02c/run.json:877 |
+
+**Registration permitted by C2B-02:** exact `/dashboard` only, login-stage GET
+Document with empty or entirely numeric query. Same origin, literal path,
+no semicolon or prohibited prefix; one path out of the approved maximum three.
+No static resource was registered. Denied Script `/ckeditor/ckeditor.js` query
+`v=1701391813000` (live-02c/run.json:835) is not proven to block login; it remains
+denied. Font rules also remain unchanged.
+
+Ending: DIAGNOSTIC_DONE / POST_3XX_DENIED_DOCUMENT_QUIET_5S at66547ms;
+the tool closed the browser at the diagnostic stop condition. The consequent
+QB_LOGIN_ABORTED reply is not evidence of a human abort or failed authentication.
+Three-condition success remains NOT_COLLECTED. Browser/profile removed,
+runtime_failure=null, WORKER_BLOCKED=0, NEW_PAGE=0. Sources:
+live-02c/run.json:918, :922, :926, :940.
+
+GET48 (46allowed/2denied), POST1allowed; responses HTTP200=38 / HTTP302=1.
+These are interception observations, not server receipt counts.
+Trace DENIED=2 / wrapper denied=2 / frame-ownership difference=0.
+Form action releases=0, released=false (live-02c/run.json:941).
+Pre/post-write qb_redact checks passed; run.json SHA256:
+`4dba9db4693d8df0ba7e18a22e3b270d67d78e8cd3380f7be57954bcd1f333b6`.
+
+Live-03 requires a separate chat start response after registration verification,
+commit and push. No reads or form operations were performed in this diagnostic.
+
+## Previous Stop Context
+
 C2B-01 corrected the fixture;
 all four local safety groups passed before the single live browser session.
 See [safety-c2b-01.log](safety-c2b-01.log) and progress section 17.
 The live session stopped with QB_LOGIN_ABORTED. No retry, build-page read,
 configuration read or form interaction followed. The frozen appendix is unchanged.
 
-## C2B-02 Supplemental Diagnostic (Latest)
+## C2B-02 Supplemental Diagnostic (Historical live-02b)
 
 The chat start gate was honored; FatTank replied to reopen the QB window before
 the single live-02b session. Login ran for 600 seconds and ended QB_LOGIN_TIMEOUT.
@@ -133,7 +173,7 @@ counts; repeated font attempts are counted separately. Build/form POST=0.
 | Child configuration suffix and TRIGGER_ID/BUILD_PKG_LIST/FAIL_FAST/EACH_GBS_BUILD_STATUS | NOT_COLLECTED |
 | Child Build table and Repository-Architecture comparison | NOT_COLLECTED |
 | Failed sample RBS path, child Status and Build Result | NOT_COLLECTED |
-| Real login conditions, landing and denied static resources | PARTIAL: live-02b exact metadata above; no302, Wicket POST denied, no successful three-condition snapshot |
+| Real login conditions, landing and denied static resources | PARTIAL: live-02c POST302 -> GET /dashboard denied; path registered within approved scope, ckeditor remains denied; no successful three-condition snapshot yet |
 | BUILD_TYPE Full -> Partial -> Full callbacks/action/version/options | NOT_COLLECTED |
 
 All build/configuration items above remain NOT_COLLECTED: 1193467/1193469,

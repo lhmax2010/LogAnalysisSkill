@@ -26,9 +26,16 @@ let stopped = false;
 let actionReleases = 0;
 let sequence = 0;
 let lastRequest = 0;
-let post302 = false;
-let deniedDocumentAfter302 = false;
+let postRedirect = false;
+let deniedDocumentAfterRedirect = false;
+const loginPostResponses = new Set();
 let wrapperDenied = 0;
+
+export function diagnosticStopReason({ redirect, deniedDocument, lastRequest, now, loginResponseCount }) {
+  if (!redirect && loginResponseCount >= 5) return 'LOGIN_POST_LIMIT_NO_REDIRECT';
+  if (redirect && deniedDocument && now - lastRequest >= 5000) return 'POST_3XX_DENIED_DOCUMENT_QUIET_5S';
+  return null;
+}
 
 // Only URL components supplied by the production metadata adapter enter here.
 export function redactAddress(path, query) {
@@ -87,7 +94,18 @@ async function selfTest(interpreter) {
     assert.throws(() => checkedReport(raw, interpreter, users), { code: 'QB_EVIDENCE_REDACTION_FAILED' });
     emit({ test: name, result: 'PASS' });
   }
-  emit({ self_tests: 15, passed: 15, network_requests: 0 });
+  for (const [name, changes, expected] of [
+    ['no-post-keeps-login-timeout', { now: 600000 }, null],
+    ['four-login-responses-keep-waiting', { loginResponseCount: 4 }, null],
+    ['five-login-responses-no-redirect-stop', { loginResponseCount: 5 }, 'LOGIN_POST_LIMIT_NO_REDIRECT'],
+    ['redirect-not-yet-quiet', { redirect: true, deniedDocument: true, loginResponseCount: 5, now: 4999 }, null],
+    ['redirect-quiet-done', { redirect: true, deniedDocument: true, loginResponseCount: 5, now: 5000 }, 'POST_3XX_DENIED_DOCUMENT_QUIET_5S'],
+  ]) {
+    assert.equal(diagnosticStopReason({ redirect: false, deniedDocument: false,
+      lastRequest: 0, now: 0, loginResponseCount: 0, ...changes }), expected);
+    emit({ test: name, result: 'PASS' });
+  }
+  emit({ self_tests: 20, passed: 20, network_requests: 0 });
 }
 
 function emit(row) { process.stdout.write(JSON.stringify(row) + '\n'); }
@@ -98,6 +116,7 @@ async function persist() {
     form_action_releases: actionReleases, released: runtime?.policy.released ?? false,
     trace_denied_count: traceDenied, wrapper_denied_count: wrapperDenied,
     frame_ownership_denied_count: traceDenied - wrapperDenied,
+    login_redirect_seen: postRedirect, login_response_count: loginPostResponses.size,
     denied_count_note: 'trace DENIED minus allow-wrapper denials are frame-ownership denials',
   }, null, 2) + '\n';
   const path = `${directory}/run.json`;
@@ -217,8 +236,12 @@ try {
         resource_type: metadata.resource_type, response_status: metadata.response_status,
         redirect_hop: metadata.redirect_source !== null, allowed: permitted });
     }
-    if (runtime.policy.phase === 'login' && metadata.method === 'POST' && metadata.response_status === 302) post302 = true;
-    if (post302 && !permitted && metadata.resource_type === 'Document' && metadata.response_status === null) deniedDocumentAfter302 = true;
+    if (runtime.policy.loginPostRequests.has(requestId) && metadata.response_status !== null) {
+      loginPostResponses.add(requestId);
+      if (metadata.response_status >= 300 && metadata.response_status < 400) postRedirect = true;
+    }
+    if (postRedirect && !permitted && metadata.resource_type === 'Document'
+      && metadata.response_status === null) deniedDocumentAfterRedirect = true;
     const shape = pathShape(metadata.path);
     const staticPath = /^\/(?:styles|jquery|scripts|datetimepicker|codemirror|wicket\/resource|images)\/[A-Za-z0-9_./~-]+$/.test(metadata.path);
     report.traffic.push({ operation, phase: runtime.policy.phase, method: metadata.method,
@@ -230,8 +253,11 @@ try {
   };
   const watchdog = setInterval(() => {
     if (runtime.failure) stop(runtime.failure);
-    if (mode === 'diagnostic' && !stopped && deniedDocumentAfter302 && elapsed() - lastRequest >= 5000) {
-      diagnosticDone('POST_302_DENIED_DOCUMENT_QUIET_5S');
+    if (mode === 'diagnostic' && !stopped) {
+      const reason = diagnosticStopReason({ redirect: postRedirect, deniedDocument: deniedDocumentAfterRedirect,
+        lastRequest, now: elapsed(), loginResponseCount: loginPostResponses.size });
+      if (reason === 'LOGIN_POST_LIMIT_NO_REDIRECT') stop(reason);
+      else if (reason) diagnosticDone(reason);
     }
   }, 25);
   const nameWatch = setInterval(() => { void rememberLoginNames(); }, 500);

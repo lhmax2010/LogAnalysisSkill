@@ -91,6 +91,9 @@ export class Policy {
       && (!m.query || /^v=\d+$/.test(m.query)) && !/Listener/i.test(m.query)) return true;
     if (this.phase === 'login') {
       if (m.method === 'GET' && ['/signin', '/', '/overview/0'].includes(m.path) && !m.query) return true;
+      // Observed in live-02c; C2B-02 permits numeric login landing page versions.
+      if (m.method === 'GET' && m.resource_type === 'Document' && m.path === '/dashboard'
+        && (!m.query || m.query.match(/^\d+$/)?.[0] === m.query)) return true;
       if (this.loginPostsClosed || m.method !== 'POST'
         || !['/signin', '/wicket/page'].includes(m.path)
         || m.query.match(/^\d+-\d+\.IFormSubmitListener-content-form$/)?.[0] !== m.query) return false;
@@ -212,7 +215,7 @@ export async function installGuards(browser, context, page, policy, onStop, trac
 export function pathShape(path) {
   if (/^\/build\/\d+(?:\/(overview|variables|step_status))?$/.test(path)) return path.replace(/\d+/, '<id>');
   if (/^\/overview\/\d+$/.test(path)) return '/overview/<id>';
-  if (path === '/' || path === '/wicket/page' || path === '/signin') return path;
+  if (path === '/' || path === '/dashboard' || path === '/wicket/page' || path === '/signin') return path;
   return '<other>';
 }
 
