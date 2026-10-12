@@ -1,0 +1,213 @@
+{
+  "source_sha256": {
+    "01.response.html": "37a6c160ff28b158b9696c1410780d027e1b8bac2f2906755a85d2f0d49871ff",
+    "02.response.html": "22a32b0f94c2e6e06ebb38f8692008b5b2132c1bcf14aa25d73952763666147d",
+    "run.json": "5840de6fcf50ca272bcc4c0029f84798d4b1dd079d5e6487a61a8acf1dff7597"
+  },
+  "byte_self_checks": "PASS",
+  "network_requests_by_this_offline_analysis": 0,
+  "breadcrumb": {
+    "source": "01.response.html:640",
+    "links": [
+      {
+        "text": "",
+        "href": "javascript:void(0);",
+        "line": 643
+      },
+      {
+        "text": "CI_TIZEN",
+        "href": "2.latest",
+        "line": 647
+      },
+      {
+        "text": "",
+        "href": "javascript:void(0);",
+        "line": 648
+      },
+      {
+        "text": "TIZEN",
+        "href": "14.latest",
+        "line": 652
+      },
+      {
+        "text": "",
+        "href": "javascript:void(0);",
+        "line": 653
+      },
+      {
+        "text": "Tizen",
+        "href": "148.latest",
+        "line": 657
+      },
+      {
+        "text": "",
+        "href": "javascript:void(0);",
+        "line": 658
+      },
+      {
+        "text": "Tizen-Base-Toolchain",
+        "href": "1913.latest",
+        "line": 662
+      },
+      {
+        "text": "",
+        "href": "javascript:void(0);",
+        "line": 663
+      },
+      {
+        "text": "RBS",
+        "href": "1914.latest",
+        "line": 667
+      },
+      {
+        "text": "",
+        "href": "javascript:void(0);",
+        "line": 668
+      }
+    ],
+    "overview_link_count": 0
+  },
+  "configuration_tab": [
+    {
+      "text": "Configuration Overview",
+      "href": "../overview/1917",
+      "resolved_url": "https://quickbuild.tizen.org/overview/1917",
+      "source": "01.response.html:698",
+      "registered": false
+    }
+  ],
+  "parent_variables": [
+    {
+      "name": "BUILD_NOTES",
+      "label": "BUILD NOTES",
+      "value": "",
+      "source": "02.response.html:808"
+    },
+    {
+      "name": "BUILD_PKG_LIST_MODIFY",
+      "label": "Build Package List",
+      "value": "platform/upstream/ncurses@206bb818958ab5f51fc5d754fb373d20d21c0e72\nplatform/upstream/pam@e439393f000b9ad3bc6c38a1f77d63eb727ec86e\nplatform/upstream/libtirpc@05ba2378f56fe0e594ad7a6b3679926dc0b7219e\nplatform/upstream/qemu-accel@881d7adf4932c1abfccba5eb1e3d8d9021be2ed6",
+      "source": "02.response.html:808"
+    },
+    {
+      "name": "BUILD_REFERENCE",
+      "label": "",
+      "value": "Live",
+      "source": "02.response.html:808"
+    },
+    {
+      "name": "BUILD_TYPE",
+      "label": "",
+      "value": "Full",
+      "source": "02.response.html:808"
+    },
+    {
+      "name": "CHILD_CONFIGURATIONS",
+      "label": "",
+      "value": "standard-armv7l:aarch64:x86_64",
+      "source": "02.response.html:808"
+    },
+    {
+      "name": "FAIL_FAST",
+      "label": "Immediate Stop With Error",
+      "value": "yes",
+      "source": "02.response.html:808"
+    },
+    {
+      "name": "PROJECT_BRANCH",
+      "label": "",
+      "value": "tizen_base",
+      "source": "02.response.html:808"
+    },
+    {
+      "name": "SNAPSHOT_NUM",
+      "label": "",
+      "value": "do not need select",
+      "source": "02.response.html:808"
+    }
+  ],
+  "login": {
+    "ok": true,
+    "path": "/dashboard",
+    "query": "",
+    "empty_query": true,
+    "not_signin": true,
+    "password_inputs": 0,
+    "sign_out_links": 1
+  },
+  "request_stage_counts": [
+    {
+      "method": "GET",
+      "allowed": false,
+      "count": 18
+    },
+    {
+      "method": "GET",
+      "allowed": true,
+      "count": 70
+    },
+    {
+      "method": "POST",
+      "allowed": true,
+      "count": 1
+    }
+  ],
+  "response_status_counts": {
+    "200": 58,
+    "302": 1
+  },
+  "denied_summary": [
+    {
+      "phase": "idle",
+      "path": "/wicket/page",
+      "resource_type": "XHR",
+      "count": 3
+    },
+    {
+      "phase": "login",
+      "path": "/ckeditor/ckeditor.js",
+      "resource_type": "Script",
+      "count": 2
+    },
+    {
+      "phase": "login",
+      "path": "/images/fonts/bootstrap-icons.woff",
+      "resource_type": "Font",
+      "count": 1
+    },
+    {
+      "phase": "login",
+      "path": "/images/fonts/bootstrap-icons.woff2",
+      "resource_type": "Font",
+      "count": 1
+    },
+    {
+      "phase": "login",
+      "path": "/wicket/page",
+      "resource_type": "XHR",
+      "count": 5
+    },
+    {
+      "phase": "read",
+      "path": "/ckeditor/ckeditor.js",
+      "resource_type": "Script",
+      "count": 2
+    },
+    {
+      "phase": "read",
+      "path": "/images/fonts/bootstrap-icons.woff",
+      "resource_type": "Font",
+      "count": 2
+    },
+    {
+      "phase": "read",
+      "path": "/images/fonts/bootstrap-icons.woff2",
+      "resource_type": "Font",
+      "count": 2
+    }
+  ],
+  "form_action_releases": 0,
+  "runtime_failure": null,
+  "browser_closed": true,
+  "profile_removed": true
+}

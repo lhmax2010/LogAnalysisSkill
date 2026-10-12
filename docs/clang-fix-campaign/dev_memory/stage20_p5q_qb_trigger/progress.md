@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2B-03_LANDING_REGISTERED;AWAITING_LIVE03_START**。
+日期:2026-10-12。状态:**C2a_COMPLETE;C2B_LIVE03_PARTIAL;STOPPED_CONFIG_LINK_SOURCE**。
 当前轮基线1e3cf4b;P5Q-C2B-03裁定及实施见§19。§18.5保留live-02b历史停点。
 本轮只实现并离线验证登录重试通道;第一步验收/推送后等聊天“开始”才启动live-02c。
 尚未启动live-02c/live-03,C3不启动。
@@ -29,7 +29,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§19 live-02c诊断完成,按批准范围精确登记/dashboard;live-03待第二次聊天启动确认,C3不启动 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§19.5 live-03三条件登录成功,父主页/变量页已取;配置普通链接在标签而非指定面包屑,停止报告;其余NOT_COLLECTED,C3不启动 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -1251,3 +1251,103 @@ live-03尚未运行。须登记提交推送完成后,再次在聊天请求“开
 不得把本次live-02c的“开始”复用于第二次人工登录。本裁定共两次会话,
 已使用1次,剩余1次。页面/变量/Child Build/配置与BUILD_TYPE联动均NOT_COLLECTED,
 form_action_releases=0。冻结稿/design.md不改,不进入C3。
+
+### 19.5 第三步 live-03:部分取得,配置链接来源停止报告
+
+前置登记提交`3013899`已推送,全量2155/1、四组安全4/4等证据见§19.4。
+FatTank再次在聊天回复“开始”后,启动本裁定第二次且最后一次人工登录会话:
+
+```bash
+env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code \
+  docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs \
+  /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs \
+  /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome \
+  docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-03 \
+  .venv/bin/python full
+```
+
+login_timeout_seconds=600。GET /signin=200;人工POST
+`/signin?0-1.IFormSubmitListener-content-form`=302;GET /dashboard=200。
+登录三条件快照通过:非signin、password_inputs=0、sign_out_links=1,
+实际落点/dashboard且query为空(run.json:1754)。
+仅发出login与两个read命令;取证入口stop控制结束会话,exit1,
+`OBSERVATION_MISMATCH`。该exit是主动停止报告,不是浏览器拦截失效。
+
+证据均位于`evidence/C2b/live-03/`,页面由生产代理先脱敏再归档、写后自检:
+
+| 请求/证据 | 结果 | sha256 |
+|---|---|---|
+| /build/1193467 / 01.response.html | HTTP200,导航与Summary构建号核对通过 | 37a6c160ff28b158b9696c1410780d027e1b8bac2f2906755a85d2f0d49871ff |
+| /build/1193467/variables / 02.response.html | HTTP200,导航构建号核对通过 | 22a32b0f94c2e6e06ebb38f8692008b5b2132c1bcf14aa25d73952763666147d |
+| run.json | STOPPED,login成功,无表单放行 | 5840de6fcf50ca272bcc4c0029f84798d4b1dd079d5e6487a61a8acf1dff7597 |
+
+父构建title为`QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER - TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261009.072553`
+(01:4)。Child Build表一行,Repository-Architecture精确为
+`standard-armv7l:aarch64:x86_64`(01:890),子构建普通链接1193469(01:891),
+Build Result为`FAILED`(01:892);父Summary Status=`Failed`(01:925)。
+因此本次观测不能称为“成功样本”,更不能由父表推断子页Status。
+
+父变量的原名/显示名/值均在02:808,结构化摘录见observations.json:
+BUILD_NOTES / BUILD NOTES / 空串;
+BUILD_PKG_LIST_MODIFY / Build Package List / 四行git_path@commit;
+BUILD_REFERENCE / 空显示名 / Live;
+BUILD_TYPE / 空显示名 / Full;
+SNAPSHOT_NUM / 空显示名 / do not need select;
+PROJECT_BRANCH / 空显示名 / tizen_base。
+另有父FAIL_FAST=yes、CHILD_CONFIGURATIONS=固定冒号串;不代替未读的子变量。
+这是既有构建的取证值,不当作工具未来填写的冻结参数。
+
+**P5Q-C2B-04 OPEN:配置页链接来源与任务书限定不符(1条新停止项)。**
+
+- 原文位置:原C2b任务“二、真机只读取证”配置项要求从父主页“面包屑中”
+  取得普通`/overview/数字`链接;C2B-02“第三步”第2条重申从已归档父构建
+  的面包屑取得overview_id;C2B-03第三步沿用该要求。冻结第9.4节要求取得
+  配置页证据,本项是取证入口来源的缺口,不擅自记为冻结行为错误。
+- 实测位置:01:640的`#breadcrumb`中仅有祖先的`*.latest`链接,
+  当前TRIGGER为无href的span(01:672);面包屑普通overview链接计数=0。
+  相邻但独立的`#configuration-header`导航标签在01:698提供
+  `Configuration Overview`、href=`../overview/1917`。
+- 离线复核:复用既有spike的HTML DOM解析器,按节点边界枚举,
+  observations.json保存面包屑完整href清单和唯一配置标签链接。
+  标准URL解析得`https://quickbuild.tizen.org/overview/1917`,仅作为候选记录,
+  未登记、未请求;没有由1914.latest、编号规律或旧SBS样本猜测。
+- 候选处置(待设计方裁定,未实施):允许从同一已归档父主页的
+  `Configuration Overview`普通导航标签取得id,仍限定同源HTTPS、无query、
+  精确/overview/数字及配置完整路径核对;不改生产放行规则和安全边界。
+- 停点行为:检查已取得两页时发现后立即发stop并关闭浏览器;
+  run.json记录的当前路径为最后一次read的变量页,来源不符的证据在主页。
+  1193467/step_status、1193469三页、1186372及其子构建、配置页、
+  BUILD_TYPE Full→Partial→Full全部NOT_COLLECTED。不为收齐页面继续请求,
+  不修改代理、冻结稿或design.md,不进入C3。
+
+请求阶段GET88(70allowed/18denied)、POST1allowed(仅人工登录);
+响应阶段200共58、302共1。这些是拦截观测数,不是服务端实收计数。
+被拒18项:ckeditor4、字体woff/woff2共6、dashboard gadget XHR5、
+idle刷新XHR3。登录后拒绝只登记事实,不追加允许项。
+XHR带random形态已脱敏记录,不是BUILD_TYPE回调的证据,不据此放宽表单规则。
+trace DENIED=18、wrapper=18、帧归属差额0;WORKER_BLOCKED=0、NEW_PAGE=0,
+runtime_failure=null。browser_closed=true、profile_removed=true,
+form_action_releases=0,released=false;open_form/fill/submit均未调用。
+全部原始报告与两页另经qb_redact原始字节复检通过。
+本裁定两次会话额度已用完,不自动重试;后续须设计方明确取证来源后继续。
+
+本轮提交只含证据与文档,生产代码/测试/冻结稿不改。
+新日志在`evidence/C2b/c2b-03-live-validation/`:
+
+| 命令 | exit | 结果 / 日志 |
+|---|---|---|
+| .venv/bin/python -m pytest -q | 0 | 2155 passed,1 skipped,175.64s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+| Node tests/node/p5q_c2b_safety.mjs(§19.2同一本机路径参数) | 0 | 4/4,loopback-only;safety.log |
+
+本次四组额外重跑与真机网络分开:Worker/WebSocket仍走b,攻击HTTP=0、
+WS握手=0,shared_worker closeTarget成功/worker异常Error,
+浏览器与目录均已清理;其它三组均通过。全量pytest同时覆盖Node单元与本机集成,
+未增加/删除任何测试。Ruff树`20db3c33867bd25455e92328e1f3c71a02e91107`,
+导出到`/tmp/p5q-c2b-live03-lint-es1h7f`,之后只补文档/日志。
+live-03两页、run.json、observations.json分别复跑PageRedactor.check_written全部通过。
+冻结sha256仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
+待设计方处置P5Q-C2B-04,不以门禁绿冒充真机取证完成。

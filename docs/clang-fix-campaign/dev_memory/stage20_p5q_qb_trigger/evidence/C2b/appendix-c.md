@@ -1,11 +1,118 @@
 # C2b Appendix C Evidence Status
 
-Status: **LANDING_REGISTERED / AWAITING_LIVE03_START**. Latest diagnostic is
-live-02c. Historical live-01/live-02/live-02b evidence remains unchanged.
-No successful login snapshot or build/configuration/form page has been collected.
-The frozen appendix is unchanged.
+Status: **PARTIAL / STOPPED_CONFIG_LINK_SOURCE**. Latest session is live-03,
+after registration commit `3013899`. Login succeeded; the parent main page and
+variables page were collected. Historical live-01/live-02/live-02b/live-02c
+evidence and the frozen appendix remain unchanged.
 
-## C2B-03 Diagnostic live-02c (Latest)
+## C2B-03 Full Session live-03 (Latest)
+
+FatTank replied with a separate chat start for the second session. The existing
+production agent and evidence entry were run unchanged, with a 600-second login
+timeout. Precondition: Node safety 4/4 and full2155/1 after landing registration
+(c2b-03-landing/safety.log, pytest.log). This session stops at a source-location
+mismatch; it does not complete C2b or authorize C3.
+
+### Login And Pages
+
+| Observation | Actual result | Source |
+|---|---|---|
+| GET /signin | HTTP200, 591/1588ms | live-03/run.json:1367, :1381 |
+| Human POST /signin?0-1.IFormSubmitListener-content-form | HTTP302, 333660/334620ms | live-03/run.json:1409, :1423 |
+| Redirect GET /dashboard, empty query | Allowed, HTTP200, 334624/335055ms | live-03/run.json:1437, :1451 |
+| Three login conditions | not_signin=true; password_inputs=0; sign_out_links=1 | live-03/run.json:1754 |
+| /build/1193467 | HTTP200, id verified; archived 01.response.html | live-03/run.json:19 |
+| /build/1193467/variables | HTTP200, id verified; archived 02.response.html | live-03/run.json:25 |
+| /build/1193467/step_status | NOT_COLLECTED, stopped before read | live-03/run.json:4 command list |
+| Child 1193469, three pages | NOT_COLLECTED; id observed only in parent link | live-03/01.response.html:891 |
+| Failed sample1186372 and its child | NOT_COLLECTED, including RBS path verification | live-03/run.json:4 command list |
+| RBS configuration page | NOT_COLLECTED; candidate1917 not registered/requested | live-03/observations.json configuration_tab |
+
+Parent title:
+`QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER - TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261009.072553`
+(01.response.html:4). This is the build-page title, not a substitute for the
+unread configuration-page title. Parent Summary Status is `Failed` (01:925),
+so this session does not establish a successful sample.
+
+### Parent Variable Mapping
+
+Each row is present at live-03/02.response.html:808. Multiple table rows share a
+single source line; observations.json retains the parsed row boundaries and values.
+Blank display label means the actual middle cell is blank, not an inferred label.
+
+| Form field | Actual variable name | Display label | Observed value |
+|---|---|---|---|
+| Build Package List | BUILD_PKG_LIST_MODIFY | Build Package List | Four git_path@commit lines: ncurses, pam, libtirpc, qemu-accel; full values in observations.json |
+| BUILD NOTES | BUILD_NOTES | BUILD NOTES | Empty string |
+| BUILD_TYPE | BUILD_TYPE | Blank | Full |
+| BUILD_REFERENCE | BUILD_REFERENCE | Blank | Live |
+| SNAPSHOT_NUM | SNAPSHOT_NUM | Blank | do not need select |
+| PROJECT_BRANCH | PROJECT_BRANCH | Blank | tizen_base |
+
+The parent also contains FAIL_FAST=yes (display label Immediate Stop With Error)
+and CHILD_CONFIGURATIONS=standard-armv7l:aarch64:x86_64 at the same source line.
+These are not evidence for the unvisited child's variables. Existing sample
+parameters are not asserted to equal future tool-submission parameters.
+
+### Child Build Table
+
+The heading is at01:879. Columns at01:883 are Repository-Architecture,
+QB Build URL, Build Result, Build Profiling. There is one body row: exact
+`standard-armv7l:aarch64:x86_64` at01:890, child1193469 link at01:891,
+`FAILED` at01:892. The architecture cell contains no extra text; this observation
+supports exact colon-joined comparison for this sample only. Child Status,
+TRIGGER_ID, BUILD_PKG_LIST, FAIL_FAST and EACH_GBS_BUILD_STATUS remain NOT_COLLECTED;
+the parent summary/table cannot supply them.
+
+### Stop: P5Q-C2B-04 OPEN
+
+The task prescribes an ordinary overview link from the parent's **breadcrumb**.
+Actual `#breadcrumb` starts at01:640, with ancestor `*.latest` links and a plain
+TRIGGER span at01:672. DOM enumeration finds zero overview links in that subtree.
+A separate Configuration Overview navigation tab at01:698 contains
+`../overview/1917`, resolving to `https://quickbuild.tizen.org/overview/1917`.
+See observations.json for the complete breadcrumb href list and separate tab.
+
+The script was stopped without substituting the tab for the specified source:
+no register_config, no configuration GET, no open_form/fill/submit. Proposed
+disposition, NOT implemented: approve the exact ordinary Configuration Overview
+tab link from the same archived parent, retaining same-origin HTTPS, empty-query,
+literal /overview/<digits> and full configuration-path checks. This is a task
+source-location discrepancy, not an asserted unsafe-browser failure.
+
+### Denials, Form Linkage And Cleanup
+
+| Denied group | Count / phase | Source |
+|---|---|---|
+| /ckeditor/ckeditor.js?v=1701391813000 | 4; login2/read2 | run.json:1395, :1465, :1591, :1647 |
+| /images/fonts/bootstrap-icons.woff2 and .woff | 6; login2/read4; non-v query masked | run.json:1479, :1493, :1605, :1619, :1661, :1675 |
+| /wicket/page dashboard gadget XHR | 5; login; listener plus masked random | run.json:1507 through :1563 |
+| /wicket/page refresh XHR | 3; idle; masked action/random | run.json:1577, :1633, :1689 |
+
+All stayed denied; no post-login registration was added. Rejected dashboard/refresh
+XHR with random is not a BUILD_TYPE callback observation and does not authorize
+loosening the form rule. Login still met all three conditions.
+
+GET88 attempts (70allowed/18denied); POST1allowed (human login only).
+Response observations: HTTP200=58, HTTP302=1. Counts are browser interception
+observations, not server receipt counts. TraceDENIED=18, wrapperDENIED=18,
+frame-ownership difference=0; no WORKER_BLOCKED or NEW_PAGE, runtime_failure=null.
+The observation stop returned exit1, browser_closed=true and profile_removed=true.
+Form action releases=0, released=false. BUILD_TYPE Full -> Partial -> Full and all
+form callback/action/version/options evidence remain NOT_COLLECTED. No Ok click,
+configuration run or build submission occurred. Both authorized sessions are used;
+no retry or C3 work follows this stop.
+
+All three source files passed qb_redact byte checks before/after writing and
+independent offline rechecking. SHA256 anchors:
+
+| File | SHA256 |
+|---|---|
+| live-03/01.response.html | 37a6c160ff28b158b9696c1410780d027e1b8bac2f2906755a85d2f0d49871ff |
+| live-03/02.response.html | 22a32b0f94c2e6e06ebb38f8692008b5b2132c1bcf14aa25d73952763666147d |
+| live-03/run.json | 5840de6fcf50ca272bcc4c0029f84798d4b1dd079d5e6487a61a8acf1dff7597 |
+
+## C2B-03 Diagnostic live-02c (Historical)
 
 The chat start gate was honored. Only login was issued. All Document requests
 below have protocol HTTPS and host quickbuild.tizen.org:
@@ -168,18 +275,19 @@ counts; repeated font attempts are counted separately. Build/form POST=0.
 
 | Required observation | Status |
 |---|---|
-| RBS overview_id, breadcrumb source and configuration title | NOT_COLLECTED |
-| Parent variables: Build Package List, BUILD NOTES, BUILD_TYPE, BUILD_REFERENCE, SNAPSHOT_NUM, PROJECT_BRANCH | NOT_COLLECTED |
+| RBS overview_id, breadcrumb source and configuration title | PARTIAL: candidate1917 is a separate tab, breadcrumb overview count0; config page NOT_COLLECTED, source approval pending |
+| Parent variables: Build Package List, BUILD NOTES, BUILD_TYPE, BUILD_REFERENCE, SNAPSHOT_NUM, PROJECT_BRANCH | COLLECTED for1193467: six mappings in live-03/02.response.html:808; not collected for1186372 |
 | Child configuration suffix and TRIGGER_ID/BUILD_PKG_LIST/FAIL_FAST/EACH_GBS_BUILD_STATUS | NOT_COLLECTED |
-| Child Build table and Repository-Architecture comparison | NOT_COLLECTED |
+| Child Build table and Repository-Architecture comparison | COLLECTED for1193467: one row, exact colon string, child1193469, FAILED; child page NOT_COLLECTED |
 | Failed sample RBS path, child Status and Build Result | NOT_COLLECTED |
-| Real login conditions, landing and denied static resources | PARTIAL: live-02c POST302 -> GET /dashboard denied; path registered within approved scope, ckeditor remains denied; no successful three-condition snapshot yet |
+| Real login conditions, landing and denied static resources | COLLECTED in live-03: POST302 -> /dashboard200, three conditions true; static/XHR denials above, no extra registrations |
 | BUILD_TYPE Full -> Partial -> Full callbacks/action/version/options | NOT_COLLECTED |
 
-All build/configuration items above remain NOT_COLLECTED: 1193467/1193469,
-1186372 and its unknown child, and the RBS overview_id were not read or guessed.
+Only1193467 main/variables were collected. The remaining build/configuration items
+remain NOT_COLLECTED:1193467 steps,1193469 pages,1186372 and its unknown child,
+and the RBS configuration page; the candidate overview_id was not registered.
 BUILD_TYPE Full -> Partial -> Full was NOT_RUN; there are no observed callbacks,
 action versions, refreshes or option changes to report. Form action was never
 registered or released. Existing SBS evidence does not fill any missing RBS field.
-C3 remains blocked. No frozen behavior discrepancy is claimed as proven from an
-unidentified denied destination; the concrete live failure is recorded instead.
+C3 remains blocked. The exact source-location mismatch and proposed disposition
+are recorded above; no further collection or rule change follows this stop.
