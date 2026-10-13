@@ -1,11 +1,80 @@
 # C2b Appendix C Evidence Status
 
-Status: **PARTIAL / LIVE08_STOPPED_CONFIGURATION_SOURCE_MISMATCH**.
-Latest session: live-08, 2026-10-13, five archived VERIFIED build pages.
+Status: **PARTIAL / LIVE09_STOPPED_QB_FORM_CHANGED**.
+Latest session: live-09, 2026-10-13, five VERIFIED build pages and one verified configuration page.
 Historical observations below are kept, not substituted for missing results.
 This document records observations, not permission to start C3.
 
-## C2B-07 Preparation (live-09 Not Started)
+## C2B-07 live-09 (Latest Session)
+
+Baseline b9b4d71, new chat start, ping/pong before browser creation, unchanged
+production/frozen design. All references in this section are under `live-09/`.
+Login succeeded at /dashboard with no password inputs and one Sign Out link;
+the three conditions and empty query are recorded in run.json:2340.
+
+| Requested item | Actual observation | Source |
+|---|---|---|
+| 1193467 overview / variables | Both HTTP200, VERIFIED | 01.response.html;02.response.html;run.json pages |
+| 1193469 overview / variables / step_status | All HTTP200, VERIFIED; no ID_UNVERIFIED | 03.response.html;04.response.html;05.response.html |
+| Child Summary / parent Child Build result | Failed / FAILED, read independently | 03.response.html:828;01.response.html:892 |
+| Configuration source | id1917 from this session; all five checks PASS | run.json:2457 |
+| Three source hrefs | ../../overview/1917, ../../pipeline/1917, ../../children/1917 resolve to same-origin exact paths | 01.response.html:698/:711/:715 |
+| Parent breadcrumb / copy path / build name | Base/RBS/TRIGGER full path and matching TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_ prefix | run.json:2354;01.response.html:93/:736 |
+| Configuration page | HTTP200; breadcrumb and copy path both PASS, matching root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER | 06.response.html:4/:710/:93;run.json:2476 |
+| Run control | One button with approved onclick shape; archived page points to ?8-1.ILinkListener-run | 06.response.html:752 |
+| Production open_form | Reloads configuration, follows fresh ?9-1.ILinkListener-run302 to ?10 HTTP200, then QB_FORM_CHANGED | run.json:2519/:2328 |
+| Form field operations | NOT_COLLECTED; no BUILD_TYPE change performed | run.json commands; no form/form_transitions |
+| Callback/action/options/reference field values, transition versions/rerender/random | NOT_COLLECTED; no form snapshot or form HTML was archived | run.json |
+| Release / cleanup | form_action_releases=0,released=false; browser/profile cleanup true | run.json:2784/:2599 |
+
+Page version8 in the separately archived configuration and version9 in the
+subsequent production open_form are distinct page visits; the script did not
+reuse an old action URL. Only the opening Document chain is observed, ending
+at page10 with has_random=false. This is not a BUILD_TYPE callback observation.
+The raw stop.path_shape is /overview/<id> because the evidence script changes
+current only after open_form succeeds; events record the actual form navigation.
+Five/two configuration checks did not fail. The precise failed form structural
+condition is not identified by the returned error; missing form content is not
+inferred from old samples. No retry, rule change, resource registration or C3.
+
+### Fresh Variable Observations
+
+The source rows are 02.response.html:808 and 04.response.html:800;
+variables-check.log is a local HTMLParser extraction, not another request.
+Parent BUILD_PKG_LIST_MODIFY / Build Package List has four target lines;
+BUILD_NOTES / BUILD NOTES is present and empty; BUILD_TYPE=Full,
+BUILD_REFERENCE=Live, SNAPSHOT_NUM=do not need select, PROJECT_BRANCH=tizen_base.
+Child TRIGGER_ID=1193467, FAIL_FAST / Immediate Stop With Error=yes,
+EACH_GBS_BUILD_STATUS is present and empty, REPO_ARCH=standard-armv7l:aarch64:x86_64.
+Child BUILD_PKG_LIST contains245 lines including all four parent targets,
+BUILD_REFERENCE=Ref. Snapshot and SNAPSHOT_NUM_URL is present (not followed).
+The child configuration is Base/RBS/build (03.response.html:4/:93), not TRIGGER.
+The parent has a combined architecture Child Build row, not independent results.
+The step page is archived; the prior live-08 step table remains historical.
+No successful child, form defaults/options or new target-equivalence rule is inferred.
+
+### Traffic And Stop
+
+Request-stage GET110/POST1 (human login only), allowed75/denied36;
+response-stage HTTP200x60/302x2. These are interception observations, not server
+receipt counts. Denied: ckeditor10, bootstrap-icons.woff9/woff2x9, Wicket XHR8.
+The presence of denied resources does not establish the cause of QB_FORM_CHANGED.
+Trace/wrapper denials36/36, frame-ownership0; WORKER_BLOCKED/NEW_PAGE0,
+runtime_failure=null. Browser and temporary profile were removed; process exit1
+is the required stop, not a passing form test. Form action releases0.
+
+run.json SHA256: `9cb7a31f1afd8e2241dc32b2e848d8b71076532f501c2b39bceae4fd062152e3`.
+Six HTML files are original production-redacted bytes; integrity.log verifies
+their stored hashes and repeats redaction checks without retaining identities.
+The runtime pre/post checks used in-memory identities. No original credential
+or identity was persisted. live-08 and all earlier directories are unchanged.
+
+Post-collection regression2165/1, mypy113, Ruff, six import contracts and design
+checker pass; Node120/120+41/41 and local safety4/4 pass; self-tests22/22+14/14
+pass. Commands/raw logs are in live-09/README.md and adjacent files. These checks
+do not turn the live form stop into success. Further form evidence awaits ruling.
+
+## C2B-07 Preparation (Historical Pre-live-09 Record)
 
 The designer ruling is recorded verbatim in progress23.1. All three source
 links now resolve against the archived page's own QuickBuild address, with
@@ -27,7 +96,7 @@ start, then ping/pong before browser startup. Its fresh five pages, configuratio
 source/page checks and form Full -> Partial -> Full are NOT_COLLECTED. No new
 request, inferred configuration id, form action release or C3 is claimed.
 
-## C2B-06 live-08 (Latest Session)
+## C2B-06 live-08 (Historical Session)
 
 Baseline962ad58; unchanged script/agent/frozen design. Fresh chat start,
 maintained PTY, ping/pong before browser creation. One human login POST302
