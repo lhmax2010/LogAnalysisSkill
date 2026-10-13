@@ -1,13 +1,15 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE07_READY;WAITING_FOR_CHAT_START**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE07_STOPPED;QB_LOGIN_TIMEOUT**。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 §21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
 live-05的启动错误见§21.5;
 live-06已完成ping/pong与一次人工登录,七页归档(两页ID_UNVERIFIED),配置1917
 五项/两项检查通过;form_evidence的open_form返回QB_FORM_CHANGED后立即停止,
-release=0,未设值/未提交,见§21.9。新live-07待聊天开始,不绕过停止条件或标C2b完成。
+release=0,未设值/未提交,见§21.9。live-07收到新的聊天开始并完成ping/pong,
+等待600秒后QB_LOGIN_TIMEOUT;登录POST=0、归档构建页=0,见§22.6。
+不绕过停止条件、不重试、不标C2b完成。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -34,7 +36,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§21.7握手/EOF停态完成,§21.8验收通过;live-06待新的开始,构建页/诊断/配置/表单待取,C3不启动 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;C2B-06生产a364489/取证脚本e683175已推送;live-07在login超时停止,POST=0,配置/表单待取,§22.6;C3不启动 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -2009,3 +2011,62 @@ Ruff完整树`ea336fe71127455987780d112eacef58c76ac443`导出到
 历史live-01至live-06目录原样保留;本轮前两步没有QuickBuild请求。
 第二步提交推送后在聊天请求“开始”;此前不启动浏览器、不创建live-07实测证据,
 不把离线通过当作真机结果。三项R1事实保留待设计修订,不进入C3。
+
+### 22.6 live-07实跑与登录停点
+
+2026-10-13,基线e683175,收到FatTank新的聊天“开始”后执行一次。PTY保持打开,
+先发ping并收到pong才启动浏览器;600秒登录时限,未提前结束、未EOF、未重试。
+脚本exit=1,状态STOPPED,原因QB_LOGIN_TIMEOUT,operation=login,path_shape=/signin。
+browser_closed=true、profile_removed=true、runtime_failure=null。
+
+原始脱敏记录`evidence/C2b/live-07/run.json`,sha256:
+`79d07795dfa6d54647f9981ff7fe1884e5f860cc1e1e6037f5db5ec3869a533e`。
+启动命令、PTY与协议输出见同目录README;此前live目录均原样保留。
+
+| 本轮事项 | 实测 / 证据 |
+|---|---|
+| 命令通道 | ping_received/pong_sent=true;run.json:845 |
+| 登录Document | 仅GET /signin,HTTP200,query为空,redirect_hop=false;run.json:778 |
+| 登录POST/重定向 | POST=0,login_response_count=0,login_redirect_seen=false;run.json:868 |
+| 登录三条件 | NOT_COLLECTED,login_response为QB_LOGIN_TIMEOUT;没有成功快照;run.json:849 |
+| 请求阶段 | GET47,放行46/拒绝1,POST0;响应阶段38条HTTP200;按traffic元数据计,不冒充服务端实收数 |
+| 唯一拒绝 | Script /ckeditor/ckeditor.js?v=1701391813000;既有规则不改;run.json:807 |
+| 拒绝对账 | trace DENIED=1,wrapper=1,帧归属拒绝=0;WORKER_BLOCKED/NEW_PAGE=0;run.json:855 |
+| 构建页 | pages=[],1193467 overview/variables和1193469 overview/variables/step_status均NOT_COLLECTED;run.json:10 |
+| 子Summary/父Child Build | 本轮未取得,不拿live-06摘要代替 |
+| 配置ID与五项/两项核对 | NOT_COLLECTED;没有register_config,未沿用历史1917 |
+| 表单联动/参考值选项 | NOT_COLLECTED;无open_form/fill/submit,回调/action/版本/重渲染/random均未取得 |
+| 放行与清理 | form_action_releases=0,released=false;browser/profile清理均true;run.json:853/:863 |
+
+相对毫秒起点是脚本启动(含等待ping),不是浏览器启动:
+首次Document请求134390ms、响应135905ms、主帧导航135911ms、关闭734394ms。
+不把734秒说成登录时限延长,也不从无POST推断人的操作或页面登录失败原因。
+本轮无新设计裁决/生产修复;附录C最新结果更新为登录停点,三项R1挂账仍保留。
+按停止协议只归档、验收、提交推送,不自动重试、不进入C3。
+
+### 22.7 live-07归档验收
+
+日志目录`evidence/C2b/live-07-validation/`,命令全集见该目录README。
+本轮代码与测试零diff,新增测试0;不新增资源/登录落点登记,不修改冻结稿。
+
+| 命令 | exit | 结果 / 日志 |
+|---|---|---|
+| .venv/bin/python -m pytest -q | 0 | 2165 passed,1 skipped,115.49s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+| pytest -v -s 三个Node入口(该目录README列完整nodeid) | 0 | 3 passed,19.44s;Node单元120/120、runtime41/41、四组安全4/4;node-gates.log |
+| run.json原始字节/结构/hash与历史证据核对 | 0 | PASS;page列表为空、只执行login、零POST/零release、清理完成、历史目录与冻结hash不变;evidence-check.log |
+
+安全四组本次重新实跑,仅loopback:Worker/WebSocket攻击HTTP0/握手0,走b:
+browser_fail_closed;shared_worker closeTarget成功,worker异常类别Error,
+QB_BROWSER_UNAVAILABLE且browserClosed/temporaryDirectoryRemoved=true。
+307/308后继拦截、302继续;逐跳forbiddenSecondHops0/postReplay0;凭据隔离通过。
+这些是本机合成控制,不能与live-07的runtime_failure=null或真实请求计数混算。
+
+Ruff完整待提交树`04b17a954d7ec3eb220868c474e5361c4b6e6665`导出到
+`/tmp/p5q-live-07-lint-B3z2Sf`;之后仅补文档与验收日志,未纳入无关工作树改动。
+运行中的身份检查使用内存身份集合;离线PageRedactor.check_bytes复查不持有
+原登录身份,不将离线检查冒充对未知身份字符串的检索。run.json hash与§22.6一致。
+全量通过不消除QB_LOGIN_TIMEOUT停点;C2b仍未完成,停止等后续指示,不进入C3。

@@ -1,0 +1,203 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 3 items
+
+tests/unit/test_qb_browser_node.py::test_node_agent_unit_matrix ✔ permanent deny external download (1.464839ms)
+✔ permanent deny http (0.092773ms)
+✔ permanent deny websocket (0.074342ms)
+✔ permanent deny rest (0.069435ms)
+✔ permanent deny log (0.263855ms)
+✔ permanent deny html report (0.138176ms)
+✔ permanent deny artifact (0.064867ms)
+✔ permanent deny promote (0.06218ms)
+✔ permanent deny cancel (0.07974ms)
+✔ permanent deny stop (0.13527ms)
+✔ permanent deny rerun (0.069361ms)
+✔ permanent deny delete (0.054053ms)
+✔ permanent deny abort (0.042273ms)
+✔ permanent deny form cancel (0.056885ms)
+✔ permanent deny 307 (0.066452ms)
+✔ permanent deny 308 (0.048504ms)
+✔ allow idle GET /styles/main.css?v=7 (0.117721ms)
+✔ allow login GET /signin (0.062781ms)
+✔ allow login POST /signin?12-1.IFormSubmitListener-content-form (0.076979ms)
+✔ allow login GET / (0.065879ms)
+✔ allow login GET /overview/0 (0.046297ms)
+✔ allow read GET /build/1 (0.082224ms)
+✔ allow read GET /build/1/overview (0.06088ms)
+✔ allow read GET /build/1/variables (0.043418ms)
+✔ allow read GET /build/1/step_status (0.041123ms)
+✔ allow read GET /overview/1921 (0.056196ms)
+✔ allow open_form GET /wicket/page?50 (0.060512ms)
+✔ allow fill GET /wicket/page?50-3 (0.050457ms)
+✔ registered login landing accepts query "" (0.080255ms)
+✔ registered login landing accepts query "0" (0.068475ms)
+✔ registered login landing accepts query "123" (0.03849ms)
+✔ registered login landing rejects query "v=1" (0.048357ms)
+✔ registered login landing rejects query "1-2" (0.030219ms)
+✔ registered login landing rejects query "1&x=2" (0.030442ms)
+✔ registered login landing rejects query "x=1" (0.038052ms)
+✔ registered login landing rejects query "1\n" (0.063378ms)
+✔ registered login landing rejects query "1.IBehaviorListener-x" (0.030949ms)
+✔ registered login landing boundary post (0.054779ms)
+✔ registered login landing boundary session path (0.025267ms)
+✔ registered login landing boundary suffix (0.021879ms)
+✔ registered login landing boundary unregistered (0.028202ms)
+✔ registered login landing boundary http (0.020831ms)
+✔ registered login landing boundary foreign (0.020444ms)
+✔ registered login landing boundary script (0.022622ms)
+✔ registered login landing boundary ckeditor remains denied (0.023077ms)
+✔ registered login landing boundary font remains denied (0.04791ms)
+✔ registered landing unavailable outside login: read (0.064991ms)
+✔ registered landing unavailable outside login: open_form (0.032012ms)
+✔ registered landing unavailable outside login: fill (0.030069ms)
+✔ registered landing unavailable outside login: submit (0.027444ms)
+✔ registered landing unavailable outside login: idle (0.030592ms)
+✔ registered landing after login redirect does not reopen the POST channels (0.099803ms)
+✔ login channel exact positive /signin (0.039653ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-form" (0.038736ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-formx" (0.036633ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-form&x=1" (0.030497ms)
+✔ login channel query rejected /signin "0-.IFormSubmitListener-content-form" (0.029641ms)
+✔ login channel query rejected /signin "0-1IFormSubmitListener-content-form" (0.029992ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-form\n" (0.036822ms)
+✔ login submission GET rejected /signin (0.041433ms)
+✔ login submission rejected in read /signin (0.037956ms)
+✔ login submission rejected in open_form /signin (0.027152ms)
+✔ login submission rejected in fill /signin (0.026978ms)
+✔ login submission rejected in submit /signin (0.038505ms)
+✔ login submission rejected in idle /signin (0.028139ms)
+✔ login channel exact positive /wicket/page (0.026469ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-form" (0.027247ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-formx" (0.02585ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-form&x=1" (0.03158ms)
+✔ login channel query rejected /wicket/page "0-.IFormSubmitListener-content-form" (0.034009ms)
+✔ login channel query rejected /wicket/page "0-1IFormSubmitListener-content-form" (0.036859ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-form\n" (0.024698ms)
+✔ login submission GET rejected /wicket/page (0.025655ms)
+✔ login submission rejected in read /wicket/page (0.026591ms)
+✔ login submission rejected in open_form /wicket/page (0.024885ms)
+✔ login submission rejected in fill /wicket/page (0.024411ms)
+✔ login submission rejected in submit /wicket/page (0.025851ms)
+✔ login submission rejected in idle /wicket/page (0.026276ms)
+✔ other login submission paths rejected (0.064085ms)
+✔ login 300 closes both channels, preserving redirect GET rules (0.084892ms)
+✔ login 301 closes both channels, preserving redirect GET rules (0.043852ms)
+✔ login 302 closes both channels, preserving redirect GET rules (0.039109ms)
+✔ login 303 closes both channels, preserving redirect GET rules (0.044824ms)
+✔ login 304 closes both channels, preserving redirect GET rules (0.042913ms)
+✔ login 307 closes both channels, preserving redirect GET rules (0.045171ms)
+✔ login 308 closes both channels, preserving redirect GET rules (0.053112ms)
+✔ login 399 closes both channels, preserving redirect GET rules (0.039192ms)
+✔ five request-stage login releases close permanently; responses do not count (0.104077ms)
+✔ leaving login permanently closes channels even after HTTP200 (0.050089ms)
+✔ rejected requests and unrelated responses do not consume the login allowance (0.063071ms)
+✔ root path shape and static restrictions remain explicit (0.057305ms)
+✔ unregistered denied /build/1?x=1 (0.039138ms)
+✔ unregistered denied /overview/1922 (0.032954ms)
+✔ unregistered denied /styles/x?Listener=x (0.034199ms)
+✔ unregistered denied /styles/x?v=a (0.02654ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-dragDrop (0.025891ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-loadPopup (0.036078ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-unloadPopup (0.024707ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-quicksearch (0.02745ms)
+✔ stage-specific navigation never escapes phase (0.795733ms)
+✔ exact run and exact refresh registrations, no prefix acceptance (0.091872ms)
+✔ registered refresh allows GET but never POST (0.050896ms)
+✔ one callback per field, old version and other field denied (0.126958ms)
+✔ stop in value not listener component is allowed (0.04355ms)
+✔ callback shape fails closed (0.525149ms)
+✔ two form instances each have exactly one release, response does not consume it (0.176904ms)
+✔ 302 next hop is judged independently and 307/308 preserve released (0.080731ms)
+✔ protocol adapter forwards only metadata even when request contains credentials (0.4138ms)
+✔ frame ownership is closed and descendants revoked on detach/navigation (0.129608ms)
+✔ form exact label/role closure and project identity (0.567765ms)
+✔ readback records text/checkbox/select/palette and validates recorder (0.882264ms)
+✔ failed fill and fingerprint mismatch invalidate form until new open (0.484717ms)
+✔ delayed submit request is awaited before navigation, never false not_released (151.377965ms)
+✔ no request release by ten-second deadline rejects and never waits for navigation (10001.454382ms)
+✔ released submit navigation timeout is unknown, not definite failure (1.535978ms)
+✔ read checks exact URL and build id and returns actual HTTP status (1.276282ms)
+✔ source guards: no HTTP client, credential extraction, debug switch, or login interactions (1.868892ms)
+✔ every command outside its permitted phase rejects before any method call (0.576909ms)
+✔ read remains available after submit but navigation invalidates the old form (0.218338ms)
+✔ fill reads current callbacks and freezes selected snapshot without setting it (2.884955ms)
+ℹ tests 120
+ℹ suites 0
+ℹ pass 120
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10251.279792
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_browser_redaction_and_response_interception ▶ C2A-04 build identity from archived HTML, with all network denied
+  ✔ archive 01.response.txt /build/1069540/overview (44.880887ms)
+  ✔ archive 03.response.txt /build/1069540/variables (13.814329ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (25.770863ms)
+  ✔ navigation spelling Id (19.39876ms)
+  ✔ navigation spelling ID (17.940558ms)
+  ✔ Summary Id resolved by column, not fixed position (16.320672ms)
+  ✔ reject duplicate-nav (8.718922ms)
+  ✔ reject missing-nav (6.535363ms)
+  ✔ reject wrong-nav (6.213268ms)
+  ✔ reject missing-summary (6.832285ms)
+  ✔ reject duplicate-summary (6.734356ms)
+  ✔ reject missing-id-column (6.709124ms)
+  ✔ reject duplicate-id-column (10.647805ms)
+  ✔ reject different-summary-id (7.4951ms)
+  ✔ reject missing-first-row (7.348252ms)
+  ✔ both overview sources agree but differ from requested id (5.108521ms)
+  ✔ subpage missing navigation (7.168363ms)
+  ✔ subpage duplicate navigation (7.96063ms)
+  ✔ subpage wrong navigation (10.126117ms)
+  ✔ C2B-06 remembered Variables at bare build 1193469 (32.885288ms)
+  ✔ C2B-06 remembered Variables at bare build 1186372 (40.779583ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 build identity from archived HTML, with all network denied (831.691725ms)
+▶ C2B-06 exact Run button grammar from live-06, with no navigation or click requests
+  ✔ none (52.209245ms)
+  ✔ anchor (10.600552ms)
+  ✔ duplicate (9.973137ms)
+  ✔ extra-statement (11.681735ms)
+  ✔ promote (14.030241ms)
+  ✔ run2 (16.132575ms)
+  ✔ external (13.022077ms)
+  ✔ missing-onclick (12.260543ms)
+  ✔ trailing-newline (12.728154ms)
+✔ C2B-06 exact Run button grammar from live-06, with no navigation or click requests (479.141957ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (355.219851ms)
+▶ C2B-04 shared identity boundary and credential vectors
+  ✔ short-display-name (11.504171ms)
+  ✔ triggered-by-row (5.286043ms)
+  ✔ triggered-by-column (7.267227ms)
+  ✔ multiword (4.972421ms)
+  ✔ literal-regex-and-ascii-boundaries (4.469673ms)
+  ✔ secrets-remain-substrings (4.043231ms)
+✔ C2B-04 shared identity boundary and credential vectors (392.782649ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/build/301","/favicon.ico"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (834.85146ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2896.752775
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety {"group":"worker-websocket","ok":true,"requests":[{"group":"worker-websocket","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WEBSOCKET_DENIED"},{"action":"WEBSOCKET_DENIED"},{"action":"WORKER_BLOCKED","type":"worker","paused":true}],"details":{"attackHTTP":0,"websocketHandshakes":0,"branch":"b:browser_fail_closed","workers":[{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WORKER_BLOCKED","type":"worker","paused":true}]},"observations":{"closeTarget":[{"type":"shared_worker","outcome":"success","success":true},{"type":"worker","outcome":"exception","category":"Error"}],"failure":"QB_BROWSER_UNAVAILABLE","browserClosed":true,"temporaryDirectoryRemoved":true}}
+{"group":"307-308","ok":true,"requests":[{"group":"307-308","method":"GET","path":"/build/307","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/308","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/302","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/999","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"}],"details":{"blocked":[307,308],"allowed":302}}
+{"group":"per-hop","ok":true,"requests":[{"group":"per-hop","method":"GET","path":"/build/301","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/303","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/304","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"POST","path":"/signin?7-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"phase":"read","path":"<other>","action":"DENIED"},{"phase":"read","path":"/wicket/page","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"login","path":"/signin","action":"DENIED"}],"details":{"forbiddenSecondHops":0,"postReplay":0}}
+{"group":"credential-isolation","ok":true,"requests":[{"group":"credential-isolation","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"POST","path":"/signin?1-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/overview/0","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[],"details":{"credentialFacts":{"cookie":true,"authorization":true,"password":true},"protocol":{"ok":true,"status":200,"html_redacted":"<html><head><link rel=\"icon\" href=\"data:,\"><title>LOCAL C2b safety fixture</title></head><body><a class=\"nav-link\">Build (id:1)</a>\n      <span>Welcome! &lt;USER&gt;</span>\n      <input type=\"hidden\" name=\"token\" value=\"&lt;REDACTED&gt;\">\n      <div class=\"build-summary\"><div class=\"box-head\">Summary</div><table>\n      <thead><tr><th>Id</th><th>Triggered By</th></tr></thead>\n      <tbody><tr><td>1</td><td>&lt;USER&gt;</td></tr></tbody></table></div></body></html>"},"exception":{"ok":false,"error":"QB_BROWSER_UNAVAILABLE"}}}
+{"summary":4,"passed":4,"failed":0,"network":"loopback-only","temporaryDirectoryRemoved":true}
+
+PASSED
+
+============================== 3 passed in 19.44s ==============================

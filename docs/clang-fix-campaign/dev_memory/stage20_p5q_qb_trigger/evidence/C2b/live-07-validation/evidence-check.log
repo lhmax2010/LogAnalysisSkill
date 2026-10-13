@@ -1,0 +1,7 @@
+PASS: run.json immutable SHA256, raw-byte redaction check, no unmasked jsessionid
+Offline check has no remembered login identities; in-memory pre/post-write checks ran in evidence process
+PASS: ping/pong, login-only, 600s configured, timeout, no page archive/config/form
+Request-stage GET=47 allowed=46 denied=1 POST=0; response-stage 200=38
+PASS: trace/wrapper denials=1/1, ownership=0, no Worker/new-page failure, cleanup=true/true
+PASS: form releases=0, released=false, no login POST or redirect
+PASS: historical live directories unchanged; frozen SHA256 unchanged

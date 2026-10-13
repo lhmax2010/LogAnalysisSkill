@@ -1,10 +1,50 @@
 # C2b Appendix C Evidence Status
 
-Status: **PARTIAL / LIVE06_STOPPED_QB_FORM_CHANGED**. Latest session: live-06,
-2026-10-13, seven archived pages, two explicitly ID_UNVERIFIED.
+Status: **PARTIAL / LIVE07_STOPPED_QB_LOGIN_TIMEOUT**. Latest session: live-07,
+2026-10-13, zero archived build pages. Historical observations below are kept,
+not substituted for the missing live-07 results.
 This document records observations, not permission to start C3.
 
-## C2B-06 Preparation (live-07 Not Started)
+## C2B-06 live-07 (Latest Session)
+
+Production a364489 and spike e683175 were already pushed and validated before
+the fresh chat start. PTY ping/pong passed before browser creation
+(live-07/run.json:845). The only command was login with a 600-second timeout
+(run.json:4). GET /signin returned200 without a redirect (run.json:778);
+no login POST was observed (run.json:869). The process waited for the login
+deadline and stopped with QB_LOGIN_TIMEOUT, exit1 (run.json:840/:849).
+This was not an EOF stop or a browser runtime failure.
+
+| Requested item | live-07 result | Evidence |
+|---|---|---|
+| Login three-condition success snapshot | NOT_COLLECTED; timeout at /signin, no successful login result | run.json:840/:849 |
+| 1193467 overview / variables | Both NOT_COLLECTED; not requested | run.json:4/:10 |
+| 1193469 overview / variables / step_status | All NOT_COLLECTED; not requested | run.json:4/:10 |
+| 1193469 Summary Status vs parent Child Build Result | NOT_COLLECTED; do not substitute historical parent summary | run.json:10 |
+| Configuration id, five parent checks and two configuration checks | NOT_COLLECTED; no register_config, no historical id reused | run.json:4 |
+| Parent/child variable shapes, reference values/options | NOT_COLLECTED in this run; previous R1 facts remain below | run.json:10 |
+| Full -> Partial -> Full, callback/action/version/options/rerender/random | NOT_COLLECTED; no open_form/fill/submit | run.json:4 |
+| Form action release count / state | 0 / released=false | run.json:863 |
+| Browser and temporary directory cleanup | Both true | run.json:853 |
+
+All source references in the table are under `live-07/`. No HTML page was
+archived in this run. `run.json` SHA256 is
+`79d07795dfa6d54647f9981ff7fe1884e5f860cc1e1e6037f5db5ec3869a533e`.
+
+Request-stage interception records: GET47, allowed46/denied1, POST0;
+response-stage records: 38 HTTP200. The only denied resource was
+`/ckeditor/ckeditor.js?v=1701391813000`, Script (run.json:807), still denied
+without a new registration. Trace/wrapper denials both1, frame-ownership
+denials0; WORKER_BLOCKED/NEW_PAGE absent and runtime_failure=null
+(run.json:855/:862). These are protocol-stage counts, not server receipt counts.
+No 3xx login landing chain was obtained. Absence of POST does not establish why
+the human login did not complete. No retry or production-rule changes followed.
+
+Validation and command details: `live-07/README.md`, `live-07-validation/`,
+progress22.6/22.7. Offline gates do not turn this stopped session into C2b
+completion. The form assumptions remain unverified; C3 is not started.
+
+## C2B-06 Preparation (Before live-07)
 
 The approved ruling is recorded verbatim in progress22.1. The archived selected
 Variables tab is visible at live-06/03.id-unverified.response.html:783-784 and
@@ -26,7 +66,7 @@ Ref. Snapshot/SNAPSHOT_NUM_URL; and the Unified sample's project/FAIL_FAST/comma
 separator differences. C3 remains blocked until the required live evidence and
 designer decisions, not unlocked by passing offline tests.
 
-## C2B-05 live-06 (Latest Session)
+## C2B-05 live-06 (Historical Session)
 
 Baseline93421b1, fresh chat start, PTY maintained throughout. Ping/pong passed
 before browser startup (live-06/run.json:2414). One human login POST returned302;
