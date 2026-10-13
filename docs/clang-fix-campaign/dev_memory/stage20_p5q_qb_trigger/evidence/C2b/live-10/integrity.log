@@ -1,0 +1,17 @@
+run_sha256 9b384c1671f2825e17b0e3fd40443c0ed9a9b40b3b18402cf297a0d63672cbb9
+project_name_actual_json "Tizen-Base-Toolchain \n\t\t\n\t\t\t\n\t\t\t\n\t\t\n    "
+project_name_expected_json "Tizen-Base-Toolchain"
+first_failure {'rule': 'project_name', 'row': 0, 'ok': False, 'reached': True}
+other_replayed_conditions pass; reached=false after project_name, not production execution
+01.response.html b88602c45062be2d8ac2fe2421aeb0da2b7e6801b38ae3b5ea3d41d88b0e78dd redaction=PASS
+02.response.html 4885979199bd8615bea7342cd31eb6bc466a1adeff9e2cdfa466647b742bcc69 redaction=PASS
+03.response.html b900d225a02aab04caadff2b769bfdd78d5c2a896942de247bbe6f6948b81407 redaction=PASS
+04.response.html 4f87c4c4f5a15f617a2c89891143b655132b45e8b61999d8851d2e002d25ca35 redaction=PASS
+05.response.html c243e7266fe434edb931afe35409a0576eb4627b9edbfc01539de0cfeec2c7be redaction=PASS
+06.response.html 00cb7ebad03f249f24763582f94af2c27af085df98485fe789c1f54a1e884087 redaction=PASS
+form-unverified.response.html 8f8b50258cf0db849b557428cc54479fe764888fa45b64096d9b4c2edefee12e redaction=PASS
+request_methods {'GET': 114, 'POST': 1}
+request_allowed {True: 75, False: 40}
+response_status {200: 61, 302: 2}
+denials 40 40 0
+integrity=PASS; identity pre/post checks used in-memory identities at collection; offline repeat does not retain identity values

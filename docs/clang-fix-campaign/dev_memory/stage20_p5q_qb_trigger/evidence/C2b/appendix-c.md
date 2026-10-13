@@ -1,11 +1,107 @@
 # C2b Appendix C Evidence Status
 
-Status: **PARTIAL / LIVE09_STOPPED_QB_FORM_CHANGED**.
-Latest session: live-09, 2026-10-13, five VERIFIED build pages and one verified configuration page.
+Status: **PARTIAL / LIVE10_STOPPED_QB_FORM_CHANGED**.
+Latest session: live-10, 2026-10-13, five VERIFIED build pages, verified configuration page,
+and a form_unverified diagnostic archive. No BUILD_TYPE change or form submission.
 Historical observations below are kept, not substituted for missing results.
 This document records observations, not permission to start C3.
 
-## C2B-08 Preparation (live-10 Not Started)
+## C2B-08 live-10 (Latest Session)
+
+Baseline284c5c0, new chat start, ping/pong before browser creation. References in
+this section are under `live-10/`. Production/frozen design and old sessions are
+unchanged. The process stops with exit1/QB_FORM_CHANGED after successful read-only
+failure capture, not after a retry. Browser/profile cleanup is true.
+
+| Requested item | Actual observation | Source |
+|---|---|---|
+| Login | /dashboard; not signin, password inputs0, Sign Out1 | run.json:2447 |
+| 1193467 overview/variables | HTTP200, both VERIFIED | 01.response.html;02.response.html |
+| 1193469 overview/variables/step_status | HTTP200, all VERIFIED | 03.response.html;04.response.html;05.response.html |
+| Child Summary / parent Child Build | Failed / FAILED, independently read; combined architecture row | 03.response.html:828;01.response.html:890/:892 |
+| Configuration source | Fresh parent overview -> id1917; all five checks true | run.json:2564 |
+| Configuration page | HTTP200; breadcrumb/copy path both match Base/RBS/TRIGGER | 06.response.html;run.json:2583 |
+| Form navigation | Fresh Run query9 ->302 -> /wicket/page?10 HTTP200 | run.json:2626 |
+| Form snapshot | Nonnull, readyState complete; two total forms (quicksearch + build form) | run.json:2706 |
+| Label difference | extra=[],missing=[],duplicates=[]; 13 labels including PROJECT_NAME | run.json:2740/:2770 |
+| First failing check | project_name,row0; exact string mismatch | run.json:2780/:3212;form-unverified.response.html:727 |
+| Action | /wicket/page?10-1.IFormSubmitListener-form; shape matches | form-unverified.response.html:718;run.json:3183 |
+| Initial BUILD_TYPE callback | One wicketAjaxPost, callbackURL accepts; query10-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select | form-unverified.response.html:757 |
+| BUILD_TYPE Full -> Partial -> Full | NOT_COLLECTED; no field operation after open_form failure | run.json commands/form_diagnostics |
+| Transition versions/options/rerender/random | NOT_COLLECTED; initial callback has no random, not an observed transition | same |
+| Release / cleanup | form_action_releases0,released=false; browser/profile removed | run.json:3400/:3605 |
+
+### Exact Failure And Ordered Replay
+
+PROJECT_NAME has no controls and exactly one viewer. The observed viewer is:
+
+```json
+"Tizen-Base-Toolchain \n\t\t\n\t\t\t\n\t\t\t\n\t\t\n    "
+```
+
+The configured value is `"Tizen-Base-Toolchain"` (run.json:2567). The strings are
+not equal; offline strip equality is a diagnostic observation, not an approved
+normalization rule. The HTML viewer begins at form-unverified.response.html:732.
+Production formDOM already uses textContent.trim() at qb_browser_agent.mjs:315,
+while validateForm compares exact strings at:342. This run did not inspect the
+page's trim implementation and does not infer why the returned value has trailing
+whitespace. No production workaround or retry was applied.
+
+Ordered checks: shape PASS -> label_set PASS -> unique_rows PASS -> project_name
+FAIL. All later control/callback/action checks have ok=true,reached=false: they
+are computations on the captured snapshot, not executed production acceptance.
+There are no extra/missing/duplicate labels in this sample; the designer's extra
+field hypothesis is not the observed first failure.
+
+| Label | Controls / observed initial state | Form HTML line |
+|---|---|---|
+| PROJECT_NAME | viewer1,controls0; exact mismatch above | 727 |
+| BUILD_TYPE | SELECT/select1; Full selected, Partial available | 747 |
+| REPO_TYPE | SELECT/select1; ALL only | 773 |
+| BUILD_REFERENCE | SELECT/select1; Live, Ref. Snapshot(selected), Snapshot Number | 798 |
+| SNAPSHOT_NUM | SELECT/select1; tizen-base-toolchain_20260924.094908 only and selected | 825 |
+| PROJECT_BRANCH | SELECT/select1; tizen_base only | 850 |
+| Immediate Stop With Error | INPUT/checkbox1; diagnostic length2, not a stored value | 875 |
+| CHILD_CONFIGURATIONS | recorder/choices/selection3; four buttons add/remove/up/down; selection list contains standard-armv7l:aarch64:x86_64 | 895 |
+| Build Package List | TEXTAREA/input1; length0 | 952 |
+| Add Package List | TEXTAREA/input1; length0 | 975 |
+| Remove Package List | TEXTAREA/input1; length0 | 998 |
+| TARGET_IMAGE | recorder/choices/selection3; four buttons; lists empty | 1021 |
+| BUILD NOTES | TEXTAREA/input1; length0, visible | 1077 |
+
+All production-designated callbacks (single control or palette recorder) have
+exactly one wicketAjaxPost and pass callbackURL. Palette choices/selection have
+no onchange, but production only checks the recorder. The raw callback is kept
+in redacted HTML, not diagnostic JSON. cke element count0; all four textareas
+visible (run.json:3184). No inference about blocked ckeditor's potential effects.
+Initial options are observed facts only; no refresh or callback was executed.
+
+### Traffic, Integrity And Remaining Gap
+
+Interception request observations: GET114/POST1 (human login only), allowed75,
+denied40. Responses: HTTP200x61,302x2. Denied: ckeditor10, two bootstrap fonts9
+each, Wicket XHR12. trace/wrapper denials40/40; frame attribution denials0.
+WORKER_BLOCKED/NEW_PAGE0,runtime_failure=null. These are interceptor counts,
+not server-receipt counts. Form submit releases0. No Ok/submit command was sent.
+
+The original stop.path_shape remains /overview/<id> because current updates only
+after open_form success; form_diagnostics.main_frame identifies the actual
+/wicket/page?10 document. Configuration checks did pass. No further live request
+is made after diagnostics; the session is closed without retry.
+
+run.json SHA256: `9b384c1671f2825e17b0e3fd40443c0ed9a9b40b3b18402cf297a0d63672cbb9`.
+form-unverified.response.html SHA256: `8f8b50258cf0db849b557428cc54479fe764888fa45b64096d9b4c2edefee12e`.
+integrity.log verifies all seven original redacted HTML hashes and repeats checks.
+The runtime used in-memory identities for pre/post checks; none is persisted.
+Remaining form-transition evidence is NOT_COLLECTED. This is one new observed
+stop (PROJECT_NAME exact mismatch); C2b remains incomplete and C3 is not started.
+
+Post-collection gates all exit0: regression2165/1, mypy113, Ruff, six import
+contracts, design checker0; Node120/120+41/41+safety4/4; form self-tests26/26,
+existing self-tests22/22+14/14. All commands/logs in live-10/README.md.
+These offline results do not change the live form failure or authorize a retry.
+
+## C2B-08 Preparation (Historical Pre-live-10 Record)
 
 Designer ruling recorded verbatim in progress24.1. Spikes now captures a current
 same-origin form on open_form QB_FORM_CHANGED or later BUILD_TYPE failure,
@@ -26,7 +122,7 @@ verification, configuration checks, form differences/failed conditions, callback
 action, options and release count are NOT_COLLECTED. No cause of the live-09 form
 failure is inferred from synthetic fixtures or the designer's hypotheses.
 
-## C2B-07 live-09 (Latest Session)
+## C2B-07 live-09 (Historical Session)
 
 Baseline b9b4d71, new chat start, ping/pong before browser creation, unchanged
 production/frozen design. All references in this section are under `live-09/`.

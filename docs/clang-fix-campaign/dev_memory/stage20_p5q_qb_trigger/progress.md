@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE10_READY;WAITING_FOR_CHAT_START**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE10_STOPPED_QB_FORM_CHANGED;WAITING_FOR_DESIGN_RULING**。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 §21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
@@ -14,8 +14,10 @@ live-07原样保留。live-08登录及五个构建页核对通过,配置登记�
 live-08原始证据保留,生产与冻结稿不改。live-09在b9b4d71后收到新的聊天“开始”,
 完成ping/pong与登录、五个构建页核对、配置1917五项/两项核对;
 open_form导航到表单后QB_FORM_CHANGED,立即停止,release=0,见§23.5。不标C2b完成。
-§24按P5Q-C2B-08增加spikes表单失败只读取证,先离线验收再等新的聊天“开始”;
-不改变生产规则,不将历史推测当成live-10实测。
+§24按P5Q-C2B-08增加spikes表单失败只读取证,284c5c0推送后收到新的聊天“开始”,
+live-10完成五个构建页与配置1917五项/两项核对,表单首失败点为PROJECT_NAME精确值不等;
+已归档form_unverified页及逐条件诊断,无字段差集/重复,release=0,见§24.6。
+不改变生产规则,不将历史推测当成live-10实测;C2b仍未完成。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -42,7 +44,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;live-09表单核对停点保留;§24按C2B-08补spikes失败诊断,先离线验收再等live-10聊天开始;生产/冻结稿不改,无C3 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;live-10表单首失败点PROJECT_NAME精确值不等,失败诊断与脱敏页已归档,release=0;§24.6停止等裁定;生产/冻结稿不改,无C3 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -2390,3 +2392,81 @@ live-09/run.json仍为`9cb7a31f1afd8e2241dc32b2e848d8b71076532f501c2b39bceae4fd0
 从本轮父overview取配置ID并五项/两项核对,再form_evidence。
 若核对通过仍只Full→Partial→Full;若失败先做本裁定只读取证再按原错误停止。
 不点Ok、不submit、不重试;release必须0;所有新真机结论留空直到现场取得。
+
+### 24.6 live-10实跑与表单结构停止报告
+
+基线284c5c0,收到FatTank新的聊天“开始”后才启动,先ping/pong再弹窗。
+仅本次人工登录,没有重复取证或追加资源登记。证据目录`evidence/C2b/live-10/`;
+run.json sha256=`9b384c1671f2825e17b0e3fd40443c0ed9a9b40b3b18402cf297a0d63672cbb9`。
+
+| 顺序 | 实测 / 证据 |
+|---|---|
+| login | 三条件通过,/dashboard,无password控件、Sign Out=1;run.json:2447 |
+| 1193467 overview/variables | HTTP200,均VERIFIED;01/02.response.html |
+| 1193469 overview/variables/step_status | HTTP200,均VERIFIED;03/04/05.response.html |
+| 配置来源/配置页 | 本轮父overview推得1917,五项true;配置页两项true;run.json:2564/:2583,06.response.html |
+| 子/父失败文字 | 子Summary Failed(03:828),父Child Build FAILED(01:892),分别读取 |
+| open_form | 配置重读200,Run302,表单/wicket/page?10为200;run.json:2626 |
+| 失败诊断 | QB_FORM_CHANGED,stage=open_form,readyState=complete,快照非null;run.json:2706 |
+| 表单归档 | form-unverified.response.html,form_unverified=true;sha256=8f8b50258cf0db849b557428cc54479fe764888fa45b64096d9b4c2edefee12e |
+| 停止/清理 | 原错误保留,exit1;browser_closed/profile_removed=true,runtime_failure=null;run.json:2436/:3400 |
+
+**本轮新停止事实1项:PROJECT_NAME逐字不等。** 同一快照的shape、label_set、
+unique_rows均通过;首失败为project_name,row=0,reached=true(run.json:3212)。
+该行controls=0,viewer=1,但其值为以下JSON字符串(run.json:2780):
+
+```json
+"Tizen-Base-Toolchain \n\t\t\n\t\t\t\n\t\t\t\n\t\t\n    "
+```
+
+登记期望为`"Tizen-Base-Toolchain"`(run.json:2567)。原页面结构在
+form-unverified.response.html:727/:732/:733。额外/缺少/重复标签均为空(run.json:2770),
+不是新增字段或字段缺失导致的本次首失败。生产formDOM的viewer读取已经调用trim
+(qb_browser_agent.mjs:315),validateForm在:342精确比较;本轮仅报告返回值事实,
+没有在现场读取原型实现,不推断为何页面上下文trim后仍有尾部空白,不自行修复。
+
+首失败之后的逐行控件/回调与action重算均ok=true、reached=false,只证明该快照上的
+诊断计算,不冒充生产执行过。BUILD NOTES为一个可见TEXTAREA,input角色,长度0;
+cke节点0、四个textarea均未隐藏(run.json:3184)。两双列表均三个控件,
+recorder回调有效,choices/selection无onchange不属于生产需检查的回调。
+完整逐行标签/控件/选项/button/PROJECT_NAME及判定顺序见run.json:2706。
+
+表单初始BUILD_TYPE=Full,选项Full/Partial;BUILD_REFERENCE=Ref. Snapshot,
+选项Live/Ref. Snapshot/Snapshot Number;SNAPSHOT_NUM唯一选项并选中
+tizen-base-toolchain_20260924.094908。只记录初始快照,没有执行Full→Partial→Full。
+action形态通过,/wicket/page?10-1.IFormSubmitListener-form;BUILD_TYPE初始onchange
+通过callbackURL且只有一个wicketAjaxPost,原文见form-unverified.response.html:757。
+联动后的callback/action/版本变化、选项刷新、重渲染/random仍NOT_COLLECTED。
+
+请求阶段GET114/POST1(人工登录),allowed75/denied40;响应阶段200x61/302x2。
+这是拦截器观测,不是服务端实收计数。拒绝:ckeditor10、两种bootstrap字体各9、
+Wicket XHR12;trace/wrapper=40/40,帧归属拒绝0,WORKER_BLOCKED/NEW_PAGE=0。
+form_action_releases=0,released=false;没有Ok/submit,没有构建提交。
+stop.path_shape仍/overview/<id>是open_form成功前current未更新,实际表单地址在
+form_diagnostics.main_frame与form_network中,不可误读成配置页失败。
+本轮停止后不重试、不加放行项、不进入C3;等待设计方裁定。
+
+### 24.7 live-10归档验收
+
+完整命令及原始日志在live-10/README.md和同目录,归档后实跑,全部exit0:
+
+| 验收 | 结果 | 日志 |
+|---|---|---|
+| pytest全量 | 2165 passed,1 skipped,158.66s,较284c5c0计数不变 | pytest.log |
+| mypy | 113 source files,无问题 | mypy.log |
+| Ruff完整待提交树 | All checks passed! | ruff.log |
+| lint-imports | 6 kept,0 broken | lint-imports.log |
+| check_design_doc | 0 problem | design-check.log |
+| Node三个入口 | 3 passed,27.10s;unit120/120、runtime41/41、安全4/4 | node-gates.log |
+| 表单失败自测 | 26/26,network_requests0,released=false | form-self-test.log |
+| 既有通道/地址、ID诊断自测 | 22/22、14/14,network_requests0 | self-test.log,id-self-test.log |
+| 归档核对 | 七页sha256/脱敏检查、精确失败值、五项/两项、清理、零release通过 | integrity.log |
+
+四组安全的Worker实际走b:browser_fail_closed:shared_worker closeTarget成功,
+worker为Error类异常,浏览器/profile清理为true;attackHTTP0/WS0。其余三组均绿。
+不访问QuickBuild,未重复真机。Ruff对暂存树
+`26280747be55b9b18b32d91efb09ceb043a378bf`导出到
+`/tmp/p5q-live10-lint-NI7isH`运行,之后只补文档与日志。
+hashes.log确认冻结稿仍0a3f5e0b…1950、live-09/run.json仍9cb7a31f…152e3。
+本提交仅文档与live-10证据,生产/冻结稿/检查器/spikes/tests均零改动;
+无关用户改动与历史草稿不纳入。门禁绿不消除真机表单停点,C2b未完成。
