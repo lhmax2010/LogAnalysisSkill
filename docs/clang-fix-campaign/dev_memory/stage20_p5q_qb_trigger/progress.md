@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE10_STOPPED_QB_FORM_CHANGED;WAITING_FOR_DESIGN_RULING**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2B09_IMPLEMENTING;LIVE11_NOT_STARTED**。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 §21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
@@ -18,6 +18,8 @@ open_form导航到表单后QB_FORM_CHANGED,立即停止,release=0,见§23.5。�
 live-10完成五个构建页与配置1917五项/两项核对,表单首失败点为PROJECT_NAME精确值不等;
 已归档form_unverified页及逐条件诊断,无字段差集/重复,release=0,见§24.6。
 不改变生产规则,不将历史推测当成live-10实测;C2b仍未完成。
+§25按已批准C2B-09裁定修正页面主环境字符串规整,分生产/取证脚本两提交;
+离线完成后再等新聊天开始执行live-11。历史live-10结论原样保留。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -2470,3 +2472,56 @@ worker为Error类异常,浏览器/profile清理为true;attackHTTP0/WS0。其余�
 hashes.log确认冻结稿仍0a3f5e0b…1950、live-09/run.json仍9cb7a31f…152e3。
 本提交仅文档与live-10证据,生产/冻结稿/检查器/spikes/tests均零改动;
 无关用户改动与历史草稿不纳入。门禁绿不消除真机表单停点,C2b未完成。
+
+## 25. 实施裁定 P5Q-C2B-09
+
+### 25.1 裁定原文
+
+原因:live-10 表单字段集合、回调与 action 全部符合。唯一失败点是 PROJECT_NAME:property-viewer 原始 textContent 为"前导空白 + Tizen-Base-Toolchain + 尾部空白",生产 formDOM 调用 .trim() 后只去掉了前导空白(form-unverified.response.html:732-736,run.json 表单诊断)。这符合"正则缺少 g 标志的 trim 替代实现"的特征,说明页面脚本覆盖了 String.prototype.trim。我们用 page.evaluate 在页面主环境中运行取数函数,会受页面对内置函数的改写影响。这是设计缺口:冻结稿没有考虑页面主环境的内置函数不可信。
+长期方案(改到隔离环境运行)留待 R1 设计修订,本轮只做最小修正。
+
+### 25.2 执行顺序与边界
+
+基线befd9a8,git pull --ff-only为Already up to date。冻结稿仍为
+0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950。
+先在本机缺陷trim夹具上复现,生产取数返回原始文本,Node规整比较;
+redactDOM必须在页面完成的身份规整用裁定指定局部正则。首提交仅生产修正、测试与记账。
+其次spikes跟进表单/结构/配置取数,记录每页九个内置函数的原生布尔值,单独提交。
+两步离线验收通过后再请求新的聊天“开始”,ping/pong后才能启动live-11。
+本裁定不等于已完成隔离环境方案,不扩大网络放行或改写冻结稿;历史证据不改。
+live-11未启动,表单联动与页面内置函数原生性仍NOT_COLLECTED;不进入C3。
+
+### 25.3 第一步生产改动与缺陷夹具
+
+formDOM只返回原始label/viewers/option text/name/body_text;Agent.snapshot在Node调用
+normalizeFormDOM,统一规整并生成role/heading。buildId在页面只采原始标签/表头/单元格,
+在Node做恰好一个、Summary/Id列及数字一致性判定。registerRefresh仅从页面采原始
+脚本/属性文本,Node提取回调与解码;fill双列表choices文字也在Node规整,与快照一致。
+redactDOM的Welcome/Triggered By用函数内局部正则
+`/^[\s\u00a0]+|[\s\u00a0]+$/g`,不使用页面trim;身份边界与secret子串规则不变。
+没有更改Policy、拦截面、放行集合、登录交互、form action或校验器接受的字段集合。
+
+真实Chromium离线夹具在about:blank,只导入live-10表单DOM,拒绝网络与外站解析。
+分正常/缺陷trim两趟:表单/option规整、buildId、Welcome/Triggered By脱敏及Python
+写前/写后检查、刷新登记共8子例,加外层1例;原41个DOM测试全部保留。
+页面取数函数的静态断言拒绝trim/trimStart/trimEnd/matchAll/toLowerCase/toUpperCase调用;
+规整函数不序列化到页面。所有原始文本仅在代理内存,不越过Python协议边界。
+
+修前before-fix.log含夹具自身PageRedactor构造参数错误,不作纯回归证明;
+改为实例化后更新identities,再跑before-fix-corrected-fixture.log(exit1):45pass/5fail,
+其中缺陷trim的表单QB_FORM_CHANGED、buildId=null与Triggered By身份残留均复现;
+另有新增option空白规整要求及外层聚合失败。修后Node为50/50,
+unit120/120、安全4/4,见evidence/C2b/c2b-09-production/node-gates.log。
+正常/缺陷两趟的规整快照与脱敏HTML逐字/逐字段相等,旧41个DOM用例不变。
+现场trim是否真的被改写要等live-11九项布尔探测,本轮不把合成夹具当真机事实。
+
+### 25.4 第一步验收
+
+evidence/C2b/c2b-09-production/记录完整命令/原文。全部门禁exit0:
+pytest2165 passed/1 skipped(116.91s);mypy113 files;Ruff clean;
+lint-imports6 kept/0 broken;check_design_doc0 problem。
+Node三个入口3 passed(22.81s),unit120/120、DOM50/50(原41+新9),安全4/4。
+Python测试计数不变;Node子用例单列。完整暂存树Ruff:
+5cf878164d9c9b7a983993788a46a70e3e74e40b -> /tmp/p5q-c2b09-production-lint-di6avA。
+之后仅补记账。第一步推送后仍不真机,先同步spikes原始DOM消费者;
+不把此处测试通过当成live-11已经取证。

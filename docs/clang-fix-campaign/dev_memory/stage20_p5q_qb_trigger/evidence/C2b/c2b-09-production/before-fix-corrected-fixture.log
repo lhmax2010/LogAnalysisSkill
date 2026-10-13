@@ -1,0 +1,147 @@
+▶ C2B-09 page trim overrides cannot change Node decisions or identity redaction
+  ✖ form and options, broken=false (37.131648ms)
+  ✔ build identity, broken=false (11.855078ms)
+  ✔ redaction pre/post check, broken=false (48.779041ms)
+  ✔ refresh registration, broken=false (7.518823ms)
+  ✖ form and options, broken=true (16.450385ms)
+  ✖ build identity, broken=true (7.211525ms)
+  ✖ redaction pre/post check, broken=true (6.501211ms)
+  ✔ refresh registration, broken=true (5.66555ms)
+✖ C2B-09 page trim overrides cannot change Node decisions or identity redaction (708.237725ms)
+▶ C2A-04 build identity from archived HTML, with all network denied
+  ✔ archive 01.response.txt /build/1069540/overview (49.611013ms)
+  ✔ archive 03.response.txt /build/1069540/variables (18.889019ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (34.645963ms)
+  ✔ navigation spelling Id (20.063991ms)
+  ✔ navigation spelling ID (15.977939ms)
+  ✔ Summary Id resolved by column, not fixed position (16.3536ms)
+  ✔ reject duplicate-nav (13.402111ms)
+  ✔ reject missing-nav (10.614984ms)
+  ✔ reject wrong-nav (9.481289ms)
+  ✔ reject missing-summary (7.558181ms)
+  ✔ reject duplicate-summary (8.543577ms)
+  ✔ reject missing-id-column (8.978938ms)
+  ✔ reject duplicate-id-column (9.556412ms)
+  ✔ reject different-summary-id (9.133068ms)
+  ✔ reject missing-first-row (14.077241ms)
+  ✔ both overview sources agree but differ from requested id (17.407193ms)
+  ✔ subpage missing navigation (14.501573ms)
+  ✔ subpage duplicate navigation (11.488038ms)
+  ✔ subpage wrong navigation (12.871186ms)
+  ✔ C2B-06 remembered Variables at bare build 1193469 (50.70824ms)
+  ✔ C2B-06 remembered Variables at bare build 1186372 (48.925397ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 build identity from archived HTML, with all network denied (778.544393ms)
+▶ C2B-06 exact Run button grammar from live-06, with no navigation or click requests
+  ✔ none (54.13648ms)
+  ✔ anchor (17.227913ms)
+  ✔ duplicate (18.257842ms)
+  ✔ extra-statement (22.889633ms)
+  ✔ promote (52.017206ms)
+  ✔ run2 (28.95803ms)
+  ✔ external (22.869697ms)
+  ✔ missing-onclick (23.100964ms)
+  ✔ trailing-newline (20.762964ms)
+✔ C2B-06 exact Run button grammar from live-06, with no navigation or click requests (610.9966ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (367.765347ms)
+▶ C2B-04 shared identity boundary and credential vectors
+  ✔ short-display-name (16.773154ms)
+  ✔ triggered-by-row (8.51579ms)
+  ✔ triggered-by-column (12.047863ms)
+  ✔ multiword (11.012968ms)
+  ✔ literal-regex-and-ascii-boundaries (4.365728ms)
+  ✔ secrets-remain-substrings (7.993642ms)
+✔ C2B-04 shared identity boundary and credential vectors (404.630823ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/favicon.ico","/build/301"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (831.003497ms)
+ℹ tests 50
+ℹ suites 0
+ℹ pass 45
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3704.671387
+
+✖ failing tests:
+
+test at tests/node/test_qb_browser_runtime.mjs:32:15
+✖ form and options, broken=false (37.131648ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   ' \nFull\t ',
+  +   ' \nPartial\t '
+  -   'Full',
+  -   'Partial'
+    ]
+  
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_runtime.mjs:46:16)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_runtime.mjs:32:7)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/node/test_qb_browser_runtime.mjs:32:15
+✖ form and options, broken=true (16.450385ms)
+  AgentError: QB_FORM_CHANGED
+      at validateForm (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs:342:100)
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_runtime.mjs:44:24)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_runtime.mjs:32:7)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    code: 'QB_FORM_CHANGED',
+    field: undefined
+  }
+
+test at tests/node/test_qb_browser_runtime.mjs:49:15
+✖ build identity, broken=true (7.211525ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  null !== '1193469'
+  
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_runtime.mjs:53:16)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_runtime.mjs:49:7)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: '1193469',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/node/test_qb_browser_runtime.mjs:56:15
+✖ redaction pre/post check, broken=true (6.501211ms)
+  AssertionError [ERR_ASSERTION]: The input was expected to not match the regular expression /Lin Hao|Other Person|synthetic-C2B09-secret/. Input:
+  
+  '<html><head></head><body><span>Welcome! &lt;USER&gt;</span>\n' +
+    '          <table><tbody><tr><td> \n' +
+    'Triggered By\t </td><td> \n' +
+    'Other Person\t </td></tr></tbody></table>\n' +
+    '          <p>&lt;USER&gt;; Other Person; Linux-PAM; ILinkListener</p>\n' +
+    '          <input type="hidden" name="token" value="&lt;REDACTED&gt;"><p>prefix-&lt;REDACTED&gt;-suffix</p></body></html>'
+  
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_runtime.mjs:62:16)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_runtime.mjs:56:7)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<html><head></head><body><span>Welcome! &lt;USER&gt;</span>\n          <table><tbody><tr><td> \nTriggered By\t </td><td> \nOther Person\t </td></tr></tbody></table>\n          <p>&lt;USER&gt;; Other Person; Linux-PAM; ILinkListener</p>\n          <input type="hidden" name="token" value="&lt;REDACTED&gt;"><p>prefix-&lt;REDACTED&gt;-suffix</p></body></html>',
+    expected: /Lin Hao|Other Person|synthetic-C2B09-secret/,
+    operator: 'doesNotMatch',
+    diff: 'simple'
+  }

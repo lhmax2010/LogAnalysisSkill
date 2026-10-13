@@ -222,13 +222,15 @@ export function pathShape(path) {
 // Browser DOM redaction is followed by a Node-side string self-check and the
 // independent qb_redact check in Python. Only the redacted DOM crosses IPC.
 export function redactDOM() {
+  // Page scripts can replace String.prototype.trim; keep this normalization local.
+  const normalize = value => value.replace(/^[\s\u00a0]+|[\s\u00a0]+$/g, '');
   const root = document.documentElement.cloneNode(true);
   const identities = new Set();
   const secrets = new Set();
   const remember = (set, value) => { if (value && !['<USER>', '<REDACTED>'].includes(value)) set.add(value); };
   for (const element of root.querySelectorAll('span, div')) {
     if ([...element.childNodes].some((node) => node.nodeType === 3 && /^\s*Welcome!/.test(node.textContent))) {
-      const value = element.textContent.replace(/^\s*Welcome!\s*/, '').trim();
+      const value = normalize(element.textContent.replace(/^\s*Welcome!\s*/, ''));
       remember(identities, value); element.textContent = 'Welcome! <USER>';
     }
   }
@@ -237,12 +239,12 @@ export function redactDOM() {
     for (const row of table.rows) {
       if (row.closest('table') !== table) continue;
       const cells = [...row.cells];
-      const index = cells.findIndex((cell) => cell.textContent.trim() === 'Triggered By');
+      const index = cells.findIndex((cell) => normalize(cell.textContent) === 'Triggered By');
       let cell;
       if (index >= 0 && cells[index].tagName === 'TH') column = index;
       else if (index >= 0) cell = cells[index + 1];
       else if (column !== null && cells[column]?.tagName === 'TD') cell = cells[column];
-      if (cell) { remember(identities, cell.textContent.trim()); cell.textContent = '<USER>'; }
+      if (cell) { remember(identities, normalize(cell.textContent)); cell.textContent = '<USER>'; }
     }
   }
   const sensitive = /password|passwd|secret|token|credential|authorization|cookie|session|csrf|xsrf/i;
@@ -250,7 +252,7 @@ export function redactDOM() {
     const name = element.getAttribute('name') ?? '';
     const isInput = element.tagName === 'INPUT';
     const hidden = isInput && /^(hidden|password)$/i.test(element.getAttribute('type') ?? '');
-    const recorder = name.endsWith(':palette:recorder');
+    const recorder = /:palette:recorder$/.test(name);
     if (sensitive.test(name + (element.id ?? ''))) {
       remember(secrets, element.getAttribute(isInput ? 'value' : 'content'));
     }
@@ -293,7 +295,7 @@ export function checkRedacted(html) {
 }
 
 export function formDOM() {
-  const forms = [...document.forms].filter((form) => form.action.includes('IFormSubmitListener-form'));
+  const forms = [...document.forms].filter((form) => /IFormSubmitListener-form/.test(form.action));
   if (forms.length !== 1) return null;
   const form = forms[0];
   const rows = [...form.querySelectorAll('.form-label')].map((label) => {
@@ -303,7 +305,7 @@ export function formDOM() {
     const viewers = [...box.querySelectorAll('.property-viewer')];
     const controls = [...box.querySelectorAll('input, select, textarea')].map((element) => ({
       id: element.id, tag: element.tagName, type: element.type,
-      role: element.name?.split(':').at(-1), callback: element.getAttribute('onchange'),
+      name: element.name, callback: element.getAttribute('onchange'),
       value: element.value, checked: element.checked,
       options: element.tagName === 'SELECT' ? [...element.options].map((option) => ({
         text: option.textContent, value: option.value, selected: option.selected,
@@ -312,10 +314,24 @@ export function formDOM() {
     const buttons = [...box.querySelectorAll('button')].map((button) => ({
       className: button.className, code: button.getAttribute('onclick'),
     }));
-    return { label: label.textContent.trim(), viewers: viewers.map((v) => v.textContent.trim()), controls, buttons };
+    return { label: label.textContent, viewers: viewers.map((v) => v.textContent), controls, buttons };
   });
-  return { title: document.title, heading: document.body.textContent.includes('Specify Build Options'),
+  return { title: document.title, body_text: document.body.textContent,
     action: form.action, rows, base: document.baseURI };
+}
+
+// Run only in Node, never serialized into the page's main world.
+export function normalizeFormDOM(raw) {
+  if (raw === null) return null;
+  const { body_text, ...form } = raw;
+  return { ...form, heading: body_text.includes('Specify Build Options'),
+    rows: form.rows.map(row => row === null ? null : ({ ...row,
+      label: row.label.trim(), viewers: row.viewers.map(value => value.trim()),
+      controls: row.controls.map(({ name, ...control }) => ({ ...control, role: name?.split(':').at(-1),
+        options: control.options.map(option => ({ ...option, text: option.text.trim() })),
+      })),
+    })),
+  };
 }
 
 export function callbackURL(code, base) {
@@ -455,31 +471,33 @@ export class Agent {
     await this.runtime.close(); throw new AgentError('QB_LOGIN_TIMEOUT');
   }
   async registerRefresh() {
-    const values = await this.page.evaluate(() => [...document.querySelectorAll('script, [onload], [onclick]')]
-      .flatMap((element) => [element.textContent ?? '', element.getAttribute('onload') ?? '', element.getAttribute('onclick') ?? ''])
-      .flatMap((code) => [...code.matchAll(/['"]([^'"\s]*IBehaviorListener[^'"\s]*action=ajaxRefresh[^'"\s]*)['"]/g)].map((m) => m[1])));
+    const sources = await this.page.evaluate(() => [...document.querySelectorAll('script, [onload], [onclick]')]
+      .map((element) => [element.textContent ?? '', element.getAttribute('onload') ?? '', element.getAttribute('onclick') ?? '']));
+    const values = sources.flat().flatMap(code =>
+      [...code.matchAll(/['"]([^'"\s]*IBehaviorListener[^'"\s]*action=ajaxRefresh[^'"\s]*)['"]/g)].map(m => m[1]));
     this.policy.refresh = new Set(values.map((value) => new URL(value.replaceAll('&amp;', '&'), this.page.url()).href)
       .filter((value) => new URL(value).origin === ORIGIN));
   }
   async buildId(path) {
-    return this.page.evaluate((overview) => {
-      const labels = [...document.querySelectorAll('.nav-link')]
-        .map((label) => label.textContent.trim().match(/^Build \((?:id|Id|ID):(\d+)\)$/))
-        .filter(Boolean);
-      if (labels.length !== 1) return null;
-      const id = labels[0][1];
-      if (!overview) return id;
-      const summaries = [...document.querySelectorAll('.build-summary')]
-        .filter((box) => box.querySelector('.box-head')?.textContent.trim() === 'Summary');
-      if (summaries.length !== 1) return null;
-      const tables = summaries[0].querySelectorAll('table');
-      if (tables.length !== 1) return null;
-      const columns = [...tables[0].querySelectorAll('thead th')];
-      const indices = columns.flatMap((cell, index) => cell.textContent.trim() === 'Id' ? [index] : []);
-      if (indices.length !== 1) return null;
-      const cells = tables[0].tBodies[0]?.rows[0]?.cells;
-      return cells?.[indices[0]]?.textContent.trim() === id ? id : null;
-    }, /^\/build\/\d+\/overview$/.test(path));
+    const raw = await this.page.evaluate(() => ({
+      labels: [...document.querySelectorAll('.nav-link')].map(label => label.textContent),
+      summaries: [...document.querySelectorAll('.build-summary')].map(box => ({
+        heading: box.querySelector('.box-head')?.textContent,
+        tables: [...box.querySelectorAll('table')].map(table => ({
+          columns: [...table.querySelectorAll('thead th')].map(cell => cell.textContent),
+          cells: [...(table.tBodies[0]?.rows[0]?.cells ?? [])].map(cell => cell.textContent),
+        })),
+      })),
+    }));
+    const labels = raw.labels.map(text => text.trim().match(/^Build \((?:id|Id|ID):(\d+)\)$/)).filter(Boolean);
+    if (labels.length !== 1) return null;
+    const id = labels[0][1];
+    if (!/^\/build\/\d+\/overview$/.test(path)) return id;
+    const summaries = raw.summaries.filter(box => box.heading?.trim() === 'Summary');
+    if (summaries.length !== 1 || summaries[0].tables.length !== 1) return null;
+    const table = summaries[0].tables[0];
+    const indices = table.columns.flatMap((text, index) => text.trim() === 'Id' ? [index] : []);
+    return indices.length === 1 && table.cells[indices[0]]?.trim() === id ? id : null;
   }
   async read(path) {
     if (typeof path !== 'string' || !this.policy.readonly(path)) throw new AgentError('AGENT_PHASE');
@@ -494,7 +512,7 @@ export class Agent {
     try { html = await this.page.evaluate(redactDOM); } catch { throw new AgentError('QB_EVIDENCE_REDACTION_FAILED'); }
     return { status: response?.status() ?? 0, html_redacted: checkRedacted(html) };
   }
-  async snapshot() { return this.page.evaluate(formDOM); }
+  async snapshot() { return normalizeFormDOM(await this.page.evaluate(formDOM)); }
   async openForm(id) {
     const project = this.projects.get(id);
     if (!project) throw new AgentError('QB_FORM_CHANGED');
@@ -564,7 +582,7 @@ export class Agent {
             await box.locator('button.remove').click();
           }
           if (value.length) {
-            const choices = await box.locator('select[name$=":choices"] option').allTextContents();
+            const choices = (await box.locator('select[name$=":choices"] option').allTextContents()).map(text => text.trim());
             if (value.some((item) => !choices.includes(item))) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);
             await box.locator('select[name$=":choices"]').selectOption(value.map((label) => ({ label })));
             await box.locator('button.add').click();

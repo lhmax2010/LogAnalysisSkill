@@ -1,11 +1,86 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { Agent, createRuntime, redactDOM, ORIGIN, FIELDS } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, createRuntime, redactDOM, checkRedacted, validateForm, ORIGIN, FIELDS } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
 const [playwright, chromium] = process.argv.slice(2);
 const archive = new URL('../../docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-cookie-02/', import.meta.url);
+
+test('C2B-09 page trim overrides cannot change Node decisions or identity redaction', async t => {
+  const runtime = await createRuntime(playwright, chromium, {
+    launchArgs: ['--no-proxy-server', '--host-resolver-rules=MAP * ~NOTFOUND'],
+  });
+  runtime.policy.allow = () => false;
+  const agent = new Agent({ ...runtime, page: {
+    url: () => `${ORIGIN}/wicket/page?10`, evaluate: (fn, ...args) => {
+      assert.doesNotMatch(fn.toString(), /\.(?:trim|trimStart|trimEnd|matchAll|toLowerCase|toUpperCase)\s*\(/);
+      return runtime.page.evaluate(fn, ...args);
+    },
+  } });
+  const fixture = readFileSync(new URL('../../docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-10/form-unverified.response.html', import.meta.url), 'utf8');
+  const nativeTrim = await runtime.page.evaluate(() => {
+    globalThis.savedTrim = String.prototype.trim;
+    return ' x '.trim();
+  });
+  assert.equal(nativeTrim, 'x');
+  const baseline = {};
+  try {
+    for (const broken of [false, true]) {
+      await runtime.page.evaluate(bad => {
+        String.prototype.trim = bad ? function () { return this.replace(/^\s+|\s+$/, ''); } : globalThis.savedTrim;
+      }, broken);
+      await t.test(`form and options, broken=${broken}`, async () => {
+        await runtime.page.evaluate(html => {
+          const parsed = new DOMParser().parseFromString(html, 'text/html');
+          const form = parsed.querySelector('form[action*="IFormSubmitListener-form"]');
+          const base = document.createElement('base'); base.href = 'https://quickbuild.tizen.org/wicket/page?10';
+          document.head.replaceChildren(base);
+          const heading = document.createElement('h1'); heading.textContent = 'Specify Build Options';
+          document.body.replaceChildren(heading, document.importNode(form, true));
+          for (const option of document.querySelectorAll('option')) option.textContent = ` \n${option.textContent}\t `;
+        }, fixture);
+        assert.equal(await runtime.page.evaluate(() => ' x '.trim()), broken ? 'x ' : 'x');
+        const form = await agent.snapshot();
+        const fields = validateForm(form, 'Tizen-Base-Toolchain');
+        assert.equal(form.rows[0].viewers[0], 'Tizen-Base-Toolchain');
+        assert.deepEqual(fields.BUILD_TYPE.controls[0].options.map(o => o.text), ['Full', 'Partial']);
+        if (broken) assert.deepEqual(form, baseline.form); else baseline.form = form;
+      });
+      await t.test(`build identity, broken=${broken}`, async () => {
+        await runtime.page.setContent(`<a class="nav-link"> \nBuild (id:1193469)\t </a>
+          <div class="build-summary"><div class="box-head"> \nSummary\t </div><table>
+          <thead><tr><th> \nId\t </th></tr></thead><tbody><tr><td> \n1193469\t </td></tr></tbody></table></div>`);
+        assert.equal(await agent.buildId('/build/1193469/overview'), '1193469');
+        assert.equal(await agent.buildId('/build/1193469/variables'), '1193469');
+      });
+      await t.test(`redaction pre/post check, broken=${broken}`, async () => {
+        await runtime.page.setContent(`<span> \nWelcome! Lin Hao\t </span>
+          <table><tr><td> \nTriggered By\t </td><td> \nOther Person\t </td></tr></table>
+          <p>Lin Hao; Other Person; Linux-PAM; ILinkListener</p>
+          <input type="hidden" name="token" value="synthetic-C2B09-secret"><p>prefix-synthetic-C2B09-secret-suffix</p>`);
+        const html = checkRedacted(await runtime.page.evaluate(redactDOM));
+        assert.doesNotMatch(html, /Lin Hao|Other Person|synthetic-C2B09-secret/);
+        assert.match(html, /&lt;USER&gt;/); assert.match(html, /Linux-PAM; ILinkListener/);
+        const root = fileURLToPath(new URL('../../', import.meta.url));
+        const venv = `${root}.venv/bin/python`;
+        const result = spawnSync(existsSync(venv) ? venv : 'python3', ['-c',
+          'import sys,tempfile; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from ci_triage.qb_redact import PageRedactor; r=PageRedactor(); r.identities.update({"Lin Hao","Other Person"}); raw=sys.stdin.buffer.read(); r.check_bytes(raw);\nwith tempfile.TemporaryDirectory() as d:\n p=Path(d)/"page.html"; p.write_bytes(raw); r.check_written(p)',
+          `${root}tizen-ci-triage/scripts`], { input: html, encoding: 'utf8' });
+        assert.equal(result.status, 0, result.stderr);
+        if (broken) assert.equal(html, baseline.redacted); else baseline.redacted = html;
+      });
+      await t.test(`refresh registration, broken=${broken}`, async () => {
+        await runtime.page.setContent(`<div onclick="'page?10-1.IBehaviorListener.0-x&amp;action=ajaxRefresh'"></div>`);
+        await agent.registerRefresh();
+        assert.deepEqual([...agent.policy.refresh], [`${ORIGIN}/wicket/page?10-1.IBehaviorListener.0-x&action=ajaxRefresh`]);
+      });
+    }
+    assert.equal(runtime.page.url(), 'about:blank');
+  } finally { await runtime.close(); }
+});
 
 test('C2A-04 build identity from archived HTML, with all network denied', async t => {
   const runtime = await createRuntime(playwright, chromium, {
