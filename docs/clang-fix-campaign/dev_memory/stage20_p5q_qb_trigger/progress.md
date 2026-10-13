@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE08_STOPPED;CONFIGURATION_SOURCE_MISMATCH**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE09_READY;WAITING_FOR_CHAT_START**。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 §21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
@@ -9,9 +9,10 @@ live-06已完成ping/pong与一次人工登录,七页归档(两页ID_UNVERIFIED)
 五项/两项检查通过;form_evidence的open_form返回QB_FORM_CHANGED后立即停止,
 release=0,未设值/未提交,见§21.9。live-07收到新的聊天开始并完成ping/pong,
 等待600秒后QB_LOGIN_TIMEOUT;登录POST=0、归档构建页=0,见§22.6。
-live-07原样保留。按FatTank新指令原样重跑live-08一次,登录及五个构建页核对通过;
-配置登记的sibling_tabs精确相对路径检查失败,见§22.8。未打开表单,release=0。
-不绕过停止条件、不自行再重试、不标C2b完成。
+live-07原样保留。live-08登录及五个构建页核对通过,配置登记的sibling_tabs
+精确相对路径检查失败,见§22.8。§23按P5Q-C2B-07裁定修正取证URL解析;
+live-08原始证据保留,生产与冻结稿不改。live-09须先完成离线验收和推送,
+再等新的聊天“开始”,不标C2b完成。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -38,7 +39,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;C2B-06生产a364489/取证脚本e683175已推送;live-08五页VERIFIED,配置登记sibling_tabs失败,表单未取,§22.8;C3不启动 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;C2B-07仅修取证来源URL解析,§23离线验收全绿;live-09待新的聊天开始,live-08原记录不改;C3不启动 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -2144,3 +2145,79 @@ Ruff完整待提交树`3aace796a64a902a944829a24566581d193b2ab3`导出到
 live-07/run.json仍为`79d07795dfa6d54647f9981ff7fe1884e5f860cc1e1e6037f5db5ec3869a533e`,
 冻结稿仍为`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
 验收绿不消除CONFIGURATION_SOURCE_MISMATCH,只归档停点等设计方核对,不进入C3。
+
+## 23. 实施裁定 P5Q-C2B-07
+
+### 23.1 裁定原文
+
+原因:P5Q-C2B-04 的五项配置来源核对里,总览链接允许任意层 ../,Pipelines 和 Children 两个标签却写死为 ../pipeline/N 与 ../children/N。改读 /build/N/overview 后,链接变为 ../../pipeline/1917 与 ../../children/1917,解析后的指向不变。这是设计方规则写法错误,不是实现错误。
+另记 live-08 新取得的事实:子构建 1193469 的配置路径为 root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build(overview 1915),构建名形如 TIZEN_Tizen_Tizen-Base-Toolchain_RBS_build_standard-armv7l:aarch64:x86_64_<时间>;子构建 Summary Status 为 Failed;父构建 Child Build 表 Build Result 为 FAILED。
+
+### 23.2 改动范围与执行顺序
+
+FatTank批准、设计方出具,开工基线0f89d4f。冻结稿sha256仍为
+`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`;
+live-08/run.json仍为`ebe9226207c9d08ac8b5df0ba03e8a5e614092431f26e65468d2a8d80f902080`。
+
+只改spikes/p5q_c2b_config_source.mjs的来源URL判定,以及evidence.mjs该判定调用处
+传入归档页source.path,配套离线测试同步;不改生产代理、冻结稿或其他设计规则。
+三个href分别以`https://quickbuild.tizen.org + source.path`用URL API解析,
+同源、无查询/片段、精确/overview/N或/pipeline/N或/children/N、正整数且相同,
+个数各恰好一个。保留原有安全整数保护。归档来源只取已核对overview的限制不变。
+面包屑/复制路径/构建名三项、配置页两项、停止条件均不变。
+
+测试覆盖../(裸build地址)与../../(overview地址)两种正确解析;
+同源绝对URL与根相对路径按本裁定解析规则为正例,替换旧的仅接受../形态反例。
+查询/片段/外站/尾段/非法整数等对三个标签分别验证;缺失/重复/ID不一致拒绝。
+增加live-08父overview离线回归,不改旧run.json的原始4绿1红记录。
+归档HTML中的base元素不能替换来源基址;未传来源路径或错误深度也须拒绝。
+
+先跑离线配置来源测试、既有self-test/id-self-test及全量门禁,全绿后提交推送。
+之后在聊天请求新的“开始”;收到后PTY启动live-09,先ping/pong再弹窗,
+不提前创建实测结果。顺序保持live-08五页,新鲜父overview登记配置并读配置页,
+再form_evidence只做Full→Partial→Full,不点Ok/Accept、不submit,release必须0,
+记录回调/action/版本/选项/重渲染/random及表单BUILD_REFERENCE/SNAPSHOT_NUM。
+任一停止条件触发即归档并停止,不重试绕过、不进入C3。
+
+### 23.3 离线落实与验收
+
+三个链接均由归档source.path提供基址,不使用当前浏览器地址或HTML的base标签。
+结果仍是五个具名布尔检查,配置页仍为两个,没有把某项失败改为可忽略。
+三个链接的查询/片段(含空分隔符)、外站/http、路径多段、非正整数/非法URL
+逐个拒绝;三个标签缺失/重复/ID不一致均拒绝。解析形态变化只影响取证脚本。
+生产代理的放行面、openForm、read和所有停止条件零改动。
+
+离线配置测试27→67(净增40个Node测试计数,含子测试),pytest包装入口未新增,
+不把Node计数与全仓pytest混算。旧的同源绝对地址/根相对路径反例按新裁定
+转为正例,其它原有来源/路径/面包屑/复制路径/构建名/配置页控制保留。
+live-08/01.response.html作为本地只读DOMParser输入,五项全绿;另用其原run.json
+facts复核,结果写`c2b-07-offline/live08-offline-source-check.json`。原run.json仍记录
+sibling_tabs=false,新证据明确mode=offline-only/network_requests=0/live09_started=false。
+
+日志目录`evidence/C2b/c2b-07-offline/`,完整命令见该目录README。
+
+| 命令 | exit | 实测 / 日志 |
+|---|---|---|
+| Node tests/node/test_p5q_c2b_config_source.mjs PW CHROMIUM | 0 | 67/67;config-source.log |
+| Node spikes/p5q_c2b_evidence.mjs --self-test .venv/bin/python | 0 | 22/22,network_requests=0;self-test.log |
+| Node spikes/p5q_c2b_evidence.mjs --id-self-test PW CHROMIUM .venv/bin/python | 0 | 14/14,network_requests=0;id-self-test.log |
+| .venv/bin/python -m pytest -q | 0 | 2165 passed,1 skipped,109.30s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+| pytest -v -s 三个Node入口(README列nodeid) | 0 | 3 passed,19.48s;Node单元120/120、runtime41/41、安全4/4;node-gates.log |
+
+Node前缀/PW/CHROMIUM沿§22.3且在README列全路径。四组本机安全从头实跑,
+Worker/WebSocket走b:browser_fail_closed,HTTP0/握手0,shared_worker closeTarget成功,
+worker异常Error,浏览器与临时目录清理true;307/308终止、302继续、逐跳与凭据隔离绿。
+Ruff完整待提交树`9234e0897556f15922df41969375adcfb4785439`导出到
+`/tmp/p5q-c2b-07-lint-xeWsfZ`;之后仅补记录与验收日志。无关既有改动未纳入。
+
+### 23.4 live-09待开始
+
+本次先提交推送修正,再在聊天请求FatTank回复“开始”。未收到前不运行真机脚本,
+不创建live-09实测证据,不提前登记1917。未来配置ID仍须来自本轮读到并核对通过的
+1193467/overview,旧离线复核不能替代新来源。live-08及更早目录原样保留。
+live-09的页面/配置两项/表单回调/action/版本/选项变化及release均NOT_COLLECTED;
+只有实跑后才填实际值。C2b尚未完成,不进入C3。

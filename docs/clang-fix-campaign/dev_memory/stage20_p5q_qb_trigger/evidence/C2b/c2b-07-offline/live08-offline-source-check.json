@@ -1,0 +1,29 @@
+{
+  "mode": "offline-only",
+  "network_requests": 0,
+  "source_run_sha256": "ebe9226207c9d08ac8b5df0ba03e8a5e614092431f26e65468d2a8d80f902080",
+  "source_file": "01.response.html",
+  "source_html_sha256": "b88602c45062be2d8ac2fe2421aeb0da2b7e6801b38ae3b5ea3d41d88b0e78dd",
+  "source_path": "/build/1193467/overview",
+  "historical_checks_unchanged": {
+    "overview_link": true,
+    "sibling_tabs": false,
+    "breadcrumb": true,
+    "copy_path": true,
+    "build_name": true
+  },
+  "revised_checks": {
+    "overview_link": true,
+    "sibling_tabs": true,
+    "breadcrumb": true,
+    "copy_path": true,
+    "build_name": true
+  },
+  "resolved_urls": {
+    "overview": "https://quickbuild.tizen.org/overview/1917",
+    "pipeline": "https://quickbuild.tizen.org/pipeline/1917",
+    "children": "https://quickbuild.tizen.org/children/1917"
+  },
+  "offline_candidate_id": 1917,
+  "live09_started": false
+}

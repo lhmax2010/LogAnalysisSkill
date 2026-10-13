@@ -223,7 +223,7 @@ async function collectRead(input) {
     const childIds = await childIdsFromVerifiedSource({ ...record, html_redacted: response.html_redacted }, runtime.page);
     const source = { ...record, facts, child_build_ids: childIds };
     parentPages.set(input.path, source);
-    (report.configuration_sources ??= []).push({ ...source, ...parentConfigurationChecks(facts) });
+    (report.configuration_sources ??= []).push({ ...source, ...parentConfigurationChecks(facts, source.path) });
     record.child_build_ids = childIds;
   }
   if (/^\/overview\/\d+$/.test(input.path)) {

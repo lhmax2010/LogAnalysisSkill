@@ -1,4 +1,4 @@
-// Evidence-only selectors for P5Q-C2B-04. No requests and no production imports.
+// Evidence-only selectors for P5Q-C2B-04/07. No requests and no production imports.
 export const CONFIGURATION_PATH = 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER';
 export const BUILD_PREFIX = 'TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_';
 
@@ -41,14 +41,24 @@ function pathChecks(facts) {
   };
 }
 
-export function parentConfigurationChecks(facts) {
-  const match = facts.overview_links.length === 1
-    && /^(?:\.\.\/)+overview\/(\d+)$/.exec(facts.overview_links[0]);
-  const id = match ? match[1] : null;
+export function parentConfigurationChecks(facts, sourcePath) {
+  const linkId = (links, kind) => {
+    if (links.length !== 1 || typeof links[0] !== 'string' || !links[0]
+      || typeof sourcePath !== 'string' || !sourcePath.startsWith('/')) return null;
+    try {
+      // Use the archived request address, never the live DOM's base element.
+      const url = new URL(links[0], `https://quickbuild.tizen.org${sourcePath}`);
+      if (url.origin !== 'https://quickbuild.tizen.org' || url.href.includes('?')
+        || url.href.includes('#')) return null;
+      const match = new RegExp(`^/${kind}/(\\d+)$`).exec(url.pathname);
+      return match && Number.isSafeInteger(Number(match[1])) && Number(match[1]) > 0 ? match[1] : null;
+    } catch { return null; }
+  };
+  const id = linkId(facts.overview_links, 'overview');
   const checks = {
-    overview_link: id !== null && Number.isSafeInteger(Number(id)) && Number(id) > 0,
-    sibling_tabs: id !== null && facts.pipeline_links.length === 1 && facts.children_links.length === 1
-      && facts.pipeline_links[0] === `../pipeline/${id}` && facts.children_links[0] === `../children/${id}`,
+    overview_link: id !== null,
+    sibling_tabs: id !== null && linkId(facts.pipeline_links, 'pipeline') === id
+      && linkId(facts.children_links, 'children') === id,
     ...pathChecks(facts),
     build_name: facts.build_names.length === 1 && facts.build_names[0].startsWith(BUILD_PREFIX),
   };
@@ -63,7 +73,7 @@ export function configurationPageChecks(facts) {
 export function parentRegistration(source) {
   if (!source || source.id_verified !== true || source.status !== 200 || !/^\/build\/\d+\/overview$/.test(source.path)
     || !/^[a-f0-9]{64}$/.test(source.sha256)) throw new Error('CONFIGURATION_SOURCE_MISMATCH');
-  const result = parentConfigurationChecks(source.facts);
+  const result = parentConfigurationChecks(source.facts, source.path);
   if (!result.passed) throw new Error('CONFIGURATION_SOURCE_MISMATCH');
   return { overview_id: Number(result.overview_id), configuration_path: CONFIGURATION_PATH,
     project_name: 'Tizen-Base-Toolchain', source: {

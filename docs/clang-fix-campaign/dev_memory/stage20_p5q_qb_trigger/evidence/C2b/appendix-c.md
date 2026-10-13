@@ -5,6 +5,28 @@ Latest session: live-08, 2026-10-13, five archived VERIFIED build pages.
 Historical observations below are kept, not substituted for missing results.
 This document records observations, not permission to start C3.
 
+## C2B-07 Preparation (live-09 Not Started)
+
+The designer ruling is recorded verbatim in progress23.1. All three source
+links now resolve against the archived page's own QuickBuild address, with
+same-origin, no-query/no-fragment, exact paths, positive matching id and one
+link per tab checks. Breadcrumb, copy-path, build name and the two config-page
+checks are unchanged. Production and frozen design are unchanged.
+
+The historical live-08 parent was rechecked offline: five checks now pass,
+resolved URLs are /overview/1917, /pipeline/1917 and /children/1917 on the same
+origin. See c2b-07-offline/live08-offline-source-check.json and config-source.log
+(67/67). This is not a live registration; live-08/run.json remains unmodified
+with its original failure. Its child path is RBS/build (overview1915), build
+name includes standard-armv7l:aarch64:x86_64; Summary Failed vs parent FAILED
+remain historical facts, not new parsing or submission rules.
+
+Full regression2165/1, self-tests22/22+14/14, Node120/120+41/41 and local safety4/4
+passed, along with mypy/ruff/import/design checks. live-09 requires a new chat
+start, then ping/pong before browser startup. Its fresh five pages, configuration
+source/page checks and form Full -> Partial -> Full are NOT_COLLECTED. No new
+request, inferred configuration id, form action release or C3 is claimed.
+
 ## C2B-06 live-08 (Latest Session)
 
 Baseline962ad58; unchanged script/agent/frozen design. Fresh chat start,
