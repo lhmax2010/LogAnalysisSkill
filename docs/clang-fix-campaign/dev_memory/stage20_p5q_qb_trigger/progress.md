@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2b_IN_PROGRESS;C2B10_OFFLINE_VALIDATION**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2b_PENDING_LIVE12;AWAITING_CHAT_START**。
 最新执行见§26:P5Q-C2B-10已批准,先生产回调修正、再取证脱敏,两步单独提交;
 live-12须等待新的聊天“开始”及ping/pong。以下现场停点均保留为历史事实。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
@@ -2725,3 +2725,51 @@ Ruff在暂存树303ab28330205afa574af59278201ef159ff1a64的导出副本运行,
 hashes.log确认冻结稿与live-11的run/form字节未变。历史live目录不改;
 无关.gitignore/四个文档删除及未跟踪草稿不纳入。
 本提交不启动浏览器真机、不开展C3。现场联动仍待live-12。
+
+### 26.4 第二步取证脚本跟进
+
+第一步生产提交2ee8ab6已推送。本步仅spikes/p5q_c2b_evidence.mjs及文档/证据。
+诊断query逐项保留键名恰为random且值全长匹配
+`^\d(\.\d+)?(e-\d+)?$`的原值;Wicket监听器形态的键名不再受64字符普通键名
+限制,无等号的裸监听器项仍记录为裸项,有值时值照常遮蔽。
+其它v/路径/凭据/身份脱敏与写前写后自检不变。
+记录允许科学计数、重复random是为了如实取证,生产仍按第一步严格拒绝。
+新增14个离线向量,包括实际长监听器形态、数值/科学计数、重复项、错误语法、
+大小写、凭据值和长的非监听器键;不生成任何网络请求。
+本步验收后才请求新的聊天“开始”;live-12未启动,历史live目录原样保留。
+
+首跑14个新增向量逐项全部PASS,但旧selfTest汇总常量仍写22;
+self-test-before-count-fix.log保留该原文,不作为新计数依据。
+已将汇总改为随实际通过条目累加,重跑self-test.log为36/36、network_requests=0;
+此处只更正测试报告计数,未改变判定或脱敏规则。
+
+### 26.5 第二步验收与live-12人工闸门
+
+全部命令与输出:evidence/C2b/c2b-10-spikes/README.md和相邻日志。
+
+| 门禁 | 实跑结果 | exit/证据 |
+|---|---|---|
+| 查询/通道自测 | 36/36(原22+新增14),network_requests0 | 0,self-test.log |
+| 表单/ID/原生性自测 | 27/27、15/15、12/12,零网络/零release | 0,*self-test.log |
+| 全量pytest | 2165 passed/1 skipped,120.89s | 0,pytest.log |
+| mypy | 113 source files,无问题 | 0,mypy.log |
+| Ruff完整待提交树 | All checks passed! | 0,ruff.log |
+| lint-imports | 6 kept/0 broken | 0,lint-imports.log |
+| check_design_doc | 0 problem | 0,design-check.log |
+| Node四入口 | 4 passed,23.49s;unit142/142,DOM51/51,配置67/67,安全4/4 | 0,node-gates.log |
+
+Worker仍走b:browser_fail_closed,shared_worker成功/worker异常Error,
+browser/profile清理true、attackHTTP0/WS0;其余三组通过。
+Ruff暂存树bb8abe5a9d4a9ffc4b97b9b96810047a1e36fc99导出后校验,副本已删除。
+其后只补文档/日志。本步相对2ee8ab6生产与冻结稿零diff;
+hashes.log确认冻结稿/live-11仍同字节。无关用户改动不处理、不提交。
+
+live-12尚未启动,未创建live-12目录、未请求QuickBuild、未弹窗。
+待本步推送后新的聊天“开始”,命令通道ping/pong先于浏览器,顺序严格同live-11:
+login、父1193467 overview/variables、子1193469 overview/variables/step_status、
+由本次已核对父overview取得配置ID并登记、读配置页完成两项核对、
+BUILD_TYPE Full→Partial→Full、close。不是预先假定配置ID。
+记录各回调query的random原值、action/版本/选项/整页重渲染;
+form_action_releases必须0。不点Ok、不submit,失败按§24先取证后停止。
+WORKER_BLOCKED、NEW_PAGE、runtime.failure等立即停止条件不变。
+页面/配置/联动/release的真机结果全部NOT_COLLECTED,不以本机夹具代替;不进入C3。

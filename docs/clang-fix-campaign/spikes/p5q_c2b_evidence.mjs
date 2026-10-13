@@ -260,6 +260,7 @@ export function diagnosticStopReason({ redirect, deniedDocument, lastRequest, no
 
 // Only URL components supplied by the production metadata adapter enter here.
 export function redactAddress(path, query) {
+  const listener = /^\d+(-\d+)?\.?I[A-Za-z]+Listener[.0-9-]*-?[A-Za-z0-9:_-]*$/;
   const maskedPath = path.split('/').map(segment => {
     if (segment.length > 64 || /[a-fA-F0-9]{16,}/.test(segment)
       || /[A-Za-z0-9+_-]{16,}={0,2}/.test(segment)) return '<TOKEN>';
@@ -267,13 +268,16 @@ export function redactAddress(path, query) {
   }).join('/');
   let maskedQuery = query;
   if (query && !/^\d+(-\d+)?$/.test(query)
-    && !/^\d+(-\d+)?\.?I[A-Za-z]+Listener[.0-9-]*-?[A-Za-z0-9:_-]*$/.test(query)) {
+    && !listener.test(query)) {
     maskedQuery = query.split('&').map(part => {
       const equals = part.indexOf('=');
       const key = equals < 0 ? part : part.slice(0, equals);
       const value = equals < 0 ? '' : part.slice(equals + 1);
       if (key === 'v' && /^\d{1,16}$/.test(value)) return part;
-      return `${/^[A-Za-z0-9_.:-]{1,64}$/.test(key) ? key : '<KEY>'}=<REDACTED len=${[...value].length}>`;
+      if (key === 'random' && value.match(/^\d(\.\d+)?(e-\d+)?$/)?.[0] === value) return part;
+      const listenerKey = key.match(listener)?.[0] === key;
+      if (listenerKey && equals < 0) return key;
+      return `${listenerKey || /^[A-Za-z0-9_.:-]{1,64}$/.test(key) ? key : '<KEY>'}=<REDACTED len=${[...value].length}>`;
     }).join('&');
   }
   return { path: maskedPath, query: maskedQuery };
@@ -287,6 +291,9 @@ function checkedReport(raw, interpreter = python, knownIdentities = [...identiti
 }
 
 async function selfTest(interpreter) {
+  let passed = 0;
+  const pass = name => { passed++; emit({ test: name, result: 'PASS' }); };
+  const callbackKey = '10-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select';
   const cases = [
     ['session-path', '/;jsessionid=abc', '', '/;jsessionid=<REDACTED>', ''],
     ['session-query', '/x', 'jsessionid=abc', '/x', 'jsessionid=<REDACTED len=3>'],
@@ -300,12 +307,30 @@ async function selfTest(interpreter) {
     ['base64-segment', '/QWxhZGRpbjpvcGVuIHNlc2FtZQ==', '', '/<TOKEN>', ''],
     ['bad-key', '/', 'bad%20key=abc', '/', '<KEY>=<REDACTED len=3>'],
     ['page-range', '/', '1-2', '/', '1-2'],
+    ['callback-and-random', '/wicket/page', `${callbackKey}&random=0.1234567890123456`,
+      '/wicket/page', `${callbackKey}&random=0.1234567890123456`],
+    ['callback-value-still-masked', '/wicket/page', `${callbackKey}=secret&random=0.1`,
+      '/wicket/page', `${callbackKey}=<REDACTED len=6>&random=0.1`],
+    ['callback-with-secret', '/wicket/page', `${callbackKey}&token=secret&random=0.1`,
+      '/wicket/page', `${callbackKey}&token=<REDACTED len=6>&random=0.1`],
+    ['random-exponent-observation-only', '/', 'random=5e-7', '/', 'random=5e-7'],
+    ['random-decimal-exponent-observation-only', '/', 'random=0.123e-7', '/', 'random=0.123e-7'],
+    ['random-integer-observation-only', '/', 'random=1', '/', 'random=1'],
+    ['random-duplicate-recorded', '/', 'random=0.1&random=0.2', '/', 'random=0.1&random=0.2'],
+    ['random-nonnumeric', '/', 'random=abc123', '/', 'random=<REDACTED len=6>'],
+    ['random-empty', '/', 'random=', '/', 'random=<REDACTED len=0>'],
+    ['random-negative', '/', 'random=-0.1', '/', 'random=<REDACTED len=4>'],
+    ['random-uppercase', '/', 'Random=0.1', '/', 'Random=<REDACTED len=3>'],
+    ['random-wrong-exponent', '/', 'random=5e+7', '/', 'random=<REDACTED len=4>'],
+    ['random-newline', '/', 'random=0.1\n', '/', 'random=<REDACTED len=4>'],
+    ['non-listener-long-key', '/', `${'x'.repeat(65)}=secret&random=0.1`,
+      '/', '<KEY>=<REDACTED len=6>&random=0.1'],
   ];
   for (const [name, path, query, expectedPath, expectedQuery] of cases) {
     const value = redactAddress(path, query);
     assert.deepEqual(value, { path: expectedPath, query: expectedQuery });
     checkedReport(JSON.stringify(value), interpreter, []);
-    emit({ test: name, result: 'PASS' });
+    pass(name);
   }
   for (const [name, raw, users] of [
     ['cookie-assignment-rejected', '{"path":"JSESSIONID_8810=synthetic"}', []],
@@ -313,7 +338,7 @@ async function selfTest(interpreter) {
     ['display-name-rejected', '{"path":"/synthetic-user"}', ['synthetic-user']],
   ]) {
     assert.throws(() => checkedReport(raw, interpreter, users), { code: 'QB_EVIDENCE_REDACTION_FAILED' });
-    emit({ test: name, result: 'PASS' });
+    pass(name);
   }
   for (const [name, changes, expected] of [
     ['no-post-keeps-login-timeout', { now: 600000 }, null],
@@ -324,7 +349,7 @@ async function selfTest(interpreter) {
   ]) {
     assert.equal(diagnosticStopReason({ redirect: false, deniedDocument: false,
       lastRequest: 0, now: 0, loginResponseCount: 0, ...changes }), expected);
-    emit({ test: name, result: 'PASS' });
+    pass(name);
   }
   const scratch = await mkdtemp(join(tmpdir(), 'p5q-evidence-channel-'));
   try {
@@ -343,7 +368,7 @@ async function selfTest(interpreter) {
     }
     assert.deepEqual(saved.commands, []);
     assert.deepEqual(saved.traffic, []);
-    emit({ test: 'stdin-eof-before-close-stops', result: 'PASS' });
+    pass('stdin-eof-before-close-stops');
     const waiting = spawn(process.execPath, [fileURLToPath(import.meta.url),
       'unused-playwright', 'unused-chromium', join(scratch, 'waiting'), interpreter, 'full'],
     { stdio: ['pipe', 'pipe', 'pipe'], timeout: 30000 });
@@ -414,9 +439,9 @@ async function selfTest(interpreter) {
       }, { code: 'QB_READ_REDIRECTED' });
       assert.deepEqual(failureEnds, []);
     } finally { failureChannel.dispose(); }
-    emit({ test: 'no-ping-no-browser', result: 'PASS' });
+    pass('no-ping-no-browser');
   } finally { testChannel.dispose(); }
-  emit({ self_tests: 22, passed: 22, network_requests: 0 });
+  emit({ self_tests: passed, passed, network_requests: 0 });
 }
 
 async function idSelfTest(pw, chrome, interpreter) {
