@@ -1,12 +1,118 @@
 # C2b Appendix C Evidence Status
 
-Status: **PARTIAL / LIVE10_STOPPED_QB_FORM_CHANGED**.
-Latest session: live-10, 2026-10-13, five VERIFIED build pages, verified configuration page,
-and a form_unverified diagnostic archive. No BUILD_TYPE change or form submission.
+Status: **PARTIAL / LIVE11_STOPPED_BUILD_TYPE_CALLBACK_DENIED**.
+Latest session: live-11, 2026-10-13, five VERIFIED build pages, verified configuration,
+initial form passed; first BUILD_TYPE callback POST denied, then QB_FORM_CHANGED.
+Partial selected locally only; no completed round trip or form submission.
 Historical observations below are kept, not substituted for missing results.
 This document records observations, not permission to start C3.
 
-## C2B-09 Preparation (No New Live Session)
+## C2B-09 live-11 (Latest Session)
+
+Baselinecbedcf5 after production4a4a727. New chat start, ping/pong, one manual
+login. Exit1, stopped during BUILD_TYPE_Partial; diagnostics preserved the
+original error, browser/profile cleaned. All references here are under live-11/.
+
+| Required observation | Actual fact | Source |
+|---|---|---|
+| Login | /dashboard; not_signin=true,password inputs0,Sign Out1 | run.json:2384 |
+| Parent1193467 overview/variables | Both HTTP200/VERIFIED | 01.response.html;02.response.html |
+| Child1193469 overview/variables/step_status | All HTTP200/VERIFIED | 03.response.html;04.response.html;05.response.html |
+| Child configuration | root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build; overview1915 | run.json configuration_sources;03.response.html |
+| Child Summary / parent Child Build | Failed / FAILED; one combined standard-armv7l:aarch64:x86_64 row | 03.response.html:828;01.response.html:883/:890/:892 |
+| RBS/TRIGGER configuration | id1917 from current verified parent; all five source and two page checks pass | run.json:2678/:2697;06.response.html |
+| Initial form | Passed open_form/validateForm, PROJECT_NAME exactly Tizen-Base-Toolchain | run.json:2846/:3187;form-initial.html:732 |
+| BUILD_TYPE transition | Full selected initially, attempted Partial; callback POST denied; no after snapshot or return-to-Full attempt | run.json:2819/:2978/:3192 |
+| Stop diagnostics | stage BUILD_TYPE_Partial; no label difference/duplicates; all structural checks pass | run.json:3113/:3617;form-unverified.response.html |
+| Release / cleanup | form_action_releases0,released=false,runtime_failure=null; browser/profile removed | run.json:3802/:3992 |
+
+### Native Flags
+
+The following nine flags use only the approved Function.prototype.toString
+native-code test. No source is recorded. At each of the eight samples:
+String.prototype.trim=false; String.prototype.replace/split/includes=true;
+Array.prototype.map/filter/includes=true; JSON.stringify=true;
+RegExp.prototype.exec=true. This is observation, not a proof of isolated execution.
+
+| Sample | Source |
+|---|---|
+| Login /dashboard | run.json:2394 |
+| /build/1193467/overview | run.json:2416 |
+| /build/1193467/variables | run.json:2438 |
+| /build/1193469/overview | run.json:2460 |
+| /build/1193469/variables | run.json:2482 |
+| /build/1193469/step_status | run.json:2504 |
+| /overview/1917 | run.json:2526 |
+| Form /wicket/page?10 | run.json:2548 |
+
+### Form Linkage Stop
+
+Initial page version10; action:
+`/wicket/page?10-1.IFormSubmitListener-form` (form-initial.html:718).
+Registered BUILD_TYPE callback (run.json:2851, form-initial.html:757):
+
+```text
+/wicket/page?10-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select
+```
+
+It has no random. The actual fill XHR POST at66421ms was denied and recorded as:
+
+```text
+/wicket/page?<KEY>=<REDACTED len=0>&random=<REDACTED len=19>
+```
+
+Source run.json:2819; has_random=true,response_status=null,allowed=false.
+The existing redactor masks the listener's bare query key in this compound
+query; its exact raw spelling was not preserved or reconstructed. The extra
+random parameter is directly observed. Policy.allow compares url===fieldUrl
+(qb_browser_agent.mjs:113). At71222ms another fill GET XHR with action/random
+was denied (run.json:2832). No fill Document GET, new main-frame navigation or
+successful callback response was observed. After30s the wait raised QB_FORM_CHANGED.
+
+At stop, local BUILD_TYPE selected_texts=[Partial], PROJECT_NAME is normalized,
+and validateForm replay is fully green (first_failure=null). This is not another
+structural failure and not a successful server-side transition. The return to
+Full was not attempted. No retry, random stripping, rule broadening or C3.
+
+| Field | Initial and stop observation | Source |
+|---|---|---|
+| BUILD_REFERENCE | Ref. Snapshot; options Live / Ref. Snapshot / Snapshot Number | run.json:2854;form-initial.html:809 |
+| SNAPSHOT_NUM | Only tizen-base-toolchain_20260924.094908, selected | run.json reference_fields;form-initial.html:836 |
+| Page version / action | 10 / same action in stop diagnostic | run.json:2852;form_diagnostics.action |
+| Callback/options after successful linkage | NOT_COLLECTED; no completed callback | form_transitions has before only |
+| Whole-page rerender | None observed during fill; not evidence of completed linkage | form_network/events |
+
+Both form HTML hashes equal8f8b5025...e12e: serialized option attributes did not
+track the live selected property. The diagnostic snapshot is the source for
+local Partial selection, not an inferred server response. The failure archive
+retains form_unverified=true because linkage did not complete.
+
+### Variable Echoes And Traffic
+
+Re-extracted from this session using the existing offline DOM parser; fields.log
+contains names/displays/values or package counts with source lines.
+Parent02.response.html:808: BUILD_PKG_LIST_MODIFY (Build Package List)4 target
+lines; BUILD_NOTES (BUILD NOTES)empty; BUILD_TYPE Full; BUILD_REFERENCE Live;
+SNAPSHOT_NUM do not need select; PROJECT_BRANCH tizen_base. The last four have
+empty display-label cells. Child04.response.html:800: TRIGGER_ID1193467,
+FAIL_FAST=yes (Immediate Stop With Error), EACH_GBS_BUILD_STATUS exists/empty,
+BUILD_PKG_LIST245 lines including all4 parent targets; BUILD_REFERENCE
+Ref. Snapshot and SNAPSHOT_NUM_URL ends tizen-base-toolchain_20260924.094908.
+Prior approved R1 discrepancies remain; no per-architecture independent status
+is inferred from the combined row. No new successful Base child sample was read.
+
+Request-stage metadata: GET110/POST2,allowed75/denied37. One allowed manual-login
+POST and one denied field-callback POST; form-submit releases0. Responses200x61,
+302x2. These are interception observations, not server receipt counts. Denied:
+ckeditor10, two bootstrap fonts9+9, GET XHR8, POST XHR1. trace/wrapper37/37,
+frame-ownership denials0; no WORKER_BLOCKED/NEW_PAGE/runtime failure.
+
+run.json SHA256832cb060ad4dde6b31b081148b4d8e6390ea5dd99cb8532e1c381295690b4cf1.
+All eight HTML hashes and redaction checks pass; see integrity.log/hashes.log.
+One new observation stop (callback random) awaits designer disposition. C2b is
+not complete; stop cleanup does not erase the missing linkage evidence.
+
+## C2B-09 Preparation (Historical, Before live-11)
 
 Production fix `4a4a727` moves form/build/refresh text normalization to Node and
 uses a local two-ended global whitespace regex in DOM redaction. Broken-trim

@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2B09_OFFLINE_READY;LIVE11_WAITING_START**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2b_STOPPED;LIVE11_BUILD_TYPE_CALLBACK_DENIED**。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 §21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
@@ -20,7 +20,10 @@ live-10完成五个构建页与配置1917五项/两项核对,表单首失败点�
 不改变生产规则,不将历史推测当成live-10实测;C2b仍未完成。
 §25按已批准C2B-09裁定修正页面主环境字符串规整,分生产/取证脚本两提交;
 生产修正4a4a727已推送,spikes跟进与九项原生布尔记录离线验收通过;
-等待新的聊天“开始”后执行live-11。历史live-10结论原样保留。
+cbedcf5推送后收到新的聊天“开始”,live-11已按顺序取证:五个构建页与配置通过,
+初始表单通过;Full→Partial实际XHR POST附带random,被精确地址规则拒绝,
+等待结束后QB_FORM_CHANGED,诊断并清理,release=0,见§25.7/25.8。
+八次原生性采样均trim=false,其余八项true。历史live-10结论原样保留。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -47,7 +50,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§25裁定已修正live-10停点对应的规整实现,生产4a4a727已推送;spikes验收通过,live-11等待新的聊天开始;冻结稿不改,无C3 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§25生产4a4a727/取证cbedcf5已推送;live-11表单通过,BUILD_TYPE回调POST含random被拒,停止等设计方裁定;release0,无C3 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -2579,3 +2582,93 @@ hashes.log确认冻结稿与live-10/run.json、form-unverified.response.html字�
 form_evidence仅Full→Partial→Full,不点Ok、不submit、form_action_releases须0。
 表单失败先按§24取证再停止;其它立即停止条件不变。页面/原生性/联动/现场release
 仍NOT_COLLECTED,不能拿离线零release代替。没有新增停止项,不进入C3。
+
+### 25.7 live-11实际取证
+
+基线cbedcf5,本轮新聊天“开始”后启动;ping/pong先于浏览器,人工登录一次,
+登录POST一次,无重试。完整命令/逐页状态与原文见evidence/C2b/live-11/README.md。
+冻结稿仍0a3f5e0b…1950;live-01至live-10不改。退出1,STOPPED/QB_FORM_CHANGED;
+浏览器与临时目录均清理,不是等待后主动降级或另开会话。
+
+| 项目 | 实测 | 证据(均live-11/) |
+|---|---|---|
+| 登录 | /dashboard;not_signin=true,password_inputs0,Sign Out1 | run.json:2384 |
+| 父1193467 overview/variables | HTTP200,VERIFIED | 01.response.html;02.response.html |
+| 子1193469 overview/variables/step_status | HTTP200,VERIFIED | 03.response.html;04.response.html;05.response.html |
+| 失败状态 | 子Summary=Failed;父Child Build=FAILED;组合架构一行 | 03.response.html:828;01.response.html:890/:892 |
+| 配置来源与页 | 本次父页取得1917,五项全true;配置页面包屑/复制路径两项全true | run.json:2678/:2697;06.response.html |
+| 初始表单 | open_form成功;PROJECT_NAME=Tizen-Base-Toolchain;validateForm通过 | run.json:2548/:2846;form-initial.html |
+| BUILD_TYPE联动 | 仅尝试Full→Partial;本地选中Partial,回调POST被拒;没有完成后快照,未执行Partial→Full | run.json:2819/:2978/:3192 |
+| 失败只读取证 | stage=BUILD_TYPE_Partial,结构重算仍全绿,字段无差集/重复,原错误保留 | run.json:3113/:3617;form-unverified.response.html |
+| 零提交与清理 | form_action_releases0,released=false,runtime_failure=null;browser/profile清理true | run.json:3802/:3992 |
+
+九项原生性只存布尔值,未读取/归档源码。以下八次均为trim=false,其余八项true:
+login:2394、父overview:2416、父variables:2438、子overview:2460、子variables:2482、
+子step_status:2504、配置:2526、open_form:2548(均run.json行号)。
+其余项为String.prototype.replace/split/includes、Array.prototype.map/filter/includes、
+JSON.stringify、RegExp.prototype.exec。这是按指定Function.prototype.toString方法
+取得的现场记录,不声称覆盖任意内置函数篡改或证明隔离环境安全。
+
+run.json sha256=832cb060ad4dde6b31b081148b4d8e6390ea5dd99cb8532e1c381295690b4cf1。
+八个HTML文件的hash/脱敏检查均通过,见integrity.log。两份表单HTML都为
+8f8b5025…e12e;HTML属性未反映select当前selected状态的变化,运行时Partial选中
+由诊断快照证明,不能据HTML相同声称没有本地设值。现场身份自检用内存身份集合,
+归档后仅对已脱敏字节复查,没有保存身份或凭据。
+
+### 25.8 新停止事实:字段回调带random被拒
+
+初始表单页版本10,action为
+`/wicket/page?10-1.IFormSubmitListener-form`;
+BUILD_TYPE登记回调为
+`/wicket/page?10-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select`,
+无random(run.json:2848;form-initial.html:757)。
+相对时间66421ms,fill阶段实际XHR POST /wicket/page的脱敏query是
+`<KEY>=<REDACTED len=0>&random=<REDACTED len=19>`,has_random=true,allowed=false,
+没有响应状态(run.json:2819)。监听器作为无等号查询项被既有脱敏规则遮蔽,
+本轮不恢复原文、不声称证明其余查询逐字等于登记值;但额外random已被直接记录。
+生产Policy.allow在:113按url===fieldUrl匹配,没有放行该POST。
+
+随后71222ms还有一个fill阶段GET XHR带action/random被拒(run.json:2832);
+没有fill阶段Document GET、没有主帧重新导航、没有成功回调响应。
+字段等待30秒后QB_FORM_CHANGED;失败诊断的production_passed=true、first_failure=null,
+所以不是又一次PROJECT_NAME/结构失败。未重试、未追加放行、未忽略random。
+候选修订只能由设计方界定回调附加参数的接受范围并保留逐字段约束,本轮不实施。
+**新增停止事实1项**,等待裁定;不执行返回Full或进入C3。
+
+初始BUILD_REFERENCE=Ref. Snapshot,选项Live/Ref. Snapshot/Snapshot Number;
+SNAPSHOT_NUM=tizen-base-toolchain_20260924.094908,唯一选项。
+停止诊断仍显示这些值,页面版本/action与初始相同;这不证明服务端联动后的结果。
+完成后的回调版本/action/选项刷新仍NOT_COLLECTED。
+父/子现状字段以本轮归档重新提取,fields.log记原名/显示名/行号:
+父Build Package List对应BUILD_PKG_LIST_MODIFY四行;子BUILD_PKG_LIST245行包含该四行;
+子TRIGGER_ID1193467、FAIL_FAST=yes、EACH_GBS_BUILD_STATUS存在且空。
+父Live/do not need select与子Ref. Snapshot/URL差异沿§22裁定留R1。
+
+拦截器请求阶段GET110/POST2,allowed75/denied37;两POST为人工登录获准一次与
+字段回调被拒一次,不是两次构建提交。响应阶段200x61/302x2。被拒:
+ckeditor10、bootstrap两字体9+9、GET XHR8、POST XHR1;trace/wrapper37/37,
+帧归属拒绝0,WORKER_BLOCKED/NEW_PAGE0。不是服务端实收统计。
+
+### 25.9 live-11归档验收
+
+本轮真机已经停止,以下均为离线/本机门禁,没有再次访问QuickBuild。
+完整命令与原始日志在live-11/README.md,全部exit0:
+
+| 验收 | 结果 | 日志 |
+|---|---|---|
+| pytest全量 | 2165 passed/1 skipped,111.67s;计数不变 | pytest.log |
+| mypy | 113 source files,无问题 | mypy.log |
+| Ruff完整待提交树 | All checks passed! | ruff.log |
+| lint-imports | 6 kept/0 broken | lint-imports.log |
+| check_design_doc | 0 problem | design-check.log |
+| Node三入口 | 3 passed,19.93s;unit120/120、DOM50/50、安全4/4 | node-gates.log |
+| 归档核对 | 八HTML hash/脱敏、native八样本、五项/两项、停点/清理/零release均通过 | integrity.log |
+
+安全Worker组走b:browser_fail_closed:shared_worker closeTarget成功,worker为Error,
+browser/profile已清理,attackHTTP0/WS0;其它三组通过。
+Ruff对暂存树df3ff86eacd400fd4d11904457cddc22a6f60feb导出到
+/tmp/p5q-live11-lint-plJJ6v执行;之后仅补文档/日志。文档diff --check为空,
+原始脱敏HTML的缩进/行尾不为消除whitespace提示而改动。
+本提交只有INDEX/progress/appendix-c与live-11证据;生产、spikes、tests、冻结稿、
+design.md、检查器零改动,历史证据原样保留。无关既有改动不纳入。
+门禁绿不能销掉实际回调停点;C2b仍STOPPED,等待设计方裁定,不重试、不进入C3。
