@@ -1,6 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2b_STOPPED;LIVE11_BUILD_TYPE_CALLBACK_DENIED**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2b_IN_PROGRESS;C2B10_OFFLINE_VALIDATION**。
+最新执行见§26:P5Q-C2B-10已批准,先生产回调修正、再取证脱敏,两步单独提交;
+live-12须等待新的聊天“开始”及ping/pong。以下现场停点均保留为历史事实。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 §21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
@@ -50,7 +52,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§25生产4a4a727/取证cbedcf5已推送;live-11表单通过,BUILD_TYPE回调POST含random被拒,停止等设计方裁定;release0,无C3 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§26按C2B-10落实当前字段random后缀,生产离线验收绿;随后取证脱敏单独提交;live-12待人工开始,无C3 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -2672,3 +2674,54 @@ Ruff对暂存树df3ff86eacd400fd4d11904457cddc22a6f60feb导出到
 本提交只有INDEX/progress/appendix-c与live-11证据;生产、spikes、tests、冻结稿、
 design.md、检查器零改动,历史证据原样保留。无关既有改动不纳入。
 门禁绿不能销掉实际回调停点;C2b仍STOPPED,等待设计方裁定,不重试、不进入C3。
+
+## 26. 实施裁定 P5Q-C2B-10
+
+### 26.1 裁定原文
+
+原因:live-11 初始表单核对通过。BUILD_TYPE 设为 Partial 时,浏览器实际发出的字段回调 POST 是"登记的回调地址 + &random=<19 个字符的值>",与登记的精确地址不等,被拒,随后 QB_FORM_CHANGED。冻结稿 §3.4(第 247 行)已预先规定:观察到这一行为时,"精确原文"规则改为"登记原文 + 末尾恰好一个 random= 十进制小数参数",并按 R1 记入附录 C。本裁定按此落实,不属于偏离冻结稿。
+另记 live-11 取得的表单事实:BUILD_REFERENCE 选项为 Live / Ref. Snapshot / Snapshot Number,默认 Ref. Snapshot;SNAPSHOT_NUM 只有一个选项 tizen-base-toolchain_20260924.094908,与子构建 1193469 的 SNAPSHOT_NUM_URL 一致。
+
+### 26.2 执行顺序与边界
+
+基线56b6d2b,git pull --ff-only为Already up to date。冻结稿sha256仍为
+0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950,不修改。
+第一步只改Policy.allow的fill当前字段POST:登记原文,或其后缀恰为
+`&random=0.<1至20位数字>`;先匹配完整登记前缀,后缀全长匹配,不忽略换行或编码差异。
+仍一次放行、消费fieldUrl;阶段/帧归属/响应307和308规则不变。
+提交action不得带random,定时刷新附加random继续拒绝。不全局剥离参数。
+
+第二步仅spikes:诊断保留匹配指定数值语法的random和Wicket监听器键名,
+不反向扩大生产接受范围(科学计数法只可记录,不能放行)。
+第三步等待新“开始”,ping/pong后人工登录live-12,顺序同live-11;
+仅BUILD_TYPE Full→Partial→Full,不点Ok、不提交,form_action_releases必须0。
+现场未实跑前页面/配置/联动均NOT_COLLECTED;任何原停止条件仍有效,不进入C3。
+
+### 26.3 第一步测试与验收
+
+evidence/C2b/c2b-10-production/保存命令、原始输出与哈希。
+新增Node单元22例,共142/142:4个正向边界(含1/20位小数)、16个非法后缀,
+当前字段/方法/阶段约束1例、action/refresh隔离1例。监听器不同、一次用完、
+多参数、重复random、空/负/科学计数/字母、编码差异、尾部换行均拒绝。
+新增真实Chromium本机夹具1例,DOM总数51/51:Math.random生成的两个POST由
+本地服务器实收,分别为Partial和Full;fieldFinished=true,action实收0、released=false。
+这些是合成数据,非真机证据。既有Node/Python用例均保留,Python nodeid数不变。
+
+四安全组4/4:Worker走b:browser_fail_closed,shared_worker closeTarget成功,
+worker为Error异常;browser/profile清理true,attackHTTP0/WS0;307/308、逐跳、
+凭据隔离组全部通过。该fail-closed分支符合既有C2B-01裁定。
+
+| 门禁 | 实跑结果 | exit/证据 |
+|---|---|---|
+| 全量pytest | 2165 passed/1 skipped,119.15s | 0,pytest.log |
+| mypy | 113 source files,无问题 | 0,mypy.log |
+| Ruff完整待提交树 | All checks passed! | 0,ruff.log |
+| lint-imports | 6 kept/0 broken | 0,lint-imports.log |
+| check_design_doc | 0 problem | 0,design-check.log |
+| Node三个入口 | 3 passed,28.92s;unit142/142,DOM51/51,safety4/4 | 0,node-gates.log |
+
+Ruff在暂存树303ab28330205afa574af59278201ef159ff1a64的导出副本运行,
+导出目录已清理,不再累积临时副本;之后仅补文档/日志。
+hashes.log确认冻结稿与live-11的run/form字节未变。历史live目录不改;
+无关.gitignore/四个文档删除及未跟踪草稿不纳入。
+本提交不启动浏览器真机、不开展C3。现场联动仍待live-12。

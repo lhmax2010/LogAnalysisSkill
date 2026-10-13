@@ -212,6 +212,53 @@ test('stop in value not listener component is allowed', () => {
   p.refresh.add(url);
   assert.equal(p.allow(meta(url.slice(ORIGIN.length))), true);
 });
+for (const suffix of ['', '&random=0.1234567890123456', '&random=0.0', '&random=0.' + '1'.repeat(20)]) {
+  test(`C2B-10 callback one-shot accepts ${JSON.stringify(suffix)}`, () => {
+    const p = policy('fill'); p.beginField(callback);
+    const request = meta(callback.slice(ORIGIN.length) + suffix, 'POST');
+    assert.equal(p.allow(request, 'field'), true);
+    assert.equal(p.fieldRequest, 'field');
+    assert.equal(p.fieldUrl, null);
+    p.active.add('field');
+    assert.equal(p.allow({ ...request, response_status: 200 }, 'field'), true);
+    assert.equal(p.allow(request, 'again'), false);
+    assert.equal(p.allow(meta(callback.slice(ORIGIN.length), 'POST'), 'bare-again'), false);
+    assert.equal(p.released, false);
+  });
+}
+for (const suffix of [
+  '&random=0.1&random=0.2', '&random=0.1&extra=1', '&extra=1&random=0.1',
+  '&random=', '&random=-0.1', '&random=5e-7', '&random=0.1e-7', '&random=abc',
+  '&random=0.1a', '&random=1.1', '&random=0.', '&random=.1', '&random=0.' + '1'.repeat(21),
+  '&random=0.1\n', '&random=0%2E1', '&Random=0.1',
+]) test(`C2B-10 callback rejects ${JSON.stringify(suffix)} without consuming registration`, () => {
+  const p = policy('fill'); p.beginField(callback);
+  const request = meta(callback.slice(ORIGIN.length), 'POST');
+  assert.equal(p.allow({ ...request, query: request.query + suffix }, 'bad'), false);
+  assert.equal(p.fieldUrl, callback);
+  assert.equal(p.allow(request, 'good'), true);
+});
+test('C2B-10 random permission cannot escape the current field POST', () => {
+  const p = policy('fill'); p.beginField(callback);
+  assert.equal(p.allow(meta(callback.slice(ORIGIN.length) + '&random=0.1')), false);
+  assert.equal(p.allow(meta(callback.replace('form-field', 'form-other').slice(ORIGIN.length) + '&random=0.1', 'POST')), false);
+  p.endField();
+  assert.equal(p.allow(meta(callback.slice(ORIGIN.length) + '&random=0.1', 'POST')), false);
+  for (const phase of ['idle', 'login', 'read', 'open_form', 'submit']) {
+    p.phase = phase; p.beginField(callback);
+    assert.equal(p.allow(meta(callback.slice(ORIGIN.length) + '&random=0.1', 'POST')), false);
+  }
+});
+test('C2B-10 submit action and refresh never accept appended random', () => {
+  const p = policy('submit'); p.newForm(); p.submitUrl = action;
+  assert.equal(p.allow(meta(action.slice(ORIGIN.length) + '&random=0.1', 'POST')), false);
+  assert.equal(p.released, false);
+  assert.equal(p.allow(meta(action.slice(ORIGIN.length), 'POST')), true);
+  const refresh = '/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh';
+  p.phase = 'fill'; p.refresh.add(ORIGIN + refresh);
+  assert.equal(p.allow(meta(refresh + '&random=0.1')), false);
+  assert.equal(p.allow(meta(refresh + '&random=0.1', 'POST')), false);
+});
 test('callback shape fails closed', () => {
   assert.throws(() => policy('fill').beginField('invalid'), { code: 'QB_FORM_CHANGED' });
   for (const bad of ['page?1', 'https://example.invalid/wicket/page?1-1.IBehaviorListener.0-x']) {

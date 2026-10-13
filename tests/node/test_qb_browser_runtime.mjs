@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { Agent, createRuntime, redactDOM, checkRedacted, validateForm, ORIGIN, FIELDS } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, createRuntime, redactDOM, checkRedacted, validateForm, callbackURL, ORIGIN, FIELDS } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
 const [playwright, chromium] = process.argv.slice(2);
 const archive = new URL('../../docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-cookie-02/', import.meta.url);
@@ -315,4 +315,65 @@ test('browser Fetch response 307/308 denied, 302 next-hop judged before server r
     assert.equal(runtime.failure, null);
     console.log(JSON.stringify({ received, forbiddenReceived: 0 }));
   } finally { await runtime.close(); await new Promise(resolve => server.close(resolve)); }
+});
+
+test('C2B-10 local form switches Full -> Partial -> Full with Math.random callbacks', async () => {
+  const received = [];
+  const callbackPath = '/wicket/page?50-2.IBehaviorListener.0-form-build-type';
+  const server = createServer(async (request, response) => {
+    let body = '';
+    for await (const part of request) body += part;
+    received.push({ method: request.method, path: request.url, body });
+    if (request.method === 'POST') { response.end(body); return; }
+    response.setHeader('Content-Type', 'text/html');
+    response.end(`<!doctype html><link rel="icon" href="data:,"><h1>Specify Build Options</h1>
+      <form action="/wicket/page?50-2.IFormSubmitListener-form"><table><tr>
+      <td class="form-label">BUILD_TYPE</td><td class="value"><select name="build:editor"
+      onchange="wicketAjaxPost('${callbackPath}', this.value)">
+      <option>Full</option><option>Partial</option></select></td></tr></table></form><output id="ack">Full</output>
+      <script>function wicketAjaxPost(url, value) {
+        fetch(url + '&random=' + Math.random(), {method: 'POST', body: value})
+          .then(response => response.text()).then(value => document.querySelector('#ack').textContent = value);
+      }</script>`);
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const host = `127.0.0.1:${server.address().port}`;
+  let runtime;
+  try {
+    runtime = await createRuntime(playwright, chromium, {
+      launchArgs: ['--no-proxy-server', '--host-resolver-rules=EXCLUDE 127.0.0.1, MAP * ~NOTFOUND'],
+    });
+    const original = runtime.policy.allow.bind(runtime.policy);
+    runtime.policy.allow = (m, id) => m.host === host
+      && original({ ...m, protocol: 'https:', host: new URL(ORIGIN).host }, id);
+    runtime.policy.phase = 'fill';
+    await runtime.page.goto(`http://${host}/wicket/page?50`);
+    const agent = new Agent(runtime);
+    const select = agent.fieldRow('BUILD_TYPE').locator('td.value select');
+    assert.equal(await select.inputValue(), 'Full');
+    for (const value of ['Partial', 'Full']) {
+      const code = await select.getAttribute('onchange');
+      runtime.policy.beginField(callbackURL(code, `${ORIGIN}/wicket/page?50`));
+      await select.selectOption({ label: value });
+      await runtime.page.waitForFunction(expected => document.querySelector('#ack').textContent === expected, value);
+      assert.equal(await select.inputValue(), value);
+      assert.equal(runtime.policy.fieldFinished, true);
+      assert.equal(runtime.policy.fieldUrl, null);
+      runtime.policy.endField();
+    }
+    const posts = received.filter(row => row.method === 'POST');
+    assert.equal(posts.length, 2);
+    assert.deepEqual(posts.map(row => row.body), ['Partial', 'Full']);
+    for (const post of posts) {
+      assert.ok(post.path.startsWith(callbackPath));
+      assert.match(post.path.slice(callbackPath.length), /^&random=0\.\d{1,20}$/);
+    }
+    assert.equal(received.some(row => row.path.includes('IFormSubmitListener')), false);
+    assert.equal(runtime.policy.released, false);
+    assert.equal(runtime.failure, null);
+    console.log(JSON.stringify({ c2b10: 'local-field-callbacks', received, form_action_releases: 0 }));
+  } finally {
+    if (runtime) await runtime.close();
+    await new Promise(resolve => server.close(resolve));
+  }
 });

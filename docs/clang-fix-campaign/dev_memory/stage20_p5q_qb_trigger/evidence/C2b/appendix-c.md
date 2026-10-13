@@ -7,6 +7,18 @@ Partial selected locally only; no completed round trip or form submission.
 Historical observations below are kept, not substituted for missing results.
 This document records observations, not permission to start C3.
 
+## C2B-10 R1 Callback Registration
+
+FatTank approved C2B-10 after the live-11 stop. Frozen section3.4 already provides
+this registration procedure. Only the current fill field POST may use the exact
+registered URL or append exactly one final `&random=0.<1-20 decimal digits>`.
+The registration remains one-shot. Exponents, duplicate random, additional
+parameters, changed listener/version, and random on submit action are denied.
+Refresh with appended random remains denied. No frozen-document edits.
+Local synthetic browser evidence: c2b-10-production/node-gates.log.
+This is not proof of a live round trip; live-12 remains NOT_COLLECTED until a new
+chat start and ping/pong. live-11 raw query was masked and is not reconstructed.
+
 ## C2B-09 live-11 (Latest Session)
 
 Baselinecbedcf5 after production4a4a727. New chat start, ping/pong, one manual

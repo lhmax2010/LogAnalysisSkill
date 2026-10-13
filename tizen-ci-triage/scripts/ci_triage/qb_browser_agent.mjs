@@ -110,7 +110,10 @@ export class Policy {
       return m.method === 'GET' && m.path === '/wicket/page' && /^\d+$/.test(m.query);
     }
     if (this.phase === 'fill') {
-      if (m.method === 'POST' && url === this.fieldUrl) {
+      const suffix = this.fieldUrl !== null && url.startsWith(this.fieldUrl)
+        ? url.slice(this.fieldUrl.length) : null;
+      if (m.method === 'POST' && (suffix === ''
+        || suffix !== null && suffix.match(/^&random=0\.\d{1,20}$/)?.[0] === suffix)) {
         this.fieldUrl = null; this.fieldRequest = requestId; return true;
       }
       return m.method === 'GET' && m.path === '/wicket/page' && /^\d+(-\d+)?$/.test(m.query);
