@@ -5,6 +5,27 @@ Latest session: live-09, 2026-10-13, five VERIFIED build pages and one verified 
 Historical observations below are kept, not substituted for missing results.
 This document records observations, not permission to start C3.
 
+## C2B-08 Preparation (live-10 Not Started)
+
+Designer ruling recorded verbatim in progress24.1. Spikes now captures a current
+same-origin form on open_form QB_FORM_CHANGED or later BUILD_TYPE failure,
+without retrying, navigating or changing production validation. It records a
+length-only control diagnostic, label differences, ordered validation failures,
+ckeditor facts and production-redacted form_unverified HTML before preserving
+the original stop. Other immediate-stop conditions remain prior to diagnostics.
+
+Offline controls26/26, including the five required synthetic failure types,
+all pass with network_requests0 and released=false; see c2b-08-offline/README.md.
+Regression2165/1, mypy/Ruff/import/design gates, Node120/120+41/41+safety4/4 and
+existing self-tests22/22+14/14 pass. No production, frozen or historical evidence
+change. The frozen explicit label list contains13 entries including PROJECT_NAME;
+the diagnostic does not invent a14th field.
+
+live-10 requires a new chat start and ping/pong before browser login. New page
+verification, configuration checks, form differences/failed conditions, callback,
+action, options and release count are NOT_COLLECTED. No cause of the live-09 form
+failure is inferred from synthetic fixtures or the designer's hypotheses.
+
 ## C2B-07 live-09 (Latest Session)
 
 Baseline b9b4d71, new chat start, ping/pong before browser creation, unchanged

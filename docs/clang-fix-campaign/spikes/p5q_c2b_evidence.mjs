@@ -16,6 +16,7 @@ import {
 import {
   configurationDOM, configurationPageChecks, parentConfigurationChecks, parentRegistration,
 } from './p5q_c2b_config_source.mjs';
+import { withFormFailureEvidence } from './p5q_c2b_form_diagnostics.mjs';
 
 const [playwright, chromium, directory, python, mode = 'full'] = process.argv.slice(2);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -646,6 +647,11 @@ async function rememberLoginNames() {
 
 if (playwright === '--self-test') { await selfTest(chromium); process.exit(0); }
 if (playwright === '--id-self-test') { await idSelfTest(chromium, directory, python); process.exit(0); }
+if (playwright === '--form-self-test') {
+  const { formSelfTest } = await import('./p5q_c2b_form_diagnostics_test.mjs');
+  await formSelfTest(chromium, directory, python, redactAddress);
+  process.exit(0);
+}
 
 await mkdir(directory, { recursive: true });
 if (existsSync(`${directory}/run.json`)) {
@@ -789,40 +795,59 @@ try {
         emit({ registered: project.overview_id, source: project.source });
       } else if (input.command === 'form_evidence') {
         if (!report.configuration || !report.configuration_page?.passed) throw new AgentError('EVIDENCE_COMMAND_INVALID');
-        current = `/overview/${report.configuration.overview_id}`;
-        await call({ command: 'open_form', overview_id: report.configuration.overview_id });
-        current = '/wicket/page';
-        report.form = [await formRecord('initial')];
-        const initial = report.form[0].options.BUILD_TYPE[0].filter(option => option.selected);
-        if (initial.length !== 1 || initial[0].text !== 'Full') throw new AgentError('QB_FORM_VALUE_UNAVAILABLE');
-        for (const value of ['Partial', 'Full']) {
-          const eventStart = report.events.length;
-          const networkStart = report.form_network?.length ?? 0;
-          const transition = { value, before: report.form.at(-1) };
-          (report.form_transitions ??= []).push(transition);
-          const form = await agent.snapshot();
-          const field = validateForm(form, agent.currentProject.project_name).BUILD_TYPE.controls[0];
-          runtime.policy.phase = 'fill';
-          runtime.policy.beginField(callbackURL(field.callback, form.base));
-          if (!field.options.some(option => option.text === value)) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE');
-          await agent.fieldRow('BUILD_TYPE').locator('td.value select').selectOption({ label: value });
-          const deadline = Date.now() + 30000;
-          while (!runtime.policy.fieldFinished || Date.now() - runtime.policy.lastActivity < 1000) {
-            check();
-            if (Date.now() >= deadline) throw new AgentError('QB_FORM_CHANGED');
-            await sleep(50);
+        await withFormFailureEvidence(async setStage => {
+          current = `/overview/${report.configuration.overview_id}`;
+          await call({ command: 'open_form', overview_id: report.configuration.overview_id });
+          setStage('initial_snapshot');
+          current = '/wicket/page';
+          report.form = [await formRecord('initial')];
+          const initial = report.form[0].options.BUILD_TYPE[0].filter(option => option.selected);
+          if (initial.length !== 1 || initial[0].text !== 'Full') throw new AgentError('QB_FORM_VALUE_UNAVAILABLE');
+          for (const value of ['Partial', 'Full']) {
+            setStage(`BUILD_TYPE_${value}`);
+            const eventStart = report.events.length;
+            const networkStart = report.form_network?.length ?? 0;
+            const transition = { value, before: report.form.at(-1) };
+            (report.form_transitions ??= []).push(transition);
+            const form = await agent.snapshot();
+            const field = validateForm(form, agent.currentProject.project_name).BUILD_TYPE.controls[0];
+            runtime.policy.phase = 'fill';
+            runtime.policy.beginField(callbackURL(field.callback, form.base));
+            if (!field.options.some(option => option.text === value)) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE');
+            await agent.fieldRow('BUILD_TYPE').locator('td.value select').selectOption({ label: value });
+            const deadline = Date.now() + 30000;
+            while (!runtime.policy.fieldFinished || Date.now() - runtime.policy.lastActivity < 1000) {
+              check();
+              if (Date.now() >= deadline) throw new AgentError('QB_FORM_CHANGED');
+              await sleep(50);
+            }
+            runtime.policy.endField(); runtime.policy.phase = 'idle';
+            report.form.push(await formRecord(value.toLowerCase()));
+            transition.after = report.form.at(-1);
+            transition.main_frame_navigations = report.events.slice(eventStart).filter(event => event.event === 'main_frame_navigation');
+            transition.document_gets = report.form_network.slice(networkStart).filter(event =>
+              event.resource_type === 'Document' && event.method === 'GET' && event.response_status === null);
+            transition.has_random = report.form_network.slice(networkStart).some(event => event.has_random);
+            await persist();
           }
-          runtime.policy.endField(); runtime.policy.phase = 'idle';
-          report.form.push(await formRecord(value.toLowerCase()));
-          transition.after = report.form.at(-1);
-          transition.main_frame_navigations = report.events.slice(eventStart).filter(event => event.event === 'main_frame_navigation');
-          transition.document_gets = report.form_network.slice(networkStart).filter(event =>
-            event.resource_type === 'Document' && event.method === 'GET' && event.response_status === null);
-          transition.has_random = report.form_network.slice(networkStart).some(event => event.has_random);
-          await persist();
-        }
-        if (runtime.policy.released || actionReleases !== 0) throw new AgentError('EVIDENCE_RELEASE_VIOLATION');
-        emit({ form: report.form, action_releases: actionReleases, state: 'not_released', canonical: canonical(report.form).length });
+          if (runtime.policy.released || actionReleases !== 0) throw new AgentError('EVIDENCE_RELEASE_VIOLATION');
+          emit({ form: report.form, action_releases: actionReleases, state: 'not_released', canonical: canonical(report.form).length });
+        }, { page: runtime.page, projectName: report.configuration.project_name, guard: check,
+          documentStatus: url => {
+            const parsed = new URL(url);
+            return report.form_network?.findLast(row => row.resource_type === 'Document'
+              && row.response_status !== null && row.protocol === parsed.protocol && row.host === parsed.host
+              && row.path === parsed.pathname && row.query === parsed.search.slice(1))?.response_status;
+          },
+          redactAddress, verify: checkedReport,
+          archive: html => archive(html, 'form-unverified.response.html'),
+          record: async diagnostic => {
+            checkedReport(JSON.stringify(diagnostic));
+            (report.form_diagnostics ??= []).push(diagnostic);
+            report.pages.push({ path: '/wicket/page', file: diagnostic.file,
+              sha256: diagnostic.sha256, form_unverified: true });
+            await persist();
+          } });
       } else throw new AgentError('EVIDENCE_COMMAND_INVALID');
       check();
       await persist();

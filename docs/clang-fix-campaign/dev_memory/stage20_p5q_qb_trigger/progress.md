@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE09_STOPPED_QB_FORM_CHANGED;WAITING_FOR_DESIGNER**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE10_READY;WAITING_FOR_CHAT_START**。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 §21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
@@ -14,6 +14,8 @@ live-07原样保留。live-08登录及五个构建页核对通过,配置登记�
 live-08原始证据保留,生产与冻结稿不改。live-09在b9b4d71后收到新的聊天“开始”,
 完成ping/pong与登录、五个构建页核对、配置1917五项/两项核对;
 open_form导航到表单后QB_FORM_CHANGED,立即停止,release=0,见§23.5。不标C2b完成。
+§24按P5Q-C2B-08增加spikes表单失败只读取证,先离线验收再等新的聊天“开始”;
+不改变生产规则,不将历史推测当成live-10实测。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -40,7 +42,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;C2B-07仅修取证来源URL解析@b9b4d71,离线全绿;live-09六页归档、配置五项/两项绿,open_form返回QB_FORM_CHANGED停止,release0;§23.5,无重试/C3 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;live-09表单核对停点保留;§24按C2B-08补spikes失败诊断,先离线验收再等live-10聊天开始;生产/冻结稿不改,无C3 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -2290,3 +2292,101 @@ Ruff导出树`8f5a45213fe05fbfee55ec06f764aa54e4c05578`,目录
 保留生产脱敏原字节。冻结稿sha256与live-08/run.json哈希仍与§23.2相同。
 本次只提交文档和证据。全部回归绿不改变真机QB_FORM_CHANGED停止结论,
 C2b未完成,待设计方处理表单取证缺口,不继续C3。
+
+## 24. 实施裁定 P5Q-C2B-08
+
+### 24.1 裁定原文
+
+原因:live-09 中 Run 返回 302,/wicket/page?10 返回 200,约 0.37 秒后 open_form 以 QB_FORM_CHANGED 结束(等待标题的时限是 30 秒,说明标题已出现,是之后的结构核对失败)。生产 open_form 在核对失败时直接抛错,表单页未进入取证。这和 P5Q-C2B-05 是同一类取证通道缺口。本裁定把"失败时先取证再停止"推广到表单阶段的全部失败点。
+设计方推测(不作结论):1193467 变量页上 ADD_TO_IMG_LIST(Add rpm list to Image)、RM_FROM_IMG_LIST(Remove rpm list from Image)、IMAGE_BUILD_ID、USER_DEFINED_GBS_BUILD_MACRO 带显示名,可能是表单新增字段,不在冻结稿第 257 行的 13 个字段集合内;也可能是 BUILD NOTES 改为富文本编辑器、ckeditor 被拒导致控件数不符。以现场取证为准。
+
+### 24.2 实施范围
+
+开工基线81e90f5,git pull --ff-only:Already up to date;冻结稿sha256仍为
+`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
+仅spikes新增表单失败诊断/自测并接入取证入口,生产与冻结稿零改动。
+先离线验收、提交推送;live-10等新的聊天“开始”,保持ping/pong与原读取顺序。
+不重试live-09,所有历史证据保持原样。
+
+失败时生产formDOM原快照只留内存,复算validateForm;诊断JSON中input/textarea仅长度,
+select仅选项文字/选中状态,不写option value、原控件value或原onchange代码。
+回调仅记录存在性、调用数、生产callbackURL是否通过及固定失败类别。
+保存标签差集/重复、按生产顺序的判定与reached标记、首个失败位置、action形态,
+PROJECT_NAME只读值、button class、ckeditor节点/隐藏textarea事实。
+null快照退回全部form个数与脱敏action;不靠历史表单猜标签。
+冻结稿第3.5节第4项的明确标签集合为13个(已含PROJECT_NAME),生产FIELDS为12个
+可编辑标签。诊断按`[...FIELDS, 'PROJECT_NAME']`唯一集合计算并记录实际数量,
+不因提示词的“13个字段 + PROJECT_NAME”措辞再造一个第14字段或修改判定。
+
+仅同源/wicket/page可做失败诊断,先后均执行停止检查;浏览器失效、跳转、HTTP失败、
+脱敏失败优先停止。诊断完成仍抛出原错误,不续跑设值、不生成新的页面请求。
+新增form-unverified.response.html经生产redactDOM及既有写前/写后检查归档;
+run.json中明确form_unverified=true,不能冒充open_form成功。
+逐条件复算与生产validateForm的实际结果必须相等,不等则停止而不改生产判据。
+
+### 24.3 验收启动记录
+
+离线五类夹具:新增字段、缺少字段、富文本控件、onchange写法变化、action不匹配;
+另核null快照、重复标签、PROJECT_NAME/双列表角色、后续联动失败、立即停止和
+隐私控制。启动时验收待执行,最终结果见§24.5;live-10尚未创建,
+真机字段差集/失败位置/联动均NOT_COLLECTED。
+完成或停止后均不进入C3。
+
+### 24.4 诊断口径与离线结果
+
+新增spikes/p5q_c2b_form_diagnostics.mjs与同目录p5q_c2b_form_diagnostics_test.mjs,
+由evidence入口的--form-self-test运行;没有新增或修改tests目录/生产模块。
+必需五类夹具及其实际首失败点在form-self-test.log:
+
+| 夹具 | 首个失败判定 | 同步观测 |
+|---|---|---|
+| 多出字段 | label_set | extra=[ADD_TO_IMG_LIST],missing=[] |
+| 缺少字段 | label_set | extra=[],missing=[BUILD_TYPE] |
+| BUILD NOTES富文本 | single_control | 第12行(零基)控件2个、cke节点1个、textarea隐藏 |
+| onchange其它写法 | callback | BUILD_TYPE,WICKET_AJAX_POST_COUNT |
+| action不匹配 | action | snapshot非null,action_matches=false |
+
+上述均仍以QB_FORM_CHANGED停止,form_unverified=true,无网络请求且released=false。
+这是合成夹具,不是live-09原因判定。其余控制包括null快照两表单与action脱敏,
+重复标签、PROJECT_NAME错误、双列表角色、回调缺失/多个/外站、行内button,
+后续联动失败保留原异常、立即停止条件与诊断期间跳转/脱敏失败。
+总计26/26;独立于pytest计数。当前文档HTTP状态来自取证入口已有form_network的
+最后同URL Document响应;不是200或查不到即拒绝诊断,不新增网络请求。
+
+validation.checks按生产顺序列出,首失败点之后reached=false;这些行的ok仅为
+同一快照上的诊断重算,不冒充生产执行过。逐条件表对应validateForm:
+shape→label_set→unique_rows→逐行project_name/palette_controls/single_control/callback
+→action。生产私有ACTION/PALETTES的spikes副本由离线测试核对源文本;
+复算总体通过/失败必须与实际调用validateForm一致。null快照只记form全集及脱敏
+action,标签与差集为null(未知),不误写成“全部缺失”。form_unverified页依旧用生产redactDOM与写前写后检查;
+HTML可含脱敏后的业务值,诊断JSON不保存input/textarea值或select option value。
+
+### 24.5 最终验收与等待人工登录
+
+日志目录`evidence/C2b/c2b-08-offline/`,完整命令见README。全部exit0:
+
+| 验收 | 实际结果 | 日志 |
+|---|---|---|
+| 新表单失败自测 | 26/26,network_requests=0,released=false | form-self-test.log |
+| 既有通道/地址与ID诊断自测 | 22/22、14/14,network_requests=0 | self-test.log,id-self-test.log |
+| 全量pytest | 2165 passed,1 skipped,130.89s;测试集合计数不变 | pytest.log |
+| mypy | 113 source files无问题 | mypy.log |
+| Ruff完整待提交树 | All checks passed! | ruff.log |
+| lint-imports | 6 kept,0 broken | lint-imports.log |
+| check_design_doc | 0 problem | design-check.log |
+| Node三个定向入口 | 3 passed,19.30s;120/120、41/41、安全4/4 | node-gates.log |
+
+26个新控制在spikes的独立自测中,不与pytest计数混算。最终full pytest是在
+补齐HTTP200/未知状态诊断前提与null快照差集口径后重新实跑。Ruff最终树
+`5ccb1f803b3df61365da34d486ea00c9fa1a0a9e`导出到
+`/tmp/p5q-c2b-08-final-lint-xkDdMI`,之后仅补文档与日志。
+四组本机安全全部通过,Worker/WebSocket的实际fail-closed分支见node-gates.log;
+不访问QuickBuild。源码静态约束仍通过,未改变生产浏览器/冻结稿/设计检查器。
+live-09/run.json仍为`9cb7a31f1afd8e2241dc32b2e848d8b71076532f501c2b39bceae4fd062152e3`。
+无关既有.gitignore改动、docs四个删除文件与历史草稿均未纳入。
+
+提交推送后请求新的聊天“开始”,收到后才执行live-10。命令通道先ping/pong,
+生产代理人工登录,读取1193467 overview/variables、1193469 overview/variables/step_status,
+从本轮父overview取配置ID并五项/两项核对,再form_evidence。
+若核对通过仍只Full→Partial→Full;若失败先做本裁定只读取证再按原错误停止。
+不点Ok、不submit、不重试;release必须0;所有新真机结论留空直到现场取得。
