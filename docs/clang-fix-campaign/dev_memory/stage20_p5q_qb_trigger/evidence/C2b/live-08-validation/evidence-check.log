@@ -1,0 +1,33 @@
+PASS raw-byte redaction: run.json
+PASS raw-byte redaction: 04.response.html
+PASS raw-byte redaction: 01.response.html
+PASS raw-byte redaction: 03.response.html
+PASS raw-byte redaction: 05.response.html
+PASS raw-byte redaction: 02.response.html
+Child Summary=Failed; parent Child Build Result=FAILED; combined architecture row
+Parent target rows=4; child package rows=245; target subset=true; child four required variables present
+05.response.html:814 master = failed (status line 812)
+05.response.html:864 TRIGGER = skipped (status line 862)
+05.response.html:905 BUILD_ABS = skipped (status line 903)
+05.response.html:946 BUILD = failed (status line 944)
+05.response.html:992 Enable_SWAP = successful (status line 990)
+05.response.html:1039 Update_Trigger_Description = successful (status line 1037)
+05.response.html:1090 Sync = successful (status line 1088)
+05.response.html:1136 Sync_Clean_Workspace = successful (status line 1134)
+05.response.html:1183 Sync_Copy_Src_from_Src_Server = successful (status line 1181)
+05.response.html:1237 Build = failed (status line 1235)
+05.response.html:1283 Build_GBS = failed (status line 1281)
+05.response.html:1330 Update_Trigger_Description = skipped (status line 1328)
+05.response.html:1374 Publish = successful (status line 1372)
+05.response.html:1424 NGBS_HTML_REPORT = successful (status line 1422)
+05.response.html:1470 Create NGBS build report = successful (status line 1468)
+05.response.html:1517 NGBS HTML REPORT = successful (status line 1515)
+05.response.html:1567 Publish_Each_Build = successful (status line 1565)
+05.response.html:1614 Publish_HTML_Report = skipped (status line 1612)
+05.response.html:1651 Publish_Build_Profiling_Report = skipped (status line 1649)
+05.response.html:1698 SNAPSHOT = skipped (status line 1696)
+05.response.html:1739 IMAGE = skipped (status line 1737)
+PASS: five archive hashes, login, ordering, four-pass/one-fail source checks, no config/form/release, cleanup
+PASS: traffic GET92/POST1, allowed66/denied27, HTTP200x53/302x1, no Worker/new-page stop
+PASS: historical live directories and frozen document unchanged
+Offline checks have no remembered login identities; in-memory live checks ran pre/post write

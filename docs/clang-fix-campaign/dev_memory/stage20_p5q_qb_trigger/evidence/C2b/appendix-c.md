@@ -1,11 +1,122 @@
 # C2b Appendix C Evidence Status
 
-Status: **PARTIAL / LIVE07_STOPPED_QB_LOGIN_TIMEOUT**. Latest session: live-07,
-2026-10-13, zero archived build pages. Historical observations below are kept,
-not substituted for the missing live-07 results.
+Status: **PARTIAL / LIVE08_STOPPED_CONFIGURATION_SOURCE_MISMATCH**.
+Latest session: live-08, 2026-10-13, five archived VERIFIED build pages.
+Historical observations below are kept, not substituted for missing results.
 This document records observations, not permission to start C3.
 
-## C2B-06 live-07 (Latest Session)
+## C2B-06 live-08 (Latest Session)
+
+Baseline962ad58; unchanged script/agent/frozen design. Fresh chat start,
+maintained PTY, ping/pong before browser creation. One human login POST302
+led to /dashboard200 and all three login conditions passed: not_signin=true,
+password_inputs=0, sign_out_links=1, empty_query=true (run.json:1936/:1943).
+All references in this section are under `live-08/` unless stated otherwise.
+
+### Pages And Configuration Stop
+
+| Requested item | Actual observation | Source |
+|---|---|---|
+| 1193467 overview / variables | Both HTTP200, VERIFIED | 01.response.html; 02.response.html; run.json pages |
+| 1193469 overview / variables / step_status | All HTTP200, VERIFIED, no ID_UNVERIFIED pages | 03.response.html; 04.response.html; 05.response.html |
+| Child Summary Status | Failed, from the child's own Summary row | 03.response.html:808/:828 |
+| Parent Child Build row | standard-armv7l:aarch64:x86_64, link1193469, resultFAILED | 01.response.html:890/:891/:892 |
+| Parent Child Build columns | Repository-Architecture / QB Build URL / Build Result / Build Profiling | 01.response.html:883 |
+| Configuration id | 1917 extracted from one Overview link; NOT registered | 01.response.html:698; run.json:1952 |
+| Five parent checks | Overview/breadcrumb/copy-path/build-name pass; sibling_tabs fails | run.json:1997 |
+| Configuration page, two page checks | NOT_COLLECTED; stopped before request | run.json:1931 |
+| Full -> Partial -> Full | NOT_COLLECTED; no form opened or field operation | run.json commands |
+| Callback/action/version/options/rerender/random, form reference fields | NOT_COLLECTED; build variables are not a substitute for form defaults/options | run.json |
+| Release / cleanup | form_action_releases=0,released=false; browser/profile cleanup bothtrue | run.json:2200; run.json browser_closed/profile_removed |
+
+The fresh parent has these exact hrefs:
+
+| Source check | Actual | Unchanged criterion/result | Source |
+|---|---|---|---|
+| Overview | ../../overview/1917 | Pattern accepts one or more ../; PASS | 01.response.html:698 |
+| Pipelines and Children | ../../pipeline/1917; ../../children/1917 | Helper requires exact ../pipeline/1917 and ../children/1917; FAIL | 01.response.html:711/:715 |
+| Breadcrumb | root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER, TRIGGER current | PASS | run.json:1970 |
+| Copy-path | Same full path | PASS | 01.response.html:93 |
+| Build name | TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261009.072553 | PASS | 01.response.html:736 |
+
+All three ids agree; the stop is the exact relative-prefix check, not an id
+inequality. The helper was not changed and no historical1917 backfill was used.
+Stop operation is register_config; the raw stop.path_shape still contains the
+last read's /build/<id>/step_status. It does not mean step_status failed.
+The process exited1 with CONFIGURATION_SOURCE_MISMATCH, no retry or C3.
+
+### Variables And Architecture
+
+Empty display labels below are empty cells, not unavailable pages.
+
+| Build / field | Variable / display label | Actual value or shape | Source |
+|---|---|---|---|
+| Parent target list | BUILD_PKG_LIST_MODIFY / Build Package List | Four git_path@commit lines: ncurses, pam, libtirpc, qemu-accel | 02.response.html:808 |
+| Parent notes | BUILD_NOTES / BUILD NOTES | Empty string | 02.response.html:808 |
+| Parent build type | BUILD_TYPE / empty | Full | 02.response.html:808 |
+| Parent reference / snapshot | BUILD_REFERENCE; SNAPSHOT_NUM / empty | Live; do not need select | 02.response.html:808 |
+| Parent branch | PROJECT_BRANCH / empty | tizen_base | 02.response.html:808 |
+| Child path suffix | Page title / breadcrumb | Tizen-Base-Toolchain/RBS/build | 03.response.html:4 |
+| Child parent binding | TRIGGER_ID / empty | 1193467 | 04.response.html:800 |
+| Child packages | BUILD_PKG_LIST / empty | 245 git_path@commit lines; includes the four parent target lines | 04.response.html:800 |
+| Child fail-fast | FAIL_FAST / Immediate Stop With Error | yes | 04.response.html:800 |
+| Child results | EACH_GBS_BUILD_STATUS / empty | Present, empty string; no per-architecture result rows | 04.response.html:800 |
+| Child architectures | REPO_ARCH / empty | standard-armv7l:aarch64:x86_64, one colon-joined value | 04.response.html:800 |
+| Child reference | BUILD_REFERENCE; SNAPSHOT_NUM_URL / empty | Ref. Snapshot; download.tizen.org snapshot URL (not followed) | 04.response.html:800 |
+
+The parent Child Build table has one combined architecture row, not three
+independent status rows. The archived step page below likewise shows steps,
+not independent architecture results. No successful child sample is established.
+The three R1 design followups from progress22.1 remain deferred to design;
+these observed variable values are not new submission defaults or equivalence rules.
+
+### Child Step List
+
+All21 displayed rows, including composite steps, in page order. No log or
+collapse link was clicked. Status source is the literal status-name text,
+not an inference from CSS or a parent step.
+
+| Step | Status | Name / status source lines in 05.response.html |
+|---|---|---|
+| master | failed | 814 / 812 |
+| TRIGGER | skipped | 864 / 862 |
+| BUILD_ABS | skipped | 905 / 903 |
+| BUILD | failed | 946 / 944 |
+| Enable_SWAP | successful | 992 / 990 |
+| Update_Trigger_Description | successful | 1039 / 1037 |
+| Sync | successful | 1090 / 1088 |
+| Sync_Clean_Workspace | successful | 1136 / 1134 |
+| Sync_Copy_Src_from_Src_Server | successful | 1183 / 1181 |
+| Build | failed | 1237 / 1235 |
+| Build_GBS | failed | 1283 / 1281 |
+| Update_Trigger_Description | skipped | 1330 / 1328 |
+| Publish | successful | 1374 / 1372 |
+| NGBS_HTML_REPORT | successful | 1424 / 1422 |
+| Create NGBS build report | successful | 1470 / 1468 |
+| NGBS HTML REPORT | successful | 1517 / 1515 |
+| Publish_Each_Build | successful | 1567 / 1565 |
+| Publish_HTML_Report | skipped | 1614 / 1612 |
+| Publish_Build_Profiling_Report | skipped | 1651 / 1649 |
+| SNAPSHOT | skipped | 1698 / 1696 |
+| IMAGE | skipped | 1739 / 1737 |
+
+### Traffic And Integrity
+
+Request-stage records: GET92/POST1 (human login only), allowed66/denied27.
+Response-stage records: HTTP200x53/302x1. They are interception counts, not
+server receipt counts. Denials: ckeditor7, bootstrap-icons.woff6/woff2x6,
+Wicket XHR8. No new resource/refresh registration, no requests after the stop.
+trace/wrapper27/27, frame-ownership0, WORKER_BLOCKED/NEW_PAGE absent,
+runtime_failure=null (run.json:2199). Form action releases0.
+
+run.json SHA256:
+`ebe9226207c9d08ac8b5df0ba03e8a5e614092431f26e65468d2a8d80f902080`.
+Five HTML hashes are pinned in run.json.pages; pre/post-write redaction ran
+before archiving. live-07 remains byte-identical with run hash79d07795...a533e.
+Command and validation details: live-08/README.md, live-08-validation/,
+progress22.8/22.9. Offline green does not resolve the source-check stop.
+
+## C2B-06 live-07 (Historical Session)
 
 Production a364489 and spike e683175 were already pushed and validated before
 the fresh chat start. PTY ping/pong passed before browser creation
