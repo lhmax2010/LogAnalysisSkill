@@ -1,0 +1,37 @@
+▶ C2B-04 configuration evidence: five parent checks, two page checks, fresh provenance
+  ✔ all five, independent fixture id and exact archived source (11.262368ms)
+  ✔ multiple parent traversals permitted only on overview (2.655238ms)
+  ✔ parent rejects missing-overview (2.458656ms)
+  ✔ parent rejects duplicate-overview (2.692009ms)
+  ✔ parent rejects query (3.142022ms)
+  ✔ parent rejects absolute-url (2.753341ms)
+  ✔ parent rejects absolute-path (2.833619ms)
+  ✔ parent rejects trailing-suffix (4.378046ms)
+  ✔ parent rejects pipeline-id (3.07994ms)
+  ✔ parent rejects children-id (2.917548ms)
+  ✔ parent rejects missing-pipeline (3.077479ms)
+  ✔ parent rejects duplicate-children (2.894103ms)
+  ✔ parent rejects wrong-breadcrumb (2.242496ms)
+  ✔ parent rejects last-not-current (2.087902ms)
+  ✔ parent rejects duplicate-breadcrumb (2.277726ms)
+  ✔ parent rejects wrong-copy (2.126311ms)
+  ✔ parent rejects missing-copy (2.749588ms)
+  ✔ parent rejects wrong-copy-anchor (2.914802ms)
+  ✔ parent rejects duplicate-copy (3.070298ms)
+  ✔ parent rejects wrong-build-prefix (2.749061ms)
+  ✔ parent rejects missing-build-name (2.386655ms)
+  ✔ parent rejects duplicate-build-name (2.56452ms)
+  ✔ configuration page requires same breadcrumb and copy path, no build name (2.641548ms)
+  ✔ configuration page rejects wrong-path (2.373873ms)
+  ✔ configuration page rejects wrong-copy (2.264809ms)
+  ✔ registration cannot use absent, subpage or unarchived source (2.469742ms)
+C2B-04 selectors: synthetic DOMParser inputs only, no archived live-03 reuse or navigation
+✔ C2B-04 configuration evidence: five parent checks, two page checks, fresh provenance (596.665015ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 598.713248

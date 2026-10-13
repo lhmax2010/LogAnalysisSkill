@@ -28,7 +28,8 @@ test('C2B-04 configuration evidence: five parent checks, two page checks, fresh 
   });
   runtime.policy.allow = () => false;
   const parse = html => runtime.page.evaluate(configurationDOM, html);
-  const source = facts => ({ path: '/build/123', file: '01.response.html', sha256: 'a'.repeat(64), status: 200, facts });
+  const source = facts => ({ path: '/build/123/overview', id_verified: true,
+    file: '01.response.html', sha256: 'a'.repeat(64), status: 200, facts });
   try {
     await t.test('all five, independent fixture id and exact archived source', async () => {
       const facts = await parse(fixture());
@@ -84,7 +85,8 @@ test('C2B-04 configuration evidence: five parent checks, two page checks, fresh 
     });
     await t.test('registration cannot use absent, subpage or unarchived source', async () => {
       const row = source(await parse(fixture()));
-      for (const value of [undefined, { ...row, path: '/build/123/variables' },
+      for (const value of [undefined, { ...row, path: '/build/123' }, { ...row, path: '/build/123/variables' },
+        { ...row, id_verified: false }, { ...row, id_verified: undefined },
         { ...row, sha256: null }, { ...row, status: 403 }]) {
         assert.throws(() => parentRegistration(value), /CONFIGURATION_SOURCE_MISMATCH/);
       }

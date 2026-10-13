@@ -4,6 +4,28 @@ Status: **PARTIAL / LIVE06_STOPPED_QB_FORM_CHANGED**. Latest session: live-06,
 2026-10-13, seven archived pages, two explicitly ID_UNVERIFIED.
 This document records observations, not permission to start C3.
 
+## C2B-06 Preparation (live-07 Not Started)
+
+The approved ruling is recorded verbatim in progress22.1. The archived selected
+Variables tab is visible at live-06/03.id-unverified.response.html:783-784 and
+05.id-unverified.response.html:791-792. These are remembered tabs, not a changed
+Summary schema. Production commit a364489 moves Summary identity checks to
+explicit /build/N/overview and accepts only the exact observed Run button
+onclick grammar. Historical live-06 status and bytes are unchanged.
+
+live-07 will use verified overviews for configuration/child-id provenance and
+1193469 as the Base failure sample; 1186372 is excluded from the new read plan.
+The two reference-field values/options and callback/navigation observations
+are added to the spike record. No new live pages, Summary Status, callbacks or
+release results are claimed here; these remain NOT_COLLECTED pending a new
+chat start and the live run.
+
+The three R1 items remain design followups, not implemented rules: Full child
+package list versus target subset; parent Live/reference display versus child
+Ref. Snapshot/SNAPSHOT_NUM_URL; and the Unified sample's project/FAIL_FAST/comma
+separator differences. C3 remains blocked until the required live evidence and
+designer decisions, not unlocked by passing offline tests.
+
 ## C2B-05 live-06 (Latest Session)
 
 Baseline93421b1, fresh chat start, PTY maintained throughout. Ping/pong passed

@@ -11,7 +11,7 @@ import { PassThrough } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 import {
   Agent, AgentError, callbackURL, canonical, checkRedacted, createRuntime,
-  ORIGIN, pathShape, redactDOM, validateForm,
+  ORIGIN, FIELDS, pathShape, redactDOM, validateForm,
 } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 import {
   configurationDOM, configurationPageChecks, parentConfigurationChecks, parentRegistration,
@@ -38,6 +38,9 @@ let deniedDocumentAfterRedirect = false;
 const loginPostResponses = new Set();
 let wrapperDenied = 0;
 const parentPages = new Map();
+const parentOverview = '/build/1193467/overview';
+const buildReadPaths = new Set([parentOverview, '/build/1193467/variables',
+  '/build/1193469/overview', '/build/1193469/variables', '/build/1193469/step_status']);
 let readNavigation = null;
 let channel;
 
@@ -121,10 +124,10 @@ async function readWithDiagnostics(input, send, page, navigation, guard, saveSam
   requireReadLocation(page, input.path, navigation());
   if (response.ok) {
     if (response.status !== 200) throw new AgentError('QB_READ_HTTP_STATUS');
-    return { ...response, ...(/^\/build\/\d+(?:\/variables)?$/.test(input.path)
+    return { ...response, ...(/^\/build\/\d+\/(?:overview|variables|step_status)$/.test(input.path)
       ? { id_verified: true, verification: 'VERIFIED' } : {}) };
   }
-  if (response.error !== 'QB_READ_ID_MISMATCH' || !/^\/build\/\d+(?:\/variables)?$/.test(input.path)) {
+  if (response.error !== 'QB_READ_ID_MISMATCH' || !/^\/build\/\d+\/(?:overview|variables)$/.test(input.path)) {
     throw new AgentError(response.error);
   }
   const samples = [];
@@ -160,8 +163,22 @@ function requireVerifiedSource(source) {
   return source;
 }
 
-async function childIdsFromVerifiedSource(source, page) {
+function requireVerifiedOverview(source) {
   requireVerifiedSource(source);
+  if (!/^\/build\/\d+\/overview$/.test(source.path)) throw new AgentError('CONFIGURATION_SOURCE_MISMATCH');
+  return source;
+}
+
+function requireReadSource(path, sources) {
+  if (!buildReadPaths.has(path)) throw new AgentError('EVIDENCE_COMMAND_INVALID');
+  if (path.startsWith('/build/1193469/')) {
+    const parent = requireVerifiedOverview(sources.get(parentOverview));
+    if (!parent.child_build_ids.includes('1193469')) throw new AgentError('EVIDENCE_COMMAND_INVALID');
+  }
+}
+
+async function childIdsFromVerifiedSource(source, page) {
+  requireVerifiedOverview(source);
   return page.evaluate(html => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const ids = [];
@@ -180,10 +197,7 @@ async function childIdsFromVerifiedSource(source, page) {
 
 async function collectRead(input) {
   const requestedId = /^\/build\/(\d+)/.exec(input.path)?.[1];
-  if (requestedId && !['1193467', '1193469', '1186372'].includes(requestedId)) {
-    const parent = requireVerifiedSource(parentPages.get('/build/1186372'));
-    if (!parent.child_build_ids.includes(requestedId)) throw new AgentError('EVIDENCE_COMMAND_INVALID');
-  }
+  if (requestedId) requireReadSource(input.path, parentPages);
   readNavigation = null;
   const diagnostic = { path: input.path, samples: [] };
   const response = await readWithDiagnostics(input, command => call(command, true), runtime.page,
@@ -200,12 +214,11 @@ async function collectRead(input) {
   if (response.id_verified === false) {
     parentPages.delete(input.path);
     diagnostic.file = saved.file;
-    if (input.path === '/build/1186372') report.skipped_children = { source_path: input.path, reason: 'ID_UNVERIFIED' };
     emit(record);
-    if (/^\/build\/1193467(?:\/variables)?$/.test(input.path)) throw new AgentError('QB_READ_ID_MISMATCH');
+    if (/^\/build\/1193467\/(?:overview|variables)$/.test(input.path)) throw new AgentError('QB_READ_ID_MISMATCH');
     return;
   }
-  if (/^\/build\/\d+$/.test(input.path)) {
+  if (/^\/build\/\d+\/overview$/.test(input.path)) {
     const facts = await runtime.page.evaluate(configurationDOM, response.html_redacted);
     const childIds = await childIdsFromVerifiedSource({ ...record, html_redacted: response.html_redacted }, runtime.page);
     const source = { ...record, facts, child_build_ids: childIds };
@@ -419,7 +432,7 @@ async function idSelfTest(pw, chrome, interpreter) {
   const pass = name => { tests += 1; emit({ test: name, result: 'PASS' }); };
   try {
     for (const name of ['two-build-labels', 'no-summary', 'late-summary']) {
-      path = name === 'two-build-labels' ? '/build/1193469/variables' : '/build/1193469';
+      path = name === 'two-build-labels' ? '/build/1193469/variables' : '/build/1193469/overview';
       lateSummary = name === 'late-summary';
       await browserRuntime.page.setContent(header + (name === 'two-build-labels'
         ? '<a class="nav-link">Build (Id:999)</a>' + summary : ''));
@@ -456,7 +469,7 @@ async function idSelfTest(pw, chrome, interpreter) {
       emit({ fixture: name, id_verified: false, samples, diagnostic_requests: networkRequests - beforeRequests });
       lateSummary = false;
       await browserRuntime.page.setContent(header + summary);
-      path = '/build/1193469';
+      path = '/build/1193469/overview';
       const next = await readWithDiagnostics({ command: 'read', path }, input => testAgent.command(input),
         page, navigation, () => {}, () => assert.fail('verified next read must not diagnose'));
       assert.equal(next.id_verified, true);
@@ -488,8 +501,46 @@ async function idSelfTest(pw, chrome, interpreter) {
     pass('ten-label-cap-and-nonunique-id-no-cell-text');
     const childPage = '<h3>Child Build</h3><table><tr><td>'
       + '<a href="https://quickbuild.tizen.org/build/1193469">child</a></td></tr></table>';
-    assert.deepEqual(await childIdsFromVerifiedSource({ id_verified: true, html_redacted: childPage }, page), ['1193469']);
+    const parent = { id_verified: true, path: parentOverview, html_redacted: childPage };
+    assert.deepEqual(await childIdsFromVerifiedSource(parent, page), ['1193469']);
     pass('verified-child-id-source');
+    for (const invalidPath of ['/build/1193467', '/build/1193467/variables', '/build/1193467/step_status']) {
+      await assert.rejects(childIdsFromVerifiedSource({ ...parent, path: invalidPath }, page),
+        { code: 'CONFIGURATION_SOURCE_MISMATCH' });
+    }
+    pass('child-id-requires-overview-not-remembered-tab');
+    const sources = new Map([[parentOverview, { ...parent, child_build_ids: ['1193469'] }]]);
+    for (const allowed of buildReadPaths) assert.doesNotThrow(() => requireReadSource(allowed, sources));
+    for (const denied of ['/build/1186372/overview', '/build/1186372/variables', '/build/1193469', '/build/1193469/log']) {
+      assert.throws(() => requireReadSource(denied, sources), { code: 'EVIDENCE_COMMAND_INVALID' });
+    }
+    assert.throws(() => requireReadSource('/build/1193469/overview', new Map()), { code: 'ID_UNVERIFIED_SOURCE' });
+    sources.set(parentOverview, { ...parent, child_build_ids: [] });
+    assert.throws(() => requireReadSource('/build/1193469/overview', sources), { code: 'EVIDENCE_COMMAND_INVALID' });
+    pass('live07-paths-and-child-relation-closed');
+    await browserRuntime.page.setContent(header);
+    path = '/build/1193469/step_status';
+    const step = await readWithDiagnostics({ command: 'read', path }, input => testAgent.command(input),
+      page, navigation, () => {}, () => assert.fail('verified step status must not diagnose'));
+    assert.equal(step.id_verified, true);
+    pass('step-status-navigation-verified');
+    const form = { heading: true, base: `${ORIGIN}/wicket/page?50`,
+      action: `${ORIGIN}/wicket/page?50-1.IFormSubmitListener-form`,
+      rows: [{ label: 'PROJECT_NAME', viewers: ['Tizen'], controls: [] }, ...FIELDS.map(label => ({ label, viewers: [],
+        controls: (['CHILD_CONFIGURATIONS', 'TARGET_IMAGE'].includes(label) ? ['recorder', 'choices', 'selection'] : ['input'])
+          .map(role => ({ role, tag: 'SELECT', type: 'select-one',
+            callback: `wicketAjaxPost('${ORIGIN}/wicket/page?50-1.IBehaviorListener.0-form-field', 0)`,
+            options: [{ text: label === 'BUILD_REFERENCE' ? 'Ref. Snapshot' : 'snapshot-1', value: 'first', selected: true },
+              { text: 'other', value: 'second', selected: false }] })),
+      }))] };
+    const facts = formFacts(form, 'Tizen', 'initial');
+    assert.equal(facts.page_version, '50');
+    assert.equal(facts.reference_fields.BUILD_REFERENCE[0].value, 'Ref. Snapshot');
+    assert.equal(facts.reference_fields.SNAPSHOT_NUM[0].value, 'snapshot-1');
+    assert.equal(facts.reference_fields.SNAPSHOT_NUM[0].options.length, 2);
+    assert.equal(facts.callback_has_random, false);
+    checkedReport(JSON.stringify(facts), interpreter, []);
+    pass('form-reference-current-values-options-and-version');
     assert.equal(networkRequests, 0);
     assert.equal(browserRuntime.page.url(), 'about:blank');
     emit({ self_tests: tests, passed: tests, network_requests: networkRequests, fixture_navigation: 'stubbed original read only' });
@@ -555,15 +606,24 @@ async function call(input, allowIdMismatch = false) {
 async function formRecord(label) {
   check();
   const form = await agent.snapshot();
-  const fields = validateForm(form, agent.currentProject.project_name);
-  const control = fields.BUILD_TYPE.controls[0];
-  const record = { label, base: form.base, action: form.action,
-    callback: callbackURL(control.callback, form.base),
-    options: Object.fromEntries(Object.entries(fields).map(([name, row]) =>
-      [name, row.controls.filter(c => c.tag === 'SELECT').map(c => c.options)])) };
+  const record = formFacts(form, agent.currentProject.project_name, label);
   const saved = await archive(await runtime.page.evaluate(redactDOM), `form-${label}.html`);
   report.pages.push({ path: '/wicket/page', ...saved });
   return record;
+}
+
+function formFacts(form, projectName, label) {
+  const fields = validateForm(form, projectName);
+  const callback = callbackURL(fields.BUILD_TYPE.controls[0].callback, form.base);
+  return { label, base: form.base, action: form.action, callback,
+    page_version: new URL(form.base).search.slice(1),
+    callback_has_random: new URL(callback).searchParams.has('random'),
+    reference_fields: Object.fromEntries(['BUILD_REFERENCE', 'SNAPSHOT_NUM'].map(name => [name,
+      fields[name].controls.map(control => ({ tag: control.tag, type: control.type,
+        value: control.tag === 'SELECT' ? control.options.filter(option => option.selected).map(option => option.text).join('\n') : control.value,
+        options: control.options ?? [] }))])),
+    options: Object.fromEntries(Object.entries(fields).map(([name, row]) =>
+      [name, row.controls.filter(c => c.tag === 'SELECT').map(c => c.options)])) };
 }
 
 function diagnosticDone(reason) {
@@ -648,6 +708,12 @@ try {
         resource_type: metadata.resource_type, response_status: metadata.response_status,
         redirect_hop: metadata.redirect_source !== null, allowed: permitted });
     }
+    if (operation === 'form_evidence' && ['Document', 'XHR', 'Fetch'].includes(metadata.resource_type)) {
+      (report.form_network ??= []).push({ relative_ms: elapsed(), phase: runtime.policy.phase,
+        method: metadata.method, protocol: metadata.protocol, host: metadata.host,
+        ...redactAddress(metadata.path, metadata.query), has_random: new URLSearchParams(metadata.query).has('random'),
+        resource_type: metadata.resource_type, response_status: metadata.response_status, allowed: permitted });
+    }
     if (runtime.policy.loginPostRequests.has(requestId) && metadata.response_status !== null) {
       loginPostResponses.add(requestId);
       if (metadata.response_status >= 300 && metadata.response_status < 400) postRedirect = true;
@@ -706,13 +772,16 @@ try {
       if (input.command === 'stop') { stop('OBSERVATION_MISMATCH'); break; }
       operation = input.command;
       if (input.command === 'read') {
-        if (!/^\/(?:build\/\d+(?:\/(?:variables|step_status))?|overview\/\d+)$/.test(input.path)) throw new AgentError('EVIDENCE_COMMAND_INVALID');
+        if (!/^\/(?:build\/\d+\/(?:overview|variables|step_status)|overview\/\d+)$/.test(input.path)) throw new AgentError('EVIDENCE_COMMAND_INVALID');
         current = input.path;
         await collectRead(input);
       } else if (input.command === 'register_config') {
         // Only a freshly archived parent response can authorize registration.
         let project;
-        try { project = parentRegistration(requireVerifiedSource(parentPages.get(input.source_path))); }
+        try {
+          if (input.source_path !== parentOverview) throw new AgentError('CONFIGURATION_SOURCE_MISMATCH');
+          project = parentRegistration(requireVerifiedOverview(parentPages.get(input.source_path)));
+        }
         catch { throw new AgentError('CONFIGURATION_SOURCE_MISMATCH'); }
         agent.projects.set(project.overview_id, project);
         agent.policy.overviewIds.add(String(project.overview_id));
@@ -727,6 +796,10 @@ try {
         const initial = report.form[0].options.BUILD_TYPE[0].filter(option => option.selected);
         if (initial.length !== 1 || initial[0].text !== 'Full') throw new AgentError('QB_FORM_VALUE_UNAVAILABLE');
         for (const value of ['Partial', 'Full']) {
+          const eventStart = report.events.length;
+          const networkStart = report.form_network?.length ?? 0;
+          const transition = { value, before: report.form.at(-1) };
+          (report.form_transitions ??= []).push(transition);
           const form = await agent.snapshot();
           const field = validateForm(form, agent.currentProject.project_name).BUILD_TYPE.controls[0];
           runtime.policy.phase = 'fill';
@@ -741,6 +814,11 @@ try {
           }
           runtime.policy.endField(); runtime.policy.phase = 'idle';
           report.form.push(await formRecord(value.toLowerCase()));
+          transition.after = report.form.at(-1);
+          transition.main_frame_navigations = report.events.slice(eventStart).filter(event => event.event === 'main_frame_navigation');
+          transition.document_gets = report.form_network.slice(networkStart).filter(event =>
+            event.resource_type === 'Document' && event.method === 'GET' && event.response_status === null);
+          transition.has_random = report.form_network.slice(networkStart).some(event => event.has_random);
           await persist();
         }
         if (runtime.policy.released || actionReleases !== 0) throw new AgentError('EVIDENCE_RELEASE_VIOLATION');

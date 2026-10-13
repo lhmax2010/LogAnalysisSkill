@@ -1,0 +1,18 @@
+{"fixture":"two-build-labels","id_verified":false,"samples":[{"sample":1,"relative_ms":523,"main_frame":{"protocol":"https:","host":"quickbuild.tizen.org","path":"/build/1193469/variables","query":""},"ready_state":"complete","navigation_count":2,"navigation_labels":["Build (id:1193469)","Build (Id:999)"],"build_summary_count":1,"build_summaries":[{"box_heads":["Summary"],"table_count":1,"tables":[{"thead_th":["Status","Id","Triggered By"],"tbody_rows":1,"id_column_index":1,"first_row_id":"1193469"}]}]},{"sample":2,"relative_ms":3526,"main_frame":{"protocol":"https:","host":"quickbuild.tizen.org","path":"/build/1193469/variables","query":""},"ready_state":"complete","navigation_count":2,"navigation_labels":["Build (id:1193469)","Build (Id:999)"],"build_summary_count":1,"build_summaries":[{"box_heads":["Summary"],"table_count":1,"tables":[{"thead_th":["Status","Id","Triggered By"],"tbody_rows":1,"id_column_index":1,"first_row_id":"1193469"}]}]}],"diagnostic_requests":0}
+{"test":"two-build-labels","result":"PASS"}
+{"fixture":"no-summary","id_verified":false,"samples":[{"sample":1,"relative_ms":3620,"main_frame":{"protocol":"https:","host":"quickbuild.tizen.org","path":"/build/1193469/overview","query":""},"ready_state":"complete","navigation_count":1,"navigation_labels":["Build (id:1193469)"],"build_summary_count":0,"build_summaries":[]},{"sample":2,"relative_ms":6621,"main_frame":{"protocol":"https:","host":"quickbuild.tizen.org","path":"/build/1193469/overview","query":""},"ready_state":"complete","navigation_count":1,"navigation_labels":["Build (id:1193469)"],"build_summary_count":0,"build_summaries":[]}],"diagnostic_requests":0}
+{"test":"no-summary","result":"PASS"}
+{"fixture":"late-summary","id_verified":false,"samples":[{"sample":1,"relative_ms":6720,"main_frame":{"protocol":"https:","host":"quickbuild.tizen.org","path":"/build/1193469/overview","query":""},"ready_state":"complete","navigation_count":1,"navigation_labels":["Build (id:1193469)"],"build_summary_count":0,"build_summaries":[]},{"sample":2,"relative_ms":9722,"main_frame":{"protocol":"https:","host":"quickbuild.tizen.org","path":"/build/1193469/overview","query":""},"ready_state":"complete","navigation_count":1,"navigation_labels":["Build (id:1193469)"],"build_summary_count":1,"build_summaries":[{"box_heads":["Summary"],"table_count":1,"tables":[{"thead_th":["Status","Id","Triggered By"],"tbody_rows":1,"id_column_index":1,"first_row_id":"1193469"}]}]}],"diagnostic_requests":0}
+{"test":"late-summary","result":"PASS"}
+{"test":"non-200","result":"PASS"}
+{"test":"redirect","result":"PASS"}
+{"test":"browser-failure","result":"PASS"}
+{"test":"redaction-failure","result":"PASS"}
+{"test":"fail-closed-during-diagnostic-wait","result":"PASS"}
+{"test":"ten-label-cap-and-nonunique-id-no-cell-text","result":"PASS"}
+{"test":"verified-child-id-source","result":"PASS"}
+{"test":"child-id-requires-overview-not-remembered-tab","result":"PASS"}
+{"test":"live07-paths-and-child-relation-closed","result":"PASS"}
+{"test":"step-status-navigation-verified","result":"PASS"}
+{"test":"form-reference-current-values-options-and-version","result":"PASS"}
+{"self_tests":14,"passed":14,"network_requests":0,"fixture_navigation":"stubbed original read only"}

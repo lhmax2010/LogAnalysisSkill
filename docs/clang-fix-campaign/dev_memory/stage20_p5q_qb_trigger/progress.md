@@ -1,12 +1,13 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2B_06_PRODUCTION_FIX_VERIFIED;SPIKE_FOLLOWUP_PENDING**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE07_READY;WAITING_FOR_CHAT_START**。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
-本轮仅补取证通道,未放宽生产判据。live-05的启动错误见§21.5;
+§21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
+live-05的启动错误见§21.5;
 live-06已完成ping/pong与一次人工登录,七页归档(两页ID_UNVERIFIED),配置1917
 五项/两项检查通过;form_evidence的open_form返回QB_FORM_CHANGED后立即停止,
-release=0,未设值/未提交,见§21.9。不得重试绕过或标C2b完成。
+release=0,未设值/未提交,见§21.9。新live-07待聊天开始,不绕过停止条件或标C2b完成。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -1953,3 +1954,58 @@ shared_worker closeTarget成功,worker closeTarget异常Error,最终QB_BROWSER_U
 Ruff完整树`ed2783513624524cc7c7c1b72d916a1e4b1f8669`导出到
 `/tmp/p5q-c2b-06-production-lint-GESLrU`,之后只补文档/完整日志。
 第一步全绿后独立提交推送;第二步尚未修改,live-07尚未登录,不进入C3。
+
+### 22.4 第二步取证脚本跟进
+
+第一步已提交推送`a364489`。第二步只改spikes内的evidence/config_source模块及
+配套离线测试;不再改生产代理。原ID_UNVERIFIED即时/3秒后采样、身份脱敏、
+ping/pong、EOF停态和五项/两项配置判据保持。
+
+- 构建页只允许本轮五个完整路径:1193467 overview/variables;
+  1193469 overview/variables/step_status。裸地址与1186372拒绝,不会默认补读。
+- 配置登记仅以本次已归档并核对通过的/build/1193467/overview为来源;
+  子ID也仅从核对通过的overview提取。1193469需在该父页Child Build表内,
+  不能凭旧证据、变量页或未核对页面补入。
+- 成功的step_status读回也标注VERIFIED;诊断例外仍仅overview/variables,
+  其它错误立即停止。1193467两页必须核对通过。
+- formFacts保存base/action/callback、page_version、BUILD_REFERENCE/SNAPSHOT_NUM
+  当前显示值与完整选项;保持其它select选项快照。新增form_network仅观察协议
+  适配后的Document/XHR/Fetch元数据,按既有URL脱敏,不读头/体,记录has_random。
+  两次设值各记录before/after、主帧导航和Document GET,不把尚未取得的联动
+  写为成功;失败时保留已采集的before/网络事实。所有记录仍走写前/写后检查。
+
+新增四项id-self-test:非overview不能作为子ID来源、本轮路径/父子关系闭集、
+step_status导航核对、表单参考值/选项/页号。原10项全部保留,10→14,
+包括双标签、缺Summary、延迟Summary、非200/重定向/运行时异常等停止控制。
+config-source既有27项同步为已核对overview输入,另在既有拒绝表里覆盖裸地址与
+id_verified缺失/false。握手/EOF自测仍22项。无需实际登录即可全部离线执行。
+
+live-07运行计划(未执行):PTY启动相同脚本,输出全新`evidence/C2b/live-07/`,
+先ping并收到pong,再只在窗口人工登录。按§22.2顺序,配置来源显式传
+`{"command":"register_config","source_path":"/build/1193467/overview"}`,
+仅用返回ID读配置;随后form_evidence,确认release=0后close。
+所有真实页面状态、1193469 Summary Status、回调/action/版本/重渲染/random及
+release实际值此时均NOT_COLLECTED。必须等新的聊天“开始”,不进入C3。
+
+### 22.5 第二步验收与live-07闸门
+
+日志目录`evidence/C2b/c2b-06-spike/`,Node/PW/CHROMIUM全路径沿§22.3。
+
+| 命令 | exit | 结果 / 日志 |
+|---|---|---|
+| Node spikes/p5q_c2b_evidence.mjs --self-test .venv/bin/python | 0 | 22/22,network_requests=0;self-test.log |
+| Node spikes/p5q_c2b_evidence.mjs --id-self-test PW CHROMIUM .venv/bin/python | 0 | 14/14,network_requests=0;id-self-test.log |
+| Node tests/node/test_p5q_c2b_config_source.mjs PW CHROMIUM | 0 | 27/27;config-source.log |
+| .venv/bin/python -m pytest -q | 0 | 2165 passed,1 skipped,106.64s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+
+Ruff完整树`ea336fe71127455987780d112eacef58c76ac443`导出到
+`/tmp/p5q-c2b-06-spike-lint-hC3NFo`;之后只补文档/完整日志。生产代码相对
+第一步a364489零diff,冻结稿仍为
+`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`。
+历史live-01至live-06目录原样保留;本轮前两步没有QuickBuild请求。
+第二步提交推送后在聊天请求“开始”;此前不启动浏览器、不创建live-07实测证据,
+不把离线通过当作真机结果。三项R1事实保留待设计修订,不进入C3。

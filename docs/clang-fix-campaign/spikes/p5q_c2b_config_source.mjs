@@ -61,7 +61,7 @@ export function configurationPageChecks(facts) {
 }
 
 export function parentRegistration(source) {
-  if (!source || source.status !== 200 || !/^\/build\/\d+$/.test(source.path)
+  if (!source || source.id_verified !== true || source.status !== 200 || !/^\/build\/\d+\/overview$/.test(source.path)
     || !/^[a-f0-9]{64}$/.test(source.sha256)) throw new Error('CONFIGURATION_SOURCE_MISMATCH');
   const result = parentConfigurationChecks(source.facts);
   if (!result.passed) throw new Error('CONFIGURATION_SOURCE_MISMATCH');
