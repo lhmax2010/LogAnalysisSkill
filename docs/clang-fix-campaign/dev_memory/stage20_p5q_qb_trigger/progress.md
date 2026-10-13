@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2B09_IMPLEMENTING;LIVE11_NOT_STARTED**。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2B09_OFFLINE_READY;LIVE11_WAITING_START**。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 §21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
@@ -19,7 +19,8 @@ live-10完成五个构建页与配置1917五项/两项核对,表单首失败点�
 已归档form_unverified页及逐条件诊断,无字段差集/重复,release=0,见§24.6。
 不改变生产规则,不将历史推测当成live-10实测;C2b仍未完成。
 §25按已批准C2B-09裁定修正页面主环境字符串规整,分生产/取证脚本两提交;
-离线完成后再等新聊天开始执行live-11。历史live-10结论原样保留。
+生产修正4a4a727已推送,spikes跟进与九项原生布尔记录离线验收通过;
+等待新的聊天“开始”后执行live-11。历史live-10结论原样保留。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -46,7 +47,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;live-10表单首失败点PROJECT_NAME精确值不等,失败诊断与脱敏页已归档,release=0;§24.6停止等裁定;生产/冻结稿不改,无C3 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§25裁定已修正live-10停点对应的规整实现,生产4a4a727已推送;spikes验收通过,live-11等待新的聊天开始;冻结稿不改,无C3 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -2525,3 +2526,56 @@ Python测试计数不变;Node子用例单列。完整暂存树Ruff:
 5cf878164d9c9b7a983993788a46a70e3e74e40b -> /tmp/p5q-c2b09-production-lint-di6avA。
 之后仅补记账。第一步推送后仍不真机,先同步spikes原始DOM消费者;
 不把此处测试通过当成live-11已经取证。
+
+### 25.5 第二步取证脚本跟进
+
+第一步已独立提交推送4a4a727。本步仅spikes代码与证据/记账,不再改生产。
+表单诊断调用生产normalizeFormDOM;ID结构采样只在Node处理导航标签、Summary/Id
+列与数值;配置来源采样的面包屑、构建名、复制路径脚本解析和Child Build标题
+也移到Node。仍按原顺序复算validateForm,不改五项/两项配置判据、不放宽任何停止条件。
+ID采样中的非Id单元格只在内存用于选择Id列,不写入结构诊断。
+
+新增spikes/p5q_c2b_intrinsics.mjs:login成功后、每个read(含可诊断的ID不符)
+及open_form可诊断结果后,只读采样如下九项,每项只返回true/false:
+String.prototype.trim/replace/split/includes、Array.prototype.map/filter/includes、
+JSON.stringify、RegExp.prototype.exec。按Function.prototype.toString.call(f)中
+是否含[native code]判定,不归档函数源码;记录command/页面脱敏地址/相对时间。
+WORKER_BLOCKED、NEW_PAGE、runtime.failure及其它立即停止错误仍先停止,不为探测绕过。
+采样前后检查运行状态与页面地址,地址变化仍QB_READ_REDIRECTED。
+
+离线新增14项:form诊断1、ID/child来源1、原生性及配置12(九项逐一包装后对应false,
+其余不变;正常九项全true;父/配置归档在缺陷trim下的核对结果不变)。
+自测form27/27、ID15/15、intrinsics12/12、既有通道/地址22/22,
+均network_requests=0、无release。Node配置67/67、unit120/120、DOM50/50、安全4/4。
+完整命令与日志:evidence/C2b/c2b-09-spikes/README.md。
+
+本次修正不是任意页面内置函数篡改下的完整隔离方案。局部正则仍处于页面环境,
+Array/RegExp等也未迁入隔离环境,按裁定留R1;原生布尔值只是现场观察不是安全证明。
+live-11尚未创建目录或打开浏览器,没有页面原生性/新联动事实。
+
+### 25.6 第二步验收与live-11人工闸门
+
+日志同c2b-09-spikes目录,全部exit0:
+
+| 验收 | 结果 | 日志 |
+|---|---|---|
+| pytest全量 | 2165 passed/1 skipped,109.10s;较第一步计数不变 | pytest.log |
+| mypy | 113 files,无问题 | mypy.log |
+| Ruff完整待提交树 | All checks passed! | ruff.log |
+| lint-imports | 6 kept/0 broken | lint-imports.log |
+| check_design_doc | 0 problem | design-check.log |
+| Node四入口 | 4 passed,20.64s;配置67/67、unit120/120、DOM50/50、安全4/4 | node-gates.log |
+| 自测 | intrinsics12/12、form27/27、ID15/15、既有22/22 | *self-test.log |
+
+Ruff完整暂存树d0d06745f648af32d69e4397e816319451a39083导出到
+/tmp/p5q-c2b09-spikes-lint-X8ohj2;之后仅补文档/日志。git diff --cached --check为空。
+四安全组Worker走b:browser_fail_closed:shared_worker closeTarget成功,
+worker为Error类异常,cleanup=true、attackHTTP0/WS0;其它三组通过。
+hashes.log确认冻结稿与live-10/run.json、form-unverified.response.html字节不变。
+本步相对4a4a727生产、design.md、冻结稿零diff。无关既有改动不纳入。
+
+第三步待新回复“开始”,先ping/pong才弹浏览器。按live-10顺序只读父overview/variables、
+子overview/variables/step_status,由当次父页五项核对取得配置ID,登记后只读配置并核对两项;
+form_evidence仅Full→Partial→Full,不点Ok、不submit、form_action_releases须0。
+表单失败先按§24取证再停止;其它立即停止条件不变。页面/原生性/联动/现场release
+仍NOT_COLLECTED,不能拿离线零release代替。没有新增停止项,不进入C3。

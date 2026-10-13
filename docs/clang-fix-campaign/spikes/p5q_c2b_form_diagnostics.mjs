@@ -1,6 +1,6 @@
 // Evidence-only replay of validateForm. Never changes the production verdict.
 import {
-  AgentError, callbackURL, canonical, checkRedacted, FIELDS, formDOM,
+  AgentError, callbackURL, canonical, checkRedacted, FIELDS, formDOM, normalizeFormDOM,
   ORIGIN, redactDOM, validateForm,
 } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
@@ -10,7 +10,7 @@ const PALETTES = new Set(['CHILD_CONFIGURATIONS', 'TARGET_IMAGE']);
 
 export function formExtrasDOM() {
   const forms = [...document.forms];
-  const selected = forms.filter(form => form.action.includes('IFormSubmitListener-form'));
+  const selected = forms.filter(form => /IFormSubmitListener-form/.test(form.action));
   return {
     ready_state: document.readyState,
     forms: forms.map(form => ({ action: form.action })),
@@ -19,10 +19,10 @@ export function formExtrasDOM() {
       return { count: buttons.length, classes: buttons.map(button => button.className) };
     }) : [],
     cke_elements: [...document.querySelectorAll('[class]')]
-      .filter(node => node.getAttribute('class').includes('cke')).length,
+      .filter(node => /cke/.test(node.getAttribute('class'))).length,
     textareas: [...document.querySelectorAll('textarea')].map(node => {
       const style = getComputedStyle(node);
-      return { role: node.name.split(':').at(-1), hidden_attribute: node.hidden,
+      return { name: node.name, hidden_attribute: node.hidden,
         hidden: node.hidden || style.display === 'none' || style.visibility === 'hidden'
           || node.getClientRects().length === 0 };
     }),
@@ -130,9 +130,10 @@ export async function collectFormDiagnostic({ page, projectName, guard, document
     if (documentStatus(current) !== 200) throw new AgentError('QB_READ_HTTP_STATUS');
   };
   stable();
-  const form = await page.evaluate(formDOM);
+  const form = normalizeFormDOM(await page.evaluate(formDOM));
   stable();
   const extras = await page.evaluate(formExtrasDOM);
+  extras.textareas = extras.textareas.map(({ name, ...item }) => ({ ...item, role: name.split(':').at(-1) }));
   stable();
   const facts = { main_frame: address(current, undefined, redactAddress),
     ...formDiagnosticFacts(form, extras, projectName, redactAddress) };

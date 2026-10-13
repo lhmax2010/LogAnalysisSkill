@@ -6,7 +6,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
-  AgentError, createRuntime, FIELDS, formDOM, ORIGIN, validateForm,
+  AgentError, createRuntime, FIELDS, formDOM, normalizeFormDOM, ORIGIN, validateForm,
 } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 import { collectFormDiagnostic, FORM_ACTION, withFormFailureEvidence } from './p5q_c2b_form_diagnostics.mjs';
 
@@ -97,6 +97,18 @@ export async function formSelfTest(playwright, chromium, python, redactAddress) 
     assert.equal(palette.button_count, 1); assert.deepEqual(palette.button_classes, ['palette-move']);
     assert.deepEqual(good.rows[0].property_viewers, [PROJECT]);
     pass('valid-form-value-lengths-options-buttons-project-no-raw-values');
+    await runtime.page.evaluate(() => {
+      globalThis.originalTrim = String.prototype.trim;
+      String.prototype.trim = function () { return this.replace(/^\s+|\s+$/, ''); };
+      for (const node of document.querySelectorAll('.form-label,.property-viewer,option')) {
+        node.textContent = ` \n${node.textContent}\t `;
+      }
+    });
+    const brokenTrim = await capture();
+    assert.equal(brokenTrim.validation.production_passed, true);
+    assert.deepEqual(brokenTrim.rows, good.rows);
+    await runtime.page.evaluate(() => { String.prototype.trim = globalThis.originalTrim; });
+    pass('broken-page-trim-uses-node-normalization-same-diagnostic-rows');
     for (const [name, html, rule, assertion] of [
       ['extra-field', fixture({ extra: row('ADD_TO_IMG_LIST') }), 'label_set', result => {
         assert.deepEqual(result.extra_labels, ['ADD_TO_IMG_LIST']);
@@ -124,7 +136,7 @@ export async function formSelfTest(playwright, chromium, python, redactAddress) 
       }],
     ]) {
       await runtime.page.setContent(html);
-      const snapshot = await runtime.page.evaluate(formDOM);
+      const snapshot = normalizeFormDOM(await runtime.page.evaluate(formDOM));
       let failure;
       try { validateForm(snapshot, PROJECT); } catch (error) { failure = error; }
       assert.equal(failure?.code, 'QB_FORM_CHANGED');

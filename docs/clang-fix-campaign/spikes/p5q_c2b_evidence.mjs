@@ -14,9 +14,10 @@ import {
   ORIGIN, FIELDS, pathShape, redactDOM, validateForm,
 } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 import {
-  configurationDOM, configurationPageChecks, parentConfigurationChecks, parentRegistration,
+  configurationDOM, normalizeConfigurationDOM, configurationPageChecks, parentConfigurationChecks, parentRegistration,
 } from './p5q_c2b_config_source.mjs';
 import { withFormFailureEvidence } from './p5q_c2b_form_diagnostics.mjs';
+import { intrinsicsDOM } from './p5q_c2b_intrinsics.mjs';
 
 const [playwright, chromium, directory, python, mode = 'full'] = process.argv.slice(2);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -84,27 +85,39 @@ function commandChannel(input, onEnd) {
 }
 
 export function idStructureDOM() {
-  const navigation = [...document.querySelectorAll('.nav-link')]
-    .map(node => node.textContent.trim()).filter(text => text.startsWith('Build ('));
-  const boxes = [...document.querySelectorAll('.build-summary')];
   return {
     ready_state: document.readyState,
+    navigation: [...document.querySelectorAll('.nav-link')].map(node => node.textContent),
+    boxes: [...document.querySelectorAll('.build-summary')].map(box => ({
+      heads: [...box.querySelectorAll('.box-head')].map(node => node.textContent),
+      tables: [...box.querySelectorAll('table')].map(table => ({
+        columns: [...table.querySelectorAll('thead th')].map(node => node.textContent),
+        row_count: table.querySelectorAll('tbody tr').length,
+        first_cells: [...(table.querySelector('tbody tr')?.cells ?? [])].map(cell => cell.textContent),
+      })),
+    })),
+  };
+}
+
+export function normalizeIdStructureDOM(raw) {
+  const navigation = raw.navigation.map(text => text.trim()).filter(text => text.startsWith('Build ('));
+  return {
+    ready_state: raw.ready_state,
     navigation_count: navigation.length,
     navigation_labels: navigation.slice(0, 10),
-    build_summary_count: boxes.length,
-    build_summaries: boxes.map(box => {
-      const heads = [...box.querySelectorAll('.box-head')].map(node => node.textContent.trim());
+    build_summary_count: raw.boxes.length,
+    build_summaries: raw.boxes.map(box => {
+      const heads = box.heads.map(text => text.trim());
       const result = { box_heads: heads };
       if (heads.includes('Summary')) {
-        const tables = [...box.querySelectorAll('table')];
+        const tables = box.tables;
         result.table_count = tables.length;
         result.tables = tables.map(table => {
-          const columns = [...table.querySelectorAll('thead th')].map(node => node.textContent.trim());
+          const columns = table.columns.map(text => text.trim());
           const indices = columns.flatMap((text, index) => text === 'Id' ? [index] : []);
-          const rows = [...table.querySelectorAll('tbody tr')];
-          return { thead_th: columns, tbody_rows: rows.length,
+          return { thead_th: columns, tbody_rows: table.row_count,
             id_column_index: indices.length === 1 ? indices[0] : null,
-            first_row_id: indices.length === 1 ? rows[0]?.cells[indices[0]]?.textContent.trim() ?? null : null };
+            first_row_id: indices.length === 1 ? table.first_cells[indices[0]]?.trim() ?? null : null };
         });
       }
       return result;
@@ -146,7 +159,7 @@ async function readWithDiagnostics(input, send, page, navigation, guard, saveSam
     const url = new URL(page.url());
     const sample = { sample: index + 1, relative_ms: elapsed(),
       main_frame: { protocol: url.protocol, host: url.host, ...redactAddress(url.pathname, url.search.slice(1)) },
-      ...await page.evaluate(idStructureDOM) };
+      ...normalizeIdStructureDOM(await page.evaluate(idStructureDOM)) };
     guard();
     saveSample(sample);
     samples.push(sample);
@@ -180,20 +193,23 @@ function requireReadSource(path, sources) {
 
 async function childIdsFromVerifiedSource(source, page) {
   requireVerifiedOverview(source);
-  return page.evaluate(html => {
+  const rows = await page.evaluate(html => {
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    const ids = [];
-    for (const heading of doc.querySelectorAll('h3')) {
-      if (heading.textContent.replace(/^\s*◆\s*/, '').trim() !== 'Child Build') continue;
+    return [...doc.querySelectorAll('h3')].map(heading => {
       const table = heading.nextElementSibling;
-      if (table?.tagName !== 'TABLE') continue;
-      for (const link of table.querySelectorAll('a[href]')) {
-        const match = /^https:\/\/quickbuild\.tizen\.org\/build\/(\d+)$/.exec(link.getAttribute('href'));
-        if (match && !ids.includes(match[1])) ids.push(match[1]);
-      }
-    }
-    return ids;
+      return { heading: heading.textContent, links: table?.tagName === 'TABLE'
+        ? [...table.querySelectorAll('a[href]')].map(link => link.getAttribute('href')) : [] };
+    });
   }, source.html_redacted);
+  const ids = [];
+  for (const row of rows) {
+    if (row.heading.replace(/^\s*◆\s*/, '').trim() !== 'Child Build') continue;
+    for (const link of row.links) {
+      const match = /^https:\/\/quickbuild\.tizen\.org\/build\/(\d+)$/.exec(link);
+      if (match && !ids.includes(match[1])) ids.push(match[1]);
+    }
+  }
+  return ids;
 }
 
 async function collectRead(input) {
@@ -220,7 +236,7 @@ async function collectRead(input) {
     return;
   }
   if (/^\/build\/\d+\/overview$/.test(input.path)) {
-    const facts = await runtime.page.evaluate(configurationDOM, response.html_redacted);
+    const facts = normalizeConfigurationDOM(await runtime.page.evaluate(configurationDOM, response.html_redacted));
     const childIds = await childIdsFromVerifiedSource({ ...record, html_redacted: response.html_redacted }, runtime.page);
     const source = { ...record, facts, child_build_ids: childIds };
     parentPages.set(input.path, source);
@@ -228,7 +244,7 @@ async function collectRead(input) {
     record.child_build_ids = childIds;
   }
   if (/^\/overview\/\d+$/.test(input.path)) {
-    const facts = await runtime.page.evaluate(configurationDOM, response.html_redacted);
+    const facts = normalizeConfigurationDOM(await runtime.page.evaluate(configurationDOM, response.html_redacted));
     report.configuration_page = { ...record, facts, ...configurationPageChecks(facts) };
     if (!report.configuration || input.path !== `/overview/${report.configuration.overview_id}`
       || !report.configuration_page.passed) throw new AgentError('CONFIGURATION_SOURCE_MISMATCH');
@@ -494,7 +510,7 @@ async function idSelfTest(pw, chrome, interpreter) {
     pass('fail-closed-during-diagnostic-wait');
     await browserRuntime.page.setContent('<a class="nav-link">Build (id:1193469)</a>'.repeat(11)
       + summary.replace('<th>Status</th>', '<th>Id</th>'));
-    const capped = await browserRuntime.page.evaluate(idStructureDOM);
+    const capped = normalizeIdStructureDOM(await browserRuntime.page.evaluate(idStructureDOM));
     assert.equal(capped.navigation_count, 11);
     assert.equal(capped.navigation_labels.length, 10);
     assert.equal(capped.build_summaries[0].tables[0].id_column_index, null);
@@ -505,6 +521,20 @@ async function idSelfTest(pw, chrome, interpreter) {
     const parent = { id_verified: true, path: parentOverview, html_redacted: childPage };
     assert.deepEqual(await childIdsFromVerifiedSource(parent, page), ['1193469']);
     pass('verified-child-id-source');
+    await browserRuntime.page.setContent(header + summary);
+    const nativeSample = normalizeIdStructureDOM(await browserRuntime.page.evaluate(idStructureDOM));
+    await browserRuntime.page.evaluate(() => {
+      globalThis.savedTrim = String.prototype.trim;
+      String.prototype.trim = function () { return this.replace(/^\s+|\s+$/, ''); };
+      for (const node of document.querySelectorAll('.nav-link,.box-head,th,td')) {
+        node.textContent = ` \n${node.textContent}\t `;
+      }
+    });
+    assert.deepEqual(normalizeIdStructureDOM(await browserRuntime.page.evaluate(idStructureDOM)), nativeSample);
+    assert.deepEqual(await childIdsFromVerifiedSource({ ...parent,
+      html_redacted: childPage.replace('Child Build', ' \nChild Build\t ') }, page), ['1193469']);
+    await browserRuntime.page.evaluate(() => { String.prototype.trim = globalThis.savedTrim; });
+    pass('broken-page-trim-id-structure-and-child-source-node-only');
     for (const invalidPath of ['/build/1193467', '/build/1193467/variables', '/build/1193467/step_status']) {
       await assert.rejects(childIdsFromVerifiedSource({ ...parent, path: invalidPath }, page),
         { code: 'CONFIGURATION_SOURCE_MISMATCH' });
@@ -599,10 +629,27 @@ async function call(input, allowIdMismatch = false) {
   report.commands.push({ command: input.command, ...(input.path ? { path: input.path } : {}) });
   const result = await agent.command(input);
   check();
+  if (['read', 'open_form'].includes(input.command)
+    && (result.ok || result.error === 'QB_READ_ID_MISMATCH' || result.error === 'QB_FORM_CHANGED')) {
+    await rememberIntrinsics(input.command, input.path);
+  }
   if (!result.ok && !(allowIdMismatch && input.command === 'read' && result.error === 'QB_READ_ID_MISMATCH')) {
     throw new AgentError(result.error);
   }
   return result;
+}
+
+async function rememberIntrinsics(command, requestedPath = null) {
+  check();
+  const before = runtime.page.url();
+  const native = await runtime.page.evaluate(intrinsicsDOM);
+  check();
+  if (runtime.page.url() !== before) throw new AgentError('QB_READ_REDIRECTED');
+  const url = new URL(before);
+  const record = { command, requested_path: requestedPath, relative_ms: elapsed(),
+    main_frame: { protocol: url.protocol, host: url.host, ...redactAddress(url.pathname, url.search.slice(1)) }, native };
+  checkedReport(JSON.stringify(record));
+  (report.intrinsics ??= []).push(record);
 }
 async function formRecord(label) {
   check();
@@ -650,6 +697,11 @@ if (playwright === '--id-self-test') { await idSelfTest(chromium, directory, pyt
 if (playwright === '--form-self-test') {
   const { formSelfTest } = await import('./p5q_c2b_form_diagnostics_test.mjs');
   await formSelfTest(chromium, directory, python, redactAddress);
+  process.exit(0);
+}
+if (playwright === '--intrinsics-self-test') {
+  const { intrinsicsSelfTest } = await import('./p5q_c2b_intrinsics.mjs');
+  await intrinsicsSelfTest(chromium, directory);
   process.exit(0);
 }
 
@@ -766,6 +818,7 @@ try {
       password_inputs: await runtime.page.locator('input[type=password]').count(),
       sign_out_links: await runtime.page.getByRole('link', { name: 'Sign Out', exact: true }).count() };
     check();
+    await rememberIntrinsics('login');
     if (mode === 'diagnostic') diagnosticDone('LOGIN_THREE_CONDITIONS');
     else emit({ login: report.login });
     }

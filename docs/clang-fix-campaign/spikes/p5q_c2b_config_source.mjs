@@ -10,24 +10,33 @@ export function configurationDOM(html) {
     const labels = [...root.querySelectorAll(':scope > span')].map(span => span.firstElementChild);
     const last = labels.at(-1);
     return {
-      segments: labels.map(label => label?.textContent.trim() ?? ''),
+      segments: labels.map(label => label?.textContent ?? ''),
       current: Boolean(last && last.tagName !== 'A' && !last.querySelector('a')),
     };
   });
-  const copyPaths = [];
-  for (const script of doc.querySelectorAll('script')) {
-    for (const match of script.textContent.matchAll(/\bonCopyClipboardLinkDomReady\(\s*(['"])([^'"\\]+)\1\s*,\s*(['"])([^'"\\]+)\3\s*\)/g)) {
-      const anchors = [...doc.querySelectorAll('#breadcrumb a[id]')].filter(a => a.id === match[2]);
-      if (anchors.length === 1) copyPaths.push({ element_id: match[2], path: match[4] });
-    }
-  }
   return {
     overview_links: hrefs('li.tab-ConfigurationOverview a.nav-link'),
     pipeline_links: hrefs('li.tab-PipelinePage a.nav-link'),
     children_links: hrefs('li.tab-ChildrenPage a.nav-link'),
     breadcrumbs,
-    copy_paths: copyPaths,
-    build_names: [...doc.querySelectorAll('.build-header .text-2xl')].map(node => node.textContent.trim()),
+    scripts: [...doc.querySelectorAll('script')].map(node => node.textContent),
+    copy_anchor_ids: [...doc.querySelectorAll('#breadcrumb a[id]')].map(node => node.id),
+    build_names: [...doc.querySelectorAll('.build-header .text-2xl')].map(node => node.textContent),
+  };
+}
+
+// Node-only; checks also accept already normalized evidence records.
+export function normalizeConfigurationDOM(raw) {
+  const { scripts, copy_anchor_ids, ...facts } = raw;
+  const copyPaths = scripts === undefined ? facts.copy_paths : [];
+  for (const script of scripts ?? []) {
+    for (const match of script.matchAll(/\bonCopyClipboardLinkDomReady\(\s*(['"])([^'"\\]+)\1\s*,\s*(['"])([^'"\\]+)\3\s*\)/g)) {
+      if (copy_anchor_ids.filter(id => id === match[2]).length === 1) copyPaths.push({ element_id: match[2], path: match[4] });
+    }
+  }
+  return { ...facts, copy_paths: copyPaths,
+    breadcrumbs: facts.breadcrumbs.map(row => ({ ...row, segments: row.segments.map(text => text.trim()) })),
+    build_names: facts.build_names.map(text => text.trim()),
   };
 }
 
@@ -41,7 +50,8 @@ function pathChecks(facts) {
   };
 }
 
-export function parentConfigurationChecks(facts, sourcePath) {
+export function parentConfigurationChecks(input, sourcePath) {
+  const facts = normalizeConfigurationDOM(input);
   const linkId = (links, kind) => {
     if (links.length !== 1 || typeof links[0] !== 'string' || !links[0]
       || typeof sourcePath !== 'string' || !sourcePath.startsWith('/')) return null;
@@ -65,8 +75,8 @@ export function parentConfigurationChecks(facts, sourcePath) {
   return { checks, passed: Object.values(checks).every(Boolean), overview_id: id };
 }
 
-export function configurationPageChecks(facts) {
-  const checks = pathChecks(facts);
+export function configurationPageChecks(input) {
+  const checks = pathChecks(normalizeConfigurationDOM(input));
   return { checks, passed: Object.values(checks).every(Boolean) };
 }
 

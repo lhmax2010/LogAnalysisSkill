@@ -6,6 +6,18 @@ and a form_unverified diagnostic archive. No BUILD_TYPE change or form submissio
 Historical observations below are kept, not substituted for missing results.
 This document records observations, not permission to start C3.
 
+## C2B-09 Preparation (No New Live Session)
+
+Production fix `4a4a727` moves form/build/refresh text normalization to Node and
+uses a local two-ended global whitespace regex in DOM redaction. Broken-trim
+fixtures pass (DOM50/50, unit120/120, safety4/4). The spikes follow-up applies the
+same normalization to diagnostics/configuration sources and adds nine native
+boolean flags. See `c2b-09-production/` and `c2b-09-spikes/` for offline evidence.
+Live-11 still awaits a new chat start and ping/pong. New page native flags,
+configuration verification and Full -> Partial -> Full remain NOT_COLLECTED.
+The latest actual session remains live-10 below; its historical wording and
+observations describe that run, not the corrected implementation.
+
 ## C2B-08 live-10 (Latest Session)
 
 Baseline284c5c0, new chat start, ping/pong before browser creation. References in

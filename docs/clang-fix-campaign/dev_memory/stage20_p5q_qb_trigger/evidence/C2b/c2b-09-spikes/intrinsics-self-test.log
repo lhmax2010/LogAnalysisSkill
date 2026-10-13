@@ -1,0 +1,13 @@
+{"test":"nine-native-boolean-flags-no-source","result":"PASS"}
+{"test":"wrapped-intrinsic-false:String.prototype.trim","result":"PASS"}
+{"test":"wrapped-intrinsic-false:String.prototype.replace","result":"PASS"}
+{"test":"wrapped-intrinsic-false:String.prototype.split","result":"PASS"}
+{"test":"wrapped-intrinsic-false:String.prototype.includes","result":"PASS"}
+{"test":"wrapped-intrinsic-false:Array.prototype.map","result":"PASS"}
+{"test":"wrapped-intrinsic-false:Array.prototype.filter","result":"PASS"}
+{"test":"wrapped-intrinsic-false:Array.prototype.includes","result":"PASS"}
+{"test":"wrapped-intrinsic-false:JSON.stringify","result":"PASS"}
+{"test":"wrapped-intrinsic-false:RegExp.prototype.exec","result":"PASS"}
+{"test":"broken-trim-config-check:01.response.html","result":"PASS"}
+{"test":"broken-trim-config-check:06.response.html","result":"PASS"}
+{"self_tests":12,"passed":12,"network_requests":0,"released":false}
