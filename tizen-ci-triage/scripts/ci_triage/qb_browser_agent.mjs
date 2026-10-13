@@ -462,13 +462,13 @@ export class Agent {
       .filter((value) => new URL(value).origin === ORIGIN));
   }
   async buildId(path) {
-    return this.page.evaluate((homepage) => {
+    return this.page.evaluate((overview) => {
       const labels = [...document.querySelectorAll('.nav-link')]
         .map((label) => label.textContent.trim().match(/^Build \((?:id|Id|ID):(\d+)\)$/))
         .filter(Boolean);
       if (labels.length !== 1) return null;
       const id = labels[0][1];
-      if (!homepage) return id;
+      if (!overview) return id;
       const summaries = [...document.querySelectorAll('.build-summary')]
         .filter((box) => box.querySelector('.box-head')?.textContent.trim() === 'Summary');
       if (summaries.length !== 1) return null;
@@ -479,7 +479,7 @@ export class Agent {
       if (indices.length !== 1) return null;
       const cells = tables[0].tBodies[0]?.rows[0]?.cells;
       return cells?.[indices[0]]?.textContent.trim() === id ? id : null;
-    }, /^\/build\/\d+$/.test(path));
+    }, /^\/build\/\d+\/overview$/.test(path));
   }
   async read(path) {
     if (typeof path !== 'string' || !this.policy.readonly(path)) throw new AgentError('AGENT_PHASE');
@@ -504,12 +504,16 @@ export class Agent {
     const expected = `QuickBuild - ${project.configuration_path}`;
     const title = await this.page.title();
     if (title !== expected && !title.startsWith(`${expected} - `)) throw new AgentError('QB_FORM_CHANGED');
-    const run = this.page.locator('[title="Run the configuration"]');
-    if (await run.count() !== 1) throw new AgentError('QB_FORM_CHANGED');
-    const href = await run.getAttribute('href');
-    if (!href || !href.includes('ILinkListener-run')) throw new AgentError('QB_FORM_CHANGED');
-    const url = new URL(href, this.page.url());
-    if (url.origin !== ORIGIN) throw new AgentError('QB_FORM_CHANGED');
+    const run = this.page.locator('button[title="Run the configuration"]');
+    if (await run.count() !== 1 || await this.page.locator('[title="Run the configuration"]').count() !== 1) {
+      throw new AgentError('QB_FORM_CHANGED');
+    }
+    const onclick = await run.getAttribute('onclick');
+    const match = typeof onclick === 'string' && /^var win = this\.ownerDocument\.defaultView \|\| this\.ownerDocument\.parentWindow; if \(win == window\) \{ window\.location\.href='((?:\.\.\/)*wicket\/page\?\d+-\d+\.ILinkListener-run)'; \} ;return false$/.exec(onclick);
+    if (!match || match[0] !== onclick) throw new AgentError('QB_FORM_CHANGED');
+    const url = new URL(match[1], this.page.url());
+    if (url.origin !== ORIGIN || url.pathname !== '/wicket/page'
+      || !/^\d+-\d+\.ILinkListener-run$/.test(url.search.slice(1))) throw new AgentError('QB_FORM_CHANGED');
     this.policy.runUrl = url.href;
     await run.click({ timeout: 30000 });
     await this.page.getByText('Specify Build Options', { exact: true }).waitFor({ timeout: 30000 });

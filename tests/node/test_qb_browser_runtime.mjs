@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { Agent, createRuntime, redactDOM, ORIGIN } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, createRuntime, redactDOM, ORIGIN, FIELDS } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
 const [playwright, chromium] = process.argv.slice(2);
 const archive = new URL('../../docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-cookie-02/', import.meta.url);
@@ -26,7 +26,7 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
   };
   try {
     for (const [file, requested] of [
-      ['01.response.txt', '/build/1069540'],
+      ['01.response.txt', '/build/1069540/overview'],
       ['03.response.txt', '/build/1069540/variables'],
       ['04.response.txt', '/build/1069540/step_status'],
     ]) await t.test(`archive ${file} ${requested}`, async () => {
@@ -41,7 +41,7 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
       assert.equal((await agent.read(path)).status, 200);
     });
     await t.test('Summary Id resolved by column, not fixed position', async () => {
-      await load('01.response.txt', '/build/1069540');
+      await load('01.response.txt', '/build/1069540/overview');
       await runtime.page.evaluate(() => {
         const table = document.querySelector('.build-summary table');
         for (const row of [table.tHead.rows[0], table.tBodies[0].rows[0]]) row.append(row.cells[0]);
@@ -52,7 +52,7 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
       'duplicate-nav', 'missing-nav', 'wrong-nav', 'missing-summary', 'duplicate-summary',
       'missing-id-column', 'duplicate-id-column', 'different-summary-id', 'missing-first-row',
     ]) await t.test(`reject ${mutation}`, async () => {
-      await load('01.response.txt', '/build/1069540');
+      await load('01.response.txt', '/build/1069540/overview');
       await runtime.page.evaluate(kind => {
         const nav = document.querySelector('.tab-BuildPage .nav-link');
         const summary = document.querySelector('.build-summary');
@@ -70,8 +70,8 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
       }, mutation);
       await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
     });
-    await t.test('both homepage sources agree but differ from requested id', async () => {
-      await load('01.response.txt', '/build/1069532');
+    await t.test('both overview sources agree but differ from requested id', async () => {
+      await load('01.response.txt', '/build/1069532/overview');
       await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
     });
     for (const mutation of ['missing', 'duplicate', 'wrong']) await t.test(`subpage ${mutation} navigation`, async () => {
@@ -85,8 +85,81 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
       }, mutation);
       await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
     });
+    const live06 = new URL('../../docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-06/', import.meta.url);
+    for (const [file, id] of [['03.id-unverified.response.html', '1193469'], ['05.id-unverified.response.html', '1186372']]) {
+      await t.test(`C2B-06 remembered Variables at bare build ${id}`, async () => {
+        await runtime.page.setContent(readFileSync(new URL(file, live06), 'utf8'));
+        assert.equal(await runtime.page.locator('.build-summary').count(), 0);
+        path = `/build/${id}`;
+        assert.equal((await agent.read(path)).status, 200);
+        path = `/build/${id}/overview`;
+        await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
+      });
+    }
     assert.equal(runtime.page.url(), 'about:blank');
     console.log('C2A-04 archived pages: page.setContent only; browser request policy denies every request');
+  } finally { await runtime.close(); }
+});
+
+test('C2B-06 exact Run button grammar from live-06, with no navigation or click requests', async t => {
+  const runtime = await createRuntime(playwright, chromium, {
+    launchArgs: ['--no-proxy-server', '--host-resolver-rules=MAP * ~NOTFOUND'],
+  });
+  runtime.policy.allow = () => false;
+  const html = readFileSync(new URL('../../docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-06/07.response.html', import.meta.url), 'utf8');
+  let clicks = 0;
+  const page = {
+    goto: async url => assert.equal(url, `${ORIGIN}/overview/1917`),
+    url: () => `${ORIGIN}/overview/1917`,
+    title: () => runtime.page.title(),
+    locator: selector => {
+      const locator = runtime.page.locator(selector);
+      return { count: () => locator.count(), getAttribute: name => locator.getAttribute(name),
+        click: async () => { clicks++; } };
+    },
+    getByText: () => ({ waitFor: async () => {} }),
+  };
+  const agent = new Agent({ ...runtime, page });
+  agent.projects.set(1917, { configuration_path: 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER', project_name: 'Tizen' });
+  agent.snapshot = async () => ({ heading: true, base: `${ORIGIN}/wicket/page?50`,
+    action: `${ORIGIN}/wicket/page?50-2.IFormSubmitListener-form`,
+    rows: [{ label: 'PROJECT_NAME', viewers: ['Tizen'], controls: [] }, ...FIELDS.map(label => ({
+      label, viewers: [], controls: (['CHILD_CONFIGURATIONS', 'TARGET_IMAGE'].includes(label)
+        ? ['recorder', 'choices', 'selection'] : ['input']).map(role => ({ role,
+        callback: `wicketAjaxPost('${ORIGIN}/wicket/page?50-2.IBehaviorListener.0-form-field', 0)` })),
+    }))] });
+  agent.registerRefresh = async () => {};
+  try {
+    for (const mutation of ['none', 'anchor', 'duplicate', 'extra-statement', 'promote', 'run2', 'external', 'missing-onclick', 'trailing-newline']) {
+      await t.test(mutation, async () => {
+        clicks = 0; runtime.policy.runUrl = null;
+        await runtime.page.setContent(html);
+        await runtime.page.evaluate(kind => {
+          const button = document.querySelector('button[title="Run the configuration"]');
+          const code = button.getAttribute('onclick');
+          if (kind === 'anchor') {
+            const anchor = document.createElement('a'); anchor.title = button.title;
+            anchor.href = '../wicket/page?9-1.ILinkListener-run'; button.replaceWith(anchor);
+          }
+          if (kind === 'duplicate') button.after(button.cloneNode(true));
+          if (kind === 'extra-statement') button.setAttribute('onclick', code + ';alert(1)');
+          if (kind === 'promote') button.setAttribute('onclick', code.replace('Listener-run', 'Listener-promote'));
+          if (kind === 'run2') button.setAttribute('onclick', code.replace('Listener-run', 'Listener-run2'));
+          if (kind === 'external') button.setAttribute('onclick', code.replace('../wicket/', 'https://outside.invalid/wicket/'));
+          if (kind === 'missing-onclick') button.removeAttribute('onclick');
+          if (kind === 'trailing-newline') button.setAttribute('onclick', code + '\n');
+        }, mutation);
+        if (mutation === 'none') {
+          assert.deepEqual(await agent.openForm(1917), { released: false });
+          assert.equal(runtime.policy.runUrl, `${ORIGIN}/wicket/page?9-1.ILinkListener-run`);
+          assert.equal(clicks, 1);
+        } else {
+          await assert.rejects(agent.openForm(1917), { code: 'QB_FORM_CHANGED' });
+          assert.equal(clicks, 0); assert.equal(runtime.policy.runUrl, null);
+        }
+      });
+    }
+    assert.equal(runtime.page.url(), 'about:blank');
   } finally { await runtime.close(); }
 });
 

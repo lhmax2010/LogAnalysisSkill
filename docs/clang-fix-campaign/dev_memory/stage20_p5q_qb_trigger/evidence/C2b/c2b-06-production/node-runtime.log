@@ -1,0 +1,54 @@
+▶ C2A-04 build identity from archived HTML, with all network denied
+  ✔ archive 01.response.txt /build/1069540/overview (53.110667ms)
+  ✔ archive 03.response.txt /build/1069540/variables (19.790064ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (34.606713ms)
+  ✔ navigation spelling Id (22.153436ms)
+  ✔ navigation spelling ID (21.603827ms)
+  ✔ Summary Id resolved by column, not fixed position (19.094462ms)
+  ✔ reject duplicate-nav (9.953179ms)
+  ✔ reject missing-nav (9.556533ms)
+  ✔ reject wrong-nav (10.730394ms)
+  ✔ reject missing-summary (11.408926ms)
+  ✔ reject duplicate-summary (10.003289ms)
+  ✔ reject missing-id-column (13.327745ms)
+  ✔ reject duplicate-id-column (15.506425ms)
+  ✔ reject different-summary-id (11.427505ms)
+  ✔ reject missing-first-row (10.269322ms)
+  ✔ both overview sources agree but differ from requested id (9.072058ms)
+  ✔ subpage missing navigation (11.592092ms)
+  ✔ subpage duplicate navigation (12.166905ms)
+  ✔ subpage wrong navigation (8.290323ms)
+  ✔ C2B-06 remembered Variables at bare build 1193469 (36.584976ms)
+  ✔ C2B-06 remembered Variables at bare build 1186372 (53.781604ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 build identity from archived HTML, with all network denied (1016.482505ms)
+▶ C2B-06 exact Run button grammar from live-06, with no navigation or click requests
+  ✔ none (69.337858ms)
+  ✔ anchor (14.419818ms)
+  ✔ duplicate (15.226001ms)
+  ✔ extra-statement (19.452815ms)
+  ✔ promote (24.430592ms)
+  ✔ run2 (22.708661ms)
+  ✔ external (22.315966ms)
+  ✔ missing-onclick (25.243725ms)
+  ✔ trailing-newline (21.159266ms)
+✔ C2B-06 exact Run button grammar from live-06, with no navigation or click requests (610.311338ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (389.769668ms)
+▶ C2B-04 shared identity boundary and credential vectors
+  ✔ short-display-name (17.910972ms)
+  ✔ triggered-by-row (7.429731ms)
+  ✔ triggered-by-column (8.071541ms)
+  ✔ multiword (6.061818ms)
+  ✔ literal-regex-and-ascii-boundaries (10.945846ms)
+  ✔ secrets-remain-substrings (6.660629ms)
+✔ C2B-04 shared identity boundary and credential vectors (403.334201ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/favicon.ico","/build/301"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (808.318171ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3231.007292

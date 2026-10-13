@@ -1,7 +1,7 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE06_STOPPED;QB_FORM_CHANGED**。
-当前轮基线93421b1;P5Q-C2B-05裁定及实施见§21。§18至§20保留历史停点。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2B_06_PRODUCTION_FIX_VERIFIED;SPIKE_FOLLOWUP_PENDING**。
+当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 本轮仅补取证通道,未放宽生产判据。live-05的启动错误见§21.5;
 live-06已完成ping/pong与一次人工登录,七页归档(两页ID_UNVERIFIED),配置1917
@@ -1883,3 +1883,73 @@ Ruff用树`d615f872fc6066b5d7526badffb9becb53c70de9`完整git archive导出
 live-05/run.json仍为
 `349a86d65c707cf615d14123a18b928e0d9b380506950355c4cbab8215259027`。
 验收通过不消除真机QB_FORM_CHANGED停点;本轮只归档并停止等设计方核对,不进入C3。
+
+## 22. 实施裁定 P5Q-C2B-06
+
+### 22.1 裁定原文
+
+原因一:QuickBuild 按会话记住上次选中的构建子标签。live-06 里 /build/1193469 与 /build/1186372 都在读完变量页之后才读,打开时显示的是 Variables 子标签(归档页里当前选中的子标签可证),所以没有 Summary 区块;不是页面结构不同。
+原因二:配置页的运行控件是 button,onclick 为 "var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?N-1.ILinkListener-run'; } ;return false",没有 href(live-06/07.response.html:722)。
+另记三项与冻结稿假设不符的事实,留待表单取证完成后一并按 R1 修订设计,本轮不实现:
+(1) Full 构建的子构建 BUILD_PKG_LIST 是全量包列表(1193469 为 245 行,含父构建 BUILD_PKG_LIST_MODIFY 的 4 行),不是只有目标行;
+(2) 父构建回显 BUILD_REFERENCE=Live、SNAPSHOT_NUM=do not need select,子构建回显 BUILD_REFERENCE=Ref. Snapshot 且有 SNAPSHOT_NUM_URL;
+(3) 1186372 属于 Tizen-Unified-Toolchain/RBS/TRIGGER,FAIL_FAST=no,CHILD_CONFIGURATIONS 用逗号分隔。按 FatTank 裁定第 9 条,它不是 Base 的合格失败样本。改用 1193469 作为 Base 失败样本(父构建 Child Build 表 Build Result=FAILED,EACH_GBS_BUILD_STATUS 存在且为空)。
+
+### 22.2 执行计划与边界
+
+FatTank已批准,设计方出具;冻结稿不改。按顺序:
+
+1. 生产read将Summary核对只用于/build/N/overview;裸/build/N只核对唯一导航标签,
+   variables/step_status不变。openForm仅允许唯一button运行控件,onclick完整匹配
+   裁定文法,解析后再次核对同源、/wicket/page和完整监听器名,不退回a[href]。
+   独立提交推送前跑pytest/mypy/完整待提交树ruff/lint-imports/check_design_doc,
+   Node单元及四组本机安全全部通过。
+2. 仅spikes跟进:主页与可信配置/子ID来源改为overview;保留ID_UNVERIFIED、
+   ping/EOF、配置五项/两项核对。补离线自测后独立提交。live-07不再读1186372。
+3. 等新的聊天“开始”再运行live-07,顺序为1193467 overview/variables,
+   1193469 overview/variables/step_status,配置登记与读取,Full→Partial→Full,close。
+   记录BUILD_REFERENCE/SNAPSHOT_NUM值与选项、回调/action/版本/重渲染/random;
+   不点Ok/Accept,不提交,release必须0,停止条件不变,不进入C3。
+
+三项R1事实仅登记,不实现字段/样本之外的行为变更。生产放行集合/pathShape不改,
+无外网取证发生于前两步;历史live目录原样保留。无关既有工作树改动不纳入提交。
+
+### 22.3 第一步生产修正与验收
+
+buildId只在精确/build/N/overview路径执行Summary表Id核对;裸地址、variables与
+step_status仍要求唯一正确导航标签。openForm要求唯一button运行控件,onclick
+按裁定完整匹配,包括拒绝末尾换行/多余语句;解析出的同源/path/query再次核对。
+没有a[href]回退,没有新增资源、落点或刷新放行。代码仅改qb_browser_agent.mjs。
+
+tests/node/test_qb_browser_runtime.mjs使用live-06/03、05已脱敏Variables归档验证
+裸地址通过而overview缺Summary拒绝;原Summary正反矩阵迁到overview路径。
+使用live-06/07已脱敏归档测试button正例与a/双button/多语句/promote/run2/
+外站/缺onclick/末尾换行反例。真实Chromium DOM,导航与点击在该夹具中替换为
+记录器,网络判定全拒绝,反例click=0/runUrl=null,正例仅注册精确地址并click=1。
+Node runtime计数29→41(含父测试与子测试);pytest入口未新增,不混计。
+live-06的Variables选中态可机械定位到03.response.html:783-784,
+历史证据不重写。
+
+日志目录`evidence/C2b/c2b-06-production/`。Node命令前缀为
+`env ELECTRON_RUN_AS_NODE=1 /snap/code/current/usr/share/code/code`;
+PW=`/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs`,
+CHROMIUM=`/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome`。
+
+| 命令(仓库根目录) | exit | 结果 / 日志 |
+|---|---|---|
+| Node tests/node/test_qb_browser_runtime.mjs PW CHROMIUM | 0 | 41/41;node-runtime.log |
+| Node --test tests/node/test_qb_browser_agent.mjs | 0 | 120/120;node-unit.log |
+| Node tests/node/p5q_c2b_safety.mjs PW CHROMIUM | 0 | 四组4/4,loopback-only;safety.log |
+| .venv/bin/python -m pytest -q | 0 | 2165 passed,1 skipped,110.27s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+
+四组从头实跑:Worker/WebSocket攻击HTTP0、握手0,本次走b:browser_fail_closed,
+shared_worker closeTarget成功,worker closeTarget异常Error,最终QB_BROWSER_UNAVAILABLE
+且browserClosed/temporaryDirectoryRemoved=true;307/308后继拒绝、合法302继续;
+逐跳forbiddenSecondHops=0/postReplay=0;凭据隔离通过。
+Ruff完整树`ed2783513624524cc7c7c1b72d916a1e4b1f8669`导出到
+`/tmp/p5q-c2b-06-production-lint-GESLrU`,之后只补文档/完整日志。
+第一步全绿后独立提交推送;第二步尚未修改,live-07尚未登录,不进入C3。
