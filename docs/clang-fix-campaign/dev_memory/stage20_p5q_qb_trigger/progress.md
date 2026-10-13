@@ -1,10 +1,12 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-12。状态:**C2a_COMPLETE;C2B_LIVE06_READY;WAITING_FOR_CHAT_START**。
-当前轮基线b7a7cc8;P5Q-C2B-05裁定及实施见§21。§18至§20保留历史停点。
+日期:2026-10-13。状态:**C2a_COMPLETE;C2B_LIVE06_STOPPED;QB_FORM_CHANGED**。
+当前轮基线93421b1;P5Q-C2B-05裁定及实施见§21。§18至§20保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 本轮仅补取证通道,未放宽生产判据。live-05的启动错误见§21.5;
-live-06前按补充要求增加ping/pong与EOF停态,见§21.7,尚未启动真机。
+live-06已完成ping/pong与一次人工登录,七页归档(两页ID_UNVERIFIED),配置1917
+五项/两项检查通过;form_evidence的open_form返回QB_FORM_CHANGED后立即停止,
+release=0,未设值/未提交,见§21.9。不得重试绕过或标C2b完成。
 live-03原样保留且仅作参考,不作为字段形态证据;C3不启动。
 C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 已读INDEX、stage15 §14及之后、stage19 §21;工作树中.gitignore和docs四个删除文件
@@ -1792,3 +1794,92 @@ sha256复核:
 
 本轮没有QuickBuild请求。两项补充完成后提交推送,live-06仍须新的聊天开始指令;
 不将离线成功当作真机取证完成,不进入C3。
+
+### 21.9 live-06实跑:通道保持、结构采样与表单停点
+
+2026-10-13收到新的聊天“开始”,基线93421b1。按§21.7命令改用新目录
+`evidence/C2b/live-06/`,exec_command指定tty=true并保持同一stdin。
+先发ping、收到pong=true后才等待人工登录,没有预发read。完整启动参数见
+`live-06/README.md`;run.json:2414记录握手两布尔值均true。
+login600秒上限未提前结束:一次人工POST返回302,落/dashboard200,
+三条件通过(not_signin=true,password_inputs=0,sign_out_links=1,query为空),
+证据run.json:2421。没有凭据进入聊天、终端输入或证据。
+
+| 顺序 / 页面 | 实测状态 | live-06证据 |
+|---|---|---|
+| 1193467主页 | 200,VERIFIED;子构建1193469 | 01.response.html;run.json:41 |
+| 1193467变量 | 200,VERIFIED | 02.response.html |
+| 1193469主页 | 200,ID_UNVERIFIED;即时/3秒后均仅一个正确Build标签、build-summary=0 | 03.id-unverified.response.html;run.json:2486 |
+| 1193469变量 | 200,VERIFIED | 04.response.html |
+| 1186372主页 | 200,ID_UNVERIFIED;两次均仅一个正确Build标签、build-summary=0 | 05.id-unverified.response.html;run.json:2526 |
+| 1186372变量 | 200,VERIFIED | 06.response.html |
+| 1186372子构建 | NOT_COLLECTED;按裁定跳过,不从未核对主页提取子ID | run.json:2568 |
+| 配置1917 | 200;父页五项+配置页两项均通过 | 07.response.html;run.json:2572/:2591 |
+| form_evidence | STOPPED/QB_FORM_CHANGED,operation=form_evidence,path_shape=/overview/<id> | run.json:2409 |
+
+两页诊断均在原页即时及3秒后采样,未导航/刷新/重试;原始结构对象逐字引于
+appendix-c的live-06节。相对时间分别201291/204330ms与249025/252066ms;
+readyState均complete,build_summaries均[]。ID_UNVERIFIED没有升级为核对通过,
+不作为配置或子ID来源。两次采样没有Summary,不能据此推断放宽生产核对标准。
+
+配置1917只从本次VERIFIED父页取得:Overview/Pipelines/Children三处ID相同,
+breadcrumb与copy-path均为root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER,
+TRIGGER为current,构建名前缀符合裁定;配置页title、breadcrumb/copy-path亦一致。
+没有猜ID、没有使用live-04回填。完整事实与行号见appendix-c。
+
+**新增停点:**已核对配置页07.response.html:722的Run入口是button,
+没有href,onclick中含`../wicket/page?9-1.ILinkListener-run`。
+生产openForm仍在qb_browser_agent.mjs:509读取href,:510缺失即QB_FORM_CHANGED。
+本次open_form重新GET配置页200后返回该错误,没有运行表单Document请求,
+没有report.form、没有BUILD_TYPE设值、没有action/callback/version/options样本。
+重新GET的DOM未另归档,以上按钮形态来自紧邻的已归档配置页;
+该对照支持href前提不符,不伪称有失败分支堆栈或表单内容。
+候选修复须由设计方核对后授权,本轮不改生产、不改规则、不尝试改用onclick点击。
+
+停止后进程exit1,browser_closed/profile_removed=true,runtime_failure=null,
+WORKER_BLOCKED/NEW_PAGE=0,form_action_releases=0,released=false。
+未点Ok/Accept、未提交、未新建构建、不进入C3。
+请求阶段GET112(允许71/拒绝41),POST1(仅人工登录);响应200共59、302共1。
+这是浏览器拦截观测,不是服务器实收计数。拒绝:ckeditor Script10,
+bootstrap-icons两个Font各9,Wicket XHR13;trace与包装拒绝各41,帧归属差额0。
+不以静态资源被拒直接推断它导致本次表单停点,不新增资源登记。
+
+附录C本次补得子变量TRIGGER_ID=1193467、FAIL_FAST=yes、
+EACH_GBS_BUILD_STATUS存在但空、BUILD_PKG_LIST为245行git_path@commit;
+子配置路径末段RBS/build。1193467实际Status=Failed,Child Build结果FAILED,
+不能充当Successful样本。失败样本子构建、子主页Status、逐架构结果与表单联动
+仍NOT_COLLECTED;父摘要不补子状态。详见带行号的appendix-c。
+
+run.json sha256=`e13a202e2e245052160d2da140a36b5d1e10ecdf387c3d2901ed7bd5cbd53213`。
+代理脱敏及含内存身份的写前/写后检查通过;离线PageRedactor.check_bytes
+对七页与run.json原始字节复检通过。live-01至live-05原样保留,冻结稿hash不变。
+
+### 21.10 live-06归档验收
+
+本轮只有文档与新证据,生产/取证脚本/tests/冻结稿/design.md均零diff。
+日志目录`evidence/C2b/live-06-validation/`:
+
+| 命令 | exit | 结果 / 日志 |
+|---|---|---|
+| .venv/bin/python -m pytest -q | 0 | 2165 passed,1 skipped,202.54s;pytest.log |
+| .venv/bin/mypy | 0 | 113 source files;mypy.log |
+| .venv/bin/ruff check .(完整待提交树) | 0 | All checks passed!;ruff.log |
+| .venv/bin/lint-imports | 0 | 6 kept,0 broken;lint-imports.log |
+| .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md | 0 | 0 problem;design-check.log |
+| Node spikes/p5q_c2b_evidence.mjs --self-test .venv/bin/python | 0 | 22/22,network_requests=0;self-test.log |
+| Node spikes/p5q_c2b_evidence.mjs --id-self-test PW CHROMIUM .venv/bin/python | 0 | 10/10,network_requests=0;id-self-test.log |
+| PageRedactor.check_bytes(live-06七页与run.json) | 0 | 8文件PASS;redaction-check.log |
+| 归档一致性核对 | 0 | 七页hash/状态、两组引用原文、间隔、配置、清理、零release、历史目录零diff;evidence-consistency.log |
+
+Node/PW/CHROMIUM完整路径与§21.4和live-06/README一致。
+全量包含既有Node单元、四组本机安全、登录重试与配置来源测试;
+没有新增pytest用例,总数与93421b1基线一致。离线自测数字不混计全量。
+Ruff用树`d615f872fc6066b5d7526badffb9becb53c70de9`完整git archive导出
+`/tmp/p5q-live-06-validation-lint-GB4tB8`,排除既有未暂存的无关工作;
+之后只补本节与验收日志。HTML保留脱敏归档原字节,不为消除空白提示重排。
+
+冻结稿sha256仍为
+`0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950`;
+live-05/run.json仍为
+`349a86d65c707cf615d14123a18b928e0d9b380506950355c4cbab8215259027`。
+验收通过不消除真机QB_FORM_CHANGED停点;本轮只归档并停止等设计方核对,不进入C3。

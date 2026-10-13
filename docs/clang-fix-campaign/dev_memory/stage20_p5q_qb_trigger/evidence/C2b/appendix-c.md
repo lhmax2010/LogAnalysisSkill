@@ -1,10 +1,209 @@
 # C2b Appendix C Evidence Status
 
-Status: **PARTIAL / LIVE05_INCOMPLETE_EXECUTION_STDIN_CLOSED**. Latest session:
-live-05 (login only); latest build-page evidence remains live-04.
+Status: **PARTIAL / LIVE06_STOPPED_QB_FORM_CHANGED**. Latest session: live-06,
+2026-10-13, seven archived pages, two explicitly ID_UNVERIFIED.
 This document records observations, not permission to start C3.
 
-## C2B-05 live-05 (Latest Session)
+## C2B-05 live-06 (Latest Session)
+
+Baseline93421b1, fresh chat start, PTY maintained throughout. Ping/pong passed
+before browser startup (live-06/run.json:2414). One human login POST returned302;
+the final /dashboard200 satisfied all three conditions: not_signin=true,
+password_inputs=0, sign_out_links=1, empty query (run.json:2421).
+No input EOF occurred. The run stopped at production open_form with
+QB_FORM_CHANGED (run.json:2409), exit1. Browser/profile cleanup succeeded,
+runtime_failure=null; form_action_releases=0, released=false (run.json:2634/:2843).
+
+### Pages And Field Evidence
+
+All references in this section are under `live-06/` unless stated otherwise.
+
+| Requested item | Actual result | Source |
+|---|---|---|
+| 1193467 main / variables | Both HTTP200, VERIFIED | 01.response.html; 02.response.html; run.json:41 |
+| 1193469 main | HTTP200, ID_UNVERIFIED, no Summary in either sample; not a source for ids | 03.id-unverified.response.html; run.json:2486 |
+| 1193469 variables | HTTP200, VERIFIED; single Build (id:1193469) | 04.response.html:691; run.json pages |
+| 1186372 main | HTTP200, ID_UNVERIFIED, no Summary in either sample | 05.id-unverified.response.html; run.json:2526 |
+| 1186372 variables | HTTP200, VERIFIED | 06.response.html; run.json pages |
+| 1186372 child | NOT_COLLECTED; skipped because main id was not verified, no child id extracted | run.json:2568 |
+| Configuration1917 | HTTP200; five parent checks and two configuration checks passed | run.json:2572/:2591; 07.response.html |
+| Child configuration suffix | RBS/build; this comes from VERIFIED variables, not unverified main | 04.response.html:4 |
+| Parent Child Build structure | Repository-Architecture / QB Build URL / Build Result / Build Profiling | 01.response.html:882 |
+| Parent Child Build row | One colon-joined string standard-armv7l:aarch64:x86_64, child1193469, FAILED | 01.response.html:890/:891/:892 |
+| Parent Status | Failed, not a successful sample | 01.response.html:925 |
+| Child1193469 Status / separate architecture status | NOT_COLLECTED; no Summary in unverified main, do not substitute parent result | run.json:2486 |
+| Failure sample child Status / Build Result | NOT_COLLECTED; no extraction from unverified1186372 | run.json:2568 |
+| Steps | NOT_COLLECTED; not in the latest C2B-05 read sequence | progress21.3 |
+| Form Full -> Partial -> Full | NOT_COLLECTED; production open_form failed before any field operation | run.json:4/:2409 |
+| Callback, form action, page-version change, options refreshed | NOT_COLLECTED; no report.form or form page archive | run.json |
+
+The 1186372 unverified main title is
+`QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Unified-Toolchain/RBS/TRIGGER - TIZEN_Tizen_Tizen-Unified-Toolchain_RBS_TRIGGER_20260930.020514`
+(05.id-unverified.response.html:4), which is a recorded title only, not a
+successful main-page verification or authorization to use its Child Build ids.
+There is still no independently verified successful child sample in this run.
+
+### Parent And Child Variables
+
+Values are existing-build observations, not defaults for a future submission.
+An empty display label below means that cell is actually empty. Presence/absence
+refers to variable rows in the named page, not text substrings in other values.
+
+| Build / requested field | Variable name | Display label | Actual value / shape | Source |
+|---|---|---|---|---|
+| 1193467 Build Package List | BUILD_PKG_LIST_MODIFY | Build Package List | Four git_path@commit rows: ncurses, pam, libtirpc, qemu-accel | 02.response.html:808 |
+| 1193467 BUILD NOTES | BUILD_NOTES | BUILD NOTES | Empty | 02.response.html:808 |
+| 1193467 BUILD_TYPE | BUILD_TYPE | Empty | Full | 02.response.html:808 |
+| 1193467 BUILD_REFERENCE | BUILD_REFERENCE | Empty | Live | 02.response.html:808 |
+| 1193467 SNAPSHOT_NUM | SNAPSHOT_NUM | Empty | do not need select | 02.response.html:808 |
+| 1193467 PROJECT_BRANCH | PROJECT_BRANCH | Empty | tizen_base | 02.response.html:808 |
+| 1193469 parent binding | TRIGGER_ID | Empty | 1193467 | 04.response.html:800 |
+| 1193469 packages | BUILD_PKG_LIST | Empty | 245 git_path@commit rows | 04.response.html:800 |
+| 1193469 fail-fast | FAIL_FAST | Immediate Stop With Error | yes | 04.response.html:800 |
+| 1193469 result rows | EACH_GBS_BUILD_STATUS | Empty | Present, empty string, not parsed as a successful result | 04.response.html:800 |
+| 1193469 arches | REPO_ARCH / ARCHITECTURE | Empty | standard-armv7l:aarch64:x86_64 / armv7l:aarch64:x86_64 | 04.response.html:800 |
+| 1193469 own trigger variable | QB_TRIGGER_ID | Empty | 1193469; distinct from TRIGGER_ID=1193467 | 04.response.html:800 |
+| 1186372 project / reference | PROJECT_NAME / PROJECT_BRANCH / BUILD_REFERENCE | Empty | Tizen-Unified-Toolchain / tizen / Snapshot Number | 06.response.html:813 |
+| Failure sample child four variables | TRIGGER_ID / BUILD_PKG_LIST / FAIL_FAST / EACH_GBS_BUILD_STATUS | NOT_COLLECTED | Child skipped; do not substitute its parent's variables | run.json:2568 |
+
+### Configuration Checks And Form Stop
+
+| Check | Actual fact | Source |
+|---|---|---|
+| One Overview tab, exact relative href | ../overview/1917 | 01.response.html:696/:698 |
+| Sibling tabs agree | ../pipeline/1917 and ../children/1917 | 01.response.html:711/:715 |
+| Breadcrumb exact, last TRIGGER current | root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER | 01.response.html:640/:672; run.json:2430 |
+| Copy-path exact | Same full path | 01.response.html:93 |
+| Build-name prefix | TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261009.072553 | 01.response.html:736 |
+| Config page breadcrumb and copy-path exact | Both match the above path | 07.response.html:93; run.json:2591 |
+| Config title | QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER | 07.response.html:4 |
+
+Only this fresh verified parent supplied register_config. No historical id
+was backfilled. Copy-path remains a possible production path-check source,
+recorded without changing production behavior.
+
+The archived configuration has a **button**, not an anchor, titled
+`Run the configuration`, with no href. Its onclick contains
+`window.location.href='../wicket/page?9-1.ILinkListener-run'`
+(07.response.html:722). Production `openForm` gets href at
+`tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs:509` and raises
+QB_FORM_CHANGED if absent at :510. In this run it re-navigated to the overview,
+received200, then returned QB_FORM_CHANGED; no form Document navigation is
+recorded. The reread DOM was not archived separately, so this is a source/nearby
+page comparison, not an invented failure stack. No attempt to click via onclick,
+repair production, retry, or register new resources was made. Resolving this
+production premise requires designer review; all form observations stay
+NOT_COLLECTED. Release count is **0**, not_released.
+
+### Two-Sample Structure Facts (Verbatim Objects)
+
+Source: run.json:2486 and :2526. The 3039ms/3041ms gaps meet the requested
+three-second delay; neither diagnostic refreshed or navigated. Empty arrays
+are actual samples, not missing evidence. No non-Id cell text was collected.
+
+```json
+{
+  "path": "/build/1193469",
+  "samples": [
+    {
+      "sample": 1,
+      "relative_ms": 201291,
+      "main_frame": {
+        "protocol": "https:",
+        "host": "quickbuild.tizen.org",
+        "path": "/build/1193469",
+        "query": ""
+      },
+      "ready_state": "complete",
+      "navigation_count": 1,
+      "navigation_labels": [
+        "Build (id:1193469)"
+      ],
+      "build_summary_count": 0,
+      "build_summaries": []
+    },
+    {
+      "sample": 2,
+      "relative_ms": 204330,
+      "main_frame": {
+        "protocol": "https:",
+        "host": "quickbuild.tizen.org",
+        "path": "/build/1193469",
+        "query": ""
+      },
+      "ready_state": "complete",
+      "navigation_count": 1,
+      "navigation_labels": [
+        "Build (id:1193469)"
+      ],
+      "build_summary_count": 0,
+      "build_summaries": []
+    }
+  ],
+  "file": "03.id-unverified.response.html"
+}
+```
+
+```json
+{
+  "path": "/build/1186372",
+  "samples": [
+    {
+      "sample": 1,
+      "relative_ms": 249025,
+      "main_frame": {
+        "protocol": "https:",
+        "host": "quickbuild.tizen.org",
+        "path": "/build/1186372",
+        "query": ""
+      },
+      "ready_state": "complete",
+      "navigation_count": 1,
+      "navigation_labels": [
+        "Build (id:1186372)"
+      ],
+      "build_summary_count": 0,
+      "build_summaries": []
+    },
+    {
+      "sample": 2,
+      "relative_ms": 252066,
+      "main_frame": {
+        "protocol": "https:",
+        "host": "quickbuild.tizen.org",
+        "path": "/build/1186372",
+        "query": ""
+      },
+      "ready_state": "complete",
+      "navigation_count": 1,
+      "navigation_labels": [
+        "Build (id:1186372)"
+      ],
+      "build_summary_count": 0,
+      "build_summaries": []
+    }
+  ],
+  "file": "05.id-unverified.response.html"
+}
+```
+
+### Denials And Boundaries
+
+Request-stage observations: GET112 (71 allowed,41 denied), POST1 (human login
+only). Response observations: 200x59,302x1. These are interception records, not
+server-side counts. Denials: ckeditor Script10; bootstrap-icons .woff/.woff2
+Font9 each; Wicket XHR13. Trace and wrapper each report41, ownership difference0.
+WORKER_BLOCKED/NEW_PAGE=0. Existing random-query refresh rejection remains
+unchanged. No resource was newly registered and no causal link between a denied
+resource and the form error is asserted. No Ok/Accept/build submission occurred.
+
+Raw report SHA256:
+`e13a202e2e245052160d2da140a36b5d1e10ecdf387c3d2901ed7bd5cbd53213`.
+All HTML was redacted before writing and checked after writing with in-memory
+identities. Archived-byte recheck: `live-06-validation/redaction-check.log`.
+Frozen design unchanged; live-01 through live-05 unchanged. No C3.
+
+## C2B-05 live-05 (Historical Login-Only Session)
 
 A fresh chat start preceded login. One human POST /signin returned302,
 /dashboard returned200, and all three login conditions passed
@@ -52,7 +251,7 @@ live-01 through live-04 artifacts are unchanged. Exact refresh requests carrying
 an appended random query remain rejected; that issue is deferred to C4 design
 verification, not changed by this evidence channel.
 
-## C2B-04 live-04 (Latest Build Evidence)
+## C2B-04 live-04 (Historical Build Evidence)
 
 A fresh chat start preceded the single browser login for this session. GET
 /signin returned200, the human login POST returned302, /dashboard returned200.
