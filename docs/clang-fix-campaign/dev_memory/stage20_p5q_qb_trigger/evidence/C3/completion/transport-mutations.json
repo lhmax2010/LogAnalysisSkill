@@ -1,0 +1,42 @@
+[
+  {
+    "removed": "core.hooksPath=/dev/null",
+    "exit": 1,
+    "log": "transport-mutation-1.log"
+  },
+  {
+    "removed": "core.fsmonitor=false",
+    "exit": 1,
+    "log": "transport-mutation-2.log"
+  },
+  {
+    "removed": "core.askPass=",
+    "exit": 1,
+    "log": "transport-mutation-3.log"
+  },
+  {
+    "removed": "credential.helper=",
+    "exit": 1,
+    "log": "transport-mutation-4.log"
+  },
+  {
+    "removed": "push.followTags=false",
+    "exit": 1,
+    "log": "transport-mutation-5.log"
+  },
+  {
+    "removed": "push.recurseSubmodules=no",
+    "exit": 1,
+    "log": "transport-mutation-6.log"
+  },
+  {
+    "removed": "push.gpgSign=false",
+    "exit": 1,
+    "log": "transport-mutation-7.log"
+  },
+  {
+    "removed": "push.pushOption=",
+    "exit": 1,
+    "log": "transport-mutation-8.log"
+  }
+]

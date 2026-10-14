@@ -1,9 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_STOPPED**。
-C3本轮基线16b9148;C3-02快照应答与驱动已补,新停点P5Q-C3-03见§30.3。
-§29的C3-01已由C3-02关闭;CLI未接入,不把未验收补丁记为C3交付。
-以下“不进入C3”是先前授权的历史边界;本轮已授权C3,但按协议在接口缺口处停止。
+日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE**。
+C3本轮基线7f3c60e;实施与验收见§31。§29的C3-01由C3-02关闭,
+§30的C3-03由C3-04关闭。以下“不进入C3”与STOPPED为先前轮次的历史记录。
+本轮仅C3,不进入C4;C5/C6真机挂账仍开放。
 最新权威改为v1.5-FROZEN,冻结登记与C2c执行见§27;以下v1.2及R1待决状态均为历史记录。
 §27.3历史停止已由§28的C2C-03关闭;本轮C2c执行见§28。最近真机执行见§26:生产2ee8ab6、取证19792bb已推送;新“开始”后完成live-12,
 五个构建页/配置通过,Full→Partial→Full联动成功,release0。以下停点均为历史事实。
@@ -3188,7 +3188,7 @@ ls-remote仅本地裸仓库,无构建/无Accept,完成后不进入C4。
 
 ### 30.3 停止报告 P5Q-C3-03:首次冻结失败且恰有一个选中项的提示模板
 
-状态:**OPEN,等待设计方裁定**。没有修改冻结稿,没有触碰Policy/installGuards。
+状态:**已由 P5Q-C3-04 裁定关闭**。没有修改冻结稿,没有触碰Policy/installGuards。
 
 **原文位置**:本节30.1第3条的单项模板为
 “参考快照已从 <冻结值> 变为 <当前值>,需在新 campaign 中处理”;随后首次冻结
@@ -3267,3 +3267,85 @@ Worker fail-closed与原规则一致,attackHTTP=0、websocketHandshakes=0,临时
 `implementation-wip.patch`中unified diff的空白上下文行按补丁格式保留,
 不把它当生产代码或已通过的C3测试矩阵。第9.1三组CLI用例数与幂等12格交付数仍为0。
 停止报告新增1条(P5Q-C3-03),本轮不进入C4。
+
+## 31. 实施裁定 P5Q-C3-04:同名下拉选项归为结构变化,快照提示模板收敛为两个
+
+### 31.1 裁定原文
+
+1. 同名选项:普通下拉框(双列表的 choices 与 selection 不在此列)中,选项显示文字在 Node 中去掉首尾空白后若有重复,即视为表单结构与已取证结构不符。检查放在 open_form 与 fill 每一次表单快照的结构校验里(validateForm 或同等位置),覆盖全部普通下拉框,不只 SNAPSHOT_NUM。代理应答 QB_FORM_CHANGED,按冻结稿第 3.2 节先取证再报错,CLI 侧为 REJECTED_QB_FORM_CHANGED;该应答不带 snapshot_state;零提交,零数据库写入。诊断结构事实的 first_failed_check 记为 duplicate_option_text。
+2. 提示模板:P5Q-C3-02 第 3 条里关于快照的五种模板全部作废,改为以下两个。第 4.3 节第 10 步 landed: unknown 的提示仍放在 message 中,不受影响。
+   a. 已有冻结值,且 snapshot_state.selected 恰好 1 项:"参考快照已从 <冻结值> 变为 <当前值>,需在新 campaign 中处理"。
+   b. 其它所有 SNAPSHOT_NUM 不可用的情况,一律使用:"参考快照不可用:冻结值 <V>,当前选中项 <S>,共 <N> 个选项;<后续>"。槽位规则:
+      - V:有冻结值时为冻结值原文,首次冻结时为"尚无";
+      - S:selected 为 1 项时为该项原文,0 项时为"无",多项时为各项以逗号分隔,null 时为"形态不在登记范围";
+      - N:option_count;
+      - 后续:有冻结值时为"需在新 campaign 中处理",首次冻结时为"请人工核对 SNAPSHOT_NUM 下拉框后重跑"。
+   同一段文字写入 trace。错误码 REJECTED_QB_SNAPSHOT_UNAVAILABLE、skip_reason=qb_snapshot_unavailable、表单作废、零提交、零数据库写入均不变。
+3. 理由:工具按选项显示文字选值,文字重复时选值目标有歧义,而已取证的表单中选项文字都不重复;把它报成"快照不可用"会误导处置。另外,逐种列举的模板存在组合遗漏,改为一个特定模板加一个带槽位的通用模板,覆盖全部情况。
+4. 下次修订设计时并入正文。
+
+### 31.2 实施计划
+
+基线7f3c60e;已重读§29、§30。冻结v1.5哈希仍为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`。
+状态C3_IN_PROGRESS。先实现同名选项结构校验与探针,再按第2.2、4节重新核对
+CLI选择/锁/幂等/事务/隔离传输/诊断,完成第9.1相关组与9.5门禁。
+旧implementation-wip.patch仅参考,逐块重新核对后实现;不修改Policy/installGuards。
+无真实QuickBuild/Gerrit连接、无登录窗、无推送构建、无Accept操作;测试远端仅本地裸库。
+每个提交同步本文件;完成C3即停,不进入C4,C5/C6挂账保持开放。
+
+### 31.3 已实现的逐项落点
+
+- 同名选项:validateForm每次校验普通SELECT,Node trim后文字重复即
+  QB_FORM_CHANGED;formFacts记录duplicate_option_text。双列表不在此列。
+  open_form与fill共用校验,诊断仍走既有惰性文档与脱敏路径,不带snapshot_state。
+  Policy/installGuards与7f3c60e逐字一致,见completion/audit.json。
+- 两个模板:qb_trigger.snapshot_message以数据库是否已有冻结行区分首次冻结,
+  不以配置是否写了具体快照判断。10个组合和“具体配置但无冻结行”独立验证;
+  stdout与trace文字一致,其它unit的终态事件与结果文件保持逐字不变。
+- CLI:qb-trigger两种选择入口、每unit独立sandbox锁、按P5规则检查记录和unit
+  base/project/spec/branch、最新round、配置冻结比对、一致gate快照及12格幂等。
+- 流程:一个CLI一次登录;open_form/fill/读回后,在全新.transport裸库中用
+  原SandboxGit环境和全部覆盖项ls-remote,不读取主副本git配置或对象。
+  该只读查询无需alternates,未调用P5中用于推送且读取主副本对象的_transport。
+  这是第4.3(6)隔离机制的只读接入,不另起git环境,不改P5行为。
+- 意图:一个BEGIN IMMEDIATE事务重查状态/最新request/PUSH事件与冻结行,
+  四个既有原语负责profile/request+SUBMITTED/状态。期间无浏览器调用。
+  不初始化schema。提交之后只有显式released=false才写QB_SUBMIT_FAILED;
+  unknown不补事件;build落点只读父variables核对标记与唯一目标行再绑定。
+  意图已提交后即处于不确定态,异常出口不伪称确定未放行;异常出口不写库。
+- 诊断:UTC时间戳-unit_hash目录;HTML与结构JSON逐字符串写前/写后检查,
+  失败删除目录,原结构错误码保留。原始页面与身份信息不写trace。
+- 原WIP未直接套用:重新按冻结稿核对选择顺序/绑定、事务、消息模板、错误状态;
+  新测试重新构造真实DB与本地裸库。历史补丁和历史探针json原样保留。
+
+用例、幂等表12格与完整命令索引:
+[completion/README.md](evidence/C3/completion/README.md)。
+本轮新增139个pytest CLI用例;机械分组为触发前置38、填表提交70、参数冻结27、
+凭据脱敏4,诊断重叠不重复计数。既有C1配置/原语/驱动/脱敏一并定向488/488。
+Node新增4净单元用例(移除已失效的重复选项快照不可用旧例),另新增4个真实
+本机浏览器诊断用例。Node内部数字不累加到pytest总数。
+
+### 31.4 验收记录
+
+最终全量pytest为2438 passed / 0 failed / 1 skipped,279.06s,exit0;
+相对7f3c60e的2299/1新增139个用例,原集合不缩小。
+唯一skip仍为test_case_insensitive_bypass_is_platform_specific。
+定向488/488、Node单元163/163、静态护栏及负例183/183、
+真实字段DOM16/16全部exit0,均无失败或跳过。隔离传输八个覆盖项逐个在独立进程移除,
+八次均pytest exit1,runner exit0;原文transport-mutation-1.log至-8.log。
+四组安全虽非放行规则改动的必检,仍额外从头复跑4/4,仅loopback;
+Worker走b:browser_fail_closed,attackHTTP=0、WS握手0、临时目录已清理。
+mypy(114 source files)、完整待提交代码树Ruff、lint-imports(6 kept / 0 broken)、
+design.md检查器(0 problem)全部exit0。Ruff树与导出路径见ruff.log;
+随后仅补文档和实测日志。冻结稿哈希未变,Policy/installGuards/驱动/design.md
+与基线逐字比较通过,见audit.json。重复选项探针与原两个当前值探针均exit0。
+全部证据位于[evidence/C3/completion](evidence/C3/completion/README.md)。
+
+开发中测试夹具曾触发round identity/UNIQUE/composite-FK约束,修正夹具的
+round/hash与绑定后重跑;不改生产约束、不关闭foreign_keys。原文保留
+fixture-setup-failures.log。Ruff长断言拆行,不改变期望。
+没有发现新的设计或裁定不一致,没有新增停止报告。
+状态C3_COMPLETE;未访问真实QuickBuild/Gerrit,未弹人工登录窗口,不进入C4。
+C5/C6原始字节/活动文档比较、成功样本、BUILD_NOTES样本挂账仍开放,
+P5Q不标CLOSED。只纳入本轮文件,既有无关修改、删除与草稿未处理。

@@ -447,6 +447,7 @@ export function validateForm(form, projectName) {
       if (row.controls.length !== 3 || canonical(row.controls.map((c) => c.role).sort())
         !== canonical(['choices', 'recorder', 'selection'])) throw new AgentError('QB_FORM_CHANGED', undefined, 'controls');
     } else if (row.controls.length !== 1) throw new AgentError('QB_FORM_CHANGED', undefined, 'controls');
+    if (duplicateOptionText(row)) throw new AgentError('QB_FORM_CHANGED', undefined, 'duplicate_option_text');
     const callback = PALETTES.has(row.label) ? row.controls.find((c) => c.role === 'recorder') : row.controls[0];
     try { callbackURL(callback.callback, form.base); }
     catch { throw new AgentError('QB_FORM_CHANGED', undefined, 'callback'); }
@@ -455,6 +456,12 @@ export function validateForm(form, projectName) {
   try { action = new URL(form.action); } catch { throw new AgentError('QB_FORM_CHANGED', undefined, 'action'); }
   if (action.origin !== ORIGIN || action.pathname !== '/wicket/page' || !ACTION.test(action.search.slice(1))) throw new AgentError('QB_FORM_CHANGED', undefined, 'action');
   return Object.fromEntries(form.rows.map((row) => [row.label, row]));
+}
+
+function duplicateOptionText(row) {
+  if (PALETTES.has(row.label)) return false;
+  return row.controls.some(control => control.tag === 'SELECT'
+    && new Set(control.options.map(option => option.text.trim())).size !== control.options.length);
 }
 
 export function readback(form, projectName) {
@@ -535,6 +542,7 @@ export function formFacts(form, projectName) {
       if (PALETTES.has(row.label)
         ? canonical(controls.map(c => c.role).sort()) !== canonical(['choices', 'recorder', 'selection'])
         : controls.length !== 1) first = 'controls';
+      else if (duplicateOptionText(row)) first = 'duplicate_option_text';
       else if (!controls.find(c => !PALETTES.has(row.label) || c.role === 'recorder')?.callback_valid) first = 'callback';
     }
     return { label: row.label, control_count: controls.length, controls };

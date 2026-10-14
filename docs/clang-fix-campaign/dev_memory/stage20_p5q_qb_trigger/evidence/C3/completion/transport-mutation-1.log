@@ -1,0 +1,43 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___________________________ test_transport_isolation ___________________________
+
+c = <test_qb_trigger.Campaign object at 0x7d14e6c19a30>
+
+    def test_transport_isolation(c):
+        main = c.root / "ws" / trigger._unit_hash("u1") / "src"
+        main.mkdir(parents=True)
+        git(main, "init", "-q")
+        c.add("wrong")
+        wrong_repo = c.units["wrong"]["remote"]
+        wrong_sha = git(
+            wrong_repo, "commit-tree", git(wrong_repo, "mktree", input=""), input="forged\n"
+        )
+        git(wrong_repo, "update-ref", "refs/heads/sandbox/test", wrong_sha)
+        assert wrong_sha != c.units["u1"]["sha"]
+        remote, wrong = str(c.units["u1"]["remote"]), str(c.units["wrong"]["remote"])
+        git(main, "config", "remote." + remote + ".url", wrong)
+        git(main, "config", "url." + wrong + ".insteadOf", remote)
+        git(main, "config", "url." + wrong + ".pushInsteadOf", remote)
+        assert c.run()[0] == 0, c.err.getvalue()
+        calls = [(args, env) for args, env in c.calls if args[0] == "git"]
+        assert any("ls-remote" in args for args, _ in calls)
+        for args, env in calls:
+            assert str(main) not in args and "--git-dir=" + str(main) not in args
+            for item in (
+                "core.hooksPath=/dev/null",
+                "core.fsmonitor=false",
+                "core.askPass=",
+                "credential.helper=",
+                "push.followTags=false",
+                "push.recurseSubmodules=no",
+                "push.gpgSign=false",
+                "push.pushOption=",
+            ):
+>               assert item in args
+E               AssertionError: assert 'core.hooksPath=/dev/null' in ['git', '-c', 'core.fsmonitor=false', '-c', 'core.askPass=', '-c', ...]
+
+tests/unit/test_qb_trigger.py:708: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_qb_trigger.py::test_transport_isolation - AssertionErr...
+1 failed in 0.41s

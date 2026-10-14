@@ -1,0 +1,578 @@
+{
+  "Policy": {
+    "unchanged": true,
+    "sha256": "0273233ecc34ed82b1c317494fd3a6465d618de927b0db1544a5508c6e9db1e5"
+  },
+  "installGuards": {
+    "unchanged": true,
+    "sha256": "9cbff807249f86aa10a7a49dc66fee799335d64d88deb38e68746be662c89ba4"
+  },
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "driver_and_design_unchanged": true,
+  "c3_group_counts": {
+    "填表与提交": 70,
+    "触发前置与幂等": 38,
+    "凭据与脱敏": 4,
+    "参数冻结与配置": 27
+  },
+  "c3_total": 139,
+  "focused_total": 488,
+  "cases": [
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_submitted_bound_and_profile"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[False-none]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[False-failed-submit]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[False-uncertain]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[False-bound]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[False-pass]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[False-fail]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[True-none]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[True-failed-submit]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[True-uncertain]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[True-bound]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[True-pass]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_idempotency_every_cell[True-fail]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_precondition_rejections[status]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_precondition_rejections[derive]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_precondition_rejections[push]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_precondition_rejections[result]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_precondition_rejections[sha]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_precondition_rejections[ref]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_three_units_middle_fill_failure"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[selected0-snap-B-@freeze]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[selected0-snap-B-snap-A]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[selected1-snap-C-@freeze]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[selected1-snap-C-snap-A]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[selected2-\\u65e0-@freeze]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[selected2-\\u65e0-snap-A]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[selected3-a,b-@freeze]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[selected3-a,b-snap-A]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[None-\\u5f62\\u6001\\u4e0d\\u5728\\u767b\\u8bb0\\u8303\\u56f4-@freeze]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_snapshot_templates_and_other_unit_unchanged[None-\\u5f62\\u6001\\u4e0d\\u5728\\u767b\\u8bb0\\u8303\\u56f4-snap-A]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_freeze_selected_and_option_count[1]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_freeze_selected_and_option_count[4]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[Add Package List]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[BUILD NOTES]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[BUILD_REFERENCE]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[BUILD_TYPE]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[Build Package List]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[CHILD_CONFIGURATIONS]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[Immediate Stop With Error]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[PROJECT_BRANCH]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[REPO_TYPE]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[Remove Package List]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[SNAPSHOT_NUM]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_each_field_readback_mismatch[TARGET_IMAGE]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_landed_binding_mismatch[marker]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_landed_binding_mismatch[target-two]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_landed_binding_mismatch[target-missing]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_landed_binding_mismatch[marker-missing]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_landed_binding_mismatch[bound-elsewhere]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_uncertain_and_rerun[reply0]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_uncertain_and_rerun[EXIT]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_uncertain_and_rerun[INVALID_JSON]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_not_released_allows_new_request"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_login_failure_all_remaining_no_writes[QB_LOGIN_TIMEOUT]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_login_failure_all_remaining_no_writes[QB_LOGIN_ABORTED]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_intent_concurrent_recheck[status]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_intent_concurrent_recheck[request]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_intent_concurrent_recheck[push]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_intent_concurrent_recheck[same-profile]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_intent_concurrent_recheck[other-profile]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_crash_windows[intent-mid]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_crash_windows[before-submit]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_crash_windows[after-submit]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_crash_windows[after-bind]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_transport_isolation"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_wrong_remote_sha_after_fill"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_sandbox_lock_rejects_before_agent"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[False-extra]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[False-missing]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[False-palette-role]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[False-duplicate-control]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[False-duplicate_option_text]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[False-form]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[True-extra]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[True-missing]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[True-palette-role]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[True-duplicate-control]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[True-duplicate_option_text]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_form_diagnostics_preserve_error[True-form]"
+    },
+    {
+      "group": "凭据与脱敏",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_sensitive_agent_page_never_written[JSESSIONID_8810=fixture-secret]"
+    },
+    {
+      "group": "凭据与脱敏",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_sensitive_agent_page_never_written[<input type=\"hidden\" value=\"fixture-secret\">]"
+    },
+    {
+      "group": "凭据与脱敏",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_sensitive_agent_page_never_written[<a href=\"/x;jsessionid=fixture-secret\">x</a>]"
+    },
+    {
+      "group": "凭据与脱敏",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_sensitive_agent_page_never_written[<span>Welcome! fixture-secret</span>]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_changed_config_rejected_before_agent[BUILD_TYPE-Partial]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_changed_config_rejected_before_agent[REPO_TYPE-NEW]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_changed_config_rejected_before_agent[BUILD_REFERENCE-Live]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_changed_config_rejected_before_agent[SNAPSHOT_NUM-snap-B]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_changed_config_rejected_before_agent[overview_id-1918]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_changed_config_rejected_before_agent[project_name-Other]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_changed_config_rejected_before_agent[configuration_path-root/other/RBS/TRIGGER]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_changed_config_rejected_before_agent[qb_pass_requires_accept-True]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[CHILD_CONFIGURATIONS-value0]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[CHILD_CONFIGURATIONS-value1]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[CHILD_CONFIGURATIONS-value2]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[CHILD_CONFIGURATIONS-value3]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[Immediate Stop With Error-False]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[TARGET_IMAGE-value5]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[configuration_path-root/wrong/TRIGGER]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[configuration_path-wrong/RBS/TRIGGER]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[overview_id-0]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[overview_id-True]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[extra-x]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[missing-None]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[PROJECT_BRANCH-wrong]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[Add Package List-x]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_config_never_starts_agent[Remove Package List-x]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_project_not_ready[None]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_project_not_ready[False]"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_two_branches_freeze_separately_and_reuse"
+    },
+    {
+      "group": "参数冻结与配置",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_new_campaign_changed_config"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[unlinked]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[old-round]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[different-arch]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[different-unit]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[base_commit]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[project]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[spec_name]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[branch]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_write_transaction_rollback[intent]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_write_transaction_rollback[not-released]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_write_transaction_rollback[binding]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_units_file_before_agent[None]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_units_file_before_agent[bad1]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_units_file_before_agent[bad2]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_units_file_before_agent[bad3]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_units_file_before_agent[bad4]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_invalid_units_file_before_agent[bad5]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_cli_missing_arguments"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_readback_extra_payloads[Build Package List-u1@sha\\nother@sha]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_readback_extra_payloads[Add Package List-pkg]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_readback_extra_payloads[CHILD_CONFIGURATIONS-value2]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_palette_recorder_mismatch_from_agent"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_diagnostic_post_write_check_removes_files"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_binding_transaction_rechecks[superseded]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_binding_transaction_rechecks[already-bound]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_duplicate_option_diagnostic_is_written_without_snapshot_state[open_form]"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_duplicate_option_diagnostic_is_written_without_snapshot_state[fill]"
+    },
+    {
+      "group": "触发前置与幂等",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_correct_sha_only_in_other_repository_rejected"
+    },
+    {
+      "group": "填表与提交",
+      "nodeid": "tests/unit/test_qb_trigger.py::test_first_freeze_with_explicit_config_snapshot_uses_no_frozen_value"
+    }
+  ]
+}

@@ -194,6 +194,8 @@ def main(
 ) -> int:
     if argv is None:
         argv = sys.argv[1:]
+    if argv and argv[0] == "qb-trigger":
+        return _main_qb_trigger(argv[1:], stdout=stdout, stderr=stderr)
     if argv and argv[0] == "sandbox-submit":
         return _main_sandbox_submit(argv[1:], stdout=stdout, stderr=stderr)
     if argv and argv[0] == "suppress-policy":
@@ -407,6 +409,26 @@ def _campaign_cli_error_payload(reason: str) -> dict[str, object]:
         "invocations_used": 0,
         "error_code": "INVALID_ARGS",
     }
+
+
+def _main_qb_trigger(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
+    from ci_triage.qb_trigger import QbTriggerOptions, empty_result, qb_trigger
+
+    parser = _CampaignRepairStepParser(prog="ci_triage qb-trigger")
+    selection = parser.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--verification-ids")
+    selection.add_argument("--units-file", type=Path)
+    parser.add_argument("--state-db", type=Path, required=True)
+    parser.add_argument("--state-root", type=Path, required=True)
+    parser.add_argument("--config", type=Path, required=True)
+    parser.add_argument("--retrigger", action="store_true")
+    try:
+        args = parser.parse_args(argv)
+        code, results = qb_trigger(QbTriggerOptions(**vars(args)), stderr=stderr)
+    except _CampaignCliArgumentError:
+        code, results = 2, [dict(empty_result(), error_code="INVALID_ARGS")]
+    print(json.dumps(results, ensure_ascii=False, sort_keys=True), file=stdout)
+    return code
 
 
 def _main_sandbox_submit(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:

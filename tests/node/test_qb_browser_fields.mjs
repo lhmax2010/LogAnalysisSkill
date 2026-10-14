@@ -35,7 +35,7 @@ const hex = value => Buffer.from(value).toString('hex');
 const controlId = name => `field-${FIELDS.indexOf(name)}`;
 const callbackPath = (version, index) => `/wicket/page?${version}-1.IBehaviorListener.0-form-field-${index}`;
 
-function formHTML({ equal = false, freeze = false, checked = true, extra = null } = {}) {
+function formHTML({ equal = false, freeze = false, checked = true, extra = null, duplicate = false } = {}) {
   const wanted = { ...EXPECTED, 'Immediate Stop With Error': checked };
   const rows = FIELDS.map((name, index) => {
     const id = controlId(name);
@@ -55,7 +55,8 @@ function formHTML({ equal = false, freeze = false, checked = true, extra = null 
       const targetSelected = equal || name === 'SNAPSHOT_NUM' && freeze;
       controls = `<select id="${id}" name="fixture:${id}:input" onchange="${onchange}">
         <option value="opaque-${index}-old" ${targetSelected ? '' : 'selected'}>${other}</option>
-        <option value="opaque-${index}-wanted" ${targetSelected ? 'selected' : ''}> \n${escapeHTML(wanted[name])}\t </option></select>`;
+        <option value="opaque-${index}-wanted" ${targetSelected ? 'selected' : ''}> \n${escapeHTML(wanted[name])}\t </option>
+        ${duplicate && name === 'BUILD_TYPE' ? `<option value="duplicate"> ${escapeHTML(wanted[name])} </option>` : ''}</select>`;
     } else if (name === 'Immediate Stop With Error') {
       controls = `<input id="${id}" name="fixture:${id}:input" type="checkbox" ${(equal ? checked : !checked) ? 'checked' : ''} onchange="${onchange}">`;
     } else {
@@ -362,6 +363,48 @@ test('C2c frozen v1.5 fields and startup self-test, loopback HTTPS only', { time
         assert.equal(fixture.received.length, offset);
       } finally { process.stderr.write = write; await runtime.close(); }
     });
+
+    await t.test('open_form rejects duplicate option text with a real passive diagnostic', async () => {
+      fixture.options = { duplicate: true };
+      const offset = fixture.received.length;
+      const runtime = await createRuntime(playwright, chromium, fixture.overrides);
+      try {
+        const agent = new Agent(runtime); agent.state = 'ready';
+        agent.projects.set(PROJECT.overview_id, PROJECT);
+        runtime.policy.overviewIds.add(String(PROJECT.overview_id));
+        const reply = await agent.command({ command: 'open_form', overview_id: PROJECT.overview_id });
+        assert.equal(reply.error, 'QB_FORM_CHANGED');
+        assert.equal(reply.diagnostic.facts.first_failed_check, 'duplicate_option_text');
+        assert.ok(reply.diagnostic.html_redacted.includes('value="duplicate"'));
+        assert.equal('snapshot_state' in reply, false);
+        assert.equal(runtime.policy.released, false);
+        assert.equal(fixture.received.slice(offset).filter(row => row.method === 'POST').length, 0);
+      } finally { await runtime.close(); }
+    });
+
+    for (const [label, wanted] of [['SNAPSHOT_NUM', '@freeze'], ['SNAPSHOT_NUM', 'snapshot-42'], ['BUILD_TYPE', 'Full']]) {
+      await t.test(`duplicate ordinary options produce passive diagnostic: ${label}/${wanted}`, async () => {
+        await withForm(fixture, { equal: true }, async observations => {
+          const { runtime, agent, fields } = observations;
+          await runtime.page.evaluate(name => {
+            const row = [...document.querySelectorAll('tr[data-field]')].find(r => r.dataset.field === name);
+            const select = row.querySelector('select');
+            const option = select.selectedOptions[0].cloneNode(true);
+            option.value = 'duplicate-value'; option.selected = false;
+            option.textContent = '  ' + select.selectedOptions[0].textContent + '  ';
+            select.append(option);
+          }, label);
+          const result = await agent.command({ command: 'fill', fields: { ...fields, [label]: wanted } });
+          assert.equal(result.error, 'QB_FORM_CHANGED');
+          assert.equal(result.diagnostic.facts.first_failed_check, 'duplicate_option_text');
+          assert.ok(result.diagnostic.html_redacted.includes('duplicate-value'));
+          assert.equal('snapshot_state' in result, false);
+          assert.equal(agent.state, 'invalid'); assert.equal(runtime.policy.released, false);
+          assert.equal(observations.received().filter(row => row.method === 'POST').length, 0);
+          assert.equal((await agent.command({ command: 'submit' })).error, 'AGENT_PHASE');
+        });
+      });
+    }
 
     await t.test('all 12 unequal fields: native changes, text blur, palette buttons and new callback versions', async () => {
       await withForm(fixture, {}, async observations => {

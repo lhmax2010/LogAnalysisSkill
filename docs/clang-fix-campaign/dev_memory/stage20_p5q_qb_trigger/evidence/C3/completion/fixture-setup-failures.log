@@ -1,0 +1,100 @@
+........................................................................ [ 59%]
+........................................FF.......                        [100%]
+=================================== FAILURES ===================================
+___________ test_selection_matches_unit_without_held[different-arch] ___________
+
+c = <test_qb_trigger.Campaign object at 0x72f481fa2630>
+fault = 'different-arch'
+
+    @pytest.mark.parametrize(
+        "fault",
+        [
+            "unlinked",
+            "old-round",
+            "different-arch",
+            "different-unit",
+            "base_commit",
+            "project",
+            "spec_name",
+            "branch",
+        ],
+    )
+    def test_selection_matches_unit_without_held(c, fault):
+        if fault == "unlinked":
+            c.sql("DELETE FROM campaign_verifications WHERE verification_id='u1-v0'")
+        elif fault == "old-round":
+            state.create_round(
+                c.db, "u1", round_index=2, edit_spec_ref="new", edit_spec_sha256="f" * 64
+            )
+        elif fault == "different-arch":
+>           c.sql("UPDATE campaign_verifications SET arch_norm='x86_64' WHERE verification_id='u1-v0'")
+
+tests/unit/test_qb_trigger.py:882: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_qb_trigger.Campaign object at 0x72f481fa2630>
+sql = "UPDATE campaign_verifications SET arch_norm='x86_64' WHERE verification_id='u1-v0'"
+args = ()
+
+    def sql(self, sql, args=()):
+        conn = self.db.connect()
+        try:
+            with conn:
+>               return [dict(r) for r in conn.execute(sql, args)]
+                                         ^^^^^^^^^^^^^^^^^^^^^^^
+E               sqlite3.IntegrityError: UNIQUE constraint failed: campaign_verifications.campaign_unit_key, campaign_verifications.arch_norm, campaign_verifications.round_index
+
+tests/unit/test_qb_trigger.py:128: IntegrityError
+___________ test_selection_matches_unit_without_held[different-unit] ___________
+
+c = <test_qb_trigger.Campaign object at 0x72f481fe9130>
+fault = 'different-unit'
+
+    @pytest.mark.parametrize(
+        "fault",
+        [
+            "unlinked",
+            "old-round",
+            "different-arch",
+            "different-unit",
+            "base_commit",
+            "project",
+            "spec_name",
+            "branch",
+        ],
+    )
+    def test_selection_matches_unit_without_held(c, fault):
+        if fault == "unlinked":
+            c.sql("DELETE FROM campaign_verifications WHERE verification_id='u1-v0'")
+        elif fault == "old-round":
+            state.create_round(
+                c.db, "u1", round_index=2, edit_spec_ref="new", edit_spec_sha256="f" * 64
+            )
+        elif fault == "different-arch":
+            c.sql("UPDATE campaign_verifications SET arch_norm='x86_64' WHERE verification_id='u1-v0'")
+        elif fault == "different-unit":
+            c.add("u2")
+>           c.sql(
+                "UPDATE campaign_verifications SET campaign_unit_key='u2' WHERE verification_id='u1-v0'"
+            )
+
+tests/unit/test_qb_trigger.py:885: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <test_qb_trigger.Campaign object at 0x72f481fe9130>
+sql = "UPDATE campaign_verifications SET campaign_unit_key='u2' WHERE verification_id='u1-v0'"
+args = ()
+
+    def sql(self, sql, args=()):
+        conn = self.db.connect()
+        try:
+            with conn:
+>               return [dict(r) for r in conn.execute(sql, args)]
+                                         ^^^^^^^^^^^^^^^^^^^^^^^
+E               sqlite3.IntegrityError: UNIQUE constraint failed: campaign_verifications.campaign_unit_key, campaign_verifications.arch_norm, campaign_verifications.round_index
+
+tests/unit/test_qb_trigger.py:128: IntegrityError
+=========================== short test summary info ============================
+FAILED tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[different-arch]
+FAILED tests/unit/test_qb_trigger.py::test_selection_matches_unit_without_held[different-unit]
+2 failed, 119 passed in 13.85s

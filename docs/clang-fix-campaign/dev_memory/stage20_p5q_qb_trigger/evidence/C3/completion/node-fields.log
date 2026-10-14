@@ -1,0 +1,27 @@
+▶ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only
+  ✔ startup self-test: real counts, version trace, disposable page and zero server requests (1170.080135ms)
+  ✔ startup self-test: count 0 closes browser with fixed stderr (1013.862397ms)
+  ✔ startup self-test: count 2 closes browser with fixed stderr (979.759518ms)
+  ✔ open_form rejects duplicate option text with a real passive diagnostic (1036.313696ms)
+  ✔ duplicate ordinary options produce passive diagnostic: SNAPSHOT_NUM/@freeze (1013.556856ms)
+  ✔ duplicate ordinary options produce passive diagnostic: SNAPSHOT_NUM/snapshot-42 (1106.857941ms)
+  ✔ duplicate ordinary options produce passive diagnostic: BUILD_TYPE/Full (1123.161899ms)
+  ✔ all 12 unequal fields: native changes, text blur, palette buttons and new callback versions (14687.811152ms)
+  ✔ all 12 equal fields including @freeze: unchanged bytes and one explicit change each (14513.571125ms)
+  ✔ an extra change is denied and invalidates the current field despite only one server POST (1101.3762ms)
+  ✔ text fill plus artificial change without blur: next field focus produces a denied late native callback (10322.999756ms)
+  ✔ delayed change during next-field snapshot fails (10233.841886ms)
+  ✔ delayed change during final readback fails (14865.321444ms)
+  ✔ swallowed equal-value change: actual 30-second timeout, invalid form and no submit (31095.89074ms)
+  ✔ continuous denied refresh GETs do not extend quiet; uncheck and @freeze still complete (14768.792367ms)
+✔ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only (119118.426874ms)
+ℹ swallowed change elapsed 30098ms; server POSTs=0
+ℹ refresh stream elapsed 13715ms; refresh server requests=0
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 119120.679038

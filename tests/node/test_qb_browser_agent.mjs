@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { Agent, AgentError, Policy, FrameOwnership, adaptProtocol, ORIGIN, FIELDS,
-  canonical, fingerprint, callbackURL, readback, validateForm, pathShape,
+  canonical, fingerprint, callbackURL, readback, validateForm, formFacts, pathShape,
   destructiveListener } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
 function meta(path, method = 'GET', extra = {}) {
@@ -549,7 +549,6 @@ for (const [name, requested, options, selected] of [
   ['missing frozen', 'frozen', [{ text: ' current-A ', selected: true }], ['current-A']],
   ['no selected', '@freeze', [{ text: 'current-A', selected: false }], []],
   ['multiple selected', '@freeze', [{ text: 'a', selected: true }, { text: 'b', selected: true }], ['a', 'b']],
-  ['first freeze duplicate text', '@freeze', [{ text: 'a', selected: true }, { text: 'a', selected: false }], ['a']],
   ['empty dropdown', '@freeze', [], []],
   ['long selected', 'frozen', [{ text: 'x'.repeat(201), selected: true }], null],
   ['invalid selected', 'frozen', [{ text: 'bad value', selected: true }], null],
@@ -572,6 +571,38 @@ for (const [name, requested, options, selected] of [
     released: false, snapshot_state: { selected, option_count: options.length } });
   assert.equal(a.state, 'invalid'); assert.equal(p.released, false);
   assert.equal((await a.command({ command: 'submit' })).error, 'AGENT_PHASE');
+});
+
+for (const [command, label, wanted] of [
+  ['fill', 'SNAPSHOT_NUM', '@freeze'], ['fill', 'SNAPSHOT_NUM', 'fixed'],
+  ['fill', 'BUILD_TYPE', 'Full'], ['open_form', 'BUILD_TYPE', 'Full'],
+]) test(`duplicate option text is structural: ${command}/${label}/${wanted}`, async () => {
+  const f = form(); const p = new Policy();
+  Object.assign(f.rows.find(r => r.label === label).controls[0], { tag: 'SELECT',
+    options: [{ text: 'same', value: 'a', selected: true },
+      { text: ' same ', value: 'b', selected: false }] });
+  const a = new Agent({ policy: p, page: {}, failure: null });
+  a.state = command === 'open_form' ? 'ready' : 'form';
+  a.currentProject = { project_name: 'Tizen' }; a.snapshot = async () => f;
+  a.openForm = async () => validateForm(f, 'Tizen');
+  a.diagnostic = async () => ({ html_redacted: '<form></form>', facts: formFacts(f, 'Tizen') });
+  const fields = Object.fromEntries(FIELDS.map(name => [name, name]));
+  Object.assign(fields, { SNAPSHOT_NUM: wanted, CHILD_CONFIGURATIONS: ['standard-armv7l:aarch64:x86_64'],
+    TARGET_IMAGE: [], 'Build Package List': 'pkg@abc', 'BUILD NOTES': 'clang-fix-campaign request=x',
+    'Add Package List': '', 'Remove Package List': '' });
+  const response = await a.command({ command, fields });
+  assert.equal(response.error, 'QB_FORM_CHANGED');
+  assert.equal(response.diagnostic.facts.first_failed_check, 'duplicate_option_text');
+  assert.equal('snapshot_state' in response, false);
+  assert.equal(a.state, 'invalid'); assert.equal(p.released, false);
+  assert.equal((await a.command({ command: 'submit' })).error, 'AGENT_PHASE');
+});
+
+test('palette options are outside duplicate ordinary-select check', () => {
+  const f = form();
+  f.rows.find(r => r.label === 'CHILD_CONFIGURATIONS').controls
+    .find(c => c.role === 'choices').options = [{ text: 'same' }, { text: 'same' }];
+  assert.doesNotThrow(() => validateForm(f, 'Tizen'));
 });
 
 test('field registration rejects a late denial before replacing the previous window', () => {
