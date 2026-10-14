@@ -123,6 +123,11 @@ class _UserFields(HTMLParser):
                 table.active = None
             if tag == "tr":
                 labels = ["".join(cell.text).strip() for cell in table.cells]
+                if any(cell.tag == "th" for cell in table.cells):
+                    table.user_columns = {
+                        index for index, cell in enumerate(table.cells)
+                        if cell.tag == "th" and labels[index] in {"Triggered By", "Requested By"}
+                    }
                 for index, cell in enumerate(table.cells):
                     if cell.tag == "th" and labels[index] in {"Triggered By", "Requested By"}:
                         table.user_columns.add(index)

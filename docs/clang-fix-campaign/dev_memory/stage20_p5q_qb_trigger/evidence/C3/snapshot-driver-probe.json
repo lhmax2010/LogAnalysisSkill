@@ -1,0 +1,23 @@
+{
+  "cases": [
+    {
+      "source_current": "current-snapshot-A",
+      "error_attributes": {
+        "code": "REJECTED_QB_SNAPSHOT_UNAVAILABLE",
+        "released": null,
+        "diagnostic": null,
+        "diagnostic_failed": false
+      }
+    },
+    {
+      "source_current": "current-snapshot-B",
+      "error_attributes": {
+        "code": "REJECTED_QB_SNAPSHOT_UNAVAILABLE",
+        "released": null,
+        "diagnostic": null,
+        "diagnostic_failed": false
+      }
+    }
+  ],
+  "current_value_available_to_cli": false
+}

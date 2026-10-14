@@ -1,0 +1,98 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 2 items
+
+tests/unit/test_qb_browser_node.py::test_node_browser_redaction_and_response_interception ▶ C2B-09 page trim overrides cannot change Node decisions or identity redaction
+  ✔ form and options, broken=false (35.041816ms)
+  ✔ build identity, broken=false (21.375719ms)
+  ✔ redaction pre/post check, broken=false (52.730552ms)
+  ✔ form and options, broken=true (16.250125ms)
+  ✔ build identity, broken=true (11.424813ms)
+  ✔ redaction pre/post check, broken=true (40.118316ms)
+✔ C2B-09 page trim overrides cannot change Node decisions or identity redaction (1200.13586ms)
+▶ C2A-04 archived build DOM identity regression only, with all network denied
+  ✔ archive 01.response.txt /build/1069540/overview (35.240878ms)
+  ✔ archive 03.response.txt /build/1069540/variables (12.312893ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (17.801508ms)
+  ✔ navigation spelling Id (13.946352ms)
+  ✔ navigation spelling ID (15.724031ms)
+  ✔ Summary Id resolved by column, not fixed position (15.646189ms)
+  ✔ reject duplicate-nav (10.916307ms)
+  ✔ reject missing-nav (15.748261ms)
+  ✔ reject wrong-nav (12.706187ms)
+  ✔ reject missing-summary (14.591496ms)
+  ✔ reject duplicate-summary (18.464415ms)
+  ✔ reject missing-id-column (15.436006ms)
+  ✔ reject duplicate-id-column (16.377306ms)
+  ✔ reject different-summary-id (20.554436ms)
+  ✔ reject missing-first-row (12.584293ms)
+  ✔ both overview sources agree but differ from requested id (18.307633ms)
+  ✔ subpage missing navigation (16.957446ms)
+  ✔ subpage duplicate navigation (14.268918ms)
+  ✔ subpage wrong navigation (12.538362ms)
+  ✔ C2B-06 remembered Variables at bare build 1193469 (27.241636ms)
+  ✔ C2B-06 remembered Variables at bare build 1186372 (28.816349ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 archived build DOM identity regression only, with all network denied (1141.377355ms)
+▶ C2B-06 exact Run button grammar from live-06, with no navigation or click requests
+  ✔ none (41.254375ms)
+  ✔ anchor (16.148246ms)
+  ✔ duplicate (14.8994ms)
+  ✔ extra-statement (23.414109ms)
+  ✔ promote (18.48125ms)
+  ✔ run2 (16.652545ms)
+  ✔ external (14.085559ms)
+  ✔ missing-onclick (18.350129ms)
+  ✔ trailing-newline (14.455745ms)
+✔ C2B-06 exact Run button grammar from live-06, with no navigation or click requests (939.399961ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (811.304601ms)
+▶ C2B-04 shared identity boundary and credential vectors
+  ✔ short-display-name (14.680871ms)
+  ✔ user-identity-does-not-count-registered-mask (8.935861ms)
+  ✔ triggered-by-row (13.411384ms)
+  ✔ triggered-by-column (8.316584ms)
+  ✔ multiword (7.246965ms)
+  ✔ literal-regex-and-ascii-boundaries (8.666906ms)
+  ✔ secrets-remain-substrings (9.219486ms)
+  ✔ opaque-hidden-value-is-global (8.892349ms)
+  ✔ registered-labels-trim-outer-whitespace (12.899526ms)
+  ✔ internal-label-whitespace-is-not-collapsed (17.112208ms)
+  ✔ business-word-successful (12.498056ms)
+  ✔ business-word-failed (8.944009ms)
+  ✔ business-word-full (9.077062ms)
+  ✔ business-word-root (6.112448ms)
+  ✔ requested-by-column-live-12-shape (7.793934ms)
+  ✔ requested-by-and-unregistered-owner (5.644056ms)
+  ✔ requestedby-and-owner-not-registered (7.248257ms)
+  ✔ requested-by-adjacent-value-not-registered (9.083138ms)
+  ✔ multiple-registered-columns-and-rows (6.581775ms)
+  ✔ repeated-header-resets-identity-columns (6.205957ms)
+  ✔ entity-display-name (5.944639ms)
+✔ C2B-04 shared identity boundary and credential vectors (954.680115ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/favicon.ico","/build/301"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (1207.271617ms)
+{"c2b10":"local-field-callbacks","received":[{"method":"GET","path":"/wicket/page?50","body":""},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.880605604727603","body":"Partial"},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.32712800777865836","body":"Full"}],"form_action_releases":0}
+✔ C2B-10 local form switches Full -> Partial -> Full with Math.random callbacks (856.520847ms)
+ℹ tests 64
+ℹ suites 0
+ℹ pass 64
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7114.240507
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety {"group":"worker-websocket","ok":true,"requests":[{"group":"worker-websocket","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WEBSOCKET_DENIED"},{"action":"WEBSOCKET_DENIED"},{"action":"WORKER_BLOCKED","type":"worker","paused":true}],"details":{"attackHTTP":0,"websocketHandshakes":0,"branch":"b:browser_fail_closed","workers":[{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WORKER_BLOCKED","type":"worker","paused":true}]},"observations":{"closeTarget":[{"type":"shared_worker","outcome":"success","success":true},{"type":"worker","outcome":"exception","category":"Error"}],"failure":"QB_BROWSER_UNAVAILABLE","browserClosed":true,"temporaryDirectoryRemoved":true}}
+{"group":"307-308","ok":true,"requests":[{"group":"307-308","method":"GET","path":"/build/307","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/308","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/302","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/999","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"}],"details":{"blocked":[307,308],"allowed":302}}
+{"group":"per-hop","ok":true,"requests":[{"group":"per-hop","method":"GET","path":"/build/301","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/303","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/304","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"POST","path":"/signin?7-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"phase":"read","path":"<other>","action":"DENIED"},{"phase":"read","path":"/wicket/page","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"login","path":"/signin","action":"DENIED"}],"details":{"forbiddenSecondHops":0,"postReplay":0}}
+{"group":"credential-isolation","ok":true,"requests":[{"group":"credential-isolation","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"POST","path":"/signin?1-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/overview/0","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}],"details":{"credentialFacts":{"cookie":true,"authorization":true,"password":true},"protocol":{"ok":true,"status":200,"html_redacted":"<html><head><link rel=\"icon\" href=\"data:,\"><title>LOCAL C2b safety fixture</title></head><body><a class=\"nav-link\">Build (id:1)</a>\n      <span>Welcome! &lt;USER&gt;</span>\n      <input type=\"hidden\" name=\"token\" value=\"&lt;REDACTED&gt;\">\n      <div class=\"build-summary\"><div class=\"box-head\">Summary</div><table>\n      <thead><tr><th>Id</th><th>Triggered By</th></tr></thead>\n      <tbody><tr><td>1</td><td>&lt;USER&gt;</td></tr></tbody></table></div></body></html>"},"exception":{"ok":false,"error":"QB_BROWSER_UNAVAILABLE"}}}
+{"summary":4,"passed":4,"failed":0,"network":"loopback-only","temporaryDirectoryRemoved":true}
+
+PASSED
+
+============================== 2 passed in 15.05s ==============================

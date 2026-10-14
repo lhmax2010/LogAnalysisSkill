@@ -1,0 +1,28 @@
+{
+  "network_requests": 0,
+  "cases": [
+    {
+      "frozen": "frozen-snapshot",
+      "current_in_snapshot": "current-snapshot-A",
+      "response": {
+        "ok": false,
+        "error": "QB_FORM_VALUE_UNAVAILABLE",
+        "field": "SNAPSHOT_NUM"
+      },
+      "form_state": "invalid",
+      "released": false
+    },
+    {
+      "frozen": "frozen-snapshot",
+      "current_in_snapshot": "current-snapshot-B",
+      "response": {
+        "ok": false,
+        "error": "QB_FORM_VALUE_UNAVAILABLE",
+        "field": "SNAPSHOT_NUM"
+      },
+      "form_state": "invalid",
+      "released": false
+    }
+  ],
+  "distinct_current_values_produce_identical_response": true
+}

@@ -190,6 +190,16 @@
     "secrets": []
   },
   {
+    "name": "repeated-header-resets-identity-columns",
+    "html": "<span>Welcome! Lin</span><table><tr><th>Triggered By</th><th>Status</th></tr><tr><td>Lin</td><td>Successful</td></tr><tr><th>Package</th><th>Status</th></tr><tr><td>Lin</td><td>Full</td></tr></table>",
+    "preserved": ["<th>Package</th><th>Status</th>", "<td>Lin</td><td>Full</td>"],
+    "masked": ["Welcome! <USER>", "<td><USER></td><td>Successful</td>"],
+    "identities": ["Lin"],
+    "user_mask_count": 2,
+    "identity_outside_registered_count": 1,
+    "secrets": []
+  },
+  {
     "name": "entity-display-name",
     "html": "<span>Welcome! Name &amp; Last</span><p>Name &amp; Last Name &#38; Last xName &amp; Last Name &amp; Lastx</p>",
     "preserved": ["Name & Last Name & Last xName & Last Name & Lastx"],

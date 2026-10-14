@@ -11,6 +11,7 @@ from ci_triage.qb_config import (
     QbConfigError,
     QbProjectNotReady,
     canonical_profile_json,
+    child_configuration_path,
     parse_qb_config,
     project_for_branch,
 )
@@ -142,6 +143,24 @@ def test_rule6_requires_boolean(config, value):
     config["projects"]["tizen_base"]["qb_pass_requires_accept"] = value
     with pytest.raises(QbConfigError):
         parse_qb_config(config)
+
+
+@pytest.mark.parametrize("path", ["other/RBS/TRIGGER", "root/X/SBS/TRIGGER", "root/X/RBS/build"])
+def test_rule7_configuration_path(config, path):
+    config["projects"]["tizen_base"]["configuration_path"] = path
+    with pytest.raises(QbConfigError) as error:
+        parse_qb_config(config)
+    assert error.value.code == "INVALID_ARGS"
+
+
+def test_child_configuration_path_derived_not_stored(config):
+    project = project_for_branch(parse_qb_config(config), "tizen_base")
+    assert child_configuration_path(project["configuration_path"]) == (
+        "root/Tizen-Base-Toolchain/RBS/build"
+    )
+    assert "child_configuration_path" not in json.loads(
+        canonical_profile_json(project, frozen_snapshot="snapshot")
+    )
 
 
 @pytest.mark.parametrize("value", [0, -1, 1.5, "600", None, True, False])

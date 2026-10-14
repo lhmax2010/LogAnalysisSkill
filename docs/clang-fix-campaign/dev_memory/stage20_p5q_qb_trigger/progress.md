@@ -1,6 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE**。
+日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_STOPPED**。
+C3本轮基线332878d;两项C2c评审遗留修复与新停点P5Q-C3-01见§29。
+以下“不进入C3”是先前授权的历史边界;本轮已授权C3,但按协议在接口缺口处停止。
 最新权威改为v1.5-FROZEN,冻结登记与C2c执行见§27;以下v1.2及R1待决状态均为历史记录。
 §27.3历史停止已由§28的C2C-03关闭;本轮C2c执行见§28。最近真机执行见§26:生产2ee8ab6、取证19792bb已推送;新“开始”后完成live-12,
 五个构建页/配置通过,Full→Partial→Full联动成功,release0。以下停点均为历史事实。
@@ -56,7 +58,7 @@ exit=0
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
 | C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§26.6 live-12五页/配置与两次联动通过,release0;附录C补现场结果,待R1核对,无C3 |
 | C2c | v1.5第10节①–⑥:隔离读取/原始字节、惰性位置脱敏/诊断、刷新删除、字段窗口/启动自检、design.md照录 | COMPLETE;§28裁定及验收;C5/C6挂账仍开放,不标P5Q CLOSED |
-| C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2c;NOT_STARTED,本轮不进入 |
+| C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | STOPPED P5Q-C3-01;两项评审遗留已修,主体未实现;见§29 |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
 | C6 | 第9.4节第2步确认的真实提交与收口文档 | C5 + FatTank明确确认;NOT_STARTED |
@@ -3044,3 +3046,110 @@ attackHTTP=0、WS握手=0、浏览器与临时目录已清理。没有因此降�
 不得P5Q CLOSED。C2c至此完成,提交推送后停止,不进入C3。
 原始失败日志的pytest/Node缩进行尾空格原样保留,不为消除diff --check提示
 改写证据;源代码、测试与Markdown的diff --check为空。
+
+## 29. C3启动、C2c评审遗留与停止报告P5Q-C3-01
+
+### 29.1 权威、范围与计划
+
+基线`332878d6e595a139b850c2eac6ceaefb5fcec27d`,分支`clang-fix-campaign`。
+开工已读本进度的计划、闭合结论和C5/C6挂账,并逐段核对冻结稿第2.1、2.2、
+3.2、3.5、4、6.2、9.1节与现有状态原语/锁/隔离传输/代理协议。
+权威`p5q-qb-trigger-design-v1.5-FROZEN.md`未改,sha256仍为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`。
+
+本轮计划:先修两项C2c遗留;再接qb-trigger CLI,按unit持sandbox锁、幂等表逐格
+实现、单事务提交意图、隔离ls-remote、提交落点/诊断落盘;最后以假代理+本地裸库
+完成第9.1节相关组及通用门禁。当前停在下一节所述协议缺口,未新增CLI/状态写入。
+没有真实QuickBuild/Gerrit请求、没有登录弹窗、没有Accept/Ready to Accept操作。
+用户已有`.gitignore`修改与docs四文件删除、其它未跟踪草稿原样保留,不纳入提交。
+
+### 29.2 C2c评审遗留,已于C3修复
+
+1. `qb_config.py`:读配置时按第2.1节第7条检查父配置路径必须以`root/`开头、
+   以`/RBS/TRIGGER`结尾;`child_configuration_path`将最后一段替换为`build`。
+   子路径不额外写入profile。测试`test_rule7_configuration_path`三种负例及
+   `test_child_configuration_path_derived_not_stored`正例通过。
+   CLI层的INVALID_ARGS/不启动代理集成用例仍待C3主体,不以纯函数测试冒充。
+2. `qb_redact.py::_UserFields`:每个新表头行重新确定身份列,不沿用先前列号。
+   共用向量`repeated-header-resets-identity-columns`在同一表内设置两段表头,
+   第一段Triggered By遮蔽、第二段Package/Status保留;JS/Python共用21组向量。
+   生产JS已有该行为,本轮不改生产代理或任何放行规则。
+
+### 29.3 停止报告P5Q-C3-01:快照不可用错误应答缺少当前值
+
+状态:**OPEN,等待设计方裁定**。这是C3接入现有代理时暴露的接口缺口,
+不是把冻结快照下架本身当成异常设计;正常拒绝行为保持不变。
+
+**要求位置**:
+
+- 冻结稿§0.5:70要求stdout提示“参考快照已从 <冻结值> 变为 <当前值>,
+  需在新campaign中处理”。§4.3第5步:436与§9.1填表组:702再次要求两值。
+- §3.5 fill第2步:313和第6步:336只在成功返回readback/选项数;
+  错误映射表规定SNAPSHOT_NUM不可用映射为REJECTED_QB_SNAPSHOT_UNAVAILABLE,
+  没有指定该错误的当前选中值应答字段。
+
+**代码事实与实测**:
+
+- `qb_browser_agent.mjs:731-736/:756-758`:当要求的冻结值不在选项中,
+  生产fill抛`AgentError('QB_FORM_VALUE_UNAVAILABLE', 'SNAPSHOT_NUM')`。
+- `qb_browser_agent.mjs:587-602`:该错误只输出`ok/error/field`,且表单作废;
+  不属于当前可产出diagnostic的错误集合。`open_form`成功也只返回released=false。
+- `qb_browser.py:17-24/:105-111/:140-143`:Python异常只有code/released/
+  diagnostic/diagnostic_failed,没有实际快照值。不能从冻结行反推当前选中项。
+- [snapshot-response-probe.mjs](evidence/C3/snapshot-response-probe.mjs)调用生产
+  `Agent.fill`与`Agent.command`,只替换DOM快照/定位器为离线夹具,无浏览器/网络。
+  同一冻结值`frozen-snapshot`,分别提供当前选中值`current-snapshot-A`和
+  `current-snapshot-B`,两次应答均为:
+
+```json
+{"ok":false,"error":"QB_FORM_VALUE_UNAVAILABLE","field":"SNAPSHOT_NUM"}
+```
+
+两次均form_state=invalid、released=false。原始输出:
+[snapshot-response-probe.json](evidence/C3/snapshot-response-probe.json)。
+同两应答经生产`decode_response`所得异常属性也完全相同,diagnostic=null:
+[snapshot-driver-probe.json](evidence/C3/snapshot-driver-probe.json)。
+探针exit=0表示成功复现信息缺失,**不是C3验收通过**。
+
+**为什么停止**:现有协议下CLI无法区分两个不同当前值,因而无法如实满足stdout
+契约。不能编造当前值、用父构建历史值代替,也不能重开表单/改用@freeze再fill
+来绕过首次失败。只加Python字段而代理不提供原始事实同样无效。
+
+**候选处理(未实施,请设计方明确)**:
+
+1. 在SNAPSHOT_NUM不可用的错误应答中携带同一可信表单快照的选中项文字和选项数,
+   经脱敏后由Python保留至QbBrowserError;CLI用冻结值与此值输出固定提示,
+   错误码/表单作废/零提交/零DB写入不变。需明确字段名、无选中项或多个选中项时
+   的表示方式,以及该错误是否携带诊断。首选这一条,不增加请求或额外设值。
+2. 或明确扩展被动诊断的错误范围,由同一可信快照产出足以取得当前快照的结构字段,
+   Python从该字段取值;不得依赖未登记的原始页面或额外请求。
+
+没有自行选定应答形状,没有修改冻结稿/生产代理/驱动。qb-trigger主体、幂等表逐格、
+事务/崩溃窗口、隔离传输变异、多unit和诊断集成测试均**NOT_IMPLEMENTED**,
+不宣称C3完成,不进入C4。C5/C6挂账仍按§27.2保持开放。
+
+### 29.4 验收
+
+本轮仅验收两项遗留修复与零网络停点探针;全仓回归不代表C3主体交付。
+完整命令和原始日志:[evidence/C3/README.md](evidence/C3/README.md)。
+
+| 项目 | 结果 | exit / C3证据文件 |
+|---|---|---|
+| 全量pytest | 2282 passed / 0 failed / 1 skipped,256.98s;相对332878d的2277/1新增5通过 | 0 / pytest.log |
+| 配置与Python脱敏定向 | 154 passed / 0 failed / 0 skipped | 0 / focused.log |
+| Node单元 | 152 passed / 0 failed / 0 skipped | 0 / node-unit.log |
+| Node DOM(含共用21向量) | 64 passed / 0 failed / 0 skipped;含新增重复表头向量 | 0 / node-dom-safety.log |
+| 四组拦截安全 | 从头重跑4/4;仅本机HTTPS假服务器 | 0 / node-dom-safety.log |
+| mypy | 113 source files,无问题 | 0 / mypy.log |
+| Ruff完整待提交代码树 | All checks passed,树511932966057615ffab3ffb7a85202d0cacbb258 | 0 / ruff.log |
+| lint-imports | 6 kept / 0 broken | 0 / lint-imports.log |
+| design.md检查器 | 0 problem | 0 / design-check.log |
+| 冻结hash/未改代理与驱动 | 哈希符合,生产代理/驱动与冻结稿零diff | 0 / frozen-hashes.log |
+
+本轮未触碰放行规则,四组安全仍额外从头跑并保留逐组服务器实收结果。
+Worker走b:browser_fail_closed,attackHTTP=0、WS握手=0,浏览器和临时目录清理成功。
+DOM/安全两个pytest入口计2 passed,不与Node内部64+4重复计数。
+第9.1节触发前置与幂等/填表与提交的CLI用例及§4.2每格映射未实现(0条),
+参数冻结与配置沿用既有全量用例加本次4个配置函数用例;
+凭据与脱敏新增1个共用向量。不得把既有通过数记为C3全部用例完成。
+提交只包含两项遗留修复、测试、状态与停点证据,不进入C4。

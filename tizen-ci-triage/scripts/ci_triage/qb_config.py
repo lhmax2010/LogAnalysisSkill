@@ -67,7 +67,7 @@ def parse_qb_config(value: object) -> dict[str, Any]:
             raise QbConfigError("project.enabled must be a boolean")
         if not project["enabled"]:
             continue
-        _text(project.get("configuration_path"), "configuration_path")
+        child_configuration_path(project.get("configuration_path"))
         _text(project.get("project_name"), "project_name")
         if type(project.get("overview_id")) is not int or project["overview_id"] <= 0:
             raise QbConfigError("overview_id must be a positive integer")
@@ -89,6 +89,14 @@ def parse_qb_config(value: object) -> dict[str, Any]:
         if type(project.get("qb_pass_requires_accept")) is not bool:
             raise QbConfigError("qb_pass_requires_accept must be a boolean")
     return copy.deepcopy(qb)
+
+
+def child_configuration_path(configuration_path: object) -> str:
+    """Validate the parent path and derive its RBS build configuration."""
+    path = _text(configuration_path, "configuration_path")
+    if not path.startswith("root/") or not path.endswith("/RBS/TRIGGER"):
+        raise QbConfigError("configuration_path must start with root/ and end with /RBS/TRIGGER")
+    return path.removesuffix("TRIGGER") + "build"
 
 
 def project_for_branch(qb: dict[str, Any], branch: str) -> dict[str, Any]:
