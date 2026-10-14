@@ -43,7 +43,7 @@ class _UserCell:
 class _UserTable:
     cells: list[_UserCell] = field(default_factory=list)
     active: _UserCell | None = None
-    user_column: int | None = None
+    user_columns: set[int] = field(default_factory=set)
 
 
 class _UserFields(HTMLParser):
@@ -122,17 +122,14 @@ class _UserFields(HTMLParser):
                 table.active.end = self.source_offset()
                 table.active = None
             if tag == "tr":
-                labels = [" ".join("".join(cell.text).split()) for cell in table.cells]
-                if "Triggered By" in labels:
-                    index = labels.index("Triggered By")
-                    if table.cells[index].tag == "th":
-                        table.user_column = index
-                    elif index + 1 < len(table.cells):
-                        cell = table.cells[index + 1]
+                labels = ["".join(cell.text).strip() for cell in table.cells]
+                for index, cell in enumerate(table.cells):
+                    if cell.tag == "th" and labels[index] in {"Triggered By", "Requested By"}:
+                        table.user_columns.add(index)
+                    elif cell.tag == "td" and index in table.user_columns:
                         self.spans.append((cell.start, cell.end))
-                elif table.user_column is not None and table.user_column < len(table.cells):
-                    cell = table.cells[table.user_column]
-                    if cell.tag == "td":
+                    elif labels[index] == "Triggered By" and index + 1 < len(table.cells):
+                        cell = table.cells[index + 1]
                         self.spans.append((cell.start, cell.end))
             if tag == "table":
                 self.tables.pop()
@@ -173,6 +170,7 @@ class _Fields(HTMLParser):
             if hidden and not recorder:
                 line, col = self.getpos()
                 self.hidden.append((self.offsets[line - 1] + col, self.get_starttag_text() or ""))
+                self.secrets.add(a.get("value") or "")
                 if "value" in a and a["value"] != "<REDACTED>":
                     self.invalid_hidden = True
             if sensitive or (a.get("type") or "").lower() == "password":
@@ -198,6 +196,8 @@ class PageRedactor:
     def __init__(self) -> None:
         self.secrets: set[str] = set()
         self.identities: set[str] = set()
+        # Per checked document, not cumulative; callers can record this number in trace.
+        self.identity_outside_registered_count = 0
 
     def _remember(self, value: str) -> None:
         if value and unescape(value) not in {"<REDACTED>", "<USER>"}:
@@ -224,15 +224,12 @@ class PageRedactor:
             self._remember(value)
         for match in SECRET_VALUE.finditer(unescape(text)):
             self._remember(next(value for value in match.groups() if value is not None))
-        # Mask ordinary hidden UI values only at their attributes, not globally.
+        # Mask hidden attributes first, including empty values; scrub their copies globally below.
         for start, raw_tag in reversed(fields.hidden):
             tag = VALUE_ATTR.sub(lambda m: m[1] + '"' + MASK + '"', raw_tag)
             text = text[:start] + tag + text[start + len(raw_tag) :]
         for value in sorted(self.secrets, key=len, reverse=True):
             text = text.replace(value, MASK)
-        for identity in sorted(self.identities, key=len, reverse=True):
-            for spelling in {identity, escape(identity)}:
-                text = _identity_pattern(spelling).sub("&lt;USER&gt;", text)
         # The post-write contract excludes the cookie assignment itself, not just its value.
         text = re.sub(r"(?i)JSESSIONID_8810\s*=", "redacted_session:", text)
         self.check_bytes(text.encode("utf-8"))
@@ -248,11 +245,6 @@ class PageRedactor:
         if (
             b"jsessionid_8810=" in raw.lower()
             or any(value in visible for value in self.secrets)
-            or any(
-                _identity_pattern(identity).search(content)
-                for identity in self.identities
-                for content in (text, decoded)
-            )
             or HEADERS.search(text)
             or fields.invalid_hidden
             or any(value not in {"", "<REDACTED>"} for value in fields.secrets)
@@ -266,6 +258,13 @@ class PageRedactor:
             value = next(value for value in match.groups() if value is not None)
             if value not in {"<REDACTED>", ""}:
                 raise EvidenceRedactionError("evidence redaction self-check failed")
+        outside = text
+        for start, end in sorted(set(users.spans), reverse=True):
+            outside = outside[:start] + "\0" + outside[end:]
+        outside = unescape(outside)
+        self.identity_outside_registered_count = sum(
+            len(_identity_pattern(identity).findall(outside)) for identity in self.identities
+        )
 
     def check_written(self, path: Path) -> None:
         """Inspect raw bytes, deleting the evidence on failure without echoing its contents."""

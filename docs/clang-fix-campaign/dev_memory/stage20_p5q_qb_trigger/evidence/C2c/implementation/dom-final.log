@@ -1,0 +1,92 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 1 item
+
+tests/unit/test_qb_browser_node.py::test_node_browser_redaction_and_response_interception ▶ C2B-09 page trim overrides cannot change Node decisions or identity redaction
+  ✔ form and options, broken=false (32.793392ms)
+  ✔ build identity, broken=false (16.349017ms)
+  ✔ redaction pre/post check, broken=false (48.59864ms)
+  ✔ form and options, broken=true (18.098575ms)
+  ✔ build identity, broken=true (17.046388ms)
+  ✔ redaction pre/post check, broken=true (48.707488ms)
+✔ C2B-09 page trim overrides cannot change Node decisions or identity redaction (1157.075236ms)
+▶ C2A-04 archived build DOM identity regression only, with all network denied
+  ✔ archive 01.response.txt /build/1069540/overview (38.496014ms)
+  ✔ archive 03.response.txt /build/1069540/variables (12.833974ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (16.039533ms)
+  ✔ navigation spelling Id (21.583725ms)
+  ✔ navigation spelling ID (15.089222ms)
+  ✔ Summary Id resolved by column, not fixed position (13.175416ms)
+  ✔ reject duplicate-nav (12.089008ms)
+  ✔ reject missing-nav (16.75586ms)
+  ✔ reject wrong-nav (14.553038ms)
+  ✔ reject missing-summary (11.69941ms)
+  ✔ reject duplicate-summary (10.584945ms)
+  ✔ reject missing-id-column (7.947334ms)
+  ✔ reject duplicate-id-column (11.477991ms)
+  ✔ reject different-summary-id (9.43875ms)
+  ✔ reject missing-first-row (8.566534ms)
+  ✔ both overview sources agree but differ from requested id (6.779878ms)
+  ✔ subpage missing navigation (13.073602ms)
+  ✔ subpage duplicate navigation (12.975066ms)
+  ✔ subpage wrong navigation (11.053443ms)
+  ✔ C2B-06 remembered Variables at bare build 1193469 (29.766539ms)
+  ✔ C2B-06 remembered Variables at bare build 1186372 (28.755833ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 archived build DOM identity regression only, with all network denied (1076.569054ms)
+▶ C2B-06 exact Run button grammar from live-06, with no navigation or click requests
+  ✔ none (44.080165ms)
+  ✔ anchor (16.785556ms)
+  ✔ duplicate (10.187802ms)
+  ✔ extra-statement (14.572441ms)
+  ✔ promote (10.676149ms)
+  ✔ run2 (10.801409ms)
+  ✔ external (19.548033ms)
+  ✔ missing-onclick (19.477565ms)
+  ✔ trailing-newline (15.335201ms)
+✔ C2B-06 exact Run button grammar from live-06, with no navigation or click requests (941.427304ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (798.540959ms)
+▶ C2B-04 shared identity boundary and credential vectors
+  ✔ short-display-name (9.890818ms)
+  ✔ user-identity-does-not-count-registered-mask (9.242805ms)
+  ✔ triggered-by-row (8.693505ms)
+  ✔ triggered-by-column (6.036861ms)
+  ✔ multiword (6.282246ms)
+  ✔ literal-regex-and-ascii-boundaries (5.99082ms)
+  ✔ secrets-remain-substrings (4.69055ms)
+  ✔ opaque-hidden-value-is-global (3.664419ms)
+  ✔ registered-labels-trim-outer-whitespace (6.992626ms)
+  ✔ internal-label-whitespace-is-not-collapsed (7.377183ms)
+  ✔ business-word-successful (7.460625ms)
+  ✔ business-word-failed (4.33988ms)
+  ✔ business-word-full (6.718931ms)
+  ✔ business-word-root (6.048039ms)
+  ✔ requested-by-column-live-12-shape (4.467159ms)
+  ✔ requested-by-and-unregistered-owner (4.501947ms)
+  ✔ requestedby-and-owner-not-registered (3.712598ms)
+  ✔ requested-by-adjacent-value-not-registered (6.28062ms)
+  ✔ multiple-registered-columns-and-rows (7.44695ms)
+  ✔ entity-display-name (6.634383ms)
+✔ C2B-04 shared identity boundary and credential vectors (965.067032ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/build/301","/favicon.ico"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (1226.827118ms)
+{"c2b10":"local-field-callbacks","received":[{"method":"GET","path":"/wicket/page?50","body":""},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.0034203532843425366","body":"Partial"},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.7887400578655359","body":"Full"}],"form_action_releases":0}
+✔ C2B-10 local form switches Full -> Partial -> Full with Math.random callbacks (878.183277ms)
+ℹ tests 63
+ℹ suites 0
+ℹ pass 63
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7047.874991
+
+PASSED
+
+============================== 1 passed in 7.12s ===============================
+
+command_exit=0

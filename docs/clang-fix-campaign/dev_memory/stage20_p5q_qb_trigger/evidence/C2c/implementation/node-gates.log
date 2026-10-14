@@ -1,0 +1,588 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 5 items
+
+tests/unit/test_qb_browser_node.py::test_node_agent_unit_matrix ✔ permanent deny external download (1.538066ms)
+✔ permanent deny http (0.104849ms)
+✔ permanent deny websocket (0.072393ms)
+✔ permanent deny rest (0.067682ms)
+✔ permanent deny log (0.300857ms)
+✔ permanent deny html report (0.14371ms)
+✔ permanent deny artifact (0.09075ms)
+✔ permanent deny promote (0.074406ms)
+✔ permanent deny cancel (0.078081ms)
+✔ permanent deny stop (0.148923ms)
+✔ permanent deny rerun (0.089488ms)
+✔ permanent deny delete (0.056533ms)
+✔ permanent deny abort (0.038961ms)
+✔ permanent deny form cancel (0.038407ms)
+✔ permanent deny 307 (0.041464ms)
+✔ permanent deny 308 (0.038451ms)
+✔ allow idle GET /styles/main.css?v=7 (0.094488ms)
+✔ allow login GET /signin (0.054283ms)
+✔ allow login POST /signin?12-1.IFormSubmitListener-content-form (0.062118ms)
+✔ allow login GET / (0.03818ms)
+✔ allow login GET /overview/0 (0.03505ms)
+✔ allow read GET /build/1 (0.082982ms)
+✔ allow read GET /build/1/overview (0.092576ms)
+✔ allow read GET /build/1/variables (0.818771ms)
+✔ allow read GET /build/1/step_status (0.045889ms)
+✔ allow read GET /overview/1921 (0.082511ms)
+✔ allow open_form GET /wicket/page?50 (0.060152ms)
+✔ allow fill GET /wicket/page?50-3 (0.043042ms)
+✔ registered login landing accepts query "" (0.071903ms)
+✔ registered login landing accepts query "0" (0.048076ms)
+✔ registered login landing accepts query "123" (0.028127ms)
+✔ registered login landing rejects query "v=1" (0.040286ms)
+✔ registered login landing rejects query "1-2" (0.024863ms)
+✔ registered login landing rejects query "1&x=2" (0.022303ms)
+✔ registered login landing rejects query "x=1" (0.023823ms)
+✔ registered login landing rejects query "1\n" (0.022592ms)
+✔ registered login landing rejects query "1.IBehaviorListener-x" (0.0221ms)
+✔ registered login landing boundary post (0.035089ms)
+✔ registered login landing boundary session path (0.028681ms)
+✔ registered login landing boundary suffix (0.02756ms)
+✔ registered login landing boundary unregistered (0.025413ms)
+✔ registered login landing boundary http (0.023981ms)
+✔ registered login landing boundary foreign (0.024275ms)
+✔ registered login landing boundary script (0.027359ms)
+✔ registered login landing boundary ckeditor remains denied (0.028831ms)
+✔ registered login landing boundary font remains denied (0.040967ms)
+✔ registered landing unavailable outside login: read (0.065323ms)
+✔ registered landing unavailable outside login: open_form (0.037908ms)
+✔ registered landing unavailable outside login: fill (0.032204ms)
+✔ registered landing unavailable outside login: submit (0.035086ms)
+✔ registered landing unavailable outside login: idle (0.043572ms)
+✔ registered landing after login redirect does not reopen the POST channels (0.108469ms)
+✔ login channel exact positive /signin (0.04552ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-form" (0.043626ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-formx" (0.034296ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-form&x=1" (0.03253ms)
+✔ login channel query rejected /signin "0-.IFormSubmitListener-content-form" (0.028345ms)
+✔ login channel query rejected /signin "0-1IFormSubmitListener-content-form" (0.033906ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-form\n" (0.027302ms)
+✔ login submission GET rejected /signin (0.039324ms)
+✔ login submission rejected in read /signin (0.039253ms)
+✔ login submission rejected in open_form /signin (0.027251ms)
+✔ login submission rejected in fill /signin (0.02672ms)
+✔ login submission rejected in submit /signin (0.044378ms)
+✔ login submission rejected in idle /signin (0.027721ms)
+✔ login channel exact positive /wicket/page (0.287041ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-form" (0.030471ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-formx" (0.027178ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-form&x=1" (0.037626ms)
+✔ login channel query rejected /wicket/page "0-.IFormSubmitListener-content-form" (0.028823ms)
+✔ login channel query rejected /wicket/page "0-1IFormSubmitListener-content-form" (0.033949ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-form\n" (0.025669ms)
+✔ login submission GET rejected /wicket/page (0.026456ms)
+✔ login submission rejected in read /wicket/page (0.027439ms)
+✔ login submission rejected in open_form /wicket/page (0.030849ms)
+✔ login submission rejected in fill /wicket/page (0.026924ms)
+✔ login submission rejected in submit /wicket/page (0.026499ms)
+✔ login submission rejected in idle /wicket/page (0.027904ms)
+✔ other login submission paths rejected (0.066476ms)
+✔ login 300 closes both channels, preserving redirect GET rules (0.086712ms)
+✔ login 301 closes both channels, preserving redirect GET rules (0.045633ms)
+✔ login 302 closes both channels, preserving redirect GET rules (0.040501ms)
+✔ login 303 closes both channels, preserving redirect GET rules (0.042515ms)
+✔ login 304 closes both channels, preserving redirect GET rules (0.04203ms)
+✔ login 307 closes both channels, preserving redirect GET rules (0.04613ms)
+✔ login 308 closes both channels, preserving redirect GET rules (0.61463ms)
+✔ login 399 closes both channels, preserving redirect GET rules (0.044501ms)
+✔ five request-stage login releases close permanently; responses do not count (0.116843ms)
+✔ leaving login permanently closes channels even after HTTP200 (0.048788ms)
+✔ rejected requests and unrelated responses do not consume the login allowance (0.058474ms)
+✔ root path shape and static restrictions remain explicit (0.065758ms)
+✔ unregistered denied /build/1?x=1 (0.037982ms)
+✔ unregistered denied /overview/1922 (0.029306ms)
+✔ unregistered denied /styles/x?Listener=x (0.057631ms)
+✔ unregistered denied /styles/x?v=a (0.024529ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-dragDrop (0.026948ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-loadPopup (0.022597ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-unloadPopup (0.026989ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-quicksearch (0.023906ms)
+✔ stage-specific navigation never escapes phase (0.160111ms)
+✔ exact run registration, no prefix acceptance (0.073369ms)
+✔ refresh denied in idle, including C2C-03 value=stop regression (0.084655ms)
+✔ refresh denied in login, including C2C-03 value=stop regression (0.056851ms)
+✔ refresh denied in read, including C2C-03 value=stop regression (0.047428ms)
+✔ refresh denied in open_form, including C2C-03 value=stop regression (0.048388ms)
+✔ refresh denied in fill, including C2C-03 value=stop regression (0.039677ms)
+✔ refresh denied in submit, including C2C-03 value=stop regression (0.03607ms)
+✔ one callback per field, old version and other field denied (0.145314ms)
+✔ C2C-03 permanent deny distinguishes stop query values from listener components (0.050753ms)
+✔ C2C-03 stop outside listener still fails the callback and read query grammar (0.07436ms)
+✔ C2B-10 callback one-shot accepts "" (0.077772ms)
+✔ C2B-10 callback one-shot accepts "&random=0.1234567890123456" (0.055106ms)
+✔ C2B-10 callback one-shot accepts "&random=0.0" (0.032949ms)
+✔ C2B-10 callback one-shot accepts "&random=0.11111111111111111111" (0.036157ms)
+✔ C2B-10 callback rejects "&random=0.1&random=0.2" without consuming registration (0.051978ms)
+✔ C2B-10 callback rejects "&random=0.1&extra=1" without consuming registration (0.035839ms)
+✔ C2B-10 callback rejects "&extra=1&random=0.1" without consuming registration (0.029263ms)
+✔ C2B-10 callback rejects "&random=" without consuming registration (0.026469ms)
+✔ C2B-10 callback rejects "&random=-0.1" without consuming registration (0.025457ms)
+✔ C2B-10 callback rejects "&random=5e-7" without consuming registration (0.025608ms)
+✔ C2B-10 callback rejects "&random=0.1e-7" without consuming registration (0.031557ms)
+✔ C2B-10 callback rejects "&random=abc" without consuming registration (0.02731ms)
+✔ C2B-10 callback rejects "&random=0.1a" without consuming registration (0.029208ms)
+✔ C2B-10 callback rejects "&random=1.1" without consuming registration (0.034995ms)
+✔ C2B-10 callback rejects "&random=0." without consuming registration (0.026213ms)
+✔ C2B-10 callback rejects "&random=.1" without consuming registration (0.024632ms)
+✔ C2B-10 callback rejects "&random=0.111111111111111111111" without consuming registration (0.024174ms)
+✔ C2B-10 callback rejects "&random=0.1\n" without consuming registration (0.023532ms)
+✔ C2B-10 callback rejects "&random=0%2E1" without consuming registration (0.02435ms)
+✔ C2B-10 callback rejects "&Random=0.1" without consuming registration (0.023711ms)
+✔ C2B-10 random permission cannot escape the current field POST (0.115957ms)
+✔ C2B-10 submit action and refresh never accept appended random (0.093645ms)
+✔ callback shape fails closed (0.582086ms)
+✔ two form instances each have exactly one release, response does not consume it (0.129159ms)
+✔ 302 next hop is judged independently and 307/308 preserve released (0.079647ms)
+✔ protocol adapter forwards only metadata even when request contains credentials (0.422035ms)
+✔ frame ownership is closed and descendants revoked on detach/navigation (0.130767ms)
+✔ form exact label/role closure and project identity (0.614432ms)
+✔ readback records text/checkbox/select/palette and validates recorder (1.043259ms)
+✔ failed fill and fingerprint mismatch invalidate form until new open (0.517862ms)
+✔ delayed submit request is awaited before navigation, never false not_released (152.476992ms)
+✔ no request release by ten-second deadline rejects and never waits for navigation (10000.607784ms)
+✔ released submit navigation timeout is unknown, not definite failure (1.010311ms)
+✔ read checks exact URL and build id and returns actual HTTP status (1.397318ms)
+✔ source guards: no HTTP client, credential extraction, debug switch, or login interactions (1.793165ms)
+✔ every command outside its permitted phase rejects before any method call (0.478071ms)
+✔ read remains available after submit but navigation invalidates the old form (0.209388ms)
+✔ fill uses current callbacks and frozen selection; checkbox false -> true (1.767456ms)
+✔ fill uses current callbacks and frozen selection; checkbox true -> false (0.947585ms)
+✔ fill uses current callbacks and frozen selection; checkbox true -> true (0.697925ms)
+✔ fill uses current callbacks and frozen selection; checkbox false -> false (1.619459ms)
+✔ field registration rejects a late denial before replacing the previous window (0.091266ms)
+ℹ tests 152
+ℹ suites 0
+ℹ pass 152
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10230.19877
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_browser_redaction_and_response_interception ▶ C2B-09 page trim overrides cannot change Node decisions or identity redaction
+  ✔ form and options, broken=false (26.143478ms)
+  ✔ build identity, broken=false (16.145428ms)
+  ✔ redaction pre/post check, broken=false (44.49788ms)
+  ✔ form and options, broken=true (16.746603ms)
+  ✔ build identity, broken=true (7.28216ms)
+  ✔ redaction pre/post check, broken=true (41.195327ms)
+✔ C2B-09 page trim overrides cannot change Node decisions or identity redaction (1100.08076ms)
+▶ C2A-04 archived build DOM identity regression only, with all network denied
+  ✔ archive 01.response.txt /build/1069540/overview (36.253325ms)
+  ✔ archive 03.response.txt /build/1069540/variables (9.65116ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (18.868454ms)
+  ✔ navigation spelling Id (17.863754ms)
+  ✔ navigation spelling ID (10.489482ms)
+  ✔ Summary Id resolved by column, not fixed position (11.9389ms)
+  ✔ reject duplicate-nav (12.66156ms)
+  ✔ reject missing-nav (15.106022ms)
+  ✔ reject wrong-nav (12.138242ms)
+  ✔ reject missing-summary (12.738022ms)
+  ✔ reject duplicate-summary (12.653781ms)
+  ✔ reject missing-id-column (11.905897ms)
+  ✔ reject duplicate-id-column (13.696399ms)
+  ✔ reject different-summary-id (14.385146ms)
+  ✔ reject missing-first-row (12.470867ms)
+  ✔ both overview sources agree but differ from requested id (10.132427ms)
+  ✔ subpage missing navigation (16.622384ms)
+  ✔ subpage duplicate navigation (16.269643ms)
+  ✔ subpage wrong navigation (11.046577ms)
+  ✔ C2B-06 remembered Variables at bare build 1193469 (34.368806ms)
+  ✔ C2B-06 remembered Variables at bare build 1186372 (35.796104ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 archived build DOM identity regression only, with all network denied (1127.038794ms)
+▶ C2B-06 exact Run button grammar from live-06, with no navigation or click requests
+  ✔ none (45.963765ms)
+  ✔ anchor (17.391341ms)
+  ✔ duplicate (13.31306ms)
+  ✔ extra-statement (13.193221ms)
+  ✔ promote (9.951042ms)
+  ✔ run2 (9.401849ms)
+  ✔ external (8.191401ms)
+  ✔ missing-onclick (12.172011ms)
+  ✔ trailing-newline (8.968865ms)
+✔ C2B-06 exact Run button grammar from live-06, with no navigation or click requests (905.832462ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (782.025871ms)
+▶ C2B-04 shared identity boundary and credential vectors
+  ✔ short-display-name (13.648398ms)
+  ✔ triggered-by-row (9.535241ms)
+  ✔ triggered-by-column (8.601528ms)
+  ✔ multiword (8.815904ms)
+  ✔ literal-regex-and-ascii-boundaries (7.692668ms)
+  ✔ secrets-remain-substrings (9.629728ms)
+  ✔ opaque-hidden-value-is-global (10.535951ms)
+  ✔ registered-labels-trim-outer-whitespace (5.649381ms)
+  ✔ internal-label-whitespace-is-not-collapsed (5.888948ms)
+  ✔ business-word-successful (6.462645ms)
+  ✔ business-word-failed (6.643635ms)
+  ✔ business-word-full (5.017786ms)
+  ✔ business-word-root (4.969902ms)
+  ✔ requested-by-column-live-12-shape (3.801755ms)
+  ✔ requested-by-and-unregistered-owner (4.773441ms)
+  ✔ requestedby-and-owner-not-registered (5.924724ms)
+  ✔ requested-by-adjacent-value-not-registered (7.090001ms)
+  ✔ multiple-registered-columns-and-rows (4.806437ms)
+  ✔ entity-display-name (5.998604ms)
+✔ C2B-04 shared identity boundary and credential vectors (895.741901ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/build/301","/favicon.ico"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (1203.134705ms)
+{"c2b10":"local-field-callbacks","received":[{"method":"GET","path":"/wicket/page?50","body":""},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.7436932938591219","body":"Partial"},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.3543895707355792","body":"Full"}],"form_action_releases":0}
+✔ C2B-10 local form switches Full -> Partial -> Full with Math.random callbacks (814.188804ms)
+ℹ tests 62
+ℹ suites 0
+ℹ pass 62
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6831.580343
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety {"group":"worker-websocket","ok":true,"requests":[{"group":"worker-websocket","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WEBSOCKET_DENIED"},{"action":"WEBSOCKET_DENIED"},{"action":"WORKER_BLOCKED","type":"worker","paused":true}],"details":{"attackHTTP":0,"websocketHandshakes":0,"branch":"b:browser_fail_closed","workers":[{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WORKER_BLOCKED","type":"worker","paused":true}]},"observations":{"closeTarget":[{"type":"shared_worker","outcome":"success","success":true},{"type":"worker","outcome":"exception","category":"Error"}],"failure":"QB_BROWSER_UNAVAILABLE","browserClosed":true,"temporaryDirectoryRemoved":true}}
+{"group":"307-308","ok":true,"requests":[{"group":"307-308","method":"GET","path":"/build/307","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/308","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/302","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/999","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"}],"details":{"blocked":[307,308],"allowed":302}}
+{"group":"per-hop","ok":true,"requests":[{"group":"per-hop","method":"GET","path":"/build/301","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/303","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/304","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"POST","path":"/signin?7-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"phase":"read","path":"<other>","action":"DENIED"},{"phase":"read","path":"/wicket/page","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"login","path":"/signin","action":"DENIED"}],"details":{"forbiddenSecondHops":0,"postReplay":0}}
+{"group":"credential-isolation","ok":true,"requests":[{"group":"credential-isolation","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"POST","path":"/signin?1-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/overview/0","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}],"details":{"credentialFacts":{"cookie":true,"authorization":true,"password":true},"protocol":{"ok":true,"status":200,"html_redacted":"<html><head><link rel=\"icon\" href=\"data:,\"><title>LOCAL C2b safety fixture</title></head><body><a class=\"nav-link\">Build (id:1)</a>\n      <span>Welcome! &lt;USER&gt;</span>\n      <input type=\"hidden\" name=\"token\" value=\"&lt;REDACTED&gt;\">\n      <div class=\"build-summary\"><div class=\"box-head\">Summary</div><table>\n      <thead><tr><th>Id</th><th>Triggered By</th></tr></thead>\n      <tbody><tr><td>1</td><td>&lt;USER&gt;</td></tr></tbody></table></div></body></html>"},"exception":{"ok":false,"error":"QB_BROWSER_UNAVAILABLE"}}}
+{"summary":4,"passed":4,"failed":0,"network":"loopback-only","temporaryDirectoryRemoved":true}
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_trusted.mjs] ▶ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only)
+  ✔ hostile main-world builtins leave read, identity, form and redaction unchanged (1308.244375ms)
+  ✔ response remains Failed after the live DOM becomes Successful (813.813565ms)
+  ✔ script-inserted build identity cannot rescue missing response identity (847.631381ms)
+  ✔ two reads and both openForm navigations recreate the isolated context (943.546207ms)
+  ✔ stale context fails closed without a main-world fallback (870.215893ms)
+  ✔ createIsolatedWorld fails closed without a main-world fallback (859.685332ms)
+  ✔ response body fails closed without a main-world fallback (853.911559ms)
+  ▶ strict response charset decoding uses headers, default UTF-8 and fatal errors
+    ✔ latin1: raw decoder (0.211235ms)
+    ✖ latin1: HTTPS navigation (28.979795ms)
+    ℹ server marker bytes=636166e9; response.body marker bytes=636166c3a9
+    ✔ quoted charset: raw decoder (0.121336ms)
+    ✖ quoted charset: HTTPS navigation (15.892113ms)
+    ℹ server marker bytes=636166e9; response.body marker bytes=636166c3a9
+    ✔ no charset: raw decoder (0.066261ms)
+    ✔ no charset: HTTPS navigation (29.467352ms)
+    ✔ literal replacement character: raw decoder (0.079022ms)
+    ✔ literal replacement character: HTTPS navigation (23.134215ms)
+    ✔ invalid UTF-8: raw decoder (0.394026ms)
+    ✖ invalid UTF-8: HTTPS navigation (31.505354ms)
+    ℹ server marker bytes=c328; response.body marker bytes=efbfbd28
+    ✔ invalid default UTF-8: raw decoder (0.148447ms)
+    ✖ invalid default UTF-8: HTTPS navigation (26.133184ms)
+    ℹ server marker bytes=ff; response.body marker bytes=efbfbd
+    ✔ unsupported charset: raw decoder (0.100056ms)
+    ✔ unsupported charset: HTTPS navigation (17.927963ms)
+  ✖ strict response charset decoding uses headers, default UTF-8 and fatal errors (910.43841ms)
+  ✔ read mismatch: shared secret context, revoked registrations and inert no-store image (1043.541143ms)
+  ✔ read diagnostic failure snapshot returns no partial evidence (769.721767ms)
+  ✔ read diagnostic failure after redaction returns no partial evidence (830.497968ms)
+  ✔ form mismatch: shared secret context, revoked registrations and inert no-store image (1065.404812ms)
+  ✔ form diagnostic failure snapshot returns no partial evidence (932.779903ms)
+  ✔ form diagnostic failure after redaction returns no partial evidence (910.269222ms)
+✖ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only) (13047.140446ms)
+ℹ network=loopback-only; server requests=73; synthetic responses only
+ℹ tests 29
+ℹ suites 0
+ℹ pass 23
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13049.371572
+
+✖ failing tests:
+
+test at tests/node/test_qb_browser_trusted.mjs:475:18
+✖ latin1: HTTPS navigation (28.979795ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'cafÃ©' !== 'café'
+  
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:512:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:475:9
+      at async withRuntime (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:225:5)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:459:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:457:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'cafÃ©',
+    expected: 'café',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/node/test_qb_browser_trusted.mjs:475:18
+✖ quoted charset: HTTPS navigation (15.892113ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'cafÃ©' !== 'café'
+  
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:512:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:475:9
+      at async withRuntime (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:225:5)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:459:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:457:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'cafÃ©',
+    expected: 'café',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/node/test_qb_browser_trusted.mjs:475:18
+✖ invalid UTF-8: HTTPS navigation (31.505354ms)
+  AssertionError [ERR_ASSERTION]: invalid encoding was accepted
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:507:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:475:9
+      at async withRuntime (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:225:5)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:459:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:457:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/node/test_qb_browser_trusted.mjs:475:18
+✖ invalid default UTF-8: HTTPS navigation (26.133184ms)
+  AssertionError [ERR_ASSERTION]: invalid encoding was accepted
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:507:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:475:9
+      at async withRuntime (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:225:5)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:459:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:457:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+FAILED
+tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs] ▶ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only
+  ✔ startup self-test: real counts, version trace, disposable page and zero server requests (1066.41754ms)
+  ✔ startup self-test: count 0 closes browser with fixed stderr (868.515595ms)
+  ✔ startup self-test: count 2 closes browser with fixed stderr (894.567873ms)
+  ✔ all 12 unequal fields: native changes, text blur, palette buttons and new callback versions (14582.919566ms)
+  ✔ all 12 equal fields including @freeze: unchanged bytes and one explicit change each (14369.243437ms)
+  ✔ an extra change is denied and invalidates the current field despite only one server POST (1021.742258ms)
+  ✔ text fill plus artificial change without blur: next field focus produces a denied late native callback (10091.236628ms)
+  ✔ delayed change during next-field snapshot fails (10077.063135ms)
+  ✔ delayed change during final readback fails (14606.611165ms)
+  ✔ swallowed equal-value change: actual 30-second timeout, invalid form and no submit (31233.245018ms)
+  ✔ continuous denied refresh GETs do not extend quiet; uncheck and @freeze still complete (14542.7344ms)
+✔ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only (113643.039598ms)
+ℹ swallowed change elapsed 30096ms; server POSTs=0
+ℹ refresh stream elapsed 13613ms; refresh server requests=0
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 113645.843661
+
+PASSED
+
+=================================== FAILURES ===================================
+_____ test_node_c2c_trusted_reads_and_fields[test_qb_browser_trusted.mjs] ______
+
+script = 'test_qb_browser_trusted.mjs'
+
+    @pytest.mark.integration
+    @pytest.mark.parametrize("script", ["test_qb_browser_trusted.mjs", "test_qb_browser_fields.mjs"])
+    def test_node_c2c_trusted_reads_and_fields(script: str) -> None:
+        command, env = node_command()
+        paths = browser_paths()
+        if not shutil.which("openssl"):
+            pytest.skip("openssl unavailable for synthetic local C2c TLS certificate")
+        result = subprocess.run(
+            [*command, str(ROOT / "tests/node" / script), *paths],
+            env=env, capture_output=True, text=True, timeout=240,
+        )
+        print(result.stdout)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: ▶ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only)
+E           ✔ hostile main-world builtins leave read, identity, form and redaction unchanged (1308.244375ms)
+E           ✔ response remains Failed after the live DOM becomes Successful (813.813565ms)
+E           ✔ script-inserted build identity cannot rescue missing response identity (847.631381ms)
+E           ✔ two reads and both openForm navigations recreate the isolated context (943.546207ms)
+E           ✔ stale context fails closed without a main-world fallback (870.215893ms)
+E           ✔ createIsolatedWorld fails closed without a main-world fallback (859.685332ms)
+E           ✔ response body fails closed without a main-world fallback (853.911559ms)
+E           ▶ strict response charset decoding uses headers, default UTF-8 and fatal errors
+E             ✔ latin1: raw decoder (0.211235ms)
+E             ✖ latin1: HTTPS navigation (28.979795ms)
+E             ℹ server marker bytes=636166e9; response.body marker bytes=636166c3a9
+E             ✔ quoted charset: raw decoder (0.121336ms)
+E             ✖ quoted charset: HTTPS navigation (15.892113ms)
+E             ℹ server marker bytes=636166e9; response.body marker bytes=636166c3a9
+E             ✔ no charset: raw decoder (0.066261ms)
+E             ✔ no charset: HTTPS navigation (29.467352ms)
+E             ✔ literal replacement character: raw decoder (0.079022ms)
+E             ✔ literal replacement character: HTTPS navigation (23.134215ms)
+E             ✔ invalid UTF-8: raw decoder (0.394026ms)
+E             ✖ invalid UTF-8: HTTPS navigation (31.505354ms)
+E             ℹ server marker bytes=c328; response.body marker bytes=efbfbd28
+E             ✔ invalid default UTF-8: raw decoder (0.148447ms)
+E             ✖ invalid default UTF-8: HTTPS navigation (26.133184ms)
+E             ℹ server marker bytes=ff; response.body marker bytes=efbfbd
+E             ✔ unsupported charset: raw decoder (0.100056ms)
+E             ✔ unsupported charset: HTTPS navigation (17.927963ms)
+E           ✖ strict response charset decoding uses headers, default UTF-8 and fatal errors (910.43841ms)
+E           ✔ read mismatch: shared secret context, revoked registrations and inert no-store image (1043.541143ms)
+E           ✔ read diagnostic failure snapshot returns no partial evidence (769.721767ms)
+E           ✔ read diagnostic failure after redaction returns no partial evidence (830.497968ms)
+E           ✔ form mismatch: shared secret context, revoked registrations and inert no-store image (1065.404812ms)
+E           ✔ form diagnostic failure snapshot returns no partial evidence (932.779903ms)
+E           ✔ form diagnostic failure after redaction returns no partial evidence (910.269222ms)
+E         ✖ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only) (13047.140446ms)
+E         ℹ network=loopback-only; server requests=73; synthetic responses only
+E         ℹ tests 29
+E         ℹ suites 0
+E         ℹ pass 23
+E         ℹ fail 6
+E         ℹ cancelled 0
+E         ℹ skipped 0
+E         ℹ todo 0
+E         ℹ duration_ms 13049.371572
+E         
+E         ✖ failing tests:
+E         
+E         test at tests/node/test_qb_browser_trusted.mjs:475:18
+E         ✖ latin1: HTTPS navigation (28.979795ms)
+E           AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E           
+E           'cafÃ©' !== 'café'
+E           
+E               at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:512:20)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:475:9
+E               at async withRuntime (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:225:5)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:459:5)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:457:3)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+E             generatedMessage: true,
+E             code: 'ERR_ASSERTION',
+E             actual: 'cafÃ©',
+E             expected: 'café',
+E             operator: 'strictEqual',
+E             diff: 'simple'
+E           }
+E         
+E         test at tests/node/test_qb_browser_trusted.mjs:475:18
+E         ✖ quoted charset: HTTPS navigation (15.892113ms)
+E           AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+E           
+E           'cafÃ©' !== 'café'
+E           
+E               at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:512:20)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:475:9
+E               at async withRuntime (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:225:5)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:459:5)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:457:3)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+E             generatedMessage: true,
+E             code: 'ERR_ASSERTION',
+E             actual: 'cafÃ©',
+E             expected: 'café',
+E             operator: 'strictEqual',
+E             diff: 'simple'
+E           }
+E         
+E         test at tests/node/test_qb_browser_trusted.mjs:475:18
+E         ✖ invalid UTF-8: HTTPS navigation (31.505354ms)
+E           AssertionError [ERR_ASSERTION]: invalid encoding was accepted
+E           
+E           true !== false
+E           
+E               at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:507:20)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:475:9
+E               at async withRuntime (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:225:5)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:459:5)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:457:3)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+E             generatedMessage: false,
+E             code: 'ERR_ASSERTION',
+E             actual: true,
+E             expected: false,
+E             operator: 'strictEqual',
+E             diff: 'simple'
+E           }
+E         
+E         test at tests/node/test_qb_browser_trusted.mjs:475:18
+E         ✖ invalid default UTF-8: HTTPS navigation (26.133184ms)
+E           AssertionError [ERR_ASSERTION]: invalid encoding was accepted
+E           
+E           true !== false
+E           
+E               at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:507:20)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:475:9
+E               at async withRuntime (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:225:5)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:459:5)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:457:3)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+E             generatedMessage: false,
+E             code: 'ERR_ASSERTION',
+E             actual: true,
+E             expected: false,
+E             operator: 'strictEqual',
+E             diff: 'simple'
+E           }
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs', '/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs', '/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome'], returncode=1, stdout="▶ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only)\n  ✔ hostile main-world builtins leave read, identity, form and redaction unchanged (1308.244375ms)\n  ✔ response remains Failed after the live DOM becomes Successful (813.813565ms)\n  ✔ script-inserted build identity cannot rescue missing response identity (847.631381ms)\n  ✔ two reads and both openForm navigations recreate the isolated context (943.546207ms)\n  ✔ stale context fails closed without a main-world fallback (870.215893ms)\n  ✔ createIsolatedWorld fails closed without a main-world fallback (859.685332ms)\n  ✔ response body fails closed without a main-world fallback (853.911559ms)\n  ▶ strict response charset decoding uses headers, default UTF-8 and fatal errors\n    ✔ latin1: raw decoder (0.211235ms)\n    ✖ latin1: HTTPS navigation (28.979795ms)\n    ℹ server marker bytes=636166e9; res...ION]: invalid encoding was accepted\n  \n  true !== false\n  \n      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:507:20)\n      at async Test.run (node:internal/test_runner/test:1409:7)\n      at async file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:475:9\n      at async withRuntime (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:225:5)\n      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:459:5)\n      at async Test.run (node:internal/test_runner/test:1409:7)\n      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_trusted.mjs:457:3)\n      at async Test.run (node:internal/test_runner/test:1409:7)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: true,\n    expected: false,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n", stderr='').returncode
+
+tests/unit/test_qb_browser_node.py:84: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_trusted.mjs]
+=================== 1 failed, 4 passed in 151.78s (0:02:31) ====================
+
+command_exit=1

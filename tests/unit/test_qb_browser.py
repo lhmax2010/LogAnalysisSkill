@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import json
 import subprocess
 import sys
@@ -27,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[2]
         ("UNKNOWN", None, "INTERNAL_ERROR"),
         ("QB_READ_ID_MISMATCH", None, "QB_FETCH_FAILED"),
         ("QB_READ_REDIRECTED", None, "QB_FETCH_FAILED"),
+        ("QB_TRUSTED_CONTEXT_UNAVAILABLE", None, "QB_FETCH_FAILED"),
     ],
 )
 def test_frozen_error_mapping(error, field, expected):
@@ -91,6 +93,144 @@ def test_read_error_mapping_is_scoped_to_read(error):
         )
     assert caught.value.code == "INTERNAL_ERROR"
     assert caught.value.released is None
+
+
+@pytest.mark.parametrize("command", ["open_form", "fill", "submit"])
+def test_trusted_context_form_error_mapping(command):
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(
+            json.dumps({"ok": False, "error": "QB_TRUSTED_CONTEXT_UNAVAILABLE"}),
+            submit_sent=False, command=command,
+        )
+    assert caught.value.code == "REJECTED_QB_FORM_CHANGED"
+
+
+def test_structural_error_carries_checked_diagnostic_without_losing_error():
+    diagnostic = {
+        "html_redacted": "<span>Welcome! &lt;USER&gt;</span><p>Successful</p>",
+        "facts": {"first_failed_check": "labels", "extra": ["&lt;REDACTED&gt;"]},
+    }
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(json.dumps({"ok": False, "error": "QB_FORM_CHANGED",
+                                    "diagnostic": diagnostic}), submit_sent=False, command="fill")
+    assert caught.value.code == "REJECTED_QB_FORM_CHANGED"
+    assert caught.value.diagnostic == diagnostic
+    assert caught.value.diagnostic_failed is False
+
+
+@pytest.mark.parametrize(
+    "command,error,expected",
+    [
+        ("fill", "QB_FORM_CHANGED", "REJECTED_QB_FORM_CHANGED"),
+        ("read", "QB_READ_ID_MISMATCH", "QB_FETCH_FAILED"),
+        ("submit", "QB_FORM_READBACK_MISMATCH", "REJECTED_QB_FORM_MISMATCH"),
+    ],
+)
+def test_redacted_hidden_input_diagnostic_preserves_original_error(command, error, expected):
+    diagnostic = {
+        "html_redacted": (
+            '<input type="hidden" name="token" value="&lt;REDACTED&gt;">'
+            '<input type="hidden" name="opaque" value="&lt;REDACTED&gt;">'
+            '<input type="hidden" name="x:palette:recorder" value="616263">'
+        ),
+        "facts": {
+            "first_failed_check": "labels",
+            'quoted "label" \\ path': 'token="&lt;REDACTED&gt;"',
+            "csrf_token": "<REDACTED>",
+            "rows": [{"callback": "/x;jsessionid=&lt;REDACTED&gt;"}, None, 1, False],
+        },
+    }
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(
+            json.dumps({"ok": False, "error": error, "released": False,
+                        "diagnostic": diagnostic}),
+            submit_sent=command == "submit", command=command,
+        )
+    assert caught.value.code == expected
+    assert caught.value.diagnostic == diagnostic
+    assert caught.value.diagnostic_failed is False
+    assert caught.value.released is (False if command == "submit" else None)
+
+
+def test_diagnostic_fact_strings_are_checked_without_json_escaping():
+    diagnostic = {
+        "html_redacted": "<p>safe</p>",
+        "facts": {
+            "label": '<input type="hidden" name="token" value="&lt;REDACTED&gt;">',
+            '<span>Welcome! &lt;USER&gt;</span>': ['csrf="<REDACTED>"', 'sessionKey=""'],
+        },
+    }
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(
+            json.dumps({"ok": False, "error": "QB_FORM_CHANGED", "diagnostic": diagnostic}),
+            submit_sent=False, command="fill",
+        )
+    assert caught.value.code == "REJECTED_QB_FORM_CHANGED"
+    assert caught.value.diagnostic == diagnostic
+
+
+@pytest.mark.parametrize("location", ["key", "value", "list"])
+@pytest.mark.parametrize(
+    "leak",
+    [
+        "JSESSIONID_8810=synthetic-private",
+        "/x;jsessionid=synthetic-private",
+        'token="synthetic-private"',
+        "callback?csrf=synthetic-private",
+        "XSRF='synthetic-private'",
+        "prefix\nAuthorization: Bearer synthetic-private",
+        "Cookie: synthetic-private",
+        "Set-Cookie: synthetic-private",
+        "tok&#101;n=&quot;synthetic-private&quot;",
+    ],
+)
+def test_nested_diagnostic_facts_reject_credentials_in_keys_and_values(location, leak):
+    entry = {leak: "safe"} if location == "key" else {"label": leak}
+    if location == "list":
+        entry = {"labels": [leak]}
+    diagnostic = {"html_redacted": "<p>safe</p>", "facts": {"rows": [{"nested": entry}]}}
+    with pytest.raises(EvidenceRedactionError) as caught:
+        decode_response(
+            json.dumps({"ok": False, "error": "QB_FORM_CHANGED", "diagnostic": diagnostic}),
+            submit_sent=False, command="fill",
+        )
+    assert "synthetic-private" not in str(caught.value)
+
+
+@pytest.mark.parametrize("key", ["cookie", "Cookie", "set-cookie", "Authorization"])
+@pytest.mark.parametrize("sent", [False, True])
+def test_diagnostic_sensitive_keys_are_still_discarded(key, sent):
+    raw = json.dumps({
+        "ok": False, "error": "QB_FORM_CHANGED", "released": False,
+        "diagnostic": {"html_redacted": "<p>safe</p>", "facts": {"rows": [{key: "safe"}]}},
+    })
+    if sent:
+        response = decode_response(raw, submit_sent=True, command="submit")
+        assert response["landed"] == "unknown"
+        assert "diagnostic" not in response
+        return
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(raw, submit_sent=False, command="fill")
+    assert caught.value.code == "QB_BROWSER_UNAVAILABLE"
+    assert caught.value.diagnostic is None
+
+
+def test_diagnostic_failure_has_no_partial_snapshot():
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(json.dumps({"ok": False, "error": "QB_READ_ID_MISMATCH",
+                                    "diagnostic_failed": True}), submit_sent=False, command="read")
+    assert caught.value.code == "QB_FETCH_FAILED"
+    assert caught.value.diagnostic is None
+    assert caught.value.diagnostic_failed is True
+
+
+@pytest.mark.parametrize("part", ["html_redacted", "facts"])
+def test_diagnostic_raw_secret_rejected(part):
+    diagnostic = {"html_redacted": "<p>safe</p>", "facts": {}}
+    diagnostic[part] = "JSESSIONID_8810=synthetic-private"
+    with pytest.raises(EvidenceRedactionError):
+        decode_response(json.dumps({"ok": False, "error": "QB_FORM_CHANGED",
+                                    "diagnostic": diagnostic}), submit_sent=False, command="fill")
 
 
 @pytest.mark.parametrize(
@@ -313,8 +453,17 @@ def test_submit_process_failure_cannot_claim_not_released(fake, monkeypatch, fai
 
 def test_python_production_launcher_never_passes_probe_switches():
     source = (ROOT / "tizen-ci-triage/scripts/ci_triage/qb_browser.py").read_text()
+    # Diagnostic responses are data, not permission to launch in probe mode.
+    launches = [node for node in ast.walk(ast.parse(source)) if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Attribute) and node.func.attr == "Popen"]
+    assert len(launches) == 1
+    argv = launches[0].args[0]
+    assert isinstance(argv, ast.List) and len(argv.elts) == 4
+    assert ast.unparse(argv) == (
+        "[browser['node'], str(Path(__file__).with_name('qb_browser_agent.mjs')), "
+        "browser['playwright_module'], browser['chromium']]"
+    )
     for forbidden in (
-        "diagnostic",
         "useBrowserFetch",
         "host-resolver-rules",
         "ignore-certificate-errors",

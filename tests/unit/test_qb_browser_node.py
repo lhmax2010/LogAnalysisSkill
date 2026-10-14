@@ -59,6 +59,31 @@ def test_node_agent_unit_matrix() -> None:
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_node_c2c_source_guard_mutations() -> None:
+    command, env = node_command()
+    result = subprocess.run(
+        [*command, "--test", str(ROOT / "tests/node/test_qb_agent_source_guards.mjs")],
+        env=env, capture_output=True, text=True, timeout=60,
+    )
+    print(result.stdout)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize("script", ["test_qb_browser_trusted.mjs", "test_qb_browser_fields.mjs"])
+def test_node_c2c_trusted_reads_and_fields(script: str) -> None:
+    command, env = node_command()
+    paths = browser_paths()
+    if not shutil.which("openssl"):
+        pytest.skip("openssl unavailable for synthetic local C2c TLS certificate")
+    result = subprocess.run(
+        [*command, str(ROOT / "tests/node" / script), *paths],
+        env=env, capture_output=True, text=True, timeout=240,
+    )
+    print(result.stdout)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 @pytest.mark.integration
 def test_node_browser_redaction_and_response_interception() -> None:
     command, env = node_command()

@@ -12,10 +12,15 @@ from ci_triage.qb_redact import PageRedactor
 
 
 class QbBrowserError(RuntimeError):
-    def __init__(self, code: str, *, released: bool | None = None) -> None:
+    def __init__(
+        self, code: str, *, released: bool | None = None,
+        diagnostic: dict[str, Any] | None = None, diagnostic_failed: bool = False,
+    ) -> None:
         super().__init__(code)
         self.code = code
         self.released = released
+        self.diagnostic = diagnostic
+        self.diagnostic_failed = diagnostic_failed
 
 
 def _sensitive_key(value: object) -> bool:
@@ -27,6 +32,18 @@ def _sensitive_key(value: object) -> bool:
     if isinstance(value, list):
         return any(_sensitive_key(item) for item in value)
     return False
+
+
+def _check_diagnostic_strings(value: object, redactor: PageRedactor) -> None:
+    if isinstance(value, str):
+        redactor.check_bytes(value.encode("utf-8"))
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            _check_diagnostic_strings(key, redactor)
+            _check_diagnostic_strings(item, redactor)
+    elif isinstance(value, list):
+        for item in value:
+            _check_diagnostic_strings(item, redactor)
 
 
 def _unknown() -> dict[str, Any]:
@@ -104,7 +121,26 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
         }.get(code if isinstance(code, str) else "", "INTERNAL_ERROR")
         if command == "read" and code in ("QB_READ_REDIRECTED", "QB_READ_ID_MISMATCH"):
             mapped = "QB_FETCH_FAILED"
-    raise QbBrowserError(mapped, released=False if submit_sent else None)
+        if code == "QB_TRUSTED_CONTEXT_UNAVAILABLE":
+            mapped = (
+                "QB_FETCH_FAILED" if command == "read" else
+                "REJECTED_QB_FORM_CHANGED" if command in {"open_form", "fill", "submit"}
+                else "INTERNAL_ERROR"
+            )
+    diagnostic = response.get("diagnostic")
+    if diagnostic is not None:
+        if not isinstance(diagnostic, dict) or not isinstance(diagnostic.get("html_redacted"), str):
+            raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+        redactor = PageRedactor()
+        redactor.check_bytes(diagnostic["html_redacted"].encode("utf-8"))
+        # Validate decoded strings, never JSON escape sequences as HTML attributes.
+        _check_diagnostic_strings(
+            {key: value for key, value in diagnostic.items() if key != "html_redacted"}, redactor,
+        )
+    raise QbBrowserError(
+        mapped, released=False if submit_sent else None, diagnostic=diagnostic,
+        diagnostic_failed=response.get("diagnostic_failed") is True,
+    )
 
 
 class QbBrowser:

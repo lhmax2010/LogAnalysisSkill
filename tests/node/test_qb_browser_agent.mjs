@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { Agent, AgentError, Policy, FrameOwnership, adaptProtocol, ORIGIN, FIELDS,
-  canonical, fingerprint, callbackURL, readback, validateForm, pathShape } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+  canonical, fingerprint, callbackURL, readback, validateForm, pathShape,
+  destructiveListener } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
 function meta(path, method = 'GET', extra = {}) {
   return { ...adaptProtocol({ requestId: 'r', frameId: 'main', resourceType: 'Document',
@@ -26,7 +27,6 @@ for (const [name, path, extra] of [
   ['308', '/build/1', { response_status: 308 }],
 ]) test(`permanent deny ${name}`, () => {
   const p = policy('read'); p.active.add('r');
-  p.refresh.add(ORIGIN + path);
   assert.equal(p.allow(meta(path, 'GET', extra), 'r'), false);
 });
 
@@ -180,23 +180,21 @@ test('stage-specific navigation never escapes phase', () => {
   assert.equal(p.allow(meta(action.slice(ORIGIN.length), 'POST')), false);
   assert.equal(p.allow(meta(callback.slice(ORIGIN.length), 'POST')), false);
 });
-test('exact run and exact refresh registrations, no prefix acceptance', () => {
+test('exact run registration, no prefix acceptance', () => {
   const p = policy('open_form'); p.runUrl = run;
   assert.equal(p.allow(meta(run.slice(ORIGIN.length) + 'x')), false);
   assert.equal(p.allow(meta(run.slice(ORIGIN.length))), true);
   assert.equal(p.allow(meta(run.slice(ORIGIN.length))), false);
-  const refresh = `${ORIGIN}/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh`;
-  p.refresh.add(refresh);
-  assert.equal(p.allow(meta(refresh.slice(ORIGIN.length))), true);
-  assert.equal(p.allow(meta(refresh.slice(ORIGIN.length) + '0')), false);
 });
-test('registered refresh allows GET but never POST', () => {
-  const p = policy('read');
-  const path = '/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh';
-  p.refresh.add(ORIGIN + path);
-  assert.equal(p.allow(meta(path, 'GET')), true);
-  assert.equal(p.allow(meta(path, 'POST')), false);
-});
+for (const phase of ['idle', 'login', 'read', 'open_form', 'fill', 'submit']) {
+  test(`refresh denied in ${phase}, including C2C-03 value=stop regression`, () => {
+    const p = policy(phase);
+    for (const suffix of ['', '0', '&value=stop', '&random=0.1']) {
+      const path = '/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh' + suffix;
+      for (const method of ['GET', 'POST']) assert.equal(p.allow(meta(path, method)), false);
+    }
+  });
+}
 test('one callback per field, old version and other field denied', () => {
   const p = policy('fill'); p.beginField(callback);
   assert.equal(p.allow(meta(callback.slice(ORIGIN.length) + 'x', 'POST')), false);
@@ -206,11 +204,19 @@ test('one callback per field, old version and other field denied', () => {
   assert.equal(p.allow(meta(callback.slice(ORIGIN.length), 'POST')), false);
   assert.equal(p.allow(meta(callback.replace('50-2', '50-3').slice(ORIGIN.length), 'POST')), true);
 });
-test('stop in value not listener component is allowed', () => {
-  const p = policy('read');
-  const url = `${ORIGIN}/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh&value=stop`;
-  p.refresh.add(url);
-  assert.equal(p.allow(meta(url.slice(ORIGIN.length))), true);
+test('C2C-03 permanent deny distinguishes stop query values from listener components', () => {
+  assert.equal(destructiveListener(new URL(callback).search.slice(1) + '&value=stop'), false);
+  assert.equal(destructiveListener('q=stop'), false);
+  for (const component of ['stopper', 'nonstop']) {
+    assert.equal(destructiveListener(`50-2.IBehaviorListener.0-form-${component}`), true);
+  }
+});
+test('C2C-03 stop outside listener still fails the callback and read query grammar', () => {
+  const p = policy('fill'); p.beginField(callback);
+  assert.equal(p.allow(meta(callback.slice(ORIGIN.length) + '&value=stop', 'POST')), false);
+  assert.equal(p.fieldUrl, callback);
+  assert.equal(p.allow(meta(callback.slice(ORIGIN.length), 'POST')), true);
+  assert.equal(policy('read').allow(meta('/build/1?q=stop')), false);
 });
 for (const suffix of ['', '&random=0.1234567890123456', '&random=0.0', '&random=0.' + '1'.repeat(20)]) {
   test(`C2B-10 callback one-shot accepts ${JSON.stringify(suffix)}`, () => {
@@ -255,7 +261,7 @@ test('C2B-10 submit action and refresh never accept appended random', () => {
   assert.equal(p.released, false);
   assert.equal(p.allow(meta(action.slice(ORIGIN.length), 'POST')), true);
   const refresh = '/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh';
-  p.phase = 'fill'; p.refresh.add(ORIGIN + refresh);
+  p.phase = 'fill';
   assert.equal(p.allow(meta(refresh + '&random=0.1')), false);
   assert.equal(p.allow(meta(refresh + '&random=0.1', 'POST')), false);
 });
@@ -336,6 +342,9 @@ test('readback records text/checkbox/select/palette and validates recorder', () 
   assert.equal(fingerprint(values), fingerprint(Object.fromEntries(Object.entries(values).reverse())));
   p.controls[0].value = '00'; assert.throws(() => readback(f, 'Tizen'), { code: 'QB_FORM_READBACK_MISMATCH' });
   p.controls[0].value = 'ff'; assert.throws(() => readback(f, 'Tizen'), { code: 'QB_FORM_READBACK_MISMATCH' });
+  p.controls[0].value = Buffer.from('standard-armv7l').toString('hex');
+  p.controls[2].options.push({ text: 'aarch64' });
+  assert.throws(() => readback(f, 'Tizen'), { code: 'QB_FORM_CHANGED' });
 });
 test('failed fill and fingerprint mismatch invalidate form until new open', async () => {
   const a = new Agent({ policy: new Policy(), page: {}, close: async () => {} });
@@ -412,13 +421,29 @@ test('released submit navigation timeout is unknown, not definite failure', asyn
 });
 test('read checks exact URL and build id and returns actual HTTP status', async () => {
   let redirect = null;
-  const page = { goto: async () => ({ status: () => 503, request: () => ({ redirectedFrom: () => redirect }) }), url: () => ORIGIN + '/build/1',
-    evaluate: async () => '<p>safe</p>' };
-  const a = new Agent({ policy: new Policy(), page });
-  a.buildId = async () => '1'; a.registerRefresh = async () => {};
+  let id = '1';
+  const raw = '<a class="nav-link">Build (id:1)</a><p>safe</p>';
+  const rawbytes = Buffer.from(raw, 'utf8');
+  const p = new Policy();
+  const page = { goto: async url => {
+    assert.equal(p.readNavigation.url, url);
+    Object.assign(p.readNavigation, { requestId: 'navigation', frameId: 'main', body: rawbytes });
+    return { status: () => 503, url: () => url,
+    request: () => ({ redirectedFrom: () => redirect }),
+    headerValue: async name => { assert.equal(name, 'content-type'); return 'text/html; charset=utf-8'; },
+    body: async () => assert.fail('Playwright transcoded body must not be used'),
+  }; }, url: () => ORIGIN + '/build/1' };
+  const a = new Agent({ policy: p, page, trace: [] });
+  a.trusted = { run: async (_fn, input) => {
+    assert.equal(input, raw);
+    return { build: { labels: [`Build (id:${id})`], summaries: [] },
+      redacted: { html_redacted: '<p>safe</p>', outside_identity_count: 0 } };
+  } };
   assert.equal((await a.read('/build/1')).status, 503);
+  assert.equal(a.rawRead, raw);
+  assert.equal(p.readNavigation, null);
   redirect = {}; await assert.rejects(a.read('/build/1'), { code: 'QB_READ_REDIRECTED' }); redirect = null;
-  a.buildId = async () => '2'; await assert.rejects(a.read('/build/1'), { code: 'QB_READ_ID_MISMATCH' });
+  id = '2'; await assert.rejects(a.read('/build/1'), { code: 'QB_READ_ID_MISMATCH' });
   page.url = () => ORIGIN + '/build/1/overview';
   await assert.rejects(a.read('/build/1'), { code: 'QB_READ_REDIRECTED' });
   await assert.rejects(a.read('/build/1?x=1'), { code: 'AGENT_PHASE' });
@@ -426,7 +451,7 @@ test('read checks exact URL and build id and returns actual HTTP status', async 
 test('source guards: no HTTP client, credential extraction, debug switch, or login interactions', () => {
   const source = readFileSync(new URL('../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /page\.request|context\.request|request\.newContext|\.cookies\(|storageState|ignoreHTTPSErrors|DEBUG\s*=\s*['"]pw/);
-  const login = source.split('  async login(timeout) {')[1].split('  async registerRefresh()')[0];
+  const login = source.split('  async login(timeout) {')[1].split('  async buildId(')[0];
   assert.doesNotMatch(login, /\b(click|fill|press|type|evaluate)\(/);
   const outside = source.slice(source.indexOf('export class Policy'));
   assert.doesNotMatch(outside, /\b(headers|postData|postDataEntries)\b/);
@@ -459,36 +484,73 @@ test('read remains available after submit but navigation invalidates the old for
   }
 });
 
-test('fill reads current callbacks and freezes selected snapshot without setting it', async () => {
+for (const [checked, wanted] of [[false, true], [true, false], [true, true], [false, false]])
+test(`fill uses current callbacks and frozen selection; checkbox ${checked} -> ${wanted}`, async () => {
   const f = form();
   const requested = Object.fromEntries(FIELDS.map(name => [name, name]));
   Object.assign(requested, { SNAPSHOT_NUM: '@freeze', CHILD_CONFIGURATIONS: ['standard-armv7l:aarch64:x86_64'],
-    TARGET_IMAGE: [], 'Immediate Stop With Error': true, 'Build Package List': 'pkg/name@abc',
+    TARGET_IMAGE: [], 'Immediate Stop With Error': wanted, 'Build Package List': 'pkg/name@abc',
     'BUILD NOTES': 'clang-fix-campaign request=synthetic', 'Add Package List': '', 'Remove Package List': '' });
   const calls = [];
   const p = new Policy();
   for (const row of f.rows.slice(1)) {
     if (row.label === 'SNAPSHOT_NUM') Object.assign(row.controls[0], { tag: 'SELECT',
       options: [{ text: 'older', selected: false }, { text: 'chosen', selected: true }] });
-    if (row.label === 'Immediate Stop With Error') Object.assign(row.controls[0], { type: 'checkbox', checked: false });
+    if (row.label === 'Immediate Stop With Error') Object.assign(row.controls[0], { type: 'checkbox', checked });
     if (row.label === 'CHILD_CONFIGURATIONS') {
       row.controls[0].value = Buffer.from(requested[row.label][0]).toString('hex');
       row.controls[2].options = [{ text: requested[row.label][0] }];
     }
   }
   const a = new Agent({ policy: p, page: {}, failure: null }); a.currentProject = { project_name: 'Tizen' };
-  a.snapshot = async () => f;
+  let snapshots = 0;
+  let previousWindow;
+  a.snapshot = async () => {
+    if (snapshots++) assert.equal(p.fieldWindow, previousWindow, 'keep the window through the next snapshot');
+    for (const row of f.rows.slice(1)) for (const control of row.controls) {
+      control.callback = `wicketAjaxPost('${callback.replace('50-2', `50-${snapshots + 2}`)}', 0)`;
+    }
+    return f;
+  };
+  const finish = (name, event) => {
+    calls.push([name, event]);
+    assert.equal(p.fieldUrl, callback.replace('50-2', `50-${snapshots + 2}`));
+    assert.ok(p.fieldWindow);
+    assert.notEqual(p.fieldWindow, previousWindow, 'each registration opens a new window');
+    previousWindow = p.fieldWindow;
+    p.fieldFinished = true; p.lastActivity = Date.now() - 1500;
+  };
   a.fieldRow = name => ({ locator: () => ({ locator: () => ({
     fill: async value => { calls.push([name, 'fill']); f.rows.find(r => r.label === name).controls[0].value = value; },
-    setChecked: async value => { calls.push([name, 'checked']); f.rows.find(r => r.label === name).controls[0].checked = value;
-      p.fieldFinished = true; p.lastActivity = Date.now() - 1500; },
+    blur: async () => finish(name, 'blur'),
+    check: async () => { f.rows.find(r => r.label === name).controls[0].checked = true; finish(name, 'check'); },
+    uncheck: async () => { f.rows.find(r => r.label === name).controls[0].checked = false; finish(name, 'uncheck'); },
     selectOption: async () => assert.fail('frozen snapshot must not be set'),
-    dispatchEvent: async () => { calls.push([name, 'change']); p.fieldFinished = true; p.lastActivity = Date.now() - 1500; },
+    dispatchEvent: async event => { assert.equal(event, 'change'); finish(name, event); },
   }) }) });
   const result = await a.fill(requested);
   assert.equal(result.readback['SNAPSHOT_NUM/value'], 'chosen');
   assert.equal(result.snapshot_option_count, 2);
-  assert.equal(calls.some(([name]) => name === 'SNAPSHOT_NUM'), false);
-  assert.equal(new Set(calls.map(([name]) => name)).size, 11);
+  const events = name => calls.filter(([field]) => field === name).map(([, event]) => event);
+  assert.deepEqual(events('SNAPSHOT_NUM'), ['change']);
+  assert.deepEqual(events('BUILD_TYPE'), ['change']);
+  assert.deepEqual(events('BUILD NOTES'), ['fill', 'blur']);
+  assert.deepEqual(events('CHILD_CONFIGURATIONS'), ['change']);
+  assert.deepEqual(events('TARGET_IMAGE'), ['change']);
+  assert.deepEqual(events('Immediate Stop With Error'), [checked === wanted ? 'change' : wanted ? 'check' : 'uncheck']);
+  assert.equal(result.readback['Immediate Stop With Error/value'], wanted);
+  assert.equal(new Set(calls.map(([name]) => name)).size, FIELDS.length);
+  assert.equal(snapshots, FIELDS.length + 1);
+  assert.equal(p.fieldWindow, null);
   assert.equal(result.fingerprint, fingerprint(result.readback));
+});
+
+test('field registration rejects a late denial before replacing the previous window', () => {
+  const p = policy('fill'); p.beginField(callback);
+  const window = p.fieldWindow;
+  p.fieldFinished = true;
+  window.denied++;
+  assert.throws(() => p.beginField(callback.replace('50-2', '50-3')), { code: 'QB_FORM_CHANGED' });
+  assert.equal(p.fieldWindow, window);
+  assert.equal(p.fieldUrl, callback);
 });

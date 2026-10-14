@@ -1,0 +1,48 @@
+▶ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only)
+  ✔ hostile main-world builtins leave read, identity, form and redaction unchanged (1532.86796ms)
+  ✔ response remains Failed after the live DOM becomes Successful (928.493387ms)
+  ✔ script-inserted build identity cannot rescue missing response identity (1002.610802ms)
+  ✔ two reads and both openForm navigations recreate the isolated context (1082.82578ms)
+  ✔ capture is exclusive to this read main-frame navigation, never same-URL fetches or frames (1166.965795ms)
+  ✔ absent slot cannot reuse a preceding read's captured bytes (1004.407166ms)
+  ✔ wrong URL cannot reuse a preceding read's captured bytes (949.00118ms)
+  ✔ wrong request id cannot reuse a preceding read's captured bytes (984.484152ms)
+  ✔ wrong frame id cannot reuse a preceding read's captured bytes (953.864593ms)
+  ✔ in-flight capture rejects a replaced slot even when it contains old valid bytes (964.009042ms)
+  ✔ stale context fails closed without a main-world fallback (999.533586ms)
+  ✔ createIsolatedWorld fails closed without a main-world fallback (998.348827ms)
+  ✔ Fetch.getResponseBody fails closed without a main-world fallback (949.2776ms)
+  ✔ non-base64 body fails closed without a main-world fallback (960.733309ms)
+  ✔ malformed base64 fails closed without a main-world fallback (924.816384ms)
+  ▶ strict response charset decoding uses headers, default UTF-8 and fatal errors
+    ✔ latin1: raw decoder (0.150911ms)
+    ✔ latin1: HTTPS navigation (37.999381ms)
+    ✔ quoted charset: raw decoder (0.072075ms)
+    ✔ quoted charset: HTTPS navigation (36.89993ms)
+    ✔ no charset: raw decoder (0.100289ms)
+    ✔ no charset: HTTPS navigation (35.153917ms)
+    ✔ literal replacement character: raw decoder (0.069656ms)
+    ✔ literal replacement character: HTTPS navigation (32.063608ms)
+    ✔ invalid UTF-8: raw decoder (0.542774ms)
+    ✔ invalid UTF-8: HTTPS navigation (21.473056ms)
+    ✔ invalid default UTF-8: raw decoder (0.082163ms)
+    ✔ invalid default UTF-8: HTTPS navigation (16.805064ms)
+    ✔ unsupported charset: raw decoder (0.093029ms)
+    ✔ unsupported charset: HTTPS navigation (18.135166ms)
+  ✔ strict response charset decoding uses headers, default UTF-8 and fatal errors (1026.361899ms)
+  ✔ read mismatch: shared secret context, revoked registrations and inert no-store image (1103.330417ms)
+  ✔ read diagnostic failure snapshot returns no partial evidence (831.553016ms)
+  ✔ read diagnostic failure after redaction returns no partial evidence (865.706705ms)
+  ✔ form mismatch: shared secret context, revoked registrations and inert no-store image (1205.308131ms)
+  ✔ form diagnostic failure snapshot returns no partial evidence (988.367467ms)
+  ✔ form diagnostic failure after redaction returns no partial evidence (1037.02287ms)
+✔ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only) (22610.807994ms)
+ℹ network=loopback-only; server requests=129; synthetic responses only
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22613.102719

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
 import { pathToFileURL } from 'node:url';
 
@@ -8,6 +8,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const STATIC = ['/styles/', '/jquery/', '/scripts/', '/datetimepicker/', '/codemirror/',
   '/wicket/resource/', '/images/', '/favicon.ico'];
 const DESTRUCTIVE = /I(Link|Behavior|FormSubmit|Resource)Listener[.0-9-]*-[A-Za-z0-9:_-]*(promote|cancel|stop|rerun|delete|abort)/i;
+export const destructiveListener = (query) => DESTRUCTIVE.test(query);
 const CALLBACK = /^\d+-\d+\.IBehaviorListener\.\d+-[A-Za-z0-9:_-]+$/;
 const ACTION = /^\d+-\d+\.IFormSubmitListener-form$/;
 export const FIELDS = ['BUILD_TYPE', 'REPO_TYPE', 'BUILD_REFERENCE', 'SNAPSHOT_NUM',
@@ -16,7 +17,7 @@ export const FIELDS = ['BUILD_TYPE', 'REPO_TYPE', 'BUILD_REFERENCE', 'SNAPSHOT_N
 const PALETTES = new Set(['CHILD_CONFIGURATIONS', 'TARGET_IMAGE']);
 
 export class AgentError extends Error {
-  constructor(code, field) { super(code); this.code = code; this.field = field; }
+  constructor(code, field, check) { super(code); this.code = code; this.field = field; this.check = check; }
 }
 
 export function canonical(value) {
@@ -44,7 +45,6 @@ export class Policy {
   constructor(overviewIds = []) {
     this.overviewIds = new Set(overviewIds.map(String));
     this.phase = 'idle';
-    this.refresh = new Set();
     this.runUrl = null;
     this.fieldUrl = null;
     this.submitUrl = null;
@@ -67,13 +67,18 @@ export class Policy {
   }
   newForm() { this.released = false; this.submitUrl = null; this.endField(); }
   beginField(url) {
+    this.assertField();
     let parsed;
     try { parsed = new URL(url); } catch { throw new AgentError('QB_FORM_CHANGED'); }
     if (parsed.origin !== ORIGIN || parsed.pathname !== '/wicket/page'
       || !CALLBACK.test(parsed.search.slice(1))) throw new AgentError('QB_FORM_CHANGED');
     this.fieldUrl = url; this.fieldFinished = false; this.fieldRequest = null;
+    this.fieldWindow = { allowed: 0, denied: 0 };
   }
-  endField() { this.fieldUrl = null; this.fieldRequest = null; }
+  assertField() {
+    if (this.fieldWindow?.denied) throw new AgentError('QB_FORM_CHANGED');
+  }
+  endField() { this.fieldUrl = null; this.fieldRequest = null; this.fieldWindow = null; }
   invalidate() { this.runUrl = null; this.submitUrl = null; this.endField(); }
   allow(m, requestId = '') {
     const url = `${m.protocol}//${m.host}${m.path}${m.query ? `?${m.query}` : ''}`;
@@ -82,7 +87,7 @@ export class Policy {
       && m.response_status >= 300 && m.response_status < 400) this.loginPostsClosed = true;
     if (m.protocol !== 'https:' || m.host !== 'quickbuild.tizen.org'
       || m.resource_type === 'WebSocket' || m.path.startsWith('/rest/')
-      || DESTRUCTIVE.test(m.query) || /ILinkListener-form-cancel/i.test(m.query)
+      || destructiveListener(m.query) || /ILinkListener-form-cancel/i.test(m.query)
       || /^\/build\/\d+\/(log|html_report|artifacts)(?:\/|$)/.test(m.path)
       || [307, 308].includes(m.response_status)) return false;
     // Responses cannot consume one-shot registrations a second time.
@@ -102,7 +107,6 @@ export class Policy {
       if (this.loginPostCount >= 5) this.loginPostsClosed = true;
       return true;
     }
-    if (this.refresh.has(url) && m.method === 'GET') return true;
     if (['read', 'open_form', 'fill'].includes(this.phase)
       && m.method === 'GET' && this.readonly(m.path) && !m.query) return true;
     if (this.phase === 'open_form') {
@@ -175,15 +179,39 @@ export async function installGuards(browser, context, page, policy, onStop, trac
       const { metadata: m, requestId, frameId } = adapted;
       const allowed = frames.has(frameId) && policy.allow(m, requestId);
       const response = m.response_status !== null;
-      const url = `${m.protocol}//${m.host}${m.path}${m.query ? `?${m.query}` : ''}`;
-      if (!policy.refresh.has(url)) policy.lastActivity = Date.now();
+      if (allowed) policy.lastActivity = Date.now();
+      if (!response && policy.fieldWindow && m.method === 'POST' && /IBehaviorListener/.test(m.query)) {
+        policy.fieldWindow[allowed ? 'allowed' : 'denied'] += 1;
+      }
       if (!allowed) trace.push({ phase: policy.phase, path: pathShape(m.path), action: 'DENIED' });
       if (allowed && !response) policy.active.add(requestId);
       if (response || !allowed) policy.active.delete(requestId);
-      guarded(root.send(!allowed ? 'Fetch.failRequest' : response ? 'Fetch.continueResponse' : 'Fetch.continueRequest',
-        !allowed ? { requestId, errorReason: 'BlockedByClient' } : { requestId }).then(() => {
+      const navigation = policy.readNavigation;
+      const matchesRead = allowed && policy.phase === 'read' && navigation
+        && frames.parents.get(frameId) === null && m.resource_type === 'Document' && m.method === 'GET'
+        && m.redirect_source === null
+        && `${m.protocol}//${m.host}${m.path}${m.query ? `?${m.query}` : ''}` === navigation.url;
+      if (matchesRead && !response && navigation.requestId === null) {
+        navigation.requestId = requestId; navigation.frameId = frameId;
+      }
+      guarded((async () => {
+        // Capture the original bytes while this exact navigation is paused.
+        // Playwright's response.body() may already have transcoded invalid text.
+        if (matchesRead && response && navigation.requestId === requestId && navigation.frameId === frameId
+          && !(m.response_status >= 300 && m.response_status < 400)) {
+          try {
+            const result = await root.send('Fetch.getResponseBody', { requestId });
+            if (result.base64Encoded !== true || typeof result.body !== 'string') throw new Error('non-byte body');
+            const body = Buffer.from(result.body, 'base64');
+            if (body.toString('base64') !== result.body) throw new Error('invalid base64 body');
+            if (policy.readNavigation === navigation && policy.phase === 'read') navigation.body = body;
+            else navigation.failed = true;
+          } catch { navigation.failed = true; }
+        }
+        await root.send(!allowed ? 'Fetch.failRequest' : response ? 'Fetch.continueResponse' : 'Fetch.continueRequest',
+          !allowed ? { requestId, errorReason: 'BlockedByClient' } : { requestId });
         if (response && requestId === policy.fieldRequest && allowed) policy.fieldFinished = true;
-      }));
+      })());
     });
     await root.send('Fetch.enable', { patterns: [
       { urlPattern: '*', requestStage: 'Request' }, { urlPattern: '*', requestStage: 'Response' },
@@ -222,32 +250,35 @@ export function pathShape(path) {
   return '<other>';
 }
 
-// Browser DOM redaction is followed by a Node-side string self-check and the
-// independent qb_redact check in Python. Only the redacted DOM crosses IPC.
-export function redactDOM() {
-  // Page scripts can replace String.prototype.trim; keep this normalization local.
+// This function receives an inert document, never the live DOM.
+export function redactDOM(document, facts = null, details = false) {
   const normalize = value => value.replace(/^[\s\u00a0]+|[\s\u00a0]+$/g, '');
-  const root = document.documentElement.cloneNode(true);
+  const root = document.documentElement;
   const identities = new Set();
+  const identityNodes = new Map();
   const secrets = new Set();
   const remember = (set, value) => { if (value && !['<USER>', '<REDACTED>'].includes(value)) set.add(value); };
   for (const element of root.querySelectorAll('span, div')) {
     if ([...element.childNodes].some((node) => node.nodeType === 3 && /^\s*Welcome!/.test(node.textContent))) {
       const value = normalize(element.textContent.replace(/^\s*Welcome!\s*/, ''));
       remember(identities, value); element.textContent = 'Welcome! <USER>';
+      identityNodes.set(element, 'Welcome! ');
     }
   }
   for (const table of root.querySelectorAll('table')) {
-    let column = null;
+    let columns = [];
     for (const row of table.rows) {
       if (row.closest('table') !== table) continue;
       const cells = [...row.cells];
-      const index = cells.findIndex((cell) => normalize(cell.textContent) === 'Triggered By');
-      let cell;
-      if (index >= 0 && cells[index].tagName === 'TH') column = index;
-      else if (index >= 0) cell = cells[index + 1];
-      else if (column !== null && cells[column]?.tagName === 'TD') cell = cells[column];
-      if (cell) { remember(identities, normalize(cell.textContent)); cell.textContent = '<USER>'; }
+      if (cells.some(cell => cell.tagName === 'TH')) columns = cells.flatMap((cell, index) =>
+        ['Triggered By', 'Requested By'].includes(normalize(cell.textContent)) ? [index] : []);
+      const targets = columns.map(index => cells[index]).filter(cell => cell?.tagName === 'TD');
+      const adjacent = cells.findIndex(cell => cell.tagName === 'TD' && normalize(cell.textContent) === 'Triggered By');
+      if (adjacent >= 0 && cells[adjacent + 1]) targets.push(cells[adjacent + 1]);
+      for (const cell of new Set(targets)) {
+        remember(identities, normalize(cell.textContent)); cell.textContent = '<USER>';
+        identityNodes.set(cell, '');
+      }
     }
   }
   const sensitive = /password|passwd|secret|token|credential|authorization|cookie|session|csrf|xsrf/i;
@@ -274,20 +305,70 @@ export function redactDOM() {
   const decode = (value) => { const box = document.createElement('textarea'); box.innerHTML = value; return box.value; };
   const identityPattern = (value) => new RegExp(`(?<![A-Za-z0-9_])${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![A-Za-z0-9_])`, 'g');
   for (const match of decode(html).matchAll(assignment)) remember(secrets, match[1] ?? match[2] ?? match[3]);
-  for (const value of [...secrets].sort((a, b) => b.length - a.length)) {
-    for (const spelling of new Set([value, escaped(value), encodeURIComponent(value), JSON.stringify(value).slice(1, -1)])) {
-      html = html.split(spelling).join('&lt;REDACTED&gt;');
+  const scrub = text => {
+    for (const value of [...secrets].sort((a, b) => b.length - a.length)) {
+      for (const spelling of new Set([value, escaped(value), encodeURIComponent(value), JSON.stringify(value).slice(1, -1)])) {
+        text = text.split(spelling).join('&lt;REDACTED&gt;');
+      }
     }
+    text = text.replace(/^\s*(?:set-cookie|cookie|authorization)\s*:[^\r\n]*/gim, '&lt;REDACTED&gt;')
+      .replace(/JSESSIONID_8810\s*=/gi, 'redacted_session:');
+    if ([...secrets].some(value => value && decode(text).includes(value))
+      || /JSESSIONID_8810\s*=/i.test(text)) throw new Error('QB_EVIDENCE_REDACTION_FAILED');
+    return text;
+  };
+  const walk = value => typeof value === 'string' ? scrub(value)
+    : Array.isArray(value) ? value.map(walk)
+      : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([k, v]) => [scrub(k), walk(v)])) : value;
+  html = scrub(html);
+  // Exclude registered positions, including the masks we just generated, from
+  // the outside count. This document is inert and html is already serialized.
+  for (const [element, empty] of identityNodes) element.textContent = empty;
+  const outsideHTML = decode(scrub(root.outerHTML));
+  const outside = [...identities].reduce((count, value) => count + [...outsideHTML.matchAll(identityPattern(value))].length, 0);
+  return details ? { html_redacted: html, facts: walk(facts), outside_identity_count: outside } : html;
+}
+
+// A fresh world is requested for every read, so a navigation can never leave a
+// cached context id referring to the previous document.
+export class TrustedPage {
+  constructor(context, page) { this.context = context; this.page = page; }
+  async run(fn, raw = null, args = []) {
+    let session;
+    try {
+      session = await this.context.newCDPSession(this.page);
+      const { frameTree } = await session.send('Page.getFrameTree');
+      const { executionContextId } = await session.send('Page.createIsolatedWorld', {
+        frameId: frameTree.frame.id, worldName: 'p5q-trusted',
+      });
+      const expression = `(() => { const document = ${raw === null ? 'globalThis.document'
+        : `new DOMParser().parseFromString(${JSON.stringify(raw)}, "text/html")`};
+        const buildDOM = ${buildDOM.toString()};
+        const redactDOM = ${redactDOM.toString()};
+        try { return { ok: true, value: (${fn.toString()})(document, ...${JSON.stringify(args)}) }; }
+        catch (error) { return { ok: false, error: error.message === 'QB_EVIDENCE_REDACTION_FAILED'
+          ? 'QB_EVIDENCE_REDACTION_FAILED' : 'QB_TRUSTED_CONTEXT_UNAVAILABLE' }; } })()`;
+      const result = await session.send('Runtime.evaluate', { expression, contextId: executionContextId, returnByValue: true });
+      if (result.exceptionDetails) throw new Error('trusted evaluation failed');
+      if (!result.result.value?.ok) throw new AgentError(result.result.value?.error === 'QB_EVIDENCE_REDACTION_FAILED'
+        ? 'QB_EVIDENCE_REDACTION_FAILED' : 'QB_TRUSTED_CONTEXT_UNAVAILABLE');
+      return result.result.value.value;
+    } catch (error) {
+      if (error instanceof AgentError) throw error;
+      throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE');
+    }
+    finally { if (session) await session.detach().catch(() => {}); }
   }
-  for (const value of [...identities].sort((a, b) => b.length - a.length)) {
-    for (const spelling of new Set([value, escaped(value)])) html = html.replace(identityPattern(spelling), '&lt;USER&gt;');
-  }
-  html = html.replace(/^\s*(?:set-cookie|cookie|authorization)\s*:[^\r\n]*/gim, '&lt;REDACTED&gt;')
-    .replace(/JSESSIONID_8810\s*=/gi, 'redacted_session:');
-  if ([...secrets].some((value) => value && decode(html).includes(value))
-    || [...identities].some((value) => identityPattern(value).test(decode(html)))
-    || /JSESSIONID_8810\s*=/i.test(html)) throw new Error('QB_EVIDENCE_REDACTION_FAILED');
-  return html;
+}
+
+export async function responseText(response, raw) {
+  try {
+    if (!response || !Buffer.isBuffer(raw)) throw new Error('missing response bytes');
+    const contentType = await response.headerValue('content-type') ?? '';
+    const charset = contentType.match(/(?:^|;)\s*charset\s*=\s*(?:"([^"]+)"|'([^']+)'|([^;\s]+))/i);
+    if (/(?:^|;)\s*charset\s*=/i.test(contentType) && !charset) throw new Error('empty charset');
+    return new TextDecoder(charset?.[1] ?? charset?.[2] ?? charset?.[3] ?? 'utf-8', { fatal: true }).decode(raw);
+  } catch { throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE'); }
 }
 
 export function checkRedacted(html) {
@@ -297,7 +378,7 @@ export function checkRedacted(html) {
   return html;
 }
 
-export function formDOM() {
+export function formDOM(document = globalThis.document) {
   const forms = [...document.forms].filter((form) => /IFormSubmitListener-form/.test(form.action));
   if (forms.length !== 1) return null;
   const form = forms[0];
@@ -350,27 +431,29 @@ export function callbackURL(code, base) {
 }
 
 export function validateForm(form, projectName) {
-  if (!form?.heading || !Array.isArray(form.rows) || form.rows.some((row) => !row)) throw new AgentError('QB_FORM_CHANGED');
+  if (!form?.heading) throw new AgentError('QB_FORM_CHANGED', undefined, 'heading');
+  if (!Array.isArray(form.rows) || form.rows.some(row => !row)) throw new AgentError('QB_FORM_CHANGED', undefined, 'row');
   const labels = form.rows.map((row) => row.label);
   if (new Set(labels).size !== FIELDS.length + 1
-    || labels.some((name) => ![...FIELDS, 'PROJECT_NAME'].includes(name))) throw new AgentError('QB_FORM_CHANGED');
+    || labels.some((name) => ![...FIELDS, 'PROJECT_NAME'].includes(name))) throw new AgentError('QB_FORM_CHANGED', undefined, 'labels');
   const grouped = Object.fromEntries([...new Set(labels)].map((name) => [name, form.rows.filter((row) => row.label === name)]));
-  if (Object.values(grouped).some((rows) => rows.length !== 1)) throw new AgentError('QB_FORM_CHANGED');
+  if (Object.values(grouped).some((rows) => rows.length !== 1)) throw new AgentError('QB_FORM_CHANGED', undefined, 'labels');
   for (const row of form.rows) {
     if (row.label === 'PROJECT_NAME') {
-      if (row.controls.length || row.viewers.length !== 1 || row.viewers[0] !== projectName) throw new AgentError('QB_FORM_CHANGED');
+      if (row.controls.length || row.viewers.length !== 1 || row.viewers[0] !== projectName) throw new AgentError('QB_FORM_CHANGED', undefined, 'project_name');
       continue;
     }
     if (PALETTES.has(row.label)) {
       if (row.controls.length !== 3 || canonical(row.controls.map((c) => c.role).sort())
-        !== canonical(['choices', 'recorder', 'selection'])) throw new AgentError('QB_FORM_CHANGED');
-    } else if (row.controls.length !== 1) throw new AgentError('QB_FORM_CHANGED');
+        !== canonical(['choices', 'recorder', 'selection'])) throw new AgentError('QB_FORM_CHANGED', undefined, 'controls');
+    } else if (row.controls.length !== 1) throw new AgentError('QB_FORM_CHANGED', undefined, 'controls');
     const callback = PALETTES.has(row.label) ? row.controls.find((c) => c.role === 'recorder') : row.controls[0];
-    callbackURL(callback.callback, form.base);
+    try { callbackURL(callback.callback, form.base); }
+    catch { throw new AgentError('QB_FORM_CHANGED', undefined, 'callback'); }
   }
   let action;
-  try { action = new URL(form.action); } catch { throw new AgentError('QB_FORM_CHANGED'); }
-  if (action.origin !== ORIGIN || action.pathname !== '/wicket/page' || !ACTION.test(action.search.slice(1))) throw new AgentError('QB_FORM_CHANGED');
+  try { action = new URL(form.action); } catch { throw new AgentError('QB_FORM_CHANGED', undefined, 'action'); }
+  if (action.origin !== ORIGIN || action.pathname !== '/wicket/page' || !ACTION.test(action.search.slice(1))) throw new AgentError('QB_FORM_CHANGED', undefined, 'action');
   return Object.fromEntries(form.rows.map((row) => [row.label, row]));
 }
 
@@ -387,9 +470,10 @@ export function readback(form, projectName) {
       catch { throw new AgentError('QB_FORM_READBACK_MISMATCH', name); }
       // The frozen configuration only permits zero or one item; a multi-value
       // delimiter was not observed and is deliberately not guessed.
-      if (selected.length > 1 || (selected.length === 0 ? recorder !== ''
+      if (selected.length > 1) throw new AgentError('QB_FORM_CHANGED');
+      if (selected.length === 0 ? recorder !== ''
         : !/^(?:[\da-fA-F]{2})+$/.test(recorder)
-          || decoded !== selected[0])) {
+          || decoded !== selected[0]) {
         throw new AgentError('QB_FORM_READBACK_MISMATCH', name);
       }
       values[`${name}/selection`] = selected;
@@ -405,9 +489,66 @@ export function readback(form, projectName) {
   return values;
 }
 
+export function buildDOM(document) {
+  return {
+    labels: [...document.querySelectorAll('.nav-link')].map(label => label.textContent),
+    summaries: [...document.querySelectorAll('.build-summary')].map(box => ({
+      heading: box.querySelector('.box-head')?.textContent,
+      tables: [...box.querySelectorAll('table')].map(table => ({
+        columns: [...table.querySelectorAll('thead th')].map(cell => cell.textContent),
+        cells: [...(table.tBodies[0]?.rows[0]?.cells ?? [])].map(cell => cell.textContent),
+      })),
+    })),
+  };
+}
+
+export function verifiedBuildId(raw, path) {
+  const labels = raw.labels.map(text => text.trim().match(/^Build \((?:id|Id|ID):(\d+)\)$/)).filter(Boolean);
+  if (labels.length !== 1) return null;
+  const id = labels[0][1];
+  if (!/^\/build\/\d+\/overview$/.test(path)) return id;
+  const summaries = raw.summaries.filter(box => box.heading?.trim() === 'Summary');
+  if (summaries.length !== 1 || summaries[0].tables.length !== 1) return null;
+  const table = summaries[0].tables[0];
+  const indices = table.columns.flatMap((text, index) => text.trim() === 'Id' ? [index] : []);
+  return indices.length === 1 && table.cells[indices[0]]?.trim() === id ? id : null;
+}
+
+export function formFacts(form, projectName) {
+  const rows = form?.rows ?? [];
+  const labels = rows.filter(Boolean).map(row => row.label);
+  let first = !form?.heading ? 'heading' : rows.some(row => !row) ? 'row' : null;
+  const missing = [...FIELDS, 'PROJECT_NAME'].filter(name => !labels.includes(name));
+  const extra = labels.filter(name => ![...FIELDS, 'PROJECT_NAME'].includes(name));
+  const duplicate = labels.filter((name, index) => labels.indexOf(name) !== index);
+  if (!first && (missing.length || extra.length || duplicate.length)) first = 'labels';
+  const facts = rows.filter(Boolean).map(row => {
+    const controls = row.controls.map(control => {
+      let valid = true;
+      try { callbackURL(control.callback, form.base); } catch { valid = false; }
+      return { tag: control.tag, type: control.type, role: control.role, callback_valid: valid,
+        callback: control.callback };
+    });
+    if (!first && row.label === 'PROJECT_NAME'
+      && (row.controls.length || row.viewers.length !== 1 || row.viewers[0] !== projectName)) first = 'project_name';
+    if (!first && row.label !== 'PROJECT_NAME') {
+      if (PALETTES.has(row.label)
+        ? canonical(controls.map(c => c.role).sort()) !== canonical(['choices', 'recorder', 'selection'])
+        : controls.length !== 1) first = 'controls';
+      else if (!controls.find(c => !PALETTES.has(row.label) || c.role === 'recorder')?.callback_valid) first = 'callback';
+    }
+    return { label: row.label, control_count: controls.length, controls };
+  });
+  if (!first) {
+    try { validateForm(form, projectName); } catch { first = 'action'; }
+  }
+  return { labels, missing, extra, duplicate, rows: facts, first_failed_check: first ?? 'field_window_or_readback' };
+}
+
 export class Agent {
   constructor(runtime) {
     this.runtime = runtime; this.page = runtime.page; this.policy = runtime.policy;
+    this.trusted = new TrustedPage(runtime.context, runtime.page);
     this.state = 'new'; this.projects = new Map(); this.currentProject = null;
   }
   async command(input) {
@@ -418,6 +559,7 @@ export class Agent {
     if (!allowed[command]?.includes(this.state)) return { ok: false, error: 'AGENT_PHASE' };
     if (this.runtime.failure) return { ok: false, error: this.runtime.failure };
     this.policy.phase = command;
+    this.rawRead = null;
     try {
       let result;
       if (command === 'login') {
@@ -448,6 +590,13 @@ export class Agent {
       }
       if (command === 'submit' && this.policy.released) return { ok: true, landed: 'unknown', released: true, observed: '<other>', messages: [] };
       const response = { ok: false, error: error instanceof AgentError ? error.code : 'QB_BROWSER_UNAVAILABLE' };
+      if (command === 'read' && response.error === 'QB_READ_ID_MISMATCH'
+        || ['open_form', 'fill'].includes(command) && response.error === 'QB_FORM_CHANGED') {
+        this.policy.invalidate();
+        this.policy.phase = 'read';
+        try { response.diagnostic = await this.diagnostic(command, error.check); }
+        catch { response.diagnostic_failed = true; }
+      }
       if (error instanceof AgentError && error.field) response.field = error.field;
       if (command === 'submit') response.released = false;
       return response;
@@ -460,9 +609,12 @@ export class Agent {
       await this.page.goto(`${ORIGIN}/signin`, { timeout: timeout * 1000 });
       while (Date.now() < deadline) {
         if (this.page.isClosed()) throw new AgentError('QB_LOGIN_ABORTED');
-        if (new URL(this.page.url()).pathname !== '/signin'
-          && await this.page.locator('input[type=password]').count() === 0
-          && await this.page.getByRole('link', { name: 'Sign Out', exact: true }).count() > 0) return {};
+        const status = await this.trusted.run(document => ({
+          password: document.querySelectorAll('input[type=password]').length,
+          links: [...document.querySelectorAll('a')].map(link => link.textContent),
+        }));
+        if (new URL(this.page.url()).pathname !== '/signin' && status.password === 0
+          && status.links.some(text => text.trim() === 'Sign Out')) return {};
         await sleep(Math.min(2000, Math.max(0, deadline - Date.now())));
       }
     } catch (error) {
@@ -473,73 +625,84 @@ export class Agent {
     }
     await this.runtime.close(); throw new AgentError('QB_LOGIN_TIMEOUT');
   }
-  async registerRefresh() {
-    const sources = await this.page.evaluate(() => [...document.querySelectorAll('script, [onload], [onclick]')]
-      .map((element) => [element.textContent ?? '', element.getAttribute('onload') ?? '', element.getAttribute('onclick') ?? '']));
-    const values = sources.flat().flatMap(code =>
-      [...code.matchAll(/['"]([^'"\s]*IBehaviorListener[^'"\s]*action=ajaxRefresh[^'"\s]*)['"]/g)].map(m => m[1]));
-    this.policy.refresh = new Set(values.map((value) => new URL(value.replaceAll('&amp;', '&'), this.page.url()).href)
-      .filter((value) => new URL(value).origin === ORIGIN));
+  async buildId(path, raw = null) { return verifiedBuildId(await this.trusted.run(buildDOM, raw), path); }
+  async passive(raw, facts = null) {
+    const result = await this.trusted.run(redactDOM, raw, [facts, true]);
+    checkRedacted(result.html_redacted);
+    this.runtime.trace.push({ action: 'IDENTITY_OUTSIDE_REGISTERED', count: result.outside_identity_count });
+    return result;
   }
-  async buildId(path) {
-    const raw = await this.page.evaluate(() => ({
-      labels: [...document.querySelectorAll('.nav-link')].map(label => label.textContent),
-      summaries: [...document.querySelectorAll('.build-summary')].map(box => ({
-        heading: box.querySelector('.box-head')?.textContent,
-        tables: [...box.querySelectorAll('table')].map(table => ({
-          columns: [...table.querySelectorAll('thead th')].map(cell => cell.textContent),
-          cells: [...(table.tBodies[0]?.rows[0]?.cells ?? [])].map(cell => cell.textContent),
-        })),
-      })),
-    }));
-    const labels = raw.labels.map(text => text.trim().match(/^Build \((?:id|Id|ID):(\d+)\)$/)).filter(Boolean);
-    if (labels.length !== 1) return null;
-    const id = labels[0][1];
-    if (!/^\/build\/\d+\/overview$/.test(path)) return id;
-    const summaries = raw.summaries.filter(box => box.heading?.trim() === 'Summary');
-    if (summaries.length !== 1 || summaries[0].tables.length !== 1) return null;
-    const table = summaries[0].tables[0];
-    const indices = table.columns.flatMap((text, index) => text.trim() === 'Id' ? [index] : []);
-    return indices.length === 1 && table.cells[indices[0]]?.trim() === id ? id : null;
+  async diagnostic(command, check) {
+    const raw = command === 'read' ? this.rawRead
+      : await this.trusted.run(document => document.documentElement.outerHTML);
+    if (typeof raw !== 'string') throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE');
+    let facts;
+    if (command === 'read') {
+      const info = await this.trusted.run(buildDOM, raw);
+      facts = { labels: info.labels, summary_count: info.summaries.length, first_failed_check: 'build_id' };
+    } else facts = formFacts(normalizeFormDOM(await this.trusted.run(formDOM, raw)), this.currentProject?.project_name);
+    if (check) facts.first_failed_check = check;
+    const redacted = await this.passive(raw, facts);
+    return { html_redacted: redacted.html_redacted, facts: redacted.facts };
   }
   async read(path) {
+    this.rawRead = null;
     if (typeof path !== 'string' || !this.policy.readonly(path)) throw new AgentError('AGENT_PHASE');
-    this.policy.refresh.clear();
     const expected = ORIGIN + path;
-    const response = await this.page.goto(expected);
-    if (this.page.url() !== expected || response?.request().redirectedFrom()) throw new AgentError('QB_READ_REDIRECTED');
+    const navigation = { url: expected, requestId: null, frameId: null, body: null, failed: false };
+    this.policy.readNavigation = navigation;
+    let response;
+    try {
+      response = await this.page.goto(expected);
+      if (this.page.url() !== expected || response?.request().redirectedFrom()) throw new AgentError('QB_READ_REDIRECTED');
+      if (this.policy.readNavigation !== navigation || navigation.failed || !navigation.requestId
+        || response?.url() !== expected) throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE');
+      this.rawRead = await responseText(response, navigation.body);
+    } finally {
+      navigation.body = null;
+      if (this.policy.readNavigation === navigation) this.policy.readNavigation = null;
+    }
+    const result = await this.trusted.run(document => ({ build: buildDOM(document),
+      redacted: redactDOM(document, null, true) }), this.rawRead);
     const id = path.match(/^\/build\/(\d+)/)?.[1];
-    if (id && await this.buildId(path) !== id) throw new AgentError('QB_READ_ID_MISMATCH');
-    await this.registerRefresh();
-    let html;
-    try { html = await this.page.evaluate(redactDOM); } catch { throw new AgentError('QB_EVIDENCE_REDACTION_FAILED'); }
-    return { status: response?.status() ?? 0, html_redacted: checkRedacted(html) };
+    if (id && verifiedBuildId(result.build, path) !== id) throw new AgentError('QB_READ_ID_MISMATCH');
+    const redacted = result.redacted;
+    checkRedacted(redacted.html_redacted);
+    this.runtime.trace.push({ action: 'IDENTITY_OUTSIDE_REGISTERED', count: redacted.outside_identity_count });
+    return { status: response.status(), html_redacted: redacted.html_redacted };
   }
-  async snapshot() { return normalizeFormDOM(await this.page.evaluate(formDOM)); }
+  async snapshot() { return normalizeFormDOM(await this.trusted.run(formDOM)); }
   async openForm(id) {
     const project = this.projects.get(id);
     if (!project) throw new AgentError('QB_FORM_CHANGED');
     this.currentProject = project;
-    this.policy.refresh.clear();
     await this.page.goto(`${ORIGIN}/overview/${id}`);
     const expected = `QuickBuild - ${project.configuration_path}`;
-    const title = await this.page.title();
-    if (title !== expected && !title.startsWith(`${expected} - `)) throw new AgentError('QB_FORM_CHANGED');
+    const config = await this.trusted.run(document => ({ title: document.title,
+      runs: [...document.querySelectorAll('[title="Run the configuration"]')].map(element => ({
+        tag: element.tagName, onclick: element.getAttribute('onclick'),
+      })),
+    }));
+    const title = config.title;
+    if (title !== expected && !title.startsWith(`${expected} - `)) throw new AgentError('QB_FORM_CHANGED', undefined, 'configuration_title');
     const run = this.page.locator('button[title="Run the configuration"]');
-    if (await run.count() !== 1 || await this.page.locator('[title="Run the configuration"]').count() !== 1) {
-      throw new AgentError('QB_FORM_CHANGED');
+    if (config.runs.length !== 1 || config.runs[0].tag !== 'BUTTON') {
+      throw new AgentError('QB_FORM_CHANGED', undefined, 'run_control');
     }
-    const onclick = await run.getAttribute('onclick');
+    const onclick = config.runs[0].onclick;
     const match = typeof onclick === 'string' && /^var win = this\.ownerDocument\.defaultView \|\| this\.ownerDocument\.parentWindow; if \(win == window\) \{ window\.location\.href='((?:\.\.\/)*wicket\/page\?\d+-\d+\.ILinkListener-run)'; \} ;return false$/.exec(onclick);
-    if (!match || match[0] !== onclick) throw new AgentError('QB_FORM_CHANGED');
+    if (!match || match[0] !== onclick) throw new AgentError('QB_FORM_CHANGED', undefined, 'run_onclick');
     const url = new URL(match[1], this.page.url());
     if (url.origin !== ORIGIN || url.pathname !== '/wicket/page'
       || !/^\d+-\d+\.ILinkListener-run$/.test(url.search.slice(1))) throw new AgentError('QB_FORM_CHANGED');
     this.policy.runUrl = url.href;
     await run.click({ timeout: 30000 });
-    await this.page.getByText('Specify Build Options', { exact: true }).waitFor({ timeout: 30000 });
+    const deadline = Date.now() + 30000;
+    while (!(await this.snapshot())?.heading) {
+      if (Date.now() >= deadline || this.runtime.failure) throw new AgentError('QB_FORM_CHANGED');
+      await sleep(50);
+    }
     validateForm(await this.snapshot(), project.project_name);
-    await this.registerRefresh();
     return { released: false };
   }
   fieldRow(name) {
@@ -571,9 +734,6 @@ export class Agent {
           const selected = control.options.filter((option) => option.selected);
           if (!snapshotCount || selected.length !== 1 || !selected[0].text) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);
           value = selected[0].text;
-          this.policy.endField();
-          expected[`${name}/value`] = value;
-          continue;
         }
       }
       if (PALETTES.has(name)) {
@@ -585,7 +745,7 @@ export class Agent {
             await box.locator('button.remove').click();
           }
           if (value.length) {
-            const choices = (await box.locator('select[name$=":choices"] option').allTextContents()).map(text => text.trim());
+            const choices = row.controls.find(c => c.role === 'choices').options.map(option => option.text);
             if (value.some((item) => !choices.includes(item))) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);
             await box.locator('select[name$=":choices"]').selectOption(value.map((label) => ({ label })));
             await box.locator('button.add').click();
@@ -594,26 +754,33 @@ export class Agent {
       } else {
         const element = box.locator('input, select, textarea');
         if (control.tag === 'SELECT') {
-          if (!control.options.some((option) => option.text === value)) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);
-          await element.selectOption({ label: value });
+          const options = control.options.filter(option => option.text === value);
+          if (options.length !== 1) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);
+          if (options[0].selected) await element.dispatchEvent('change');
+          else await element.selectOption({ value: options[0].value });
         } else if (control.type === 'checkbox') {
           if (typeof value !== 'boolean') throw new AgentError('QB_FORM_READBACK_MISMATCH', name);
           if (control.checked === value) await element.dispatchEvent('change');
-          else await element.setChecked(value);
+          else if (value) await element.check();
+          else await element.uncheck();
         } else {
           if (typeof value !== 'string') throw new AgentError('QB_FORM_READBACK_MISMATCH', name);
-          await element.fill(value); await element.dispatchEvent('change');
+          if (control.value === value) await element.dispatchEvent('change');
+          else { await element.fill(value); await element.blur(); }
         }
       }
       const deadline = Date.now() + 30000;
       while (!this.policy.fieldFinished || Date.now() - this.policy.lastActivity < 1000) {
+        this.policy.assertField();
         if (Date.now() > deadline || this.runtime.failure) throw new AgentError('QB_FORM_CHANGED');
         await sleep(50);
       }
-      this.policy.endField();
+      this.policy.assertField();
       expected[`${name}/${PALETTES.has(name) ? 'selection' : 'value'}`] = value;
     }
     const actual = readback(await this.snapshot(), this.currentProject.project_name);
+    this.policy.assertField();
+    this.policy.endField();
     if (canonical(actual) !== canonical(expected)) throw new AgentError('QB_FORM_READBACK_MISMATCH');
     this.expected = expected;
     return { readback: actual, fingerprint: fingerprint(actual), snapshot_option_count: snapshotCount, released: false };
@@ -641,7 +808,42 @@ export class Agent {
   }
 }
 
+export async function startupSelfTest(runtime, version, syntheticCount = 1) {
+  try {
+    await runtime.page.setContent(`<select id="select" onchange="this.dataset.changes=+(this.dataset.changes||0)+${syntheticCount}"><option>a</option><option>b</option></select>
+      <input id="check" type="checkbox" onchange="this.dataset.changes=+(this.dataset.changes||0)+${syntheticCount}">
+      <textarea id="text" onchange="this.dataset.changes=+(this.dataset.changes||0)+${syntheticCount}"></textarea>`);
+    await runtime.page.locator('#select').selectOption({ label: 'b' });
+    await runtime.page.locator('#check').check();
+    await runtime.page.locator('#text').fill('changed');
+    await runtime.page.locator('#text').blur();
+    const counts = await new TrustedPage(runtime.context, runtime.page).run(document =>
+      [...document.querySelectorAll('#select,#check,#text')].map(element => Number(element.dataset.changes ?? 0)));
+    if (canonical(counts) !== '[1,1,1]' || runtime.failure) throw new Error('framework mismatch');
+    runtime.trace.push({ action: 'FRAMEWORK_SELF_TEST', playwright_version: version, counts });
+  } catch {
+    await runtime.close();
+    process.stderr.write('浏览器框架的设值行为与设计不符,升级 Playwright 后须重新验证\n');
+    throw new AgentError('QB_BROWSER_UNAVAILABLE');
+  }
+}
+
 export async function createRuntime(modulePath, chromiumPath, testOptions = {}) {
+  // Use a disposable, fully guarded browser for the synthetic page. Closing it
+  // avoids weakening the new-page guard when starting the working page.
+  const probe = await launchRuntime(modulePath, chromiumPath, testOptions);
+  try {
+    const pkg = JSON.parse(await readFile(new URL('./package.json', pathToFileURL(modulePath)), 'utf8'));
+    await startupSelfTest(probe, pkg.version);
+  } catch {
+    throw new AgentError('QB_BROWSER_UNAVAILABLE');
+  } finally { await probe.close(); }
+  const runtime = await launchRuntime(modulePath, chromiumPath, testOptions);
+  runtime.trace.push(...probe.trace);
+  return runtime;
+}
+
+async function launchRuntime(modulePath, chromiumPath, testOptions = {}) {
   const profile = await mkdtemp('/dev/shm/p5q-browser-');
   process.env.TMPDIR = profile;
   const env = { ...process.env, TMPDIR: profile };

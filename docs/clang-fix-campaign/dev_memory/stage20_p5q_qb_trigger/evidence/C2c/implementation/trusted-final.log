@@ -1,0 +1,62 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 1 item
+
+tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_trusted.mjs] ▶ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only)
+  ✔ hostile main-world builtins leave read, identity, form and redaction unchanged (1308.32786ms)
+  ✔ response remains Failed after the live DOM becomes Successful (828.28461ms)
+  ✔ script-inserted build identity cannot rescue missing response identity (841.783988ms)
+  ✔ two reads and both openForm navigations recreate the isolated context (913.474384ms)
+  ✔ capture is exclusive to this read main-frame navigation, never same-URL fetches or frames (920.256738ms)
+  ✔ absent slot cannot reuse a preceding read's captured bytes (818.179432ms)
+  ✔ wrong URL cannot reuse a preceding read's captured bytes (820.011803ms)
+  ✔ wrong request id cannot reuse a preceding read's captured bytes (875.518231ms)
+  ✔ wrong frame id cannot reuse a preceding read's captured bytes (884.610792ms)
+  ✔ in-flight capture rejects a replaced slot even when it contains old valid bytes (808.207861ms)
+  ✔ stale context fails closed without a main-world fallback (832.277543ms)
+  ✔ createIsolatedWorld fails closed without a main-world fallback (847.00854ms)
+  ✔ Fetch.getResponseBody fails closed without a main-world fallback (870.520374ms)
+  ✔ non-base64 body fails closed without a main-world fallback (859.261489ms)
+  ✔ malformed base64 fails closed without a main-world fallback (845.697436ms)
+  ▶ strict response charset decoding uses headers, default UTF-8 and fatal errors
+    ✔ latin1: raw decoder (0.204907ms)
+    ✔ latin1: HTTPS navigation (34.08533ms)
+    ✔ quoted charset: raw decoder (0.089395ms)
+    ✔ quoted charset: HTTPS navigation (24.053039ms)
+    ✔ no charset: raw decoder (0.095692ms)
+    ✔ no charset: HTTPS navigation (28.45851ms)
+    ✔ literal replacement character: raw decoder (0.091326ms)
+    ✔ literal replacement character: HTTPS navigation (33.946251ms)
+    ✔ invalid UTF-8: raw decoder (0.911232ms)
+    ✔ invalid UTF-8: HTTPS navigation (18.782772ms)
+    ✔ invalid default UTF-8: raw decoder (0.094471ms)
+    ✔ invalid default UTF-8: HTTPS navigation (14.147197ms)
+    ✔ unsupported charset: raw decoder (0.173273ms)
+    ✔ unsupported charset: HTTPS navigation (10.820956ms)
+  ✔ strict response charset decoding uses headers, default UTF-8 and fatal errors (935.356465ms)
+  ✔ read mismatch: shared secret context, revoked registrations and inert no-store image (981.33059ms)
+  ✔ read diagnostic failure snapshot returns no partial evidence (769.120557ms)
+  ✔ read diagnostic failure after redaction returns no partial evidence (840.622045ms)
+  ✔ form mismatch: shared secret context, revoked registrations and inert no-store image (1144.00656ms)
+  ✔ form diagnostic failure snapshot returns no partial evidence (899.690915ms)
+  ✔ form diagnostic failure after redaction returns no partial evidence (904.410009ms)
+✔ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only) (19889.962149ms)
+ℹ network=loopback-only; server requests=129; synthetic responses only
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 19892.545675
+
+PASSED
+
+============================== 1 passed in 19.96s ==============================
+
+command_exit=0

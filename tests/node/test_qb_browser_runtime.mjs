@@ -4,7 +4,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { Agent, createRuntime, redactDOM, checkRedacted, validateForm, callbackURL, ORIGIN, FIELDS } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, TrustedPage, createRuntime, redactDOM, checkRedacted, validateForm,
+  buildDOM, verifiedBuildId, callbackURL, ORIGIN, FIELDS } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
 
 const [playwright, chromium] = process.argv.slice(2);
 const archive = new URL('../../docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-cookie-02/', import.meta.url);
@@ -15,11 +16,10 @@ test('C2B-09 page trim overrides cannot change Node decisions or identity redact
   });
   runtime.policy.allow = () => false;
   const agent = new Agent({ ...runtime, page: {
-    url: () => `${ORIGIN}/wicket/page?10`, evaluate: (fn, ...args) => {
-      assert.doesNotMatch(fn.toString(), /\.(?:trim|trimStart|trimEnd|matchAll|toLowerCase|toUpperCase)\s*\(/);
-      return runtime.page.evaluate(fn, ...args);
-    },
+    url: () => `${ORIGIN}/wicket/page?10`,
+    evaluate: () => assert.fail('agent reads must use the isolated world'),
   } });
+  agent.trusted = new TrustedPage(runtime.context, runtime.page);
   const fixture = readFileSync(new URL('../../docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-10/form-unverified.response.html', import.meta.url), 'utf8');
   const nativeTrim = await runtime.page.evaluate(() => {
     globalThis.savedTrim = String.prototype.trim;
@@ -57,44 +57,40 @@ test('C2B-09 page trim overrides cannot change Node decisions or identity redact
         assert.equal(await agent.buildId('/build/1193469/variables'), '1193469');
       });
       await t.test(`redaction pre/post check, broken=${broken}`, async () => {
-        await runtime.page.setContent(`<span> \nWelcome! Lin Hao\t </span>
+        const raw = `<span> \nWelcome! Lin Hao\t </span>
           <table><tr><td> \nTriggered By\t </td><td> \nOther Person\t </td></tr></table>
           <p>Lin Hao; Other Person; Linux-PAM; ILinkListener</p>
-          <input type="hidden" name="token" value="synthetic-C2B09-secret"><p>prefix-synthetic-C2B09-secret-suffix</p>`);
-        const html = checkRedacted(await runtime.page.evaluate(redactDOM));
-        assert.doesNotMatch(html, /Lin Hao|Other Person|synthetic-C2B09-secret/);
+          <input type="hidden" name="token" value="synthetic-C2B09-secret"><p>prefix-synthetic-C2B09-secret-suffix</p>`;
+        const result = await agent.passive(raw);
+        const html = checkRedacted(result.html_redacted);
+        assert.doesNotMatch(html, /synthetic-C2B09-secret/);
+        assert.match(html, /<p>Lin Hao; Other Person; Linux-PAM; ILinkListener<\/p>/);
+        assert.match(html, /Welcome! &lt;USER&gt;/);
+        assert.match(html, /<td>&lt;USER&gt;<\/td>/);
+        assert.equal(result.outside_identity_count, 2);
         assert.match(html, /&lt;USER&gt;/); assert.match(html, /Linux-PAM; ILinkListener/);
         const root = fileURLToPath(new URL('../../', import.meta.url));
         const venv = `${root}.venv/bin/python`;
-        const result = spawnSync(existsSync(venv) ? venv : 'python3', ['-c',
-          'import sys,tempfile; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from ci_triage.qb_redact import PageRedactor; r=PageRedactor(); r.identities.update({"Lin Hao","Other Person"}); raw=sys.stdin.buffer.read(); r.check_bytes(raw);\nwith tempfile.TemporaryDirectory() as d:\n p=Path(d)/"page.html"; p.write_bytes(raw); r.check_written(p)',
+        const checked = spawnSync(existsSync(venv) ? venv : 'python3', ['-c',
+          'import sys,tempfile; from pathlib import Path; sys.path.insert(0,sys.argv[1]); from ci_triage.qb_redact import PageRedactor; r=PageRedactor(); r.identities.update({"Lin Hao","Other Person"}); raw=sys.stdin.buffer.read(); r.check_bytes(raw); assert r.identity_outside_registered_count == 2;\nwith tempfile.TemporaryDirectory() as d:\n p=Path(d)/"page.html"; p.write_bytes(raw); r.check_written(p)',
           `${root}tizen-ci-triage/scripts`], { input: html, encoding: 'utf8' });
-        assert.equal(result.status, 0, result.stderr);
+        assert.equal(checked.status, 0, checked.stderr);
         if (broken) assert.equal(html, baseline.redacted); else baseline.redacted = html;
-      });
-      await t.test(`refresh registration, broken=${broken}`, async () => {
-        await runtime.page.setContent(`<div onclick="'page?10-1.IBehaviorListener.0-x&amp;action=ajaxRefresh'"></div>`);
-        await agent.registerRefresh();
-        assert.deepEqual([...agent.policy.refresh], [`${ORIGIN}/wicket/page?10-1.IBehaviorListener.0-x&action=ajaxRefresh`]);
       });
     }
     assert.equal(runtime.page.url(), 'about:blank');
   } finally { await runtime.close(); }
 });
 
-test('C2A-04 build identity from archived HTML, with all network denied', async t => {
+test('C2A-04 archived build DOM identity regression only, with all network denied', async t => {
   const runtime = await createRuntime(playwright, chromium, {
     launchArgs: ['--no-proxy-server', '--host-resolver-rules=MAP * ~NOTFOUND'],
   });
   runtime.policy.allow = () => false;
   let path;
-  // Navigation is replaced only in this offline fixture; DOM evaluation is real Chromium.
-  const page = {
-    goto: async () => ({ status: () => 200, request: () => ({ redirectedFrom: () => null }) }),
-    url: () => ORIGIN + path,
-    evaluate: (...args) => runtime.page.evaluate(...args),
-  };
-  const agent = new Agent({ ...runtime, page });
+  // Archived HTML and DOM mutations test extraction, not original response bytes.
+  const trusted = new TrustedPage(runtime.context, runtime.page);
+  const identify = async () => verifiedBuildId(await trusted.run(buildDOM), path);
   const load = async (file, requested) => {
     path = requested;
     await runtime.page.setContent(readFileSync(new URL(file, archive), 'utf8'));
@@ -106,14 +102,14 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
       ['04.response.txt', '/build/1069540/step_status'],
     ]) await t.test(`archive ${file} ${requested}`, async () => {
       await load(file, requested);
-      assert.equal((await agent.read(path)).status, 200);
+      assert.equal(await identify(), '1069540');
     });
     for (const spelling of ['Id', 'ID']) await t.test(`navigation spelling ${spelling}`, async () => {
       await load('03.response.txt', '/build/1069540/variables');
       await runtime.page.evaluate(value => {
         document.querySelector('.tab-BuildPage .nav-link span').textContent = `Build (${value}:1069540)`;
       }, spelling);
-      assert.equal((await agent.read(path)).status, 200);
+      assert.equal(await identify(), '1069540');
     });
     await t.test('Summary Id resolved by column, not fixed position', async () => {
       await load('01.response.txt', '/build/1069540/overview');
@@ -121,7 +117,7 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
         const table = document.querySelector('.build-summary table');
         for (const row of [table.tHead.rows[0], table.tBodies[0].rows[0]]) row.append(row.cells[0]);
       });
-      assert.equal((await agent.read(path)).status, 200);
+      assert.equal(await identify(), '1069540');
     });
     for (const mutation of [
       'duplicate-nav', 'missing-nav', 'wrong-nav', 'missing-summary', 'duplicate-summary',
@@ -143,11 +139,11 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
         if (kind === 'missing-first-row') summary.querySelector('tbody tr').remove();
         document.title = 'Build #1069540'; // A matching title cannot rescue invalid sources.
       }, mutation);
-      await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
+      assert.equal(await identify(), null);
     });
     await t.test('both overview sources agree but differ from requested id', async () => {
       await load('01.response.txt', '/build/1069532/overview');
-      await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
+      assert.equal(await identify(), '1069540');
     });
     for (const mutation of ['missing', 'duplicate', 'wrong']) await t.test(`subpage ${mutation} navigation`, async () => {
       await load('03.response.txt', '/build/1069540/variables');
@@ -158,7 +154,7 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
         if (kind === 'wrong') nav.textContent = 'Build (id:1069532)';
         document.title = 'Build #1069540';
       }, mutation);
-      await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
+      assert.equal(await identify(), mutation === 'wrong' ? '1069532' : null);
     });
     const live06 = new URL('../../docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-06/', import.meta.url);
     for (const [file, id] of [['03.id-unverified.response.html', '1193469'], ['05.id-unverified.response.html', '1186372']]) {
@@ -166,9 +162,9 @@ test('C2A-04 build identity from archived HTML, with all network denied', async 
         await runtime.page.setContent(readFileSync(new URL(file, live06), 'utf8'));
         assert.equal(await runtime.page.locator('.build-summary').count(), 0);
         path = `/build/${id}`;
-        assert.equal((await agent.read(path)).status, 200);
+        assert.equal(await identify(), id);
         path = `/build/${id}/overview`;
-        await assert.rejects(agent.read(path), { code: 'QB_READ_ID_MISMATCH' });
+        assert.equal(await identify(), null);
       });
     }
     assert.equal(runtime.page.url(), 'about:blank');
@@ -195,6 +191,7 @@ test('C2B-06 exact Run button grammar from live-06, with no navigation or click 
     getByText: () => ({ waitFor: async () => {} }),
   };
   const agent = new Agent({ ...runtime, page });
+  agent.trusted = new TrustedPage(runtime.context, runtime.page);
   agent.projects.set(1917, { configuration_path: 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER', project_name: 'Tizen' });
   agent.snapshot = async () => ({ heading: true, base: `${ORIGIN}/wicket/page?50`,
     action: `${ORIGIN}/wicket/page?50-2.IFormSubmitListener-form`,
@@ -203,7 +200,6 @@ test('C2B-06 exact Run button grammar from live-06, with no navigation or click 
         ? ['recorder', 'choices', 'selection'] : ['input']).map(role => ({ role,
         callback: `wicketAjaxPost('${ORIGIN}/wicket/page?50-2.IBehaviorListener.0-form-field', 0)` })),
     }))] });
-  agent.registerRefresh = async () => {};
   try {
     for (const mutation of ['none', 'anchor', 'duplicate', 'extra-statement', 'promote', 'run2', 'external', 'missing-onclick', 'trailing-newline']) {
       await t.test(mutation, async () => {
@@ -242,15 +238,17 @@ test('real browser DOM redaction with identities, hidden values, URL and recorde
   const runtime = await createRuntime(playwright, chromium, {
     launchArgs: ['--no-proxy-server', '--host-resolver-rules=MAP * ~NOTFOUND'],
   });
+  runtime.policy.allow = () => false;
+  const agent = new Agent(runtime);
   try {
-    await runtime.page.setContent(`<span>Welcome! Alice-PRIVATE</span>
+    const raw = `<span>Welcome! Alice-PRIVATE</span>
       <table><tr><td>Triggered By</td><td>Bob-PRIVATE</td></tr></table>
       <input type="hidden" name="opaque" value="hidden-SECRET">
       <input type="hidden" name="x:palette:recorder" value="616263">
       <a href="/x;jsessionid=url-SECRET?csrf=csrf-SECRET">test</a>
       <script>const token="script-SECRET";</script>
-      <p>JSESSIONID_8810=text-SECRET</p>`);
-    const html = await runtime.page.evaluate(redactDOM);
+      <p>JSESSIONID_8810=text-SECRET</p>`;
+    const html = await agent.trusted.run(redactDOM, raw);
     assert.doesNotMatch(html, /PRIVATE|SECRET|JSESSIONID_8810=/);
     assert.match(html, /616263/); assert.match(html, /&lt;USER&gt;/);
     assert.match(html, /&lt;REDACTED&gt;/);
@@ -264,19 +262,21 @@ test('C2B-04 shared identity boundary and credential vectors', async t => {
     launchArgs: ['--no-proxy-server', '--host-resolver-rules=MAP * ~NOTFOUND'],
   });
   runtime.policy.allow = () => false;
+  const agent = new Agent(runtime);
   try {
     for (const vector of vectors) await t.test(vector.name, async () => {
-      await runtime.page.setContent(vector.html);
-      const html = await runtime.page.evaluate(redactDOM);
+      const result = await agent.passive(vector.html);
+      const html = result.html_redacted;
       const decoded = await runtime.page.evaluate(value => {
         const box = document.createElement('textarea'); box.innerHTML = value; return box.value;
       }, html);
       for (const value of [...vector.preserved, ...vector.masked]) assert.ok(decoded.includes(value), value);
       for (const value of vector.secrets) assert.ok(!decoded.includes(value), value);
-      for (const value of vector.identities) {
-        const pattern = new RegExp(`(?<![A-Za-z0-9_])${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![A-Za-z0-9_])`);
-        assert.doesNotMatch(decoded, pattern);
-      }
+      assert.equal(decoded.split('<USER>').length - 1, vector.user_mask_count);
+      assert.equal(result.outside_identity_count, vector.identity_outside_registered_count);
+      assert.deepEqual(runtime.trace.at(-1), {
+        action: 'IDENTITY_OUTSIDE_REGISTERED', count: vector.identity_outside_registered_count,
+      });
     });
     assert.equal(runtime.page.url(), 'about:blank');
   } finally { await runtime.close(); }

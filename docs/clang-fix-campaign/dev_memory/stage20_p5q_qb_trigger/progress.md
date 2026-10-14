@@ -1,8 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_STOPPED;AWAITING_C2C_02_RULING**。
+日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE**。
 最新权威改为v1.5-FROZEN,冻结登记与C2c执行见§27;以下v1.2及R1待决状态均为历史记录。
-最新停止报告见§27.3;最近真机执行见§26:生产2ee8ab6、取证19792bb已推送;新“开始”后完成live-12,
+§27.3历史停止已由§28的C2C-03关闭;本轮C2c执行见§28。最近真机执行见§26:生产2ee8ab6、取证19792bb已推送;新“开始”后完成live-12,
 五个构建页/配置通过,Full→Partial→Full联动成功,release0。以下停点均为历史事实。
 现场取证成功不等于R1设计差异已关闭,不进入C3。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
@@ -55,7 +55,8 @@ exit=0
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
 | C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§26.6 live-12五页/配置与两次联动通过,release0;附录C补现场结果,待R1核对,无C3 |
-| C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
+| C2c | v1.5第10节①–⑥:隔离读取/原始字节、惰性位置脱敏/诊断、刷新删除、字段窗口/启动自检、design.md照录 | COMPLETE;§28裁定及验收;C5/C6挂账仍开放,不标P5Q CLOSED |
+| C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2c;NOT_STARTED,本轮不进入 |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
 | C6 | 第9.4节第2步确认的真实提交与收口文档 | C5 + FatTank明确确认;NOT_STARTED |
@@ -2881,7 +2882,7 @@ b的BUILD_NOTES样本均放C5。成功样本与BUILD_NOTES样本可由C6补齐;
 
 ### 27.3 停止报告 P5Q-C2C-02:stop查询正例与闭集不相容
 
-状态:OPEN,待设计方裁定,不是已批准的实施裁定。停止事项数1。
+状态:已由 P5Q-C2C-03 裁定关闭(见§28)。以下保留原停止事实,不是新停点。
 权威文件未修改,未自行放宽规则或改写验收用例。
 
 | 原文位置(v1.5冻结稿) | 要求与实际冲突 |
@@ -2944,3 +2945,102 @@ Ruff导出暂存树4d86fe86dedb138db7cc7a7dc8a6da35a929ebdb,
 临时目录/tmp/p5q-c2c-lint-tp36xd已清理;此后只补文档与日志。
 静态断言逐名字负例NOT_RUN;第二步1-6仍未交付,没有借基线绿标完成。
 本提交范围仅v1.5原字节、INDEX/progress和C2c证据;真实QuickBuild/Gerrit访问0。
+
+## 28. 实施裁定 P5Q-C2C-03:查询含 stop 的用例按层验收
+
+### 28.1 裁定原文
+
+1. 冻结稿第 9.2 节首条中"查询中含 stop 字样但监听器名无破坏性动作的合法回调 → 放行",按以下三层验收,冻结稿不改:
+   a. 永久禁止判定层(破坏性监听器正则)单元测试:
+      - stop 只出现在监听器组件名以外的查询里(例如合法字段回调后接 &value=stop,以及 ?q=stop)→ 判定为"不命中永久禁止";
+      - 组件名含 stop(例如 form-stopper)→ 命中永久禁止。
+   b. 端到端放行判定:上面带 &value=stop 的地址最终仍被拒,因为它不符合放行文法。不得为这条用例增加任何放行例外或参数例外。
+   c. tests/node/test_qb_browser_agent.mjs 第 211 行"登记的刷新 GET 带 value=stop 放行"的旧正例,改为"在任何阶段都必须拒绝"的回归例。
+2. 已接受残余:破坏性正则按子串匹配,组件名中含 desktop、nonstop 之类的词会被误拒,后果是该字段失败、表单作废(方向安全)。本版接受;真机遇到时停止并按 R1 处理。
+3. 理由:v1.5 下只读页面查询必须为空,字段回调文法闭合,只允许末尾一个十进制 random,stop 放进组件名又会命中永久禁止,因此不存在"含 stop 且合法放行"的地址。该用例的原意是"永久禁止不误伤查询值",按层拆开后原意保留。
+4. 下次修订设计文档时并入正文。
+
+### 28.2 续做边界
+
+开工HEAD=68b71aa;冻结哈希复核仍为f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c。
+按§27计划续做①–⑥,旧WIP只参考不套用。C5/C6挂账不变,只做本机/离线,
+不访问真实QuickBuild、不做Gerrit推送、永不点击Accept/Ready to Accept、不进入C3。
+
+### 28.3 实现过程与原始字节取证
+
+①隔离读取、②位置脱敏/惰性诊断、③删除刷新、④字段计数窗口/启动自检、
+⑤错误诊断应答、⑥附录A照录已在工作树实现,最终门禁通过前不标DONE。
+未直接套用§27归档的WIP;重新按v1.5检查函数及测试,冻结稿原字节未改。
+
+解码本机测试曾发现`response.body()`不是所有charset下的原始字节:
+Latin-1的`636166e9`变为UTF-8的`636166c3a9`,非法UTF-8的`c328`变为
+`efbfbd28`。初轮Node入口因此1 failed/4 passed,原始失败留在
+[node-gates.log](evidence/C2c/implementation/node-gates.log),不冒充绿。
+随后用同一loopback HTTPS服务器、同一浏览器级双阶段拦截,对照冻结稿允许的
+另一路`Fetch.getResponseBody`,在`Fetch.continueResponse`前取正文:
+Latin-1、非法UTF-8、合法UTF-8、合法U+FFFD四组均逐字节等于服务器发送值,
+`base64Encoded=true`,4/4;非法UTF-8严格解码拒绝、合法U+FFFD正常。
+见[raw-bytes-probe.log](evidence/C2c/implementation/raw-bytes-probe.log),
+复现入口`tests/node/p5q_c2c_raw_bytes_probe.mjs`。仅4次本机GET,无外网,
+浏览器/证书临时目录已清理。据此采用第3.1节明确允许的Fetch路径,
+不是设计矛盾或新裁定;不使用替换字符猜测、不补发HTTP请求、不放宽严格解码。
+
+已完成的中间检查:Python脱敏+驱动193/193;静态逐名变异183/183;
+mypy113 source files;lint-imports6 kept/0 broken;design.md检查器0 problem。
+最终完整门禁及源码位置以下节为准,本段不是最终验收结论。
+
+### 28.4 最终实现与逐项落点
+
+以下行号为本轮交付工作树;提交SHA由Git外部锚定,本文件不自记。
+
+| C2c条目 | 实现与验收落点 |
+|---|---|
+| ①隔离环境/原始字节 | `qb_browser_agent.mjs:159`主拦截响应阶段Fetch正文;`:334`TrustedPage逐导航重建;`:364`严格charset解码;`:648`同次主帧导航请求ID绑定,读完清空;`test_qb_browser_trusted.mjs`37/37 |
+| ②惰性脱敏/身份位置 | `qb_browser_agent.mjs:254`惰性document,Welcome/Triggered By/Requested By遮蔽,登记外只计数;`qb_redact.py:49/:238`三位置与字节自检;20组共用向量,Python+driver233/233,DOM63/63 |
+| ③刷新删除 | `qb_browser_agent.mjs:44`Policy无刷新登记/提取;`:182`仅获准请求更新活动时间;所有阶段刷新拒绝,连续被拒流不延长字段静默窗口 |
+| ④字段与启动自检 | `qb_browser_agent.mjs:711`fill一次设值/change,文本受控blur,`@freeze`仍回调,计数延续到下一字段/末字段读回;`:811`启动合成控件1/1/1,版本trace;`test_qb_browser_fields.mjs`12/12 |
+| ⑤结构诊断应答 | `qb_browser_agent.mjs:554/:635`先撤销登记再惰性取证,失败无部分输出;`qb_browser.py:37/:130`逐个解码后的HTML/结构字符串自检并保留原错误;不把JSON转义串当HTML解析 |
+| ⑥design.md | v1.5.23;`:5`元信息/记录;`:2645`QB_FETCH_FAILED补句;`:2757`第6条追加;`:2765`第14条新增;`:3482`文末版本;附录A逐字照录,第11条原样;检查器0 problem |
+
+`stop`三层用例在`tests/node/test_qb_browser_agent.mjs`:
+`:207`永久禁止层、`:214`最终闭集拒绝、`:190`六阶段旧刷新回归。
+没有新增参数或放行例外。完整逐名静态负例见
+[static-mutations-final.log](evidence/C2c/implementation/static-mutations-final.log):
+对生产源码的内存副本逐项加一行,使用同一AST判据证明变红;183/183,
+包括第9.2末条的所有名字、唯一addInitScript守卫、setContent位置及Python参数限制。
+
+内部核对修正了两处实现问题:JSON转义HTML被误作HTML解析,以及显示名为USER时
+登记位置的占位符被算入登记外次数。新增含hidden字段诊断接收/嵌套凭据拒绝用例,
+及两端共用USER向量(登记外次数恰1)。没有更改设计规则或安全边界。
+旧read单元mock未提供新Fetch捕获槽导致首轮全仓1 failed/2236 passed/1 skipped,
+原文保留`pytest-full.log`;更新mock后最终全仓绿,未删除/跳过该测试。
+
+### 28.5 最终门禁与边界
+
+完整命令、环境、原始输出及中间失败解释:
+[implementation/README.md](evidence/C2c/implementation/README.md)。
+
+| 门禁 | 实跑结果 | exit / 证据(implementation/) |
+|---|---|---|
+| 全量pytest | 2277 passed / 0 failed / 1 skipped,257.03s;基线2165/1,增加112个通过用例 | 0 / pytest-final.log |
+| Python脱敏+驱动 | 233 passed / 0 failed / 0 skipped | 0 / python-final.log |
+| Node六入口 | 6 passed / 0 failed / 0 skipped;单元152、静态183、可信读取37、字段12;最终DOM向量单列63 | 0 / node-final.log、dom-final.log |
+| mypy | 113 source files,无问题 | 0 / mypy.log |
+| Ruff完整待提交树 | All checks passed;导出树ed66947ef18eef798eefc00fb656e148740a6163,临时目录已清理 | 0 / ruff-final.log |
+| lint-imports | 6 kept / 0 broken | 0 / lint-imports.log |
+| design.md检查器 | 0 problem | 0 / design-check.log |
+| 四组拦截安全 | 从头重跑4/4,loopback-only | 0 / node-final.log |
+| 冻结文件 | v1.5与v1.2哈希均未改变,相对68b71aa diff为空 | 0 / frozen-hashes.log |
+
+四安全组按服务器实收核对:Worker/WebSocket、307/308、凭据隔离、逐跳拦截全绿。
+Worker走b:shared_worker成功关闭,worker closeTarget为Error,随后整体fail-closed;
+attackHTTP=0、WS握手=0、浏览器与临时目录已清理。没有因此降级保护。
+第9.5的campaign_qb_profiles精确表集合/CHECK负例在全量中原样复跑通过。
+
+本轮与冻结稿不一致或做不到的地方:无。C2C-02已由C2C-03关闭。
+原始响应读取选Fetch是冻结稿允许的路径选择,不是新裁定;查询stop的分层裁定
+仍须下次设计修订并入正文。冻结稿不改,无真实QuickBuild/Gerrit访问,
+无人工登录,无Accept/Ready to Accept点击。C5/C6真机挂账见§27.2,未关闭前
+不得P5Q CLOSED。C2c至此完成,提交推送后停止,不进入C3。
+原始失败日志的pytest/Node缩进行尾空格原样保留,不为消除diff --check提示
+改写证据;源代码、测试与Markdown的diff --check为空。

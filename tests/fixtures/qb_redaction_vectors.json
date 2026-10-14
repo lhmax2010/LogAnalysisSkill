@@ -2,41 +2,61 @@
   {
     "name": "short-display-name",
     "html": "<span>Welcome! Lin</span><p>ILinkListener signOutLink dependentLink Linux-PAM onCopyClipboardLinkDomReady</p><p>Lin Lin-PAM xLin Linx _Lin Lin_ 1Lin Lin1</p>",
-    "preserved": ["ILinkListener", "signOutLink", "dependentLink", "Linux-PAM", "onCopyClipboardLinkDomReady", "xLin Linx _Lin Lin_ 1Lin Lin1"],
-    "masked": ["Welcome! <USER>", "<USER> <USER>-PAM"],
+    "preserved": ["ILinkListener", "signOutLink", "dependentLink", "Linux-PAM", "onCopyClipboardLinkDomReady", "Lin Lin-PAM xLin Linx _Lin Lin_ 1Lin Lin1"],
+    "masked": ["Welcome! <USER>"],
     "identities": ["Lin"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 2,
+    "secrets": []
+  },
+  {
+    "name": "user-identity-does-not-count-registered-mask",
+    "html": "<span>Welcome! USER</span><p>USER</p>",
+    "preserved": ["<p>USER</p>"],
+    "masked": ["Welcome! <USER>"],
+    "identities": ["USER"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 1,
     "secrets": []
   },
   {
     "name": "triggered-by-row",
     "html": "<table><tr><td>Triggered By</td><td><a>Lin</a></td></tr></table><p>Lin-PAM Linux-PAM</p>",
-    "preserved": ["Linux-PAM"],
-    "masked": ["<USER>-PAM"],
+    "preserved": ["Lin-PAM Linux-PAM"],
+    "masked": ["<td>Triggered By</td><td><USER></td>"],
     "identities": ["Lin"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 1,
     "secrets": []
   },
   {
     "name": "triggered-by-column",
     "html": "<table><tr><th>Id</th><th>Triggered By</th></tr><tr><td>123</td><td>Lin</td></tr></table><p>ILinkListener Lin</p>",
-    "preserved": ["123", "ILinkListener"],
-    "masked": ["ILinkListener <USER>"],
+    "preserved": ["123", "ILinkListener Lin"],
+    "masked": ["<td>123</td><td><USER></td>"],
     "identities": ["Lin"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 1,
     "secrets": []
   },
   {
     "name": "multiword",
     "html": "<span>Welcome! Lin Hao</span><p>Lin Hao Lin Hao-PAM xLin Hao Lin Haox Lin</p>",
-    "preserved": ["xLin Hao Lin Haox Lin"],
-    "masked": ["Welcome! <USER>", "<USER> <USER>-PAM"],
+    "preserved": ["Lin Hao Lin Hao-PAM xLin Hao Lin Haox Lin"],
+    "masked": ["Welcome! <USER>"],
     "identities": ["Lin Hao"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 2,
     "secrets": []
   },
   {
     "name": "literal-regex-and-ascii-boundaries",
     "html": "<span>Welcome! L.in</span><p>L.in Lin xL.in L.inx \u00e9L.in\u00e9</p>",
-    "preserved": ["Lin xL.in L.inx"],
-    "masked": ["Welcome! <USER>", "\u00e9<USER>\u00e9"],
+    "preserved": ["L.in Lin xL.in L.inx \u00e9L.in\u00e9"],
+    "masked": ["Welcome! <USER>"],
     "identities": ["L.in"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 2,
     "secrets": []
   },
   {
@@ -45,6 +65,138 @@
     "preserved": ["61,62", "Linux-PAM"],
     "masked": ["Welcome! <USER>", "x<REDACTED>x x<REDACTED>x x<REDACTED>x"],
     "identities": ["Lin"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 0,
     "secrets": ["TokenFixture", "SessionFixture", "CookieFixture", "JSESSIONID_8810="]
+  },
+  {
+    "name": "opaque-hidden-value-is-global",
+    "html": "<span>Welcome! Lin</span><input type=\"hidden\" name=\"opaque\" value=\"OpaqueFixture\"><input type=\"hidden\" name=\"x:palette:recorder\" value=\"616263\"><label>Unknown OpaqueFixture xOpaqueFixturex</label><p>616263</p>",
+    "preserved": ["opaque", "616263"],
+    "masked": ["Welcome! <USER>", "<label>Unknown <REDACTED> x<REDACTED>x</label>"],
+    "identities": ["Lin"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 0,
+    "secrets": ["OpaqueFixture"]
+  },
+  {
+    "name": "registered-labels-trim-outer-whitespace",
+    "html": "<span>Welcome! Lin</span><table><tr><th> \tTriggered By\n </th><th>\n Requested By\t </th><th>Owner</th></tr><tr><td>Lin</td><td>Lin</td><td>Lin</td></tr></table><table><tr><td>\n Triggered By\t </td><td>Lin</td></tr></table>",
+    "preserved": [" \tTriggered By\n ", "\n Requested By\t ", "\n Triggered By\t ", "<th>Owner</th>"],
+    "masked": ["Welcome! <USER>", "<td><USER></td><td><USER></td><td>Lin</td>", "<td>\n Triggered By\t </td><td><USER></td>"],
+    "identities": ["Lin"],
+    "user_mask_count": 4,
+    "identity_outside_registered_count": 1,
+    "secrets": []
+  },
+  {
+    "name": "internal-label-whitespace-is-not-collapsed",
+    "html": "<span>Welcome! Lin</span><table><tr><th>Triggered  By</th><th>Requested\tBy</th><th>Requested\nBy</th></tr><tr><td>Lin</td><td>Lin</td><td>Lin</td></tr></table><table><tr><td>Triggered\nBy</td><td>Lin</td></tr></table>",
+    "preserved": ["<th>Triggered  By</th><th>Requested\tBy</th><th>Requested\nBy</th>", "<td>Lin</td><td>Lin</td><td>Lin</td>", "<td>Triggered\nBy</td><td>Lin</td>"],
+    "masked": ["Welcome! <USER>"],
+    "identities": ["Lin"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 4,
+    "secrets": []
+  },
+  {
+    "name": "business-word-successful",
+    "html": "<span>Welcome! Successful</span><table><tr><th>Id</th><th>Status</th><th>Triggered By</th></tr><tr><td>123</td><td>Successful</td><td>Successful</td></tr></table><table><tr><td>BUILD_TYPE</td><td>Full</td></tr></table><a href=\"/root/RBS/TRIGGER\">root/RBS/TRIGGER</a><select><option value=\"Full\">Full</option></select><script>const ILinkListener = 'Successful';</script><p>Successful reviewed this.</p>",
+    "preserved": ["<td>123</td><td>Successful</td>", "<td>BUILD_TYPE</td><td>Full</td>", "root/RBS/TRIGGER", "<option value=\"Full\">Full</option>", "const ILinkListener = 'Successful';", "Successful reviewed this."],
+    "masked": ["Welcome! <USER>", "<td>Successful</td><td><USER></td>"],
+    "identities": ["Successful"],
+    "user_mask_count": 2,
+    "identity_outside_registered_count": 3,
+    "secrets": []
+  },
+  {
+    "name": "business-word-failed",
+    "html": "<span>Welcome! Failed</span><table><tr><th>Id</th><th>Status</th><th>Triggered By</th></tr><tr><td>123</td><td>Failed</td><td>Failed</td></tr></table><table><tr><td>BUILD_TYPE</td><td>Full</td></tr></table><a href=\"/root/RBS/TRIGGER\">root/RBS/TRIGGER</a><select><option value=\"Full\">Full</option></select><script>const ILinkListener = 'Failed';</script><p>Failed reviewed this.</p>",
+    "preserved": ["<td>123</td><td>Failed</td>", "<td>BUILD_TYPE</td><td>Full</td>", "root/RBS/TRIGGER", "<option value=\"Full\">Full</option>", "const ILinkListener = 'Failed';", "Failed reviewed this."],
+    "masked": ["Welcome! <USER>", "<td>Failed</td><td><USER></td>"],
+    "identities": ["Failed"],
+    "user_mask_count": 2,
+    "identity_outside_registered_count": 3,
+    "secrets": []
+  },
+  {
+    "name": "business-word-full",
+    "html": "<span>Welcome! Full</span><table><tr><th>Id</th><th>Status</th><th>Triggered By</th></tr><tr><td>123</td><td>Successful</td><td>Full</td></tr></table><table><tr><td>BUILD_TYPE</td><td>Full</td></tr></table><a href=\"/root/RBS/TRIGGER\">root/RBS/TRIGGER</a><select><option value=\"Full\">Full</option></select><script>const ILinkListener = 'Full';</script><p>Full reviewed this.</p>",
+    "preserved": ["<td>123</td><td>Successful</td>", "<td>BUILD_TYPE</td><td>Full</td>", "root/RBS/TRIGGER", "<option value=\"Full\">Full</option>", "const ILinkListener = 'Full';", "Full reviewed this."],
+    "masked": ["Welcome! <USER>", "<td>Successful</td><td><USER></td>"],
+    "identities": ["Full"],
+    "user_mask_count": 2,
+    "identity_outside_registered_count": 5,
+    "secrets": []
+  },
+  {
+    "name": "business-word-root",
+    "html": "<span>Welcome! root</span><table><tr><th>Id</th><th>Status</th><th>Triggered By</th></tr><tr><td>123</td><td>Successful</td><td>root</td></tr></table><table><tr><td>BUILD_TYPE</td><td>Full</td></tr></table><a href=\"/root/RBS/TRIGGER\">root/RBS/TRIGGER</a><select><option value=\"Full\">Full</option></select><script>const ILinkListener = 'root';</script><p>root reviewed this.</p>",
+    "preserved": ["<td>123</td><td>Successful</td>", "<td>BUILD_TYPE</td><td>Full</td>", "<a href=\"/root/RBS/TRIGGER\">root/RBS/TRIGGER</a>", "<option value=\"Full\">Full</option>", "const ILinkListener = 'root';", "root reviewed this."],
+    "masked": ["Welcome! <USER>", "<td>Successful</td><td><USER></td>"],
+    "identities": ["root"],
+    "user_mask_count": 2,
+    "identity_outside_registered_count": 4,
+    "secrets": []
+  },
+  {
+    "name": "requested-by-column-live-12-shape",
+    "html": "<div id=\"header\" class=\"flex pb-2\"><div id=\"topnav\" class=\"ml-auto piped-links text-xs\"><span><span>Welcome! Lin</span></span></div></div><div class=\"box mb-5\"><div class=\"box-head flex\"><div class=\"flex-1\">Build Requests</div></div><div class=\"box-body\"><table class=\"table table-sm datatable\"><thead><tr class=\"headers\"><th class=\"row-selector\"><span><input type=\"checkbox\" class=\"row-selector form-check-input\"></span></th><th><span>Requested By</span></th><th><span>Schedule Date</span></th><th><span>Priority</span></th><th><span>Process Status</span></th><th><span>Master Node</span></th><th><span>Build Version</span></th></tr></thead><tbody><tr class=\"even sortable\"><td class=\"row-selector\"><span><input type=\"checkbox\" class=\"row-selector form-check-input\"></span></td><td><span><span>Lin</span></span></td><td><span><span>2026-10-13 02:54:07</span></span></td><td><span>10</span></td><td><span><span class=\"rightgap2\">RUNNING_BUILD</span></span></td><td>fixture-master:8942</td><td><a class=\"build-status running\" href=\"/build/123\">FIXTURE_RBS_TRIGGER_20261013.025407</a></td></tr></tbody></table></div></div>",
+    "preserved": ["Build Requests", "Requested By", "Schedule Date", "2026-10-13 02:54:07", "RUNNING_BUILD", "fixture-master:8942", "FIXTURE_RBS_TRIGGER_20261013.025407"],
+    "masked": ["Welcome! <USER>", "<td><USER></td>"],
+    "identities": ["Lin"],
+    "user_mask_count": 2,
+    "identity_outside_registered_count": 0,
+    "secrets": []
+  },
+  {
+    "name": "requested-by-and-unregistered-owner",
+    "html": "<span>Welcome! Lin</span><table><thead><tr><th>Requested By</th><th>Owner</th><th>Process Status</th></tr></thead><tbody><tr><td><span>Lin</span></td><td>Lin</td><td>RUNNING_BUILD</td></tr></tbody></table>",
+    "preserved": ["<th>Requested By</th><th>Owner</th>", "<td>Lin</td><td>RUNNING_BUILD</td>"],
+    "masked": ["Welcome! <USER>", "<td><USER></td><td>Lin</td>"],
+    "identities": ["Lin"],
+    "user_mask_count": 2,
+    "identity_outside_registered_count": 1,
+    "secrets": []
+  },
+  {
+    "name": "requestedby-and-owner-not-registered",
+    "html": "<span>Welcome! Lin</span><table><tr><th>RequestedBy</th><th>Owner</th></tr><tr><td>Lin</td><td>Lin</td></tr></table>",
+    "preserved": ["<th>RequestedBy</th><th>Owner</th>", "<td>Lin</td><td>Lin</td>"],
+    "masked": ["Welcome! <USER>"],
+    "identities": ["Lin"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 2,
+    "secrets": []
+  },
+  {
+    "name": "requested-by-adjacent-value-not-registered",
+    "html": "<span>Welcome! Lin</span><table><tr><td>Requested By</td><td>Lin</td></tr></table>",
+    "preserved": ["<td>Requested By</td><td>Lin</td>"],
+    "masked": ["Welcome! <USER>"],
+    "identities": ["Lin"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 1,
+    "secrets": []
+  },
+  {
+    "name": "multiple-registered-columns-and-rows",
+    "html": "<span>Welcome! Lin</span><table><tr><th>Triggered By</th><th>Requested By</th><th>Owner</th></tr><tr><td>Lin</td><td>Hao</td><td>Lin</td></tr><tr><td>Hao</td><td>Lin</td><td>Hao</td></tr></table>",
+    "preserved": ["<th>Triggered By</th><th>Requested By</th><th>Owner</th>"],
+    "masked": ["Welcome! <USER>", "<td><USER></td><td><USER></td><td>Lin</td>", "<td><USER></td><td><USER></td><td>Hao</td>"],
+    "identities": ["Lin", "Hao"],
+    "user_mask_count": 5,
+    "identity_outside_registered_count": 2,
+    "secrets": []
+  },
+  {
+    "name": "entity-display-name",
+    "html": "<span>Welcome! Name &amp; Last</span><p>Name &amp; Last Name &#38; Last xName &amp; Last Name &amp; Lastx</p>",
+    "preserved": ["Name & Last Name & Last xName & Last Name & Lastx"],
+    "masked": ["Welcome! <USER>"],
+    "identities": ["Name & Last"],
+    "user_mask_count": 1,
+    "identity_outside_registered_count": 2,
+    "secrets": []
   }
 ]

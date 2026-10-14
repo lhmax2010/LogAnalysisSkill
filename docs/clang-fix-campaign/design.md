@@ -2,7 +2,8 @@
 
 ## 0. 元信息
 
-- 版本:**v1.5.22-FROZEN(实现输入版)**
+- 版本:**v1.5.23-FROZEN(实现输入版)**
+- v1.5.23 变更记录:P5Q 快照漂移接受、FAIL 语义与可信读取环境失败说明,见 §4.5 第 6、14 条及 §4.3,按 P5Q v1.5 冻结设计附录 A 末尾 v1.4 增补同步(含 v1.5 条款)。
 - v1.5.22 变更记录:P5Q 复验触发改为 RBS 网页表单,见 §4.5,按 P5Q 冻结设计附录 A 同步。
 - v1.5.21 变更记录:P5 代码评审修订见 §4.4 第 21–24 条,按 P5 v1.3.1 附录 A.3 同步。
 - v1.5.20 变更记录:P2-P5 落地裁定见 §4.4,按 P5 冻结设计附录 A 同步。
@@ -2641,7 +2642,7 @@ QB_LOGIN_TIMEOUT                  登录窗口超时未完成登录
 QB_LOGIN_ABORTED                  登录窗口被关闭
 QB_BROWSER_UNAVAILABLE            Node/Playwright/Chromium 不可用,/dev/shm 不可用,或代理异常退出(提交放行前)
 QB_RESULT_UNRECOGNIZED            构建状态文字或页面结构无法识别,不写 RESULT
-QB_FETCH_FAILED                   读取页面失败(非 200、重定向、构建号不符、登录失效、代理异常),不写 RESULT
+QB_FETCH_FAILED                   读取页面失败(非 200、重定向、构建号不符、登录失效、代理异常),不写 RESULT;含可信读取环境不可用(P5Q 设计文件 v1.4)
 QB_EVIDENCE_REDACTION_FAILED      证据写后脱敏自检失败,证据删除,不写 RESULT
 PREFLIGHT_FAILED                   campaign-preflight 任一检查失败(v1.3.1)
 CHANGE_ID_HOOK_FAILED              commit-msg hook 生成失败:message 已含
@@ -2753,7 +2754,7 @@ P5Q 模块(qb_browser_agent、qb_browser、qb_redact、qb-trigger、qb-result-fe
 3. 目标行写入表单 Build Package List,格式 `仓库路径@commit`,只写一行;表字段 `sbs_target` 保留原名,语义为该行。
 4. 每次提交在 BUILD NOTES 写入请求标记 `clang-fix-campaign request=<request_id>`;构建与请求只凭回显的请求标记、目标行、子构建 TRIGGER_ID、配置路径与页面构建号对应。
 5. `SUBMITTED` 事件语义改为"提交意图已落库,即将放行提交";意图先于放行写入。提交一旦放行,不存在"确定失败"结论;无法确定是否已提交时不自动重提。`QB_SUBMIT_FAILED` 只表示意图已落库但提交确定未放行。
-6. 通过判据为子构建 Status 精确等于 `Successful`,且子构建回显 `FAIL_FAST=yes`、架构为 `standard-armv7l:aarch64:x86_64`、逐架构状态为空;`qb_pass_requires_accept` 默认 false,与其它复验参数一起在每个 state DB、每个 branch 首次触发时冻结于新表 `campaign_qb_profiles`,P5R 按 unit.branch 从该表读取。
+6. 通过判据为子构建 Status 精确等于 `Successful`,且子构建回显 `FAIL_FAST=yes`、架构为 `standard-armv7l:aarch64:x86_64`、逐架构状态为空;`qb_pass_requires_accept` 默认 false,与其它复验参数一起在每个 state DB、每个 branch 首次触发时冻结于新表 `campaign_qb_profiles`,P5R 按 unit.branch 从该表读取。(v1.5.23)子构建快照地址与冻结值的关系尚未取证,只记录;不一致时有指引地停止、不写结论。其中参考快照在构建期间滚动(主机与路径根相符、快照名不同)的情形,可由人对单个 request 以 `qb-result-fetch --accept-snapshot-drift` 接受,结果文件记实际快照名 `snapshot_used` 与 `snapshot_drift_accepted=true`;P5R 报告须标出这类 unit 及其实际快照名。FAIL 只表示含目标行的全量构建失败,见第 14 条。
 7. 工具永远不点 Ready to Accept;推送 sandbox 分支不会自动触发 QuickBuild 构建,P12 首次真实推送后观察确认。
 8. EF-5:①REST 探活不再需要;③SBS 构建只读取证与 RBS 表单结构证据已取得,RBS 构建页完整字段映射由 P5Q 设计文件第 9.4 节第 1 步确定,确定后 P5Q 的 qb-trigger 才开工;④accept 语义已由 FatTank 裁定;②真实提交的响应形态移入 P5Q 收口前的确认提交(P5Q 设计文件第 9.4 节第 2 步),不再作为 P5Q 开工门。
 9. campaign-preflight 取消 QB REST 探针与 QB_PASSWORD/QB_COOKIE 检查,改为检查 Node、Playwright 模块、Chromium 路径与 /dev/shm 可用。
@@ -2761,6 +2762,7 @@ P5Q 模块(qb_browser_agent、qb_browser、qb_redact、qb-trigger、qb-result-fe
 11. qb_result 文件 schema 以 P5Q 设计文件第 5.4 节为准。review-submit 接受该 schema:`per_arch_status` 为 null 与数据库 NULL 表示未提供独立架构状态,不启动逐架构校验,非空映射才按架构校验;`accepted` 可空,冻结参数要求 Accept 时只有数据库 accepted=1 才通过,NULL 与 0 均不通过。"已有 RESULT 而校验失败不得降级"不变。
 12. 同一 request 已有终态 RESULT 后,状态不变而 accepted 等判定字段变化时,追加新的 RESULT,最新 RESULT 为权威;状态改变视为状态不一致。
 13. 新增 `campaign_state` 按连接写入的内部原语;P5Q 的每个写入点在一个事务内完成。
+14. qb_result 的 `status=FAIL` 表示"包含本 unit 目标行的那一次全量构建(`FAIL_FAST=yes`,单个 Build_GBS 步)失败",**不等于本 unit 的修复未通过**:QuickBuild 页面上没有逐包状态。P5R 不得仅凭 FAIL 断言本 unit 的修复失败,须结合结果文件中的 `child_failed_step`、`child_error_message` 由人判读;PASS 的语义不变。
 
 ## 5. 非功能性需求
 
@@ -3477,7 +3479,7 @@ tizen-ci-triage/scripts/ci_triage/;kb 数据 tizen-ci-triage/kb/;
 
 ---
 
-本文档为 **v1.5.22-FROZEN(实现输入版)**(2026-10-10;
+本文档为 **v1.5.23-FROZEN(实现输入版)**(2026-10-10;
 冻结裁决见 §0)。
 
 **EF 台账**:EF-1 / EF-2 / EF-3 / EF-4 / EF-6 **已关闭**(结论见 §1.4);
