@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="19" time="386.447" timestamp="2026-10-14T21:18:01.324626+08:00" hostname="linhao-linux"><testcase classname="tests.unit.test_p5q_c5a_integration" name="test_real_cli_browser_submit_bind_pending_pass[build]" time="23.037" /><testcase classname="tests.unit.test_p5q_c5a_integration" name="test_real_cli_browser_submit_bind_pending_pass[error-created]" time="16.343" /><testcase classname="tests.unit.test_p5q_c5a_integration" name="test_real_cli_browser_submit_bind_pending_pass[error-no-build]" time="16.245" /><testcase classname="tests.unit.test_p5q_c5a_integration" name="test_real_cli_browser_submit_bind_pending_pass[no-navigation]" time="76.139" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_agent_unit_matrix" time="10.274" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_c2c_source_guard_mutations" time="4.142" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_c2c_trusted_reads_and_fields[test_qb_browser_trusted.mjs]" time="19.794" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs]" time="119.180" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_c5a_evidence_tools" time="53.575"><failure message="AssertionError: ▶ C5a offline evidence tools use real guards and isolated worlds&#10;    ✖ raw/live comparison: equal (4802.379318ms)&#10;    ✔ raw/live comparison: insert-nav (14078.359434ms)&#10;    ✔ raw/live comparison: change-status (3982.501195ms)&#10;    ✔ twelve-field rehearsal: random/version/unchanged values/no action release (15808.630782ms)&#10;    ✔ login false positive: signin-with-signout (1800.314355ms)&#10;    ✔ login false positive: password-remains (1820.568842ms)&#10;    ✔ login false positive: no-signout (1845.063313ms)&#10;    ✖ read redirected to different Successful build stays a read failure (2871.717278ms)&#10;    ✔ window.open disabled and foreign iframe denied before request (3303.144589ms)&#10;    ✔ server callback code inconsistent with DOM is denied without a server POST (3074.109011ms)&#10;  ✖ C5a offline evidence tools use real guards and isolated worlds (53484.43385ms)&#10;  ℹ tests 11&#10;  ℹ suites 0&#10;  ℹ pass 8&#10;  ℹ fail 3&#10;  ℹ cancelled 0&#10;  ℹ skipped 0&#10;  ℹ todo 0&#10;  ℹ duration_ms 53486.764673&#10;  &#10;  ✖ failing tests:&#10;  &#10;  test at tests/node/test_p5q_c5_tools.mjs:27:15&#10;  ✖ raw/live comparison: equal (4802.379318ms)&#10;    AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:&#10;    &#10;      assert.ok(results[2].comparison.find(row =&gt; row.field === 'variables').raw[0].rows.length &gt;= 10)&#10;    &#10;        at TestContext.&lt;anonymous&gt; (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:47:20)&#10;        at async Test.run (node:internal/test_runner/test:1409:7)&#10;        at async TestContext.&lt;anonymous&gt; (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:27:7)&#10;        at async Test.run (node:internal/test_runner/test:1409:7)&#10;        at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {&#10;      generatedMessage: true,&#10;      code: 'ERR_ASSERTION',&#10;      actual: false,&#10;      expected: true,&#10;      operator: '==',&#10;      diff: 'simple'&#10;    }&#10;  &#10;  test at tests/node/test_p5q_c5_tools.mjs:99:13&#10;  ✖ read redirected to different Successful build stays a read failure (2871.717278ms)&#10;    Error: Command failed: /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python -c import sys; from ci_triage.qb_browser import decode_response,QbBrowserError&#10;    try: decode_response(sys.stdin.read(),command=&quot;read&quot;)&#10;    except QbBrowserError as e: print(e.code)&#10;    Traceback (most recent call last):&#10;      File &quot;&lt;string&gt;&quot;, line 2, in &lt;module&gt;&#10;    TypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'&#10;    &#10;        at genericNodeError (node:internal/errors:986:15)&#10;        at wrappedFn (node:internal/errors:540:14)&#10;        at checkExecSyncError (node:child_process:942:11)&#10;        at execFileSync (node:child_process:978:15)&#10;        at TestContext.&lt;anonymous&gt; (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:108:24)&#10;        at async Test.run (node:internal/test_runner/test:1409:7)&#10;        at async TestContext.&lt;anonymous&gt; (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:99:5)&#10;        at async Test.run (node:internal/test_runner/test:1409:7)&#10;        at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {&#10;      status: 1,&#10;      signal: null,&#10;      output: [ null, '', `Traceback (most recent call last):\n  File &quot;&lt;string&gt;&quot;, line 2, in &lt;module&gt;\nTypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'\n` ],&#10;      pid: 948820,&#10;      stdout: '',&#10;      stderr: `Traceback (most recent call last):\n  File &quot;&lt;string&gt;&quot;, line 2, in &lt;module&gt;\nTypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'\n`&#10;    }&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 2, in &lt;module&gt;&#10;  TypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs', '/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs', '/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome'], returncode=1, stdout='▶ C5a offline evidence tools use real guards and isolated worlds\n  ✖ raw/live comparison: equal (4802.379318ms)\n  ✔ raw/live comparison: insert-nav (14078.359434ms)\n  ✔ raw/live comparison: change-status (3982.501195ms)\n  ✔ twelve-field rehearsal: random/version/unchanged values/no action release (15808.630782ms)\n  ✔ login false positive: signin-with-signout (1800.314355ms)\n  ✔ login false positive: password-remains (1820.568842ms)\n  ✔ login false positive: no-signout (1845.063313ms)\n  ✖ read redirected to different Successful build stays a read failure (2871.717278ms)\n  ✔ window.open disabled and foreign iframe denied before request (3303.144589ms)\n  ✔ server callback code inconsistent with DOM is denied without a server POST (3074.109011ms)\n✖ C5a offline evidence tools use real guards and isolated worlds (53484.43385ms)\nℹ tests 11\nℹ suites 0\nℹ pass 8\nℹ fail ...      at async Test.run (node:internal/test_runner/test:1409:7)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {\n    status: 1,\n    signal: null,\n    output: [ null, \'\', `Traceback (most recent call last):\\n  File &quot;&lt;string&gt;&quot;, line 2, in &lt;module&gt;\\nTypeError: decode_response() missing 1 required keyword-only argument: \'submit_sent\'\\n` ],\n    pid: 948820,\n    stdout: \'\',\n    stderr: `Traceback (most recent call last):\\n  File &quot;&lt;string&gt;&quot;, line 2, in &lt;module&gt;\\nTypeError: decode_response() missing 1 required keyword-only argument: \'submit_sent\'\\n`\n  }\n', stderr='已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\nTraceback (most recent call last):\n  File &quot;&lt;string&gt;&quot;, line 2, in &lt;module&gt;\nTypeError: decode_response() missing 1 required keyword-only argument: \'submit_sent\'\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n').returncode">result = subprocess.run(
+            [*command, str(ROOT / "tests/node/test_p5q_c5_tools.mjs"), *paths],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=150,
+        )
+        print(result.stdout)
+        assert result.returncode == 0, result.stdout + result.stderr
+    
+    
+    def test_c5a_tools_are_readonly_and_not_production_test_overrides() -&gt; None:
+        spikes = ROOT / "docs/clang-fix-campaign/spikes"
+        for name in ("p5q_fill_rehearsal.mjs", "p5q_compare_raw_active.mjs", "p5q_c5_tools.mjs"):
+&gt;           source = (spikes / name).read_text()
+E           AssertionError: ▶ C5a offline evidence tools use real guards and isolated worlds
+E               ✖ raw/live comparison: equal (4802.379318ms)
+E               ✔ raw/live comparison: insert-nav (14078.359434ms)
+E               ✔ raw/live comparison: change-status (3982.501195ms)
+E               ✔ twelve-field rehearsal: random/version/unchanged values/no action release (15808.630782ms)
+E               ✔ login false positive: signin-with-signout (1800.314355ms)
+E               ✔ login false positive: password-remains (1820.568842ms)
+E               ✔ login false positive: no-signout (1845.063313ms)
+E               ✖ read redirected to different Successful build stays a read failure (2871.717278ms)
+E               ✔ window.open disabled and foreign iframe denied before request (3303.144589ms)
+E               ✔ server callback code inconsistent with DOM is denied without a server POST (3074.109011ms)
+E             ✖ C5a offline evidence tools use real guards and isolated worlds (53484.43385ms)
+E             ℹ tests 11
+E             ℹ suites 0
+E             ℹ pass 8
+E             ℹ fail 3
+E             ℹ cancelled 0
+E             ℹ skipped 0
+E             ℹ todo 0
+E             ℹ duration_ms 53486.764673
+E             
+E             ✖ failing tests:
+E             
+E             test at tests/node/test_p5q_c5_tools.mjs:27:15
+E             ✖ raw/live comparison: equal (4802.379318ms)
+E               AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+E               
+E                 assert.ok(results[2].comparison.find(row =&gt; row.field === 'variables').raw[0].rows.length &gt;= 10)
+E               
+E                   at TestContext.&lt;anonymous&gt; (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:47:20)
+E                   at async Test.run (node:internal/test_runner/test:1409:7)
+E                   at async TestContext.&lt;anonymous&gt; (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:27:7)
+E                   at async Test.run (node:internal/test_runner/test:1409:7)
+E                   at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+E                 generatedMessage: true,
+E                 code: 'ERR_ASSERTION',
+E                 actual: false,
+E                 expected: true,
+E                 operator: '==',
+E                 diff: 'simple'
+E               }
+E             
+E             test at tests/node/test_p5q_c5_tools.mjs:99:13
+E             ✖ read redirected to different Successful build stays a read failure (2871.717278ms)
+E               Error: Command failed: /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python -c import sys; from ci_triage.qb_browser import decode_response,QbBrowserError
+E               try: decode_response(sys.stdin.read(),command="read")
+E               except QbBrowserError as e: print(e.code)
+E               Traceback (most recent call last):
+E                 File "&lt;string&gt;", line 2, in &lt;module&gt;
+E               TypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'
+E               
+E                   at genericNodeError (node:internal/errors:986:15)
+E                   at wrappedFn (node:internal/errors:540:14)
+E                   at checkExecSyncError (node:child_process:942:11)
+E                   at execFileSync (node:child_process:978:15)
+E                   at TestContext.&lt;anonymous&gt; (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:108:24)
+E                   at async Test.run (node:internal/test_runner/test:1409:7)
+E                   at async TestContext.&lt;anonymous&gt; (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:99:5)
+E                   at async Test.run (node:internal/test_runner/test:1409:7)
+E                   at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+E                 status: 1,
+E                 signal: null,
+E                 output: [ null, '', `Traceback (most recent call last):\n  File "&lt;string&gt;", line 2, in &lt;module&gt;\nTypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'\n` ],
+E                 pid: 948820,
+E                 stdout: '',
+E                 stderr: `Traceback (most recent call last):\n  File "&lt;string&gt;", line 2, in &lt;module&gt;\nTypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'\n`
+E               }
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             Traceback (most recent call last):
+E               File "&lt;string&gt;", line 2, in &lt;module&gt;
+E             TypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs', '/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs', '/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome'], returncode=1, stdout='▶ C5a offline evidence tools use real guards and isolated worlds\n  ✖ raw/live comparison: equal (4802.379318ms)\n  ✔ raw/live comparison: insert-nav (14078.359434ms)\n  ✔ raw/live comparison: change-status (3982.501195ms)\n  ✔ twelve-field rehearsal: random/version/unchanged values/no action release (15808.630782ms)\n  ✔ login false positive: signin-with-signout (1800.314355ms)\n  ✔ login false positive: password-remains (1820.568842ms)\n  ✔ login false positive: no-signout (1845.063313ms)\n  ✖ read redirected to different Successful build stays a read failure (2871.717278ms)\n  ✔ window.open disabled and foreign iframe denied before request (3303.144589ms)\n  ✔ server callback code inconsistent with DOM is denied without a server POST (3074.109011ms)\n✖ C5a offline evidence tools use real guards and isolated worlds (53484.43385ms)\nℹ tests 11\nℹ suites 0\nℹ pass 8\nℹ fail ...      at async Test.run (node:internal/test_runner/test:1409:7)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {\n    status: 1,\n    signal: null,\n    output: [ null, \'\', `Traceback (most recent call last):\\n  File "&lt;string&gt;", line 2, in &lt;module&gt;\\nTypeError: decode_response() missing 1 required keyword-only argument: \'submit_sent\'\\n` ],\n    pid: 948820,\n    stdout: \'\',\n    stderr: `Traceback (most recent call last):\\n  File "&lt;string&gt;", line 2, in &lt;module&gt;\\nTypeError: decode_response() missing 1 required keyword-only argument: \'submit_sent\'\\n`\n  }\n', stderr='已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\nTraceback (most recent call last):\n  File "&lt;string&gt;", line 2, in &lt;module&gt;\nTypeError: decode_response() missing 1 required keyword-only argument: \'submit_sent\'\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n').returncode
+
+tests/unit/test_qb_browser_node.py:107: AssertionError</failure></testcase><testcase classname="tests.unit.test_qb_browser_node" name="test_c5a_tools_are_readonly_and_not_production_test_overrides" time="0.000" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_browser_redaction_and_response_interception" time="7.328" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_c2b_configuration_source_checks" time="1.210" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_h_diagnostic_normal_and_control" time="22.159" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_c2b_local_https_safety" time="7.885" /><testcase classname="tests.unit.test_qb_browser_node" name="test_c2b_evidence_entry_is_not_a_submit_or_launch_override_path" time="0.001" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_login_retry_and_five_attempt_limit" time="5.981" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_profile_cleanup[normal]" time="1.022" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_profile_cleanup[exception]" time="1.011" /><testcase classname="tests.unit.test_qb_browser_node" name="test_node_profile_cleanup[signal]" time="1.009" /></testsuite></testsuites>

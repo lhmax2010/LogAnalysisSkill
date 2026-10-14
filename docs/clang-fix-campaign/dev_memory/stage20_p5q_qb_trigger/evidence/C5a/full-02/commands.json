@@ -1,0 +1,15 @@
+[
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-v",
+      "-s",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5a/full-02/pytest.xml"
+    ],
+    "exit": 0,
+    "seconds": 496.679,
+    "log": "pytest.log"
+  }
+]

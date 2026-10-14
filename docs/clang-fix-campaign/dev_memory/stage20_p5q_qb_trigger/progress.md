@@ -1,6 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE**。
+日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE**。
+C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b/C6未开始,真机挂账仍开放。
+以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;当前边界为不进入C5b。
 C4最新裁定与执行见§33;§32停点已由P5Q-C4-02关闭。
 C4本轮基线ec3be74;源格式对齐要求已撤回,旧探针作废,实现与验收见§33。
 C4本轮不访问真实QuickBuild/Gerrit,不弹登录窗口,不进入C5。
@@ -62,9 +64,10 @@ exit=0
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
 | C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§26.6 live-12五页/配置与两次联动通过,release0;附录C补现场结果,待R1核对,无C3 |
 | C2c | v1.5第10节①–⑥:隔离读取/原始字节、惰性位置脱敏/诊断、刷新删除、字段窗口/启动自检、design.md照录 | COMPLETE;§28裁定及验收;C5/C6挂账仍开放,不标P5Q CLOSED |
-| C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | STOPPED P5Q-C3-01;两项评审遗留已修,主体未实现;见§29 |
-| C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
-| C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
+| C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | COMPLETE @3ef542a;§31;C3-01/C3-03均已裁定关闭 |
+| C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | COMPLETE @39e4bde;§33;C4-01已由C4-02关闭 |
+| C5a | 第9.3节本机浏览器集成;第1.6步工具准备 | COMPLETE;§34;全部离线,2638 passed/1 skipped,四组安全4/4 |
+| C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | NOT_STARTED;须另获真机授权 |
 | C6 | 第9.4节第2步确认的真实提交与收口文档 | C5 + FatTank明确确认;NOT_STARTED |
 
 C2真机取证与冻结稿假设不符时按R1修订,不得直接继续C3。
@@ -3500,3 +3503,99 @@ _remote_check及P2-P5生产模块、schema/API无改动;冻结稿哈希仍为§3
 无新的规范矛盾或做不到事项,停止报告新增0。不进入C5,不把C4完成写成P5Q CLOSED。
 原始字节/活动文档比对、成功样本、BUILD_NOTES样本与真实提交继续由C5/C6履行。
 仅纳入本轮实现/测试/证据与进度,未处理用户既有.gitignore改动、文档删除及草稿。
+
+## 34. C5a:本机浏览器集成与第1.6步工具准备
+
+### 34.1 范围与计划
+
+基线39e4bde;已核对§33的C4完成记录与开放挂账。v1.5冻结稿SHA256仍为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`。
+C2C-03、C3-02、C3-04、C4-02继续有效。先列第9.3节逐项覆盖,再补真实CLI/
+真实代理/本地HTTPS服务器链路,然后准备原始正文与活动文档比对、完整填表演练
+两项工具并离线验证。最后跑第9.5门禁及四组拦截安全测试。
+
+只访问测试入口映射的loopback HTTPS与本地git裸库,不访问真实QB/Gerrit,
+不弹真实登录窗口,不点击Accept/Ready to Accept。不改Policy/installGuards/
+冻结稿;如需改动,按停止报告协议记录事实与候选处理。每个提交同步本节。
+C5a不关闭第9.4节真机义务,不进入C5b/C6。用户既有改动与草稿不处理。
+
+覆盖清单与缺口见[evidence/C5a/coverage.md](evidence/C5a/coverage.md);
+清单中未跑项目不借历史结果冒充本轮通过。
+
+### 34.2 本机集成与取证工具
+
+- 新增tests/node/p5q_fake_quickbuild.mjs,从live-12的结构蓝本重新构造响应,
+  不把归档活动HTML当响应体。保留坏trim、random回调、版本递增、记住Variables、
+  dashboard、刷新脚本。已有假登录服务器复跑失败后wicket重提交/五次上限。
+  测试证书在临时目录生成,以SPKI精确信任,DNS映射只从tests入口传入。
+  假服务器监听loopback;其它域名映射NOTFOUND;实际收取请求逐条归档。
+- 新增真实Python CLI链路,真实Agent通过测试node入口启动,测试入口模拟人工登录,
+  生产login不点击/输入。build模式提交一次并绑定,再Running/PENDING、Successful/
+  PASS,检查状态、RESULT及fsync发布的结果文件。另测error-created、error-no-build、
+  no-navigation三种unknown,再次调用CLI零新增提交。git只用本地裸库,没有push。
+- spikes/p5q_compare_raw_active.mjs复用生产Agent/installGuards,同一次导航捕获
+  正文字节并严格解码,隔离环境序列化活动文档;两者分别惰性脱敏后落盘。
+  包含变量表thead td及br换行,所有要求字段逐项比较;登记位置外身份计数分列。
+  首个差异页留证后停止,不回退生产read。路径参数先按只读集合验证。
+- spikes/p5q_fill_rehearsal.mjs只login/open_form/fill/close,独立rehearsal request_id,
+  无DB、无提交命令、无Ok点击、无submitUrl写入。通过只读包装生产快照和已适配
+  协议元数据,记录12字段窗口、随机值、HTTP状态、版本、已相等值、读回与指纹。
+  实际action获准次数与policy.released双断言为0/false。配置页与各表单快照的
+  登记位置外身份计数也记录。无生产trace扩展,无Policy/installGuards改动。
+- 共用p5q_c5_tools.mjs负责惰性字段提取、元数据观察与双端写前/写后检查;
+  两份同名.md运行说明列完整C5b命令,仅目标构建号/目标行留待FatTank指定。
+  本轮没有执行说明中的真机命令,没有弹真实登录窗口。
+
+### 34.3 测试补齐与开发记录
+
+第9.3节16项逐条映射见[evidence/C5a/coverage.md](evidence/C5a/coverage.md)。
+已有trusted/fields、安全四组、h三模式、login retry、源码护栏全部原义复跑;
+仅在既有trusted/fields测试追加服务器实收导出,未删减断言。
+新增pytest参数用例4个(完整CLI的四模式)、Node工具入口1个、工具静态护栏1个。
+工具Node矩阵12项(含外层):三种比对、十二字段演练、四种登录真假阳性、
+重定向读取错误映射、window.open/外站iframe、DOM与实际回调不一致。
+
+开发期focused-01为18 passed/1 failed:新增工具测试对合成父变量表误写>=10行
+(实际9行),以及调用decode_response漏传既有必需参数submit_sent=False。
+两者均修正测试自身,不改生产API或放行规则;不把该轮计作验收通过。
+其余合成夹具纠正包括QB_TRIGGER_ID、FAIL_FAST显示名、快照URL不带尾斜杠、
+unknown退出码5/再次幂等退出码0、测试入口stdin清理,均以既有设计/实现为准。
+第一轮全量full-01实测2638 passed/1 skipped,0 failed;随后补齐演练每页身份计数,
+最终以full-02全量重新执行结果为准,不拿旧轮绿灯代替新代码验收。
+
+### 34.4 开放边界
+
+C5a仅准备并离线验证工具。第9.4节1.6a原始字节/活动文档真机比对、1.6c真机
+完整演练仍须C5b完成,两者都先于任何真实提交。成功样本与BUILD_NOTES非空样本
+仍具名挂账,允许按冻结稿由C6补齐;挂账未关闭不得P5Q CLOSED。
+本轮不修改冻结稿、design.md、生产代码或P2-P5;不执行Accept/Ready to Accept,
+不访问真实QB/Gerrit。没有新的规格不一致或做不到事项,停止报告新增0。
+
+### 34.5 最终验收与提交边界
+
+证据总索引:[evidence/C5a/README.md](evidence/C5a/README.md)。所有命令与exit
+记录在对应目录commands.json;集合、请求数与不可变边界由audit.py实跑生成。
+
+| 项目 | 最终实测 | 证据(相对evidence/C5a) |
+|---|---|---|
+| 全仓pytest | 2638 passed / 0 failed / 1 skipped,496.40s,exit0 | full-02/pytest.log、pytest.xml |
+| 集合对账 | 2633→2639,新增6、removed=[] | audit.json |
+| 真实CLI四模式 | 4 passed,无失败/跳过;一次提交,错误落点不重提 | full-02/artifacts/{build,error-created,error-no-build,no-navigation}/ |
+| 正常链路 | 35个本地实收请求,1次运行表单提交,submitted_bound→RUNNING→PASS,RESULT与结果文件存在 | full-02/artifacts/build/commands.json、server-requests.json、state-facts.json、result.json |
+| 新工具Node | 12 passed / 0 failed / 0 skipped | full-02/pytest.log,full-02/artifacts/tools/ |
+| 两文档三种比较 | 六页全字段一致;插入导航仅活动文档有;改Status值不同 | full-02/artifacts/tools/{equal,insert-nav,change-status}/ |
+| 填表演练 | 12字段各1次获准POST、HTTP200、12版本,not_released,action放行0,16次身份计数均0 | full-02/artifacts/tools/rehearsal/run.json |
+| 既有Node | 单元163/静态183/可信读取37/字段DOM16/runtime64/配置来源67,全部通过 | full-02/pytest.log |
+| 安全四组 | 从头复跑4/4,攻击HTTP0/WS0;Worker分支b且浏览器/profile已清理 | safety.json |
+| 其它浏览器组 | h三模式3/3,登录重试2/2,正常/异常/SIGTERM清理3/3 | full-02/pytest.log |
+| mypy | exit0,116 source files | tools-02/mypy.log |
+| Ruff完整待提交树 | exit0,All checks passed | ruff-02/ruff.log |
+| lint-imports | exit0,6 kept / 0 broken | tools-02/lint-imports.log |
+| design.md检查器 | exit0,0 problem | tools-02/design-check.log |
+| 机械边界检查 | exit0,冻结hash匹配、生产/design零diff | audit.json |
+
+唯一skip仍为大小写不敏感文件系统平台用例,不是Node/浏览器跳过。
+源码/文档diff-check通过;开发失败原始日志/JUnit保留pytest输出的尾部空白,
+不为消除空白提示而改写证据。所有新增内容限tests、spikes、stage证据/进度及INDEX。
+用户既有.gitignore改动、四个文档删除及未跟踪草稿未纳入提交。
+C5a COMPLETE,不进入C5b,不把本轮离线通过记作P5Q CLOSED。

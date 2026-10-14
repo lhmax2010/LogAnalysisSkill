@@ -1,0 +1,17 @@
+[
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-v",
+      "-s",
+      "tests/unit/test_p5q_c5a_integration.py",
+      "tests/unit/test_qb_browser_node.py",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5a/focused-01/focused.xml"
+    ],
+    "exit": 1,
+    "seconds": 386.587,
+    "log": "focused.log"
+  }
+]

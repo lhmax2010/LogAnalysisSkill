@@ -1,0 +1,158 @@
+{
+  "path": "/build/1193469/overview",
+  "navigation": "VERIFIED",
+  "raw_file": "01.raw-redacted.html",
+  "active_file": "01.active-redacted.html",
+  "raw_outside_identity_count": 0,
+  "active_outside_identity_count": 0,
+  "comparison": [
+    {
+      "field": "navigation",
+      "result": "一致",
+      "raw": [
+        "Build (id:1193469)"
+      ],
+      "active": [
+        "Build (id:1193469)"
+      ]
+    },
+    {
+      "field": "summary",
+      "result": "值不同",
+      "raw": [
+        {
+          "heading": "Summary",
+          "tables": [
+            {
+              "columns": [
+                "Id",
+                "Status",
+                "Triggered By"
+              ],
+              "rows": [
+                [
+                  "1193469",
+                  "Failed",
+                  "<USER>"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "active": [
+        {
+          "heading": "Summary",
+          "tables": [
+            {
+              "columns": [
+                "Id",
+                "Status",
+                "Triggered By"
+              ],
+              "rows": [
+                [
+                  "1193469",
+                  "Successful",
+                  "<USER>"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "field": "child_build",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "variables",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "configuration_tabs",
+      "result": "一致",
+      "raw": [
+        [
+          "../../overview/1915"
+        ],
+        [
+          "../../pipeline/1915"
+        ],
+        [
+          "../../children/1915"
+        ]
+      ],
+      "active": [
+        [
+          "../../overview/1915"
+        ],
+        [
+          "../../pipeline/1915"
+        ],
+        [
+          "../../children/1915"
+        ]
+      ]
+    },
+    {
+      "field": "breadcrumb",
+      "result": "一致",
+      "raw": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "build"
+      ],
+      "active": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "build"
+      ]
+    },
+    {
+      "field": "copy_path",
+      "result": "一致",
+      "raw": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build"
+      ],
+      "active": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build"
+      ]
+    },
+    {
+      "field": "build_name",
+      "result": "一致",
+      "raw": [
+        "TIZEN_Tizen_Tizen-Base-Toolchain_RBS_build_20261014"
+      ],
+      "active": [
+        "TIZEN_Tizen_Tizen-Base-Toolchain_RBS_build_20261014"
+      ]
+    },
+    {
+      "field": "failed_steps",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "error_message",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    }
+  ]
+}

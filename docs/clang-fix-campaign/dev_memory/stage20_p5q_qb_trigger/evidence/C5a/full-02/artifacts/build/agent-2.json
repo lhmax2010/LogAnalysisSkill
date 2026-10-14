@@ -1,0 +1,103 @@
+{
+  "transcript": [
+    {
+      "input": {
+        "command": "login",
+        "login_timeout_seconds": 60,
+        "projects": [
+          {
+            "overview_id": 1917,
+            "configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER",
+            "project_name": "Tizen-Base-Toolchain"
+          }
+        ]
+      },
+      "output": {
+        "ok": true
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/build/1193467/overview"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><a class=\"nav-link\">Build (id:1193467)</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script>\n    <ul><li class=\"tab-ConfigurationOverview\"><a class=\"nav-link\" href=\"../../overview/1917\">overview</a></li><li class=\"tab-PipelinePage\"><a class=\"nav-link\" href=\"../../pipeline/1917\">pipeline</a></li><li class=\"tab-ChildrenPage\"><a class=\"nav-link\" href=\"../../children/1917\">children</a></li></ul>\n    <div class=\"build-header\"><span>TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261014</span></div>\n    <section class=\"build-summary\"><div class=\"box-head\">Summary</div><table><thead><tr>\n    <th>Id</th><th>Status</th><th>Triggered By</th></tr></thead><tbody><tr><td>1193467</td>\n    <td id=\"status\">Successful</td><td>&lt;USER&gt;</td></tr></tbody></table></section>\n    \n    <h3>Child Build</h3><table><thead><tr><th>Repository-Architecture</th><th>QB Build URL</th><th>Build Result</th><th>Build Profiling</th></tr></thead><tbody><tr><td>standard-armv7l:aarch64:x86_64</td>\n      <td><a href=\"https://quickbuild.tizen.org/build/1193469\">1193469</a></td><td>SUCCESSFUL</td><td></td></tr></tbody></table><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/build/1193467/variables"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><a class=\"nav-link\">Build (id:1193467)</a><table><thead><tr><td>Name</td><td>Display Name</td><td>Value</td></tr></thead>\n    <tbody><tr><td>QB_TRIGGER_ID</td><td></td><td>1193467</td></tr><tr><td>BUILD_PKG_LIST_MODIFY</td><td>Build Package List</td><td>u1@a97acc260d52515199247d53577d2979a51093d5</td></tr><tr><td>BUILD_NOTES</td><td>BUILD NOTES</td><td>clang-fix-campaign request=2225790619da4d3b9641e6cb684a6928</td></tr><tr><td>BUILD_TYPE</td><td>BUILD_TYPE</td><td>Full</td></tr><tr><td>BUILD_REFERENCE</td><td>BUILD_REFERENCE</td><td>Ref. Snapshot</td></tr><tr><td>SNAPSHOT_NUM</td><td>SNAPSHOT_NUM</td><td>tizen-base-toolchain_20260924.094908</td></tr><tr><td>PROJECT_BRANCH</td><td>PROJECT_BRANCH</td><td>tizen_base</td></tr><tr><td>FAIL_FAST</td><td>Immediate Stop With Error</td><td>yes</td></tr><tr><td>CHILD_CONFIGURATIONS</td><td></td><td>standard-armv7l:aarch64:x86_64</td></tr></tbody></table><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/build/1193469/overview"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><a class=\"nav-link\">Build (id:1193469)</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>build</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build')</script>\n    <ul><li class=\"tab-ConfigurationOverview\"><a class=\"nav-link\" href=\"../../overview/1915\">overview</a></li><li class=\"tab-PipelinePage\"><a class=\"nav-link\" href=\"../../pipeline/1915\">pipeline</a></li><li class=\"tab-ChildrenPage\"><a class=\"nav-link\" href=\"../../children/1915\">children</a></li></ul>\n    <div class=\"build-header\"><span>TIZEN_Tizen_Tizen-Base-Toolchain_RBS_build_20261014</span></div>\n    <section class=\"build-summary\"><div class=\"box-head\">Summary</div><table><thead><tr>\n    <th>Id</th><th>Status</th><th>Triggered By</th></tr></thead><tbody><tr><td>1193469</td>\n    <td id=\"status\">Successful</td><td>&lt;USER&gt;</td></tr></tbody></table></section>\n    \n    <script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/build/1193469/variables"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><a class=\"nav-link\">Build (id:1193469)</a><table><thead><tr><td>Name</td><td>Display Name</td><td>Value</td></tr></thead>\n    <tbody><tr><td>QB_TRIGGER_ID</td><td></td><td>1193469</td></tr><tr><td>TRIGGER_ID</td><td></td><td>1193467</td></tr><tr><td>BUILD_PKG_LIST</td><td></td><td>u1@a97acc260d52515199247d53577d2979a51093d5<br>other/package@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</td></tr><tr><td>FAIL_FAST</td><td></td><td>yes</td></tr><tr><td>REPO_ARCH</td><td></td><td>standard-armv7l:aarch64:x86_64</td></tr><tr><td>CHILD_CONFIGURATIONS</td><td></td><td>standard-armv7l:aarch64:x86_64</td></tr><tr><td>EACH_GBS_BUILD_STATUS</td><td></td><td></td></tr><tr><td>BUILD_REFERENCE</td><td></td><td>Ref. Snapshot</td></tr><tr><td>SNAPSHOT_NUM_URL</td><td></td><td>http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260924.094908</td></tr></tbody></table><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "close"
+      },
+      "output": {
+        "ok": true
+      }
+    }
+  ],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    }
+  ]
+}

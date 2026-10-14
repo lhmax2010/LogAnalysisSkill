@@ -85,6 +85,36 @@ def test_node_c2c_trusted_reads_and_fields(script: str) -> None:
 
 
 @pytest.mark.integration
+def test_node_c5a_evidence_tools() -> None:
+    command, env = node_command()
+    paths = browser_paths()
+    if not shutil.which("openssl"):
+        pytest.skip("openssl unavailable for synthetic local C5a TLS certificate")
+    result = subprocess.run(
+        [*command, str(ROOT / "tests/node/test_p5q_c5_tools.mjs"), *paths],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=150,
+    )
+    print(result.stdout)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_c5a_tools_are_readonly_and_not_production_test_overrides() -> None:
+    spikes = ROOT / "docs/clang-fix-campaign/spikes"
+    for name in ("p5q_fill_rehearsal.mjs", "p5q_compare_raw_active.mjs", "p5q_c5_tools.mjs"):
+        source = (spikes / name).read_text()
+        assert "command: 'submit'" not in source
+        assert "submitUrl" not in source
+        assert "name: 'Ok'" not in source
+        assert "--host-resolver-rules" not in source
+        assert "--ignore-certificate-errors-spki-list" not in source
+        assert "installGuards =" not in source and "policy.allow =" not in source
+        assert "process.stdin" not in source
+
+
+@pytest.mark.integration
 def test_node_browser_redaction_and_response_interception() -> None:
     command, env = node_command()
     paths = browser_paths()

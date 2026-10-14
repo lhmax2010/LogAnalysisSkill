@@ -1,0 +1,59 @@
+[
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "ci_triage",
+      "qb-trigger",
+      "--verification-ids",
+      "u1-v0,u1-v1,u1-v2",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-82/test_real_cli_browser_submit_b0/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-82/test_real_cli_browser_submit_b0/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-82/test_real_cli_browser_submit_b0/config.yaml"
+    ],
+    "exit": 0,
+    "stdout": "[{\"action\": \"submitted_bound\", \"campaign_unit_key\": \"u1\", \"diagnostic_dir\": null, \"error_code\": null, \"message\": null, \"qb_build_id\": \"1193467\", \"request_id\": \"070075ffacda4300a252591820a5e882\", \"request_seq\": 1, \"sbs_target\": \"u1@a97acc260d52515199247d53577d2979a51093d5\", \"status\": \"QB_TRIGGERED\"}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n"
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "ci_triage",
+      "qb-result-fetch",
+      "--request-id",
+      "070075ffacda4300a252591820a5e882",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-82/test_real_cli_browser_submit_b0/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-82/test_real_cli_browser_submit_b0/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-82/test_real_cli_browser_submit_b0/config.yaml"
+    ],
+    "exit": 0,
+    "stdout": "[{\"child_build_id\": \"1193469\", \"diagnostic_dir\": null, \"error_code\": null, \"message\": null, \"qb_build_id\": \"1193467\", \"qb_result_path\": null, \"request_id\": \"070075ffacda4300a252591820a5e882\", \"result_event_id\": null, \"status\": \"RUNNING\", \"terminal\": false}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n"
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "ci_triage",
+      "qb-result-fetch",
+      "--request-id",
+      "070075ffacda4300a252591820a5e882",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-82/test_real_cli_browser_submit_b0/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-82/test_real_cli_browser_submit_b0/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-82/test_real_cli_browser_submit_b0/config.yaml"
+    ],
+    "exit": 0,
+    "stdout": "[{\"child_build_id\": \"1193469\", \"diagnostic_dir\": null, \"error_code\": null, \"message\": null, \"qb_build_id\": \"1193467\", \"qb_result_path\": \"qb_results/070075ffacda4300a252591820a5e882/20261014T132718787087Z.json\", \"request_id\": \"070075ffacda4300a252591820a5e882\", \"result_event_id\": 3, \"status\": \"PASS\", \"terminal\": true}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n"
+  }
+]

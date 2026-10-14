@@ -1,0 +1,816 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 19 items
+
+tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build] PASSED
+tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[error-created] PASSED
+tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[error-no-build] PASSED
+tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation] PASSED
+tests/unit/test_qb_browser_node.py::test_node_agent_unit_matrix ✔ permanent deny external download (1.658228ms)
+✔ permanent deny http (0.101105ms)
+✔ permanent deny websocket (0.078308ms)
+✔ permanent deny rest (0.072093ms)
+✔ permanent deny log (0.283762ms)
+✔ permanent deny html report (0.13708ms)
+✔ permanent deny artifact (0.070404ms)
+✔ permanent deny promote (0.065877ms)
+✔ permanent deny cancel (0.090812ms)
+✔ permanent deny stop (3.334056ms)
+✔ permanent deny rerun (0.130325ms)
+✔ permanent deny delete (0.048418ms)
+✔ permanent deny abort (0.038276ms)
+✔ permanent deny form cancel (0.045287ms)
+✔ permanent deny 307 (0.042036ms)
+✔ permanent deny 308 (0.037201ms)
+✔ allow idle GET /styles/main.css?v=7 (0.102955ms)
+✔ allow login GET /signin (0.062007ms)
+✔ allow login POST /signin?12-1.IFormSubmitListener-content-form (0.061824ms)
+✔ allow login GET / (0.082812ms)
+✔ allow login GET /overview/0 (0.035115ms)
+✔ allow read GET /build/1 (0.099527ms)
+✔ allow read GET /build/1/overview (0.05674ms)
+✔ allow read GET /build/1/variables (0.042634ms)
+✔ allow read GET /build/1/step_status (0.032781ms)
+✔ allow read GET /overview/1921 (0.054693ms)
+✔ allow open_form GET /wicket/page?50 (0.058181ms)
+✔ allow fill GET /wicket/page?50-3 (0.043394ms)
+✔ registered login landing accepts query "" (0.072455ms)
+✔ registered login landing accepts query "0" (0.049412ms)
+✔ registered login landing accepts query "123" (0.031234ms)
+✔ registered login landing rejects query "v=1" (0.043691ms)
+✔ registered login landing rejects query "1-2" (0.026684ms)
+✔ registered login landing rejects query "1&x=2" (0.024765ms)
+✔ registered login landing rejects query "x=1" (0.030399ms)
+✔ registered login landing rejects query "1\n" (0.029182ms)
+✔ registered login landing rejects query "1.IBehaviorListener-x" (0.028985ms)
+✔ registered login landing boundary post (0.041586ms)
+✔ registered login landing boundary session path (0.029414ms)
+✔ registered login landing boundary suffix (0.02954ms)
+✔ registered login landing boundary unregistered (0.028502ms)
+✔ registered login landing boundary http (0.025781ms)
+✔ registered login landing boundary foreign (0.025707ms)
+✔ registered login landing boundary script (0.028843ms)
+✔ registered login landing boundary ckeditor remains denied (0.02882ms)
+✔ registered login landing boundary font remains denied (0.043638ms)
+✔ registered landing unavailable outside login: read (0.068172ms)
+✔ registered landing unavailable outside login: open_form (0.047277ms)
+✔ registered landing unavailable outside login: fill (0.034523ms)
+✔ registered landing unavailable outside login: submit (0.039674ms)
+✔ registered landing unavailable outside login: idle (0.037952ms)
+✔ registered landing after login redirect does not reopen the POST channels (0.108001ms)
+✔ login channel exact positive /signin (0.050379ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-form" (0.045986ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-formx" (0.035095ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-form&x=1" (0.032591ms)
+✔ login channel query rejected /signin "0-.IFormSubmitListener-content-form" (0.029887ms)
+✔ login channel query rejected /signin "0-1IFormSubmitListener-content-form" (0.030525ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-form\n" (0.029757ms)
+✔ login submission GET rejected /signin (0.04161ms)
+✔ login submission rejected in read /signin (0.040412ms)
+✔ login submission rejected in open_form /signin (0.094457ms)
+✔ login submission rejected in fill /signin (0.029488ms)
+✔ login submission rejected in submit /signin (0.045287ms)
+✔ login submission rejected in idle /signin (0.028975ms)
+✔ login channel exact positive /wicket/page (0.028603ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-form" (0.039234ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-formx" (0.033115ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-form&x=1" (0.040643ms)
+✔ login channel query rejected /wicket/page "0-.IFormSubmitListener-content-form" (0.033816ms)
+✔ login channel query rejected /wicket/page "0-1IFormSubmitListener-content-form" (0.027263ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-form\n" (0.0263ms)
+✔ login submission GET rejected /wicket/page (0.027269ms)
+✔ login submission rejected in read /wicket/page (0.025857ms)
+✔ login submission rejected in open_form /wicket/page (0.025351ms)
+✔ login submission rejected in fill /wicket/page (0.026632ms)
+✔ login submission rejected in submit /wicket/page (0.026296ms)
+✔ login submission rejected in idle /wicket/page (0.027978ms)
+✔ other login submission paths rejected (0.069197ms)
+✔ login 300 closes both channels, preserving redirect GET rules (0.087101ms)
+✔ login 301 closes both channels, preserving redirect GET rules (0.048026ms)
+✔ login 302 closes both channels, preserving redirect GET rules (0.798976ms)
+✔ login 303 closes both channels, preserving redirect GET rules (0.075177ms)
+✔ login 304 closes both channels, preserving redirect GET rules (0.043503ms)
+✔ login 307 closes both channels, preserving redirect GET rules (0.044411ms)
+✔ login 308 closes both channels, preserving redirect GET rules (0.048951ms)
+✔ login 399 closes both channels, preserving redirect GET rules (0.036616ms)
+✔ five request-stage login releases close permanently; responses do not count (0.145589ms)
+✔ leaving login permanently closes channels even after HTTP200 (0.060809ms)
+✔ rejected requests and unrelated responses do not consume the login allowance (0.062629ms)
+✔ root path shape and static restrictions remain explicit (0.068406ms)
+✔ unregistered denied /build/1?x=1 (0.050648ms)
+✔ unregistered denied /overview/1922 (0.031373ms)
+✔ unregistered denied /styles/x?Listener=x (0.032363ms)
+✔ unregistered denied /styles/x?v=a (0.025219ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-dragDrop (0.024132ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-loadPopup (0.029956ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-unloadPopup (0.023687ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-quicksearch (0.022699ms)
+✔ stage-specific navigation never escapes phase (0.160749ms)
+✔ exact run registration, no prefix acceptance (0.065344ms)
+✔ refresh denied in idle, including C2C-03 value=stop regression (0.072103ms)
+✔ refresh denied in login, including C2C-03 value=stop regression (0.049896ms)
+✔ refresh denied in read, including C2C-03 value=stop regression (0.048869ms)
+✔ refresh denied in open_form, including C2C-03 value=stop regression (0.039998ms)
+✔ refresh denied in fill, including C2C-03 value=stop regression (0.04878ms)
+✔ refresh denied in submit, including C2C-03 value=stop regression (0.047337ms)
+✔ one callback per field, old version and other field denied (0.134685ms)
+✔ C2C-03 permanent deny distinguishes stop query values from listener components (0.051067ms)
+✔ C2C-03 stop outside listener still fails the callback and read query grammar (0.073584ms)
+✔ C2B-10 callback one-shot accepts "" (0.067219ms)
+✔ C2B-10 callback one-shot accepts "&random=0.1234567890123456" (0.048389ms)
+✔ C2B-10 callback one-shot accepts "&random=0.0" (0.03366ms)
+✔ C2B-10 callback one-shot accepts "&random=0.11111111111111111111" (0.031714ms)
+✔ C2B-10 callback rejects "&random=0.1&random=0.2" without consuming registration (0.051736ms)
+✔ C2B-10 callback rejects "&random=0.1&extra=1" without consuming registration (0.037635ms)
+✔ C2B-10 callback rejects "&extra=1&random=0.1" without consuming registration (0.031375ms)
+✔ C2B-10 callback rejects "&random=" without consuming registration (0.027963ms)
+✔ C2B-10 callback rejects "&random=-0.1" without consuming registration (0.034359ms)
+✔ C2B-10 callback rejects "&random=5e-7" without consuming registration (0.032534ms)
+✔ C2B-10 callback rejects "&random=0.1e-7" without consuming registration (0.032872ms)
+✔ C2B-10 callback rejects "&random=abc" without consuming registration (0.027054ms)
+✔ C2B-10 callback rejects "&random=0.1a" without consuming registration (0.032683ms)
+✔ C2B-10 callback rejects "&random=1.1" without consuming registration (0.03655ms)
+✔ C2B-10 callback rejects "&random=0." without consuming registration (0.028122ms)
+✔ C2B-10 callback rejects "&random=.1" without consuming registration (0.025872ms)
+✔ C2B-10 callback rejects "&random=0.111111111111111111111" without consuming registration (0.026608ms)
+✔ C2B-10 callback rejects "&random=0.1\n" without consuming registration (0.025538ms)
+✔ C2B-10 callback rejects "&random=0%2E1" without consuming registration (0.024251ms)
+✔ C2B-10 callback rejects "&Random=0.1" without consuming registration (0.024326ms)
+✔ C2B-10 random permission cannot escape the current field POST (0.120555ms)
+✔ C2B-10 submit action and refresh never accept appended random (0.085751ms)
+✔ callback shape fails closed (0.531973ms)
+✔ two form instances each have exactly one release, response does not consume it (0.132822ms)
+✔ 302 next hop is judged independently and 307/308 preserve released (0.081011ms)
+✔ protocol adapter forwards only metadata even when request contains credentials (0.549552ms)
+✔ frame ownership is closed and descendants revoked on detach/navigation (0.142988ms)
+✔ form exact label/role closure and project identity (0.600193ms)
+✔ readback records text/checkbox/select/palette and validates recorder (1.019484ms)
+✔ failed fill and fingerprint mismatch invalidate form until new open (1.025822ms)
+✔ delayed submit request is awaited before navigation, never false not_released (152.63339ms)
+✔ no request release by ten-second deadline rejects and never waits for navigation (10001.453062ms)
+✔ released submit navigation timeout is unknown, not definite failure (1.388209ms)
+✔ read checks exact URL and build id and returns actual HTTP status (2.161126ms)
+✔ source guards: no HTTP client, credential extraction, debug switch, or login interactions (2.079873ms)
+✔ every command outside its permitted phase rejects before any method call (0.517631ms)
+✔ read remains available after submit but navigation invalidates the old form (0.15235ms)
+✔ fill uses current callbacks and frozen selection; checkbox false -> true (2.318543ms)
+✔ fill uses current callbacks and frozen selection; checkbox true -> false (1.183655ms)
+✔ fill uses current callbacks and frozen selection; checkbox true -> true (1.096719ms)
+✔ fill uses current callbacks and frozen selection; checkbox false -> false (1.639973ms)
+✔ snapshot unavailable carries safe field-start state: missing frozen (0.479395ms)
+✔ snapshot unavailable carries safe field-start state: no selected (0.236714ms)
+✔ snapshot unavailable carries safe field-start state: multiple selected (0.218464ms)
+✔ snapshot unavailable carries safe field-start state: empty dropdown (0.258079ms)
+✔ snapshot unavailable carries safe field-start state: long selected (0.212411ms)
+✔ snapshot unavailable carries safe field-start state: invalid selected (0.205348ms)
+✔ duplicate option text is structural: fill/SNAPSHOT_NUM/@freeze (0.46069ms)
+✔ duplicate option text is structural: fill/SNAPSHOT_NUM/fixed (0.136637ms)
+✔ duplicate option text is structural: fill/BUILD_TYPE/Full (0.101778ms)
+✔ duplicate option text is structural: open_form/BUILD_TYPE/Full (0.125457ms)
+✔ palette options are outside duplicate ordinary-select check (0.134322ms)
+✔ field registration rejects a late denial before replacing the previous window (0.073663ms)
+ℹ tests 163
+ℹ suites 0
+ℹ pass 163
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10243.375839
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2c_source_guard_mutations ✔ C2c production agent satisfies frozen v1.5 section 9.2 source guards (24.910453ms)
+✔ C2c production Python driver has no test launch switches (25.334577ms)
+✔ C2c RED page.evaluate (34.161021ms)
+✔ C2c RED frame.evaluate (31.495145ms)
+✔ C2c RED locator.evaluate (29.460627ms)
+✔ C2c RED handle.evaluate (24.972853ms)
+✔ C2c RED arbitraryAlias.evaluate (28.82203ms)
+✔ C2c RED evaluateAll (28.439921ms)
+✔ C2c RED evaluateHandle (18.690599ms)
+✔ C2c RED $eval (26.154849ms)
+✔ C2c RED $$eval (20.114495ms)
+✔ C2c RED waitForFunction (19.075481ms)
+✔ C2c RED addScriptTag (23.710586ms)
+✔ C2c RED exposeFunction (22.785585ms)
+✔ C2c RED exposeBinding (22.070035ms)
+✔ C2c RED evaluate optional chain (15.952335ms)
+✔ C2c RED evaluate computed property (23.921805ms)
+✔ C2c RED evaluate constant concatenation (22.541309ms)
+✔ C2c RED evaluate escaped identifier (22.573255ms)
+✔ C2c RED evaluate extracted method alias (19.3104ms)
+✔ C2c RED evaluate destructured alias (23.994958ms)
+✔ C2c RED evaluate inside template interpolation (27.260491ms)
+✔ C2c RED evaluate comment between tokens (17.534506ms)
+✔ C2c RED page.request (22.856001ms)
+✔ C2c RED context.request (24.025084ms)
+✔ C2c RED request.newContext (25.063878ms)
+✔ C2c RED request.newContext aliased namespace (26.492884ms)
+✔ C2c RED playwright.request.newContext (19.222312ms)
+✔ C2c RED context.request alias (22.200271ms)
+✔ C2c RED page.request computed property (27.042169ms)
+✔ C2c RED request destructuring (23.067395ms)
+✔ C2c RED page.request inside protocol adapter is still forbidden (25.524639ms)
+✔ C2c RED context.request inside protocol adapter is still forbidden (18.302813ms)
+✔ C2c RED request client destructuring inside protocol adapter (28.332472ms)
+✔ C2c RED cookies (28.352254ms)
+✔ C2c RED storageState (21.699851ms)
+✔ C2c RED cookies computed alias (21.897883ms)
+✔ C2c RED storageState browser option (24.502059ms)
+✔ C2c RED ignoreHTTPSErrors: true (26.749573ms)
+✔ C2c RED ignoreHTTPSErrors computed true (25.423155ms)
+✔ C2c RED ignoreHTTPSErrors dynamic value (24.619924ms)
+✔ C2c RED DEBUG=pw:protocol (21.28751ms)
+✔ C2c RED PWDEBUG=1 (22.525876ms)
+✔ C2c RED DEBUG launch environment (27.51604ms)
+✔ C2c RED DEBUG command switch (28.106893ms)
+✔ C2c RED fetch (20.968694ms)
+✔ C2c RED XMLHttpRequest (23.965976ms)
+✔ C2c RED HTTP module node:http (27.334351ms)
+✔ C2c RED HTTP module node:https (19.964585ms)
+✔ C2c RED HTTP module node:http2 (18.979941ms)
+✔ C2c RED HTTP module undici (26.221523ms)
+✔ C2c RED HTTP module axios (20.667293ms)
+✔ C2c RED HTTP module got (20.314673ms)
+✔ C2c RED HTTP module node-fetch (14.100064ms)
+✔ C2c RED HTTP module superagent (22.364602ms)
+✔ C2c RED HTTP static import (19.920489ms)
+✔ C2c RED HTTP require (23.027575ms)
+✔ C2c RED headers outside protocol adapter (23.92982ms)
+✔ C2c RED headers before protocol adapter (16.461724ms)
+✔ C2c RED headers computed access (26.226855ms)
+✔ C2c RED headers destructuring (28.755769ms)
+✔ C2c RED headers fake adapter in comment (15.116367ms)
+✔ C2c RED headers nested namesake is not protocol adapter (18.925542ms)
+✔ C2c ALLOW headers inside actual adaptProtocol (9.125937ms)
+✔ C2c RED postData outside protocol adapter (16.986832ms)
+✔ C2c RED postData before protocol adapter (20.37389ms)
+✔ C2c RED postData computed access (15.997832ms)
+✔ C2c RED postData destructuring (17.009359ms)
+✔ C2c RED postData fake adapter in comment (17.366733ms)
+✔ C2c RED postData nested namesake is not protocol adapter (14.413018ms)
+✔ C2c ALLOW postData inside actual adaptProtocol (9.909732ms)
+✔ C2c RED postDataEntries outside protocol adapter (16.123532ms)
+✔ C2c RED postDataEntries before protocol adapter (16.835407ms)
+✔ C2c RED postDataEntries computed access (17.576083ms)
+✔ C2c RED postDataEntries destructuring (14.360268ms)
+✔ C2c RED postDataEntries fake adapter in comment (16.089344ms)
+✔ C2c RED postDataEntries nested namesake is not protocol adapter (15.767554ms)
+✔ C2c ALLOW postDataEntries inside actual adaptProtocol (7.955929ms)
+✔ C2c RED login click (21.925641ms)
+✔ C2c RED login fill (21.601565ms)
+✔ C2c RED login press (16.821159ms)
+✔ C2c RED login type (19.659705ms)
+✔ C2c RED login dblclick (16.311128ms)
+✔ C2c RED login tap (14.56966ms)
+✔ C2c RED login check (16.159152ms)
+✔ C2c RED login uncheck (15.971461ms)
+✔ C2c RED login setChecked (14.460192ms)
+✔ C2c RED login selectOption (17.121977ms)
+✔ C2c RED login pressSequentially (16.214149ms)
+✔ C2c RED login insertText (15.652167ms)
+✔ C2c RED login dispatchEvent (15.969565ms)
+✔ C2c RED login focus (16.192726ms)
+✔ C2c RED login blur (15.39116ms)
+✔ C2c RED login hover (15.840504ms)
+✔ C2c RED login dragTo (15.19083ms)
+✔ C2c RED login dragAndDrop (15.599816ms)
+✔ C2c RED login setInputFiles (16.815903ms)
+✔ C2c RED login clear (16.495083ms)
+✔ C2c RED login selectText (14.335522ms)
+✔ C2c RED login down (17.553878ms)
+✔ C2c RED login up (16.281075ms)
+✔ C2c RED login move (15.533077ms)
+✔ C2c RED login wheel (16.992568ms)
+✔ C2c RED login submit (15.54371ms)
+✔ C2c RED login requestSubmit (14.32989ms)
+✔ C2c RED login interaction after fake closing brace comment (16.673543ms)
+✔ C2c RED login interaction after fake closing brace string (15.448906ms)
+✔ C2c RED login nested callback (14.712306ms)
+✔ C2c RED login computed interaction (19.820954ms)
+✔ C2c RED login inline dispatch branch (17.08194ms)
+✔ C2c RED login delegated helper (19.177914ms)
+✔ C2c RED addInitScript exactly one: extra call (21.207652ms)
+✔ C2c RED addInitScript outside window.open installation (21.092343ms)
+✔ C2c RED addInitScript extracted alias (22.278876ms)
+✔ C2c RED addInitScript comment cannot authorize a call (24.566688ms)
+✔ C2c RED setContent outside startupSelfTest (22.218173ms)
+✔ C2c RED setContent in login (23.340479ms)
+✔ C2c RED setContent fake selftest comment (17.069286ms)
+✔ C2c RED setContent nested namesake is not startupSelfTest (20.540732ms)
+✔ C2c RED setContent computed call (20.044714ms)
+✔ C2c RED addInitScript zero calls cannot be rescued by comment or string (18.759594ms)
+✔ C2c RED sole addInitScript guard cannot also read page data (26.633591ms)
+✔ C2c RED sole addInitScript must precede navigation (22.772969ms)
+✔ C2c RED sole addInitScript wrong function (20.834891ms)
+✔ C2c RED sole addInitScript wrong receiver (21.062029ms)
+✔ C2c RED sole addInitScript not awaited (21.028047ms)
+✔ C2c RED refresh allowset (20.898739ms)
+✔ C2c RED refreshUrls allowset (18.835549ms)
+✔ C2c RED refresh property allowset (20.97707ms)
+✔ C2c RED refresh allowset lookup (20.636026ms)
+✔ C2c RED registerRefresh (15.791821ms)
+✔ C2c RED extractRefresh (15.781919ms)
+✔ C2c RED ajaxRefresh DOM extraction (19.193011ms)
+✔ C2c RED ajaxRefresh script extraction (20.756484ms)
+✔ C2c RED ajaxRefresh registration (18.074556ms)
+✔ C2c RED cloneNode active document (18.553274ms)
+✔ C2c RED cloneNode arbitrary alias (17.404114ms)
+✔ C2c RED main test option testOptions (16.054892ms)
+✔ C2c RED main test option launchArgs (20.398524ms)
+✔ C2c RED main test option diagnostic (19.871495ms)
+✔ C2c RED main test option useBrowserFetch (17.451778ms)
+✔ C2c RED main test option syntheticCount (17.362569ms)
+✔ C2c RED main anonymous third runtime argument (16.544838ms)
+✔ C2c RED main spread runtime arguments (16.078182ms)
+✔ C2c ALLOW normal browser.newContext (9.93612ms)
+✔ C2c ALLOW aliased browser.newContext (7.066236ms)
+✔ C2c ALLOW normal runtime.browser.newContext (7.255841ms)
+✔ C2c ALLOW ignoreHTTPSErrors: false (9.889178ms)
+✔ C2c ALLOW Response.request metadata (8.09239ms)
+✔ C2c ALLOW protocol event.request destructuring (9.626242ms)
+✔ C2c ALLOW Runtime.evaluate CDP string (8.4744ms)
+✔ C2c ALLOW forbidden names inside comment (8.561158ms)
+✔ C2c ALLOW forbidden names inside string (7.105131ms)
+✔ C2c ALLOW forbidden names inside regex (8.547266ms)
+✔ C2c ALLOW DEBUG deletion (7.371665ms)
+✔ C2c ALLOW refresh denial matcher (8.902434ms)
+✔ C2c ALLOW non-login interaction (11.153119ms)
+✔ C2c ALLOW main sanitized diagnostic response data (7.923189ms)
+✔ C2c ALLOW source is never executed (9.223246ms)
+✔ C2c ALLOW startupSelfTest setContent (11.242859ms)
+✔ C2c RED Python driver testOptions (47.933499ms)
+✔ C2c RED Python driver test_options (41.287873ms)
+✔ C2c RED Python driver launchArgs (46.665203ms)
+✔ C2c RED Python driver launch_args (44.197867ms)
+✔ C2c RED Python driver useBrowserFetch (49.189813ms)
+✔ C2c RED Python driver use_browser_fetch (45.315043ms)
+✔ C2c RED Python driver syntheticCount (48.945681ms)
+✔ C2c RED Python driver synthetic_count (47.970868ms)
+✔ C2c RED Python driver argv --test-options (46.444697ms)
+✔ C2c RED Python driver argv --diagnostic (49.772516ms)
+✔ C2c RED Python driver argv --launch-args (49.220931ms)
+✔ C2c RED Python driver argv --use-browser-fetch (47.383916ms)
+✔ C2c RED Python driver argv --synthetic-count (45.577378ms)
+✔ C2c RED Python driver argv --host-resolver-rules=MAP example.invalid 127.0.0.1 (41.943413ms)
+✔ C2c RED Python driver argv --ignore-certificate-errors-spki-list=fixture (41.395669ms)
+✔ C2c RED Python driver diagnostic launch keyword (41.687747ms)
+✔ C2c RED Python driver unknown fifth argv element (41.517555ms)
+✔ C2c RED Python driver argv unpacking (41.264686ms)
+✔ C2c ALLOW Python diagnostic and diagnostic_failed response fields (20.662715ms)
+✔ C2c ALLOW Python diagnostic QbBrowserError keyword (20.321288ms)
+✔ C2c ALLOW Python comments do not become launch flags (20.264088ms)
+✔ C2c RED malformed JS fails closed (10.49324ms)
+✔ C2c RED malformed Python fails closed (36.32385ms)
+ℹ tests 183
+ℹ suites 0
+ℹ pass 183
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4117.223629
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_trusted.mjs] ▶ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only)
+  ✔ hostile main-world builtins leave read, identity, form and redaction unchanged (1325.674494ms)
+  ✔ response remains Failed after the live DOM becomes Successful (795.808628ms)
+  ✔ script-inserted build identity cannot rescue missing response identity (814.070065ms)
+  ✔ two reads and both openForm navigations recreate the isolated context (983.781739ms)
+  ✔ capture is exclusive to this read main-frame navigation, never same-URL fetches or frames (997.098739ms)
+  ✔ absent slot cannot reuse a preceding read's captured bytes (844.358213ms)
+  ✔ wrong URL cannot reuse a preceding read's captured bytes (856.947441ms)
+  ✔ wrong request id cannot reuse a preceding read's captured bytes (828.146021ms)
+  ✔ wrong frame id cannot reuse a preceding read's captured bytes (898.956263ms)
+  ✔ in-flight capture rejects a replaced slot even when it contains old valid bytes (814.945508ms)
+  ✔ stale context fails closed without a main-world fallback (879.520955ms)
+  ✔ createIsolatedWorld fails closed without a main-world fallback (785.75882ms)
+  ✔ Fetch.getResponseBody fails closed without a main-world fallback (815.97023ms)
+  ✔ non-base64 body fails closed without a main-world fallback (839.847766ms)
+  ✔ malformed base64 fails closed without a main-world fallback (853.852698ms)
+  ▶ strict response charset decoding uses headers, default UTF-8 and fatal errors
+    ✔ latin1: raw decoder (0.324775ms)
+    ✔ latin1: HTTPS navigation (26.993861ms)
+    ✔ quoted charset: raw decoder (0.08626ms)
+    ✔ quoted charset: HTTPS navigation (21.513958ms)
+    ✔ no charset: raw decoder (0.064217ms)
+    ✔ no charset: HTTPS navigation (27.612007ms)
+    ✔ literal replacement character: raw decoder (0.165572ms)
+    ✔ literal replacement character: HTTPS navigation (24.545384ms)
+    ✔ invalid UTF-8: raw decoder (0.920665ms)
+    ✔ invalid UTF-8: HTTPS navigation (12.860359ms)
+    ✔ invalid default UTF-8: raw decoder (0.103ms)
+    ✔ invalid default UTF-8: HTTPS navigation (12.587999ms)
+    ✔ unsupported charset: raw decoder (0.15592ms)
+    ✔ unsupported charset: HTTPS navigation (11.988618ms)
+  ✔ strict response charset decoding uses headers, default UTF-8 and fatal errors (897.710579ms)
+  ✔ read mismatch: shared secret context, revoked registrations and inert no-store image (957.320517ms)
+  ✔ read diagnostic failure snapshot returns no partial evidence (778.354251ms)
+  ✔ read diagnostic failure after redaction returns no partial evidence (847.6776ms)
+  ✔ form mismatch: shared secret context, revoked registrations and inert no-store image (1082.246446ms)
+  ✔ form diagnostic failure snapshot returns no partial evidence (847.334536ms)
+  ✔ form diagnostic failure after redaction returns no partial evidence (891.249804ms)
+✔ C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only) (19741.165331ms)
+ℹ network=loopback-only; server requests=129; synthetic responses only
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 19743.614353
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs] ▶ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only
+  ✔ startup self-test: real counts, version trace, disposable page and zero server requests (1061.954139ms)
+  ✔ startup self-test: count 0 closes browser with fixed stderr (909.531902ms)
+  ✔ startup self-test: count 2 closes browser with fixed stderr (790.455455ms)
+  ✔ open_form rejects duplicate option text with a real passive diagnostic (946.12893ms)
+  ✔ duplicate ordinary options produce passive diagnostic: SNAPSHOT_NUM/@freeze (937.139233ms)
+  ✔ duplicate ordinary options produce passive diagnostic: SNAPSHOT_NUM/snapshot-42 (1126.153686ms)
+  ✔ duplicate ordinary options produce passive diagnostic: BUILD_TYPE/Full (961.575005ms)
+  ✔ all 12 unequal fields: native changes, text blur, palette buttons and new callback versions (14511.205807ms)
+  ✔ all 12 equal fields including @freeze: unchanged bytes and one explicit change each (14318.718688ms)
+  ✔ an extra change is denied and invalidates the current field despite only one server POST (1003.816927ms)
+  ✔ text fill plus artificial change without blur: next field focus produces a denied late native callback (10002.830186ms)
+  ✔ delayed change during next-field snapshot fails (9956.556892ms)
+  ✔ delayed change during final readback fails (14550.402586ms)
+  ✔ swallowed equal-value change: actual 30-second timeout, invalid form and no submit (31276.624854ms)
+  ✔ continuous denied refresh GETs do not extend quiet; uncheck and @freeze still complete (16465.296809ms)
+✔ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only (119130.790695ms)
+ℹ swallowed change elapsed 30053ms; server POSTs=0
+ℹ refresh stream elapsed 13653ms; refresh server requests=0
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 119133.236123
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c5a_evidence_tools ▶ C5a offline evidence tools use real guards and isolated worlds
+  ✖ raw/live comparison: equal (4802.379318ms)
+  ✔ raw/live comparison: insert-nav (14078.359434ms)
+  ✔ raw/live comparison: change-status (3982.501195ms)
+  ✔ twelve-field rehearsal: random/version/unchanged values/no action release (15808.630782ms)
+  ✔ login false positive: signin-with-signout (1800.314355ms)
+  ✔ login false positive: password-remains (1820.568842ms)
+  ✔ login false positive: no-signout (1845.063313ms)
+  ✖ read redirected to different Successful build stays a read failure (2871.717278ms)
+  ✔ window.open disabled and foreign iframe denied before request (3303.144589ms)
+  ✔ server callback code inconsistent with DOM is denied without a server POST (3074.109011ms)
+✖ C5a offline evidence tools use real guards and isolated worlds (53484.43385ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 8
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 53486.764673
+
+✖ failing tests:
+
+test at tests/node/test_p5q_c5_tools.mjs:27:15
+✖ raw/live comparison: equal (4802.379318ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(results[2].comparison.find(row => row.field === 'variables').raw[0].rows.length >= 10)
+  
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:47:20)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:27:7)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/node/test_p5q_c5_tools.mjs:99:13
+✖ read redirected to different Successful build stays a read failure (2871.717278ms)
+  Error: Command failed: /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python -c import sys; from ci_triage.qb_browser import decode_response,QbBrowserError
+  try: decode_response(sys.stdin.read(),command="read")
+  except QbBrowserError as e: print(e.code)
+  Traceback (most recent call last):
+    File "<string>", line 2, in <module>
+  TypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'
+  
+      at genericNodeError (node:internal/errors:986:15)
+      at wrappedFn (node:internal/errors:540:14)
+      at checkExecSyncError (node:child_process:942:11)
+      at execFileSync (node:child_process:978:15)
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:108:24)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:99:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    status: 1,
+    signal: null,
+    output: [ null, '', `Traceback (most recent call last):\n  File "<string>", line 2, in <module>\nTypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'\n` ],
+    pid: 948820,
+    stdout: '',
+    stderr: `Traceback (most recent call last):\n  File "<string>", line 2, in <module>\nTypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'\n`
+  }
+
+FAILED
+tests/unit/test_qb_browser_node.py::test_c5a_tools_are_readonly_and_not_production_test_overrides PASSED
+tests/unit/test_qb_browser_node.py::test_node_browser_redaction_and_response_interception ▶ C2B-09 page trim overrides cannot change Node decisions or identity redaction
+  ✔ form and options, broken=false (34.814313ms)
+  ✔ build identity, broken=false (16.372858ms)
+  ✔ redaction pre/post check, broken=false (50.456585ms)
+  ✔ form and options, broken=true (18.757797ms)
+  ✔ build identity, broken=true (16.05024ms)
+  ✔ redaction pre/post check, broken=true (48.131748ms)
+✔ C2B-09 page trim overrides cannot change Node decisions or identity redaction (1138.610532ms)
+▶ C2A-04 archived build DOM identity regression only, with all network denied
+  ✔ archive 01.response.txt /build/1069540/overview (45.708975ms)
+  ✔ archive 03.response.txt /build/1069540/variables (12.891225ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (24.36897ms)
+  ✔ navigation spelling Id (23.336017ms)
+  ✔ navigation spelling ID (14.54511ms)
+  ✔ Summary Id resolved by column, not fixed position (11.930175ms)
+  ✔ reject duplicate-nav (10.24074ms)
+  ✔ reject missing-nav (8.812526ms)
+  ✔ reject wrong-nav (9.608114ms)
+  ✔ reject missing-summary (9.126556ms)
+  ✔ reject duplicate-summary (9.090504ms)
+  ✔ reject missing-id-column (15.654115ms)
+  ✔ reject duplicate-id-column (10.596273ms)
+  ✔ reject different-summary-id (15.701913ms)
+  ✔ reject missing-first-row (10.9749ms)
+  ✔ both overview sources agree but differ from requested id (9.503041ms)
+  ✔ subpage missing navigation (12.215435ms)
+  ✔ subpage duplicate navigation (13.843284ms)
+  ✔ subpage wrong navigation (20.890765ms)
+  ✔ C2B-06 remembered Variables at bare build 1193469 (37.432263ms)
+  ✔ C2B-06 remembered Variables at bare build 1186372 (29.009203ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 archived build DOM identity regression only, with all network denied (1188.54101ms)
+▶ C2B-06 exact Run button grammar from live-06, with no navigation or click requests
+  ✔ none (42.535081ms)
+  ✔ anchor (25.996091ms)
+  ✔ duplicate (21.477988ms)
+  ✔ extra-statement (14.046703ms)
+  ✔ promote (10.256455ms)
+  ✔ run2 (14.794782ms)
+  ✔ external (10.727008ms)
+  ✔ missing-onclick (10.928862ms)
+  ✔ trailing-newline (11.27051ms)
+✔ C2B-06 exact Run button grammar from live-06, with no navigation or click requests (960.003926ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (842.48753ms)
+▶ C2B-04 shared identity boundary and credential vectors
+  ✔ short-display-name (17.906434ms)
+  ✔ user-identity-does-not-count-registered-mask (10.402631ms)
+  ✔ triggered-by-row (8.465217ms)
+  ✔ triggered-by-column (9.255024ms)
+  ✔ multiword (4.920185ms)
+  ✔ literal-regex-and-ascii-boundaries (9.509597ms)
+  ✔ secrets-remain-substrings (7.21605ms)
+  ✔ opaque-hidden-value-is-global (8.089824ms)
+  ✔ registered-labels-trim-outer-whitespace (11.454565ms)
+  ✔ internal-label-whitespace-is-not-collapsed (8.054207ms)
+  ✔ business-word-successful (11.464073ms)
+  ✔ business-word-failed (9.157235ms)
+  ✔ business-word-full (9.654212ms)
+  ✔ business-word-root (9.137319ms)
+  ✔ requested-by-column-live-12-shape (8.231421ms)
+  ✔ requested-by-and-unregistered-owner (6.472358ms)
+  ✔ requestedby-and-owner-not-registered (7.68062ms)
+  ✔ requested-by-adjacent-value-not-registered (6.213533ms)
+  ✔ multiple-registered-columns-and-rows (4.479329ms)
+  ✔ repeated-header-resets-identity-columns (4.049574ms)
+  ✔ entity-display-name (3.636778ms)
+✔ C2B-04 shared identity boundary and credential vectors (964.95194ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/favicon.ico","/build/301"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (1220.455186ms)
+{"c2b10":"local-field-callbacks","received":[{"method":"GET","path":"/wicket/page?50","body":""},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.17765125112490476","body":"Partial"},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.9836219213975429","body":"Full"}],"form_action_releases":0}
+✔ C2B-10 local form switches Full -> Partial -> Full with Math.random callbacks (948.063294ms)
+ℹ tests 64
+ℹ suites 0
+ℹ pass 64
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7266.588584
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2b_configuration_source_checks ▶ C2B-04/07 configuration evidence: URL resolution, five parent checks, two page checks, fresh provenance
+  ✔ all five, independent fixture id and exact archived source (7.89564ms)
+  ✔ one traversal from bare build address (3.109117ms)
+  ✔ two traversals from overview address (3.5687ms)
+  ✔ same-origin absolute URLs (2.50209ms)
+  ✔ root-relative paths (1.343703ms)
+  ✔ resolution uses archived address, not a guessed depth or HTML base (2.151473ms)
+  ✔ live-08 archived overview passes all five revised checks without navigation (11.961216ms)
+  ✔ overview rejects query (2.726298ms)
+  ✔ overview rejects empty-query (1.733332ms)
+  ✔ overview rejects fragment (1.643396ms)
+  ✔ overview rejects empty-fragment (1.490529ms)
+  ✔ overview rejects external-url (1.874281ms)
+  ✔ overview rejects http-downgrade (1.725429ms)
+  ✔ overview rejects trailing-segment (1.585152ms)
+  ✔ overview rejects zero (1.859564ms)
+  ✔ overview rejects negative (2.052632ms)
+  ✔ overview rejects non-integer (1.636396ms)
+  ✔ overview rejects unsafe-integer (1.718374ms)
+  ✔ overview rejects malformed-url (1.564702ms)
+  ✔ pipeline rejects query (1.478293ms)
+  ✔ pipeline rejects empty-query (1.768396ms)
+  ✔ pipeline rejects fragment (2.161723ms)
+  ✔ pipeline rejects empty-fragment (2.019681ms)
+  ✔ pipeline rejects external-url (1.681189ms)
+  ✔ pipeline rejects http-downgrade (1.651977ms)
+  ✔ pipeline rejects trailing-segment (2.218596ms)
+  ✔ pipeline rejects zero (1.638166ms)
+  ✔ pipeline rejects negative (1.769312ms)
+  ✔ pipeline rejects non-integer (2.016897ms)
+  ✔ pipeline rejects unsafe-integer (1.809754ms)
+  ✔ pipeline rejects malformed-url (2.181377ms)
+  ✔ children rejects query (1.680312ms)
+  ✔ children rejects empty-query (0.876466ms)
+  ✔ children rejects fragment (2.109891ms)
+  ✔ children rejects empty-fragment (3.668566ms)
+  ✔ children rejects external-url (2.084723ms)
+  ✔ children rejects http-downgrade (0.937111ms)
+  ✔ children rejects trailing-segment (0.648435ms)
+  ✔ children rejects zero (2.832468ms)
+  ✔ children rejects negative (1.269729ms)
+  ✔ children rejects non-integer (1.254433ms)
+  ✔ children rejects unsafe-integer (1.113448ms)
+  ✔ children rejects malformed-url (1.943282ms)
+  ✔ parent rejects missing-overview (1.292323ms)
+  ✔ parent rejects duplicate-overview (1.022964ms)
+  ✔ parent rejects overview-id (1.113012ms)
+  ✔ parent rejects pipeline-id (1.214814ms)
+  ✔ parent rejects children-id (2.14459ms)
+  ✔ parent rejects missing-pipeline (2.096732ms)
+  ✔ parent rejects duplicate-pipeline (2.451798ms)
+  ✔ parent rejects missing-children (1.627455ms)
+  ✔ parent rejects duplicate-children (2.838554ms)
+  ✔ parent rejects wrong-breadcrumb (2.192143ms)
+  ✔ parent rejects last-not-current (2.726197ms)
+  ✔ parent rejects duplicate-breadcrumb (1.953889ms)
+  ✔ parent rejects wrong-copy (2.267431ms)
+  ✔ parent rejects missing-copy (2.333862ms)
+  ✔ parent rejects wrong-copy-anchor (2.127208ms)
+  ✔ parent rejects duplicate-copy (2.563681ms)
+  ✔ parent rejects wrong-build-prefix (2.386281ms)
+  ✔ parent rejects missing-build-name (2.127278ms)
+  ✔ parent rejects duplicate-build-name (1.584959ms)
+  ✔ configuration page requires same breadcrumb and copy path, no build name (1.563238ms)
+  ✔ configuration page rejects wrong-path (1.627154ms)
+  ✔ configuration page rejects wrong-copy (1.708194ms)
+  ✔ registration cannot use absent, subpage or unarchived source (1.927336ms)
+C2B-04/07 selectors: synthetic DOMParser inputs and archived live-08 only, no network or navigation
+✔ C2B-04/07 configuration evidence: URL resolution, five parent checks, two page checks, fresh provenance (1163.182121ms)
+ℹ tests 67
+ℹ suites 0
+ℹ pass 67
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1166.800819
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_h_diagnostic_normal_and_control {"summary": 3, "passed": 3, "failed": 0, "networkScope": "synthetic-loopback-only"}
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety {"group":"worker-websocket","ok":true,"requests":[{"group":"worker-websocket","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WEBSOCKET_DENIED"},{"action":"WEBSOCKET_DENIED"},{"action":"WORKER_BLOCKED","type":"worker","paused":true}],"details":{"attackHTTP":0,"websocketHandshakes":0,"branch":"b:browser_fail_closed","workers":[{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WORKER_BLOCKED","type":"worker","paused":true}]},"observations":{"closeTarget":[{"type":"shared_worker","outcome":"success","success":true},{"type":"worker","outcome":"exception","category":"Error"}],"failure":"QB_BROWSER_UNAVAILABLE","browserClosed":true,"temporaryDirectoryRemoved":true}}
+{"group":"307-308","ok":true,"requests":[{"group":"307-308","method":"GET","path":"/build/307","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/308","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/302","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/999","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"}],"details":{"blocked":[307,308],"allowed":302}}
+{"group":"per-hop","ok":true,"requests":[{"group":"per-hop","method":"GET","path":"/build/301","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/303","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/304","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"POST","path":"/signin?7-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"phase":"read","path":"<other>","action":"DENIED"},{"phase":"read","path":"/wicket/page","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"login","path":"/signin","action":"DENIED"}],"details":{"forbiddenSecondHops":0,"postReplay":0}}
+{"group":"credential-isolation","ok":true,"requests":[{"group":"credential-isolation","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"POST","path":"/signin?1-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/overview/0","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}],"details":{"credentialFacts":{"cookie":true,"authorization":true,"password":true},"protocol":{"ok":true,"status":200,"html_redacted":"<html><head><link rel=\"icon\" href=\"data:,\"><title>LOCAL C2b safety fixture</title></head><body><a class=\"nav-link\">Build (id:1)</a>\n      <span>Welcome! &lt;USER&gt;</span>\n      <input type=\"hidden\" name=\"token\" value=\"&lt;REDACTED&gt;\">\n      <div class=\"build-summary\"><div class=\"box-head\">Summary</div><table>\n      <thead><tr><th>Id</th><th>Triggered By</th></tr></thead>\n      <tbody><tr><td>1</td><td>&lt;USER&gt;</td></tr></tbody></table></div></body></html>","outside_identity_count":0},"exception":{"ok":false,"error":"QB_BROWSER_UNAVAILABLE"}}}
+{"summary":4,"passed":4,"failed":0,"network":"loopback-only","temporaryDirectoryRemoved":true}
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_c2b_evidence_entry_is_not_a_submit_or_launch_override_path PASSED
+tests/unit/test_qb_browser_node.py::test_node_login_retry_and_five_attempt_limit {"scenario":"retry-success","ok":true,"login":"three-conditions-passed","postStatuses":[200,302],"afterSuccessReceived":0,"received":[{"scenario":"retry-success","method":"GET","path":"/signin","status":200},{"scenario":"retry-success","method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form","status":200},{"scenario":"retry-success","method":"POST","path":"/wicket/page?1-1.IFormSubmitListener-content-form","status":302},{"scenario":"retry-success","method":"GET","path":"/","status":200}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"phase":"idle","path":"/wicket/page","action":"DENIED"}],"browserClosed":true,"temporaryDirectoryRemoved":true}
+{"scenario":"five-failure-limit","ok":true,"attempted":6,"serverReceived":5,"sixthDenied":true,"postStatuses":[200,200,200,200,200],"received":[{"scenario":"five-failure-limit","method":"GET","path":"/signin","status":200},{"scenario":"five-failure-limit","method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form","status":200},{"scenario":"five-failure-limit","method":"POST","path":"/wicket/page?1-1.IFormSubmitListener-content-form","status":200},{"scenario":"five-failure-limit","method":"POST","path":"/wicket/page?2-1.IFormSubmitListener-content-form","status":200},{"scenario":"five-failure-limit","method":"POST","path":"/wicket/page?3-1.IFormSubmitListener-content-form","status":200},{"scenario":"five-failure-limit","method":"POST","path":"/wicket/page?4-1.IFormSubmitListener-content-form","status":200}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"phase":"login","path":"/wicket/page","action":"DENIED"}],"browserClosed":true,"temporaryDirectoryRemoved":true}
+{"summary":2,"passed":2,"expected":2,"network":"loopback-only","temporaryDirectoryRemoved":true}
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_profile_cleanup[normal] {"mode": "normal", "removed": true}
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_profile_cleanup[exception] {"mode": "exception", "removed": true}
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_profile_cleanup[signal] {"mode": "signal", "removed": true}
+PASSED
+
+=================================== FAILURES ===================================
+_________________________ test_node_c5a_evidence_tools _________________________
+
+        result = subprocess.run(
+            [*command, str(ROOT / "tests/node/test_p5q_c5_tools.mjs"), *paths],
+            env=env,
+            capture_output=True,
+            text=True,
+            timeout=150,
+        )
+        print(result.stdout)
+        assert result.returncode == 0, result.stdout + result.stderr
+    
+    
+    def test_c5a_tools_are_readonly_and_not_production_test_overrides() -> None:
+        spikes = ROOT / "docs/clang-fix-campaign/spikes"
+        for name in ("p5q_fill_rehearsal.mjs", "p5q_compare_raw_active.mjs", "p5q_c5_tools.mjs"):
+>           source = (spikes / name).read_text()
+E           AssertionError: ▶ C5a offline evidence tools use real guards and isolated worlds
+E               ✖ raw/live comparison: equal (4802.379318ms)
+E               ✔ raw/live comparison: insert-nav (14078.359434ms)
+E               ✔ raw/live comparison: change-status (3982.501195ms)
+E               ✔ twelve-field rehearsal: random/version/unchanged values/no action release (15808.630782ms)
+E               ✔ login false positive: signin-with-signout (1800.314355ms)
+E               ✔ login false positive: password-remains (1820.568842ms)
+E               ✔ login false positive: no-signout (1845.063313ms)
+E               ✖ read redirected to different Successful build stays a read failure (2871.717278ms)
+E               ✔ window.open disabled and foreign iframe denied before request (3303.144589ms)
+E               ✔ server callback code inconsistent with DOM is denied without a server POST (3074.109011ms)
+E             ✖ C5a offline evidence tools use real guards and isolated worlds (53484.43385ms)
+E             ℹ tests 11
+E             ℹ suites 0
+E             ℹ pass 8
+E             ℹ fail 3
+E             ℹ cancelled 0
+E             ℹ skipped 0
+E             ℹ todo 0
+E             ℹ duration_ms 53486.764673
+E             
+E             ✖ failing tests:
+E             
+E             test at tests/node/test_p5q_c5_tools.mjs:27:15
+E             ✖ raw/live comparison: equal (4802.379318ms)
+E               AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+E               
+E                 assert.ok(results[2].comparison.find(row => row.field === 'variables').raw[0].rows.length >= 10)
+E               
+E                   at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:47:20)
+E                   at async Test.run (node:internal/test_runner/test:1409:7)
+E                   at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:27:7)
+E                   at async Test.run (node:internal/test_runner/test:1409:7)
+E                   at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+E                 generatedMessage: true,
+E                 code: 'ERR_ASSERTION',
+E                 actual: false,
+E                 expected: true,
+E                 operator: '==',
+E                 diff: 'simple'
+E               }
+E             
+E             test at tests/node/test_p5q_c5_tools.mjs:99:13
+E             ✖ read redirected to different Successful build stays a read failure (2871.717278ms)
+E               Error: Command failed: /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python -c import sys; from ci_triage.qb_browser import decode_response,QbBrowserError
+E               try: decode_response(sys.stdin.read(),command="read")
+E               except QbBrowserError as e: print(e.code)
+E               Traceback (most recent call last):
+E                 File "<string>", line 2, in <module>
+E               TypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'
+E               
+E                   at genericNodeError (node:internal/errors:986:15)
+E                   at wrappedFn (node:internal/errors:540:14)
+E                   at checkExecSyncError (node:child_process:942:11)
+E                   at execFileSync (node:child_process:978:15)
+E                   at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:108:24)
+E                   at async Test.run (node:internal/test_runner/test:1409:7)
+E                   at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs:99:5)
+E                   at async Test.run (node:internal/test_runner/test:1409:7)
+E                   at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+E                 status: 1,
+E                 signal: null,
+E                 output: [ null, '', `Traceback (most recent call last):\n  File "<string>", line 2, in <module>\nTypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'\n` ],
+E                 pid: 948820,
+E                 stdout: '',
+E                 stderr: `Traceback (most recent call last):\n  File "<string>", line 2, in <module>\nTypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'\n`
+E               }
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             Traceback (most recent call last):
+E               File "<string>", line 2, in <module>
+E             TypeError: decode_response() missing 1 required keyword-only argument: 'submit_sent'
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5_tools.mjs', '/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs', '/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome'], returncode=1, stdout='▶ C5a offline evidence tools use real guards and isolated worlds\n  ✖ raw/live comparison: equal (4802.379318ms)\n  ✔ raw/live comparison: insert-nav (14078.359434ms)\n  ✔ raw/live comparison: change-status (3982.501195ms)\n  ✔ twelve-field rehearsal: random/version/unchanged values/no action release (15808.630782ms)\n  ✔ login false positive: signin-with-signout (1800.314355ms)\n  ✔ login false positive: password-remains (1820.568842ms)\n  ✔ login false positive: no-signout (1845.063313ms)\n  ✖ read redirected to different Successful build stays a read failure (2871.717278ms)\n  ✔ window.open disabled and foreign iframe denied before request (3303.144589ms)\n  ✔ server callback code inconsistent with DOM is denied without a server POST (3074.109011ms)\n✖ C5a offline evidence tools use real guards and isolated worlds (53484.43385ms)\nℹ tests 11\nℹ suites 0\nℹ pass 8\nℹ fail ...      at async Test.run (node:internal/test_runner/test:1409:7)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {\n    status: 1,\n    signal: null,\n    output: [ null, \'\', `Traceback (most recent call last):\\n  File "<string>", line 2, in <module>\\nTypeError: decode_response() missing 1 required keyword-only argument: \'submit_sent\'\\n` ],\n    pid: 948820,\n    stdout: \'\',\n    stderr: `Traceback (most recent call last):\\n  File "<string>", line 2, in <module>\\nTypeError: decode_response() missing 1 required keyword-only argument: \'submit_sent\'\\n`\n  }\n', stderr='已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\nTraceback (most recent call last):\n  File "<string>", line 2, in <module>\nTypeError: decode_response() missing 1 required keyword-only argument: \'submit_sent\'\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n').returncode
+
+tests/unit/test_qb_browser_node.py:107: AssertionError
+- generated xml file: /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5a/focused-01/focused.xml -
+=========================== short test summary info ============================
+FAILED tests/unit/test_qb_browser_node.py::test_node_c5a_evidence_tools - Ass...
+=================== 1 failed, 18 passed in 386.45s (0:06:26) ===================

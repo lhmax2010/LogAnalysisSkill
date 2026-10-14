@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { createHash, X509Certificate } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:https';
 import test from 'node:test';
 import { pathToFileURL } from 'node:url';
@@ -533,5 +533,11 @@ test('C2c frozen v1.5 fields and startup self-test, loopback HTTPS only', { time
         t.diagnostic(`refresh stream elapsed ${Math.round(elapsed)}ms; refresh server requests=0`);
       });
     });
-  } finally { await fixture.close(); }
+  } finally {
+    if (process.env.P5Q_C5A_EVIDENCE) {
+      await mkdir(process.env.P5Q_C5A_EVIDENCE, { recursive: true });
+      await writeFile(`${process.env.P5Q_C5A_EVIDENCE}/existing-fields-requests.json`, JSON.stringify(fixture.received, null, 2));
+    }
+    await fixture.close();
+  }
 });

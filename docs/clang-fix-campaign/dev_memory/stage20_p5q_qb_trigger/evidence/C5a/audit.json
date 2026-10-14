@@ -1,0 +1,47 @@
+{
+  "pytest": {
+    "passed": 2638,
+    "failed": 0,
+    "skipped": 1
+  },
+  "previous_collection": 2633,
+  "current_collection": 2639,
+  "added": [
+    "tests.unit.test_p5q_c5a_integration::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "tests.unit.test_p5q_c5a_integration::test_real_cli_browser_submit_bind_pending_pass[error-created]",
+    "tests.unit.test_p5q_c5a_integration::test_real_cli_browser_submit_bind_pending_pass[error-no-build]",
+    "tests.unit.test_p5q_c5a_integration::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+    "tests.unit.test_qb_browser_node::test_c5a_tools_are_readonly_and_not_production_test_overrides",
+    "tests.unit.test_qb_browser_node::test_node_c5a_evidence_tools"
+  ],
+  "removed": [],
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "production_and_design_changes": [],
+  "full_chain": {
+    "build": {
+      "requests": 35,
+      "submissions": 1,
+      "builds": 1
+    },
+    "error-created": {
+      "requests": 20,
+      "submissions": 1,
+      "builds": 1
+    },
+    "error-no-build": {
+      "requests": 20,
+      "submissions": 1,
+      "builds": 0
+    },
+    "no-navigation": {
+      "requests": 19,
+      "submissions": 1,
+      "builds": 1
+    }
+  },
+  "rehearsal": {
+    "fields": 12,
+    "action_releases": 0
+  },
+  "safety_passed": 4
+}

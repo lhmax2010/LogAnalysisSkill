@@ -1,0 +1,192 @@
+{
+  "path": "/build/1193469/variables",
+  "navigation": "VERIFIED",
+  "raw_file": "04.raw-redacted.html",
+  "active_file": "04.active-redacted.html",
+  "raw_outside_identity_count": 0,
+  "active_outside_identity_count": 0,
+  "comparison": [
+    {
+      "field": "navigation",
+      "result": "一致",
+      "raw": [
+        "Build (id:1193469)"
+      ],
+      "active": [
+        "Build (id:1193469)"
+      ]
+    },
+    {
+      "field": "summary",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "child_build",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "variables",
+      "result": "一致",
+      "raw": [
+        {
+          "columns": [
+            "Name",
+            "Display Name",
+            "Value"
+          ],
+          "rows": [
+            [
+              "QB_TRIGGER_ID",
+              "",
+              "1193469"
+            ],
+            [
+              "TRIGGER_ID",
+              "",
+              "1193467"
+            ],
+            [
+              "BUILD_PKG_LIST",
+              "",
+              "package@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ],
+            [
+              "FAIL_FAST",
+              "",
+              "yes"
+            ],
+            [
+              "REPO_ARCH",
+              "",
+              "standard-armv7l:aarch64:x86_64"
+            ],
+            [
+              "CHILD_CONFIGURATIONS",
+              "",
+              "standard-armv7l:aarch64:x86_64"
+            ],
+            [
+              "EACH_GBS_BUILD_STATUS",
+              "",
+              ""
+            ],
+            [
+              "BUILD_REFERENCE",
+              "",
+              "Ref. Snapshot"
+            ],
+            [
+              "SNAPSHOT_NUM_URL",
+              "",
+              "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260924.094908"
+            ]
+          ]
+        }
+      ],
+      "active": [
+        {
+          "columns": [
+            "Name",
+            "Display Name",
+            "Value"
+          ],
+          "rows": [
+            [
+              "QB_TRIGGER_ID",
+              "",
+              "1193469"
+            ],
+            [
+              "TRIGGER_ID",
+              "",
+              "1193467"
+            ],
+            [
+              "BUILD_PKG_LIST",
+              "",
+              "package@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ],
+            [
+              "FAIL_FAST",
+              "",
+              "yes"
+            ],
+            [
+              "REPO_ARCH",
+              "",
+              "standard-armv7l:aarch64:x86_64"
+            ],
+            [
+              "CHILD_CONFIGURATIONS",
+              "",
+              "standard-armv7l:aarch64:x86_64"
+            ],
+            [
+              "EACH_GBS_BUILD_STATUS",
+              "",
+              ""
+            ],
+            [
+              "BUILD_REFERENCE",
+              "",
+              "Ref. Snapshot"
+            ],
+            [
+              "SNAPSHOT_NUM_URL",
+              "",
+              "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260924.094908"
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "field": "configuration_tabs",
+      "result": "一致",
+      "raw": [
+        [],
+        [],
+        []
+      ],
+      "active": [
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "field": "breadcrumb",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "copy_path",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "build_name",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "failed_steps",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "error_message",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    }
+  ]
+}
