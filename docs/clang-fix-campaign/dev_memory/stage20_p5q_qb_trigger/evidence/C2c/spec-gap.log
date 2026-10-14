@@ -1,0 +1,8 @@
+POSITIVE exact field callback: ALLOWED
+QUERY_VALUE_STOP listener=form-field: callbackURL and beginField both QB_FORM_CHANGED (extra parameter outside closed grammar)
+LISTENER_COMPONENT_STOP: grammar accepts, permanent destructive-listener rule DENIES
+LEGACY test fixture: registered ajaxRefresh GET with value=stop ALLOWED at b6bec94
+v1.5:280 requires this refresh fixture DENIED; v1.5:306 disallows value=stop on field callbacks; v1.5:756 still requires a legal non-destructive callback with stop in query ALLOWED
+SPEC_GAP_CONFIRMED P5Q-C2C-02; network_requests=0; assertion_checks=5/5; exit=2
+
+command_exit=2

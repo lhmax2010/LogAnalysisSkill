@@ -1,7 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;AWAITING_DESIGN_R1**。
-最新执行见§26:生产2ee8ab6、取证19792bb已推送;新“开始”后完成live-12,
+日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_STOPPED;AWAITING_C2C_02_RULING**。
+最新权威改为v1.5-FROZEN,冻结登记与C2c执行见§27;以下v1.2及R1待决状态均为历史记录。
+最新停止报告见§27.3;最近真机执行见§26:生产2ee8ab6、取证19792bb已推送;新“开始”后完成live-12,
 五个构建页/配置通过,Full→Partial→Full联动成功,release0。以下停点均为历史事实。
 现场取证成功不等于R1设计差异已关闭,不进入C3。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
@@ -2849,3 +2850,97 @@ design.md/检查器零diff,历史live目录保留,无关用户改动不处理。
 Ruff对暂存树80058cb1811f0422d813802e34c0641fd3b9006c导出副本运行,
 /tmp/p5q-live12-lint-XClBU8已清理;之后只补文档与日志。
 文档diff --check为空;原始脱敏HTML缩进/行尾保持归档字节,不为消除whitespace提示而改动。
+
+## 27. 实施裁定 P5Q-C2C-01:v1.5 冻结
+
+### 27.1 冻结登记与范围
+
+2026-10-14,开工HEAD=b6bec94f4336740d5fd6fb9b58607cd1af355128,
+分支clang-fix-campaign。已读本stage计划、闭合记录及挂账;无关.gitignore改动、
+docs四个删除与未跟踪草稿不处理。
+冻结文件:docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md。
+实跑sha256=f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c,
+与FatTank给定值逐字相等;文件不得修改。
+v1.5取代v1.2-FROZEN成为P5Q权威设计,v1.2-FROZEN保留备查。
+下一步为C2c,只做第10节C2c六项补齐与第9.2/相关9.1/9.5门禁;
+拦截安全子集从头复跑,第9.3其它用例与第9.4真机不在本任务范围。
+不访问真实QuickBuild、不弹登录窗口、不做Gerrit推送,永不点击Accept/Ready to Accept。
+
+### 27.2 计划与挂账
+
+1. 本机可满足性验证:隔离环境与设值事件计数,全部使用合成页面。
+2. 代理读取改为响应原始字节+严格解码+隔离环境惰性解析;活动表单只在隔离环境取数。
+3. 惰性诊断与身份位置遮蔽、刷新删除、字段完整窗口/启动自检、结构失败诊断。
+4. design.md按附录A末尾同步v1.5.23;测试逐条补齐,静态断言逐名称反控。
+5. 全量门禁与四安全组,同步证据后提交推送,不进入C3。
+
+具名挂账:第9.4节第1.6步a的原始字节与活动文档比对、成功样本,
+b的BUILD_NOTES样本均放C5。成功样本与BUILD_NOTES样本可由C6补齐;
+原始字节比对及完整填表演练必须先于真实提交,挂账未核验关闭前不得CLOSED。
+本机合成夹具不能替代这些真机前提。
+
+### 27.3 停止报告 P5Q-C2C-02:stop查询正例与闭集不相容
+
+状态:OPEN,待设计方裁定,不是已批准的实施裁定。停止事项数1。
+权威文件未修改,未自行放宽规则或改写验收用例。
+
+| 原文位置(v1.5冻结稿) | 要求与实际冲突 |
+|---|---|
+| 第9.2节首条,L756 | 必须有“查询中含stop字样但监听器名无破坏性动作的合法回调→放行”正例 |
+| 第3.5节open_form第6项,L306 | 字段回调query完整匹配`^\d+-\d+\.IBehaviorListener\.\d+-[A-Za-z0-9:_-]+$`,不能登记额外`&value=stop` |
+| 第3.4节fill行,L282 | 登记原文之外只容许末尾一个十进制random参数,不能容纳stop值 |
+| 第3.4节永久禁止,L268-L269 | stop若放入监听器组件名,会命中破坏性动作正则,必须拒绝 |
+| 第3.4节已登录只读行,L280 | 定时刷新全部拒绝,且删除刷新登记集合;不能沿用旧刷新正例 |
+
+既有`tests/node/test_qb_browser_agent.mjs:209`正例实际是登记的refresh GET,
+`?1-1.IBehaviorListener-refresh&action=ajaxRefresh&value=stop`。
+它在b6bec94能放行,但按v1.5必须拒绝。改用字段回调时,stop只可能位于
+额外参数(不符合登记文法)或监听器组件(触发永久禁止);数字前缀/random
+均不能承载stop。故这条端到端放行正例无法与现有闭集同时满足。
+
+离线取证:[spec-gap-check.mjs](evidence/C2c/spec-gap-check.mjs)从本地不可变
+`b6bec94:.../qb_browser_agent.mjs`读取规则,不使用未提交实现,不启动浏览器。
+[spec-gap.log](evidence/C2c/spec-gap.log)五项断言全部符合实测,主动exit2表示规格停止:
+普通字段回调放行;带`&value=stop`的callbackURL与beginField各拒绝;
+组件名form-stopper被永久禁止;旧登记刷新GET在基线放行。
+网络请求0。该探针证明旧实现/登记文法的事实,不冒充C2c验收绿。
+
+候选处理(未执行,需裁定):将第9.2节这一个用例拆清层次,在永久禁止判定层
+断言非监听器查询值中的stop不被误判为破坏动作;最终请求仍遵守阶段/文法闭集,
+不能据此新增放行。旧refresh用例改为必须拒绝的回归例。
+若设计方希望保留“最终放行”的正例,需提供与现有闭集兼容的具体URL,
+或另行裁定文法/安全边界;实现方不自行补参数例外。
+
+本机可行性预检已证明CDP隔离环境可建立,selectOption/check/fill+blur的change
+计数为1/1/1,网络0,见[preflight-baseline.log](evidence/C2c/preflight-baseline.log)。
+它不证明完整隔离生命周期、原始响应读取或所有字段窗口要求已经实现。
+停止前的未完成实现存入[implementation-wip.patch](evidence/C2c/implementation-wip.patch),
+仅供续做定位,未验收、不可部署;包含暴露此冲突的未完成测试,不是可应用的交付补丁。
+已只撤销本轮自己对生产/tests的修改,`git diff --stat -- tizen-ci-triage tests`为空;
+design.md尚未同步,冻结稿不改,用户既有改动不处理。
+
+第二步1-6均未交付,第9.2新增静态断言逐名变异测试NOT_RUN。
+下节如有基线门禁结果,只证明此次冻结登记/停止报告的文档提交未改坏现状,
+不代表C2c完成。停止后不继续编码、不运行真机取证、不进入C3。
+
+### 27.4 冻结登记与停止报告的基线回归
+
+以下均为本轮重新实跑,生产/tests仍为b6bec94;不是v1.5新增验收。
+完整命令和日志在[evidence/C2c/README.md](evidence/C2c/README.md)。
+
+| 门禁 | 本轮结果 | exit/证据(C2c/) |
+|---|---|---|
+| 全量pytest | 2165 passed / 0 failed / 1 skipped,123.74s,新增测试0 | 0,pytest-baseline.log |
+| mypy | 113 source files,无问题 | 0,mypy-baseline.log |
+| lint-imports | 6 kept / 0 broken | 0,lint-imports-baseline.log |
+| design.md检查器 | 0 problem,仍为既有v1.5.22,不是待同步v1.5.23 | 0,design-check-baseline.log |
+| Node三入口 | 3 passed / 0 failed / 0 skipped,20.14s;unit142/142、DOM51/51 | 0,node-baseline.log |
+| 四安全组 | 从头重跑4/4,仅loopback假服务器 | 0,node-baseline.log |
+| Ruff完整待提交树 | All checks passed! | 0,ruff-baseline.log |
+
+Worker组走b:browser_fail_closed,shared_worker closeTarget成功,worker异常Error,
+attackHTTP0/WS0,浏览器及临时目录已清理。其它三组全部通过。
+Ruff导出暂存树4d86fe86dedb138db7cc7a7dc8a6da35a929ebdb,
+临时目录/tmp/p5q-c2c-lint-tp36xd已清理;此后只补文档与日志。
+静态断言逐名字负例NOT_RUN;第二步1-6仍未交付,没有借基线绿标完成。
+本提交范围仅v1.5原字节、INDEX/progress和C2c证据;真实QuickBuild/Gerrit访问0。

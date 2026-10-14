@@ -1,0 +1,923 @@
+diff --git a/tests/fixtures/qb_redaction_vectors.json b/tests/fixtures/qb_redaction_vectors.json
+index dfff669..26defa3 100644
+--- a/tests/fixtures/qb_redaction_vectors.json
++++ b/tests/fixtures/qb_redaction_vectors.json
+@@ -3,7 +3,7 @@
+     "name": "short-display-name",
+     "html": "<span>Welcome! Lin</span><p>ILinkListener signOutLink dependentLink Linux-PAM onCopyClipboardLinkDomReady</p><p>Lin Lin-PAM xLin Linx _Lin Lin_ 1Lin Lin1</p>",
+     "preserved": ["ILinkListener", "signOutLink", "dependentLink", "Linux-PAM", "onCopyClipboardLinkDomReady", "xLin Linx _Lin Lin_ 1Lin Lin1"],
+-    "masked": ["Welcome! <USER>", "<USER> <USER>-PAM"],
++    "masked": ["Welcome! <USER>", "Lin Lin-PAM"],
+     "identities": ["Lin"],
+     "secrets": []
+   },
+@@ -11,7 +11,7 @@
+     "name": "triggered-by-row",
+     "html": "<table><tr><td>Triggered By</td><td><a>Lin</a></td></tr></table><p>Lin-PAM Linux-PAM</p>",
+     "preserved": ["Linux-PAM"],
+-    "masked": ["<USER>-PAM"],
++    "masked": ["Lin-PAM"],
+     "identities": ["Lin"],
+     "secrets": []
+   },
+@@ -19,7 +19,7 @@
+     "name": "triggered-by-column",
+     "html": "<table><tr><th>Id</th><th>Triggered By</th></tr><tr><td>123</td><td>Lin</td></tr></table><p>ILinkListener Lin</p>",
+     "preserved": ["123", "ILinkListener"],
+-    "masked": ["ILinkListener <USER>"],
++    "masked": ["ILinkListener Lin"],
+     "identities": ["Lin"],
+     "secrets": []
+   },
+@@ -27,7 +27,7 @@
+     "name": "multiword",
+     "html": "<span>Welcome! Lin Hao</span><p>Lin Hao Lin Hao-PAM xLin Hao Lin Haox Lin</p>",
+     "preserved": ["xLin Hao Lin Haox Lin"],
+-    "masked": ["Welcome! <USER>", "<USER> <USER>-PAM"],
++    "masked": ["Welcome! <USER>", "Lin Hao Lin Hao-PAM"],
+     "identities": ["Lin Hao"],
+     "secrets": []
+   },
+@@ -35,7 +35,7 @@
+     "name": "literal-regex-and-ascii-boundaries",
+     "html": "<span>Welcome! L.in</span><p>L.in Lin xL.in L.inx \u00e9L.in\u00e9</p>",
+     "preserved": ["Lin xL.in L.inx"],
+-    "masked": ["Welcome! <USER>", "\u00e9<USER>\u00e9"],
++    "masked": ["Welcome! <USER>", "\u00e9L.in\u00e9"],
+     "identities": ["L.in"],
+     "secrets": []
+   },
+@@ -46,5 +46,30 @@
+     "masked": ["Welcome! <USER>", "x<REDACTED>x x<REDACTED>x x<REDACTED>x"],
+     "identities": ["Lin"],
+     "secrets": ["TokenFixture", "SessionFixture", "CookieFixture", "JSESSIONID_8810="]
++  },
++  {
++    "name": "successful-business-word",
++    "html": "<span>Welcome! Successful</span><table><tr><th>Triggered By</th><th>Status</th><th>Requested By</th><th>Owner</th></tr><tr><td>Successful</td><td>Successful</td><td>Successful</td><td>Successful</td></tr></table>",
++    "preserved": ["<td>Successful</td>"],
++    "masked": ["Welcome! <USER>", "<td><USER></td>"],
++    "identities": ["Successful"], "secrets": [], "outside": 2
++  },
++  {
++    "name": "failed-business-word",
++    "html": "<span>Welcome! Failed</span><table><tr><th>Triggered By</th><th>Status</th></tr><tr><td>Failed</td><td>Failed</td></tr></table>",
++    "preserved": ["<td>Failed</td>"], "masked": ["Welcome! <USER>"],
++    "identities": ["Failed"], "secrets": [], "outside": 1
++  },
++  {
++    "name": "full-option",
++    "html": "<div>Welcome! Full</div><select><option>Full</option></select><table><tr><th>Requested By</th></tr><tr><td>Full</td></tr></table>",
++    "preserved": ["<option>Full</option>"], "masked": ["Welcome! <USER>", "<td><USER></td>"],
++    "identities": ["Full"], "secrets": [], "outside": 1
++  },
++  {
++    "name": "root-configuration",
++    "html": "<span>Welcome! root</span><p>root/CI_TIZEN/TIZEN</p><table><tr><td>Triggered By</td><td>root</td></tr></table>",
++    "preserved": ["root/CI_TIZEN/TIZEN"], "masked": ["Welcome! <USER>", "<td><USER></td>"],
++    "identities": ["root"], "secrets": [], "outside": 1
+   }
+ ]
+diff --git a/tests/node/test_qb_browser_agent.mjs b/tests/node/test_qb_browser_agent.mjs
+index 25549c8..ea3bacb 100644
+--- a/tests/node/test_qb_browser_agent.mjs
++++ b/tests/node/test_qb_browser_agent.mjs
+@@ -26,7 +26,6 @@ for (const [name, path, extra] of [
+   ['308', '/build/1', { response_status: 308 }],
+ ]) test(`permanent deny ${name}`, () => {
+   const p = policy('read'); p.active.add('r');
+-  p.refresh.add(ORIGIN + path);
+   assert.equal(p.allow(meta(path, 'GET', extra), 'r'), false);
+ });
+ 
+@@ -180,21 +179,19 @@ test('stage-specific navigation never escapes phase', () => {
+   assert.equal(p.allow(meta(action.slice(ORIGIN.length), 'POST')), false);
+   assert.equal(p.allow(meta(callback.slice(ORIGIN.length), 'POST')), false);
+ });
+-test('exact run and exact refresh registrations, no prefix acceptance', () => {
++test('exact run registration and refresh always denied', () => {
+   const p = policy('open_form'); p.runUrl = run;
+   assert.equal(p.allow(meta(run.slice(ORIGIN.length) + 'x')), false);
+   assert.equal(p.allow(meta(run.slice(ORIGIN.length))), true);
+   assert.equal(p.allow(meta(run.slice(ORIGIN.length))), false);
+   const refresh = `${ORIGIN}/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh`;
+-  p.refresh.add(refresh);
+-  assert.equal(p.allow(meta(refresh.slice(ORIGIN.length))), true);
++  assert.equal(p.allow(meta(refresh.slice(ORIGIN.length))), false);
+   assert.equal(p.allow(meta(refresh.slice(ORIGIN.length) + '0')), false);
+ });
+-test('registered refresh allows GET but never POST', () => {
++test('refresh allows neither GET nor POST', () => {
+   const p = policy('read');
+   const path = '/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh';
+-  p.refresh.add(ORIGIN + path);
+-  assert.equal(p.allow(meta(path, 'GET')), true);
++  assert.equal(p.allow(meta(path, 'GET')), false);
+   assert.equal(p.allow(meta(path, 'POST')), false);
+ });
+ test('one callback per field, old version and other field denied', () => {
+@@ -206,11 +203,11 @@ test('one callback per field, old version and other field denied', () => {
+   assert.equal(p.allow(meta(callback.slice(ORIGIN.length), 'POST')), false);
+   assert.equal(p.allow(meta(callback.replace('50-2', '50-3').slice(ORIGIN.length), 'POST')), true);
+ });
+-test('stop in value not listener component is allowed', () => {
+-  const p = policy('read');
+-  const url = `${ORIGIN}/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh&value=stop`;
+-  p.refresh.add(url);
+-  assert.equal(p.allow(meta(url.slice(ORIGIN.length))), true);
++test('stop in non-destructive callback component remains allowed', () => {
++  const p = policy('fill');
++  const url = `${ORIGIN}/wicket/page?1-1.IBehaviorListener.0-form-stopper`;
++  p.beginField(url);
++  assert.equal(p.allow(meta(url.slice(ORIGIN.length), 'POST')), true);
+ });
+ for (const suffix of ['', '&random=0.1234567890123456', '&random=0.0', '&random=0.' + '1'.repeat(20)]) {
+   test(`C2B-10 callback one-shot accepts ${JSON.stringify(suffix)}`, () => {
+@@ -255,7 +252,7 @@ test('C2B-10 submit action and refresh never accept appended random', () => {
+   assert.equal(p.released, false);
+   assert.equal(p.allow(meta(action.slice(ORIGIN.length), 'POST')), true);
+   const refresh = '/build/1?1-1.IBehaviorListener-refresh&action=ajaxRefresh';
+-  p.phase = 'fill'; p.refresh.add(ORIGIN + refresh);
++  p.phase = 'fill';
+   assert.equal(p.allow(meta(refresh + '&random=0.1')), false);
+   assert.equal(p.allow(meta(refresh + '&random=0.1', 'POST')), false);
+ });
+@@ -412,10 +409,11 @@ test('released submit navigation timeout is unknown, not definite failure', asyn
+ });
+ test('read checks exact URL and build id and returns actual HTTP status', async () => {
+   let redirect = null;
+-  const page = { goto: async () => ({ status: () => 503, request: () => ({ redirectedFrom: () => redirect }) }), url: () => ORIGIN + '/build/1',
+-    evaluate: async () => '<p>safe</p>' };
+-  const a = new Agent({ policy: new Policy(), page });
+-  a.buildId = async () => '1'; a.registerRefresh = async () => {};
++  const page = { goto: async () => ({ status: () => 503, request: () => ({ redirectedFrom: () => redirect }),
++    body: async () => Buffer.from('<p>safe</p>'), headerValue: async () => null }), url: () => ORIGIN + '/build/1' };
++  const a = new Agent({ policy: new Policy(), page, trace: [] });
++  a.buildId = async () => '1';
++  a.trusted.run = async () => ({ html_redacted: '<p>safe</p>', identity_outside_count: 0 });
+   assert.equal((await a.read('/build/1')).status, 503);
+   redirect = {}; await assert.rejects(a.read('/build/1'), { code: 'QB_READ_REDIRECTED' }); redirect = null;
+   a.buildId = async () => '2'; await assert.rejects(a.read('/build/1'), { code: 'QB_READ_ID_MISMATCH' });
+@@ -426,7 +424,7 @@ test('read checks exact URL and build id and returns actual HTTP status', async
+ test('source guards: no HTTP client, credential extraction, debug switch, or login interactions', () => {
+   const source = readFileSync(new URL('../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', import.meta.url), 'utf8');
+   assert.doesNotMatch(source, /page\.request|context\.request|request\.newContext|\.cookies\(|storageState|ignoreHTTPSErrors|DEBUG\s*=\s*['"]pw/);
+-  const login = source.split('  async login(timeout) {')[1].split('  async registerRefresh()')[0];
++  const login = source.split('  async login(timeout) {')[1].split('  async buildId(')[0];
+   assert.doesNotMatch(login, /\b(click|fill|press|type|evaluate)\(/);
+   const outside = source.slice(source.indexOf('export class Policy'));
+   assert.doesNotMatch(outside, /\b(headers|postData|postDataEntries)\b/);
+@@ -480,15 +478,16 @@ test('fill reads current callbacks and freezes selected snapshot without setting
+   a.snapshot = async () => f;
+   a.fieldRow = name => ({ locator: () => ({ locator: () => ({
+     fill: async value => { calls.push([name, 'fill']); f.rows.find(r => r.label === name).controls[0].value = value; },
+-    setChecked: async value => { calls.push([name, 'checked']); f.rows.find(r => r.label === name).controls[0].checked = value;
++    check: async () => { calls.push([name, 'checked']); f.rows.find(r => r.label === name).controls[0].checked = true;
+       p.fieldFinished = true; p.lastActivity = Date.now() - 1500; },
++    blur: async () => { calls.push([name, 'blur']); p.fieldFinished = true; p.lastActivity = Date.now() - 1500; },
+     selectOption: async () => assert.fail('frozen snapshot must not be set'),
+     dispatchEvent: async () => { calls.push([name, 'change']); p.fieldFinished = true; p.lastActivity = Date.now() - 1500; },
+   }) }) });
+   const result = await a.fill(requested);
+   assert.equal(result.readback['SNAPSHOT_NUM/value'], 'chosen');
+   assert.equal(result.snapshot_option_count, 2);
+-  assert.equal(calls.some(([name]) => name === 'SNAPSHOT_NUM'), false);
+-  assert.equal(new Set(calls.map(([name]) => name)).size, 11);
++  assert.deepEqual(calls.filter(([name]) => name === 'SNAPSHOT_NUM'), [['SNAPSHOT_NUM', 'change']]);
++  assert.equal(new Set(calls.map(([name]) => name)).size, 12);
+   assert.equal(result.fingerprint, fingerprint(result.readback));
+ });
+diff --git a/tests/unit/test_qb_redact.py b/tests/unit/test_qb_redact.py
+index b4ed703..b1bcf57 100644
+--- a/tests/unit/test_qb_redact.py
++++ b/tests/unit/test_qb_redact.py
+@@ -43,10 +43,13 @@ def test_shared_identity_boundaries_and_secret_substrings(vector, tmp_path):
+     path.write_bytes(safe.encode())
+     redactor.check_bytes(path.read_bytes())
+     redactor.check_written(path)
++    if "outside" in vector:
++        assert redactor.trace[-1]["identity_outside_count"] == vector["outside"]
+     for identity in vector["identities"]:
+-        with pytest.raises(EvidenceRedactionError):
+-            redactor.check_bytes((safe + " " + identity + "-PAM").encode())
++        redactor.check_bytes((safe + " " + identity + "-PAM").encode())
+         path.write_bytes((safe + " " + identity).encode())
++        redactor.check_written(path)
++        path.write_text(safe + f"<table><tr><th>Requested By</th></tr><tr><td>{identity}</td></tr></table>")
+         with pytest.raises(EvidenceRedactionError):
+             redactor.check_written(path)
+         assert not path.exists()
+@@ -89,7 +92,7 @@ def test_redact_roundtrip_and_raw_written_scan(tmp_path: Path, capsys):
+         '<input type="hidden" value="private">',
+         '<a href="/x;jsessionid=private">link</a>',
+         "JSESSIONID_8810=private",
+-        "Fixture Person",
++        "<span>Welcome! Fixture Person</span>",
+         "Authorization: Basic private",
+         "Cookie: private",
+         "Set-Cookie: private",
+diff --git a/tizen-ci-triage/scripts/ci_triage/qb_browser.py b/tizen-ci-triage/scripts/ci_triage/qb_browser.py
+index 8096394..c07957b 100644
+--- a/tizen-ci-triage/scripts/ci_triage/qb_browser.py
++++ b/tizen-ci-triage/scripts/ci_triage/qb_browser.py
+@@ -12,10 +12,12 @@ from ci_triage.qb_redact import PageRedactor
+ 
+ 
+ class QbBrowserError(RuntimeError):
+-    def __init__(self, code: str, *, released: bool | None = None) -> None:
++    def __init__(self, code: str, *, released: bool | None = None,
++                 diagnostic: dict[str, Any] | None = None) -> None:
+         super().__init__(code)
+         self.code = code
+         self.released = released
++        self.diagnostic = diagnostic
+ 
+ 
+ def _sensitive_key(value: object) -> bool:
+@@ -102,9 +104,19 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
+             "QB_BROWSER_UNAVAILABLE": "QB_BROWSER_UNAVAILABLE",
+             "QB_EVIDENCE_REDACTION_FAILED": "QB_EVIDENCE_REDACTION_FAILED",
+         }.get(code if isinstance(code, str) else "", "INTERNAL_ERROR")
+-        if command == "read" and code in ("QB_READ_REDIRECTED", "QB_READ_ID_MISMATCH"):
++        if command == "read" and code in (
++            "QB_READ_REDIRECTED", "QB_READ_ID_MISMATCH", "QB_TRUSTED_CONTEXT_UNAVAILABLE"
++        ):
+             mapped = "QB_FETCH_FAILED"
+-    raise QbBrowserError(mapped, released=False if submit_sent else None)
++        elif command in ("open_form", "fill", "submit") and code == "QB_TRUSTED_CONTEXT_UNAVAILABLE":
++            mapped = "REJECTED_QB_FORM_CHANGED"
++    diagnostic = response.get("diagnostic")
++    if diagnostic is not None:
++        if not isinstance(diagnostic, dict) or not isinstance(diagnostic.get("html_redacted"), str):
++            raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
++        PageRedactor().check_bytes(diagnostic["html_redacted"].encode())
++        PageRedactor().check_bytes(json.dumps(diagnostic, ensure_ascii=False).encode())
++    raise QbBrowserError(mapped, released=False if submit_sent else None, diagnostic=diagnostic)
+ 
+ 
+ class QbBrowser:
+diff --git a/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs b/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs
+index b838105..4ed76ca 100644
+--- a/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs
++++ b/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs
+@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
+ import { mkdtemp, rm } from 'node:fs/promises';
+ import { createInterface } from 'node:readline';
+ import { pathToFileURL } from 'node:url';
++import { createRequire } from 'node:module';
+ 
+ export const ORIGIN = 'https://quickbuild.tizen.org';
+ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+@@ -44,7 +45,6 @@ export class Policy {
+   constructor(overviewIds = []) {
+     this.overviewIds = new Set(overviewIds.map(String));
+     this.phase = 'idle';
+-    this.refresh = new Set();
+     this.runUrl = null;
+     this.fieldUrl = null;
+     this.submitUrl = null;
+@@ -52,6 +52,7 @@ export class Policy {
+     this.lastActivity = Date.now();
+     this.active = new Set();
+     this.fieldFinished = false;
++    this.fieldWindow = null;
+     this.loginPostCount = 0;
+     this.loginPostsClosed = false;
+     this.loginPostRequests = new Set();
+@@ -67,13 +68,18 @@ export class Policy {
+   }
+   newForm() { this.released = false; this.submitUrl = null; this.endField(); }
+   beginField(url) {
++    this.assertField();
+     let parsed;
+     try { parsed = new URL(url); } catch { throw new AgentError('QB_FORM_CHANGED'); }
+     if (parsed.origin !== ORIGIN || parsed.pathname !== '/wicket/page'
+       || !CALLBACK.test(parsed.search.slice(1))) throw new AgentError('QB_FORM_CHANGED');
+     this.fieldUrl = url; this.fieldFinished = false; this.fieldRequest = null;
++    this.fieldWindow = { allowed: 0, denied: 0 };
+   }
+-  endField() { this.fieldUrl = null; this.fieldRequest = null; }
++  assertField() {
++    if (this.fieldWindow?.denied) throw new AgentError('QB_FORM_CHANGED');
++  }
++  endField() { this.fieldUrl = null; this.fieldRequest = null; this.fieldWindow = null; }
+   invalidate() { this.runUrl = null; this.submitUrl = null; this.endField(); }
+   allow(m, requestId = '') {
+     const url = `${m.protocol}//${m.host}${m.path}${m.query ? `?${m.query}` : ''}`;
+@@ -102,7 +108,6 @@ export class Policy {
+       if (this.loginPostCount >= 5) this.loginPostsClosed = true;
+       return true;
+     }
+-    if (this.refresh.has(url) && m.method === 'GET') return true;
+     if (['read', 'open_form', 'fill'].includes(this.phase)
+       && m.method === 'GET' && this.readonly(m.path) && !m.query) return true;
+     if (this.phase === 'open_form') {
+@@ -114,7 +119,8 @@ export class Policy {
+         ? url.slice(this.fieldUrl.length) : null;
+       if (m.method === 'POST' && (suffix === ''
+         || suffix !== null && suffix.match(/^&random=0\.\d{1,20}$/)?.[0] === suffix)) {
+-        this.fieldUrl = null; this.fieldRequest = requestId; return true;
++        this.fieldUrl = null; this.fieldRequest = requestId;
++        this.fieldWindow.allowed++; return true;
+       }
+       return m.method === 'GET' && m.path === '/wicket/page' && /^\d+(-\d+)?$/.test(m.query);
+     }
+@@ -175,8 +181,9 @@ export async function installGuards(browser, context, page, policy, onStop, trac
+       const { metadata: m, requestId, frameId } = adapted;
+       const allowed = frames.has(frameId) && policy.allow(m, requestId);
+       const response = m.response_status !== null;
+-      const url = `${m.protocol}//${m.host}${m.path}${m.query ? `?${m.query}` : ''}`;
+-      if (!policy.refresh.has(url)) policy.lastActivity = Date.now();
++      if (allowed) policy.lastActivity = Date.now();
++      if (!response && !allowed && policy.fieldWindow && m.method === 'POST'
++        && /IBehaviorListener/.test(m.query)) policy.fieldWindow.denied++;
+       if (!allowed) trace.push({ phase: policy.phase, path: pathShape(m.path), action: 'DENIED' });
+       if (allowed && !response) policy.active.add(requestId);
+       if (response || !allowed) policy.active.delete(requestId);
+@@ -224,10 +231,10 @@ export function pathShape(path) {
+ 
+ // Browser DOM redaction is followed by a Node-side string self-check and the
+ // independent qb_redact check in Python. Only the redacted DOM crosses IPC.
+-export function redactDOM() {
+-  // Page scripts can replace String.prototype.trim; keep this normalization local.
++export function redactDOM(input = {}) {
+   const normalize = value => value.replace(/^[\s\u00a0]+|[\s\u00a0]+$/g, '');
+-  const root = document.documentElement.cloneNode(true);
++  const passive = new DOMParser().parseFromString(input.html ?? document.documentElement.outerHTML, 'text/html');
++  const root = passive.documentElement;
+   const identities = new Set();
+   const secrets = new Set();
+   const remember = (set, value) => { if (value && !['<USER>', '<REDACTED>'].includes(value)) set.add(value); };
+@@ -238,16 +245,20 @@ export function redactDOM() {
+     }
+   }
+   for (const table of root.querySelectorAll('table')) {
+-    let column = null;
++    let columns = [];
+     for (const row of table.rows) {
+       if (row.closest('table') !== table) continue;
+       const cells = [...row.cells];
+-      const index = cells.findIndex((cell) => normalize(cell.textContent) === 'Triggered By');
+-      let cell;
+-      if (index >= 0 && cells[index].tagName === 'TH') column = index;
+-      else if (index >= 0) cell = cells[index + 1];
+-      else if (column !== null && cells[column]?.tagName === 'TD') cell = cells[column];
+-      if (cell) { remember(identities, normalize(cell.textContent)); cell.textContent = '<USER>'; }
++      if (cells.some(cell => cell.tagName === 'TH')) {
++        columns = cells.flatMap((cell, index) => ['Triggered By', 'Requested By'].includes(normalize(cell.textContent)) ? [index] : []);
++      } else {
++        const index = cells.findIndex(cell => normalize(cell.textContent) === 'Triggered By');
++        const targets = new Set(columns.map(column => cells[column]).filter(Boolean));
++        if (index >= 0 && cells[index + 1]) targets.add(cells[index + 1]);
++        for (const cell of targets) {
++          remember(identities, normalize(cell.textContent)); cell.textContent = '<USER>';
++        }
++      }
+     }
+   }
+   const sensitive = /password|passwd|secret|token|credential|authorization|cookie|session|csrf|xsrf/i;
+@@ -270,24 +281,29 @@ export function redactDOM() {
+   }
+   let html = root.outerHTML;
+   const assignment = /[\w-]*(?:token|csrf|xsrf|session)[\w-]*["']?\s*[:=]\s*(?:"([^"]*)"|'([^']*)'|([^?&;\s<>"'`)\]}]+))/gi;
+-  const escaped = (value) => { const div = document.createElement('div'); div.textContent = value; return div.innerHTML; };
+-  const decode = (value) => { const box = document.createElement('textarea'); box.innerHTML = value; return box.value; };
++  const escaped = (value) => { const div = passive.createElement('div'); div.textContent = value; return div.innerHTML; };
++  const decode = (value) => { const box = passive.createElement('textarea'); box.innerHTML = value; return box.value; };
+   const identityPattern = (value) => new RegExp(`(?<![A-Za-z0-9_])${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![A-Za-z0-9_])`, 'g');
+   for (const match of decode(html).matchAll(assignment)) remember(secrets, match[1] ?? match[2] ?? match[3]);
+-  for (const value of [...secrets].sort((a, b) => b.length - a.length)) {
+-    for (const spelling of new Set([value, escaped(value), encodeURIComponent(value), JSON.stringify(value).slice(1, -1)])) {
+-      html = html.split(spelling).join('&lt;REDACTED&gt;');
++  const mask = text => {
++    for (const value of [...secrets].sort((a, b) => b.length - a.length)) {
++      for (const spelling of new Set([value, escaped(value), encodeURIComponent(value), JSON.stringify(value).slice(1, -1)])) {
++        text = text.split(spelling).join('&lt;REDACTED&gt;');
++      }
+     }
+-  }
+-  for (const value of [...identities].sort((a, b) => b.length - a.length)) {
+-    for (const spelling of new Set([value, escaped(value)])) html = html.replace(identityPattern(spelling), '&lt;USER&gt;');
+-  }
+-  html = html.replace(/^\s*(?:set-cookie|cookie|authorization)\s*:[^\r\n]*/gim, '&lt;REDACTED&gt;')
+-    .replace(/JSESSIONID_8810\s*=/gi, 'redacted_session:');
+-  if ([...secrets].some((value) => value && decode(html).includes(value))
+-    || [...identities].some((value) => identityPattern(value).test(decode(html)))
+-    || /JSESSIONID_8810\s*=/i.test(html)) throw new Error('QB_EVIDENCE_REDACTION_FAILED');
+-  return html;
++    return text.replace(/^\s*(?:set-cookie|cookie|authorization)\s*:[^\r\n]*/gim, '&lt;REDACTED&gt;')
++      .replace(/JSESSIONID_8810\s*=/gi, 'redacted_session:');
++  };
++  html = mask(html);
++  const scrub = value => typeof value === 'string' ? mask(value)
++    : Array.isArray(value) ? value.map(scrub)
++      : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([k, v]) => [mask(k), scrub(v)])) : value;
++  const diagnostic = scrub(input.diagnostic ?? null);
++  const strings = [html, JSON.stringify(diagnostic)];
++  if (strings.some(text => [...secrets].some(value => value && decode(text).includes(value))
++    || /JSESSIONID_8810\s*=/i.test(text))) throw new Error('QB_EVIDENCE_REDACTION_FAILED');
++  const outside = [...identities].reduce((n, value) => n + [...decode(html).matchAll(identityPattern(value))].length, 0);
++  return input.bundle ? { html_redacted: html, facts: diagnostic, identity_outside_count: outside } : html;
+ }
+ 
+ export function checkRedacted(html) {
+@@ -297,10 +313,8 @@ export function checkRedacted(html) {
+   return html;
+ }
+ 
+-export function formDOM() {
+-  const forms = [...document.forms].filter((form) => /IFormSubmitListener-form/.test(form.action));
+-  if (forms.length !== 1) return null;
+-  const form = forms[0];
++export function formDOM(doc = document) {
++  const forms = [...doc.forms].map(form => {
+   const rows = [...form.querySelectorAll('.form-label')].map((label) => {
+     const row = label.closest('tr');
+     const box = row?.querySelector('td.value');
+@@ -319,14 +333,18 @@ export function formDOM() {
+     }));
+     return { label: label.textContent, viewers: viewers.map((v) => v.textContent), controls, buttons };
+   });
+-  return { title: document.title, body_text: document.body.textContent,
+-    action: form.action, rows, base: document.baseURI };
++    return { action: form.getAttribute('action'), rows };
++  });
++  return { title: doc.title, body_text: doc.body.textContent, forms, base: doc.baseURI };
+ }
+ 
+ // Run only in Node, never serialized into the page's main world.
+ export function normalizeFormDOM(raw) {
+   if (raw === null) return null;
+-  const { body_text, ...form } = raw;
++  const { body_text, forms, ...meta } = raw;
++  const selected = forms.filter(form => /IFormSubmitListener-form/.test(form.action));
++  if (selected.length !== 1) return null;
++  const form = { ...meta, ...selected[0], action: new URL(selected[0].action, raw.base).href };
+   return { ...form, heading: body_text.includes('Specify Build Options'),
+     rows: form.rows.map(row => row === null ? null : ({ ...row,
+       label: row.label.trim(), viewers: row.viewers.map(value => value.trim()),
+@@ -350,27 +368,28 @@ export function callbackURL(code, base) {
+ }
+ 
+ export function validateForm(form, projectName) {
+-  if (!form?.heading || !Array.isArray(form.rows) || form.rows.some((row) => !row)) throw new AgentError('QB_FORM_CHANGED');
++  const fail = rule => { const error = new AgentError('QB_FORM_CHANGED'); error.rule = rule; throw error; };
++  if (!form?.heading || !Array.isArray(form.rows) || form.rows.some((row) => !row)) fail('form_heading_or_rows');
+   const labels = form.rows.map((row) => row.label);
+   if (new Set(labels).size !== FIELDS.length + 1
+-    || labels.some((name) => ![...FIELDS, 'PROJECT_NAME'].includes(name))) throw new AgentError('QB_FORM_CHANGED');
++    || labels.some((name) => ![...FIELDS, 'PROJECT_NAME'].includes(name))) fail('label_set');
+   const grouped = Object.fromEntries([...new Set(labels)].map((name) => [name, form.rows.filter((row) => row.label === name)]));
+-  if (Object.values(grouped).some((rows) => rows.length !== 1)) throw new AgentError('QB_FORM_CHANGED');
++  if (Object.values(grouped).some((rows) => rows.length !== 1)) fail('duplicate_labels');
+   for (const row of form.rows) {
+     if (row.label === 'PROJECT_NAME') {
+-      if (row.controls.length || row.viewers.length !== 1 || row.viewers[0] !== projectName) throw new AgentError('QB_FORM_CHANGED');
++      if (row.controls.length || row.viewers.length !== 1 || row.viewers[0] !== projectName) fail('project_name');
+       continue;
+     }
+     if (PALETTES.has(row.label)) {
+       if (row.controls.length !== 3 || canonical(row.controls.map((c) => c.role).sort())
+-        !== canonical(['choices', 'recorder', 'selection'])) throw new AgentError('QB_FORM_CHANGED');
+-    } else if (row.controls.length !== 1) throw new AgentError('QB_FORM_CHANGED');
++        !== canonical(['choices', 'recorder', 'selection'])) fail('palette_roles');
++    } else if (row.controls.length !== 1) fail('control_count');
+     const callback = PALETTES.has(row.label) ? row.controls.find((c) => c.role === 'recorder') : row.controls[0];
+-    callbackURL(callback.callback, form.base);
++    try { callbackURL(callback.callback, form.base); } catch { fail('callback_shape'); }
+   }
+   let action;
+-  try { action = new URL(form.action); } catch { throw new AgentError('QB_FORM_CHANGED'); }
+-  if (action.origin !== ORIGIN || action.pathname !== '/wicket/page' || !ACTION.test(action.search.slice(1))) throw new AgentError('QB_FORM_CHANGED');
++  try { action = new URL(form.action); } catch { fail('action_shape'); }
++  if (action.origin !== ORIGIN || action.pathname !== '/wicket/page' || !ACTION.test(action.search.slice(1))) fail('action_shape');
+   return Object.fromEntries(form.rows.map((row) => [row.label, row]));
+ }
+ 
+@@ -405,9 +424,65 @@ export function readback(form, projectName) {
+   return values;
+ }
+ 
++export function buildDOM(doc = document) {
++  return {
++    labels: [...doc.querySelectorAll('.nav-link')].map(label => label.textContent),
++    summaries: [...doc.querySelectorAll('.build-summary')].map(box => ({
++      heading: box.querySelector('.box-head')?.textContent,
++      tables: [...box.querySelectorAll('table')].map(table => ({
++        columns: [...table.querySelectorAll('thead th')].map(cell => cell.textContent),
++        cells: [...(table.tBodies[0]?.rows[0]?.cells ?? [])].map(cell => cell.textContent),
++      })),
++    })),
++  };
++}
++
++export function checkedBuildId(raw, path) {
++  const labels = raw.labels.map(text => text.trim().match(/^Build \((?:id|Id|ID):(\d+)\)$/)).filter(Boolean);
++  if (labels.length !== 1) return null;
++  const id = labels[0][1];
++  if (!/^\/build\/\d+\/overview$/.test(path)) return id;
++  const summaries = raw.summaries.filter(box => box.heading?.trim() === 'Summary');
++  if (summaries.length !== 1 || summaries[0].tables.length !== 1) return null;
++  const table = summaries[0].tables[0];
++  const indices = table.columns.flatMap((text, index) => text.trim() === 'Id' ? [index] : []);
++  return indices.length === 1 && table.cells[indices[0]]?.trim() === id ? id : null;
++}
++
++export function decodeBody(bytes, contentType) {
++  try {
++    const charset = contentType?.match(/(?:^|;)\s*charset\s*=\s*(?:"([^"]+)"|'([^']+)'|([^;\s]+))/i);
++    return new TextDecoder(charset ? charset[1] ?? charset[2] ?? charset[3] : 'utf-8', { fatal: true }).decode(bytes);
++  } catch { throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE'); }
++}
++
++// No context ID survives a call: every operation establishes its world in the
++// currently committed document. Navigation races therefore fail closed.
++export class TrustedPage {
++  constructor(context, page) { this.context = context; this.page = page; }
++  async run(fn, argument) {
++    let session;
++    try {
++      session = await this.context.newCDPSession(this.page);
++      const { frameTree } = await session.send('Page.getFrameTree');
++      const { executionContextId } = await session.send('Page.createIsolatedWorld', {
++        frameId: frameTree.frame.id, worldName: 'p5q-trusted-dom',
++      });
++      const { result, exceptionDetails } = await session.send('Runtime.evaluate', {
++        contextId: executionContextId, returnByValue: true, awaitPromise: true,
++        expression: `(() => { ${formDOM.toString()}; ${buildDOM.toString()}; ${redactDOM.toString()}; return (${fn.toString()})(${JSON.stringify(argument) ?? 'undefined'}); })()`,
++      });
++      if (exceptionDetails) throw new Error('trusted execution failed');
++      return result.value;
++    } catch { throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE'); }
++    finally { if (session) await session.detach().catch(() => {}); }
++  }
++}
++
+ export class Agent {
+   constructor(runtime) {
+     this.runtime = runtime; this.page = runtime.page; this.policy = runtime.policy;
++    this.trusted = new TrustedPage(runtime.context, this.page);
+     this.state = 'new'; this.projects = new Map(); this.currentProject = null;
+   }
+   async command(input) {
+@@ -418,6 +493,7 @@ export class Agent {
+     if (!allowed[command]?.includes(this.state)) return { ok: false, error: 'AGENT_PHASE' };
+     if (this.runtime.failure) return { ok: false, error: this.runtime.failure };
+     this.policy.phase = command;
++    this.readSource = null;
+     try {
+       let result;
+       if (command === 'login') {
+@@ -448,6 +524,12 @@ export class Agent {
+       }
+       if (command === 'submit' && this.policy.released) return { ok: true, landed: 'unknown', released: true, observed: '<other>', messages: [] };
+       const response = { ok: false, error: error instanceof AgentError ? error.code : 'QB_BROWSER_UNAVAILABLE' };
++      if (command === 'read' && response.error === 'QB_READ_ID_MISMATCH'
++        || ['open_form', 'fill'].includes(command) && response.error === 'QB_FORM_CHANGED') {
++        this.policy.invalidate();
++        try { response.diagnostic = await this.diagnostic(command, response.error); }
++        catch { response.diagnostic_failed = 'diagnostic_failed'; }
++      }
+       if (error instanceof AgentError && error.field) response.field = error.field;
+       if (command === 'submit') response.released = false;
+       return response;
+@@ -460,9 +542,12 @@ export class Agent {
+       await this.page.goto(`${ORIGIN}/signin`, { timeout: timeout * 1000 });
+       while (Date.now() < deadline) {
+         if (this.page.isClosed()) throw new AgentError('QB_LOGIN_ABORTED');
+-        if (new URL(this.page.url()).pathname !== '/signin'
+-          && await this.page.locator('input[type=password]').count() === 0
+-          && await this.page.getByRole('link', { name: 'Sign Out', exact: true }).count() > 0) return {};
++        const facts = await this.trusted.run(() => ({
++          passwords: document.querySelectorAll('input[type=password]').length,
++          links: [...document.querySelectorAll('a')].map(link => link.textContent),
++        }));
++        if (new URL(this.page.url()).pathname !== '/signin' && facts.passwords === 0
++          && facts.links.some(text => text.trim() === 'Sign Out')) return {};
+         await sleep(Math.min(2000, Math.max(0, deadline - Date.now())));
+       }
+     } catch (error) {
+@@ -473,63 +558,78 @@ export class Agent {
+     }
+     await this.runtime.close(); throw new AgentError('QB_LOGIN_TIMEOUT');
+   }
+-  async registerRefresh() {
+-    const sources = await this.page.evaluate(() => [...document.querySelectorAll('script, [onload], [onclick]')]
+-      .map((element) => [element.textContent ?? '', element.getAttribute('onload') ?? '', element.getAttribute('onclick') ?? '']));
+-    const values = sources.flat().flatMap(code =>
+-      [...code.matchAll(/['"]([^'"\s]*IBehaviorListener[^'"\s]*action=ajaxRefresh[^'"\s]*)['"]/g)].map(m => m[1]));
+-    this.policy.refresh = new Set(values.map((value) => new URL(value.replaceAll('&amp;', '&'), this.page.url()).href)
+-      .filter((value) => new URL(value).origin === ORIGIN));
+-  }
+-  async buildId(path) {
+-    const raw = await this.page.evaluate(() => ({
+-      labels: [...document.querySelectorAll('.nav-link')].map(label => label.textContent),
+-      summaries: [...document.querySelectorAll('.build-summary')].map(box => ({
+-        heading: box.querySelector('.box-head')?.textContent,
+-        tables: [...box.querySelectorAll('table')].map(table => ({
+-          columns: [...table.querySelectorAll('thead th')].map(cell => cell.textContent),
+-          cells: [...(table.tBodies[0]?.rows[0]?.cells ?? [])].map(cell => cell.textContent),
+-        })),
+-      })),
+-    }));
+-    const labels = raw.labels.map(text => text.trim().match(/^Build \((?:id|Id|ID):(\d+)\)$/)).filter(Boolean);
+-    if (labels.length !== 1) return null;
+-    const id = labels[0][1];
+-    if (!/^\/build\/\d+\/overview$/.test(path)) return id;
+-    const summaries = raw.summaries.filter(box => box.heading?.trim() === 'Summary');
+-    if (summaries.length !== 1 || summaries[0].tables.length !== 1) return null;
+-    const table = summaries[0].tables[0];
+-    const indices = table.columns.flatMap((text, index) => text.trim() === 'Id' ? [index] : []);
+-    return indices.length === 1 && table.cells[indices[0]]?.trim() === id ? id : null;
++  async buildId(path, html) {
++    const raw = await this.trusted.run(source => buildDOM(source === undefined ? document
++      : new DOMParser().parseFromString(source, 'text/html')), html);
++    return checkedBuildId(raw, path);
+   }
+   async read(path) {
+     if (typeof path !== 'string' || !this.policy.readonly(path)) throw new AgentError('AGENT_PHASE');
+-    this.policy.refresh.clear();
+     const expected = ORIGIN + path;
+     const response = await this.page.goto(expected);
+     if (this.page.url() !== expected || response?.request().redirectedFrom()) throw new AgentError('QB_READ_REDIRECTED');
++    try {
++      this.readSource = decodeBody(await response.body(), await response.headerValue('content-type'));
++    } catch { throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE'); }
+     const id = path.match(/^\/build\/(\d+)/)?.[1];
+-    if (id && await this.buildId(path) !== id) throw new AgentError('QB_READ_ID_MISMATCH');
+-    await this.registerRefresh();
+-    let html;
+-    try { html = await this.page.evaluate(redactDOM); } catch { throw new AgentError('QB_EVIDENCE_REDACTION_FAILED'); }
+-    return { status: response?.status() ?? 0, html_redacted: checkRedacted(html) };
++    if (id && await this.buildId(path, this.readSource) !== id) throw new AgentError('QB_READ_ID_MISMATCH');
++    const bundle = await this.trusted.run(redactDOM, { html: this.readSource, bundle: true });
++    this.runtime.trace.push({ action: 'IDENTITY_OUTSIDE', count: bundle.identity_outside_count });
++    return { status: response.status(), html_redacted: checkRedacted(bundle.html_redacted) };
++  }
++  async snapshot() { return normalizeFormDOM(await this.trusted.run(() => formDOM())); }
++  async diagnostic(command, error) {
++    const html = command === 'read' ? this.readSource
++      : await this.trusted.run(() => document.documentElement.outerHTML);
++    if (typeof html !== 'string') throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE');
++    const raw = await this.trusted.run(source => {
++      const doc = new DOMParser().parseFromString(source, 'text/html');
++      return { form: formDOM(doc), build: buildDOM(doc) };
++    }, html);
++    raw.form.base = this.page.url();
++    const form = normalizeFormDOM(raw.form);
++    const labels = form?.rows.filter(Boolean).map(row => row.label) ?? [];
++    let first = 'build_id';
++    if (command !== 'read') {
++      try { validateForm(form, this.currentProject?.project_name); first = 'field_callback_or_operation'; }
++      catch (failure) { first = failure.rule ?? 'form_structure'; }
++    }
++    const facts = { error, first_failure: first,
++      labels, extra_labels: labels.filter(label => ![...FIELDS, 'PROJECT_NAME'].includes(label)),
++      missing_labels: [...FIELDS, 'PROJECT_NAME'].filter(label => !labels.includes(label)),
++      forms: raw.form.forms.map(f => ({ action: f.action })),
++      rows: (form?.rows ?? []).filter(Boolean).map(row => ({ label: row.label,
++        control_count: row.controls.length, roles: row.controls.map(c => c.role),
++        callbacks: row.controls.filter(c => c.callback).map(c => {
++          let valid = true;
++          try { callbackURL(c.callback, form.base); } catch { valid = false; }
++          return { source: c.callback, valid };
++        }),
++      })),
++      navigation_labels: raw.build.labels,
++      summary_count: raw.build.summaries.filter(s => s.heading?.trim() === 'Summary').length,
++    };
++    const result = await this.trusted.run(redactDOM, { html, diagnostic: facts, bundle: true });
++    this.runtime.trace.push({ action: 'IDENTITY_OUTSIDE', count: result.identity_outside_count });
++    return { html_redacted: checkRedacted(result.html_redacted), facts: result.facts };
+   }
+-  async snapshot() { return normalizeFormDOM(await this.page.evaluate(formDOM)); }
+   async openForm(id) {
+     const project = this.projects.get(id);
+     if (!project) throw new AgentError('QB_FORM_CHANGED');
+     this.currentProject = project;
+-    this.policy.refresh.clear();
+     await this.page.goto(`${ORIGIN}/overview/${id}`);
+     const expected = `QuickBuild - ${project.configuration_path}`;
+-    const title = await this.page.title();
++    const facts = await this.trusted.run(() => ({ title: document.title,
++      buttons: [...document.querySelectorAll('[title="Run the configuration"]')]
++        .map(button => ({ tag: button.tagName, onclick: button.getAttribute('onclick') })),
++    }));
++    const title = facts.title;
+     if (title !== expected && !title.startsWith(`${expected} - `)) throw new AgentError('QB_FORM_CHANGED');
+     const run = this.page.locator('button[title="Run the configuration"]');
+-    if (await run.count() !== 1 || await this.page.locator('[title="Run the configuration"]').count() !== 1) {
++    if (facts.buttons.length !== 1 || facts.buttons[0].tag !== 'BUTTON') {
+       throw new AgentError('QB_FORM_CHANGED');
+     }
+-    const onclick = await run.getAttribute('onclick');
++    const onclick = facts.buttons[0].onclick;
+     const match = typeof onclick === 'string' && /^var win = this\.ownerDocument\.defaultView \|\| this\.ownerDocument\.parentWindow; if \(win == window\) \{ window\.location\.href='((?:\.\.\/)*wicket\/page\?\d+-\d+\.ILinkListener-run)'; \} ;return false$/.exec(onclick);
+     if (!match || match[0] !== onclick) throw new AgentError('QB_FORM_CHANGED');
+     const url = new URL(match[1], this.page.url());
+@@ -537,9 +637,14 @@ export class Agent {
+       || !/^\d+-\d+\.ILinkListener-run$/.test(url.search.slice(1))) throw new AgentError('QB_FORM_CHANGED');
+     this.policy.runUrl = url.href;
+     await run.click({ timeout: 30000 });
+-    await this.page.getByText('Specify Build Options', { exact: true }).waitFor({ timeout: 30000 });
+-    validateForm(await this.snapshot(), project.project_name);
+-    await this.registerRefresh();
++    const deadline = Date.now() + 30000;
++    let form;
++    do {
++      form = await this.snapshot();
++      if (form?.heading) break;
++      await sleep(50);
++    } while (Date.now() < deadline);
++    validateForm(form, project.project_name);
+     return { released: false };
+   }
+   fieldRow(name) {
+@@ -571,9 +676,6 @@ export class Agent {
+           const selected = control.options.filter((option) => option.selected);
+           if (!snapshotCount || selected.length !== 1 || !selected[0].text) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);
+           value = selected[0].text;
+-          this.policy.endField();
+-          expected[`${name}/value`] = value;
+-          continue;
+         }
+       }
+       if (PALETTES.has(name)) {
+@@ -585,7 +687,8 @@ export class Agent {
+             await box.locator('button.remove').click();
+           }
+           if (value.length) {
+-            const choices = (await box.locator('select[name$=":choices"] option').allTextContents()).map(text => text.trim());
++            const current = validateForm(await this.snapshot(), this.currentProject.project_name)[name];
++            const choices = current.controls.find(c => c.role === 'choices').options.map(o => o.text);
+             if (value.some((item) => !choices.includes(item))) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);
+             await box.locator('select[name$=":choices"]').selectOption(value.map((label) => ({ label })));
+             await box.locator('button.add').click();
+@@ -594,26 +697,33 @@ export class Agent {
+       } else {
+         const element = box.locator('input, select, textarea');
+         if (control.tag === 'SELECT') {
+-          if (!control.options.some((option) => option.text === value)) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);
+-          await element.selectOption({ label: value });
++          const option = control.options.find(option => option.text === value);
++          if (!option) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);
++          if (option.selected) await element.dispatchEvent('change');
++          else await element.selectOption({ value: option.value });
+         } else if (control.type === 'checkbox') {
+           if (typeof value !== 'boolean') throw new AgentError('QB_FORM_READBACK_MISMATCH', name);
+           if (control.checked === value) await element.dispatchEvent('change');
+-          else await element.setChecked(value);
++          else if (value) await element.check();
++          else await element.uncheck();
+         } else {
+           if (typeof value !== 'string') throw new AgentError('QB_FORM_READBACK_MISMATCH', name);
+-          await element.fill(value); await element.dispatchEvent('change');
++          if (control.value === value) await element.dispatchEvent('change');
++          else { await element.fill(value); await element.blur(); }
+         }
+       }
+       const deadline = Date.now() + 30000;
+       while (!this.policy.fieldFinished || Date.now() - this.policy.lastActivity < 1000) {
++        this.policy.assertField();
+         if (Date.now() > deadline || this.runtime.failure) throw new AgentError('QB_FORM_CHANGED');
+         await sleep(50);
+       }
+-      this.policy.endField();
++      this.policy.assertField();
+       expected[`${name}/${PALETTES.has(name) ? 'selection' : 'value'}`] = value;
+     }
+     const actual = readback(await this.snapshot(), this.currentProject.project_name);
++    this.policy.assertField();
++    this.policy.endField();
+     if (canonical(actual) !== canonical(expected)) throw new AgentError('QB_FORM_READBACK_MISMATCH');
+     this.expected = expected;
+     return { readback: actual, fingerprint: fingerprint(actual), snapshot_option_count: snapshotCount, released: false };
+@@ -641,7 +751,7 @@ export class Agent {
+   }
+ }
+ 
+-export async function createRuntime(modulePath, chromiumPath, testOptions = {}) {
++async function launchRuntime(modulePath, chromiumPath, testOptions = {}) {
+   const profile = await mkdtemp('/dev/shm/p5q-browser-');
+   process.env.TMPDIR = profile;
+   const env = { ...process.env, TMPDIR: profile };
+@@ -682,6 +792,39 @@ export async function createRuntime(modulePath, chromiumPath, testOptions = {})
+   } catch { await runtime.close(); throw new AgentError('QB_BROWSER_UNAVAILABLE'); }
+ }
+ 
++export async function startupSelfTest(runtime, variant) {
++  const increment = variant === 'none' ? 0 : variant === 'double' ? 2 : 1;
++  await runtime.page.setContent(`<select id="s"><option>a</option><option>b</option></select>
++    <input id="c" type="checkbox"><textarea id="t"></textarea><script>
++    for (const id of ['s','c','t']) document.getElementById(id).onchange = function () {
++      this.dataset.count = +(this.dataset.count || 0) + ${increment};
++    };</script>`);
++  await runtime.page.locator('#s').selectOption({ label: 'b' });
++  await runtime.page.locator('#c').check();
++  await runtime.page.locator('#t').fill('self-test');
++  await runtime.page.locator('#t').blur();
++  const counts = await new TrustedPage(runtime.context, runtime.page).run(() =>
++    [...document.querySelectorAll('#s,#c,#t')].map(e => Number(e.dataset.count ?? 0)));
++  if (canonical(counts) !== '[1,1,1]') throw new AgentError('QB_BROWSER_UNAVAILABLE');
++  return counts;
++}
++
++export async function createRuntime(modulePath, chromiumPath, testOptions = {}) {
++  // Retire the entire guarded synthetic browser before creating the working one;
++  // this needs no exception to the new-page-target fail-closed rule.
++  const selfTest = await launchRuntime(modulePath, chromiumPath, testOptions);
++  let counts;
++  try { counts = await startupSelfTest(selfTest, testOptions.selfTestVariant); }
++  catch {
++    process.stderr.write('浏览器框架的设值行为与设计不符,升级 Playwright 后须重新验证\n');
++    throw new AgentError('QB_BROWSER_UNAVAILABLE');
++  } finally { await selfTest.close(); }
++  const version = createRequire(pathToFileURL(modulePath))('./package.json').version;
++  const runtime = await launchRuntime(modulePath, chromiumPath, testOptions);
++  runtime.trace.push({ action: 'STARTUP_SELF_TEST', playwright_version: version, counts });
++  return runtime;
++}
++
+ export function installFailureHandlers(finish) {
+   const fatal = () => {
+     process.stdout.write('{"ok":false,"error":"QB_BROWSER_UNAVAILABLE"}\n');
+diff --git a/tizen-ci-triage/scripts/ci_triage/qb_redact.py b/tizen-ci-triage/scripts/ci_triage/qb_redact.py
+index 048e7c4..d971a84 100644
+--- a/tizen-ci-triage/scripts/ci_triage/qb_redact.py
++++ b/tizen-ci-triage/scripts/ci_triage/qb_redact.py
+@@ -43,7 +43,7 @@ class _UserCell:
+ class _UserTable:
+     cells: list[_UserCell] = field(default_factory=list)
+     active: _UserCell | None = None
+-    user_column: int | None = None
++    user_columns: list[int] = field(default_factory=list)
+ 
+ 
+ class _UserFields(HTMLParser):
+@@ -123,17 +123,21 @@ class _UserFields(HTMLParser):
+                 table.active = None
+             if tag == "tr":
+                 labels = [" ".join("".join(cell.text).split()) for cell in table.cells]
+-                if "Triggered By" in labels:
++                if any(cell.tag == "th" for cell in table.cells):
++                    table.user_columns = [
++                        index for index, label in enumerate(labels)
++                        if label in {"Triggered By", "Requested By"}
++                    ]
++                elif "Triggered By" in labels:
+                     index = labels.index("Triggered By")
+-                    if table.cells[index].tag == "th":
+-                        table.user_column = index
+-                    elif index + 1 < len(table.cells):
++                    if index + 1 < len(table.cells):
+                         cell = table.cells[index + 1]
+                         self.spans.append((cell.start, cell.end))
+-                elif table.user_column is not None and table.user_column < len(table.cells):
+-                    cell = table.cells[table.user_column]
+-                    if cell.tag == "td":
+-                        self.spans.append((cell.start, cell.end))
++                else:
++                    for column in table.user_columns:
++                        if column < len(table.cells) and table.cells[column].tag == "td":
++                            cell = table.cells[column]
++                            self.spans.append((cell.start, cell.end))
+             if tag == "table":
+                 self.tables.pop()
+         if tag in self.tags:
+@@ -198,6 +202,7 @@ class PageRedactor:
+     def __init__(self) -> None:
+         self.secrets: set[str] = set()
+         self.identities: set[str] = set()
++        self.trace: list[dict[str, int]] = []
+ 
+     def _remember(self, value: str) -> None:
+         if value and unescape(value) not in {"<REDACTED>", "<USER>"}:
+@@ -230,12 +235,13 @@ class PageRedactor:
+             text = text[:start] + tag + text[start + len(raw_tag) :]
+         for value in sorted(self.secrets, key=len, reverse=True):
+             text = text.replace(value, MASK)
+-        for identity in sorted(self.identities, key=len, reverse=True):
+-            for spelling in {identity, escape(identity)}:
+-                text = _identity_pattern(spelling).sub("&lt;USER&gt;", text)
+         # The post-write contract excludes the cookie assignment itself, not just its value.
+         text = re.sub(r"(?i)JSESSIONID_8810\s*=", "redacted_session:", text)
+         self.check_bytes(text.encode("utf-8"))
++        self.trace.append({"identity_outside_count": sum(
++            len(_identity_pattern(identity).findall(unescape(text)))
++            for identity in self.identities
++        )})
+         return text
+ 
+     def check_bytes(self, raw: bytes) -> None:
+@@ -248,11 +254,6 @@ class PageRedactor:
+         if (
+             b"jsessionid_8810=" in raw.lower()
+             or any(value in visible for value in self.secrets)
+-            or any(
+-                _identity_pattern(identity).search(content)
+-                for identity in self.identities
+-                for content in (text, decoded)
+-            )
+             or HEADERS.search(text)
+             or fields.invalid_hidden
+             or any(value not in {"", "<REDACTED>"} for value in fields.secrets)
