@@ -196,6 +196,8 @@ def main(
         argv = sys.argv[1:]
     if argv and argv[0] == "qb-trigger":
         return _main_qb_trigger(argv[1:], stdout=stdout, stderr=stderr)
+    if argv and argv[0] == "qb-result-fetch":
+        return _main_qb_result_fetch(argv[1:], stdout=stdout, stderr=stderr)
     if argv and argv[0] == "sandbox-submit":
         return _main_sandbox_submit(argv[1:], stdout=stdout, stderr=stderr)
     if argv and argv[0] == "suppress-policy":
@@ -409,6 +411,26 @@ def _campaign_cli_error_payload(reason: str) -> dict[str, object]:
         "invocations_used": 0,
         "error_code": "INVALID_ARGS",
     }
+
+
+def _main_qb_result_fetch(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
+    from ci_triage.qb_result_fetch import QbResultFetchOptions, empty_result, qb_result_fetch
+
+    parser = _CampaignRepairStepParser(prog="ci_triage qb-result-fetch")
+    parser.add_argument("--request-id")
+    parser.add_argument("--qb-build-id")
+    parser.add_argument("--requests-file", type=Path)
+    parser.add_argument("--accept-snapshot-drift", action="store_true")
+    parser.add_argument("--state-db", type=Path, required=True)
+    parser.add_argument("--state-root", type=Path, required=True)
+    parser.add_argument("--config", type=Path, required=True)
+    try:
+        args = parser.parse_args(argv)
+        code, results = qb_result_fetch(QbResultFetchOptions(**vars(args)), stderr=stderr)
+    except _CampaignCliArgumentError:
+        code, results = 2, [dict(empty_result(), error_code="INVALID_ARGS")]
+    print(json.dumps(results, ensure_ascii=False, sort_keys=True), file=stdout)
+    return code
 
 
 def _main_qb_trigger(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:

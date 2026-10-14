@@ -380,6 +380,8 @@ test('C2c isolated/inert read and diagnosis (synthetic loopback HTTPS only)', { 
       tape.countParses = false;
       assert.equal(baselineRead.ok, true);
       assert.equal(baselineRead.status, 200);
+      assert.equal(Number.isInteger(baselineRead.outside_identity_count), true);
+      assert.ok(baselineRead.outside_identity_count >= 0);
       assert.match(baselineRead.html_redacted, /<td id="status">Failed<\/td>/);
       assertScrubbed(baselineRead);
       assert.match(baselineRead.html_redacted, /Welcome! &lt;USER&gt;/);

@@ -60,8 +60,9 @@ def variables(target, marker, changes=None):
 
 
 class Campaign:
-    def __init__(self, root, monkeypatch):
+    def __init__(self, root, monkeypatch, object_format="sha1"):
         self.root, self.mp = root, monkeypatch
+        self.object_format = object_format
         self.db = StateDatabase(root / "state.db")
         self.remotes = root / "remotes"
         self.remotes.mkdir()
@@ -144,7 +145,7 @@ class Campaign:
     def add(self, key, branch="tizen_base"):
         remote = self.remotes / key
         remote.mkdir()
-        git(remote, "init", "--bare", "-q")
+        git(remote, "init", "--bare", "-q", "--object-format=" + self.object_format)
         git(remote, "config", "user.name", "Test")
         git(remote, "config", "user.email", "test@example.com")
         tree = git(remote, "mktree", input="")
@@ -708,6 +709,31 @@ def test_transport_isolation(c):
             assert item in args
         assert env["GIT_CONFIG_NOSYSTEM"] == "1" and env["GIT_CONFIG_GLOBAL"] == "/dev/null"
     assert not (main.parent / ".transport").exists()
+
+
+def test_sha256_remote_residual(tmp_path, monkeypatch):
+    campaign = Campaign(tmp_path, monkeypatch, object_format="sha256")
+    code, rows = campaign.run()
+    if code == 0:
+        assert rows[0]["action"] == "submitted_bound"
+        assert rows[0]["sbs_target"] == "u1@" + campaign.units["u1"]["sha"]
+        outcome = "SHA_MATCHED"
+    else:
+        assert (code, rows[0]["error_code"]) == (4, "REJECTED_SANDBOX_NOT_BOUND")
+        assert campaign.sql("SELECT * FROM campaign_qb_requests") == []
+        outcome = "REJECTED_SANDBOX_NOT_BOUND"
+    calls = [args for args, _ in campaign.calls if args[0] == "git"]
+    assert any("ls-remote" in args for args in calls)
+    for args in calls:
+        assert "--show-object-format" not in args
+        assert not any(arg.startswith("--object-format") for arg in args)
+        for index, arg in enumerate(args):
+            if arg == "-C":
+                assert Path(args[index + 1]).name == ".transport"
+            if arg.startswith("--git-dir="):
+                assert Path(arg.split("=", 1)[1]).name == ".transport"
+    assert not (campaign.root / "ws" / trigger._unit_hash("u1") / ".transport").exists()
+    print(json.dumps(dict(sha256_remote_outcome=outcome, git_argv=calls), sort_keys=True))
 
 
 def test_wrong_remote_sha_after_fill(c):

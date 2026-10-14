@@ -681,7 +681,8 @@ export class Agent {
     const redacted = result.redacted;
     checkRedacted(redacted.html_redacted);
     this.runtime.trace.push({ action: 'IDENTITY_OUTSIDE_REGISTERED', count: redacted.outside_identity_count });
-    return { status: response.status(), html_redacted: redacted.html_redacted };
+    return { status: response.status(), html_redacted: redacted.html_redacted,
+      outside_identity_count: redacted.outside_identity_count };
   }
   async snapshot() { return normalizeFormDOM(await this.trusted.run(formDOM)); }
   async openForm(id) {

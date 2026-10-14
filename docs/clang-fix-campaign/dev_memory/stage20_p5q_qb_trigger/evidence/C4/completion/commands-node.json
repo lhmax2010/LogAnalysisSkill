@@ -1,0 +1,17 @@
+[
+  {
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-v",
+      "-s",
+      "tests/unit/test_qb_browser_node.py",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C4/completion/node-gates.xml"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "seconds": 200.143,
+    "log": "node-gates.log"
+  }
+]

@@ -1,5 +1,9 @@
 # C4 Source Format Preflight
 
+OBSOLETE: P5Q-C4-02 (progress section 33) withdrew source-format alignment.
+This historical intentional-red probe is no longer an acceptance criterion.
+Its original script and results remain unchanged for the stop-report record.
+
 Baseline: `3ef542a985712c340c333addedde092d818cc8b7`.
 Authority SHA256:
 `f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`.

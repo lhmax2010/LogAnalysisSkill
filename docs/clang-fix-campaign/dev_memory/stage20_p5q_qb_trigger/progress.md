@@ -1,11 +1,12 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_STOPPED**。
-C4本轮基线3ef542a;开工核对及P5Q-C4-01停止报告见§32。
-C3源对象格式遗留尚未修复,C4主体未实施;不进入C5。
+日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE**。
+C4最新裁定与执行见§33;§32停点已由P5Q-C4-02关闭。
+C4本轮基线ec3be74;源格式对齐要求已撤回,旧探针作废,实现与验收见§33。
+C4本轮不访问真实QuickBuild/Gerrit,不弹登录窗口,不进入C5。
 C3本轮基线7f3c60e;实施与验收见§31。§29的C3-01由C3-02关闭,
 §30的C3-03由C3-04关闭。以下“不进入C3”与STOPPED为先前轮次的历史记录。
-本轮仅C3,不进入C4;C5/C6真机挂账仍开放。
+上述C3边界为历史记录;C5/C6真机挂账仍开放。
 最新权威改为v1.5-FROZEN,冻结登记与C2c执行见§27;以下v1.2及R1待决状态均为历史记录。
 §27.3历史停止已由§28的C2C-03关闭;本轮C2c执行见§28。最近真机执行见§26:生产2ee8ab6、取证19792bb已推送;新“开始”后完成live-12,
 五个构建页/配置通过,Full→Partial→Full联动成功,release0。以下停点均为历史事实。
@@ -3365,7 +3366,7 @@ P5Q-C2C-03、P5Q-C3-02、P5Q-C3-04继续有效,C5/C6挂账未关闭。
 快照漂移、辅助step_status、证据与原子结果发布;离线假代理矩阵与第9.5门禁。
 在第一项规格核对即发现下述冲突,未将候选方案写入生产代码。
 
-### 32.2 P5Q-C4-01(OPEN)
+### 32.2 P5Q-C4-01(已由 P5Q-C4-02 裁定关闭)
 
 **原文位置与冲突**:
 
@@ -3412,3 +3413,90 @@ Policy、installGuards、冻结稿或design.md。本次只提交停止报告、�
 完整C4 pytest/mypy/Node/lint-imports门禁未执行,不沿用C3数字当作本轮验收。
 证据脚本Ruff、设计检查器结果见证据索引。未访问真实QuickBuild/Gerrit,
 未弹登录窗口,没有Accept操作;不进入C5。无关既有改动与草稿保持原样。
+
+## 33. 实施裁定 P5Q-C4-02:撤回传输仓库格式对齐
+
+### 33.1 裁定原文
+
+1. 撤回上一轮任务第一步"qb-trigger 传输仓库按源仓库对象格式选择"的要求。qb_trigger.py 的 _remote_check 保持 C3 的写法:用默认格式新建一次性 bare 传输仓库,只做 ls-remote,用后删除。冻结稿第 9.1 节"没有任何 git 命令以主副本为 -C/--git-dir"的全称禁令不变,不增加任何例外。
+2. 理由:P5 对齐格式,是因为它要借源仓库的对象做推送;qb-trigger 的传输仓库只做 ls-remote,不需要对象,与源仓库格式无关。为一个用不到的对齐,在隔离禁令上开例外,得不偿失。
+3. 已接受残余:远端仓库若为 sha256,ls-remote 可能报错或得不到匹配,结果一律为 REJECTED_SANDBOX_NOT_BOUND,不会误判绑定。Tizen Gerrit 为 sha1。
+4. 补一例坐实残余:远端为 sha256 本地裸仓库时,qb-trigger 的结果只能是"sha 相符则通过",或 REJECTED_SANDBOX_NOT_BOUND,不得出现其它结果;并记录实测走的是哪一种。该用例中的全部 git argv 仍须满足第 9.1 节的全称禁令。
+5. 第 32 节的规格探针按本裁定改为期望"不查询源仓库格式",或标注为已作废,二选一并在 progress.md 说明。
+
+### 33.2 执行计划与边界
+
+基线ec3be74;已读§32,冻结稿哈希核对一致,仍为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`。
+选择把§32旧探针标为已作废,保留原始脚本/日志作为历史停点证据,不再作为验收。
+_remote_check不改;先补残余实测,再实现第5节入口/锁、父子页面核对、
+快照与辅助页分类、证据/结果原子发布和事务重查,按第9.1/9.5节验收。
+不改Policy/installGuards,不访问真实QuickBuild/Gerrit,不弹窗,不进入C5。
+C2C-03/C3-02/C3-04仍有效;C5/C6挂账保持开放。无关工作区改动不处理。
+
+### 33.3 C4 实现与局部接口接线
+
+- qb_trigger._remote_check保持原字节,不查源格式、不取源对象。新增本地sha256
+  裸库用例,本机实测SHA_MATCHED;全部git argv只以.transport为仓库上下文,
+  无主副本-C/--git-dir,无object-format查询,无push,结束清理传输目录。
+- qb-result-fetch入口新增三种单项引用与批量引用;漂移开关限单request。
+  先只读定位unit锁,随后入口校验至最后落库均持.sandbox_submit.lock;
+  同次调用一个代理/一次登录,每项独立返回;网络不占数据库事务。
+- qb_result_html只解析代理返回的脱敏HTML,stdlib HTMLParser构造节点树;
+  live-12的01-05作为离线模板。配置URL只用请求地址,忽略base元素。
+  父overview与variables都读取并核对后才能绑定/决定pending。
+  子目标行、配置、FAIL_FAST、三架构、快照均按冻结规则;不推断服务端行为。
+- 手工绑定、非终态、RESULT使用既有按连接原语,各自一个BEGIN IMMEDIATE;
+  事务内重查request/绑定/目标,状态按6.3迁移。结果文件先fsync/rename/
+  fsync父目录后写库;重查或写库失败删除本轮文件。终态三分支保留旧事件/文件。
+- step_status只在FAIL/CANCELLED/TIMEOUT读取。driver在既有映射码之外保留
+  agent_code,使ID不符/重定向可降为null,可信环境失效/代理异常不可吞掉。
+  driver原映射与submit语义不变。结构错误诊断照常自检归档。
+- Agent.read只把已有outside_identity_count随成功应答返回;不增加读取/请求,
+  不碰Policy/installGuards。Python校验非负整数后写trace;业务HTML仍写前/写后
+  自检。代理内身份计数算法、qb_redact不改。
+- 第5.3要求的漂移/未取证格式处置指引放stdout每项message并同文写trace,
+  其它情况为null。此接线沿用C3消息承载方式,不改错误码或准入判据。
+
+逐项实现、§5.3全部负例及§9.1分组见
+[completion/README.md](evidence/C4/completion/README.md),精确nodeid/源码行由
+audit_completion.py从实跑JUnit与AST生成,不手填枚举数字。
+开发中修正两处夹具设置:profile参数使用既有frozen_snapshot;状态序号使用
+log_id。绑定重查负例改为带外SQL损坏,因为公共API本来就拒绝改绑;不改公共约束。
+
+### 33.4 最终验收与交付边界
+
+证据目录`evidence/C4/completion/`。每条命令、退出码与耗时写入commands-*.json;
+pytest/focused/Node的完整逐用例日志与JUnit均入档。audit.json机械统计:
+
+| 验收 | 实测 | 原始证据 |
+|---|---|---|
+| 全量pytest | 2632 passed / 0 failed / 1 skipped,331.87s,exit0 | pytest.log / pytest.xml |
+| 原集合不缩小 | 2439→2633 nodeid,removed=[],新增194 | audit.json collection |
+| C4读取与落库 | 155 passed / 0 failed / 0 skipped | focused.xml / audit.json |
+| C4事务与原语 | 15 passed / 0 failed / 0 skipped | focused.xml / audit.json |
+| C4凭据与脱敏 | 14 passed / 0 failed / 0 skipped | focused.xml / audit.json |
+| Python驱动 | 169 passed(含新增9),无失败/跳过 | focused.xml |
+| sha256远端残余 | 1 passed,SHA_MATCHED,无源格式查询 | focused.log末尾git_argv |
+| 定向合计 | 354 passed / 0 failed / 0 skipped,exit0 | focused.log |
+| Node入口 | 13 passed / 0 failed / 0 skipped,exit0 | node-gates.log / node-gates.xml |
+| Node内部 | 单元163、静态护栏及变异183、可信读取37、字段DOM16、runtime64、配置来源67,全部通过 | node-gates.log |
+| 四组安全 | 从头复跑4/4,loopback-only | node-gates.log:616 |
+| mypy | exit0,116 source files | mypy.log |
+| Ruff完整待提交树 | exit0,All checks passed | ruff.log(含tree及导出路径) |
+| lint-imports | exit0,6 kept / 0 broken | lint-imports.log |
+| design.md检查器 | exit0,0 problem | design-check.log |
+| 机械边界检查 | exit0,冻结稿/design/trigger/redact/state/Policy/installGuards逐字不变 | audit.json |
+
+唯一skip仍为test_case_insensitive_bypass_is_platform_specific。新增194=fetch184+
+driver9+sha256残余1,Node内部断言不重复加入pytest计数。
+四组中的Worker实际走b:browser_fail_closed,攻击HTTP0/WS握手0,临时目录清理;
+不是访问真实QuickBuild。常规网络读取全为假代理,ls-remote只到本地裸库。
+
+最后自查补齐诊断I/O与脱敏失败的区别:前者保留原读取错误,后者删除诊断并报
+QB_EVIDENCE_REDACTION_FAILED;必读/辅助页各一正反,4/4。初版全量2628/1日志
+另存pytest-initial.log,最终以2632/1为准,不是用初版代替最终验收。
+_remote_check及P2-P5生产模块、schema/API无改动;冻结稿哈希仍为§33.2钉值。
+无新的规范矛盾或做不到事项,停止报告新增0。不进入C5,不把C4完成写成P5Q CLOSED。
+原始字节/活动文档比对、成功样本、BUILD_NOTES样本与真实提交继续由C5/C6履行。
+仅纳入本轮实现/测试/证据与进度,未处理用户既有.gitignore改动、文档删除及草稿。

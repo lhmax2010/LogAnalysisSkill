@@ -13,6 +13,33 @@ from ci_triage.qb_redact import EvidenceRedactionError
 ROOT = Path(__file__).resolve().parents[2]
 
 
+@pytest.mark.parametrize(
+    "code", ["QB_READ_ID_MISMATCH", "QB_READ_REDIRECTED", "QB_TRUSTED_CONTEXT_UNAVAILABLE"]
+)
+def test_read_error_retains_agent_category(code):
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(json.dumps(dict(ok=False, error=code)), submit_sent=False, command="read")
+    assert caught.value.code == "QB_FETCH_FAILED"
+    assert caught.value.agent_code == code
+
+
+@pytest.mark.parametrize("value", [True, -1, "1", None, 1.0])
+def test_identity_count_protocol_rejects_invalid(value):
+    with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+        decode_response(
+            json.dumps(dict(ok=True, outside_identity_count=value)),
+            submit_sent=False,
+            command="read",
+        )
+
+
+def test_identity_count_protocol_preserved():
+    response = decode_response(
+        json.dumps(dict(ok=True, outside_identity_count=3)), submit_sent=False, command="read"
+    )
+    assert response["outside_identity_count"] == 3
+
+
 @pytest.mark.parametrize("selected", [[], ["snap-A"], ["snap-A", "snap-B"], None])
 def test_snapshot_state_is_preserved(selected):
     state = {"selected": selected, "option_count": 2}

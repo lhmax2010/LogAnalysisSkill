@@ -21,6 +21,7 @@ class QbBrowserError(RuntimeError):
         diagnostic: dict[str, Any] | None = None,
         diagnostic_failed: bool = False,
         snapshot_state: dict[str, Any] | None = None,
+        agent_code: str | None = None,
     ) -> None:
         super().__init__(code)
         self.code = code
@@ -28,6 +29,7 @@ class QbBrowserError(RuntimeError):
         self.diagnostic = diagnostic
         self.diagnostic_failed = diagnostic_failed
         self.snapshot_state = snapshot_state
+        self.agent_code = agent_code
 
 
 def validate_snapshot_state(value: object) -> dict[str, Any]:
@@ -138,6 +140,11 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
         elif response.get("released") is not False or not isinstance(response.get("error"), str):
             return _unknown()
     if response["ok"]:
+        if "outside_identity_count" in response and (
+            type(response["outside_identity_count"]) is not int
+            or response["outside_identity_count"] < 0
+        ):
+            raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
         if "html_redacted" in response:
             html = response["html_redacted"]
             if not isinstance(html, str):
@@ -188,6 +195,7 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
         diagnostic=diagnostic,
         diagnostic_failed=response.get("diagnostic_failed") is True,
         snapshot_state=snapshot_state,
+        agent_code=code if isinstance(code, str) else None,
     )
 
 

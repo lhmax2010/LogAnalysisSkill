@@ -1,0 +1,31 @@
+[
+  {
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/mypy"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "seconds": 1.214,
+    "log": "mypy.log"
+  },
+  {
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/lint-imports"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "seconds": 0.301,
+    "log": "lint-imports.log"
+  },
+  {
+    "command": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "docs/clang-fix-campaign/tools/check_design_doc.py",
+      "docs/clang-fix-campaign/design.md"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "seconds": 0.153,
+    "log": "design-check.log"
+  }
+]
