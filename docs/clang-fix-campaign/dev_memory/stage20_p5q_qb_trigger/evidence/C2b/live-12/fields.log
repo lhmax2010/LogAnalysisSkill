@@ -1,0 +1,24 @@
+OFFLINE HTMLParser from ef5_rbs_form.DOM; selected fields only, no network
+02.response.html:808 {"name": "BUILD_NOTES", "label": "BUILD NOTES", "value": ""}
+02.response.html:808 {"name": "BUILD_PKG_LIST", "label": "", "line_count": 245, "each_has_at": true}
+02.response.html:808 {"name": "BUILD_PKG_LIST_MODIFY", "label": "Build Package List", "line_count": 4, "each_has_at": true}
+02.response.html:808 {"name": "BUILD_REFERENCE", "label": "", "value": "Live"}
+02.response.html:808 {"name": "BUILD_TYPE", "label": "", "value": "Full"}
+02.response.html:808 {"name": "CHILD_CONFIGURATIONS", "label": "", "value": "standard-armv7l:aarch64:x86_64"}
+02.response.html:808 {"name": "FAIL_FAST", "label": "Immediate Stop With Error", "value": "yes"}
+02.response.html:808 {"name": "PROJECT_BRANCH", "label": "", "value": "tizen_base"}
+02.response.html:808 {"name": "SNAPSHOT_NUM", "label": "", "value": "do not need select"}
+02.response.html:808 {"name": "SNAPSHOT_NUM_URL", "label": "", "value": ""}
+04.response.html:800 {"name": "BUILD_PKG_LIST", "label": "", "line_count": 245, "each_has_at": true}
+04.response.html:800 {"name": "BUILD_REFERENCE", "label": "", "value": "Ref. Snapshot"}
+04.response.html:800 {"name": "CHILD_CONFIGURATIONS", "label": "", "value": "standard-armv7l:aarch64:x86_64"}
+04.response.html:800 {"name": "EACH_GBS_BUILD_STATUS", "label": "", "value": ""}
+04.response.html:800 {"name": "FAIL_FAST", "label": "Immediate Stop With Error", "value": "yes"}
+04.response.html:800 {"name": "SNAPSHOT_NUM_URL", "label": "", "value": "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260924.094908"}
+04.response.html:800 {"name": "TRIGGER_ID", "label": "", "value": "1193467"}
+PARENT_TARGET_LINES=4 CHILD_PACKAGE_LINES=245 CONTAINS_ALL_PARENT_TARGETS=true
+01.response.html:924 Id=1193467
+01.response.html:925 Status=Failed
+03.response.html:827 Id=1193469
+03.response.html:828 Status=Failed
+exit=0

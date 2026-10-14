@@ -1,0 +1,14 @@
+OFFLINE: JSON assertions, SHA256, production PageRedactor.check_bytes; no network
+PAGE 01.response.html /build/1193467/overview sha256=592628026885cbcac5cd0d75ecbd95095512959150c36ddad5c9c7efd2220b8b redaction=PASS
+PAGE 02.response.html /build/1193467/variables sha256=698d40f0b9728f36fa293d53f6625eb696503136cda386f5c768e2200d135842 redaction=PASS
+PAGE 03.response.html /build/1193469/overview sha256=0226f21beb3b0578a03292552d0efd26f6263708e013334cc89cfb04dfd0dfb2 redaction=PASS
+PAGE 04.response.html /build/1193469/variables sha256=f119ee57561bc943796ba644af144a20d690955346a1a84f5495f15a264807aa redaction=PASS
+PAGE 05.response.html /build/1193469/step_status sha256=6a345e80953eba17ab10c0872d6b4acff54e6e1005951bd7e8f06a089a6276ee redaction=PASS
+PAGE 06.response.html /overview/1917 sha256=10a46fd3e1f6cd4e243e0fb12147b93d2ed6d792af54de4c810420359f10165e redaction=PASS
+Traceback (most recent call last):
+  File "<stdin>", line 21, in <module>
+KeyError: 'status'
+exit=1
+The ad-hoc offline verifier incorrectly required HTTP status on form snapshots.
+The six read-page records carry status; the three same-page form snapshots do not.
+Raw evidence unchanged. Corrected offline check is recorded in integrity-final.log.

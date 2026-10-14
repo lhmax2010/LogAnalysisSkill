@@ -1,0 +1,240 @@
+$ .venv/bin/python -m pytest -v -s tests/unit/test_qb_browser_node.py::test_node_agent_unit_matrix tests/unit/test_qb_browser_node.py::test_node_browser_redaction_and_response_interception tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 3 items
+
+tests/unit/test_qb_browser_node.py::test_node_agent_unit_matrix ✔ permanent deny external download (1.522662ms)
+✔ permanent deny http (0.09437ms)
+✔ permanent deny websocket (0.074225ms)
+✔ permanent deny rest (0.068368ms)
+✔ permanent deny log (0.262188ms)
+✔ permanent deny html report (0.143991ms)
+✔ permanent deny artifact (0.065572ms)
+✔ permanent deny promote (0.060649ms)
+✔ permanent deny cancel (0.085823ms)
+✔ permanent deny stop (0.262717ms)
+✔ permanent deny rerun (0.073046ms)
+✔ permanent deny delete (0.061924ms)
+✔ permanent deny abort (0.066155ms)
+✔ permanent deny form cancel (0.068764ms)
+✔ permanent deny 307 (0.053351ms)
+✔ permanent deny 308 (0.044739ms)
+✔ allow idle GET /styles/main.css?v=7 (0.102832ms)
+✔ allow login GET /signin (0.054706ms)
+✔ allow login POST /signin?12-1.IFormSubmitListener-content-form (0.057415ms)
+✔ allow login GET / (0.037136ms)
+✔ allow login GET /overview/0 (0.035001ms)
+✔ allow read GET /build/1 (0.080173ms)
+✔ allow read GET /build/1/overview (0.063939ms)
+✔ allow read GET /build/1/variables (0.046381ms)
+✔ allow read GET /build/1/step_status (0.070991ms)
+✔ allow read GET /overview/1921 (0.0665ms)
+✔ allow open_form GET /wicket/page?50 (0.060429ms)
+✔ allow fill GET /wicket/page?50-3 (0.869534ms)
+✔ registered login landing accepts query "" (0.088777ms)
+✔ registered login landing accepts query "0" (0.05586ms)
+✔ registered login landing accepts query "123" (0.028579ms)
+✔ registered login landing rejects query "v=1" (0.040658ms)
+✔ registered login landing rejects query "1-2" (0.023527ms)
+✔ registered login landing rejects query "1&x=2" (0.021832ms)
+✔ registered login landing rejects query "x=1" (0.021919ms)
+✔ registered login landing rejects query "1\n" (0.021845ms)
+✔ registered login landing rejects query "1.IBehaviorListener-x" (0.022222ms)
+✔ registered login landing boundary post (0.034031ms)
+✔ registered login landing boundary session path (0.022187ms)
+✔ registered login landing boundary suffix (0.019984ms)
+✔ registered login landing boundary unregistered (0.020282ms)
+✔ registered login landing boundary http (0.019403ms)
+✔ registered login landing boundary foreign (0.019036ms)
+✔ registered login landing boundary script (0.021293ms)
+✔ registered login landing boundary ckeditor remains denied (0.021355ms)
+✔ registered login landing boundary font remains denied (0.0358ms)
+✔ registered landing unavailable outside login: read (0.062641ms)
+✔ registered landing unavailable outside login: open_form (0.036912ms)
+✔ registered landing unavailable outside login: fill (0.032502ms)
+✔ registered landing unavailable outside login: submit (0.033854ms)
+✔ registered landing unavailable outside login: idle (0.035403ms)
+✔ registered landing after login redirect does not reopen the POST channels (0.113737ms)
+✔ login channel exact positive /signin (0.057238ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-form" (0.048111ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-formx" (0.033669ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-form&x=1" (0.029834ms)
+✔ login channel query rejected /signin "0-.IFormSubmitListener-content-form" (0.030993ms)
+✔ login channel query rejected /signin "0-1IFormSubmitListener-content-form" (0.025587ms)
+✔ login channel query rejected /signin "0-1.IFormSubmitListener-content-form\n" (0.025283ms)
+✔ login submission GET rejected /signin (0.037982ms)
+✔ login submission rejected in read /signin (0.037581ms)
+✔ login submission rejected in open_form /signin (0.026805ms)
+✔ login submission rejected in fill /signin (0.02593ms)
+✔ login submission rejected in submit /signin (0.038237ms)
+✔ login submission rejected in idle /signin (0.02729ms)
+✔ login channel exact positive /wicket/page (0.027364ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-form" (0.025633ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-formx" (0.025264ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-form&x=1" (0.050613ms)
+✔ login channel query rejected /wicket/page "0-.IFormSubmitListener-content-form" (0.034939ms)
+✔ login channel query rejected /wicket/page "0-1IFormSubmitListener-content-form" (0.03076ms)
+✔ login channel query rejected /wicket/page "0-1.IFormSubmitListener-content-form\n" (0.023882ms)
+✔ login submission GET rejected /wicket/page (0.025189ms)
+✔ login submission rejected in read /wicket/page (0.025868ms)
+✔ login submission rejected in open_form /wicket/page (0.028721ms)
+✔ login submission rejected in fill /wicket/page (0.025496ms)
+✔ login submission rejected in submit /wicket/page (0.024678ms)
+✔ login submission rejected in idle /wicket/page (0.02677ms)
+✔ other login submission paths rejected (0.06462ms)
+✔ login 300 closes both channels, preserving redirect GET rules (0.083193ms)
+✔ login 301 closes both channels, preserving redirect GET rules (0.042512ms)
+✔ login 302 closes both channels, preserving redirect GET rules (0.04017ms)
+✔ login 303 closes both channels, preserving redirect GET rules (0.280559ms)
+✔ login 304 closes both channels, preserving redirect GET rules (0.041858ms)
+✔ login 307 closes both channels, preserving redirect GET rules (0.044803ms)
+✔ login 308 closes both channels, preserving redirect GET rules (0.054197ms)
+✔ login 399 closes both channels, preserving redirect GET rules (0.038788ms)
+✔ five request-stage login releases close permanently; responses do not count (0.107433ms)
+✔ leaving login permanently closes channels even after HTTP200 (0.050624ms)
+✔ rejected requests and unrelated responses do not consume the login allowance (0.061001ms)
+✔ root path shape and static restrictions remain explicit (0.58291ms)
+✔ unregistered denied /build/1?x=1 (0.039665ms)
+✔ unregistered denied /overview/1922 (0.03308ms)
+✔ unregistered denied /styles/x?Listener=x (0.047825ms)
+✔ unregistered denied /styles/x?v=a (0.023894ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-dragDrop (0.02558ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-loadPopup (0.022487ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-unloadPopup (0.028792ms)
+✔ unregistered denied /wicket/page?1-1.IBehaviorListener-quicksearch (0.021655ms)
+✔ stage-specific navigation never escapes phase (0.149233ms)
+✔ exact run and exact refresh registrations, no prefix acceptance (0.093458ms)
+✔ registered refresh allows GET but never POST (0.073584ms)
+✔ one callback per field, old version and other field denied (0.203458ms)
+✔ stop in value not listener component is allowed (0.043942ms)
+✔ C2B-10 callback one-shot accepts "" (0.0597ms)
+✔ C2B-10 callback one-shot accepts "&random=0.1234567890123456" (0.056643ms)
+✔ C2B-10 callback one-shot accepts "&random=0.0" (0.033145ms)
+✔ C2B-10 callback one-shot accepts "&random=0.11111111111111111111" (0.030936ms)
+✔ C2B-10 callback rejects "&random=0.1&random=0.2" without consuming registration (0.049131ms)
+✔ C2B-10 callback rejects "&random=0.1&extra=1" without consuming registration (0.029285ms)
+✔ C2B-10 callback rejects "&extra=1&random=0.1" without consuming registration (0.031975ms)
+✔ C2B-10 callback rejects "&random=" without consuming registration (0.02665ms)
+✔ C2B-10 callback rejects "&random=-0.1" without consuming registration (0.024741ms)
+✔ C2B-10 callback rejects "&random=5e-7" without consuming registration (0.025885ms)
+✔ C2B-10 callback rejects "&random=0.1e-7" without consuming registration (0.025135ms)
+✔ C2B-10 callback rejects "&random=abc" without consuming registration (0.034176ms)
+✔ C2B-10 callback rejects "&random=0.1a" without consuming registration (0.027096ms)
+✔ C2B-10 callback rejects "&random=1.1" without consuming registration (0.035482ms)
+✔ C2B-10 callback rejects "&random=0." without consuming registration (0.029288ms)
+✔ C2B-10 callback rejects "&random=.1" without consuming registration (0.026497ms)
+✔ C2B-10 callback rejects "&random=0.111111111111111111111" without consuming registration (0.025161ms)
+✔ C2B-10 callback rejects "&random=0.1\n" without consuming registration (0.02997ms)
+✔ C2B-10 callback rejects "&random=0%2E1" without consuming registration (0.02475ms)
+✔ C2B-10 callback rejects "&Random=0.1" without consuming registration (0.023108ms)
+✔ C2B-10 random permission cannot escape the current field POST (0.138747ms)
+✔ C2B-10 submit action and refresh never accept appended random (0.095325ms)
+✔ callback shape fails closed (0.545371ms)
+✔ two form instances each have exactly one release, response does not consume it (0.127912ms)
+✔ 302 next hop is judged independently and 307/308 preserve released (0.075498ms)
+✔ protocol adapter forwards only metadata even when request contains credentials (0.410831ms)
+✔ frame ownership is closed and descendants revoked on detach/navigation (0.129129ms)
+✔ form exact label/role closure and project identity (0.564232ms)
+✔ readback records text/checkbox/select/palette and validates recorder (0.862716ms)
+✔ failed fill and fingerprint mismatch invalidate form until new open (0.476848ms)
+✔ delayed submit request is awaited before navigation, never false not_released (151.533472ms)
+✔ no request release by ten-second deadline rejects and never waits for navigation (10000.994782ms)
+✔ released submit navigation timeout is unknown, not definite failure (1.187743ms)
+✔ read checks exact URL and build id and returns actual HTTP status (1.026732ms)
+✔ source guards: no HTTP client, credential extraction, debug switch, or login interactions (1.393898ms)
+✔ every command outside its permitted phase rejects before any method call (0.586716ms)
+✔ read remains available after submit but navigation invalidates the old form (0.224487ms)
+✔ fill reads current callbacks and freezes selected snapshot without setting it (2.058409ms)
+ℹ tests 142
+ℹ suites 0
+ℹ pass 142
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10230.518933
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_browser_redaction_and_response_interception ▶ C2B-09 page trim overrides cannot change Node decisions or identity redaction
+  ✔ form and options, broken=false (22.398521ms)
+  ✔ build identity, broken=false (6.323331ms)
+  ✔ redaction pre/post check, broken=false (39.125583ms)
+  ✔ refresh registration, broken=false (5.479514ms)
+  ✔ form and options, broken=true (20.763509ms)
+  ✔ build identity, broken=true (4.66459ms)
+  ✔ redaction pre/post check, broken=true (38.900604ms)
+  ✔ refresh registration, broken=true (5.353099ms)
+✔ C2B-09 page trim overrides cannot change Node decisions or identity redaction (630.937166ms)
+▶ C2A-04 build identity from archived HTML, with all network denied
+  ✔ archive 01.response.txt /build/1069540/overview (46.832807ms)
+  ✔ archive 03.response.txt /build/1069540/variables (15.16878ms)
+  ✔ archive 04.response.txt /build/1069540/step_status (27.503342ms)
+  ✔ navigation spelling Id (16.055678ms)
+  ✔ navigation spelling ID (11.085897ms)
+  ✔ Summary Id resolved by column, not fixed position (11.531881ms)
+  ✔ reject duplicate-nav (6.767076ms)
+  ✔ reject missing-nav (5.952793ms)
+  ✔ reject wrong-nav (7.07336ms)
+  ✔ reject missing-summary (7.59953ms)
+  ✔ reject duplicate-summary (6.543969ms)
+  ✔ reject missing-id-column (7.135695ms)
+  ✔ reject duplicate-id-column (6.632782ms)
+  ✔ reject different-summary-id (6.54957ms)
+  ✔ reject missing-first-row (11.06931ms)
+  ✔ both overview sources agree but differ from requested id (5.248193ms)
+  ✔ subpage missing navigation (7.495129ms)
+  ✔ subpage duplicate navigation (5.747746ms)
+  ✔ subpage wrong navigation (5.739468ms)
+  ✔ C2B-06 remembered Variables at bare build 1193469 (34.733978ms)
+  ✔ C2B-06 remembered Variables at bare build 1186372 (37.242552ms)
+C2A-04 archived pages: page.setContent only; browser request policy denies every request
+✔ C2A-04 build identity from archived HTML, with all network denied (647.198142ms)
+▶ C2B-06 exact Run button grammar from live-06, with no navigation or click requests
+  ✔ none (62.559874ms)
+  ✔ anchor (15.871083ms)
+  ✔ duplicate (9.184095ms)
+  ✔ extra-statement (10.489147ms)
+  ✔ promote (10.271423ms)
+  ✔ run2 (12.973112ms)
+  ✔ external (13.00734ms)
+  ✔ missing-onclick (12.548448ms)
+  ✔ trailing-newline (12.944502ms)
+✔ C2B-06 exact Run button grammar from live-06, with no navigation or click requests (483.371573ms)
+✔ real browser DOM redaction with identities, hidden values, URL and recorder (374.255869ms)
+▶ C2B-04 shared identity boundary and credential vectors
+  ✔ short-display-name (17.54203ms)
+  ✔ triggered-by-row (4.290856ms)
+  ✔ triggered-by-column (9.694039ms)
+  ✔ multiword (3.997687ms)
+  ✔ literal-regex-and-ascii-boundaries (5.565983ms)
+  ✔ secrets-remain-substrings (5.884803ms)
+✔ C2B-04 shared identity boundary and credential vectors (364.881119ms)
+{"received":["/build/307","/build/308","/build/302","/build/999","/build/301","/favicon.ico"],"forbiddenReceived":0}
+✔ browser Fetch response 307/308 denied, 302 next-hop judged before server receives (808.958298ms)
+{"c2b10":"local-field-callbacks","received":[{"method":"GET","path":"/wicket/page?50","body":""},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.6594223061272129","body":"Partial"},{"method":"POST","path":"/wicket/page?50-2.IBehaviorListener.0-form-build-type&random=0.7183526294519917","body":"Full"}],"form_action_releases":0}
+✔ C2B-10 local form switches Full -> Partial -> Full with Math.random callbacks (408.898354ms)
+ℹ tests 51
+ℹ suites 0
+ℹ pass 51
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3722.417316
+
+PASSED
+tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety {"group":"worker-websocket","ok":true,"requests":[{"group":"worker-websocket","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WEBSOCKET_DENIED"},{"action":"WEBSOCKET_DENIED"},{"action":"WORKER_BLOCKED","type":"worker","paused":true}],"details":{"attackHTTP":0,"websocketHandshakes":0,"branch":"b:browser_fail_closed","workers":[{"action":"WORKER_BLOCKED","type":"shared_worker","paused":true},{"action":"WORKER_BLOCKED","type":"worker","paused":true}]},"observations":{"closeTarget":[{"type":"shared_worker","outcome":"success","success":true},{"type":"worker","outcome":"exception","category":"Error"}],"failure":"QB_BROWSER_UNAVAILABLE","browserClosed":true,"temporaryDirectoryRemoved":true}}
+{"group":"307-308","ok":true,"requests":[{"group":"307-308","method":"GET","path":"/build/307","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/308","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/302","host":"quickbuild.tizen.org"},{"group":"307-308","method":"GET","path":"/build/999","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"}],"details":{"blocked":[307,308],"allowed":302}}
+{"group":"per-hop","ok":true,"requests":[{"group":"per-hop","method":"GET","path":"/build/301","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/303","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/build/304","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"per-hop","method":"POST","path":"/signin?7-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[{"phase":"read","path":"<other>","action":"DENIED"},{"phase":"read","path":"/wicket/page","action":"DENIED"},{"phase":"read","path":"/build/<id>","action":"DENIED"},{"phase":"login","path":"/signin","action":"DENIED"}],"details":{"forbiddenSecondHops":0,"postReplay":0}}
+{"group":"credential-isolation","ok":true,"requests":[{"group":"credential-isolation","method":"GET","path":"/signin","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"POST","path":"/signin?1-1.IFormSubmitListener-content-form","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/overview/0","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"},{"group":"credential-isolation","method":"GET","path":"/build/1","host":"quickbuild.tizen.org"}],"handshakes":[],"trace":[],"details":{"credentialFacts":{"cookie":true,"authorization":true,"password":true},"protocol":{"ok":true,"status":200,"html_redacted":"<html><head><link rel=\"icon\" href=\"data:,\"><title>LOCAL C2b safety fixture</title></head><body><a class=\"nav-link\">Build (id:1)</a>\n      <span>Welcome! &lt;USER&gt;</span>\n      <input type=\"hidden\" name=\"token\" value=\"&lt;REDACTED&gt;\">\n      <div class=\"build-summary\"><div class=\"box-head\">Summary</div><table>\n      <thead><tr><th>Id</th><th>Triggered By</th></tr></thead>\n      <tbody><tr><td>1</td><td>&lt;USER&gt;</td></tr></tbody></table></div></body></html>"},"exception":{"ok":false,"error":"QB_BROWSER_UNAVAILABLE"}}}
+{"summary":4,"passed":4,"failed":0,"network":"loopback-only","temporaryDirectoryRemoved":true}
+
+PASSED
+
+============================== 3 passed in 20.07s ==============================
+
+exit=0

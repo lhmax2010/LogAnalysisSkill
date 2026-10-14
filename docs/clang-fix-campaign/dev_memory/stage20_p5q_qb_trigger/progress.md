@@ -1,8 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-13。状态:**C2a_COMPLETE;C2b_PENDING_LIVE12;AWAITING_CHAT_START**。
-最新执行见§26:P5Q-C2B-10已批准,先生产回调修正、再取证脱敏,两步单独提交;
-live-12须等待新的聊天“开始”及ping/pong。以下现场停点均保留为历史事实。
+日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;AWAITING_DESIGN_R1**。
+最新执行见§26:生产2ee8ab6、取证19792bb已推送;新“开始”后完成live-12,
+五个构建页/配置通过,Full→Partial→Full联动成功,release0。以下停点均为历史事实。
+现场取证成功不等于R1设计差异已关闭,不进入C3。
 当前轮基线540b316;P5Q-C2B-06裁定及实施见§22。§18至§21保留历史停点。
 身份脱敏与取证入口已分别推送6028356/47a1f8e;live-04在子主页构建号核对停下,
 §21只补取证通道;本轮§22按批准裁定修正read/openForm并跟进取证路径。
@@ -52,7 +53,7 @@ exit=0
 |---|---|---|
 | C0 | 冻结稿原字节入库;附录A同步design.md v1.5.22;本stage与INDEX/移交表 | DONE @3e073bc;C0-01已落实,§9门禁全部通过 |
 | C1 | qb_redact.py;配置解析;campaign_qb_profiles;四个按连接写入原语/公共API重构/qb_profile;精确表集合测试与第9.1节对应用例 | DONE;§10验收通过,本次提交由Git外部锚定 |
-| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§26按C2B-10落实当前字段random后缀,生产离线验收绿;随后取证脱敏单独提交;live-12待人工开始,无C3 |
+| C2 | qb_browser_agent.mjs三拦截面/协议适配层;qb_browser.py/假代理;第9.2节与第9.3节本机安全子集;随后第9.4节第1/1.5步、回填附录C | C2a COMPLETE;§26.6 live-12五页/配置与两次联动通过,release0;附录C补现场结果,待R1核对,无C3 |
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | C2且只读取证结论完整;NOT_STARTED |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | C3;NOT_STARTED |
 | C5 | 第9.3节其余本机浏览器集成与证据 | C4;NOT_STARTED |
@@ -2773,3 +2774,78 @@ BUILD_TYPE Full→Partial→Full、close。不是预先假定配置ID。
 form_action_releases必须0。不点Ok、不submit,失败按§24先取证后停止。
 WORKER_BLOCKED、NEW_PAGE、runtime.failure等立即停止条件不变。
 页面/配置/联动/release的真机结果全部NOT_COLLECTED,不以本机夹具代替;不进入C3。
+
+### 26.6 live-12现场完成
+
+2026-10-14,19792bb推送后收到新的聊天“开始”。按§26.5顺序执行,先ping/pong,
+再弹窗一次人工登录,之后只读五个构建页、由本次父overview五项核对取得1917、
+register_config、读配置页两项核对、BUILD_TYPE Full→Partial→Full、close。
+命令与逐页锚点:evidence/C2b/live-12/README.md;现场run.json原字节保留。
+exit0,COLLECTED,stop=null,无重试;未读1186372,未点Ok/submit/Accept。
+
+| 项目 | 实测 | 证据(live-12/) |
+|---|---|---|
+| 登录 | POST/signin302→GET/dashboard200,空查询;not_signin=true,password0,SignOut1 | run.json:2442与diagnostics |
+| 父1193467 | overview/variables均200且VERIFIED | 01/02.response.html |
+| 子1193469 | overview/variables/step_status均200且VERIFIED | 03/04/05.response.html |
+| 失败状态 | 子Summary Failed;父Child Build FAILED,架构组合一行 | 03.response.html:828;01.response.html:883/:892 |
+| 配置 | 1917,RBS/TRIGGER,五项来源/两项页面核对均通过 | run.json:2737/:2756;06.response.html |
+| 联动 | 初始Full,Partial成功后返回Full;两POST均200 | run.json:2944/:3076/:3206;form_network |
+| 安全/清理 | form_action_releases0,released=false,runtime_failure=null;browser/profile清理true | run.json:3870/:4064 |
+
+原始登记callback始终为
+`/wicket/page?10-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select`。
+Full→Partial:147147ms请求、147435ms响应,末尾random=0.3453609721766676,
+逐字等于登记原文加一个允许后缀(run.json:2885/:2898)。
+Partial→Full:148678ms请求、148963ms响应,random=0.6594204778800775
+(run.json:2911/:2924)。均fill/XHR POST、allowed=true、HTTP200。
+
+三个快照的action始终`/wicket/page?10-1.IFormSubmitListener-form`,page_version10,
+callback原文不变。两次main_frame_navigations与document_gets均空
+(run.json:3599/:3600/:3865/:3866),未观察到整页重渲染导航;
+不据此推断服务端没有内部刷新或局部DOM替换。
+选项文字/值集合全相同,只有BUILD_TYPE的selected标志Full→Partial→Full;
+其它字段选中项不变。BUILD_REFERENCE仍Ref. Snapshot,选项Live/Ref. Snapshot/
+Snapshot Number;SNAPSHOT_NUM唯一选项tizen-base-toolchain_20260924.094908。
+三张HTML hash相同,因selected运行时属性不必反映在序列化属性中;
+以运行时快照与实际回调响应证明联动,不把相同HTML当成没有设值。
+
+拦截器请求阶段GET112/POST3,allowed77/denied38;响应200x63/302x2。
+三POST为人工登录一次、字段回调两次,构建表单action放行0。
+拒绝ckeditor10、bootstrap两字体9+9、GET刷新XHR10,没有补登记静态资源;
+本轮未阻断取证。trace/wrapper38/38,帧归属拒绝0,WORKER_BLOCKED/NEW_PAGE0。
+该统计是拦截器观察,不冒充服务端接收数。八个原生性样本trim=false、其余八项true。
+
+fields.log重新按HTML结构提取:父BUILD_PKG_LIST_MODIFY四行,显示名Build Package List;
+子BUILD_PKG_LIST245行包含全部四行,TRIGGER_ID1193467/FAIL_FAST=yes/
+EACH_GBS_BUILD_STATUS存在且空。父Live/do not need select与子Ref. Snapshot/URL
+差异仍留R1,不自行认定等价;自动刷新random仍拒绝,隔离环境方案仍待R1。
+成功Base子构建样本/真正提交后的响应与build-id映射本轮NOT_COLLECTED。
+附录C已补回调取证;本轮新增停止事项0,不标设计闭合、不进入C3。
+
+run.json sha256=e74fa531d4f8857912a0fbbf9f70ccbca4479a226ce8b41ef094f40c1d271a08。
+九HTML逐一hash与写后脱敏检查通过。离线核对脚本首跑误以为表单快照也有status,
+KeyError原文与exit1保留在integrity.log;不改原始证据,按read页/表单快照各自结构
+重跑integrity-final.log exit0,全部hash、联动、五项/两项、零release与清理通过。
+该修正只涉及本次临时离线核对,未改任何生产/取证脚本、判据或现场记录。
+
+### 26.7 live-12归档验收
+
+真机close之后不再请求QuickBuild,只跑离线/本机门禁。完整命令与原文见live-12/README.md。
+
+| 门禁 | 实跑 | exit/日志 |
+|---|---|---|
+| 全量pytest | 2165 passed/1 skipped,118.52s,计数不变 | 0,pytest.log |
+| mypy | 113 source files,无问题 | 0,mypy.log |
+| lint-imports | 6 kept/0 broken | 0,lint-imports.log |
+| check_design_doc | 0 problem | 0,design-check.log |
+| Node三入口 | 3 passed,20.07s;unit142/142,DOM51/51,safety4/4 | 0,node-gates.log |
+| Ruff完整待提交树 | All checks passed! | 0,ruff.log |
+
+Worker组仍走b:browser_fail_closed,shared_worker closeTarget成功/worker异常Error,
+browser/profile已清理、attackHTTP0/WS0;其它三组通过。
+本次提交只含INDEX/progress/appendix-c/live-12证据,生产/spikes/tests/冻结稿/
+design.md/检查器零diff,历史live目录保留,无关用户改动不处理。
+Ruff对暂存树80058cb1811f0422d813802e34c0641fd3b9006c导出副本运行,
+/tmp/p5q-live12-lint-XClBU8已清理;之后只补文档与日志。
+文档diff --check为空;原始脱敏HTML缩进/行尾保持归档字节,不为消除whitespace提示而改动。

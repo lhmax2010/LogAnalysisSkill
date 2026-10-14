@@ -1,9 +1,9 @@
 # C2b Appendix C Evidence Status
 
-Status: **PARTIAL / LIVE11_STOPPED_BUILD_TYPE_CALLBACK_DENIED**.
-Latest session: live-11, 2026-10-13, five VERIFIED build pages, verified configuration,
-initial form passed; first BUILD_TYPE callback POST denied, then QB_FORM_CHANGED.
-Partial selected locally only; no completed round trip or form submission.
+Status: **LIVE12_COLLECTED / AWAITING_DESIGN_R1**.
+Latest session: live-12, 2026-10-14, five VERIFIED build pages, verified configuration,
+initial form passed; Full -> Partial -> Full completed, two callback responses HTTP200.
+No form submission; form_action_releases=0. Outstanding R1 differences remain open.
 Historical observations below are kept, not substituted for missing results.
 This document records observations, not permission to start C3.
 
@@ -16,10 +16,87 @@ The registration remains one-shot. Exponents, duplicate random, additional
 parameters, changed listener/version, and random on submit action are denied.
 Refresh with appended random remains denied. No frozen-document edits.
 Local synthetic browser evidence: c2b-10-production/node-gates.log.
-This is not proof of a live round trip; live-12 remains NOT_COLLECTED until a new
-chat start and ping/pong. live-11 raw query was masked and is not reconstructed.
+live-12 now supplies the live round trips below; live-11 raw query was masked
+and is not reconstructed. Previously archived sessions remain byte-for-byte unchanged.
 
-## C2B-09 live-11 (Latest Session)
+## C2B-10 live-12 (Latest Session)
+
+Baseline19792bb after production2ee8ab6. New chat start, ping/pong, one manual
+login. Exit0, COLLECTED, stop=null. Browser/profile cleaned. All references in
+this section are under live-12/. This is collection completion, not C3 approval.
+
+| Required observation | Actual fact | Source |
+|---|---|---|
+| Login | /dashboard, empty query; not_signin=true,password inputs0,Sign Out1 | run.json:2442 |
+| Parent1193467 overview/variables | Both HTTP200, VERIFIED | 01.response.html;02.response.html;run.json pages |
+| Child1193469 overview/variables/step_status | All HTTP200, VERIFIED | 03.response.html;04.response.html;05.response.html;run.json pages |
+| Child Summary / parent Child Build | Failed / FAILED; single combined standard-armv7l:aarch64:x86_64 row, not separate per-arch results | 03.response.html:828;01.response.html:883/:890/:892 |
+| Configuration source | id1917, root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER; five source checks pass | run.json:2737;01.response.html |
+| Configuration page | /overview/1917 HTTP200; breadcrumb/copy path both match | run.json:2756;06.response.html |
+| Parent variables | BUILD_PKG_LIST_MODIFY displayed as Build Package List,4 lines; BUILD_NOTES displayed as BUILD NOTES,empty; BUILD_TYPE Full,BUILD_REFERENCE Live,SNAPSHOT_NUM do not need select,PROJECT_BRANCH tizen_base | 02.response.html:808;fields.log |
+| Child variables | TRIGGER_ID1193467,FAIL_FAST yes,EACH_GBS_BUILD_STATUS present/empty; BUILD_PKG_LIST245 lines including all4 parent targets | 04.response.html:800;fields.log |
+| Child reference | Ref. Snapshot; SNAPSHOT_NUM_URL ends in tizen-base-toolchain_20260924.094908 | 04.response.html:800;fields.log |
+| Form | Initial structure accepted; three runtime snapshots Full/Partial/Full | run.json:2944/:3076/:3206;form-initial.html/form-partial.html/form-full.html |
+| Safety | stop=null,runtime_failure=null,WORKER_BLOCKED0,NEW_PAGE0,form_action_releases0,released=false; browser/profile cleaned | run.json:2434/:3870/:4064;integrity-final.log |
+
+### Field Callbacks And Options
+
+All three snapshots retain page version `10`, base `/wicket/page?10`, action
+`/wicket/page?10-1.IFormSubmitListener-form` and registered BUILD_TYPE callback:
+
+```text
+/wicket/page?10-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select
+```
+
+The actual callback queries equal that registered query plus the suffix shown
+below. Both are one-shot fill POSTs; neither is a form action release.
+
+| Transition | Request/response relative ms | Actual random | Result/source |
+|---|---|---|---|
+| Full -> Partial | 147147 / 147435 | 0.3453609721766676 | allowed,HTTP200;run.json:2878/:2885/:2898 |
+| Partial -> Full | 148678 / 148963 | 0.6594204778800775 | allowed,HTTP200;run.json:2911/:2924 |
+
+Both transition windows have zero main-frame navigations and zero Document GETs
+(run.json:3599/:3600/:3865/:3866). No whole-page rerender navigation observed.
+This does not assert that the server made no internal refresh or DOM replacement.
+All option text/value sets remain equal; only BUILD_TYPE selected flags change.
+Other selected options remain equal as well (integrity-final.log, all three form snapshots).
+BUILD_REFERENCE stays Ref. Snapshot, options Live / Ref. Snapshot / Snapshot Number;
+SNAPSHOT_NUM has only tizen-base-toolchain_20260924.094908, selected
+(run.json:2953/:2977/:3083/:3107/:3213/:3237).
+The three HTML SHA256 values are identical because selected properties are not
+necessarily serialized into selected attributes. Runtime snapshots, plus two HTTP200
+callbacks, prove the transition; identical HTML does not mean the selection never changed.
+
+### Interception And Native Flags
+
+Request-stage observations: GET112/POST3,allowed77/denied38; response-stage
+HTTP200x63/302x2. POST3 means one manual login and two field callbacks, not builds.
+Denied38: ckeditor10,bootstrap-icons.woff2 nine,bootstrap-icons.woff nine,
+GET XHR refresh ten. No new resource registration; static resource failures did
+not prevent these observations. Trace/wrapper38/38,frame-ownership refusals0.
+These are interceptor observations, not a server-receipt count.
+
+All eight native-flag samples (login,five build pages,configuration,open_form)
+show String.prototype.trim=false and the other eight approved flags=true
+(run.json:2453; integrity-final.log). Only booleans are recorded, not function source.
+No inference that all page built-ins are trusted; isolated execution remains an R1 topic.
+
+### Remaining Scope And Verification
+
+The known parent/child target-list and snapshot-reference differences are still
+R1 design inputs, not silently reconciled. Automatic refresh random stays denied.
+A successful Base child sample and actual submission response/build-id mapping
+are NOT_COLLECTED in this run. No Ok,submit,Accept,real build,or C3.
+
+run.json SHA256: `e74fa531d4f8857912a0fbbf9f70ccbca4479a226ce8b41ef094f40c1d271a08`.
+Nine HTML hashes/redaction,configuration checks,transitions,cleanup and no release
+pass offline recheck. The initial ad-hoc verifier wrongly read status from form
+snapshots and failed KeyError; integrity.log preserves that error. Corrected
+schema-aware recheck is integrity-final.log; raw evidence was not changed.
+Full commands, archive checks and gate outputs are in live-12/README.md.
+
+## C2B-09 live-11 (Historical Session)
 
 Baselinecbedcf5 after production4a4a727. New chat start, ping/pong, one manual
 login. Exit1, stopped during BUILD_TYPE_Partial; diagnostics preserved the
