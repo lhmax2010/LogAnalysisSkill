@@ -1,0 +1,106 @@
+{"network_commands": [], "source_format": "sha1", "source_format_argv": ["git", "-C", "/tmp/pytest-of-linhao/pytest-65/test_p5_format_selection_and_f0/primary-worktree", "-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", "-c", "core.askPass=", "-c", "credential.helper=", "-c", "push.followTags=false", "-c", "push.recurseSubmodules=no", "-c", "push.gpgSign=false", "-c", "push.pushOption=", "rev-parse", "--show-object-format"], "transport_cleaned": true, "transport_format": "sha1"}
+F{"network_commands": [], "source_format": "sha256", "source_format_argv": ["git", "-C", "/tmp/pytest-of-linhao/pytest-65/test_p5_format_selection_and_f1/primary-worktree", "-c", "core.hooksPath=/dev/null", "-c", "core.fsmonitor=false", "-c", "core.askPass=", "-c", "credential.helper=", "-c", "push.followTags=false", "-c", "push.recurseSubmodules=no", "-c", "push.gpgSign=false", "-c", "push.pushOption=", "rev-parse", "--show-object-format"], "transport_cleaned": true, "transport_format": "sha256"}
+F
+=================================== FAILURES ===================================
+_____________ test_p5_format_selection_and_frozen_invariant[sha1] ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-linhao/pytest-65/test_p5_format_selection_and_f0')
+object_format = 'sha1'
+
+    @pytest.mark.parametrize("object_format", ["sha1", "sha256"])
+    def test_p5_format_selection_and_frozen_invariant(tmp_path: Path, object_format: str) -> None:
+        source = tmp_path / "primary-worktree"
+        source.mkdir()
+        git = SandboxGit()
+        format_args = ("--object-format=sha256",) if object_format == "sha256" else ()
+        git.run(None, "init", *format_args, str(source))
+        calls: list[list[str]] = []
+    
+        class RecordingGit:
+            def run(self, *args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
+                result = git.run(*args, **kwargs)
+                calls.append(result.args)
+                return result
+    
+        snapshot = SimpleNamespace(
+            git=RecordingGit(), derive_inputs=SimpleNamespace(worktree=source)
+        )
+        with _transport(snapshot, tmp_path) as transport:
+            actual = git.run(
+                None, "rev-parse", "--show-object-format", git_dir=transport
+            ).stdout.strip()
+            assert actual == object_format
+        assert not (tmp_path / ".transport").exists()
+        source_calls = [
+            argv for argv in calls
+            if any(argv[i:i + 2] == ["-C", str(source)] for i in range(len(argv) - 1))
+            or "--git-dir=" + str(source) in argv
+        ]
+        format_calls = [argv for argv in source_calls if "--show-object-format" in argv]
+        assert len(format_calls) == 1
+        print(json.dumps({
+            "source_format": object_format,
+            "transport_format": actual,
+            "source_format_argv": format_calls[0],
+            "transport_cleaned": True,
+            "network_commands": [argv for argv in calls if "ls-remote" in argv or "push" in argv],
+        }, sort_keys=True))
+        # Evaluate the exact frozen section 9.1 invariant against P5's real command.
+>       assert not format_calls, "FROZEN_9_1: no git command may use the primary copy via -C/--git-dir"
+E       AssertionError: FROZEN_9_1: no git command may use the primary copy via -C/--git-dir
+E       assert not [['git', '-C', '/tmp/pytest-of-linhao/pytest-65/test_p5_format_selection_and_f0/primary-worktree', '-c', 'core.hooksPath=/dev/null', '-c', ...]]
+
+docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C4/format-preflight/test_format_contract.py:55: AssertionError
+____________ test_p5_format_selection_and_frozen_invariant[sha256] _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-linhao/pytest-65/test_p5_format_selection_and_f1')
+object_format = 'sha256'
+
+    @pytest.mark.parametrize("object_format", ["sha1", "sha256"])
+    def test_p5_format_selection_and_frozen_invariant(tmp_path: Path, object_format: str) -> None:
+        source = tmp_path / "primary-worktree"
+        source.mkdir()
+        git = SandboxGit()
+        format_args = ("--object-format=sha256",) if object_format == "sha256" else ()
+        git.run(None, "init", *format_args, str(source))
+        calls: list[list[str]] = []
+    
+        class RecordingGit:
+            def run(self, *args: Any, **kwargs: Any) -> subprocess.CompletedProcess[str]:
+                result = git.run(*args, **kwargs)
+                calls.append(result.args)
+                return result
+    
+        snapshot = SimpleNamespace(
+            git=RecordingGit(), derive_inputs=SimpleNamespace(worktree=source)
+        )
+        with _transport(snapshot, tmp_path) as transport:
+            actual = git.run(
+                None, "rev-parse", "--show-object-format", git_dir=transport
+            ).stdout.strip()
+            assert actual == object_format
+        assert not (tmp_path / ".transport").exists()
+        source_calls = [
+            argv for argv in calls
+            if any(argv[i:i + 2] == ["-C", str(source)] for i in range(len(argv) - 1))
+            or "--git-dir=" + str(source) in argv
+        ]
+        format_calls = [argv for argv in source_calls if "--show-object-format" in argv]
+        assert len(format_calls) == 1
+        print(json.dumps({
+            "source_format": object_format,
+            "transport_format": actual,
+            "source_format_argv": format_calls[0],
+            "transport_cleaned": True,
+            "network_commands": [argv for argv in calls if "ls-remote" in argv or "push" in argv],
+        }, sort_keys=True))
+        # Evaluate the exact frozen section 9.1 invariant against P5's real command.
+>       assert not format_calls, "FROZEN_9_1: no git command may use the primary copy via -C/--git-dir"
+E       AssertionError: FROZEN_9_1: no git command may use the primary copy via -C/--git-dir
+E       assert not [['git', '-C', '/tmp/pytest-of-linhao/pytest-65/test_p5_format_selection_and_f1/primary-worktree', '-c', 'core.hooksPath=/dev/null', '-c', ...]]
+
+docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C4/format-preflight/test_format_contract.py:55: AssertionError
+=========================== short test summary info ============================
+FAILED docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C4/format-preflight/test_format_contract.py::test_p5_format_selection_and_frozen_invariant[sha1]
+FAILED docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C4/format-preflight/test_format_contract.py::test_p5_format_selection_and_frozen_invariant[sha256]
+2 failed in 0.10s

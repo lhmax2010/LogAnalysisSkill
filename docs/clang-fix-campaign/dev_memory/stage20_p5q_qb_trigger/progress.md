@@ -1,6 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE**。
+日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_STOPPED**。
+C4本轮基线3ef542a;开工核对及P5Q-C4-01停止报告见§32。
+C3源对象格式遗留尚未修复,C4主体未实施;不进入C5。
 C3本轮基线7f3c60e;实施与验收见§31。§29的C3-01由C3-02关闭,
 §30的C3-03由C3-04关闭。以下“不进入C3”与STOPPED为先前轮次的历史记录。
 本轮仅C3,不进入C4;C5/C6真机挂账仍开放。
@@ -3349,3 +3351,64 @@ fixture-setup-failures.log。Ruff长断言拆行,不改变期望。
 状态C3_COMPLETE;未访问真实QuickBuild/Gerrit,未弹人工登录窗口,不进入C4。
 C5/C6原始字节/活动文档比较、成功样本、BUILD_NOTES样本挂账仍开放,
 P5Q不标CLOSED。只纳入本轮文件,既有无关修改、删除与草稿未处理。
+
+## 32. C4 开工与停止报告 P5Q-C4-01:源格式查询与主副本 argv 禁令
+
+### 32.1 上下文与计划
+
+基线为3ef542a985712c340c333addedde092d818cc8b7,分支clang-fix-campaign。
+已读取本文件与冻结稿第1、3、5、6、9节。v1.5冻结稿sha256仍为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`,未修改。
+P5Q-C2C-03、P5Q-C3-02、P5Q-C3-04继续有效,C5/C6挂账未关闭。
+
+本轮计划依次为:修复C3传输仓库对象格式;实现C4入口/锁/绑定、父子页面核对、
+快照漂移、辅助step_status、证据与原子结果发布;离线假代理矩阵与第9.5门禁。
+在第一项规格核对即发现下述冲突,未将候选方案写入生产代码。
+
+### 32.2 P5Q-C4-01(OPEN)
+
+**原文位置与冲突**:
+
+- 本轮任务第一步要求以P5相同方式,按源仓库`rev-parse --show-object-format`
+  选择sha1/sha256,修正C3的`.transport`格式。
+- 冻结稿第4.3(6),L437:远端核对不得以主副本为`-C`/`--git-dir`。
+  第9.1节隔离传输验收,L692进一步写成“没有任何 git 命令以主副本为
+  `-C`/`--git-dir`”,并非仅限`ls-remote`。
+- P5 `sandbox_submit.py:681`把primary_arch对应的验证worktree作为派生主副本;
+  `:833/:834`的`_transport`取该worktree并调用
+  `s.git.run(source, "rev-parse", "--show-object-format")`。
+  `_sandbox_git.py:52`把非空cwd编码为`git -C <source>`。
+  因此照搬这一格式查询会违反当前冻结验收的全称禁令。
+
+**离线实测**:
+
+- 直接调用现有P5 `_transport`,分别用临时sha1/sha256源仓库;
+  两种传输仓库格式均与源相同,退出后临时传输目录清理成功。
+- 两种情况均实际执行`git -C <primary-worktree> ... rev-parse --show-object-format`;
+  单独将该命令交给第9.1节全称禁令检查,均红。没有复制P5实现或修改生产函数。
+- 原C3隔离用例不改动实跑:1 passed,exit0。新规格探针:2 failed,exit1,
+  两处失败都在最后的冻结禁令断言,不是格式选择失败。
+- 探针没有`ls-remote`、push或浏览器调用,只操作临时本地仓库。
+
+原始argv、失败原文与复现命令:
+[format-preflight/README.md](evidence/C4/format-preflight/README.md)。
+
+**候选处理(未实施,需设计方裁定)**:
+
+1. 建议允许一条具名例外:仅为选择传输格式,允许用既有SandboxGit及全部
+   环境/覆盖项在P5同一源主副本上执行只读`rev-parse --show-object-format`。
+   白名单只含这一条元数据查询;网络核对仍全部在`.transport`,不得读取源仓库
+   remote/url配置来确定远端。第9.1断言相应分开“源元数据精确一条”和
+   “其余命令不得以主副本为上下文”,八条环境覆盖的变异证伪保持。
+   新增sha256源/传输相等、sha1不传object-format、未知格式/格式不等拒绝用例。
+2. 若保持绝对禁令,需设计方另行指定不运行源仓库git命令的权威格式来源及校验
+   方式;本轮不猜测、不按sha长度推导、不借换cwd/路径拼写绕过断言。
+
+### 32.3 交付边界与验收
+
+状态C4_STOPPED。C3遗留未标为“已于C4修复”;qb-result-fetch未实现,
+第5.3负例矩阵和C4第9.1各组交付数为0。没有修改生产代码、已有测试、
+Policy、installGuards、冻结稿或design.md。本次只提交停止报告、离线探针与证据。
+完整C4 pytest/mypy/Node/lint-imports门禁未执行,不沿用C3数字当作本轮验收。
+证据脚本Ruff、设计检查器结果见证据索引。未访问真实QuickBuild/Gerrit,
+未弹登录窗口,没有Accept操作;不进入C5。无关既有改动与草稿保持原样。
