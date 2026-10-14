@@ -1,7 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
 日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_STOPPED**。
-C3本轮基线332878d;两项C2c评审遗留修复与新停点P5Q-C3-01见§29。
+C3本轮基线16b9148;C3-02快照应答与驱动已补,新停点P5Q-C3-03见§30.3。
+§29的C3-01已由C3-02关闭;CLI未接入,不把未验收补丁记为C3交付。
 以下“不进入C3”是先前授权的历史边界;本轮已授权C3,但按协议在接口缺口处停止。
 最新权威改为v1.5-FROZEN,冻结登记与C2c执行见§27;以下v1.2及R1待决状态均为历史记录。
 §27.3历史停止已由§28的C2C-03关闭;本轮C2c执行见§28。最近真机执行见§26:生产2ee8ab6、取证19792bb已推送;新“开始”后完成live-12,
@@ -3077,7 +3078,7 @@ attackHTTP=0、WS握手=0、浏览器与临时目录已清理。没有因此降�
 
 ### 29.3 停止报告P5Q-C3-01:快照不可用错误应答缺少当前值
 
-状态:**OPEN,等待设计方裁定**。这是C3接入现有代理时暴露的接口缺口,
+状态:**已由 P5Q-C3-02 裁定关闭**。这是C3接入现有代理时暴露的接口缺口,
 不是把冻结快照下架本身当成异常设计;正常拒绝行为保持不变。
 
 **要求位置**:
@@ -3153,3 +3154,116 @@ DOM/安全两个pytest入口计2 passed,不与Node内部64+4重复计数。
 参数冻结与配置沿用既有全量用例加本次4个配置函数用例;
 凭据与脱敏新增1个共用向量。不得把既有通过数记为C3全部用例完成。
 提交只包含两项遗留修复、测试、状态与停点证据,不进入C4。
+
+## 30. 实施裁定 P5Q-C3-02:快照不可用应答携带当前选中项
+
+### 30.1 裁定原文
+
+1. 代理应答:fill 在 SNAPSHOT_NUM 字段返回 QB_FORM_VALUE_UNAVAILABLE 时(包括冻结值不在选项中、@freeze 时无选中项、多个选中项或下拉框为空),应答增加 snapshot_state 对象,键集合恰好为两个:
+   - selected:取自该字段开始时那一次隔离环境表单快照,为全部选中项文字(在 Node 中去掉首尾空白)组成的列表,可以是 0 项、1 项或多项。任一项长度超过 200,或不完全匹配 ^[A-Za-z0-9._:+-]+$,则 selected 整体置为 null,不返回原文。
+   - option_count:该下拉框的选项数,为整数。
+   不增加任何请求,不额外设值,不重开表单;该错误不产生诊断;表单照常作废,released=false。其它错误应答不带 snapshot_state。
+2. Python 驱动:decode_response 校验 snapshot_state 的形状:键集合恰为 selected 和 option_count;selected 为 null 或由字符串组成的列表,且每项都符合上面的长度与字符限制;option_count 为非负整数。不符合即按协议错误处理,报 QB_BROWSER_UNAVAILABLE。校验通过后,把它保存在 QbBrowserError.snapshot_state 上。
+3. CLI 输出:qb-trigger 在 stdout 中每个 unit 的对象新增 message 键,值为字符串或 null,只填固定模板文字:
+   - 冻结值不可用且 selected 恰好 1 项:"参考快照已从 <冻结值> 变为 <当前值>,需在新 campaign 中处理";
+   - selected 为 0 项:"参考快照冻结值 <冻结值> 已不在下拉框中,当前无选中项,需在新 campaign 中处理";
+   - selected 为多项:"参考快照冻结值 <冻结值> 已不在下拉框中,当前选中多项:<逐项以逗号分隔>,需在新 campaign 中处理";
+   - selected 为 null:"参考快照冻结值 <冻结值> 已不在下拉框中,当前选中项形态不在登记范围,需在新 campaign 中处理";
+   - 首次冻结(@freeze)失败时,把模板中的"冻结值 <冻结值>"改为"尚无冻结值",其余同上;
+   - 冻结稿第 4.3 节第 10 步 landed: unknown 的提示文字同样放在 message 中;
+   - 其它情况为 null。
+   同一段文字写入 trace。错误码 REJECTED_QB_SNAPSHOT_UNAVAILABLE、skip_reason=qb_snapshot_unavailable、零提交、零数据库写入都不变。
+4. 理由:冻结稿第 0.5 节和第 4.3 节第 5 步要求输出两值,但第 3.5 节应答格式没有给当前值留字段,属设计前后不一致;最小改法是只在应答里增加字段,不改放行规则。
+5. 下次修订设计时并入正文。
+
+### 30.2 实施计划与边界
+
+基线16b9148;权威v1.5 hash仍为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`,不改冻结稿。
+先落快照错误应答、驱动校验、探针与测试,再实现qb-trigger与第9.1节集成用例。
+Policy/installGuards不得改;不访问真实QuickBuild/Gerrit,不弹登录窗;
+ls-remote仅本地裸仓库,无构建/无Accept,完成后不进入C4。
+原§29探针历史输出保留,新的期望与结果单列C3/implementation证据。
+当前状态:C3_STOPPED,见§30.3。C5/C6挂账不受本轮影响。
+
+### 30.3 停止报告 P5Q-C3-03:首次冻结失败且恰有一个选中项的提示模板
+
+状态:**OPEN,等待设计方裁定**。没有修改冻结稿,没有触碰Policy/installGuards。
+
+**原文位置**:本节30.1第3条的单项模板为
+“参考快照已从 <冻结值> 变为 <当前值>,需在新 campaign 中处理”;随后首次冻结
+条款要求把模板中的“冻结值 <冻结值>”替换成“尚无冻结值”。前一模板没有该
+待替换片段,首次冻结也没有实际冻结值。0项/多项/null的三种模板不存在此问题。
+
+**实测可达,不是仅作措辞推测**:生产fill在@freeze时先取得唯一选中项,随后仍
+按选项文字查找且要求恰好一个匹配。给下拉框两个同名选项(不同value)、仅第一个
+selected=true,就会走QB_FORM_VALUE_UNAVAILABLE,而snapshot_state.selected恰好1项。
+这不是“多个选中项”,不能输出该模板;不能把字面@freeze冒充旧的实际快照。
+
+最小输入:SNAPSHOT_NUM=@freeze;options=[
+{text:current-snapshot-A,value:current-snapshot-A,selected:true},
+{text:current-snapshot-A,value:other,selected:false}]。
+
+生产Agent.command/fill的原始应答:
+
+```json
+{"ok":false,"error":"QB_FORM_VALUE_UNAVAILABLE","field":"SNAPSHOT_NUM","snapshot_state":{"selected":["current-snapshot-A"],"option_count":2},"released":false}
+```
+
+form_state=invalid,网络0/提交0;用current-snapshot-B重复同样成立。
+证据:[first-freeze-single-selected.json](evidence/C3/implementation/first-freeze-single-selected.json);
+复现:`snapshot-response-probe.mjs --duplicate-first-freeze`。探针只替换DOM输入/定位器,
+调用生产fill/command,不修改生产判定;Node单元也固化同输入。
+
+**候选处理,均未擅自实施**:
+
+1. 建议补一个首次@freeze失败且selected恰为1项的固定模板,例如
+   “参考快照尚无冻结值,当前选中项为 <当前值>,需在新 campaign 中处理”。
+   仅补输出文字,保持错误码、skip_reason、表单作废、零提交/零数据库写入不变。
+2. 或由设计方明确把重复选项文字改归QB_FORM_CHANGED。此项会改变错误分类,
+   超出本轮只补应答字段的授权,不能自行采用。
+
+CLI集成代码尚未验收,已从活动生产/测试树撤下,只保存
+[implementation-wip.patch](evidence/C3/implementation/implementation-wip.patch)作为定位参考。
+不得直接套用当交付;其中首次冻结单项提示分支未满足裁定,测试矩阵也未完成。
+§4锁/幂等表/事务/远端隔离/诊断CLI/崩溃窗口本轮均**未交付**,
+不宣称第9.1节三组或幂等表12格已验收,不进入C4。
+
+### 30.4 本轮已闭合范围
+
+- 代理:仅fill开始处取当前字段快照的selected与option_count,长度/字符校验后
+  随SNAPSHOT_NUM不可用应答返回;表单仍作废,released=false,不生成diagnostic。
+- Python:exact-key/type/字符/长度校验,非法协议QB_BROWSER_UNAVAILABLE;
+  合法事实保留到QbBrowserError.snapshot_state。非对应错误不得携带该对象。
+- 原§29的两个探针已按新应答期望重跑,不同当前值现在可区分,见
+  [snapshot-response.json](evidence/C3/implementation/snapshot-response.json)与
+  [driver-response.json](evidence/C3/implementation/driver-response.json)。
+  §29旧json原样保留;旧脚本原文可由16b9148取得,新脚本对应本轮裁定。
+- Node新增7例(含新停点输入);Python新增17例。CLI message没有交付,
+  不把协议字段可用等同于CLI要求完成。
+
+### 30.5 验收
+
+日志与命令见[evidence/C3/implementation/README.md](evidence/C3/implementation/README.md)。
+本轮仅验收协议补齐与停点取证;全仓绿不表示C3主体完成。
+
+| 项目 | 实测结果 | exit / 证据文件 |
+|---|---|---|
+| 全量pytest | 2299 passed / 0 failed / 1 skipped,258.23s;基线2282/1增加17 | 0 / pytest.log |
+| Python驱动定向 | 160 passed / 0 failed / 0 skipped | 0 / driver-tests.log |
+| Node单元 | 159 passed / 0 failed / 0 skipped;增加7 | 0 / node-unit.log |
+| 第9.2静态护栏与负例 | 183 passed / 0 failed / 0 skipped | 0 / static-guards.log |
+| 四组本机拦截安全 | 虽非强制,额外从头重跑4/4,loopback-only | 0 / safety.log |
+| mypy | 113 source files,无问题 | 0 / mypy.log |
+| Ruff完整待提交代码树 | All checks passed;树49d7784f43ea4522f4c4b7f3ff8c59e95520f3a4,后续仅补文档日志 | 0 / ruff.log |
+| lint-imports | 6 kept / 0 broken | 0 / lint-imports.log |
+| design.md检查器 | 0 problem | 0 / design-check.log |
+| Policy/installGuards逐字比较 | 与16b9148相同,不触发放行规则变更 | 0 / guard-identity.log |
+| v1.5哈希 | f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c | 0 / frozen-hashes.log |
+
+Safety日志中的quickbuild.tizen.org由测试host-resolver映射到本机HTTPS假服务器,
+合成登录由测试脚本操作,不是真实QuickBuild登录。四组summary=4/4;
+Worker fail-closed与原规则一致,attackHTTP=0、websocketHandshakes=0,临时目录清理成功。
+`implementation-wip.patch`中unified diff的空白上下文行按补丁格式保留,
+不把它当生产代码或已通过的C3测试矩阵。第9.1三组CLI用例数与幂等12格交付数仍为0。
+停止报告新增1条(P5Q-C3-03),本轮不进入C4。

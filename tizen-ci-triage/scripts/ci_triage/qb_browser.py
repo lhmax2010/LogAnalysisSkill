@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -13,14 +14,42 @@ from ci_triage.qb_redact import PageRedactor
 
 class QbBrowserError(RuntimeError):
     def __init__(
-        self, code: str, *, released: bool | None = None,
-        diagnostic: dict[str, Any] | None = None, diagnostic_failed: bool = False,
+        self,
+        code: str,
+        *,
+        released: bool | None = None,
+        diagnostic: dict[str, Any] | None = None,
+        diagnostic_failed: bool = False,
+        snapshot_state: dict[str, Any] | None = None,
     ) -> None:
         super().__init__(code)
         self.code = code
         self.released = released
         self.diagnostic = diagnostic
         self.diagnostic_failed = diagnostic_failed
+        self.snapshot_state = snapshot_state
+
+
+def validate_snapshot_state(value: object) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != {"selected", "option_count"}:
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    selected = value["selected"]
+    if (
+        type(value["option_count"]) is not int
+        or value["option_count"] < 0
+        or selected is not None
+        and (
+            not isinstance(selected, list)
+            or any(
+                not isinstance(item, str)
+                or len(item) > 200
+                or re.fullmatch(r"[A-Za-z0-9._:+-]+", item) is None
+                for item in selected
+            )
+        )
+    ):
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    return value
 
 
 def _sensitive_key(value: object) -> bool:
@@ -72,6 +101,19 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
         if submit_sent:
             return _unknown()
         raise QbBrowserError("INTERNAL_ERROR")
+    snapshot_state = None
+    snapshot_error = (
+        command == "fill"
+        and response.get("error") == "QB_FORM_VALUE_UNAVAILABLE"
+        and response.get("field") == "SNAPSHOT_NUM"
+        and response["ok"] is False
+    )
+    if snapshot_error:
+        snapshot_state = validate_snapshot_state(response.get("snapshot_state"))
+    elif "snapshot_state" in response:
+        if submit_sent:
+            return _unknown()
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
     if submit_sent:
         if response["ok"]:
             build_id = response.get("build_id")
@@ -123,8 +165,10 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
             mapped = "QB_FETCH_FAILED"
         if code == "QB_TRUSTED_CONTEXT_UNAVAILABLE":
             mapped = (
-                "QB_FETCH_FAILED" if command == "read" else
-                "REJECTED_QB_FORM_CHANGED" if command in {"open_form", "fill", "submit"}
+                "QB_FETCH_FAILED"
+                if command == "read"
+                else "REJECTED_QB_FORM_CHANGED"
+                if command in {"open_form", "fill", "submit"}
                 else "INTERNAL_ERROR"
             )
     diagnostic = response.get("diagnostic")
@@ -135,11 +179,15 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
         redactor.check_bytes(diagnostic["html_redacted"].encode("utf-8"))
         # Validate decoded strings, never JSON escape sequences as HTML attributes.
         _check_diagnostic_strings(
-            {key: value for key, value in diagnostic.items() if key != "html_redacted"}, redactor,
+            {key: value for key, value in diagnostic.items() if key != "html_redacted"},
+            redactor,
         )
     raise QbBrowserError(
-        mapped, released=False if submit_sent else None, diagnostic=diagnostic,
+        mapped,
+        released=False if submit_sent else None,
+        diagnostic=diagnostic,
         diagnostic_failed=response.get("diagnostic_failed") is True,
+        snapshot_state=snapshot_state,
     )
 
 

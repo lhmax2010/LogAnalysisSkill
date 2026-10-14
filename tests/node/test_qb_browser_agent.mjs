@@ -545,6 +545,35 @@ test(`fill uses current callbacks and frozen selection; checkbox ${checked} -> $
   assert.equal(result.fingerprint, fingerprint(result.readback));
 });
 
+for (const [name, requested, options, selected] of [
+  ['missing frozen', 'frozen', [{ text: ' current-A ', selected: true }], ['current-A']],
+  ['no selected', '@freeze', [{ text: 'current-A', selected: false }], []],
+  ['multiple selected', '@freeze', [{ text: 'a', selected: true }, { text: 'b', selected: true }], ['a', 'b']],
+  ['first freeze duplicate text', '@freeze', [{ text: 'a', selected: true }, { text: 'a', selected: false }], ['a']],
+  ['empty dropdown', '@freeze', [], []],
+  ['long selected', 'frozen', [{ text: 'x'.repeat(201), selected: true }], null],
+  ['invalid selected', 'frozen', [{ text: 'bad value', selected: true }], null],
+]) test(`snapshot unavailable carries safe field-start state: ${name}`, async () => {
+  const f = form(); const p = new Policy();
+  Object.assign(f.rows.find(r => r.label === 'SNAPSHOT_NUM').controls[0], { tag: 'SELECT', options });
+  const a = new Agent({ policy: p, page: {}, failure: null });
+  a.state = 'form'; a.currentProject = { project_name: 'Tizen' };
+  a.snapshot = async () => f;
+  a.fieldRow = () => ({ locator: () => ({ locator: () => ({ dispatchEvent: async () => {
+    p.fieldFinished = true; p.lastActivity = Date.now() - 1500;
+  } }) }) });
+  const fields = Object.fromEntries(FIELDS.map(label => [label, label]));
+  Object.assign(fields, { CHILD_CONFIGURATIONS: ['standard-armv7l:aarch64:x86_64'], TARGET_IMAGE: [],
+    'Build Package List': 'pkg/name@abc', 'BUILD NOTES': 'clang-fix-campaign request=synthetic',
+    'Add Package List': '', 'Remove Package List': '' });
+  fields.SNAPSHOT_NUM = requested;
+  const response = await a.command({ command: 'fill', fields });
+  assert.deepEqual(response, { ok: false, error: 'QB_FORM_VALUE_UNAVAILABLE', field: 'SNAPSHOT_NUM',
+    released: false, snapshot_state: { selected, option_count: options.length } });
+  assert.equal(a.state, 'invalid'); assert.equal(p.released, false);
+  assert.equal((await a.command({ command: 'submit' })).error, 'AGENT_PHASE');
+});
+
 test('field registration rejects a late denial before replacing the previous window', () => {
   const p = policy('fill'); p.beginField(callback);
   const window = p.fieldWindow;

@@ -1,0 +1,1631 @@
+diff --git a/tizen-ci-triage/scripts/ci_triage/cli.py b/tizen-ci-triage/scripts/ci_triage/cli.py
+index 6447c11..2b7fd5f 100644
+--- a/tizen-ci-triage/scripts/ci_triage/cli.py
++++ b/tizen-ci-triage/scripts/ci_triage/cli.py
+@@ -194,6 +194,8 @@ def main(
+ ) -> int:
+     if argv is None:
+         argv = sys.argv[1:]
++    if argv and argv[0] == "qb-trigger":
++        return _main_qb_trigger(argv[1:], stdout=stdout, stderr=stderr)
+     if argv and argv[0] == "sandbox-submit":
+         return _main_sandbox_submit(argv[1:], stdout=stdout, stderr=stderr)
+     if argv and argv[0] == "suppress-policy":
+@@ -409,6 +411,26 @@ def _campaign_cli_error_payload(reason: str) -> dict[str, object]:
+     }
+ 
+ 
++def _main_qb_trigger(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
++    from ci_triage.qb_trigger import QbTriggerOptions, empty_result, qb_trigger
++
++    parser = _CampaignRepairStepParser(prog="ci_triage qb-trigger")
++    selection = parser.add_mutually_exclusive_group(required=True)
++    selection.add_argument("--verification-ids")
++    selection.add_argument("--units-file", type=Path)
++    parser.add_argument("--state-db", type=Path, required=True)
++    parser.add_argument("--state-root", type=Path, required=True)
++    parser.add_argument("--config", type=Path, required=True)
++    parser.add_argument("--retrigger", action="store_true")
++    try:
++        args = parser.parse_args(argv)
++        code, results = qb_trigger(QbTriggerOptions(**vars(args)), stderr=stderr)
++    except _CampaignCliArgumentError:
++        code, results = 2, [dict(empty_result(), error_code="INVALID_ARGS")]
++    print(json.dumps(results, ensure_ascii=False, sort_keys=True), file=stdout)
++    return code
++
++
+ def _main_sandbox_submit(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
+     parser = _CampaignRepairStepParser(prog="ci_triage sandbox-submit")
+     parser.add_argument("--verification-ids", required=True)
+diff --git a/tizen-ci-triage/scripts/ci_triage/qb_trigger.py b/tizen-ci-triage/scripts/ci_triage/qb_trigger.py
+new file mode 100644
+index 0000000..30e44f9
+--- /dev/null
++++ b/tizen-ci-triage/scripts/ci_triage/qb_trigger.py
+@@ -0,0 +1,648 @@
++"""Locked QuickBuild submission with frozen profiles and durable intent."""
++
++from __future__ import annotations
++
++import copy
++import fcntl
++import json
++import re
++import shutil
++import sqlite3
++import subprocess
++import traceback
++import uuid
++from collections.abc import Iterator
++from contextlib import contextmanager
++from dataclasses import dataclass
++from datetime import datetime, timezone
++from html.parser import HTMLParser
++from pathlib import Path
++from typing import Any, TextIO
++
++import yaml
++from tizen_ci_shared.state import StateDatabase
++
++from ci_triage import campaign_state as state
++from ci_triage import sandbox_submit as sandbox
++from ci_triage._campaign_workspace import _unit_hash
++from ci_triage.aggregate import aggregate_verifications
++from ci_triage.qb_browser import QbBrowser, QbBrowserError, _check_diagnostic_strings
++from ci_triage.qb_config import (
++    FORM_KEYS,
++    QbConfigError,
++    QbProjectNotReady,
++    canonical_profile_json,
++    parse_qb_config,
++    project_for_branch,
++)
++from ci_triage.qb_redact import EvidenceRedactionError, PageRedactor
++
++_STATUSES = {
++    "SANDBOX_PUSHED",
++    "KB_APPENDED",
++    "QB_REQUESTED",
++    "QB_TRIGGERED",
++    "SANDBOX_QB_PENDING",
++    "SANDBOX_QB_PASS",
++    "SANDBOX_QB_FAILED",
++    "QB_SUBMIT_FAILED",
++}
++_PALETTES = {"CHILD_CONFIGURATIONS", "TARGET_IMAGE"}
++_UNKNOWN_MESSAGE = (
++    "请到 QuickBuild 按请求标记找到构建后用 qb-result-fetch --request-id 与 --qb-build-id 绑定;"
++    "确认没有构建后用 --retrigger 重提"
++)
++
++
++@dataclass(frozen=True)
++class QbTriggerOptions:
++    state_db: Path
++    state_root: Path
++    config: Path
++    verification_ids: str | None = None
++    units_file: Path | None = None
++    retrigger: bool = False
++
++
++@dataclass(frozen=True)
++class TriggerSnapshot:
++    unit: state.Unit
++    status: str
++    derived: str
++    push: dict[str, Any]
++    push_event: int
++    request: dict[str, Any] | None
++    bound: dict[str, Any] | None
++    result: dict[str, Any] | None
++    profile: dict[str, Any] | None
++
++
++class _Rejected(Exception):
++    def __init__(self, code: str) -> None:
++        super().__init__(code)
++        self.code = code
++
++
++def empty_result() -> dict[str, Any]:
++    return dict(
++        campaign_unit_key=None,
++        sbs_target=None,
++        request_id=None,
++        request_seq=None,
++        qb_build_id=None,
++        action="rejected",
++        status=None,
++        error_code=None,
++        diagnostic_dir=None,
++        message=None,
++    )
++
++
++def _groups(options: QbTriggerOptions) -> list[tuple[str, ...]]:
++    if (options.verification_ids is None) == (options.units_file is None):
++        raise QbConfigError("select verification-ids or units-file")
++    if options.units_file is not None:
++        rows = json.loads(options.units_file.read_text(encoding="utf-8"))
++    else:
++        rows = [{"verification_ids": (options.verification_ids or "").split(",")}]
++    if not isinstance(rows, list) or not rows:
++        raise QbConfigError("units-file must be a nonempty array")
++    groups = []
++    for row in rows:
++        if not isinstance(row, dict) or set(row) != {"verification_ids"}:
++            raise QbConfigError("invalid unit selection")
++        ids = row["verification_ids"]
++        if (
++            not isinstance(ids, list)
++            or len(ids) != 3
++            or any(not isinstance(item, str) or not item.strip() for item in ids)
++            or len(set(ids)) != 3
++        ):
++            raise QbConfigError("three distinct verification ids required")
++        groups.append(tuple(ids))
++    return groups
++
++
++@contextmanager
++def _lock(root: Path) -> Iterator[None]:
++    root.mkdir(parents=True, exist_ok=True)
++    with (root / ".sandbox_submit.lock").open("a+", encoding="utf-8") as stream:
++        try:
++            fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
++        except BlockingIOError:
++            raise state.CampaignStateBusy("sandbox lock held") from None
++        yield
++
++
++@contextmanager
++def _write(db: StateDatabase) -> Iterator[sqlite3.Connection]:
++    # Existing campaign only: no schema initialization on any trigger path.
++    conn = sqlite3.connect(db.path.resolve().as_uri() + "?mode=rw", uri=True)
++    conn.row_factory = sqlite3.Row
++    conn.execute("PRAGMA foreign_keys=ON")
++    conn.execute("PRAGMA busy_timeout=5000")
++    try:
++        with state._immediate_transaction(conn):
++            yield conn
++    finally:
++        conn.close()
++
++
++def _row(conn: sqlite3.Connection, sql: str, *args: Any) -> dict[str, Any] | None:
++    row = conn.execute(sql, args).fetchone()
++    return dict(row) if row is not None else None
++
++
++def _latest_request(conn: sqlite3.Connection, key: str) -> dict[str, Any] | None:
++    return _row(
++        conn,
++        "SELECT * FROM campaign_qb_requests WHERE campaign_unit_key=? "
++        "ORDER BY request_seq DESC LIMIT 1",
++        key,
++    )
++
++
++def _profile(conn: sqlite3.Connection, branch: str) -> dict[str, Any] | None:
++    return _row(conn, "SELECT * FROM campaign_qb_profiles WHERE branch=?", branch)
++
++
++def _push_event(conn: sqlite3.Connection, key: str) -> int:
++    rows = conn.execute(
++        "SELECT event_id,payload_json FROM campaign_gate_events "
++        "WHERE campaign_unit_key=? AND event_type='PUSH' ORDER BY event_id DESC",
++        (key,),
++    ).fetchall()
++    return next(
++        (
++            int(row["event_id"])
++            for row in rows
++            if json.loads(row["payload_json"])["ref_class"] == "sandbox"
++        ),
++        0,
++    )
++
++
++def _snapshot(db: StateDatabase, ids: tuple[str, ...], key: str) -> TriggerSnapshot:
++    conn = state._read_connection(db)
++    try:
++        conn.execute("BEGIN")
++        links = sandbox._links(conn, ids)
++        round_ = sandbox._round(conn, key)
++        if links[0]["campaign_unit_key"] != key:
++            raise state.CampaignStateBusy("unit changed during locking")
++        if round_ is None or links[0]["round_index"] != round_.round_index:
++            raise _Rejected("REJECTED_ROUND_SUPERSEDED")
++        unit = state._require_unit(conn, key)
++        gate = state._gate_view_on_connection(conn, key)
++        status = sandbox._status(conn, key)
++        if status not in _STATUSES or not gate.derive or not gate.sandbox_push:
++            raise _Rejected("REJECTED_SANDBOX_NOT_BOUND")
++        derived = str(gate.derive["derived_commit_sha"])
++        push = dict(gate.sandbox_push)
++        if (
++            push["result"] != "ok"
++            or push["pushed_sha"] != derived
++            or not isinstance(push["ref"], str)
++            or not push["ref"].startswith("refs/heads/")
++            or sandbox._BRANCH.fullmatch(push["ref"].removeprefix("refs/heads/")) is None
++            or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/+-]*", unit.project) is None
++            or ".." in unit.project
++            or unit.project.endswith("/")
++        ):
++            raise _Rejected("REJECTED_SANDBOX_NOT_BOUND")
++        request = _latest_request(conn, key)
++        seq = request["request_seq"] if request else None
++        bound = _row(
++            conn,
++            "SELECT * FROM campaign_qb_events WHERE request_seq=? "
++            "AND event_type='BUILD_BOUND' ORDER BY event_id DESC LIMIT 1",
++            seq,
++        )
++        result = _row(
++            conn,
++            "SELECT * FROM campaign_qb_events WHERE request_seq=? "
++            "AND event_type='RESULT' ORDER BY event_id DESC LIMIT 1",
++            seq,
++        )
++        return TriggerSnapshot(
++            unit,
++            str(status),
++            derived,
++            push,
++            _push_event(conn, key),
++            request,
++            bound,
++            result,
++            _profile(conn, unit.branch),
++        )
++    finally:
++        conn.close()
++
++
++def _idempotency(snapshot: TriggerSnapshot, retrigger: bool) -> str | None:
++    if snapshot.request is None:
++        return None
++    if snapshot.bound is None:
++        return None if snapshot.status == "QB_SUBMIT_FAILED" or retrigger else "already_requested"
++    if snapshot.result is None or snapshot.result["status"] == "PASS":
++        if retrigger:
++            raise _Rejected("REJECTED_QB_REQUEST_PENDING")
++        return "already_passed" if snapshot.result else "already_requested"
++    return None if retrigger else "already_requested"
++
++
++def snapshot_message(frozen: str, selected: list[str] | None) -> str:
++    if selected is not None and len(selected) == 1 and frozen != "@freeze":
++        return f"参考快照已从 {frozen} 变为 {selected[0]},需在新 campaign 中处理"
++    prefix = "尚无冻结值" if frozen == "@freeze" else f"冻结值 {frozen}"
++    if selected is None:
++        current = "当前选中项形态不在登记范围"
++    elif not selected:
++        current = "当前无选中项"
++    else:
++        current = "当前选中多项:" + ",".join(selected)
++    return f"参考快照{prefix} 已不在下拉框中,{current},需在新 campaign 中处理"
++
++
++def _trace(root: Path, key: str, facts: dict[str, Any]) -> None:
++    _check_diagnostic_strings(facts, PageRedactor())
++    path = root / "qb_traces" / (_unit_hash(key) + ".jsonl")
++    path.parent.mkdir(parents=True, exist_ok=True)
++    with path.open("a", encoding="utf-8") as stream:
++        stream.write(json.dumps(facts, ensure_ascii=False, sort_keys=True) + "\n")
++
++
++def _diagnostic(root: Path, key: str, diagnostic: dict[str, Any]) -> str | None:
++    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
++    directory = root / "qb_diagnostics" / f"{stamp}-{_unit_hash(key)}"
++    try:
++        directory.mkdir(parents=True)
++        html = diagnostic["html_redacted"].encode("utf-8")
++        facts = {name: value for name, value in diagnostic.items() if name != "html_redacted"}
++        redactor = PageRedactor()
++        redactor.check_bytes(html)
++        _check_diagnostic_strings(facts, redactor)
++        (directory / "page.html").write_bytes(html)
++        (directory / "structure.json").write_text(
++            json.dumps(facts, ensure_ascii=False, sort_keys=True), encoding="utf-8"
++        )
++        redactor.check_bytes((directory / "page.html").read_bytes())
++        _check_diagnostic_strings(json.loads((directory / "structure.json").read_bytes()), redactor)
++        return str(directory)
++    except (OSError, ValueError, EvidenceRedactionError):
++        shutil.rmtree(directory, ignore_errors=True)
++        return None
++
++
++def _readback_profile(
++    project: dict[str, Any], fields: dict[str, Any], filled: dict[str, Any], frozen: bool
++) -> str:
++    actual = filled.get("readback")
++    expected_keys = {f"{key}/{'selection' if key in _PALETTES else 'value'}" for key in fields}
++    if not isinstance(actual, dict) or set(actual) != expected_keys:
++        raise _Rejected("REJECTED_QB_FORM_MISMATCH")
++    values = {}
++    for key, wanted in fields.items():
++        value = actual[f"{key}/{'selection' if key in _PALETTES else 'value'}"]
++        values[key] = value
++        if key == "SNAPSHOT_NUM" and wanted == "@freeze":
++            if not isinstance(value, str) or not value or value == "@freeze":
++                raise _Rejected("REJECTED_QB_FORM_MISMATCH")
++            continue
++        if type(value) is not type(wanted) or value != wanted:
++            code = "REJECTED_QB_FORM_MISMATCH"
++            if frozen and key in FORM_KEYS:
++                code = "REJECTED_QB_PARAMS_CHANGED"
++            if key == "SNAPSHOT_NUM":
++                selected = (
++                    [value]
++                    if (
++                        isinstance(value, str)
++                        and len(value) <= 200
++                        and re.fullmatch(r"[A-Za-z0-9._:+-]+", value)
++                    )
++                    else None
++                )
++                raise QbBrowserError(
++                    "REJECTED_QB_SNAPSHOT_UNAVAILABLE",
++                    snapshot_state={
++                        "selected": selected,
++                        "option_count": filled.get("snapshot_option_count", 0),
++                    },
++                )
++            raise _Rejected(code)
++    candidate = copy.deepcopy(project)
++    candidate["form"] = {key: values[key] for key in FORM_KEYS}
++    return canonical_profile_json(candidate)
++
++
++def _remote_check(config: sandbox._Config, snapshot: TriggerSnapshot, root: Path) -> None:
++    path = root / ".transport"
++    try:
++        if path.is_symlink() or path.is_file():
++            path.unlink()
++        elif path.exists():
++            shutil.rmtree(path)
++        # ls-remote needs no source objects or alternates. Never inspect the main copy.
++        config.git.run(None, "init", "--bare", str(path))
++        remote = config.remote_base.rstrip("/") + "/" + snapshot.unit.project
++        sandbox._remote_check(config.git, path, remote)
++        if (
++            sandbox._classify_ref(snapshot.push["ref"], config.git) != sandbox.RefClass.SANDBOX
++            or sandbox._remote_sha(config.git, path, remote, snapshot.push["ref"])
++            != snapshot.derived
++        ):
++            raise _Rejected("REJECTED_SANDBOX_NOT_BOUND")
++    except (sandbox._Reject, sandbox._TransportFailure, OSError, subprocess.SubprocessError):
++        raise _Rejected("REJECTED_SANDBOX_NOT_BOUND") from None
++    finally:
++        if path.exists():
++            shutil.rmtree(path)
++
++
++def _intent(
++    db: StateDatabase, snapshot: TriggerSnapshot, profile: str, request_id: str, target: str
++) -> int:
++    key = snapshot.unit.campaign_unit_key
++    with _write(db) as conn:
++        latest = _latest_request(conn, key)
++        if (
++            sandbox._status(conn, key) != snapshot.status
++            or (latest["request_seq"] if latest else None)
++            != (snapshot.request["request_seq"] if snapshot.request else None)
++            or _push_event(conn, key) != snapshot.push_event
++        ):
++            raise _Rejected("REJECTED_STATE_INCONSISTENT")
++        current = _profile(conn, snapshot.unit.branch)
++        if current is not None and current["profile_json"] != profile:
++            raise _Rejected("REJECTED_QB_PARAMS_CHANGED")
++        state._insert_qb_profile_on_connection(conn, snapshot.unit.branch, profile_json=profile)
++        seq = state._create_qb_request_on_connection(
++            conn, key, request_id=request_id, sbs_target=target
++        )
++        state._append_status_on_connection(conn, key, "QB_REQUESTED")
++        return seq
++
++
++class _VariableRows(HTMLParser):
++    """Read server variable rows with explicit br/newline boundaries, not a page summary."""
++
++    def __init__(self) -> None:
++        super().__init__(convert_charrefs=True)
++        self.rows: list[list[str]] = []
++        self.cells: list[str] | None = None
++        self.cell: list[str] | None = None
++
++    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
++        if tag == "tr":
++            self.cells = []
++        elif tag in {"td", "th"} and self.cells is not None:
++            self.cell = []
++        elif tag == "br" and self.cell is not None:
++            self.cell.append("\n")
++
++    def handle_data(self, data: str) -> None:
++        if self.cell is not None:
++            self.cell.append(data)
++
++    def handle_endtag(self, tag: str) -> None:
++        if tag in {"td", "th"} and self.cell is not None and self.cells is not None:
++            self.cells.append("".join(self.cell).strip())
++            self.cell = None
++        elif tag == "tr" and self.cells is not None:
++            self.rows.append(self.cells)
++            self.cells = None
++
++
++def _binding_echo(response: dict[str, Any], target: str, marker: str) -> bool:
++    if response.get("status") != 200 or not isinstance(response.get("html_redacted"), str):
++        return False
++    parser = _VariableRows()
++    parser.feed(response["html_redacted"])
++
++    def value(name: str, label: str) -> str | None:
++        rows = [row for row in parser.rows if len(row) == 3 and row[0] == name]
++        return rows[0][2] if len(rows) == 1 and rows[0][1] == label else None
++
++    packages = value("BUILD_PKG_LIST_MODIFY", "Build Package List")
++    return (
++        packages is not None
++        and [line.strip() for line in packages.splitlines() if line.strip()] == [target]
++        and value("BUILD_NOTES", "BUILD NOTES") == marker
++    )
++
++
++def _bind(db: StateDatabase, key: str, seq: int, build: str) -> None:
++    with _write(db) as conn:
++        latest = _latest_request(conn, key)
++        if (
++            latest is None
++            or latest["request_seq"] != seq
++            or conn.execute(
++                "SELECT 1 FROM campaign_qb_events WHERE event_type='BUILD_BOUND' "
++                "AND (request_seq=? OR qb_build_id=?)",
++                (seq, build),
++            ).fetchone()
++        ):
++            raise _Rejected("REJECTED_QB_BINDING_MISMATCH")
++        state._append_qb_event_on_connection(
++            conn, request_seq=seq, event_type="BUILD_BOUND", qb_build_id=build
++        )
++        state._append_status_on_connection(conn, key, "QB_TRIGGERED")
++
++
++def _submit(
++    db: StateDatabase,
++    browser: QbBrowser,
++    snapshot: TriggerSnapshot,
++    result: dict[str, Any],
++    fingerprint: str,
++    root: Path,
++) -> None:
++    key, seq = snapshot.unit.campaign_unit_key, result["request_seq"]
++    try:
++        reply = browser.command("submit", fingerprint=fingerprint)
++    except QbBrowserError as exc:
++        if exc.released is not False:
++            raise
++        with _write(db) as conn:
++            state._append_status_on_connection(conn, key, "QB_SUBMIT_FAILED")
++        result.update(
++            action="submit_failed", status="QB_SUBMIT_FAILED", error_code="REJECTED_QB_FORM_CHANGED"
++        )
++        if exc.diagnostic is not None:
++            result["diagnostic_dir"] = _diagnostic(root, key, exc.diagnostic)
++        return
++    if reply["landed"] == "build":
++        build = reply["build_id"]
++        try:
++            echo = browser.command("read", path=f"/build/{build}/variables")
++            if not _binding_echo(
++                echo, result["sbs_target"], f"clang-fix-campaign request={result['request_id']}"
++            ):
++                raise _Rejected("REJECTED_QB_BINDING_MISMATCH")
++            _bind(db, key, seq, build)
++        except (_Rejected, QbBrowserError) as exc:
++            result.update(action="submit_uncertain", error_code="REJECTED_QB_BINDING_MISMATCH")
++            if isinstance(exc, QbBrowserError) and exc.diagnostic is not None:
++                result["diagnostic_dir"] = _diagnostic(root, key, exc.diagnostic)
++            return
++        result.update(action="submitted_bound", status="QB_TRIGGERED", qb_build_id=build)
++    else:
++        result.update(
++            action="submit_uncertain", error_code="QB_SUBMIT_UNCERTAIN", message=_UNKNOWN_MESSAGE
++        )
++        _trace(
++            root,
++            key,
++            {
++                "request_id": result["request_id"],
++                "message": _UNKNOWN_MESSAGE,
++                "observed": reply["observed"],
++                "messages": reply["messages"],
++            },
++        )
++
++
++def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[dict[str, Any]]]:
++    try:
++        groups = _groups(options)
++        raw = yaml.safe_load(options.config.read_text(encoding="utf-8"))
++        qb = parse_qb_config(raw.get("qb") if isinstance(raw, dict) else None)
++        config = sandbox._config(options.config)
++    except (ValueError, OSError, yaml.YAMLError, sandbox._Reject):
++        return 2, [dict(empty_result(), error_code="INVALID_ARGS")]
++    db = StateDatabase(options.state_db)
++    results: list[dict[str, Any]] = []
++    exit_code = 0
++    browser: QbBrowser | None = None
++    login_failure: str | None = None
++    try:
++        for ids in groups:
++            result = empty_result()
++            results.append(result)
++            key = "unselected"
++            fields: dict[str, Any] = {}
++            try:
++                if login_failure:
++                    result.update(action="submit_failed", error_code=login_failure)
++                    continue
++                conn = state._read_connection(db)
++                try:
++                    key = str(sandbox._links(conn, ids)[0]["campaign_unit_key"])
++                finally:
++                    conn.close()
++                result["campaign_unit_key"] = key
++                root = config.workspace / _unit_hash(key)
++                with _lock(root):
++                    snapshot = _snapshot(db, ids, key)
++                    result.update(
++                        status=snapshot.status,
++                        sbs_target=f"{snapshot.unit.project}@{snapshot.derived}",
++                    )
++                    aggregate = aggregate_verifications(ids, db)
++                    if not aggregate.ok:
++                        raise _Rejected("REJECTED_ARCH_AGGREGATE_MISMATCH")
++                    project = project_for_branch(qb, snapshot.unit.branch)
++                    frozen = (
++                        json.loads(snapshot.profile["profile_json"]) if snapshot.profile else None
++                    )
++                    frozen_json = snapshot.profile["profile_json"] if snapshot.profile else None
++                    if (
++                        frozen is not None
++                        and canonical_profile_json(
++                            project, frozen_snapshot=frozen["form"]["SNAPSHOT_NUM"]
++                        )
++                        != frozen_json
++                    ):
++                        raise _Rejected("REJECTED_QB_PARAMS_CHANGED")
++                    action = _idempotency(snapshot, options.retrigger)
++                    if action:
++                        assert snapshot.request is not None
++                        result.update(
++                            action=action,
++                            request_id=snapshot.request["request_id"],
++                            request_seq=snapshot.request["request_seq"],
++                            qb_build_id=snapshot.bound["qb_build_id"] if snapshot.bound else None,
++                        )
++                        continue
++                    if browser is None:
++                        browser = QbBrowser(qb)
++                        browser.__enter__()
++                        try:
++                            browser.login()
++                        except QbBrowserError as exc:
++                            login_failure = exc.code
++                            result.update(action="submit_failed", error_code=exc.code)
++                            exit_code = 5
++                            continue
++                    request_id = uuid.uuid4().hex
++                    result["request_id"] = request_id
++                    browser.command("open_form", overview_id=project["overview_id"])
++                    fields = copy.deepcopy(frozen["form"] if frozen else project["form"])
++                    fields.update(
++                        {
++                            "Build Package List": result["sbs_target"],
++                            "BUILD NOTES": f"clang-fix-campaign request={request_id}",
++                        }
++                    )
++                    filled = browser.command("fill", fields=fields)
++                    profile = _readback_profile(project, fields, filled, frozen is not None)
++                    if frozen is not None and profile != frozen_json:
++                        raise _Rejected("REJECTED_QB_PARAMS_CHANGED")
++                    _remote_check(config, snapshot, root)
++                    _trace(
++                        options.state_root,
++                        key,
++                        {
++                            "sbs_target": result["sbs_target"],
++                            "request_id": request_id,
++                            "fingerprint": filled["fingerprint"],
++                            "first_freeze": frozen is None,
++                            "snapshot_option_count": filled["snapshot_option_count"],
++                        },
++                    )
++                    seq = _intent(db, snapshot, profile, request_id, result["sbs_target"])
++                    result.update(request_seq=seq, status="QB_REQUESTED")
++                    _submit(
++                        db, browser, snapshot, result, filled["fingerprint"], options.state_root
++                    )
++                    if result["action"] in {"submit_failed", "submit_uncertain"}:
++                        exit_code = 5
++            except (QbBrowserError, _Rejected, QbProjectNotReady, sandbox._Reject) as exc:
++                result["error_code"] = exc.code
++                exit_code = max(exit_code, 4 if exc.code.startswith("REJECTED_") else 5)
++                if isinstance(exc, QbBrowserError):
++                    if exc.snapshot_state is not None:
++                        result["message"] = snapshot_message(
++                            fields["SNAPSHOT_NUM"], exc.snapshot_state["selected"]
++                        )
++                        _trace(
++                            options.state_root,
++                            key,
++                            {
++                                "message": result["message"],
++                                "skip_reason": "qb_snapshot_unavailable",
++                            },
++                        )
++                    if exc.diagnostic is not None:
++                        result["diagnostic_dir"] = _diagnostic(
++                            options.state_root, key, exc.diagnostic
++                        )
++            except state.CampaignStateBusy:
++                result["error_code"] = "CAMPAIGN_STATE_BUSY"
++                exit_code = max(exit_code, 4)
++            except state.StateInconsistent:
++                result["error_code"] = "REJECTED_STATE_INCONSISTENT"
++                exit_code = max(exit_code, 4)
++            except EvidenceRedactionError:
++                result["error_code"] = "QB_EVIDENCE_REDACTION_FAILED"
++                exit_code = 5
++            except Exception:
++                result["error_code"] = "INTERNAL_ERROR"
++                exit_code = 5
++                traceback.print_exc(file=stderr)
++    finally:
++        if browser is not None:
++            browser.close()
++    return exit_code, results
+diff --git a/tests/unit/test_qb_trigger.py b/tests/unit/test_qb_trigger.py
+new file mode 100644
+index 0000000..ce1b3b6
+--- /dev/null
++++ b/tests/unit/test_qb_trigger.py
+@@ -0,0 +1,931 @@
++from __future__ import annotations
++
++import copy
++import fcntl
++import hashlib
++import html
++import io
++import json
++import subprocess
++import sys
++import uuid
++from pathlib import Path
++
++import pytest
++import yaml
++from ci_triage import campaign_state as state
++from ci_triage import cli
++from ci_triage import qb_trigger as trigger
++from ci_triage.qb_config import ARCHITECTURES, canonical_profile_json
++from tizen_ci_shared.state import StateDatabase, VerificationRecord, write_pass_record
++
++ROOT = Path(__file__).resolve().parents[2]
++ARCHIVE = ROOT / "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C2b/live-12"
++
++
++def git(path, *args, input=None):
++    return subprocess.run(
++        ["git", "-C", str(path), *args], check=True, capture_output=True, text=True, input=input
++    ).stdout.strip()
++
++
++def variables(target, marker, changes=None):
++    parser = trigger._VariableRows()
++    parser.feed((ARCHIVE / "02.response.html").read_text())
++    changes = {"BUILD_PKG_LIST_MODIFY": target, "BUILD_NOTES": marker, **(changes or {})}
++    rows = []
++    for row in parser.rows:
++        if len(row) != 3:
++            continue
++        if row[0] in changes:
++            if changes[row[0]] is None:
++                continue
++            row[2] = changes[row[0]]
++        rows.append(
++            "<tr>"
++            + "".join("<td>" + html.escape(value).replace("\n", "<br>") + "</td>" for value in row)
++            + "</tr>"
++        )
++    assert any("BUILD_NOTES" in row for row in rows) or changes.get("BUILD_NOTES") is None
++    return "<table>" + "".join(rows) + "</table>"
++
++
++class Campaign:
++    def __init__(self, root, monkeypatch):
++        self.root, self.monkeypatch = root, monkeypatch
++        self.db = StateDatabase(root / "state.db")
++        self.remote_base = root / "remotes"
++        self.remote_base.mkdir()
++        self.config = root / "config.yaml"
++        self.project = {
++            "enabled": True,
++            "configuration_path": "root/Tizen-Base-Toolchain/RBS/TRIGGER",
++            "overview_id": 1917,
++            "project_name": "Tizen-Base-Toolchain",
++            "qb_pass_requires_accept": False,
++            "form": {
++                "BUILD_TYPE": "Full",
++                "REPO_TYPE": "ALL",
++                "BUILD_REFERENCE": "Ref. Snapshot",
++                "SNAPSHOT_NUM": "@freeze",
++                "PROJECT_BRANCH": "tizen_base",
++                "Immediate Stop With Error": True,
++                "CHILD_CONFIGURATIONS": [ARCHITECTURES],
++                "TARGET_IMAGE": [],
++                "Add Package List": "",
++                "Remove Package List": "",
++            },
++        }
++        self.data = {
++            "campaign_workspace": str(root / "ws"),
++            "gerrit_ssh_base": str(self.remote_base),
++            "git_author_identity": "Test <test@example.com>",
++            "git_committer_identity": "Test <test@example.com>",
++            "gerrit_commit_msg_hook": str(root / "hook"),
++            "gerrit_commit_msg_hook_sha256": "a" * 64,
++            "qb": {
++                "base_url": "https://quickbuild.tizen.org",
++                "browser": {
++                    "node": sys.executable,
++                    "playwright_module": sys.executable,
++                    "chromium": sys.executable,
++                    "login_timeout_seconds": 60,
++                },
++                "projects": {"tizen_base": self.project},
++            },
++        }
++        self.save_config()
++        self.units = {}
++        self.add_unit("u1")
++        self.calls = []
++        self.agent_starts = 0
++        self.agent_transcript = root / "commands.jsonl"
++        self.script = root / "responses.json"
++        self.original_popen = subprocess.Popen
++
++        def popen(argv, *args, **kwargs):
++            self.calls.append((list(argv), kwargs.get("env", {})))
++            assert "push" not in argv, "no pushes, including local pushes"
++            if any(str(arg).endswith("qb_browser_agent.mjs") for arg in argv):
++                self.agent_starts += 1
++                argv = [
++                    sys.executable,
++                    str(ROOT / "tests/fixtures/qb_fake_agent.py"),
++                    str(self.script),
++                    str(self.agent_transcript),
++                ]
++            return self.original_popen(argv, *args, **kwargs)
++
++        monkeypatch.setattr(subprocess, "Popen", popen)
++        self.ids = iter(range(1, 100))
++        monkeypatch.setattr(trigger.uuid, "uuid4", lambda: uuid.UUID(int=next(self.ids)))
++
++    def save_config(self):
++        self.config.write_text(yaml.safe_dump(self.data))
++
++    def sql(self, sql, params=()):
++        conn = self.db.connect()
++        try:
++            with conn:
++                return [dict(row) for row in conn.execute(sql, params)]
++        finally:
++            conn.close()
++
++    def add_unit(self, key, branch="tizen_base"):
++        remote = self.remote_base / key
++        remote.mkdir()
++        git(remote, "init", "--bare", "-q")
++        git(remote, "config", "user.name", "Test")
++        git(remote, "config", "user.email", "test@example.com")
++        tree = git(remote, "mktree", input="")
++        commit = git(remote, "commit-tree", tree, input="derived\n")
++        git(remote, "update-ref", "refs/heads/sandbox/test", commit)
++        state.create_unit(
++            self.db,
++            campaign_unit_key=key,
++            submission_identity_key=key,
++            ci_system="quickbuild",
++            source_build_id="1",
++            project=key,
++            branch=branch,
++            spec_name=key,
++            base_commit=commit,
++            primary_arch="standard-aarch64",
++            failed_arches=["standard-aarch64"],
++            toolchain_profile="clang",
++            ci_evidence_ref="evidence",
++            ci_evidence_sha256="a" * 64,
++            max_rounds=3,
++            max_build_invocations=9,
++        )
++        state.create_round(
++            self.db, key, round_index=1, edit_spec_ref="edit", edit_spec_sha256="e" * 64
++        )
++        for i, arch in enumerate(("aarch64", "armv7l", "x86_64")):
++            record = VerificationRecord(
++                verification_id=f"{key}-v{i}",
++                result="PASS",
++                timestamp="2026-10-14T00:00:00Z",
++                failure_key=f"{key}-{arch}",
++                base_commit=commit,
++                verified_commit_sha=commit,
++                verified_tree_sha=tree,
++                canonical_diff_sha256="d" * 64,
++                patch_sha256="d" * 64,
++                edit_spec_sha256="e" * 64,
++                project=key,
++                branch=branch,
++                spec_name=key,
++                arch="standard-" + arch,
++                gbs_conf_sha256="f" * 64,
++                build_log_sha256="b" * 64,
++                worktree_path=str(self.root / key / arch),
++                command_line="gbs build",
++            )
++            write_pass_record(self.db, record)
++            self.sql(
++                "INSERT INTO campaign_verifications (campaign_unit_key,arch_raw,arch_norm,"
++                "verification_id,round_index,edit_spec_sha256,campaign_schema_version,created_at) "
++                "VALUES (?,?,?,?,?,?,?,?)",
++                (
++                    key,
++                    record.arch,
++                    arch,
++                    record.verification_id,
++                    1,
++                    "e" * 64,
++                    "campaign/v1",
++                    "2026-10-14T00:00:00Z",
++                ),
++            )
++        derive = dict(
++            message_brief="fix",
++            author_identity="Test <test@example.com>",
++            committer_identity="Test <test@example.com>",
++            author_date="2026-10-14T00:00:00Z",
++            committer_date="2026-10-14T00:00:00Z",
++            derived_commit_sha=commit,
++            verified_tree_sha=tree,
++        )
++        push = dict(
++            ref="refs/heads/sandbox/test",
++            ref_class="sandbox",
++            pushed_sha=commit,
++            result="ok",
++            url=None,
++            at="2026-10-14T00:00:00Z",
++        )
++        state.append_event(self.db, key, "DERIVE", derive)
++        state.append_event(self.db, key, "PUSH", push)
++        state.append_status(self.db, key, "SANDBOX_PUSHED")
++        self.units[key] = dict(derived=commit, remote=remote, push=push, branch=branch)
++
++    def commands(self):
++        return [json.loads(line) for line in self.agent_transcript.read_text().splitlines()]
++
++    def snapshot(self):
++        return {
++            table: self.sql("SELECT * FROM " + table)
++            for table in (
++                "campaign_qb_profiles",
++                "campaign_qb_requests",
++                "campaign_qb_events",
++                "campaign_gate_events",
++                "campaign_status_log",
++            )
++        }
++
++    def replies(
++        self, key="u1", request=1, build="100", current="snap-A", option_count=1, read_changes=None
++    ):
++        unit = self.units[key]
++        fields = copy.deepcopy(self.data["qb"]["projects"][unit["branch"]]["form"])
++        fields["SNAPSHOT_NUM"] = current
++        target = key + "@" + unit["derived"]
++        marker = "clang-fix-campaign request=" + uuid.UUID(int=request).hex
++        fields.update({"Build Package List": target, "BUILD NOTES": marker})
++        readback = {
++            f"{name}/{'selection' if name in trigger._PALETTES else 'value'}": value
++            for name, value in fields.items()
++        }
++        return [
++            {"ok": True, "released": False},
++            {
++                "ok": True,
++                "released": False,
++                "readback": readback,
++                "fingerprint": "a" * 64,
++                "snapshot_option_count": option_count,
++            },
++            {"ok": True, "released": True, "landed": "build", "build_id": build},
++            {"ok": True, "status": 200, "html_redacted": variables(target, marker, read_changes)},
++        ]
++
++    def run(self, replies=None, *, units=None, retrigger=False):
++        self.calls.clear()
++        self.agent_transcript.write_text("")
++        self.script.write_text(
++            json.dumps([{"ok": True}, *(replies if replies is not None else self.replies())])
++        )
++        args = [
++            "qb-trigger",
++            "--state-db",
++            str(self.db.path),
++            "--state-root",
++            str(self.root / "evidence"),
++            "--config",
++            str(self.config),
++        ]
++        if units is None:
++            args += ["--verification-ids", "u1-v0,u1-v1,u1-v2"]
++        else:
++            path = self.root / "units.json"
++            path.write_text(
++                json.dumps(
++                    [{"verification_ids": [f"{key}-v{i}" for i in range(3)]} for key in units]
++                )
++            )
++            args += ["--units-file", str(path)]
++        if retrigger:
++            args += ["--retrigger"]
++        out, self.err = io.StringIO(), io.StringIO()
++        code = cli.main(args, stdout=out, stderr=self.err)
++        return code, json.loads(out.getvalue())
++
++    def seed(self, kind, key="u1"):
++        if kind == "none":
++            return
++        seq = state.create_qb_request(
++            self.db, key, request_id="old-" + key, sbs_target=key + "@" + self.units[key]["derived"]
++        )
++        status = "QB_SUBMIT_FAILED" if kind == "failed-submit" else "QB_REQUESTED"
++        if kind in {"bound", "pass", "fail"}:
++            state.append_qb_event(
++                self.db, request_seq=seq, event_type="BUILD_BOUND", qb_build_id="99"
++            )
++            status = "QB_TRIGGERED"
++        if kind in {"pass", "fail"}:
++            state.append_qb_event(
++                self.db,
++                request_seq=seq,
++                event_type="RESULT",
++                qb_build_id="99",
++                status=kind.upper(),
++                sbs_target_echo=key + "@" + self.units[key]["derived"],
++                qb_result_sha256="a" * 64,
++                qb_result_ref="unchanged.json",
++            )
++            status = "SANDBOX_QB_PASS" if kind == "pass" else "SANDBOX_QB_FAILED"
++        state.append_status(self.db, key, status)
++
++
++@pytest.fixture
++def c(tmp_path, monkeypatch):
++    return Campaign(tmp_path, monkeypatch)
++
++
++def test_submitted_bound_and_profile(c):
++    code, rows = c.run()
++    assert (code, rows[0]["action"]) == (0, "submitted_bound"), c.err.getvalue()
++    assert [r["event_type"] for r in c.sql("SELECT * FROM campaign_qb_events")] == [
++        "SUBMITTED",
++        "BUILD_BOUND",
++    ]
++    assert rows[0]["status"] == "QB_TRIGGERED"
++    profile = state.qb_profile(c.db, "tizen_base")
++    assert profile["profile_sha256"] == hashlib.sha256(profile["profile_json"].encode()).hexdigest()
++    assert json.loads(profile["profile_json"])["form"]["SNAPSHOT_NUM"] == "snap-A"
++    assert [command["command"] for command in c.commands()] == [
++        "login",
++        "open_form",
++        "fill",
++        "submit",
++        "read",
++        "close",
++    ]
++
++
++@pytest.mark.parametrize("kind", ["none", "failed-submit", "uncertain", "bound", "pass", "fail"])
++@pytest.mark.parametrize("retrigger", [False, True])
++def test_idempotency_every_cell(c, kind, retrigger):
++    c.seed(kind)
++    old = c.sql("SELECT * FROM campaign_qb_events")
++    will_submit = kind in {"none", "failed-submit"} or retrigger and kind in {"uncertain", "fail"}
++    pending = retrigger and kind in {"bound", "pass"}
++    code, rows = c.run(retrigger=retrigger)
++    assert code == (4 if pending else 0), c.err.getvalue()
++    expected = (
++        "submitted_bound"
++        if will_submit
++        else "rejected"
++        if pending
++        else "already_passed"
++        if kind == "pass"
++        else "already_requested"
++    )
++    assert rows[0]["action"] == expected
++    assert len([x for x in c.commands() if x["command"] == "submit"]) == int(will_submit)
++    assert len(c.sql("SELECT * FROM campaign_qb_requests")) == (kind != "none") + will_submit
++    assert c.sql("SELECT * FROM campaign_qb_events")[: len(old)] == old
++    if not will_submit:
++        assert c.agent_starts == 0
++
++
++@pytest.mark.parametrize("fault", ["status", "derive", "push", "result", "sha", "ref", "project"])
++def test_precondition_rejections(c, fault):
++    if fault == "status":
++        state.append_status(c.db, "u1", "REPAIR_ROUND_RUNNING")
++    elif fault in {"derive", "push"}:
++        c.sql("DELETE FROM campaign_gate_events WHERE event_type=?", (fault.upper(),))
++    elif fault == "project":
++        c.sql("UPDATE campaign_units SET project='../bad' WHERE campaign_unit_key='u1'")
++    else:
++        push = dict(c.units["u1"]["push"])
++        push.update(
++            {"result": "failed"}
++            if fault == "result"
++            else {"pushed_sha": "f" * 40}
++            if fault == "sha"
++            else {"ref": "refs/heads/main"}
++        )
++        state.append_event(c.db, "u1", "PUSH", push)
++    before = c.snapshot()
++    code, rows = c.run()
++    assert (code, rows[0]["error_code"]) == (4, "REJECTED_SANDBOX_NOT_BOUND"), c.err.getvalue()
++    assert c.snapshot() == before and c.agent_starts == 0
++
++
++def test_three_units_middle_fill_failure(c):
++    c.add_unit("u2")
++    c.add_unit("u3")
++    before = c.snapshot()
++    replies = (
++        c.replies()
++        + [c.replies("u2", 2)[0], {"ok": False, "error": "QB_FORM_READBACK_MISMATCH"}]
++        + c.replies("u3", 3, "102")
++    )
++    code, rows = c.run(replies, units=["u1", "u2", "u3"])
++    assert code == 4, c.err.getvalue()
++    assert [row["action"] for row in rows] == ["submitted_bound", "rejected", "submitted_bound"]
++    names = [x["command"] for x in c.commands()]
++    assert (names.count("login"), names.count("open_form"), names.count("submit")) == (1, 3, 2)
++    assert len(c.sql("SELECT * FROM campaign_qb_requests")) == 2
++    after = c.snapshot()
++    for table in before:
++        assert [r for r in before[table] if r.get("campaign_unit_key") == "u2"] == [
++            r for r in after[table] if r.get("campaign_unit_key") == "u2"
++        ]
++
++
++@pytest.mark.parametrize("current", [["snap-B"], ["snap-C"], [], ["snap-B", "snap-C"], None])
++def test_snapshot_unavailable_message_and_other_unit_unchanged(c, current):
++    c.add_unit("u2")
++    c.seed("pass", "u2")
++    result_file = c.root / "unchanged.json"
++    result_file.write_text('{"status":"PASS"}\n')
++    conn = c.db.connect()
++    with conn:
++        state._insert_qb_profile_on_connection(
++            conn,
++            "tizen_base",
++            profile_json=canonical_profile_json(c.project, frozen_snapshot="snap-A"),
++        )
++    conn.close()
++    before, result_bytes = c.snapshot(), result_file.read_bytes()
++    replies = [
++        c.replies()[0],
++        {
++            "ok": False,
++            "error": "QB_FORM_VALUE_UNAVAILABLE",
++            "field": "SNAPSHOT_NUM",
++            "released": False,
++            "snapshot_state": {"selected": current, "option_count": 3},
++        },
++    ]
++    code, rows = c.run(replies)
++    assert (code, rows[0]["error_code"]) == (4, "REJECTED_QB_SNAPSHOT_UNAVAILABLE")
++    assert rows[0]["message"] == trigger.snapshot_message("snap-A", current)
++    if current and len(current) == 1:
++        assert current[0] in rows[0]["message"]
++    assert c.snapshot() == before and result_file.read_bytes() == result_bytes
++    trace = next((c.root / "evidence/qb_traces").glob("*.jsonl")).read_text()
++    assert rows[0]["message"] in trace and "qb_snapshot_unavailable" in trace
++    assert not any(x["command"] == "submit" for x in c.commands())
++
++
++@pytest.mark.parametrize("count", [1, 4])
++def test_freeze_selected_and_option_count(c, count):
++    code, rows = c.run(c.replies(option_count=count))
++    assert code == 0, c.err.getvalue()
++    trace = json.loads(next((c.root / "evidence/qb_traces").glob("*.jsonl")).read_text())
++    assert trace["snapshot_option_count"] == count and trace["first_freeze"] is True
++
++
++@pytest.mark.parametrize("field", sorted(trigger.FORM_KEYS | {"Build Package List", "BUILD NOTES"}))
++def test_each_field_readback_mismatch(c, field):
++    replies = c.replies()
++    key = field + ("/selection" if field in trigger._PALETTES else "/value")
++    old = replies[1]["readback"][key]
++    if field == "SNAPSHOT_NUM":
++        c.project["form"][field] = "snap-A"
++        c.save_config()
++    replies[1]["readback"][key] = (
++        old + ["extra"]
++        if isinstance(old, list)
++        else not old
++        if isinstance(old, bool)
++        else old + " "
++    )
++    code, rows = c.run(replies)
++    assert code == 4
++    assert rows[0]["error_code"] == (
++        "REJECTED_QB_SNAPSHOT_UNAVAILABLE"
++        if field == "SNAPSHOT_NUM"
++        else "REJECTED_QB_FORM_MISMATCH"
++    )
++    assert c.sql("SELECT * FROM campaign_qb_requests") == []
++
++
++@pytest.mark.parametrize(
++    "fault", ["marker", "target-two", "target-missing", "marker-missing", "bound-elsewhere"]
++)
++def test_landed_binding_mismatch(c, fault):
++    changes = {
++        "marker": {"BUILD_NOTES": "wrong"},
++        "target-two": {"BUILD_PKG_LIST_MODIFY": "x@y\nz@q"},
++        "target-missing": {"BUILD_PKG_LIST_MODIFY": None},
++        "marker-missing": {"BUILD_NOTES": None},
++    }
++    if fault == "bound-elsewhere":
++        c.add_unit("u2")
++        seq = state.create_qb_request(c.db, "u2", request_id="other", sbs_target="u2@sha")
++        state.append_qb_event(c.db, request_seq=seq, event_type="BUILD_BOUND", qb_build_id="100")
++    code, rows = c.run(c.replies(read_changes=changes.get(fault)))
++    assert (code, rows[0]["action"], rows[0]["error_code"]) == (
++        5,
++        "submit_uncertain",
++        "REJECTED_QB_BINDING_MISMATCH",
++    )
++    assert rows[0]["status"] == "QB_REQUESTED"
++    assert not c.sql(
++        "SELECT * FROM campaign_qb_events WHERE request_seq=? AND event_type='BUILD_BOUND'",
++        (rows[0]["request_seq"],),
++    )
++
++
++@pytest.mark.parametrize(
++    "reply",
++    [
++        {"ok": True, "released": True, "landed": "unknown", "observed": "<other>", "messages": []},
++        "EXIT",
++        "INVALID_JSON",
++    ],
++)
++def test_uncertain_and_rerun(c, reply):
++    code, rows = c.run(c.replies()[:2] + [reply])
++    assert (code, rows[0]["error_code"]) == (5, "QB_SUBMIT_UNCERTAIN")
++    assert "--request-id" in rows[0]["message"] and "--retrigger" in rows[0]["message"]
++    assert [r["event_type"] for r in c.sql("SELECT * FROM campaign_qb_events")] == ["SUBMITTED"]
++    assert c.run()[1][0]["action"] == "already_requested"
++
++
++def test_not_released_allows_new_request_without_retrigger(c):
++    code, rows = c.run(
++        c.replies()[:2] + [{"ok": False, "released": False, "error": "QB_FORM_CHANGED"}]
++    )
++    assert code == 5 and rows[0]["status"] == "QB_SUBMIT_FAILED"
++    code, rows = c.run(c.replies(request=2))
++    assert code == 0 and rows[0]["action"] == "submitted_bound", c.err.getvalue()
++    assert len(c.sql("SELECT * FROM campaign_qb_requests")) == 2
++    assert sum(x["command"] == "submit" for x in c.commands()) == 1
++
++
++@pytest.mark.parametrize("error", ["QB_LOGIN_TIMEOUT", "QB_LOGIN_ABORTED"])
++def test_login_failure_all_remaining_no_writes(c, error):
++    c.add_unit("u2")
++    before = c.snapshot()
++    old_enter = trigger.QbBrowser.__enter__
++
++    def enter(agent):
++        c.script.write_text(json.dumps([{"ok": False, "error": error}]))
++        return old_enter(agent)
++
++    c.monkeypatch.setattr(trigger.QbBrowser, "__enter__", enter)
++    code, rows = c.run(units=["u1", "u2"])
++    assert code == 5 and all(
++        row["action"] == "submit_failed" and row["error_code"] == error for row in rows
++    )
++    assert c.snapshot() == before
++
++
++@pytest.mark.parametrize("point", ["status", "request", "push", "same-profile", "other-profile"])
++def test_intent_concurrent_recheck(c, point):
++    original = trigger._intent
++
++    def race(db, snapshot, profile, request_id, target):
++        if point == "status":
++            state.append_status(db, "u1", "KB_APPENDED")
++        elif point == "request":
++            state.create_qb_request(db, "u1", request_id="racer", sbs_target=target)
++        elif point == "push":
++            state.append_event(db, "u1", "PUSH", c.units["u1"]["push"])
++        else:
++            with trigger._write(db) as conn:
++                state._insert_qb_profile_on_connection(
++                    conn,
++                    "tizen_base",
++                    profile_json=profile
++                    if point == "same-profile"
++                    else profile.replace("snap-A", "snap-B"),
++                )
++        return original(db, snapshot, profile, request_id, target)
++
++    c.monkeypatch.setattr(trigger, "_intent", race)
++    code, rows = c.run()
++    expected = (
++        None
++        if point == "same-profile"
++        else "REJECTED_QB_PARAMS_CHANGED"
++        if point == "other-profile"
++        else "REJECTED_STATE_INCONSISTENT"
++    )
++    assert rows[0]["error_code"] == expected, c.err.getvalue()
++    assert sum(x["command"] == "submit" for x in c.commands()) == (point == "same-profile")
++    assert len(c.sql("SELECT * FROM campaign_qb_requests")) == (
++        point in {"request", "same-profile"}
++    )
++
++
++@pytest.mark.parametrize("point", ["intent-mid", "before-submit", "after-submit", "after-bind"])
++def test_crash_windows(c, point):
++    class Crash(BaseException):
++        pass
++
++    if point == "intent-mid":
++        old = state._append_status_on_connection
++
++        def crash(conn, key, status, *args, **kwargs):
++            if status == "QB_REQUESTED":
++                raise Crash()
++            return old(conn, key, status, *args, **kwargs)
++
++        c.monkeypatch.setattr(state, "_append_status_on_connection", crash)
++    elif point == "after-bind":
++        old_bind = trigger._bind
++
++        def crash_bind(*args):
++            old_bind(*args)
++            raise Crash()
++
++        c.monkeypatch.setattr(trigger, "_bind", crash_bind)
++    else:
++        command = trigger.QbBrowser.command
++
++        def crash_command(agent, name, **fields):
++            if name == "submit":
++                if point == "after-submit":
++                    command(agent, name, **fields)
++                raise Crash()
++            return command(agent, name, **fields)
++
++        c.monkeypatch.setattr(trigger.QbBrowser, "command", crash_command)
++    with pytest.raises(Crash):
++        c.run()
++    events = [r["event_type"] for r in c.sql("SELECT * FROM campaign_qb_events")]
++    assert events == (
++        []
++        if point == "intent-mid"
++        else ["SUBMITTED", "BUILD_BOUND"]
++        if point == "after-bind"
++        else ["SUBMITTED"]
++    )
++    assert len(c.sql("SELECT * FROM campaign_qb_profiles")) == (point != "intent-mid")
++
++
++def test_transport_isolation(c):
++    main = c.root / "ws" / trigger._unit_hash("u1") / "src"
++    main.mkdir(parents=True)
++    git(main, "init", "-q")
++    remote = str(c.units["u1"]["remote"])
++    wrong = str(c.root / "wrong.git")
++    git(main, "config", "remote." + remote + ".url", wrong)
++    git(main, "config", "url." + wrong + ".insteadOf", remote)
++    git(main, "config", "url." + wrong + ".pushInsteadOf", remote)
++    code, _ = c.run()
++    assert code == 0, c.err.getvalue()
++    calls = [(args, env) for args, env in c.calls if args[0] == "git"]
++    assert calls
++    for args, env in calls:
++        assert str(main) not in args and "--git-dir=" + str(main) not in args
++        for override in (
++            "core.hooksPath=/dev/null",
++            "core.fsmonitor=false",
++            "core.askPass=",
++            "credential.helper=",
++            "push.followTags=false",
++            "push.recurseSubmodules=no",
++            "push.gpgSign=false",
++            "push.pushOption=",
++        ):
++            assert override in args
++        assert env["GIT_CONFIG_NOSYSTEM"] == "1" and env["GIT_CONFIG_GLOBAL"] == "/dev/null"
++    assert not (main.parent / ".transport").exists()
++
++
++def test_wrong_remote_sha_after_fill(c):
++    command = trigger.QbBrowser.command
++
++    def changed(agent, name, **fields):
++        result = command(agent, name, **fields)
++        if name == "fill":
++            remote = c.units["u1"]["remote"]
++            tree = git(remote, "mktree", input="")
++            other = git(remote, "commit-tree", tree, input="other\n")
++            git(remote, "update-ref", "refs/heads/sandbox/test", other)
++        return result
++
++    c.monkeypatch.setattr(trigger.QbBrowser, "command", changed)
++    code, rows = c.run()
++    assert (code, rows[0]["error_code"]) == (4, "REJECTED_SANDBOX_NOT_BOUND")
++    assert c.sql("SELECT * FROM campaign_qb_requests") == []
++
++
++def test_sandbox_lock_rejects_before_agent(c):
++    root = c.root / "ws" / trigger._unit_hash("u1")
++    root.mkdir(parents=True)
++    with (root / ".sandbox_submit.lock").open("a+") as stream:
++        fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
++        code, rows = c.run()
++    assert code == 4 and rows[0]["error_code"] == "CAMPAIGN_STATE_BUSY"
++    assert c.agent_starts == 0
++
++
++@pytest.mark.parametrize("fault", ["extra", "missing", "palette-role", "duplicate-control", "form"])
++@pytest.mark.parametrize("write_failure", [False, True])
++def test_form_diagnostics_preserve_error(c, fault, write_failure):
++    diagnostic = {
++        "html_redacted": '<p>Welcome! &lt;USER&gt;</p><input type="hidden" value="&lt;REDACTED&gt;">',
++        "facts": {"first_failed_check": fault, "labels": ["<REDACTED>"]},
++    }
++    if write_failure:
++        (c.root / "evidence").write_text("not a directory")
++    before = c.snapshot()
++    code, rows = c.run([{"ok": False, "error": "QB_FORM_CHANGED", "diagnostic": diagnostic}])
++    assert (code, rows[0]["error_code"]) == (4, "REJECTED_QB_FORM_CHANGED")
++    assert c.snapshot() == before
++    if write_failure:
++        assert rows[0]["diagnostic_dir"] is None
++    else:
++        directory = Path(rows[0]["diagnostic_dir"])
++        assert (directory / "page.html").read_text() == diagnostic["html_redacted"]
++        assert json.loads((directory / "structure.json").read_text()) == {
++            "facts": diagnostic["facts"]
++        }
++
++
++@pytest.mark.parametrize(
++    "leak",
++    [
++        "JSESSIONID_8810=fixture-secret",
++        '<input type="hidden" value="fixture-secret">',
++        '<a href="/x;jsessionid=fixture-secret">x</a>',
++        "<span>Welcome! fixture-secret</span>",
++    ],
++)
++def test_sensitive_agent_page_never_written(c, leak):
++    replies = c.replies()
++    replies[-1]["html_redacted"] = leak
++    code, rows = c.run(replies)
++    assert (code, rows[0]["error_code"]) == (5, "QB_EVIDENCE_REDACTION_FAILED")
++    assert "fixture-secret" not in json.dumps(rows) + c.err.getvalue()
++    for path in (c.root / "evidence").rglob("*"):
++        if path.is_file():
++            assert b"fixture-secret" not in path.read_bytes()
++    assert [r["event_type"] for r in c.sql("SELECT * FROM campaign_qb_events")] == ["SUBMITTED"]
++
++
++def test_diagnostic_write_after_check_failure_deletes_files(c):
++    original = trigger.PageRedactor.check_bytes
++    calls = 0
++
++    def check(redactor, raw):
++        nonlocal calls
++        calls += 1
++        if calls == 3:
++            raise trigger.EvidenceRedactionError("synthetic")
++        return original(redactor, raw)
++
++    c.monkeypatch.setattr(trigger.PageRedactor, "check_bytes", check)
++    diagnostic = {"html_redacted": "<p>safe</p>", "facts": {}}
++    code, rows = c.run([{"ok": False, "error": "QB_FORM_CHANGED", "diagnostic": diagnostic}])
++    assert rows[0]["error_code"] == "REJECTED_QB_FORM_CHANGED" and rows[0]["diagnostic_dir"] is None
++    assert not list((c.root / "evidence").rglob("*.html"))
++
++
++@pytest.mark.parametrize("selected", [[], ["a", "b"], None])
++def test_first_freeze_unavailable_templates(c, selected):
++    code, rows = c.run(
++        [
++            c.replies()[0],
++            {
++                "ok": False,
++                "error": "QB_FORM_VALUE_UNAVAILABLE",
++                "field": "SNAPSHOT_NUM",
++                "snapshot_state": {"selected": selected, "option_count": 0},
++            },
++        ]
++    )
++    assert code == 4 and "尚无冻结值" in rows[0]["message"]
++    assert c.sql("SELECT * FROM campaign_qb_requests") == []
++
++
++@pytest.mark.parametrize(
++    "key,new",
++    [
++        ("BUILD_TYPE", "Partial"),
++        ("REPO_TYPE", "NEW"),
++        ("BUILD_REFERENCE", "Live"),
++        ("SNAPSHOT_NUM", "snap-B"),
++        ("overview_id", 1918),
++        ("project_name", "Other"),
++        ("configuration_path", "root/other/RBS/TRIGGER"),
++        ("qb_pass_requires_accept", True),
++    ],
++)
++def test_changed_config_rejected_before_agent(c, key, new):
++    assert c.run()[0] == 0
++    c.add_unit("u2")
++    if key in c.project["form"]:
++        c.project["form"][key] = new
++    else:
++        c.project[key] = new
++    c.save_config()
++    starts = c.agent_starts
++    before = c.snapshot()
++    code, rows = c.run(units=["u2"])
++    assert (code, rows[0]["error_code"]) == (4, "REJECTED_QB_PARAMS_CHANGED")
++    assert c.agent_starts == starts and c.snapshot() == before
++
++
++@pytest.mark.parametrize(
++    "field,value",
++    [
++        ("CHILD_CONFIGURATIONS", ["aarch64"]),
++        ("CHILD_CONFIGURATIONS", ["aarch64:x86_64"]),
++        ("CHILD_CONFIGURATIONS", [ARCHITECTURES, ARCHITECTURES]),
++        ("CHILD_CONFIGURATIONS", [ARCHITECTURES, "other"]),
++        ("Immediate Stop With Error", False),
++        ("TARGET_IMAGE", ["image"]),
++        ("configuration_path", "root/wrong/TRIGGER"),
++        ("configuration_path", "wrong/RBS/TRIGGER"),
++        ("overview_id", 0),
++        ("overview_id", True),
++        ("extra", "x"),
++        ("missing", None),
++        ("PROJECT_BRANCH", "wrong"),
++        ("Add Package List", "x"),
++        ("Remove Package List", "x"),
++    ],
++)
++def test_invalid_config_never_starts_agent(c, field, value):
++    if field == "missing":
++        del c.project["form"]["REPO_TYPE"]
++    elif field in {"configuration_path", "overview_id"}:
++        c.project[field] = value
++    else:
++        c.project["form"][field] = value
++    c.save_config()
++    before = c.snapshot()
++    code, rows = c.run()
++    assert (code, rows[0]["error_code"]) == (2, "INVALID_ARGS")
++    assert c.agent_starts == 0 and c.snapshot() == before
++
++
++@pytest.mark.parametrize("enabled", [None, False])
++def test_project_not_ready(c, enabled):
++    if enabled is None:
++        c.data["qb"]["projects"] = {}
++    else:
++        c.project["enabled"] = False
++    c.save_config()
++    code, rows = c.run()
++    assert (code, rows[0]["error_code"]) == (4, "REJECTED_QB_PROJECT_NOT_READY")
++    assert c.agent_starts == 0
++
++
++def test_two_branches_freeze_separately_and_same_branch_reuses(c):
++    c.add_unit("u2")
++    c.add_unit("u3", "tizen")
++    other = copy.deepcopy(c.project)
++    other["form"]["PROJECT_BRANCH"] = "tizen"
++    other["form"]["SNAPSHOT_NUM"] = "snap-C"
++    c.data["qb"]["projects"]["tizen"] = other
++    c.save_config()
++    code, rows = c.run(
++        c.replies() + c.replies("u2", 2, "101") + c.replies("u3", 3, "102", "snap-C"),
++        units=["u1", "u2", "u3"],
++    )
++    assert code == 0, c.err.getvalue()
++    assert all(row["action"] == "submitted_bound" for row in rows)
++    assert len(c.sql("SELECT * FROM campaign_qb_profiles")) == 2
++    assert (
++        json.loads(state.qb_profile(c.db, "tizen")["profile_json"])["form"]["SNAPSHOT_NUM"]
++        == "snap-C"
++    )
++
++
++def test_new_campaign_accepts_different_config(c):
++    c.project["form"]["BUILD_TYPE"] = "Partial"
++    c.project["form"]["SNAPSHOT_NUM"] = "snap-B"
++    c.save_config()
++    assert c.run(c.replies(current="snap-B"))[0] == 0
++
++
++@pytest.mark.parametrize("fault", ["unlinked", "old-round", "different-arch", "different-unit"])
++def test_selection_follows_p5_without_held(c, fault):
++    if fault == "unlinked":
++        c.sql("DELETE FROM campaign_verifications WHERE verification_id='u1-v0'")
++    elif fault == "old-round":
++        state.create_round(
++            c.db, "u1", round_index=2, edit_spec_ref="new", edit_spec_sha256="e" * 64
++        )
++    elif fault == "different-arch":
++        c.sql("UPDATE campaign_verifications SET arch_norm='x86_64' WHERE verification_id='u1-v0'")
++    else:
++        c.add_unit("u2")
++        c.sql(
++            "UPDATE campaign_verifications SET campaign_unit_key='u2' WHERE verification_id='u1-v0'"
++        )
++    before = c.snapshot()
++    code, rows = c.run()
++    assert code == 4 and c.snapshot() == before and c.agent_starts == 0
++    assert rows[0]["error_code"] == (
++        "REJECTED_ROUND_SUPERSEDED" if fault == "old-round" else "REJECTED_ARCH_AGGREGATE_MISMATCH"
++    )
++
++
++@pytest.mark.parametrize("point", ["intent", "not-released", "binding"])
++def test_each_write_transaction_rolls_back(c, point):
++    original = state._append_status_on_connection
++
++    def fail(conn, key, status, *args, **kwargs):
++        if (
++            status
++            == {
++                "intent": "QB_REQUESTED",
++                "not-released": "QB_SUBMIT_FAILED",
++                "binding": "QB_TRIGGERED",
++            }[point]
++        ):
++            raise RuntimeError("injected transaction failure")
++        return original(conn, key, status, *args, **kwargs)
++
++    c.monkeypatch.setattr(state, "_append_status_on_connection", fail)
++    replies = c.replies()
++    if point == "not-released":
++        replies[2] = {"ok": False, "released": False, "error": "QB_FORM_CHANGED"}
++    code, rows = c.run(replies)
++    assert code == 5 and rows[0]["error_code"] == "INTERNAL_ERROR"
++    events = c.sql("SELECT * FROM campaign_qb_events")
++    assert [r["event_type"] for r in events] == ([] if point == "intent" else ["SUBMITTED"])
++    assert len(c.sql("SELECT * FROM campaign_qb_profiles")) == (point != "intent")

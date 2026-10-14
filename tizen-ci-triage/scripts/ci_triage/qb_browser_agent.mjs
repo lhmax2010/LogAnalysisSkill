@@ -598,6 +598,10 @@ export class Agent {
         catch { response.diagnostic_failed = true; }
       }
       if (error instanceof AgentError && error.field) response.field = error.field;
+      if (command === 'fill' && response.error === 'QB_FORM_VALUE_UNAVAILABLE' && error.field === 'SNAPSHOT_NUM') {
+        response.snapshot_state = this.snapshotState;
+        response.released = false;
+      }
       if (command === 'submit') response.released = false;
       return response;
     } finally { this.policy.phase = 'idle'; }
@@ -709,6 +713,7 @@ export class Agent {
     return this.page.locator('tr').filter({ has: this.page.locator('.form-label').filter({ hasText: new RegExp(`^${name}$`) }) }).filter({ has: this.page.locator('td.value') }).last();
   }
   async fill(fields) {
+    this.snapshotState = null;
     if (!fields || canonical(Object.keys(fields).sort()) !== canonical([...FIELDS].sort())) throw new AgentError('QB_FORM_CHANGED');
     if (typeof fields['Build Package List'] !== 'string'
       || !/^[^\s@]+@[^\s@]+$/.test(fields['Build Package List'])
@@ -730,6 +735,9 @@ export class Agent {
       let value = fields[name];
       if (name === 'SNAPSHOT_NUM') {
         snapshotCount = control.options.length;
+        const selectedText = control.options.filter(option => option.selected).map(option => option.text.trim());
+        this.snapshotState = { selected: selectedText.every(text => text.length <= 200 && /^[A-Za-z0-9._:+-]+$/.test(text))
+          ? selectedText : null, option_count: snapshotCount };
         if (value === '@freeze') {
           const selected = control.options.filter((option) => option.selected);
           if (!snapshotCount || selected.length !== 1 || !selected[0].text) throw new AgentError('QB_FORM_VALUE_UNAVAILABLE', name);

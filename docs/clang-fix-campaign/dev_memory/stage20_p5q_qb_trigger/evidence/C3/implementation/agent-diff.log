@@ -1,0 +1,15 @@
+diff --git a/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs b/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs
+index d64064a..740992e 100644
+--- a/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs
++++ b/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs
+@@ -600,0 +601,4 @@ export class Agent {
++      if (command === 'fill' && response.error === 'QB_FORM_VALUE_UNAVAILABLE' && error.field === 'SNAPSHOT_NUM') {
++        response.snapshot_state = this.snapshotState;
++        response.released = false;
++      }
+@@ -711,0 +716 @@ export class Agent {
++    this.snapshotState = null;
+@@ -732,0 +738,3 @@ export class Agent {
++        const selectedText = control.options.filter(option => option.selected).map(option => option.text.trim());
++        this.snapshotState = { selected: selectedText.every(text => text.length <= 200 && /^[A-Za-z0-9._:+-]+$/.test(text))
++          ? selectedText : null, option_count: snapshotCount };

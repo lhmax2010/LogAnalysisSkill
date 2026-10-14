@@ -1,0 +1,47 @@
+{
+  "network_requests": 0,
+  "cases": [
+    {
+      "response": {
+        "ok": false,
+        "error": "QB_FORM_VALUE_UNAVAILABLE",
+        "field": "SNAPSHOT_NUM",
+        "released": false,
+        "snapshot_state": {
+          "selected": [
+            "current-snapshot-A"
+          ],
+          "option_count": 1
+        }
+      },
+      "error_code": "REJECTED_QB_SNAPSHOT_UNAVAILABLE",
+      "snapshot_state": {
+        "selected": [
+          "current-snapshot-A"
+        ],
+        "option_count": 1
+      }
+    },
+    {
+      "response": {
+        "ok": false,
+        "error": "QB_FORM_VALUE_UNAVAILABLE",
+        "field": "SNAPSHOT_NUM",
+        "released": false,
+        "snapshot_state": {
+          "selected": [
+            "current-snapshot-B"
+          ],
+          "option_count": 1
+        }
+      },
+      "error_code": "REJECTED_QB_SNAPSHOT_UNAVAILABLE",
+      "snapshot_state": {
+        "selected": [
+          "current-snapshot-B"
+        ],
+        "option_count": 1
+      }
+    }
+  ]
+}
