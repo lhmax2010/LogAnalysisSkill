@@ -1,0 +1,28 @@
+{
+  "scope": "documentation and preflight only; no browser or production CLI run",
+  "commands": [
+    {
+      "name": "design",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit": 0,
+      "output": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n"
+    },
+    {
+      "name": "diff",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "evidence_and_added_document_bytes": "PASS",
+  "production_tests_spikes_frozen_and_recorder_unchanged": true,
+  "full_test_suite": "NOT_RERUN; documentation-only preparation"
+}

@@ -1,0 +1,238 @@
+{
+  "checked_at": "2026-10-15T10:02:09.058231+00:00",
+  "head": "c677504b06fe1bdd3543d7be7e14169588a7e501",
+  "db_sha256_before": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "db_sha256_after": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "qb_table_counts": {
+    "campaign_qb_requests": 0,
+    "campaign_qb_profiles": 0,
+    "campaign_qb_events": 0
+  },
+  "unit_latest_status": {
+    "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+    "status": "SANDBOX_PUSHED"
+  },
+  "browser_profiles": [],
+  "residual_agent_or_chromium_processes": [],
+  "other_chrome_processes": [
+    {
+      "pid": 4075,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4083,
+      "comm": "chrome_crashpad",
+      "exe": "/opt/google/chrome/chrome_crashpad_handler",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4085,
+      "comm": "chrome_crashpad",
+      "exe": "/opt/google/chrome/chrome_crashpad_handler",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4091,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4092,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4094,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4120,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4122,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4166,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4186,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4342,
+      "comm": "chrome_crashpad",
+      "exe": "/snap/code/268/usr/share/code/chrome_crashpad_handler",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4573,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 4690,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 5625,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 5720,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 98966,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 124515,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 184234,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 185242,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 778161,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 778727,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 778934,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 929028,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1052809,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1055729,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1055743,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1057471,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1183853,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1194130,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1199643,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1201402,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1204786,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1204807,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1206468,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    },
+    {
+      "pid": 1273741,
+      "comm": "chrome",
+      "exe": "/opt/google/chrome/chrome",
+      "p5q_profile": false
+    }
+  ],
+  "process_inspection_permission_errors": [],
+  "config_matches_preparation": true,
+  "frozen_design_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "live04_existed_before_check": false,
+  "network_requests": 0,
+  "browser_started": false,
+  "code_changes": false,
+  "confirmation": "NOT_YET_RECEIVED",
+  "precondition_result": "PASS"
+}

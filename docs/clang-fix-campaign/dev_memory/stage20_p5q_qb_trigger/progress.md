@@ -1,9 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_DIAGNOSTIC_STOPPED_CLOSE_PROCESS_EXIT**。
-本轮见§40/P5Q-C6A-03:只补固定类别诊断与不提交探针,全量2680 passed/1 skipped;
-环境检查后已取得新“开始”并执行diag-01;前三命令成功,close清理失败,见§40.6。
-不重跑、不授权真实提交。以下§38–39保留历史。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE04_WAITING_SUBMIT_CONFIRMATION**。
+本轮见§41/P5Q-C6A-04与§42:关闭后退出问题由设计方判为已知缺陷,修复后置;
+live-04前置核对通过,须重新取得“确认提交”才执行一次。本任务不改任何代码。
+§38–40保留历史,不复用其中的授权或将其结果改写为本轮结果。
 最新续任务见§39.4–39.5:live-02记录进程遇本地磁盘同步阻塞后终止,未取得生产返回;
 专用库hash未变、无残留进程。FatTank再次要求弹窗并新回复“确认提交”,仅授权live-03一次;
 live-03已返回exit5/QB_BROWSER_UNAVAILABLE,登录调用已返回但意图未落库,具体代理失败阶段未知。
@@ -4645,3 +4645,85 @@ driver trace显示close协议应答ok;随后驱动等待进程退出,清理耗�
 新增证据逐文件字节自检通过;把整份progress当HTML证据检查会命中早先裁定原文里的
 禁止键名示例,父版本同样被拒且该历史行未变。本次新增文档文字单独检查通过,
 未删改历史原文或放宽检查器,见[scoped-self-check.json](evidence/C6a/diag-01/scoped-self-check.json)。
+
+## 41. 实施裁定 P5Q-C6A-04:diag-01 结论与关闭后进程不退出的处理
+
+### 41.1 裁定原文
+
+1. diag-01 证明:生产 Python 驱动 → 生产代理 → 真机 QuickBuild 这条路径的 login、open_form、fill 均成功,12 个字段读回相符,放行 0 次。live-03 的失败未复现;生产诊断信息(停止类别)已生效,如再出现即可定位。
+2. 关闭后进程不退出,判定为已知缺陷:生产代理主循环在收到 close 后,没有像测试入口(tests/node/p5q_cli_agent.mjs:37)那样销毁标准输入;同时 Python 驱动 qb_browser.py 在 wait 之后才关闭标准输入。两边互相等待,直到 35 秒超时后 SIGTERM。测试入口与生产入口不一致,是该缺陷未被测试发现的原因。
+3. 该缺陷只发生在全部工作完成并落库之后。QbBrowser.close 遇到超时只会终止进程,不抛出异常,不改变 qb-trigger 与 qb-result-fetch 的 stdout 与退出码,因此不阻断 C6a 真实提交。C6a 执行时出现"close 后约 35 秒、代理退出码 -15",按已知缺陷记录,不作为停止条件。
+4. 修复安排在 C6a 提交之后、C6b 之前的离线修复轮,另行下达任务。本任务不改任何代码。
+
+### 41.2 执行边界
+
+上述为本轮设计方裁定,不重写diag-01原始证据或先前的候选根因说明。本任务不改
+生产代码、取证工具、测试、冻结稿或设计正文;不在本轮实施退出修复。
+仅将该已知关闭表现从停止条件中排除,其它异常仍立即停止、不重试。
+本轮最多一次qb-trigger,绝不带--retrigger,不推送Gerrit,不点Accept/Ready to Accept。
+提交成功才执行一次规定的qb-result-fetch;终态读取和收口仍属于C6b。
+
+## 42. C6a 第四次执行
+
+### 42.1 前置核对与当前状态
+
+开工HEAD为`c677504`,已读§38–40与diag-01/stop-report.md。
+2026-10-15 18:02:09(Asia/Shanghai)只读核对通过,证据为
+[live-04/preflight.json](evidence/C6a/live-04/preflight.json):
+
+- 专用库读取前后SHA256均为
+  `bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405`。
+- campaign_qb_requests、campaign_qb_profiles、campaign_qb_events各0行;
+  unit `p5q-c6-libtirpc-20261015`最新状态为SANDBOX_PUSHED。
+- `/dev/shm/p5q-browser-*`为0个;无生产代理、Playwright Chromium或带P5Q profile
+  参数的残留进程。只检查/proc元数据,不输出原始argv或凭据;无权限读取失败。
+- 另有日常Google Chrome及VS Code crashpad进程,exe分别在`/opt/google/chrome/`
+  和`/snap/code/`,全部无P5Q profile标记;不将它们称为本任务残留,未关闭或改动。
+- 专用config与准备阶段归档逐字节一致;权威冻结稿SHA256仍为
+  `f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`。
+- live-04在检查前不存在;本次仅新建前置核对证据,未启动浏览器、未访问QB、
+  未运行qb-trigger/qb-result-fetch、未写状态库。
+
+状态WAITING_SUBMIT_CONFIRMATION。旧“确认提交”和“开始”均不复用。
+本轮前置核对不代表真实提交已经发生;确认等待期间不保持任何浏览器或执行会话。
+
+### 42.2 十二字段、路径与待执行命令
+
+配置`root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER`,overview_id=1917。
+这次将真实产生一个约24小时的Full构建,不是演练。拟填值保持§38.5:
+
+| 字段 | 拟填值 |
+|---|---|
+| BUILD_TYPE | Full |
+| REPO_TYPE | ALL |
+| BUILD_REFERENCE | Ref. Snapshot |
+| SNAPSHOT_NUM | @freeze:取实际填表时唯一选中项并冻结,不预设历史值 |
+| PROJECT_BRANCH | tizen_base |
+| Immediate Stop With Error | true/勾选 |
+| CHILD_CONFIGURATIONS | [standard-armv7l:aarch64:x86_64] |
+| Build Package List | platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0 |
+| Add Package List | 空串 |
+| Remove Package List | 空串 |
+| TARGET_IMAGE | []/空 |
+| BUILD NOTES | clang-fix-campaign request=<生产命令将生成的request_id> |
+
+专用目录`/home/linhao/Toolchain/p5q-live-validation/p5q-c6/`,
+数据库`state.db`,配置`config.yaml`,state-root为`state/`,workspace为`ws/`,
+只读远端核对使用`remotes/platform/upstream/libtirpc`本地镜像。
+收到新的“确认提交”后,实际生产argv必须与live-01一致:
+
+```bash
+/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python -m ci_triage qb-trigger --verification-ids p5q-c6-libtirpc-20261015-v0,p5q-c6-libtirpc-20261015-v1,p5q-c6-libtirpc-20261015-v2 --state-db /home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db --state-root /home/linhao/Toolchain/p5q-live-validation/p5q-c6/state --config /home/linhao/Toolchain/p5q-live-validation/p5q-c6/config.yaml
+```
+
+启动环境与live-01保持一致,输出记录到新目录live-04。既有run_c6_once.py只接受
+live-01至03;不修改它,确认后由命令执行层按同一生产argv记录本次输出。
+FatTank只在弹出的窗口中登录,须在600秒内完成;登录后不点击其它内容、不打开
+新标签页。结束时浏览器关闭后可能额外等待约35秒,按§41已知缺陷记录。
+本次尚未收到确认、尚无request_id/构建号/stdout/父构建回显或状态迁移。
+
+本准备提交仅本节/INDEX与前置证据,设计检查exit0/0 problem、diff检查exit0,
+新证据与新增文档文字字节自检通过;见
+[preparation-validation.json](evidence/C6a/live-04/preparation-validation.json)。
+生产、测试、spikes、既有执行记录工具与冻结稿均零改动,未重跑全仓测试;
+§40.3的2680/1仍作为历史代码验收记录,不冒称本次重跑。
