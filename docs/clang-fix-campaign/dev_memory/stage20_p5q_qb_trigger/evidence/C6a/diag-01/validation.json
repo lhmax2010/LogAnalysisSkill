@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-10-15T09:49:09.164733+00:00",
+  "files": {
+    "result.json": "01a449b148106f8729cad05f012218904dbaf73ec0c6f3da63197d2859d2375e",
+    "command.json": "d3f77a9aa7ced8e65a1dddaf47668f07b4877f29dae443cff6ae9a6018b0c919",
+    "stop-report.md": "4c49f90729f34d0a5360655cd922b4898fbef6e224d082902ef844205b6e8286"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/unit/test_p5q_c6_diagnostics.py::test_probe_source_is_non_mutating"
+      ],
+      "exit": 0,
+      "log": "static.log"
+    },
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit": 0,
+      "log": "design.log"
+    },
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/diag-01/validate_evidence.py"
+      ],
+      "exit": 0,
+      "log": "ruff.log"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "log": "diff.log"
+    }
+  ],
+  "dedicated_db_sha256": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "frozen_design_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "remaining_browser_profile_paths": [],
+  "evidence_checks": "PASS; live diagnosis remains STOPPED"
+}

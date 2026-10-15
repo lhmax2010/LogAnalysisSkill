@@ -1,8 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_DIAGNOSTIC_READY_AWAITING_START**。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_DIAGNOSTIC_STOPPED_CLOSE_PROCESS_EXIT**。
 本轮见§40/P5Q-C6A-03:只补固定类别诊断与不提交探针,全量2680 passed/1 skipped;
-新真机诊断须在环境检查后重新取得“开始”,不授权真实提交。以下§38–39保留历史。
+环境检查后已取得新“开始”并执行diag-01;前三命令成功,close清理失败,见§40.6。
+不重跑、不授权真实提交。以下§38–39保留历史。
 最新续任务见§39.4–39.5:live-02记录进程遇本地磁盘同步阻塞后终止,未取得生产返回;
 专用库hash未变、无残留进程。FatTank再次要求弹窗并新回复“确认提交”,仅授权live-03一次;
 live-03已返回exit5/QB_BROWSER_UNAVAILABLE,登录调用已返回但意图未落库,具体代理失败阶段未知。
@@ -4593,3 +4594,54 @@ exit0;2026-10-15T09:31:06Z至09:31:28Z。原始df/free输出、三次ps采样、
 不点击其它内容、不打开新标签页/窗口。任何结果都停止,不重跑、不进入真实提交。
 本轮未发现冻结稿/裁定的新增不一致或做不到之处。真机结果仍NOT_RUN,不得以离线
 四例代替diag-01实测。成功/BUILD_NOTES样本与C6b仍未关闭。
+
+### 40.6 diag-01一次执行与停止记录
+
+§40.5为执行前状态。环境证据提交`471b0a8`已推送后,FatTank新回复原文“开始”。
+随后按§40.5原命令仅执行一次,未带测试参数;执行前专用config与C6准备归档逐字节
+一致,新目录不存在,专用库及冻结稿hash均符合指定值。没有重复真实提交授权。
+
+2026-10-15 17:39:48至17:41:40(Asia/Shanghai;原始JSON保留UTC),探针exit5。
+命令与exec输出记录见[command.json](evidence/C6a/diag-01/command.json),
+未修改的探针输出见[result.json](evidence/C6a/diag-01/result.json)。
+
+| 命令 | 结果 | 秒 | failure_category | 代理退出码 |
+|---|---|---:|---|---|
+| login | ok | 58.354 | null | 当时未退出 |
+| open_form | ok | 2.429 | null | 当时未退出 |
+| fill | ok,12字段读回与指纹符合 | 15.957 | null | 当时未退出 |
+| close及进程清理 | QB_BROWSER_UNAVAILABLE | 35.070 | null | -15 |
+
+fill实际参考快照为`tizen-base-toolchain_20260924.094908`;目标为已批准libtirpc行,
+BUILD NOTES为probe专用标记。`release_state=not_released`,`form_action_releases=0`,
+`state_db_access=false`;未运行真实qb-trigger/qb-result-fetch,无提交、无Gerrit推送。
+
+driver trace显示close协议应答ok;随后驱动等待进程退出,清理耗时35秒并最终得到
+-15(SIGTERM)。探针因非零退出码构造QB_BROWSER_UNAVAILABLE,而不是收到代理失败
+应答,因此failure_category为null。未观察到QB_AGENT_STOPPED固定行;不伪填类别。
+四命令全ok的验收未通过,立即停止,不重跑、不实施额外修复。
+
+停止报告见[stop-report.md](evidence/C6a/diag-01/stop-report.md)。生产main与本机测试
+入口的stdin清理不同,提供待验证的生命周期候选原因,不是已确认根因;也不能据
+本次前三步成功推断live-03原故障原因。后续候选为先离线复现实际生产入口的退出
+行为,由设计方裁定最小修复。冻结稿未改,本轮不改变任何退出/放行/拒绝逻辑。
+
+收尾仅新增脱敏证据和progress/INDEX;离线证据核对命令:
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/diag-01/validate_evidence.py
+```
+
+结果见[validation.json](evidence/C6a/diag-01/validation.json):结构化输出、读回/指纹、
+写后自检及原字节hash复核,只读文件不打开数据库;另执行探针静态护栏、design检查
+和diff检查。专用库hash仍为bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405;
+冻结稿仍为f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c。
+全仓2680/1、Node362/0、四组安全4/4仍是§40.3代码提交前的本轮实跑结果,
+本次证据收尾不冒称又跑了一遍。成功/BUILD_NOTES样本与真实提交仍挂账;不进入C6b。
+收尾静态护栏1 passed/0 failed/0 skipped,design 0 problem、Ruff、diff检查均exit0;
+目录元数据检查未发现剩余p5q-browser目录,没有追加清理。新离线记录脚本首次检查
+出现3条E501及设计检查器缺少路径参数,已仅修正记录脚本后重跑;原始失败摘要保留
+在[initial-validation.json](evidence/C6a/diag-01/initial-validation.json),不改生产代码或检查器。
+新增证据逐文件字节自检通过;把整份progress当HTML证据检查会命中早先裁定原文里的
+禁止键名示例,父版本同样被拒且该历史行未变。本次新增文档文字单独检查通过,
+未删改历史原文或放宽检查器,见[scoped-self-check.json](evidence/C6a/diag-01/scoped-self-check.json)。

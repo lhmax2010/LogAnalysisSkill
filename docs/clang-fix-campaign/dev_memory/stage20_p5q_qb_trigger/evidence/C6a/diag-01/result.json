@@ -1,0 +1,101 @@
+{
+  "started_at": "2026-10-15T09:39:48.731836+00:00",
+  "ok": false,
+  "commands": [
+    {
+      "command": "login",
+      "ok": true,
+      "elapsed_seconds": 58.354,
+      "error_code": null,
+      "agent_error_code": null,
+      "failure_category": null,
+      "agent_exited": false,
+      "agent_exit_code": null
+    },
+    {
+      "command": "open_form",
+      "ok": true,
+      "elapsed_seconds": 2.429,
+      "error_code": null,
+      "agent_error_code": null,
+      "failure_category": null,
+      "agent_exited": false,
+      "agent_exit_code": null
+    },
+    {
+      "command": "fill",
+      "ok": true,
+      "elapsed_seconds": 15.957,
+      "error_code": null,
+      "agent_error_code": null,
+      "failure_category": null,
+      "agent_exited": false,
+      "agent_exit_code": null
+    },
+    {
+      "command": "close",
+      "ok": false,
+      "elapsed_seconds": 35.07,
+      "error_code": "QB_BROWSER_UNAVAILABLE",
+      "agent_error_code": null,
+      "failure_category": null,
+      "agent_exited": true,
+      "agent_exit_code": -15
+    }
+  ],
+  "trace": [
+    {
+      "command": "login",
+      "ok": true
+    },
+    {
+      "command": "open_form",
+      "ok": true
+    },
+    {
+      "command": "fill",
+      "ok": true
+    },
+    {
+      "command": "close",
+      "ok": true
+    }
+  ],
+  "release_state": "not_released",
+  "form_action_releases": 0,
+  "state_db_access": false,
+  "requested_fields": {
+    "Add Package List": "",
+    "BUILD_REFERENCE": "Ref. Snapshot",
+    "BUILD_TYPE": "Full",
+    "CHILD_CONFIGURATIONS": [
+      "standard-armv7l:aarch64:x86_64"
+    ],
+    "Immediate Stop With Error": true,
+    "PROJECT_BRANCH": "tizen_base",
+    "REPO_TYPE": "ALL",
+    "Remove Package List": "",
+    "SNAPSHOT_NUM": "@freeze",
+    "TARGET_IMAGE": [],
+    "Build Package List": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+    "BUILD NOTES": "clang-fix-campaign request=probe-1e37a64037fe42e282a7ed1dbe706428"
+  },
+  "readback": {
+    "BUILD_TYPE/value": "Full",
+    "REPO_TYPE/value": "ALL",
+    "BUILD_REFERENCE/value": "Ref. Snapshot",
+    "SNAPSHOT_NUM/value": "tizen-base-toolchain_20260924.094908",
+    "PROJECT_BRANCH/value": "tizen_base",
+    "Immediate Stop With Error/value": true,
+    "CHILD_CONFIGURATIONS/selection": [
+      "standard-armv7l:aarch64:x86_64"
+    ],
+    "Build Package List/value": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+    "Add Package List/value": "",
+    "Remove Package List/value": "",
+    "TARGET_IMAGE/selection": [],
+    "BUILD NOTES/value": "clang-fix-campaign request=probe-1e37a64037fe42e282a7ed1dbe706428"
+  },
+  "fingerprint": "e63ff6fbcf3fe5965722a268ee3426c587d4262878155d21ee4b8f88d3b60215",
+  "ended_at": "2026-10-15T09:41:40.542472+00:00"
+}

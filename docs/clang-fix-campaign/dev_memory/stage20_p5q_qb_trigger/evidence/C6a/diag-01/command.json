@@ -1,0 +1,21 @@
+{
+  "authorization": "开始",
+  "code_commit": "471b0a8",
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "argv": [
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/spikes/p5q_c6_driver_probe.py",
+    "--config",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/config.yaml",
+    "--output",
+    "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/diag-01"
+  ],
+  "exit_code": 5,
+  "execution_count": 1,
+  "output_recording": "Transcribed from exec session 61024 combined output; not a separate raw stderr capture.",
+  "observed_output": [
+    "已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。"
+  ],
+  "observed_agent_stopped_line": false,
+  "retry": false
+}

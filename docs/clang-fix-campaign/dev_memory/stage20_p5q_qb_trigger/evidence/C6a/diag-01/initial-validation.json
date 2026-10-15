@@ -1,0 +1,14 @@
+{
+  "scope": "Offline evidence-recorder checks only; no second live probe",
+  "ruff": {
+    "exit": 1,
+    "findings": "Three E501 long lines in the new validate_evidence.py; wrapped without logic changes"
+  },
+  "evidence_recorder": {
+    "exit": 1,
+    "static_test": "1 passed",
+    "design_checker_exit": 2,
+    "design_checker_output": "usage: check_design_doc.py [-h] [--self-test] [path]\ncheck_design_doc.py: error: 需要 design.md 路径,或使用 --self-test\n",
+    "correction": "Pass docs/clang-fix-campaign/design.md to the existing checker; checker and design unchanged"
+  }
+}

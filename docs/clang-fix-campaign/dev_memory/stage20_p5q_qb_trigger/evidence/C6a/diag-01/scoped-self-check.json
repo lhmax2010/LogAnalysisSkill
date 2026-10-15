@@ -1,0 +1,12 @@
+{
+  "scope": "Documentation and evidence check after local commit, before push",
+  "new_diag_files_checked": 10,
+  "new_diag_files_result": "PASS",
+  "index_result": "PASS",
+  "progress_full_document": "REJECTED_BY_HTML_EVIDENCE_CHECKER",
+  "progress_parent_full_document": "REJECTED_BY_HTML_EVIDENCE_CHECKER",
+  "historical_rule_literal_lines_unchanged": true,
+  "historical_rule_literal_line_count": 1,
+  "progress_added_text": "PASS",
+  "explanation": "The historical design ruling quotes the prohibited session-key spelling. It was already present before this commit and is unchanged. All new evidence and added documentation pass the unchanged checker; historical text was not rewritten."
+}
