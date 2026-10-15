@@ -1,0 +1,43 @@
+{
+  "db_byte_unchanged": true,
+  "sql_unchanged": true,
+  "counts": {
+    "campaign_qb_requests": 0,
+    "campaign_qb_profiles": 0,
+    "campaign_qb_events": 0
+  },
+  "statuses": [
+    [
+      "SANDBOX_PUSHED"
+    ]
+  ],
+  "fetch_started": false,
+  "trigger_attempts": 1,
+  "files": [
+    {
+      "path": "live-01/trigger/command.json",
+      "sha256": "ffe89ab58b32d921fba35d913ab9a404f859727a6f6d9740a3f77aafff89ff2d",
+      "size": 668
+    },
+    {
+      "path": "live-01/trigger/execution.json",
+      "sha256": "ce4848c403ff806934ad369f90ff0ccb7b6eece61a09734bec0d1add3e1e1d15",
+      "size": 825
+    },
+    {
+      "path": "live-01/trigger/state-after.sql",
+      "sha256": "291ce88a1203ab975aafa6e263b88b598546050c76a961afdfed7f91ae67734f",
+      "size": 13010
+    },
+    {
+      "path": "live-01/trigger/stderr.txt",
+      "sha256": "e09e4b36e90c1a093f6b5a67027e71c9e0e346a7a14a13167e7ada24f0ab8b36",
+      "size": 90
+    },
+    {
+      "path": "live-01/trigger/stdout.json",
+      "sha256": "3153fcca8627dac42cd95e4285d7047341aec67490590d1a60cd1de1b1d42e13",
+      "size": 329
+    }
+  ]
+}

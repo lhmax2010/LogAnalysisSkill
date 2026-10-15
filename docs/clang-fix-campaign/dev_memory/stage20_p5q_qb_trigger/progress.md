@@ -1,15 +1,17 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_WAITING_SUBMIT_CONFIRMATION**。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_STOPPED_LOGIN_TIMEOUT**。
 最新任务C6a见§37–38:libtirpc目标已确认,manifest/专用库/本地镜像/离线前置核验完成;
-尚未收到“确认提交”,不得真实提交。
+FatTank已回复“确认提交”;仅运行一次生产qb-trigger,exit5/QB_LOGIN_TIMEOUT,
+无request_id/构建号、无库变更,立即停止,未运行qb-result-fetch,见§38.6–38.8。
 C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b基线b134d16,六页原始/活动比对通过;
-填表演练exit1且未落盘阶段证据,见§35。C6尚无真实QB请求,成功/BUILD_NOTES样本挂账开放。
+填表演练exit1且未落盘阶段证据,见§35。C6真实登录未完成,无构建提交;
+成功/BUILD_NOTES样本挂账开放。
 §36按P5Q-C5B-02完成工具失败落盘及离线验证:2639 passed/1 skipped;
 5afb645推送后FatTank回复“沿用。开始”,fill-rehearsal-02一次实跑通过,
 12字段各1获准/0拒绝/HTTP200,not_released/action放行0,见§36.6–36.9。
 以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;§36轮次止于C5b,
-当前C6a仅准备,真实提交闸门以§38为准。
+当前C6a已按异常即停规则停止,真实执行结果以§38为准,旧确认不授权重试。
 C4最新裁定与执行见§33;§32停点已由P5Q-C4-02关闭。
 C4本轮基线ec3be74;源格式对齐要求已撤回,旧探针作废,实现与验收见§33。
 C4本轮不访问真实QuickBuild/Gerrit,不弹登录窗口,不进入C5。
@@ -4192,3 +4194,95 @@ overview_id=1917,qb_pass_requires_accept=false。拟填值:
 尚未收到“确认提交”,不开浏览器、不运行真实qb-trigger/qb-result-fetch。
 生产request_id尚未生成。已批准的目标选择不替代此次完整字段确认。
 无新增设计矛盾/停止报告;C6b终态读取仍不在本轮范围。
+
+### 38.6 明确提交授权与一次执行
+
+e08bcc9已推送,十二字段与专用路径已完整呈交后,FatTank本轮回复原文:
+
+```text
+确认提交
+```
+
+本条仅授权既定libtirpc目标的一次生产qb-trigger及随后一次生产qb-result-fetch,
+不授权--retrigger、Gerrit push或Accept/Ready to Accept。登录只在浏览器窗口由
+FatTank本人完成。执行前再次核对冻结hash、专用配置与状态库的准备hash;
+启动/结束时间、完整argv、stdout/exit及SQL快照落evidence/C6a/live-01。
+一次执行记录采用新目录排他创建,不覆盖、不重跑;结果在执行后追加。
+
+### 38.7 一次生产调用结果与停止报告
+
+本轮代码基线e08bcc9。仅运行下列记录入口一次,它不修改生产代码、不替换代理,
+不传测试参数,只排他登记调用及检查生产输出后落盘:
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/run_c6_once.py trigger
+```
+
+实际生产argv(没有--retrigger):
+
+```bash
+/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python -m ci_triage qb-trigger --verification-ids p5q-c6-libtirpc-20261015-v0,p5q-c6-libtirpc-20261015-v1,p5q-c6-libtirpc-20261015-v2 --state-db /home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db --state-root /home/linhao/Toolchain/p5q-live-validation/p5q-c6/state --config /home/linhao/Toolchain/p5q-live-validation/p5q-c6/config.yaml
+```
+
+清除QB_COOKIE/QB_PASSWORD/DEBUG/PWDEBUG/NODE_OPTIONS/PYTHONPATH/MYPYPATH环境项,
+stdin为DEVNULL,不读终端输入,登录只由FatTank在生产浏览器窗口操作。
+配置/冻结稿hash及准备DB字节hash在启动前再次匹配。未访问真实Gerrit或推送。
+
+- UTC开始:`2026-10-15T07:03:21.402428+00:00`。
+- UTC结束:`2026-10-15T07:13:57.523871+00:00`。
+- CLI exit **5**;记录入口exit0只表示输出保存完成,不代表生产命令成功。
+- 配置登录时限600秒,未提前终止;总耗时636.12秒含启动和退出,不把总耗时
+  当成精确登录等待时长。
+- stderr只有生产固定登录提示;无诊断目录、页面证据或异常堆栈。
+
+完整stdout原文见[stdout.json](evidence/C6a/live-01/trigger/stdout.json),核心结果:
+
+```json
+{"action":"submit_failed","campaign_unit_key":"p5q-c6-libtirpc-20261015","error_code":"QB_LOGIN_TIMEOUT","status":"SANDBOX_PUSHED","request_id":null,"request_seq":null,"qb_build_id":null,"diagnostic_dir":null,"message":null,"sbs_target":"platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0"}
+```
+
+停止点为生产login,未走到生成request_id、填表、提交意图或submit。
+不是submitted_bound,也不是允许人工查号绑定的QB_SUBMIT_UNCERTAIN。
+因此按任务第三步第2条“其它任何结果停止”执行:不重试、不换路径,
+不运行qb-result-fetch,不构造人工绑定,不进入C6b。
+
+现有证据只有生产错误码,没有登录请求链或三条件逐项结果。
+不得据此断言“没有人工登录”,也不得断言“落点被拒/检测器错误”。
+原因未确定,未取得足以证明与冻结稿矛盾的事实;不自行改等待时间、工具或规则。
+后续若需继续,须由FatTank/设计方另行明确新的登录取证或执行安排;
+本次“确认提交”不解释为重试授权。
+
+### 38.8 停止后核对、挂账与证据
+
+证据目录[evidence/C6a/live-01](evidence/C6a/live-01):
+command.json/execution.json记录授权、完整argv、时间与CLI exit;
+stdout.json/stderr.txt保存生产输出;state-after.sql是只读SQL导出。
+所有写出均调用PageRedactor.check_bytes做写前/写后检查,未保存凭据或浏览器配置目录。
+生产CLI及代理进程已结束,未发送额外QB请求排障。
+清理核对时/dev/shm另有一个目录,mtime为2026-10-14T07:02:58Z,早于本轮,
+没有引用它的进程;仅记录目录元数据,不读内容、不删除既有目录,
+见`evidence/C6a/live-01/cleanup-metadata.json`。不将此旧目录误报为本轮新建残留。
+
+[stop-audit.json](evidence/C6a/live-01/stop-audit.json)确认:
+- 真实qb-trigger调用数1;没有第二次调用,无--retrigger;
+- state-after.sql与准备阶段state-before.sql逐字节相等;
+- DB SHA256仍为`bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405`;
+- campaign_qb_requests/profiles/events均0行,状态日志仅SANDBOX_PUSHED;
+- 无fetch执行目录,没有qb-result-fetch stdout或状态迁移;
+- request_id、构建号、提交落点均未取得,父构建BUILD_NOTES/BUILD_REFERENCE/
+  SNAPSHOT_NUM回显未取得,无法做请求标记与冻结值的比对。
+
+| 义务 | 当前结论 |
+|---|---|
+| 目标与manifest | PASS,保持§38.2逐字匹配 |
+| 专用状态/镜像/离线前置 | PASS,保持§38.3–38.4;合成前提不代表真实gbs/推送 |
+| 明确提交授权 | RECEIVED,原话“确认提交”;一次生产调用已消耗 |
+| 真实提交与绑定 | NOT_COMPLETED,QB_LOGIN_TIMEOUT;未产生提交 |
+| 首次qb-result-fetch | NOT_RUN,按停止规则跳过 |
+| 成功样本/非空BUILD_NOTES回显 | OPEN,本次未补齐 |
+| C6b终态读取 | NOT_READY,无request_id/构建号可供执行;不伪造查询命令 |
+
+生产模块、已验收工具、冻结稿不改;仅本节/INDEX、一次执行记录脚本与脱敏证据。
+收尾运行证据脚本ruff、design检查及新证据自检,结果见
+`evidence/C6a/live-01/validation.json`。未重跑全仓,§38.4的203定向测试仍为
+e08bcc9准备阶段结果,不冒称本次重跑。用户既有改动原样保留。

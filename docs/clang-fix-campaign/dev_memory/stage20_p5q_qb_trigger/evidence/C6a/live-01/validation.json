@@ -1,0 +1,40 @@
+{
+  "commands": [
+    {
+      "name": "ruff",
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/run_c6_once.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "design",
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "new_evidence_files_checked": 9,
+  "frozen_hash_matches": true,
+  "production_and_existing_tools_unchanged": true,
+  "cleanup": {
+    "production_cli_pid_exists": false,
+    "agent_pid_exists": false,
+    "remaining_p5q_shm_directory_count": 1
+  },
+  "full_pytest_rerun": false
+}
