@@ -1,0 +1,99 @@
+▶ C5b finally evidence and noninterfering observers on local HTTPS
+  ✔ login_timeout (2322.428661ms)
+  ✔ open_form (3595.160295ms)
+  ✔ third_field (5646.119384ms)
+  ✔ identity_goto (15942.56583ms)
+  ✔ identity_snapshot (15768.472238ms)
+  ✔ adapter (16106.731147ms)
+  ✔ write_failure (16018.935803ms)
+  ✔ normal (16063.684596ms)
+  ✖ assembly (15893.389517ms)
+  ✔ compare_read_failure (3151.188465ms)
+✖ C5b finally evidence and noninterfering observers on local HTTPS (110515.958938ms)
+✔ exception codes never come from arbitrary exception text (0.255588ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 10
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 110518.885639
+
+✖ failing tests:
+
+test at tests/node/test_p5q_c5b_failure_evidence.mjs:38:15
+✖ assembly (15893.389517ms)
+  TypeError: Cannot read properties of undefined (reading 'length')
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5b_failure_evidence.mjs:135:47)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5b_failure_evidence.mjs:38:7)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+F.
+=================================== FAILURES ===================================
+________________________ test_node_c5b_failure_evidence ________________________
+
+    @pytest.mark.integration
+    def test_node_c5b_failure_evidence() -> None:
+        command, env = node_command()
+        paths = browser_paths()
+        if not shutil.which("openssl"):
+            pytest.skip("openssl unavailable for synthetic local C5b TLS certificate")
+        result = subprocess.run(
+            [*command, str(ROOT / "tests/node/test_p5q_c5b_failure_evidence.mjs"), *paths],
+            env=env, capture_output=True, text=True, timeout=180,
+        )
+        print(result.stdout)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: ▶ C5b finally evidence and noninterfering observers on local HTTPS
+E           ✔ login_timeout (2322.428661ms)
+E           ✔ open_form (3595.160295ms)
+E           ✔ third_field (5646.119384ms)
+E           ✔ identity_goto (15942.56583ms)
+E           ✔ identity_snapshot (15768.472238ms)
+E           ✔ adapter (16106.731147ms)
+E           ✔ write_failure (16018.935803ms)
+E           ✔ normal (16063.684596ms)
+E           ✖ assembly (15893.389517ms)
+E           ✔ compare_read_failure (3151.188465ms)
+E         ✖ C5b finally evidence and noninterfering observers on local HTTPS (110515.958938ms)
+E         ✔ exception codes never come from arbitrary exception text (0.255588ms)
+E         ℹ tests 12
+E         ℹ suites 0
+E         ℹ pass 10
+E         ℹ fail 2
+E         ℹ cancelled 0
+E         ℹ skipped 0
+E         ℹ todo 0
+E         ℹ duration_ms 110518.885639
+E         
+E         ✖ failing tests:
+E         
+E         test at tests/node/test_p5q_c5b_failure_evidence.mjs:38:15
+E         ✖ assembly (15893.389517ms)
+E           TypeError: Cannot read properties of undefined (reading 'length')
+E               at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5b_failure_evidence.mjs:135:47)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_p5q_c5b_failure_evidence.mjs:38:7)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...ickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n').returncode
+
+tests/unit/test_qb_browser_node.py:130: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_qb_browser_node.py::test_node_c5b_failure_evidence - A...
+1 failed, 1 passed in 110.63s (0:01:50)

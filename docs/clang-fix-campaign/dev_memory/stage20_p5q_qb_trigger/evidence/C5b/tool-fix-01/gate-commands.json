@@ -1,0 +1,38 @@
+[
+  {
+    "argv": [
+      ".venv/bin/mypy"
+    ],
+    "exit": 0,
+    "seconds": 1.572,
+    "log": "mypy.log"
+  },
+  {
+    "argv": [
+      ".venv/bin/ruff",
+      "check",
+      "."
+    ],
+    "exit": 1,
+    "seconds": 3.713,
+    "log": "ruff.log"
+  },
+  {
+    "argv": [
+      ".venv/bin/lint-imports"
+    ],
+    "exit": 0,
+    "seconds": 0.576,
+    "log": "lint-imports.log"
+  },
+  {
+    "argv": [
+      ".venv/bin/python",
+      "docs/clang-fix-campaign/tools/check_design_doc.py",
+      "docs/clang-fix-campaign/design.md"
+    ],
+    "exit": 0,
+    "seconds": 0.07,
+    "log": "design-check.log"
+  }
+]

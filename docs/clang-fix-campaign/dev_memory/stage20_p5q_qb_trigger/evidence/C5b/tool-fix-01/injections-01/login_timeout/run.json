@@ -1,0 +1,32 @@
+{
+  "stage": "login",
+  "status": "STOPPED",
+  "failure": {
+    "stage": "login",
+    "code": "QB_LOGIN_TIMEOUT"
+  },
+  "responses": [
+    {
+      "stage": "login",
+      "has_diagnostic": false,
+      "ok": false,
+      "error": "QB_LOGIN_TIMEOUT"
+    }
+  ],
+  "callbacks": [],
+  "observer_errors": [],
+  "page_identity_counts": [],
+  "snapshots": [],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "write_stage": "write"
+}

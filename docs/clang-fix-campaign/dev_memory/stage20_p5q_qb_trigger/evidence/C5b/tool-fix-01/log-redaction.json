@@ -1,0 +1,18 @@
+[
+  {
+    "path": "full.log",
+    "raw_sha256": "fa86ad2f800b64a90effe47f661d1cb06e023253b1166e6f314759aed123dc05",
+    "redacted_sha256": "3f9f3baf1f382b574f5b1a5b043e82aa07fc8c7fbdd0612cf57024dbd8c695c2",
+    "raw_bytes": 327400,
+    "redacted_bytes": 339924,
+    "reason": "Synthetic negative-fixture parameters masked; console log HTML-escaped so fixture tags are text, XML serialized with parser. Test-set audit preceded log redaction. No original log committed."
+  },
+  {
+    "path": "full.xml",
+    "raw_sha256": "be91a2a249569015dcbd3e7ed7403171795ed12aae58bb13e949d8eff4a96423",
+    "redacted_sha256": "21432c7dd85937d85a0e1cf8a7c017775d30f42d107597182b883492a9e0e022",
+    "raw_bytes": 368878,
+    "redacted_bytes": 368725,
+    "reason": "Synthetic negative-fixture parameters masked; console log HTML-escaped so fixture tags are text, XML serialized with parser. Test-set audit preceded log redaction. No original log committed."
+  }
+]

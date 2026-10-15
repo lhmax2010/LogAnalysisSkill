@@ -71,7 +71,8 @@ export function variables(id, submitted = VALUES) {
     <tbody>${values.map(columns).join('')}</tbody></table>`);
 }
 
-export function form(version, { extraField = false, refresh = true, noNavigation = false, callbackMismatch = false } = {}) {
+export function form(version, { extraField = false, refresh = true, noNavigation = false, callbackMismatch = false,
+  callbackMismatchAt = null } = {}) {
   const rows = FIELDS.map((name, i) => {
     const base = `form:field:${i}`;
     const callback = escape(`wicketAjaxPost('page?${version}-1.IBehaviorListener.0-form-field-${i}', this)`);
@@ -96,6 +97,7 @@ export function form(version, { extraField = false, refresh = true, noNavigation
     window.wicketAjaxPost = function(url, element) {
       const row=element.closest('tr');
       ${callbackMismatch ? "url=url.replace('field-0','field-99');" : ''}
+      ${Number.isInteger(callbackMismatchAt) ? `url=url.replace('field-${callbackMismatchAt}','field-99');` : ''}
       fetch(url+'&random='+Math.random(), {method:'POST', body:new URLSearchParams({field:row.dataset.field,value:element.value})})
       .then(r=>r.json()).then(reply=>{
         document.querySelector('form').action='page?'+reply.version+'-1.IFormSubmitListener-form';
@@ -144,7 +146,8 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
         <button title="Run the configuration" onclick="var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false">Run</button>`, `QuickBuild - ${PROJECT.configuration_path}`));
       else if (row.method === 'GET' && /ILinkListener-run$/.test(url.search)) { fixture.version = 41; redirect('/wicket/page?41'); }
       else if (row.method === 'GET' && url.pathname === '/wicket/page' && /^\?\d+$/.test(url.search)) response.end(
-        form(fixture.version, { noNavigation: fixture.mode === 'no-navigation', callbackMismatch: fixture.callbackMismatch }).replace('<h1>',
+        form(fixture.version, { noNavigation: fixture.mode === 'no-navigation', callbackMismatch: fixture.callbackMismatch,
+          callbackMismatchAt: fixture.callbackMismatchAt, extraField: fixture.extraField }).replace('<h1>',
           url.search === '?99' ? '<div class="feedbackPanelERROR">Synthetic server error after request</div><h1>' : '<h1>'));
       else if (row.method === 'POST' && /IBehaviorListener/.test(url.search)) {
         response.setHeader('Content-Type', 'application/json');

@@ -1,0 +1,38 @@
+{
+  "stage": "read",
+  "status": "STOPPED",
+  "failure": {
+    "stage": "read",
+    "code": "QB_READ_REDIRECTED"
+  },
+  "responses": [
+    {
+      "stage": "login",
+      "has_diagnostic": false,
+      "ok": true
+    },
+    {
+      "stage": "read",
+      "has_diagnostic": false,
+      "ok": false,
+      "error": "QB_READ_REDIRECTED"
+    }
+  ],
+  "callbacks": [],
+  "observer_errors": [],
+  "page_identity_counts": [],
+  "snapshots": [],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "pages": [],
+  "write_stage": "write"
+}

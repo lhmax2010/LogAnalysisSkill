@@ -1,0 +1,38 @@
+[
+  {
+    "method": "GET",
+    "path": "/signin",
+    "status": 200,
+    "body": ""
+  },
+  {
+    "method": "POST",
+    "path": "/signin?0-1.IFormSubmitListener-content-form",
+    "status": 302,
+    "body": "<SYNTHETIC_LOGIN_REDACTED>"
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard",
+    "status": 200,
+    "body": ""
+  },
+  {
+    "method": "GET",
+    "path": "/overview/1917",
+    "status": 200,
+    "body": ""
+  },
+  {
+    "method": "GET",
+    "path": "/wicket/page?41-1.ILinkListener-run",
+    "status": 302,
+    "body": ""
+  },
+  {
+    "method": "GET",
+    "path": "/wicket/page?41",
+    "status": 200,
+    "body": ""
+  }
+]

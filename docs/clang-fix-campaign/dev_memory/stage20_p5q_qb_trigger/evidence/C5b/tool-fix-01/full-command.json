@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/pytest",
+    "-v",
+    "-s",
+    "--junitxml=docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/tool-fix-01/full.xml"
+  ],
+  "exit": 0,
+  "seconds": 636.423,
+  "P5Q_C5B_EVIDENCE": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/tool-fix-01/full-injections",
+  "P5Q_C5A_EVIDENCE": "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/tool-fix-01/full-local-integration"
+}

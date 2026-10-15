@@ -1,0 +1,538 @@
+{
+  "stage": "open_form",
+  "status": "STOPPED",
+  "failure": {
+    "stage": "open_form",
+    "code": "QB_FORM_CHANGED"
+  },
+  "responses": [
+    {
+      "stage": "login",
+      "has_diagnostic": false,
+      "ok": true
+    },
+    {
+      "stage": "open_form",
+      "has_diagnostic": true,
+      "ok": false,
+      "error": "QB_FORM_CHANGED"
+    }
+  ],
+  "callbacks": [],
+  "observer_errors": [],
+  "page_identity_counts": [
+    {
+      "page": "https://quickbuild.tizen.org/overview/1917",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?41",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?41",
+      "outside_identity_count": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "stage": "open_form",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES",
+          "EXTRA"
+        ],
+        "missing": [],
+        "extra": [
+          "EXTRA"
+        ],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-0', this)"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-1', this)"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-2', this)"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-3', this)"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-4', this)"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-5', this)"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-6', this)"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-7', this)"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-8', this)"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-9', this)"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-10', this)"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-11', this)"
+              }
+            ]
+          },
+          {
+            "label": "EXTRA",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "text",
+                "role": "",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "labels"
+      }
+    },
+    {
+      "stage": "open_form",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES",
+          "EXTRA"
+        ],
+        "missing": [],
+        "extra": [
+          "EXTRA"
+        ],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-0', this)"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-1', this)"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-2', this)"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-3', this)"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-4', this)"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-5', this)"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-6', this)"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-7', this)"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-8', this)"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-9', this)"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-10', this)"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "wicketAjaxPost('page?41-1.IBehaviorListener.0-form-field-11', this)"
+              }
+            ]
+          },
+          {
+            "label": "EXTRA",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "text",
+                "role": "",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "labels"
+      }
+    }
+  ],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    }
+  ],
+  "request_id": "rehearsal-4eb35fc4195f413580d31a6a3245bc0d",
+  "release_state": "not_released",
+  "form_action_releases": 0,
+  "final_action": "https://quickbuild.tizen.org/wicket/page?41-1.IFormSubmitListener-form",
+  "registrations": [],
+  "diagnostic_files": [
+    "diagnostic.html",
+    "diagnostic.json"
+  ],
+  "write_stage": "write"
+}

@@ -112,6 +112,22 @@ def test_c5a_tools_are_readonly_and_not_production_test_overrides() -> None:
         assert "--ignore-certificate-errors-spki-list" not in source
         assert "installGuards =" not in source and "policy.allow =" not in source
         assert "process.stdin" not in source
+        assert "error.message" not in source
+        assert "error.stack" not in source
+
+
+@pytest.mark.integration
+def test_node_c5b_failure_evidence() -> None:
+    command, env = node_command()
+    paths = browser_paths()
+    if not shutil.which("openssl"):
+        pytest.skip("openssl unavailable for synthetic local C5b TLS certificate")
+    result = subprocess.run(
+        [*command, str(ROOT / "tests/node/test_p5q_c5b_failure_evidence.mjs"), *paths],
+        env=env, capture_output=True, text=True, timeout=180,
+    )
+    print(result.stdout)
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 @pytest.mark.integration

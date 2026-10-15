@@ -1,0 +1,590 @@
+E401 [*] Multiple imports on one line
+ --> audit_four_sigs.py:4:1
+  |
+2 | """p0-signature-audit 抽审核验:四个高风险签名 vs v1.5.14-FROZEN 权威参数表。
+3 | 用法: python3 audit_four_sigs.py docs/clang-fix-campaign/design.md"""
+4 | import ast, re, sys
+  | ^^^^^^^^^^^^^^^^^^^
+5 |
+6 | # 权威规格:自 v1.5.14-FROZEN 伪语法原文机械导出(Claude 侧提取,行号 L1971/L1892/L2052/L2004)
+  |
+help: Split imports
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> audit_four_sigs.py:4:1
+  |
+2 | """p0-signature-audit 抽审核验:四个高风险签名 vs v1.5.14-FROZEN 权威参数表。
+3 | 用法: python3 audit_four_sigs.py docs/clang-fix-campaign/design.md"""
+4 | import ast, re, sys
+  | ^^^^^^^^^^^^^^^^^^^
+5 |
+6 | # 权威规格:自 v1.5.14-FROZEN 伪语法原文机械导出(Claude 侧提取,行号 L1971/L1892/L2052/L2004)
+  |
+help: Organize imports
+
+E701 Multiple statements on one line (colon)
+  --> audit_four_sigs.py:27:17
+   |
+26 | def unparse(x):
+27 |     if x is None: return None
+   |                 ^
+28 |     return ast.unparse(x).strip("'\"")
+   |
+
+E701 Multiple statements on one line (colon)
+  --> audit_four_sigs.py:34:8
+   |
+32 | found, fail = {}, 0
+33 | for f in fences:
+34 |     try: tree = ast.parse(f)
+   |        ^
+35 |     except SyntaxError: continue
+36 |     for node in ast.walk(tree):
+   |
+
+E701 Multiple statements on one line (colon)
+  --> audit_four_sigs.py:35:23
+   |
+33 | for f in fences:
+34 |     try: tree = ast.parse(f)
+35 |     except SyntaxError: continue
+   |                       ^
+36 |     for node in ast.walk(tree):
+37 |         if isinstance(node, ast.FunctionDef) and node.name in EXPECTED:
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> audit_four_sigs.py:48:55
+   |
+46 |     got = found.get(name)
+47 |     if got is None:
+48 |         print(f"[FAIL] {name}: 未在任何 python 围栏中找到 def"); fail += 1; continue
+   |                                                                ^
+49 |     ok = (got["pos"]==exp["pos"] and got["kwonly"]==exp["kwonly"]
+50 |           and got["kw_defaults"]==exp["kw_defaults"] and got["ret"]==exp["ret"]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> audit_four_sigs.py:48:66
+   |
+46 |     got = found.get(name)
+47 |     if got is None:
+48 |         print(f"[FAIL] {name}: 未在任何 python 围栏中找到 def"); fail += 1; continue
+   |                                                                           ^
+49 |     ok = (got["pos"]==exp["pos"] and got["kwonly"]==exp["kwonly"]
+50 |           and got["kw_defaults"]==exp["kw_defaults"] and got["ret"]==exp["ret"]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> audit_four_sigs.py:54:57
+   |
+52 |     print(f"[{'OK' if ok else 'FAIL'}] {name}")
+53 |     if not ok:
+54 |         print(f"    expected={exp}\n    got     ={got}"); fail += 1
+   |                                                         ^
+55 | print(f"\nresult: {'PASS 4/4' if fail==0 else f'FAIL({fail})'}")
+56 | sys.exit(1 if fail else 0)
+   |
+
+E401 [*] Multiple imports on one line
+ --> docs/clang-fix-campaign/hashobj2.py:7:1
+  |
+5 | # 标签到标题的映射从未登记;且 `**B-13 ` 在本稿行首出现两次(正控制小节),
+6 | # 按前缀读法 (b) 应红、按完整标题读法通过 —— 规格与实现不是同一个东西。
+7 | import re, sys, hashlib
+  | ^^^^^^^^^^^^^^^^^^^^^^^
+8 | # ---8<--- RULEBLOCK BEGIN hashobj2.EXCLUDED
+9 | # 排除小节 = (标签, 完整标题正则);每个正则须在全文恰匹配一次,否则即红(类三)
+  |
+help: Split imports
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs/clang-fix-campaign/hashobj2.py:7:1
+  |
+5 | # 标签到标题的映射从未登记;且 `**B-13 ` 在本稿行首出现两次(正控制小节),
+6 | # 按前缀读法 (b) 应红、按完整标题读法通过 —— 规格与实现不是同一个东西。
+7 | import re, sys, hashlib
+  | ^^^^^^^^^^^^^^^^^^^^^^^
+8 | # ---8<--- RULEBLOCK BEGIN hashobj2.EXCLUDED
+9 | # 排除小节 = (标签, 完整标题正则);每个正则须在全文恰匹配一次,否则即红(类三)
+  |
+help: Organize imports
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/hashobj2.py:22:25
+   |
+20 |     starts, bad = [], []
+21 |     for lab, rx in COMP:
+22 |         hit = [i for i, l in enumerate(lines) if rx.match(l)]
+   |                         ^
+23 |         if len(hit) != 1:
+24 |             bad.append((lab, len(hit)))
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/hashobj2.py:29:12
+   |
+27 |         print("锚正则唯一定位核验失败(即红):", bad)
+28 |     keep, skip = [], False
+29 |     for i, l in enumerate(lines):
+   |            ^
+30 |         if i in starts:
+31 |             skip = True
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/hashobj2.py:42:23
+   |
+40 |     """返回本脚本【规则常量区块】的字节 —— 供断言③ 与稿内嵌入块逐字节比对"""
+41 |     src = open(path, encoding='utf-8').read().splitlines(True)
+42 |     a = next(i for i, l in enumerate(src) if 'RULEBLOCK BEGIN' in l)
+   |                       ^
+43 |     b = next(i for i, l in enumerate(src) if 'RULEBLOCK END' in l)
+44 |     return ''.join(src[a+1:b]).encode()
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/hashobj2.py:43:23
+   |
+41 |     src = open(path, encoding='utf-8').read().splitlines(True)
+42 |     a = next(i for i, l in enumerate(src) if 'RULEBLOCK BEGIN' in l)
+43 |     b = next(i for i, l in enumerate(src) if 'RULEBLOCK END' in l)
+   |                       ^
+44 |     return ''.join(src[a+1:b]).encode()
+45 | if __name__ == '__main__':
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/hashobj2.py:47:21
+   |
+45 | if __name__ == '__main__':
+46 |     t, n = obj(sys.argv[1])
+47 |     allsec = [l for l in open(sys.argv[1], encoding='utf-8').read().splitlines()
+   |                     ^
+48 |               if re.match(r'^#{2,3} ', l) or re.match(r'^\*\*B-\d', l)]
+49 |     missing = [x for x in allsec
+   |
+
+E701 Multiple statements on one line (colon)
+  --> docs/clang-fix-campaign/hashobj2.py:53:15
+   |
+51 |     print(f"{sys.argv[1]}  排除小节命中 {n}/{len(EXCLUDED)}  对象 {len(t.encode())} 字节"
+52 |           f"  覆盖核验缺失 {len(missing)}")
+53 |     if missing: print("  缺失:", missing[:5])
+   |               ^
+54 |     print("sha256 =", hashlib.sha256(t.encode()).hexdigest())
+55 |     print("规则区块 sha256 =", hashlib.sha256(ruleblock()).hexdigest())
+   |
+
+E401 [*] Multiple imports on one line
+  --> docs/clang-fix-campaign/ident_check3.py:12:1
+   |
+10 | #      本版改为三层(Tier A/B/C)各有其机械判据,并【强制产出分层覆盖计数】。
+11 | #  (3) 元规则(九) 第三句(甲的第五次反转默认):产物自带【输入面清单】。
+12 | import re, sys, collections, hashlib, json
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 | from hashobj2 import obj
+   |
+help: Split imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> docs/clang-fix-campaign/ident_check3.py:12:1
+   |
+10 |   #      本版改为三层(Tier A/B/C)各有其机械判据,并【强制产出分层覆盖计数】。
+11 |   #  (3) 元规则(九) 第三句(甲的第五次反转默认):产物自带【输入面清单】。
+12 | / import re, sys, collections, hashlib, json
+13 | | from hashobj2 import obj
+   | |________________________^
+14 |
+15 |   CN = '一二三四五六七八九十'
+   |
+help: Organize imports
+
+B007 Loop control variable `t` not used within loop body
+  --> docs/clang-fix-campaign/ident_check3.py:62:16
+   |
+60 | def toks(line):
+61 |     out = set()
+62 |     for n, rx, t, sec in COMP:
+   |                ^
+63 |         for m in rx.finditer(line):
+64 |             g = m.group(1) if rx.groups else m.group(0)
+   |
+help: Rename unused `t` to `_t`
+
+B007 Loop control variable `sec` not used within loop body
+  --> docs/clang-fix-campaign/ident_check3.py:62:19
+   |
+60 | def toks(line):
+61 |     out = set()
+62 |     for n, rx, t, sec in COMP:
+   |                   ^^^
+63 |         for m in rx.finditer(line):
+64 |             g = m.group(1) if rx.groups else m.group(0)
+   |
+help: Rename unused `sec` to `_sec`
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/ident_check3.py:69:26
+   |
+68 | def sections(lines):
+69 |     idx = [(i, l) for i, l in enumerate(lines) if re.match(r'^#{2,3} ', l)]
+   |                          ^
+70 |     out = []
+71 |     for j, (i, l) in enumerate(idx):
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/ident_check3.py:71:16
+   |
+69 |     idx = [(i, l) for i, l in enumerate(lines) if re.match(r'^#{2,3} ', l)]
+70 |     out = []
+71 |     for j, (i, l) in enumerate(idx):
+   |                ^
+72 |         end = idx[j + 1][0] if j + 1 < len(idx) else len(lines)
+73 |         out.append((i, end, l.strip()))
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/ident_check3.py:95:23
+   |
+93 | def ruleblock(path=__file__):
+94 |     src = open(path, encoding='utf-8').read().splitlines(True)
+95 |     a = next(i for i, l in enumerate(src) if 'RULEBLOCK BEGIN' in l)
+   |                       ^
+96 |     b = next(i for i, l in enumerate(src) if 'RULEBLOCK END' in l)
+97 |     return ''.join(src[a+1:b]).encode()
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/ident_check3.py:96:23
+   |
+94 |     src = open(path, encoding='utf-8').read().splitlines(True)
+95 |     a = next(i for i, l in enumerate(src) if 'RULEBLOCK BEGIN' in l)
+96 |     b = next(i for i, l in enumerate(src) if 'RULEBLOCK END' in l)
+   |                       ^
+97 |     return ''.join(src[a+1:b]).encode()
+   |
+
+E701 Multiple statements on one line (colon)
+   --> docs/clang-fix-campaign/ident_check3.py:105:26
+    |
+103 |     def sec_of(i):
+104 |         for a, b, t in secs:
+105 |             if a <= i < b: return t
+    |                          ^
+106 |         return '(前言)'
+107 |     # 非规范区 = 变更块 + 生成记录区内容(与 B-13 共用同一排除集,内容枚举)
+    |
+
+E741 Ambiguous variable name: `l`
+   --> docs/clang-fix-campaign/ident_check3.py:108:26
+    |
+106 |         return '(前言)'
+107 |     # 非规范区 = 变更块 + 生成记录区内容(与 B-13 共用同一排除集,内容枚举)
+108 |     end = next((i for i, l in enumerate(lines) if l.strip() == '---'), 0)
+    |                          ^
+109 |     NON = set(range(0, end))
+110 |     from hashobj2 import COMP as EXC_SEC
+    |
+
+E741 Ambiguous variable name: `l`
+   --> docs/clang-fix-campaign/ident_check3.py:111:24
+    |
+109 |     NON = set(range(0, end))
+110 |     from hashobj2 import COMP as EXC_SEC
+111 |     starts = [i for i, l in enumerate(lines) if any(rx.match(l) for _, rx in EXC_SEC)]
+    |                        ^
+112 |     skip = False
+113 |     for i, l in enumerate(lines):
+    |
+
+E741 Ambiguous variable name: `l`
+   --> docs/clang-fix-campaign/ident_check3.py:113:12
+    |
+111 |     starts = [i for i, l in enumerate(lines) if any(rx.match(l) for _, rx in EXC_SEC)]
+112 |     skip = False
+113 |     for i, l in enumerate(lines):
+    |            ^
+114 |         if i in starts: skip = True; continue
+115 |         if skip and re.match(r'^(#{2,3} |\*\*B-\d)', l): skip = False
+    |
+
+E701 Multiple statements on one line (colon)
+   --> docs/clang-fix-campaign/ident_check3.py:114:23
+    |
+112 |     skip = False
+113 |     for i, l in enumerate(lines):
+114 |         if i in starts: skip = True; continue
+    |                       ^
+115 |         if skip and re.match(r'^(#{2,3} |\*\*B-\d)', l): skip = False
+116 |         if skip: NON.add(i)
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> docs/clang-fix-campaign/ident_check3.py:114:36
+    |
+112 |     skip = False
+113 |     for i, l in enumerate(lines):
+114 |         if i in starts: skip = True; continue
+    |                                    ^
+115 |         if skip and re.match(r'^(#{2,3} |\*\*B-\d)', l): skip = False
+116 |         if skip: NON.add(i)
+    |
+
+E701 Multiple statements on one line (colon)
+   --> docs/clang-fix-campaign/ident_check3.py:115:56
+    |
+113 |     for i, l in enumerate(lines):
+114 |         if i in starts: skip = True; continue
+115 |         if skip and re.match(r'^(#{2,3} |\*\*B-\d)', l): skip = False
+    |                                                        ^
+116 |         if skip: NON.add(i)
+117 |     occ = collections.defaultdict(list)
+    |
+
+E701 Multiple statements on one line (colon)
+   --> docs/clang-fix-campaign/ident_check3.py:116:16
+    |
+114 |         if i in starts: skip = True; continue
+115 |         if skip and re.match(r'^(#{2,3} |\*\*B-\d)', l): skip = False
+116 |         if skip: NON.add(i)
+    |                ^
+117 |     occ = collections.defaultdict(list)
+118 |     for i, l in enumerate(lines, 1):
+    |
+
+E741 Ambiguous variable name: `l`
+   --> docs/clang-fix-campaign/ident_check3.py:118:12
+    |
+116 |         if skip: NON.add(i)
+117 |     occ = collections.defaultdict(list)
+118 |     for i, l in enumerate(lines, 1):
+    |            ^
+119 |         for cls, x in toks(l): occ[(cls, x)].append(i)
+120 |     tier = dict((n, t) for n, _, t, _ in CLASSES)
+    |
+
+E701 Multiple statements on one line (colon)
+   --> docs/clang-fix-campaign/ident_check3.py:119:30
+    |
+117 |     occ = collections.defaultdict(list)
+118 |     for i, l in enumerate(lines, 1):
+119 |         for cls, x in toks(l): occ[(cls, x)].append(i)
+    |                              ^
+120 |     tier = dict((n, t) for n, _, t, _ in CLASSES)
+121 |     home = dict((n, s) for n, _, _, s in CLASSES)
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> docs/clang-fix-campaign/ident_check3.py:125:34
+    |
+123 |     for (cls, x), ls in sorted(occ.items()):
+124 |         if x in NONIDENT:
+125 |             cov['X 已登记非标识符'] += 1; continue
+    |                                         ^
+126 |         T = tier[cls]
+127 |         if T == 'A':
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> docs/clang-fix-campaign/ident_check3.py:144:53
+    |
+142 |                   and isdef(lines[i - 1], x)]
+143 |         if not hit and x not in GAPS:
+144 |             zero.append((cls, T, x, len(ls), ls[0])); cov[f'{T} 零定义'] += 1
+    |                                                     ^
+145 |         elif outdef:
+146 |             multi.append((cls, T, x, outdef[:6])); cov[f'{T} 多定义'] += 1
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> docs/clang-fix-campaign/ident_check3.py:146:50
+    |
+144 |             zero.append((cls, T, x, len(ls), ls[0])); cov[f'{T} 零定义'] += 1
+145 |         elif outdef:
+146 |             multi.append((cls, T, x, outdef[:6])); cov[f'{T} 多定义'] += 1
+    |                                                  ^
+147 |         else:
+148 |             cov[f'{T} 通过'] += 1
+    |
+
+E741 Ambiguous variable name: `l`
+   --> docs/clang-fix-campaign/ident_check3.py:157:78
+    |
+155 |            'coverage': dict(sorted(cov.items())),
+156 |            'zero': [{'cls': c, 'tier': t, 'id': x, 'n': n, 'first': f} for c, t, x, n, f in zero],
+157 |            'multi': [{'cls': c, 'tier': t, 'id': x, 'lines': l} for c, t, x, l in multi],
+    |                                                                              ^
+158 |            'input_face': {'n_ident': len(occ),
+159 |                           'ident_digest': hashlib.sha256(
+    |
+
+E401 [*] Multiple imports on one line
+  --> docs/clang-fix-campaign/norm_diff5.py:12:1
+   |
+10 | #      实测它在 v1.14/v1.15 仅命中变更块内一行,当前完全冗余。
+11 | #      现排除集 = 六条行级模式 + 两条结构性区域,合计八条,与稿逐条对应。
+12 | import re, sys, difflib, hashlib, json
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+13 | from hashobj2 import COMP as EXC_SEC
+14 | # ---8<--- RULEBLOCK BEGIN norm_diff5.EXCLUDE
+   |
+help: Split imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> docs/clang-fix-campaign/norm_diff5.py:12:1
+   |
+10 |   #      实测它在 v1.14/v1.15 仅命中变更块内一行,当前完全冗余。
+11 |   #      现排除集 = 六条行级模式 + 两条结构性区域,合计八条,与稿逐条对应。
+12 | / import re, sys, difflib, hashlib, json
+13 | | from hashobj2 import COMP as EXC_SEC
+   | |____________________________________^
+14 |   # ---8<--- RULEBLOCK BEGIN norm_diff5.EXCLUDE
+15 |   # ---- 冻结排除模式(类三·就地列举;六条行级 + 两条结构性 = 八条)----
+   |
+help: Organize imports
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/norm_diff5.py:33:26
+   |
+31 | def nonnorm(lines):
+32 |     """X7 变更块 + X8 生成记录区内容(内容枚举,与 hashobj2 共用锚正则)"""
+33 |     end = next((i for i, l in enumerate(lines) if l.strip() == '---'), 0)
+   |                          ^
+34 |     out = set(range(0, end))
+35 |     starts = [i for i, l in enumerate(lines) if any(rx.match(l) for _, rx in EXC_SEC)]
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/norm_diff5.py:35:24
+   |
+33 |     end = next((i for i, l in enumerate(lines) if l.strip() == '---'), 0)
+34 |     out = set(range(0, end))
+35 |     starts = [i for i, l in enumerate(lines) if any(rx.match(l) for _, rx in EXC_SEC)]
+   |                        ^
+36 |     skip = False
+37 |     for i, l in enumerate(lines):
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/norm_diff5.py:37:12
+   |
+35 |     starts = [i for i, l in enumerate(lines) if any(rx.match(l) for _, rx in EXC_SEC)]
+36 |     skip = False
+37 |     for i, l in enumerate(lines):
+   |            ^
+38 |         if i in starts:
+39 |             skip = True; continue          # 标题行保留(B-* 的定义位)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> docs/clang-fix-campaign/norm_diff5.py:39:24
+   |
+37 |     for i, l in enumerate(lines):
+38 |         if i in starts:
+39 |             skip = True; continue          # 标题行保留(B-* 的定义位)
+   |                        ^
+40 |         if skip and re.match(r'^(#{2,3} |\*\*B-\d)', l):
+41 |             skip = False
+   |
+
+E701 Multiple statements on one line (colon)
+  --> docs/clang-fix-campaign/norm_diff5.py:42:16
+   |
+40 |         if skip and re.match(r'^(#{2,3} |\*\*B-\d)', l):
+41 |             skip = False
+42 |         if skip: out.add(i)
+   |                ^
+43 |     return out
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/norm_diff5.py:49:12
+   |
+47 |     NON = nonnorm(lines)
+48 |     out = []
+49 |     for i, l in enumerate(lines):
+   |            ^
+50 |         if i in NON: continue
+51 |         t = l.strip()
+   |
+
+E701 Multiple statements on one line (colon)
+  --> docs/clang-fix-campaign/norm_diff5.py:50:20
+   |
+48 |     out = []
+49 |     for i, l in enumerate(lines):
+50 |         if i in NON: continue
+   |                    ^
+51 |         t = l.strip()
+52 |         if not t: continue
+   |
+
+E701 Multiple statements on one line (colon)
+  --> docs/clang-fix-campaign/norm_diff5.py:52:17
+   |
+50 |         if i in NON: continue
+51 |         t = l.strip()
+52 |         if not t: continue
+   |                 ^
+53 |         if any(rx.search(t) for rx, _ in EXC): continue
+54 |         for seg in SPLIT.split(t):
+   |
+
+E701 Multiple statements on one line (colon)
+  --> docs/clang-fix-campaign/norm_diff5.py:53:46
+   |
+51 |         t = l.strip()
+52 |         if not t: continue
+53 |         if any(rx.search(t) for rx, _ in EXC): continue
+   |                                              ^
+54 |         for seg in SPLIT.split(t):
+55 |             seg = (seg or '').strip(' |>-*')
+   |
+
+E701 Multiple statements on one line (colon)
+  --> docs/clang-fix-campaign/norm_diff5.py:56:28
+   |
+54 |         for seg in SPLIT.split(t):
+55 |             seg = (seg or '').strip(' |>-*')
+56 |             if len(seg) < 8: continue
+   |                            ^
+57 |             k = re.sub(r'[\s*`>|—·\-–()()]+', '', seg)
+58 |             k = re.sub(r'v1\.\d+[^,,)）]*', '', k)
+   |
+
+E701 Multiple statements on one line (colon)
+  --> docs/clang-fix-campaign/norm_diff5.py:59:26
+   |
+57 |             k = re.sub(r'[\s*`>|—·\-–()()]+', '', seg)
+58 |             k = re.sub(r'v1\.\d+[^,,)）]*', '', k)
+59 |             if len(k) < 6: continue
+   |                          ^
+60 |             out.append((i + 1, seg, k))
+61 |     return out
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/norm_diff5.py:65:23
+   |
+63 | def ruleblock(path=__file__):
+64 |     src = open(path, encoding='utf-8').read().splitlines(True)
+65 |     a = next(i for i, l in enumerate(src) if 'RULEBLOCK BEGIN' in l)
+   |                       ^
+66 |     b = next(i for i, l in enumerate(src) if 'RULEBLOCK END' in l)
+67 |     return ''.join(src[a+1:b]).encode()
+   |
+
+E741 Ambiguous variable name: `l`
+  --> docs/clang-fix-campaign/norm_diff5.py:66:23
+   |
+64 |     src = open(path, encoding='utf-8').read().splitlines(True)
+65 |     a = next(i for i, l in enumerate(src) if 'RULEBLOCK BEGIN' in l)
+66 |     b = next(i for i, l in enumerate(src) if 'RULEBLOCK END' in l)
+   |                       ^
+67 |     return ''.join(src[a+1:b]).encode()
+   |
+
+Found 53 errors.
+[*] 8 fixable with the `--fix` option (2 hidden fixes can be enabled with the `--unsafe-fixes` option).

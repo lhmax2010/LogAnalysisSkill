@@ -31,14 +31,112 @@ export async function checkedWrite(path, html) {
 export async function newOutput(path) { await mkdir(path, { recursive: false }); }
 export async function writeJSON(path, data) { await checkedWrite(path, JSON.stringify(data, null, 2) + '\n'); }
 
+export class EvidenceError extends Error {
+  constructor(code) { super(); this.code = /^[A-Z_]+$/.test(code) ? code : 'EVIDENCE_ERROR'; }
+}
+
+export function errorCode(error) {
+  if ((error instanceof AgentError || error instanceof EvidenceError) && /^[A-Z_]+$/.test(error.code)) return error.code;
+  const name = error?.constructor?.name;
+  return typeof name === 'string' && /^[A-Za-z_]{1,64}$/.test(name) ? name : 'Error';
+}
+
+export function reportFailure(error, stderr = process.stderr) {
+  if (error instanceof EvidenceError && error.code === 'EVIDENCE_WRITE_FAILED') stderr.write('EVIDENCE_WRITE_FAILED\n');
+  else stderr.write(`EVIDENCE_STOPPED stage=${error instanceof EvidenceError ? error.stage ?? 'startup' : 'startup'} code=${error instanceof EvidenceError ? error.recordedCode ?? error.code : errorCode(error)}\n`);
+}
+
+export class EvidenceRun {
+  constructor(output) {
+    this.output = output; this.stage = 'startup'; this.agent = null; this.diagnostic = null;
+    this.data = { stage: this.stage, status: 'RUNNING', failure: null, responses: [], callbacks: [],
+      observer_errors: [], page_identity_counts: [], snapshots: [], trace: [] };
+  }
+  fail(error) {
+    if (!this.data.failure) this.data.failure = { stage: this.stage, code: errorCode(error) };
+    this.data.status = 'STOPPED';
+  }
+  incomplete(kind, error) {
+    this.data.observer_errors.push({ stage: this.stage, kind, code: errorCode(error) });
+  }
+  response(reply, stage = this.stage) {
+    const summary = { stage, has_diagnostic: Boolean(reply?.diagnostic) };
+    for (const key of ['ok', 'error', 'field', 'released', 'snapshot_state']) {
+      if (Object.hasOwn(reply, key)) summary[key] = reply[key];
+    }
+    this.data.responses.push(summary);
+    if (reply.diagnostic) this.diagnostic = reply.diagnostic;
+    return reply;
+  }
+  async command(input) {
+    this.stage = input.command;
+    const reply = this.response(await this.agent.command(input));
+    if (!reply.ok) throw new AgentError(reply.error);
+    return reply;
+  }
+  async finish() {
+    this.data.trace = this.agent?.runtime.trace ?? [];
+    this.data.stage = this.data.failure?.stage ?? this.stage;
+    if (!this.data.failure) this.data.status = this.data.observer_errors.length ? 'EVIDENCE_INCOMPLETE' : 'PASSED';
+    if (this.diagnostic) {
+      try {
+        await checkedWrite(`${this.output}/diagnostic.html`, this.diagnostic.html_redacted);
+        await writeJSON(`${this.output}/diagnostic.json`, this.diagnostic.facts);
+        this.data.diagnostic_files = ['diagnostic.html', 'diagnostic.json'];
+      } catch (error) {
+        this.stage = 'write'; this.fail(error); this.data.stage = 'write';
+        this.data.diagnostic_write_error = errorCode(error);
+      }
+    }
+    this.data.write_stage = 'write';
+    this.stage = 'write';
+    try { await writeJSON(`${this.output}/run.json`, this.data); }
+    catch { const failure = new EvidenceError('EVIDENCE_WRITE_FAILED'); failure.stage = 'write'; throw failure; }
+  }
+}
+
+// One final record even when login/open_form fails before any form facts exist.
+export async function withEvidence(output, work) {
+  const record = new EvidenceRun(output);
+  let value;
+  try { value = await work(record); }
+  catch (error) { record.fail(error); }
+  finally { await record.finish(); }
+  if (record.data.failure || record.data.status === 'EVIDENCE_INCOMPLETE') {
+    const failure = new EvidenceError(record.data.failure?.code ?? 'EVIDENCE_INCOMPLETE');
+    // Exception class names are not tool error names; keep them only as the recorded code.
+    failure.recordedCode = record.data.failure?.code ?? failure.code;
+    failure.stage = record.data.failure?.stage ?? record.data.stage;
+    throw failure;
+  }
+  return value;
+}
+
+export async function evidenceSession(output, makeAgent, work) {
+  return withEvidence(output, async record => {
+    const agent = await makeAgent(); record.agent = agent;
+    try {
+      await record.command({ command: 'login', projects: [PROJECT], login_timeout_seconds: 600 });
+      return await work(agent, record);
+    } finally {
+      try { record.response(await agent.command({ command: 'close' }), 'close'); }
+      catch (error) { record.stage = 'close'; record.fail(error); }
+    }
+  });
+}
+
 // Only adapted metadata. Never reads raw protocol request/response headers/body.
 export function observeCallbacks(runtime) {
   const requests = [];
   const actions = [];
+  const errors = [];
   const windows = new WeakMap();
   let nextWindow = 0;
   const listener = event => {
-    const { metadata: m, requestId } = adaptProtocol(event);
+    let adapted;
+    try { adapted = adaptProtocol(event); }
+    catch { errors.push({ action: 'ADAPT_FAILED' }); return; }
+    const { metadata: m, requestId } = adapted;
     if (m.method === 'POST' && m.response_status === null && /IFormSubmitListener-form$/.test(m.query)) {
       actions.push({ allowed: runtime.policy.active.has(requestId) });
     }
@@ -52,7 +150,7 @@ export function observeCallbacks(runtime) {
       status: m.response_status, allowed, window: window ? windows.get(window) : null });
   };
   runtime.guards.root.on('Fetch.requestPaused', listener);
-  return { requests, actions, close: () => runtime.guards.root.off('Fetch.requestPaused', listener) };
+  return { requests, actions, errors, close: () => runtime.guards.root.off('Fetch.requestPaused', listener) };
 }
 
 export function assertRuntime(runtime) {
@@ -102,8 +200,10 @@ export function validatePaths(policy, paths) {
     || new URL(path, ORIGIN).href !== ORIGIN + path)) throw new AgentError('AGENT_PHASE');
 }
 
-export async function comparePage(agent, path, output, sequence) {
+export async function comparePage(agent, path, output, sequence, record = null) {
+  if (record) record.stage = 'read';
   const reply = await agent.command({ command: 'read', path });
+  record?.response(reply);
   assertRuntime(agent.runtime);
   if (!reply.ok && reply.error !== 'QB_READ_ID_MISMATCH') throw new AgentError(reply.error);
   if (typeof agent.rawRead !== 'string' || agent.page.url() !== ORIGIN + path) throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE');
@@ -111,13 +211,20 @@ export async function comparePage(agent, path, output, sequence) {
   const rawRedacted = await agent.passive(agent.rawRead);
   const activeRedacted = await agent.passive(active);
   const rawName = `${sequence}.raw-redacted.html`, activeName = `${sequence}.active-redacted.html`;
+  if (record) record.stage = 'write';
   await checkedWrite(`${output}/${rawName}`, rawRedacted.html_redacted);
   await checkedWrite(`${output}/${activeName}`, activeRedacted.html_redacted);
   const rawFacts = await agent.trusted.run(pageFacts, rawRedacted.html_redacted);
   const activeFacts = await agent.trusted.run(pageFacts, activeRedacted.html_redacted);
+  if (record) record.stage = 'assemble';
   const result = { path, navigation: reply.ok ? 'VERIFIED' : reply.error, raw_file: rawName, active_file: activeName,
     raw_outside_identity_count: rawRedacted.outside_identity_count,
     active_outside_identity_count: activeRedacted.outside_identity_count, comparison: compareFacts(rawFacts, activeFacts) };
+  if (record) {
+    record.data.snapshots.push({ path, raw: rawFacts, active: activeFacts });
+    record.data.page_identity_counts.push({ page: path, raw: rawRedacted.outside_identity_count, active: activeRedacted.outside_identity_count });
+    record.stage = 'write';
+  }
   await writeJSON(`${output}/${sequence}.comparison.json`, result);
   return result;
 }

@@ -1,0 +1,82 @@
+[
+  {
+    "mode": "login_timeout",
+    "stage": "login",
+    "code": "QB_LOGIN_TIMEOUT",
+    "status": "STOPPED",
+    "received": 1,
+    "form_action_releases": null
+  },
+  {
+    "mode": "open_form",
+    "stage": "open_form",
+    "code": "QB_FORM_CHANGED",
+    "status": "STOPPED",
+    "received": 6,
+    "form_action_releases": 0
+  },
+  {
+    "mode": "third_field",
+    "stage": "fill",
+    "code": "QB_FORM_CHANGED",
+    "status": "STOPPED",
+    "received": 8,
+    "form_action_releases": 0
+  },
+  {
+    "mode": "identity_goto",
+    "stage": "assemble",
+    "code": "EVIDENCE_INCOMPLETE",
+    "status": "EVIDENCE_INCOMPLETE",
+    "received": 18,
+    "form_action_releases": 0
+  },
+  {
+    "mode": "identity_snapshot",
+    "stage": "assemble",
+    "code": "EVIDENCE_INCOMPLETE",
+    "status": "EVIDENCE_INCOMPLETE",
+    "received": 18,
+    "form_action_releases": 0
+  },
+  {
+    "mode": "adapter",
+    "stage": "assemble",
+    "code": "EVIDENCE_INCOMPLETE",
+    "status": "EVIDENCE_INCOMPLETE",
+    "received": 18,
+    "form_action_releases": 0
+  },
+  {
+    "mode": "write_failure",
+    "stage": "write",
+    "code": "EVIDENCE_WRITE_FAILED",
+    "status": "EVIDENCE_WRITE_FAILED",
+    "received": 18,
+    "form_action_releases": null
+  },
+  {
+    "mode": "normal",
+    "stage": "assemble",
+    "code": null,
+    "status": "PASSED",
+    "received": 18,
+    "form_action_releases": 0
+  },
+  {
+    "mode": "assembly",
+    "stage": "assemble",
+    "code": "TypeError",
+    "status": "STOPPED",
+    "received": 18,
+    "form_action_releases": 0
+  },
+  {
+    "mode": "compare_read_failure",
+    "stage": "read",
+    "code": "QB_READ_REDIRECTED",
+    "status": "STOPPED",
+    "received": 5,
+    "form_action_releases": null
+  }
+]

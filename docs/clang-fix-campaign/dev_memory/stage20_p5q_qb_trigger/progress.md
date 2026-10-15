@@ -1,9 +1,11 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_STOPPED**。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_AWAITING_CONFIRMATION**。
 C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b基线b134d16,六页原始/活动比对通过;
 填表演练exit1且未落盘阶段证据,见§35。C6未开始,成功/BUILD_NOTES样本挂账开放。
-以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;当前边界为停止C5b、不进入C6。
+§36按P5Q-C5B-02完成工具失败落盘及离线验证:2639 passed/1 skipped;
+等待工具提交推送后的目标行确认及新的“开始”,尚未启动fill-rehearsal-02。
+以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;当前边界为等待C5b人工确认、不进入C6。
 C4最新裁定与执行见§33;§32停点已由P5Q-C4-02关闭。
 C4本轮基线ec3be74;源格式对齐要求已撤回,旧探针作废,实现与验收见§33。
 C4本轮不访问真实QuickBuild/Gerrit,不弹登录窗口,不进入C5。
@@ -68,7 +70,7 @@ exit=0
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | COMPLETE @3ef542a;§31;C3-01/C3-03均已裁定关闭 |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | COMPLETE @39e4bde;§33;C4-01已由C4-02关闭 |
 | C5a | 第9.3节本机浏览器集成;第1.6步工具准备 | COMPLETE;§34;全部离线,2638 passed/1 skipped,四组安全4/4 |
-| C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | STOPPED;§35:六页比对通过,演练exit1/无运行记录,未重试;两个样本仍挂账 |
+| C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | AWAITING_CONFIRMATION;§36工具修复离线验收通过;§35六页比对保留,真机演练未通过;两个样本仍挂账 |
 | C6 | 第9.4节第2步确认的真实提交与收口文档 | C5 + FatTank明确确认;NOT_STARTED |
 
 C2真机取证与冻结稿假设不符时按R1修订,不得直接继续C3。
@@ -3662,6 +3664,8 @@ DENIED共22条(仍按原规则拒绝,未增加登记),IDENTITY_OUTSIDE_REGISTERE
 
 ### 35.4 第二步实际结果与停止报告 P5Q-C5B-01
 
+状态:已由 P5Q-C5B-02 裁定处理。历史失败证据原样保留,本轮执行见§36。
+
 第一步通过、身份计数均0后,再次在聊天请求“开始”;FatTank回复“开始”,仅授权
 本次演练登录。下列命令执行一次,没有重试,没有改用其它工具或路径:
 
@@ -3734,3 +3738,151 @@ session标签记录终端工具的进程编号,触发既有SECRET_VALUE规则,�
 改动或草稿。状态C5b_STOPPED,停止报告新增1(P5Q-C5B-01),不自行关闭。
 暂存区diff-check全量exit2,2150处均为12份归档HTML自身的尾空白或混合缩进;
 不格式化原始证据。排除这12份HTML后同一检查exit0,字节hash保持原值。
+
+## 36. 实施裁定 P5Q-C5B-02:取证工具补失败落盘后重跑填表演练
+
+### 36.1 裁定原文
+
+1. 第 1.6 步 a 的原始字节比对已在固定六页通过(60 项一致,身份计数均为 0),本轮不重跑。
+2. 批准只修改两个取证工具及其共用库(docs/clang-fix-campaign/spikes/ 下的 p5q_fill_rehearsal.mjs、p5q_compare_raw_active.mjs、p5q_c5_tools.mjs),不修改任何生产代码、Policy 或 installGuards。修改内容:
+   a. 失败落盘:每个阶段(login、open_form、fill、记录组装、写出)都要有阶段名;无论成功还是失败,都在 finally 中写出 run.json。run.json 记录以下内容:
+      - 阶段名;
+      - 代理应答中的固定字段(ok、error、field、released、snapshot_state,以及是否带 diagnostic);
+      - 代理返回的诊断(本已脱敏,仍经 checkedWrite 写前写后自检,单独存为 diagnostic.html 与 diagnostic.json);
+      - agent.runtime.trace;
+      - 已观察到的回调元数据;
+      - 身份计数;
+      - 已取得的 snapshot 结构事实。
+      异常信息只记录:AgentError 的 code;本工具自己抛出的固定大写错误名(完整匹配 ^[A-Z_]+$);其它异常只记类名。不得记录异常原文或堆栈。终端 stderr 只输出固定格式"EVIDENCE_STOPPED stage=<阶段> code=<错误名>"。run.json 写出本身失败时,stderr 输出固定的"EVIDENCE_WRITE_FAILED"。
+   b. 身份计数钩子不得影响生产流程:演练工具挂在 agent.snapshot 与 page.goto 上的身份计数,出错时只记录错误码(按 a 的规则),不得向外抛出;生产的 open_form、fill 按原样继续执行。只要有任何一次身份计数失败,本次演练的结论标为"证据不完整",不得算作通过。
+   c. observeCallbacks 的事件监听:adaptProtocol 抛错时只记录一条"ADAPT_FAILED",不得向外抛出;出现过该记录的,本次演练结论同样不得算作通过。
+3. 静态护栏不变,另增一条断言:两个工具源码中不出现 error.message 与 error.stack 的输出或落盘。
+4. 离线验证:在 C5a 的假服务器上逐一注入以下失败,断言 run.json 存在、阶段名与错误名正确、不含原始异常文本、prompt 中禁止的内容一律不出现:
+   - 登录超时;
+   - open_form 返回 QB_FORM_CHANGED 并带诊断;
+   - fill 在第 3 个字段失败;
+   - 身份计数钩子抛错,但生产 fill 仍完成,结论为"证据不完整";
+   - 监听器遇到非法地址;
+   - run.json 写出失败。
+   另跑一次完整的正常演练。全量 pytest、mypy、ruff、lint-imports、Node 自检、design.md 检查器全部通过。
+5. 先提交并推送工具修改与离线验证证据,再进入真机重跑。
+
+### 36.2 本轮计划与边界
+
+基线78212fe,冻结SHA256已实算匹配f16621bb…cf91c。先实现工具层finally落盘、
+失败诊断、非干扰身份/回调观察及离线注入测试,跑全部门禁并独立提交推送。
+不改生产/Policy/installGuards/冻结稿,不重跑raw-active-01,不覆盖历史证据。
+本轮离线阶段仅假服务器;真机演练须在工具提交后确认目标行并重新收到“开始”。
+成功样本与BUILD_NOTES样本仍暂无。只login/open_form/fill/close,不提交、不点Ok、
+Accept或Ready to Accept,不运行真实触发/结果CLI、不写state DB、不推Gerrit。
+未来真机目录fill-rehearsal-02,现阶段不创建、不启动。第三步仅解析既有脱敏归档。
+第四步提示词末尾截在“页面版本与”,已明确的逐字段与前后action记录要求照前轮执行。
+
+### 36.3 工具实现与离线注入
+
+三个spikes文件为本轮唯一可执行工具改动,生产目录/Policy/installGuards/design.md/
+冻结稿零diff。共享EvidenceRun记录stage、固定应答字段、trace、观察器错误、
+身份计数与已脱敏snapshot结构事实;withEvidence的finally统一写run.json。
+诊断HTML与结构JSON经同一checkedWrite写前/写后检查后分文件保存。
+失败只记录AgentError.code、EvidenceError固定大写code或其它异常的类名;
+不读任意异常message/stack作为日志,未登记的异常文本即使是大写也不采纳。
+身份钩子失败仅记IDENTITY_COUNT_FAILED,不向生产snapshot/goto抛出;
+非法协议事件仅记ADAPT_FAILED,不把事件原文带出。任一观察失败均标
+EVIDENCE_INCOMPLETE,即使生产fill成功也不判演练通过。
+
+运行环境只复用C5a的本地HTTPS假服务器/测试证书/DNS映射。测试入口模拟人工
+登录,生产login未改。未启动真机窗口;未读/写真实state DB,未访问Gerrit。
+
+定向复跑证据:`evidence/C5b/tool-fix-01/focused-02.log`,pytest 3 passed;
+新增Node矩阵12 passed(含外层测试),既有工具Node矩阵12 passed。
+其中包含额外的goto/snapshot两个身份失败入口、记录组装失败与比较读取失败。
+
+| 注入/对照 | 阶段与错误/状态 | 落盘及副作用证据 |
+|---|---|---|
+| 登录超时 | login / QB_LOGIN_TIMEOUT | run.json存在;假服务器仅GET signin;关闭浏览器/profile |
+| open_form结构变化 | open_form / QB_FORM_CHANGED | 固定应答+diagnostic.html/json;零表单提交 |
+| 第3字段失败 | fill / QB_FORM_CHANGED | BUILD_REFERENCE窗口拒绝1;前2回调实收;诊断与snapshot保存 |
+| goto身份钩子抛TypeError | EVIDENCE_INCOMPLETE | fill仍成功完成12字段;仅类名,无异常原文 |
+| snapshot身份钩子抛TypeError | EVIDENCE_INCOMPLETE | 同上,降级只保存结构计数并标facts_unavailable |
+| 观察监听器非法URL | EVIDENCE_INCOMPLETE / ADAPT_FAILED | 不抛出、不保存原始事件,fill仍完成 |
+| run.json不能写 | write / EVIDENCE_WRITE_FAILED | 固定stderr,退出失败;故意把该路径设为目录,不伪造run.json |
+| 正常演练 | PASSED | 12字段各1允许/0拒绝/HTTP200;not_released,action放行0 |
+| 组装抛TypeError | assemble / TypeError | run.json仍保存已有快照、12回调与成功fill应答,不是通过 |
+| 比较工具读取跳转 | read / QB_READ_REDIRECTED | run.json保存失败应答和trace,不继续取其它页 |
+
+写出失败用例按裁定的EVIDENCE_WRITE_FAILED出口验收;存储本身不可写时不可能
+同时要求有效run.json,没有伪报文件存在或通过。其它失败均断言run.json存在。
+全部用例检查模拟异常原文、模拟密码、未遮蔽身份与会话文本不出现在归档;
+工具源码静态护栏补message/stack禁用断言。每例浏览器关闭、临时profile删除。
+
+开发期focused-01为1 failed/1 passed:额外的assembly注入已经正确写出
+assemble/TypeError,但测试随后误执行成功场景的registrations.length断言;
+仅改此测试的分支,改查已取得snapshot/回调,未改生产或放宽验收。
+失败日志与首轮产物保留,不把focused-01计作通过。
+
+Node独立自检`node-selftest.log`:346 passed/0 failed/0 skipped。
+mypy exit0(116 source files)、lint-imports exit0(6 kept/0 broken)、design检查0 problem。
+工作目录`ruff check .`发现53项,全部在开工前已有且未跟踪的audit_four_sigs.py、
+hashobj2.py、ident_check3.py、norm_diff5.py;不改这些草稿。沿用C5a的
+git checkout-index完整待提交树导出方式运行`ruff check .`,exit0。两份日志均保留。
+全仓pytest与最终新增集合对账已完成,见§36.4,未把定向通过当作全量验收。
+
+### 36.4 离线验收与提交边界
+
+证据根目录:[evidence/C5b/tool-fix-01](evidence/C5b/tool-fix-01/README.md)。
+完整命令/环境/exit分别保存于`full-command.json`、`gate-commands.json`、
+`node-selftest-command.json`与`ruff-pending-tree-command.json`。
+
+| 门禁 | 本轮结果 | 证据 |
+|---|---|---|
+| 全仓pytest -v -s | exit0;2639 passed/0 failed/1 skipped,636.12s | full.log、full.xml |
+| 基线集合对账 | 2639→2640项;新增1,删除0 | test-set-audit.json |
+| 新增故障矩阵 | Node 12 passed/0 failed/0 skipped;含外层测试 | full.log、full-injections/outcomes.json |
+| 原有C5a工具用例 | Node 12 passed/0 failed/0 skipped;原始/活动比较及演练 | full.log、full-local-integration/ |
+| Node独立自检/源码护栏 | 346 passed/0 failed/0 skipped | node-selftest.log |
+| mypy | exit0;116 source files | mypy.log |
+| Ruff完整待提交树 | exit0;All checks passed | ruff-pending-tree.log |
+| lint-imports | exit0;6 kept/0 broken | lint-imports.log |
+| design.md检查器 | exit0;0 problem | design-check.log |
+
+集合对账使用C5a已归档`full-02/pytest.xml`与本轮JUnit XML逐testcase比较。
+唯一新增pytest入口是`test_node_c5b_failure_evidence`;唯一skip仍是大小写敏感
+文件系统上的既有平台特定测试,不是Node或真hook跳过。故障注入与既有本机
+浏览器测试均在本机实跑,不涉及真实QuickBuild或Gerrit。
+
+全目录附加脱敏自检先发现full.log/full.xml含既有负例nodeid中的合成凭据字面量
+与HTML夹具片段,不是运行时真实凭据。入库前仅遮蔽这些日志参数并对控制台日志
+做HTML转义;XML用结构化解析再序列化,测试总数/失败/跳过数不变。原始日志与
+处理后hash见`log-redaction.json`;集合对账在日志脱敏前执行,未对nodeid集合
+新增例外。原始日志不入库;216个最终证据文件均过PageRedactor.check_bytes。
+
+完整运行的正常对照12字段均1获准/0拒绝/HTTP200,读回匹配、@freeze为
+初始选中项,release_state=not_released、form_action_releases=0。
+`full-injections/`逐用例保留run、诊断(如有)、服务器请求记录和固定stderr;
+写出故障只证明固定失败出口及清理,不虚构可写的run文件。
+生产路径、Policy/installGuards、设计正文、冻结稿及raw-active-01对78212fe零diff。
+原始19份C5b文件hash不变;新证据脱敏复核与正常演练字段对账见
+`artifact-audit.json`。暂存仅三个spikes工具、相关离线测试、本节/INDEX及
+本轮证据,不包含用户既有.gitignore改动、四个docs删除或未跟踪草稿。
+暂存区全量diff-check exit2仅报告28处生成日志/合成页面的尾空白,保留取证输出;
+工具、测试及progress/INDEX范围的同一检查exit0,不格式化归档页面。
+
+### 36.5 真机闸门与挂账
+
+工具修复提交由Git外部锚定;推送后先询问是否沿用
+`platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f`,
+若换行先核对完整格式。确认后再请求新的“开始”;历史“开始”不复用。
+本次离线阶段没有启动真机浏览器,没有创建fill-rehearsal-02,没有新增QB请求。
+
+| 项目 | 当前状态 |
+|---|---|
+| P5Q-C5B-01停点 | 已由P5Q-C5B-02裁定处理;历史exit1与原因未知事实保留 |
+| 固定六页原始/活动字节比较 | PASS保留,本轮不重跑;60项一致/身份计数0 |
+| 工具失败落盘与离线验证 | COMPLETE;本节证据 |
+| fill-rehearsal-02 | WAITING_TARGET_AND_START;不得记为通过 |
+| 1193469离线failed_steps/child_overview分析 | PENDING;按本轮顺序在真机重跑后执行 |
+| 成功样本、非空BUILD_NOTES样本 | OPEN;仍暂无 |
+| C6前置 | NOT_MET:真机填表未通过,且未获C6真实提交确认 |
+
+无生产规则变更,未新增需要放宽设计的请求;本轮已记录的存储故障按裁定规定
+走EVIDENCE_WRITE_FAILED出口。完成工具提交不等于完成C5b,不得进入C6。

@@ -1,0 +1,18 @@
+{
+  "source": "complete git index including all intended changes, excludes pre-existing untracked drafts",
+  "export_argv": [
+    "git",
+    "checkout-index",
+    "--all",
+    "--prefix=/tmp/p5q-c5b-commit-ruff-rx1hrwi2/"
+  ],
+  "export_exit": 0,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/ruff",
+    "check",
+    "."
+  ],
+  "exit": 0,
+  "seconds": 0.029,
+  "temporary_export_removed": true
+}

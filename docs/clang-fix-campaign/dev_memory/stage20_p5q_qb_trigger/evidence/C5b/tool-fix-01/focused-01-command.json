@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/pytest",
+    "-q",
+    "-s",
+    "tests/unit/test_qb_browser_node.py::test_node_c5b_failure_evidence",
+    "tests/unit/test_qb_browser_node.py::test_c5a_tools_are_readonly_and_not_production_test_overrides"
+  ],
+  "exit": 1
+}

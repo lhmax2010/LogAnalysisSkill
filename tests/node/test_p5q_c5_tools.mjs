@@ -36,7 +36,11 @@ test('C5a offline evidence tools use real guards and isolated worlds', { timeout
           const before = fixture.received.length;
           const paths = ['/build/1193469/overview'];
           if (!mode) paths.push('/build/1193467/overview', '/build/1193467/variables', '/build/1193469/variables', '/build/1193469/step_status', '/overview/1917');
-          const results = await comparePages(agent, paths, output);
+          let results;
+          if (mode) {
+            await assert.rejects(comparePages(agent, paths, output), { code: 'EVIDENCE_PREMISE_MISMATCH' });
+            results = JSON.parse(await readFile(`${output}/run.json`, 'utf8')).pages;
+          } else results = await comparePages(agent, paths, output);
           const [result] = results;
           assert.equal(fixture.received.length - before, paths.length, 'one navigation per comparison');
           assert.equal(result.comparison.find(row => row.field === (mode === 'insert-nav' ? 'navigation' : 'summary')).result, wanted);

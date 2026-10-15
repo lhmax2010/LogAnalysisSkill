@@ -1,0 +1,110 @@
+[
+  {
+    "method": "GET",
+    "path": "/signin",
+    "status": 200,
+    "body": ""
+  },
+  {
+    "method": "POST",
+    "path": "/signin?0-1.IFormSubmitListener-content-form",
+    "status": 302,
+    "body": "<SYNTHETIC_LOGIN_REDACTED>"
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard",
+    "status": 200,
+    "body": ""
+  },
+  {
+    "method": "GET",
+    "path": "/overview/1917",
+    "status": 200,
+    "body": ""
+  },
+  {
+    "method": "GET",
+    "path": "/wicket/page?41-1.ILinkListener-run",
+    "status": 302,
+    "body": ""
+  },
+  {
+    "method": "GET",
+    "path": "/wicket/page?41",
+    "status": 200,
+    "body": ""
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?41-1.IBehaviorListener.0-form-field-0&random=0.7226052354216193",
+    "status": 200,
+    "body": "field=BUILD_TYPE&value=opaque-0-0"
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?42-1.IBehaviorListener.0-form-field-1&random=0.11886922011213441",
+    "status": 200,
+    "body": "field=REPO_TYPE&value=opaque-1-0"
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?43-1.IBehaviorListener.0-form-field-2&random=0.0516567157577672",
+    "status": 200,
+    "body": "field=BUILD_REFERENCE&value=opaque-2-0"
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?44-1.IBehaviorListener.0-form-field-3&random=0.3906162494451727",
+    "status": 200,
+    "body": "field=SNAPSHOT_NUM&value=opaque-3-0"
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?45-1.IBehaviorListener.0-form-field-4&random=0.042624454027746506",
+    "status": 200,
+    "body": "field=PROJECT_BRANCH&value=opaque-4-0"
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?46-1.IBehaviorListener.0-form-field-5&random=0.6255907802339338",
+    "status": 200,
+    "body": "field=Immediate+Stop+With+Error&value=on"
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?47-1.IBehaviorListener.0-form-field-6&random=0.0020072496739280687",
+    "status": 200,
+    "body": "field=CHILD_CONFIGURATIONS&value=7374616e646172642d61726d76376c3a616172636836343a7838365f3634"
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?48-1.IBehaviorListener.0-form-field-7&random=0.8504955054063043",
+    "status": 200,
+    "body": "field=Build+Package+List&value=local%2Ffixture%40cccccccccccccccccccccccccccccccccccccccc"
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?49-1.IBehaviorListener.0-form-field-8&random=0.8956204791528141",
+    "status": 200,
+    "body": "field=Add+Package+List&value="
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?50-1.IBehaviorListener.0-form-field-9&random=0.05046003738519733",
+    "status": 200,
+    "body": "field=Remove+Package+List&value="
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?51-1.IBehaviorListener.0-form-field-10&random=0.2610497297315436",
+    "status": 200,
+    "body": "field=TARGET_IMAGE&value="
+  },
+  {
+    "method": "POST",
+    "path": "/wicket/page?52-1.IBehaviorListener.0-form-field-11&random=0.27933825370889753",
+    "status": 200,
+    "body": "field=BUILD+NOTES&value=clang-fix-campaign+request%3Drehearsal-0e48c00b4f6d4cf89d9628d4a27ee963"
+  }
+]

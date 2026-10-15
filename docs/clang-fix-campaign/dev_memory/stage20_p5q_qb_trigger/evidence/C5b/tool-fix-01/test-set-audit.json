@@ -1,0 +1,21 @@
+{
+  "baseline": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5a/full-02/pytest.xml",
+  "current": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/tool-fix-01/full.xml",
+  "baseline_total": 2639,
+  "current_counts": {
+    "total": 2640,
+    "passed": 2639,
+    "failed": 0,
+    "skipped": 1
+  },
+  "added": [
+    "tests.unit.test_qb_browser_node::test_node_c5b_failure_evidence"
+  ],
+  "removed": [],
+  "skips": [
+    {
+      "test": "tests.unit.test_tizen_build_verify::test_case_insensitive_bypass_is_platform_specific",
+      "reason": "case-sensitive filesystem"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+▶ C5b finally evidence and noninterfering observers on local HTTPS
+  ✔ login_timeout (2276.180832ms)
+  ✔ open_form (3491.721476ms)
+  ✔ third_field (5742.721194ms)
+  ✔ identity_goto (15821.958851ms)
+  ✔ identity_snapshot (15698.92211ms)
+  ✔ adapter (16050.367257ms)
+  ✔ write_failure (15979.219506ms)
+  ✔ normal (15854.962467ms)
+  ✔ assembly (15957.311199ms)
+  ✔ compare_read_failure (3273.78029ms)
+✔ C5b finally evidence and noninterfering observers on local HTTPS (110154.904479ms)
+✔ exception codes never come from arbitrary exception text (0.259821ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 110158.035532
+
+..▶ C5a offline evidence tools use real guards and isolated worlds
+  ✔ raw/live comparison: equal (4729.767002ms)
+  ✔ raw/live comparison: insert-nav (3321.402093ms)
+  ✔ raw/live comparison: change-status (3177.241243ms)
+  ✔ twelve-field rehearsal: random/version/unchanged values/no action release (15678.111676ms)
+  ✔ login false positive: signin-with-signout (1794.643232ms)
+  ✔ login false positive: password-remains (1779.061372ms)
+  ✔ login false positive: no-signout (1818.364684ms)
+  ✔ login false positive: unregistered-landing (805.676319ms)
+  ✔ read redirected to different Successful build stays a read failure (2895.086003ms)
+  ✔ window.open disabled and foreign iframe denied before request (3302.767407ms)
+  ✔ server callback code inconsistent with DOM is denied without a server POST (3007.143138ms)
+✔ C5a offline evidence tools use real guards and isolated worlds (42444.849166ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42447.406749
+
+.
+3 passed in 152.73s (0:02:32)
