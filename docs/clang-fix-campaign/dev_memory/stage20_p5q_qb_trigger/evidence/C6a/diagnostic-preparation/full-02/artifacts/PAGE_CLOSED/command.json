@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/spikes/p5q_c6_driver_probe.py",
+    "--config",
+    "/tmp/pytest-of-linhao/pytest-90/test_probe_local_real_driver_P0/config.yaml",
+    "--output",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/diagnostic-preparation/full-02/artifacts/PAGE_CLOSED/probe"
+  ],
+  "exit": 5,
+  "stdout": "",
+  "stderr": "\u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\nQB_AGENT_STOPPED category=PAGE_CLOSED\n"
+}

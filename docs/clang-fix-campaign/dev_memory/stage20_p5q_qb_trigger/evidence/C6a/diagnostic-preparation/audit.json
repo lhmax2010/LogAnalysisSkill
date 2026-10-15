@@ -1,0 +1,103 @@
+{
+  "baseline": "66485ca",
+  "policy_byte_identical": true,
+  "installGuards_identical_except_category_annotations": true,
+  "pytest": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "1",
+    "tests": "2681",
+    "time": "680.013",
+    "timestamp": "2026-10-15T17:16:45.930505+08:00",
+    "hostname": "linhao-linux"
+  },
+  "production_files": [
+    "tizen-ci-triage/scripts/ci_triage/qb_browser.py",
+    "tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs",
+    "tizen-ci-triage/scripts/ci_triage/qb_result_fetch.py",
+    "tizen-ci-triage/scripts/ci_triage/qb_trigger.py"
+  ],
+  "gates": {
+    "full-02": [
+      {
+        "argv": [
+          "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/pytest",
+          "-v",
+          "-s",
+          "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/diagnostic-preparation/full-02/pytest.xml"
+        ],
+        "exit": 0,
+        "seconds": 680.515,
+        "log": "pytest.log"
+      }
+    ],
+    "tools-01": [
+      {
+        "argv": [
+          "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/mypy"
+        ],
+        "exit": 0,
+        "seconds": 2.043,
+        "log": "mypy.log"
+      },
+      {
+        "argv": [
+          "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/lint-imports"
+        ],
+        "exit": 0,
+        "seconds": 0.451,
+        "log": "lint-imports.log"
+      },
+      {
+        "argv": [
+          "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+          "docs/clang-fix-campaign/tools/check_design_doc.py",
+          "docs/clang-fix-campaign/design.md"
+        ],
+        "exit": 0,
+        "seconds": 0.095,
+        "log": "design.log"
+      },
+      {
+        "argv": [
+          "/home/linhao/.local/bin/node",
+          "--test",
+          "tests/node/test_qb_browser_agent.mjs",
+          "tests/node/test_qb_failure_categories.mjs",
+          "tests/node/test_qb_agent_source_guards.mjs"
+        ],
+        "exit": 0,
+        "seconds": 10.26,
+        "log": "node.log"
+      }
+    ],
+    "safety-01": [
+      {
+        "argv": [
+          "/home/linhao/.local/bin/node",
+          "tests/node/p5q_c2b_safety.mjs",
+          "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+          "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome"
+        ],
+        "exit": 0,
+        "seconds": 8.795,
+        "log": "safety.log"
+      }
+    ],
+    "ruff-01": [
+      {
+        "argv": [
+          "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/ruff",
+          "check",
+          "."
+        ],
+        "exit": 0,
+        "seconds": 0.206,
+        "log": "ruff.log"
+      }
+    ]
+  },
+  "frozen_design_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "dedicated_db_sha256": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405"
+}

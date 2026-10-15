@@ -7,10 +7,72 @@ import sys
 from pathlib import Path
 
 import pytest
-from ci_triage.qb_browser import QbBrowser, QbBrowserError, decode_response
+from ci_triage.qb_browser import FAILURE_CATEGORIES, QbBrowser, QbBrowserError, decode_response
 from ci_triage.qb_redact import EvidenceRedactionError
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+@pytest.mark.parametrize("category", sorted(FAILURE_CATEGORIES))
+def test_stop_category_driver_metadata(fake, category):
+    config, script, _, _ = fake
+    script.write_text(
+        json.dumps(
+            [
+                {
+                    "ok": False,
+                    "error": "QB_BROWSER_UNAVAILABLE",
+                    "failure_category": category,
+                }
+            ]
+        )
+    )
+    with QbBrowser(config) as browser:
+        with pytest.raises(QbBrowserError) as caught:
+            browser.login()
+        expected = dict(
+            command="login",
+            agent_error_code="QB_BROWSER_UNAVAILABLE",
+            failure_category=category,
+            agent_exited=False,
+            agent_exit_code=None,
+        )
+        assert caught.value.failure_facts() == expected
+        assert browser.trace == [{"ok": False, **expected}]
+
+
+@pytest.mark.parametrize("category", [None, "bad-secret", 1, True, [], {}, "NEW_PAGE\n"])
+def test_invalid_stop_category_is_protocol_error(category):
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(
+            json.dumps(
+                {
+                    "ok": False,
+                    "error": "QB_BROWSER_UNAVAILABLE",
+                    "failure_category": category,
+                }
+            ),
+            submit_sent=False,
+            command="fill",
+        )
+    assert caught.value.code == "QB_BROWSER_UNAVAILABLE"
+    assert caught.value.failure_category is None
+    assert "bad-secret" not in json.dumps(caught.value.failure_facts())
+
+
+def test_exited_process_is_recorded_without_raw_exception(fake):
+    config, script, _, _ = fake
+    script.write_text("[]")
+    with QbBrowser(config) as browser:
+        browser.process.terminate()
+        browser.process.wait(timeout=10)
+        browser.process.stdin.close()
+        with pytest.raises(QbBrowserError) as caught:
+            browser.login()
+        assert caught.value.agent_exited is True
+        assert caught.value.agent_exit_code == browser.process.returncode
+        assert caught.value.command == "login"
+        assert caught.value.failure_category is None
 
 
 @pytest.mark.parametrize(

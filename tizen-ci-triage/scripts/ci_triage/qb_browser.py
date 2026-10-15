@@ -11,6 +11,36 @@ from typing import Any
 
 from ci_triage.qb_redact import PageRedactor
 
+FAILURE_CATEGORIES = frozenset(
+    {
+        "NEW_PAGE",
+        "WORKER_BLOCKED",
+        "WORKER_NOT_PAUSED",
+        "CLOSE_TARGET_FAILED",
+        "BROWSER_DISCONNECTED",
+        "PAGE_CLOSED",
+        "ADAPT_FAILED",
+        "FETCH_CONTINUE_FAILED",
+        "UNKNOWN",
+    }
+)
+_COMMANDS = frozenset({"login", "open_form", "fill", "read", "submit", "close"})
+_AGENT_CODES = frozenset(
+    {
+        "QB_BROWSER_UNAVAILABLE",
+        "AGENT_PHASE",
+        "QB_LOGIN_TIMEOUT",
+        "QB_LOGIN_ABORTED",
+        "QB_FORM_CHANGED",
+        "QB_FORM_VALUE_UNAVAILABLE",
+        "QB_FORM_READBACK_MISMATCH",
+        "QB_READ_REDIRECTED",
+        "QB_READ_ID_MISMATCH",
+        "QB_EVIDENCE_REDACTION_FAILED",
+        "QB_TRUSTED_CONTEXT_UNAVAILABLE",
+    }
+)
+
 
 class QbBrowserError(RuntimeError):
     def __init__(
@@ -22,6 +52,8 @@ class QbBrowserError(RuntimeError):
         diagnostic_failed: bool = False,
         snapshot_state: dict[str, Any] | None = None,
         agent_code: str | None = None,
+        failure_category: str | None = None,
+        command: str | None = None,
     ) -> None:
         super().__init__(code)
         self.code = code
@@ -30,6 +62,28 @@ class QbBrowserError(RuntimeError):
         self.diagnostic_failed = diagnostic_failed
         self.snapshot_state = snapshot_state
         self.agent_code = agent_code
+        self.failure_category = failure_category
+        self.command = command
+        self.agent_exited: bool | None = None
+        self.agent_exit_code: int | None = None
+        self.trace_written = False
+
+    def failure_facts(self) -> dict[str, Any]:
+        return {
+            "command": self.command if self.command in _COMMANDS else None,
+            "agent_error_code": (
+                self.agent_code
+                if self.agent_code in _AGENT_CODES
+                else "UNKNOWN"
+                if self.agent_code is not None
+                else None
+            ),
+            "failure_category": (
+                self.failure_category if self.failure_category in FAILURE_CATEGORIES else None
+            ),
+            "agent_exited": self.agent_exited,
+            "agent_exit_code": self.agent_exit_code,
+        }
 
 
 def validate_snapshot_state(value: object) -> dict[str, Any]:
@@ -88,6 +142,32 @@ def _unknown() -> dict[str, Any]:
 
 
 def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[str, Any]:
+    """Retain fixed diagnostic metadata without changing existing error mapping."""
+    category = None
+    try:
+        response = json.loads(raw)
+    except (ValueError, TypeError):
+        response = None
+    try:
+        if isinstance(response, dict) and "failure_category" in response:
+            value = response["failure_category"]
+            if not isinstance(value, str) or value not in FAILURE_CATEGORIES:
+                if submit_sent:
+                    return _unknown()
+                raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+            category = value
+        return _decode_response(raw, submit_sent=submit_sent, command=command)
+    except QbBrowserError as exc:
+        exc.command = command if command in _COMMANDS else None
+        exc.failure_category = category
+        if isinstance(response, dict) and not _sensitive_key(response):
+            code = response.get("error")
+            if isinstance(code, str) and code in _AGENT_CODES:
+                exc.agent_code = code
+        raise
+
+
+def _decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[str, Any]:
     """Map only the frozen response table; never echo an agent payload in errors."""
     try:
         response = json.loads(raw)
@@ -205,6 +285,7 @@ class QbBrowser:
     def __init__(self, qb: dict[str, Any]) -> None:
         self.qb = qb
         self.process: subprocess.Popen[str] | None = None
+        self.trace: list[dict[str, Any]] = []
 
     def __enter__(self) -> QbBrowser:
         browser = self.qb["browser"]
@@ -230,6 +311,19 @@ class QbBrowser:
         return self
 
     def command(self, command: str, **fields: Any) -> dict[str, Any]:
+        try:
+            response = self._command(command, **fields)
+        except QbBrowserError as exc:
+            exc.command = command if command in _COMMANDS else None
+            if self.process is not None:
+                exc.agent_exit_code = self.process.poll()
+                exc.agent_exited = exc.agent_exit_code is not None
+            self.trace.append({"ok": False, **exc.failure_facts()})
+            raise
+        self.trace.append({"command": command if command in _COMMANDS else None, "ok": True})
+        return response
+
+    def _command(self, command: str, **fields: Any) -> dict[str, Any]:
         process = self.process
         if process is None or process.stdin is None or process.stdout is None:
             if command == "submit":

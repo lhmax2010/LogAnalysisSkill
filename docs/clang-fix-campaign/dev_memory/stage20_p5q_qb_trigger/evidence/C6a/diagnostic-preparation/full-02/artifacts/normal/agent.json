@@ -1,0 +1,267 @@
+{
+  "transcript": [
+    {
+      "input": {
+        "command": "login",
+        "login_timeout_seconds": 60,
+        "projects": [
+          {
+            "overview_id": 1917,
+            "configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER",
+            "project_name": "Tizen-Base-Toolchain"
+          }
+        ]
+      },
+      "output": {
+        "ok": true
+      }
+    },
+    {
+      "input": {
+        "command": "open_form",
+        "overview_id": 1917
+      },
+      "output": {
+        "ok": true,
+        "released": false
+      }
+    },
+    {
+      "input": {
+        "command": "fill",
+        "fields": {
+          "Add Package List": "",
+          "BUILD_REFERENCE": "Ref. Snapshot",
+          "BUILD_TYPE": "Full",
+          "CHILD_CONFIGURATIONS": [
+            "standard-armv7l:aarch64:x86_64"
+          ],
+          "Immediate Stop With Error": true,
+          "PROJECT_BRANCH": "tizen_base",
+          "REPO_TYPE": "ALL",
+          "Remove Package List": "",
+          "SNAPSHOT_NUM": "@freeze",
+          "TARGET_IMAGE": [],
+          "Build Package List": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+          "BUILD NOTES": "clang-fix-campaign request=probe-9b66a5262bb942efa18a8693d9259d5a"
+        }
+      },
+      "output": {
+        "ok": true,
+        "readback": {
+          "BUILD_TYPE/value": "Full",
+          "REPO_TYPE/value": "ALL",
+          "BUILD_REFERENCE/value": "Ref. Snapshot",
+          "SNAPSHOT_NUM/value": "tizen-base-toolchain_20260924.094908",
+          "PROJECT_BRANCH/value": "tizen_base",
+          "Immediate Stop With Error/value": true,
+          "CHILD_CONFIGURATIONS/selection": [
+            "standard-armv7l:aarch64:x86_64"
+          ],
+          "Build Package List/value": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+          "Add Package List/value": "",
+          "Remove Package List/value": "",
+          "TARGET_IMAGE/selection": [],
+          "BUILD NOTES/value": "clang-fix-campaign request=probe-9b66a5262bb942efa18a8693d9259d5a"
+        },
+        "fingerprint": "a9ee7ea692032de935fa909c08fe18936d644df8d2f2f6885748102e4c9c78f3",
+        "snapshot_option_count": 1,
+        "released": false
+      }
+    },
+    {
+      "input": {
+        "command": "close"
+      },
+      "output": {
+        "ok": true
+      }
+    }
+  ],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    }
+  ]
+}

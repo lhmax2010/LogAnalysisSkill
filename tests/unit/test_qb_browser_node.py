@@ -59,6 +59,16 @@ def test_node_agent_unit_matrix() -> None:
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_node_failure_categories() -> None:
+    command, env = node_command()
+    result = subprocess.run(
+        [*command, "--test", str(ROOT / "tests/node/test_qb_failure_categories.mjs")],
+        env=env, capture_output=True, text=True, timeout=30,
+    )
+    print(result.stdout)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_node_c2c_source_guard_mutations() -> None:
     command, env = node_command()
     result = subprocess.run(

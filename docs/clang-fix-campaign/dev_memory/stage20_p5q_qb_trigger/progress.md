@@ -1,6 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE03_STOPPED_BROWSER_UNAVAILABLE**。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_DIAGNOSTIC_OFFLINE_VERIFIED_AWAITING_ENVIRONMENT**。
+本轮见§40/P5Q-C6A-03:只补固定类别诊断与不提交探针,全量2680 passed/1 skipped;
+新真机诊断须在环境检查后重新取得“开始”,不授权真实提交。以下§38–39保留历史。
 最新续任务见§39.4–39.5:live-02记录进程遇本地磁盘同步阻塞后终止,未取得生产返回;
 专用库hash未变、无残留进程。FatTank再次要求弹窗并新回复“确认提交”,仅授权live-03一次;
 live-03已返回exit5/QB_BROWSER_UNAVAILABLE,登录调用已返回但意图未落库,具体代理失败阶段未知。
@@ -4471,3 +4473,86 @@ SNAPSHOT_NUM回显和冻结值均NOT_COLLECTED;不凭配置值冒充页面实测
 浏览器、不联网、不写专用数据库;见[recorder-checks.json](evidence/C6a/live-03/recorder-checks.json)。
 未重跑全仓pytest;§38.4的203定向测试与§36的2639/1均保持历史结果,不冒称本次重跑。
 用户既有工作区改动不处理。等待设计方核对本次停止证据,不进入C6b。
+
+## 40. 实施裁定 P5Q-C6A-03:先补生产诊断信息,再做一次不提交的真机诊断
+
+### 40.1 裁定原文
+
+a. 连续三次 C6a 执行各自因不同原因中止(live-01 未见窗口,登录超时;live-02 本机磁盘 I/O 阻塞;live-03 登录后报 QB_BROWSER_UNAVAILABLE),生产路径缺少足以定位的诊断信息。在定位清楚之前,不再进行真实提交。
+b. 批准对生产代码做以下最小改动,只增加诊断信息,不改变任何放行、拒绝或判定逻辑:
+   - 代理:runtime.failure 被置位时,同时记录一个固定的停止类别,枚举为 NEW_PAGE、WORKER_BLOCKED、WORKER_NOT_PAUSED、CLOSE_TARGET_FAILED、BROWSER_DISCONNECTED、PAGE_CLOSED、ADAPT_FAILED、FETCH_CONTINUE_FAILED、UNKNOWN。installGuards 中各个 onStop 调用处只允许增加这个类别参数,不得改动任何判定条件。浏览器的 disconnected 事件、page 的 close 事件也映射到对应类别。代理因此返回的错误应答增加 failure_category 字段(只能取上述枚举值)。代理异常停止时,stderr 输出一行固定格式"QB_AGENT_STOPPED category=<类别>"。
+   - Python 驱动 qb_browser.py:decode_response 校验并保存 failure_category(取值不在枚举内,按协议错误处理);命令失败时,把命令名、agent 错误码、failure_category、代理进程是否已退出及退出码,记到 QbBrowserError 上。
+   - qb-trigger 与 qb-result-fetch:任何代理命令失败时,把上述字段与命令名写入 state_root 下的 trace(沿用现有 _trace 写法与脱敏自检),stdout 结构不变。
+c. 这些改动涉及 installGuards 函数体内的 onStop 调用点,因此四个拦截安全组必须从头重跑;第 9.2 节静态断言全部必须通过。
+d. 真机诊断使用一个不提交的驱动脚本:只调用生产 QbBrowser 的 login → open_form → fill → close,源码中不出现 submit 命令。
+
+### 40.2 现场询问与计划
+
+开工基线66485ca;已核对§38、§39与三次停止证据。冻结稿hash仍为
+f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c;
+专用库hash仍为bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405。
+已向FatTank询问live-03窗口、配置页/表单、其它点击/新窗口及关闭情况;答复待登记,
+不将先前live-01的“没有弹出窗口”当作本次答案。
+
+顺序:固定类别及命令元数据→不提交探针与离线注入→全量门禁和四组安全测试→
+提交推送→环境采样/仅无进程引用的残留清理→等待新的“开始”→diag-01仅一次。
+不改冻结稿/Policy判据,不运行真实qb-trigger/qb-result-fetch,不写专用状态库。
+正常close的事件不误记为异常;事件类别只补诊断,不增加停止条件。
+
+FatTank对live-03现场询问的回复原文:
+
+```text
+不记得了  应该弹出了
+```
+
+据此只记录“可能弹出,记忆不确定”;是否进入配置页/Specify Build Options、
+是否有其它点击/新标签页/新窗口/手动关闭、是否自行消失均UNKNOWN。
+不把上述不确定回忆当作故障原因,后续仍按本裁定的离线验收与一次不提交诊断执行。
+
+### 40.3 实现与离线证据
+
+- `qb_browser_agent.mjs`:固定九类、首个停止原因、固定stderr与failure_category应答;
+  installGuards原onStop条件不动,仅补类别;正常close不归为异常。浏览器断开优先于
+  同一次关闭伴随的page.close,单页关闭仍记录PAGE_CLOSED。Policy全文未变。
+- `qb_browser.py`:校验类别;QbBrowserError保存command/agent_error_code/
+  failure_category/agent_exited/agent_exit_code;驱动trace只含固定元数据。
+- `qb_trigger.py`与`qb_result_fetch.py`:沿用_trace与脱敏检查,每次失败去重记账;
+  原stdout键集合、错误码映射、状态库写入分支不变。trace写出失败不覆盖原结果。
+- `spikes/p5q_c6_driver_probe.py`:只用生产QbBrowser的login/open_form/fill/close,
+  12字段沿用§38.5、BUILD NOTES用probe专用标记;核对读回、指纹和released=false;
+  finally写result.json并关闭进程。源码无submit字符串、不接收state DB参数。
+- 测试入口`tests/node/p5q_cli_agent.mjs`只在本机HTTPS夹具中模拟人工登录和故障,
+  不向生产驱动增加任何测试参数。新页面/断开/关页均为真实浏览器事件,不是伪造应答。
+
+证据根:[diagnostic-preparation](evidence/C6a/diagnostic-preparation/README.md)。
+完整命令与退出码在各子目录commands.json;测试stdout/JUnit保存原文。
+
+| 验证 | 本轮结果与位置 |
+|---|---|
+| 全仓pytest | 2680 passed / 0 failed / 1 skipped;`full-02/pytest.log`、`pytest.xml`;较2639/1基线新增41项 |
+| 停止类别Node+既有矩阵+§9.2静态负例 | 362 passed / 0 failed / 0 skipped;`tools-01/node.log` |
+| 驱动/两CLI固定类别链路 | 九类分别保留,非法类别拒收;`test_qb_browser.py`、`test_p5q_c6_diagnostics.py` |
+| 本机真实驱动正常路径 | login/open_form/fill/close全ok;读回及指纹一致;not_released、action放行0;`full-02/artifacts/normal/` |
+| 本机新页面 | open_form记录NEW_PAGE;无构建;`full-02/artifacts/NEW_PAGE/` |
+| 本机浏览器断开 | open_form记录BROWSER_DISCONNECTED;无构建;`full-02/artifacts/BROWSER_DISCONNECTED/` |
+| 本机单页关闭 | open_form记录PAGE_CLOSED;无构建;`full-02/artifacts/PAGE_CLOSED/` |
+| 四组安全从头重跑 | 4 passed / 0 failed,loopback-only;`safety-01/safety.log`;实际请求及Worker关闭分支在原文 |
+| mypy | exit0,116 source files;`tools-01/mypy.log` |
+| lint-imports | exit0;`tools-01/lint-imports.log` |
+| design checker | exit0,0 problem;`tools-01/design.log` |
+| Ruff完整待提交树 | exit0;`ruff-01/ruff.log`,索引导出不混入用户既有改动与草稿 |
+
+`audit.json`确认Policy逐字节相同、installGuards仅有类别参数差异;冻结稿与专用库
+hash均仍匹配任务指定值。trace不写原始异常文本、协议事件或任何凭据。
+
+每个本机故障探针的命令、exit、固定stderr、服务端请求清单、结果JSON及agent trace
+均单独归档。测试配置不接触专用库;本机正常/故障四例均确认合成state DB原字节不变。
+WORKER_BLOCKED是允许枚举且已测传播;成功关闭暂停Worker仍不停止,失败仍走原有
+WORKER_NOT_PAUSED/CLOSE_TARGET_FAILED条件,不为凑类别而新增停止行为。
+首轮新增测试曾把fetch的既有QB_FETCH_FAILED映射写成QB_BROWSER_UNAVAILABLE,
+已修正测试期望,未改生产映射;进程退出测试先关闭输入管道避免制造额外缓冲区错误。
+初始记录入口full-01路径定位错误,pytest未启动;修正记录脚本后full-02完整执行。
+这些修正只涉及本轮工具/测试,不把失败尝试计作通过。
+
+代码门禁通过后先提交推送;环境检查和一次真机诊断另记。仍无新真实QB请求、
+无Gerrit推送、无专用库写入。冻结稿未变,成功/BUILD_NOTES样本仍挂账,不进入C6b。

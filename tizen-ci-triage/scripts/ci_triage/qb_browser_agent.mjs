@@ -15,6 +15,28 @@ export const FIELDS = ['BUILD_TYPE', 'REPO_TYPE', 'BUILD_REFERENCE', 'SNAPSHOT_N
   'PROJECT_BRANCH', 'Immediate Stop With Error', 'CHILD_CONFIGURATIONS', 'Build Package List',
   'Add Package List', 'Remove Package List', 'TARGET_IMAGE', 'BUILD NOTES'];
 const PALETTES = new Set(['CHILD_CONFIGURATIONS', 'TARGET_IMAGE']);
+export const FAILURE_CATEGORIES = Object.freeze(['NEW_PAGE', 'WORKER_BLOCKED', 'WORKER_NOT_PAUSED',
+  'CLOSE_TARGET_FAILED', 'BROWSER_DISCONNECTED', 'PAGE_CLOSED', 'ADAPT_FAILED', 'FETCH_CONTINUE_FAILED', 'UNKNOWN']);
+
+export function recordFailure(runtime, category = 'UNKNOWN') {
+  if (!runtime.failure_category || runtime.failure_category === 'PAGE_CLOSED'
+    && !runtime.failure_reported && category === 'BROWSER_DISCONNECTED') {
+    runtime.failure_category = FAILURE_CATEGORIES.includes(category) ? category : 'UNKNOWN';
+  }
+  if (!runtime.failure_reported) {
+    runtime.failure_reported = true;
+    runtime.trace.push({ action: 'AGENT_STOPPED', failure_category: runtime.failure_category });
+    process.stderr.write(`QB_AGENT_STOPPED category=${runtime.failure_category}\n`);
+  }
+  return runtime.failure_category;
+}
+
+function failureReply(runtime, response) {
+  if (runtime.failure_category || runtime.failure || response.error === 'QB_BROWSER_UNAVAILABLE') {
+    response.failure_category = recordFailure(runtime, runtime.failure_category ?? 'UNKNOWN');
+  }
+  return response;
+}
 
 export class AgentError extends Error {
   constructor(code, field, check) { super(code); this.code = code; this.field = field; this.check = check; }
@@ -168,14 +190,14 @@ export async function installGuards(browser, context, page, policy, onStop, trac
   primary.on('Page.frameNavigated', ({ frame }) => frames.navigate(frame));
   const root = await browser.newBrowserCDPSession();
   const pending = new Set();
-  const guarded = (promise) => {
+  const guarded = (promise, category = 'FETCH_CONTINUE_FAILED') => {
     pending.add(promise);
-    promise.catch(onStop).finally(() => pending.delete(promise));
+    promise.catch(() => onStop(category)).finally(() => pending.delete(promise));
   };
   if (useBrowserFetch) {
     root.on('Fetch.requestPaused', (event) => {
       let adapted;
-      try { adapted = adaptProtocol(event); } catch { onStop(); return; }
+      try { adapted = adaptProtocol(event); } catch { onStop('ADAPT_FAILED'); return; }
       const { metadata: m, requestId, frameId } = adapted;
       const allowed = frames.has(frameId) && policy.allow(m, requestId);
       const response = m.response_status !== null;
@@ -220,7 +242,7 @@ export async function installGuards(browser, context, page, policy, onStop, trac
   root.on('Target.targetCreated', ({ targetInfo }) => {
     if (targetInfo.type === 'page' && targetInfo.targetId !== main.targetId) {
       trace.push({ action: 'NEW_PAGE' });
-      if (!diagnostic) onStop();
+      if (!diagnostic) onStop('NEW_PAGE');
     }
   });
   await root.send('Target.setDiscoverTargets', { discover: true });
@@ -229,10 +251,10 @@ export async function installGuards(browser, context, page, policy, onStop, trac
     if (seen.has(targetInfo.targetId)) return;
     seen.add(targetInfo.targetId);
     trace.push({ action: 'WORKER_BLOCKED', type: targetInfo.type, paused: waitingForDebugger });
-    if (!waitingForDebugger) { onStop(); return; }
+    if (!waitingForDebugger) { onStop('WORKER_NOT_PAUSED'); return; }
     guarded(session.send('Target.closeTarget', { targetId: targetInfo.targetId }).then((result) => {
-      if (!result.success) onStop();
-    }));
+      if (!result.success) onStop('CLOSE_TARGET_FAILED');
+    }), 'CLOSE_TARGET_FAILED');
   };
   const filter = [{ type: 'worker' }, { type: 'shared_worker' }, { type: 'service_worker' }, { exclude: true }];
   root.on('Target.attachedToTarget', (event) => blockWorker(root, event));
@@ -565,7 +587,7 @@ export class Agent {
     const command = input?.command;
     if (command === 'close') { await this.runtime.close(); this.state = 'closed'; return { ok: true }; }
     if (!allowed[command]?.includes(this.state)) return { ok: false, error: 'AGENT_PHASE' };
-    if (this.runtime.failure) return { ok: false, error: this.runtime.failure };
+    if (this.runtime.failure) return failureReply(this.runtime, { ok: false, error: this.runtime.failure });
     this.policy.phase = command;
     this.rawRead = null;
     try {
@@ -611,7 +633,7 @@ export class Agent {
         response.released = false;
       }
       if (command === 'submit') response.released = false;
-      return response;
+      return failureReply(this.runtime, response);
     } finally { this.policy.phase = 'idle'; }
   }
   async login(timeout) {
@@ -869,7 +891,9 @@ async function launchRuntime(modulePath, chromiumPath, testOptions = {}) {
   let closing;
   let launching;
   const stopSignal = () => { void runtime.close().finally(() => process.exit(0)); };
-  runtime.close = () => closing ??= (async () => {
+  runtime.close = () => {
+    runtime.closing = true;
+    return closing ??= (async () => {
     try {
       const browser = runtime.browser ?? (launching ? await launching.catch(() => null) : null);
       if (browser) await browser.close();
@@ -877,7 +901,8 @@ async function launchRuntime(modulePath, chromiumPath, testOptions = {}) {
       await rm(profile, { recursive: true, force: true });
       for (const signal of ['SIGINT', 'SIGTERM']) process.removeListener(signal, stopSignal);
     }
-  })();
+    })();
+  };
   for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, stopSignal);
   try {
     const { chromium } = await import(pathToFileURL(modulePath).href);
@@ -888,22 +913,33 @@ async function launchRuntime(modulePath, chromiumPath, testOptions = {}) {
         '--disable-sync', '--disable-breakpad', '--disable-crash-reporter', ...(testOptions.launchArgs ?? [])],
     });
     runtime.browser = await launching;
+    runtime.browser.on('disconnected', () => {
+      if (!runtime.closing) recordFailure(runtime, 'BROWSER_DISCONNECTED');
+    });
     runtime.context = await runtime.browser.newContext({ acceptDownloads: false, serviceWorkers: 'block' });
     await runtime.context.routeWebSocket('**/*', (socket) => { runtime.trace.push({ action: 'WEBSOCKET_DENIED' }); socket.close(); });
     await runtime.context.addInitScript(() => Object.defineProperty(window, 'open', {
       value: () => null, configurable: false, writable: false,
     }));
     runtime.page = await runtime.context.newPage();
-    runtime.guards = await installGuards(runtime.browser, runtime.context, runtime.page, runtime.policy, () => {
+    runtime.page.on('close', () => {
+      // A browser disconnect also closes its page; await the error response so
+      // that a disconnect can be distinguished from closing only this page.
+      if (!runtime.closing && !runtime.failure_category) runtime.failure_category = 'PAGE_CLOSED';
+    });
+    runtime.guards = await installGuards(runtime.browser, runtime.context, runtime.page, runtime.policy, (category) => {
+      recordFailure(runtime, category);
       runtime.failure = 'QB_BROWSER_UNAVAILABLE'; void runtime.close();
     }, runtime.trace);
     return runtime;
   } catch { await runtime.close(); throw new AgentError('QB_BROWSER_UNAVAILABLE'); }
 }
 
-export function installFailureHandlers(finish) {
+export function installFailureHandlers(finish, getRuntime = () => null) {
   const fatal = () => {
-    process.stdout.write('{"ok":false,"error":"QB_BROWSER_UNAVAILABLE"}\n');
+    const runtime = getRuntime() ?? { trace: [] };
+    const category = recordFailure(runtime, runtime.failure_category ?? 'UNKNOWN');
+    process.stdout.write(`${JSON.stringify({ ok: false, error: 'QB_BROWSER_UNAVAILABLE', failure_category: category })}\n`);
     void finish().finally(() => process.exit(1));
   };
   process.once('uncaughtException', fatal);
@@ -914,7 +950,7 @@ async function main() {
   for (const name of ['DEBUG', 'PWDEBUG', 'NODE_OPTIONS']) delete process.env[name];
   let runtime;
   const finish = async () => { if (runtime) await runtime.close(); };
-  installFailureHandlers(finish);
+  installFailureHandlers(finish, () => runtime);
   try {
     if (process.argv.length !== 4) throw new AgentError('QB_BROWSER_UNAVAILABLE');
     runtime = await createRuntime(process.argv[2], process.argv[3]);
@@ -927,7 +963,10 @@ async function main() {
       process.stdout.write(`${JSON.stringify(response)}\n`);
       if (agent.state === 'closed' || runtime.failure || ['QB_LOGIN_TIMEOUT', 'QB_LOGIN_ABORTED'].includes(response.error)) break;
     }
-  } catch { process.stdout.write('{"ok":false,"error":"QB_BROWSER_UNAVAILABLE"}\n'); }
+  } catch {
+    const category = recordFailure(runtime ?? { trace: [] }, runtime?.failure_category ?? 'UNKNOWN');
+    process.stdout.write(`${JSON.stringify({ ok: false, error: 'QB_BROWSER_UNAVAILABLE', failure_category: category })}\n`);
+  }
   finally { await finish(); }
 }
 

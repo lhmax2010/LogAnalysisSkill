@@ -1,0 +1,40 @@
+[
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/mypy"
+    ],
+    "exit": 0,
+    "seconds": 2.043,
+    "log": "mypy.log"
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/lint-imports"
+    ],
+    "exit": 0,
+    "seconds": 0.451,
+    "log": "lint-imports.log"
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "docs/clang-fix-campaign/tools/check_design_doc.py",
+      "docs/clang-fix-campaign/design.md"
+    ],
+    "exit": 0,
+    "seconds": 0.095,
+    "log": "design.log"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/bin/node",
+      "--test",
+      "tests/node/test_qb_browser_agent.mjs",
+      "tests/node/test_qb_failure_categories.mjs",
+      "tests/node/test_qb_agent_source_guards.mjs"
+    ],
+    "exit": 0,
+    "seconds": 10.26,
+    "log": "node.log"
+  }
+]

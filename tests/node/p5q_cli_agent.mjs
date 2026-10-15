@@ -17,6 +17,16 @@ try {
       await runtime.page.getByRole('button', { name: 'Login', exact: true }).click();
     }
     const output = await result;
+    if (input.command === 'login' && output.ok) {
+      if (process.env.P5Q_TEST_C6_FAILURE === 'NEW_PAGE') {
+        try { await runtime.context.newPage(); } catch { /* Expected fail-closed. */ }
+        await runtime.close();
+      } else if (process.env.P5Q_TEST_C6_FAILURE === 'BROWSER_DISCONNECTED') {
+        await runtime.browser.close();
+      } else if (process.env.P5Q_TEST_C6_FAILURE === 'PAGE_CLOSED') {
+        await runtime.page.close();
+      }
+    }
     transcript.push({ input, output });
     process.stdout.write(JSON.stringify(output) + '\n');
     if (input.command === 'close') break;

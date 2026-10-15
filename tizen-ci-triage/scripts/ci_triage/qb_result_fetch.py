@@ -278,6 +278,7 @@ def _read_page(
     try:
         reply = browser.command("read", path=path)
     except QbBrowserError as exc:
+        trigger._browser_failure_trace(root, view.key, exc)
         if exc.diagnostic is not None:
             result["diagnostic_dir"] = _diagnostic(root, view.key, exc.diagnostic)
         if optional and exc.agent_code in {"QB_READ_REDIRECTED", "QB_READ_ID_MISMATCH"}:
@@ -565,6 +566,7 @@ def qb_result_fetch(
         for selection in selections:
             result = {**empty_result(), **selection}
             results.append(result)
+            key = "unselected"
             try:
                 conn = state._read_connection(db)
                 try:
@@ -598,6 +600,7 @@ def qb_result_fetch(
                 result["error_code"] = exc.code
                 exit_code = max(exit_code, 5 if exc.code == pages.UNRECOGNIZED else 4)
             except QbBrowserError as exc:
+                trigger._browser_failure_trace(options.state_root, key, exc)
                 result["error_code"] = (
                     "QB_EVIDENCE_REDACTION_FAILED"
                     if exc.code == "QB_EVIDENCE_REDACTION_FAILED"

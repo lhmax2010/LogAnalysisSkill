@@ -288,6 +288,17 @@ def _trace(root: Path, key: str, facts: dict[str, Any]) -> None:
         stream.write(json.dumps(facts, ensure_ascii=False, sort_keys=True) + "\n")
 
 
+def _browser_failure_trace(root: Path, key: str, error: QbBrowserError) -> None:
+    if error.trace_written:
+        return
+    try:
+        _trace(root, key, {"action": "BROWSER_COMMAND_FAILED", **error.failure_facts()})
+        error.trace_written = True
+    except (OSError, EvidenceRedactionError):
+        # Diagnostic storage must not replace the original command outcome.
+        pass
+
+
 def _diagnostic(root: Path, key: str, diagnostic: dict[str, Any]) -> str | None:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     directory = root / "qb_diagnostics" / f"{stamp}-{_unit_hash(key)}"
@@ -474,6 +485,7 @@ def _submit(
     try:
         reply = browser.command("submit", fingerprint=fingerprint)
     except QbBrowserError as exc:
+        _browser_failure_trace(root, key, exc)
         if exc.released is not False:
             raise
         with _write(db) as conn:
@@ -507,6 +519,8 @@ def _submit(
             raise _Rejected("REJECTED_QB_BINDING_MISMATCH")
         _bind(db, key, seq, build)
     except (_Rejected, QbBrowserError) as exc:
+        if isinstance(exc, QbBrowserError):
+            _browser_failure_trace(root, key, exc)
         result.update(action="submit_uncertain", error_code="REJECTED_QB_BINDING_MISMATCH")
         if isinstance(exc, QbBrowserError) and exc.diagnostic is not None:
             result["diagnostic_dir"] = _diagnostic(root, key, exc.diagnostic)
@@ -570,6 +584,7 @@ def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[
                         try:
                             browser.login()
                         except QbBrowserError as exc:
+                            _browser_failure_trace(options.state_root, key, exc)
                             login_failure = exc.code
                             result.update(action="submit_failed", error_code=exc.code)
                             exit_code = 5
@@ -615,6 +630,7 @@ def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[
                 result["error_code"] = exc.code
                 exit_code = max(exit_code, 4 if exc.code.startswith("REJECTED_") else 5)
                 if isinstance(exc, QbBrowserError):
+                    _browser_failure_trace(options.state_root, key, exc)
                     if exc.snapshot_state is not None:
                         result["message"] = snapshot_message(
                             frozen_snapshot,
