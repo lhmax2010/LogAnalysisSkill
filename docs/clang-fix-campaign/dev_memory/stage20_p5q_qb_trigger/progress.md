@@ -1,13 +1,14 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE02_WAITING_CONFIRMATION**。
-最新续任务见§39:FatTank原话“没有弹出窗口”,按任务规定归入“人工未在时限内登录”;
-专用库hash/空QB表/SANDBOX_PUSHED已复核通过,等待新的“确认提交”,尚未启动live-02。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE03_STOPPED_BROWSER_UNAVAILABLE**。
+最新续任务见§39.4–39.5:live-02记录进程遇本地磁盘同步阻塞后终止,未取得生产返回;
+专用库hash未变、无残留进程。FatTank再次要求弹窗并新回复“确认提交”,仅授权live-03一次;
+live-03已返回exit5/QB_BROWSER_UNAVAILABLE,登录调用已返回但意图未落库,具体代理失败阶段未知。
 上一轮C6a见§37–38:libtirpc目标已确认,manifest/专用库/本地镜像/离线前置核验完成;
 FatTank已回复“确认提交”;仅运行一次生产qb-trigger,exit5/QB_LOGIN_TIMEOUT,
 无request_id/构建号、无库变更,立即停止,未运行qb-result-fetch,见§38.6–38.8。
 C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b基线b134d16,六页原始/活动比对通过;
-填表演练exit1且未落盘阶段证据,见§35。C6真实登录未完成,无构建提交;
+填表演练exit1且未落盘阶段证据,见§35。C6a live-03登录调用已返回,无提交意图落库或构建号;
 成功/BUILD_NOTES样本挂账开放。
 §36按P5Q-C5B-02完成工具失败落盘及离线验证:2639 passed/1 skipped;
 5afb645推送后FatTank回复“沿用。开始”,fill-rehearsal-02一次实跑通过,
@@ -4370,3 +4371,103 @@ state.db、config.yaml、state/和ws/;目标配置RBS/TRIGGER,overview_id=1917�
 提醒FatTank浏览器弹出后须在600秒内在窗口完成登录,不读终端输入。
 仅新的逐字答复“确认提交”解锁本轮启动;“重跑”“开始”和上一轮确认都不算。
 当前状态LIVE02_WAITING_CONFIRMATION,无新增QB请求,不进入C6b。
+
+### 39.4 live-02本地停止
+
+上述等待状态为准备时的历史记录。FatTank随后新回复“确认提交”,启动一次
+`run_c6_once.py trigger --evidence-run live-02`,原始command.json保持原样。
+记录开始于2026-10-15T07:55:15.941017+00:00。
+记录进程1197349在写执行记录期间处于D状态,等待点jbd2_log_wait_commit;
+对应/home位于/dev/sda1 ext4,日志进程jbd2/sda1-8也为D状态。
+历次采样在34秒至2分59秒期间均未取得启动输出,2分12秒采样无子进程。
+为避免恢复后突然继续提交,对该记录进程发送SIGTERM,记录入口exit143;
+回收时收到C6A_TRIGGER_STARTED,但没有取得生产stdout/exit。
+该标记不能证明生产CLI未启动,也不能当作生产CLI成功或失败的结论。
+
+停止后无run_c6_once.py、qb-trigger或qb_browser_agent.mjs进程;
+专用库SHA256仍为bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405,
+与live-01结束时逐字节相同。没有请求记录/冻结行/构建号,未执行qb-result-fetch。
+未采到网络日志,不伪造HTTP请求数;不将本次记为QB_LOGIN_TIMEOUT。
+证据见[evidence/C6a/live-02/stop-report.md](evidence/C6a/live-02/stop-report.md)。
+
+### 39.5 live-03新的授权
+
+FatTank在live-02停止后原话“重新再弹一次窗口”。再次明确说明生产命令会在
+登录后自动提交,且仍沿用§39.3十二字段及同一libtirpc目标后,FatTank新回复:
+
+```text
+确认提交
+```
+
+仅据此授权live-03一次调用,不复用live-02的授权。执行前复核冻结稿hash、专用库
+hash与无残留进程;新增目录live-03,不覆盖live-01/live-02。
+记录工具仅扩展--evidence-run的输出选择,不转发给生产命令,argv/环境处理/600秒
+登录时限不变,不加--retrigger。先做同文件系统同步探针,通过后再启动。
+本轮不改生产代码或冻结稿,不进入C6b;执行结果见§39.6。
+
+同文件系统checked_write及目录fsync探针通过,耗时0.603秒,临时合成文件已清理;
+专用库只读查询三张QB表各0行,SQL导出仍与live-01逐字节相等。
+记录工具ruff exit0,design检查exit0/0 problem,定向diff-check exit0。
+live-03记录开始于2026-10-15T08:03:41.724509+00:00,生产argv与live-01逐项相等;
+记录进程1199083、生产CLI1199087、代理1199088、Chromium1199302均已观察到。
+本次600秒登录等待交由生产代理处理,不代填凭据、不额外发请求排障。
+
+### 39.6 live-03实际结果与停止报告
+
+本次记录入口命令:
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/run_c6_once.py trigger --evidence-run live-03
+```
+
+生产argv见[evidence/C6a/live-03/trigger/command.json](evidence/C6a/live-03/trigger/command.json),
+与live-01完全相同,无--retrigger;新目录参数只作用于记录入口。
+开始2026-10-15T08:03:41.724509+00:00,结束08:08:04.355155+00:00;
+记录入口exit0表示落盘成功,**生产CLI exit5**,不能混用。
+生产stdout完整保存在[stdout.json](evidence/C6a/live-03/trigger/stdout.json),摘要:
+
+```json
+{"action":"rejected","error_code":"QB_BROWSER_UNAVAILABLE","status":"SANDBOX_PUSHED","request_id":"e724b5428a4a45a5a2d03a0a93e6eb25","request_seq":null,"qb_build_id":null,"diagnostic_dir":null,"message":null}
+```
+
+从qb_trigger.py:571–579的控制流可知:request_id只在browser.login()正常返回后生成。
+因此本次不同于live-01的登录超时,但没有另存三条件现场快照,不补造现场描述。
+request_seq为空,三张QB表0行,SQL及DB hash逐字节未变,说明没有完成提交意图落库;
+结合提交必须在_intent成功后调用的代码顺序,未进入提交步骤。request_id只在本次
+内存/stdout中产生,不是可供qb-result-fetch使用的已登记请求。
+
+[stop-audit.json](evidence/C6a/live-03/stop-audit.json)逐项核对:
+- DB SHA256仍为bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405;
+  SQL与live-01及本次归档逐字节相等,唯一状态仍SANDBOX_PUSHED;
+- 请求/冻结/事件三表均空,无qb_traces或qb_diagnostics目录;
+- 记录/CLI/代理/本次Chromium四个已知PID均不存在,无.transport残留;
+- /dev/shm有两个p5q-browser目录,mtime均早于live-03开始,无进程引用;
+  仅记录元数据,不读取内容、不删除、不据此推断来源;
+- HTTP请求数没有采集,不伪填0;没有运行qb-result-fetch,没有重提/--retrigger。
+
+停止点与证据边界见[stop-report.md](evidence/C6a/live-03/stop-report.md):
+现有输出只能将失败限定在登录返回后、提交意图落库前,不能区分open_form、fill
+以及驱动拒收/代理退出等具体原因。没有父构建页,BUILD_NOTES、BUILD_REFERENCE、
+SNAPSHOT_NUM回显和冻结值均NOT_COLLECTED;不凭配置值冒充页面实测。
+候选后续:由设计方批准只增加固定阶段/错误类别与安全trace的取证通道后定位,
+不记录原始协议事件/凭据/响应正文;本轮不实施、不自行再跑。
+
+### 39.7 挂账与本轮验收
+
+| 义务 | 结论 |
+|---|---|
+| 目标与manifest | 保持§38.2 PASS,libtirpc原commit逐字匹配 |
+| 专用状态/镜像/生产参数 | PASS,不触碰真实campaign;本地镜像边界保持P5Q-C6-01 |
+| live-02停止 | 本地I/O阻塞,记录入口143,生产exit未知;原始command保留 |
+| live-03一次新授权调用 | 已执行,生产exit5/QB_BROWSER_UNAVAILABLE,立即停止 |
+| 提交、绑定、首次结果读取 | NOT_COMPLETED/NOT_RUN,无已登记request或构建号 |
+| 父构建回显/成功样本/BUILD_NOTES样本 | OPEN,本轮未补齐 |
+| C6b | NOT_READY,不能对未入库request伪造可执行读取命令 |
+
+本轮只改记录工具输出目录选项、progress/INDEX和脱敏证据;生产模块、spikes、测试、
+冻结稿与live-01全部未改。记录工具ruff、design检查、diff-check及证据字节自检结果
+见[evidence/C6a/live-03/validation.json](evidence/C6a/live-03/validation.json)。
+记录工具的五项全模拟检查5 passed/0 failed/0 skipped,所有Popen均为桩,不启动
+浏览器、不联网、不写专用数据库;见[recorder-checks.json](evidence/C6a/live-03/recorder-checks.json)。
+未重跑全仓pytest;§38.4的203定向测试与§36的2639/1均保持历史结果,不冒称本次重跑。
+用户既有工作区改动不处理。等待设计方核对本次停止证据,不进入C6b。

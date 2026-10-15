@@ -1,0 +1,65 @@
+{
+  "audited_at": "2026-10-15T08:09:56.101455+00:00",
+  "run": "live-03",
+  "wrapper_exit": 0,
+  "production_cli_exit": 5,
+  "result": {
+    "action": "rejected",
+    "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+    "diagnostic_dir": null,
+    "error_code": "QB_BROWSER_UNAVAILABLE",
+    "message": null,
+    "qb_build_id": null,
+    "request_id": "e724b5428a4a45a5a2d03a0a93e6eb25",
+    "request_seq": null,
+    "sbs_target": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+    "status": "SANDBOX_PUSHED"
+  },
+  "production_argv_equals_live01": true,
+  "db_sha256": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "sql_equals_live01": true,
+  "sql_equals_live03_archive": true,
+  "qb_table_counts": {
+    "campaign_qb_requests": 0,
+    "campaign_qb_profiles": 0,
+    "campaign_qb_events": 0
+  },
+  "unit_status_history": [
+    "SANDBOX_PUSHED"
+  ],
+  "request_id_persisted": false,
+  "fetch_invoked": false,
+  "trace_directory_exists": false,
+  "diagnostic_directory_exists": false,
+  "evidence_files_checked": [
+    "trigger/command.json",
+    "trigger/execution.json",
+    "trigger/state-after.sql",
+    "trigger/stderr.txt",
+    "trigger/stdout.json"
+  ],
+  "processes_remaining": {
+    "1199083": false,
+    "1199087": false,
+    "1199088": false,
+    "1199302": false
+  },
+  "browser_directories_metadata_only": [
+    {
+      "path": "/dev/shm/p5q-browser-NJmrwJ",
+      "mtime_utc": "2026-10-15T07:59:47.970001+00:00",
+      "content_read": false
+    },
+    {
+      "path": "/dev/shm/p5q-browser-q8VW3u",
+      "mtime_utc": "2026-10-14T07:02:58.657438+00:00",
+      "content_read": false
+    }
+  ],
+  "transport_directories": [],
+  "qb_http_count": "NOT_COLLECTED",
+  "production_changes": false,
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "browser_directory_process_references_found": false,
+  "browser_directory_note": "Metadata only; both mtimes precede live-03 start. No attribution or content inspection."
+}

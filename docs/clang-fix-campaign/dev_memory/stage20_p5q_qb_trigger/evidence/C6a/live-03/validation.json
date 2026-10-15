@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "name": "recorder_mock_checks",
+      "exit_code": 0,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "name": "ruff",
+      "command": ".venv/bin/ruff check docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/run_c6_once.py",
+      "exit_code": 0
+    },
+    {
+      "name": "design",
+      "command": ".venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md",
+      "exit_code": 0,
+      "problems": 0
+    },
+    {
+      "name": "diff-check",
+      "command": "git diff --check -- docs/clang-fix-campaign/dev_memory/INDEX.md docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger",
+      "exit_code": 0
+    }
+  ],
+  "checked_evidence": [
+    {
+      "path": "live-02/stop-report.md",
+      "sha256": "eb2d5275912b7dabee00b4818ebe1e7f65c083ced8f5727db141a1bf72271dd2"
+    },
+    {
+      "path": "live-02/trigger/command.json",
+      "sha256": "a42d590bf1d8eb616be0109f8a71a3dd79f8adae30a85ba7efbe7dace17e860a"
+    },
+    {
+      "path": "live-03/recorder-checks.json",
+      "sha256": "f7f60d11efd36890c423f29c640f10933975cd70137b88c8aa7d6cffcf646bc9"
+    },
+    {
+      "path": "live-03/stop-audit.json",
+      "sha256": "906edc54bdfec8e67531d5e5309d2217f90f53c94da087341c3444cc5acc168d"
+    },
+    {
+      "path": "live-03/stop-report.md",
+      "sha256": "06f7102580ce128c19563a4058365b64d2e7d602c463a6fafcaf1da8c7bfd5bb"
+    },
+    {
+      "path": "live-03/trigger/command.json",
+      "sha256": "e89ac51ca78cf7d5ccd47200eddf86c6e5d64223761aefaf40bee70366243b45"
+    },
+    {
+      "path": "live-03/trigger/execution.json",
+      "sha256": "1f4af669482666d18a7c246b2607ae13d76e4af3831875bc644d88982440c767"
+    },
+    {
+      "path": "live-03/trigger/state-after.sql",
+      "sha256": "291ce88a1203ab975aafa6e263b88b598546050c76a961afdfed7f91ae67734f"
+    },
+    {
+      "path": "live-03/trigger/stderr.txt",
+      "sha256": "e09e4b36e90c1a093f6b5a67027e71c9e0e346a7a14a13167e7ada24f0ab8b36"
+    },
+    {
+      "path": "live-03/trigger/stdout.json",
+      "sha256": "e40ebc6625eb9d6086a4534e3d9567c768f778cc62fbb27fa68e447c81c1625c"
+    }
+  ],
+  "production_spikes_tests_frozen_and_live01_unchanged": true,
+  "full_pytest_rerun": false,
+  "network_during_validation": false,
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c"
+}

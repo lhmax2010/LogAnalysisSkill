@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "ci_triage",
+    "qb-trigger",
+    "--verification-ids",
+    "p5q-c6-libtirpc-20261015-v0,p5q-c6-libtirpc-20261015-v1,p5q-c6-libtirpc-20261015-v2",
+    "--state-db",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db",
+    "--state-root",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state",
+    "--config",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/config.yaml"
+  ],
+  "started_at": "2026-10-15T07:55:15.941017+00:00",
+  "user_authorization": "确认提交",
+  "production_path": true,
+  "test_arguments": [],
+  "attempt": 1,
+  "evidence_run": "live-02"
+}

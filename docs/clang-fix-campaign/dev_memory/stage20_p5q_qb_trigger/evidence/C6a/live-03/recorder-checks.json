@@ -1,0 +1,14 @@
+{
+  "mode": "all_Popen_mocked_no_browser_or_network",
+  "passed": 5,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "default_live01_and_explicit_live02_live03_directories",
+    "identical_production_argv_env_and_stdio_no_new_agent_flags",
+    "duplicate_run_refused_before_spawn",
+    "fetch_uses_selected_run_request_only",
+    "dedicated_database_unchanged_and_prior_evidence_preserved"
+  ],
+  "dedicated_db_sha256": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405"
+}

@@ -38,7 +38,9 @@ def checked_write(path: Path, content: bytes) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("step", choices=("trigger", "fetch"))
-    parser.add_argument("--evidence-run", choices=("live-01", "live-02"), default="live-01")
+    parser.add_argument(
+        "--evidence-run", choices=("live-01", "live-02", "live-03"), default="live-01"
+    )
     options = parser.parse_args()
     step, evidence_run = options.step, options.evidence_run
     frozen = REPO / "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md"
