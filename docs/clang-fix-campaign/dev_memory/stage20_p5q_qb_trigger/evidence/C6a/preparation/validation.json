@@ -1,0 +1,33 @@
+[
+  {
+    "name": "ruff",
+    "argv": [
+      ".venv/bin/ruff",
+      "check",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/preparation/prepare_c6.py"
+    ],
+    "exit_code": 0,
+    "log": "ruff.log"
+  },
+  {
+    "name": "design",
+    "argv": [
+      ".venv/bin/python",
+      "docs/clang-fix-campaign/tools/check_design_doc.py",
+      "docs/clang-fix-campaign/design.md"
+    ],
+    "exit_code": 0,
+    "log": "design.log"
+  },
+  {
+    "name": "targeted-tests",
+    "argv": [
+      ".venv/bin/pytest",
+      "-q",
+      "tests/unit/test_qb_trigger.py",
+      "tests/unit/test_qb_config.py"
+    ],
+    "exit_code": 0,
+    "log": "targeted-tests.log"
+  }
+]

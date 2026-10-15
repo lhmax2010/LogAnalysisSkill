@@ -1,0 +1,100 @@
+{
+  "files": [
+    {
+      "path": "config.yaml",
+      "sha256": "3456055898fe2f41c662329ea6bcc91a092f065483442db1ea2cdd99cbdb8c1e",
+      "size": 1341,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "design.log",
+      "sha256": "cf943b2962ddfcf7edb62afe4d5dfaa6fd54c15b48756861b99689635c34519d",
+      "size": 78,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "manifest-check.json",
+      "sha256": "b64b67c20cfdcfbba81d0a90f5e6b2ff662eb860956a89f5d120756362b73808",
+      "size": 1414,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "manifest.xml",
+      "sha256": "aa8ff39bd437a625fe2db2927311b071149b836a5f0212aa49638d8b728d6d69",
+      "size": 33380,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "mirror-check.json",
+      "sha256": "8182e0c3820dc93e63add903b7a3b43f6934080ed992f97cdca844075742f74b",
+      "size": 447,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "mirror-commands.json",
+      "sha256": "7a7f3bcc40745cb0a585c59df719cfd9c99d6ffb3a3b19d5ac47ea8c24e39288",
+      "size": 7026,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "preflight.json",
+      "sha256": "6111094dbb61d99a17f70b8e98a0f5865138c7221661e3ad8b7ad161b51fec50",
+      "size": 10850,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "prepare_c6.py",
+      "sha256": "99122e3b9bbda3bea95a85918bddc1d3bf3dd6525f73eacea43e03587c5c5093",
+      "size": 16889,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "ruff.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "size": 19,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "state-before.sql",
+      "sha256": "291ce88a1203ab975aafa6e263b88b598546050c76a961afdfed7f91ae67734f",
+      "size": 13010,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "state-prepared.json",
+      "sha256": "0f6554373bd622391fc71717113da29bf4749a1169ce17efbc3f9ef0c802305e",
+      "size": 851,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "synthetic-basis.json",
+      "sha256": "f401b5dd37d05a740cdb35ff5cb3409bc0c5d70f4c316f44e0db39077bf3d9ba",
+      "size": 865,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "targeted-tests.log",
+      "sha256": "7502f5e4e4a6cfb80276657fefae1a19f75f4d77da57d169497b4fe203d15218",
+      "size": 261,
+      "selfcheck": "PASS"
+    },
+    {
+      "path": "validation.json",
+      "sha256": "8f52ed6728c89c6d19fe0c1b1b77175e958545edaf7405828fcf14bf1e8ad8fc",
+      "size": 740,
+      "selfcheck": "PASS"
+    }
+  ],
+  "counts": {
+    "campaign_units": 1,
+    "campaign_verifications": 3,
+    "campaign_gate_events": 2,
+    "campaign_qb_requests": 0,
+    "campaign_qb_events": 0,
+    "campaign_qb_profiles": 0
+  },
+  "config_matches_external": true,
+  "db_matches_export": true,
+  "frozen_hash_matches": true,
+  "real_qb_submission_count": 0
+}

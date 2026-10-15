@@ -1,0 +1,39 @@
+{
+  "target_confirmation": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+  "source_url": "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260924.094908/builddata/manifest/tizen-base-toolchain_20260924.094908_standard.xml",
+  "command": [
+    "curl",
+    "--silent",
+    "--show-error",
+    "--retry",
+    "0",
+    "--max-time",
+    "60",
+    "--max-redirs",
+    "0",
+    "--proto",
+    "=http",
+    "--output",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/preparation/manifest.xml",
+    "--write-out",
+    "%{json}\\n",
+    "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260924.094908/builddata/manifest/tizen-base-toolchain_20260924.094908_standard.xml"
+  ],
+  "http_status": 200,
+  "exit_code": 0,
+  "request_count": 1,
+  "redirect_count": 0,
+  "content_type": "text/xml; charset=utf-8",
+  "size_bytes": 33380,
+  "sha256": "aa8ff39bd437a625fe2db2927311b071149b836a5f0212aa49638d8b728d6d69",
+  "attributes": {
+    "name": "platform/upstream/libtirpc",
+    "path": "platform/upstream/libtirpc",
+    "revision": "7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0"
+  },
+  "source": {
+    "line": 97,
+    "original_line": "  <project name=\"platform/upstream/libtirpc\" path=\"platform/upstream/libtirpc\" revision=\"7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0\"/>"
+  },
+  "exact_revision_match": true
+}

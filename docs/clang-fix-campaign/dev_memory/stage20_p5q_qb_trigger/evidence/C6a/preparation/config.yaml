@@ -1,0 +1,32 @@
+campaign_workspace: /home/linhao/Toolchain/p5q-live-validation/p5q-c6/ws
+gerrit_commit_msg_hook: /home/linhao/gerrit-hook/commit-msg
+gerrit_commit_msg_hook_sha256: 3c7e9b5fbe0b7ed945abd74248913c912ee0464abb416c18278bc5811dbb6f50
+gerrit_ssh_base: /home/linhao/Toolchain/p5q-live-validation/p5q-c6/remotes
+git_author_identity: C6 Synthetic Fixture <p5q-c6@example.invalid>
+git_committer_identity: C6 Synthetic Fixture <p5q-c6@example.invalid>
+qb:
+  base_url: https://quickbuild.tizen.org
+  browser:
+    chromium: /home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome
+    login_timeout_seconds: 600
+    node: /home/linhao/.local/bin/node
+    playwright_module: /home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs
+  projects:
+    tizen_base:
+      configuration_path: root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER
+      enabled: true
+      form:
+        Add Package List: ''
+        BUILD_REFERENCE: Ref. Snapshot
+        BUILD_TYPE: Full
+        CHILD_CONFIGURATIONS:
+        - standard-armv7l:aarch64:x86_64
+        Immediate Stop With Error: true
+        PROJECT_BRANCH: tizen_base
+        REPO_TYPE: ALL
+        Remove Package List: ''
+        SNAPSHOT_NUM: '@freeze'
+        TARGET_IMAGE: []
+      overview_id: 1917
+      project_name: Tizen-Base-Toolchain
+      qb_pass_requires_accept: false

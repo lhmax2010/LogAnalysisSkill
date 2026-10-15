@@ -1,0 +1,23 @@
+{
+  "authority": "P5Q-C6-01",
+  "target": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+  "template": "tests/unit/test_p5q_c5a_integration.py -> test_qb_trigger.Campaign.add",
+  "synthetic": [
+    "three PASS verification records",
+    "unit and round",
+    "DERIVE",
+    "PUSH"
+  ],
+  "real_facts": [
+    "manifest revision",
+    "fetched commit and tree",
+    "local sandbox ref"
+  ],
+  "warning": "No real gbs verification, derived commit creation or Gerrit push occurred.",
+  "placeholder_digests": {
+    "patch": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "edit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "gbs_conf": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "build_log": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  }
+}

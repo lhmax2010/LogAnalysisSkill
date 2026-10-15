@@ -1,9 +1,10 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_WAITING_TARGET**。
-最新任务C6a见§37–38:仅获准准备,等待目标行确认;尚未收到“确认提交”,不得真实提交。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_WAITING_SUBMIT_CONFIRMATION**。
+最新任务C6a见§37–38:libtirpc目标已确认,manifest/专用库/本地镜像/离线前置核验完成;
+尚未收到“确认提交”,不得真实提交。
 C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b基线b134d16,六页原始/活动比对通过;
-填表演练exit1且未落盘阶段证据,见§35。C6未开始,成功/BUILD_NOTES样本挂账开放。
+填表演练exit1且未落盘阶段证据,见§35。C6尚无真实QB请求,成功/BUILD_NOTES样本挂账开放。
 §36按P5Q-C5B-02完成工具失败落盘及离线验证:2639 passed/1 skipped;
 5afb645推送后FatTank回复“沿用。开始”,fill-rehearsal-02一次实跑通过,
 12字段各1获准/0拒绝/HTTP200,not_released/action放行0,见§36.6–36.9。
@@ -4063,3 +4064,131 @@ field_window_or_readback,而open_form轮询早期可返回heading。它不是命
 §36的成功样本与BUILD_NOTES构建回显样本挂账仍开放。
 本准备提交仅progress/INDEX;运行`.venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md`,exit0/0 problem。
 冻结hash匹配;未改代码,未重跑全仓,不把§36历史验收记为本轮实跑。
+
+### 38.2 目标确认与快照原文
+
+§38.1为fa26715准备提交时的历史状态。本轮FatTank回复原文:
+
+```text
+platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0
+```
+
+目标格式核对通过;此回复只确认目标,不是“确认提交”。冻结稿hash仍匹配。
+对任务指定manifest只做一次普通HTTP GET,无重试、无重定向、无浏览器:
+
+```bash
+curl --silent --show-error --retry 0 --max-time 60 --max-redirs 0 --proto '=http' --output /home/linhao/Toolchain/p5q-live-validation/p5q-c6/preparation/manifest.xml --write-out '%{json}\n' http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260924.094908/builddata/manifest/tizen-base-toolchain_20260924.094908_standard.xml
+```
+
+exit0/HTTP200,Content-Type=`text/xml; charset=utf-8`,33380字节。
+完整公共manifest归档[evidence/C6a/preparation/manifest.xml](evidence/C6a/preparation/manifest.xml),
+SHA256=`aa8ff39bd437a625fe2db2927311b071149b836a5f0212aa49638d8b728d6d69`。
+XML解析恰好命中一个目标project,revision与目标逐字相等。
+第97行原文(保留前导两个空格):
+
+```xml
+  <project name="platform/upstream/libtirpc" path="platform/upstream/libtirpc" revision="7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0"/>
+```
+
+核对命令、属性与原始行见[manifest-check.json](evidence/C6a/preparation/manifest-check.json)。
+这是指定20260924.094908快照的证明,尚未打开当前QB表单;
+不把历史/manifest快照值冒称为本轮表单当前选中项。
+
+### 38.3 专用状态与镜像构造
+
+全部构造入口为本轮独立证据脚本
+[prepare_c6.py](evidence/C6a/preparation/prepare_c6.py),不进入生产包。
+四个阶段各执行一次:
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/preparation/prepare_c6.py manifest
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/preparation/prepare_c6.py fetch
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/preparation/prepare_c6.py construct
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/preparation/prepare_c6.py preflight
+```
+
+四阶段exit0。fetch阶段复用生产SandboxGit统一环境与八项`-c`覆盖,
+SSH固定`ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20`,
+不输入凭据、不放松主机校验。以下为逐条git子命令,完整argv/exit/stdout/stderr
+均在[mirror-commands.json](evidence/C6a/preparation/mirror-commands.json):
+
+```text
+git init --bare /home/linhao/Toolchain/p5q-live-validation/p5q-c6/remotes/platform/upstream/libtirpc
+git -C <上述镜像> fetch --no-tags --no-recurse-submodules --depth=1 ssh://review.tizen.org:29418/platform/upstream/libtirpc 7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0
+git -C <上述镜像> cat-file -t 7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0
+git -C <上述镜像> rev-parse 7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0^{tree}
+git -C <上述镜像> update-ref refs/heads/sandbox/p5q-c6-libtirpc 7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0
+git -C <上述镜像> show-ref --verify refs/heads/sandbox/p5q-c6-libtirpc
+```
+
+六条exit0,实际fetch一次、Gerrit push零次。对象类型commit,
+tree=`9ef054c6187444dedb07aab80fb04279f5683bf4`,本地sandbox ref与目标一致,
+见[mirror-check.json](evidence/C6a/preparation/mirror-check.json)。
+
+专用库`/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db`,
+专用配置同根`config.yaml`,state-root同根`state/`,workspace同根`ws/`。
+配置无凭据,Node/Playwright/Chromium均为生产本机路径,登录时限600秒;
+无测试证书、DNS覆盖或其它测试专用参数。配置副本与hash见
+[config.yaml](evidence/C6a/preparation/config.yaml)和
+[state-prepared.json](evidence/C6a/preparation/state-prepared.json)。
+
+unit=`p5q-c6-libtirpc-20261015`,verification IDs为该前缀加`-v0/-v1/-v2`,
+对应aarch64/armv7l/x86_64。按C5a形态建立三份合成PASS、一个unit/round、
+DERIVE/PUSH两事件和SANDBOX_PUSHED状态;均明确标注C6-01合成前提。
+实际目标commit/tree来自只读fetch,不伪称已执行gbs、derive或Gerrit push。
+专用合成说明见[synthetic-basis.json](evidence/C6a/preparation/synthetic-basis.json),
+SQL导出见[state-before.sql](evidence/C6a/preparation/state-before.sql);不提交二进制数据库。
+
+### 38.4 离线前置与远端核对
+
+使用生产`cli.main`进入qb-trigger,仅在证据脚本中把代理进程替换为既有
+`tests/fixtures/qb_fake_agent.py`;它在login处主动返回QB_LOGIN_ABORTED。
+这是计划内的无浏览器边界探针,不是一次真实登录失败,不进入open_form/fill/submit。
+CLI exit5、status=SANDBOX_PUSHED、request_id/request_seq均null;
+假代理收到恰好login/close两条命令,前置校验已通过。生产代码与生产配置未改。
+
+另在同一unit锁内调用生产`_snapshot`与`_remote_check`,使用
+`ws/fe30a222b971/.transport`和生产统一git环境,执行本地镜像ls-remote;
+核对通过、比对sha为目标commit,临时传输仓库已删除。
+全部argv见[preflight.json](evidence/C6a/preparation/preflight.json),
+没有git命令以主副本为-C/--git-dir,没有访问真实Gerrit做ls-remote。
+
+专用库前后SQL完全一致,数据库原始字节SHA256也完全一致:
+`bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405`。
+campaign_qb_requests/profiles/events均0行;没有假SUBMITTED/BUILD_BOUND/RESULT或
+假冻结值污染真实一次提交。真实浏览器0、QuickBuild请求0、真实提交0。
+
+本轮定向验收:
+- `pytest -q tests/unit/test_qb_trigger.py tests/unit/test_qb_config.py`:203 passed,
+  0 failed/0 skipped,exit0,全部本地/假代理;
+- 证据脚本ruff exit0;设计检查exit0/0 problem;
+- 冻结稿/生产模块/既有工具/既有测试相对fa26715零diff。
+
+命令与日志见[validation.json](evidence/C6a/preparation/validation.json)。
+准备脚本初次ruff有行宽问题,仅格式化/拆行修正后通过;未修改生产或放宽检查。
+本轮未重跑全仓,不把203定向测试称为全仓结果。
+
+### 38.5 待确认的十二字段与真实提交闸门
+
+目标配置为`root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER`,
+overview_id=1917,qb_pass_requires_accept=false。拟填值:
+
+| 字段 | 拟填值 |
+|---|---|
+| BUILD_TYPE | Full |
+| REPO_TYPE | ALL |
+| BUILD_REFERENCE | Ref. Snapshot |
+| SNAPSHOT_NUM | @freeze:取真实填表时的唯一选中项并冻结,不预设历史值 |
+| PROJECT_BRANCH | tizen_base |
+| Immediate Stop With Error | true/勾选 |
+| CHILD_CONFIGURATIONS | [standard-armv7l:aarch64:x86_64] |
+| Build Package List | platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0 |
+| Add Package List | 空串 |
+| Remove Package List | 空串 |
+| TARGET_IMAGE | []/空 |
+| BUILD NOTES | clang-fix-campaign request=<生产qb-trigger将生成的request_id> |
+
+状态WAITING_SUBMIT_CONFIRMATION。以上值与专用路径将呈交FatTank;
+尚未收到“确认提交”,不开浏览器、不运行真实qb-trigger/qb-result-fetch。
+生产request_id尚未生成。已批准的目标选择不替代此次完整字段确认。
+无新增设计矛盾/停止报告;C6b终态读取仍不在本轮范围。
