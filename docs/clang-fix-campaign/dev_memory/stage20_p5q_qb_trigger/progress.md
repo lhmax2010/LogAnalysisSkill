@@ -1,7 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_STOPPED_LOGIN_TIMEOUT**。
-最新任务C6a见§37–38:libtirpc目标已确认,manifest/专用库/本地镜像/离线前置核验完成;
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE02_WAITING_CONFIRMATION**。
+最新续任务见§39:FatTank原话“没有弹出窗口”,按任务规定归入“人工未在时限内登录”;
+专用库hash/空QB表/SANDBOX_PUSHED已复核通过,等待新的“确认提交”,尚未启动live-02。
+上一轮C6a见§37–38:libtirpc目标已确认,manifest/专用库/本地镜像/离线前置核验完成;
 FatTank已回复“确认提交”;仅运行一次生产qb-trigger,exit5/QB_LOGIN_TIMEOUT,
 无request_id/构建号、无库变更,立即停止,未运行qb-result-fetch,见§38.6–38.8。
 C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b基线b134d16,六页原始/活动比对通过;
@@ -11,7 +13,7 @@ C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b基线b134d16,六页
 5afb645推送后FatTank回复“沿用。开始”,fill-rehearsal-02一次实跑通过,
 12字段各1获准/0拒绝/HTTP200,not_released/action放行0,见§36.6–36.9。
 以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;§36轮次止于C5b,
-当前C6a已按异常即停规则停止,真实执行结果以§38为准,旧确认不授权重试。
+§38的停止为live-01历史事实,续任务按§39处理;旧确认仍不授权重跑。
 C4最新裁定与执行见§33;§32停点已由P5Q-C4-02关闭。
 C4本轮基线ec3be74;源格式对齐要求已撤回,旧探针作废,实现与验收见§33。
 C4本轮不访问真实QuickBuild/Gerrit,不弹登录窗口,不进入C5。
@@ -4286,3 +4288,85 @@ stdout.json/stderr.txt保存生产输出;state-after.sql是只读SQL导出。
 收尾运行证据脚本ruff、design检查及新证据自检,结果见
 `evidence/C6a/live-01/validation.json`。未重跑全仓,§38.4的203定向测试仍为
 e08bcc9准备阶段结果,不冒称本次重跑。用户既有改动原样保留。
+
+## 39. C6a 第二次执行记录
+
+### 39.1 现场确认与分支
+
+续任务基线3db000d;已重读§38及live-01的命令、exit/stdout/停止后状态证据,
+权威冻结稿实算hash仍为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`。
+向FatTank询问了07:03 UTC那次是否弹出窗口、是否在窗口完成登录。
+FatTank先回复:
+
+```text
+重跑
+```
+
+该答复未说明现场,没有据此启动。再次询问后,FatTank回复原文:
+
+```text
+没有弹出窗口
+```
+
+问题1已答“没有弹出窗口”;问题2未另行回答,不补造另一条原话。
+依据本轮任务第一步明确将“窗口未弹出”归入的分支,登记为
+**人工未在时限内登录**,进入第二步的本地准备与重新确认。
+这仅是执行分支分类,不将未弹窗归因于人工疏忽,也不声称查明了未弹窗的技术原因。
+不满足“窗口弹出且已完成登录”分支,本轮不写P5Q-C6A-02。
+
+### 39.2 重跑前的只读核验
+
+证据:[precheck.json](evidence/C6a/retry-preparation/precheck.json)。
+读取前/后专用state.db的SHA256均为
+`bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405`,
+与live-01结束时相同,SQL导出也与其state-after.sql逐字节一致。
+campaign_qb_requests/profiles/events各0行,unit最新状态SANDBOX_PUSHED。
+配置与准备阶段归档逐字节相同;live-02目录尚不存在。
+本次检查不初始化schema、不写数据库、不访问网络、不启动浏览器。
+
+记录入口run_c6_once.py仅增加`--evidence-run live-02`输出选择;
+此参数不转发给生产CLI或代理。生产argv、环境处理、600秒登录时限和
+目录排他创建保护不变;live-01原始文件保持原样。
+准备使用的记录入口如下,**本节登记时未执行**:
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/run_c6_once.py trigger --evidence-run live-02
+```
+
+其中实际生产qb-trigger命令必须与§38.7完整argv相同,无--retrigger。
+本轮最多一次生产调用;若再次登录超时或出现其它非准许结果,停止并保留证据,
+不再自行重跑。未生成新request_id,未取得父页回显或读取结果。
+
+记录入口四项全模拟检查4 passed/0 failed/0 skipped:默认live-01输出保持;
+live-02的生产argv/环境/stdin/stdout处理与live-01相同且旧文件未变;
+fetch只取所选执行目录的request;重复目录在创建进程前即拒绝。
+所有Popen均为桩,临时测试DB与专用C6库分离,无浏览器/网络请求。
+结果见[recording-path-tests.json](evidence/C6a/retry-preparation/recording-path-tests.json)。
+记录脚本ruff exit0、design检查exit0/0 problem、diff-check exit0;
+未改生产代码,未重跑全仓。live-01与冻结稿原样保留。
+
+### 39.3 新的确认闸门
+
+重新呈交十二字段,与§38.5相同:
+
+| 字段 | 拟填值 |
+|---|---|
+| BUILD_TYPE | Full |
+| REPO_TYPE | ALL |
+| BUILD_REFERENCE | Ref. Snapshot |
+| SNAPSHOT_NUM | @freeze:取填表时的唯一选中项并冻结 |
+| PROJECT_BRANCH | tizen_base |
+| Immediate Stop With Error | true/勾选 |
+| CHILD_CONFIGURATIONS | [standard-armv7l:aarch64:x86_64] |
+| Build Package List | platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0 |
+| Add Package List | 空串 |
+| Remove Package List | 空串 |
+| TARGET_IMAGE | []/空 |
+| BUILD NOTES | clang-fix-campaign request=<生产命令将生成的request_id> |
+
+专用路径仍为`/home/linhao/Toolchain/p5q-live-validation/p5q-c6/`下的
+state.db、config.yaml、state/和ws/;目标配置RBS/TRIGGER,overview_id=1917。
+提醒FatTank浏览器弹出后须在600秒内在窗口完成登录,不读终端输入。
+仅新的逐字答复“确认提交”解锁本轮启动;“重跑”“开始”和上一轮确认都不算。
+当前状态LIVE02_WAITING_CONFIRMATION,无新增QB请求,不进入C6b。

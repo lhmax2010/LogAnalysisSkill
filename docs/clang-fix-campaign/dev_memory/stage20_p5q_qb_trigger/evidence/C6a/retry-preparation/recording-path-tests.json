@@ -1,0 +1,27 @@
+{
+  "tests": [
+    {
+      "test": "default_live01_path",
+      "passed": true
+    },
+    {
+      "test": "live02_same_production_argv_and_unchanged_live01",
+      "passed": true
+    },
+    {
+      "test": "fetch_reads_live02_request",
+      "passed": true
+    },
+    {
+      "test": "duplicate_run_blocked_before_process",
+      "passed": true
+    }
+  ],
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "all_subprocesses_mocked": true,
+  "real_browser_starts": 0,
+  "network_requests": 0,
+  "dedicated_c6_db_touched": false
+}

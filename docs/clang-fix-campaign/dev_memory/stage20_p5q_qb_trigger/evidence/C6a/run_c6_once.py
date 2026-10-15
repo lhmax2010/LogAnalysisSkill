@@ -38,7 +38,9 @@ def checked_write(path: Path, content: bytes) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("step", choices=("trigger", "fetch"))
-    step = parser.parse_args().step
+    parser.add_argument("--evidence-run", choices=("live-01", "live-02"), default="live-01")
+    options = parser.parse_args()
+    step, evidence_run = options.step, options.evidence_run
     frozen = REPO / "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md"
     assert hashlib.sha256(frozen.read_bytes()).hexdigest() == FROZEN_HASH
     assert (ROOT / "config.yaml").read_bytes() == (
@@ -56,7 +58,7 @@ def main() -> None:
         assert hashlib.sha256((ROOT / "state.db").read_bytes()).hexdigest() == prepared["db_sha256"]
         args += ["--verification-ids", ",".join(f"{KEY}-v{i}" for i in range(3))]
     else:
-        trigger = json.loads((EVIDENCE / "live-01/trigger/stdout.json").read_text())[0]
+        trigger = json.loads((EVIDENCE / evidence_run / "trigger/stdout.json").read_text())[0]
         assert trigger["action"] == "submitted_bound" and trigger["error_code"] is None
         args += ["--request-id", trigger["request_id"]]
     args += [
@@ -68,7 +70,7 @@ def main() -> None:
         str(ROOT / "config.yaml"),
     ]
     assert "--retrigger" not in args
-    output = EVIDENCE / "live-01" / step
+    output = EVIDENCE / evidence_run / step
     output.mkdir(parents=True, exist_ok=False)
     facts = {
         "argv": args,
@@ -77,6 +79,7 @@ def main() -> None:
         "production_path": True,
         "test_arguments": [],
         "attempt": 1,
+        "evidence_run": evidence_run,
     }
     checked_write(
         output / "command.json", (json.dumps(facts, ensure_ascii=False, indent=2) + "\n").encode()

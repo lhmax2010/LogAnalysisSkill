@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-15T07:37:19.060818+00:00",
+  "head": "3db000d",
+  "user_reply": "没有弹出窗口",
+  "question_2": "未另行回答;不补造原话",
+  "classification": "人工未在时限内登录",
+  "classification_basis": "用户任务第一步明确将窗口未弹出归入此分支",
+  "expected_db_sha256": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "actual_db_sha256": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "db_hash_after_readonly_check": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "sql_matches_live01": true,
+  "counts": {
+    "campaign_qb_requests": 0,
+    "campaign_qb_profiles": 0,
+    "campaign_qb_events": 0
+  },
+  "unit_status": "SANDBOX_PUSHED",
+  "config_unchanged": true,
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "live02_absent": true,
+  "new_submit_confirmation_received": false,
+  "browser_started": false,
+  "quickbuild_requests": 0
+}
