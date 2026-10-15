@@ -1,0 +1,152 @@
+{
+  "started_at": "2026-10-15T09:31:06.592742+00:00",
+  "db_sha256_before": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "commands": [
+    {
+      "argv": [
+        "df",
+        "-h",
+        "/dev/shm",
+        "/home"
+      ],
+      "exit": 0,
+      "stdout": "Filesystem      Size  Used Avail Use% Mounted on\ntmpfs            16G  119M   16G   1% /dev/shm\n/dev/sda1       1.8T  1.4T  396G  78% /home\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "free",
+        "-h"
+      ],
+      "exit": 0,
+      "stdout": "               total        used        free      shared  buff/cache   available\nMem:            30Gi        14Gi       7.0Gi       690Mi         9Gi        15Gi\nSwap:          4.0Gi       4.0Gi       8.3Mi\n",
+      "stderr": ""
+    }
+  ],
+  "profiles": [
+    {
+      "path": "/dev/shm/p5q-browser-NJmrwJ",
+      "uid": 1000,
+      "inode": 754514,
+      "mtime": "2026-10-15T07:59:47.970001+00:00",
+      "size": {
+        "argv": [
+          "du",
+          "-sb",
+          "/dev/shm/p5q-browser-NJmrwJ"
+        ],
+        "exit": 0,
+        "stdout": "7953928\t/dev/shm/p5q-browser-NJmrwJ\n",
+        "stderr": ""
+      },
+      "references": {
+        "pids": [],
+        "exit": 1,
+        "uncertain": false
+      },
+      "deletion": "REMOVED",
+      "pre_delete_references": {
+        "pids": [],
+        "exit": 1,
+        "uncertain": false
+      }
+    },
+    {
+      "path": "/dev/shm/p5q-browser-q8VW3u",
+      "uid": 1000,
+      "inode": 149055,
+      "mtime": "2026-10-14T07:02:58.657438+00:00",
+      "size": {
+        "argv": [
+          "du",
+          "-sb",
+          "/dev/shm/p5q-browser-q8VW3u"
+        ],
+        "exit": 0,
+        "stdout": "18\t/dev/shm/p5q-browser-q8VW3u\n",
+        "stderr": ""
+      },
+      "references": {
+        "pids": [],
+        "exit": 1,
+        "uncertain": false
+      },
+      "deletion": "REMOVED",
+      "pre_delete_references": {
+        "pids": [],
+        "exit": 1,
+        "uncertain": false
+      }
+    }
+  ],
+  "d_samples": [
+    {
+      "at": "2026-10-15T09:31:06.614938+00:00",
+      "argv": [
+        "ps",
+        "-eo",
+        "state,pid,comm"
+      ],
+      "exit": 0,
+      "count": 1,
+      "rows": [
+        "D 1239372 kworker/u81:1+i915_flip"
+      ],
+      "details": [
+        {
+          "pid": 1239372,
+          "name": "kworker/u81:1+i915_flip",
+          "wchan": "0"
+        }
+      ]
+    },
+    {
+      "at": "2026-10-15T09:31:16.632731+00:00",
+      "argv": [
+        "ps",
+        "-eo",
+        "state,pid,comm"
+      ],
+      "exit": 0,
+      "count": 1,
+      "rows": [
+        "D 1239372 kworker/u81:1+i915_flip"
+      ],
+      "details": [
+        {
+          "pid": 1239372,
+          "name": "kworker/u81:1+i915_flip",
+          "wchan": "0"
+        }
+      ]
+    },
+    {
+      "at": "2026-10-15T09:31:26.651065+00:00",
+      "argv": [
+        "ps",
+        "-eo",
+        "state,pid,comm"
+      ],
+      "exit": 0,
+      "count": 2,
+      "rows": [
+        "D     467 jbd2/nvme0n1p1-8",
+        "D 1239372 kworker/u81:1+i915_flip"
+      ],
+      "details": [
+        {
+          "pid": 467,
+          "name": "jbd2/nvme0n1p1-8",
+          "wchan": "0"
+        },
+        {
+          "pid": 1239372,
+          "name": "kworker/u81:1+i915_flip",
+          "wchan": "0"
+        }
+      ]
+    }
+  ],
+  "db_sha256_after": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "ended_at": "2026-10-15T09:31:28.960876+00:00"
+}

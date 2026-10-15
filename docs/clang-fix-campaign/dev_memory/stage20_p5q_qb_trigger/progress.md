@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_DIAGNOSTIC_OFFLINE_VERIFIED_AWAITING_ENVIRONMENT**。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_DIAGNOSTIC_READY_AWAITING_START**。
 本轮见§40/P5Q-C6A-03:只补固定类别诊断与不提交探针,全量2680 passed/1 skipped;
 新真机诊断须在环境检查后重新取得“开始”,不授权真实提交。以下§38–39保留历史。
 最新续任务见§39.4–39.5:live-02记录进程遇本地磁盘同步阻塞后终止,未取得生产返回;
@@ -4556,3 +4556,40 @@ WORKER_NOT_PAUSED/CLOSE_TARGET_FAILED条件,不为凑类别而新增停止行为
 
 代码门禁通过后先提交推送;环境检查和一次真机诊断另记。仍无新真实QB请求、
 无Gerrit推送、无专用库写入。冻结稿未变,成功/BUILD_NOTES样本仍挂账,不进入C6b。
+
+### 40.4 环境检查与残留清理
+
+代码及离线证据提交`c88142b`,已推送origin/clang-fix-campaign,然后执行:
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/diagnostic-preparation/environment_audit.py --clean --output docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/diagnostic-preparation/environment.json
+```
+
+exit0;2026-10-15T09:31:06Z至09:31:28Z。原始df/free输出、三次ps采样、
+目录元数据与两次lsof检查结果见[environment.json](evidence/C6a/diagnostic-preparation/environment.json)。
+
+- `/dev/shm`:16G,已用119M,可用16G;`/home`在`/dev/sda1`,1.8T,已用1.4T,可用396G(78%)。
+- 内存30Gi,available15Gi;swap4.0Gi,已用4.0Gi,可用8.3Mi。仅记录,不将可用内存等同于整机无负载。
+- 10秒间隔三次D状态计数为1/1/2。PID1239372的`kworker/u81:1+i915_flip`三次均在;
+  `jbd2/nvme0n1p1-8`只在第三次出现。wchan只可见0,未进一步推断内核原因。
+  没有观察到`/home`所在sda1关联任务持续三次D状态,不满足本任务的持续磁盘阻塞闸门;
+  这不是“没有任何D状态”或“机器完全空闲”的结论。
+- `/dev/shm/p5q-browser-NJmrwJ`:7953928字节,mtime2026-10-15T07:59:47.970001Z;
+  `/dev/shm/p5q-browser-q8VW3u`:18字节,mtime2026-10-14T07:02:58.657438Z。
+  两者uid1000、两次lsof均无引用/无警告,记录后已删除;总计7953946字节,约7.59MiB。
+  不读取或归档目录内容,未删除其它路径。
+- 环境检查前后专用库hash均为bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405。
+
+### 40.5 一次真机诊断人工闸门
+
+当前WAITING_START,`diag-01`尚未创建或执行。拟执行命令:
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/spikes/p5q_c6_driver_probe.py --config /home/linhao/Toolchain/p5q-live-validation/p5q-c6/config.yaml --output docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/diag-01
+```
+
+只login/open_form/fill/close,不提交、不产生构建、不运行真实qb-trigger/qb-result-fetch,
+不写专用库。请求FatTank新回复“开始”后才运行一次;600秒内只在窗口登录,登录后
+不点击其它内容、不打开新标签页/窗口。任何结果都停止,不重跑、不进入真实提交。
+本轮未发现冻结稿/裁定的新增不一致或做不到之处。真机结果仍NOT_RUN,不得以离线
+四例代替diag-01实测。成功/BUILD_NOTES样本与C6b仍未关闭。
