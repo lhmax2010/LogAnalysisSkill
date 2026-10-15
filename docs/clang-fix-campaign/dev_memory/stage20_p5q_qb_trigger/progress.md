@@ -1,12 +1,14 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING**。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_WAITING_TARGET**。
+最新任务C6a见§37–38:仅获准准备,等待目标行确认;尚未收到“确认提交”,不得真实提交。
 C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b基线b134d16,六页原始/活动比对通过;
 填表演练exit1且未落盘阶段证据,见§35。C6未开始,成功/BUILD_NOTES样本挂账开放。
 §36按P5Q-C5B-02完成工具失败落盘及离线验证:2639 passed/1 skipped;
 5afb645推送后FatTank回复“沿用。开始”,fill-rehearsal-02一次实跑通过,
 12字段各1获准/0拒绝/HTTP200,not_released/action放行0,见§36.6–36.9。
-以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;当前边界为C5b证据登记完成、不进入C6。
+以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;§36轮次止于C5b,
+当前C6a仅准备,真实提交闸门以§38为准。
 C4最新裁定与执行见§33;§32停点已由P5Q-C4-02关闭。
 C4本轮基线ec3be74;源格式对齐要求已撤回,旧探针作废,实现与验收见§33。
 C4本轮不访问真实QuickBuild/Gerrit,不弹登录窗口,不进入C5。
@@ -72,7 +74,7 @@ exit=0
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | COMPLETE @39e4bde;§33;C4-01已由C4-02关闭 |
 | C5a | 第9.3节本机浏览器集成;第1.6步工具准备 | COMPLETE;§34;全部离线,2638 passed/1 skipped,四组安全4/4 |
 | C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | EXECUTED_SAMPLES_PENDING;§36.6–36.9真机演练及离线解析通过;§35六页比对保留;成功/BUILD_NOTES两个样本仍挂账 |
-| C6 | 第9.4节第2步确认的真实提交与收口文档 | C5 + FatTank明确确认;NOT_STARTED |
+| C6 | 第9.4节第2步确认的真实提交与收口文档 | C6a WAITING_TARGET;§37–38登记专用状态库裁定;只有新的“确认提交”授权一次真实提交,C6b不在本轮范围 |
 
 C2真机取证与冻结稿假设不符时按R1修订,不得直接继续C3。
 C0授权不含实现;C1/C2a已完成。本轮C2b授权浏览器人工登录、只读与BUILD_TYPE联动取证,
@@ -3991,3 +3993,73 @@ field_window_or_readback,而open_form轮询早期可返回heading。它不是命
 不冒称本次文档收尾重新跑了全仓。收尾复跑取证静态护栏和design检查,
 并核对新文件写后脱敏、原始19份历史hash与冻结hash;命令/exit见
 `evidence/C5b/fill-rehearsal-02/validation.json`。无新增停止报告,不进入C6。
+
+## 37. 实施裁定 P5Q-C6-01:C6 的状态库与远端核对
+
+### 37.1 裁定原文
+
+1. 冻结稿未写明 C6 如何准备"已推送到 sandbox 分支"的 unit;而 P12 之前不允许任何真实推送。C6 因此使用专用的 state DB 与专用配置,放在 <仓库外的专用目录>/p5q-c6/ 下(具体路径由实现方确定并记入 progress.md),不使用、也不触碰任何真实 campaign 的 state DB。
+2. 状态库构造方式照搬 C5a 完整链路用例(tests/unit/test_p5q_c5a_integration.py)中的 state DB 与本地裸仓库:三份 verification record、unit、DERIVE 事件(derived_commit_sha 为目标 commit)、PUSH 事件(result=ok,ref 为 sandbox 白名单内的一个 ref 名,pushed_sha 为目标 commit)。
+3. 远端核对:专用配置的 gerrit_ssh_base 指向本机一个 bare 镜像目录。在镜像中建立上述 sandbox ref,指向目标 commit。目标 commit 的对象只允许从 Tizen Gerrit 只读拉取(fetch),严禁任何 push。拉取与建 ref 的命令全部记入 progress.md。
+4. 除远端地址外,代理、浏览器、qb-trigger、qb-result-fetch、QuickBuild 全部走生产路径;不传任何测试专用参数(--host-resolver-rules、测试证书等)。远端核对这一步已由 C3 离线验证,C6 不覆盖它;收口文档须写明这一点。
+5. 下次修订设计时并入第 9.4 节第 2 步。
+
+### 37.2 专用路径与隔离边界
+
+开工HEAD `1c770da`,分支clang-fix-campaign。已读§35及之后;
+权威v1.5冻结稿SHA256实算为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`,匹配且不改。
+以下专用根目录位于仓库外,开工检查不存在,待目标确认后创建:
+
+```text
+/home/linhao/Toolchain/p5q-live-validation/p5q-c6/
+  state.db
+  config.yaml
+  state/
+  ws/
+  remotes/<目标仓库路径>
+```
+
+上面的remotes子路径使用目标仓库路径(如platform/upstream/libtirpc),
+待目标确认后登记完整路径。`gerrit_ssh_base`仅指向该专用remotes目录。
+构造依据是C5a集成测试引用的`tests/unit/test_qb_trigger.py::Campaign.add`;
+三份PASS verification与DERIVE/PUSH均为本裁定专用合成前提,不是真实gbs验证
+或真实推送的证明,不得混入任何真实campaign。C6仅验证真实QB路径,不覆盖
+真实Gerrit远端绑定;此限制移交收口文档。
+
+生产代码、工具和冻结稿不改。已有.gitignore改动、四个docs删除与未跟踪草稿
+原样保留,不纳入提交。不读取/保存账号、密码、Cookie;永不点Accept/Ready to Accept。
+
+## 38. C6a 真实提交
+
+### 38.1 计划与当前人工闸门
+
+当前状态WAITING_TARGET。已向FatTank询问目标行,未把C5b的“沿用。开始”
+当作C6a目标选择或真实提交授权。待选候选:
+
+- `platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0`
+- `platform/upstream/pam@119d738652c19a33e8cc5d959f416185fb34c6cb`
+- `platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f`
+
+候选hash目前只来自任务书,尚未宣称经过manifest实测。确认目标后依次:
+
+1. 一次普通HTTP GET取得任务指定的20260924.094908 manifest,解析XML并保留
+   目标project元素原文,逐字比较revision。若选择LLVM,记录任务指定的非快照
+   commit限制,不得把构建结果归因于工具链路本身。
+2. 在§37.2专用路径用C5a形态建立本地镜像和状态前提;仅fetch目标对象与本地
+   update-ref,不推送Gerrit。所有构造命令、合成事实与SQL导出单列入证。
+3. 用假代理做无真浏览器/无QB请求的前置核验;另核对本地镜像ref等于目标sha。
+   不得留下SUBMITTED/BUILD_BOUND等假执行结果污染真实一次提交的起点。
+4. 展示十二字段拟填值与专用路径后,请求FatTank逐字回复“确认提交”。
+   “开始”或其它答复不算授权。request_id由生产命令生成,不伪造预先已生成的值。
+5. 获授权后只运行生产qb-trigger一次,绝不带--retrigger。submitted_bound记录
+   构建号;QB_SUBMIT_UNCERTAIN只请FatTank按标记查号并走人工绑定,不重提。
+   其它结果立即停止。随后只运行一次规定的生产qb-result-fetch。
+6. 登记父页回显、请求标记/冻结值、stdout/exit/状态迁移与脱敏证据,提交推送后
+   停止。约24小时后的终态读取与收口属于C6b,不在本轮范围。
+
+当前尚无manifest GET、Gerrit fetch、专用状态库写入、真实浏览器或QB请求;
+拟填值完整确认表、真实执行命令和证据在目标确认后追加,不提前填入结果。
+§36的成功样本与BUILD_NOTES构建回显样本挂账仍开放。
+本准备提交仅progress/INDEX;运行`.venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md`,exit0/0 problem。
+冻结hash匹配;未改代码,未重跑全仓,不把§36历史验收记为本轮实跑。
