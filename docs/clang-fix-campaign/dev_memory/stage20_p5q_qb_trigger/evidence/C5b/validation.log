@@ -1,0 +1,43 @@
+$ .venv/bin/pytest -q tests/unit/test_qb_browser_node.py::test_c5a_tools_are_readonly_and_not_production_test_overrides
+.                                                                        [100%]
+1 passed in 0.17s
+exit=0
+
+$ .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md
+== check_design_doc: docs/clang-fix-campaign/design.md ==
+-- OK: 0 problem --
+exit=0
+
+$ sha256sum docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md
+f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c  docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md
+exit=0
+
+$ git diff --name-only b134d16 -- tizen-ci-triage/scripts docs/clang-fix-campaign/spikes docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md
+(empty output)
+exit=0
+
+Offline final evidence audit (Python APIs; no browser/network):
+root=docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b
+For every file under root: PageRedactor.check_bytes(read_bytes()), then
+PageRedactor.check_written(path). For each of the 19 artifact-hashes.json
+entries: hashlib.sha256(file.read_bytes()).hexdigest() equals recorded sha256.
+precheck: 24 files passed
+write-after self-check: 24 files passed
+original evidence hash integrity: 19/19 PASS
+exit=0
+
+Earlier metadata-only audit failure: exit1. The operator record used a
+credential-like label for the execution-tool process number. Those two
+operator files were rejected and deleted by check_written. Changed only the
+metadata label to process_handle, recreated the records, then ran the final
+24-file audit above. No original browser artifact or redaction rule changed.
+
+$ git diff --cached --check
+exit=2
+2150 whitespace findings in 12 archived HTML files only:
+2056 trailing-whitespace findings; 94 space-before-tab findings.
+Archived HTML is preserved byte-for-byte, not reformatted.
+
+$ git diff --cached --check -- docs/clang-fix-campaign/dev_memory/INDEX.md docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger ':(exclude)docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/raw-active-01/*.html'
+(empty output)
+exit=0

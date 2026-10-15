@@ -1,8 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-14。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE**。
-C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b/C6未开始,真机挂账仍开放。
-以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;当前边界为不进入C5b。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_STOPPED**。
+C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b基线b134d16,六页原始/活动比对通过;
+填表演练exit1且未落盘阶段证据,见§35。C6未开始,成功/BUILD_NOTES样本挂账开放。
+以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;当前边界为停止C5b、不进入C6。
 C4最新裁定与执行见§33;§32停点已由P5Q-C4-02关闭。
 C4本轮基线ec3be74;源格式对齐要求已撤回,旧探针作废,实现与验收见§33。
 C4本轮不访问真实QuickBuild/Gerrit,不弹登录窗口,不进入C5。
@@ -67,7 +68,7 @@ exit=0
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | COMPLETE @3ef542a;§31;C3-01/C3-03均已裁定关闭 |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | COMPLETE @39e4bde;§33;C4-01已由C4-02关闭 |
 | C5a | 第9.3节本机浏览器集成;第1.6步工具准备 | COMPLETE;§34;全部离线,2638 passed/1 skipped,四组安全4/4 |
-| C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | NOT_STARTED;须另获真机授权 |
+| C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | STOPPED;§35:六页比对通过,演练exit1/无运行记录,未重试;两个样本仍挂账 |
 | C6 | 第9.4节第2步确认的真实提交与收口文档 | C5 + FatTank明确确认;NOT_STARTED |
 
 C2真机取证与冻结稿假设不符时按R1修订,不得直接继续C3。
@@ -3599,3 +3600,137 @@ C5a仅准备并离线验证工具。第9.4节1.6a原始字节/活动文档真机
 不为消除空白提示而改写证据。所有新增内容限tests、spikes、stage证据/进度及INDEX。
 用户既有.gitignore改动、四个文档删除及未跟踪草稿未纳入提交。
 C5a COMPLETE,不进入C5b,不把本轮离线通过记作P5Q CLOSED。
+
+## 35. C5b 真机执行
+
+### 35.1 第零步参数与授权
+
+日期2026-10-15(Asia/Shanghai);基线b134d16,分支clang-fix-campaign。
+已读本文件并核对C5a完成、C5b/C6挂账与已登记实施裁定。v1.5冻结稿SHA256:
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`,匹配且不修改。
+
+FatTank给出llvm参数表,工具说明Snapshot Number不等于本批要求的Ref. Snapshot
+成功父样本,随后在聊天列明以下登记值;FatTank回复“开始吧”确认并授权启动:
+
+```text
+目标行：platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f
+Ref. Snapshot 成功父子样本：暂无
+BUILD NOTES 非空样本：暂无
+```
+
+目标行已机械核验完整匹配`^[^\s@]+@[0-9a-f]{40}$`。此前两张参数表中的Live与
+Snapshot Number不当作Ref. Snapshot证据,不照抄其快照值到演练。成功样本和
+BUILD_NOTES样本继续挂账。本轮两个工具、共用helper与生产目录对b134d16零diff。
+
+### 35.2 执行顺序与边界
+
+仅运行C5a已验收的比较工具,一次人工浏览器登录,固定六页按任务顺序读取,
+输出evidence/C5b/raw-active-01;输出目录开工时不存在,不得覆盖旧证据。
+所有字段一致且登记位置外身份计数处理完后,才允许另一次登录进行填表演练。
+任何失败/差异立即停止,保留脱敏证据,不重试、不换路径继续。
+
+不发送submit、不点Ok/Accept/Ready to Accept,不运行qb-trigger/qb-result-fetch,
+不写state DB、不做Gerrit推送;登录只由FatTank在浏览器内完成,不读终端输入。
+不修改生产代码、冻结稿与两个工具。既有无关改动和草稿不纳入提交。
+
+第一步预定命令(仓库根;无测试证书/DNS覆盖;600秒登录时限):
+
+```bash
+env -u QB_COOKIE -u QB_PASSWORD -u DEBUG -u PWDEBUG -u NODE_OPTIONS /home/linhao/.local/bin/node docs/clang-fix-campaign/spikes/p5q_compare_raw_active.mjs --path /build/1193467/overview --path /build/1193467/variables --path /build/1193469/overview --path /build/1193469/variables --path /build/1193469/step_status --path /overview/1917 --output docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/raw-active-01
+```
+
+### 35.3 第一步实际结果
+
+上列命令实际执行一次,exit0。终端仅有固定浏览器登录提示(生产login写stderr)。
+FatTank完成一次浏览器人工登录,没有终端输入。比较工具自行结束并关闭浏览器。
+19个输出文件均由工具写前/写后自检,随后再次用生产PageRedactor.check_written
+离线复核19/19通过。证据在`evidence/C5b/raw-active-01/`,run.json保留完整trace。
+
+| 页路径 | 比较文件 | 全部10类比较项 | 原始/活动身份计数 |
+|---|---|---|---|
+| /build/1193467/overview | 01.comparison.json | 一致 | 0 / 0 |
+| /build/1193467/variables | 02.comparison.json | 一致 | 0 / 0 |
+| /build/1193469/overview | 03.comparison.json | 一致 | 0 / 0 |
+| /build/1193469/variables | 04.comparison.json | 一致 | 0 / 0 |
+| /build/1193469/step_status | 05.comparison.json | 一致 | 0 / 0 |
+| /overview/1917 | 06.comparison.json | 一致 | 0 / 0 |
+
+六页navigation均VERIFIED。trace无WORKER_BLOCKED/NEW_PAGE,无运行失败;
+DENIED共22条(仍按原规则拒绝,未增加登记),IDENTITY_OUTSIDE_REGISTERED共18条。
+原始字节比对前提在本批固定六页范围通过;没有新增身份位置需要人工确认。
+成功样本和BUILD_NOTES样本仍暂无,不因上述固定页通过而销账。
+
+### 35.4 第二步实际结果与停止报告 P5Q-C5B-01
+
+第一步通过、身份计数均0后,再次在聊天请求“开始”;FatTank回复“开始”,仅授权
+本次演练登录。下列命令执行一次,没有重试,没有改用其它工具或路径:
+
+```bash
+env -u QB_COOKIE -u QB_PASSWORD -u DEBUG -u PWDEBUG -u NODE_OPTIONS /home/linhao/.local/bin/node docs/clang-fix-campaign/spikes/p5q_fill_rehearsal.mjs --target platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f --output docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/fill-rehearsal-01
+```
+
+终端先出现固定登录提示,随后`EVIDENCE_STOPPED`,进程exit1。结束后首次检查
+输出目录存在但为空,没有run.json、代理应答、trace、回调记录或诊断HTML。
+外层工具会话4739的结束结果和命令记入[evidence/C5b/execution.json](evidence/C5b/execution.json);
+`fill-rehearsal-01/STOPPED.md`是事后停止说明,不是探测工具的运行产出。
+
+事实与证据缺口:
+
+- `spikes/p5q_fill_rehearsal.mjs:79`登录错误直接抛出;`:33`打开表单错误也直接
+  抛出;`:41`运行状态检查、`:42`记录组装及`:65`写出也可能失败。`:84`统一
+  只输出EVIDENCE_STOPPED,未把阶段或固定代理错误码落盘。
+- 不能据此判断本次是哪一个阶段失败,不能断言登录成功、open_form失败或
+  任一具体字段失败;没有把代码中的可能分支冒充实测原因。
+- 十二字段的获准/被拒次数、HTTP状态、random、读回、版本及action变化全部
+  NOT_COLLECTED;release_state与form_action_releases同样NOT_COLLECTED,不补写0。
+- 工具命令路径只有login/open_form/fill/close,静态护栏本轮1 passed;未发送
+  submit命令,未点击Ok/Accept/Ready to Accept,未运行触发/结果CLI或写state DB。
+  这是源码边界证据,不替代缺失的运行时放行计数。finally保留原关闭逻辑,
+  进程已退出;结束后/dev/shm只见前一天遗留目录,未删除或处理它们。
+
+处理:按本轮“任何失败立即停止”要求,不再访问QB,不修改工具补取,第三步
+离线事实分析也未继续执行。没有将C5a假服务器演练结果当作本次真机通过。
+
+候选处理(待设计方批准,本轮未实施):仅补取证工具的失败落盘通道,在各阶段
+保存固定阶段/错误类别、已有且脱敏的代理应答/诊断/trace,在finally中写出已取得
+的事实后清理;写出失败仍固定报错,不得泄露原始异常/凭据。经离线验证后另获
+FatTank真机授权,使用新目录重跑。当前停点不要求也不授权放宽生产规则。
+
+### 35.5 第三步状态、挂账与C6前置
+
+第二步失败后停止,第三步五个问题均未执行生产解析函数:
+
+| 问题 | 本轮结论 |
+|---|---|
+| 成功子构建Status原文/归一结果 | NOT_COLLECTED:未提供合格成功样本 |
+| 成功子构建EACH_GBS_BUILD_STATUS | NOT_COLLECTED:未提供合格成功样本 |
+| 成功父SNAPSHOT_NUM/子SNAPSHOT_NUM_URL/snapshot_kind | NOT_COLLECTED:未提供合格成功样本;不以Live/Snapshot Number表代替 |
+| 非空BUILD_NOTES回显、空白/转义/换行/截断 | NOT_COLLECTED:未提供非空样本 |
+| 1193469 failed_steps/Error Message | NOT_RUN_AFTER_STOP:原始/活动脱敏页已归档05与03,未执行本轮第三步解析 |
+
+| 义务/前置 | 状态与依据 |
+|---|---|
+| 第1.6a原始/活动文档比对 | PASS:固定六页60项一致,身份计数均0;§35.3 |
+| 成功样本 | OPEN:暂无,可按冻结稿由C6补齐,关闭前不得P5Q CLOSED |
+| BUILD_NOTES非空样本 | OPEN:暂无,同上 |
+| 第1.6c十二字段真机演练 | NOT_PASSED:本次exit1,字段与放行计数未取得;§35.4 |
+| 本机集成门禁 | C5a已通过@b134d16;本轮未重跑,不冒充C5b结果 |
+| FatTank对C6真实提交的确认 | NOT_GIVEN:本轮“开始”仅授权C5b登录/演练 |
+| C6前置合取 | NOT_MET;不得进入C6 |
+
+### 35.6 离线收尾校验与提交边界
+
+停止后只做证据检查、文档登记及GitHub文档/证据提交推送,无新增QB请求。
+命令与输出见[evidence/C5b/README.md](evidence/C5b/README.md)及validation.log:
+原始19个文件PageRedactor写后自检19/19;六页60项一致断言通过;
+取证工具静态护栏1 passed/0 failed/0 skipped;design.md检查器0 problem。
+收尾说明的首轮全目录脱敏检查exit1:新写的execution.json与STOPPED.md用
+session标签记录终端工具的进程编号,触发既有SECRET_VALUE规则,被check_written
+删除。用合成非凭据值复现后,仅将这两个事后记录的标签改为process_handle;
+不改脱敏规则、不改原始19个文件。最终全目录重新自检,结果见validation.log。
+冻结hash仍匹配;生产目录、spikes及冻结稿对b134d16零diff。
+本轮未跑全仓pytest/mypy/ruff/Node浏览器测试,不将C5a的2638 passed/1 skipped
+记为本轮执行。仅提交stage20进度、INDEX与C5b脱敏证据/说明,不纳入用户既有
+改动或草稿。状态C5b_STOPPED,停止报告新增1(P5Q-C5B-01),不自行关闭。
+暂存区diff-check全量exit2,2150处均为12份归档HTML自身的尾空白或混合缩进;
+不格式化原始证据。排除这12份HTML后同一检查exit0,字节hash保持原值。

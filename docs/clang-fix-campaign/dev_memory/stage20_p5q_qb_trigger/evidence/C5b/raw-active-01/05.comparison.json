@@ -1,0 +1,158 @@
+{
+  "path": "/build/1193469/step_status",
+  "navigation": "VERIFIED",
+  "raw_file": "05.raw-redacted.html",
+  "active_file": "05.active-redacted.html",
+  "raw_outside_identity_count": 0,
+  "active_outside_identity_count": 0,
+  "comparison": [
+    {
+      "field": "navigation",
+      "result": "一致",
+      "raw": [
+        "Build (id:1193469)"
+      ],
+      "active": [
+        "Build (id:1193469)"
+      ]
+    },
+    {
+      "field": "summary",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "child_build",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "variables",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "configuration_tabs",
+      "result": "一致",
+      "raw": [
+        [
+          "../../overview/1915"
+        ],
+        [
+          "../../pipeline/1915"
+        ],
+        [
+          "../../children/1915"
+        ]
+      ],
+      "active": [
+        [
+          "../../overview/1915"
+        ],
+        [
+          "../../pipeline/1915"
+        ],
+        [
+          "../../children/1915"
+        ]
+      ]
+    },
+    {
+      "field": "breadcrumb",
+      "result": "一致",
+      "raw": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "build",
+        ""
+      ],
+      "active": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "build",
+        ""
+      ]
+    },
+    {
+      "field": "copy_path",
+      "result": "一致",
+      "raw": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build"
+      ],
+      "active": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build"
+      ]
+    },
+    {
+      "field": "build_name",
+      "result": "一致",
+      "raw": [
+        "TIZEN_Tizen_Tizen-Base-Toolchain_RBS_build_standard-armv7l:aarch64:x86_64_20261009.072740"
+      ],
+      "active": [
+        "TIZEN_Tizen_Tizen-Base-Toolchain_RBS_build_standard-armv7l:aarch64:x86_64_20261009.072740"
+      ]
+    },
+    {
+      "field": "failed_steps",
+      "result": "一致",
+      "raw": [
+        [
+          "master"
+        ],
+        [
+          "master",
+          "BUILD"
+        ],
+        [
+          "master",
+          "BUILD",
+          "Build"
+        ],
+        [
+          "master",
+          "BUILD",
+          "Build",
+          "Build_GBS"
+        ]
+      ],
+      "active": [
+        [
+          "master"
+        ],
+        [
+          "master",
+          "BUILD"
+        ],
+        [
+          "master",
+          "BUILD",
+          "Build"
+        ],
+        [
+          "master",
+          "BUILD",
+          "Build",
+          "Build_GBS"
+        ]
+      ]
+    },
+    {
+      "field": "error_message",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    }
+  ]
+}
