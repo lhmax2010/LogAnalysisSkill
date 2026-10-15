@@ -1,0 +1,4195 @@
+{
+  "stage": "assemble",
+  "status": "PASSED",
+  "failure": null,
+  "responses": [
+    {
+      "stage": "login",
+      "has_diagnostic": false,
+      "ok": true
+    },
+    {
+      "stage": "open_form",
+      "has_diagnostic": false,
+      "ok": true,
+      "released": false
+    },
+    {
+      "stage": "fill",
+      "has_diagnostic": false,
+      "ok": true,
+      "released": false
+    },
+    {
+      "stage": "close",
+      "has_diagnostic": false,
+      "ok": true
+    }
+  ],
+  "callbacks": [
+    {
+      "request_id": "interception-job-54.0",
+      "method": "GET",
+      "path": "/wicket/page",
+      "query": "2-1.IBehaviorListener.0-dashboardBody-columns-0-gadgets-1-body&random=0.5109103749238162",
+      "random": "0.5109103749238162",
+      "status": null,
+      "allowed": false,
+      "window": null
+    },
+    {
+      "request_id": "interception-job-56.0",
+      "method": "GET",
+      "path": "/wicket/page",
+      "query": "2-1.IBehaviorListener.0-dashboardBody-columns-0-gadgets-2-body&random=0.2438547378348881",
+      "random": "0.2438547378348881",
+      "status": null,
+      "allowed": false,
+      "window": null
+    },
+    {
+      "request_id": "interception-job-57.0",
+      "method": "GET",
+      "path": "/wicket/page",
+      "query": "2-1.IBehaviorListener.0-dashboardBody-columns-1-gadgets-2-body&random=0.9620054443008148",
+      "random": "0.9620054443008148",
+      "status": null,
+      "allowed": false,
+      "window": null
+    },
+    {
+      "request_id": "interception-job-58.0",
+      "method": "GET",
+      "path": "/wicket/page",
+      "query": "2-1.IBehaviorListener.0-dashboardBody-columns-1-gadgets-3-body&random=0.5725960893592851",
+      "random": "0.5725960893592851",
+      "status": null,
+      "allowed": false,
+      "window": null
+    },
+    {
+      "request_id": "interception-job-59.0",
+      "method": "GET",
+      "path": "/wicket/page",
+      "query": "2-1.IBehaviorListener.0-dashboardBody-columns-1-gadgets-4-body&random=0.983875557576935",
+      "random": "0.983875557576935",
+      "status": null,
+      "allowed": false,
+      "window": null
+    },
+    {
+      "request_id": "interception-job-71.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select&random=0.18186181716435856",
+      "random": "0.18186181716435856",
+      "status": null,
+      "allowed": true,
+      "window": 0
+    },
+    {
+      "request_id": "interception-job-71.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select&random=0.18186181716435856",
+      "random": "0.18186181716435856",
+      "status": 200,
+      "allowed": null,
+      "window": 0
+    },
+    {
+      "request_id": "interception-job-72.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select&random=0.6711595992734872",
+      "random": "0.6711595992734872",
+      "status": null,
+      "allowed": true,
+      "window": 1
+    },
+    {
+      "request_id": "interception-job-72.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select&random=0.6711595992734872",
+      "random": "0.6711595992734872",
+      "status": 200,
+      "allowed": null,
+      "window": 1
+    },
+    {
+      "request_id": "interception-job-73.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select&random=0.5303376859101842",
+      "random": "0.5303376859101842",
+      "status": null,
+      "allowed": true,
+      "window": 2
+    },
+    {
+      "request_id": "interception-job-73.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select&random=0.5303376859101842",
+      "random": "0.5303376859101842",
+      "status": 200,
+      "allowed": null,
+      "window": 2
+    },
+    {
+      "request_id": "interception-job-74.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select&random=0.3966841414702431",
+      "random": "0.3966841414702431",
+      "status": null,
+      "allowed": true,
+      "window": 3
+    },
+    {
+      "request_id": "interception-job-74.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select&random=0.3966841414702431",
+      "random": "0.3966841414702431",
+      "status": 200,
+      "allowed": null,
+      "window": 3
+    },
+    {
+      "request_id": "interception-job-75.0",
+      "method": "GET",
+      "path": "/wicket/page",
+      "query": "<UNREGISTERED_SHAPE>",
+      "random": null,
+      "status": null,
+      "allowed": false,
+      "window": 3
+    },
+    {
+      "request_id": "interception-job-76.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select&random=0.09292005471267772",
+      "random": "0.09292005471267772",
+      "status": null,
+      "allowed": true,
+      "window": 4
+    },
+    {
+      "request_id": "interception-job-76.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select&random=0.09292005471267772",
+      "random": "0.09292005471267772",
+      "status": 200,
+      "allowed": null,
+      "window": 4
+    },
+    {
+      "request_id": "interception-job-77.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox&random=0.24318240062835306",
+      "random": "0.24318240062835306",
+      "status": null,
+      "allowed": true,
+      "window": 5
+    },
+    {
+      "request_id": "interception-job-77.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox&random=0.24318240062835306",
+      "random": "0.24318240062835306",
+      "status": 200,
+      "allowed": null,
+      "window": 5
+    },
+    {
+      "request_id": "interception-job-78.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder&random=0.39746795008835334",
+      "random": "0.39746795008835334",
+      "status": null,
+      "allowed": true,
+      "window": 6
+    },
+    {
+      "request_id": "interception-job-78.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder&random=0.39746795008835334",
+      "random": "0.39746795008835334",
+      "status": 200,
+      "allowed": null,
+      "window": 6
+    },
+    {
+      "request_id": "interception-job-79.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input&random=0.08296163547319368",
+      "random": "0.08296163547319368",
+      "status": null,
+      "allowed": true,
+      "window": 7
+    },
+    {
+      "request_id": "interception-job-79.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input&random=0.08296163547319368",
+      "random": "0.08296163547319368",
+      "status": 200,
+      "allowed": null,
+      "window": 7
+    },
+    {
+      "request_id": "interception-job-80.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input&random=0.4214171457659791",
+      "random": "0.4214171457659791",
+      "status": null,
+      "allowed": true,
+      "window": 8
+    },
+    {
+      "request_id": "interception-job-80.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input&random=0.4214171457659791",
+      "random": "0.4214171457659791",
+      "status": 200,
+      "allowed": null,
+      "window": 8
+    },
+    {
+      "request_id": "interception-job-81.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input&random=0.03201454955146443",
+      "random": "0.03201454955146443",
+      "status": null,
+      "allowed": true,
+      "window": 9
+    },
+    {
+      "request_id": "interception-job-81.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input&random=0.03201454955146443",
+      "random": "0.03201454955146443",
+      "status": 200,
+      "allowed": null,
+      "window": 9
+    },
+    {
+      "request_id": "interception-job-82.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder&random=0.2044692257376286",
+      "random": "0.2044692257376286",
+      "status": null,
+      "allowed": true,
+      "window": 10
+    },
+    {
+      "request_id": "interception-job-82.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder&random=0.2044692257376286",
+      "random": "0.2044692257376286",
+      "status": 200,
+      "allowed": null,
+      "window": 10
+    },
+    {
+      "request_id": "interception-job-83.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input&random=0.2388493290930449",
+      "random": "0.2388493290930449",
+      "status": null,
+      "allowed": true,
+      "window": 11
+    },
+    {
+      "request_id": "interception-job-83.0",
+      "method": "POST",
+      "path": "/wicket/page",
+      "query": "4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input&random=0.2388493290930449",
+      "random": "0.2388493290930449",
+      "status": 200,
+      "allowed": null,
+      "window": 11
+    }
+  ],
+  "observer_errors": [],
+  "page_identity_counts": [
+    {
+      "page": "https://quickbuild.tizen.org/overview/1917",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    },
+    {
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "outside_identity_count": 0
+    }
+  ],
+  "snapshots": [
+    {
+      "stage": "open_form",
+      "facts": {
+        "labels": [],
+        "missing": [
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES",
+          "PROJECT_NAME"
+        ],
+        "extra": [],
+        "duplicate": [],
+        "rows": [],
+        "first_failed_check": "heading",
+        "base": null,
+        "action": null
+      }
+    },
+    {
+      "stage": "open_form",
+      "facts": {
+        "labels": [],
+        "missing": [
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES",
+          "PROJECT_NAME"
+        ],
+        "extra": [],
+        "duplicate": [],
+        "rows": [],
+        "first_failed_check": "heading",
+        "base": null,
+        "action": null
+      }
+    },
+    {
+      "stage": "open_form",
+      "facts": {
+        "labels": [],
+        "missing": [
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES",
+          "PROJECT_NAME"
+        ],
+        "extra": [],
+        "duplicate": [],
+        "rows": [],
+        "first_failed_check": "heading",
+        "base": null,
+        "action": null
+      }
+    },
+    {
+      "stage": "open_form",
+      "facts": {
+        "labels": [],
+        "missing": [
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES",
+          "PROJECT_NAME"
+        ],
+        "extra": [],
+        "duplicate": [],
+        "rows": [],
+        "first_failed_check": "heading",
+        "base": null,
+        "action": null
+      }
+    },
+    {
+      "stage": "open_form",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "open_form",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    },
+    {
+      "stage": "fill",
+      "facts": {
+        "labels": [
+          "PROJECT_NAME",
+          "BUILD_TYPE",
+          "REPO_TYPE",
+          "BUILD_REFERENCE",
+          "SNAPSHOT_NUM",
+          "PROJECT_BRANCH",
+          "Immediate Stop With Error",
+          "CHILD_CONFIGURATIONS",
+          "Build Package List",
+          "Add Package List",
+          "Remove Package List",
+          "TARGET_IMAGE",
+          "BUILD NOTES"
+        ],
+        "missing": [],
+        "extra": [],
+        "duplicate": [],
+        "rows": [
+          {
+            "label": "PROJECT_NAME",
+            "control_count": 0,
+            "controls": []
+          },
+          {
+            "label": "BUILD_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "REPO_TYPE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "BUILD_REFERENCE",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "SNAPSHOT_NUM",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "PROJECT_BRANCH",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "SELECT",
+                "type": "select-one",
+                "role": "select",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Immediate Stop With Error",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "checkbox",
+                "role": "checkbox",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "CHILD_CONFIGURATIONS",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "Build Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Add Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "Remove Package List",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));"
+              }
+            ]
+          },
+          {
+            "label": "TARGET_IMAGE",
+            "control_count": 3,
+            "controls": [
+              {
+                "tag": "INPUT",
+                "type": "hidden",
+                "role": "recorder",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));"
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "choices",
+                "callback_valid": false,
+                "callback": null
+              },
+              {
+                "tag": "SELECT",
+                "type": "select-multiple",
+                "role": "selection",
+                "callback_valid": false,
+                "callback": null
+              }
+            ]
+          },
+          {
+            "label": "BUILD NOTES",
+            "control_count": 1,
+            "controls": [
+              {
+                "tag": "TEXTAREA",
+                "type": "textarea",
+                "role": "input",
+                "callback_valid": true,
+                "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));"
+              }
+            ]
+          }
+        ],
+        "first_failed_check": "field_window_or_readback",
+        "base": "https://quickbuild.tizen.org/wicket/page?4",
+        "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+      }
+    }
+  ],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "open_form",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "open_form",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "open_form",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "open_form",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "open_form",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "open_form",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "open_form",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "open_form",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "phase": "open_form",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "phase": "open_form",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "open_form",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    }
+  ],
+  "request_id": "rehearsal-59518afe99534d119917d66c416cb87f",
+  "result": {
+    "ok": true,
+    "readback": {
+      "BUILD_TYPE/value": "Full",
+      "REPO_TYPE/value": "ALL",
+      "BUILD_REFERENCE/value": "Ref. Snapshot",
+      "SNAPSHOT_NUM/value": "tizen-base-toolchain_20260924.094908",
+      "PROJECT_BRANCH/value": "tizen_base",
+      "Immediate Stop With Error/value": true,
+      "CHILD_CONFIGURATIONS/selection": [
+        "standard-armv7l:aarch64:x86_64"
+      ],
+      "Build Package List/value": "platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f",
+      "Add Package List/value": "",
+      "Remove Package List/value": "",
+      "TARGET_IMAGE/selection": [],
+      "BUILD NOTES/value": "clang-fix-campaign request=rehearsal-59518afe99534d119917d66c416cb87f"
+    },
+    "fingerprint": "3ea1c735a8ac260d2cd0f5e319ddbd3b8f35744dc8611aafb180a25227b6e62b",
+    "snapshot_option_count": 1,
+    "released": false
+  },
+  "release_state": "not_released",
+  "form_action_releases": 0,
+  "final_action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+  "registrations": [
+    {
+      "field": "BUILD_TYPE",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "Full"
+      ],
+      "expected": "Full",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.18186181716435856"
+      ]
+    },
+    {
+      "field": "REPO_TYPE",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "ALL"
+      ],
+      "expected": "ALL",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.6711595992734872"
+      ]
+    },
+    {
+      "field": "BUILD_REFERENCE",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "Ref. Snapshot"
+      ],
+      "expected": "Ref. Snapshot",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.5303376859101842"
+      ]
+    },
+    {
+      "field": "SNAPSHOT_NUM",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "tizen-base-toolchain_20260924.094908"
+      ],
+      "expected": "@freeze",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.3966841414702431"
+      ]
+    },
+    {
+      "field": "PROJECT_BRANCH",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "tizen_base"
+      ],
+      "expected": "tizen_base",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.09292005471267772"
+      ]
+    },
+    {
+      "field": "Immediate Stop With Error",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": true,
+      "expected": true,
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.24318240062835306"
+      ]
+    },
+    {
+      "field": "CHILD_CONFIGURATIONS",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "7374616e646172642d61726d76376c3a616172636836343a7838365f3634",
+      "expected": [
+        "standard-armv7l:aarch64:x86_64"
+      ],
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.39746795008835334"
+      ]
+    },
+    {
+      "field": "Build Package List",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": "platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f",
+      "value_already_equal": false,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.08296163547319368"
+      ]
+    },
+    {
+      "field": "Add Package List",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": "",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.4214171457659791"
+      ]
+    },
+    {
+      "field": "Remove Package List",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": "",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.03201454955146443"
+      ]
+    },
+    {
+      "field": "TARGET_IMAGE",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": [],
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.2044692257376286"
+      ]
+    },
+    {
+      "field": "BUILD NOTES",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": "clang-fix-campaign request=rehearsal-59518afe99534d119917d66c416cb87f",
+      "value_already_equal": false,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.2388493290930449"
+      ]
+    }
+  ],
+  "write_stage": "write"
+}

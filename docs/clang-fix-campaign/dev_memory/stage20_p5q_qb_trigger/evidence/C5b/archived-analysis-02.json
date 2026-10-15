@@ -1,0 +1,58 @@
+{
+  "execution": "offline only; no CLI, no network, no database",
+  "exit": 0,
+  "head": "5afb645f7e7acef649672b8e2e78cf711ddcdfcf",
+  "calls": [
+    {
+      "call": "ci_triage.qb_result_html.failed_steps",
+      "input": "05.*-redacted.html"
+    },
+    {
+      "call": "ci_triage.qb_result_html.child_overview",
+      "input": "03.*-redacted.html",
+      "profile": {
+        "configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER"
+      },
+      "build_result": "FAILED"
+    }
+  ],
+  "results": [
+    {
+      "source": "raw",
+      "overview_path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/raw-active-01/03.raw-redacted.html",
+      "overview_sha256": "ae6152cc734a96550ca006c6cd8470e73123f4f6ef9e7567c5b73ae152bbcc52",
+      "step_path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/raw-active-01/05.raw-redacted.html",
+      "step_sha256": "6519ed8c61dbbf6bed21e60efab71c1a29c8a5d88312e50445733315f343ed6d",
+      "failed_steps": "master > BUILD > Build > Build_GBS",
+      "child_overview": {
+        "status": "FAIL",
+        "child_status_text": "Failed",
+        "child_configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build",
+        "child_error_message": "Step\n\t\t\t\t\t\tError\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tmaster @ ip-192-168-56-75:8811\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\tComposite step 'master' failed due to unsatisfied success condition.\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tmaster > BUILD @ ip-192-168-56-75:8811\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\tComposite step 'BUILD' failed due to unsatisfied success condition.\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tmaster > BUILD > Build @ ip-192-168-56-75:8811\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\tComposite step 'Build' failed due to unsatisfied success condition.\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tmaster > BUILD > Build > Build_GBS @ ip-192-168-56-75:8811\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\tFailed to run command: \nexport QB_SCRIPTS='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/master/QB-Scripts'\nexport WORKSPACE='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811'\nexport REPO_ARCH='standard-armv7l:aarch64:x86_64'\nexport REPOSITORY='standard'\nexport ARCHITECTURE='armv7l:aarch64:x86_64'\nexport TARGET_SNAPSHOT_URL=''\nexport ALL_CHILD_CONFIG='standard-armv7l:aarch64:x86_64'\nexport QB_CUR_STEP='BUILD'\nexport META_PACKAGES_COMMIT_ID=''\nexport FIXED_VARIABLES_FILE='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/variable_files/fixed_variables.yaml'\nexport BUILD_PKG_LIST_FILE='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/BUILD_PKG_LIST_FILE'\nexport CHILD_CONFIGURATIONS='standard-armv7l:aarch64:x86_64'\nexport USE_BRANCH_POLICY='false'\nexport FAIL_FAST='yes'\nexport QB_TRIGGER_ID='1193469'\nexport IMAGE_BUILD_ID=''\nexport DOCKER_NAME='gbsbuild_ip-192-168-56-75_8811'\n\n\n/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/master/QB-Scripts/exec_gbs_build.py\nCommand return code: 1\nCommand error output: Cloning into '/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/9he7hh3b'...\nTotal 315 (delta 104), reused 198 (delta 104)\nCloning into '/data/workspace/gbsbuild-ROOT/xy_i5dmv'...\nTotal 315 (delta 104), reused 198 (delta 104)\n/root/gbsbuild-ROOT/mauchzso/exec_ngbs_build.py:73: DeprecationWarning: Testing an element's truth value will raise an exception in future versions.  Use specific 'len(elem)' or 'elem is not None' test instead.\n  if debuginfo:"
+      }
+    },
+    {
+      "source": "active",
+      "overview_path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/raw-active-01/03.active-redacted.html",
+      "overview_sha256": "f799ce16a8c4f80c94a056117f2a76d2dfb15c02e15a40ec30d1c848997f5845",
+      "step_path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/raw-active-01/05.active-redacted.html",
+      "step_sha256": "2a07065ea5682ebf7260b302c2aa00ab7abb0931c97cb76d5e0bf9e3254fff99",
+      "failed_steps": "master > BUILD > Build > Build_GBS",
+      "child_overview": {
+        "status": "FAIL",
+        "child_status_text": "Failed",
+        "child_configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build",
+        "child_error_message": "Step\n\t\t\t\t\t\tError\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tmaster @ ip-192-168-56-75:8811\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\tComposite step 'master' failed due to unsatisfied success condition.\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tmaster > BUILD @ ip-192-168-56-75:8811\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\tComposite step 'BUILD' failed due to unsatisfied success condition.\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tmaster > BUILD > Build @ ip-192-168-56-75:8811\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\tComposite step 'Build' failed due to unsatisfied success condition.\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\tmaster > BUILD > Build > Build_GBS @ ip-192-168-56-75:8811\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\tFailed to run command: \nexport QB_SCRIPTS='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/master/QB-Scripts'\nexport WORKSPACE='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811'\nexport REPO_ARCH='standard-armv7l:aarch64:x86_64'\nexport REPOSITORY='standard'\nexport ARCHITECTURE='armv7l:aarch64:x86_64'\nexport TARGET_SNAPSHOT_URL=''\nexport ALL_CHILD_CONFIG='standard-armv7l:aarch64:x86_64'\nexport QB_CUR_STEP='BUILD'\nexport META_PACKAGES_COMMIT_ID=''\nexport FIXED_VARIABLES_FILE='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/variable_files/fixed_variables.yaml'\nexport BUILD_PKG_LIST_FILE='/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/BUILD_PKG_LIST_FILE'\nexport CHILD_CONFIGURATIONS='standard-armv7l:aarch64:x86_64'\nexport USE_BRANCH_POLICY='false'\nexport FAIL_FAST='yes'\nexport QB_TRIGGER_ID='1193469'\nexport IMAGE_BUILD_ID=''\nexport DOCKER_NAME='gbsbuild_ip-192-168-56-75_8811'\n\n\n/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/master/QB-Scripts/exec_gbs_build.py\nCommand return code: 1\nCommand error output: Cloning into '/home/tizenbuild/ci_tizen_workspace/ip-192-168-56-75_8811/9he7hh3b'...\nTotal 315 (delta 104), reused 198 (delta 104)\nCloning into '/data/workspace/gbsbuild-ROOT/xy_i5dmv'...\nTotal 315 (delta 104), reused 198 (delta 104)\n/root/gbsbuild-ROOT/mauchzso/exec_ngbs_build.py:73: DeprecationWarning: Testing an element's truth value will raise an exception in future versions.  Use specific 'len(elem)' or 'elem is not None' test instead.\n  if debuginfo:"
+      }
+    }
+  ],
+  "appendix_c_13": {
+    "line": 912,
+    "step_path_equal": true,
+    "error_excerpt_present": true,
+    "error_excerpt": "Composite step 'BUILD' failed due to unsatisfied success condition",
+    "note": "The appendix is an excerpt. The production return retains the entire Error Message box, including its Step/Error headings, all four rows and command output. No truncation or substitution was performed."
+  },
+  "success_sample": "OPEN_NOT_PROVIDED",
+  "build_notes_sample": "OPEN_NOT_PROVIDED"
+}

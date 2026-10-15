@@ -1,11 +1,12 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_AWAITING_CONFIRMATION**。
+日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING**。
 C5a基线39e4bde,离线集成与第1.6步工具见§34。C5b基线b134d16,六页原始/活动比对通过;
 填表演练exit1且未落盘阶段证据,见§35。C6未开始,成功/BUILD_NOTES样本挂账开放。
 §36按P5Q-C5B-02完成工具失败落盘及离线验证:2639 passed/1 skipped;
-等待工具提交推送后的目标行确认及新的“开始”,尚未启动fill-rehearsal-02。
-以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;当前边界为等待C5b人工确认、不进入C6。
+5afb645推送后FatTank回复“沿用。开始”,fill-rehearsal-02一次实跑通过,
+12字段各1获准/0拒绝/HTTP200,not_released/action放行0,见§36.6–36.9。
+以下各轮“不进入下一阶段”只约束当轮,均保留为历史记录;当前边界为C5b证据登记完成、不进入C6。
 C4最新裁定与执行见§33;§32停点已由P5Q-C4-02关闭。
 C4本轮基线ec3be74;源格式对齐要求已撤回,旧探针作废,实现与验收见§33。
 C4本轮不访问真实QuickBuild/Gerrit,不弹登录窗口,不进入C5。
@@ -70,7 +71,7 @@ exit=0
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | COMPLETE @3ef542a;§31;C3-01/C3-03均已裁定关闭 |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | COMPLETE @39e4bde;§33;C4-01已由C4-02关闭 |
 | C5a | 第9.3节本机浏览器集成;第1.6步工具准备 | COMPLETE;§34;全部离线,2638 passed/1 skipped,四组安全4/4 |
-| C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | AWAITING_CONFIRMATION;§36工具修复离线验收通过;§35六页比对保留,真机演练未通过;两个样本仍挂账 |
+| C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | EXECUTED_SAMPLES_PENDING;§36.6–36.9真机演练及离线解析通过;§35六页比对保留;成功/BUILD_NOTES两个样本仍挂账 |
 | C6 | 第9.4节第2步确认的真实提交与收口文档 | C5 + FatTank明确确认;NOT_STARTED |
 
 C2真机取证与冻结稿假设不符时按R1修订,不得直接继续C3。
@@ -3886,3 +3887,107 @@ git checkout-index完整待提交树导出方式运行`ruff check .`,exit0。两
 
 无生产规则变更,未新增需要放宽设计的请求;本轮已记录的存储故障按裁定规定
 走EVIDENCE_WRITE_FAILED出口。完成工具提交不等于完成C5b,不得进入C6。
+
+### 36.6 真机重跑授权与执行
+
+§36.5为工具提交时的历史闸门状态。工具修复`5afb645`已推送origin/clang-fix-campaign,
+FatTank本轮明确回复“沿用。开始”。确认目标行原样为:
+
+```text
+platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f
+```
+
+完整格式核对通过,冻结hash仍为f16621bb…cf91c;三个工具及生产代码相对
+5afb645无工作树改动,新输出目录事前不存在。仅运行一次下列命令,登录只由
+FatTank在窗口完成,不读终端输入、不取凭据、不重跑原始/活动文档比对:
+
+```bash
+env -u QB_COOKIE -u QB_PASSWORD -u DEBUG -u PWDEBUG -u NODE_OPTIONS /home/linhao/.local/bin/node docs/clang-fix-campaign/spikes/p5q_fill_rehearsal.mjs --target platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f --output docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/fill-rehearsal-02
+```
+
+exit0;login/open_form/fill/close四个应答均ok=true,无diagnostic。
+run.json状态PASSED,失败为空;未出现WORKER_BLOCKED、NEW_PAGE或ADAPT_FAILED。
+浏览器由工具close关闭,进程结束,未重试。命令/授权/退出码见
+`evidence/C5b/fill-rehearsal-02/execution.json`。
+run.json SHA256:`c975d19eed9ad0e13c7592fb672436ac6f3e255816b921e504197d93757a97e7`。
+
+### 36.7 十二字段真机验收
+
+原始运行记录:[fill-rehearsal-02/run.json](evidence/C5b/fill-rehearsal-02/run.json);
+逐项机械对账:[acceptance.json](evidence/C5b/fill-rehearsal-02/acceptance.json)。
+以下12行均为获准1/拒绝0/回调HTTP200,读回逐字段等于要求值;
+SNAPSHOT_NUM的@freeze等于该字段开始时的唯一选中项。
+
+| 字段 | 初值已等 | 获准/拒绝 | HTTP | random原值 | 读回 |
+|---|---|---|---|---|---|
+| BUILD_TYPE | 是 | 1/0 | 200 | 0.18186181716435856 | Full |
+| REPO_TYPE | 是 | 1/0 | 200 | 0.6711595992734872 | ALL |
+| BUILD_REFERENCE | 是 | 1/0 | 200 | 0.5303376859101842 | Ref. Snapshot |
+| SNAPSHOT_NUM | @freeze | 1/0 | 200 | 0.3966841414702431 | tizen-base-toolchain_20260924.094908 |
+| PROJECT_BRANCH | 是 | 1/0 | 200 | 0.09292005471267772 | tizen_base |
+| Immediate Stop With Error | 是 | 1/0 | 200 | 0.24318240062835306 | true |
+| CHILD_CONFIGURATIONS | 是 | 1/0 | 200 | 0.39746795008835334 | [standard-armv7l:aarch64:x86_64] |
+| Build Package List | 否 | 1/0 | 200 | 0.08296163547319368 | §36.6目标行,逐字相等 |
+| Add Package List | 是 | 1/0 | 200 | 0.4214171457659791 | 空串 |
+| Remove Package List | 是 | 1/0 | 200 | 0.03201454955146443 | 空串 |
+| TARGET_IMAGE | 是 | 1/0 | 200 | 0.2044692257376286 | [] |
+| BUILD NOTES | 否 | 1/0 | 200 | 0.2388493290930449 | clang-fix-campaign request=rehearsal-59518afe99534d119917d66c416cb87f |
+
+10个值已相等的字段(含@freeze及双列表)均触发一次回调,不是跳过。
+全部字段记录的页面均为`https://quickbuild.tizen.org/wicket/page?4`,
+全部action及最终action均为`https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form`,
+版本/action未变。回调完整原文、初值、读回与指纹在run.json中保留;
+指纹为`3ea1c735a8ac260d2cd0f5e319ddbd3b8f35744dc8611aafb180a25227b6e62b`。
+
+身份观察20次全部0,observer_errors=[];没有身份计数失败或ADAPT_FAILED。
+trace仍有16条其它请求DENIED(login4/open_form11/fill1),路径仅为代理记录的
+形态,不据此猜资源名;它们不是被拒字段回调,不曾追加放行或绕过。
+release_state=not_released、form_action_releases=0,无submit命令、无Ok/Accept/
+Ready to Accept点击、无构建产生,未运行真实qb-trigger/qb-result-fetch或写state DB。
+
+附加审计初次误将formFacts.first_failed_check必须为空作为断言而exit1;
+核对生产`formFacts`后确认该诊断辅助函数无结构问题时返回默认
+field_window_or_readback,而open_form轮询早期可返回heading。它不是命令失败标志。
+原始快照保持4次heading/15次默认标记,未删改;验收按裁定规定的命令应答、
+12字段窗口、读回、身份与release记录完成。不修改工具、不重跑真机。
+
+### 36.8 既有归档的离线事实
+
+只调用`ci_triage.qb_result_html.failed_steps`与`child_overview`,不运行CLI,
+不访问网络、不写state DB。分别解析raw-active-01中的03/05原始字节脱敏页及
+活动文档脱敏页,两种来源的解析结果逐字段相同。完整原文/输入hash/调用参数见
+[archived-analysis-02.json](evidence/C5b/archived-analysis-02.json),exit0。
+
+- 失败步骤:`master > BUILD > Build > Build_GBS`。归档
+  `raw-active-01/05.raw-redacted.html:814/:946/:1237/:1283`为对应层级名称,
+  与冻结稿附录C第13项的路径一致。
+- 子构建Status原文`Failed`,归一`FAIL`;配置为
+  `root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build`。
+  状态来源`raw-active-01/03.raw-redacted.html:828`。
+- Error Message区块从同页`:848`开始,标题在`:849`;生产函数原样返回整个
+  区块文本(2093字符,含Step/Error表头、四行错误及命令输出),不是一条摘要。
+  附录C第13项的`Composite step 'BUILD' failed due to unsatisfied success condition`
+  对应`:868`的完整句子(原文带句末点号),确实包含于返回值。
+  `:862/:874/:880`另有master/Build/Build_GBS的错误,不删减冒充单句原文。
+
+未发现本次已取得事实与第5.3节/附录C第13项的矛盾。成功样本与非空BUILD_NOTES
+样本仍未提供,没有用本次未提交的演练BUILD NOTES读回来替代构建回显样本。
+
+### 36.9 挂账、验收与收尾
+
+| 义务/前置 | 当前结论 |
+|---|---|
+| 第1.6a原始/活动文档比对 | PASS保留:固定6页60项一致,身份计数0;本轮不重跑 |
+| 第1.6c填表演练 | PASS:fill-rehearsal-02一次运行,十二字段全部满足裁定 |
+| 1193469失败步骤/错误原文 | COMPLETE:§36.8离线解析,两种归档结果一致 |
+| 成功Ref. Snapshot样本 | OPEN:暂无,可按冻结稿由C6补齐,未关闭前不得P5Q CLOSED |
+| 非空BUILD_NOTES构建回显样本 | OPEN:暂无,同上 |
+| C6三项技术前置 | 本机集成/第1.6c/原始字节比对均PASS |
+| FatTank对C6真实提交的确认 | NOT_GIVEN:本次“沿用。开始”仅授权C5b演练 |
+| C6最终准入 | NOT_MET:尚缺C6明确确认;本轮止于C5b |
+
+本轮只新增脱敏证据和进度/INDEX文档;生产、三个工具、冻结稿、历史证据均未改。
+§36.4的全量2639 passed/1 skipped及全部代码门禁来自5afb645工具修复提交,
+不冒称本次文档收尾重新跑了全仓。收尾复跑取证静态护栏和design检查,
+并核对新文件写后脱敏、原始19份历史hash与冻结hash;命令/exit见
+`evidence/C5b/fill-rehearsal-02/validation.json`。无新增停止报告,不进入C6。

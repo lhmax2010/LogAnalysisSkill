@@ -1,0 +1,32 @@
+{
+  "head": "5afb645f7e7acef649672b8e2e78cf711ddcdfcf",
+  "authorization": "FatTank: 沿用。开始",
+  "argv": [
+    "env",
+    "-u",
+    "QB_COOKIE",
+    "-u",
+    "QB_PASSWORD",
+    "-u",
+    "DEBUG",
+    "-u",
+    "PWDEBUG",
+    "-u",
+    "NODE_OPTIONS",
+    "/home/linhao/.local/bin/node",
+    "docs/clang-fix-campaign/spikes/p5q_fill_rehearsal.mjs",
+    "--target",
+    "platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f",
+    "--output",
+    "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/fill-rehearsal-02"
+  ],
+  "attempts": 1,
+  "exit": 0,
+  "terminal_output": "已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n",
+  "run_sha256": "c975d19eed9ad0e13c7592fb672436ac6f3e255816b921e504197d93757a97e7",
+  "run_bytes": 167586,
+  "recorded_at": "2026-10-15T05:40:39.911552+00:00",
+  "new_live_comparison_run": false,
+  "real_submission": false,
+  "database_written": false
+}

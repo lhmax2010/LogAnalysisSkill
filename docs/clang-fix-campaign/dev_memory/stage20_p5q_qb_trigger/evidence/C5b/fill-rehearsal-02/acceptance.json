@@ -1,0 +1,278 @@
+{
+  "verdict": "PASSED",
+  "field_count": 12,
+  "fields": [
+    {
+      "field": "BUILD_TYPE",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-1-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idb8')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idb8') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "Full"
+      ],
+      "expected": "Full",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.18186181716435856"
+      ],
+      "readback": "Full",
+      "readback_matches": true
+    },
+    {
+      "field": "REPO_TYPE",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-2-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idba')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idba') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "ALL"
+      ],
+      "expected": "ALL",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.6711595992734872"
+      ],
+      "readback": "ALL",
+      "readback_matches": true
+    },
+    {
+      "field": "BUILD_REFERENCE",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-3-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbc')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbc') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "Ref. Snapshot"
+      ],
+      "expected": "Ref. Snapshot",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.5303376859101842"
+      ],
+      "readback": "Ref. Snapshot",
+      "readback_matches": true
+    },
+    {
+      "field": "SNAPSHOT_NUM",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-4-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idbe')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idbe') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "tizen-base-toolchain_20260924.094908"
+      ],
+      "expected": "@freeze",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.3966841414702431"
+      ],
+      "readback": "tizen-base-toolchain_20260924.094908",
+      "readback_matches": true
+    },
+    {
+      "field": "PROJECT_BRANCH",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-5-property-editor-editor-wrapper-select', wicketSerialize(Wicket.$('idc0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc0') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": [
+        "tizen_base"
+      ],
+      "expected": "tizen_base",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.09292005471267772"
+      ],
+      "readback": "tizen_base",
+      "readback_matches": true
+    },
+    {
+      "field": "Immediate Stop With Error",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-6-property-editor-editor-checkbox', wicketSerialize(Wicket.$('idc2')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc2') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": true,
+      "expected": true,
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.24318240062835306"
+      ],
+      "readback": true,
+      "readback_matches": true
+    },
+    {
+      "field": "CHILD_CONFIGURATIONS",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-7-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idc5')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc5') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "7374616e646172642d61726d76376c3a616172636836343a7838365f3634",
+      "expected": [
+        "standard-armv7l:aarch64:x86_64"
+      ],
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.39746795008835334"
+      ],
+      "readback": [
+        "standard-armv7l:aarch64:x86_64"
+      ],
+      "readback_matches": true
+    },
+    {
+      "field": "Build Package List",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-8-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idc9')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idc9') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": "platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f",
+      "value_already_equal": false,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.08296163547319368"
+      ],
+      "readback": "platform/upstream/llvm@67619ec8bbbac7238a6cfc33a481ccfbcd12206f",
+      "readback_matches": true
+    },
+    {
+      "field": "Add Package List",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-9-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcb')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcb') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": "",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.4214171457659791"
+      ],
+      "readback": "",
+      "readback_matches": true
+    },
+    {
+      "field": "Remove Package List",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-10-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idcd')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idcd') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": "",
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.03201454955146443"
+      ],
+      "readback": "",
+      "readback_matches": true
+    },
+    {
+      "field": "TARGET_IMAGE",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-11-property-editor-editor-palette-recorder', wicketSerialize(Wicket.$('idd0')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd0') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": [],
+      "value_already_equal": true,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.2044692257376286"
+      ],
+      "readback": [],
+      "readback_matches": true
+    },
+    {
+      "field": "BUILD NOTES",
+      "callback": "var wcall=wicketAjaxPost('page?4-1.IBehaviorListener.0-form-editor-content-basicProperties-12-property-editor-editor-wrapper-input', wicketSerialize(Wicket.$('idd4')),function() { }.bind(this),function() { }.bind(this), function() {return Wicket.$('idd4') != null;}.bind(this));",
+      "action": "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form",
+      "page": "https://quickbuild.tizen.org/wicket/page?4",
+      "initial": "",
+      "expected": "clang-fix-campaign request=rehearsal-59518afe99534d119917d66c416cb87f",
+      "value_already_equal": false,
+      "allowed": 1,
+      "denied": 0,
+      "response_status": [
+        200
+      ],
+      "random": [
+        "0.2388493290930449"
+      ],
+      "readback": "clang-fix-campaign request=rehearsal-59518afe99534d119917d66c416cb87f",
+      "readback_matches": true
+    }
+  ],
+  "pages_observed": [
+    "https://quickbuild.tizen.org/wicket/page?4"
+  ],
+  "action_values": [
+    "https://quickbuild.tizen.org/wicket/page?4-1.IFormSubmitListener-form"
+  ],
+  "action_unchanged": true,
+  "page_version_unchanged": true,
+  "already_equal_count": 10,
+  "identity_observations": 20,
+  "outside_identity_total": 0,
+  "observer_errors": [],
+  "snapshot_count": 19,
+  "snapshot_fact_labels": {
+    "heading": 4,
+    "field_window_or_readback": 15
+  },
+  "snapshot_fact_note": "formFacts is a diagnostic helper: successful structure uses field_window_or_readback, not null; early open_form polling can lack heading. Completion is recorded by command replies and twelve field windows. No production or run.json change.",
+  "release_state": "not_released",
+  "form_action_releases": 0,
+  "trace_events": {
+    "FRAMEWORK_SELF_TEST": 1,
+    "DENIED": 16,
+    "IDENTITY_OUTSIDE_REGISTERED": 20
+  },
+  "denied_by_phase": {
+    "login": 4,
+    "open_form": 11,
+    "fill": 1
+  }
+}

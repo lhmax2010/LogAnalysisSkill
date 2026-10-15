@@ -1,0 +1,11 @@
+$ .venv/bin/pytest -q tests/unit/test_qb_browser_node.py::test_c5a_tools_are_readonly_and_not_production_test_overrides
+.                                                                        [100%]
+1 passed in 0.01s
+
+exit=0
+
+$ .venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md
+== check_design_doc: docs/clang-fix-campaign/design.md ==
+-- OK: 0 problem --
+
+exit=0

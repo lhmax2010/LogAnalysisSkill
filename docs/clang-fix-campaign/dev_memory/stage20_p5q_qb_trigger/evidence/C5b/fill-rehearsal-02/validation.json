@@ -1,0 +1,41 @@
+{
+  "commands": [
+    {
+      "argv": [
+        ".venv/bin/pytest",
+        "-q",
+        "tests/unit/test_qb_browser_node.py::test_c5a_tools_are_readonly_and_not_production_test_overrides"
+      ],
+      "exit": 0,
+      "seconds": 0.142
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit": 0,
+      "seconds": 0.072
+    }
+  ],
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "protected_paths_unchanged": [
+    "tizen-ci-triage/scripts",
+    "docs/clang-fix-campaign/spikes",
+    "docs/clang-fix-campaign/design.md",
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md",
+    "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/raw-active-01",
+    "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C5b/fill-rehearsal-01"
+  ],
+  "historical_hashes_unchanged": 19,
+  "redaction_files": [
+    "fill-rehearsal-02/run.json",
+    "fill-rehearsal-02/acceptance.json",
+    "fill-rehearsal-02/README.md",
+    "fill-rehearsal-02/execution.json",
+    "archived-analysis-02.json"
+  ],
+  "run_unchanged": true,
+  "full_regression": "Not rerun for documentation/evidence-only follow-up; code tested at 5afb645: 2639 passed, 1 skipped, all mandatory gates passed on complete intended tree."
+}

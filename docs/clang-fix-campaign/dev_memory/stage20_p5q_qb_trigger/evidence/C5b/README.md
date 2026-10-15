@@ -1,5 +1,13 @@
 # C5b Live Evidence (2026-10-15)
 
+Latest follow-up: P5Q-C5B-02 tool repair `5afb645` passed offline validation;
+after new target/start confirmation, [fill-rehearsal-02](fill-rehearsal-02/README.md)
+passed all twelve field windows with zero action releases. The original six-page
+comparison is retained, not rerun. [Offline archive analysis](archived-analysis-02.json)
+now records 1193469's failed steps and complete Error Message. Successful and
+nonempty BUILD_NOTES samples remain open; no C6 authorization or submission.
+The following sections describe the original attempt and retain its stop facts.
+
 Status: **STOPPED**, P5Q-C5B-01. No retry and no C6.
 Source HEAD b134d1603c509ae9247bdb3511dd82f72d4f940c. Production, both
 accepted tools, their shared helper and the v1.5 frozen design are unchanged.
