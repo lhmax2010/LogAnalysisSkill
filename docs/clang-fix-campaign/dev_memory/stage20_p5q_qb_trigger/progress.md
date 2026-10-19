@@ -1,12 +1,12 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-19。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE05_WAITING_MANUAL_BUILD_ID**。
+日期:2026-10-19。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE05_STOPPED_BUILD_NOT_FOUND**。
 本轮见§41/P5Q-C6A-04与§42:关闭后退出问题由设计方判为已知缺陷,修复后置;
 live-04已获新“确认提交”,当场核对通过后仅执行一次;login超时停止,见§42.4。
 live-04停止后未重试、未运行fetch或进入C6b。
 最新续执行见§43:FatTank再次明确确认,live-05单独记账,不覆盖live-04;
-一次trigger返回QB_SUBMIT_UNCERTAIN,已写提交意图,等待FatTank提供父构建号后人工绑定。
-当前不重提、不带--retrigger、不做额外QB读取;没有构建号前不运行fetch。
+一次trigger返回QB_SUBMIT_UNCERTAIN,已写提交意图;FatTank人工查找回复“未找到”,见§43.5。
+当前停止等待设计方裁定,不重提、不带--retrigger、不做额外QB读取或fetch。
 §38–40保留历史,不复用其中的授权或将其结果改写为本轮结果。
 最新续任务见§39.4–39.5:live-02记录进程遇本地磁盘同步阻塞后终止,未取得生产返回;
 专用库hash未变、无残留进程。FatTank再次要求弹窗并新回复“确认提交”,仅授权live-03一次;
@@ -4884,3 +4884,29 @@ first_freeze=true、snapshot_option_count=1、填表fingerprint,
 本次只入库progress/INDEX与脱敏执行证据,不修改代码。收尾仅运行设计检查、diff检查、
 逐文件写后字节自检,结果见live-05/validation.json;不重跑全仓代码测试,
 §40.3的2680 passed/1 skipped仍为历史验收结果。
+
+### 43.5 FatTank回复“未找到”:停止
+
+2026-10-19,FatTank对按完整BUILD NOTES标记查找父构建号的问题回复原文:
+
+> 未找到
+
+§43.4及pending-manual-binding.md保留为当时的等待记录,现由本节更新为
+STOPPED_BUILD_NOT_FOUND。没有取得正整数父构建号,不能执行人工绑定或首次fetch。
+“未找到”是人工查找结果,不是服务器未创建构建的证明;服务器是否创建构建、
+为何落在/wicket/page仍未知,不将QB_SUBMIT_UNCERTAIN改判为提交失败或成功。
+
+只读复核专用DB SHA256仍为
+`d1ff348dda02521b55759e92bc2dda360a268848012ae1741b9dc22b8bfe7140`,
+与§43.3一致。保留QB_REQUESTED、request_seq=1、SUBMITTED提交意图与冻结profile;
+没有清库、删除记录、回退状态或重提。冻结稿hash仍为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`。
+本回复后未启动浏览器,未访问QB或Gerrit,未运行trigger/fetch,未读取新快照manifest。
+父构建回显、首次fetch、新快照revision比较和C6b继续挂账。
+
+停止报告:[live-05/stop-report.md](evidence/C6a/live-05/stop-report.md)。
+候选处理仅提交设计方:确定是否需要另行批准的只读取证或不提交诊断,以定位提交
+落点未知的原因;不自行增加请求、修改规则或再运行提交。原始执行证据一律保留。
+本次仅登记人工回复与停止状态,设计检查/diff检查/新增文字脱敏自检见
+[manual-lookup-validation.json](evidence/C6a/live-05/manual-lookup-validation.json),
+未重跑代码测试。
