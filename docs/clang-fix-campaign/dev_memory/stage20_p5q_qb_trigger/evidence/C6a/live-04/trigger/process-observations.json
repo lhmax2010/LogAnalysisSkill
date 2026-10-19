@@ -1,0 +1,105 @@
+{
+  "method": "passive /proc descendant metadata sampling, 0.1 second interval; exit code recorded only if zombie observed",
+  "processes": [
+    {
+      "pid": 1725326,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 2.31,
+      "last_seen_seconds": 8.487
+    },
+    {
+      "pid": 1725345,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 3.721,
+      "last_seen_seconds": 8.487
+    },
+    {
+      "pid": 1725346,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 4.024,
+      "last_seen_seconds": 8.487
+    },
+    {
+      "pid": 1725368,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 5.035,
+      "last_seen_seconds": 8.487
+    },
+    {
+      "pid": 1725414,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 5.642,
+      "last_seen_seconds": 8.487
+    },
+    {
+      "pid": 1725485,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 6.452,
+      "last_seen_seconds": 8.386
+    },
+    {
+      "pid": 1725484,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 6.452,
+      "last_seen_seconds": 8.386
+    },
+    {
+      "pid": 1725515,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 8.588,
+      "last_seen_seconds": 608.894
+    },
+    {
+      "pid": 1725523,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 8.689,
+      "last_seen_seconds": 608.894
+    },
+    {
+      "pid": 1725522,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 8.69,
+      "last_seen_seconds": 608.894
+    },
+    {
+      "pid": 1725547,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 8.69,
+      "last_seen_seconds": 608.895
+    },
+    {
+      "pid": 1725650,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 8.791,
+      "last_seen_seconds": 608.894
+    },
+    {
+      "pid": 1725565,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 8.791,
+      "last_seen_seconds": 608.893
+    },
+    {
+      "pid": 1725667,
+      "comm": "chrome",
+      "kind": "chromium",
+      "first_seen_seconds": 8.892,
+      "last_seen_seconds": 608.894
+    }
+  ],
+  "monitor_error_categories": [],
+  "no_protocol_or_credential_capture": true
+}

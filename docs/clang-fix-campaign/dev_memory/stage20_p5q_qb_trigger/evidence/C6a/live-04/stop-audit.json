@@ -1,0 +1,75 @@
+{
+  "audited_at": "2026-10-19T04:07:42.765271+00:00",
+  "production_cli_exit": 5,
+  "recorder_exit": 0,
+  "trigger_invocations": 1,
+  "fetch_invocations": 0,
+  "manifest_gets": 0,
+  "manifest_reason": "No successful submission; no frozen campaign_qb_profiles row",
+  "qb_http_count": "NOT_COLLECTED",
+  "post_stop_network_requests": 0,
+  "production_argv_equals_live01": true,
+  "result": [
+    {
+      "action": "submit_failed",
+      "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+      "diagnostic_dir": null,
+      "error_code": "QB_LOGIN_TIMEOUT",
+      "message": null,
+      "qb_build_id": null,
+      "request_id": null,
+      "request_seq": null,
+      "sbs_target": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+      "status": "SANDBOX_PUSHED"
+    }
+  ],
+  "db_sha256": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "qb_table_counts": {
+    "campaign_qb_requests": 0,
+    "campaign_qb_profiles": 0,
+    "campaign_qb_events": 0
+  },
+  "unit_status_history": [
+    [
+      "p5q-c6-libtirpc-20261015",
+      "SANDBOX_PUSHED"
+    ]
+  ],
+  "sql_equals_live01": true,
+  "sql_equals_live04": true,
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "browser_profiles": [],
+  "residual_processes": [],
+  "candidate_inspection_errors": [],
+  "process_check_method": "Executable identity and exact agent argument / user-data-dir prefix; comm alone does not identify Node. No shell-source substring matching.",
+  "failure_trace": [
+    {
+      "action": "BROWSER_COMMAND_FAILED",
+      "agent_error_code": "QB_LOGIN_TIMEOUT",
+      "agent_exit_code": null,
+      "agent_exited": false,
+      "command": "login",
+      "failure_category": null
+    }
+  ],
+  "shutdown_observation": {
+    "last_chromium_seen_seconds": 608.895,
+    "cli_elapsed_seconds": 644.008,
+    "approx_tail_seconds": 35.113,
+    "agent_exit_code": null,
+    "agent_exit_code_reason": "NOT_COLLECTED: no agent record or zombie exit status in passive sampler; error trace precedes cleanup",
+    "direct_close_command_timing": "NOT_COLLECTED",
+    "interpretation": "About 35 seconds after last Chromium observation, consistent with approved known close defect; not proof of exact agent exit code"
+  },
+  "fetch_directory_exists": false,
+  "dedicated_transport_directories": [],
+  "evidence_sha256": {
+    "trigger/command.json": "74366359a995285dea964012644cbb30b7e0324c97f5348bbbed9356c6f02754",
+    "trigger/execution.json": "aee4df1aab690c3fabe66c9e64cc13340b15b74007d8f320e5ae5f8165a98692",
+    "trigger/process-observations.json": "8d5e2e2d5a10b8eea5e465361adb94a3c8815adf33800845d5993a46710f6c21",
+    "trigger/state-after.sql": "291ce88a1203ab975aafa6e263b88b598546050c76a961afdfed7f91ae67734f",
+    "trigger/stderr.txt": "e09e4b36e90c1a093f6b5a67027e71c9e0e346a7a14a13167e7ada24f0ab8b36",
+    "trigger/stdout.json": "3153fcca8627dac42cd95e4285d7047341aec67490590d1a60cd1de1b1d42e13",
+    "trigger/trace.jsonl": "4291ca8511d589945dd9269c739ced2a462eef03214d2469bb6c522f2b18590c"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "scope": "offline evidence/documentation checks only",
+  "commands": [
+    {
+      "name": "design",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit": 0,
+      "output": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n"
+    },
+    {
+      "name": "diff",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "checked_files": [
+    {
+      "path": "preflight-2.json",
+      "sha256": "9ec31f4919b54f0fdde23e458448061eec9d349b33fe6989dfdfca017e8c54ab"
+    },
+    {
+      "path": "preflight.json",
+      "sha256": "530874899329f7932e9e61605605aa2af7ed7759cd09eb4785b47dd2a83fe7c3"
+    },
+    {
+      "path": "preparation-validation.json",
+      "sha256": "84c91ae4bff308d9923f35a0fccd9efdf9c16d2d15cdde6d3f493ffb8c766c8b"
+    },
+    {
+      "path": "stop-audit.json",
+      "sha256": "02da2f755aaf3a1be9844e0fba1136cdcdbe414e9f04820230a8e8fc1a2b73bf"
+    },
+    {
+      "path": "stop-report.md",
+      "sha256": "8d48e23b6c4d708af9fdab28927d92fc2e9276edb24c3f3ee3456616556c8ab7"
+    },
+    {
+      "path": "trigger/command.json",
+      "sha256": "74366359a995285dea964012644cbb30b7e0324c97f5348bbbed9356c6f02754"
+    },
+    {
+      "path": "trigger/execution.json",
+      "sha256": "aee4df1aab690c3fabe66c9e64cc13340b15b74007d8f320e5ae5f8165a98692"
+    },
+    {
+      "path": "trigger/process-observations.json",
+      "sha256": "8d5e2e2d5a10b8eea5e465361adb94a3c8815adf33800845d5993a46710f6c21"
+    },
+    {
+      "path": "trigger/state-after.sql",
+      "sha256": "291ce88a1203ab975aafa6e263b88b598546050c76a961afdfed7f91ae67734f"
+    },
+    {
+      "path": "trigger/stderr.txt",
+      "sha256": "e09e4b36e90c1a093f6b5a67027e71c9e0e346a7a14a13167e7ada24f0ab8b36"
+    },
+    {
+      "path": "trigger/stdout.json",
+      "sha256": "3153fcca8627dac42cd95e4285d7047341aec67490590d1a60cd1de1b1d42e13"
+    },
+    {
+      "path": "trigger/trace.jsonl",
+      "sha256": "4291ca8511d589945dd9269c739ced2a462eef03214d2469bb6c522f2b18590c"
+    }
+  ],
+  "added_document_text": "PASS",
+  "production_tests_spikes_design_frozen_recorder_unchanged": true,
+  "full_test_suite": "NOT_RERUN: no code changes",
+  "db_sha256_unchanged": true
+}

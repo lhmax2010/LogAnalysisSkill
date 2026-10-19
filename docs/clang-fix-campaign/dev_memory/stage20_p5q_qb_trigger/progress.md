@@ -1,8 +1,9 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-15。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE04_WAITING_SUBMIT_CONFIRMATION**。
+日期:2026-10-19。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE04_STOPPED_LOGIN_TIMEOUT**。
 本轮见§41/P5Q-C6A-04与§42:关闭后退出问题由设计方判为已知缺陷,修复后置;
-live-04前置核对通过,须重新取得“确认提交”才执行一次。本任务不改任何代码。
+live-04已获新“确认提交”,当场核对通过后仅执行一次;login超时停止,见§42.4。
+本任务不改任何代码,不重试、不运行fetch或进入C6b。
 §38–40保留历史,不复用其中的授权或将其结果改写为本轮结果。
 最新续任务见§39.4–39.5:live-02记录进程遇本地磁盘同步阻塞后终止,未取得生产返回;
 专用库hash未变、无残留进程。FatTank再次要求弹窗并新回复“确认提交”,仅授权live-03一次;
@@ -4727,3 +4728,78 @@ FatTank只在弹出的窗口中登录,须在600秒内完成;登录后不点击�
 [preparation-validation.json](evidence/C6a/live-04/preparation-validation.json)。
 生产、测试、spikes、既有执行记录工具与冻结稿均零改动,未重跑全仓测试;
 §40.3的2680/1仍作为历史代码验收记录,不冒称本次重跑。
+
+### 42.3 2026-10-19重新核对与新授权
+
+FatTank本轮确认原话为“确认提交”,并要求启动前重新只读核对、完整保留trigger/fetch
+证据,以及成功提交后对变更的实际冻结快照做一次公共manifest GET并记录目标revision。
+本次确认只授权live-04一次qb-trigger及成功后一次首次结果读取,不复用旧授权。
+
+11:53:59至11:54:19(Asia/Shanghai)完成当场核对,
+见[preflight-2.json](evidence/C6a/live-04/preflight-2.json)。
+DB前后hash仍为bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405;
+三张QB表均0行,unit最新SANDBOX_PUSHED;P5Q profile、代理、Playwright Chromium残留
+均0。冻结稿hash与专用config均未变。间隔10秒的三次D状态采样全部0,无持续磁盘
+阻塞,不触发等待机器空闲确认的闸门。free原文显示内存available12Gi、swap剩余478Mi;
+/home为/dev/sda1,可用231G,/dev/shm可用16G。
+
+接下来按§42.2完整生产argv仅运行一次,输出排他新建于live-04/trigger;成功后fetch
+另存live-04/fetch。记录完整argv、UTC起止时间、exit、stdout/stderr、只读SQL导出与
+DB hash;仅增加命令执行层的被动进程元数据观察,不修改代码或代理参数。
+记录到本条时尚未启动命令,不得将授权/前置通过写成提交成功。
+
+### 42.4 live-04一次生产执行与停止
+
+§42.3后仅执行一次§42.2的生产argv,与live-01完整参数逐字相同。代码HEAD为
+`6dc24e9`;生产模块、spikes、既有记录工具和冻结稿未改。输出落在
+[live-04/trigger](evidence/C6a/live-04/trigger/),完整启动环境项与argv见command.json。
+没有--retrigger、测试证书或DNS覆盖。没有运行qb-result-fetch或任何额外QB读取。
+
+- 开始2026-10-19 11:55:15,结束12:05:59(Asia/Shanghai),JSON保留UTC。
+- 生产CLI exit5,总耗时644.008秒;外层记录exit0仅表示证据保存成功。
+- stdout:action=submit_failed,error_code=QB_LOGIN_TIMEOUT,status=SANDBOX_PUSHED;
+  request_id/request_seq/qb_build_id/diagnostic_dir/message均null。
+- stderr仅固定登录提示;配置600秒时限未缩短,没有提前中断或追加第二次调用。
+
+生产trace新增的固定事实见[trace.jsonl](evidence/C6a/live-04/trigger/trace.jsonl):
+
+```json
+{"action":"BROWSER_COMMAND_FAILED","agent_error_code":"QB_LOGIN_TIMEOUT","agent_exit_code":null,"agent_exited":false,"command":"login","failure_category":null}
+```
+
+trace中的进程状态为login错误时的瞬间,不是清理结束后的退出结果。被动/proc采样
+最后观察到Chromium为t=608.895秒,CLI结束t=644.008秒,尾段约35.113秒;与已知
+关闭延迟一致,不作为额外停止原因。采样没有取得代理终态wait status,代理退出码
+如实记NOT_COLLECTED,不能直接套用diag-01的-15;也没有直接的close调用计时。
+本次停止原因是QB_LOGIN_TIMEOUT,不属于§41豁免的关闭表现。
+
+没有request_id/提交意图或构建号,故按其它结果立即停止,不fetch、不人工绑定、
+不重试。没有登录请求链或页面快照,不能断言人工未登录、窗口未弹出或检测器错误。
+停止报告见[stop-report.md](evidence/C6a/live-04/stop-report.md)。
+
+### 42.5 停止后状态、挂账与收尾
+
+[stop-audit.json](evidence/C6a/live-04/stop-audit.json)确认:
+DB hash仍为bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405,
+只读SQL导出与live-01及本次归档逐字节一致,三张QB表仍0行,
+状态历史仅SANDBOX_PUSHED。冻结稿hash不变;无P5Q代理/Playwright Chromium、
+profile或.transport残留。检查可执行文件与参数项,不按shell命令正文子串误判。
+
+| 项目 | 本次结果 |
+|---|---|
+| 新授权与当场前置 | 完成,preflight-2.json,三次D状态0/0/0 |
+| trigger argv/起止/exit/stdout/stderr | 已保存,trigger/command.json、execution.json、stdout.json、stderr.txt |
+| 执行后SQL与DB hash | 已保存,trigger/state-after.sql与execution.json |
+| trace与清理表现 | 已保存trace.jsonl与process-observations.json;最终代理退出码未采得 |
+| 提交落点、构建号 | NOT_COLLECTED,登录超时,未提交 |
+| 父构建三项回显与请求标记比对 | NOT_COLLECTED,无父构建页/请求标记 |
+| qb-result-fetch stdout与状态迁移 | NOT_RUN,无fetch目录,状态未迁移 |
+| 本次冻结SNAPSHOT_NUM | NOT_CREATED,profiles为0行,不借用历史快照值 |
+| 新快照manifest GET/revision比较 | NOT_RUN,“提交成功后”的条件未满足 |
+| 成功样本/BUILD_NOTES样本/C6b | 仍挂账,本次不进入 |
+
+HTTP请求总数没有采集,不伪填0。停止后无新增网络取证、无Gerrit推送。
+首次停止后全/proc审计碰到系统进程权限限制和shell源码字符串误匹配,未修改生产或
+运行规则;只读复核改为检查候选可执行文件及独立参数项,结果如上,未删除任何进程。
+本次只改progress/INDEX和脱敏证据;收尾复跑设计检查与diff检查,逐文件字节自检,
+结果见live-04/validation.json。不重跑全仓代码测试,§40.3仍为历史验收结果。
