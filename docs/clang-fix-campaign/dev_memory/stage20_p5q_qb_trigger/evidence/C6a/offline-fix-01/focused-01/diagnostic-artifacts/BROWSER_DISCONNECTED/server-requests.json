@@ -1,0 +1,25 @@
+{
+  "received": [
+    {
+      "method": "GET",
+      "path": "/signin",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "POST",
+      "path": "/signin?0-1.IFormSubmitListener-content-form",
+      "status": 302,
+      "body": "<SYNTHETIC_LOGIN_REDACTED>"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard",
+      "status": 200,
+      "body": ""
+    }
+  ],
+  "submissions": [],
+  "builds": 0,
+  "errors": []
+}

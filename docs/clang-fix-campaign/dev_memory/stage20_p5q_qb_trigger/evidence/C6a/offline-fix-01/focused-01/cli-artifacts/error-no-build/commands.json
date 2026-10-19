@@ -1,0 +1,42 @@
+[
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3",
+      "-m",
+      "ci_triage",
+      "qb-trigger",
+      "--verification-ids",
+      "u1-v0,u1-v1,u1-v2",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-93/test_real_cli_browser_submit_b2/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-93/test_real_cli_browser_submit_b2/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-93/test_real_cli_browser_submit_b2/config.yaml"
+    ],
+    "exit": 5,
+    "stdout": "[{\"action\": \"submit_uncertain\", \"campaign_unit_key\": \"u1\", \"diagnostic_dir\": null, \"error_code\": \"QB_SUBMIT_UNCERTAIN\", \"message\": \"观察到的落点:/wicket/page;请到 QuickBuild 按请求标记找到构建后用 qb-result-fetch --request-id 与 --qb-build-id 绑定;确认没有构建后用 --retrigger 重提\", \"qb_build_id\": null, \"request_id\": \"859aea270b354707bb28e013b5e3a958\", \"request_seq\": 1, \"sbs_target\": \"u1@a97acc260d52515199247d53577d2979a51093d5\", \"status\": \"QB_REQUESTED\"}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n",
+    "close_to_cli_exit_seconds": 0.126112699508667
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3",
+      "-m",
+      "ci_triage",
+      "qb-trigger",
+      "--verification-ids",
+      "u1-v0,u1-v1,u1-v2",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-93/test_real_cli_browser_submit_b2/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-93/test_real_cli_browser_submit_b2/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-93/test_real_cli_browser_submit_b2/config.yaml"
+    ],
+    "exit": 0,
+    "stdout": "[{\"action\": \"already_requested\", \"campaign_unit_key\": \"u1\", \"diagnostic_dir\": null, \"error_code\": null, \"message\": null, \"qb_build_id\": null, \"request_id\": \"859aea270b354707bb28e013b5e3a958\", \"request_seq\": 1, \"sbs_target\": \"u1@a97acc260d52515199247d53577d2979a51093d5\", \"status\": \"QB_REQUESTED\"}]\n",
+    "stderr": "",
+    "close_to_cli_exit_seconds": null
+  }
+]

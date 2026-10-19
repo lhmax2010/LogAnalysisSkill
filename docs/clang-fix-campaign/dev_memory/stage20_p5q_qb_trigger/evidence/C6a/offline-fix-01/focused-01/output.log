@@ -1,0 +1,269 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 242 items
+
+tests/unit/test_p5q_c6_offline_fix.py::test_local_login_facts {"scenario":"signin","result":{"ok":false,"error":"QB_LOGIN_TIMEOUT","login_facts":{"final_path_shape":"/signin","on_signin":true,"password_present":true,"sign_out_present":false,"checks":4,"login_posts_released":0,"login_channel_closed":false,"denied":{}}}}
+✔ C6 login facts: signin (12515.981889ms)
+{"scenario":"unregistered","result":{"ok":false,"error":"QB_LOGIN_TIMEOUT","login_facts":{"final_path_shape":"/","on_signin":false,"password_present":false,"sign_out_present":false,"checks":4,"login_posts_released":1,"login_channel_closed":true,"denied":{"<other>":1}}}}
+✔ C6 login facts: unregistered (8172.357315ms)
+{"scenario":"no-signout","result":{"ok":false,"error":"QB_LOGIN_TIMEOUT","login_facts":{"final_path_shape":"/dashboard","on_signin":false,"password_present":false,"sign_out_present":false,"checks":4,"login_posts_released":1,"login_channel_closed":true,"denied":{}}}}
+✔ C6 login facts: no-signout (17914.987443ms)
+{"scenario":"closed","result":{"ok":false,"error":"QB_LOGIN_ABORTED","login_facts":{"final_path_shape":"/signin","on_signin":true,"password_present":true,"sign_out_present":false,"checks":1,"login_posts_released":0,"login_channel_closed":false,"denied":{}},"failure_category":"PAGE_CLOSED"}}
+✔ C6 login facts: closed (3708.321691ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 42326.757802
+
+PASSED
+tests/unit/test_p5q_c6_offline_fix.py::test_production_entry_close_exits_with_input_held_open PASSED
+tests/unit/test_p5q_c6_offline_fix.py::test_driver_close_does_not_terminate_production_entry PASSED
+tests/unit/test_qb_browser.py::test_login_facts_driver_and_trace[QB_LOGIN_TIMEOUT] PASSED
+tests/unit/test_qb_browser.py::test_login_facts_driver_and_trace[QB_LOGIN_ABORTED] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[None] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts1] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts2] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts3] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts4] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts5] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts6] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts7] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts8] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts9] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts10] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts11] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts12] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts13] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts14] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts15] PASSED
+tests/unit/test_qb_browser.py::test_invalid_login_facts_protocol_error[facts16] PASSED
+tests/unit/test_qb_browser.py::test_login_facts_only_on_login_timeout_or_abort[read-False-QB_LOGIN_TIMEOUT] PASSED
+tests/unit/test_qb_browser.py::test_login_facts_only_on_login_timeout_or_abort[login-True-None] PASSED
+tests/unit/test_qb_browser.py::test_login_facts_only_on_login_timeout_or_abort[login-False-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_stop_category_driver_metadata[ADAPT_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_stop_category_driver_metadata[BROWSER_DISCONNECTED] PASSED
+tests/unit/test_qb_browser.py::test_stop_category_driver_metadata[CLOSE_TARGET_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_stop_category_driver_metadata[FETCH_CONTINUE_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_stop_category_driver_metadata[NEW_PAGE] PASSED
+tests/unit/test_qb_browser.py::test_stop_category_driver_metadata[PAGE_CLOSED] PASSED
+tests/unit/test_qb_browser.py::test_stop_category_driver_metadata[UNKNOWN] PASSED
+tests/unit/test_qb_browser.py::test_stop_category_driver_metadata[WORKER_BLOCKED] PASSED
+tests/unit/test_qb_browser.py::test_stop_category_driver_metadata[WORKER_NOT_PAUSED] PASSED
+tests/unit/test_qb_browser.py::test_invalid_stop_category_is_protocol_error[None] PASSED
+tests/unit/test_qb_browser.py::test_invalid_stop_category_is_protocol_error[bad-secret] PASSED
+tests/unit/test_qb_browser.py::test_invalid_stop_category_is_protocol_error[1] PASSED
+tests/unit/test_qb_browser.py::test_invalid_stop_category_is_protocol_error[True] PASSED
+tests/unit/test_qb_browser.py::test_invalid_stop_category_is_protocol_error[category4] PASSED
+tests/unit/test_qb_browser.py::test_invalid_stop_category_is_protocol_error[category5] PASSED
+tests/unit/test_qb_browser.py::test_invalid_stop_category_is_protocol_error[NEW_PAGE\n] PASSED
+tests/unit/test_qb_browser.py::test_exited_process_is_recorded_without_raw_exception PASSED
+tests/unit/test_qb_browser.py::test_read_error_retains_agent_category[QB_READ_ID_MISMATCH] PASSED
+tests/unit/test_qb_browser.py::test_read_error_retains_agent_category[QB_READ_REDIRECTED] PASSED
+tests/unit/test_qb_browser.py::test_read_error_retains_agent_category[QB_TRUSTED_CONTEXT_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_identity_count_protocol_rejects_invalid[True] PASSED
+tests/unit/test_qb_browser.py::test_identity_count_protocol_rejects_invalid[-1] PASSED
+tests/unit/test_qb_browser.py::test_identity_count_protocol_rejects_invalid[1] PASSED
+tests/unit/test_qb_browser.py::test_identity_count_protocol_rejects_invalid[None] PASSED
+tests/unit/test_qb_browser.py::test_identity_count_protocol_rejects_invalid[1.0] PASSED
+tests/unit/test_qb_browser.py::test_identity_count_protocol_preserved PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_is_preserved[selected0] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_is_preserved[selected1] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_is_preserved[selected2] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_is_preserved[None] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[None] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state1] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state2] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state3] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state4] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state5] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state6] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state7] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state8] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state9] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state10] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_invalid_protocol[state11] PASSED
+tests/unit/test_qb_browser.py::test_snapshot_state_is_not_accepted_on_other_errors PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_FORM_CHANGED-None-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_FORM_VALUE_UNAVAILABLE-SNAPSHOT_NUM-REJECTED_QB_SNAPSHOT_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_FORM_VALUE_UNAVAILABLE-BUILD_TYPE-REJECTED_QB_FORM_MISMATCH] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_FORM_READBACK_MISMATCH-None-REJECTED_QB_FORM_MISMATCH] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_LOGIN_TIMEOUT-None-QB_LOGIN_TIMEOUT] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_LOGIN_ABORTED-None-QB_LOGIN_ABORTED] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[AGENT_PHASE-None-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_BROWSER_UNAVAILABLE-None-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_EVIDENCE_REDACTION_FAILED-None-QB_EVIDENCE_REDACTION_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[UNKNOWN-None-INTERNAL_ERROR] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_READ_ID_MISMATCH-None-QB_FETCH_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_READ_REDIRECTED-None-QB_FETCH_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_frozen_error_mapping[QB_TRUSTED_CONTEXT_UNAVAILABLE-None-QB_FETCH_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[not json] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[null] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[[]] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[true] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[{"ok":0}] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[{"ok":false,"error":"AGENT_PHASE"}] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[{"ok":false,"error":[],"released":false}] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[{"ok":false,"released":false}] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[{"ok":true,"released":false,"landed":"build","build_id":"12"}] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[{"ok":true,"released":true,"landed":"build","build_id":"wrong"}] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[{"ok":true,"landed":"build","build_id":"12"}] PASSED
+tests/unit/test_qb_browser.py::test_sent_submit_ambiguous_reply_is_unknown[{"ok":true,"released":true}] PASSED
+tests/unit/test_qb_browser.py::test_sensitive_reply_is_always_discarded[False-cookie] PASSED
+tests/unit/test_qb_browser.py::test_sensitive_reply_is_always_discarded[False-Cookie] PASSED
+tests/unit/test_qb_browser.py::test_sensitive_reply_is_always_discarded[False-set-cookie] PASSED
+tests/unit/test_qb_browser.py::test_sensitive_reply_is_always_discarded[False-Authorization] PASSED
+tests/unit/test_qb_browser.py::test_sensitive_reply_is_always_discarded[True-cookie] PASSED
+tests/unit/test_qb_browser.py::test_sensitive_reply_is_always_discarded[True-Cookie] PASSED
+tests/unit/test_qb_browser.py::test_sensitive_reply_is_always_discarded[True-set-cookie] PASSED
+tests/unit/test_qb_browser.py::test_sensitive_reply_is_always_discarded[True-Authorization] PASSED
+tests/unit/test_qb_browser.py::test_read_error_mapping_is_scoped_to_read[QB_READ_REDIRECTED] PASSED
+tests/unit/test_qb_browser.py::test_read_error_mapping_is_scoped_to_read[QB_READ_ID_MISMATCH] PASSED
+tests/unit/test_qb_browser.py::test_trusted_context_form_error_mapping[open_form] PASSED
+tests/unit/test_qb_browser.py::test_trusted_context_form_error_mapping[fill] PASSED
+tests/unit/test_qb_browser.py::test_trusted_context_form_error_mapping[submit] PASSED
+tests/unit/test_qb_browser.py::test_structural_error_carries_checked_diagnostic_without_losing_error PASSED
+tests/unit/test_qb_browser.py::test_redacted_hidden_input_diagnostic_preserves_original_error[fill-QB_FORM_CHANGED-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_redacted_hidden_input_diagnostic_preserves_original_error[read-QB_READ_ID_MISMATCH-QB_FETCH_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_redacted_hidden_input_diagnostic_preserves_original_error[submit-QB_FORM_READBACK_MISMATCH-REJECTED_QB_FORM_MISMATCH] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_fact_strings_are_checked_without_json_escaping PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[JSESSIONID_8810=synthetic-private-key] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[JSESSIONID_8810=synthetic-private-value] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[JSESSIONID_8810=synthetic-private-list] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[/x;jsessionid=synthetic-private-key] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[/x;jsessionid=synthetic-private-value] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[/x;jsessionid=synthetic-private-list] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[token="synthetic-private"-key] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[token="synthetic-private"-value] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[token="synthetic-private"-list] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[callback?csrf=synthetic-private-key] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[callback?csrf=synthetic-private-value] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[callback?csrf=synthetic-private-list] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[XSRF='synthetic-private'-key] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[XSRF='synthetic-private'-value] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[XSRF='synthetic-private'-list] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[prefix\nAuthorization: Bearer synthetic-private-key] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[prefix\nAuthorization: Bearer synthetic-private-value] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[prefix\nAuthorization: Bearer synthetic-private-list] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[Cookie: synthetic-private-key] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[Cookie: synthetic-private-value] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[Cookie: synthetic-private-list] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[Set-Cookie: synthetic-private-key] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[Set-Cookie: synthetic-private-value] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[Set-Cookie: synthetic-private-list] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[tok&#101;n=&quot;synthetic-private&quot;-key] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[tok&#101;n=&quot;synthetic-private&quot;-value] PASSED
+tests/unit/test_qb_browser.py::test_nested_diagnostic_facts_reject_credentials_in_keys_and_values[tok&#101;n=&quot;synthetic-private&quot;-list] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_sensitive_keys_are_still_discarded[False-cookie] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_sensitive_keys_are_still_discarded[False-Cookie] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_sensitive_keys_are_still_discarded[False-set-cookie] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_sensitive_keys_are_still_discarded[False-Authorization] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_sensitive_keys_are_still_discarded[True-cookie] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_sensitive_keys_are_still_discarded[True-Cookie] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_sensitive_keys_are_still_discarded[True-set-cookie] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_sensitive_keys_are_still_discarded[True-Authorization] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_failure_has_no_partial_snapshot PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_raw_secret_rejected[html_redacted] PASSED
+tests/unit/test_qb_browser.py::test_diagnostic_raw_secret_rejected[facts] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[False-QB_FORM_CHANGED-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[False-AGENT_PHASE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[False-QB_BROWSER_UNAVAILABLE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[False-QB_EVIDENCE_REDACTION_FAILED-QB_EVIDENCE_REDACTION_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[False-UNKNOWN-INTERNAL_ERROR] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[True-QB_FORM_CHANGED-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[True-AGENT_PHASE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[True-QB_BROWSER_UNAVAILABLE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[True-QB_EVIDENCE_REDACTION_FAILED-QB_EVIDENCE_REDACTION_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[True-UNKNOWN-INTERNAL_ERROR] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[None-QB_FORM_CHANGED-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[None-AGENT_PHASE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[None-QB_BROWSER_UNAVAILABLE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[None-QB_EVIDENCE_REDACTION_FAILED-QB_EVIDENCE_REDACTION_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[None-UNKNOWN-INTERNAL_ERROR] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[0-QB_FORM_CHANGED-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[0-AGENT_PHASE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[0-QB_BROWSER_UNAVAILABLE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[0-QB_EVIDENCE_REDACTION_FAILED-QB_EVIDENCE_REDACTION_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[0-UNKNOWN-INTERNAL_ERROR] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[1-QB_FORM_CHANGED-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[1-AGENT_PHASE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[1-QB_BROWSER_UNAVAILABLE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[1-QB_EVIDENCE_REDACTION_FAILED-QB_EVIDENCE_REDACTION_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[1-UNKNOWN-INTERNAL_ERROR] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[false-QB_FORM_CHANGED-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[false-AGENT_PHASE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[false-QB_BROWSER_UNAVAILABLE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[false-QB_EVIDENCE_REDACTION_FAILED-QB_EVIDENCE_REDACTION_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[false-UNKNOWN-INTERNAL_ERROR] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released6-QB_FORM_CHANGED-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released6-AGENT_PHASE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released6-QB_BROWSER_UNAVAILABLE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released6-QB_EVIDENCE_REDACTION_FAILED-QB_EVIDENCE_REDACTION_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released6-UNKNOWN-INTERNAL_ERROR] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released7-QB_FORM_CHANGED-REJECTED_QB_FORM_CHANGED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released7-AGENT_PHASE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released7-QB_BROWSER_UNAVAILABLE-QB_BROWSER_UNAVAILABLE] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released7-QB_EVIDENCE_REDACTION_FAILED-QB_EVIDENCE_REDACTION_FAILED] PASSED
+tests/unit/test_qb_browser.py::test_submit_error_only_explicit_boolean_false_proves_not_released[released7-UNKNOWN-INTERNAL_ERROR] PASSED
+tests/unit/test_qb_browser.py::test_submit_verified_build_and_unknown_landing_preserved PASSED
+tests/unit/test_qb_browser.py::test_html_independent_redaction_check[JSESSIONID_8810=fixture-secret] PASSED
+tests/unit/test_qb_browser.py::test_html_independent_redaction_check[<input type="hidden" name="token" value="fixture-secret">] PASSED
+tests/unit/test_qb_browser.py::test_html_independent_redaction_check[<span>Welcome! fixture-user</span>] PASSED
+tests/unit/test_qb_browser.py::test_redacted_html_and_palette_recorder_preserved PASSED
+tests/unit/test_qb_browser.py::test_driver_fake_protocol_roundtrip PASSED
+tests/unit/test_qb_browser.py::test_driver_bad_agent_reply_before_submit[EXIT] PASSED
+tests/unit/test_qb_browser.py::test_driver_bad_agent_reply_before_submit[INVALID_JSON] PASSED
+tests/unit/test_qb_browser.py::test_driver_bad_agent_reply_after_submit[EXIT] PASSED
+tests/unit/test_qb_browser.py::test_driver_bad_agent_reply_after_submit[INVALID_JSON] PASSED
+tests/unit/test_qb_browser.py::test_driver_preserves_submit_release_evidence[False] PASSED
+tests/unit/test_qb_browser.py::test_driver_preserves_submit_release_evidence[True] PASSED
+tests/unit/test_qb_browser.py::test_driver_preserves_submit_release_evidence[None] PASSED
+tests/unit/test_qb_browser.py::test_driver_preserves_submit_release_evidence[0] PASSED
+tests/unit/test_qb_browser.py::test_driver_preserves_submit_release_evidence[false] PASSED
+tests/unit/test_qb_browser.py::test_driver_read_error_mapping PASSED
+tests/unit/test_qb_browser.py::test_submit_process_failure_cannot_claim_not_released[missing-process] PASSED
+tests/unit/test_qb_browser.py::test_submit_process_failure_cannot_claim_not_released[broken-pipe] PASSED
+tests/unit/test_qb_browser.py::test_submit_process_failure_cannot_claim_not_released[closed-pipe] PASSED
+tests/unit/test_qb_browser.py::test_submit_process_failure_cannot_claim_not_released[decode] PASSED
+tests/unit/test_qb_browser.py::test_python_production_launcher_never_passes_probe_switches PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_login_facts_trace[trigger-QB_LOGIN_TIMEOUT] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_login_facts_trace[trigger-QB_LOGIN_ABORTED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_login_facts_trace[fetch-QB_LOGIN_TIMEOUT] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_login_facts_trace[fetch-QB_LOGIN_ABORTED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[trigger-ADAPT_FAILED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[trigger-BROWSER_DISCONNECTED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[trigger-CLOSE_TARGET_FAILED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[trigger-FETCH_CONTINUE_FAILED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[trigger-NEW_PAGE] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[trigger-PAGE_CLOSED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[trigger-UNKNOWN] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[trigger-WORKER_BLOCKED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[trigger-WORKER_NOT_PAUSED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[fetch-ADAPT_FAILED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[fetch-BROWSER_DISCONNECTED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[fetch-CLOSE_TARGET_FAILED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[fetch-FETCH_CONTINUE_FAILED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[fetch-NEW_PAGE] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[fetch-PAGE_CLOSED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[fetch-UNKNOWN] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[fetch-WORKER_BLOCKED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_cli_failure_trace_preserves_category[fetch-WORKER_NOT_PAUSED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_probe_source_is_non_mutating PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_probe_local_real_driver[None] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_probe_local_real_driver[NEW_PAGE] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_probe_local_real_driver[BROWSER_DISCONNECTED] PASSED
+tests/unit/test_p5q_c6_diagnostics.py::test_probe_local_real_driver[PAGE_CLOSED] PASSED
+tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build] PASSED
+tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[error-created] PASSED
+tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[error-no-build] PASSED
+tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation] PASSED
+
+======================= 242 passed in 223.59s (0:03:43) ========================

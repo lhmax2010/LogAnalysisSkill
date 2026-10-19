@@ -1,0 +1,196 @@
+{
+  "path": "/build/1193467/overview",
+  "navigation": "VERIFIED",
+  "raw_file": "02.raw-redacted.html",
+  "active_file": "02.active-redacted.html",
+  "raw_outside_identity_count": 0,
+  "active_outside_identity_count": 0,
+  "comparison": [
+    {
+      "field": "navigation",
+      "result": "一致",
+      "raw": [
+        "Build (id:1193467)"
+      ],
+      "active": [
+        "Build (id:1193467)"
+      ]
+    },
+    {
+      "field": "summary",
+      "result": "一致",
+      "raw": [
+        {
+          "heading": "Summary",
+          "tables": [
+            {
+              "columns": [
+                "Id",
+                "Status",
+                "Triggered By"
+              ],
+              "rows": [
+                [
+                  "1193467",
+                  "Failed",
+                  "<USER>"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "active": [
+        {
+          "heading": "Summary",
+          "tables": [
+            {
+              "columns": [
+                "Id",
+                "Status",
+                "Triggered By"
+              ],
+              "rows": [
+                [
+                  "1193467",
+                  "Failed",
+                  "<USER>"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "field": "child_build",
+      "result": "一致",
+      "raw": [
+        {
+          "columns": [
+            "Repository-Architecture",
+            "QB Build URL",
+            "Build Result",
+            "Build Profiling"
+          ],
+          "rows": [
+            [
+              "standard-armv7l:aarch64:x86_64",
+              "1193469",
+              "RUNNING",
+              ""
+            ]
+          ]
+        }
+      ],
+      "active": [
+        {
+          "columns": [
+            "Repository-Architecture",
+            "QB Build URL",
+            "Build Result",
+            "Build Profiling"
+          ],
+          "rows": [
+            [
+              "standard-armv7l:aarch64:x86_64",
+              "1193469",
+              "RUNNING",
+              ""
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "field": "variables",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "configuration_tabs",
+      "result": "一致",
+      "raw": [
+        [
+          "../../overview/1917"
+        ],
+        [
+          "../../pipeline/1917"
+        ],
+        [
+          "../../children/1917"
+        ]
+      ],
+      "active": [
+        [
+          "../../overview/1917"
+        ],
+        [
+          "../../pipeline/1917"
+        ],
+        [
+          "../../children/1917"
+        ]
+      ]
+    },
+    {
+      "field": "breadcrumb",
+      "result": "一致",
+      "raw": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "TRIGGER"
+      ],
+      "active": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "TRIGGER"
+      ]
+    },
+    {
+      "field": "copy_path",
+      "result": "一致",
+      "raw": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER"
+      ],
+      "active": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER"
+      ]
+    },
+    {
+      "field": "build_name",
+      "result": "一致",
+      "raw": [
+        "TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261014"
+      ],
+      "active": [
+        "TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261014"
+      ]
+    },
+    {
+      "field": "failed_steps",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "error_message",
+      "result": "一致",
+      "raw": [
+        "synthetic build failure"
+      ],
+      "active": [
+        "synthetic build failure"
+      ]
+    }
+  ]
+}

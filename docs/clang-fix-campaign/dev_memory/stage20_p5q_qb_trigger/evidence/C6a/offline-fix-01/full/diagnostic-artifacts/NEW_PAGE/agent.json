@@ -1,0 +1,59 @@
+{
+  "transcript": [
+    {
+      "input": {
+        "command": "login",
+        "login_timeout_seconds": 60,
+        "projects": [
+          {
+            "overview_id": 1917,
+            "configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER",
+            "project_name": "Tizen-Base-Toolchain"
+          }
+        ]
+      },
+      "output": {
+        "ok": true
+      }
+    },
+    {
+      "input": {
+        "command": "open_form",
+        "overview_id": 1917
+      },
+      "output": {
+        "ok": false,
+        "error": "QB_BROWSER_UNAVAILABLE",
+        "failure_category": "NEW_PAGE"
+      }
+    },
+    {
+      "input": {
+        "command": "close"
+      },
+      "output": {
+        "ok": true
+      }
+    }
+  ],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "action": "NEW_PAGE"
+    },
+    {
+      "action": "AGENT_STOPPED",
+      "failure_category": "NEW_PAGE"
+    }
+  ],
+  "close_started_unix_ms": 1792391924093,
+  "close_finished_unix_ms": 1792391924093
+}

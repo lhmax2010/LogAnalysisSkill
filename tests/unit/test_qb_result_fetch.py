@@ -136,8 +136,8 @@ class FetchCampaign(Campaign):
             replies[index] = replacement
         return replies
 
-    def run(self, args=None, replies=None):
-        self.script.write_text(json.dumps([dict(ok=True), *(replies or self.replies())]))
+    def run(self, args=None, replies=None, login=None):
+        self.script.write_text(json.dumps([login or dict(ok=True), *(replies or self.replies())]))
         stdout, stderr = io.StringIO(), io.StringIO()
         args = ["--request-id", R, "--qb-build-id", P] if args is None else args
         code = cli.main(

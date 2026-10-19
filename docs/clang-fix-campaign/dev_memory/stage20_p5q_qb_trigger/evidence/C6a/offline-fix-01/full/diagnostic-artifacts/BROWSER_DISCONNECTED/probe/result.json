@@ -1,0 +1,74 @@
+{
+  "started_at": "2026-10-19T06:38:44.513424+00:00",
+  "ok": false,
+  "commands": [
+    {
+      "command": "login",
+      "ok": true,
+      "elapsed_seconds": 3.115,
+      "error_code": null,
+      "agent_error_code": null,
+      "failure_category": null,
+      "agent_exited": false,
+      "agent_exit_code": null
+    },
+    {
+      "command": "open_form",
+      "ok": false,
+      "elapsed_seconds": 0.001,
+      "error_code": "QB_BROWSER_UNAVAILABLE",
+      "agent_error_code": "QB_BROWSER_UNAVAILABLE",
+      "failure_category": "BROWSER_DISCONNECTED",
+      "agent_exited": false,
+      "agent_exit_code": null
+    },
+    {
+      "command": "close",
+      "ok": true,
+      "elapsed_seconds": 0.032,
+      "error_code": null,
+      "agent_error_code": null,
+      "failure_category": null,
+      "agent_exited": true,
+      "agent_exit_code": 0
+    }
+  ],
+  "trace": [
+    {
+      "command": "login",
+      "ok": true
+    },
+    {
+      "ok": false,
+      "command": "open_form",
+      "agent_error_code": "QB_BROWSER_UNAVAILABLE",
+      "failure_category": "BROWSER_DISCONNECTED",
+      "agent_exited": false,
+      "agent_exit_code": null
+    },
+    {
+      "command": "close",
+      "ok": true
+    }
+  ],
+  "release_state": "unknown",
+  "form_action_releases": null,
+  "state_db_access": false,
+  "requested_fields": {
+    "Add Package List": "",
+    "BUILD_REFERENCE": "Ref. Snapshot",
+    "BUILD_TYPE": "Full",
+    "CHILD_CONFIGURATIONS": [
+      "standard-armv7l:aarch64:x86_64"
+    ],
+    "Immediate Stop With Error": true,
+    "PROJECT_BRANCH": "tizen_base",
+    "REPO_TYPE": "ALL",
+    "Remove Package List": "",
+    "SNAPSHOT_NUM": "@freeze",
+    "TARGET_IMAGE": [],
+    "Build Package List": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+    "BUILD NOTES": "clang-fix-campaign request=probe-071269b2b7294d65bb43fe76cc5aead7"
+  },
+  "ended_at": "2026-10-19T06:38:47.661642+00:00"
+}

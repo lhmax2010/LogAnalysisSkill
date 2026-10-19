@@ -5048,3 +5048,129 @@ RESULT文件SHA256为`feebbbe78c7bb2444dcb46a50a5b1bda7584d34e275a2dcea710c45e34
 告警;保持取证字节不改。排除这四份原始HTML后,其余全部待提交文件的同一检查返回0。
 完整告警、路径归属与原文件hash复核见fetch/staged-validation.json及其输出日志;
 不将完整暂存区检查声称为0,不修改git规则以隐藏告警。
+
+## 44. 实施裁定 P5Q-C6A-05:修复关闭后进程不退出、补登录诊断
+
+### 44.1 裁定原文
+
+1. C6a 已由 live-05 完成:父构建 1201886 经人工绑定,子构建 1201889 首次读取即 PASS。仍有两项待修:
+   a. 关闭后进程不退出(P5Q-C6A-04 登记的已知缺陷),每次 CLI 结束多等约 35 秒并以 SIGTERM 结束代理;
+   b. 登录阶段没有诊断信息,live-01、live-04 两次登录超时无法区分原因。
+2. 批准对生产代码做以下最小改动,不改变任何放行、拒绝或判定逻辑,不改冻结稿:
+   a. 关闭修复:生产代理主循环结束后销毁 process.stdin,确保收到 close 后进程自行退出;Python 驱动 QbBrowser.close 在写出 close 命令后立即关闭 stdin,再 wait。删除测试入口 tests/node/p5q_cli_agent.mjs 中专门为退出而做的 stdin 销毁,使测试入口与生产入口的退出行为一致。
+   b. 登录诊断:代理的 login 在返回 QB_LOGIN_TIMEOUT 或 QB_LOGIN_ABORTED 时,应答增加 login_facts 对象,键集合固定为:
+      - final_path_shape:用现有 pathShape 处理当前页面路径;
+      - on_signin、password_present、sign_out_present:最后一次检查时三个登录条件各自的布尔值;
+      - checks:检查次数;
+      - login_posts_released:登录 POST 的放行次数;
+      - login_channel_closed:登录通道是否已关闭;
+      - denied:登录阶段被拒请求的计数,按 pathShape 分组。
+      不含任何查询值、请求头、请求体、账号、密码或 Cookie。Python 驱动严格校验 login_facts 的键集合与类型,不合格按协议错误处理;qb-trigger 与 qb-result-fetch 把它写入 trace。
+3. 以上改动涉及代理文件,四个拦截安全组必须从头重跑;第 9.2 节静态断言全部通过。
+
+### 44.2 执行范围与计划
+
+基线243df59。已读§38–43及diag-01/live-04停止报告。冻结稿SHA256仍为
+`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`;
+专用库`/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db` SHA256仍为
+`08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30`。
+本轮仅离线修复与本机假HTTPS测试,不访问真实QuickBuild、不登录、不写专用库,
+不做Gerrit推送、不进入收口。Policy/installGuards判定逻辑保持原样。
+
+- DONE:生产入口退出回归、Python先关stdin、测试入口去掉退出特例。
+- DONE:四种登录事实、严格协议校验、两个CLI trace核对;focused-01为242 passed。
+- DONE:全仓2709 passed/1 skipped/0 failed;Node单元及静态负例362 passed,
+  mypy/ruff/lint-imports/design检查通过,四组安全测试4/4,hash复核通过。
+
+证据目录:`evidence/C6a/offline-fix-01/`。已有与本任务无关的工作区变更保留不动。
+
+### 44.3 实现与诊断口径
+
+生产改动仅`qb_browser_agent.mjs`与`qb_browser.py`:
+main的finally清理后销毁stdin;Python写close后关闭管道再wait;
+测试入口删除stdin.destroy,额外的关闭计时只在测试入口记录。
+login保留原有成功条件,复用最后一次隔离环境检查的三个布尔值,
+在关闭页面及离开login阶段之前记录路径形态、POST计数、通道状态和DENIED分组。
+没有新增网络请求、页面取数或判定条件。若连一次检查都未完成,checks=0,
+三个布尔值初始为false,不把它们解释为已检查到页面不存在对应元素。
+
+Python对键集合、布尔值、非负整数与现有pathShape输出集合严格校验,
+非法诊断不回显。新增login_facts仅在login超时/中止应答中接受。
+两个CLI已有的BROWSER_COMMAND_FAILED trace统一调用failure_facts,
+通过它传递已校验对象,CLI stdout与两个CLI模块本身不变。
+
+离线四场景:停留signin、POST302到未登记路径、POST302到dashboard但没有Sign Out、
+关闭窗口;前三项TIMEOUT,最后ABORTED/PAGE_CLOSED。未登记跳转被拒后浏览器错误页
+的pathname为`/`,故final_path_shape为`/`,拒绝项另按`<other>`记1次;
+不据此误称登录到了站点首页。每项仅合成账号、密码与会话值,输出无残留。
+
+baseline-close复现生产代理收到close成功应答仍超过5秒不退出(预期红)。
+close-fixed中的首次驱动测试遇到本轮诊断解析变量顺序错误,已修正;
+focused-01两项退出测试均绿,未调用terminate。临时Node命令误用了相对路径,
+未执行任何Node测试;随后node-unit用绝对路径实跑362/0/0。
+正式门禁以本节最终结果和各command.json为准,不以中间试跑替代。
+
+### 44.4 最终验收与关闭耗时
+
+状态:`C6a_OFFLINE_FIX_VERIFIED`,不进入C6b或收口。本轮新增29个pytest用例,
+基线2680 passed/1 skipped,本轮2709 passed/1 skipped/0 failed。
+唯一skip为既有`test_case_insensitive_bypass_is_platform_specific`,
+不是Node、浏览器或本轮新增用例。完整argv、UTC时间、exit和输入hash见每个
+command.json;[summary.json](evidence/C6a/offline-fix-01/summary.json)为机械汇总。
+
+| 门禁 | 本轮结果 | 证据(相对offline-fix-01/) |
+|---|---|---|
+| pytest全量 | 2709 passed / 1 skipped / 0 failed, exit0 | full/output.log、full/pytest.xml |
+| 定向回归 | 242 passed / 0 failed, exit0 | focused-01/output.log |
+| Node单元与§9.2静态负例 | 362 passed / 0 failed / 0 skipped, exit0 | node-unit/output.log |
+| 本机登录四场景 | 4 passed / 0 failed / 0 skipped | full/artifacts/login-*.json、full/output.log |
+| mypy | 116 source files, exit0 | mypy/output.log |
+| ruff完整待提交树 | All checks passed, exit0 | ruff-final/output.log、command.json |
+| lint-imports | 6 kept / 0 broken, exit0 | lint-imports/output.log |
+| design.md检查 | 0 problem, exit0 | design/output.log |
+| 四组拦截安全测试 | 4 passed / 0 failed, exit0 | safety/output.log、command.json |
+
+四组独立重跑,全量pytest中也重新运行。Worker/WebSocket组走已批准分支b:
+shared_worker closeTarget成功,worker closeTarget抛Error;
+runtime.failure=QB_BROWSER_UNAVAILABLE/category=CLOSE_TARGET_FAILED,
+浏览器已关闭、临时目录已删除,攻击HTTP=0、WS握手=0。
+307/308均拦下、302对照放行;逐跳禁路请求及POST重放均0;
+凭据隔离的合成会话、授权与密码不进入协议输出,ADAPT_FAILED注入按预期停止。
+没有为此放宽任何原有判据。
+
+关闭耗时分别记录,不混用:
+
+| 测量 | 修复前 | 修复后(全量运行) | 证据 |
+|---|---|---|---|
+| 生产入口close应答后,保持stdin打开等待退出 | 5秒内不退出(预期红) | 0.015秒,exit0 | baseline-close/、full/artifacts/production-close.json |
+| 实际QbBrowser.close,已完成启动 | diag-01为35.070秒、exit -15 | 0.114秒,exit0,terminate调用0次;wait前stdin已关闭 | full/artifacts/driver-close.json |
+| qb-trigger关闭命令开始至CLI退出 | live-05尾段约34.969秒,未采代理退出码 | 0.127秒,CLI exit0 | full/cli-artifacts/build/commands.json |
+| qb-result-fetch关闭命令开始至CLI退出 | live-05尾段约35.042秒,未采代理退出码 | RUNNING读取0.129秒、PASS读取0.124秒,均exit0 | 同上 |
+
+历史live-05的数值只是进程观察尾段,不冒称直接测得的close耗时或代理-15。
+修复后实际生产入口退出0由专门回归证明;CLI计时来自仅测试入口增加的时间戳,
+生产代码不加入测试计时开关。原C5a四种落点模式及原诊断用例全部通过。
+
+### 44.5 落点、边界与交付
+
+- `qb_browser_agent.mjs:642`:保留登录判定并记录最后检查;
+  `:674`汇总login_facts,`:996`生产主循环退出后销毁stdin。
+- `qb_browser.py:97`:固定键/类型/路径形态校验;
+  `:176`解码保存,`:76`统一failure_facts透传,`:399`先关闭stdin再wait。
+- 两个CLI沿用既有`qb_trigger.py:291`的统一失败trace入口;
+  `qb_result_fetch.py:603`登录失败也走同一入口。两个CLI文件原字节不变,
+  `test_cli_login_facts_trace`四例验证timeout/aborted分别落盘、stdout不增字段、库不写。
+- `tests/node/p5q_cli_agent.mjs`删除退出特例;新增实际生产入口测试,
+  `tests/node/test_qb_login_facts.mjs`覆盖四种真实本地浏览器场景。
+
+summarize.py逐字节核对Agent之前的整个源码前缀(含Policy、installGuards、pathShape)
+与243df59一致,hash为`40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16`。
+冻结稿、design.md和专用状态库均保持原hash,没有真实QB/Gerrit操作或真实状态库写入。
+原有与本轮无关的工作区变更未纳入提交。
+与冻结稿或裁定新发现的不一致/做不到之处:无。新停止报告0条。
+完整入口见[证据索引](evidence/C6a/offline-fix-01/README.md);本轮结束,等待下一任务。
+
+暂存核验补记:完整`git diff --cached --check`为exit2,仅baseline-close/close-fixed
+两份原始失败日志及八份合成overview HTML的原字节行尾空白;
+不改写证据、不改检查器。排除原始log/html后的同一检查exit0。
+完整输出与命令见offline-fix-01/staged-diff及staged-nonraw;本轮要求的全部门禁仍为exit0。

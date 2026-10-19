@@ -1,0 +1,21 @@
+{
+  "argv": [
+    ".venv/bin/pytest",
+    "-v",
+    "-s",
+    "tests/unit/test_p5q_c6_offline_fix.py::test_production_entry_close_exits_with_input_held_open"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started": "2026-10-19T06:28:01.103508+00:00",
+  "ended": "2026-10-19T06:28:18.852931+00:00",
+  "seconds": 17.749,
+  "exit": 1,
+  "input_hashes_before": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  },
+  "input_hashes_after": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  }
+}

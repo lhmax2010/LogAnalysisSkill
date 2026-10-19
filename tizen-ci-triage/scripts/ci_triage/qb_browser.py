@@ -25,6 +25,10 @@ FAILURE_CATEGORIES = frozenset(
     }
 )
 _COMMANDS = frozenset({"login", "open_form", "fill", "read", "submit", "close"})
+_PATH_SHAPES = frozenset(
+    {"/", "/dashboard", "/wicket/page", "/signin", "<other>", "/overview/<id>"}
+    | {f"/build/<id>{suffix}" for suffix in ("", "/overview", "/variables", "/step_status")}
+)
 _AGENT_CODES = frozenset(
     {
         "QB_BROWSER_UNAVAILABLE",
@@ -61,6 +65,7 @@ class QbBrowserError(RuntimeError):
         self.diagnostic = diagnostic
         self.diagnostic_failed = diagnostic_failed
         self.snapshot_state = snapshot_state
+        self.login_facts: dict[str, Any] | None = None
         self.agent_code = agent_code
         self.failure_category = failure_category
         self.command = command
@@ -69,7 +74,7 @@ class QbBrowserError(RuntimeError):
         self.trace_written = False
 
     def failure_facts(self) -> dict[str, Any]:
-        return {
+        facts: dict[str, Any] = {
             "command": self.command if self.command in _COMMANDS else None,
             "agent_error_code": (
                 self.agent_code
@@ -84,6 +89,33 @@ class QbBrowserError(RuntimeError):
             "agent_exited": self.agent_exited,
             "agent_exit_code": self.agent_exit_code,
         }
+        if self.login_facts is not None:
+            facts["login_facts"] = self.login_facts
+        return facts
+
+
+def validate_login_facts(value: object) -> dict[str, Any]:
+    booleans = {"on_signin", "password_present", "sign_out_present", "login_channel_closed"}
+    counts = {"checks", "login_posts_released"}
+    if not isinstance(value, dict) or set(value) != booleans | counts | {
+        "final_path_shape", "denied"
+    }:
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    path = value["final_path_shape"]
+    denied = value["denied"]
+    if (
+        not isinstance(path, str)
+        or path not in _PATH_SHAPES
+        or any(type(value[key]) is not bool for key in booleans)
+        or any(type(value[key]) is not int or value[key] < 0 for key in counts)
+        or not isinstance(denied, dict)
+        or any(
+            key not in _PATH_SHAPES or type(count) is not int or count < 0
+            for key, count in denied.items()
+        )
+    ):
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    return value
 
 
 def validate_snapshot_state(value: object) -> dict[str, Any]:
@@ -144,11 +176,22 @@ def _unknown() -> dict[str, Any]:
 def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[str, Any]:
     """Retain fixed diagnostic metadata without changing existing error mapping."""
     category = None
+    login_facts = None
     try:
         response = json.loads(raw)
     except (ValueError, TypeError):
         response = None
     try:
+        if isinstance(response, dict) and "login_facts" in response:
+            if (
+                command != "login" or response.get("ok") is not False
+                or response.get("error") not in ("QB_LOGIN_TIMEOUT", "QB_LOGIN_ABORTED")
+                or _sensitive_key(response)
+            ):
+                if submit_sent:
+                    return _unknown()
+                raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+            login_facts = validate_login_facts(response["login_facts"])
         if isinstance(response, dict) and "failure_category" in response:
             value = response["failure_category"]
             if not isinstance(value, str) or value not in FAILURE_CATEGORIES:
@@ -160,6 +203,7 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
     except QbBrowserError as exc:
         exc.command = command if command in _COMMANDS else None
         exc.failure_category = category
+        exc.login_facts = login_facts
         if isinstance(response, dict) and not _sensitive_key(response):
             code = response.get("error")
             if isinstance(code, str) and code in _AGENT_CODES:
@@ -357,9 +401,11 @@ class QbBrowser:
         if process is None:
             return
         try:
-            if process.poll() is None and process.stdin is not None:
+            if process.poll() is None and process.stdin is not None and not process.stdin.closed:
                 process.stdin.write('{"command":"close"}\n')
                 process.stdin.flush()
+            if process.stdin is not None:
+                process.stdin.close()
             process.wait(timeout=35)
         except (OSError, subprocess.TimeoutExpired):
             process.terminate()

@@ -6,6 +6,7 @@ import select
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -70,13 +71,26 @@ def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):
             str(campaign.config),
         ]
         run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)
+        ended = time.time()
+        agent_log = Path(env["P5Q_TEST_AGENT_LOG"])
+        close_seconds = None
+        if agent_log.exists():
+            lifecycle = json.loads(agent_log.read_text())
+            close_started = lifecycle["close_started_unix_ms"]
+            if close_started is not None:
+                close_seconds = ended - close_started / 1000
         commands.append(
-            {"argv": argv, "exit": run.returncode, "stdout": run.stdout, "stderr": run.stderr}
+            {"argv": argv, "exit": run.returncode, "stdout": run.stdout, "stderr": run.stderr,
+             "close_to_cli_exit_seconds": close_seconds}
         )
         (evidence / "commands.json").write_text(
             json.dumps(commands, ensure_ascii=False, indent=2) + "\n"
         )
         server_command({})
+        if close_seconds is not None:
+            assert 0 <= close_seconds < 5
+        elif name == "qb-result-fetch" or not commands[:-1]:
+            pytest.fail("missing close timing for browser invocation")
         assert run.returncode == expected_exit, run.stdout + run.stderr
         return json.loads(run.stdout)[0]
 

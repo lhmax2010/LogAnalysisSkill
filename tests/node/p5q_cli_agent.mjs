@@ -6,9 +6,11 @@ const [playwright, chromium] = process.argv.slice(2);
 const runtime = await createRuntime(playwright, chromium, JSON.parse(await readFile(process.env.P5Q_TEST_SERVER, 'utf8')));
 const agent = new Agent(runtime);
 const transcript = [];
+let closeStarted = null, closeFinished = null;
 try {
   for await (const line of createInterface({ input: process.stdin })) {
     const input = JSON.parse(line);
+    if (input.command === 'close') closeStarted = Date.now();
     const result = agent.command(input);
     if (input.command === 'login') {
       // Test simulates the person; production Agent.login remains passive.
@@ -17,6 +19,7 @@ try {
       await runtime.page.getByRole('button', { name: 'Login', exact: true }).click();
     }
     const output = await result;
+    if (input.command === 'close') closeFinished = Date.now();
     if (input.command === 'login' && output.ok) {
       if (process.env.P5Q_TEST_C6_FAILURE === 'NEW_PAGE') {
         try { await runtime.context.newPage(); } catch { /* Expected fail-closed. */ }
@@ -33,6 +36,6 @@ try {
   }
 } finally {
   await runtime.close();
-  await writeFile(process.env.P5Q_TEST_AGENT_LOG, JSON.stringify({ transcript, trace: runtime.trace }, null, 2));
-  process.stdin.destroy();
+  await writeFile(process.env.P5Q_TEST_AGENT_LOG, JSON.stringify({ transcript, trace: runtime.trace,
+    close_started_unix_ms: closeStarted, close_finished_unix_ms: closeFinished }, null, 2));
 }

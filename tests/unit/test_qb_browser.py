@@ -11,6 +11,55 @@ from ci_triage.qb_browser import FAILURE_CATEGORIES, QbBrowser, QbBrowserError, 
 from ci_triage.qb_redact import EvidenceRedactionError
 
 ROOT = Path(__file__).resolve().parents[2]
+LOGIN_FACTS = dict(
+    final_path_shape="/dashboard", on_signin=False, password_present=False,
+    sign_out_present=False, checks=2, login_posts_released=1,
+    login_channel_closed=True, denied={"<other>": 1},
+)
+
+
+@pytest.mark.parametrize("code", ["QB_LOGIN_TIMEOUT", "QB_LOGIN_ABORTED"])
+def test_login_facts_driver_and_trace(fake, code):
+    config, script, _, _ = fake
+    script.write_text(json.dumps([dict(ok=False, error=code, login_facts=LOGIN_FACTS)]))
+    with QbBrowser(config) as browser:
+        with pytest.raises(QbBrowserError) as caught:
+            browser.login()
+        assert caught.value.code == code
+        assert caught.value.login_facts == LOGIN_FACTS
+        assert browser.trace[0]["login_facts"] == LOGIN_FACTS
+
+
+@pytest.mark.parametrize("facts", [
+    None,
+    {**LOGIN_FACTS, "extra": "synthetic-secret"},
+    {key: value for key, value in LOGIN_FACTS.items() if key != "checks"},
+    *[{**LOGIN_FACTS, key: value} for key, value in [
+        ("final_path_shape", []), ("final_path_shape", "/dashboard?synthetic-secret"),
+        ("on_signin", 1), ("password_present", "false"), ("sign_out_present", None),
+        ("login_channel_closed", 0), ("checks", True), ("checks", -1),
+        ("login_posts_released", "1"), ("login_posts_released", -1), ("denied", []),
+        ("denied", {"/secret": 1}), ("denied", {"<other>": True}),
+        ("denied", {"<other>": -1}),
+    ]],
+])
+def test_invalid_login_facts_protocol_error(facts):
+    with pytest.raises(QbBrowserError) as caught:
+        decode_response(json.dumps(dict(ok=False, error="QB_LOGIN_TIMEOUT", login_facts=facts)),
+                        submit_sent=False, command="login")
+    assert caught.value.code == "QB_BROWSER_UNAVAILABLE"
+    assert caught.value.login_facts is None
+    assert "synthetic-secret" not in json.dumps(caught.value.failure_facts())
+
+
+@pytest.mark.parametrize("command,ok,code", [
+    ("read", False, "QB_LOGIN_TIMEOUT"), ("login", True, None),
+    ("login", False, "QB_BROWSER_UNAVAILABLE"),
+])
+def test_login_facts_only_on_login_timeout_or_abort(command, ok, code):
+    with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+        decode_response(json.dumps(dict(ok=ok, error=code, login_facts=LOGIN_FACTS)),
+                        submit_sent=False, command=command)
 
 
 @pytest.mark.parametrize("category", sorted(FAILURE_CATEGORIES))

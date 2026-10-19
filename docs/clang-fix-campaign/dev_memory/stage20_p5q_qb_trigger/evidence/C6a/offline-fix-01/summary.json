@@ -1,0 +1,99 @@
+{
+  "baseline": "243df59",
+  "policy_and_install_guards_prefix_unchanged": true,
+  "security_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+  "untouched": {
+    "tizen-ci-triage/scripts/ci_triage/qb_trigger.py": "71ecc772eb840caa9ef21145ab39f87751ed5d865f7d8f3eef4a9a2c122b0431",
+    "tizen-ci-triage/scripts/ci_triage/qb_result_fetch.py": "22bb5d3b252099c7c0a7f688132941674e429898691b3c3c5b5721774d65cf46",
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "docs/clang-fix-campaign/design.md": "c0b37bdf0571472d08f2038cdd306068fbd27a0208d593a0b1575803ea9e923b"
+  },
+  "dedicated_state_db_sha256": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30",
+  "gates": {
+    "focused-01": {
+      "exit": 0,
+      "seconds": 228.915
+    },
+    "full": {
+      "exit": 0,
+      "seconds": 687.131
+    },
+    "mypy": {
+      "exit": 0,
+      "seconds": 3.115
+    },
+    "ruff-final": {
+      "exit": 0,
+      "seconds": 7.731
+    },
+    "lint-imports": {
+      "exit": 0,
+      "seconds": 0.524
+    },
+    "node-unit": {
+      "exit": 0,
+      "seconds": 10.335
+    },
+    "design": {
+      "exit": 0,
+      "seconds": 0.181
+    },
+    "safety": {
+      "exit": 0,
+      "seconds": 8.008
+    }
+  },
+  "pytest": {
+    "tests": 2710,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "passed": 2709
+  },
+  "close_timings": [
+    {
+      "run": "focused-01",
+      "command": "qb-trigger",
+      "close_to_cli_exit_seconds": 0.13145780563354492
+    },
+    {
+      "run": "focused-01",
+      "command": "qb-result-fetch",
+      "close_to_cli_exit_seconds": 0.12760043144226074
+    },
+    {
+      "run": "focused-01",
+      "command": "qb-result-fetch",
+      "close_to_cli_exit_seconds": 0.1299283504486084
+    },
+    {
+      "run": "full",
+      "command": "qb-trigger",
+      "close_to_cli_exit_seconds": 0.1271200180053711
+    },
+    {
+      "run": "full",
+      "command": "qb-result-fetch",
+      "close_to_cli_exit_seconds": 0.12874960899353027
+    },
+    {
+      "run": "full",
+      "command": "qb-result-fetch",
+      "close_to_cli_exit_seconds": 0.12392020225524902
+    }
+  ],
+  "login_evidence_no_synthetic_secrets": [
+    "focused-01/artifacts/login-no-signout.json",
+    "focused-01/artifacts/login-unregistered.json",
+    "focused-01/artifacts/login-signin.json",
+    "focused-01/artifacts/driver-close.json",
+    "focused-01/artifacts/login-closed.json",
+    "focused-01/artifacts/production-close.json",
+    "full/artifacts/login-no-signout.json",
+    "full/artifacts/login-unregistered.json",
+    "full/artifacts/login-signin.json",
+    "full/artifacts/driver-close.json",
+    "full/artifacts/login-closed.json",
+    "full/artifacts/production-close.json"
+  ]
+}

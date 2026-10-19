@@ -1,0 +1,57 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 2 items
+
+tests/unit/test_p5q_c6_offline_fix.py::test_production_entry_close_exits_with_input_held_open PASSED
+tests/unit/test_p5q_c6_offline_fix.py::test_driver_close_does_not_terminate_production_entry FAILED
+
+=================================== FAILURES ===================================
+____________ test_driver_close_does_not_terminate_production_entry _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x761a2c287b60>
+tmp_path = PosixPath('/tmp/pytest-of-linhao/pytest-92/test_driver_close_does_not_ter0')
+
+    @pytest.mark.integration
+    def test_driver_close_does_not_terminate_production_entry(monkeypatch, tmp_path):
+        command, _ = node_command()
+        playwright, chromium = browser_paths()
+        if len(command) != 1:
+            pytest.skip("Production argv requires a standalone Node executable")
+        browser = QbBrowser({"browser": {
+            "node": command[0], "playwright_module": playwright, "chromium": chromium,
+        }})
+        browser.__enter__()
+        process = browser.process
+        # A protocol round trip waits for Chromium startup before measuring shutdown.
+        with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+>           browser.command("invalid")
+
+tests/unit/test_p5q_c6_offline_fix.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-ci-triage/scripts/ci_triage/qb_browser.py:359: in command
+    response = self._command(command, **fields)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tizen-ci-triage/scripts/ci_triage/qb_browser.py:386: in _command
+    return decode_response(raw, submit_sent=command == "submit", command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok":false,"error":"AGENT_PHASE"}\n'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        try:
+>           if isinstance(response, dict) and "login_facts" in response:
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-ci-triage/scripts/ci_triage/qb_browser.py:181: UnboundLocalError
+=========================== short test summary info ============================
+FAILED tests/unit/test_p5q_c6_offline_fix.py::test_driver_close_does_not_terminate_production_entry
+========================= 1 failed, 1 passed in 3.89s ==========================

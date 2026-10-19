@@ -9,11 +9,32 @@ from pathlib import Path
 import pytest
 from ci_triage.qb_browser import FAILURE_CATEGORIES
 from test_p5q_c5a_integration import line
+from test_qb_browser import LOGIN_FACTS
 from test_qb_browser_node import ROOT, browser_paths, node_command
 from test_qb_result_fetch import FetchCampaign
 from test_qb_trigger import Campaign
 
 PROBE = ROOT / "docs/clang-fix-campaign/spikes/p5q_c6_driver_probe.py"
+
+
+@pytest.mark.parametrize("code", ["QB_LOGIN_TIMEOUT", "QB_LOGIN_ABORTED"])
+@pytest.mark.parametrize("operation", ["trigger", "fetch"])
+def test_cli_login_facts_trace(tmp_path, monkeypatch, operation, code):
+    error = dict(ok=False, error=code, login_facts=LOGIN_FACTS)
+    campaign = (Campaign if operation == "trigger" else FetchCampaign)(tmp_path, monkeypatch)
+    before = campaign.snapshot()
+    result = campaign.run(login=error)
+    assert result[0] == 5
+    assert campaign.snapshot() == before
+    root = tmp_path / "evidence" if operation == "trigger" else tmp_path
+    traces = [json.loads(line) for path in (root / "qb_traces").glob("*.jsonl")
+              for line in path.read_text().splitlines()]
+    failures = [row for row in traces if row.get("action") == "BROWSER_COMMAND_FAILED"]
+    assert len(failures) == 1
+    assert failures[0]["command"] == "login"
+    assert failures[0]["agent_error_code"] == code
+    assert failures[0]["login_facts"] == LOGIN_FACTS
+    assert "login_facts" not in json.dumps(result[1])  # stdout contract unchanged
 
 
 @pytest.mark.parametrize("category", sorted(FAILURE_CATEGORIES))

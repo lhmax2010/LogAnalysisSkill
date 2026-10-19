@@ -132,14 +132,15 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
       const redirect = path => { row.status = 302; response.writeHead(302, { Location: path }); response.end(); };
       const url = new URL(request.url, ORIGIN);
       if (row.method === 'GET' && url.pathname === '/signin') {
+        if (fixture.loginCookie) response.setHeader('Set-Cookie', `synthetic-session=${fixture.loginCookie}; Secure; HttpOnly`);
         if (fixture.loginCase === 'unregistered-landing') { redirect('/not-registered'); return; }
         if (fixture.loginCase === 'signin-with-signout') { response.end(page('<h1>Still signin</h1>')); return; }
         if (fixture.loginCase) { redirect('/dashboard'); return; }
         response.end('<!doctype html><link rel="icon" href="data:,"><form method="POST" action="/signin?0-1.IFormSubmitListener-content-form"><input name="user"><input type="password" name="password"><button>Login</button></form>');
       } else if (row.method === 'POST' && /IFormSubmitListener-content-form$/.test(url.search)) {
         row.body = '<SYNTHETIC_LOGIN_REDACTED>';
-        redirect('/dashboard');
-      } else if (url.pathname === '/dashboard') response.end(fixture.loginCase === 'no-signout'
+        redirect(fixture.loginRedirect ?? '/dashboard');
+      } else if (url.pathname === '/dashboard') response.end(fixture.dashboardNoSignOut || fixture.loginCase === 'no-signout'
         ? '<!doctype html><link rel="icon" href="data:,"><h1>Dashboard without signout</h1>'
         : page('<h1>Dashboard</h1>' + (fixture.loginCase === 'password-remains' ? '<input type="password">' : '')));
       else if (url.pathname === '/overview/1917') response.end(page(`${breadcrumb(PROJECT.configuration_path)}

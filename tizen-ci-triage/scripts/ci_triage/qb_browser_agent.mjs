@@ -620,6 +620,9 @@ export class Agent {
       }
       if (command === 'submit' && this.policy.released) return { ok: true, landed: 'unknown', released: true, observed: '<other>', messages: [] };
       const response = { ok: false, error: error instanceof AgentError ? error.code : 'QB_BROWSER_UNAVAILABLE' };
+      if (command === 'login' && ['QB_LOGIN_TIMEOUT', 'QB_LOGIN_ABORTED'].includes(response.error)) {
+        response.login_facts = this.loginFacts;
+      }
       if (command === 'read' && response.error === 'QB_READ_ID_MISMATCH'
         || ['open_form', 'fill'].includes(command) && response.error === 'QB_FORM_CHANGED') {
         this.policy.invalidate();
@@ -639,6 +642,7 @@ export class Agent {
   async login(timeout) {
     process.stderr.write('已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n');
     const deadline = Date.now() + timeout * 1000;
+    this.lastLoginCheck = { on_signin: false, password_present: false, sign_out_present: false, checks: 0 };
     try {
       await this.page.goto(`${ORIGIN}/signin`, { timeout: timeout * 1000 });
       while (Date.now() < deadline) {
@@ -647,17 +651,39 @@ export class Agent {
           password: document.querySelectorAll('input[type=password]').length,
           links: [...document.querySelectorAll('a')].map(link => link.textContent),
         }));
+        this.lastLoginCheck = {
+          on_signin: new URL(this.page.url()).pathname === '/signin',
+          password_present: status.password > 0,
+          sign_out_present: status.links.some(text => text.trim() === 'Sign Out'),
+          checks: this.lastLoginCheck.checks + 1,
+        };
         if (new URL(this.page.url()).pathname !== '/signin' && status.password === 0
           && status.links.some(text => text.trim() === 'Sign Out')) return {};
         await sleep(Math.min(2000, Math.max(0, deadline - Date.now())));
       }
     } catch (error) {
       const closed = this.page.isClosed();
+      this.captureLoginFacts();
       await this.runtime.close();
       if (error instanceof AgentError) throw error;
       throw new AgentError(this.runtime.failure ?? (closed ? 'QB_LOGIN_ABORTED' : 'QB_LOGIN_TIMEOUT'));
     }
+    this.captureLoginFacts();
     await this.runtime.close(); throw new AgentError('QB_LOGIN_TIMEOUT');
+  }
+  captureLoginFacts() {
+    let finalPath = '<other>';
+    try { finalPath = pathShape(new URL(this.page.url()).pathname); } catch { /* No committed URL. */ }
+    const denied = {};
+    for (const entry of this.runtime.trace) {
+      if (entry.phase === 'login' && entry.action === 'DENIED') denied[entry.path] = (denied[entry.path] ?? 0) + 1;
+    }
+    this.loginFacts = {
+      final_path_shape: finalPath, ...this.lastLoginCheck,
+      login_posts_released: this.policy.loginPostCount,
+      login_channel_closed: this.policy.loginPostsClosed,
+      denied,
+    };
   }
   async buildId(path, raw = null) { return verifiedBuildId(await this.trusted.run(buildDOM, raw), path); }
   async passive(raw, facts = null) {
@@ -967,7 +993,7 @@ async function main() {
     const category = recordFailure(runtime ?? { trace: [] }, runtime?.failure_category ?? 'UNKNOWN');
     process.stdout.write(`${JSON.stringify({ ok: false, error: 'QB_BROWSER_UNAVAILABLE', failure_category: category })}\n`);
   }
-  finally { await finish(); }
+  finally { try { await finish(); } finally { process.stdin.destroy(); } }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();

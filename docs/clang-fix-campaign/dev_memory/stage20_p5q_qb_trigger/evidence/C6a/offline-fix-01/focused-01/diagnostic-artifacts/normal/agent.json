@@ -1,0 +1,274 @@
+{
+  "transcript": [
+    {
+      "input": {
+        "command": "login",
+        "login_timeout_seconds": 60,
+        "projects": [
+          {
+            "overview_id": 1917,
+            "configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER",
+            "project_name": "Tizen-Base-Toolchain"
+          }
+        ]
+      },
+      "output": {
+        "ok": true
+      }
+    },
+    {
+      "input": {
+        "command": "open_form",
+        "overview_id": 1917
+      },
+      "output": {
+        "ok": true,
+        "released": false
+      }
+    },
+    {
+      "input": {
+        "command": "fill",
+        "fields": {
+          "Add Package List": "",
+          "BUILD_REFERENCE": "Ref. Snapshot",
+          "BUILD_TYPE": "Full",
+          "CHILD_CONFIGURATIONS": [
+            "standard-armv7l:aarch64:x86_64"
+          ],
+          "Immediate Stop With Error": true,
+          "PROJECT_BRANCH": "tizen_base",
+          "REPO_TYPE": "ALL",
+          "Remove Package List": "",
+          "SNAPSHOT_NUM": "@freeze",
+          "TARGET_IMAGE": [],
+          "Build Package List": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+          "BUILD NOTES": "clang-fix-campaign request=probe-e6e3caa2a4214875a074c85e502b5daa"
+        }
+      },
+      "output": {
+        "ok": true,
+        "readback": {
+          "BUILD_TYPE/value": "Full",
+          "REPO_TYPE/value": "ALL",
+          "BUILD_REFERENCE/value": "Ref. Snapshot",
+          "SNAPSHOT_NUM/value": "tizen-base-toolchain_20260924.094908",
+          "PROJECT_BRANCH/value": "tizen_base",
+          "Immediate Stop With Error/value": true,
+          "CHILD_CONFIGURATIONS/selection": [
+            "standard-armv7l:aarch64:x86_64"
+          ],
+          "Build Package List/value": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+          "Add Package List/value": "",
+          "Remove Package List/value": "",
+          "TARGET_IMAGE/selection": [],
+          "BUILD NOTES/value": "clang-fix-campaign request=probe-e6e3caa2a4214875a074c85e502b5daa"
+        },
+        "fingerprint": "b0f6447683e6887ddb1d99ad08e3e8b14fcea68c0e64722d3fb06b07c8a5089e",
+        "snapshot_option_count": 1,
+        "released": false
+      }
+    },
+    {
+      "input": {
+        "command": "close"
+      },
+      "output": {
+        "ok": true
+      }
+    }
+  ],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    }
+  ],
+  "close_started_unix_ms": 1792391540176,
+  "close_finished_unix_ms": 1792391540233
+}

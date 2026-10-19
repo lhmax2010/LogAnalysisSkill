@@ -1,0 +1,77 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 1 item
+
+tests/unit/test_p5q_c6_offline_fix.py::test_production_entry_close_exits_with_input_held_open FAILED
+
+=================================== FAILURES ===================================
+____________ test_production_entry_close_exits_with_input_held_open ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-linhao/pytest-91/test_production_entry_close_ex0')
+
+    @pytest.mark.integration
+    def test_production_entry_close_exits_with_input_held_open(tmp_path):
+        command, env = node_command()
+        paths = browser_paths()
+        argv = [*command, str(ROOT / "tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs"), *paths]
+        process = subprocess.Popen(
+            argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, env=env,
+        )
+        record = {"argv": argv, "stdin_held_open": True}
+        try:
+            process.stdin.write('{"command":"close"}\n')
+            process.stdin.flush()
+            assert select.select([process.stdout], [], [], 30)[0]
+            record["response"] = json.loads(process.stdout.readline())
+            assert record["response"] == {"ok": True}
+            started = time.monotonic()
+            try:
+>               assert process.wait(timeout=5) == 0
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/test_p5q_c6_offline_fix.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/lib/python3.12/subprocess.py:1264: in wait
+    return self._wait(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <Popen: returncode: -15 args: ['/home/linhao/.local/bin/node', '/home/linhao...>
+timeout = 5
+
+    def _wait(self, timeout):
+        """Internal implementation of wait() on POSIX."""
+        if self.returncode is not None:
+            return self.returncode
+    
+        if timeout is not None:
+            endtime = _time() + timeout
+            # Enter a busy loop if we have a timeout.  This busy loop was
+            # cribbed from Lib/threading.py in Thread.wait() at r71065.
+            delay = 0.0005 # 500 us -> initial delay of 1 ms
+            while True:
+                if self._waitpid_lock.acquire(False):
+                    try:
+                        if self.returncode is not None:
+                            break  # Another thread waited.
+                        (pid, sts) = self._try_wait(os.WNOHANG)
+                        assert pid == self.pid or pid == 0
+                        if pid == self.pid:
+                            self._handle_exitstatus(sts)
+                            break
+                    finally:
+                        self._waitpid_lock.release()
+                remaining = self._remaining_time(endtime)
+                if remaining <= 0:
+>                   raise TimeoutExpired(self.args, timeout)
+E                   subprocess.TimeoutExpired: Command '['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', '/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs', '/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome']' timed out after 5 seconds
+
+/usr/lib/python3.12/subprocess.py:2045: TimeoutExpired
+=========================== short test summary info ============================
+FAILED tests/unit/test_p5q_c6_offline_fix.py::test_production_entry_close_exits_with_input_held_open
+============================== 1 failed in 15.36s ==============================

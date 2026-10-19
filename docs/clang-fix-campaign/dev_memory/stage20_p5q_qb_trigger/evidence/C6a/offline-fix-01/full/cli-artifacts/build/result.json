@@ -1,0 +1,37 @@
+{
+  "accepted": null,
+  "child_build_id": "1193469",
+  "child_build_result_text": "SUCCESSFUL",
+  "child_configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build",
+  "child_error_message": null,
+  "child_failed_step": null,
+  "child_params_echo": {
+    "BUILD_REFERENCE": "Ref. Snapshot",
+    "SNAPSHOT_NUM_URL": "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20260924.094908"
+  },
+  "child_status_text": "Successful",
+  "configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER",
+  "evidence": [
+    "qb_evidence/0e483bb91bc1455f9bbd0121202f7de5/05.1193467-overview.html",
+    "qb_evidence/0e483bb91bc1455f9bbd0121202f7de5/06.1193467-variables.html",
+    "qb_evidence/0e483bb91bc1455f9bbd0121202f7de5/07.1193469-overview.html",
+    "qb_evidence/0e483bb91bc1455f9bbd0121202f7de5/08.1193469-variables.html"
+  ],
+  "fetched_at": "2026-10-19T06:36:28.098180+00:00",
+  "params_echo": {
+    "BUILD_REFERENCE": "Ref. Snapshot",
+    "BUILD_TYPE": "Full",
+    "FAIL_FAST": "yes",
+    "PROJECT_BRANCH": "tizen_base",
+    "SNAPSHOT_NUM": "tizen-base-toolchain_20260924.094908"
+  },
+  "parent_status_text": "Successful",
+  "per_arch_status": null,
+  "pkg_list_echo": {},
+  "qb_build_id": "1193467",
+  "request_marker_echo": "clang-fix-campaign request=0e483bb91bc1455f9bbd0121202f7de5",
+  "sbs_target_echo": "u1@a97acc260d52515199247d53577d2979a51093d5",
+  "snapshot_drift_accepted": false,
+  "snapshot_used": "tizen-base-toolchain_20260924.094908",
+  "status": "PASS"
+}
