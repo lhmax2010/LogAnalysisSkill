@@ -1,9 +1,12 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-19。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE04_STOPPED_LOGIN_TIMEOUT**。
+日期:2026-10-19。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE05_WAITING_MANUAL_BUILD_ID**。
 本轮见§41/P5Q-C6A-04与§42:关闭后退出问题由设计方判为已知缺陷,修复后置;
 live-04已获新“确认提交”,当场核对通过后仅执行一次;login超时停止,见§42.4。
-本任务不改任何代码,不重试、不运行fetch或进入C6b。
+live-04停止后未重试、未运行fetch或进入C6b。
+最新续执行见§43:FatTank再次明确确认,live-05单独记账,不覆盖live-04;
+一次trigger返回QB_SUBMIT_UNCERTAIN,已写提交意图,等待FatTank提供父构建号后人工绑定。
+当前不重提、不带--retrigger、不做额外QB读取;没有构建号前不运行fetch。
 §38–40保留历史,不复用其中的授权或将其结果改写为本轮结果。
 最新续任务见§39.4–39.5:live-02记录进程遇本地磁盘同步阻塞后终止,未取得生产返回;
 专用库hash未变、无残留进程。FatTank再次要求弹窗并新回复“确认提交”,仅授权live-03一次;
@@ -4803,3 +4806,81 @@ HTTP请求总数没有采集,不伪填0。停止后无新增网络取证、无Ge
 运行规则;只读复核改为检查候选可执行文件及独立参数项,结果如上,未删除任何进程。
 本次只改progress/INDEX和脱敏证据;收尾复跑设计检查与diff检查,逐文件字节自检,
 结果见live-04/validation.json。不重跑全仓代码测试,§40.3仍为历史验收结果。
+
+## 43. C6a 第五次执行
+
+### 43.1 新授权与当场前置
+
+live-04停止证据已由`c26922e`推送。FatTank随后说“重新弹出窗口”;已说明这会启动
+新一次真实提交尝试、沿用原libtirpc目标与十二字段,旧确认不复用。FatTank再次回复
+原文“确认提交”,据此只授权本轮live-05的一次qb-trigger及成功后一次首次fetch。
+仍不带--retrigger、不推送Gerrit、不点Accept/Ready to Accept、不做代码修复。
+
+2026-10-19 13:19:42至13:20:02(Asia/Shanghai)重新完成只读前置:
+[live-05/preflight.json](evidence/C6a/live-05/preflight.json)。
+专用库hash仍为bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405;
+QB三表各0行、unit仍SANDBOX_PUSHED;无P5Q代理/Playwright Chromium/profile残留,
+冻结稿hash和专用config均未变。10秒间隔D状态0/1/0,仅第二次短暂出现
+`kworker/u81:0+i915_flip`,没有持续D进程;不触发磁盘阻塞人工闸门。
+内存available12Gi、swap剩余491Mi,/home可用231G,/dev/shm可用16G。
+
+拟执行生产argv保持live-01及§42.2逐字相同;本次证据排他写入live-05/trigger,
+成功后fetch写入live-05/fetch。保持600秒窗口内人工登录,已知关闭延迟按§41处理。
+若本次冻结快照不是20260924.094908,成功提交后按上一轮补充要求做一次公共manifest
+GET核对libtirpc revision,只记录、不改变判定。任何其它异常停止,不自行重试。
+本条为启动前记录,尚不表示已产生请求或构建。
+
+### 43.2 一次生产执行:提交落点未知
+
+仅执行一次§42.2的生产argv,代码HEAD为`c26922e`,与live-01参数逐字一致。
+未修改生产/取证/测试/记录工具或冻结稿,无测试参数、无--retrigger。
+完整证据见[live-05/trigger](evidence/C6a/live-05/trigger/):command.json、execution.json、
+stdout.json、stderr.txt、state-after.sql、process-observations.json。
+
+- UTC开始2026-10-19T05:20:49.637083+00:00,结束05:22:03.444859+00:00;
+  Asia/Shanghai为13:20:49至13:22:03,生产CLI耗时73.756秒,exit5。
+- stdout:action=submit_uncertain,error_code=QB_SUBMIT_UNCERTAIN,status=QB_REQUESTED。
+- request_id=`9fe02dc3927c4b7fa55a3dffce699d03`,request_seq=1,qb_build_id=null。
+- sbs_target=`platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0`。
+- 观察落点`/wicket/page`,未取得父构建号。stderr仅固定登录提示。
+- 生产stdout的通用message中含--retrigger建议,本任务不执行,只走已批准的人工绑定分支。
+
+trace-before.jsonl保留本次前的历史trace;trace-after.jsonl为执行后全量;
+[trace-new.jsonl](evidence/C6a/live-05/trigger/trace-new.jsonl)仅本次新增两条:
+first_freeze=true、snapshot_option_count=1、填表fingerprint,
+以及observed=/wicket/page与相同request_id的提示。没有新增BROWSER_COMMAND_FAILED条目;
+不能把trace-before中live-04的QB_LOGIN_TIMEOUT归于本次。
+本次trace未记录failure_category或最终代理wait status,不推断这些值。
+
+### 43.3 意图、快照与关闭表现
+
+[pending-audit.json](evidence/C6a/live-05/pending-audit.json)为执行后只读复核:
+
+- DB SHA256=`d1ff348dda02521b55759e92bc2dda360a268848012ae1741b9dc22b8bfe7140`,
+  复核前后未变,SQL导出与trigger/state-after.sql一致。
+- QB requests/profiles/events各1行。唯一事件为SUBMITTED(提交意图),尚无BUILD_BOUND/RESULT;
+  状态从SANDBOX_PUSHED迁到QB_REQUESTED。不能以SUBMITTED行证明服务器已经创建构建。
+- 本次实际冻结SNAPSHOT_NUM=`tizen-base-toolchain_20261013.024319`;
+  profile_sha256=`c8504d8c2d0385c98cf71c2e4f79353492ef6230591b0dfecc36a194451bf69d`。
+  它不同于原manifest核对的20260924.094908;新manifest GET待人工绑定确认构建后执行,
+  只记录libtirpc revision比较,不改变判定。
+- 请求标记应为`clang-fix-campaign request=9fe02dc3927c4b7fa55a3dffce699d03`;
+  尚无父构建页面,BUILD_NOTES/BUILD_REFERENCE/SNAPSHOT_NUM实际回显均NOT_COLLECTED。
+- 最后观察到本次Chromium为t=38.787秒,CLI结束t=73.756秒,尾段约34.969秒,
+  与§41已知关闭延迟一致。未采到最终代理退出码,记NOT_COLLECTED,不套用-15。
+- 复核没有P5Q代理、Playwright Chromium、profile或.transport残留;
+  冻结稿SHA256不变。没有删除其它浏览器、目录或用户文件。
+
+### 43.4 等待人工构建号
+
+已在聊天请FatTank按完整BUILD NOTES请求标记查找RBS/TRIGGER父构建号,不要再次Run,
+不要点击Accept/Ready to Accept;若未找到则如实回复,不猜号、不重提。
+当前状态WAITING_MANUAL_BUILD_ID,尚未收到构建号,未运行qb-result-fetch,
+没有fetch目录、额外QuickBuild页面访问或manifest GET,不进入C6b。
+收到正整数构建号后才按原授权执行一次生产qb-result-fetch,使用--request-id与
+--qb-build-id人工绑定并首次读取;证据另存live-05/fetch,不再调用qb-trigger。
+
+等待报告见[pending-manual-binding.md](evidence/C6a/live-05/pending-manual-binding.md)。
+本次只入库progress/INDEX与脱敏执行证据,不修改代码。收尾仅运行设计检查、diff检查、
+逐文件写后字节自检,结果见live-05/validation.json;不重跑全仓代码测试,
+§40.3的2680 passed/1 skipped仍为历史验收结果。

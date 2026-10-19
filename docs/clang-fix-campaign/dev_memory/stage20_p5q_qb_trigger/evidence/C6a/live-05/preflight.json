@@ -1,0 +1,87 @@
+{
+  "started_at": "2026-10-19T05:19:42.526691+00:00",
+  "authorization": "确认提交",
+  "authorization_context": "Fresh reply after request to reopen window; previous live-04 authorization not reused",
+  "head": "c26922e722dcea4b13584d28b5e17f73082e05be",
+  "network_requests": 0,
+  "browser_started": false,
+  "db_sha256_before": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "qb_table_counts": {
+    "campaign_qb_requests": 0,
+    "campaign_qb_profiles": 0,
+    "campaign_qb_events": 0
+  },
+  "unit_status_rows": [
+    [
+      "p5q-c6-libtirpc-20261015",
+      "SANDBOX_PUSHED",
+      1
+    ]
+  ],
+  "db_sha256_after": "bd4380eacf2409c40137ad8b648939261b3a3eebe20d4101a6e2269b2c4eb405",
+  "frozen_design_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "config_equals_preparation": true,
+  "browser_profiles": [],
+  "residual_processes": [],
+  "candidate_inspection_errors": [],
+  "free": {
+    "argv": [
+      "free",
+      "-h"
+    ],
+    "exit": 0,
+    "stdout": "               total        used        free      shared  buff/cache   available\nMem:            30Gi        17Gi       1.0Gi       773Mi        13Gi        12Gi\nSwap:          4.0Gi       3.5Gi       491Mi\n",
+    "stderr": ""
+  },
+  "home_mount": {
+    "argv": [
+      "findmnt",
+      "--target",
+      "/home",
+      "--noheadings",
+      "--output",
+      "SOURCE,TARGET,FSTYPE"
+    ],
+    "exit": 0,
+    "stdout": "/dev/sda1 /home  ext4\n",
+    "stderr": ""
+  },
+  "df": {
+    "argv": [
+      "df",
+      "-h",
+      "/home",
+      "/dev/shm"
+    ],
+    "exit": 0,
+    "stdout": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1       1.8T  1.5T  231G  87% /home\ntmpfs            16G  141M   16G   1% /dev/shm\n",
+    "stderr": ""
+  },
+  "d_samples": [
+    {
+      "time": "2026-10-19T05:19:42.565556+00:00",
+      "ps_exit": 0,
+      "processes": []
+    },
+    {
+      "time": "2026-10-19T05:19:52.583060+00:00",
+      "ps_exit": 0,
+      "processes": [
+        {
+          "pid": 1732165,
+          "comm": "kworker/u81:0+i915_flip",
+          "wchan": "0"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-19T05:20:02.601090+00:00",
+      "ps_exit": 0,
+      "processes": []
+    }
+  ],
+  "persistent_d_pids": [],
+  "technical_preconditions_pass": true,
+  "disk_gate": "PASS_NO_PERSISTENT_D",
+  "ended_at": "2026-10-19T05:20:02.601145+00:00"
+}

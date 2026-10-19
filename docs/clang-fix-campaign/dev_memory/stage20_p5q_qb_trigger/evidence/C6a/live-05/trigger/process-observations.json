@@ -1,0 +1,112 @@
+{
+  "method": "passive /proc descendants/executable metadata sampling at 0.1s; exit recorded only if zombie observed",
+  "processes": [
+    {
+      "pid": 1733391,
+      "kind": "agent",
+      "first_seen_seconds": 0.201,
+      "exe": "/home/linhao/Toolchain/development/security_optimization_rea/.local-tools/node-v24.21.0-linux-x64/bin/node",
+      "last_seen_seconds": 73.705
+    },
+    {
+      "pid": 1733403,
+      "kind": "chromium",
+      "first_seen_seconds": 0.403,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 0.705
+    },
+    {
+      "pid": 1733411,
+      "kind": "chromium",
+      "first_seen_seconds": 0.403,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 0.706
+    },
+    {
+      "pid": 1733410,
+      "kind": "chromium",
+      "first_seen_seconds": 0.403,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 0.706
+    },
+    {
+      "pid": 1733441,
+      "kind": "chromium",
+      "first_seen_seconds": 0.504,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 0.706
+    },
+    {
+      "pid": 1733436,
+      "kind": "chromium",
+      "first_seen_seconds": 0.504,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 0.705
+    },
+    {
+      "pid": 1733533,
+      "kind": "chromium",
+      "first_seen_seconds": 0.604,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 0.604
+    },
+    {
+      "pid": 1733532,
+      "kind": "chromium",
+      "first_seen_seconds": 0.604,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 0.604
+    },
+    {
+      "pid": 1733568,
+      "kind": "chromium",
+      "first_seen_seconds": 0.807,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 38.686
+    },
+    {
+      "pid": 1733576,
+      "kind": "chromium",
+      "first_seen_seconds": 0.807,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 38.787
+    },
+    {
+      "pid": 1733575,
+      "kind": "chromium",
+      "first_seen_seconds": 0.807,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 38.787
+    },
+    {
+      "pid": 1733608,
+      "kind": "chromium",
+      "first_seen_seconds": 0.908,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 38.686
+    },
+    {
+      "pid": 1733600,
+      "kind": "chromium",
+      "first_seen_seconds": 0.908,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 38.686
+    },
+    {
+      "pid": 1733721,
+      "kind": "chromium",
+      "first_seen_seconds": 1.009,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 38.686
+    },
+    {
+      "pid": 1733720,
+      "kind": "chromium",
+      "first_seen_seconds": 1.009,
+      "exe": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "last_seen_seconds": 38.686
+    }
+  ],
+  "monitor_error_categories": [],
+  "no_protocol_or_credential_capture": true
+}

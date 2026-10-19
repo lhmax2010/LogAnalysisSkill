@@ -1,0 +1,83 @@
+{
+  "checked_at": "2026-10-19T05:25:54.484951+00:00",
+  "scope": "offline evidence/documentation checks only",
+  "commands": [
+    {
+      "name": "design",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit": 0,
+      "output": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n"
+    },
+    {
+      "name": "diff",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "checked_files": [
+    {
+      "path": "pending-audit.json",
+      "sha256": "bf4e7eae2ad68cb5ada2d656dae612e618c189432f0bc6c171226117cff59bbe"
+    },
+    {
+      "path": "pending-manual-binding.md",
+      "sha256": "05cc563ed1db5955b04e89bdd391a223751f354dd466b3df004c8c0fcd6e2025"
+    },
+    {
+      "path": "preflight.json",
+      "sha256": "efffec79b096183bebabea8b5e91628548fa4be05507a4086829dfcfcecfee31"
+    },
+    {
+      "path": "trigger/command.json",
+      "sha256": "356a173d8a1b11dbb60b588b84452821ee1db2b13e050dcfa485938acacedfb5"
+    },
+    {
+      "path": "trigger/execution.json",
+      "sha256": "35d74d9e07556a7f609ca1584a2b4dfff4f83974bea8d297e438380af4a14139"
+    },
+    {
+      "path": "trigger/process-observations.json",
+      "sha256": "55fa24f98a01e5100d2eec229fcf365188309cd89f70e9c158fd290776496c03"
+    },
+    {
+      "path": "trigger/state-after.sql",
+      "sha256": "58a63f44ef2db75df694b66ba41b97b4a0b144165fe78c8819b8c46c426eb604"
+    },
+    {
+      "path": "trigger/stderr.txt",
+      "sha256": "e09e4b36e90c1a093f6b5a67027e71c9e0e346a7a14a13167e7ada24f0ab8b36"
+    },
+    {
+      "path": "trigger/stdout.json",
+      "sha256": "a92ed7ddcb658d6e7e41afb077305745003bc86fbf79e3df8cc9f223e68ae873"
+    },
+    {
+      "path": "trigger/trace-after.jsonl",
+      "sha256": "32edee2bf73ac31bd4ee38bf6325139af0f42fdc4758867dca95164370e9e448"
+    },
+    {
+      "path": "trigger/trace-before.jsonl",
+      "sha256": "4291ca8511d589945dd9269c739ced2a462eef03214d2469bb6c522f2b18590c"
+    },
+    {
+      "path": "trigger/trace-new.jsonl",
+      "sha256": "02564cd5f40d68921d91d252c536c0a60dd5295835467c3430b7f0e336528c5a"
+    }
+  ],
+  "added_document_text": "PASS",
+  "production_tests_spikes_design_frozen_unchanged": true,
+  "trigger_argv_equals_live01": true,
+  "full_test_suite": "NOT_RERUN: no code changes",
+  "manual_binding": "PENDING_USER_BUILD_ID",
+  "fetch_invocations": 0,
+  "trigger_invocations": 1
+}

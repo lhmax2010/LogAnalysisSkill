@@ -1,0 +1,73 @@
+{
+  "observed_at": "2026-10-19T05:24:33.695947+00:00",
+  "state_db_sha256_before": "d1ff348dda02521b55759e92bc2dda360a268848012ae1741b9dc22b8bfe7140",
+  "state_db_sha256_after": "d1ff348dda02521b55759e92bc2dda360a268848012ae1741b9dc22b8bfe7140",
+  "table_counts": {
+    "campaign_qb_requests": 1,
+    "campaign_qb_profiles": 1,
+    "campaign_qb_events": 1
+  },
+  "records": {
+    "campaign_qb_requests": [
+      {
+        "request_seq": 1,
+        "request_id": "9fe02dc3927c4b7fa55a3dffce699d03",
+        "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+        "sbs_target": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+        "created_at": "2026-10-19T05:21:27.843403+00:00"
+      }
+    ],
+    "campaign_qb_profiles": [
+      {
+        "branch": "tizen_base",
+        "profile_json": "{\"configuration_path\":\"root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER\",\"form\":{\"Add Package List\":\"\",\"BUILD_REFERENCE\":\"Ref. Snapshot\",\"BUILD_TYPE\":\"Full\",\"CHILD_CONFIGURATIONS\":[\"standard-armv7l:aarch64:x86_64\"],\"Immediate Stop With Error\":true,\"PROJECT_BRANCH\":\"tizen_base\",\"REPO_TYPE\":\"ALL\",\"Remove Package List\":\"\",\"SNAPSHOT_NUM\":\"tizen-base-toolchain_20261013.024319\",\"TARGET_IMAGE\":[]},\"overview_id\":1917,\"project_name\":\"Tizen-Base-Toolchain\",\"qb_pass_requires_accept\":false}",
+        "profile_sha256": "c8504d8c2d0385c98cf71c2e4f79353492ef6230591b0dfecc36a194451bf69d",
+        "created_at": "2026-10-19T05:21:27.842975+00:00"
+      }
+    ],
+    "campaign_qb_events": [
+      {
+        "event_id": 1,
+        "request_seq": 1,
+        "event_type": "SUBMITTED",
+        "qb_build_id": null,
+        "status": null,
+        "accepted": null,
+        "sbs_target_echo": null,
+        "per_arch_status_json": null,
+        "qb_result_sha256": null,
+        "qb_result_ref": null,
+        "degraded": 0,
+        "created_at": "2026-10-19T05:21:27.843536+00:00"
+      }
+    ],
+    "campaign_status_log": [
+      {
+        "log_id": 1,
+        "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+        "status": "SANDBOX_PUSHED",
+        "reason": null,
+        "arch_norm": null,
+        "created_at": "2026-10-15T06:50:00.137549+00:00"
+      },
+      {
+        "log_id": 2,
+        "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+        "status": "QB_REQUESTED",
+        "reason": null,
+        "arch_norm": null,
+        "created_at": "2026-10-19T05:21:27.843715+00:00"
+      }
+    ]
+  },
+  "sql_matches_trigger_archive": true,
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "profile_directories": [],
+  "residual_processes": [],
+  "process_scan_errors": [],
+  "transport_directories": [],
+  "fetch_started": false,
+  "manual_build_id_received": false,
+  "manifest_get_started": false,
+  "status": "WAITING_MANUAL_BUILD_ID"
+}
