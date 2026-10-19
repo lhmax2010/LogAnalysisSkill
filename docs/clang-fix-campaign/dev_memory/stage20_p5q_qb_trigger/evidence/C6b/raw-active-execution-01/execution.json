@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/home/linhao/.local/bin/node",
+    "docs/clang-fix-campaign/spikes/p5q_compare_raw_active.mjs",
+    "--path",
+    "/build/1201886/overview",
+    "--path",
+    "/build/1201886/variables",
+    "--path",
+    "/build/1201889/overview",
+    "--path",
+    "/build/1201889/variables",
+    "--path",
+    "/overview/1917",
+    "--output",
+    "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6b/raw-active-01"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started_at": "2026-10-19T07:16:49.567295+00:00",
+  "attempt": 1,
+  "stdin": "DEVNULL",
+  "test_overrides": [],
+  "ended_at": "2026-10-19T07:17:31.919075+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 42.290508,
+  "last_chromium_seconds": 41.972482,
+  "close_tail_seconds": 0.318026,
+  "process_sampling_interval_seconds": 0.1,
+  "agent_exit_code": "NOT_COLLECTED"
+}

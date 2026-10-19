@@ -1,0 +1,71 @@
+{
+  "at": "2026-10-19T07:16:07.270809+00:00",
+  "head": "9cc481ff1570e25ce753a5f9b0ebb8bd28450544",
+  "database": {
+    "sha256": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30",
+    "table_counts": {
+      "campaign_qb_requests": 1,
+      "campaign_qb_profiles": 1,
+      "campaign_qb_events": 3
+    },
+    "latest_status": {
+      "log_id": 4,
+      "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+      "status": "SANDBOX_QB_PASS",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-19T05:58:23.480569+00:00"
+    },
+    "events": [
+      {
+        "event_id": 1,
+        "request_seq": 1,
+        "event_type": "SUBMITTED",
+        "qb_build_id": null,
+        "status": null,
+        "accepted": null,
+        "sbs_target_echo": null,
+        "per_arch_status_json": null,
+        "qb_result_sha256": null,
+        "qb_result_ref": null,
+        "degraded": 0,
+        "created_at": "2026-10-19T05:21:27.843536+00:00"
+      },
+      {
+        "event_id": 2,
+        "request_seq": 1,
+        "event_type": "BUILD_BOUND",
+        "qb_build_id": "1201886",
+        "status": null,
+        "accepted": null,
+        "sbs_target_echo": null,
+        "per_arch_status_json": null,
+        "qb_result_sha256": null,
+        "qb_result_ref": null,
+        "degraded": 0,
+        "created_at": "2026-10-19T05:58:22.345726+00:00"
+      },
+      {
+        "event_id": 3,
+        "request_seq": 1,
+        "event_type": "RESULT",
+        "qb_build_id": "1201886",
+        "status": "PASS",
+        "accepted": null,
+        "sbs_target_echo": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+        "per_arch_status_json": null,
+        "qb_result_sha256": "feebbbe78c7bb2444dcb46a50a5b1bda7584d34e275a2dcea710c45e3415932b",
+        "qb_result_ref": "qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json",
+        "degraded": 0,
+        "created_at": "2026-10-19T05:58:23.480238+00:00"
+      }
+    ]
+  },
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "profiles": [],
+  "transports": [],
+  "processes": [],
+  "process_scan_errors": [],
+  "display_configured": true,
+  "ready": true
+}

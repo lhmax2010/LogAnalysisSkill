@@ -1,6 +1,11 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-19。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE05_BOUND_FIRST_READ_PASS**。
+日期:2026-10-19。状态:**C6 完成,等待 v1.6 自动绑定**。P5Q不标CLOSED。
+最新执行见§45–46/P5Q-C6B-01:终态重读exit0、RESULT仍为3、专用库逐字节不变;
+成功父1201886/子1201889及配置1917的五页50项比对一致,身份计数均0。
+成功样本与BUILD_NOTES样本挂账已CLOSED,第9.4节第2步真实提交已完成(1201886)。
+关闭尾段0.213秒;v1.6自动绑定、验证性提交、历史登录超时原因仍开放。
+以下旧轮次概述保留作历史,以§45–46和第5节最新台账为当前状态。
 本轮见§41/P5Q-C6A-04与§42:关闭后退出问题由设计方判为已知缺陷,修复后置;
 live-04已获新“确认提交”,当场核对通过后仅执行一次;login超时停止,见§42.4。
 live-04停止后未重试、未运行fetch或进入C6b。
@@ -64,6 +69,10 @@ C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 
 ## 1. 权威与冻结哈希
 
+本节原文为C0入库记录。当前权威已由§27更新为v1.5-FROZEN,
+SHA256=f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c;
+v1.2保留备查。本轮复核见§45。
+
 权威:[p5q-qb-trigger-design-v1.2-FROZEN.md](../../p5q-qb-trigger-design-v1.2-FROZEN.md)。
 FatTank放入的文件原字节保留,未修改标题、附录或其它内容。校验原文:
 
@@ -88,8 +97,8 @@ exit=0
 | C3 | qb-trigger CLI及触发/填表/崩溃/多unit/隔离传输用例 | COMPLETE @3ef542a;§31;C3-01/C3-03均已裁定关闭 |
 | C4 | qb-result-fetch CLI、人工绑定及读取/落库用例 | COMPLETE @39e4bde;§33;C4-01已由C4-02关闭 |
 | C5a | 第9.3节本机浏览器集成;第1.6步工具准备 | COMPLETE;§34;全部离线,2638 passed/1 skipped,四组安全4/4 |
-| C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | EXECUTED_SAMPLES_PENDING;§36.6–36.9真机演练及离线解析通过;§35六页比对保留;成功/BUILD_NOTES两个样本仍挂账 |
-| C6 | 第9.4节第2步确认的真实提交与收口文档 | C6a WAITING_TARGET;§37–38登记专用状态库裁定;只有新的“确认提交”授权一次真实提交,C6b不在本轮范围 |
+| C5b | 第1.6步原始/活动文档比对、填表演练与样本补齐 | COMPLETE;§36.6–36.9演练及§35六页比对通过,成功/BUILD_NOTES两个样本由§45补齐并CLOSED |
+| C6 | 第9.4节第2步确认的真实提交与收口文档 | C6 完成,等待 v1.6 自动绑定;§43人工绑定1201886/子1201889 PASS,§45终态重读与样本补证完成;P5Q收口尚未获准 |
 
 C2真机取证与冻结稿假设不符时按R1修订,不得直接继续C3。
 C0授权不含实现;C1/C2a已完成。本轮C2b授权浏览器人工登录、只读与BUILD_TYPE联动取证,
@@ -150,10 +159,14 @@ Successful与Accept分开:默认qb_pass_requires_accept=false;冻结稿附录A�
 
 | 项目 | 状态/关门点 |
 |---|---|
-| 第9.4节第1步RBS只读取证 | PENDING_C2;安全子集本机先绿,父1193467/子1193469及失败父1186372;配置ID/title、变量映射、Child Build表、登录落点/被拒资源等全量取证 |
-| 第9.4节第1.5步表单联动 | PENDING_C2;Full改Partial再改回Full,不submit,记录回调/action/版本/重渲染变化 |
-| 第9.4节第2步一次真实提交 | PENDING_C6/FatTank;先展示十二字段/目标行并确认,再提交并fetch,取得响应落点与build ID闭环;完成前不CLOSED |
-| 附录C待填 | PENDING_C2;冻结稿当前保持原字节;取证后按授权照录,不得猜字段或拿SBS替代 |
+| 第9.4节第1步RBS只读取证 | DONE;C2b/live-12及§26,Base失败样本1193469;1186372为Unified,不替代Base样本 |
+| 第9.4节第1.5步表单联动 | DONE;§26/live-12,Full→Partial→Full;§36.6填表演练12字段各1获准/0拒绝/HTTP200、提交放行0 |
+| 第9.4节第1.6步a原始字节比对 | CLOSED;C5b固定六页60项一致,本轮成功父子与1917五页50项一致、身份计数均0;见§45.4 |
+| 第9.4节第1.6步成功样本 | CLOSED;1201886/1201889,live-05与C6b双份证据及逐项行号见§45.5 |
+| 第9.4节第1.6步BUILD_NOTES样本 | CLOSED;完整请求标记逐字相等,无首尾空白、HTML转义或截断;见§45.5 |
+| 第9.4节第2步一次真实提交 | DONE;1201886经人工绑定,1201889 PASS;§43/live-05及§45终态重读,本轮未再提交 |
+| 附录C待填 | 已取证内容见C2b/appendix-c.md、§26及v1.5;成功样本/快照关系由§45补证登记,本轮冻结稿原字节不改 |
+| v1.6自动绑定与验证性提交 | OPEN;三方评审冻结、实现自动查找绑定、再一次验证性真实提交之后P5Q才可CLOSED;本轮不实施 |
 | P12 sandbox推送观察 | PENDING_P12;首次真实Gerrit推送后观察是否自发QB构建;本批不提前真实推送 |
 | Unified配置 | 未取证保持disabled,不能猜配置ID/默认值 |
 
@@ -5174,3 +5187,154 @@ summarize.py逐字节核对Agent之前的整个源码前缀(含Policy、installG
 两份原始失败日志及八份合成overview HTML的原字节行尾空白;
 不改写证据、不改检查器。排除原始log/html后的同一检查exit0。
 完整输出与命令见offline-fix-01/staged-diff及staged-nonraw;本轮要求的全部门禁仍为exit0。
+
+## 45. 实施裁定 P5Q-C6B-01:C6b 范围与两项决定
+
+### 45.1 裁定原文
+
+1. FatTank 于 2026-10-19 作出两项决定:
+   a. 提交后落点不明时,由工具自动查找构建号并绑定。此功能纳入 P5Q,由设计 v1.6 规定。v1.6 经三方评审冻结并实现,再经一次验证性真实提交,之后 P5Q 才能 CLOSED。本轮不实现。
+   b. 快照判据(冻结稿第 9.4 节第 2 步要求的 R1 决定)。依据:1201886/1201889 实测,Ref. Snapshot 模式下,父构建回显的 SNAPSHOT_NUM、冻结值、子构建 SNAPSHOT_NUM_URL 的最后一段三者相同。决定:
+      - 子构建快照地址按现行规则正式作为判据:最后一段等于冻结值时照常落库;同形态但不相等为快照漂移,默认停止,可对单个 request 人工接受;其它不符一律停止;
+      - 父构建 SNAPSHOT_NUM 继续只记录,不作判据;
+      - 本轮不改代码;停止提示里"须取一个以 Ref. Snapshot 提交的子构建样本后按 R1 定判据"这句,留到 v1.6 实现时修改。
+2. C6b 范围:
+   a. 对已绑定的 request 9fe02dc3927c4b7fa55a3dffce699d03 做一次真机终态重读;
+   b. 用现有比对工具,对成功样本做原始正文与活动文档比对(冻结稿第 9.4 节第 1.6 步 a"找到成功样本时一并覆盖"),同时取一份新的配置页 1917 样本供 v1.6 设计;
+   c. 正式关闭成功样本与 BUILD_NOTES 样本两个挂账项,写 C6 阶段小结。
+3. 9cc481f 验收的三点备注,只记录,不改代码:
+   - login_facts 的 final_path_shape 为"/"时,可能是跳到未登记地址后的浏览器错误页,必须和 denied 里的 <other>、login_channel_closed 一起看,不能理解为登录到了首页;
+   - QbBrowser.close 会两次关闭 stdin,无害;
+   - 关闭修复和 login_facts 由本轮真机重读做首次真机核对。
+
+### 45.2 执行计划与边界
+
+执行基线9cc481f。已读§5、§43–44及p5q_compare_raw_active.md;
+冻结稿SHA256为`f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c`。
+本轮不改生产代码、取证工具、design.md或冻结稿。只执行一次生产终态重读,
+随后仅在前项符合预期时执行一次五页原始正文/活动文档比对。每次浏览器启动前重新
+归档只读前置;任何异常停止、不重试。当前两项均PENDING,不提前关闭样本挂账。
+证据目录为`evidence/C6b/`;不提交state.db二进制或任何凭据。
+
+### 45.3 一次生产终态重读
+
+两次操作均在聊天预告后由FatTank在窗口内登录,不读终端输入。
+各自启动前重新检查专用库SHA256、三表1/1/3、SANDBOX_QB_PASS、无P5Q代理/
+Playwright Chromium/profile/.transport残留及冻结稿hash,全部通过。
+前置文件分别为`evidence/C6b/reread-01/preflight.json`与
+`evidence/C6b/raw-active-execution-01/preflight.json`。
+
+```bash
+/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python -m ci_triage qb-result-fetch --request-id 9fe02dc3927c4b7fa55a3dffce699d03 --state-db /home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db --state-root /home/linhao/Toolchain/p5q-live-validation/p5q-c6/state --config /home/linhao/Toolchain/p5q-live-validation/p5q-c6/config.yaml
+```
+
+UTC 2026-10-19T07:16:07.430044+00:00至07:16:32.790632+00:00,exit0,
+stderr仅一行固定登录提示。stdout仍为PASS、terminal=true、parent1201886/child1201889、RESULT event_id=3,
+指向既有`qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json`。
+完整原文见[reread-01/stdout.json](evidence/C6b/reread-01/stdout.json)。
+DB执行前后均为`08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30`,
+三表仍1/1/3,最新状态仍SANDBOX_QB_PASS。没有新事件,accepted仍null;
+既有RESULT复用路径为`qb_result_fetch.py:500–506`,未触发accepted变化追加分支。
+
+qb_evidence新增且仅新增四份05.1201886-overview.html、06.1201886-variables.html、
+07.1201889-overview.html、08.1201889-variables.html;qb_results新增保留文件0,
+既有文件无改写/删除。四条新增trace均outside_identity_count=0。
+原字节证据、逐文件hash、trace前后与增量、只读SQL导出在reread-01/。
+生产命令由仓库外执行记录器直接Popen,只清除与旧轮次相同的凭据/调试环境变量,
+不注入代理参数、不包装或改写生产代码。每个命令均只运行一次。
+
+进程观察每0.1秒采样,最后观察到Chromium为t=25.098941秒,CLI结束t=25.311512秒,
+尾段0.212571秒。代理最终退出码未直接采到,如实记NOT_COLLECTED,不从CLI exit0推断。
+执行后无残留。登录成功,未产生login_facts;本轮不能把登录失败事实字段称为已触发
+真机验证,其格式和失败场景沿用§44离线验收。
+
+### 45.4 成功样本五页比对与配置页摘录
+
+```bash
+/home/linhao/.local/bin/node docs/clang-fix-campaign/spikes/p5q_compare_raw_active.mjs --path /build/1201886/overview --path /build/1201886/variables --path /build/1201889/overview --path /build/1201889/variables --path /overview/1917 --output docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6b/raw-active-01
+```
+
+目录首次执行前不存在。UTC07:16:49.567295至07:17:31.919075,exit0,
+run.json=PASSED,login/5次read/close均ok。stdout为空,stderr仅一行固定登录提示;
+专用DB前后仍为上述08ed202e…acd30,三表1/1/3,专用state目录无新增/修改/删除文件。
+记录器关闭尾段0.318026秒;代理退出码NOT_COLLECTED,这不是直接close调用计时。
+
+| 页面 | 证据序号 | 导航核对 | 十项比对 | 身份计数raw/active |
+|---|---|---|---|---|
+| /build/1201886/overview | 01 | VERIFIED | 10/10一致 | 0/0 |
+| /build/1201886/variables | 02 | VERIFIED | 10/10一致 | 0/0 |
+| /build/1201889/overview | 03 | VERIFIED | 10/10一致 | 0/0 |
+| /build/1201889/variables | 04 | VERIFIED | 10/10一致 | 0/0 |
+| /overview/1917 | 05 | VERIFIED | 10/10一致 | 0/0 |
+
+十项为navigation、summary、child_build、variables、configuration_tabs、breadcrumb、
+copy_path、build_name、failed_steps、error_message;不适用的项目在两侧均为空,
+不把空项说成读取到了字段。逐页逐字段事实见raw-active-01/NN.comparison.json;
+表格见[C6b/README.md](evidence/C6b/README.md)。
+
+1917的Build Requests共1行,Recent Builds共10行。1201886只出现在Recent Builds
+第2行(raw-redacted:971,构建链接:983),不在Build Requests中。
+逐行全量摘录、表头、链接、状态class、Begin Date/Duration见
+[configuration-1917.md](evidence/C6b/configuration-1917.md)。
+两表HTML均非逐字一致:活动文档在change/下拉菜单锚点增加
+`popup-trigger close popup-target` class。单元格文字、构建链接及状态class一致,
+完整差异见configuration-tables.diff;这里仅记录,不据此修订v1.6或声称整表字节一致。
+本轮工具规定的十项比较没有该差异;成功样本四页的全部规定字段均一致。
+
+### 45.5 挂账关闭表
+
+以下每条均引用live-05与本轮raw-active双份证据,不是仅依据RESULT复述。
+旧文件基址为`evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/`,
+新文件基址为`evidence/C6b/raw-active-01/`;行号指原字节HTML。
+
+| 项目 | 事实与结论 | live-05来源 | C6b来源 |
+|---|---|---|---|
+| 成功子构建Summary | Successful,归一PASS | 03.1201889-overview.html:830 | 03.raw-redacted.html:830 |
+| 父Child Build结果 | SUCCESSFUL,指向1201889 | 01.1201886-overview.html:891 | 01.raw-redacted.html:891 |
+| EACH_GBS_BUILD_STATUS | 存在,单元格原文为空 | 04.1201889-variables.html:802 | 04.raw-redacted.html:802 |
+| 父SNAPSHOT_NUM | tizen-base-toolchain_20261013.024319 | 02.1201886-variables.html:810 | 02.raw-redacted.html:810 |
+| 子SNAPSHOT_NUM_URL | http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319 | 04.1201889-variables.html:802 | 04.raw-redacted.html:802 |
+| 快照关系 | 父回显=冻结值=子URL末段;snapshot_kind=same;父回显仍只记录 | 上述父子变量页及live-05/fetch结果JSON | 上述父子变量页及C6b/offline-analysis.json |
+| BUILD_NOTES | clang-fix-campaign request=9fe02dc3927c4b7fa55a3dffce699d03;单元格文本及内部HTML逐字相等,无首尾空白、转义、换行或截断 | 02.1201886-variables.html:810 | 02.raw-redacted.html:810 |
+
+成功样本挂账=CLOSED,BUILD_NOTES样本挂账=CLOSED;前提为本轮对应四页原始/活动
+规定字段全部一致,已满足。解析用生产qb_result_html的parent_overview、child_overview、
+snapshot_kind及HTMLParser源位置;完整事实、单元格原文与引用在offline-analysis.json。
+离线摘录初稿错误假设td不带属性,在旧归档的`td class="vat"`处断言失败;
+已改为按HTMLParser定位单元格内部原字节,核对值而非臆定标签写法后通过。
+这不是生产/真机失败,未因此重读或修改任何页面/工具。
+
+### 45.6 验收与边界
+
+仅运行本轮要求的设计检查、diff检查、逐个新增文件原始字节脱敏自检及JSON字符串
+递归检查;不重跑pytest、不将§44的2709/1冒称本轮结果。结果见C6b/validation.json。
+冻结稿/design.md/生产代码/既有spikes均保持原字节,专用DB保持08ed202e…acd30。
+没有qb-trigger、retrigger、accept-snapshot-drift、Gerrit推送或Accept操作;
+除了两次授权只读浏览器操作,没有其它QuickBuild请求,没有重试。
+新停止报告0条。配置两表HTML class差异仅按任务要求留档,不扩大样本关闭结论。
+
+验收结果:design.md检查exit0/0 problem;新增证据逐文件原始字节及JSON递归脱敏检查
+均通过。完整暂存区diff检查exit2,仅14份原字节HTML和configuration-tables.diff
+的原始空白告警,最终加入原始检查输出log后共16份;不修改证据字节或检查规则。
+排除原始HTML/diff及该原始输出log后的检查exit0。
+命令、告警路径、逐文件hash见validation.json及gates/;最终暂存复核见final-validation.json。
+
+## 46. C6 阶段小结
+
+状态:**C6 完成,等待 v1.6 自动绑定**;P5Q不是CLOSED。
+
+| 坐实的事实 | 证据 |
+|---|---|
+| 一次真实提交已创建父1201886,人工按BUILD_NOTES查号后绑定,子1201889 PASS | §43.7及C6a/live-05/trigger、fetch |
+| 现行已绑定request终态重读幂等,RESULT仍为3、数据库不变 | C6b/reread-01/stdout.json、post-audit.json |
+| 成功样本原始正文/活动文档字段相等,身份计数0 | C6b/raw-active-01/01–04.comparison.json |
+| 非空BUILD_NOTES与请求标记逐字一致,样本挂账关闭 | §45.5与C6b/offline-analysis.json |
+| Ref. Snapshot下父回显/冻结值/子快照名三者相同,R1决定按§45.1执行 | §45.5及live-05/fetch既有RESULT |
+| 关闭修复首次真机核对:尾段0.212571秒,旧轮35.042秒;未直接观察代理退出码 | C6b/reread-01/execution.json、process-observations.json;旧live-05/fetch/execution.json |
+| 配置1917两表新样本已取得,表格HTML不逐字一致但摘录字段一致 | C6b/configuration-1917.md、configuration-tables.diff |
+
+仍开放:自动查找并绑定构建号须由v1.6三方评审冻结、实现及一次验证性真实提交闭环;
+live-01/live-04登录超时原因仍未知,现有login_facts可供下次出现时区分,
+本轮两次登录成功未触发失败事实应答。停止提示旧措辞留到v1.6修改。
+C6使用专用构造状态库及本地bare镜像,不覆盖真实Gerrit远端核对;该项沿用C3离线验证,
+首次真实sandbox推送仍在P12。Unified未取证仍disabled。完成本轮后停止,不自行收口。

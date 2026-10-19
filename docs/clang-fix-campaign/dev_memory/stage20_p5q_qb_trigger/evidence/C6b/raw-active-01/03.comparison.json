@@ -1,0 +1,176 @@
+{
+  "path": "/build/1201889/overview",
+  "navigation": "VERIFIED",
+  "raw_file": "03.raw-redacted.html",
+  "active_file": "03.active-redacted.html",
+  "raw_outside_identity_count": 0,
+  "active_outside_identity_count": 0,
+  "comparison": [
+    {
+      "field": "navigation",
+      "result": "一致",
+      "raw": [
+        "Build (id:1201889)"
+      ],
+      "active": [
+        "Build (id:1201889)"
+      ]
+    },
+    {
+      "field": "summary",
+      "result": "一致",
+      "raw": [
+        {
+          "heading": "Summary",
+          "tables": [
+            {
+              "columns": [
+                "Id",
+                "Status",
+                "Begin Date",
+                "Duration",
+                "Triggered By",
+                "#Dependents",
+                "#Dependencies"
+              ],
+              "rows": [
+                [
+                  "1201889",
+                  "Successful",
+                  "2026-10-19 05:23:31",
+                  "16 minutes 12 seconds",
+                  "<USER>",
+                  "0 builds",
+                  "0 builds"
+                ]
+              ]
+            }
+          ]
+        }
+      ],
+      "active": [
+        {
+          "heading": "Summary",
+          "tables": [
+            {
+              "columns": [
+                "Id",
+                "Status",
+                "Begin Date",
+                "Duration",
+                "Triggered By",
+                "#Dependents",
+                "#Dependencies"
+              ],
+              "rows": [
+                [
+                  "1201889",
+                  "Successful",
+                  "2026-10-19 05:23:31",
+                  "16 minutes 12 seconds",
+                  "<USER>",
+                  "0 builds",
+                  "0 builds"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "field": "child_build",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "variables",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "configuration_tabs",
+      "result": "一致",
+      "raw": [
+        [
+          "../../overview/1915"
+        ],
+        [
+          "../../pipeline/1915"
+        ],
+        [
+          "../../children/1915"
+        ]
+      ],
+      "active": [
+        [
+          "../../overview/1915"
+        ],
+        [
+          "../../pipeline/1915"
+        ],
+        [
+          "../../children/1915"
+        ]
+      ]
+    },
+    {
+      "field": "breadcrumb",
+      "result": "一致",
+      "raw": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "build",
+        ""
+      ],
+      "active": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "build",
+        ""
+      ]
+    },
+    {
+      "field": "copy_path",
+      "result": "一致",
+      "raw": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build"
+      ],
+      "active": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build"
+      ]
+    },
+    {
+      "field": "build_name",
+      "result": "一致",
+      "raw": [
+        "TIZEN_Tizen_Tizen-Base-Toolchain_RBS_build_standard-armv7l:aarch64:x86_64_20261019.052330"
+      ],
+      "active": [
+        "TIZEN_Tizen_Tizen-Base-Toolchain_RBS_build_standard-armv7l:aarch64:x86_64_20261019.052330"
+      ]
+    },
+    {
+      "field": "failed_steps",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "error_message",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    }
+  ]
+}

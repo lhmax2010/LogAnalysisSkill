@@ -1,0 +1,103 @@
+--- Build Requests/raw
++++ Build Requests/active
+@@ -29,7 +29,7 @@
+ 		</td><td>&lt;USER&gt;</td><td>
+ 			<span>
+ 		<span>2026-10-19 07:17:46</span>
+-		<a id="idb5" href="javascript:void(0);">change</a>
++		<a id="idb5" href="javascript:void(0);" class="popup-trigger close popup-target">change</a>
+ 	</span>
+ 		</td><td>
+ 			<span>10</span>
+--- Recent Builds/raw
++++ Recent Builds/active
+@@ -34,7 +34,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="idd1" class=" build-status running maskable" href="/build/1202070">TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261019.071746</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idb7" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idb7" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+                 <a class="link-muted hover:text-danger ml-2" title="Stop the build" id="idd2" href="../wicket/page?7-1.ILinkListener-recentBuildsContainer-recentBuilds-body-rows-1-cells-2-cell-notNull-stop" onclick="confirmDlg('Do you really want to stop this build?', function() {window.location.href='../wicket/page?7-1.ILinkListener-recentBuildsContainer-recentBuilds-body-rows-1-cells-2-cell-notNull-stop';}); return false;"><svg class="svgicon bi bi-stop-circle" version="1.1" aria-hidden="true" viewBox="0 0 16 16">
+     <path xmlns="http://www.w3.org/2000/svg" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path><path xmlns="http://www.w3.org/2000/svg" d="M5 6.5A1.5 1.5 0 0 1 6.5 5h3A1.5 1.5 0 0 1 11 6.5v3A1.5 1.5 0 0 1 9.5 11h-3A1.5 1.5 0 0 1 5 9.5v-3z"></path>
+@@ -81,7 +81,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="idd8" class=" build-status successful maskable" href="/build/1201886">TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261019.052151</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idb8" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idb8" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+             
+             
+@@ -112,7 +112,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="iddd" class=" build-status successful maskable" href="/build/1201414">TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261018.084117</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idb9" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idb9" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+             
+             
+@@ -143,7 +143,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="ide2" class=" build-status failed maskable" href="/build/1200964">TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261016.105352</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idba" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idba" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+             
+             
+@@ -174,7 +174,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="ide7" class=" build-status cancelled maskable" href="/build/1200950">TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261016.100620</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idbb" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idbb" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+             
+             
+@@ -205,7 +205,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="idec" class=" build-status failed maskable" href="/build/1200465">TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261016.031921</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idbc" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idbc" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+             
+             
+@@ -236,7 +236,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="idf1" class=" build-status failed maskable" href="/build/1200120">TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261015.161304</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idbd" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idbd" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+             
+             
+@@ -267,7 +267,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="idf6" class=" build-status successful maskable" href="/build/1199036">[Snapshot] TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261015.022255</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idbe" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idbe" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+             
+             
+@@ -298,7 +298,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="idfb" class=" build-status timeout maskable" href="/build/1198829">TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261014.221921</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idbf" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idbf" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+             
+             
+@@ -329,7 +329,7 @@
+     
+ </svg></span>
+             <span class="ml-1"><a id="id100" class=" build-status successful maskable" href="/build/1197829">[Snapshot] TIZEN_Tizen_Tizen-Base-Toolchain_RBS_TRIGGER_20261014.065008</a></span>
+-            <a class="ml-1 link-muted popup-trigger-icon" id="idc0" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
++            <a class="ml-1 link-muted popup-trigger-icon popup-trigger close popup-target" id="idc0" href="javascript:void(0);"><i class="fa-solid fa-caret-down"></i></a>
+             
+             
+             

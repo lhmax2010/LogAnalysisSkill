@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "ci_triage",
+    "qb-result-fetch",
+    "--request-id",
+    "9fe02dc3927c4b7fa55a3dffce699d03",
+    "--state-db",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db",
+    "--state-root",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state",
+    "--config",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/config.yaml"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started_at": "2026-10-19T07:16:07.430044+00:00",
+  "attempt": 1,
+  "stdin": "DEVNULL",
+  "test_overrides": [],
+  "ended_at": "2026-10-19T07:16:32.790632+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 25.311512,
+  "last_chromium_seconds": 25.098941,
+  "close_tail_seconds": 0.212571,
+  "process_sampling_interval_seconds": 0.1,
+  "agent_exit_code": "NOT_COLLECTED"
+}

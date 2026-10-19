@@ -1,0 +1,112 @@
+{
+  "path": "/overview/1917",
+  "navigation": "VERIFIED",
+  "raw_file": "05.raw-redacted.html",
+  "active_file": "05.active-redacted.html",
+  "raw_outside_identity_count": 0,
+  "active_outside_identity_count": 0,
+  "comparison": [
+    {
+      "field": "navigation",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "summary",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "child_build",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "variables",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "configuration_tabs",
+      "result": "一致",
+      "raw": [
+        [
+          "1917"
+        ],
+        [
+          "../pipeline/1917"
+        ],
+        [
+          "../children/1917"
+        ]
+      ],
+      "active": [
+        [
+          "1917"
+        ],
+        [
+          "../pipeline/1917"
+        ],
+        [
+          "../children/1917"
+        ]
+      ]
+    },
+    {
+      "field": "breadcrumb",
+      "result": "一致",
+      "raw": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "TRIGGER",
+        ""
+      ],
+      "active": [
+        "root",
+        "CI_TIZEN",
+        "TIZEN",
+        "Tizen",
+        "Tizen-Base-Toolchain",
+        "RBS",
+        "TRIGGER",
+        ""
+      ]
+    },
+    {
+      "field": "copy_path",
+      "result": "一致",
+      "raw": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER"
+      ],
+      "active": [
+        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER"
+      ]
+    },
+    {
+      "field": "build_name",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "failed_steps",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "error_message",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+BEGIN TRANSACTION;
+CREATE TABLE campaign_change_ids (
+  submission_key TEXT NOT NULL PRIMARY KEY
+                 CHECK (length(submission_key) = 64
+                        AND submission_key NOT GLOB '*[^0-9a-f]*'),
+  change_id      TEXT NOT NULL UNIQUE
+                 CHECK (length(change_id) = 41
+                        AND substr(change_id, 1, 1) = 'I'
+                        AND substr(change_id, 2) NOT GLOB '*[^0-9a-f]*'),
+  source         TEXT NOT NULL CHECK (source = 'commit_msg_hook'),
+  hook_sha256    TEXT NOT NULL
+                 CHECK (length(hook_sha256) = 64
+                        AND hook_sha256 NOT GLOB '*[^0-9a-f]*'),
+  created_at     TEXT NOT NULL
+);
+CREATE TABLE campaign_gate_events (
+  event_id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  campaign_unit_key   TEXT NOT NULL,
+  round_index         INTEGER,
+  arch_norm           TEXT,
+  verdict             TEXT,
+  invocation_event_id INTEGER,
+  event_type          TEXT NOT NULL,
+  payload_json        TEXT NOT NULL,
+  created_at          TEXT NOT NULL,
+  FOREIGN KEY (campaign_unit_key) REFERENCES campaign_units (campaign_unit_key)
+);
+INSERT INTO "campaign_gate_events" VALUES(1,'p5q-c6-libtirpc-20261015',NULL,NULL,NULL,NULL,'DERIVE','{"author_date":"2026-10-15T06:49:57Z","author_identity":"C6 Synthetic Fixture <p5q-c6@example.invalid>","committer_date":"2026-10-15T06:49:57Z","committer_identity":"C6 Synthetic Fixture <p5q-c6@example.invalid>","derived_commit_sha":"7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0","message_brief":"SYNTHETIC C6-01: reuse fetched snapshot commit; no derive executed","verified_tree_sha":"9ef054c6187444dedb07aab80fb04279f5683bf4"}','2026-10-15T06:49:59.937964+00:00');
+INSERT INTO "campaign_gate_events" VALUES(2,'p5q-c6-libtirpc-20261015',NULL,NULL,NULL,NULL,'PUSH','{"at":"2026-10-15T06:49:57Z","pushed_sha":"7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0","ref":"refs/heads/sandbox/p5q-c6-libtirpc","ref_class":"sandbox","result":"ok","url":null}','2026-10-15T06:50:00.038059+00:00');
+CREATE TABLE campaign_qb_events (
+  event_id              INTEGER PRIMARY KEY AUTOINCREMENT,
+  request_seq           INTEGER NOT NULL,
+  event_type            TEXT NOT NULL
+                        CHECK (event_type IN ('SUBMITTED','BUILD_BOUND','RESULT')),
+  qb_build_id           TEXT,
+  status                TEXT,
+  accepted              INTEGER,
+  sbs_target_echo       TEXT,
+  per_arch_status_json  TEXT,
+  qb_result_sha256      TEXT,
+  qb_result_ref         TEXT,
+  degraded              INTEGER NOT NULL DEFAULT 0,
+  created_at            TEXT NOT NULL,
+  FOREIGN KEY (request_seq) REFERENCES campaign_qb_requests (request_seq)
+);
+INSERT INTO "campaign_qb_events" VALUES(1,1,'SUBMITTED',NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'2026-10-19T05:21:27.843536+00:00');
+INSERT INTO "campaign_qb_events" VALUES(2,1,'BUILD_BOUND','1201886',NULL,NULL,NULL,NULL,NULL,NULL,0,'2026-10-19T05:58:22.345726+00:00');
+INSERT INTO "campaign_qb_events" VALUES(3,1,'RESULT','1201886','PASS',NULL,'platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0',NULL,'feebbbe78c7bb2444dcb46a50a5b1bda7584d34e275a2dcea710c45e3415932b','qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json',0,'2026-10-19T05:58:23.480238+00:00');
+CREATE TABLE campaign_qb_profiles (
+  branch          TEXT NOT NULL PRIMARY KEY,   -- campaign_units.branch
+  profile_json    TEXT NOT NULL,               -- 规范化 JSON(键排序、紧凑分隔符、ensure_ascii=False)
+  profile_sha256  TEXT NOT NULL
+                  CHECK (length(profile_sha256) = 64
+                         AND profile_sha256 NOT GLOB '*[^0-9a-f]*'),
+  created_at      TEXT NOT NULL
+);
+INSERT INTO "campaign_qb_profiles" VALUES('tizen_base','{"configuration_path":"root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER","form":{"Add Package List":"","BUILD_REFERENCE":"Ref. Snapshot","BUILD_TYPE":"Full","CHILD_CONFIGURATIONS":["standard-armv7l:aarch64:x86_64"],"Immediate Stop With Error":true,"PROJECT_BRANCH":"tizen_base","REPO_TYPE":"ALL","Remove Package List":"","SNAPSHOT_NUM":"tizen-base-toolchain_20261013.024319","TARGET_IMAGE":[]},"overview_id":1917,"project_name":"Tizen-Base-Toolchain","qb_pass_requires_accept":false}','c8504d8c2d0385c98cf71c2e4f79353492ef6230591b0dfecc36a194451bf69d','2026-10-19T05:21:27.842975+00:00');
+CREATE TABLE campaign_qb_requests (
+  request_seq       INTEGER PRIMARY KEY AUTOINCREMENT,
+  request_id        TEXT NOT NULL UNIQUE,
+  campaign_unit_key TEXT NOT NULL,
+  sbs_target        TEXT NOT NULL,
+  created_at        TEXT NOT NULL,
+  FOREIGN KEY (campaign_unit_key) REFERENCES campaign_units (campaign_unit_key)
+);
+INSERT INTO "campaign_qb_requests" VALUES(1,'9fe02dc3927c4b7fa55a3dffce699d03','p5q-c6-libtirpc-20261015','platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0','2026-10-19T05:21:27.843403+00:00');
+CREATE TABLE campaign_rounds (
+  campaign_unit_key TEXT NOT NULL,
+  round_index       INTEGER NOT NULL CHECK (round_index >= 1),
+  edit_spec_ref     TEXT NOT NULL,
+  edit_spec_sha256  TEXT NOT NULL,
+  created_at        TEXT NOT NULL,
+  PRIMARY KEY (campaign_unit_key, round_index),
+  UNIQUE (campaign_unit_key, edit_spec_sha256),
+  UNIQUE (campaign_unit_key, round_index, edit_spec_sha256),
+  FOREIGN KEY (campaign_unit_key) REFERENCES campaign_units (campaign_unit_key)
+);
+INSERT INTO "campaign_rounds" VALUES('p5q-c6-libtirpc-20261015',1,'/home/linhao/Toolchain/development/LogAnalysisSkill/synthetic:C6-01','eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee','2026-10-15T06:49:59.204980+00:00');
+CREATE TABLE campaign_status_log (
+  log_id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  campaign_unit_key TEXT NOT NULL,
+  status            TEXT NOT NULL,
+  reason            TEXT,
+  arch_norm         TEXT,
+  created_at        TEXT NOT NULL,
+  FOREIGN KEY (campaign_unit_key) REFERENCES campaign_units (campaign_unit_key)
+);
+INSERT INTO "campaign_status_log" VALUES(1,'p5q-c6-libtirpc-20261015','SANDBOX_PUSHED',NULL,NULL,'2026-10-15T06:50:00.137549+00:00');
+INSERT INTO "campaign_status_log" VALUES(2,'p5q-c6-libtirpc-20261015','QB_REQUESTED',NULL,NULL,'2026-10-19T05:21:27.843715+00:00');
+INSERT INTO "campaign_status_log" VALUES(3,'p5q-c6-libtirpc-20261015','QB_TRIGGERED',NULL,NULL,'2026-10-19T05:58:22.345945+00:00');
+INSERT INTO "campaign_status_log" VALUES(4,'p5q-c6-libtirpc-20261015','SANDBOX_QB_PASS',NULL,NULL,'2026-10-19T05:58:23.480569+00:00');
+CREATE TABLE campaign_units (
+  campaign_unit_key        TEXT PRIMARY KEY,
+  ci_system                TEXT NOT NULL,
+  source_build_id          TEXT NOT NULL,
+  project                  TEXT NOT NULL,
+  branch                   TEXT NOT NULL,
+  spec_name                TEXT NOT NULL,
+  base_commit              TEXT NOT NULL,
+  submission_identity_key  TEXT NOT NULL,
+  toolchain_profile        TEXT NOT NULL,
+  ci_evidence_ref          TEXT,
+  ci_evidence_sha256       TEXT,
+  primary_arch             TEXT,
+  max_rounds               INTEGER NOT NULL CHECK (max_rounds >= 1),
+  max_build_invocations    INTEGER NOT NULL CHECK (max_build_invocations >= 1),
+  failed_arches            TEXT NOT NULL,
+  created_at               TEXT NOT NULL,
+  schema_version           TEXT NOT NULL,
+  CHECK (
+    (primary_arch IS NULL AND ci_evidence_ref IS NULL
+      AND ci_evidence_sha256 IS NULL)
+    OR
+    (primary_arch IS NOT NULL AND ci_evidence_ref IS NOT NULL
+      AND ci_evidence_sha256 IS NOT NULL)
+  )
+);
+INSERT INTO "campaign_units" VALUES('p5q-c6-libtirpc-20261015','quickbuild','1','platform/upstream/libtirpc','tizen_base','libtirpc','7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0','p5q-c6-libtirpc-20261015','clang','/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/preparation/synthetic-basis.json','f401b5dd37d05a740cdb35ff5cb3409bc0c5d70f4c316f44e0db39077bf3d9ba','standard-aarch64',3,9,'["standard-aarch64"]','2026-10-15T06:49:59.111533+00:00','campaign/v1');
+CREATE TABLE campaign_verifications (
+  link_id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+  campaign_unit_key       TEXT NOT NULL,
+  arch_raw                TEXT NOT NULL,
+  arch_norm               TEXT NOT NULL,
+  verification_id         TEXT NOT NULL UNIQUE,
+  round_index             INTEGER NOT NULL,
+  edit_spec_sha256        TEXT NOT NULL,
+  campaign_schema_version TEXT NOT NULL,
+  created_at              TEXT NOT NULL,
+  UNIQUE (campaign_unit_key, arch_norm, round_index),
+  FOREIGN KEY (campaign_unit_key, round_index, edit_spec_sha256)
+    REFERENCES campaign_rounds (campaign_unit_key, round_index, edit_spec_sha256),
+  FOREIGN KEY (campaign_unit_key) REFERENCES campaign_units (campaign_unit_key),
+  FOREIGN KEY (verification_id) REFERENCES verification_records (verification_id)
+);
+INSERT INTO "campaign_verifications" VALUES(1,'p5q-c6-libtirpc-20261015','standard-aarch64','aarch64','p5q-c6-libtirpc-20261015-v0',1,'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee','campaign/v1','2026-10-15T06:49:57Z');
+INSERT INTO "campaign_verifications" VALUES(2,'p5q-c6-libtirpc-20261015','standard-armv7l','armv7l','p5q-c6-libtirpc-20261015-v1',1,'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee','campaign/v1','2026-10-15T06:49:57Z');
+INSERT INTO "campaign_verifications" VALUES(3,'p5q-c6-libtirpc-20261015','standard-x86_64','x86_64','p5q-c6-libtirpc-20261015-v2',1,'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee','campaign/v1','2026-10-15T06:49:57Z');
+CREATE TABLE submissions (
+            submission_key TEXT PRIMARY KEY,
+            verification_id TEXT NOT NULL,
+            submitted_at TEXT NOT NULL,
+            action TEXT NOT NULL,
+            gerrit_change_id TEXT,
+            FOREIGN KEY (verification_id) REFERENCES verification_records (verification_id)
+        );
+CREATE TABLE unit_status_log (
+            log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            unit_key TEXT NOT NULL,
+            status TEXT NOT NULL,
+            timestamp TEXT NOT NULL,
+            verification_id TEXT,
+            reason TEXT,
+            FOREIGN KEY (verification_id) REFERENCES verification_records (verification_id)
+        );
+INSERT INTO "unit_status_log" VALUES(1,'p5q-c6-libtirpc-20261015-aarch64','GERRIT_READY','2026-10-15T06:49:59.336998+00:00','p5q-c6-libtirpc-20261015-v0','verification passed');
+INSERT INTO "unit_status_log" VALUES(2,'p5q-c6-libtirpc-20261015-armv7l','GERRIT_READY','2026-10-15T06:49:59.536513+00:00','p5q-c6-libtirpc-20261015-v1','verification passed');
+INSERT INTO "unit_status_log" VALUES(3,'p5q-c6-libtirpc-20261015-x86_64','GERRIT_READY','2026-10-15T06:49:59.736763+00:00','p5q-c6-libtirpc-20261015-v2','verification passed');
+CREATE TABLE verification_records (
+            verification_id TEXT PRIMARY KEY,
+            result TEXT NOT NULL CHECK (result = 'PASS'),
+            timestamp TEXT NOT NULL,
+            failure_key TEXT NOT NULL,
+            base_commit TEXT NOT NULL,
+            verified_commit_sha TEXT NOT NULL,
+            verified_tree_sha TEXT NOT NULL,
+            canonical_diff_sha256 TEXT NOT NULL,
+            patch_sha256 TEXT NOT NULL,
+            edit_spec_sha256 TEXT NOT NULL,
+            project TEXT NOT NULL,
+            branch TEXT NOT NULL,
+            spec_name TEXT NOT NULL,
+            arch TEXT NOT NULL,
+            gbs_conf_sha256 TEXT NOT NULL,
+            build_log_sha256 TEXT NOT NULL,
+            worktree_path TEXT NOT NULL,
+            command_line TEXT NOT NULL
+        );
+INSERT INTO "verification_records" VALUES('p5q-c6-libtirpc-20261015-v0','PASS','2026-10-15T06:49:57Z','p5q-c6-libtirpc-20261015-aarch64','7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0','7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0','9ef054c6187444dedb07aab80fb04279f5683bf4','dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd','dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd','eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee','platform/upstream/libtirpc','tizen_base','libtirpc','standard-aarch64','ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff','bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb','/home/linhao/Toolchain/p5q-live-validation/p5q-c6/synthetic-not-built/aarch64','SYNTHETIC P5Q-C6-01 fixture; no gbs build executed');
+INSERT INTO "verification_records" VALUES('p5q-c6-libtirpc-20261015-v1','PASS','2026-10-15T06:49:57Z','p5q-c6-libtirpc-20261015-armv7l','7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0','7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0','9ef054c6187444dedb07aab80fb04279f5683bf4','dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd','dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd','eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee','platform/upstream/libtirpc','tizen_base','libtirpc','standard-armv7l','ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff','bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb','/home/linhao/Toolchain/p5q-live-validation/p5q-c6/synthetic-not-built/armv7l','SYNTHETIC P5Q-C6-01 fixture; no gbs build executed');
+INSERT INTO "verification_records" VALUES('p5q-c6-libtirpc-20261015-v2','PASS','2026-10-15T06:49:57Z','p5q-c6-libtirpc-20261015-x86_64','7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0','7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0','9ef054c6187444dedb07aab80fb04279f5683bf4','dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd','dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd','eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee','platform/upstream/libtirpc','tizen_base','libtirpc','standard-x86_64','ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff','bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb','/home/linhao/Toolchain/p5q-live-validation/p5q-c6/synthetic-not-built/x86_64','SYNTHETIC P5Q-C6-01 fixture; no gbs build executed');
+CREATE INDEX idx_unit_status_log_latest
+            ON unit_status_log (unit_key, timestamp, log_id);
+CREATE UNIQUE INDEX ux_convergence_per_invocation
+  ON campaign_gate_events (invocation_event_id)
+  WHERE event_type = 'CONVERGENCE' AND invocation_event_id IS NOT NULL;
+CREATE INDEX ix_gate_unit_type
+  ON campaign_gate_events (campaign_unit_key, event_type, event_id);
+CREATE INDEX ix_status_unit
+  ON campaign_status_log (campaign_unit_key, log_id);
+CREATE INDEX ix_qb_req_unit
+  ON campaign_qb_requests (campaign_unit_key, request_seq);
+CREATE INDEX ix_qb_ev_req
+  ON campaign_qb_events (request_seq, event_id);
+CREATE INDEX ix_qb_ev_build
+  ON campaign_qb_events (qb_build_id);
+DELETE FROM "sqlite_sequence";
+INSERT INTO "sqlite_sequence" VALUES('unit_status_log',3);
+INSERT INTO "sqlite_sequence" VALUES('campaign_verifications',3);
+INSERT INTO "sqlite_sequence" VALUES('campaign_gate_events',2);
+INSERT INTO "sqlite_sequence" VALUES('campaign_status_log',4);
+INSERT INTO "sqlite_sequence" VALUES('campaign_qb_requests',1);
+INSERT INTO "sqlite_sequence" VALUES('campaign_qb_events',3);
+COMMIT;
