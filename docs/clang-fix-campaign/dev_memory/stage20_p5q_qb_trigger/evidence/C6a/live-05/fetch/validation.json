@@ -1,0 +1,165 @@
+{
+  "checked_at": "2026-10-19T06:03:27.867350+00:00",
+  "scope": "documentation/evidence-only closeout checks; no production code changes",
+  "commands": [
+    {
+      "name": "design",
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit": 0,
+      "output": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n"
+    },
+    {
+      "name": "diff",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "output": ""
+    }
+  ],
+  "checked_files": [
+    {
+      "path": "fetch/analysis.json",
+      "sha256": "0c9762aa84896c6d5bf5921776a8d4a3a2fc0e7859454d890bdcb56101347d9d",
+      "bytes": 8155
+    },
+    {
+      "path": "fetch/command.json",
+      "sha256": "8f902dc382af3f6ddf0197e037b1b79b4d24083f24cc1a7fab2d9ac894cbd724",
+      "bytes": 1069
+    },
+    {
+      "path": "fetch/execution.json",
+      "sha256": "f2a33787c58d6a9cb2909627bd9a89b13e7b8bb9ccab3e79c012f3f838b55655",
+      "bytes": 1277
+    },
+    {
+      "path": "fetch/post-audit.json",
+      "sha256": "9e0a6d3c18284f323db7836b80308ae0b3afc379ad539243011e390ad2727870",
+      "bytes": 861
+    },
+    {
+      "path": "fetch/preflight.json",
+      "sha256": "d3502d6b3bada6d51215568f526beda401627c12e36094467d623aeb8903fa71",
+      "bytes": 2009
+    },
+    {
+      "path": "fetch/process-observations.json",
+      "sha256": "f04b44d9ba7567ffc58888da5b1ec465e9b4533eba491e16a9eee7fea81f2a95",
+      "bytes": 3557
+    },
+    {
+      "path": "fetch/report.md",
+      "sha256": "7b618d140dec7909c1ffcaee5f3f5b261a077f1d1947e7a5e915d55f1ea3b6ed",
+      "bytes": 4724
+    },
+    {
+      "path": "fetch/staged-diff-check.json",
+      "sha256": "c122086c1e156851ba26bbfbdc2abc8eab2832e8c1bef7eada6794ef2c07bb9b",
+      "bytes": 85452
+    },
+    {
+      "path": "fetch/staged-validation.json",
+      "sha256": "2d67c00b19e8df23066f0fce32753ce4ad40161af801a9f27332ada4a50759db",
+      "bytes": 108021
+    },
+    {
+      "path": "fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "sha256": "82c499183be47e81de7e5490650a63645fda496f4702472809e5c434d6c8d4b7",
+      "bytes": 40976
+    },
+    {
+      "path": "fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "sha256": "636b2ee84be5a09836a3c17842e049478b9e256d5d8bd1c876f4a27ba2ea35a6",
+      "bytes": 62994
+    },
+    {
+      "path": "fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "sha256": "5e93051f97a34d326d89be52ab29915543e50b2e60eefa3c3bd54f967095b4cc",
+      "bytes": 36988
+    },
+    {
+      "path": "fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "sha256": "d6e8bb1fe2380856d48125d347c1bd8f64174aaecc171385383da46b066b8d56",
+      "bytes": 58450
+    },
+    {
+      "path": "fetch/state/qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json",
+      "sha256": "feebbbe78c7bb2444dcb46a50a5b1bda7584d34e275a2dcea710c45e3415932b",
+      "bytes": 18687
+    },
+    {
+      "path": "fetch/state-after.sql",
+      "sha256": "3066ecd5b7451b058ef94eedc78c225f85987f8a514dec40f413a9be8feb7aec",
+      "bytes": 15000
+    },
+    {
+      "path": "fetch/stderr.txt",
+      "sha256": "e09e4b36e90c1a093f6b5a67027e71c9e0e346a7a14a13167e7ada24f0ab8b36",
+      "bytes": 90
+    },
+    {
+      "path": "fetch/stdout.json",
+      "sha256": "0ce80937a2cfabccf7a4ca9363756842685742340e7feb94c40b473559c0b9a3",
+      "bytes": 320
+    },
+    {
+      "path": "fetch/trace-after.jsonl",
+      "sha256": "a18206b68c5b801a4ae8dc521d9a6f99b735db556b272d3b688a4a3a9d906b07",
+      "bytes": 1193
+    },
+    {
+      "path": "fetch/trace-before.jsonl",
+      "sha256": "32edee2bf73ac31bd4ee38bf6325139af0f42fdc4758867dca95164370e9e448",
+      "bytes": 731
+    },
+    {
+      "path": "fetch/trace-new.jsonl",
+      "sha256": "e1eb40c8d19a08508b5cbfb98f33d8049c1fbf8afe43f934c65137e4d48c78a9",
+      "bytes": 462
+    },
+    {
+      "path": "manifest-20261013/command.json",
+      "sha256": "57ad5b20a33d55a18d84dcd129ca0079a5a3fbdc9426efae00b09f05320a6ecf",
+      "bytes": 860
+    },
+    {
+      "path": "manifest-20261013/project.xml",
+      "sha256": "60e2bc65d4d2fba105368662d53c1973cee3a5ad52b174d5184429d247119b7e",
+      "bytes": 131
+    },
+    {
+      "path": "manifest-20261013/response.xml",
+      "sha256": "a70c799cea8c9265a107154af818da0a5ff5cf533c94f65dd43e21d3a9b574eb",
+      "bytes": 33380
+    },
+    {
+      "path": "manifest-20261013/result.json",
+      "sha256": "9d821e87bd5f65961d6e9a65a7da3a5822299648f39bd8c77fc49d01180c6301",
+      "bytes": 1513
+    },
+    {
+      "path": "manifest-20261013/stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "added_document_text": "PASS",
+  "protected_files_unchanged": true,
+  "existing_trigger_evidence_unchanged": true,
+  "full_test_suite": "NOT_RERUN: no code changes",
+  "current_fetch_exit": 0,
+  "current_fetch_status": "PASS",
+  "new_qb_trigger_invocations": 0,
+  "qb_result_fetch_invocations": 1,
+  "c6b_started": false,
+  "rechecked_at": "2026-10-19T06:04:45.595171+00:00",
+  "staged_diff_check": "exit 2: raw HTML whitespace only; details in staged-validation.json",
+  "other_staged_files_diff_check_exit": 0
+}

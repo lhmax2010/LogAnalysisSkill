@@ -1,0 +1,219 @@
+{
+  "parsed_at": "2026-10-19T06:00:30.460484+00:00",
+  "source": "Production archived redacted HTML only; no network or CLI rerun",
+  "request_id": "9fe02dc3927c4b7fa55a3dffce699d03",
+  "parent_build_id": "1201886",
+  "child_build_id": "1201889",
+  "parent_echoes": {
+    "BUILD_NOTES": {
+      "display_name": "BUILD NOTES",
+      "decoded_cell_text": "clang-fix-campaign request=9fe02dc3927c4b7fa55a3dffce699d03",
+      "parsed_value": "clang-fix-campaign request=9fe02dc3927c4b7fa55a3dffce699d03",
+      "source_file": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "key_source_lines": [
+        810
+      ]
+    },
+    "BUILD_PKG_LIST_MODIFY": {
+      "display_name": "Build Package List",
+      "decoded_cell_text": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+      "parsed_value": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+      "source_file": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "key_source_lines": [
+        810
+      ]
+    },
+    "BUILD_REFERENCE": {
+      "display_name": "",
+      "decoded_cell_text": "Ref. Snapshot",
+      "parsed_value": "Ref. Snapshot",
+      "source_file": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "key_source_lines": [
+        810
+      ]
+    },
+    "SNAPSHOT_NUM": {
+      "display_name": "",
+      "decoded_cell_text": "tizen-base-toolchain_20261013.024319",
+      "parsed_value": "tizen-base-toolchain_20261013.024319",
+      "source_file": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "key_source_lines": [
+        810
+      ]
+    }
+  },
+  "parent_checks": {
+    "request_marker": true,
+    "BUILD_REFERENCE": true,
+    "SNAPSHOT_NUM": true,
+    "target": true
+  },
+  "result_fields": {
+    "accepted": null,
+    "child_build_id": "1201889",
+    "child_build_result_text": "SUCCESSFUL",
+    "child_configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/build",
+    "child_error_message": null,
+    "child_failed_step": null,
+    "child_params_echo": {
+      "BUILD_REFERENCE": "Ref. Snapshot",
+      "SNAPSHOT_NUM_URL": "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319"
+    },
+    "child_status_text": "Successful",
+    "configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER",
+    "fetched_at": "2026-10-19T05:58:23.418995+00:00",
+    "params_echo": {
+      "BUILD_REFERENCE": "Ref. Snapshot",
+      "BUILD_TYPE": "Full",
+      "FAIL_FAST": "yes",
+      "PROJECT_BRANCH": "tizen_base",
+      "SNAPSHOT_NUM": "tizen-base-toolchain_20261013.024319"
+    },
+    "parent_status_text": "Successful",
+    "per_arch_status": null,
+    "qb_build_id": "1201886",
+    "request_marker_echo": "clang-fix-campaign request=9fe02dc3927c4b7fa55a3dffce699d03",
+    "sbs_target_echo": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+    "snapshot_drift_accepted": false,
+    "snapshot_used": "tizen-base-toolchain_20261013.024319",
+    "status": "PASS"
+  },
+  "child_EACH_GBS_BUILD_STATUS": "",
+  "snapshot_kind": "same",
+  "snapshot_name": "tizen-base-toolchain_20261013.024319",
+  "outside_identity_counts": [
+    {
+      "outside_identity_count": 0,
+      "path": "/build/1201886/overview",
+      "request_id": "9fe02dc3927c4b7fa55a3dffce699d03"
+    },
+    {
+      "outside_identity_count": 0,
+      "path": "/build/1201886/variables",
+      "request_id": "9fe02dc3927c4b7fa55a3dffce699d03"
+    },
+    {
+      "outside_identity_count": 0,
+      "path": "/build/1201889/overview",
+      "request_id": "9fe02dc3927c4b7fa55a3dffce699d03"
+    },
+    {
+      "outside_identity_count": 0,
+      "path": "/build/1201889/variables",
+      "request_id": "9fe02dc3927c4b7fa55a3dffce699d03"
+    }
+  ],
+  "events": [
+    {
+      "event_id": 1,
+      "request_seq": 1,
+      "event_type": "SUBMITTED",
+      "qb_build_id": null,
+      "status": null,
+      "accepted": null,
+      "sbs_target_echo": null,
+      "per_arch_status_json": null,
+      "qb_result_sha256": null,
+      "qb_result_ref": null,
+      "degraded": 0,
+      "created_at": "2026-10-19T05:21:27.843536+00:00"
+    },
+    {
+      "event_id": 2,
+      "request_seq": 1,
+      "event_type": "BUILD_BOUND",
+      "qb_build_id": "1201886",
+      "status": null,
+      "accepted": null,
+      "sbs_target_echo": null,
+      "per_arch_status_json": null,
+      "qb_result_sha256": null,
+      "qb_result_ref": null,
+      "degraded": 0,
+      "created_at": "2026-10-19T05:58:22.345726+00:00"
+    },
+    {
+      "event_id": 3,
+      "request_seq": 1,
+      "event_type": "RESULT",
+      "qb_build_id": "1201886",
+      "status": "PASS",
+      "accepted": null,
+      "sbs_target_echo": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+      "per_arch_status_json": null,
+      "qb_result_sha256": "feebbbe78c7bb2444dcb46a50a5b1bda7584d34e275a2dcea710c45e3415932b",
+      "qb_result_ref": "qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json",
+      "degraded": 0,
+      "created_at": "2026-10-19T05:58:23.480238+00:00"
+    }
+  ],
+  "status_history": [
+    {
+      "log_id": 1,
+      "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+      "status": "SANDBOX_PUSHED",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-15T06:50:00.137549+00:00"
+    },
+    {
+      "log_id": 2,
+      "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+      "status": "QB_REQUESTED",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-19T05:21:27.843715+00:00"
+    },
+    {
+      "log_id": 3,
+      "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+      "status": "QB_TRIGGERED",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-19T05:58:22.345945+00:00"
+    },
+    {
+      "log_id": 4,
+      "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+      "status": "SANDBOX_QB_PASS",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-19T05:58:23.480569+00:00"
+    }
+  ],
+  "state_db_sha256": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30",
+  "result_file_sha256": "feebbbe78c7bb2444dcb46a50a5b1bda7584d34e275a2dcea710c45e3415932b",
+  "result_hash_matches_event": true,
+  "archives": [
+    {
+      "source": "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "archive": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "sha256": "82c499183be47e81de7e5490650a63645fda496f4702472809e5c434d6c8d4b7",
+      "bytes": 40976
+    },
+    {
+      "source": "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "archive": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "sha256": "636b2ee84be5a09836a3c17842e049478b9e256d5d8bd1c876f4a27ba2ea35a6",
+      "bytes": 62994
+    },
+    {
+      "source": "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "archive": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "sha256": "5e93051f97a34d326d89be52ab29915543e50b2e60eefa3c3bd54f967095b4cc",
+      "bytes": 36988
+    },
+    {
+      "source": "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "archive": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "sha256": "d6e8bb1fe2380856d48125d347c1bd8f64174aaecc171385383da46b066b8d56",
+      "bytes": 58450
+    },
+    {
+      "source": "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state/qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json",
+      "archive": "state/qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json",
+      "sha256": "feebbbe78c7bb2444dcb46a50a5b1bda7584d34e275a2dcea710c45e3415932b",
+      "bytes": 18687
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "sample_interval_seconds": 0.1,
+  "cli_elapsed_seconds": 82.675,
+  "processes": [
+    {
+      "pid": 1740652,
+      "executable": "/home/linhao/Toolchain/development/security_optimization_rea/.local-tools/node-v24.21.0-linux-x64/bin/node",
+      "first_seen_seconds": 0.705,
+      "last_seen_seconds": 82.56,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740686,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 1.308,
+      "last_seen_seconds": 2.422,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740694,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 1.409,
+      "last_seen_seconds": 2.422,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740693,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 1.409,
+      "last_seen_seconds": 2.422,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740719,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 1.51,
+      "last_seen_seconds": 2.422,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740738,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 1.611,
+      "last_seen_seconds": 2.422,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740800,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 1.711,
+      "last_seen_seconds": 2.32,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740799,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 1.711,
+      "last_seen_seconds": 2.32,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740862,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 2.523,
+      "last_seen_seconds": 47.633,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740870,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 2.523,
+      "last_seen_seconds": 47.633,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740869,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 2.523,
+      "last_seen_seconds": 47.633,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740904,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 2.624,
+      "last_seen_seconds": 47.633,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740894,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 2.624,
+      "last_seen_seconds": 47.633,
+      "last_state": "S"
+    },
+    {
+      "pid": 1741004,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 2.725,
+      "last_seen_seconds": 47.633,
+      "last_state": "S"
+    },
+    {
+      "pid": 1740970,
+      "executable": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "first_seen_seconds": 2.725,
+      "last_seen_seconds": 47.633,
+      "last_state": "S"
+    }
+  ],
+  "errors": [],
+  "note": "Passive descendant metadata only; missing terminal exit codes are NOT_COLLECTED."
+}

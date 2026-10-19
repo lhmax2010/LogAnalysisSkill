@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "ci_triage",
+    "qb-result-fetch",
+    "--request-id",
+    "9fe02dc3927c4b7fa55a3dffce699d03",
+    "--qb-build-id",
+    "1201886",
+    "--state-db",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db",
+    "--state-root",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state",
+    "--config",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/config.yaml"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started_at": "2026-10-19T05:57:35.892507+00:00",
+  "user_authorization": "Existing uncertain-submit manual-binding flow; FatTank supplied build 1201886",
+  "production_path": true,
+  "test_arguments": [],
+  "attempt": 1,
+  "evidence_run": "live-05",
+  "stdin": "DEVNULL",
+  "removed_environment_names": [
+    "QB_COOKIE",
+    "QB_PASSWORD",
+    "DEBUG",
+    "PWDEBUG",
+    "NODE_OPTIONS",
+    "PYTHONPATH",
+    "MYPYPATH"
+  ],
+  "request_id": "9fe02dc3927c4b7fa55a3dffce699d03",
+  "manual_build_id": 1201886
+}

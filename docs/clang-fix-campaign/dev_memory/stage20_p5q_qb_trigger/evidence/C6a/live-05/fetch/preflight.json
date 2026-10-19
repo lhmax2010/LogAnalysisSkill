@@ -1,0 +1,57 @@
+{
+  "checked_at": "2026-10-19T05:57:04.941970+00:00",
+  "head": "8f66d7d08557b1db2bad5a0620e4f91aa319e665",
+  "state_db_sha256": "d1ff348dda02521b55759e92bc2dda360a268848012ae1741b9dc22b8bfe7140",
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "config_matches_preparation": true,
+  "table_counts": {
+    "campaign_qb_requests": 1,
+    "campaign_qb_profiles": 1,
+    "campaign_qb_events": 1
+  },
+  "requests": [
+    {
+      "request_seq": 1,
+      "request_id": "9fe02dc3927c4b7fa55a3dffce699d03",
+      "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+      "sbs_target": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+      "created_at": "2026-10-19T05:21:27.843403+00:00"
+    }
+  ],
+  "latest_status": {
+    "log_id": 2,
+    "campaign_unit_key": "p5q-c6-libtirpc-20261015",
+    "status": "QB_REQUESTED",
+    "reason": null,
+    "arch_norm": null,
+    "created_at": "2026-10-19T05:21:27.843715+00:00"
+  },
+  "profile_directories": [],
+  "residual_processes": [],
+  "process_scan_errors": [],
+  "d_samples": [
+    {
+      "at": "2026-10-19T05:56:44.902706+00:00",
+      "processes": [
+        "D 1736920 kworker/u81:0+i915_flip"
+      ]
+    },
+    {
+      "at": "2026-10-19T05:56:54.920671+00:00",
+      "processes": []
+    },
+    {
+      "at": "2026-10-19T05:57:04.939178+00:00",
+      "processes": [
+        "D 1738493 kworker/u81:1+i915_flip"
+      ]
+    }
+  ],
+  "persistent_d_processes": [],
+  "free_h": "               total        used        free      shared  buff/cache   available\nMem:            30Gi        19Gi       3.2Gi       859Mi       9.9Gi        11Gi\nSwap:          4.0Gi       3.7Gi       329Mi\n",
+  "df_h": "Filesystem      Size  Used Avail Use% Mounted on\ntmpfs            16G  145M   16G   1% /dev/shm\n/dev/sda1       1.8T  1.5T  225G  88% /home\n",
+  "display_configured": true,
+  "manual_build_id": 1201886,
+  "user_build_notes": "clang-fix-campaign request=9fe02dc3927c4b7fa55a3dffce699d03",
+  "ready": true
+}

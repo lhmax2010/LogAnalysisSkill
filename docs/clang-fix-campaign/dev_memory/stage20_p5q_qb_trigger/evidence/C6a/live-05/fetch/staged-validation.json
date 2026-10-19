@@ -1,0 +1,2138 @@
+{
+  "checked_at": "2026-10-19T06:04:45.595171+00:00",
+  "complete_staged_check": {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit": 2,
+    "output_file": "staged-diff-check.json",
+    "issue_count": 411,
+    "files": [
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html"
+    ]
+  },
+  "remaining_staged_files_check": {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      "docs/clang-fix-campaign/dev_memory/INDEX.md",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/analysis.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/command.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/execution.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/post-audit.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/preflight.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/process-observations.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/report.md",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state-after.sql",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/stderr.txt",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/stdout.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/trace-after.jsonl",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/trace-before.jsonl",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/trace-new.jsonl",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/validation.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/manifest-20261013/command.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/manifest-20261013/project.xml",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/manifest-20261013/response.xml",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/manifest-20261013/result.json",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/manifest-20261013/stderr.txt",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/progress.md"
+    ],
+    "exit": 0,
+    "output": ""
+  },
+  "archive_byte_checks": [
+    {
+      "archive": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "original_bytes_match": true,
+      "sha256": "82c499183be47e81de7e5490650a63645fda496f4702472809e5c434d6c8d4b7"
+    },
+    {
+      "archive": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "original_bytes_match": true,
+      "sha256": "636b2ee84be5a09836a3c17842e049478b9e256d5d8bd1c876f4a27ba2ea35a6"
+    },
+    {
+      "archive": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "original_bytes_match": true,
+      "sha256": "5e93051f97a34d326d89be52ab29915543e50b2e60eefa3c3bd54f967095b4cc"
+    },
+    {
+      "archive": "state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "original_bytes_match": true,
+      "sha256": "d6e8bb1fe2380856d48125d347c1bd8f64174aaecc171385383da46b066b8d56"
+    },
+    {
+      "archive": "state/qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json",
+      "original_bytes_match": true,
+      "sha256": "feebbbe78c7bb2444dcb46a50a5b1bda7584d34e275a2dcea710c45e3415932b"
+    }
+  ],
+  "interpretation": "Only original redacted HTML whitespace warnings; evidence bytes retained without normalization",
+  "issues": [
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 5,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 11,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 172,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 186,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 345,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 346,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 347,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 351,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 352,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 354,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 356,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 477,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 479,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 481,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 482,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 484,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 487,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 509,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 511,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 517,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 532,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 537,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 539,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 544,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 549,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 570,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 571,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 575,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 577,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 578,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 586,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 596,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 597,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 602,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 606,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 610,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 614,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 631,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 633,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 637,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 638,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 673,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 677,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 678,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 685,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 686,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 690,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 697,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 701,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 708,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 710,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 714,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 721,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 724,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 728,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 732,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 733,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 739,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 746,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 747,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 750,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 752,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 756,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 757,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 758,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 765,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 766,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 770,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 771,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 775,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 776,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 780,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 781,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 787,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 791,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 792,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 796,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 797,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 801,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 802,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 806,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 807,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 811,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 812,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 911,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 915,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 918,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 925,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 931,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 938,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 944,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 945,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 947,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 953,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 954,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 955,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 957,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 958,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 959,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 960,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 962,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 965,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 967,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 972,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 978,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 979,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/01.1201886-overview.html",
+      "line": 981,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 5,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 11,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 162,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 176,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 335,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 336,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 337,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 341,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 342,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 344,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 346,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 467,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 469,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 471,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 472,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 474,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 477,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 499,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 501,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 507,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 522,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 527,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 529,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 534,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 539,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 560,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 561,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 565,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 567,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 568,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 576,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 586,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 587,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 592,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 596,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 600,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 604,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 621,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 623,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 627,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 628,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 663,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 667,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 668,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 675,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 676,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 680,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 687,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 691,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 698,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 700,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 704,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 711,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 714,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 718,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 722,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 723,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 729,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 736,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 737,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 740,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 742,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 746,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 747,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 748,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 755,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 756,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 760,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 761,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 765,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 766,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 770,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 771,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 777,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 781,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 782,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 786,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 787,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 791,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 792,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 796,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 797,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 801,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 802,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 816,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 817,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 818,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 820,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 821,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 822,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 823,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 825,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 828,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 830,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 835,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 841,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 842,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/02.1201886-variables.html",
+      "line": 844,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 5,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 11,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 172,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 186,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 345,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 346,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 347,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 351,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 352,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 354,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 356,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 477,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 479,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 481,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 482,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 484,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 487,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 509,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 511,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 517,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 532,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 537,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 539,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 544,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 549,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 570,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 571,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 575,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 577,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 578,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 586,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 596,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 597,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 602,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 606,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 610,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 614,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 631,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 633,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 637,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 638,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 673,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 677,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 678,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 682,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 683,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 684,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 688,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 695,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 699,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 706,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 708,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 712,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 719,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 722,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 726,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 730,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 731,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 737,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 741,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 742,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 744,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 748,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 749,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 750,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 757,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 758,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 762,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 763,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 767,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 768,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 772,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 773,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 779,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 783,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 784,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 788,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 789,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 793,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 794,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 798,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 799,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 803,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 804,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 808,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 817,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 821,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 824,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 831,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 837,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 844,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 850,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 851,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 853,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 859,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 860,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 861,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 863,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 864,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 865,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 866,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 868,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 871,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 873,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 878,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 884,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 885,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/03.1201889-overview.html",
+      "line": 887,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 5,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 11,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 162,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 176,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 335,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 336,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 337,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 341,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 342,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 344,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 346,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 467,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 469,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 471,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 472,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 474,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 477,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 499,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 501,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 507,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 522,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 527,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 529,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 534,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 539,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 560,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 561,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 565,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 567,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 568,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 576,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 586,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 587,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 592,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 596,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 600,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 604,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 621,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 623,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 627,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 628,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 663,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 667,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 668,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 672,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 673,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 674,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 678,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 685,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 689,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 696,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 698,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 702,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 709,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 712,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 716,
+      "message": "space before tab in indent."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 720,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 721,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 727,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 731,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 732,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 734,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 738,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 739,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 740,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 747,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 748,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 752,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 753,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 757,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 758,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 762,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 763,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 769,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 773,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 774,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 778,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 779,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 783,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 784,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 788,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 789,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 793,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 794,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 808,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 809,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 810,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 812,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 813,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 814,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 815,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 817,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 820,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 822,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 827,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 833,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 834,
+      "message": "trailing whitespace."
+    },
+    {
+      "path": "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C6a/live-05/fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/04.1201889-variables.html",
+      "line": 836,
+      "message": "trailing whitespace."
+    }
+  ]
+}

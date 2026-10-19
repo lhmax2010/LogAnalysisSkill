@@ -1,0 +1,43 @@
+{
+  "argv": [
+    "curl",
+    "--disable",
+    "--silent",
+    "--show-error",
+    "--request",
+    "GET",
+    "--retry",
+    "0",
+    "--max-redirs",
+    "0",
+    "--connect-timeout",
+    "20",
+    "--max-time",
+    "60",
+    "--proto",
+    "=http",
+    "--write-out",
+    "\n%{http_code}",
+    "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319/builddata/manifest/tizen-base-toolchain_20261013.024319_standard.xml"
+  ],
+  "url": "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319/builddata/manifest/tizen-base-toolchain_20261013.024319_standard.xml",
+  "method": "GET",
+  "attempts": 1,
+  "redirect_follow": false,
+  "started_at": "2026-10-19T05:59:45.500384+00:00",
+  "purpose": "Compare frozen snapshot manifest revision; informational only",
+  "ended_at": "2026-10-19T05:59:46.425192+00:00",
+  "exit_code": 0,
+  "http_status": "200",
+  "sha256": "a70c799cea8c9265a107154af818da0a5ff5cf533c94f65dd43e21d3a9b574eb",
+  "matching_projects": 1,
+  "expected_revision": "7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+  "project_attributes": {
+    "name": "platform/upstream/libtirpc",
+    "path": "platform/upstream/libtirpc",
+    "revision": "7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0"
+  },
+  "revision_matches": true,
+  "project_source_line": 97,
+  "project_raw": "<project name=\"platform/upstream/libtirpc\" path=\"platform/upstream/libtirpc\" revision=\"7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0\"/>"
+}

@@ -1,12 +1,14 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-19。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE05_STOPPED_BUILD_NOT_FOUND**。
+日期:2026-10-19。状态:**C2a_COMPLETE;C2b_LIVE12_COLLECTED;C2c_COMPLETE;C3_COMPLETE;C4_COMPLETE;C5a_COMPLETE;C5b_EXECUTED_SAMPLES_PENDING;C6a_LIVE05_BOUND_FIRST_READ_PASS**。
 本轮见§41/P5Q-C6A-04与§42:关闭后退出问题由设计方判为已知缺陷,修复后置;
 live-04已获新“确认提交”,当场核对通过后仅执行一次;login超时停止,见§42.4。
 live-04停止后未重试、未运行fetch或进入C6b。
 最新续执行见§43:FatTank再次明确确认,live-05单独记账,不覆盖live-04;
-一次trigger返回QB_SUBMIT_UNCERTAIN,已写提交意图;FatTank人工查找回复“未找到”,见§43.5。
-当前停止等待设计方裁定,不重提、不带--retrigger、不做额外QB读取或fetch。
+一次trigger返回QB_SUBMIT_UNCERTAIN,已写提交意图;先前“未找到”记录保留于§43.5。
+FatTank随后提供1201886,见§43.6;一次生产fetch人工绑定及首次读取exit0,
+子构建1201889已为PASS,落库SANDBOX_QB_PASS,见§43.7–43.9。未重提、未修代码,
+不再fetch、不进入C6b或标P5Q CLOSED。
 §38–40保留历史,不复用其中的授权或将其结果改写为本轮结果。
 最新续任务见§39.4–39.5:live-02记录进程遇本地磁盘同步阻塞后终止,未取得生产返回;
 专用库hash未变、无残留进程。FatTank再次要求弹窗并新回复“确认提交”,仅授权live-03一次;
@@ -4910,3 +4912,139 @@ STOPPED_BUILD_NOT_FOUND。没有取得正整数父构建号,不能执行人工�
 本次仅登记人工回复与停止状态,设计检查/diff检查/新增文字脱敏自检见
 [manual-lookup-validation.json](evidence/C6a/live-05/manual-lookup-validation.json),
 未重跑代码测试。
+
+### 43.6 FatTank提供父构建号:人工绑定与首次读取准备
+
+2026-10-19,FatTank补充提供原文“构建号是：1201886”,并给出以下页面信息:
+
+| 用户提供字段 | 原文 |
+|---|---|
+| Build Package List | platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0 |
+| Build Type | Full |
+| Build Reference | Ref. Snapshot |
+| Profile URL | http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319 |
+| Base URL | http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/reference |
+| Build Notes | clang-fix-campaign request=9fe02dc3927c4b7fa55a3dffce699d03 |
+
+§43.5保留为此前人工查找结果;本次正整数父构建号解除人工绑定的输入缺口,
+不把用户提供的表格冒充生产HTML取证。按既有QB_SUBMIT_UNCERTAIN分支授权,
+只运行一次生产qb-result-fetch,以--request-id与--qb-build-id人工绑定并首次读取,
+不再运行qb-trigger、不带--retrigger、不进入C6b。
+启动前只读确认DB仍为d1ff348dda02521b55759e92bc2dda360a268848012ae1741b9dc22b8bfe7140,
+request_seq=1仍仅SUBMITTED、状态QB_REQUESTED,专用config与准备归档一致,冻结稿hash未变。
+预定命令及输出另存live-05/fetch,不改写trigger证据或既有停止报告。
+
+```bash
+/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python -m ci_triage qb-result-fetch --request-id 9fe02dc3927c4b7fa55a3dffce699d03 --qb-build-id 1201886 --state-db /home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db --state-root /home/linhao/Toolchain/p5q-live-validation/p5q-c6/state --config /home/linhao/Toolchain/p5q-live-validation/p5q-c6/config.yaml
+```
+
+本条为准备记录,实际命令结果、数据库迁移及父构建回显须以随后证据为准。
+
+### 43.7 人工绑定与首次读取完成
+
+执行基线`8f66d7d`;生产代码、测试、spikes、记录工具、design.md和冻结稿均未改。
+收到FatTank提供的1201886后,按§43.6命令只调用一次生产qb-result-fetch,
+未调用qb-trigger、未带--retrigger或--accept-snapshot-drift,没有额外QB读取。
+此次人工绑定与首次结果读取合为同一次命令,不再追加第二次fetch。
+
+当场前置见[live-05/fetch/preflight.json](evidence/C6a/live-05/fetch/preflight.json):
+DB仍为d1ff348dda02521b55759e92bc2dda360a268848012ae1741b9dc22b8bfe7140,
+QB三表各1行、状态QB_REQUESTED,无P5Q代理/Chromium/profile残留;
+10秒间隔D状态1/0/1,无持续D进程,冻结稿hash与专用config保持一致。
+登录仅由FatTank在浏览器内完成,命令stdin为DEVNULL,无测试证书或DNS覆盖参数。
+
+- UTC开始2026-10-19T05:57:35.892507+00:00,结束05:58:58.626026+00:00;
+  Asia/Shanghai为13:57:35至13:58:58,耗时82.675秒,生产CLI exit0。
+- 父构建1201886人工绑定成功;子构建1201889首次读取时已为Successful/PASS,
+  terminal=true。按C6a“首次读取若已终态照实记录”的规则保留,不另起C6b轮询。
+- 新事件:BUILD_BOUND(event_id=2)、RESULT(event_id=3,status=PASS);
+  状态QB_REQUESTED → QB_TRIGGERED → SANDBOX_QB_PASS,未经过SANDBOX_QB_PENDING。
+- 完整stdout、stderr、argv、UTC起止、exit、SQL与hash见fetch/。
+  [stdout.json](evidence/C6a/live-05/fetch/stdout.json)原文:
+
+```json
+[{"child_build_id":"1201889","diagnostic_dir":null,"error_code":null,"message":null,"qb_build_id":"1201886","qb_result_path":"qb_results/9fe02dc3927c4b7fa55a3dffce699d03/20261019T055823425754Z.json","request_id":"9fe02dc3927c4b7fa55a3dffce699d03","result_event_id":3,"status":"PASS","terminal":true}]
+```
+
+四个页面均通过生产读取核对与脱敏,已按原字节复制到fetch/state/qb_evidence/:
+
+| 页面 | 归档文件 | 登记位置外身份计数 |
+|---|---|---|
+| /build/1201886/overview | 01.1201886-overview.html | 0 |
+| /build/1201886/variables | 02.1201886-variables.html | 0 |
+| /build/1201889/overview | 03.1201889-overview.html | 0 |
+| /build/1201889/variables | 04.1201889-variables.html | 0 |
+
+原始状态目录路径与归档hash逐项见[fetch/analysis.json](evidence/C6a/live-05/fetch/analysis.json)。
+未读取step_status(不是终态失败)、未点Accept/Ready to Accept,未做Gerrit推送。
+业务页共4个,未采集登录/静态资源等全部HTTP请求数,不把4写成总请求数。
+
+### 43.8 父子回显与新快照manifest
+
+下面是生产归档HTML经qb_result_html离线解析的事实,不是只引用用户表格。
+父变量均在fetch/state/qb_evidence/9fe02dc3927c4b7fa55a3dffce699d03/
+02.1201886-variables.html:810(三列表格在同一源行):
+
+| 变量 | 回显原文 | 对照 |
+|---|---|---|
+| BUILD_NOTES | clang-fix-campaign request=9fe02dc3927c4b7fa55a3dffce699d03 | 与请求标记逐字相等,解码单元格无首尾空白、无换行、无截断 |
+| BUILD_PKG_LIST_MODIFY | platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0 | 恰好一行,与目标逐字相等 |
+| BUILD_REFERENCE | Ref. Snapshot | 与冻结profile相等 |
+| SNAPSHOT_NUM | tizen-base-toolchain_20261013.024319 | 与实际冻结值相等(本项按设计只记录) |
+
+子构建Summary Status=Successful;父Child Build表Build Result=SUCCESSFUL。
+子BUILD_REFERENCE=Ref. Snapshot,子SNAPSHOT_NUM_URL为
+`http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319`,
+生产snapshot_kind离线复核为same,snapshot_drift_accepted=false;
+EACH_GBS_BUILD_STATUS存在且为空。accepted=null,未推断人工Accept已发生。
+这些是回显记录,不扩张为“服务端实际消费快照”之外的新判据。
+
+按FatTank补充要求,对已变更的冻结快照只做一次普通HTTP GET,无重试、无重定向跟随:
+
+```text
+http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319/builddata/manifest/tizen-base-toolchain_20261013.024319_standard.xml
+```
+
+curl exit0、HTTP200;命令/起止/原始XML/项目元素/结构解析结果见
+[manifest-20261013/result.json](evidence/C6a/live-05/manifest-20261013/result.json)。
+XML SHA256=`a70c799cea8c9265a107154af818da0a5ff5cf533c94f65dd43e21d3a9b574eb`。
+response.xml:97恰好一个对应project,原字节元素为:
+
+```xml
+<project name="platform/upstream/libtirpc" path="platform/upstream/libtirpc" revision="7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0"/>
+```
+
+revision仍等于目标commit;仅记录,未改变生产结果判定。
+
+### 43.9 关闭表现、收尾与边界
+
+最后观察到Chromium为t=47.633秒,CLI结束t=82.675秒,尾段约35.042秒,
+与§41已知关闭缺陷一致。未采得代理最终wait status,退出码仍如实记NOT_COLLECTED,
+不将CLI exit0或历史-15当作本次代理退出码。本轮不修复。
+
+[fetch/post-audit.json](evidence/C6a/live-05/fetch/post-audit.json)确认无代理、Playwright
+Chromium、profile或.transport残留,DB hash为
+`08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30`,QB三表为1/1/3。
+RESULT文件SHA256为`feebbbe78c7bb2444dcb46a50a5b1bda7584d34e275a2dcea710c45e3415932b`,
+与数据库event_id=3一致。原文件及四页证据按字节归档,SQL导出只读取得,
+不提交二进制state.db或任何凭据。trigger与先前停止证据一律原样保留。
+
+| 项目 | 当前状态 |
+|---|---|
+| 本次真实提交的构建身份 | 已由父页核对、人工绑定与BUILD_BOUND确认,1201886 |
+| C6a首次fetch | 已完成,子1201889首次已PASS,RESULT=3 |
+| 父回显与请求标记/冻结值 | 一致,四页身份计数均0 |
+| 变更快照manifest核对 | 一次GET/200,libtirpc revision一致 |
+| 成功样本与非空BUILD_NOTES样本 | 新证据已取得;正式挂账核验及收口交后续C6b,不在本轮标CLOSED |
+| 关闭缺陷修复 | 按设计方安排另行离线任务,本轮未实施 |
+| C6b | 未进入,不因首次已终态而追加读取或自动收口 |
+
+无新的冻结稿/裁定不一致;提交落点unknown的人工绑定分支及已知关闭延迟均按既有规则
+处理。本次只改文档/INDEX与证据,收尾设计检查0 problem、diff检查、逐文件脱敏自检
+见[fetch/validation.json](evidence/C6a/live-05/fetch/validation.json)。未重跑全仓代码测试,
+历史2680 passed/1 skipped不冒称本轮结果。
+
+暂存区补充核验:`git diff --cached --check`返回2,仅四份原字节HTML的行尾空白/缩进
+告警;保持取证字节不改。排除这四份原始HTML后,其余全部待提交文件的同一检查返回0。
+完整告警、路径归属与原文件hash复核见fetch/staged-validation.json及其输出日志;
+不将完整暂存区检查声称为0,不修改git规则以隐藏告警。

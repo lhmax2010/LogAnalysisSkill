@@ -1,0 +1,28 @@
+{
+  "checked_at": "2026-10-19T06:01:02.854799+00:00",
+  "state_db_sha256": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30",
+  "frozen_sha256": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+  "table_counts": {
+    "campaign_qb_requests": 1,
+    "campaign_qb_profiles": 1,
+    "campaign_qb_events": 3
+  },
+  "latest_status": "SANDBOX_QB_PASS",
+  "profile_directories": [],
+  "residual_processes": [],
+  "scan_errors": [],
+  "transport_directories": [],
+  "production_invocations_this_turn": {
+    "qb_trigger": 0,
+    "qb_result_fetch": 1
+  },
+  "extra_qb_reads": 0,
+  "manifest_http_gets": 1,
+  "gerrit_pushes": 0,
+  "accept_actions": 0,
+  "c6b_started": false,
+  "agent_terminal_exit_code": "NOT_COLLECTED",
+  "browser_last_seen_seconds": 47.633,
+  "cli_elapsed_seconds": 82.675,
+  "post_browser_tail_seconds": 35.042
+}

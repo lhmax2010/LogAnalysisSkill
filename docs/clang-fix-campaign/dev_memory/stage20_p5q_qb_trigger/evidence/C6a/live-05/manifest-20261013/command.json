@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "curl",
+    "--disable",
+    "--silent",
+    "--show-error",
+    "--request",
+    "GET",
+    "--retry",
+    "0",
+    "--max-redirs",
+    "0",
+    "--connect-timeout",
+    "20",
+    "--max-time",
+    "60",
+    "--proto",
+    "=http",
+    "--write-out",
+    "\n%{http_code}",
+    "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319/builddata/manifest/tizen-base-toolchain_20261013.024319_standard.xml"
+  ],
+  "url": "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319/builddata/manifest/tizen-base-toolchain_20261013.024319_standard.xml",
+  "method": "GET",
+  "attempts": 1,
+  "redirect_follow": false,
+  "started_at": "2026-10-19T05:59:45.500384+00:00",
+  "purpose": "Compare frozen snapshot manifest revision; informational only"
+}
