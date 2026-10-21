@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/home/linhao/.local/bin/node",
+    "--test",
+    "tests/node/test_qb_browser_agent.mjs",
+    "tests/node/test_qb_failure_categories.mjs",
+    "tests/node/test_qb_agent_source_guards.mjs"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started": "2026-10-21T07:21:45.859934+00:00",
+  "ended": "2026-10-21T07:21:56.482795+00:00",
+  "seconds": 10.623,
+  "exit": 0,
+  "before": {
+    "hashes": {
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+      "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+    },
+    "protected_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+    "agent_only_two_authorized_edits": true
+  },
+  "after": {
+    "hashes": {
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+      "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+    },
+    "protected_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+    "agent_only_two_authorized_edits": true
+  }
+}

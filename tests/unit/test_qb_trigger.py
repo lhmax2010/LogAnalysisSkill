@@ -16,8 +16,10 @@ import pytest
 import yaml
 from ci_triage import campaign_state as state
 from ci_triage import cli
+from ci_triage import qb_discovery as discovery
 from ci_triage import qb_trigger as trigger
 from ci_triage.qb_config import ARCHITECTURES, canonical_profile_json
+from qb_discovery_fixtures import Clock, configuration, reply
 from tizen_ci_shared.state import StateDatabase, VerificationRecord, write_pass_record
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -130,6 +132,9 @@ class Campaign:
         monkeypatch.setattr(subprocess, "Popen", popen)
         numbers = iter(range(1, 100))
         monkeypatch.setattr(trigger.uuid, "uuid4", lambda: uuid.UUID(int=next(numbers)))
+        self.clock = Clock()
+        monkeypatch.setattr(discovery, "time", self.clock.time)
+        monkeypatch.setattr(trigger, "time", self.clock.time)
 
     def save(self):
         self.config.write_text(yaml.safe_dump(self.data))
@@ -278,7 +283,18 @@ class Campaign:
         self.calls.clear()
         self.transcript.write_text("")
         self.script.write_text(
-            json.dumps([login or {"ok": True}, *(self.replies() if replies is None else replies)])
+            json.dumps(
+                dict(
+                    replies=[
+                        login or {"ok": True},
+                        *(self.replies() if replies is None else replies),
+                    ],
+                    configuration_pages={
+                        f"/overview/{p['overview_id']}": reply(configuration(p))
+                        for p in self.data["qb"]["projects"].values()
+                    },
+                )
+            )
         )
         args = [
             "qb-trigger",
@@ -351,6 +367,7 @@ def test_submitted_bound_and_profile(c):
     assert json.loads(profile["profile_json"])["form"]["SNAPSHOT_NUM"] == "snap-A"
     assert [x["command"] for x in c.commands()] == [
         "login",
+        "read",
         "open_form",
         "fill",
         "submit",

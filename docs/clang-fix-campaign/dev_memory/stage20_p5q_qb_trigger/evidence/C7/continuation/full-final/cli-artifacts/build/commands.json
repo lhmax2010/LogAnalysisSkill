@@ -1,0 +1,59 @@
+[
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py",
+      "qb-trigger",
+      "--verification-ids",
+      "u1-v0,u1-v1,u1-v2",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b0/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b0/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b0/config.yaml"
+    ],
+    "exit": 0,
+    "stdout": "[{\"action\": \"submitted_bound\", \"campaign_unit_key\": \"u1\", \"diagnostic_dir\": null, \"error_code\": null, \"message\": null, \"qb_build_id\": \"1193467\", \"request_id\": \"7fdcb42a29ce4c77a2db9c5dd409abd4\", \"request_seq\": 1, \"sbs_target\": \"u1@a97acc260d52515199247d53577d2979a51093d5\", \"status\": \"QB_TRIGGERED\"}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n",
+    "close_to_cli_exit_seconds": 0.12389087677001953
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py",
+      "qb-result-fetch",
+      "--request-id",
+      "7fdcb42a29ce4c77a2db9c5dd409abd4",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b0/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b0/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b0/config.yaml"
+    ],
+    "exit": 0,
+    "stdout": "[{\"child_build_id\": \"1193469\", \"diagnostic_dir\": null, \"error_code\": null, \"message\": null, \"qb_build_id\": \"1193467\", \"qb_result_path\": null, \"request_id\": \"7fdcb42a29ce4c77a2db9c5dd409abd4\", \"result_event_id\": null, \"status\": \"RUNNING\", \"terminal\": false}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n",
+    "close_to_cli_exit_seconds": 0.17595195770263672
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py",
+      "qb-result-fetch",
+      "--request-id",
+      "7fdcb42a29ce4c77a2db9c5dd409abd4",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b0/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b0/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b0/config.yaml"
+    ],
+    "exit": 0,
+    "stdout": "[{\"child_build_id\": \"1193469\", \"diagnostic_dir\": null, \"error_code\": null, \"message\": null, \"qb_build_id\": \"1193467\", \"qb_result_path\": \"qb_results/7fdcb42a29ce4c77a2db9c5dd409abd4/20261021T072809152737Z.json\", \"request_id\": \"7fdcb42a29ce4c77a2db9c5dd409abd4\", \"result_event_id\": 3, \"status\": \"PASS\", \"terminal\": true}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n",
+    "close_to_cli_exit_seconds": 0.12412428855895996
+  }
+]

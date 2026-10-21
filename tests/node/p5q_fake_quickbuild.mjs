@@ -31,6 +31,15 @@ const breadcrumb = path => `<div id="breadcrumb">${path.split('/').map(part => `
   <script>onCopyClipboardLinkDomReady('copy', '${path}')</script>`;
 const columns = values => '<tr>' + values.map(text => `<td>${escape(text).replaceAll('\n', '<br>')}</td>`).join('') + '</tr>';
 
+// C6b 05.raw-redacted.html blueprint: direct .flex-1 heading and six columns.
+function recentBuilds(built) {
+  return `<div class="box"><div class="box-head"><div class="flex-1">Recent Builds</div><a>history</a><a>rss</a></div>
+    <table><thead><tr>${['Id', 'Version', 'Master Node', 'Begin Date', 'Duration', 'Triggered By']
+      .map(name => `<th>${name}</th>`).join('')}</tr></thead><tbody>${built ?
+      '<tr><td>1193467</td><td><a href="/build/1193467">TIZEN_RBS_TRIGGER</a><a href="/?1-1.ILinkListener-stop">stop</a></td><td>node</td><td>2026-10-21</td><td>1s</td><td>LocalTester</td></tr>' : ''}
+    </tbody></table></div>`;
+}
+
 export function overview(id, status = 'Running', mode = '') {
   const parent = id === '1193467';
   const path = parent ? PROJECT.configuration_path : PROJECT.configuration_path.replace(/TRIGGER$/, 'build');
@@ -118,7 +127,7 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
   const cert = await readFile(`${directory}/cert`), key = await readFile(`${directory}/key`);
   const spki = createHash('sha256').update(new X509Certificate(cert).publicKey.export({ type: 'spki', format: 'der' })).digest('base64');
   const fixture = { received: [], submissions: [], version: 41, childStatus, mode, compare,
-    submitted: { ...VALUES }, remembered: 'overview', builds: 0, errors: [] };
+    submitted: { ...VALUES }, remembered: 'overview', builds: 0, errors: [], lookupRounds: 0 };
   const server = createServer({ cert, key }, (request, response) => {
     const row = { method: request.method, path: request.url, status: 200 };
     fixture.received.push(row);
@@ -143,8 +152,12 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
       } else if (url.pathname === '/dashboard') response.end(fixture.dashboardNoSignOut || fixture.loginCase === 'no-signout'
         ? '<!doctype html><link rel="icon" href="data:,"><h1>Dashboard without signout</h1>'
         : page('<h1>Dashboard</h1>' + (fixture.loginCase === 'password-remains' ? '<input type="password">' : '')));
-      else if (url.pathname === '/overview/1917') response.end(page(`${breadcrumb(PROJECT.configuration_path)}
+      else if (url.pathname === '/overview/1917') {
+        if (fixture.submissions.length) fixture.lookupRounds++;
+        const visible = fixture.mode === 'delayed-build' && fixture.lookupRounds < 2 ? 0 : fixture.builds;
+        response.end(page(`${breadcrumb(PROJECT.configuration_path)}${recentBuilds(visible)}
         <button title="Run the configuration" onclick="var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false">Run</button>`, `QuickBuild - ${PROJECT.configuration_path}`));
+      }
       else if (row.method === 'GET' && /ILinkListener-run$/.test(url.search)) { fixture.version = 41; redirect('/wicket/page?41'); }
       else if (row.method === 'GET' && url.pathname === '/wicket/page' && /^\?\d+$/.test(url.search)) response.end(
         form(fixture.version, { noNavigation: fixture.mode === 'no-navigation', callbackMismatch: fixture.callbackMismatch,
@@ -157,7 +170,7 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
         const payload = Object.fromEntries(new URLSearchParams(body));
         fixture.submissions.push(payload);
         for (const name of ['Build Package List', 'BUILD NOTES']) fixture.submitted[name] = payload[`form:field:${FIELDS.indexOf(name)}:input`];
-        if (fixture.mode !== 'error-no-build') fixture.builds++;
+        if (!['error-no-build', 'late-build'].includes(fixture.mode)) fixture.builds++;
         fixture.remembered = 'variables';
         if (fixture.mode === 'build') redirect('/build/1193467');
         else if (fixture.mode === 'no-navigation') response.end(form(fixture.version));
@@ -191,6 +204,7 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
       const command = JSON.parse(line);
       if (command.status) fixture.childStatus = command.status;
       if (command.mode) fixture.mode = command.mode;
+      if (command.publish) fixture.builds = 1;
       await writeFile(evidence, JSON.stringify({ received: fixture.received, submissions: fixture.submissions,
         builds: fixture.builds, errors: fixture.errors }, null, 2) + '\n');
       process.stdout.write('{"ok":true}\n');

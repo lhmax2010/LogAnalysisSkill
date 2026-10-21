@@ -9,6 +9,7 @@ import re
 import shutil
 import sqlite3
 import subprocess
+import time
 import traceback
 import uuid
 from collections.abc import Iterator
@@ -23,10 +24,12 @@ import yaml
 from tizen_ci_shared.state import StateDatabase
 
 from ci_triage import campaign_state as state
+from ci_triage import qb_discovery as discovery
+from ci_triage import qb_result_html as pages
 from ci_triage import sandbox_submit as sandbox
 from ci_triage._campaign_workspace import _unit_hash
 from ci_triage.aggregate import aggregate_verifications
-from ci_triage.qb_browser import QbBrowser, QbBrowserError, _check_diagnostic_strings
+from ci_triage.qb_browser import QbBrowser, QbBrowserError, _check_diagnostic_strings, driver_failed
 from ci_triage.qb_config import (
     FORM_KEYS,
     QbConfigError,
@@ -48,10 +51,6 @@ _STATUSES = {
     "QB_SUBMIT_FAILED",
 }
 _PALETTES = {"CHILD_CONFIGURATIONS", "TARGET_IMAGE"}
-_UNKNOWN_MESSAGE = (
-    "请到 QuickBuild 按请求标记找到构建后用 qb-result-fetch --request-id 与 --qb-build-id 绑定;"
-    "确认没有构建后用 --retrigger 重提"
-)
 
 
 @dataclass(frozen=True)
@@ -299,6 +298,28 @@ def _browser_failure_trace(root: Path, key: str, error: QbBrowserError) -> None:
         pass
 
 
+def _close_browser(browser: QbBrowser, root: Path, key: str) -> None:
+    browser.close()
+    for record in browser.termination_records:
+        try:
+            _trace(root, key, record)
+        except (OSError, EvidenceRedactionError):
+            pass
+
+
+def _baseline(browser: QbBrowser, project: dict[str, Any], result: dict[str, Any]) -> int:
+    try:
+        return discovery.baseline(browser, project)
+    except pages.ResultCheckError as exc:
+        result["message"] = discovery.baseline_message(exc.check)
+    except QbBrowserError as exc:
+        if exc.code == "QB_BROWSER_UNAVAILABLE":
+            raise
+        result["message"] = discovery.baseline_message("configuration_read")
+        raise _Rejected("REJECTED_QB_FORM_CHANGED") from exc
+    raise _Rejected("REJECTED_QB_FORM_CHANGED")
+
+
 def _diagnostic(root: Path, key: str, diagnostic: dict[str, Any]) -> str | None:
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     directory = root / "qb_diagnostics" / f"{stamp}-{_unit_hash(key)}"
@@ -479,11 +500,18 @@ def _bind(db: StateDatabase, key: str, seq: int, build: str) -> None:
 
 
 def _submit(
-    db: StateDatabase, browser: QbBrowser, result: dict[str, Any], fingerprint: str, root: Path
+    db: StateDatabase,
+    browser: QbBrowser,
+    result: dict[str, Any],
+    fingerprint: str,
+    root: Path,
+    profile: dict[str, Any],
+    baseline_w: int,
 ) -> None:
     key, seq = result["campaign_unit_key"], result["request_seq"]
     try:
         reply = browser.command("submit", fingerprint=fingerprint)
+        replied_at = time.monotonic()
     except QbBrowserError as exc:
         _browser_failure_trace(root, key, exc)
         if exc.released is not False:
@@ -497,7 +525,44 @@ def _submit(
             result["diagnostic_dir"] = _diagnostic(root, key, exc.diagnostic)
         return
     if reply["landed"] == "unknown":
-        message = f"观察到的落点:{reply['observed']};{_UNKNOWN_MESSAGE}"
+        found = discovery.Discovery()
+        if not driver_failed(reply):
+            conn = state._read_connection(db)
+            try:
+                request = _latest_request(conn, key)
+            finally:
+                conn.close()
+            assert request is not None
+            found = discovery.discover(
+                browser,
+                db,
+                root,
+                request,
+                profile,
+                baseline_w=baseline_w,
+                submitted_at=replied_at,
+                trace=lambda facts: _trace(root, key, facts),
+            )
+        prefix = f"观察到的落点:{reply['observed']};"
+        if found.category == "已绑定":
+            build = found.builds[0]
+            message = prefix + f"已按请求标记在配置页最近构建中找到并绑定构建 {build}"
+            result.update(action="submitted_bound", status="QB_TRIGGERED", qb_build_id=build)
+        else:
+            code = "QB_SUBMIT_UNCERTAIN"
+            if found.category in {"核对不通过", "多于一个"}:
+                code = "REJECTED_QB_BINDING_MISMATCH"
+                message = prefix + (
+                    f"自动查找到的构建 {','.join(found.builds)} 不能绑定({found.category}),"
+                    "须人工核对后按第 5.2 节绑定"
+                )
+            else:
+                if found.category == "证据脱敏自检失败":
+                    code = "QB_EVIDENCE_REDACTION_FAILED"
+                message = prefix + found.retry_message(
+                    result["request_id"], driver_failure=driver_failed(reply)
+                )
+            result.update(action="submit_uncertain", error_code=code)
         _trace(
             root,
             key,
@@ -508,7 +573,7 @@ def _submit(
                 messages=reply["messages"],
             ),
         )
-        result.update(action="submit_uncertain", error_code="QB_SUBMIT_UNCERTAIN", message=message)
+        result["message"] = message
         return
     build = reply["build_id"]
     try:
@@ -541,6 +606,8 @@ def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[
     exit_code = 0
     browser: QbBrowser | None = None
     login_failure: str | None = None
+    unavailable_unit: str | None = None
+    key = "unselected"
     try:
         for ids in groups:
             result = empty_result()
@@ -577,6 +644,22 @@ def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[
                             request_seq=snapshot.request["request_seq"],
                             qb_build_id=snapshot.bound["qb_build_id"] if snapshot.bound else None,
                         )
+                        if action == "already_requested" and snapshot.bound is None:
+                            result["message"] = (
+                                f"该 unit 已有未绑定的请求 {snapshot.request['request_id']};可运行 "
+                                f"qb-result-fetch --request-id {snapshot.request['request_id']} "
+                                "自动查找构建号,确认没有构建后再用 --retrigger 重提"
+                            )
+                        continue
+                    if unavailable_unit is not None:
+                        result.update(
+                            error_code="QB_BROWSER_UNAVAILABLE",
+                            message=(
+                                f"浏览器在处理 {unavailable_unit} 时不可用,"
+                                "本批剩余 unit 未处理;请排查后重跑"
+                            ),
+                        )
+                        exit_code = 5
                         continue
                     if browser is None:
                         browser = QbBrowser(qb)
@@ -591,6 +674,7 @@ def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[
                             continue
                     request_id = uuid.uuid4().hex
                     result["request_id"] = request_id
+                    baseline_w = _baseline(browser, snapshot.project, result)
                     browser.command("open_form", overview_id=snapshot.project["overview_id"])
                     frozen = (
                         json.loads(snapshot.profile["profile_json"]) if snapshot.profile else None
@@ -618,19 +702,32 @@ def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[
                             fingerprint=filled["fingerprint"],
                             first_freeze=frozen is None,
                             snapshot_option_count=filled["snapshot_option_count"],
+                            W=baseline_w,
                         ),
                     )
                     seq = _intent(db, snapshot, profile, request_id, result["sbs_target"])
                     # Durable intent exists now; an unexpected failure cannot prove non-release.
                     result.update(request_seq=seq, status="QB_REQUESTED", action="submit_uncertain")
-                    _submit(db, browser, result, filled["fingerprint"], options.state_root)
+                    _submit(
+                        db,
+                        browser,
+                        result,
+                        filled["fingerprint"],
+                        options.state_root,
+                        json.loads(profile),
+                        baseline_w,
+                    )
                     if result["action"] in {"submit_failed", "submit_uncertain"}:
                         exit_code = 5
             except (QbBrowserError, _Rejected, QbProjectNotReady, sandbox._Reject) as exc:
                 result["error_code"] = exc.code
                 exit_code = max(exit_code, 4 if exc.code.startswith("REJECTED_") else 5)
+                if isinstance(exc.__cause__, QbBrowserError):
+                    _browser_failure_trace(options.state_root, key, exc.__cause__)
                 if isinstance(exc, QbBrowserError):
                     _browser_failure_trace(options.state_root, key, exc)
+                    if exc.code == "QB_BROWSER_UNAVAILABLE" or exc.agent_exited:
+                        unavailable_unit = unavailable_unit or key
                     if exc.snapshot_state is not None:
                         result["message"] = snapshot_message(
                             frozen_snapshot,
@@ -665,7 +762,14 @@ def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[
                 result["error_code"] = "INTERNAL_ERROR"
                 exit_code = 5
                 traceback.print_exc(file=stderr)
+            finally:
+                if browser is not None and (
+                    browser.unavailable
+                    or browser.process is None
+                    or browser.process.poll() is not None
+                ):
+                    unavailable_unit = unavailable_unit or key
     finally:
         if browser is not None:
-            browser.close()
+            _close_browser(browser, options.state_root, key)
     return exit_code, results

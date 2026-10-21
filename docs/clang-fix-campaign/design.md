@@ -2,7 +2,8 @@
 
 ## 0. 元信息
 
-- 版本:**v1.5.23-FROZEN(实现输入版)**
+- 版本:**v1.5.24-FROZEN(实现输入版)**
+- v1.5.24 变更记录:P5Q 自动查找与完整绑定核对、子构建快照判据定案,按 P5Q v1.8 冻结设计附录 A 的 v1.6 增补同步,见 §4.5 第 5、6 条。
 - v1.5.23 变更记录:P5Q 快照漂移接受、FAIL 语义与可信读取环境失败说明,见 §4.5 第 6、14 条及 §4.3,按 P5Q v1.5 冻结设计附录 A 末尾 v1.4 增补同步(含 v1.5 条款)。
 - v1.5.22 变更记录:P5Q 复验触发改为 RBS 网页表单,见 §4.5,按 P5Q 冻结设计附录 A 同步。
 - v1.5.21 变更记录:P5 代码评审修订见 §4.4 第 21–24 条,按 P5 v1.3.1 附录 A.3 同步。
@@ -2753,8 +2754,8 @@ P5Q 模块(qb_browser_agent、qb_browser、qb_redact、qb-trigger、qb-result-fe
 2. 复验流水线为 RBS/TRIGGER(非 SBS),按 campaign_units.branch 选择 QuickBuild 工程;命令 `qb-sbs-trigger` 更名为 `qb-trigger`。
 3. 目标行写入表单 Build Package List,格式 `仓库路径@commit`,只写一行;表字段 `sbs_target` 保留原名,语义为该行。
 4. 每次提交在 BUILD NOTES 写入请求标记 `clang-fix-campaign request=<request_id>`;构建与请求只凭回显的请求标记、目标行、子构建 TRIGGER_ID、配置路径与页面构建号对应。
-5. `SUBMITTED` 事件语义改为"提交意图已落库,即将放行提交";意图先于放行写入。提交一旦放行,不存在"确定失败"结论;无法确定是否已提交时不自动重提。`QB_SUBMIT_FAILED` 只表示意图已落库但提交确定未放行。
-6. 通过判据为子构建 Status 精确等于 `Successful`,且子构建回显 `FAIL_FAST=yes`、架构为 `standard-armv7l:aarch64:x86_64`、逐架构状态为空;`qb_pass_requires_accept` 默认 false,与其它复验参数一起在每个 state DB、每个 branch 首次触发时冻结于新表 `campaign_qb_profiles`,P5R 按 unit.branch 从该表读取。(v1.5.23)子构建快照地址与冻结值的关系尚未取证,只记录;不一致时有指引地停止、不写结论。其中参考快照在构建期间滚动(主机与路径根相符、快照名不同)的情形,可由人对单个 request 以 `qb-result-fetch --accept-snapshot-drift` 接受,结果文件记实际快照名 `snapshot_used` 与 `snapshot_drift_accepted=true`;P5R 报告须标出这类 unit 及其实际快照名。FAIL 只表示含目标行的全量构建失败,见第 14 条。
+5. `SUBMITTED` 事件语义改为"提交意图已落库,即将放行提交";意图先于放行写入。提交一旦放行,不存在"确定失败"结论;无法确定是否已提交时不自动重提。`QB_SUBMIT_FAILED` 只表示意图已落库但提交确定未放行。(v1.5.24)提交后落点不是构建页时,工具只读该配置页的 Recent Builds 表,逐个读取候选构建的变量页,按请求标记精确匹配;恰好一个、且通过与人工绑定相同的全部核对,才自动绑定;找不到或多于一个时保持未绑定,由人处理。规则见 P5Q 设计文件 v1.6 第 5.5 节。
+6. 通过判据为子构建 Status 精确等于 `Successful`,且子构建回显 `FAIL_FAST=yes`、架构为 `standard-armv7l:aarch64:x86_64`、逐架构状态为空;`qb_pass_requires_accept` 默认 false,与其它复验参数一起在每个 state DB、每个 branch 首次触发时冻结于新表 `campaign_qb_profiles`,P5R 按 unit.branch 从该表读取。(v1.5.23)(v1.5.24)子构建快照地址已取证:以 Ref. Snapshot 提交时,其最后一段等于冻结值;它作为判据,一致照常落库,不一致时有指引地停止、不写结论。其中参考快照在构建期间滚动(主机与路径根相符、快照名不同)的情形,可由人对单个 request 以 `qb-result-fetch --accept-snapshot-drift` 接受,结果文件记实际快照名 `snapshot_used` 与 `snapshot_drift_accepted=true`;P5R 报告须标出这类 unit 及其实际快照名。FAIL 只表示含目标行的全量构建失败,见第 14 条。
 7. 工具永远不点 Ready to Accept;推送 sandbox 分支不会自动触发 QuickBuild 构建,P12 首次真实推送后观察确认。
 8. EF-5:①REST 探活不再需要;③SBS 构建只读取证与 RBS 表单结构证据已取得,RBS 构建页完整字段映射由 P5Q 设计文件第 9.4 节第 1 步确定,确定后 P5Q 的 qb-trigger 才开工;④accept 语义已由 FatTank 裁定;②真实提交的响应形态移入 P5Q 收口前的确认提交(P5Q 设计文件第 9.4 节第 2 步),不再作为 P5Q 开工门。
 9. campaign-preflight 取消 QB REST 探针与 QB_PASSWORD/QB_COOKIE 检查,改为检查 Node、Playwright 模块、Chromium 路径与 /dev/shm 可用。
@@ -3479,7 +3480,7 @@ tizen-ci-triage/scripts/ci_triage/;kb 数据 tizen-ci-triage/kb/;
 
 ---
 
-本文档为 **v1.5.23-FROZEN(实现输入版)**(2026-10-10;
+本文档为 **v1.5.24-FROZEN(实现输入版)**(2026-10-10;
 冻结裁决见 §0)。
 
 **EF 台账**:EF-1 / EF-2 / EF-3 / EF-4 / EF-6 **已关闭**(结论见 §1.4);

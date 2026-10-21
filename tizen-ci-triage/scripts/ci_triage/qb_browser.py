@@ -6,7 +6,10 @@ import json
 import os
 import re
 import subprocess
+import time
 from pathlib import Path
+from queue import Empty, Queue
+from threading import Thread
 from typing import Any
 
 from ci_triage.qb_redact import PageRedactor
@@ -98,7 +101,8 @@ def validate_login_facts(value: object) -> dict[str, Any]:
     booleans = {"on_signin", "password_present", "sign_out_present", "login_channel_closed"}
     counts = {"checks", "login_posts_released"}
     if not isinstance(value, dict) or set(value) != booleans | counts | {
-        "final_path_shape", "denied"
+        "final_path_shape",
+        "denied",
     }:
         raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
     path = value["final_path_shape"]
@@ -163,14 +167,24 @@ def _check_diagnostic_strings(value: object, redactor: PageRedactor) -> None:
             _check_diagnostic_strings(item, redactor)
 
 
+class _DriverUnknown(dict[str, Any]):
+    """Provenance is a Python type, never part of the serialized response."""
+
+
+def driver_failed(response: dict[str, Any]) -> bool:
+    return isinstance(response, _DriverUnknown)
+
+
 def _unknown() -> dict[str, Any]:
-    return {
-        "ok": True,
-        "landed": "unknown",
-        "released": True,
-        "observed": "<other>",
-        "messages": [],
-    }
+    return _DriverUnknown(
+        {
+            "ok": True,
+            "landed": "unknown",
+            "released": True,
+            "observed": "<other>",
+            "messages": [],
+        }
+    )
 
 
 def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[str, Any]:
@@ -184,7 +198,8 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
     try:
         if isinstance(response, dict) and "login_facts" in response:
             if (
-                command != "login" or response.get("ok") is not False
+                command != "login"
+                or response.get("ok") is not False
                 or response.get("error") not in ("QB_LOGIN_TIMEOUT", "QB_LOGIN_ABORTED")
                 or _sensitive_key(response)
             ):
@@ -194,7 +209,12 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
             login_facts = validate_login_facts(response["login_facts"])
         if isinstance(response, dict) and "failure_category" in response:
             value = response["failure_category"]
-            if not isinstance(value, str) or value not in FAILURE_CATEGORIES:
+            if (
+                response.get("ok") is not False
+                or not isinstance(response.get("error"), str)
+                or not isinstance(value, str)
+                or value not in FAILURE_CATEGORIES
+            ):
                 if submit_sent:
                     return _unknown()
                 raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
@@ -326,10 +346,16 @@ def _decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[
 class QbBrowser:
     """One agent and one login per CLI invocation; commands are synchronous."""
 
-    def __init__(self, qb: dict[str, Any]) -> None:
+    def __init__(
+        self, qb: dict[str, Any], *, read_timeout: float = 60, submit_timeout: float = 150
+    ) -> None:
         self.qb = qb
         self.process: subprocess.Popen[str] | None = None
         self.trace: list[dict[str, Any]] = []
+        self.read_timeout = read_timeout
+        self.submit_timeout = submit_timeout
+        self.termination_records: list[dict[str, Any]] = []
+        self.unavailable = False
 
     def __enter__(self) -> QbBrowser:
         browser = self.qb["browser"]
@@ -358,32 +384,85 @@ class QbBrowser:
         try:
             response = self._command(command, **fields)
         except QbBrowserError as exc:
+            if exc.code == "QB_BROWSER_UNAVAILABLE" or exc.agent_code is None:
+                self.unavailable = True
             exc.command = command if command in _COMMANDS else None
             if self.process is not None:
                 exc.agent_exit_code = self.process.poll()
                 exc.agent_exited = exc.agent_exit_code is not None
             self.trace.append({"ok": False, **exc.failure_facts()})
             raise
+        if driver_failed(response):
+            self.unavailable = True
         self.trace.append({"command": command if command in _COMMANDS else None, "ok": True})
         return response
 
     def _command(self, command: str, **fields: Any) -> dict[str, Any]:
         process = self.process
-        if process is None or process.stdin is None or process.stdout is None:
+        if (
+            process is None
+            or process.poll() is not None
+            or process.stdin is None
+            or process.stdout is None
+        ):
             if command == "submit":
                 return _unknown()
             raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
         if _sensitive_key(fields):
             raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+        replies: Queue[str] = Queue(maxsize=1)
+
+        def exchange() -> None:
+            try:
+                assert process.stdin is not None and process.stdout is not None
+                process.stdin.write(
+                    json.dumps({"command": command, **fields}, ensure_ascii=False) + "\n"
+                )
+                process.stdin.flush()
+                raw = process.stdout.readline()
+            except (OSError, UnicodeError, ValueError):
+                raw = ""
+            replies.put(raw)
+
+        # Bound the complete exchange, including a partial line or blocked pipe write.
+        started = time.monotonic()
+        worker = Thread(target=exchange, daemon=True)
+        worker.start()
+        timeout = (
+            self.read_timeout
+            if command == "read"
+            else self.submit_timeout
+            if command == "submit"
+            else None
+        )
         try:
-            process.stdin.write(
-                json.dumps({"command": command, **fields}, ensure_ascii=False) + "\n"
-            )
-            process.stdin.flush()
-            raw = process.stdout.readline()
-        except (OSError, UnicodeError, ValueError):
-            raw = ""
+            raw = replies.get(timeout=timeout)
+        except Empty:
+            self._terminate(time.monotonic() - started)
+            worker.join(timeout=5)
+            if command == "submit":
+                return _unknown()
+            raise QbBrowserError("QB_FETCH_FAILED") from None
         return decode_response(raw, submit_sent=command == "submit", command=command)
+
+    def _terminate(self, waited: float) -> None:
+        process = self.process
+        if process is None or process.poll() is not None:
+            return
+        if process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=35)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+        self.termination_records.append(
+            {
+                "event": "agent_terminated",
+                "waited_seconds": int(waited),
+                "exit_code": process.returncode,
+            }
+        )
 
     def login(self) -> dict[str, Any]:
         return self.command(
@@ -400,6 +479,7 @@ class QbBrowser:
         process = self.process
         if process is None:
             return
+        started = time.monotonic()
         try:
             if process.poll() is None and process.stdin is not None and not process.stdin.closed:
                 process.stdin.write('{"command":"close"}\n')
@@ -408,8 +488,7 @@ class QbBrowser:
                 process.stdin.close()
             process.wait(timeout=35)
         except (OSError, subprocess.TimeoutExpired):
-            process.terminate()
-            process.wait(timeout=35)
+            self._terminate(time.monotonic() - started)
         finally:
             if process.stdin is not None:
                 process.stdin.close()

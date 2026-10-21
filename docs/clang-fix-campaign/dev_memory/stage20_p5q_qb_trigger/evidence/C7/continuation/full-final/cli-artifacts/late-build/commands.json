@@ -1,0 +1,59 @@
+[
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py",
+      "qb-trigger",
+      "--verification-ids",
+      "u1-v0,u1-v1,u1-v2",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b5/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b5/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b5/config.yaml"
+    ],
+    "exit": 5,
+    "stdout": "[{\"action\": \"submit_uncertain\", \"campaign_unit_key\": \"u1\", \"diagnostic_dir\": null, \"error_code\": \"QB_SUBMIT_UNCERTAIN\", \"message\": \"观察到的落点:/wicket/page;自动查找未找到带本请求标记的构建(未找到,已核对 0 个候选,0 个暂不可读);请尽快运行 qb-result-fetch --request-id 05a9a841f1af4755ab7c5db49b302981 再次自动查找(配置页最近构建表只保留约 10 个构建,该配置再产生约 10 个新构建后将只能人工查号),或到 QuickBuild 按请求标记找到构建后用 --qb-build-id 绑定;确认没有构建后用 --retrigger 重提\", \"qb_build_id\": null, \"request_id\": \"05a9a841f1af4755ab7c5db49b302981\", \"request_seq\": 1, \"sbs_target\": \"u1@a97acc260d52515199247d53577d2979a51093d5\", \"status\": \"QB_REQUESTED\"}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n",
+    "close_to_cli_exit_seconds": 0.12923574447631836
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py",
+      "qb-result-fetch",
+      "--request-id",
+      "05a9a841f1af4755ab7c5db49b302981",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b5/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b5/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b5/config.yaml"
+    ],
+    "exit": 0,
+    "stdout": "[{\"child_build_id\": \"1193469\", \"diagnostic_dir\": null, \"error_code\": null, \"message\": null, \"qb_build_id\": \"1193467\", \"qb_result_path\": null, \"request_id\": \"05a9a841f1af4755ab7c5db49b302981\", \"result_event_id\": null, \"status\": \"RUNNING\", \"terminal\": false}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n",
+    "close_to_cli_exit_seconds": 0.2770512104034424
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python3",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py",
+      "qb-result-fetch",
+      "--request-id",
+      "05a9a841f1af4755ab7c5db49b302981",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b5/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b5/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-107/test_real_cli_browser_submit_b5/config.yaml"
+    ],
+    "exit": 0,
+    "stdout": "[{\"child_build_id\": \"1193469\", \"diagnostic_dir\": null, \"error_code\": null, \"message\": null, \"qb_build_id\": \"1193467\", \"qb_result_path\": \"qb_results/05a9a841f1af4755ab7c5db49b302981/20261021T073126982025Z.json\", \"request_id\": \"05a9a841f1af4755ab7c5db49b302981\", \"result_event_id\": 3, \"status\": \"PASS\", \"terminal\": true}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n",
+    "close_to_cli_exit_seconds": 0.22747254371643066
+  }
+]

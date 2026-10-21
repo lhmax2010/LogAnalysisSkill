@@ -1,0 +1,1411 @@
+{
+  "immutable_inputs": {
+    "hashes": {
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+      "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+    },
+    "protected_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+    "agent_only_two_authorized_edits": true
+  },
+  "suites": [
+    {
+      "run": "full-final",
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "1",
+      "tests": "2879",
+      "time": "1134.317",
+      "timestamp": "2026-10-21T15:26:19.509057+08:00",
+      "hostname": "linhao-linux"
+    },
+    {
+      "run": "wait-boundaries-final",
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "3",
+      "time": "35.817",
+      "timestamp": "2026-10-21T15:43:54.544478+08:00",
+      "hostname": "linhao-linux"
+    }
+  ],
+  "total": 2882,
+  "passed": 2881,
+  "failed": 0,
+  "skipped": 1,
+  "current_collection_exactly_covered": true,
+  "preserved_html_whitespace": {
+    "exit": 2,
+    "count": 32,
+    "files": [
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/01.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/03.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/05.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/07.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/03.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/06.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/08.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/10.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/03.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/06.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/08.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/10.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/05.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/07.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/09.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/03.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/06.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/08.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/10.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/03.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/06.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/08.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/10.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/05.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/07.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/continuation/integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/09.1193469-overview.html:10: trailing whitespace."
+    ]
+  },
+  "groups": {
+    "tests.e2e.test_build_workflow_e2e": 7,
+    "tests.e2e.test_m8_wrapper_e2e": 21,
+    "tests.functional.test_evidence_fixtures": 5,
+    "tests.functional.test_full_match_fixtures": 6,
+    "tests.functional.test_quick_filter_fixtures": 5,
+    "tests.functional.test_rank_fixtures": 3,
+    "tests.functional.test_scan_fixtures": 5,
+    "tests.functional.test_scan_realistic_perf": 1,
+    "tests.functional.test_spec_fixtures": 2,
+    "tests.integration.test_build_verify_real_git": 8,
+    "tests.integration.test_derive_commit_real_hook": 4,
+    "tests.integration.test_gerrit_submit_real_git": 3,
+    "tests.unit.suggesters.test_bw_m3_suggesters": 14,
+    "tests.unit.suggesters.test_depsolve": 12,
+    "tests.unit.test_aggregate": 36,
+    "tests.unit.test_analyze_wrapper": 9,
+    "tests.unit.test_approved_shim_deletions": 2,
+    "tests.unit.test_build_runner": 24,
+    "tests.unit.test_campaign_change_ids": 42,
+    "tests.unit.test_campaign_gate_view": 23,
+    "tests.unit.test_campaign_reconcile": 22,
+    "tests.unit.test_campaign_repair_step": 53,
+    "tests.unit.test_campaign_state": 36,
+    "tests.unit.test_ci_triage": 54,
+    "tests.unit.test_ci_triage_entrypoints": 18,
+    "tests.unit.test_ci_triage_state": 9,
+    "tests.unit.test_command_parser": 12,
+    "tests.unit.test_convergence": 15,
+    "tests.unit.test_ctags_loader": 4,
+    "tests.unit.test_derive_commit": 49,
+    "tests.unit.test_design_drift_ledger": 7,
+    "tests.unit.test_error_clusters": 10,
+    "tests.unit.test_evidence_base": 12,
+    "tests.unit.test_evidence_collectors": 29,
+    "tests.unit.test_failure_classify": 21,
+    "tests.unit.test_fix_all_gold_validation": 9,
+    "tests.unit.test_full_match": 43,
+    "tests.unit.test_gerrit_fetch": 37,
+    "tests.unit.test_historical_inputs": 8,
+    "tests.unit.test_p5q_c5a_integration": 6,
+    "tests.unit.test_p5q_c6_diagnostics": 27,
+    "tests.unit.test_p5q_c6_offline_fix": 3,
+    "tests.unit.test_package_metadata": 1,
+    "tests.unit.test_packet_assembler": 52,
+    "tests.unit.test_patch_formatter": 12,
+    "tests.unit.test_patch_suggest": 65,
+    "tests.unit.test_perf_report": 3,
+    "tests.unit.test_qb_browser": 208,
+    "tests.unit.test_qb_browser_node": 17,
+    "tests.unit.test_qb_config": 63,
+    "tests.unit.test_qb_discovery": 123,
+    "tests.unit.test_qb_driver_budget": 47,
+    "tests.unit.test_qb_redact": 91,
+    "tests.unit.test_qb_result_fetch": 184,
+    "tests.unit.test_qb_state": 35,
+    "tests.unit.test_qb_trigger": 140,
+    "tests.unit.test_quick_filter": 41,
+    "tests.unit.test_rank_causes": 19,
+    "tests.unit.test_sandbox_git": 12,
+    "tests.unit.test_sandbox_submit": 134,
+    "tests.unit.test_scan_and_extract": 42,
+    "tests.unit.test_semantic_classifier": 19,
+    "tests.unit.test_source_candidate_observation": 6,
+    "tests.unit.test_source_candidates": 11,
+    "tests.unit.test_source_to_object": 8,
+    "tests.unit.test_spec_minimal": 17,
+    "tests.unit.test_submission_identity": 32,
+    "tests.unit.test_suppress_policy": 241,
+    "tests.unit.test_terminal_alias_preflight": 39,
+    "tests.unit.test_terminal_anchors": 8,
+    "tests.unit.test_terminal_authority": 6,
+    "tests.unit.test_terminal_before_run": 2,
+    "tests.unit.test_terminal_callable_ids": 9,
+    "tests.unit.test_terminal_entry_observation": 3,
+    "tests.unit.test_terminal_expected_diff": 97,
+    "tests.unit.test_terminal_import_linter": 25,
+    "tests.unit.test_terminal_marker_failures": 2,
+    "tests.unit.test_terminal_marker_observation": 2,
+    "tests.unit.test_terminal_monitored_preflight": 28,
+    "tests.unit.test_terminal_phase_projection": 6,
+    "tests.unit.test_terminal_predicates": 103,
+    "tests.unit.test_terminal_protected_marker_readers": 4,
+    "tests.unit.test_terminal_registry": 13,
+    "tests.unit.test_terminal_scan": 37,
+    "tests.unit.test_terminal_timeout_contracts": 18,
+    "tests.unit.test_tizen_build_verify": 45,
+    "tests.unit.test_tizen_gerrit_submit": 24,
+    "tests.unit.test_tizen_triage_report": 33,
+    "tests.unit.test_tracing_logger": 7,
+    "tests.unit.test_verify_workspace": 11,
+    "tests.unit.test_workflow": 21
+  },
+  "files": [
+    {
+      "file": "audit_delivery.py",
+      "bytes": 3964,
+      "sha256": "45aed9d3fb6e017bff22cece39d88531ef602b7e97a170a8946649864fbefbeb",
+      "check": "PASS"
+    },
+    {
+      "file": "collection-final/command.json",
+      "bytes": 1667,
+      "sha256": "b68e78ff73b65eaae1b4d51d07951a62bde6d47a36bb87b40f823193d70944f1",
+      "check": "PASS"
+    },
+    {
+      "file": "collection-final/output.log",
+      "bytes": 373599,
+      "sha256": "80d58f93706fe593bbf70a70438c67b700a55e9bd4fda0799c43b015e3e30cb3",
+      "check": "PASS"
+    },
+    {
+      "file": "coverage.md",
+      "bytes": 8780,
+      "sha256": "1e27c473d60a502c08c20c6e1146c9dee7c0bfabbc8b464379adab81066b9869",
+      "check": "PASS"
+    },
+    {
+      "file": "design-final/command.json",
+      "bytes": 1733,
+      "sha256": "c5876754b42b11882bdb4596a9677a3a8988a391ac1633ac3a28717b02a3d9fc",
+      "check": "PASS"
+    },
+    {
+      "file": "design-final/output.log",
+      "bytes": 78,
+      "sha256": "cf943b2962ddfcf7edb62afe4d5dfaa6fd54c15b48756861b99689635c34519d",
+      "check": "PASS"
+    },
+    {
+      "file": "focused-01/command.json",
+      "bytes": 1737,
+      "sha256": "6a0b62b63cbfb5568284765b20c1854d3bf3b197206ac734f40ef474bb683956",
+      "check": "PASS"
+    },
+    {
+      "file": "focused-01/output.log",
+      "bytes": 2051,
+      "sha256": "77b2b5ec9c8cd643e8a8d217e820f14271df9847f171281d192fb7f43aa2c4d5",
+      "check": "PASS"
+    },
+    {
+      "file": "full-01/cli-artifacts/build/server-requests.json",
+      "bytes": 439,
+      "sha256": "15bb4464c9e7c866810fe85df36c8f62bb8433e42ad409526a81637cfff30406",
+      "check": "PASS"
+    },
+    {
+      "file": "full-01/command.json",
+      "bytes": 1765,
+      "sha256": "a0474a2eece468b778227904cc5cd4f155062467877fe461bb1944bf12033af9",
+      "check": "PASS"
+    },
+    {
+      "file": "full-01/junit.xml",
+      "bytes": 110139,
+      "sha256": "d9bdbe2f895729a0d9eb1cc085c4253fea7150603ba82c00d94222db7954bb90",
+      "check": "PASS"
+    },
+    {
+      "file": "full-01/output.log",
+      "bytes": 976,
+      "sha256": "8493690a1cce0cff2cef46ee13205b41269ed1079a58dce9a11c722a924ceed0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/agent-0.json",
+      "bytes": 9241,
+      "sha256": "ab471cd493cea54716ef0630a0034985b7b665e99b1fe750cb8c7b360236fcd8",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/agent-1.json",
+      "bytes": 7640,
+      "sha256": "118abdd5d40bd98bf84250ff9bc0df295a01ad88057e320a2f9148e62ba7358c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/agent-2.json",
+      "bytes": 7649,
+      "sha256": "5e936d3e9f5ed7019d791585ba1f15e725265bc6f8fa85bc5e93aea763d16554",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/commands.json",
+      "bytes": 3493,
+      "sha256": "4189390f293dd04779e2c2147a8477ae68ea71b0069bcc1619ea12ad8638109a",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/01.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/02.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "10033f7cd6115c0110e441e497221e885f9dbf58c31fa6a19c2be23dcc905302",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/03.1193469-overview.html",
+      "bytes": 1332,
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/04.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/05.1193467-overview.html",
+      "bytes": 1669,
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/06.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "10033f7cd6115c0110e441e497221e885f9dbf58c31fa6a19c2be23dcc905302",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/07.1193469-overview.html",
+      "bytes": 1335,
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/qb_evidence/7fdcb42a29ce4c77a2db9c5dd409abd4/08.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/result.json",
+      "bytes": 1549,
+      "sha256": "36124b0af8966ced9b05c6e7b1187cb80134285d006ee998d933e40a898538be",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/server-requests.json",
+      "bytes": 6670,
+      "sha256": "1be9ed00e812998ef9ce2818eb5f0349fa514867677530969232a96e1234839b",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/build/state-facts.json",
+      "bytes": 4565,
+      "sha256": "3d0202fc4d62d86722a03edbae4b932d9121bbc8efd1332a77c0223f6424ba41",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/agent-0.json",
+      "bytes": 14676,
+      "sha256": "d651c376b80ba9c87c72905e32e117a87900e760d700dfb4247e1005b3386758",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/agent-1.json",
+      "bytes": 7640,
+      "sha256": "4319786dbc383dda4a9d7085324211d8c26fe19f4bd91ffdb8efe5b64b1dc848",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/agent-2.json",
+      "bytes": 7649,
+      "sha256": "b43923b6554c2f11abe2612db624ebc7b0129ff972a5419005ecf1c4017aaf93",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/commands.json",
+      "bytes": 3598,
+      "sha256": "e235c96ff18c4a46a0c590fc2642b80064b7a2d2cbf743d4f981edb19137bd34",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/01.overview-1917.html",
+      "bytes": 1390,
+      "sha256": "c14da502ad6e4bb202c6891a138fc12c10a0e978823518efd13bcecadf541d6e",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/02.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "c5133bd97bdee97b8f636b9ba2705f0a30df33c7d87c2176772f3367db580d5f",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/03.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/04.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/05.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "c5133bd97bdee97b8f636b9ba2705f0a30df33c7d87c2176772f3367db580d5f",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/06.1193469-overview.html",
+      "bytes": 1332,
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/07.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/08.1193467-overview.html",
+      "bytes": 1669,
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/09.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "c5133bd97bdee97b8f636b9ba2705f0a30df33c7d87c2176772f3367db580d5f",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/10.1193469-overview.html",
+      "bytes": 1335,
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/qb_evidence/06d4bc668ea94eb28266b10ca7a196cc/11.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/result.json",
+      "bytes": 1549,
+      "sha256": "b3cd3977c9826fc8efb26b3bfd8f6eb1bd52428d7dcccb4aa997689360c013e3",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/server-requests.json",
+      "bytes": 7003,
+      "sha256": "87071bda97d7fe8f6e4677db50da82a644b6ce3f96ada703f49949f0bb2c6ed9",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/delayed-build/state-facts.json",
+      "bytes": 4565,
+      "sha256": "56e3681d663c7d4646de17cd77c2e6ecbee7b28679073f28c03b8c4086fc4670",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/agent-0.json",
+      "bytes": 12950,
+      "sha256": "1b6d148e4c34dbc50f2d2a95436c43fff5013a690d7fbb3913afa56436cacae2",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/agent-1.json",
+      "bytes": 7640,
+      "sha256": "e7f51e2e6c2696c02d5dfdc11f522bbdce1f21b0e4d83aa03b3a1c9e853077d4",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/agent-2.json",
+      "bytes": 7649,
+      "sha256": "ed50ef9e8f930d70332ac5f1b4727e9590e04bacfde9088fdca4277c0e41fa78",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/commands.json",
+      "bytes": 3599,
+      "sha256": "aad34ea98a1ea4c5e0f76ef52c9fc4faa1e002cd1f8403a5425000b3708b6d92",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/01.overview-1917.html",
+      "bytes": 1390,
+      "sha256": "c14da502ad6e4bb202c6891a138fc12c10a0e978823518efd13bcecadf541d6e",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/02.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "d70b3f0dcc25ceb7866ed4084ae251766c1f4628f3b034ab5918f4022c4fd782",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/03.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/04.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/05.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "d70b3f0dcc25ceb7866ed4084ae251766c1f4628f3b034ab5918f4022c4fd782",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/06.1193469-overview.html",
+      "bytes": 1332,
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/07.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/08.1193467-overview.html",
+      "bytes": 1669,
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/09.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "d70b3f0dcc25ceb7866ed4084ae251766c1f4628f3b034ab5918f4022c4fd782",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/10.1193469-overview.html",
+      "bytes": 1335,
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/qb_evidence/7005894854714c86a876266a31409457/11.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/result.json",
+      "bytes": 1549,
+      "sha256": "58b157bc547f17eef74697f24edfcb86121dc1c8f4264944145cb1195ca949a1",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/server-requests.json",
+      "bytes": 6895,
+      "sha256": "a5175ce6dc64b2224e67cc1e4f1591a89dd133e66f2a0c5e5c9c1132b15e064d",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-created/state-facts.json",
+      "bytes": 4565,
+      "sha256": "f3078ba67bcddd1a3f46af7e7a4049f14f7e6ea70429f159fba14fa111683549",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-no-build/agent-0.json",
+      "bytes": 23120,
+      "sha256": "1fc2bc84bf6853d7aa622118ae3f07a7beb037783d218c9bbca03f676ff77bc2",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-no-build/commands.json",
+      "bytes": 2848,
+      "sha256": "4e51f4fbc2af5e7d46cd0f48f6861082bc263baf0798a6e098d01713816ae9ad",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-no-build/server-requests.json",
+      "bytes": 5966,
+      "sha256": "2fab927b614aea66bb7ae505462b72dc75b730a83842945e39d5f031fdbcc6de",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/error-no-build/state-facts.json",
+      "bytes": 3040,
+      "sha256": "a498ee3bd3cce078e62f678691e7cf36f57872f243800e54fbfb0cf07c1ba2d0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/existing-fields-requests.json",
+      "bytes": 20031,
+      "sha256": "da66d2bc79d1fd0fe9f09e956c22500fa30ab4ab1a0033dd94dcdfdc92d0f3b2",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/existing-trusted-requests.json",
+      "bytes": 16708,
+      "sha256": "d80642d6b11fda86ee7d1c8af387331cf3d24654af18006f92f35e47b3e10295",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/agent-0.json",
+      "bytes": 23120,
+      "sha256": "2cb9443aa3fd618db7d4b8d9359341f9c921be72290001efb7cb557028084718",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/agent-1.json",
+      "bytes": 9373,
+      "sha256": "1c0a19b7eabc43cc378bcea011b7c86ea36ac48bc8cb249aedcafc2dc0037651",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/agent-2.json",
+      "bytes": 7649,
+      "sha256": "331e4d1f8ab96e8b79671d749e573c4151b26b35b10c90978ccfe7e457719d10",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/commands.json",
+      "bytes": 3963,
+      "sha256": "8c60f3e65ca01c83896082729810c19ce112e81b28a2a1a5d9f8e57b09950da6",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/01.overview-1917.html",
+      "bytes": 1203,
+      "sha256": "6b146814bc55b3d9a35b38bf7394ca4c7208c1362055852d94e31edcf67dd98a",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/02.overview-1917.html",
+      "bytes": 1390,
+      "sha256": "c14da502ad6e4bb202c6891a138fc12c10a0e978823518efd13bcecadf541d6e",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/03.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "2ef91b697fbc25625eb8b1c4c49acbb97fa8720df34a8be89faa6e0901f1f270",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/04.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/05.1193469-overview.html",
+      "bytes": 1332,
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/06.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/07.1193467-overview.html",
+      "bytes": 1669,
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/08.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "2ef91b697fbc25625eb8b1c4c49acbb97fa8720df34a8be89faa6e0901f1f270",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/09.1193469-overview.html",
+      "bytes": 1335,
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/qb_evidence/05a9a841f1af4755ab7c5db49b302981/10.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/result.json",
+      "bytes": 1549,
+      "sha256": "6c50de7b8ab3fbea5f8d309da743e53f956a3351ec3f10fa07ded4355eefb146",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/server-requests.json",
+      "bytes": 7725,
+      "sha256": "26f838cd4f8a79fb60f130bce2e7d90e07c4f4e331de3e4b8e574fa92f6b4e7b",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/late-build/state-facts.json",
+      "bytes": 4565,
+      "sha256": "f4c487b968fde0428a67dc49858b8b6d9dfc9c0cba53e2d40ea30523fc20fbc6",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/agent-0.json",
+      "bytes": 29035,
+      "sha256": "dc5012a49e324280f6e69504a9b203724c8c300a30821cb7ade3c1ebe3935bdb",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/agent-1.json",
+      "bytes": 7640,
+      "sha256": "b464202850ac47024823e34e94de9272f77a0288811cdc647759bb99a9ad3cd8",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/agent-2.json",
+      "bytes": 7649,
+      "sha256": "e02a103c9a65e559f502b90b27f60892957ec63e2d6cf5bce45baab3a0f589e8",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/commands.json",
+      "bytes": 3598,
+      "sha256": "48b4cff28907dcefdddc7049f157eda44c180abc8a6a300a63aff57827da006b",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/01.overview-1917.html",
+      "bytes": 1390,
+      "sha256": "c14da502ad6e4bb202c6891a138fc12c10a0e978823518efd13bcecadf541d6e",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/02.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "244300cb20560320b6415af33ded64a973405d5548e9e5f31e8261681440031c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/03.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/04.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/05.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "244300cb20560320b6415af33ded64a973405d5548e9e5f31e8261681440031c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/06.1193469-overview.html",
+      "bytes": 1332,
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/07.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/08.1193467-overview.html",
+      "bytes": 1669,
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/09.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "244300cb20560320b6415af33ded64a973405d5548e9e5f31e8261681440031c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/10.1193469-overview.html",
+      "bytes": 1335,
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/qb_evidence/411af62e3a26438ca48b88b356f3eb52/11.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/result.json",
+      "bytes": 1549,
+      "sha256": "b25d4e64b9a50220710d11e92c0f6acfc9324884f46ed564d8b9fc4ec7d82727",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/server-requests.json",
+      "bytes": 6786,
+      "sha256": "647197c91a0b8e20df3042773ada8c48506ab8647026b64e284ade9c68a85d8c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/no-navigation/state-facts.json",
+      "bytes": 4565,
+      "sha256": "3f977771d409ca6b8c5da8b7534a6d604b32e8fdf2b551c7864418228b03cb1d",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/change-status/01.active-redacted.html",
+      "bytes": 1534,
+      "sha256": "900f81d85fdbe70403f14fbb38f79acdfb8433ea7863bbf60ca79d11512f5126",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/change-status/01.comparison.json",
+      "bytes": 3159,
+      "sha256": "776dab3d6b0d008016d7a256d9b28993667e150a1ffac07b36142da1fcd2a4a5",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/change-status/01.raw-redacted.html",
+      "bytes": 1530,
+      "sha256": "f8b892c45dd8a6582c37ecebec519c6d698bb26af28a5360da335019c93b9984",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/change-status/run.json",
+      "bytes": 7355,
+      "sha256": "f4b8916c30a3260932491567f9542462ad9184035f8a754a8cc5d8f188a7395b",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/01.active-redacted.html",
+      "bytes": 1455,
+      "sha256": "c6ee72e8e4071c5dc0a40d65a33134a21d1f15502bba772359fa13afa0adc516",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/01.comparison.json",
+      "bytes": 3152,
+      "sha256": "7af3c06b757780e433b18b1ef5889af00ab290633dbed6cca167ea5602c30fae",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/01.raw-redacted.html",
+      "bytes": 1455,
+      "sha256": "c6ee72e8e4071c5dc0a40d65a33134a21d1f15502bba772359fa13afa0adc516",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/02.active-redacted.html",
+      "bytes": 1786,
+      "sha256": "35f97859b40caa82ab052d1fc4baa444cd6f67d7f3bf1d320ca49ee54b95aac3",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/02.comparison.json",
+      "bytes": 3890,
+      "sha256": "ee043d2b597401b7e1b7bd942d63b61b2f93c2d6115eb8aea728081d354b7072",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/02.raw-redacted.html",
+      "bytes": 1786,
+      "sha256": "35f97859b40caa82ab052d1fc4baa444cd6f67d7f3bf1d320ca49ee54b95aac3",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/03.active-redacted.html",
+      "bytes": 1224,
+      "sha256": "d68fe3dc6d2f3168f67e58f4d7d4be4b7540a9a9f65094b4d7607e7f2dbb22c5",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/03.comparison.json",
+      "bytes": 4097,
+      "sha256": "00e4888caf41730bd99cf3ecd045c3adba6ed44649965adc77da434ee884cfff",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/03.raw-redacted.html",
+      "bytes": 1224,
+      "sha256": "d68fe3dc6d2f3168f67e58f4d7d4be4b7540a9a9f65094b4d7607e7f2dbb22c5",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/04.active-redacted.html",
+      "bytes": 1229,
+      "sha256": "207c07d53eda0271c90c672a22cb302a435d77583ee5c33f6d10f2f70bd30c11",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/04.comparison.json",
+      "bytes": 4103,
+      "sha256": "8749718fa3f8181ad91c1be20f26bbaf0d9bff1a2b3fc0bc4b996f3db6250500",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/04.raw-redacted.html",
+      "bytes": 1229,
+      "sha256": "207c07d53eda0271c90c672a22cb302a435d77583ee5c33f6d10f2f70bd30c11",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/05.active-redacted.html",
+      "bytes": 470,
+      "sha256": "cea5839eda55b50dd6376678ba35757d6a25807ab0bfc2ebabfa589a2e0e7aa2",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/05.comparison.json",
+      "bytes": 1551,
+      "sha256": "7df2328fe54f1b8b3ddb45d11ae34041fe5ad09ffd5cd90637d04e75dbee4e10",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/05.raw-redacted.html",
+      "bytes": 470,
+      "sha256": "cea5839eda55b50dd6376678ba35757d6a25807ab0bfc2ebabfa589a2e0e7aa2",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/06.active-redacted.html",
+      "bytes": 1203,
+      "sha256": "6b146814bc55b3d9a35b38bf7394ca4c7208c1362055852d94e31edcf67dd98a",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/06.comparison.json",
+      "bytes": 1805,
+      "sha256": "c595ab5f63121ec2ec52e8d8c2426dae411b44ac6e79c48eb573c8e8cbf8d217",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/06.raw-redacted.html",
+      "bytes": 1203,
+      "sha256": "6b146814bc55b3d9a35b38bf7394ca4c7208c1362055852d94e31edcf67dd98a",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/equal/run.json",
+      "bytes": 40822,
+      "sha256": "70089cf1f91e9dacf7d82ab403ec99841c2b2fb4ac2fc27fae70ee548716142c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/inconsistent-callback.json",
+      "bytes": 12277,
+      "sha256": "c1396c24ef5b6f00440ce9b1df2c20a4a7a38d3d3bc484c7e089182842af9c4f",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/insert-nav/01.active-redacted.html",
+      "bytes": 1566,
+      "sha256": "dbbd9de1f128f29257e6130e538220582ae15ef8fe90eda8d8e8633478b3df1c",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/insert-nav/01.comparison.json",
+      "bytes": 3142,
+      "sha256": "6826e16b336150bb10244be71c5c36c97c471774ef82797bc1d0e97ab2a8d6d3",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/insert-nav/01.raw-redacted.html",
+      "bytes": 1524,
+      "sha256": "c185c43a7e5837b06f9b36dc73ca8da4c8b0a3be9073d746ff0021430f4f2333",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/insert-nav/diagnostic.html",
+      "bytes": 1524,
+      "sha256": "c185c43a7e5837b06f9b36dc73ca8da4c8b0a3be9073d746ff0021430f4f2333",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/insert-nav/diagnostic.json",
+      "bytes": 127,
+      "sha256": "4d7d7402b73a55aa701e8240ba678154757fd16c4314f954a398fb72ea165db3",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/insert-nav/run.json",
+      "bytes": 7398,
+      "sha256": "86451cde870f564bf9678952a37eff609e106a998b1488c06e357906f8497a99",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/redirect-response.json",
+      "bytes": 41,
+      "sha256": "3ed5011db8f92507af4e7859212a0d4e881262fff4a8c286628628a9b17775fc",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/rehearsal/run.json",
+      "bytes": 132473,
+      "sha256": "2d89ffb468cf811e65e0ad99c9ef064766ab3e8607374527f6e179fd797dd7c3",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/server-requests.json",
+      "bytes": 6924,
+      "sha256": "540dca8a17a757130c897b41aa7f59dedc5d1ca460acdd29a2eea9991416ecac",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/cli-artifacts/tools/window-frame-trace.json",
+      "bytes": 212,
+      "sha256": "5a24da9cb2c8e81d6b1827d555e49e54045c06a24c27d48eccaf5da979ddf46e",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/command.json",
+      "bytes": 1770,
+      "sha256": "7aa81e5bd8865187b31bd553fbb3de532f6560f600c34c8b5bdf50eeb2b60702",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/junit.xml",
+      "bytes": 488773,
+      "sha256": "3dd70af984bf7c1b1f7fe2436164c4ecf8c82876f1936011cda13f5e0d426296",
+      "check": "PASS"
+    },
+    {
+      "file": "full-final/output.log",
+      "bytes": 3245,
+      "sha256": "e824b4fcd62b4c199301b25e1ed5eab6da34dc07b75ca0745ff0884730ffe308",
+      "check": "PASS"
+    },
+    {
+      "file": "imports-final/command.json",
+      "bytes": 1641,
+      "sha256": "24088baa93bfdff460e4ef78a7c5863094a3a5e80fdefeba21498962c0c887ae",
+      "check": "PASS"
+    },
+    {
+      "file": "imports-final/output.log",
+      "bytes": 446,
+      "sha256": "827852be494e303fc02bc2eaab165faf062ff507aa54375769b5ef715d3dd0fd",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/agent-0.json",
+      "bytes": 14585,
+      "sha256": "75b31c65311d2c560b5b655ba70c079e36e3c133e568b3c5903b3165d7ef25aa",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/agent-1.json",
+      "bytes": 7640,
+      "sha256": "69cf70ef9951414ab07a6e21aa0429747a1862d683b55a8ade17d02ffcc1d5da",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/agent-2.json",
+      "bytes": 7649,
+      "sha256": "cc332a553f5d771a79f361d3a0cf52eb040ec95d2d1081fcdaa937a6a1c05f54",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/commands.json",
+      "bytes": 3598,
+      "sha256": "b58bab7dc25f3767b7b2ba6162e5d74ac944742fafd34459aedabbe263612157",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/01.overview-1917.html",
+      "bytes": 1390,
+      "sha256": "c14da502ad6e4bb202c6891a138fc12c10a0e978823518efd13bcecadf541d6e",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/02.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "5566980457d5aed5a3cbedb2ff896725a3990e029fae4e1ae077e28e45c972c5",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/03.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/04.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/05.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "5566980457d5aed5a3cbedb2ff896725a3990e029fae4e1ae077e28e45c972c5",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/06.1193469-overview.html",
+      "bytes": 1332,
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/07.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/08.1193467-overview.html",
+      "bytes": 1669,
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/09.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "5566980457d5aed5a3cbedb2ff896725a3990e029fae4e1ae077e28e45c972c5",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/10.1193469-overview.html",
+      "bytes": 1335,
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/qb_evidence/6e6bc3d8bd2f4324a07afe796aca735a/11.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/result.json",
+      "bytes": 1549,
+      "sha256": "471e221fe7ae942620dd1f08dd8d6eade2148e0395ceed0f900b90e73e24e085",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/server-requests.json",
+      "bytes": 7001,
+      "sha256": "91ced84fe659d835566e8d81a19a0bf1f2655e5da329b6b9619f287bf4fcdbb3",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/delayed-build/state-facts.json",
+      "bytes": 4565,
+      "sha256": "64cc64fb84de0d175fc8087d02e5093743e9a1f4e4e0d360664a6062bdc5ee9e",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/agent-0.json",
+      "bytes": 23029,
+      "sha256": "18133f63cfe15ccb42310674014696e3ec2b9968943455eabac30e42ab74f49b",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/agent-1.json",
+      "bytes": 9373,
+      "sha256": "fd3693dfcb72bc3f173597299789514d5747f98ff03ab66951c8a0b04d1076b3",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/agent-2.json",
+      "bytes": 7649,
+      "sha256": "939df8e0b4c5fc6c593e062c220724424e8679c388e6b9f6a5385a73d507ac89",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/commands.json",
+      "bytes": 3964,
+      "sha256": "d5a782d19b8ea1891fa5bfd1cc7177ddf39f159d4420976f8e9071cff3b32491",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/01.overview-1917.html",
+      "bytes": 1203,
+      "sha256": "6b146814bc55b3d9a35b38bf7394ca4c7208c1362055852d94e31edcf67dd98a",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/02.overview-1917.html",
+      "bytes": 1390,
+      "sha256": "c14da502ad6e4bb202c6891a138fc12c10a0e978823518efd13bcecadf541d6e",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/03.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "533ad50008ecc7a9eb213d8b5caa983406a6b243b6961a0697eed7217c10040c",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/04.1193467-overview.html",
+      "bytes": 1663,
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/05.1193469-overview.html",
+      "bytes": 1332,
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/06.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/07.1193467-overview.html",
+      "bytes": 1669,
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/08.1193467-variables.html",
+      "bytes": 1236,
+      "sha256": "533ad50008ecc7a9eb213d8b5caa983406a6b243b6961a0697eed7217c10040c",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/09.1193469-overview.html",
+      "bytes": 1335,
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/qb_evidence/3d2b9f55533543fdaa42520b01e74914/10.1193469-variables.html",
+      "bytes": 1224,
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/result.json",
+      "bytes": 1549,
+      "sha256": "3bf4d4e3718565b214d587c1485f92fb49de27062598f66fadefb5160ee96a1b",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/server-requests.json",
+      "bytes": 7725,
+      "sha256": "905c7bd00c7f0f732c105e1601aa08284b7f54c35ce6967d938c6b617759f1c4",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/cli-artifacts/late-build/state-facts.json",
+      "bytes": 4565,
+      "sha256": "cece34c03922b49f7d0adf9dc7f240df44a4921ac8b4defd5ee435f7fd0764aa",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/command.json",
+      "bytes": 1725,
+      "sha256": "e85e20ffea16f4f441b1b4efaf88784a8c2dae5bffa3fe050f073b4c1b07dfa6",
+      "check": "PASS"
+    },
+    {
+      "file": "integration-added/output.log",
+      "bytes": 113,
+      "sha256": "c99eb133811461c6984c2ae635410f3c06f5ca6e7856c3c374e934b1cf102885",
+      "check": "PASS"
+    },
+    {
+      "file": "mypy-02/command.json",
+      "bytes": 1633,
+      "sha256": "3e08ba4c08cd54501040c95bf2ad9ad586d93bd4f07e9b911699e8354ba23bc0",
+      "check": "PASS"
+    },
+    {
+      "file": "mypy-02/output.log",
+      "bytes": 45,
+      "sha256": "d144f4b429956a53bf5c6beb1fc2bbd224cf5a2307ff13c3ca35f06e02685c53",
+      "check": "PASS"
+    },
+    {
+      "file": "mypy-final/command.json",
+      "bytes": 1633,
+      "sha256": "d55db26ec1e30d7685e58692beb4b0d879e72b0685e6028cac201871c6040278",
+      "check": "PASS"
+    },
+    {
+      "file": "mypy-final/output.log",
+      "bytes": 45,
+      "sha256": "d144f4b429956a53bf5c6beb1fc2bbd224cf5a2307ff13c3ca35f06e02685c53",
+      "check": "PASS"
+    },
+    {
+      "file": "mypy-final-2/command.json",
+      "bytes": 1633,
+      "sha256": "76a1957acee2248882392fa091de732f704673774e4114ae3893a951c48cec38",
+      "check": "PASS"
+    },
+    {
+      "file": "mypy-final-2/output.log",
+      "bytes": 45,
+      "sha256": "d144f4b429956a53bf5c6beb1fc2bbd224cf5a2307ff13c3ca35f06e02685c53",
+      "check": "PASS"
+    },
+    {
+      "file": "node-01/command.json",
+      "bytes": 1805,
+      "sha256": "210d49866e23698f2bb1e0ab5c8e00d9842d61d451e8dec30bf65bc5b7a07756",
+      "check": "PASS"
+    },
+    {
+      "file": "node-01/output.log",
+      "bytes": 22534,
+      "sha256": "fc1376ead16a21b584aee147bddc01138ccca3727b1cfe3fa3d22f047e52bbd5",
+      "check": "PASS"
+    },
+    {
+      "file": "pytest-artifact-redaction.json",
+      "bytes": 1148,
+      "sha256": "53ce374805fab20546444981884d31c86b858f4b952b0c09ab9985ac901f13e1",
+      "check": "PASS"
+    },
+    {
+      "file": "ruff-delivery/command.json",
+      "bytes": 1681,
+      "sha256": "292fa6ac76c643ec0c1d1c15bd0856899629dff62caafc94e3a073e3e5add904",
+      "check": "PASS"
+    },
+    {
+      "file": "ruff-delivery/output.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "check": "PASS"
+    },
+    {
+      "file": "ruff-delivery-final/command.json",
+      "bytes": 1681,
+      "sha256": "ea7d262d4bb18610f55eaeee35f48ec9287eb1f8879f09eee39b97dc11ba0201",
+      "check": "PASS"
+    },
+    {
+      "file": "ruff-delivery-final/output.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "check": "PASS"
+    },
+    {
+      "file": "ruff-final/command.json",
+      "bytes": 1682,
+      "sha256": "79eb261c97c06fa2ce15648f1a5ce7fd8afe3606b425d1a046719c86c1b16c63",
+      "check": "PASS"
+    },
+    {
+      "file": "ruff-final/output.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "check": "PASS"
+    },
+    {
+      "file": "ruff-final-2/command.json",
+      "bytes": 1681,
+      "sha256": "6a3caef878c32c634f5362bd9922f586e966c95776941a854a2d4d60b986a66c",
+      "check": "PASS"
+    },
+    {
+      "file": "ruff-final-2/output.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "check": "PASS"
+    },
+    {
+      "file": "run_checks.py",
+      "bytes": 2975,
+      "sha256": "d78627cf9f9627ba52289da2c32313a5b9e0c02f717be6bf44ee7da7ce3793cc",
+      "check": "PASS"
+    },
+    {
+      "file": "safety-01/command.json",
+      "bytes": 1838,
+      "sha256": "e49f37d6d6f19f672d9cd6049d32e199a3e7d7f69603ac87eb4942df9e2e81f3",
+      "check": "PASS"
+    },
+    {
+      "file": "safety-01/output.log",
+      "bytes": 5033,
+      "sha256": "9fc3370106c827847b4c3854dd3c8486925eb8db10a7712ff17776c62902d7c0",
+      "check": "PASS"
+    },
+    {
+      "file": "sanitize_pytest_evidence.py",
+      "bytes": 2229,
+      "sha256": "86024ec5c1891e04134ccecf188b18ddc0c42daea3c38aac76bd592e395bf695",
+      "check": "PASS"
+    },
+    {
+      "file": "wait-boundaries/command.json",
+      "bytes": 1758,
+      "sha256": "5fb2d49de38d83e4da27ce1c0999854c85ca024ce5144917a955d50229c630df",
+      "check": "PASS"
+    },
+    {
+      "file": "wait-boundaries/output.log",
+      "bytes": 301,
+      "sha256": "498736dc9e6aad19f61bed50710a58beaba67a651d6c29b865f05fe3b6e31281",
+      "check": "PASS"
+    },
+    {
+      "file": "wait-boundaries-final/command.json",
+      "bytes": 1891,
+      "sha256": "57de30f9be9ff5b2b9f020c8bcb468d79b1951f0f7f33b40c4c53e9e3a95be5e",
+      "check": "PASS"
+    },
+    {
+      "file": "wait-boundaries-final/junit.xml",
+      "bytes": 803,
+      "sha256": "27c12a7cc776fdfac8542ed83e9f1eabc48d218677a0b38e5755d8affc87b35a",
+      "check": "PASS"
+    },
+    {
+      "file": "wait-boundaries-final/output.log",
+      "bytes": 302,
+      "sha256": "28a627781b9435fa73dd36e50080137ce9d72d6529ec71795592641826277430",
+      "check": "PASS"
+    }
+  ],
+  "redaction_passed": 206,
+  "redaction_failed": 0
+}

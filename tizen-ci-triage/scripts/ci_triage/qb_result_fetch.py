@@ -10,8 +10,9 @@ import shutil
 import sqlite3
 import tempfile
 import traceback
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
+from functools import partial
 from pathlib import Path
 from typing import Any, TextIO
 
@@ -19,12 +20,15 @@ import yaml
 from tizen_ci_shared.state import StateDatabase
 
 from ci_triage import campaign_state as state
+from ci_triage import qb_binding as binding
+from ci_triage import qb_discovery as discovery
 from ci_triage import qb_result_html as pages
 from ci_triage import qb_trigger as trigger
 from ci_triage import sandbox_submit as sandbox
 from ci_triage._campaign_workspace import _unit_hash
 from ci_triage.qb_browser import QbBrowser, QbBrowserError, _check_diagnostic_strings
 from ci_triage.qb_config import parse_qb_config
+from ci_triage.qb_evidence import archive
 from ci_triage.qb_redact import EvidenceRedactionError, PageRedactor
 
 RESULT_KEYS = frozenset(
@@ -57,7 +61,7 @@ DRIFT_GUIDANCE = (
     "则对该 request 加 `--accept-snapshot-drift` 重跑 fetch;否则在新 campaign 中重做"
 )
 SNAPSHOT_GUIDANCE = (
-    "子构建快照地址与冻结值的关系尚未取证,须取一个以 Ref. Snapshot 提交的子构建样本后按 R1 定判据"
+    "子构建快照地址的主机、路径根或形态与登记不符,须人工核对后按 R1 修订附录 C 第 6 项的登记"
 )
 EACH_GUIDANCE = (
     "EACH_GBS_BUILD_STATUS 非空且格式尚未取证;不得人工降级或 --retrigger。"
@@ -201,8 +205,10 @@ def _view(db: StateDatabase, selection: dict[str, str], key: str) -> RequestView
         _latest(conn, request)
         bound = _event(conn, request["request_seq"], "BUILD_BOUND")
         build = selection.get("qb_build_id", bound["qb_build_id"] if bound else "")
-        pages.require(bool(build), "supply_request_id_and_qb_build_id")
-        _binding_allowed(conn, request, build)
+        if build:
+            _binding_allowed(conn, request, build)
+        else:
+            binding.automatic_allowed(conn, request)
         unit = state._require_unit(conn, key)
         stored = trigger._profile(conn, unit.branch)
         pages.require(stored is not None, "missing_profile", "REJECTED_STATE_INCONSISTENT")
@@ -223,21 +229,7 @@ def _view(db: StateDatabase, selection: dict[str, str], key: str) -> RequestView
 def _manual_bind(db: StateDatabase, view: RequestView) -> None:
     if view.bound is not None:
         return
-    with trigger._write(db) as conn:
-        _binding_allowed(conn, view.request, view.build)
-        if _event(conn, view.request["request_seq"], "BUILD_BOUND") is None:
-            pages.require(
-                sandbox._status(conn, view.key) == "QB_REQUESTED",
-                "binding_state",
-                "REJECTED_STATE_INCONSISTENT",
-            )
-            state._append_qb_event_on_connection(
-                conn,
-                request_seq=view.request["request_seq"],
-                event_type="BUILD_BOUND",
-                qb_build_id=view.build,
-            )
-            state._append_status_on_connection(conn, view.key, "QB_TRIGGERED")
+    binding.bind(db, view.request, view.build)
 
 
 def _diagnostic(root: Path, key: str, diagnostic: dict[str, Any]) -> str | None:
@@ -288,30 +280,7 @@ def _read_page(
     count = reply.get("outside_identity_count")
     if not isinstance(html, str) or type(status) is not int or type(count) is not int or count < 0:
         raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
-    data = html.encode("utf-8")
-    redactor = PageRedactor()
-    redactor.check_bytes(data)
-    directory = root / "qb_evidence" / view.request["request_id"]
-    directory.mkdir(parents=True, exist_ok=True)
-    # Keep previous reads as evidence, including unsuccessful attempts.
-    numbers = [
-        int(p.name.split(".", 1)[0])
-        for p in directory.glob("*.html")
-        if p.name.split(".", 1)[0].isdigit()
-    ]
-    name = (
-        f"{max(numbers, default=0) + 1:02d}."
-        + path.removeprefix("/build/").replace("/", "-")
-        + ".html"
-    )
-    output = directory / name
-    try:
-        output.write_bytes(data)
-        redactor.check_bytes(output.read_bytes())
-    except (OSError, EvidenceRedactionError):
-        output.unlink(missing_ok=True)
-        raise
-    evidence.append(str(output.relative_to(root)))
+    evidence.append(archive(root, view.request["request_id"], path, html))
     trigger._trace(
         root,
         view.key,
@@ -362,23 +331,23 @@ def _collect(
     view: RequestView,
     output: dict[str, Any],
     accept: bool,
+    discovered: discovery.Discovery | None = None,
 ) -> dict[str, Any]:
-    evidence: list[str] = []
+    evidence: list[str] = list(discovered.evidence) if discovered else []
     parent = view.build
 
     def read(path: str) -> str | None:
         return _read_page(browser, root, view, path, evidence, output)
 
-    overview = read(f"/build/{parent}/overview")
-    variables = read(f"/build/{parent}/variables")
-    assert overview is not None and variables is not None
-    facts = pages.parent_overview(overview, f"/build/{parent}/overview", view.profile)
-    facts.update(
-        pages.parent_variables(
-            variables, parent, view.request["request_id"], view.request["sbs_target"], view.profile
-        )
-    )
-    _manual_bind(db, view)
+    if discovered is not None:
+        assert discovered.facts is not None
+        facts = dict(discovered.facts)
+    else:
+        overview = read(f"/build/{parent}/overview")
+        variables = read(f"/build/{parent}/variables")
+        assert overview is not None and variables is not None
+        facts = binding.parent_facts(overview, variables, parent, view.profile, view.request)
+        _manual_bind(db, view)
     child = facts["child_build_id"]
     if child is None:
         return dict(status="QUEUED", child_build_id=None)
@@ -562,6 +531,7 @@ def qb_result_fetch(
     results = []
     exit_code = 0
     login_failed = False
+    key = "unselected"
     try:
         for selection in selections:
             result = {**empty_result(), **selection}
@@ -575,7 +545,9 @@ def qb_result_fetch(
                     conn.close()
                 with trigger._lock(workspace / _unit_hash(key)):
                     view = _view(db, selection, key)
-                    result.update(request_id=view.request["request_id"], qb_build_id=view.build)
+                    result.update(
+                        request_id=view.request["request_id"], qb_build_id=view.build or None
+                    )
                     if login_failed:
                         raise QbBrowserError("QB_FETCH_FAILED")
                     if browser is None:
@@ -586,8 +558,42 @@ def qb_result_fetch(
                         except QbBrowserError:
                             login_failed = True
                             raise
+                    found = None
+                    if not view.build:
+                        found = discovery.discover(
+                            browser,
+                            db,
+                            options.state_root,
+                            view.request,
+                            view.profile,
+                            baseline_w=0,
+                            submitted_at=None,
+                            trace=partial(trigger._trace, options.state_root, key),
+                        )
+                        if found.category != "已绑定":
+                            result["message"] = (
+                                f"自动查找:{found.category},已核对 {len(found.checked)} 个候选,"
+                                f"{len(found.unreadable)} 个暂不可读,"
+                                f"构建号:{','.join(found.builds)};"
+                                "可稍后重试,或人工查到构建号后同时给 --qb-build-id 绑定"
+                            )
+                            code = {
+                                "配置页不可识别": pages.UNRECOGNIZED,
+                                "配置页读取失败": "QB_FETCH_FAILED",
+                                "读取失败": "QB_FETCH_FAILED",
+                                "证据脱敏自检失败": "QB_EVIDENCE_REDACTION_FAILED",
+                            }.get(found.category, pages.BINDING)
+                            raise pages.ResultCheckError(code, "discovery")
+                        view = replace(view, build=found.builds[0])
+                        result["qb_build_id"] = view.build
                     facts = _collect(
-                        browser, db, options.state_root, view, result, options.accept_snapshot_drift
+                        browser,
+                        db,
+                        options.state_root,
+                        view,
+                        result,
+                        options.accept_snapshot_drift,
+                        found,
                     )
                     event = _persist(db, options.state_root, view, facts)
                     result.update(
@@ -598,7 +604,13 @@ def qb_result_fetch(
                     )
             except pages.ResultCheckError as exc:
                 result["error_code"] = exc.code
-                exit_code = max(exit_code, 5 if exc.code == pages.UNRECOGNIZED else 4)
+                exit_code = max(
+                    exit_code,
+                    5
+                    if exc.code
+                    in {pages.UNRECOGNIZED, "QB_FETCH_FAILED", "QB_EVIDENCE_REDACTION_FAILED"}
+                    else 4,
+                )
             except QbBrowserError as exc:
                 trigger._browser_failure_trace(options.state_root, key, exc)
                 result["error_code"] = (
@@ -622,5 +634,5 @@ def qb_result_fetch(
                 traceback.print_exc(file=stderr)
     finally:
         if browser is not None:
-            browser.close()
+            trigger._close_browser(browser, options.state_root, key)
     return exit_code, results

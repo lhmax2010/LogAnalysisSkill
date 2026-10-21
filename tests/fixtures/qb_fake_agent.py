@@ -9,7 +9,11 @@ from pathlib import Path
 
 def main() -> None:
     script, transcript = (Path(arg) for arg in sys.argv[1:])
-    replies = iter(json.loads(script.read_text(encoding="utf-8")))
+    scenario = json.loads(script.read_text(encoding="utf-8"))
+    configuration_pages = (
+        scenario.get("configuration_pages", {}) if isinstance(scenario, dict) else {}
+    )
+    replies = iter(scenario["replies"] if isinstance(scenario, dict) else scenario)
     state = "new"
     allowed = {
         "login": {"new"},
@@ -29,13 +33,17 @@ def main() -> None:
         if state not in allowed.get(name, set()):
             print('{"ok":false,"error":"AGENT_PHASE"}', flush=True)
             continue
-        response = next(replies, {"ok": True})
+        response = (
+            configuration_pages[command["path"]]
+            if name == "read" and command.get("path") in configuration_pages
+            else next(replies, {"ok": True})
+        )
         if response == "EXIT":
             return
         if response == "INVALID_JSON":
             print("not json", flush=True)
             continue
-        if response.get("ok"):
+        if isinstance(response, dict) and response.get("ok"):
             state = {
                 "login": "ready",
                 "read": "ready",

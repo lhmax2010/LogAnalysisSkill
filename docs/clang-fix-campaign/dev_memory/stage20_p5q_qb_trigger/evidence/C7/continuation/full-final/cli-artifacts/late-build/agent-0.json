@@ -1,0 +1,463 @@
+{
+  "transcript": [
+    {
+      "input": {
+        "command": "login",
+        "login_timeout_seconds": 60,
+        "projects": [
+          {
+            "overview_id": 1917,
+            "configuration_path": "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER",
+            "project_name": "Tizen-Base-Toolchain"
+          }
+        ]
+      },
+      "output": {
+        "ok": true
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "open_form",
+        "overview_id": 1917
+      },
+      "output": {
+        "ok": true,
+        "released": false
+      }
+    },
+    {
+      "input": {
+        "command": "fill",
+        "fields": {
+          "Add Package List": "",
+          "BUILD_REFERENCE": "Ref. Snapshot",
+          "BUILD_TYPE": "Full",
+          "CHILD_CONFIGURATIONS": [
+            "standard-armv7l:aarch64:x86_64"
+          ],
+          "Immediate Stop With Error": true,
+          "PROJECT_BRANCH": "tizen_base",
+          "REPO_TYPE": "ALL",
+          "Remove Package List": "",
+          "SNAPSHOT_NUM": "@freeze",
+          "TARGET_IMAGE": [],
+          "Build Package List": "u1@a97acc260d52515199247d53577d2979a51093d5",
+          "BUILD NOTES": "clang-fix-campaign request=05a9a841f1af4755ab7c5db49b302981"
+        }
+      },
+      "output": {
+        "ok": true,
+        "readback": {
+          "BUILD_TYPE/value": "Full",
+          "REPO_TYPE/value": "ALL",
+          "BUILD_REFERENCE/value": "Ref. Snapshot",
+          "SNAPSHOT_NUM/value": "tizen-base-toolchain_20260924.094908",
+          "PROJECT_BRANCH/value": "tizen_base",
+          "Immediate Stop With Error/value": true,
+          "CHILD_CONFIGURATIONS/selection": [
+            "standard-armv7l:aarch64:x86_64"
+          ],
+          "Build Package List/value": "u1@a97acc260d52515199247d53577d2979a51093d5",
+          "Add Package List/value": "",
+          "Remove Package List/value": "",
+          "TARGET_IMAGE/selection": [],
+          "BUILD NOTES/value": "clang-fix-campaign request=05a9a841f1af4755ab7c5db49b302981"
+        },
+        "fingerprint": "294b87b0c48c122e6bd53950d97505fa0077b91235a1bb5b445cbbb567d97c43",
+        "snapshot_option_count": 1,
+        "released": false
+      }
+    },
+    {
+      "input": {
+        "command": "submit",
+        "fingerprint": "294b87b0c48c122e6bd53950d97505fa0077b91235a1bb5b445cbbb567d97c43"
+      },
+      "output": {
+        "ok": true,
+        "landed": "unknown",
+        "observed": "/wicket/page",
+        "messages": [],
+        "released": true
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "read",
+        "path": "/overview/1917"
+      },
+      "output": {
+        "ok": true,
+        "status": 200,
+        "html_redacted": "<html><head>\n  <meta charset=\"utf-8\"><title>QuickBuild - root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER</title><link rel=\"icon\" href=\"data:,\"></head>\n  <body><span>Welcome! &lt;USER&gt;</span><a href=\"/signout\">Sign Out</a><div id=\"breadcrumb\"><span>root</span><span>CI_TIZEN</span><span>TIZEN</span><span>Tizen</span><span>Tizen-Base-Toolchain</span><span>RBS</span><span>TRIGGER</span></div>\n  <script>onCopyClipboardLinkDomReady('copy', 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER')</script><div class=\"box\"><div class=\"box-head\"><div class=\"flex-1\">Recent Builds</div><a>history</a><a>rss</a></div>\n    <table><thead><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr></thead><tbody>\n    </tbody></table></div>\n        <button title=\"Run the configuration\" onclick=\"var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false\">Run</button><script>String.prototype.trim=function(){return this.replace(/^\\s+|\\s+$/, '');};\n  window.onCopyClipboardLinkDomReady=function(){};</script></body></html>",
+        "outside_identity_count": 0
+      }
+    },
+    {
+      "input": {
+        "command": "close"
+      },
+      "output": {
+        "ok": true
+      }
+    }
+  ],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    }
+  ],
+  "close_started_unix_ms": 1792567874648,
+  "close_finished_unix_ms": 1792567874703
+}

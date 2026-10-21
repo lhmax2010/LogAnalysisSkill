@@ -20,7 +20,10 @@ def line(process):
 
 
 @pytest.mark.integration
-@pytest.mark.parametrize("mode", ["build", "error-created", "error-no-build", "no-navigation"])
+@pytest.mark.parametrize(
+    "mode",
+    ["build", "error-created", "error-no-build", "no-navigation", "delayed-build", "late-build"],
+)
 def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):
     command, env = node_command()
     playwright, chromium = browser_paths()
@@ -59,8 +62,7 @@ def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):
         env["P5Q_TEST_AGENT_LOG"] = str(evidence / f"agent-{len(commands)}.json")
         argv = [
             sys.executable,
-            "-m",
-            "ci_triage",
+            str(ROOT / "tests/fixtures/p5q_cli_clock.py"),
             name,
             *args,
             "--state-db",
@@ -80,8 +82,13 @@ def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):
             if close_started is not None:
                 close_seconds = ended - close_started / 1000
         commands.append(
-            {"argv": argv, "exit": run.returncode, "stdout": run.stdout, "stderr": run.stderr,
-             "close_to_cli_exit_seconds": close_seconds}
+            {
+                "argv": argv,
+                "exit": run.returncode,
+                "stdout": run.stdout,
+                "stderr": run.stderr,
+                "close_to_cli_exit_seconds": close_seconds,
+            }
         )
         (evidence / "commands.json").write_text(
             json.dumps(commands, ensure_ascii=False, indent=2) + "\n"
@@ -101,9 +108,32 @@ def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):
             "qb-trigger",
             "--verification-ids",
             "u1-v0,u1-v1,u1-v2",
-            expected_exit=0 if mode == "build" else 5,
+            expected_exit=5 if mode in {"error-no-build", "late-build"} else 0,
         )
-        if mode != "build":
+        transcript = json.loads((evidence / "agent-0.json").read_text())["transcript"]
+        protocol = [row["input"] for row in transcript]
+        submit_index = next(i for i, value in enumerate(protocol) if value["command"] == "submit")
+        baseline_reads = [v for v in protocol[:submit_index] if v["command"] == "read"]
+        lookup_reads = [
+            v
+            for v in protocol[submit_index + 1 :]
+            if v["command"] == "read" and v.get("path") == "/overview/1917"
+        ]
+        assert baseline_reads == [{"command": "read", "path": "/overview/1917"}]
+        assert len(lookup_reads) == (
+            0
+            if mode == "build"
+            else 10
+            if mode in {"error-no-build", "late-build"}
+            else 2
+            if mode == "delayed-build"
+            else 1
+        )
+        requests = json.loads(received.read_text())["received"]
+        assert sum(
+            r["method"] == "GET" and r["path"] == "/overview/1917" for r in requests
+        ) == 2 + len(lookup_reads)
+        if mode == "error-no-build":
             assert triggered["action"] == "submit_uncertain", triggered
             again = cli("qb-trigger", "--verification-ids", "u1-v0,u1-v1,u1-v2")
             assert again["request_id"] == triggered["request_id"]
@@ -116,10 +146,26 @@ def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):
             )
             (evidence / "state-facts.json").write_text(json.dumps(campaign.snapshot(), indent=2))
             return
-        assert triggered["action"] == "submitted_bound", triggered
+        assert triggered["action"] == (
+            "submit_uncertain" if mode == "late-build" else "submitted_bound"
+        ), triggered
+        if mode == "late-build":
+            assert not campaign.sql(
+                "SELECT * FROM campaign_qb_events WHERE event_type='BUILD_BOUND'"
+            )
+            server_command({"publish": True})
         request = triggered["request_id"]
         pending = cli("qb-result-fetch", "--request-id", request)
         assert pending["status"] == "RUNNING", pending
+        fetch_commands = json.loads((evidence / "agent-1.json").read_text())["transcript"]
+        fetch_reads = [
+            r["input"]["path"] for r in fetch_commands if r["input"]["command"] == "read"
+        ]
+        assert fetch_reads == (
+            ["/overview/1917", "/build/1193467/variables", "/build/1193467/overview"]
+            if mode == "late-build"
+            else ["/build/1193467/overview", "/build/1193467/variables"]
+        ) + ["/build/1193469/overview", "/build/1193469/variables"]
         assert (
             campaign.sql("SELECT status FROM campaign_status_log ORDER BY log_id DESC LIMIT 1")[0][
                 "status"
@@ -146,6 +192,8 @@ def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):
         (evidence / "result.json").write_text(json.dumps(result, indent=2))
         (evidence / "state-facts.json").write_text(json.dumps(campaign.snapshot(), indent=2))
         shutil.copytree(tmp_path / "state" / "qb_evidence", evidence / "qb_evidence")
+        for file in (evidence / "qb_evidence").rglob("*.html"):
+            assert "LocalTester" not in file.read_text()
         assert (
             campaign.sql("SELECT status FROM campaign_status_log ORDER BY log_id DESC LIMIT 1")[0][
                 "status"

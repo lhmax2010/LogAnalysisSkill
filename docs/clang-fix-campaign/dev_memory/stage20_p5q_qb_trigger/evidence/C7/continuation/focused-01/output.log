@@ -1,0 +1,19 @@
+........................................................................................................................{"hold": "newCDPSession", "command": "read", "elapsed_seconds": 0.4078737460076809, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "Page.getFrameTree", "command": "read", "elapsed_seconds": 0.40780696098227054, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "Page.createIsolatedWorld", "command": "read", "elapsed_seconds": 0.40758519095834345, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "Runtime.evaluate", "command": "read", "elapsed_seconds": 0.4076262350426987, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "detach", "command": "read", "elapsed_seconds": 0.4077356930356473, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "newCDPSession", "command": "submit", "elapsed_seconds": 0.40790400898549706, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "Page.getFrameTree", "command": "submit", "elapsed_seconds": 0.40800322592258453, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "Page.createIsolatedWorld", "command": "submit", "elapsed_seconds": 0.4037187499925494, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "Runtime.evaluate", "command": "submit", "elapsed_seconds": 0.4034780159126967, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "detach", "command": "submit", "elapsed_seconds": 0.40345290198456496, "event": "agent_terminated", "waited_seconds": 0, "exit_code": -15}
+.{"hold": "Runtime.evaluate", "command": "read", "elapsed_seconds": 60.007633412024006, "event": "agent_terminated", "waited_seconds": 60, "exit_code": -15}
+.................................navigation-missing: RED
+navigation-60000: RED
+driver-read-short: RED
+submit-click-long: RED
+submit-release-long: RED
+driver-submit-short: RED
+.
+164 passed in 87.28s (0:01:27)

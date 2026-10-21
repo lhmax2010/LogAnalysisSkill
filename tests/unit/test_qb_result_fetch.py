@@ -326,7 +326,7 @@ def test_snapshot_negative_not_overridden(c, url, accept):
     args = ["--request-id", R, "--qb-build-id", P] + (["--accept-snapshot-drift"] if accept else [])
     code, out, _ = c.run(args)
     assert (code, out["error_code"], c.events()) == (5, pages.UNRECOGNIZED, [])
-    assert FROZEN in out["message"] and "按 R1 定判据" in out["message"]
+    assert FROZEN in out["message"] and fetch.SNAPSHOT_GUIDANCE in out["message"]
     assert "qb_evidence/" in out["message"]
 
 
@@ -580,11 +580,19 @@ def test_terminal_idempotent_changed_fields_and_status(c):
 
 @pytest.mark.parametrize(
     "mode",
-    ["unbound", "no_request_build", "not_released", "different_bound", "superseded", "other_bound"],
+    [
+        "inconsistent",
+        "no_request_build",
+        "not_released",
+        "different_bound",
+        "superseded",
+        "other_bound",
+    ],
 )
 def test_entry_refusals_no_browser(c, mode):
     args = ["--request-id", R, "--qb-build-id", P]
-    if mode == "unbound":
+    if mode == "inconsistent":
+        state.append_status(c.db, "u1", "QB_TRIGGERED")
         args = ["--request-id", R]
     elif mode == "no_request_build":
         args = ["--qb-build-id", P]

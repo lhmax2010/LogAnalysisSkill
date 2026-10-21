@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-21。状态:**C7 STOPPED(P5Q-C7-02),当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+日期:2026-10-21。状态:**C7 COMPLETE,当前权威 v1.8-FROZEN;P5Q-C7-02已由C7-03关闭;等待C8,本轮不进入**。P5Q不标CLOSED。
 本轮冻结登记与离线实现见§47;以下C6及旧权威记录保留为历史。
 最新执行见§45–46/P5Q-C6B-01:终态重读exit0、RESULT仍为3、专用库逐字节不变;
 成功父1201886/子1201889及配置1917的五页50项比对一致,身份计数均0。
@@ -167,7 +167,7 @@ Successful与Accept分开:默认qb_pass_requires_accept=false;冻结稿附录A�
 | 第9.4节第1.6步BUILD_NOTES样本 | CLOSED;完整请求标记逐字相等,无首尾空白、HTML转义或截断;见§45.5 |
 | 第9.4节第2步一次真实提交 | DONE;1201886经人工绑定,1201889 PASS;§43/live-05及§45终态重读,本轮未再提交 |
 | 附录C待填 | 已取证内容见C2b/appendix-c.md、§26及v1.5;成功样本/快照关系由§45补证登记,本轮冻结稿原字节不改 |
-| v1.8自动绑定与验证性提交 | C7 STOPPED(P5Q-C7-02);当前权威v1.8-FROZEN,read的CDP等待预算与代理限定修改范围冲突,见§47.3;C8未执行 |
+| v1.8自动绑定与验证性提交 | C7 COMPLETE;离线实现与门禁见§48;当前权威v1.8-FROZEN;C8验证性提交未执行 |
 | P12 sandbox推送观察 | PENDING_P12;首次真实Gerrit推送后观察是否自发QB构建;本批不提前真实推送 |
 | Unified配置 | 未取证保持disabled,不能猜配置ID/默认值 |
 
@@ -5368,7 +5368,7 @@ P12观察、Unified配置与验证性提交仍开放。本轮不访问真实Quic
 
 ### 47.3 停止报告 P5Q-C7-02:read 的 CDP 等待预算
 
-OPEN。v1.8第3.2节:259要求read路径上其它等待也不得超过30000毫秒,
+已由§48的P5Q-C7-03裁定关闭。以下为原停止事实,原始证据保留。v1.8第3.2节:259要求read路径上其它等待也不得超过30000毫秒,
 但现有TrustedPage.run(:361/:362/:363/:373/:382)的五个CDP等待没有时限。
 本轮代理仅允许改导航timeout与登录提示,没有授权增加TrustedPage/read的预算包装。
 两条不能由这两处编辑同时落实;Python60秒应答上限不能证明代理30秒保证。
@@ -5403,3 +5403,118 @@ OPEN。v1.8第3.2节:259要求read路径上其它等待也不得超过30000毫�
 design.md附录A同步及C7其余交付仍待裁定后继续,不把基线检查通过作为v1.5.24已完成。
 脱敏自检最初把探针源码的局部变量session赋值误识别为会话值;
 该局部变量仅改名为cdp后复查全部通过,探针行为不变,未改脱敏规则。
+
+## 48. 实施裁定 P5Q-C7-03:代理侧等待预算的范围
+
+### 48.1 裁定原文
+
+1. 停止报告 P5Q-C7-02 成立。v1.8 第 3.2 节"read 应答等待上限"一段中"并保证 read 路径上没有其它可超过该值的等待"一句作废,改为:
+   a. 代理侧显式超时只约束以下两类:read 的页面导航(30000 毫秒);submit 中已有的三个显式等待(Ok 点击 60 秒、放行等待 10 秒、跳转等待 60 秒)。
+   b. 可信读取环境的 CDP 调用(新建会话、取帧树、建隔离环境、Runtime.evaluate、断开会话),以及读取响应头等其它框架调用,代理侧不设预算,列为已接受残余。理由:它们只与本机浏览器进程交互、不经网络,挂起说明浏览器本身已坏。
+   c. 统一由驱动侧应答上限兜底:read 60 秒、submit 150 秒。超时即终止代理,写 agent_terminated 记录,按第 3.2 节归类。驱动侧上限是唯一的硬上限;代理侧显式超时的作用只是不依赖框架默认值。
+2. 第 9.2 节相应断言改为:
+   a. 源码静态断言:read 路径的页面导航带显式 timeout,值为 30000,且小于驱动的 read 上限 60 秒;submit 路径三个显式超时之和小于驱动的 submit 上限 150 秒;每条各有负例。不对 CDP 调用做预算断言。
+   b. 行为用例:用与 evidence/C7/probe-read-budget.mjs 相同的方法,分别让五处 CDP 等待之一挂起 → 驱动在 read 上限到时终止代理、写 agent_terminated、结果为读取失败(qb-result-fetch 为 QB_FETCH_FAILED,自动查找中为"读取失败");submit 路径中让一次可信读取挂起 → 驱动在 submit 上限到时终止,按驱动侧失败处理、不查找。
+   c. 计时方式:测试可以通过驱动的构造参数缩短上限;生产入口固定为 60 秒与 150 秒,不经命令行或配置暴露;至少一例 read 按生产默认值真实计时。
+3. 代理改动授权不变,仍只允许两处:read 导航显式 timeout: 30000、登录固定提示补齐。以"export class Agent {"为末端的源码前缀(含 Policy、installGuards、TrustedPage)保持与 48b0aa9 逐字节一致,hash 应为 40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16。
+4. 本裁定在下次修订设计时并入正文,并列入 C8 收口文档的已接受残余。
+
+### 48.2 续实施计划与边界
+
+基线edee2f2。重读§47与C7/stop-report.md,三项输入哈希与§47.2一致。
+旧探针保留为历史证据;不恢复未验收草稿。按新裁定重新实现驱动上限、失败来源、
+终止记录,然后实现第5.5节两种查找、两个CLI与共享绑定,同步design.md附录A。
+CDP等待无代理侧预算是已接受残余,由驱动硬上限兜底;C8须明确列出。
+全部新增证据放C7/continuation/;离线测试与本机HTTPS、安全四组、全部门禁完成后交付。
+不访问真实QuickBuild、不弹登录窗口、不推送Gerrit、不点Accept、不写专用库、不进入C8。
+
+### 48.3 代码与用例落点
+
+下表模块路径均在`tizen-ci-triage/scripts/ci_triage/`下。逐项用例及证据索引见
+[coverage.md](evidence/C7/continuation/coverage.md),JUnit保留测试函数名,参数部分用稳定SHA256代替,
+避免脱敏负例的合成HTML进入证据;与当前collect清单逐项对账。
+
+| v1.8条文或裁定 | 落点 | 本轮落实 |
+|---|---|---|
+| 5.5配置页身份与Recent Builds | qb_result_html.py:158 | 直接子元素flex-1、六列表头、Id/链接、重复与50行上限 |
+| 5.5两模式、基线、候选、截止点 | qb_discovery.py:83 | 提交后180秒/至多10轮;读取时一次;严格大于截止点才停,覆盖概览读取;轮询假时钟测试 |
+| 5.2同核对/同事务 | qb_binding.py:87/:105;qb_result_fetch.py:229 | 自动与人工共用父页核对及单写事务,重查最新request、状态与已有绑定 |
+| 4.3第2.5/10步 | qb_trigger.py:310/:502 | 基线失败分身份/表结构;驱动unknown不查找;代理合法unknown才查找;未匹配不重提 |
+| 4.2第5步、4.3第1步 | qb_trigger.py:596 | already_requested提示;中途不可用不重启,保留最初失效unit名称,其它幂等项不变 |
+| 5.1读取时恢复 | qb_result_fetch.py:519 | 未绑定只接受最新QB_REQUESTED,保持requests-file输入顺序;绑定后继续原结果读取 |
+| 5.3证据续编、5.5隐私 | qb_evidence.py:8;qb_discovery.py:230 | 最后配置页先归档,仅匹配候选两页落盘;非匹配页及诊断不落盘/不进trace |
+| 3.2、C7-03第1/2条 | qb_browser.py:170/:346 | 驱动unknown以内存类型标识,JSON不增加键;read60/submit150秒;五CDP挂起与submit挂起验证 |
+| 3.1终止记录 | qb_trigger.py:301;qb_browser.py:448 | 超时终止记录,CLI关闭后写trace,写出失败不覆盖业务结果 |
+| C7-03第3条 | qb_browser_agent.mjs:643/:716 | 只补登录提示及导航timeout30000;Agent之前前缀与48b0aa9逐字节相等 |
+| 5.3第4项b | qb_result_fetch.py:63 | 停止提示改为核对主机、路径根与形态后按R1修订附录C第6项 |
+| 附录A v1.6增补 | design.md:5/:2757/:3483 | v1.5.24版本/记录、4.5第5条追加/第6条替换;4.3不改 |
+
+附录A照录时,替换引文之外的旧`(v1.5.23)`标记按“其余文字不变”保留,
+故4.5第6条相邻显示`(v1.5.23)(v1.5.24)`。未修改任何冻结稿或检查器。
+没有恢复旧草稿;绑定/证据抽取只为两条CLI共用现有规则,没有改变判据。
+
+### 48.4 验收记录(完成)
+
+`continuation/run_checks.py`逐命令记录argv、UTC起止、exit、前后输入hash与代理精确两处diff。
+定向测试初轮164 passed,含五处CDP等待的read/submit与CLI映射、生产默认read真实计时
+60.007633秒、六条预算RED变异。另补三条进程不存在/已退出/管道断开的真实驱动CLI用例,
+纳入最终全量回归。Node362 passed,含既有159项RED静态负例。
+四个安全组从头重跑4/4:Worker组走已批准的browser_fail_closed分支,
+worker closeTarget抛固定Error类别、shared_worker关闭成功;攻击HTTP0、WS握手0,
+浏览器已关且临时目录删除。307/308、逐跳、凭据隔离均通过。
+
+本机HTTPS集成新增delayed-build与late-build两例已独立通过,假时钟推进轮询:
+第二轮出现的新构建完成自动绑定;十轮未出现后,读取时模式一次查找绑定并继续RUNNING/PASS。
+最终全量运行归档六种模式的协议命令、实际服务器请求、stdout、结果与脱敏页面。
+`full-01`为主动中断的未完成回归(exit2):补齐上述两例之后重新从头运行`full-final`,
+不把中断运行作为验收。mypy119文件、lint-imports6条契约、design检查器0problem已通过;
+完整暂存树导出后的ruff通过,不把工作区既有草稿/无关删除纳入本轮。
+
+最终全仓命令为`.venv/bin/pytest -q --junitxml=<full-final/junit.xml>`,
+结果2878 passed/0 failed/1 skipped,exit0,1134.40秒。
+该次收集之后补齐的3条预算边界用例单独运行,3 passed/0 failed/0 skipped,
+见`wait-boundaries-final/`:149秒合法unknown继续查找绑定;150秒终止且不查找;
+close实等35.093729秒后终止,trace恰一条且已完成结果不变。
+两次互不重叠的JUnit合并覆盖当前`pytest --collect-only -q`的2882项,
+合计2881 passed/0 failed/1 skipped,并非声称一次命令执行了2881项。
+唯一skip为`test_tizen_build_verify.py::test_case_insensitive_bypass_is_platform_specific`,
+原因`case-sensitive filesystem`,与基线一致。
+
+| 门禁/分组 | 最终结果 | continuation/下证据 |
+|---|---|---|
+| 全仓pytest + 3条补充边界 | 2881 passed/0 failed/1 skipped,两次exit均0 | full-final/;wait-boundaries-final/;collection-final/;delivery-audit.json |
+| 自动查找Python | 123 passed | full-final/junit.xml,test_qb_discovery |
+| 驱动预算/分类/CLI映射 | 47 passed(44+3) | 两份JUnit,test_qb_driver_budget |
+| 既有trigger/fetch | 140/184 passed | full-final/junit.xml |
+| 真实CLI+本地HTTPS六模式 | 6 passed,新增2例 | full-final/cli-artifacts/;integration-added/ |
+| Node单元/静态断言 | 362 passed/0 failed/0 skipped | node-01/ |
+| 静态变异负例 | 159个既有名字负例+6个预算负例全部RED | node-01/output.log;focused-01/output.log |
+| 拦截安全四组 | 4 passed/0 failed,全部重跑 | safety-01/ |
+| mypy | exit0,119 source files | mypy-final-2/ |
+| ruff完整待提交树 | exit0,All checks passed | ruff-delivery-final/ |
+| lint-imports | exit0,6 kept/0 broken | imports-final/ |
+| design.md检查器 | exit0,0 problem | design-final/ |
+
+每个目录的`command.json`有完整argv与UTC起止,包括Node/Playwright/Chromium本机路径。
+新增pytest数量172(123查找+47预算+2本机集成),基线2709 passed/1 skipped。
+pytest参数原文中的合成HTML触发了归档自检,改为测试名加参数SHA256;
+安全日志中JSON内嵌HTML用Unicode转义保存尖括号,解析后的结构与值逐字不变。
+不改变生产脱敏规则;`audit_delivery.py`同时检查原始字节与JSON解码字符串,
+并核对两份JUnit与当前collect集合相等。处理过程首轮遇到中断JUnit的无名testcase,
+改为保留该中断记录后完成;不将该记录计入验收。证据哈希详见`delivery-audit.json`。
+完整`git diff --cached --check`只报告原样归档HTML的行尾空白;
+排除`continuation/**/qb_evidence/*.html`后exit0。原始页面不为样式检查改写,
+逐文件例外由`delivery-audit.json`登记并断言除此之外没有其它空白问题。
+
+### 48.5 交付边界与后续挂账
+
+新增停止报告0项,与v1.8加C7-03不一致/有歧义/做不到的地方:无。
+代理前缀SHA256为`40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16`,
+与48b0aa9逐字节相等;整个代理文件也只出现授权的两处变更。
+v1.5、v1.8与专用库前后SHA256均与§47.2相同。
+
+C8须写入已接受残余:CDP及其它本机框架调用没有代理侧预算,由驱动60/150秒兜底;
+Recent Builds约10条的恢复窗口;身份计数不能发现未登记、且不等于登录显示名的账号列。
+C8验证性真实提交未执行;P12推送观察与Unified配置挂账保持原样。
+本轮提交只含C7实现、测试、design.md照录同步、进度与脱敏证据;
+没有修改两个冻结稿、专用状态库或工作区原有无关变更,没有真实QB/Gerrit操作。

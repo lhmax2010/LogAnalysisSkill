@@ -155,6 +155,42 @@ def summary(doc: Element) -> dict[str, str]:
     return result
 
 
+def recent_builds(html: str, profile: dict[str, Any]) -> list[str]:
+    """Registered configuration identity and six-column Recent Builds table."""
+    doc = Document(html).root
+    title = one(doc.find("title"), "configuration_title").text().strip()
+    expected = "QuickBuild - " + profile["configuration_path"]
+    require(title == expected or title.startswith(expected + " - "), "configuration_title")
+    config_path(doc, profile["configuration_path"])
+    headings = [head for head in doc.find(cls="box-head") if any(
+        isinstance(child, Element) and child.has("flex-1")
+        and child.text().strip() == "Recent Builds" for child in head.children
+    )]
+    heading = one(headings, "recent_builds_title")
+    require(heading.parent is not None, "recent_builds_box")
+    assert heading.parent is not None
+    table = one(heading.parent.find("table"), "recent_builds_table")
+    header = one(table.find("thead"), "recent_builds_header")
+    require([n.text().strip() for n in header.find("th")] == [
+        "Id", "Version", "Master Node", "Begin Date", "Duration", "Triggered By"
+    ], "recent_builds_columns")
+    body = one(table.find("tbody"), "recent_builds_body")
+    rows = body.find("tr")
+    require(len(rows) <= 50, "recent_builds_limit")
+    builds: list[str] = []
+    for item in rows:
+        values = cells(item)
+        require(len(values) == 6, "recent_builds_row_columns")
+        build = values[0].text().strip()
+        require(re.fullmatch(r"\d+", build) is not None, "recent_builds_id")
+        links = [match[1] for link in values[1].find("a")
+                 if (match := re.fullmatch(r"/build/(\d+)", link.attrs.get("href", "")))]
+        require(links == [build], "recent_builds_link")
+        require(build not in builds, "recent_builds_duplicate_id")
+        builds.append(build)
+    return builds
+
+
 def parent_overview(html: str, path: str, profile: dict[str, Any]) -> dict[str, Any]:
     doc = Document(html).root
     for cls, kind in (

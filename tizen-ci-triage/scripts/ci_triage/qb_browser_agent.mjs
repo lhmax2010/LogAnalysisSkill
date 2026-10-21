@@ -640,7 +640,7 @@ export class Agent {
     } finally { this.policy.phase = 'idle'; }
   }
   async login(timeout) {
-    process.stderr.write('已打开 QuickBuild 登录窗口,请在窗口中登录;登录后工具会自动继续。\n');
+    process.stderr.write('已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n');
     const deadline = Date.now() + timeout * 1000;
     this.lastLoginCheck = { on_signin: false, password_present: false, sign_out_present: false, checks: 0 };
     try {
@@ -713,7 +713,7 @@ export class Agent {
     this.policy.readNavigation = navigation;
     let response;
     try {
-      response = await this.page.goto(expected);
+      response = await this.page.goto(expected, { timeout: 30000 });
       if (this.page.url() !== expected || response?.request().redirectedFrom()) throw new AgentError('QB_READ_REDIRECTED');
       if (this.policy.readNavigation !== navigation || navigation.failed || !navigation.requestId
         || response?.url() !== expected) throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE');
