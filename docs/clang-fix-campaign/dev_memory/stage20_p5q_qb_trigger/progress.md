@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-21。状态:**C7 ACCEPTED,C8 OFFLINE_FIX_VERIFIED,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+日期:2026-10-21。状态:**C7 ACCEPTED,C8 PREPARED_WAITING_CONFIRMATION,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
 本轮裁定、离线小修与C8准备见§49。新的十二字段确认前不访问QuickBuild,不复用旧提交授权。
 本轮冻结登记与离线实现见§47;以下C6及旧权威记录保留为历史。
 最新执行见§45–46/P5Q-C6B-01:终态重读exit0、RESULT仍为3、专用库逐字节不变;
@@ -168,7 +168,7 @@ Successful与Accept分开:默认qb_pass_requires_accept=false;冻结稿附录A�
 | 第9.4节第1.6步BUILD_NOTES样本 | CLOSED;完整请求标记逐字相等,无首尾空白、HTML转义或截断;见§45.5 |
 | 第9.4节第2步一次真实提交 | DONE;1201886经人工绑定,1201889 PASS;§43/live-05及§45终态重读,本轮未再提交 |
 | 附录C待填 | 已取证内容见C2b/appendix-c.md、§26及v1.5;成功样本/快照关系由§45补证登记,本轮冻结稿原字节不改 |
-| v1.8自动绑定与验证性提交 | C7 COMPLETE;离线实现与门禁见§48;当前权威v1.8-FROZEN;C8验证性提交未执行 |
+| v1.8自动绑定与验证性提交 | C7 ACCEPTED;C8小修e393a1f已推送,专用库准备完成;等待本轮逐字“确认提交”,未执行真实提交或零提交读取;见§49 |
 | P12 sandbox推送观察 | PENDING_P12;首次真实Gerrit推送后观察是否自发QB构建;本批不提前真实推送 |
 | Unified配置 | 未取证保持disabled,不能猜配置ID/默认值 |
 
@@ -5587,3 +5587,111 @@ unit 2、真实提交、结果轮询与零提交读取均未执行,旧确认不�
 
 未发现与冻结稿或本裁定不一致/做不到的地方。小修先独立提交推送;
 随后才开始C8专用目录准备,当前没有真实QB请求、没有Gerrit fetch或push。
+
+### 49.5 C8专用准备(小修e393a1f推送之后)
+
+新目录`/home/linhao/Toolchain/p5q-live-validation/p5q-c8/`此前不存在。
+目标固定为`platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0`。
+不复用C6的库或镜像,不复制其冻结快照行。unit 2尚未构造。
+
+构造入口(仓库根目录运行,完整实现与证据在evidence/C8/preparation/):
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/preparation/prepare_c8.py fetch
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/preparation/prepare_c8.py construct
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/preparation/prepare_c8.py preflight
+```
+
+fetch只执行一次,2026-10-21T09:01:09Z至09:01:13Z,exit0。
+实际Git命令依次如下;均由SandboxGit加统一环境与8项-c覆盖,
+完整argv/起止/exit/stdout/stderr逐条存于mirror-commands.json,没有真实push:
+
+```bash
+git init --bare /home/linhao/Toolchain/p5q-live-validation/p5q-c8/remotes/platform/upstream/libtirpc
+git -C /home/linhao/Toolchain/p5q-live-validation/p5q-c8/remotes/platform/upstream/libtirpc fetch --no-tags --no-recurse-submodules --depth=1 ssh://review.tizen.org:29418/platform/upstream/libtirpc 7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0
+git -C /home/linhao/Toolchain/p5q-live-validation/p5q-c8/remotes/platform/upstream/libtirpc cat-file -t 7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0
+git -C /home/linhao/Toolchain/p5q-live-validation/p5q-c8/remotes/platform/upstream/libtirpc rev-parse 7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0^{tree}
+git -C /home/linhao/Toolchain/p5q-live-validation/p5q-c8/remotes/platform/upstream/libtirpc update-ref refs/heads/sandbox/p5q-c8-libtirpc 7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0
+git -C /home/linhao/Toolchain/p5q-live-validation/p5q-c8/remotes/platform/upstream/libtirpc show-ref --verify refs/heads/sandbox/p5q-c8-libtirpc
+```
+
+对象类型commit,tree=`9ef054c6187444dedb07aab80fb04279f5683bf4`,本机sandbox ref精确匹配目标。
+SSH只用BatchMode/StrictHostKeyChecking/ConnectTimeout,未索要或记录凭据。
+可选的当前公共manifest GET本轮未执行,不声称已核对当前快照revision。
+
+unit=`p5q-c8-libtirpc-20261021`,verification_ids为同名前缀的-v0/-v1/-v2,
+分别standard-aarch64、standard-armv7l、standard-x86_64。
+三份PASS、round、DERIVE、PUSH按C6-01构造,明确是合成前提,
+不是实际gbs验证、派生提交或Gerrit推送。构造来源及占位字段见synthetic-basis.json、state-before.sql。
+库`p5q-c8/state.db`,配置`p5q-c8/config.yaml`,state_root=`p5q-c8/state`,工作区=`p5q-c8/ws`。
+配置的gerrit_ssh_base仅指向本机remotes;浏览器路径/600秒登录时限均为生产配置,
+没有host-resolver或测试证书参数。SNAPSHOT_NUM=@freeze,当前没有冻结行。
+
+### 49.6 前置、清理与准备验收
+
+构造命令尚未结束时误提前启动了一次只读preflight,因此关联尚未齐全,
+exit1/REJECTED_ARCH_AGGREGATE_MISMATCH。等待construct成功后再检查;
+这次顺序错误没有真实QB访问、没有提交意图写入,不把它当生产规格缺口。
+随后检查发现一个旧profile残留(2026-10-21T07:24Z创建),只有socket和19字节symlink,
+没有普通文件或进程引用。保留原检查于preflight-before-cleanup.json;
+lsof exit1且stdout/stderr均空,逐项校验owner/类型/inode后仅删除该目录,
+不读取或输出链接值。清理命令如下,exit0,证据orphan-cleanup.json:
+
+```bash
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/preparation/clean_orphan.py
+```
+
+最后一次preflight在09:03:47Z至09:04:07Z完成,exit0,证据preflight.json:
+
+| 检查 | 实际结果 |
+|---|---|
+| C8库SHA256前后 | dd43219d2964e23d711e904ab640a73eb3c328e6685940dc7711beb4f7563ff2,相等 |
+| unit数/最新状态 | 1 / SANDBOX_PUSHED |
+| QB requests/profiles/events | 0 / 0 / 0 |
+| 本机远端核对 | PASS,derived/ref均等于目标commit,隔离.transport已删除 |
+| 代理/Playwright Chromium/profile/.transport | 均0残留,进程扫描错误0 |
+| 磁盘 | /home可用214G,占用88%;/dev/shm可用16G |
+| 内存 | available 6.3Gi;swap已用约4Gi,如实记录不称空闲 |
+| D状态进程(间隔10秒3次) | 0 / 0 / 0 |
+| v1.8/v1.5/C6库 | 与§49.2相同 |
+| C6目录 | 逐文件内容hash/链接目标与c6-tree-before.json相等,未写任何C6文件 |
+
+只读前置直接调用生产_snapshot、_idempotency与_remote_check,没有实例化代理,
+没有运行qb-trigger或qb-result-fetch命令。未提交state.db二进制,
+只提交SQL文本快照、无凭据配置副本与脱敏JSON。准备脚本ruff通过;
+生产代码没有在小修提交之后改变,完整回归结果仍见§49.4。
+准备交付的validate.py实跑通过:14份文件原字节/JSON解码脱敏自检,
+ruff、design.md检查器(0 problem)、暂存diff检查均exit0;
+完整记录见preparation/validation.json。本准备提交不重跑全量pytest,
+没有修改小修已验收的生产代码或测试。
+
+### 49.7 十二字段与待确认闸门
+
+| 字段 | 拟填值 |
+|---|---|
+| BUILD_TYPE | Full |
+| REPO_TYPE | ALL |
+| BUILD_REFERENCE | Ref. Snapshot |
+| SNAPSHOT_NUM | @freeze,提交时表单的唯一当前选中项,不预设历史值 |
+| PROJECT_BRANCH | tizen_base |
+| Immediate Stop With Error | true(勾选) |
+| CHILD_CONFIGURATIONS | standard-armv7l:aarch64:x86_64,一个组合项 |
+| Build Package List | platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0 |
+| Add Package List | 空字符串 |
+| Remove Package List | 空字符串 |
+| TARGET_IMAGE | 空列表 |
+| BUILD NOTES | clang-fix-campaign request=<生产qb-trigger生成的request_id> |
+
+目前新“确认提交”=NOT_RECEIVED。准备证据先提交推送后,在对话列出上表与专用路径,
+等待FatTank逐字确认。之前所有“确认提交”与“开始”均不复用。
+待授权生产命令(未执行):
+
+```bash
+.venv/bin/python -m ci_triage qb-trigger --verification-ids p5q-c8-libtirpc-20261021-v0,p5q-c8-libtirpc-20261021-v1,p5q-c8-libtirpc-20261021-v2 --state-db /home/linhao/Toolchain/p5q-live-validation/p5q-c8/state.db --state-root /home/linhao/Toolchain/p5q-live-validation/p5q-c8/state --config /home/linhao/Toolchain/p5q-live-validation/p5q-c8/config.yaml
+```
+
+下一步仅允许一次真实trigger,无retrigger。只有unknown后自动绑定成功才继续规定的结果读取;
+直接build落点、未找到/超时/多于一个、基线失败或其它异常均停止,不重提。
+约25分钟首次fetch,非终态时至少间隔20分钟;每次浏览器登录前预告。
+终态之后才构造unit 2并做一次读取时模式零提交验证,e1/e2/e3a/e3b均待执行。
+本轮未写收口文档,P5Q不标CLOSED。当前未发现新的设计不一致或做不到之处。

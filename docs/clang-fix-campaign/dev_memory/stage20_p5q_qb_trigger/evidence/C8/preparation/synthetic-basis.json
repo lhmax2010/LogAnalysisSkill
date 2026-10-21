@@ -1,0 +1,17 @@
+{
+  "authority": "P5Q-C6-01 + P5Q-C8-01",
+  "target": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+  "template": "C6 preparation and tests/unit/test_p5q_c5a_integration.py",
+  "synthetic": [
+    "three PASS verification records",
+    "unit/round",
+    "DERIVE",
+    "PUSH"
+  ],
+  "real_facts": [
+    "read-only fetched commit and tree",
+    "local sandbox ref"
+  ],
+  "warning": "No real gbs verification, derived commit creation or Gerrit push occurred.",
+  "manifest": "NOT_REQUESTED (optional); current snapshot remains unfrozen"
+}

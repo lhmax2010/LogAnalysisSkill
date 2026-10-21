@@ -1,0 +1,108 @@
+{
+  "at": "2026-10-21T09:07:08.207035+00:00",
+  "immutable": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  },
+  "gates": [
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/preparation"
+      ],
+      "started": "2026-10-21T09:07:07.990501+00:00",
+      "ended": "2026-10-21T09:07:08.001197+00:00",
+      "exit": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "started": "2026-10-21T09:07:08.001210+00:00",
+      "ended": "2026-10-21T09:07:08.169925+00:00",
+      "exit": 0,
+      "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "started": "2026-10-21T09:07:08.169949+00:00",
+      "ended": "2026-10-21T09:07:08.180518+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "d507f1ca11062293d0c267761c58baae88c92b6fbae85cd2c46dacbabad28d37"
+    },
+    {
+      "path": "c6-tree-before.json",
+      "sha256": "dd1074231b1a6d6086096b056f204d898d13f7f515bad6ad6801db318780931e"
+    },
+    {
+      "path": "clean_orphan.py",
+      "sha256": "5674a00e263a9c3bc655acab95cb63aa6f41c70e4f246890c801b9e92692bb14"
+    },
+    {
+      "path": "config.yaml",
+      "sha256": "1b5a0e79018f5ad123ca2efec5b45543e997ef05a25487440601b8de03f44329"
+    },
+    {
+      "path": "mirror-commands.json",
+      "sha256": "f4f82d78432ac2499690a53cbeb7e53df73525ba9643fb05cdad6d7e90439311"
+    },
+    {
+      "path": "mirror.json",
+      "sha256": "b5e9168e23213ff1baaf975ab2feee570df9b3a06f64e210d35c2436cd1fbb87"
+    },
+    {
+      "path": "orphan-cleanup.json",
+      "sha256": "e2182452357b5ffe7e7fd1848528e0791918921f7afb1dfb9481e5af57fffd6f"
+    },
+    {
+      "path": "preflight-before-cleanup.json",
+      "sha256": "3b31502d1e1555cc22fe7cd81018f58128a52587b32d9ba41d940a2df9310c65"
+    },
+    {
+      "path": "preflight.json",
+      "sha256": "699c58d8d47f91068e6e21faac42914dc6252410eecf5b2fe10c0403a7070398"
+    },
+    {
+      "path": "prepare_c8.py",
+      "sha256": "a511d809b5d09bff8d6544d0d6ec6b7c4d5652aaa24d9ba58c838c01ad789fb2"
+    },
+    {
+      "path": "prepared.json",
+      "sha256": "35130ab860820021d37d9b5a72914850fae752f0ad5d658fec4d235c498cee09"
+    },
+    {
+      "path": "state-before.sql",
+      "sha256": "8c9c206a272b633ffd9239caa527fbb46b08061eee7bda1fb44ef20f9f3e33c4"
+    },
+    {
+      "path": "synthetic-basis.json",
+      "sha256": "b996028b53b84eacf326cfd142347aa3011883f164d925d26702f45100e12574"
+    },
+    {
+      "path": "validate.py",
+      "sha256": "5a36daaf327ac21e575f1b4d6526b8c6bedab21c178eda34dff4f6bc7948de7a"
+    }
+  ],
+  "redaction_failed": 0,
+  "c6_tree_unchanged": true,
+  "live_authorization": "NOT_RECEIVED"
+}

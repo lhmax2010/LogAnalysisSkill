@@ -1,0 +1,40 @@
+{
+  "path": "/dev/shm/p5q-browser-M9aRkY",
+  "entries": [
+    {
+      "path": ".",
+      "mode": "drwx------",
+      "size": 60,
+      "uid": 1000
+    },
+    {
+      "path": "org.chromium.Chromium.PVos3b",
+      "mode": "drwx------",
+      "size": 80,
+      "uid": 1000
+    },
+    {
+      "path": "org.chromium.Chromium.PVos3b/SingletonCookie",
+      "mode": "lrwxrwxrwx",
+      "size": 19,
+      "uid": 1000
+    },
+    {
+      "path": "org.chromium.Chromium.PVos3b/SingletonSocket",
+      "mode": "srwxrwxr-x",
+      "size": 0,
+      "uid": 1000
+    }
+  ],
+  "lsof_exit": 1,
+  "lsof_stdout": "",
+  "lsof_stderr": "",
+  "mtime": "2026-10-21T07:24:16.761415+00:00",
+  "action": "REMOVED",
+  "at": "2026-10-21T09:03:38.028671+00:00",
+  "immutable": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  }
+}
