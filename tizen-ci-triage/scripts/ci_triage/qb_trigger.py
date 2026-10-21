@@ -313,7 +313,9 @@ def _baseline(browser: QbBrowser, project: dict[str, Any], result: dict[str, Any
     except pages.ResultCheckError as exc:
         result["message"] = discovery.baseline_message(exc.check)
     except QbBrowserError as exc:
-        if exc.code == "QB_BROWSER_UNAVAILABLE":
+        if browser.unavailable or exc.code == "QB_BROWSER_UNAVAILABLE":
+            # Baseline failure is pre-submit; a dead driver invalidates the batch agent.
+            exc.code = "QB_BROWSER_UNAVAILABLE"
             raise
         result["message"] = discovery.baseline_message("configuration_read")
         raise _Rejected("REJECTED_QB_FORM_CHANGED") from exc

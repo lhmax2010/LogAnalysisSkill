@@ -1,0 +1,256 @@
+{
+  "received": [
+    {
+      "method": "GET",
+      "path": "/signin",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "POST",
+      "path": "/signin?0-1.IFormSubmitListener-content-form",
+      "status": 302,
+      "body": "<SYNTHETIC_LOGIN_REDACTED>"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?41-1.ILinkListener-run",
+      "status": 302,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?41",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?41-1.IBehaviorListener.0-form-field-0&random=0.07986432985422487",
+      "status": 200,
+      "body": "field=BUILD_TYPE&value=opaque-0-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?42-1.IBehaviorListener.0-form-field-1&random=0.9234411164506283",
+      "status": 200,
+      "body": "field=REPO_TYPE&value=opaque-1-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?43-1.IBehaviorListener.0-form-field-2&random=0.7459898923757466",
+      "status": 200,
+      "body": "field=BUILD_REFERENCE&value=opaque-2-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?44-1.IBehaviorListener.0-form-field-3&random=0.04845873107174126",
+      "status": 200,
+      "body": "field=SNAPSHOT_NUM&value=opaque-3-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?45-1.IBehaviorListener.0-form-field-4&random=0.8562439069834069",
+      "status": 200,
+      "body": "field=PROJECT_BRANCH&value=opaque-4-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?46-1.IBehaviorListener.0-form-field-5&random=0.46811860210227707",
+      "status": 200,
+      "body": "field=Immediate+Stop+With+Error&value=on"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?47-1.IBehaviorListener.0-form-field-6&random=0.2108802224857076",
+      "status": 200,
+      "body": "field=CHILD_CONFIGURATIONS&value=7374616e646172642d61726d76376c3a616172636836343a7838365f3634"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?48-1.IBehaviorListener.0-form-field-7&random=0.6826777242507768",
+      "status": 200,
+      "body": "field=Build+Package+List&value=u1%40a97acc260d52515199247d53577d2979a51093d5"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?49-1.IBehaviorListener.0-form-field-8&random=0.7314594478193447",
+      "status": 200,
+      "body": "field=Add+Package+List&value="
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?50-1.IBehaviorListener.0-form-field-9&random=0.5531558737839787",
+      "status": 200,
+      "body": "field=Remove+Package+List&value="
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?51-1.IBehaviorListener.0-form-field-10&random=0.9127521310024925",
+      "status": 200,
+      "body": "field=TARGET_IMAGE&value="
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?52-1.IBehaviorListener.0-form-field-11&random=0.5894400636832572",
+      "status": 200,
+      "body": "field=BUILD+NOTES&value=clang-fix-campaign+request%3D3471981f06dc46eb8075e8a6fda90de2"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?53-1.IFormSubmitListener-form",
+      "status": 302,
+      "body": "form%3Afield%3A0%3Ainput=opaque-0-0&form%3Afield%3A1%3Ainput=opaque-1-0&form%3Afield%3A2%3Ainput=opaque-2-0&form%3Afield%3A3%3Ainput=opaque-3-0&form%3Afield%3A4%3Ainput=opaque-4-0&form%3Afield%3A5%3Ainput=on&form%3Afield%3A6%3Apalette%3Arecorder=7374616e646172642d61726d76376c3a616172636836343a7838365f3634&form%3Afield%3A7%3Ainput=u1%40a97acc260d52515199247d53577d2979a51093d5&form%3Afield%3A8%3Ainput=&form%3Afield%3A9%3Ainput=&form%3Afield%3A10%3Apalette%3Arecorder=&form%3Afield%3A11%3Ainput=clang-fix-campaign+request%3D3471981f06dc46eb8075e8a6fda90de2"
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?99",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193467/variables",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193467/overview",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/signin",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "POST",
+      "path": "/signin?0-1.IFormSubmitListener-content-form",
+      "status": 302,
+      "body": "<SYNTHETIC_LOGIN_REDACTED>"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193467/overview",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193467/variables",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193469/overview",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193469/variables",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/signin",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "POST",
+      "path": "/signin?0-1.IFormSubmitListener-content-form",
+      "status": 302,
+      "body": "<SYNTHETIC_LOGIN_REDACTED>"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193467/overview",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193467/variables",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193469/overview",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/build/1193469/variables",
+      "status": 200,
+      "body": ""
+    }
+  ],
+  "submissions": [
+    {
+      "form:field:0:input": "opaque-0-0",
+      "form:field:1:input": "opaque-1-0",
+      "form:field:2:input": "opaque-2-0",
+      "form:field:3:input": "opaque-3-0",
+      "form:field:4:input": "opaque-4-0",
+      "form:field:5:input": "on",
+      "form:field:6:palette:recorder": "7374616e646172642d61726d76376c3a616172636836343a7838365f3634",
+      "form:field:7:input": "u1@a97acc260d52515199247d53577d2979a51093d5",
+      "form:field:8:input": "",
+      "form:field:9:input": "",
+      "form:field:10:palette:recorder": "",
+      "form:field:11:input": "clang-fix-campaign request=3471981f06dc46eb8075e8a6fda90de2"
+    }
+  ],
+  "builds": 1,
+  "errors": []
+}

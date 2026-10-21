@@ -1,0 +1,821 @@
+{
+  "inputs": {
+    "hashes": {
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+      "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+    },
+    "protected_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+    "agent_unchanged": true
+  },
+  "total": 2892,
+  "passed": 2891,
+  "failed": 0,
+  "skipped": 1,
+  "groups": {
+    "tests.e2e.test_build_workflow_e2e": 7,
+    "tests.e2e.test_m8_wrapper_e2e": 21,
+    "tests.functional.test_evidence_fixtures": 5,
+    "tests.functional.test_full_match_fixtures": 6,
+    "tests.functional.test_quick_filter_fixtures": 5,
+    "tests.functional.test_rank_fixtures": 3,
+    "tests.functional.test_scan_fixtures": 5,
+    "tests.functional.test_scan_realistic_perf": 1,
+    "tests.functional.test_spec_fixtures": 2,
+    "tests.integration.test_build_verify_real_git": 8,
+    "tests.integration.test_derive_commit_real_hook": 4,
+    "tests.integration.test_gerrit_submit_real_git": 3,
+    "tests.unit.suggesters.test_bw_m3_suggesters": 14,
+    "tests.unit.suggesters.test_depsolve": 12,
+    "tests.unit.test_aggregate": 36,
+    "tests.unit.test_analyze_wrapper": 9,
+    "tests.unit.test_approved_shim_deletions": 2,
+    "tests.unit.test_build_runner": 24,
+    "tests.unit.test_campaign_change_ids": 42,
+    "tests.unit.test_campaign_gate_view": 23,
+    "tests.unit.test_campaign_reconcile": 22,
+    "tests.unit.test_campaign_repair_step": 53,
+    "tests.unit.test_campaign_state": 36,
+    "tests.unit.test_ci_triage": 54,
+    "tests.unit.test_ci_triage_entrypoints": 18,
+    "tests.unit.test_ci_triage_state": 9,
+    "tests.unit.test_command_parser": 12,
+    "tests.unit.test_convergence": 15,
+    "tests.unit.test_ctags_loader": 4,
+    "tests.unit.test_derive_commit": 49,
+    "tests.unit.test_design_drift_ledger": 7,
+    "tests.unit.test_error_clusters": 10,
+    "tests.unit.test_evidence_base": 12,
+    "tests.unit.test_evidence_collectors": 29,
+    "tests.unit.test_failure_classify": 21,
+    "tests.unit.test_fix_all_gold_validation": 9,
+    "tests.unit.test_full_match": 43,
+    "tests.unit.test_gerrit_fetch": 37,
+    "tests.unit.test_historical_inputs": 8,
+    "tests.unit.test_p5q_c5a_integration": 6,
+    "tests.unit.test_p5q_c6_diagnostics": 27,
+    "tests.unit.test_p5q_c6_offline_fix": 3,
+    "tests.unit.test_package_metadata": 1,
+    "tests.unit.test_packet_assembler": 52,
+    "tests.unit.test_patch_formatter": 12,
+    "tests.unit.test_patch_suggest": 65,
+    "tests.unit.test_perf_report": 3,
+    "tests.unit.test_qb_browser": 208,
+    "tests.unit.test_qb_browser_node": 17,
+    "tests.unit.test_qb_config": 63,
+    "tests.unit.test_qb_discovery": 133,
+    "tests.unit.test_qb_driver_budget": 47,
+    "tests.unit.test_qb_redact": 91,
+    "tests.unit.test_qb_result_fetch": 184,
+    "tests.unit.test_qb_state": 35,
+    "tests.unit.test_qb_trigger": 140,
+    "tests.unit.test_quick_filter": 41,
+    "tests.unit.test_rank_causes": 19,
+    "tests.unit.test_sandbox_git": 12,
+    "tests.unit.test_sandbox_submit": 134,
+    "tests.unit.test_scan_and_extract": 42,
+    "tests.unit.test_semantic_classifier": 19,
+    "tests.unit.test_source_candidate_observation": 6,
+    "tests.unit.test_source_candidates": 11,
+    "tests.unit.test_source_to_object": 8,
+    "tests.unit.test_spec_minimal": 17,
+    "tests.unit.test_submission_identity": 32,
+    "tests.unit.test_suppress_policy": 241,
+    "tests.unit.test_terminal_alias_preflight": 39,
+    "tests.unit.test_terminal_anchors": 8,
+    "tests.unit.test_terminal_authority": 6,
+    "tests.unit.test_terminal_before_run": 2,
+    "tests.unit.test_terminal_callable_ids": 9,
+    "tests.unit.test_terminal_entry_observation": 3,
+    "tests.unit.test_terminal_expected_diff": 97,
+    "tests.unit.test_terminal_import_linter": 25,
+    "tests.unit.test_terminal_marker_failures": 2,
+    "tests.unit.test_terminal_marker_observation": 2,
+    "tests.unit.test_terminal_monitored_preflight": 28,
+    "tests.unit.test_terminal_phase_projection": 6,
+    "tests.unit.test_terminal_predicates": 103,
+    "tests.unit.test_terminal_protected_marker_readers": 4,
+    "tests.unit.test_terminal_registry": 13,
+    "tests.unit.test_terminal_scan": 37,
+    "tests.unit.test_terminal_timeout_contracts": 18,
+    "tests.unit.test_tizen_build_verify": 45,
+    "tests.unit.test_tizen_gerrit_submit": 24,
+    "tests.unit.test_tizen_triage_report": 33,
+    "tests.unit.test_tracing_logger": 7,
+    "tests.unit.test_verify_workspace": 11,
+    "tests.unit.test_workflow": 21
+  },
+  "integrations": {
+    "build": {
+      "exits": [
+        0,
+        0,
+        0
+      ],
+      "close_seconds": [
+        0.17685723304748535,
+        0.0786745548248291,
+        0.1251688003540039
+      ],
+      "source": "full/cli-artifacts/build/commands.json"
+    },
+    "delayed-build": {
+      "exits": [
+        0,
+        0,
+        0
+      ],
+      "close_seconds": [
+        0.1307530403137207,
+        0.12564325332641602,
+        0.07775712013244629
+      ],
+      "source": "full/cli-artifacts/delayed-build/commands.json"
+    },
+    "error-created": {
+      "exits": [
+        0,
+        0,
+        0
+      ],
+      "close_seconds": [
+        0.0791633129119873,
+        0.07644820213317871,
+        0.07945632934570312
+      ],
+      "source": "full/cli-artifacts/error-created/commands.json"
+    },
+    "error-no-build": {
+      "exits": [
+        5,
+        0
+      ],
+      "close_seconds": [
+        0.12658166885375977,
+        null
+      ],
+      "source": "full/cli-artifacts/error-no-build/commands.json"
+    },
+    "late-build": {
+      "exits": [
+        5,
+        0,
+        0
+      ],
+      "close_seconds": [
+        0.12577557563781738,
+        0.07630085945129395,
+        0.07511568069458008
+      ],
+      "source": "full/cli-artifacts/late-build/commands.json"
+    },
+    "no-navigation": {
+      "exits": [
+        0,
+        0,
+        0
+      ],
+      "close_seconds": [
+        0.13035249710083008,
+        0.12623047828674316,
+        0.12435674667358398
+      ],
+      "source": "full/cli-artifacts/no-navigation/commands.json"
+    }
+  },
+  "raw_html_whitespace": {
+    "exit": 2,
+    "locations": [
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/01.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/03.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/05.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/07.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/03.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/06.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/08.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/10.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/03.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/06.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/08.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/10.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/05.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/07.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/09.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/03.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/04.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/06.1193469-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/08.1193467-overview.html:10: trailing whitespace.",
+      "docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/offline/full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/10.1193469-overview.html:10: trailing whitespace."
+    ]
+  },
+  "files": [
+    {
+      "file": "README.md",
+      "sha256": "cd7b2b82097f72269f8a7358e5b6c620dc495615f92953631b7f7ca4d635ae2a"
+    },
+    {
+      "file": "audit.py",
+      "sha256": "3b6e8010918afba42cea480c1aaf7f98db0b326a69941f849ce08588656bad7a"
+    },
+    {
+      "file": "collection/command.json",
+      "sha256": "946c9cb0e2667df233afb3e30f5e0146b31691c654571016789453541b8910de"
+    },
+    {
+      "file": "collection/output.log",
+      "sha256": "78caee7c1553c2287db6d7bcd2c6887db72fa3e3e3636b0a6acc318ddcfbd8cc"
+    },
+    {
+      "file": "design/command.json",
+      "sha256": "59d0d52b974c77396562a86d6ebd7d1884476cdd7eb7c3885cd0f57fc47b6183"
+    },
+    {
+      "file": "design/output.log",
+      "sha256": "cf943b2962ddfcf7edb62afe4d5dfaa6fd54c15b48756861b99689635c34519d"
+    },
+    {
+      "file": "focused/command.json",
+      "sha256": "791677b02a153d1ae25dd65df087b09990d6636ac98d984956d569f9cb565a47"
+    },
+    {
+      "file": "focused/junit.xml",
+      "sha256": "271c62d03bcdf55ce3f051d53479c1e4299c2010682798d48f86cbcfb8b2b110"
+    },
+    {
+      "file": "focused/output.log",
+      "sha256": "f497f0c32b33c6b73d8544f849a87ae72121e7fde6bae93ae2f38293d8e956f6"
+    },
+    {
+      "file": "full/cli-artifacts/build/agent-0.json",
+      "sha256": "2a96a5480cf3fb5b37534ddbc1a6e88441f8ecac371e5ad47485478fb2213829"
+    },
+    {
+      "file": "full/cli-artifacts/build/agent-1.json",
+      "sha256": "b372dd62ac080e5c8f7bd2a4bf4074134e65da778ed07874ea132da6b33dbd47"
+    },
+    {
+      "file": "full/cli-artifacts/build/agent-2.json",
+      "sha256": "564be5df652890a0054cd1a5133008ac6d26cc60540b178be3c14e960182b5e0"
+    },
+    {
+      "file": "full/cli-artifacts/build/commands.json",
+      "sha256": "7d90684f374407e78d3401bb7f33ea7717e371f530bcd7db052b299b2e23c816"
+    },
+    {
+      "file": "full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/01.1193467-overview.html",
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750"
+    },
+    {
+      "file": "full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/02.1193467-variables.html",
+      "sha256": "3220c278f48b46a0732d39299d42d4b3f70e5ef1489c20584641efc8ba556dee"
+    },
+    {
+      "file": "full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/03.1193469-overview.html",
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97"
+    },
+    {
+      "file": "full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/04.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/05.1193467-overview.html",
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4"
+    },
+    {
+      "file": "full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/06.1193467-variables.html",
+      "sha256": "3220c278f48b46a0732d39299d42d4b3f70e5ef1489c20584641efc8ba556dee"
+    },
+    {
+      "file": "full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/07.1193469-overview.html",
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c"
+    },
+    {
+      "file": "full/cli-artifacts/build/qb_evidence/d07033f1f8dd4b2f9341609da497888e/08.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/build/result.json",
+      "sha256": "b6527cadbdcd7bccefb04521d1d1b0add8b6d2311193b5a115b1da61df7c6da5"
+    },
+    {
+      "file": "full/cli-artifacts/build/server-requests.json",
+      "sha256": "53d72aeb86130f430d70916f7296a3eb59b5310d025ec0ea5b4b953ec7818c01"
+    },
+    {
+      "file": "full/cli-artifacts/build/state-facts.json",
+      "sha256": "5a07b276ead3424e429bc0fb99416754e4537f381d3ab5ca245d582fdfb1c7cd"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/agent-0.json",
+      "sha256": "494b6671bab4d13cfe58d20528c25d5c9711917d2c66903335bac0ecefce0abf"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/agent-1.json",
+      "sha256": "2dce94268d6584397e99ae2f745f815a547a24dd53abada232ba1d874657ef3f"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/agent-2.json",
+      "sha256": "288becee342c4b47004657e2a648139b8510d159246756fb36a3f5ae6269cb8e"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/commands.json",
+      "sha256": "dd076c574a66bca20e884a65f8c1bb66233d0f15f09bfaf5da7c2001d2ad9d08"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/01.overview-1917.html",
+      "sha256": "97e8f0118281c011898b5ae0385d1daa464d8746e941960e72e0eb59d949a93d"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/02.1193467-variables.html",
+      "sha256": "59f37fdf838205354d4430b37d35372876e5fae769650916abf2fa553772716d"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/03.1193467-overview.html",
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/04.1193467-overview.html",
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/05.1193467-variables.html",
+      "sha256": "59f37fdf838205354d4430b37d35372876e5fae769650916abf2fa553772716d"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/06.1193469-overview.html",
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/07.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/08.1193467-overview.html",
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/09.1193467-variables.html",
+      "sha256": "59f37fdf838205354d4430b37d35372876e5fae769650916abf2fa553772716d"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/10.1193469-overview.html",
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/qb_evidence/3471981f06dc46eb8075e8a6fda90de2/11.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/result.json",
+      "sha256": "60ea7bec535b279a90b462a2898cec373f27eceb736c1532e87097c2fd7101ec"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/server-requests.json",
+      "sha256": "ab04c4280962aec2c91778db79f61ac524cadc6e7f0fb9eebe8f9eb69fa40925"
+    },
+    {
+      "file": "full/cli-artifacts/delayed-build/state-facts.json",
+      "sha256": "7e472beab81265de6ab5dd8611d670c1a164fbcaa123b195c0f3935e858268d7"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/agent-0.json",
+      "sha256": "bc25353b875ac126cd764967c8357920bb9c5810ad2decc1c57c1d5c3e4f89f8"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/agent-1.json",
+      "sha256": "4d24fe1e51ccd3b2befb33bfe87a26ff648e15c6e0566e392a1695df77f59b8b"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/agent-2.json",
+      "sha256": "6ad7d83fa6d6f74052224c6a1c46ceef7e41c3fa01c506df02715ff932da0748"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/commands.json",
+      "sha256": "a4dbb52f093dcb1e9889701376f7bdc299f9661f67bb31ec20bdb350dcd84c4a"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/01.overview-1917.html",
+      "sha256": "97e8f0118281c011898b5ae0385d1daa464d8746e941960e72e0eb59d949a93d"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/02.1193467-variables.html",
+      "sha256": "11e38e443cff12266b9608d6a4338ae48d87d8a57e4785aef63d31e75f91e16d"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/03.1193467-overview.html",
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/04.1193467-overview.html",
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/05.1193467-variables.html",
+      "sha256": "11e38e443cff12266b9608d6a4338ae48d87d8a57e4785aef63d31e75f91e16d"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/06.1193469-overview.html",
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/07.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/08.1193467-overview.html",
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/09.1193467-variables.html",
+      "sha256": "11e38e443cff12266b9608d6a4338ae48d87d8a57e4785aef63d31e75f91e16d"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/10.1193469-overview.html",
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/qb_evidence/b0822c61f47f46569c0bb818b831eed3/11.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/result.json",
+      "sha256": "b2613a9f829109504d5545b21356b6242ec4d595294d3d36297acb5f7d1072b5"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/server-requests.json",
+      "sha256": "445ec922b0630e8df91f4e961546cee8ae7cf4d50767339899a6cd4a451ee7dd"
+    },
+    {
+      "file": "full/cli-artifacts/error-created/state-facts.json",
+      "sha256": "efd7317ec2f937788c75d7cbb5e8c491328769529a7a1b60aecb57c519a55d89"
+    },
+    {
+      "file": "full/cli-artifacts/error-no-build/agent-0.json",
+      "sha256": "2e37143486377e44a35790ceb7731b4eb3c09209099d64c2d2e0c73a31c5067e"
+    },
+    {
+      "file": "full/cli-artifacts/error-no-build/commands.json",
+      "sha256": "87335aa84eceac71d915be12f3f3b2e9a8b42340cf3094c6f9cbbed5b6d9d4fd"
+    },
+    {
+      "file": "full/cli-artifacts/error-no-build/server-requests.json",
+      "sha256": "0430fad894984062b4086bf32c31e9e62f59b566c188f9ea0306cf1721d6d291"
+    },
+    {
+      "file": "full/cli-artifacts/error-no-build/state-facts.json",
+      "sha256": "de4c1a706fb9aa63e60a95c489e795bd7209dbbfa2e0b2e2188515062abafbc0"
+    },
+    {
+      "file": "full/cli-artifacts/existing-fields-requests.json",
+      "sha256": "47f26d938aaa11a6d3b501377a0d08206d08bbb87c07a5a70be99bfb12af9bcf"
+    },
+    {
+      "file": "full/cli-artifacts/existing-trusted-requests.json",
+      "sha256": "d80642d6b11fda86ee7d1c8af387331cf3d24654af18006f92f35e47b3e10295"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/agent-0.json",
+      "sha256": "9b6c7aad4ee55118b9a252404fa4136ff969f0bc5c1e02824e9a9b99ace0f1cc"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/agent-1.json",
+      "sha256": "4f9ba747c76f4d07fcad5c1accf9fe7f64bae4e696145607f9c079af4686ec72"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/agent-2.json",
+      "sha256": "ab977e80293c589c497555e31f0ca8e7410d77e8d591c62b68a09236abeae516"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/commands.json",
+      "sha256": "45b68b3bb21a54749cfb881cb8c468a5bd979fb1e78bc25dd97fb8f4dfb314d4"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/01.overview-1917.html",
+      "sha256": "6b146814bc55b3d9a35b38bf7394ca4c7208c1362055852d94e31edcf67dd98a"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/02.overview-1917.html",
+      "sha256": "97e8f0118281c011898b5ae0385d1daa464d8746e941960e72e0eb59d949a93d"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/03.1193467-variables.html",
+      "sha256": "e885af17a1e04fbde04ce859ae1371e620eecf155c6cb0da53d177fa54bb2580"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/04.1193467-overview.html",
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/05.1193469-overview.html",
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/06.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/07.1193467-overview.html",
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/08.1193467-variables.html",
+      "sha256": "e885af17a1e04fbde04ce859ae1371e620eecf155c6cb0da53d177fa54bb2580"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/09.1193469-overview.html",
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/qb_evidence/71b6b5ab39934b91a254f0094b3a75d1/10.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/result.json",
+      "sha256": "dd57e6e30e932e015fde1f58e8eeac4a778507aa38c68cd31019e38f26bc105e"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/server-requests.json",
+      "sha256": "d38c365360eb842390a9e5b60a4566b061cf7247657417f3981d928f04a930cf"
+    },
+    {
+      "file": "full/cli-artifacts/late-build/state-facts.json",
+      "sha256": "3503a21cf4a4574e25d1895fa9038875c2618ce3b3ad1cafdc7b8f2f4234bafe"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/agent-0.json",
+      "sha256": "7c945fab0a568f5ed9b8a1deca3480c7e320d5db04f0c5dd4277c3d4db9019d4"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/agent-1.json",
+      "sha256": "cb260020d62255f489f47b5780d15d7128bf331ab738a3f1ce1159edf4cfc4b3"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/agent-2.json",
+      "sha256": "17af2e13d466f65c3e1b023c01bcc2924afd56d34de842508c304efeff19f995"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/commands.json",
+      "sha256": "6dce815ab4dea86892a6aee9a1c6d87ae7ca8e7ed3399e825720e1aaa417a61e"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/01.overview-1917.html",
+      "sha256": "97e8f0118281c011898b5ae0385d1daa464d8746e941960e72e0eb59d949a93d"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/02.1193467-variables.html",
+      "sha256": "5fc42809e9c81e97baa9f29cd0f881d7d0226d7019522f919d348d2cb774c312"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/03.1193467-overview.html",
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/04.1193467-overview.html",
+      "sha256": "711601d09194ef3cb4b0b2bda0c946cf83778179181474509bd067b3ca36d750"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/05.1193467-variables.html",
+      "sha256": "5fc42809e9c81e97baa9f29cd0f881d7d0226d7019522f919d348d2cb774c312"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/06.1193469-overview.html",
+      "sha256": "0134202298ddd440034104255172e220ca28f6641bb2b9f6e13827ab8056ff97"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/07.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/08.1193467-overview.html",
+      "sha256": "a217f45b97d8ec5bd2f6d0813adf2270f17c4efb307306d9a87855f3263ca0b4"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/09.1193467-variables.html",
+      "sha256": "5fc42809e9c81e97baa9f29cd0f881d7d0226d7019522f919d348d2cb774c312"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/10.1193469-overview.html",
+      "sha256": "36c47dc678b273f4d8b48f9a04d0ac85208846d89f9fae20a12b9ff879b4468c"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/qb_evidence/7e2d76b8bb7e4bb7ac71a3a219d1e5d1/11.1193469-variables.html",
+      "sha256": "8cb11074e9cb1289d10ad3e4f58c03334e0c8bb0616bd8dc026d54fc291b62f0"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/result.json",
+      "sha256": "e410416304721ebb55a0875e87d224419c32c594593eef921ee41a279bc4726b"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/server-requests.json",
+      "sha256": "9d7b3d78a26cff0fad55d11054277baeb6906bfd6e6c5ba67938d03db76c1396"
+    },
+    {
+      "file": "full/cli-artifacts/no-navigation/state-facts.json",
+      "sha256": "3d1344ffb8252f43590f6e21c556e0d6b97a988b3f7f6568f02cdf9d3b596d2a"
+    },
+    {
+      "file": "full/cli-artifacts/tools/change-status/01.active-redacted.html",
+      "sha256": "900f81d85fdbe70403f14fbb38f79acdfb8433ea7863bbf60ca79d11512f5126"
+    },
+    {
+      "file": "full/cli-artifacts/tools/change-status/01.comparison.json",
+      "sha256": "776dab3d6b0d008016d7a256d9b28993667e150a1ffac07b36142da1fcd2a4a5"
+    },
+    {
+      "file": "full/cli-artifacts/tools/change-status/01.raw-redacted.html",
+      "sha256": "f8b892c45dd8a6582c37ecebec519c6d698bb26af28a5360da335019c93b9984"
+    },
+    {
+      "file": "full/cli-artifacts/tools/change-status/run.json",
+      "sha256": "f4b8916c30a3260932491567f9542462ad9184035f8a754a8cc5d8f188a7395b"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/01.active-redacted.html",
+      "sha256": "c6ee72e8e4071c5dc0a40d65a33134a21d1f15502bba772359fa13afa0adc516"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/01.comparison.json",
+      "sha256": "7af3c06b757780e433b18b1ef5889af00ab290633dbed6cca167ea5602c30fae"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/01.raw-redacted.html",
+      "sha256": "c6ee72e8e4071c5dc0a40d65a33134a21d1f15502bba772359fa13afa0adc516"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/02.active-redacted.html",
+      "sha256": "35f97859b40caa82ab052d1fc4baa444cd6f67d7f3bf1d320ca49ee54b95aac3"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/02.comparison.json",
+      "sha256": "ee043d2b597401b7e1b7bd942d63b61b2f93c2d6115eb8aea728081d354b7072"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/02.raw-redacted.html",
+      "sha256": "35f97859b40caa82ab052d1fc4baa444cd6f67d7f3bf1d320ca49ee54b95aac3"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/03.active-redacted.html",
+      "sha256": "d68fe3dc6d2f3168f67e58f4d7d4be4b7540a9a9f65094b4d7607e7f2dbb22c5"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/03.comparison.json",
+      "sha256": "00e4888caf41730bd99cf3ecd045c3adba6ed44649965adc77da434ee884cfff"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/03.raw-redacted.html",
+      "sha256": "d68fe3dc6d2f3168f67e58f4d7d4be4b7540a9a9f65094b4d7607e7f2dbb22c5"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/04.active-redacted.html",
+      "sha256": "207c07d53eda0271c90c672a22cb302a435d77583ee5c33f6d10f2f70bd30c11"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/04.comparison.json",
+      "sha256": "8749718fa3f8181ad91c1be20f26bbaf0d9bff1a2b3fc0bc4b996f3db6250500"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/04.raw-redacted.html",
+      "sha256": "207c07d53eda0271c90c672a22cb302a435d77583ee5c33f6d10f2f70bd30c11"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/05.active-redacted.html",
+      "sha256": "cea5839eda55b50dd6376678ba35757d6a25807ab0bfc2ebabfa589a2e0e7aa2"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/05.comparison.json",
+      "sha256": "7df2328fe54f1b8b3ddb45d11ae34041fe5ad09ffd5cd90637d04e75dbee4e10"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/05.raw-redacted.html",
+      "sha256": "cea5839eda55b50dd6376678ba35757d6a25807ab0bfc2ebabfa589a2e0e7aa2"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/06.active-redacted.html",
+      "sha256": "6b146814bc55b3d9a35b38bf7394ca4c7208c1362055852d94e31edcf67dd98a"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/06.comparison.json",
+      "sha256": "c595ab5f63121ec2ec52e8d8c2426dae411b44ac6e79c48eb573c8e8cbf8d217"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/06.raw-redacted.html",
+      "sha256": "6b146814bc55b3d9a35b38bf7394ca4c7208c1362055852d94e31edcf67dd98a"
+    },
+    {
+      "file": "full/cli-artifacts/tools/equal/run.json",
+      "sha256": "70089cf1f91e9dacf7d82ab403ec99841c2b2fb4ac2fc27fae70ee548716142c"
+    },
+    {
+      "file": "full/cli-artifacts/tools/inconsistent-callback.json",
+      "sha256": "c1396c24ef5b6f00440ce9b1df2c20a4a7a38d3d3bc484c7e089182842af9c4f"
+    },
+    {
+      "file": "full/cli-artifacts/tools/insert-nav/01.active-redacted.html",
+      "sha256": "dbbd9de1f128f29257e6130e538220582ae15ef8fe90eda8d8e8633478b3df1c"
+    },
+    {
+      "file": "full/cli-artifacts/tools/insert-nav/01.comparison.json",
+      "sha256": "6826e16b336150bb10244be71c5c36c97c471774ef82797bc1d0e97ab2a8d6d3"
+    },
+    {
+      "file": "full/cli-artifacts/tools/insert-nav/01.raw-redacted.html",
+      "sha256": "c185c43a7e5837b06f9b36dc73ca8da4c8b0a3be9073d746ff0021430f4f2333"
+    },
+    {
+      "file": "full/cli-artifacts/tools/insert-nav/diagnostic.html",
+      "sha256": "c185c43a7e5837b06f9b36dc73ca8da4c8b0a3be9073d746ff0021430f4f2333"
+    },
+    {
+      "file": "full/cli-artifacts/tools/insert-nav/diagnostic.json",
+      "sha256": "4d7d7402b73a55aa701e8240ba678154757fd16c4314f954a398fb72ea165db3"
+    },
+    {
+      "file": "full/cli-artifacts/tools/insert-nav/run.json",
+      "sha256": "86451cde870f564bf9678952a37eff609e106a998b1488c06e357906f8497a99"
+    },
+    {
+      "file": "full/cli-artifacts/tools/redirect-response.json",
+      "sha256": "3ed5011db8f92507af4e7859212a0d4e881262fff4a8c286628628a9b17775fc"
+    },
+    {
+      "file": "full/cli-artifacts/tools/rehearsal/run.json",
+      "sha256": "7f2c8946c86b49f35ff92a81efb0f2612d4073a9128b7e552b8b7a16ccf6fffd"
+    },
+    {
+      "file": "full/cli-artifacts/tools/server-requests.json",
+      "sha256": "a01cd71deaa38a86567bc94cc22edd7364123322c8ebbbafd1217416fe841cde"
+    },
+    {
+      "file": "full/cli-artifacts/tools/window-frame-trace.json",
+      "sha256": "5a24da9cb2c8e81d6b1827d555e49e54045c06a24c27d48eccaf5da979ddf46e"
+    },
+    {
+      "file": "full/command.json",
+      "sha256": "2d1966d072f1f0a1c27bc82519532c48acf1a06cfecbec24180bcf71bfaa5b40"
+    },
+    {
+      "file": "full/junit.xml",
+      "sha256": "4e3d7a892603139eb4856632ec057d541650f7acc04bd2f7316bf1e3e15a5c32"
+    },
+    {
+      "file": "full/output.log",
+      "sha256": "442c24d053ec5dd7814079d67bb1153d697be91d8a31eecef7fb251a5e7faabb"
+    },
+    {
+      "file": "imports/command.json",
+      "sha256": "bb06f22c77fa47fe6010ffbbceb8e2eec416d71db11fbadaa3eba302fd5d7bd9"
+    },
+    {
+      "file": "imports/output.log",
+      "sha256": "827852be494e303fc02bc2eaab165faf062ff507aa54375769b5ef715d3dd0fd"
+    },
+    {
+      "file": "mypy/command.json",
+      "sha256": "ff085ceed6aa4091e6d6d6e968158c9f1e20eba56d92f08511a2bf269eef5f2e"
+    },
+    {
+      "file": "mypy/output.log",
+      "sha256": "d144f4b429956a53bf5c6beb1fc2bbd224cf5a2307ff13c3ca35f06e02685c53"
+    },
+    {
+      "file": "ruff/command.json",
+      "sha256": "9fd457776c307ad06ebd9e426b1582b697f2f7837eb85cd96080470e4e137cc8"
+    },
+    {
+      "file": "ruff/output.log",
+      "sha256": "4f4cb704c0144d79701195ad96876382b63e08a446c79876868651a3c6e9e7ea"
+    },
+    {
+      "file": "ruff-delivery/command.json",
+      "sha256": "a798c219c829cf4f7fd509823242d0a114bdd07b33ae664c3b9db41043fb04e0"
+    },
+    {
+      "file": "ruff-delivery/output.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "file": "ruff-final/command.json",
+      "sha256": "645ce7291cb10cc65edcc1f8f4bea757b66d14042b93ab149731785a7a988755"
+    },
+    {
+      "file": "ruff-final/output.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "file": "ruff-index/command.json",
+      "sha256": "c646a646d951f404208fd55822a3b2104b5ae28f002ed75b5a9f96abde56b953"
+    },
+    {
+      "file": "ruff-index/output.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "file": "run_checks.py",
+      "sha256": "698874af5c63b3458b375008a7695504f4f27f4ada8d42ef04870fe1d41bb1f9"
+    }
+  ],
+  "redaction_checked": 151
+}

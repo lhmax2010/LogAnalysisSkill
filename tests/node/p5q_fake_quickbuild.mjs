@@ -36,7 +36,7 @@ function recentBuilds(built) {
   return `<div class="box"><div class="box-head"><div class="flex-1">Recent Builds</div><a>history</a><a>rss</a></div>
     <table><thead><tr>${['Id', 'Version', 'Master Node', 'Begin Date', 'Duration', 'Triggered By']
       .map(name => `<th>${name}</th>`).join('')}</tr></thead><tbody>${built ?
-      '<tr><td>1193467</td><td><a href="/build/1193467">TIZEN_RBS_TRIGGER</a><a href="/?1-1.ILinkListener-stop">stop</a></td><td>node</td><td>2026-10-21</td><td>1s</td><td>LocalTester</td></tr>' : ''}
+      '<tr><td>1193467</td><td><a href="/build/1193467">TIZEN_RBS_TRIGGER</a><a href="javascript:void(0);">menu</a><a href="/?1-1.ILinkListener-stop">stop</a></td><td>node</td><td>2026-10-21</td><td>1s</td><td>LocalTester</td></tr>' : ''}
     </tbody></table></div>`;
 }
 

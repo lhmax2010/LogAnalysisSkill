@@ -18,7 +18,15 @@ from ci_triage.qb_evidence import archive
 from ci_triage.qb_redact import EvidenceRedactionError, PageRedactor
 
 IDENTITY_CHECKS = frozenset(
-    {"configuration_title", "breadcrumb", "breadcrumb_path", "breadcrumb_current", "copy_path"}
+    {
+        "configuration_title",
+        "configuration_http",
+        "configuration_read",
+        "breadcrumb",
+        "breadcrumb_path",
+        "breadcrumb_current",
+        "copy_path",
+    }
 )
 
 

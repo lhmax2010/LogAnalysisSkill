@@ -30,6 +30,7 @@ def configuration(profile, builds=()):
     crumbs = "".join(f"<span>{html.escape(segment)}</span>" for segment in path.split("/"))
     rows = "".join(
         f'<tr><td>{build}</td><td><a href="/build/{build}">Build</a>'
+        '<a href="javascript:void(0);">menu</a>'
         '<a href="/?0-1.ILinkListener-stop">stop</a></td><td>main</td>'
         "<td>2026-10-21</td><td>1s</td><td>&lt;USER&gt;</td></tr>"
         for build in builds

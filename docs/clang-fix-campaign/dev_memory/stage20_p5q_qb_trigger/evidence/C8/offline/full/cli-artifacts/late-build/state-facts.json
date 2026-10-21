@@ -1,0 +1,129 @@
+{
+  "campaign_qb_profiles": [
+    {
+      "branch": "tizen_base",
+      "profile_json": "{\"configuration_path\":\"root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER\",\"form\":{\"Add Package List\":\"\",\"BUILD_REFERENCE\":\"Ref. Snapshot\",\"BUILD_TYPE\":\"Full\",\"CHILD_CONFIGURATIONS\":[\"standard-armv7l:aarch64:x86_64\"],\"Immediate Stop With Error\":true,\"PROJECT_BRANCH\":\"tizen_base\",\"REPO_TYPE\":\"ALL\",\"Remove Package List\":\"\",\"SNAPSHOT_NUM\":\"tizen-base-toolchain_20260924.094908\",\"TARGET_IMAGE\":[]},\"overview_id\":1917,\"project_name\":\"Tizen-Base-Toolchain\",\"qb_pass_requires_accept\":false}",
+      "profile_sha256": "4ddb2ae8b12e24f2b118193d0303b71aa7508f6fd4ce44fb947005db5d553819",
+      "created_at": "2026-10-21T08:45:29.729194+00:00"
+    }
+  ],
+  "campaign_qb_requests": [
+    {
+      "request_seq": 1,
+      "request_id": "71b6b5ab39934b91a254f0094b3a75d1",
+      "campaign_unit_key": "u1",
+      "sbs_target": "u1@a97acc260d52515199247d53577d2979a51093d5",
+      "created_at": "2026-10-21T08:45:29.729475+00:00"
+    }
+  ],
+  "campaign_qb_events": [
+    {
+      "event_id": 1,
+      "request_seq": 1,
+      "event_type": "SUBMITTED",
+      "qb_build_id": null,
+      "status": null,
+      "accepted": null,
+      "sbs_target_echo": null,
+      "per_arch_status_json": null,
+      "qb_result_sha256": null,
+      "qb_result_ref": null,
+      "degraded": 0,
+      "created_at": "2026-10-21T08:45:29.729547+00:00"
+    },
+    {
+      "event_id": 2,
+      "request_seq": 1,
+      "event_type": "BUILD_BOUND",
+      "qb_build_id": "1193467",
+      "status": null,
+      "accepted": null,
+      "sbs_target_echo": null,
+      "per_arch_status_json": null,
+      "qb_result_sha256": null,
+      "qb_result_ref": null,
+      "degraded": 0,
+      "created_at": "2026-10-21T08:45:33.559495+00:00"
+    },
+    {
+      "event_id": 3,
+      "request_seq": 1,
+      "event_type": "RESULT",
+      "qb_build_id": "1193467",
+      "status": "PASS",
+      "accepted": null,
+      "sbs_target_echo": "u1@a97acc260d52515199247d53577d2979a51093d5",
+      "per_arch_status_json": null,
+      "qb_result_sha256": "0802d03398f0b621fdc9cb25c46ab51080045fbd23fc587c626387a4c4f22e91",
+      "qb_result_ref": "qb_results/71b6b5ab39934b91a254f0094b3a75d1/20261021T084536982299Z.json",
+      "degraded": 0,
+      "created_at": "2026-10-21T08:45:36.984661+00:00"
+    }
+  ],
+  "campaign_gate_events": [
+    {
+      "event_id": 1,
+      "campaign_unit_key": "u1",
+      "round_index": null,
+      "arch_norm": null,
+      "verdict": null,
+      "invocation_event_id": null,
+      "event_type": "DERIVE",
+      "payload_json": "{\"author_date\":\"2026-10-14T00:00:00Z\",\"author_identity\":\"Test <test@example.com>\",\"committer_date\":\"2026-10-14T00:00:00Z\",\"committer_identity\":\"Test <test@example.com>\",\"derived_commit_sha\":\"a97acc260d52515199247d53577d2979a51093d5\",\"message_brief\":\"fix\",\"verified_tree_sha\":\"4b825dc642cb6eb9a060e54bf8d69288fbee4904\"}",
+      "created_at": "2026-10-21T08:45:13.714066+00:00"
+    },
+    {
+      "event_id": 2,
+      "campaign_unit_key": "u1",
+      "round_index": null,
+      "arch_norm": null,
+      "verdict": null,
+      "invocation_event_id": null,
+      "event_type": "PUSH",
+      "payload_json": "{\"at\":\"2026-10-14T00:00:00Z\",\"pushed_sha\":\"a97acc260d52515199247d53577d2979a51093d5\",\"ref\":\"refs/heads/sandbox/test\",\"ref_class\":\"sandbox\",\"result\":\"ok\",\"url\":null}",
+      "created_at": "2026-10-21T08:45:13.715596+00:00"
+    }
+  ],
+  "campaign_status_log": [
+    {
+      "log_id": 1,
+      "campaign_unit_key": "u1",
+      "status": "SANDBOX_PUSHED",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-21T08:45:13.716953+00:00"
+    },
+    {
+      "log_id": 2,
+      "campaign_unit_key": "u1",
+      "status": "QB_REQUESTED",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-21T08:45:29.729680+00:00"
+    },
+    {
+      "log_id": 3,
+      "campaign_unit_key": "u1",
+      "status": "QB_TRIGGERED",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-21T08:45:33.559642+00:00"
+    },
+    {
+      "log_id": 4,
+      "campaign_unit_key": "u1",
+      "status": "SANDBOX_QB_PENDING",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-21T08:45:33.619701+00:00"
+    },
+    {
+      "log_id": 5,
+      "campaign_unit_key": "u1",
+      "status": "SANDBOX_QB_PASS",
+      "reason": null,
+      "arch_norm": null,
+      "created_at": "2026-10-21T08:45:36.984796+00:00"
+    }
+  ]
+}

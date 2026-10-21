@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+from queue import Empty, Queue
 
 import pytest
 from ci_triage import campaign_state as state
@@ -61,6 +62,13 @@ def test_actual_configuration_heading_with_history_rss(c):
     ids = pages.recent_builds(CONFIG_ARCHIVE.read_text(), c.project)
     assert len(ids) == 10 and "1201886" in ids
     assert pages.recent_builds(configuration(c.project), c.project) == []
+
+
+def test_configuration_dropdown_and_stop_links_are_not_build_links(c):
+    html = configuration(c.project, [P, C])
+    assert html.count('href="javascript:void(0);"') == 2
+    assert html.count("ILinkListener-stop") == 2
+    assert pages.recent_builds(html, c.project) == [P, C]
 
 
 BAD_CONFIG = [
@@ -450,6 +458,7 @@ def test_configuration_read_failure_modes(c, failure, mode):
         before = c.snapshot()
         code, rows = run_trigger(c, [response])
         assert (code, rows[0]["error_code"]) == (4, "REJECTED_QB_FORM_CHANGED")
+        assert rows[0]["message"].startswith("配置页身份与冻结 profile 不符")
         assert c.snapshot() == before
         if failure == "redirect":
             traces = "".join(p.read_text() for p in (c.root / "qb_traces").glob("*.jsonl"))
@@ -463,6 +472,72 @@ def test_configuration_read_failure_modes(c, failure, mode):
         assert (code, rows[0]["error_code"]) == (5, "QB_SUBMIT_UNCERTAIN")
         assert "配置页读取失败" in rows[0]["message"]
     assert not c.events("BUILD_BOUND")
+
+
+@pytest.mark.parametrize("failure", [403, 404, 500, "redirect", "trusted"])
+def test_baseline_identity_failure_does_not_submit(c, failure):
+    trigger_setup(c)
+    before = c.snapshot()
+    response = (
+        reply("unavailable", failure)
+        if isinstance(failure, int)
+        else dict(
+            ok=False,
+            error="QB_READ_REDIRECTED"
+            if failure == "redirect"
+            else "QB_TRUSTED_CONTEXT_UNAVAILABLE",
+        )
+    )
+    code, rows = run_trigger(c, [response])
+    assert (code, rows[0]["error_code"]) == (4, "REJECTED_QB_FORM_CHANGED")
+    assert rows[0]["message"].startswith("配置页身份与冻结 profile 不符")
+    assert c.snapshot() == before
+    assert [r["command"] for r in c.commands()] == ["login", "read", "close"]
+
+
+@pytest.mark.parametrize("failure", ["timeout", "unavailable", "exited", "malformed"])
+def test_baseline_driver_failure_stops_batch_without_restart(c, monkeypatch, failure):
+    from ci_triage import qb_browser as driver
+
+    trigger_setup(c)
+    for key in ("u2", "u3", "u4"):
+        c.add(key)
+    state.create_qb_request(c.db, "u4", request_id="b" * 32, sbs_target=c.target)
+    state.append_status(c.db, "u4", "QB_REQUESTED")
+    before = c.snapshot()
+    if failure == "timeout":
+
+        class TimeoutReplies(Queue):
+            def get(self, block=True, timeout=None):
+                raw = super().get(block=block, timeout=5)
+                if timeout == 60:
+                    raise Empty
+                return raw
+
+        monkeypatch.setattr(driver, "Queue", TimeoutReplies)
+    response = {
+        "timeout": config_reply(c),
+        "unavailable": dict(ok=False, error="QB_BROWSER_UNAVAILABLE"),
+        "exited": "EXIT",
+        "malformed": "INVALID_JSON",
+    }[failure]
+    code, rows = run_trigger(c, [response], units=["u1", "u2", "u3", "u4"])
+    assert code == 5 and c.starts == 1
+    assert rows[0]["error_code"] == "QB_BROWSER_UNAVAILABLE"
+    assert rows[0]["message"] is None
+    for row in rows[1:3]:
+        assert row["error_code"] == "QB_BROWSER_UNAVAILABLE"
+        assert row["message"] == "浏览器在处理 u1 时不可用,本批剩余 unit 未处理;请排查后重跑"
+    assert rows[3]["action"] == "already_requested"
+    assert c.snapshot() == before
+    assert [r["command"] for r in c.commands() if r["command"] != "close"] == ["login", "read"]
+    if failure == "timeout":
+        traces = [
+            json.loads(line)
+            for path in (c.root / "qb_traces").glob("*.jsonl")
+            for line in path.read_text().splitlines()
+        ]
+        assert sum(t.get("event") == "agent_terminated" for t in traces) == 1
 
 
 def unknown():

@@ -1,6 +1,7 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-21。状态:**C7 COMPLETE,当前权威 v1.8-FROZEN;P5Q-C7-02已由C7-03关闭;等待C8,本轮不进入**。P5Q不标CLOSED。
+日期:2026-10-21。状态:**C7 ACCEPTED,C8 OFFLINE_FIX_VERIFIED,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+本轮裁定、离线小修与C8准备见§49。新的十二字段确认前不访问QuickBuild,不复用旧提交授权。
 本轮冻结登记与离线实现见§47;以下C6及旧权威记录保留为历史。
 最新执行见§45–46/P5Q-C6B-01:终态重读exit0、RESULT仍为3、专用库逐字节不变;
 成功父1201886/子1201889及配置1917的五页50项比对一致,身份计数均0。
@@ -5518,3 +5519,71 @@ Recent Builds约10条的恢复窗口;身份计数不能发现未登记、且不�
 C8验证性真实提交未执行;P12推送观察与Unified配置挂账保持原样。
 本轮提交只含C7实现、测试、design.md照录同步、进度与脱敏证据;
 没有修改两个冻结稿、专用状态库或工作区原有无关变更,没有真实QB/Gerrit操作。
+
+## 49. 实施裁定 P5Q-C8-01:C7 验收、小修与 C8 范围
+
+### 49.1 裁定原文
+
+1. C7(0b27c49)验收通过。
+2. 两处小修,只改 Python 与测试,不改代理:
+   a. 第 4.3 节第 2.5 步失败归类:配置页 HTTP 非 200、重定向、可信读取环境不可用,归"页面身份"类提示(v1.8 第 4.3 节第 2.5 步 a);read 应答超时或代理不可用,error_code 为 QB_BROWSER_UNAVAILABLE(不是 REJECTED_QB_FORM_CHANGED),并按第 4.3 节第 1 步处理本批剩余 unit。对每种情况补测试,断言错误码和提示类别。
+   b. 本机集成的假配置页按 C6b 05.raw-redacted.html 补上每行的下拉菜单链接(href="javascript:void(0);"),保留停止链接,重跑自动查找本机集成用例。
+3. C8 范围:v1.8 第 9.4 节第 3 步全部内容(验证性真实提交;随后对构造的未绑定请求做零提交读取验证)。不写收口文档,收口另行下达。
+
+### 49.2 计划、输入与授权边界
+
+基线0b27c49;已重读§37–48及v1.8第9.4节第3步。
+v1.8 SHA256=d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364;
+v1.5 SHA256=f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c;
+C6专用库SHA256=08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30。
+本轮不修改冻结稿、代理或C6目录任何文件。代理前缀须保持
+40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16。
+
+先完成基线失败归类、夹具菜单链接、离线门禁并提交推送;
+然后在仓库外新建p5q-c8专用库、配置和只读fetch取得对象的本机bare镜像,
+只构造unit 1。完成前置、列出十二字段、提交推送准备证据后等待本轮逐字“确认提交”。
+unit 2、真实提交、结果轮询与零提交读取均未执行,旧确认不得复用。
+证据统一放evidence/C8/。无关.gitignore、docs删除、草稿不纳入提交。
+
+### 49.3 小修落点与离线用例
+
+- `ci_triage/qb_discovery.py:20`:configuration_http/configuration_read纳入身份提示集合,
+  Recent Builds结构提示不变。
+- `ci_triage/qb_trigger.py:310`:基线read的驱动失效归QB_BROWSER_UNAVAILABLE,
+  保留原QbBrowserError的命令/退出/停止类别诊断;沿用批次不可用处理,不重启代理。
+- `tests/node/p5q_fake_quickbuild.mjs:35`:每行补javascript:void(0);菜单链接,
+  停止链接保留;只改本机假服务器的测试夹具。
+- `tests/unit/qb_discovery_fixtures.py`:同样补菜单,与C6b原始页蓝本保持一致。
+- `tests/unit/test_qb_discovery.py:67/:478/:499`:新增1项链接解析、5项页面身份、
+  4项驱动失效用例。批次覆盖u1失败,u2/u3不可用,u4已有请求仍幂等,整库不写。
+  既有HTTP/重定向用例新增身份提示断言。
+
+定向133 passed/0 failed;新增10项。全量门禁完成,最终结果见§49.4。
+证据脚本首轮ruff发现两条长行,只修正该脚本排版,复跑完整待提交树通过。
+代理文件完整字节与0b27c49一致,不只比较前缀;无生产放行规则变更。
+
+### 49.4 小修验收完成
+
+| 门禁 | 结果 | evidence/C8/offline/证据 |
+|---|---|---|
+| 全量pytest | 2891 passed / 1 skipped / 0 failed,exit0,896.30秒 | full/output.log、junit.xml、command.json |
+| 定向自动查找 | 133 passed / 0 failed | focused/ |
+| 本机HTTPS六种模式 | 6/6通过,配置页含菜单与停止链接 | full/cli-artifacts/各模式的commands.json、server-requests.json |
+| mypy | exit0,119 source files | mypy/ |
+| ruff完整待提交树 | exit0,All checks passed | ruff-final/ |
+| lint-imports | exit0,6 kept / 0 broken | imports/ |
+| design.md检查器 | exit0,0 problem | design/ |
+| 冻结稿/C6库/代理字节 | 前后相同,前缀hash与§49.2相同 | 每个command.json、audit.json |
+
+唯一skip仍为大小写不敏感文件系统用例,原因case-sensitive filesystem。
+本轮单次完整回归覆盖当前collect的2892项,参数名哈希化后逐项集合对账相等。
+全量中Node静态断言、浏览器DOM、四组本机安全测试包装用例均通过;
+代理未改,本轮不另称独立重跑并归档了四组原始日志。
+本机六模式的协议与服务器请求分别归档,延迟出现/读取时恢复均通过;
+其中预期submit_uncertain的CLI exit5是用例规定结果,不是pytest失败。
+关闭尾段0.075–0.177秒。证据逐文件原字节与JSON解码字符串自检通过,
+详见audit.json;合成负例的参数名按C7方式哈希化,不改生产脱敏规则。
+归档HTML保留原字节,其行尾空白为diff检查的具名例外,不格式化原始证据。
+
+未发现与冻结稿或本裁定不一致/做不到的地方。小修先独立提交推送;
+随后才开始C8专用目录准备,当前没有真实QB请求、没有Gerrit fetch或push。
