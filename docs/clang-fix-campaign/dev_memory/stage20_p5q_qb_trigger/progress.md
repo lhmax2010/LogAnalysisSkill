@@ -5695,3 +5695,46 @@ ruff、design.md检查器(0 problem)、暂存diff检查均exit0;
 约25分钟首次fetch,非终态时至少间隔20分钟;每次浏览器登录前预告。
 终态之后才构造unit 2并做一次读取时模式零提交验证,e1/e2/e3a/e3b均待执行。
 本轮未写收口文档,P5Q不标CLOSED。当前未发现新的设计不一致或做不到之处。
+
+## 50. 本机流程降噪(2026-10-21)
+
+用户原话:“优化下流程，你运行过程中弹窗太频繁了，而且很多无用弹窗，整体优化下”。
+本项不是新的设计裁定,也不是C8真实提交授权。§49.7的人工闸门继续有效。
+
+根因:离线浏览器测试复用生产createRuntime(headless:false),测试子进程继承
+人工桌面的DISPLAY,每个用例及启动自检都会显示窗口。无需修改代理解决此问题。
+
+处理:
+- 新增tests/run_quiet.py,整批pytest在一个私有Xvfb显示器上执行,仍为headed
+  Chromium;关闭TCP监听,自动选择空闲显示号,使用独立Xauthority并在结束时清理。
+- tests/unit/test_qb_browser_node.py的共用browser_paths增加误启动保护:
+  本机依赖齐全时,未通过虚拟显示入口的浏览器测试直接失败,不启动桌面窗口。
+  原有缺少Node/Playwright/Chromium时的显式skip保持不变。
+- 新增7个离线测试覆盖参数原样传递、父环境不变、三个依赖分别缺失时拒绝启动、
+  无shell进程替换、误用桌面拒绝及虚拟显示放行。说明见tests/QUIET_BROWSER_TESTS.md。
+- 日常执行规则写入dev_memory/methodology.md“本机测试与人工交互分流”:
+  定向验证合并,最终树门禁不无故重复;只有人工登录、真实提交授权和阻塞才请求交互。
+
+本机Xvfb缺失,从现有Ubuntu软件源下载xvfb 2:21.1.12-1ubuntu1.9,
+包SHA256=2011271eabcc2eb460e99995c5ef26e46633e87d04f570e305b62f178f7b452c,
+与apt索引相等。仅解包到~/.local/share/p5q-test-display,未使用sudo安装,
+未修改系统配置,未增加Python依赖。原生产桌面为:0,实测测试窗口位于:99。
+虚拟显示缺失的第一次入口测试如预期exit2,没有桌面回退;完成解包后7个用例通过。
+
+生产代码、冻结稿及C6/C8状态库不在本项修改范围。没有真实QB访问,
+没有弹人工登录窗口,没有真实提交。
+
+验收:经静默入口运行5个测试文件,60 passed / 0 failed / 0 skipped,604.40秒。
+其中新入口7例、Node/DOM/安全包装17例、完整CLI六种场景6例、诊断27例、
+生产退出回归3例。四组拦截安全测试的包装断言4/4通过,无需修改任何原有判据。
+这是本次针对显示环境改动的定向回归,不冒称重新运行了全仓pytest;
+此前全仓2891 passed / 1 skipped的记录仍见§49.4。
+
+mypy全生产119文件及新入口分别exit0;ruff已跟踪Python与新增代码exit0;
+lint-imports 6 kept / 0 broken;design.md检查器0 problem;diff --check通过。
+Xvfb有非致命XKEYBOARD键名警告,不影响测试结果。结束后无本轮Xvfb进程、
+代理/Playwright Chromium/profile残留,虚拟显示socket和临时Xauthority目录已删除。
+生产代码相对bce9052零diff,v1.5/v1.8冻结稿hash不变;C6库仍为
+08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30,
+C8库仍为dd43219d2964e23d711e904ab640a73eb3c328e6685940dc7711beb4f7563ff2。
+证据:evidence/C8/quiet-browser-tests/README.md与pytest.xml。

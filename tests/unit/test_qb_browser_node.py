@@ -43,6 +43,11 @@ def browser_paths() -> tuple[str, str]:
         or not os.environ.get("DISPLAY")
     ):
         pytest.skip("Local Playwright/Chromium/display unavailable; local C2a evidence required")
+    if os.environ.get("P5Q_TEST_DISPLAY") != "virtual":
+        pytest.fail(
+            "Browser tests require a private display: run .venv/bin/python tests/run_quiet.py "
+            "with the same pytest arguments (no automatic desktop fallback)"
+        )
     return playwright, chromium
 
 
