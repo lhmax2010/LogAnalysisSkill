@@ -1,0 +1,88 @@
+{
+  "baseline": "48b0aa9dd2d793a103839ca6239fbec668fdb648",
+  "source_sha256": "c13413a3f46398fa0cf594f483ec25a210e4a9ec369bfdb989ff7a76fa70c913",
+  "protected_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+  "navigation_timeout_applied": true,
+  "network_requests": 0,
+  "browser_started": false,
+  "observations": [
+    {
+      "hold": "newCDPSession",
+      "calls": [
+        "goto(timeout=30000)",
+        "newCDPSession"
+      ],
+      "pending_after_30000ms": true,
+      "observed_at_ms": 31007
+    },
+    {
+      "hold": "Page.getFrameTree",
+      "calls": [
+        "goto(timeout=30000)",
+        "newCDPSession",
+        "Page.getFrameTree"
+      ],
+      "pending_after_30000ms": true,
+      "observed_at_ms": 31007
+    },
+    {
+      "hold": "Page.createIsolatedWorld",
+      "calls": [
+        "goto(timeout=30000)",
+        "newCDPSession",
+        "Page.getFrameTree",
+        "Page.createIsolatedWorld"
+      ],
+      "pending_after_30000ms": true,
+      "observed_at_ms": 31007
+    },
+    {
+      "hold": "Runtime.evaluate",
+      "calls": [
+        "goto(timeout=30000)",
+        "newCDPSession",
+        "Page.getFrameTree",
+        "Page.createIsolatedWorld",
+        "Runtime.evaluate"
+      ],
+      "pending_after_30000ms": true,
+      "observed_at_ms": 31007
+    },
+    {
+      "hold": "detach",
+      "calls": [
+        "goto(timeout=30000)",
+        "newCDPSession",
+        "Page.getFrameTree",
+        "Page.createIsolatedWorld",
+        "Runtime.evaluate",
+        "detach"
+      ],
+      "pending_after_30000ms": true,
+      "observed_at_ms": 31007
+    }
+  ],
+  "after_release": [
+    {
+      "hold": "newCDPSession",
+      "outcome": "read_returned"
+    },
+    {
+      "hold": "Page.getFrameTree",
+      "outcome": "read_returned"
+    },
+    {
+      "hold": "Page.createIsolatedWorld",
+      "outcome": "read_returned"
+    },
+    {
+      "hold": "Runtime.evaluate",
+      "outcome": "read_returned"
+    },
+    {
+      "hold": "detach",
+      "outcome": "read_returned"
+    }
+  ],
+  "contract_met": false
+}

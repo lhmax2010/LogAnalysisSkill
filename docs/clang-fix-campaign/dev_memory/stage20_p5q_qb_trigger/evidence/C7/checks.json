@@ -1,0 +1,71 @@
+{
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "results": [
+    {
+      "name": "budget-probe",
+      "argv": [
+        "/home/linhao/Toolchain/development/security_optimization_rea/.local-tools/node-v24.21.0-linux-x64/bin/node",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C7/probe-read-budget.mjs"
+      ],
+      "started": "2026-10-21T06:17:46.583Z",
+      "ended": "2026-10-21T06:18:17.636Z",
+      "duration_ms": 31053,
+      "exit": 1,
+      "signal": null,
+      "stdout": "budget-probe.stdout.json",
+      "stderr": "budget-probe.stderr.txt"
+    },
+    {
+      "name": "source-guards",
+      "argv": [
+        "/home/linhao/Toolchain/development/security_optimization_rea/.local-tools/node-v24.21.0-linux-x64/bin/node",
+        "--test",
+        "tests/node/test_qb_agent_source_guards.mjs"
+      ],
+      "started": "2026-10-21T06:18:17.637Z",
+      "ended": "2026-10-21T06:18:22.305Z",
+      "duration_ms": 4668,
+      "exit": 0,
+      "signal": null,
+      "stdout": "source-guards.stdout.txt",
+      "stderr": "source-guards.stderr.txt"
+    },
+    {
+      "name": "design-check",
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "started": "2026-10-21T06:18:22.305Z",
+      "ended": "2026-10-21T06:18:22.384Z",
+      "duration_ms": 79,
+      "exit": 0,
+      "signal": null,
+      "stdout": "design-check.stdout.txt",
+      "stderr": "design-check.stderr.txt"
+    }
+  ],
+  "checks": {
+    "before": {
+      "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+      "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+      "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+    },
+    "after": {
+      "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+      "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+      "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+    },
+    "unchanged": true,
+    "agent": {
+      "baseline_sha256": "c13413a3f46398fa0cf594f483ec25a210e4a9ec369bfdb989ff7a76fa70c913",
+      "current_sha256": "c13413a3f46398fa0cf594f483ec25a210e4a9ec369bfdb989ff7a76fa70c913",
+      "full_equal": true,
+      "prefix_end": "export class Agent {",
+      "prefix_baseline_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+      "prefix_current_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+      "prefix_equal": true
+    }
+  }
+}

@@ -1,6 +1,7 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-19。状态:**C6 完成,等待 v1.6 自动绑定**。P5Q不标CLOSED。
+日期:2026-10-21。状态:**C7 STOPPED(P5Q-C7-02),当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+本轮冻结登记与离线实现见§47;以下C6及旧权威记录保留为历史。
 最新执行见§45–46/P5Q-C6B-01:终态重读exit0、RESULT仍为3、专用库逐字节不变;
 成功父1201886/子1201889及配置1917的五页50项比对一致,身份计数均0。
 成功样本与BUILD_NOTES样本挂账已CLOSED,第9.4节第2步真实提交已完成(1201886)。
@@ -69,9 +70,9 @@ C0开工基线:`26e9e3d`;C1开工基线:`3e073bc`,分支`clang-fix-campaign`。
 
 ## 1. 权威与冻结哈希
 
-本节原文为C0入库记录。当前权威已由§27更新为v1.5-FROZEN,
-SHA256=f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c;
-v1.2保留备查。本轮复核见§45。
+本节原文为C0入库记录。当前权威已由§47更新为v1.8-FROZEN,
+SHA256=d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364;
+v1.5与v1.2原样保留备查。v1.5的原始hash见§27与§47。
 
 权威:[p5q-qb-trigger-design-v1.2-FROZEN.md](../../p5q-qb-trigger-design-v1.2-FROZEN.md)。
 FatTank放入的文件原字节保留,未修改标题、附录或其它内容。校验原文:
@@ -166,7 +167,7 @@ Successful与Accept分开:默认qb_pass_requires_accept=false;冻结稿附录A�
 | 第9.4节第1.6步BUILD_NOTES样本 | CLOSED;完整请求标记逐字相等,无首尾空白、HTML转义或截断;见§45.5 |
 | 第9.4节第2步一次真实提交 | DONE;1201886经人工绑定,1201889 PASS;§43/live-05及§45终态重读,本轮未再提交 |
 | 附录C待填 | 已取证内容见C2b/appendix-c.md、§26及v1.5;成功样本/快照关系由§45补证登记,本轮冻结稿原字节不改 |
-| v1.6自动绑定与验证性提交 | OPEN;三方评审冻结、实现自动查找绑定、再一次验证性真实提交之后P5Q才可CLOSED;本轮不实施 |
+| v1.8自动绑定与验证性提交 | C7 STOPPED(P5Q-C7-02);当前权威v1.8-FROZEN,read的CDP等待预算与代理限定修改范围冲突,见§47.3;C8未执行 |
 | P12 sandbox推送观察 | PENDING_P12;首次真实Gerrit推送后观察是否自发QB构建;本批不提前真实推送 |
 | Unified配置 | 未取证保持disabled,不能猜配置ID/默认值 |
 
@@ -5338,3 +5339,67 @@ live-01/live-04登录超时原因仍未知,现有login_facts可供下次出现�
 本轮两次登录成功未触发失败事实应答。停止提示旧措辞留到v1.6修改。
 C6使用专用构造状态库及本地bare镜像,不覆盖真实Gerrit远端核对;该项沿用C3离线验证,
 首次真实sandbox推送仍在P12。Unified未取证仍disabled。完成本轮后停止,不自行收口。
+
+## 47. 实施裁定 P5Q-C7-01:v1.8 冻结与 C7 范围
+
+### 47.1 裁定原文
+
+a. v1.8-FROZEN 取代 v1.5-FROZEN 成为 P5Q 的权威设计;v1.5-FROZEN 原样保留备查,哈希不变。v1.5 冻结后登记的实施裁定已全部并入 v1.8 正文(附录 I),以后以 v1.8 正文为准。
+b. 本轮只做 v1.8 第 10 节 C7 一行所列内容,包括附录 I 第 14 条、附录 J、附录 K 的全部采纳项;不做 C8,不做任何真机操作。
+c. 实现中发现 v1.8 条文与代码无法同时满足、条文有歧义或做不到:停止并写停止报告,不要自行改设计或自行选一种解释。
+
+### 47.2 冻结核对与计划
+
+基线48b0aa9dd2d793a103839ca6239fbec668fdb648,分支clang-fix-campaign。
+已读第5、44–46节,已关闭的成功样本与BUILD_NOTES挂账保持CLOSED;
+P12观察、Unified配置与验证性提交仍开放。本轮不访问真实QuickBuild/Gerrit,
+不弹登录窗口、不点击Accept/Ready to Accept、不写专用状态库。
+
+| 原字节输入 | SHA256实算值 | 结果 |
+|---|---|---|
+| docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md | d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364 | 与给定值一致,原字节入库 |
+| docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md | f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c | 保留不改 |
+| /home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db | 08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30 | 只读核对,不得写入 |
+
+实施顺序:冻结与design.md附录A同步;驱动失败分类/上限/终止trace;
+自动查找解析与绑定复用;两个CLI接入;单元/静态负例/本机HTTPS集成与四组安全测试;
+全部门禁与字节核对。证据目录evidence/C7/。每次提交同步本节。
+工作树原有.gitignore修改、docs四文件删除与其它草稿不属于本任务,不纳入提交。
+
+### 47.3 停止报告 P5Q-C7-02:read 的 CDP 等待预算
+
+OPEN。v1.8第3.2节:259要求read路径上其它等待也不得超过30000毫秒,
+但现有TrustedPage.run(:361/:362/:363/:373/:382)的五个CDP等待没有时限。
+本轮代理仅允许改导航timeout与登录提示,没有授权增加TrustedPage/read的预算包装。
+两条不能由这两处编辑同时落实;Python60秒应答上限不能证明代理30秒保证。
+
+已用不可变48b0aa9生产Agent加“仅导航显式timeout”的内存变体实测:
+五个合成CDP等待均在31010毫秒时仍pending;释放后均正常返回。零网络/零浏览器。
+首次命令exit1;复跑及完整元数据由evidence/C7/capture-checks.mjs归档到checks.json,
+事实原文见budget-probe.stdout.json。没有真实QuickBuild故障或真机重试。
+
+完整事实、代码行号、框架源码依据与两个未实施候选见
+[stop-report.md](evidence/C7/stop-report.md):由设计方选择收敛代理预算表述,
+或授权可信读取/清理的预算实现并明确错误与清理语义。未自行选择解释。
+本轮尝试的生产/驱动与design.md同步改动已全部撤回至48b0aa9,
+只交付冻结登记、探针和停点记录。C7其余实现与完整验收未完成,不进入C8。
+
+### 47.4 本轮实际检查与交付
+
+| 检查 | 结果 | 证据 |
+|---|---|---|
+| read后续等待契约探针 | exit1,5/5超过30秒仍pending;释放后5/5正常返回 | C7/budget-probe.stdout.json |
+| 既有源码静态护栏与负例 | exit0,183 passed/0 failed/0 skipped;含159项RED变异负例 | C7/source-guards.stdout.txt |
+| design.md检查器(基线文档) | exit0,0 problem | C7/design-check.stdout.txt |
+| v1.8/v1.5/专用库前后hash | 均逐字节不变,匹配给定值 | C7/checks.json |
+| 代理完整文件及前缀 | 均与48b0aa9相等;前缀hash为40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16 | C7/checks.json |
+| 新增C7文件脱敏自检 | 10文件通过,0失败;JSON另检查解码字符串 | C7/redaction-check.json |
+| 暂存差异空白检查 | git diff --cached --check,exit0 | 本轮提交前执行 |
+| 全量pytest/mypy/ruff/lint-imports/完整Node/本机HTTPS与四个安全组 | NOT_RUN;因规格停点终止,没有生产改动交付 | C7/stop-report.md |
+
+归档脚本首轮调用检查器时漏传design.md路径,exit2/usage错误;
+按既有命令补入路径后重跑exit0,未改检查器或正文。最终argv/UTC起止/exit均在checks.json。
+本轮提交范围仅新冻结稿原字节、progress/INDEX、C7探针与证据;v1.7草稿不入库。
+design.md附录A同步及C7其余交付仍待裁定后继续,不把基线检查通过作为v1.5.24已完成。
+脱敏自检最初把探针源码的局部变量session赋值误识别为会话值;
+该局部变量仅改名为cdp后复查全部通过,探针行为不变,未改脱敏规则。
