@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="57.550" timestamp="2026-10-21T19:53:52.327549+08:00" hostname="linhao-linux"><testcase classname="tests.unit.test_p5q_c8_investigation" name="test_post_submit_read_signatures" time="57.344"><failure message="AssertionError: CASE_COMPLETE control&#10;  CASE_COMPLETE idle-script-navigation&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。&#10;  INVESTIGATION_STOPPED AssertionError&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...口中重新输入;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nINVESTIGATION_STOPPED AssertionError\n').returncode">tmp_path = PosixPath('/tmp/pytest-of-linhao/pytest-114/test_post_submit_read_signatur0')
+
+&gt;   ???
+E   AssertionError: CASE_COMPLETE control
+E     CASE_COMPLETE idle-script-navigation
+E     已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E     已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E     已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E     INVESTIGATION_STOPPED AssertionError
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...口中重新输入;登录后工具会自动继续。\n已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nINVESTIGATION_STOPPED AssertionError\n').returncode
+
+tests/unit/test_p5q_c8_investigation.py:22: AssertionError</failure></testcase></testsuite></testsuites>

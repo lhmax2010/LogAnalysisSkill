@@ -1,6 +1,6 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-21。状态:**C7 ACCEPTED,C8 STOPPED_READ_FAILURE,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+日期:2026-10-21。状态:**C7 ACCEPTED,C8 READ_RECOVERY_PREFLIGHT_STOPPED,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
 本轮裁定、离线小修与C8准备见§49。新授权只执行一次trigger,unknown落点后首次自动查找读取失败;
 执行记录与停止报告见§51,没有重提、没有运行fetch,也没有构造unit 2。
 本轮冻结登记与离线实现见§47;以下C6及旧权威记录保留为历史。
@@ -5822,3 +5822,106 @@ ruff、design.md检查器和本轮diff检查;结果与逐文件hash记于live-01
 实跑结果:audit PASS,14份证据脱敏检查0失败,5条检查命令均exit0,
 design.md为0 problem;进程/profile/.transport残留与扫描错误均0。
 代理前缀仍为40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16。
+
+## 52. 实施裁定 P5Q-C8-02:live-01 处置
+
+### 52.1 裁定原文
+
+1. live-01 停止成立。提交多半已经放行、构建可能已经存在;不重提,不带 --retrigger。
+2. 授权立即用读取时模式补绑定:对 request 202711dfe6b34472b6b8dc23f3a74a6e 运行一次生产 qb-result-fetch --request-id(不带 --qb-build-id)。该次执行就是 v1.8 第 9.4 节第 3 步"读取时模式真机验证"的替代,取代原定构造 unit 2 的零提交验证,不再构造 unit 2。验收:
+   a. 绑定到唯一匹配的构建;FatTank 在 QuickBuild 页面核对构建号与请求标记一致;
+   b. trace 中的候选恰为 Recent Builds 中未被本库绑定的全部行;除匹配构建外,判定类别均可读;
+   c. qb_evidence 下只有配置页与匹配构建的页面,他人构建页零落盘,qb_diagnostics 零新增;
+   d. 登录显示名计数(第 9.4 节第 3 步 e3a);候选页结构断言,并整理候选页的变量名集合供 FatTank 浏览(e3b)。
+   若未找到、多于一个或核对不通过:停止报告,不改代码,不人工绑定,等设计方裁定。
+3. 绑定后照常读取结果直到终态:首次读取若非终态,间隔至少 20 分钟再读;每次运行前在对话中预告。终态结果按 C6 的方式逐项核对,快照判据按第 0.5 节。
+4. 提交后自动查找失败(读配置页 579 毫秒即返回 QB_BROWSER_UNAVAILABLE、类别 UNKNOWN、代理未退出)记为待查缺陷。本轮只做离线调查,不改生产代码,不再做真实提交。
+
+### 52.2 执行边界与证据计划
+
+已重读live-01/stop-report.md。本次为读取授权,不要求或复用提交授权。
+专用库预期hash=c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63,
+QB三表1/1/1,唯一事件SUBMITTED,unit为QB_REQUESTED。不运行qb-trigger,
+不带--qb-build-id/--retrigger/--accept-snapshot-drift;不构造unit 2。
+真机证据保存到新目录evidence/C8/live-02,每次真机结束先归档提交推送。
+离线调查保存在evidence/C8/investigation,本机浏览器仅使用虚拟显示器。
+
+执行前发现的证据限制:生产qb_discovery只记录候选ID/判定、读取耗时和显示名计数,
+不输出候选变量名集合;他人变量页按设计不落盘。本轮不向生产命令注入包装或
+修改生产代码取得该集合。e3b以实际可核验范围登记,缺失部分不得写成通过;
+需要额外取证授权的部分交设计方裁定,不自行再次读取他人页面。
+
+### 52.3 live-02 前置停止,未启动真实读取
+
+命令:`.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/run_read_recovery.py preflight`。
+2026-10-21T11:50:41Z开始,三次D状态采样结束于11:51:02Z,exit1,
+原因是现存11个Playwright Chromium进程。证据:live-02/preflight.json与stop-report.md。
+库hash、QB三表1/1/1、SUBMITTED事件、QB_REQUESTED状态、C6库和目录、两份冻结稿均符合;
+profile与.transport均0,间隔10秒D状态0/0/0;内存available 5.9Gi,/home可用213G。
+
+只读归属检查:根PID1226014,父PID1225999,开始于本机19:43:12;
+浏览器exe为`/home/linhao/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome`,
+父进程exe为`/home/linhao/qb_fetch/.deps/playwright/driver/node`。
+不同于本任务登记的Chromium1208,不是据此允许绕过前置的理由。
+没有终止这些进程、没有清理其目录、没有重跑前置,没有启动生产qb-result-fetch。
+读取时自动绑定、FatTank构建核对、终态读取和a–d验收均NOT_RUN。
+本轮只继续明确授权的离线调查,使用私有虚拟显示和本机假服务器。
+
+### 52.4 离线调查结果与候选方案
+
+报告:evidence/C8/investigation/README.md。生产代码/代理/Policy/installGuards零修改。
+仅在tests/node的假HTTPS服务器增加可控响应延迟、连接中断、重定向与落地脚本;
+新测试入口记录原生产Agent.read抛出的错误类和固定类别,不输出原始异常或堆栈。
+本轮所有本机浏览器均经tests/run_quiet.py虚拟显示,没有弹出人工登录窗口。
+
+| 候选 | 实测结论 |
+|---|---|
+| a,落地页idle时脚本跳转 | idle /build/<id>被拒,随后read成功,未复现UNKNOWN |
+| a,脚本/刷新与延迟read | 三种变体均为QB_TRUSTED_CONTEXT_UNAVAILABLE,非live-01签名 |
+| a,测试入口强制并发Page.navigate | 252ms返回Error/NAVIGATION_INTERRUPTED,应答QB_BROWSER_UNAVAILABLE/UNKNOWN,浏览器仍连接;属可控故障注入,不证明真机发生 |
+| b,帧归属 | 自然运行主帧ID始终相同,未观察丢失;注入删除root归属后6ms复现UNKNOWN,read请求被拒 |
+| c,连接中断/302至signin/307 | 分别9/10/8ms复现UNKNOWN,证明同一签名有多个来源 |
+| 延迟对照 | 仅延迟1800ms、没有额外导航时read成功(1857ms) |
+
+各case均一条合成表单提交;没有访问真实QuickBuild、没有真实Gerrit交互。
+JSON包含runtime.trace中DENIED的phase/path形态、适配后元数据、主帧事件、服务器
+请求清单和应答,不保存请求头/体。Node进程继续执行下一case且browser连接仍在,
+不能把固定AGENT_STOPPED日志解释成进程已退出。原live-01缺少这些细分事实,
+根因仍未唯一确定,没有擅自选定一个生产修复。
+
+残留调查:history.py从C7归档重建680个已完成用例前缀,下一例是完整CLI链路[build];
+full-01的SIGINT中断时间与残留mtime相差0.756362秒。历史创建PID未记录,因此是
+强关联不是PID证明。本机独立复现:正常close/SIGTERM均exit0、目录消失;
+SIGINT以130退出,19ms后留下同型SingletonSocket/SingletonCookie目录。
+Playwright自己的SIGINT退出会抢在代理异步外层TMPDIR清理之前,与复现一致。
+仅清理本次测试进程明确返回、lsof确认无引用的目录,不碰前置阻塞的另一套浏览器。
+
+候选修复只列方案:固定read子步骤/拒绝来源诊断;确认导航竞争后串行化受预算约束
+的页面代际转换;确认帧丢失后保持fail-closed地补齐事件归属;让代理单独管理SIGINT
+清理;只输出候选变量名与结构的e3b元数据。是否触及代理/拦截及所需测试见报告表。
+本轮未实现任何候选方案,待设计方裁定。
+
+### 52.5 验证记录与未完成验收
+
+navigation-01保留1 failed/57.90秒:探针对脚本竞争“必须UNKNOWN”的假设断言错误,
+实际为有类型的可信环境错误。修正为如实记录能否复现后,
+navigation-02为4 passed/0 failed/0 skipped(154.41秒),覆盖9个导航case和3种退出;
+navigation-03为2 passed/0 failed/0 skipped(59.61秒),覆盖2个补充对照及原完整CLI
+本机[build]回归。没有重跑全仓pytest,不冒称为全仓通过。
+证据目录内包含每轮pytest.xml、固定stderr、逐case JSON、源码路径与复现命令。
+
+首次离线核验:evidence/C8/audit_recovery.py,暂存前结果见investigation/audit.json。
+8条检查命令均exit0;Node源码护栏183 passed/0 failed/0 skipped,
+design.md检查器0 problem,33份证据逐文件原始字节与JSON解码值脱敏检查0失败。
+新Python文件ruff、两个Node文件语法、生产源码零diff及diff空白检查通过。
+本次测试创建的profile均已清理,没有.transport残留;没有清理另一套浏览器。
+代理前缀仍为40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16。
+暂存后git diff --cached --check为exit2,唯一告警是navigation-01/pytest.xml:10
+原始失败日志的行尾空白。该证据逐字保留,不改失败原文;仅排除此文件再检查其余
+全部暂存文件。最终复核另存investigation/audit-final.json,不覆盖暂存前记录。
+最终复核为audit PASS:34份输入证据脱敏0失败,8条命令exit0,源码护栏仍183通过。
+
+真机补绑定未启动,因此:a构建号与FatTank核对、b候选全集、c归档边界、d身份计数与
+候选变量名人工浏览,以及终态结果全部NOT_RUN。unit 2按新裁定永久取消本轮计划。
+C8库仍c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63;
+C6目录和库、v1.5/v1.8冻结稿均不变。P5Q不标CLOSED,不写收口文档。

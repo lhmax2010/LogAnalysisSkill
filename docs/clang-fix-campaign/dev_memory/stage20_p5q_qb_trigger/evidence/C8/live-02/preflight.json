@@ -1,0 +1,134 @@
+{
+  "at": "2026-10-21T11:50:41.463437+00:00",
+  "immutable": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  },
+  "database": {
+    "sha256": "c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63",
+    "counts": {
+      "campaign_qb_requests": 1,
+      "campaign_qb_profiles": 1,
+      "campaign_qb_events": 1
+    },
+    "events": [
+      [
+        "SUBMITTED",
+        null
+      ]
+    ],
+    "status": "QB_REQUESTED",
+    "request": [
+      [
+        "202711dfe6b34472b6b8dc23f3a74a6e"
+      ]
+    ]
+  },
+  "processes": [
+    {
+      "pid": 1226014,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226020,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226022,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226025,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226026,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226058,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226071,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226107,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226184,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226201,
+      "kinds": [
+        "chromium"
+      ]
+    },
+    {
+      "pid": 1226560,
+      "kinds": [
+        "chromium"
+      ]
+    }
+  ],
+  "profiles": [],
+  "transports": [],
+  "d_samples": [
+    {
+      "at": "2026-10-21T11:50:42.000809+00:00",
+      "rows": []
+    },
+    {
+      "at": "2026-10-21T11:50:52.020890+00:00",
+      "rows": []
+    },
+    {
+      "at": "2026-10-21T11:51:02.039372+00:00",
+      "rows": []
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "df",
+        "-h",
+        "/home",
+        "/dev/shm"
+      ],
+      "exit": 0,
+      "stdout": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1       1.8T  1.5T  213G  88% /home\ntmpfs            16G  162M   16G   2% /dev/shm\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "free",
+        "-h"
+      ],
+      "exit": 0,
+      "stdout": "               total        used        free      shared  buff/cache   available\nMem:            30Gi        24Gi       849Mi       862Mi       6.4Gi       5.9Gi\nSwap:          4.0Gi       4.0Gi       400Ki\n",
+      "stderr": ""
+    }
+  ]
+}

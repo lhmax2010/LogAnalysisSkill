@@ -1,0 +1,36 @@
+{
+  "mode": "SIGINT",
+  "argv": [
+    "/home/linhao/.local/bin/node",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/qb_browser_lifecycle.mjs",
+    "signal",
+    "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+    "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome"
+  ],
+  "pid": 1240009,
+  "exit_code": 130,
+  "elapsed_seconds": 0.01911241200286895,
+  "profile": "/dev/shm/p5q-browser-WaKylx",
+  "profile_exists": true,
+  "entries": [
+    {
+      "path": "org.chromium.Chromium.eiGafd",
+      "size": 80,
+      "mode": 16832
+    },
+    {
+      "path": "org.chromium.Chromium.eiGafd/SingletonCookie",
+      "size": 20,
+      "mode": 41471
+    },
+    {
+      "path": "org.chromium.Chromium.eiGafd/SingletonSocket",
+      "size": 0,
+      "mode": 49661
+    }
+  ],
+  "stderr_categories": [],
+  "stdout_sanitized": "",
+  "lsof_exit": 1,
+  "own_residue_removed": true
+}

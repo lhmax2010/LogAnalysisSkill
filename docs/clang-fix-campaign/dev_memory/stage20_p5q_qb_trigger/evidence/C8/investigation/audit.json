@@ -1,0 +1,258 @@
+{
+  "at": "2026-10-21T12:04:27.345542+00:00",
+  "immutable": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  },
+  "c6_tree_unchanged": true,
+  "c8_db_sha256": "c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63",
+  "protected_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+  "p5q_profiles": [],
+  "transports": [],
+  "gates": [
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/run_read_recovery.py",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/audit_recovery.py",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/investigation/history.py",
+        "tests/unit/test_p5q_c8_investigation.py"
+      ],
+      "started": "2026-10-21T12:04:20.180890+00:00",
+      "ended": "2026-10-21T12:04:20.216351+00:00",
+      "exit": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/linhao/.local/bin/node",
+        "--check",
+        "tests/node/p5q_c8_investigation.mjs"
+      ],
+      "started": "2026-10-21T12:04:20.216371+00:00",
+      "ended": "2026-10-21T12:04:20.236789+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/linhao/.local/bin/node",
+        "--check",
+        "tests/node/p5q_fake_quickbuild.mjs"
+      ],
+      "started": "2026-10-21T12:04:20.236806+00:00",
+      "ended": "2026-10-21T12:04:20.253739+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/linhao/.local/bin/node",
+        "--test",
+        "tests/node/test_qb_agent_source_guards.mjs"
+      ],
+      "started": "2026-10-21T12:04:20.253756+00:00",
+      "ended": "2026-10-21T12:04:25.617651+00:00",
+      "exit": 0,
+      "stdout": "✔ C2c production agent satisfies frozen v1.5 section 9.2 source guards (24.588819ms)\n✔ C2c production Python driver has no test launch switches (25.171404ms)\n✔ C2c RED page.evaluate (37.620106ms)\n✔ C2c RED frame.evaluate (40.89349ms)\n✔ C2c RED locator.evaluate (30.882896ms)\n✔ C2c RED handle.evaluate (25.818172ms)\n✔ C2c RED arbitraryAlias.evaluate (32.088189ms)\n✔ C2c RED evaluateAll (38.815004ms)\n✔ C2c RED evaluateHandle (21.737162ms)\n✔ C2c RED $eval (26.798198ms)\n✔ C2c RED $$eval (22.953331ms)\n✔ C2c RED waitForFunction (23.107317ms)\n✔ C2c RED addScriptTag (18.897012ms)\n✔ C2c RED exposeFunction (23.573299ms)\n✔ C2c RED exposeBinding (24.291463ms)\n✔ C2c RED evaluate optional chain (23.017811ms)\n✔ C2c RED evaluate computed property (23.662477ms)\n✔ C2c RED evaluate constant concatenation (18.299468ms)\n✔ C2c RED evaluate escaped identifier (24.815531ms)\n✔ C2c RED evaluate extracted method alias (26.4172ms)\n✔ C2c RED evaluate destructured alias (27.470866ms)\n✔ C2c RED evaluate inside template interpolation (22.794088ms)\n✔ C2c RED evaluate comment between tokens (20.434815ms)\n✔ C2c RED page.request (22.458022ms)\n✔ C2c RED context.request (24.623184ms)\n✔ C2c RED request.newContext (23.667315ms)\n✔ C2c RED request.newContext aliased namespace (24.727204ms)\n✔ C2c RED playwright.request.newContext (31.109887ms)\n✔ C2c RED context.request alias (23.975639ms)\n✔ C2c RED page.request computed property (23.722537ms)\n✔ C2c RED request destructuring (22.572114ms)\n✔ C2c RED page.request inside protocol adapter is still forbidden (25.103565ms)\n✔ C2c RED context.request inside protocol adapter is still forbidden (22.004485ms)\n✔ C2c RED request client destructuring inside protocol adapter (26.540051ms)\n✔ C2c RED cookies (22.323191ms)\n✔ C2c RED storageState (28.082972ms)\n✔ C2c RED cookies computed alias (23.513151ms)\n✔ C2c RED storageState browser option (19.753264ms)\n✔ C2c RED ignoreHTTPSErrors: true (18.082052ms)\n✔ C2c RED ignoreHTTPSErrors computed true (27.72712ms)\n✔ C2c RED ignoreHTTPSErrors dynamic value (23.410288ms)\n✔ C2c RED DEBUG=pw:protocol (21.464475ms)\n✔ C2c RED PWDEBUG=1 (23.818233ms)\n✔ C2c RED DEBUG launch environment (23.324244ms)\n✔ C2c RED DEBUG command switch (20.731855ms)\n✔ C2c RED fetch (23.963215ms)\n✔ C2c RED XMLHttpRequest (20.335474ms)\n✔ C2c RED HTTP module node:http (23.414587ms)\n✔ C2c RED HTTP module node:https (23.413977ms)\n✔ C2c RED HTTP module node:http2 (21.091722ms)\n✔ C2c RED HTTP module undici (24.682602ms)\n✔ C2c RED HTTP module axios (17.481729ms)\n✔ C2c RED HTTP module got (18.927806ms)\n✔ C2c RED HTTP module node-fetch (19.131861ms)\n✔ C2c RED HTTP module superagent (17.329977ms)\n✔ C2c RED HTTP static import (18.783775ms)\n✔ C2c RED HTTP require (23.390272ms)\n✔ C2c RED headers outside protocol adapter (23.614679ms)\n✔ C2c RED headers before protocol adapter (21.328467ms)\n✔ C2c RED headers computed access (22.28412ms)\n✔ C2c RED headers destructuring (22.472278ms)\n✔ C2c RED headers fake adapter in comment (17.947032ms)\n✔ C2c RED headers nested namesake is not protocol adapter (17.903271ms)\n✔ C2c ALLOW headers inside actual adaptProtocol (10.386457ms)\n✔ C2c RED postData outside protocol adapter (19.943215ms)\n✔ C2c RED postData before protocol adapter (20.753181ms)\n✔ C2c RED postData computed access (21.084853ms)\n✔ C2c RED postData destructuring (21.129369ms)\n✔ C2c RED postData fake adapter in comment (20.292952ms)\n✔ C2c RED postData nested namesake is not protocol adapter (21.574579ms)\n✔ C2c ALLOW postData inside actual adaptProtocol (11.941492ms)\n✔ C2c RED postDataEntries outside protocol adapter (19.96082ms)\n✔ C2c RED postDataEntries before protocol adapter (21.303004ms)\n✔ C2c RED postDataEntries computed access (21.12805ms)\n✔ C2c RED postDataEntries destructuring (19.990934ms)\n✔ C2c RED postDataEntries fake adapter in comment (21.984511ms)\n✔ C2c RED postDataEntries nested namesake is not protocol adapter (24.463899ms)\n✔ C2c ALLOW postDataEntries inside actual adaptProtocol (9.285508ms)\n✔ C2c RED login click (24.755764ms)\n✔ C2c RED login fill (23.374807ms)\n✔ C2c RED login press (19.387768ms)\n✔ C2c RED login type (23.163972ms)\n✔ C2c RED login dblclick (19.995065ms)\n✔ C2c RED login tap (17.56122ms)\n✔ C2c RED login check (17.135394ms)\n✔ C2c RED login uncheck (17.866153ms)\n✔ C2c RED login setChecked (18.528195ms)\n✔ C2c RED login selectOption (18.484636ms)\n✔ C2c RED login pressSequentially (17.598898ms)\n✔ C2c RED login insertText (20.565229ms)\n✔ C2c RED login dispatchEvent (17.179057ms)\n✔ C2c RED login focus (17.257334ms)\n✔ C2c RED login blur (19.237162ms)\n✔ C2c RED login hover (19.46752ms)\n✔ C2c RED login dragTo (16.890176ms)\n✔ C2c RED login dragAndDrop (16.814226ms)\n✔ C2c RED login setInputFiles (20.001276ms)\n✔ C2c RED login clear (18.376613ms)\n✔ C2c RED login selectText (15.912556ms)\n✔ C2c RED login down (17.530346ms)\n✔ C2c RED login up (16.948117ms)\n✔ C2c RED login move (18.226035ms)\n✔ C2c RED login wheel (16.482713ms)\n✔ C2c RED login submit (17.693182ms)\n✔ C2c RED login requestSubmit (17.732414ms)\n✔ C2c RED login interaction after fake closing brace comment (17.850959ms)\n✔ C2c RED login interaction after fake closing brace string (18.546107ms)\n✔ C2c RED login nested callback (16.948665ms)\n✔ C2c RED login computed interaction (17.348909ms)\n✔ C2c RED login inline dispatch branch (16.592851ms)\n✔ C2c RED login delegated helper (17.009862ms)\n✔ C2c RED addInitScript exactly one: extra call (21.153238ms)\n✔ C2c RED addInitScript outside window.open installation (21.591612ms)\n✔ C2c RED addInitScript extracted alias (23.12106ms)\n✔ C2c RED addInitScript comment cannot authorize a call (22.78251ms)\n✔ C2c RED setContent outside startupSelfTest (24.414706ms)\n✔ C2c RED setContent in login (22.53945ms)\n✔ C2c RED setContent fake selftest comment (19.53576ms)\n✔ C2c RED setContent nested namesake is not startupSelfTest (23.16256ms)\n✔ C2c RED setContent computed call (16.43845ms)\n✔ C2c RED addInitScript zero calls cannot be rescued by comment or string (21.089141ms)\n✔ C2c RED sole addInitScript guard cannot also read page data (24.998158ms)\n✔ C2c RED sole addInitScript must precede navigation (21.998321ms)\n✔ C2c RED sole addInitScript wrong function (20.902266ms)\n✔ C2c RED sole addInitScript wrong receiver (22.038033ms)\n✔ C2c RED sole addInitScript not awaited (23.518727ms)\n✔ C2c RED refresh allowset (24.066238ms)\n✔ C2c RED refreshUrls allowset (21.094085ms)\n✔ C2c RED refresh property allowset (19.772171ms)\n✔ C2c RED refresh allowset lookup (22.975775ms)\n✔ C2c RED registerRefresh (19.048994ms)\n✔ C2c RED extractRefresh (18.272942ms)\n✔ C2c RED ajaxRefresh DOM extraction (20.830019ms)\n✔ C2c RED ajaxRefresh script extraction (22.448694ms)\n✔ C2c RED ajaxRefresh registration (20.996759ms)\n✔ C2c RED cloneNode active document (21.463702ms)\n✔ C2c RED cloneNode arbitrary alias (20.076229ms)\n✔ C2c RED main test option testOptions (23.884434ms)\n✔ C2c RED main test option launchArgs (21.232305ms)\n✔ C2c RED main test option diagnostic (21.425724ms)\n✔ C2c RED main test option useBrowserFetch (23.014431ms)\n✔ C2c RED main test option syntheticCount (19.252468ms)\n✔ C2c RED main anonymous third runtime argument (17.992194ms)\n✔ C2c RED main spread runtime arguments (20.065391ms)\n✔ C2c ALLOW normal browser.newContext (9.033407ms)\n✔ C2c ALLOW aliased browser.newContext (9.379957ms)\n✔ C2c ALLOW normal runtime.browser.newContext (8.53995ms)\n✔ C2c ALLOW ignoreHTTPSErrors: false (9.246179ms)\n✔ C2c ALLOW Response.request metadata (9.004545ms)\n✔ C2c ALLOW protocol event.request destructuring (9.661085ms)\n✔ C2c ALLOW Runtime.evaluate CDP string (10.915338ms)\n✔ C2c ALLOW forbidden names inside comment (8.688204ms)\n✔ C2c ALLOW forbidden names inside string (7.654325ms)\n✔ C2c ALLOW forbidden names inside regex (10.914832ms)\n✔ C2c ALLOW DEBUG deletion (8.12625ms)\n✔ C2c ALLOW refresh denial matcher (10.429635ms)\n✔ C2c ALLOW non-login interaction (12.42954ms)\n✔ C2c ALLOW main sanitized diagnostic response data (9.426824ms)\n✔ C2c ALLOW source is never executed (10.848539ms)\n✔ C2c ALLOW startupSelfTest setContent (10.145564ms)\n✔ C2c RED Python driver testOptions (57.832855ms)\n✔ C2c RED Python driver test_options (49.13275ms)\n✔ C2c RED Python driver launchArgs (57.930637ms)\n✔ C2c RED Python driver launch_args (51.023722ms)\n✔ C2c RED Python driver useBrowserFetch (51.505746ms)\n✔ C2c RED Python driver use_browser_fetch (54.70047ms)\n✔ C2c RED Python driver syntheticCount (58.467346ms)\n✔ C2c RED Python driver synthetic_count (52.848826ms)\n✔ C2c RED Python driver argv --test-options (58.252012ms)\n✔ C2c RED Python driver argv --diagnostic (58.254811ms)\n✔ C2c RED Python driver argv --launch-args (58.588144ms)\n✔ C2c RED Python driver argv --use-browser-fetch (54.765652ms)\n✔ C2c RED Python driver argv --synthetic-count (56.439911ms)\n✔ C2c RED Python driver argv --host-resolver-rules=MAP example.invalid 127.0.0.1 (55.797564ms)\n✔ C2c RED Python driver argv --ignore-certificate-errors-spki-list=fixture (54.635546ms)\n✔ C2c RED Python driver diagnostic launch keyword (49.540638ms)\n✔ C2c RED Python driver unknown fifth argv element (55.492182ms)\n✔ C2c RED Python driver argv unpacking (52.569114ms)\n✔ C2c ALLOW Python diagnostic and diagnostic_failed response fields (25.430262ms)\n✔ C2c ALLOW Python diagnostic QbBrowserError keyword (24.118405ms)\n✔ C2c ALLOW Python comments do not become launch flags (27.176639ms)\n✔ C2c RED malformed JS fails closed (10.498949ms)\n✔ C2c RED malformed Python fails closed (47.60967ms)\nℹ tests 183\nℹ suites 0\nℹ pass 183\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 5092.903045\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "started": "2026-10-21T12:04:25.617674+00:00",
+      "ended": "2026-10-21T12:04:25.788604+00:00",
+      "exit": 0,
+      "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--exit-code",
+        "9a688a0",
+        "--",
+        "tizen-ci-triage/scripts/ci_triage"
+      ],
+      "started": "2026-10-21T12:04:25.788628+00:00",
+      "ended": "2026-10-21T12:04:25.820343+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "tests",
+        "docs/clang-fix-campaign/dev_memory"
+      ],
+      "started": "2026-10-21T12:04:25.820366+00:00",
+      "ended": "2026-10-21T12:04:26.598700+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "started": "2026-10-21T12:04:26.598726+00:00",
+      "ended": "2026-10-21T12:04:26.605081+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "files": [
+    {
+      "path": "live-02/preflight.json",
+      "sha256": "9b5944722000e96037acbf93dd158550cd83ae98fbe0bdaa574802df599c94a5"
+    },
+    {
+      "path": "live-02/stop-report.md",
+      "sha256": "2fcb1a28ce7bb6aa6a19d201c892ce5514778636620f0b673c650793070381d8"
+    },
+    {
+      "path": "investigation/README.md",
+      "sha256": "eaed4c198debfa78463fbe975e7245f43435252673876b4a0518cc9aabca66c2"
+    },
+    {
+      "path": "investigation/history.json",
+      "sha256": "2da221bbb3c9cd03b9f6cb97e955fe017dd72fdd05c03617a2c626eb9c9b9c0e"
+    },
+    {
+      "path": "investigation/history.py",
+      "sha256": "5d61143279ce5da81460e1419df058cf42d5518cdd7af50e284ddfbfed6e22e2"
+    },
+    {
+      "path": "investigation/navigation-01/control.json",
+      "sha256": "de193ed3c9a8bdf281a2fa4eac40026b71275216ff9a4f445d7aa3e52611c3bc"
+    },
+    {
+      "path": "investigation/navigation-01/idle-script-navigation.json",
+      "sha256": "ce0d460edef191bb09b0d1882d8f14e0f04d9b957257750ad47f56a2b63c9a52"
+    },
+    {
+      "path": "investigation/navigation-01/node.stderr.txt",
+      "sha256": "77718c666253371b5990d366d9963b9e43d57598794ed97787dbd118136a0792"
+    },
+    {
+      "path": "investigation/navigation-01/node.stdout.txt",
+      "sha256": "ee43d42f23c4c08a3de64336f42ee6cfb7ceca2af11da33645979a325c6c4568"
+    },
+    {
+      "path": "investigation/navigation-01/pytest.xml",
+      "sha256": "490b34d05071581eca6a7eff73d161201b7aead15f21c925d69119c797ecb2a9"
+    },
+    {
+      "path": "investigation/navigation-01/racing-script-navigation.json",
+      "sha256": "aa5e925a360a0864e9538e00da9bb99899e372e747b065dfbcde6a9b36f6635a"
+    },
+    {
+      "path": "investigation/navigation-02/cleanup-SIGINT.json",
+      "sha256": "41176617108a64a24788907d6893abfdc3cffa91c377dd9906374fa4045450dd"
+    },
+    {
+      "path": "investigation/navigation-02/cleanup-SIGTERM.json",
+      "sha256": "a532d18f3d800b3e919a606c23446afd1f314a49b31222261a76914e81c8fd8f"
+    },
+    {
+      "path": "investigation/navigation-02/cleanup-normal.json",
+      "sha256": "6f62f325d84eeb10b94b8a41048d52bfd74ec9f35252e6d9279be940df459e1b"
+    },
+    {
+      "path": "investigation/navigation-02/configuration-connection-abort.json",
+      "sha256": "d02ba1148a8de44d699ac81487e63e203e42d4109d30a18afc0c742ed822dde0"
+    },
+    {
+      "path": "investigation/navigation-02/configuration-redirect-307.json",
+      "sha256": "90f13170bd62d68cbf6b1e6c2a8cf9cd86e7f72f8a758d2ba50f11c48b894209"
+    },
+    {
+      "path": "investigation/navigation-02/configuration-redirect-signin.json",
+      "sha256": "d0071d29e2ab23f61550f1105a1e54c21998f8efdb686ff0d85409f74c9844b8"
+    },
+    {
+      "path": "investigation/navigation-02/control.json",
+      "sha256": "1749274bf1e185089d5ecea2c7b2d7efd585d327ae094a7996d70af968704cd5"
+    },
+    {
+      "path": "investigation/navigation-02/idle-script-navigation.json",
+      "sha256": "4f1cd8e07c2cb6e225190ec1a67e4d5277cc017b13fcc000f93426e408556794"
+    },
+    {
+      "path": "investigation/navigation-02/injected-missing-root-membership.json",
+      "sha256": "0ce1c88d8d6829ea84d5ebac4b1fe2ab07ffd0384bc997eaf33e3e586ed4f62e"
+    },
+    {
+      "path": "investigation/navigation-02/node.stderr.txt",
+      "sha256": "d333bf9dab5b0a0e47345fd1b0fb69ea87fd46fcf87cdae8e26b7db71628c24f"
+    },
+    {
+      "path": "investigation/navigation-02/node.stdout.txt",
+      "sha256": "a76c6c43dcea1852cc4ecf3f160b03b7263c21fe183f31ed17a6ddfc5196c9d8"
+    },
+    {
+      "path": "investigation/navigation-02/pytest.xml",
+      "sha256": "77cccdc2d3ec6c0f2808ed898a9026e767af14db44a1e4dcfa322f12670d276d"
+    },
+    {
+      "path": "investigation/navigation-02/racing-meta-refresh.json",
+      "sha256": "7c7242a700323351dff601ef639004ceb91234b383979de8e76af26922331f6c"
+    },
+    {
+      "path": "investigation/navigation-02/racing-script-navigation.json",
+      "sha256": "469b31f7e0ccceed382b39e777fdff556b901a9ce7622f3deb8383e4e0dffe99"
+    },
+    {
+      "path": "investigation/navigation-02/racing-wicket-navigation.json",
+      "sha256": "c60ecd7e342fa4bb974cff86f49f54dfc303e62b53f606143062ad636a8a7e7e"
+    },
+    {
+      "path": "investigation/navigation-02/summary.json",
+      "sha256": "755b4fa77ae76773de994b8c8e49f4f09a8f69adfd6ed871964e2610a8df9636"
+    },
+    {
+      "path": "investigation/navigation-03/delay-only-control.json",
+      "sha256": "86aedb05de69a509c3d804047b567c5e80eeee11d113cb52a5312737eaaa71cf"
+    },
+    {
+      "path": "investigation/navigation-03/injected-competing-navigation.json",
+      "sha256": "9cf53fa6849b92a0a4f05d6821ad413ec6ebc221146db9d7c94054afd74cb6ee"
+    },
+    {
+      "path": "investigation/navigation-03/node.stderr.txt",
+      "sha256": "ec568552df4d9f7a2147a96c55ff4771a91d9a4bb58b87c0cd1aa77d2878933a"
+    },
+    {
+      "path": "investigation/navigation-03/node.stdout.txt",
+      "sha256": "66e2c7f78e255943d853ad4753d17db05453402d2750a6c5fe59ed459534f6b5"
+    },
+    {
+      "path": "investigation/navigation-03/pytest.xml",
+      "sha256": "d376bf6549adf5b8af9dcd20c242dd0bfdf3ca923dc4d5c09b894c59cebc290d"
+    },
+    {
+      "path": "investigation/navigation-03/summary.json",
+      "sha256": "8d8f8dcd9c843f32b8f5b7ebc3509db613e3ec0d2c9a63c188f572014fbe1e9e"
+    }
+  ],
+  "redaction_failures": 0,
+  "real_qb_commands": 0,
+  "live_result": "PREFLIGHT_STOPPED"
+}

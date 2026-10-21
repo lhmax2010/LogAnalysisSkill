@@ -1,0 +1,192 @@
+[
+  {
+    "case": "control",
+    "signature": false,
+    "response": {
+      "ok": true,
+      "error": null,
+      "failure_category": null,
+      "status": 200
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": null,
+        "elapsed_ms": 38
+      }
+    ],
+    "same_root": true
+  },
+  {
+    "case": "idle-script-navigation",
+    "signature": false,
+    "response": {
+      "ok": true,
+      "error": null,
+      "failure_category": null,
+      "status": 200
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": null,
+        "elapsed_ms": 36
+      }
+    ],
+    "same_root": true
+  },
+  {
+    "case": "racing-script-navigation",
+    "signature": false,
+    "response": {
+      "ok": false,
+      "error": "QB_TRUSTED_CONTEXT_UNAVAILABLE",
+      "failure_category": null,
+      "status": null
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": {
+          "class_name": "AgentError",
+          "agent_code": "QB_TRUSTED_CONTEXT_UNAVAILABLE",
+          "category": "OTHER_FRAMEWORK_ERROR"
+        },
+        "elapsed_ms": 1828
+      }
+    ],
+    "same_root": true
+  },
+  {
+    "case": "racing-meta-refresh",
+    "signature": false,
+    "response": {
+      "ok": false,
+      "error": "QB_TRUSTED_CONTEXT_UNAVAILABLE",
+      "failure_category": null,
+      "status": null
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": {
+          "class_name": "AgentError",
+          "agent_code": "QB_TRUSTED_CONTEXT_UNAVAILABLE",
+          "category": "OTHER_FRAMEWORK_ERROR"
+        },
+        "elapsed_ms": 1826
+      }
+    ],
+    "same_root": true
+  },
+  {
+    "case": "racing-wicket-navigation",
+    "signature": false,
+    "response": {
+      "ok": false,
+      "error": "QB_TRUSTED_CONTEXT_UNAVAILABLE",
+      "failure_category": null,
+      "status": null
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": {
+          "class_name": "AgentError",
+          "agent_code": "QB_TRUSTED_CONTEXT_UNAVAILABLE",
+          "category": "OTHER_FRAMEWORK_ERROR"
+        },
+        "elapsed_ms": 1824
+      }
+    ],
+    "same_root": true
+  },
+  {
+    "case": "injected-missing-root-membership",
+    "signature": true,
+    "response": {
+      "ok": false,
+      "error": "QB_BROWSER_UNAVAILABLE",
+      "failure_category": "UNKNOWN",
+      "status": null
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": {
+          "class_name": "Error",
+          "agent_code": null,
+          "category": "BLOCKED_BY_CLIENT"
+        },
+        "elapsed_ms": 6
+      }
+    ],
+    "same_root": true
+  },
+  {
+    "case": "configuration-connection-abort",
+    "signature": true,
+    "response": {
+      "ok": false,
+      "error": "QB_BROWSER_UNAVAILABLE",
+      "failure_category": "UNKNOWN",
+      "status": null
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": {
+          "class_name": "Error",
+          "agent_code": null,
+          "category": "NETWORK_RESPONSE_FAILED"
+        },
+        "elapsed_ms": 9
+      }
+    ],
+    "same_root": true
+  },
+  {
+    "case": "configuration-redirect-signin",
+    "signature": true,
+    "response": {
+      "ok": false,
+      "error": "QB_BROWSER_UNAVAILABLE",
+      "failure_category": "UNKNOWN",
+      "status": null
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": {
+          "class_name": "Error",
+          "agent_code": null,
+          "category": "BLOCKED_BY_CLIENT"
+        },
+        "elapsed_ms": 10
+      }
+    ],
+    "same_root": true
+  },
+  {
+    "case": "configuration-redirect-307",
+    "signature": true,
+    "response": {
+      "ok": false,
+      "error": "QB_BROWSER_UNAVAILABLE",
+      "failure_category": "UNKNOWN",
+      "status": null
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": {
+          "class_name": "Error",
+          "agent_code": null,
+          "category": "BLOCKED_BY_CLIENT"
+        },
+        "elapsed_ms": 8
+      }
+    ],
+    "same_root": true
+  }
+]

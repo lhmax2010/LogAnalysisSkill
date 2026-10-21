@@ -1,0 +1,42 @@
+[
+  {
+    "case": "delay-only-control",
+    "signature": false,
+    "response": {
+      "ok": true,
+      "error": null,
+      "failure_category": null,
+      "status": 200
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": null,
+        "elapsed_ms": 1857
+      }
+    ],
+    "same_root": true
+  },
+  {
+    "case": "injected-competing-navigation",
+    "signature": true,
+    "response": {
+      "ok": false,
+      "error": "QB_BROWSER_UNAVAILABLE",
+      "failure_category": "UNKNOWN",
+      "status": null
+    },
+    "reads": [
+      {
+        "path": "/overview/1917",
+        "error": {
+          "class_name": "Error",
+          "agent_code": null,
+          "category": "NAVIGATION_INTERRUPTED"
+        },
+        "elapsed_ms": 252
+      }
+    ],
+    "same_root": true
+  }
+]

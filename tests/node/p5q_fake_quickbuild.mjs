@@ -154,6 +154,15 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
         : page('<h1>Dashboard</h1>' + (fixture.loginCase === 'password-remains' ? '<input type="password">' : '')));
       else if (url.pathname === '/overview/1917') {
         if (fixture.submissions.length) fixture.lookupRounds++;
+        if (fixture.submissions.length && fixture.configurationDelayMs) {
+          await new Promise(resolve => setTimeout(resolve, fixture.configurationDelayMs));
+        }
+        if (fixture.submissions.length && fixture.configurationAbort) { response.destroy(); return; }
+        if (fixture.submissions.length && fixture.configurationRedirect) {
+          row.status = fixture.configurationRedirect.status;
+          response.writeHead(row.status, { Location: fixture.configurationRedirect.path });
+          response.end(); return;
+        }
         const visible = fixture.mode === 'delayed-build' && fixture.lookupRounds < 2 ? 0 : fixture.builds;
         response.end(page(`${breadcrumb(PROJECT.configuration_path)}${recentBuilds(visible)}
         <button title="Run the configuration" onclick="var win = this.ownerDocument.defaultView || this.ownerDocument.parentWindow; if (win == window) { window.location.href='../wicket/page?41-1.ILinkListener-run'; } ;return false">Run</button>`, `QuickBuild - ${PROJECT.configuration_path}`));
@@ -162,7 +171,8 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
       else if (row.method === 'GET' && url.pathname === '/wicket/page' && /^\?\d+$/.test(url.search)) response.end(
         form(fixture.version, { noNavigation: fixture.mode === 'no-navigation', callbackMismatch: fixture.callbackMismatch,
           callbackMismatchAt: fixture.callbackMismatchAt, extraField: fixture.extraField }).replace('<h1>',
-          url.search === '?99' ? '<div class="feedbackPanelERROR">Synthetic server error after request</div><h1>' : '<h1>'));
+          url.search === '?99' ? '<div class="feedbackPanelERROR">Synthetic server error after request</div><h1>' : '<h1>')
+          + (url.search === '?99' ? fixture.landingScript ?? '' : ''));
       else if (row.method === 'POST' && /IBehaviorListener/.test(url.search)) {
         response.setHeader('Content-Type', 'application/json');
         response.end(JSON.stringify({ version: ++fixture.version }));
