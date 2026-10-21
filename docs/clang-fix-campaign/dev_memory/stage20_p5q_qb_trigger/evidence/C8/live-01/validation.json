@@ -1,0 +1,149 @@
+{
+  "at": "2026-10-21T11:12:56.586196+00:00",
+  "immutable": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  },
+  "c6_tree_unchanged": true,
+  "db_sha256": "c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63",
+  "status": "QB_REQUESTED",
+  "protected_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+  "cleanup": {
+    "profiles": [],
+    "transports": [],
+    "processes": [],
+    "scan_errors": []
+  },
+  "gates": [
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/run_live.py",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/validate_live.py"
+      ],
+      "started": "2026-10-21T11:12:56.131765+00:00",
+      "ended": "2026-10-21T11:12:56.230415+00:00",
+      "exit": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "started": "2026-10-21T11:12:56.230433+00:00",
+      "ended": "2026-10-21T11:12:56.371632+00:00",
+      "exit": 0,
+      "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/progress.md"
+      ],
+      "started": "2026-10-21T11:12:56.371654+00:00",
+      "ended": "2026-10-21T11:12:56.379215+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "started": "2026-10-21T11:12:56.379222+00:00",
+      "ended": "2026-10-21T11:12:56.555364+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--exit-code",
+        "1b718c8",
+        "--",
+        "tizen-ci-triage/scripts/ci_triage"
+      ],
+      "started": "2026-10-21T11:12:56.555381+00:00",
+      "ended": "2026-10-21T11:12:56.562806+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "files": [
+    {
+      "path": "authorization.json",
+      "sha256": "3463d3d10e296b4410e45cf4f29528bf6dc27f491f9e11a758d043e8f73458b2"
+    },
+    {
+      "path": "preflight.json",
+      "sha256": "4b468cbdaef203a71540a184817a8ff74eef729fcf75783ab5b36dae7db6c9d6"
+    },
+    {
+      "path": "stop-report.md",
+      "sha256": "54f9f866f5d59f6b53974c134f939567f9ddb1f3e61a595b13fef4c00700db3e"
+    },
+    {
+      "path": "trigger/command.json",
+      "sha256": "b438b964e8938ac067ef022281122768d7fed9bc144a31936fb9d8f9b8fd27a9"
+    },
+    {
+      "path": "trigger/execution.json",
+      "sha256": "5c96c16528bcc4b20c706e6eff715919cacfc617fe9687940cdc4af05671abcc"
+    },
+    {
+      "path": "trigger/process-observations.json",
+      "sha256": "834dc7431c274e95d02eda8109f4ef4fb36ceb54a0f448da08062f41ce7f7158"
+    },
+    {
+      "path": "trigger/state/qb_traces/7383e5c48f62.jsonl",
+      "sha256": "d637eaf95c281af74d28a08490d55e38ef6e9d3d529a34df2b9206e8276ada19"
+    },
+    {
+      "path": "trigger/state-after.sql",
+      "sha256": "bfbb23ea54c756b62b2e7ea18e3546c0d6a38108a5e3b34de4d5d6d9cdffb60c"
+    },
+    {
+      "path": "trigger/state-before.sql",
+      "sha256": "8c9c206a272b633ffd9239caa527fbb46b08061eee7bda1fb44ef20f9f3e33c4"
+    },
+    {
+      "path": "trigger/stderr.txt",
+      "sha256": "6c80e5ce3cfa1e2361230de1db811dabba0ca53cfa4c6339eb5951b7fee53371"
+    },
+    {
+      "path": "trigger/stdout.json",
+      "sha256": "67f359f3c5f2c28539417679fb2621f75b7c7f945b804f3aa0a851f75325725c"
+    },
+    {
+      "path": "trigger/trace-after.jsonl",
+      "sha256": "d637eaf95c281af74d28a08490d55e38ef6e9d3d529a34df2b9206e8276ada19"
+    },
+    {
+      "path": "trigger/trace-before.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "trigger/trace-new.jsonl",
+      "sha256": "d637eaf95c281af74d28a08490d55e38ef6e9d3d529a34df2b9206e8276ada19"
+    }
+  ],
+  "redaction_failed": 0,
+  "live_outcome": "STOPPED_READ_FAILURE",
+  "new_live_operations": 0
+}

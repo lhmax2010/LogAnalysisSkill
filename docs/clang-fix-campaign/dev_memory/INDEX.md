@@ -26,7 +26,7 @@
 | P3 aggregate | CLOSED | `f12154b`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p3-aggregate-closeout.md#最终签收); [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09): 1496 passed/1 skipped, design synchronization retained for P5 |
 | P4 derive_commit | CLOSED | `2ba0e0d`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09): 1480 passed/1 skipped, real hook PASSED; new P5 hardening in stage16 transfer list |
 | P5 sandbox-submit | CLOSED | Designer verified `37e27b1`, FatTank approved, 2026-10-10; both review rounds resolved, no further review; P4.5 suppress_policy and gate_view delivered in P5 | [final acceptance](../review/p5-sandbox-submit-closeout.md#8-最终签收); 1937 passed/1 skipped, 94 gates no new failure; [P5Q handoff](stage19_p5_sandbox_submit/progress.md#21-p5q移交清单): EF-5 partial, FatTank business rulings recorded, first real sandbox push remains P12 |
-| P5Q qb-trigger / qb-result-fetch | C8 WAITING_CONFIRMATION | C8-01 fix e393a1f pushed; 2891 passed/1 skipped; dedicated unit 1 prepared | [progress](stage20_p5q_qb_trigger/progress.md); no live C8 operation yet; new exact confirmation required; P5Q not CLOSED |
+| P5Q qb-trigger / qb-result-fetch | C8 STOPPED_READ_FAILURE | One authorized trigger, unknown landing; discovery read failed QB_BROWSER_UNAVAILABLE / UNKNOWN; DB QB_REQUESTED | [stop report](stage20_p5q_qb_trigger/evidence/C8/live-01/stop-report.md); no retry or fetch; unit 2 not created; P5Q not CLOSED |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -59,7 +59,7 @@ second contract authority. Runtime behavior remains governed by
 | 17 P3 aggregate | CLOSED | Accepted `f12154b`, 2026-10-09; single reviewer: P3 acceptable; PM verified fixes, FatTank approved | [progress](stage17_p3_aggregate/progress.md#7-最终签收2026-10-09); [final acceptance](../review/p3-aggregate-closeout.md#最终签收); design text synchronization deferred to P5 |
 | 18 P4 derive_commit | CLOSED | Accepted `2ba0e0d`, 2026-10-09; single reviewer: changes needed; PM verified fixes, FatTank approved | [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09); [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [P5 transfers](stage16_p2_submission_identity/progress.md#5-p2-01裁决与移交清单), not yet implemented |
 | 19 P5 sandbox-submit | CLOSED | Accepted code `37e27b1`, closeout `b0ecda4`; designer verified, FatTank approved, 2026-10-10; P4.5 suppress_policy/gate_view delivered | [final acceptance](../review/p5-sandbox-submit-closeout.md#8-最终签收); [progress](stage19_p5_sandbox_submit/progress.md#20-最终签收2026-10-10); 1937/1, 94 gates no new failure; [P5Q handoff](stage19_p5_sandbox_submit/progress.md#21-p5q移交清单), no third review |
-| 20 P5Q QuickBuild trigger | C8 WAITING_CONFIRMATION | v1.8 authority; fix gates and independent preparation completed, section 49 | [progress](stage20_p5q_qb_trigger/progress.md); C6 unchanged; await exact new submission confirmation |
+| 20 P5Q QuickBuild trigger | C8 STOPPED_READ_FAILURE | v1.8 authority; C8 live-01 request 202711dfe6b34472b6b8dc23f3a74a6e unbound | [progress section 51](stage20_p5q_qb_trigger/progress.md#51-c8-验证性真实执行); C6 unchanged; build may exist, no resubmission |
 
 ## Code-Ready Checkpoint
 

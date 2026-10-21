@@ -1,7 +1,8 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-21。状态:**C7 ACCEPTED,C8 PREPARED_WAITING_CONFIRMATION,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
-本轮裁定、离线小修与C8准备见§49。新的十二字段确认前不访问QuickBuild,不复用旧提交授权。
+日期:2026-10-21。状态:**C7 ACCEPTED,C8 STOPPED_READ_FAILURE,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+本轮裁定、离线小修与C8准备见§49。新授权只执行一次trigger,unknown落点后首次自动查找读取失败;
+执行记录与停止报告见§51,没有重提、没有运行fetch,也没有构造unit 2。
 本轮冻结登记与离线实现见§47;以下C6及旧权威记录保留为历史。
 最新执行见§45–46/P5Q-C6B-01:终态重读exit0、RESULT仍为3、专用库逐字节不变;
 成功父1201886/子1201889及配置1917的五页50项比对一致,身份计数均0。
@@ -5738,3 +5739,86 @@ Xvfb有非致命XKEYBOARD键名警告,不影响测试结果。结束后无本轮
 08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30,
 C8库仍为dd43219d2964e23d711e904ab640a73eb3c328e6685940dc7711beb4f7563ff2。
 证据:evidence/C8/quiet-browser-tests/README.md与pytest.xml。
+
+## 51. C8 验证性真实执行
+
+### 51.1 当轮授权与再次前置
+
+在1b718c8流程降噪推送之后,用户在本对话新回复原文:“确认提交”。
+仅授权§49.7的unit 1/既定libtirpc目标一次生产qb-trigger,不带--retrigger;
+随后按P5Q-C8-01读取结果及做unit 2零提交验证。工具不点Accept/Ready to Accept,
+不推送Gerrit,不写C6库。仍按既有停止条件处理,不自动重试真实操作。
+
+新证据目录evidence/C8/live-01,不复用任何C6证据目录。
+evidence/C8/run_live.py仅封装生产CLI子进程、只读监测和证据写出,不修改生产代码。
+前置命令:`.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/run_live.py preflight`。
+结果exit0:库hash仍为dd43219d2964e23d711e904ab640a73eb3c328e6685940dc7711beb4f7563ff2,
+QB三表0/0/0,unit 1为SANDBOX_PUSHED,本机镜像ref相符,无代理/Chromium/profile/
+.transport残留;间隔10秒三次D状态采样为0/0/0。完整环境、冻结稿与C6逐文件
+不变核验见live-01/preflight.json;授权原话见authorization.json。
+本轮真实登录使用原桌面,不通过tests/run_quiet.py,不传测试专用参数。
+
+### 51.2 一次生产执行与实测结果
+
+证据封装命令:
+`.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/run_live.py trigger`。
+实际生产argv与§49.7相同(解释器为仓库.venv的绝对路径),完整保存于
+live-01/trigger/command.json与execution.json;没有--retrigger。
+
+| 项目 | 实际结果 |
+|---|---|
+| UTC起止 | 2026-10-21T11:02:05.864429+00:00 至 11:07:21.457775+00:00 |
+| CLI exit / action / error_code | 5 / submit_uncertain / QB_SUBMIT_UNCERTAIN |
+| request_id / seq | 202711dfe6b34472b6b8dc23f3a74a6e / 1 |
+| BUILD NOTES请求标记 | clang-fix-campaign request=202711dfe6b34472b6b8dc23f3a74a6e |
+| 落点 / messages | /wicket/page / [] |
+| 基线W / 查找轮次 | 1203402 / 1 |
+| 首轮开始 | submit应答之后0.002617秒 |
+| 首次查找读取 | /overview/1917,579毫秒;配置页状态和行数均null |
+| 读取失败诊断 | command=read;agent_error_code=QB_BROWSER_UNAVAILABLE;failure_category=UNKNOWN |
+| 应答当时代理状态 | agent_exited=false;agent_exit_code=null,不代表最终退出码 |
+| 候选 / 绑定构建号 | [] / 未取得;不能据此认定没有构建 |
+| 最后观察到Chromium至CLI退出 | 0.285600秒;最终代理退出码NOT_COLLECTED |
+| 本次冻结SNAPSHOT_NUM | tizen-base-toolchain_20261013.024319 |
+
+生产stderr原文保存在trigger/stderr.txt,含固定登录提示与
+`QB_AGENT_STOPPED category=UNKNOWN`。stdout原文在trigger/stdout.json;
+trace新增3条在trigger/trace-new.jsonl。没有新增qb_evidence/qb_results或诊断页面,
+state_root唯一新增文件是qb_traces/7383e5c48f62.jsonl。未取得父构建回显、人工构建号
+核对或终态结果。本轮没有执行可选manifest GET,不声称核对了当前快照的revision。
+
+执行前库SHA256:
+`dd43219d2964e23d711e904ab640a73eb3c328e6685940dc7711beb4f7563ff2`。
+执行后库SHA256:
+`c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63`。
+requests/profiles/events从0/0/0变为1/1/1;唯一QB事件为SUBMITTED,
+unit由SANDBOX_PUSHED变为QB_REQUESTED。没有BUILD_BOUND或RESULT。
+profile_sha256=`c8504d8c2d0385c98cf71c2e4f79353492ef6230591b0dfecc36a194451bf69d`。
+SQL导出为trigger/state-before.sql和state-after.sql,不提交state.db二进制。
+
+### 51.3 停止与后续边界
+
+停止报告:[C8 live-01 stop-report](evidence/C8/live-01/stop-report.md)。
+本次未达到“unknown后自动查找绑定”的验收结果,且命中§49.7的其它异常停止条件。
+UNKNOWN没有提供更细异常来源,现有证据不能断言是新页面、Worker、登录、网络或
+可信读取环境故障;未记录HTTP响应也不能推断HTTP状态。构建可能已经创建。
+stdout的通用后续建议不覆盖本任务停止条件:没有重试、没有运行qb-result-fetch,
+没有人工绑定、没有再次弹窗、没有构造unit 2。e1/e2/e3a/e3b全部NOT_STARTED。
+不把本次称为“未找到构建”,也不把C8或P5Q标为完成。
+
+候选后续仅供设计方裁定:先离线复现生产submit到下一次read的转换;若仍无法定位,
+再审批UNKNOWN边界的固定脱敏子类别取证,不记录异常原文、协议头或凭据。
+任何新的真机操作另行授权,不得以当前授权重提。
+
+### 51.4 离线归档验收
+
+仅增加执行封装、脱敏证据与状态记录,生产代码和冻结稿没有修改。
+本轮不重跑全仓测试或弹出测试窗口;此前小修全仓2891 passed / 1 skipped见§49.4,
+流程降噪60 passed / 0 failed / 0 skipped见§50,不冒称为本轮新实跑。
+离线核验命令:`.venv/bin/python docs/clang-fix-campaign/dev_memory/stage20_p5q_qb_trigger/evidence/C8/validate_live.py`。
+核验包含新证据原始字节与JSON解码值脱敏检查、SQL导出与当前库只读对账、
+冻结稿及C6目录不变、代理前缀、生产源码零diff、进程/profile/.transport残留,
+ruff、design.md检查器和本轮diff检查;结果与逐文件hash记于live-01/validation.json。
+实跑结果:audit PASS,14份证据脱敏检查0失败,5条检查命令均exit0,
+design.md为0 problem;进程/profile/.transport残留与扫描错误均0。
+代理前缀仍为40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16。

@@ -1,0 +1,48 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "ci_triage",
+    "qb-trigger",
+    "--verification-ids",
+    "p5q-c8-libtirpc-20261021-v0,p5q-c8-libtirpc-20261021-v1,p5q-c8-libtirpc-20261021-v2",
+    "--state-db",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c8/state.db",
+    "--state-root",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c8/state",
+    "--config",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c8/config.yaml"
+  ],
+  "started_at": "2026-10-21T11:02:05.864429+00:00",
+  "before": {
+    "sha256": "dd43219d2964e23d711e904ab640a73eb3c328e6685940dc7711beb4f7563ff2",
+    "counts": {
+      "campaign_qb_requests": 0,
+      "campaign_qb_profiles": 0,
+      "campaign_qb_events": 0
+    }
+  },
+  "attempt": 1,
+  "production": true,
+  "ended_at": "2026-10-21T11:07:21.457775+00:00",
+  "exit_code": 5,
+  "elapsed_seconds": 315.53425109398086,
+  "last_chromium_to_cli_exit_seconds": 0.2855996099533513,
+  "agent_exit_code": "NOT_COLLECTED",
+  "after": {
+    "sha256": "c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63",
+    "counts": {
+      "campaign_qb_requests": 1,
+      "campaign_qb_profiles": 1,
+      "campaign_qb_events": 1
+    }
+  },
+  "changed_state_files": [
+    "qb_traces/7383e5c48f62.jsonl"
+  ],
+  "immutable": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  }
+}
