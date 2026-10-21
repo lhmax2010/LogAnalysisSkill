@@ -1,0 +1,331 @@
+{
+  "at": "2026-10-21T12:30:23.859678+00:00",
+  "immutable": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  },
+  "database": {
+    "sha256": "c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63",
+    "counts": {
+      "campaign_qb_requests": 1,
+      "campaign_qb_profiles": 1,
+      "campaign_qb_events": 1
+    },
+    "events": [
+      [
+        "SUBMITTED",
+        null
+      ]
+    ],
+    "status": "QB_REQUESTED",
+    "request": [
+      [
+        "202711dfe6b34472b6b8dc23f3a74a6e"
+      ]
+    ]
+  },
+  "processes": {
+    "own": [],
+    "other": [
+      {
+        "pid": 4075,
+        "ppid": 2563,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 13 14:02:24 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4091,
+        "ppid": 4075,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 13 14:02:24 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4092,
+        "ppid": 4075,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 13 14:02:24 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4094,
+        "ppid": 4092,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 13 14:02:24 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4120,
+        "ppid": 4091,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 13 14:02:24 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4122,
+        "ppid": 4075,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 13 14:02:24 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4166,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 13 14:02:25 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4186,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 13 14:02:25 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4690,
+        "ppid": 4075,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 13 14:02:54 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 98966,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Wed Oct 14 01:41:00 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 479993,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Thu Oct 15 13:54:41 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 833798,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Mon Oct 19 15:48:47 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1093390,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Wed Oct 21 08:37:17 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1093498,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Wed Oct 21 08:37:31 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1183853,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Thu Oct 15 06:03:14 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1194130,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Thu Oct 15 07:22:48 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1201402,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Thu Oct 15 08:16:56 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1225431,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Wed Oct 21 11:39:35 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1243960,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Wed Oct 21 12:03:35 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1243988,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Wed Oct 21 12:03:37 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1244095,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Wed Oct 21 12:04:12 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1246679,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Wed Oct 21 12:19:54 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1247710,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Wed Oct 21 12:26:41 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 1408195,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Thu Oct 15 21:03:28 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4147318,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 20 12:18:21 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4147449,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 20 12:18:32 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4157286,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 20 13:37:46 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      },
+      {
+        "pid": 4158664,
+        "ppid": 4094,
+        "exe": "/opt/google/chrome/chrome",
+        "started_utc": "Tue Oct 20 13:48:05 2026",
+        "root_pid": 4075,
+        "root_exe": "/opt/google/chrome/chrome",
+        "root_started_utc": "Tue Oct 13 14:02:24 2026"
+      }
+    ],
+    "errors": []
+  },
+  "profiles": [],
+  "transports": [],
+  "d_samples": [
+    {
+      "at": "2026-10-21T12:30:23.902954+00:00",
+      "rows": [
+        "D 1244569 kworker/u81:1+i915_flip"
+      ]
+    },
+    {
+      "at": "2026-10-21T12:30:33.920932+00:00",
+      "rows": [
+        "D 1244569 kworker/u81:1+i915_flip"
+      ]
+    },
+    {
+      "at": "2026-10-21T12:30:43.939461+00:00",
+      "rows": [
+        "D 1247807 kworker/u80:3+i915"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "df",
+        "-h",
+        "/home",
+        "/dev/shm"
+      ],
+      "exit": 0,
+      "stdout": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/sda1       1.8T  1.5T  213G  88% /home\ntmpfs            16G  166M   16G   2% /dev/shm\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "free",
+        "-h"
+      ],
+      "exit": 0,
+      "stdout": "               total        used        free      shared  buff/cache   available\nMem:            30Gi        25Gi       1.0Gi       881Mi       6.0Gi       5.3Gi\nSwap:          4.0Gi       4.0Gi       184Ki\n",
+      "stderr": ""
+    }
+  ],
+  "persistent_d_pids": []
+}

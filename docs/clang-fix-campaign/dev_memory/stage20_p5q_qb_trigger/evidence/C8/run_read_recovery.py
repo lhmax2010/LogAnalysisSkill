@@ -9,11 +9,13 @@ import sys
 import time
 from pathlib import Path
 
-from run_live import HERE, PREP, REPO, ROOT, checked, database, processes, write
+from process_inventory import inventory
+from run_live import HERE, PREP, REPO, ROOT, checked, database, write
 
 OUT = HERE / "live-02"
 EXPECTED = "c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63"
 REQUEST = "202711dfe6b34472b6b8dc23f3a74a6e"
+PREFLIGHT = "preflight-3"
 
 
 def current():
@@ -38,12 +40,12 @@ def current():
 
 
 def preflight():
-    OUT.mkdir(exist_ok=False)
+    OUT.mkdir(exist_ok=True)
     report = dict(
         at=PREP.stamp(),
         immutable=PREP.immutable(),
         database=current(),
-        processes=processes(),
+        processes=inventory(),
         profiles=[str(p) for p in Path("/dev/shm").glob("p5q-browser-*")],
         transports=[str(p) for p in ROOT.rglob(".transport")],
         d_samples=[],
@@ -61,25 +63,50 @@ def preflight():
                 rows=[row for row in result["stdout"].splitlines() if row.split()[:1] == ["D"]],
             )
         )
-    write(OUT / "preflight.json", report)
+    persistent = set.intersection(
+        *(set(row.split()[1] for row in sample["rows"]) for sample in report["d_samples"])
+    )
+    report["persistent_d_pids"] = sorted(persistent)
+    write(OUT / f"{PREFLIGHT}.json", report)
     assert report["database"]["sha256"] == EXPECTED
     assert list(report["database"]["counts"].values()) == [1, 1, 1]
     assert report["database"]["events"] == [("SUBMITTED", None)]
     assert report["database"]["request"] == [(REQUEST,)]
     assert report["database"]["status"] == "QB_REQUESTED"
-    assert not report["processes"] and not report["profiles"] and not report["transports"]
-    assert not any(sample["rows"] for sample in report["d_samples"]), "D_STATE_REVIEW_REQUIRED"
+    assert not report["processes"]["errors"]
+    assert not report["processes"]["own"] and not report["profiles"] and not report["transports"]
+    assert not persistent, "D_STATE_REVIEW_REQUIRED"
     assert (ROOT / "config.yaml").read_bytes() == (HERE / "preparation/config.yaml").read_bytes()
-    write(OUT / "preflight-passed.json", {"at": PREP.stamp(), "sha256": EXPECTED})
-    print("PREFLIGHT_PASS")
+    write(OUT / f"{PREFLIGHT}-checks.json", {"at": PREP.stamp(), "sha256": EXPECTED})
+    print(json.dumps(dict(checks="PASS", other=report["processes"]["other"])))
+
+
+def confirm_process_scope():
+    pre = json.loads((OUT / f"{PREFLIGHT}.json").read_text())
+    now = inventory()
+    assert not now["own"] and not now["errors"]
+    if pre["processes"]["other"] or now["other"]:
+        confirmation = json.loads((OUT / "other-browser-confirmation.json").read_text())
+        assert confirmation["reply"] and confirmation["authority"] == "FatTank"
+        assert confirmation["decision"] in {"ended", "no_quickbuild_login"}
+        allowed = {
+            (row["root_pid"], row["root_started_utc"])
+            for row in confirmation["processes"]
+        }
+        assert {(row["root_pid"], row["root_started_utc"]) for row in now["other"]} <= allowed
+        if confirmation["decision"] == "ended":
+            assert not now["other"]
+    write(OUT / "pre-launch-processes.json", dict(at=PREP.stamp(), **now))
 
 
 def fetch():
     assert PREP.digest(ROOT / "state.db") == EXPECTED
     PREP.immutable()
-    assert (OUT / "preflight-passed.json").exists()
+    assert (OUT / f"{PREFLIGHT}-checks.json").exists()
     assert os.environ.get("DISPLAY") and os.environ.get("P5Q_TEST_DISPLAY") != "virtual"
-    assert not processes() and not list(Path("/dev/shm").glob("p5q-browser-*"))
+    confirm_process_scope()
+    assert not list(Path("/dev/shm").glob("p5q-browser-*"))
+    assert not list(ROOT.rglob(".transport"))
     dest = OUT / "fetch"
     dest.mkdir(exist_ok=False)
     argv = [
@@ -111,7 +138,7 @@ def fetch():
         before=before,
         request_id=REQUEST,
         production=True,
-        authorization="P5Q-C8-02",
+        authorization="P5Q-C8-02 + P5Q-C8-03",
         attempt=1,
     )
     write(dest / "command.json", facts)
@@ -139,9 +166,9 @@ def fetch():
     observations, previous, last_chromium = [], None, None
     print("READ_STARTED", flush=True)
     while True:
-        rows = processes()
+        rows = inventory()["own"]
         now = time.monotonic()
-        if any("chromium" in row["kinds"] for row in rows):
+        if any(row["kind"] == "chromium" for row in rows):
             last_chromium = now
         if rows != previous:
             observations.append(

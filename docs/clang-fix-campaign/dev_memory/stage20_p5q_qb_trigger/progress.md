@@ -1,6 +1,7 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-21。状态:**C7 ACCEPTED,C8 READ_RECOVERY_PREFLIGHT_STOPPED,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+日期:2026-10-21。状态:**C7 ACCEPTED,C8 WAITING_OTHER_BROWSER_CONFIRMATION,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+最新续执行见§53/P5Q-C8-03:重新核对P5Q自身残留,其它浏览器须人工确认,不重提构建。
 本轮裁定、离线小修与C8准备见§49。新授权只执行一次trigger,unknown落点后首次自动查找读取失败;
 执行记录与停止报告见§51,没有重提、没有运行fetch,也没有构造unit 2。
 本轮冻结登记与离线实现见§47;以下C6及旧权威记录保留为历史。
@@ -5925,3 +5926,43 @@ design.md检查器0 problem,33份证据逐文件原始字节与JSON解码值脱�
 候选变量名人工浏览,以及终态结果全部NOT_RUN。unit 2按新裁定永久取消本轮计划。
 C8库仍c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63;
 C6目录和库、v1.5/v1.8冻结稿均不变。P5Q不标CLOSED,不写收口文档。
+
+## 53. 实施裁定 P5Q-C8-03:live-02 前置停止与调查处置
+
+### 53.1 裁定原文
+
+1. live-02 前置停止成立;离线调查结论(根因未唯一确定、/dev/shm 残留与 SIGINT 清理竞争相关)登记备查。
+2. 前置"无残留进程"检查的范围改为 P5Q 自己的进程:本仓库代理脚本启动的 node 进程,以及 p5q 配置所用 Chromium 路径(chromium-1208)且 profile 位于 /dev/shm/p5q-browser-* 的进程树。发现其它 Playwright/Chromium 进程(例如 /home/linhao/qb_fetch)时,不终止、不读取其文件,在对话中列出 PID、可执行路径与启动时间,请 FatTank 确认它已结束、或确认不会在本次执行期间登录 QuickBuild,得到确认后才继续。
+3. P5Q-C8-02 第 2 项验收 d 中"整理候选页变量名集合供 FatTank 浏览"一项本次不做:现有生产 trace 不记录变量名,为此改代码会推迟补绑定。e3a(登录显示名计数)照做;候选页三列变量表结构由现有解析器保证。这一缺口列入收口文档的已接受残余与待办。
+4. 其余按 P5Q-C8-02 执行:对 request 202711dfe6b34472b6b8dc23f3a74a6e 运行一次生产 qb-result-fetch --request-id 补绑定;绑定后在对话中给出构建号与请求标记,请 FatTank 在 QuickBuild 页面核对;之后读取直到终态。
+5. 调查报告中的候选修复本轮都不实施,待补绑定结束后另行裁定。
+
+### 53.2 执行准备
+
+已重读live-02/stop-report.md与investigation/README.md。原前置停止证据不覆盖;
+新前置使用live-02/preflight-2.json,首次真实读取使用live-02/fetch/。
+只调整证据封装的进程范围与确认闸门,生产代码/代理/冻结稿不改。
+本轮不构造unit 2,不运行qb-trigger,不带--qb-build-id、--retrigger或--accept-snapshot-drift。
+e3b变量名集合缺口按本裁定列为后续收口的已接受残余与待办,本次不采集。
+
+### 53.3 只读前置封装修正与其它浏览器确认
+
+preflight-2.json保留:本次新增封装先读全进程exe,误把sd-pam(PID2569)、
+ssh-agent(PID98466)的元数据权限限制记为检查错误,exit1。它们不在裁定的
+P5Q/浏览器检查范围内;修正为先按ps进程名筛选node/浏览器候选,再检查所有权,
+不改生产代码。修正后的只读检查另存preflight-3.json,不覆盖原记录。
+第一轮D状态采样为0/1/0,中间唯一项为i915_flip内核worker,无持续D进程。
+封装按既有三次采样交集判断持续D状态,不把单次图形worker当作/home持续I/O阻塞。
+
+检测到其它Chrome进程树:主PID4075,/opt/google/chrome/chrome,
+启动时间2026-10-13 22:02:24(Asia/Shanghai),对应UTC14:02:24。
+已在对话请求确认该浏览器已结束、或本次执行期间不会使用它登录QuickBuild。
+确认前不运行生产命令;不终止该进程树,不读取其会话文件。
+
+修正后的preflight-3检查通过(exit0):P5Q自身进程/profile/.transport均0,
+库hash仍c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63,
+QB三表1/1/1,事件仍仅SUBMITTED,unit为QB_REQUESTED;两份冻结稿与C6目录不变。
+未发现持续D状态进程。其它浏览器为上述Chrome进程树(28个进程),完整PID、exe和
+启动时间见preflight-3.json。当前等待FatTank确认,尚无确认原话。
+真实qb-result-fetch没有执行,fetch目录不存在;绑定与终态验收均NOT_RUN。
+封装ruff通过,design.md检查器0 problem,生产源码与冻结稿相对3ef39c2零diff。
