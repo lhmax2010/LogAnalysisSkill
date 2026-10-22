@@ -27,7 +27,7 @@ All further live operations stopped. No production change or candidate fix was m
 
 | Item | Result |
 |---|---|
-| a: automatic binding | Parent 1204698 bound; complete request marker matches archived parent variables; FatTank page confirmation requested, PENDING |
+| a: automatic binding | PASS: parent 1204698 bound; complete request marker matches archived parent variables; FatTank confirmed both on 2026-10-22 (see human confirmation below) |
 | b: candidate set | Exact equality with all 10 Recent Builds rows minus pre-existing bindings (none), verified offline |
 | b: readability | NOT SATISFIED: 1 match, 7 different markers, 2 temporarily unreadable |
 | c: archive boundary | PASS: configuration page plus matching parent/child pages only (5 HTML files); other candidates' pages 0; diagnostics additions 0 |
@@ -68,3 +68,16 @@ Status: QB_REQUESTED -> QB_TRIGGERED -> SANDBOX_QB_PASS.
 Both frozen designs and the entire C6 directory remain unchanged.
 
 No SQL database binary is committed. Original preflight-stop evidence remains intact.
+
+## Human Confirmation (2026-10-22)
+
+FatTank was asked to check parent `1204698` against the complete BUILD NOTES marker
+`clang-fix-campaign request=202711dfe6b34472b6b8dc23f3a74a6e` and replied:
+
+> 构建号与完整请求标记一致
+
+The exact question and reply are in [human-build-confirmation.json](human-build-confirmation.json).
+Acceptance a is now confirmed. This reply does not resolve acceptance b's two
+unreadable candidates or e3a's nonzero identity count; the overall stop remains.
+The original `human_build_confirmation=PENDING` in `fetch/archive-validation.json`
+is retained as a historical execution snapshot. No further live operation was run.
