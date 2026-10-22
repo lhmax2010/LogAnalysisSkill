@@ -1,0 +1,268 @@
+{
+  "at": "2026-10-22T02:28:40.350202+00:00",
+  "immutable": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  },
+  "agent_prefix": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+  "execution_exit": 0,
+  "db_sha256": "dc40ecd44197b95b250ffcb9000a6201721bce280e2f19d119912f2e4f3991b2",
+  "recent_builds": [
+    "1204798",
+    "1204735",
+    "1204732",
+    "1204698",
+    "1203402",
+    "1203397",
+    "1203205",
+    "1203187",
+    "1202547",
+    "1202298"
+  ],
+  "bound_before": [],
+  "candidates": [
+    {
+      "build_id": "1202298",
+      "category": "标记不同"
+    },
+    {
+      "build_id": "1202547",
+      "category": "标记不同"
+    },
+    {
+      "build_id": "1203187",
+      "category": "标记不同"
+    },
+    {
+      "build_id": "1203205",
+      "category": "标记不同"
+    },
+    {
+      "build_id": "1203397",
+      "category": "标记不同"
+    },
+    {
+      "build_id": "1203402",
+      "category": "标记不同"
+    },
+    {
+      "build_id": "1204698",
+      "category": "匹配"
+    },
+    {
+      "build_id": "1204732",
+      "category": "标记不同"
+    },
+    {
+      "build_id": "1204735",
+      "category": "暂不可读"
+    },
+    {
+      "build_id": "1204798",
+      "category": "暂不可读"
+    }
+  ],
+  "candidate_set_equal": true,
+  "lookup_rounds": 1,
+  "discovery_read_duration_sum_ms": 6278,
+  "other_candidates_all_readable": false,
+  "outside_identity_counts": [
+    {
+      "path": "/overview/1917",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1202298/variables",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1202547/variables",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1203187/variables",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1203205/variables",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1203397/variables",
+      "outside_identity_count": 1
+    },
+    {
+      "path": "/build/1203402/variables",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1204698/variables",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1204732/variables",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1204735/variables",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1204798/variables",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1204698/overview",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1204699/overview",
+      "outside_identity_count": 0
+    },
+    {
+      "path": "/build/1204699/variables",
+      "outside_identity_count": 0
+    }
+  ],
+  "archived_pages": [
+    "01.overview-1917.html",
+    "02.1204698-variables.html",
+    "03.1204698-overview.html",
+    "04.1204699-overview.html",
+    "05.1204699-variables.html"
+  ],
+  "other_users_pages": 0,
+  "diagnostics_added": 0,
+  "terminal": {
+    "parent": "1204698",
+    "child": "1204699",
+    "status": "PASS",
+    "parent_status": "Successful",
+    "child_status": "Successful",
+    "child_result": "SUCCESSFUL",
+    "each_status": "",
+    "request_marker": "clang-fix-campaign request=202711dfe6b34472b6b8dc23f3a74a6e",
+    "target": "platform/upstream/libtirpc@7623cb042a74f4dfb2d3fe0dc4db0cf3863dd3f0",
+    "frozen_snapshot": "tizen-base-toolchain_20261013.024319",
+    "parent_snapshot": "tizen-base-toolchain_20261013.024319",
+    "child_snapshot": "http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319",
+    "snapshot_kind": "same",
+    "snapshot_drift_accepted": false,
+    "result_sha256": "9a38b93ba589e444a1110b9db2d5f9037f2977798b40c7b363f20527761d777c",
+    "accepted": null
+  },
+  "redaction_failures": 0,
+  "files": [
+    {
+      "path": "live-02/fetch/command.json",
+      "sha256": "bce46150a3e6c9a089e5bc0b00cc0baa2ad66412df20abe2c82a3aaeecf67e55"
+    },
+    {
+      "path": "live-02/fetch/execution.json",
+      "sha256": "df5b5ccd7be3f8c28c3f9e85f10f3b47b2e71a37c759a42cfb9cfd0c2ce5fee9"
+    },
+    {
+      "path": "live-02/fetch/process-observations.json",
+      "sha256": "88efbe8038ed03df1e29170c8d44d1c527210bb2569ed7886ae18c8364078dbe"
+    },
+    {
+      "path": "live-02/fetch/state/qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/01.overview-1917.html",
+      "sha256": "cbce5bf06713dcdf40b5c13ab569485f620eb67b1c7065cc4c26341f62fdb54a"
+    },
+    {
+      "path": "live-02/fetch/state/qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/02.1204698-variables.html",
+      "sha256": "e3107e1e3cebba2a9ddb960bff2cc118f929bde11225b9cdd7e9edb92f0d3a84"
+    },
+    {
+      "path": "live-02/fetch/state/qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/03.1204698-overview.html",
+      "sha256": "14d770a58bbcbd65889247ba7bb0b37d5ebe2159ea2e06f809bb66694ecd93e7"
+    },
+    {
+      "path": "live-02/fetch/state/qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/04.1204699-overview.html",
+      "sha256": "8b87f9fc93e6148444fc03168c0f88e3773608ceae25c5fe8a125d5648f69b28"
+    },
+    {
+      "path": "live-02/fetch/state/qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/05.1204699-variables.html",
+      "sha256": "5c8b283f8069e92e8312d011f3548905486b664507e4a550e4a1d4e67539ad7b"
+    },
+    {
+      "path": "live-02/fetch/state/qb_results/202711dfe6b34472b6b8dc23f3a74a6e/20261022T022528479812Z.json",
+      "sha256": "9a38b93ba589e444a1110b9db2d5f9037f2977798b40c7b363f20527761d777c"
+    },
+    {
+      "path": "live-02/fetch/state/qb_traces/7383e5c48f62.jsonl",
+      "sha256": "16b9df3d9a94fe2475f8f5ceeb5d73b8f82807818af8f200f74dc5e8620f6b4e"
+    },
+    {
+      "path": "live-02/fetch/state-after.sql",
+      "sha256": "2b072357fa983a25c383fafc0ef5fff76f01c04991569c6a43eb8590323b6b16"
+    },
+    {
+      "path": "live-02/fetch/state-before.sql",
+      "sha256": "bfbb23ea54c756b62b2e7ea18e3546c0d6a38108a5e3b34de4d5d6d9cdffb60c"
+    },
+    {
+      "path": "live-02/fetch/stderr.txt",
+      "sha256": "4ab2dd108712bd15ed26843e8bb7798bdac19352791d17077e635d3b6a357f29"
+    },
+    {
+      "path": "live-02/fetch/stdout.json",
+      "sha256": "ba32c998d39ce83148cc0b90d02fb7b9a262c22fe3d074fbe74cffedba34093b"
+    },
+    {
+      "path": "live-02/fetch/trace-after.jsonl",
+      "sha256": "16b9df3d9a94fe2475f8f5ceeb5d73b8f82807818af8f200f74dc5e8620f6b4e"
+    },
+    {
+      "path": "live-02/fetch/trace-before.jsonl",
+      "sha256": "d637eaf95c281af74d28a08490d55e38ef6e9d3d529a34df2b9206e8276ada19"
+    },
+    {
+      "path": "live-02/fetch/trace-new.jsonl",
+      "sha256": "ecdbf049dc96cc4825752b12d628c6858224b0ef06a8b96ef48e42f9e3c8f707"
+    },
+    {
+      "path": "live-02/other-browser-confirmation.json",
+      "sha256": "2a500d73cc92cdd61dae634381b141d252f18f8662d495572b9dff1bed0f236c"
+    },
+    {
+      "path": "live-02/other-browser-observation-20261022.json",
+      "sha256": "6a8b742a4169b054cb94fbd5a8a0aa5d462a28dd9f64426d432f5542515066ed"
+    },
+    {
+      "path": "live-02/pre-launch-processes.json",
+      "sha256": "5d9367236154abe2f23e027829422a62e44a5e61130dc0844005ab3b194b6faf"
+    },
+    {
+      "path": "live-02/preflight-2.json",
+      "sha256": "14f2275957c7d5d67c99c71597998395bfca43473988543c9b341cae8c7ec1da"
+    },
+    {
+      "path": "live-02/preflight-3-checks.json",
+      "sha256": "a9d6c6167c9b6bd947b6501e0ff369514345ec440fcdc4e86e472a0fad7a8dfb"
+    },
+    {
+      "path": "live-02/preflight-3.json",
+      "sha256": "07dd6d2007238d85bc30e03289c6ec6e07f70c035329f8f623986bdd56bf134a"
+    },
+    {
+      "path": "live-02/preflight-4-checks.json",
+      "sha256": "346f13ee5be875342b532c98d6cd30c195f40e7053548acf8e7945e969af3969"
+    },
+    {
+      "path": "live-02/preflight-4.json",
+      "sha256": "f15d38a858fd21bd950de8cbe05acfb330f4c0e485d0af7a26e00dbe805cb185"
+    },
+    {
+      "path": "live-02/preflight.json",
+      "sha256": "9b5944722000e96037acbf93dd158550cd83ae98fbe0bdaa574802df599c94a5"
+    },
+    {
+      "path": "live-02/stop-report.md",
+      "sha256": "2fcb1a28ce7bb6aa6a19d201c892ce5514778636620f0b673c650793070381d8"
+    }
+  ],
+  "acceptance": "STOPPED: two unreadable candidates and one nonzero identity count",
+  "human_build_confirmation": "PENDING"
+}

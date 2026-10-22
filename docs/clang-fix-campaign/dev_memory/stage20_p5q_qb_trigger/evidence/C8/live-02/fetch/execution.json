@@ -1,0 +1,84 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "ci_triage",
+    "qb-result-fetch",
+    "--request-id",
+    "202711dfe6b34472b6b8dc23f3a74a6e",
+    "--state-db",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c8/state.db",
+    "--state-root",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c8/state",
+    "--config",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c8/config.yaml"
+  ],
+  "started_at": "2026-10-22T02:22:47.590924+00:00",
+  "before": {
+    "sha256": "c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63",
+    "counts": {
+      "campaign_qb_requests": 1,
+      "campaign_qb_profiles": 1,
+      "campaign_qb_events": 1
+    }
+  },
+  "request_id": "202711dfe6b34472b6b8dc23f3a74a6e",
+  "production": true,
+  "authorization": "P5Q-C8-02 + P5Q-C8-03",
+  "attempt": 1,
+  "ended_at": "2026-10-22T02:25:30.672392+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 162.29976331500802,
+  "last_chromium_to_cli_exit_seconds": 1.3913101319922134,
+  "agent_exit_code": "NOT_COLLECTED",
+  "after": {
+    "sha256": "dc40ecd44197b95b250ffcb9000a6201721bce280e2f19d119912f2e4f3991b2",
+    "counts": {
+      "campaign_qb_requests": 1,
+      "campaign_qb_profiles": 1,
+      "campaign_qb_events": 3
+    }
+  },
+  "changed_state_files": [
+    "qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/01.overview-1917.html",
+    "qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/02.1204698-variables.html",
+    "qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/03.1204698-overview.html",
+    "qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/04.1204699-overview.html",
+    "qb_evidence/202711dfe6b34472b6b8dc23f3a74a6e/05.1204699-variables.html",
+    "qb_results/202711dfe6b34472b6b8dc23f3a74a6e/20261022T022528479812Z.json",
+    "qb_traces/7383e5c48f62.jsonl"
+  ],
+  "state": {
+    "sha256": "dc40ecd44197b95b250ffcb9000a6201721bce280e2f19d119912f2e4f3991b2",
+    "counts": {
+      "campaign_qb_requests": 1,
+      "campaign_qb_profiles": 1,
+      "campaign_qb_events": 3
+    },
+    "events": [
+      [
+        "SUBMITTED",
+        null
+      ],
+      [
+        "BUILD_BOUND",
+        "1204698"
+      ],
+      [
+        "RESULT",
+        "1204698"
+      ]
+    ],
+    "status": "SANDBOX_QB_PASS",
+    "request": [
+      [
+        "202711dfe6b34472b6b8dc23f3a74a6e"
+      ]
+    ]
+  },
+  "immutable": {
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c6/state.db": "08ed202e69a73a480e7282a198565f32adae8157a332804df4df970238eacd30"
+  }
+}

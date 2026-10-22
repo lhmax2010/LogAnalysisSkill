@@ -15,7 +15,7 @@ from run_live import HERE, PREP, REPO, ROOT, checked, database, write
 OUT = HERE / "live-02"
 EXPECTED = "c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63"
 REQUEST = "202711dfe6b34472b6b8dc23f3a74a6e"
-PREFLIGHT = "preflight-3"
+PREFLIGHT = "preflight-4"
 
 
 def current():

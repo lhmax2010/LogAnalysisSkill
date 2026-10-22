@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "ci_triage",
+    "qb-result-fetch",
+    "--request-id",
+    "202711dfe6b34472b6b8dc23f3a74a6e",
+    "--state-db",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c8/state.db",
+    "--state-root",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c8/state",
+    "--config",
+    "/home/linhao/Toolchain/p5q-live-validation/p5q-c8/config.yaml"
+  ],
+  "started_at": "2026-10-22T02:22:47.590924+00:00",
+  "before": {
+    "sha256": "c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63",
+    "counts": {
+      "campaign_qb_requests": 1,
+      "campaign_qb_profiles": 1,
+      "campaign_qb_events": 1
+    }
+  },
+  "request_id": "202711dfe6b34472b6b8dc23f3a74a6e",
+  "production": true,
+  "authorization": "P5Q-C8-02 + P5Q-C8-03",
+  "attempt": 1
+}

@@ -1,6 +1,7 @@
 # Stage20 P5Q QuickBuild Trigger
 
-日期:2026-10-21。状态:**C7 ACCEPTED,C8 WAITING_OTHER_BROWSER_CONFIRMATION,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+日期:2026-10-22。状态:**C7 ACCEPTED,C8 BOUND_PASS_ACCEPTANCE_STOPPED,当前权威 v1.8-FROZEN**。P5Q不标CLOSED。
+§53.4:一次读取已绑定父1204698/子1204699并写PASS;两个候选暂不可读及一处身份计数非0,停止验收。
 最新续执行见§53/P5Q-C8-03:重新核对P5Q自身残留,其它浏览器须人工确认,不重提构建。
 本轮裁定、离线小修与C8准备见§49。新授权只执行一次trigger,unknown落点后首次自动查找读取失败;
 执行记录与停止报告见§51,没有重提、没有运行fetch,也没有构造unit 2。
@@ -5966,3 +5967,58 @@ QB三表1/1/1,事件仍仅SUBMITTED,unit为QB_REQUESTED;两份冻结稿与C6目�
 启动时间见preflight-3.json。当前等待FatTank确认,尚无确认原话。
 真实qb-result-fetch没有执行,fetch目录不存在;绑定与终态验收均NOT_RUN。
 封装ruff通过,design.md检查器0 problem,生产源码与冻结稿相对3ef39c2零diff。
+
+2026-10-22 FatTank回复原话:"已结束该浏览器"。当场只读核对仍见PID4075的
+Chrome进程树,exe和启动时间与昨日相同;P5Q自身进程为0,状态库hash和事件不变。
+事实保存于live-02/other-browser-observation-20261022.json。未据此推断窗口是否
+仍开着或是否登录QuickBuild,未终止进程;已说明后台进程可以保留,请求明确确认
+本次期间不会用它登录QuickBuild。确认未到前继续等待,不运行生产读取。
+
+随后FatTank明确回复原话:"确认，本次期间不会用它登录 QuickBuild"。
+依据该确认保留Chrome进程树,不终止、不读取其会话文件;刷新只读前置到
+preflight-4.json(不覆盖历史记录),通过后只运行一次生产qb-result-fetch补绑定。
+
+### 53.4 一次生产补绑定与终态读取
+
+preflight-4只读前置通过;其它Chrome按FatTank的明确确认保留,未终止或读取会话文件。
+命令:`.venv/bin/python evidence/C8/run_read_recovery.py fetch`(相对于本stage目录);
+实际生产完整argv见live-02/fetch/command.json,只含qb-result-fetch --request-id
+202711dfe6b34472b6b8dc23f3a74a6e以及专用state-db/state-root/config,无--qb-build-id。
+UTC起止2026-10-22T02:22:47.590924至02:25:30.672392,CLI exit0,耗时162.300秒。
+stdout:父1204698、子1204699、status=PASS、terminal=true、result_event_id=3,
+error_code/message/diagnostic_dir均null。首次即终态,不再安排后续读取。
+
+查找1轮、10个候选,与已归档Recent Builds中未被本库绑定的全部行精确一致。
+1个匹配(1204698)、7个标记不同、2个暂不可读(1204735/1204798)。
+12次查找相关read的耗时合计6278ms(含配置与绑定overview),非完整查找墙钟耗时。
+查找完整墙钟耗时没有单独记录。关闭尾段为1.391秒,代理退出码NOT_COLLECTED。
+
+库hash从c346b6b8d065ad14a5dbab2bb9e9d66f370234e8ac73133426789002075b2c63
+变为dc40ecd44197b95b250ffcb9000a6201721bce280e2f19d119912f2e4f3991b2;
+QB三表1/1/1变为1/1/3,新增BUILD_BOUND(2)、RESULT(3),状态依次
+QB_REQUESTED→QB_TRIGGERED→SANDBOX_QB_PASS。只提交SQL文本导出,不提交库二进制。
+
+终态离线核对:父/子Status均Successful,Child Build结果SUCCESSFUL,
+子EACH_GBS_BUILD_STATUS存在且为空;目标行libtirpc@7623cb...精确匹配且在全量列表中唯一。
+父BUILD_NOTES等于完整请求标记;冻结快照、父SNAPSHOT_NUM与子快照URL末段均为
+tizen-base-toolchain_20261013.024319,snapshot_kind=same,未接受漂移。
+accepted=null,冻结profile不要求Accept。证据live-02/fetch/archive-validation.json。
+
+### 53.5 验收停止与待人工核对
+
+停止报告:live-02/read-stop-report.md。a机器绑定与回显通过,已在对话请求FatTank
+核对父构建1204698与完整标记clang-fix-campaign request=202711dfe6b34472b6b8dc23f3a74a6e,
+人工回复PENDING。b候选全集相等,但两个暂不可读不满足“除匹配构建外均可读”。
+c通过:仅配置页、匹配父构建两页、子构建两页共5份HTML,他人构建页0、诊断新增0。
+e3a为待人工/设计核对:候选1203397变量页的outside_identity_count=1,其它全部0。
+未保存该候选页,不能从现有证据定位身份出现位置;未追加访问。e3b变量名集合按
+C8-03延期,不把它与e3a混为已豁免。不得将本次CLI PASS称为C8验收全绿。
+
+所有真机操作已停止,不重试、不手工绑定、不重提、不实施调查候选修复。
+生产代码与代理未改;两份冻结稿和C6目录不变。原live-02前置停止证据全部保留。
+
+本次归档离线验证通过,见fetch/archive-validation.json与delivery-checks.json:
+生产解析器复算父/子字段与结果一致,候选全集相等,29份文件脱敏自检0失败。
+新封装ruff通过,design.md检查器0 problem;未重跑全仓pytest(生产代码无修改)。
+git diff --cached --check的非0仅来自5份原样保留的脱敏HTML的原始空白;
+逐文件告警数已登记,排除这5份页面后其余全部暂存文件exit0。未整理或改写原始页面。
