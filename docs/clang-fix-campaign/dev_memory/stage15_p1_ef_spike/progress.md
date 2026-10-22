@@ -1,6 +1,9 @@
 # Stage15 P1 EF-5 Environment Spike
 
-日期:2026-10-10。状态:**WEB_READ_PARTIAL**(累计结论;最新rbs-form-01为离线解析)。
+日期:2026-10-22。状态:**CLOSED**。按P5Q-C8-04第4条,P1的EF-5由P5Q C6/C8证据覆盖并一并关闭。
+收口见[review/p5q-closeout.md](../../review/p5q-closeout.md)及本文件§18;
+本轮不再执行任何QuickBuild真机操作,下一次只在最终端到端阶段。
+以下为2026-10-10及更早的历史记录,WEB_READ_PARTIAL不改写为当时已取证成功:
 最新取证:Base工程RBS运行表单,2个form/19个控件/25个按钮,网络请求0,详见§17。
 §16的在线续跑7 GET/200与§15停机记录保留;未取得提交响应与新build ID获取方式。
 权威:`../../design.md` v1.5.19-FROZEN §1.4 EF-5、§4.1
@@ -959,3 +962,19 @@ exit=0 (ruff.log)
 仅排除form.redacted.html后exit0。保留取证原空白,不为格式检查改写HTML。
 `git diff --cached --numstat -- 'tizen-*' tests docs/clang-fix-campaign/design.md '*FROZEN*'`
 空输出、exit0,交付范围符合要求。
+
+## 18. P1 EF-5关闭(P5Q-C8-04,2026-10-22)
+
+依据[stage20 progress第54节](../stage20_p5q_qb_trigger/progress.md#54-实施裁定-p5q-c8-04p5q-收口),
+P1环境事实spike的EF-5部分由P5Q C6/C8真机证据覆盖,P1一并标为CLOSED。
+本阶段旧REST拒绝、SBS只读部分可读、RBS离线表单与未取得提交响应的原始记录保留。
+不把后续证据倒填为旧spike实测,也不恢复已取消的REST/Basic Auth路线。
+
+| 原挂账 | 后续证据与处置 |
+|---|---|
+| 提交响应与构建号获取 | C6 unknown落点后人工绑定1201886/1201889 PASS;C8读取时自动绑定1204698/1204699 PASS且FatTank核对一致,见[收口第2节](../../review/p5q-closeout.md#2-真机验证记录) |
+| RBS字段/架构/联动/结果样本 | C2b实测并入冻结稿,C5b演练12字段通过,C6b成功样本及BUILD_NOTES比对关闭;证据索引见同一收口文档 |
+| Unified配置、P12推送观察等 | 不因P1关闭而宣称已验证;转收口第4/5节的残余与移交清单,保持未启用/待观察 |
+
+P5Q-C8-04明确接受的三个C8验收残余不再补测。下一次真机只在最终端到端阶段;
+本轮只更新文档与索引,无登录、网络取证、代码或状态库改动。
