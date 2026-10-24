@@ -1,0 +1,171 @@
+{
+  "fixture_kind": "synthetic_only",
+  "network_access": false,
+  "commands": [
+    {
+      "command": [
+        "/home/toolchain/.pyenv/versions/3.10.12/bin/python3",
+        "vd-cosmos-watch/scripts/run.py",
+        "observe",
+        "--config",
+        "vd-cosmos-core/config.sample.json",
+        "--manifest",
+        "fixtures/minimal/manifest.json"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "artifact": {
+          "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/demo-data/rounds/380b8eb386dbb3c903e89ee2e2d145431a64697d093fb2c6f89d9c7fbe966f26/attempt-c972c176b8444524b8f683856b4ab455/watch-observe.json",
+          "sha256": "42761b3bfc4c688489a12a31dd5c2713b2f1d7f70aa87bf21e5a29d41b6185cc",
+          "size": 6794
+        },
+        "execution_state": "未知",
+        "exit_code": 0,
+        "header_consistency": "一致",
+        "last_event_id": 2,
+        "ok": true,
+        "report_state": "完整",
+        "result_state": "失败"
+      },
+      "stderr": "",
+      "evidence": "docs/enhance/batch1/evidence/01-watch-observe.json",
+      "fixture_kind": "synthetic"
+    },
+    {
+      "command": [
+        "/home/toolchain/.pyenv/versions/3.10.12/bin/python3",
+        "vd-cosmos-fetch/scripts/run.py",
+        "packages",
+        "--config",
+        "vd-cosmos-core/config.sample.json",
+        "--manifest",
+        "fixtures/minimal/manifest.json",
+        "--arch",
+        "armv7l"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "artifact": {
+          "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/demo-data/rounds/380b8eb386dbb3c903e89ee2e2d145431a64697d093fb2c6f89d9c7fbe966f26/attempt-d96103927ba14ab2b2b9f4340353575b/fetch-packages.json",
+          "sha256": "e691f7c650c3df8e405e9d5a7eee9cf4e9dd8b8dbab5c256198b6d17bb4a6d6d",
+          "size": 3446
+        },
+        "exit_code": 0,
+        "last_event_id": 4,
+        "ok": true,
+        "report_state": "完整",
+        "result_state": "失败"
+      },
+      "stderr": "",
+      "evidence": "docs/enhance/batch1/evidence/02-fetch-packages.json",
+      "fixture_kind": "synthetic"
+    },
+    {
+      "command": [
+        "/home/toolchain/.pyenv/versions/3.10.12/bin/python3",
+        "vd-cosmos-fetch/scripts/run.py",
+        "inputs",
+        "--config",
+        "vd-cosmos-core/config.sample.json",
+        "--manifest",
+        "fixtures/minimal/manifest.json"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "artifact": {
+          "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/demo-data/rounds/380b8eb386dbb3c903e89ee2e2d145431a64697d093fb2c6f89d9c7fbe966f26/attempt-0aca08987c6e433cb2f2f4054660137d/fetch-inputs.json",
+          "sha256": "8232bc1e86523eb660fd0a5d32e69ec21b452ec06d774e7bf705ee331edc447a",
+          "size": 2111
+        },
+        "exit_code": 0,
+        "header_consistency": "一致",
+        "last_event_id": 6,
+        "ok": true
+      },
+      "stderr": "",
+      "evidence": "docs/enhance/batch1/evidence/03-fetch-inputs.json",
+      "fixture_kind": "synthetic"
+    },
+    {
+      "command": [
+        "/home/toolchain/.pyenv/versions/3.10.12/bin/python3",
+        "vd-cosmos-fetch/scripts/run.py",
+        "groups",
+        "--config",
+        "vd-cosmos-core/config.sample.json",
+        "--manifest",
+        "fixtures/minimal/manifest.json"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "artifact": {
+          "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/demo-data/rounds/380b8eb386dbb3c903e89ee2e2d145431a64697d093fb2c6f89d9c7fbe966f26/attempt-f6efa2fca9c24e2b89bd7c5b043b9ed3/fetch-groups.json",
+          "sha256": "7bec4b8dd14d8ed4a6196ae23c6d805e5b1ef08a638ee8b7498b37281e3a6097",
+          "size": 931
+        },
+        "exit_code": 0,
+        "last_event_id": 8,
+        "ok": true
+      },
+      "stderr": "",
+      "evidence": "docs/enhance/batch1/evidence/04-fetch-groups.json",
+      "fixture_kind": "synthetic"
+    },
+    {
+      "command": [
+        "/home/toolchain/.pyenv/versions/3.10.12/bin/python3",
+        "vd-cosmos-fetch/scripts/run.py",
+        "logs",
+        "--config",
+        "vd-cosmos-core/config.sample.json",
+        "--manifest",
+        "fixtures/minimal/manifest.json"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "artifact": {
+          "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/demo-data/rounds/380b8eb386dbb3c903e89ee2e2d145431a64697d093fb2c6f89d9c7fbe966f26/attempt-267ffdfd4d2f4da2845bd9a27d326700/fetch-logs.json",
+          "sha256": "e24b741292703e3c2d13ed8170e3634537572f0f2ebe52784aa913d5cce8163f",
+          "size": 514
+        },
+        "exit_code": 0,
+        "last_event_id": 10,
+        "ok": true
+      },
+      "stderr": "",
+      "evidence": "docs/enhance/batch1/evidence/05-fetch-logs.json",
+      "fixture_kind": "synthetic"
+    },
+    {
+      "command": [
+        "/home/toolchain/.pyenv/versions/3.10.12/bin/python3",
+        "vd-cosmos-watch/scripts/run.py",
+        "observe",
+        "--config",
+        "vd-cosmos-core/config.sample.json",
+        "--manifest",
+        "fixtures/minimal/manifest.json",
+        "--backend",
+        "real"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "artifact": {
+          "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/demo-data/rounds/380b8eb386dbb3c903e89ee2e2d145431a64697d093fb2c6f89d9c7fbe966f26/attempt-577a355df9c14b979bb7945692da178d/watch-observe.json",
+          "sha256": "697dfe499be0504171cc2f745df2e6f5cc508bb3f6f9cb581b24eb398038a8db",
+          "size": 6792
+        },
+        "execution_state": "未知",
+        "exit_code": 0,
+        "header_consistency": "一致",
+        "last_event_id": 12,
+        "ok": true,
+        "report_state": "完整",
+        "result_state": "失败"
+      },
+      "stderr": "",
+      "evidence": "docs/enhance/batch1/evidence/06-watch-observe.json",
+      "fixture_kind": "synthetic"
+    }
+  ]
+}

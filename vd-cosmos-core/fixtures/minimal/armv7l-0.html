@@ -1,0 +1,25 @@
+<!doctype html><html><body><h1>GBS Local Full Build Report</h1><table>
+<tr><td>Profile</td><td>fixture-profile</td></tr>
+<tr><td>Arch</td><td>armv7l</td></tr>
+<tr><td>Start Time</td><td>2026-10-24 00:00:00</td></tr>
+<tr><td>GBS Version</td><td>fixture-1</td></tr>
+<tr><td>BASE SNAPSHOT</td><td>fixture-base</td></tr>
+<tr><td>PRODUCT SNAPSHOT</td><td>fixture-product</td></tr>
+<tr><td>BUILD CONF</td><td>//example/config/build.conf@1</td></tr>
+</table><h2>Summary</h2><table>
+<tr><th>Total</th><th>succeeded</th><th>Export Error</th><th>Expansion Error</th><th>Build Error</th></tr>
+<tr><td>3</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+</table>
+<h2>Build Statis Details</h2><table>
+<tr><th>Package</th><th>Path</th><th>Status</th></tr>
+<tr><td>ok</td><td>//example/packages/ok@100</td><td><a href="logs/success/ok-1.0-1/log.txt">Succeeded</a></td></tr>
+<tr><td>provider</td><td>//example/packages/provider@100</td><td><a href="logs/fail/provider-1.0-1/log.txt">Failed</a></td></tr>
+</table>
+<h2>Expansion Error Details</h2><table>
+<tr><th>Package</th><th>Path</th><th>Status</th></tr>
+<tr><td>consumer</td><td>//example/packages/consumer@100</td><td>nothing provides provider &gt;= 2 needed by consumer<br>nothing provides other needed by consumer</td></tr>
+</table>
+<h2>Export Error Details</h2><table>
+<tr><th>Package</th><th>Path</th><th>Status</th></tr>
+</table>
+</body></html>

@@ -1,0 +1,43 @@
+{
+  "blocking_downstream": [],
+  "groups": [
+    {
+      "arch": "armv7l",
+      "certain_blockers": [],
+      "members": [
+        {
+          "arch": "armv7l",
+          "name": "consumer",
+          "path": "//example/packages/consumer"
+        }
+      ],
+      "normalization_version": 1,
+      "signature": "other",
+      "suspected_blockers": []
+    },
+    {
+      "arch": "armv7l",
+      "certain_blockers": [],
+      "members": [
+        {
+          "arch": "armv7l",
+          "name": "consumer",
+          "path": "//example/packages/consumer"
+        }
+      ],
+      "normalization_version": 1,
+      "signature": "provider >= 2",
+      "suspected_blockers": [
+        {
+          "basis": "name_similarity_requires_confirmation",
+          "key": {
+            "arch": "armv7l",
+            "name": "provider",
+            "path": "//example/packages/provider"
+          }
+        }
+      ]
+    }
+  ],
+  "todos": []
+}

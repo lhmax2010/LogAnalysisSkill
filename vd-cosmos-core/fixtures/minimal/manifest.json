@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "build_ref": {
+    "backend_id": "fixture",
+    "instance_id": "fixture-instance",
+    "run_id": "fixture-run",
+    "execution_kind": "cosmos"
+  },
+  "reports": {
+    "armv7l": [
+      {
+        "path": "armv7l-0.html",
+        "observed_at": "2026-10-24T00:00:00Z",
+        "status_code": 200,
+        "source_url": "https://example.invalid/report/"
+      },
+      {
+        "path": "armv7l-1.html",
+        "observed_at": "2026-10-24T00:01:00Z",
+        "status_code": 200,
+        "source_url": "https://example.invalid/report/"
+      }
+    ],
+    "x86_64": [
+      {
+        "path": "x86_64-0.html",
+        "observed_at": "2026-10-24T00:00:00Z",
+        "status_code": 200,
+        "source_url": "https://example.invalid/report/"
+      },
+      {
+        "path": "x86_64-1.html",
+        "observed_at": "2026-10-24T00:01:00Z",
+        "status_code": 200,
+        "source_url": "https://example.invalid/report/"
+      }
+    ]
+  },
+  "expected_packages": {
+    "armv7l": [
+      {
+        "arch": "armv7l",
+        "name": "ok",
+        "path": "//example/packages/ok"
+      },
+      {
+        "arch": "armv7l",
+        "name": "provider",
+        "path": "//example/packages/provider"
+      },
+      {
+        "arch": "armv7l",
+        "name": "consumer",
+        "path": "//example/packages/consumer"
+      }
+    ],
+    "x86_64": [
+      {
+        "arch": "x86_64",
+        "name": "host",
+        "path": "//example/packages/host"
+      }
+    ]
+  },
+  "logs": [
+    {
+      "key": {
+        "arch": "armv7l",
+        "name": "provider",
+        "path": "//example/packages/provider"
+      },
+      "path": "armv7l-provider-log.txt"
+    }
+  ]
+}

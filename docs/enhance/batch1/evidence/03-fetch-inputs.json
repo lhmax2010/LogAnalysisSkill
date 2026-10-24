@@ -1,0 +1,81 @@
+{
+  "exit_code": 0,
+  "header_consistency": "一致",
+  "reports": {
+    "armv7l": {
+      "headers": {
+        "arch": "armv7l",
+        "base": "fixture-base",
+        "build_conf": "//example/config/build.conf@1",
+        "gbs_version": "fixture-1",
+        "product": "fixture-product",
+        "profile": "fixture-profile",
+        "start_time": "2026-10-24 00:00:00"
+      },
+      "rows": [
+        {
+          "cl": "100",
+          "key": {
+            "arch": "armv7l",
+            "name": "ok",
+            "path": "//example/packages/ok"
+          },
+          "path": "//example/packages/ok",
+          "raw": "//example/packages/ok@100",
+          "shelve": false,
+          "source_line": 15
+        },
+        {
+          "cl": "100",
+          "key": {
+            "arch": "armv7l",
+            "name": "provider",
+            "path": "//example/packages/provider"
+          },
+          "path": "//example/packages/provider",
+          "raw": "//example/packages/provider@100",
+          "shelve": false,
+          "source_line": 16
+        },
+        {
+          "cl": "100",
+          "key": {
+            "arch": "armv7l",
+            "name": "consumer",
+            "path": "//example/packages/consumer"
+          },
+          "path": "//example/packages/consumer",
+          "raw": "//example/packages/consumer@100",
+          "shelve": false,
+          "source_line": 20
+        }
+      ]
+    },
+    "x86_64": {
+      "headers": {
+        "arch": "x86_64",
+        "base": "fixture-base",
+        "build_conf": "//example/config/build.conf@1",
+        "gbs_version": "fixture-1",
+        "product": "fixture-product",
+        "profile": "fixture-profile",
+        "start_time": "2026-10-24 00:00:00"
+      },
+      "rows": [
+        {
+          "cl": "100",
+          "key": {
+            "arch": "x86_64",
+            "name": "host",
+            "path": "//example/packages/host"
+          },
+          "path": "//example/packages/host",
+          "raw": "//example/packages/host@100",
+          "shelve": false,
+          "source_line": 15
+        }
+      ]
+    }
+  },
+  "todos": []
+}

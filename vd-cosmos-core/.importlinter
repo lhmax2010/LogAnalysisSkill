@@ -1,0 +1,19 @@
+[importlinter]
+root_packages =
+    vd_cosmos_core
+    vd_cosmos_watch
+    vd_cosmos_fetch
+
+[importlinter:contract:layers]
+name = skills depend on core only
+type = layers
+layers =
+    vd_cosmos_watch | vd_cosmos_fetch
+    vd_cosmos_core
+
+[importlinter:contract:independence]
+name = watch and fetch are independent
+type = independence
+modules =
+    vd_cosmos_watch
+    vd_cosmos_fetch
