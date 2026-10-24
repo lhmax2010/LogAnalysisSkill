@@ -44,6 +44,7 @@ class Package:
     source_line: int = 0
     raw_path: str = ""
     raw_status: str = ""
+    other_expansion_messages: list[str] = field(default_factory=list)
 
     def to_dict(self):
         return asdict(self)

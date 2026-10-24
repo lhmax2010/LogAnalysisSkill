@@ -11,9 +11,9 @@
     ],
     "report_markers": {
       "report": "GBS Local Full Build Report",
-      "summary": "Summary",
-      "expansion": "Expansion Error Details",
-      "export": "Export Error Details"
+      "summary": "Build Status Summary",
+      "expansion": "Expansion error details",
+      "export": "Export error details"
     },
     "detail_table_title_prefix": "Build Statis Details",
     "header_must_match": [
@@ -22,7 +22,25 @@
       "base",
       "product"
     ],
-    "status_source": null
+    "status_source": {
+      "kind": "detail_page",
+      "url_template": "https://example.invalid/build/{run_id}",
+      "status_title_regex": "^Build is (.+)$",
+      "terminal_words": [
+        "successful",
+        "failed",
+        "cancelled",
+        "timed out",
+        "timeout"
+      ],
+      "running_words": [
+        "running"
+      ],
+      "queued_words": [
+        "queued",
+        "waiting"
+      ]
+    }
   },
   "poll": {
     "interval_s": 60,

@@ -1,0 +1,63 @@
+{
+  "protected_file_count": 8542,
+  "changed": [],
+  "selected_files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "before_sha256": "817aafcc4040909d98e81c2083f39b4505474a7fe8593e5aeeaa4590365e2c33",
+      "after_sha256": "817aafcc4040909d98e81c2083f39b4505474a7fe8593e5aeeaa4590365e2c33"
+    },
+    {
+      "path": "README.md",
+      "before_sha256": "3961c985699948a147b3345a0fb341ad3034a37149f29c0bceaf4e45a0868b02",
+      "after_sha256": "3961c985699948a147b3345a0fb341ad3034a37149f29c0bceaf4e45a0868b02"
+    },
+    {
+      "path": "tests/unit/test_qb_browser_node.py",
+      "before_sha256": "114c48eb82da581c2a59f2d2457335febfcd6b48a0b224bd8d673766a5bb18cb",
+      "after_sha256": "114c48eb82da581c2a59f2d2457335febfcd6b48a0b224bd8d673766a5bb18cb"
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs",
+      "before_sha256": "f36593f9802fdd6d2c47c7b1b4bfd1ba3128cf5a705679209d3b83780ec1f71d",
+      "after_sha256": "f36593f9802fdd6d2c47c7b1b4bfd1ba3128cf5a705679209d3b83780ec1f71d"
+    },
+    {
+      "path": ".nvmrc",
+      "before_sha256": "0c4bf84f9bedd485b2c4eac05f59e35addc86ce7dbf0d90435528e04384c6314",
+      "after_sha256": "0c4bf84f9bedd485b2c4eac05f59e35addc86ce7dbf0d90435528e04384c6314"
+    },
+    {
+      "path": "tests/node/test_qb_node_security.mjs",
+      "before_sha256": "d2b887753047129b7ede30b32df1dfb3bc9a52d2e4bac3b5ff4909821a9f4210",
+      "after_sha256": "d2b887753047129b7ede30b32df1dfb3bc9a52d2e4bac3b5ff4909821a9f4210"
+    },
+    {
+      "path": "pyproject.toml",
+      "before_sha256": "e64a8fb619751a83df304efc65f48c9d1b4eee30da71c56c71f7752fdcf9cb57",
+      "after_sha256": "e64a8fb619751a83df304efc65f48c9d1b4eee30da71c56c71f7752fdcf9cb57"
+    },
+    {
+      "path": ".importlinter",
+      "before_sha256": "f3fc4705aa1ff57292f0d86ab8bb973bd479c34d11e79012de0cea9c2c1be527",
+      "after_sha256": "f3fc4705aa1ff57292f0d86ab8bb973bd479c34d11e79012de0cea9c2c1be527"
+    },
+    {
+      "path": "docs/enhance/vd-cosmos-loganalyzer-hld-v0.2.md",
+      "before_sha256": "3230165513406f8f0803636de2d269ba2dd7d51879cafaca93090a8869202f72",
+      "after_sha256": "3230165513406f8f0803636de2d269ba2dd7d51879cafaca93090a8869202f72"
+    },
+    {
+      "path": "docs/enhance/vd-cosmos-loganalyzer-hld-v0.3.md",
+      "before_sha256": "20aa9afdd64ea57822e5922f6af34e9f4fcf312718f06ef15f3c82308f25c6b5",
+      "after_sha256": "20aa9afdd64ea57822e5922f6af34e9f4fcf312718f06ef15f3c82308f25c6b5"
+    }
+  ],
+  "allowed_existing_changes": [
+    "vd-cosmos-core/",
+    "vd-cosmos-watch/",
+    "vd-cosmos-fetch/",
+    "docs/enhance/dev_memory/STATUS.md"
+  ],
+  "existing_unrelated_changes_preserved": true
+}

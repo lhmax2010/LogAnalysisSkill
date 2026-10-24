@@ -51,6 +51,10 @@ class Document(HTMLParser):
         self.close()
 
     def handle_starttag(self, tag, attrs):
+        # HTML permits omitted </p>. A new paragraph/block ends the preceding
+        # paragraph; otherwise the real report's three snapshot fields nest.
+        if tag in {"p", "div", "table", "h1", "h2", "h3", "h4", "h5", "h6"}:
+            self.handle_endtag("p")
         node = Node(tag, dict(attrs), self.getpos()[0], len(self.nodes) + 1)
         self.nodes.append(node)
         self.stack[-1].children.append(node)
@@ -108,19 +112,42 @@ def parse_path(value):
     return match[1].strip(), match[2], bool(re.search(r"\(\s*shelve\s*\)$", value, re.I))
 
 
-def missing_items(text):
-    items = []
-    for line in text.splitlines():
+def missing_items(cell):
+    # Only HTML <br> separates messages. Source-code line wrapping is whitespace
+    # within a message and must not create new signatures.
+    lines = [""]
+
+    def visit(node):
+        for child in node.children:
+            if isinstance(child, Node):
+                if child.tag == "br":
+                    lines.append("")
+                else:
+                    visit(child)
+            else:
+                lines[-1] += child
+
+    visit(cell)
+    items, other = [], []
+    for line in map(normalize, lines):
         match = re.fullmatch(r"\s*nothing\s+provides\s+(.+?)(?:\s+needed\s+by\s+.+)?\s*", line, re.I)
         if match:
             value = normalize(match[1])
             if value not in items:
                 items.append(value)
         elif line.strip():
-            raise ValueError("unknown expansion message")
+            value = normalize(line)
+            if value not in items:
+                items.append(value)
+            # Retain occurrences for the acceptance report's message count.
+            other.append(value)
     if not items:
         raise ValueError("missing dependency list")
-    return items
+    return items, other
+
+
+def count_label(value):
+    return re.sub(r"\s+packages$", "", label(value))
 
 
 def _header_and_counts(document, summary_prefix):
@@ -150,12 +177,12 @@ def _header_and_counts(document, summary_prefix):
         for index, row in enumerate(rows):
             values = [normalize(c.text()) for c in cells(row)]
             candidates = []
-            if len(values) == 2 and label(values[0]) in COUNTS:
-                candidates.append((COUNTS[label(values[0])], values[1]))
-            if len(values) == 5 and set(map(label, values)) == set(COUNTS) and index + 1 < len(rows):
+            if len(values) == 2 and count_label(values[0]) in COUNTS:
+                candidates.append((COUNTS[count_label(values[0])], values[1]))
+            if len(values) == 5 and set(map(count_label, values)) == set(COUNTS) and index + 1 < len(rows):
                 numbers = [normalize(c.text()) for c in cells(rows[index + 1])]
                 if len(numbers) == 5:
-                    candidates.extend((COUNTS[label(k)], v) for k, v in zip(values, numbers))
+                    candidates.extend((COUNTS[count_label(k)], v) for k, v in zip(values, numbers))
             for key, raw in candidates:
                 if not re.fullmatch(r"[0-9]+", raw):
                     malformed = True
@@ -176,7 +203,7 @@ def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""
     if marker not in label(document.root.text()):
         raise FlowError(5, "not_a_report")
     headers, counts, malformed = _header_and_counts(document, cosmos["report_markers"]["summary"])
-    packages, inputs, issues, titles = [], [], [], {}
+    packages, inputs, issues, titles, warnings = [], [], [], {}, []
     prefixes = {"build": cosmos["detail_table_title_prefix"],
                 "expansion": cosmos["report_markers"]["expansion"],
                 "export": cosmos["report_markers"]["export"]}
@@ -198,9 +225,9 @@ def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""
                 continue
             if len(cols) == 1 and any(label(cols[0].text()).startswith(label(p)) for p in prefixes.values()):
                 continue
-            if len(cols) >= 2 and label(cols[0].text()) in {"package", "package name", "name"} and label(cols[1].text()) in {"path", "source", "p4 path"}:
+            if len(cols) >= 2 and label(cols[0].text()) in {"package", "package name", "name"} and label(cols[1].text()) in {"path", "source", "p4 path", "package path"}:
                 continue
-            if len(cols) < 3:
+            if len(cols) != 3:
                 malformed = True
                 issues.append("malformed_detail_row")
                 continue
@@ -210,7 +237,7 @@ def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""
                 path, cl, shelve = parse_path(raw_path)
                 if not name:
                     raise ValueError()
-                missing = missing_items(cols[2].text()) if kind == "expansion" else []
+                missing, other = missing_items(cols[2]) if kind == "expansion" else ([], [])
             except ValueError:
                 malformed = True
                 issues.append("unparsed_detail_row")
@@ -233,7 +260,9 @@ def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""
                 if parent and parent[0].startswith(name + "-"):
                     version = parent[0][len(name) + 1:]
             package = Package(PackageKey(arch, name, path), version, cl, shelve,
-                              category, log_url, missing, row.line, raw_path, raw_status)
+                              category, log_url, missing, row.line, raw_path, raw_status, other)
+            if other:
+                warnings.append("other_expansion_message_format")
             packages.append(package.to_dict())
             inputs.append({"key": package.key.to_dict(), "path": path, "cl": cl,
                            "shelve": shelve, "raw": raw_path, "source_line": row.line})
@@ -282,6 +311,6 @@ def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""
         result = "失败" if any(p["category"] != "succeeded" for p in packages) else "成功"
     return {"arch": arch, "report_state": state, "result_state": result,
             "headers": headers, "counts": counts, "packages": packages, "input_rows": inputs,
-            "raw_table_titles": titles, "issues": sorted(set(issues)),
+            "raw_table_titles": titles, "issues": sorted(set(issues + warnings)),
             "package_keys_unique": unique, "categories_disjoint": disjoint,
             "missing_packages": missing, "extra_packages": extra, "stable": stable}

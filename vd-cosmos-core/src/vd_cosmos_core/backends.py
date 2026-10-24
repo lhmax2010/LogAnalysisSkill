@@ -165,10 +165,25 @@ class SavedReportReader(ReportReader):
         detail = self.manifest.get("detail_page")
         if status_source and detail:
             detail_path, data = self.read_source(detail)
-            visible = normalize(Document(data.decode("utf-8")).root.text())
-            if all(marker in visible for marker in status_source["complete_markers"]):
-                execution = {"state": "已结束", "source": str(detail_path),
-                             "sha256": digest(data), "trust": "configured_detail_markers"}
+            document = Document(data.decode("utf-8"))
+            execution.update(source=str(detail_path), sha256=digest(data),
+                             basis="first_build_status_title", subresult=None)
+            for node in document.nodes:
+                title = normalize(node.attrs.get("title") or "")
+                if not re.fullmatch(r"Build is .+", title, re.I):
+                    continue
+                # Never fall through to downstream builds, including when the
+                # first build's word is unknown or fails the configured regex.
+                match = re.fullmatch(status_source["status_title_regex"], title, re.I)
+                word = normalize(match[1]).casefold() if match and match[1] else None
+                execution.update(title=title, source_line=node.line, element_order=node.order,
+                                 subresult=word)
+                for key, state_name in (("terminal_words", "已结束"), ("running_words", "运行"),
+                                        ("queued_words", "排队")):
+                    if word in {normalize(w).casefold() for w in status_source[key]}:
+                        execution.update(state=state_name, trust="configured_detail_title")
+                        break
+                break
         todos = [{"arch": arch, "reason": reason} for arch, report in reports.items()
                  for reason in report.get("issues", [])]
         if consistency == "不一致":

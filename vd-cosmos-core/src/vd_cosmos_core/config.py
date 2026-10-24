@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+from urllib.parse import urlsplit
 
 from .errors import FlowError
 from .files import confined, load_json
@@ -68,10 +69,26 @@ def load_config(path):
             raise ValueError()
         status = cosmos["status_source"]
         if status is not None:
-            if status["kind"] != "detail_page" or not status["complete_markers"]:
+            required = {"kind", "url_template", "status_title_regex",
+                        "terminal_words", "running_words", "queued_words"}
+            if not isinstance(status, dict) or set(status) != required or status["kind"] != "detail_page":
                 raise ValueError()
-            if not all(isinstance(s, str) and s.strip() for s in status["complete_markers"]):
+            if not isinstance(status["url_template"], str) or not status["url_template"].strip():
                 raise ValueError()
+            url = urlsplit(status["url_template"])
+            if url.scheme not in {"http", "https"} or not url.netloc or url.username or url.password:
+                raise ValueError()
+            if not isinstance(status["status_title_regex"], str) or re.compile(status["status_title_regex"]).groups != 1:
+                raise ValueError()
+            seen = set()
+            for key in ("terminal_words", "running_words", "queued_words"):
+                words = status[key]
+                if not isinstance(words, list) or not words or not all(isinstance(w, str) and w.strip() for w in words):
+                    raise ValueError()
+                normalized = {" ".join(w.split()).casefold() for w in words}
+                if len(normalized) != len(words) or normalized & seen:
+                    raise ValueError()
+                seen.update(normalized)
         if type(raw["poll"]["interval_s"]) not in (int, float) or raw["poll"]["interval_s"] <= 0:
             raise ValueError()
         if type(raw["poll"].get("stall_polls", 6)) is not int or raw["poll"].get("stall_polls", 6) < 2:

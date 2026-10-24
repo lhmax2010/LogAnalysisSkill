@@ -10,6 +10,8 @@ def key_of(package):
 
 def group_expansion(packages, provides=()):
     failures = {key_of(p): p for p in packages if p["category"] == "build_error"}
+    other = {(p["key"]["arch"], normalize(message)) for p in packages
+             for message in p.get("other_expansion_messages", [])}
     verified = {}
     for entry in provides:
         key = (entry["key"]["arch"], entry["key"]["name"], entry["key"]["path"])
@@ -29,10 +31,12 @@ def group_expansion(packages, provides=()):
             arch = package["key"]["arch"]
             group = groups.setdefault((arch, signature), {
                 "arch": arch, "signature": signature, "normalization_version": 1,
+                "message_format": "其它格式" if (arch, signature) in other else "nothing provides",
+                "requires_manual_confirmation": (arch, signature) in other,
                 "members": [], "certain_blockers": [], "suspected_blockers": []})
             if package["key"] not in group["members"]:
                 group["members"].append(package["key"])
-            providers = verified.get((arch, signature), [])
+            providers = [] if (arch, signature) in other else verified.get((arch, signature), [])
             for key, evidence in providers:
                 item = {"key": failures[key]["key"], "source_kind": evidence["source_kind"],
                         "sha256": evidence["sha256"], "evidence_path": evidence["evidence_path"]}
@@ -63,7 +67,7 @@ def package_covered(package, groups, confirmed_signatures=(), repaired_providers
     repaired = set(repaired_providers)
     covered = {signature for item_arch, signature in confirmed if item_arch == arch}
     for group in groups["groups"]:
-        if group["arch"] != arch:
+        if group["arch"] != arch or group.get("requires_manual_confirmation"):
             continue
         if any((b["key"]["arch"], b["key"]["name"], b["key"]["path"]) in repaired
                for b in group["certain_blockers"]):

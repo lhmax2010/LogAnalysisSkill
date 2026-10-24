@@ -1,0 +1,56 @@
+{
+  "files": [
+    {
+      "description": "HLD v0.5.2",
+      "downloads_filename": "vd-cosmos-loganalyzer-hld-v0.5.2.md",
+      "destination": "docs/enhance/vd-cosmos-loganalyzer-hld-v0.5.2.md",
+      "source_sha256": "7a054e9a7e0bbcec77177c31e58df5ddefb3b177d6aace41e25a474b2a897916",
+      "copied_sha256": "7a054e9a7e0bbcec77177c31e58df5ddefb3b177d6aace41e25a474b2a897916",
+      "expected_sha256": "7a054e9a7e0bbcec77177c31e58df5ddefb3b177d6aace41e25a474b2a897916",
+      "matches": true
+    },
+    {
+      "description": "armv7l 真实报告前 120 行",
+      "downloads_filename": "report_armv7l_head120.html",
+      "destination": "docs/enhance/batch1/real-snippets/report_armv7l_head120.html",
+      "source_sha256": "4df7895cbba7adb10a93f0fc10c3fd5d41a55f5abd6e33377a0ef050183ed826",
+      "copied_sha256": "4df7895cbba7adb10a93f0fc10c3fd5d41a55f5abd6e33377a0ef050183ed826",
+      "expected_sha256": "4df7895cbba7adb10a93f0fc10c3fd5d41a55f5abd6e33377a0ef050183ed826",
+      "matches": true
+    },
+    {
+      "description": "x86_64 真实报告前 120 行",
+      "downloads_filename": "report_x86_64_head120.html",
+      "destination": "docs/enhance/batch1/real-snippets/report_x86_64_head120.html",
+      "source_sha256": "c4a68a6424541f9412703737747696895ec70cbcee0109023e43899b8f25fe4f",
+      "copied_sha256": "c4a68a6424541f9412703737747696895ec70cbcee0109023e43899b8f25fe4f",
+      "expected_sha256": "c4a68a6424541f9412703737747696895ec70cbcee0109023e43899b8f25fe4f",
+      "matches": true
+    },
+    {
+      "description": "构建机运行配置",
+      "downloads_filename": "config.json",
+      "destination": null,
+      "source_sha256": "e774c86a9f90ec1841f906aae52f1d4e89d3ac7d721ec626966c3409fbcd7caf",
+      "copied_sha256": null,
+      "expected_sha256": "e774c86a9f90ec1841f906aae52f1d4e89d3ac7d721ec626966c3409fbcd7caf",
+      "matches": true
+    },
+    {
+      "description": "第 1.1 批任务说明",
+      "downloads_filename": "Codex_batch1.1_prompt.md",
+      "destination": null,
+      "source_sha256": "4b9062fdbe4e99fc441e5fd3a0363518bee218829fe226ddab758d4cf10721f9",
+      "copied_sha256": null,
+      "expected_sha256": "4b9062fdbe4e99fc441e5fd3a0363518bee218829fe226ddab758d4cf10721f9",
+      "matches": true
+    }
+  ],
+  "originals_preserved": true,
+  "removed_untracked_versions": [
+    "0.5",
+    "0.5.1"
+  ],
+  "real_config_load_check": "已完成：见 real-config-load.json",
+  "hld_authorized_exemption": "复制后按 B1.1-Q01 添加一处注释，见 hld-comment-exemption.json"
+}

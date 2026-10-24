@@ -1,0 +1,218 @@
+{
+  "arm_path_set_comparison": {
+    "actual_count": 4,
+    "difference_count": 0,
+    "differences_first20": [],
+    "equal": true,
+    "expected_count": 4,
+    "result": "相等"
+  },
+  "baselines": {
+    "armv7l": "rows.txt 独立路径/CL/shelve 多重集合；包名来自报告",
+    "failures": "links.txt 跨架构多重集合",
+    "x86_64": "自基线，未独立核验"
+  },
+  "execution_evidence": {
+    "basis": "first_build_status_title",
+    "element_order": 3,
+    "sha256": "3cae1da7fd202f8f3b9261bca41a439b4cabfccc4d504f582e6c663e4491ae99",
+    "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/demo-data/verification/b1-real-8eb4a40070fa4c44bfbf392bda09ef99/detail-page.html",
+    "source_line": 2,
+    "state": "已结束",
+    "subresult": "failed",
+    "title": "Build is failed",
+    "trust": "configured_detail_title"
+  },
+  "execution_state": "已结束",
+  "exit_code": 0,
+  "expansion_group_count": 3,
+  "expansion_groups_top15": [
+    {
+      "arch": "armv7l",
+      "certain_blockers": [],
+      "members": [
+        {
+          "arch": "armv7l",
+          "name": "odd-consumer",
+          "path": "//example/packages/odd-consumer/..."
+        }
+      ],
+      "message_format": "其它格式",
+      "normalization_version": 1,
+      "requires_manual_confirmation": true,
+      "signature": "conflict detected: alpha versus beta",
+      "suspected_blockers": []
+    },
+    {
+      "arch": "armv7l",
+      "certain_blockers": [],
+      "members": [
+        {
+          "arch": "armv7l",
+          "name": "consumer",
+          "path": "//example/packages/consumer/..."
+        }
+      ],
+      "message_format": "nothing provides",
+      "normalization_version": 1,
+      "requires_manual_confirmation": false,
+      "signature": "other",
+      "suspected_blockers": []
+    },
+    {
+      "arch": "armv7l",
+      "certain_blockers": [],
+      "members": [
+        {
+          "arch": "armv7l",
+          "name": "consumer",
+          "path": "//example/packages/consumer/..."
+        }
+      ],
+      "message_format": "nothing provides",
+      "normalization_version": 1,
+      "requires_manual_confirmation": false,
+      "signature": "provider >= 2",
+      "suspected_blockers": [
+        {
+          "basis": "name_similarity_requires_confirmation",
+          "key": {
+            "arch": "armv7l",
+            "name": "provider",
+            "path": "//example/packages/provider/..."
+          }
+        }
+      ]
+    }
+  ],
+  "git_commit": "d93987cfc27ea50a8c2aaf5b85a66b6f89d977b8",
+  "header_consistency": "一致",
+  "links_comparison": {
+    "actual_count": 2,
+    "difference_count": 0,
+    "differences_first20": [],
+    "equal": true,
+    "expected_count": 2,
+    "result": "相等"
+  },
+  "mode": "fixture",
+  "network_access": false,
+  "other_format_message_count": 1,
+  "other_format_messages_first10": [
+    {
+      "key": {
+        "arch": "armv7l",
+        "name": "odd-consumer",
+        "path": "//example/packages/odd-consumer/..."
+      },
+      "message": "conflict detected: alpha versus beta",
+      "source_line": 71
+    }
+  ],
+  "report_state": "完整",
+  "reports": {
+    "armv7l": {
+      "categories_disjoint": true,
+      "counts": {
+        "build_error": 1,
+        "expansion_error": 2,
+        "export_error": 0,
+        "succeeded": 1,
+        "total": 4
+      },
+      "counts_match": true,
+      "expected_counts": {
+        "build_error": 1,
+        "expansion_error": 2,
+        "export_error": 0,
+        "succeeded": 1,
+        "total": 4
+      },
+      "issues": [
+        "other_expansion_message_format"
+      ],
+      "package_keys_unique": true,
+      "report_state": "完整",
+      "result_state": "失败"
+    },
+    "x86_64": {
+      "categories_disjoint": true,
+      "counts": {
+        "build_error": 1,
+        "expansion_error": 0,
+        "export_error": 0,
+        "succeeded": 1,
+        "total": 2
+      },
+      "counts_match": true,
+      "expected_counts": {
+        "build_error": 1,
+        "expansion_error": 0,
+        "export_error": 0,
+        "succeeded": 1,
+        "total": 2
+      },
+      "issues": [],
+      "package_keys_unique": true,
+      "report_state": "完整",
+      "result_state": "失败"
+    }
+  },
+  "result_state": "失败",
+  "rows_comparison": {
+    "actual_count": 4,
+    "difference_count": 0,
+    "differences_first20": [],
+    "equal": true,
+    "expected_count": 4,
+    "result": "相等"
+  },
+  "schema_version": 1,
+  "simulation_note": "离线小规模夹具，不是真实验收",
+  "snapshot_interval_s": 61.0,
+  "source_evidence": [
+    {
+      "copy": "arm-report.html",
+      "role": "arm-report",
+      "sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb",
+      "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/fixtures/real_format/report_armv7l.html",
+      "source_unchanged": true
+    },
+    {
+      "copy": "x86-report.html",
+      "role": "x86-report",
+      "sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07",
+      "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/fixtures/real_format/report_x86_64.html",
+      "source_unchanged": true
+    },
+    {
+      "copy": "detail-page.html",
+      "role": "detail-page",
+      "sha256": "3cae1da7fd202f8f3b9261bca41a439b4cabfccc4d504f582e6c663e4491ae99",
+      "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/fixtures/real_format/detail.html",
+      "source_unchanged": true
+    },
+    {
+      "copy": "rows.txt",
+      "role": "rows",
+      "sha256": "d69dc2ec9ee1faf49ba193f986d9bd6c6bed6a5edeee879902d5fd60cfe5d85b",
+      "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/fixtures/real_format/rows.txt",
+      "source_unchanged": true
+    },
+    {
+      "copy": "links.txt",
+      "role": "links",
+      "sha256": "433396d5f24b4a7d170e89203dffb22e8177dada2bd5d1d32a0c8db29399eecb",
+      "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/fixtures/real_format/links.txt",
+      "source_unchanged": true
+    }
+  ],
+  "stability_simulated": true,
+  "todos": [
+    {
+      "arch": "armv7l",
+      "reason": "other_expansion_message_format"
+    }
+  ],
+  "verdict": "PASS"
+}

@@ -1,0 +1,120 @@
+<html>
+
+<head>
+<title>GBS Build Report</title>
+<style>
+.failed { color: red }
+.succeeded { color: green }
+table {
+    border-collapse:collapse;
+    margin-bottom: 1em;
+}
+
+th { background-color: #F3F3F3 }
+td, th {
+    border: 1px solid grey;
+    padding: 3px
+}
+
+table.middle th { text-align: left }
+
+</style>
+
+</head>
+
+<body>
+
+
+<h1 align="center" >GBS Local Full Build Report</h1>
+
+<p><B>Profile:</B> tizen.393</p>
+<p><B>Arch:</B> armv7l</p>
+<p><B>Start Time:</B> 2026-10-22 13:26 +0900
+</p>
+<p><B>GBS Version:</B> 2.0.1
+</p>
+
+<p><B>BASE SNAPSHOT:</B> http://repos.vd.sec.samsung.net/obs220/tizen-rsa/tizen-10.0-base-dev-llvm/standard/tizen-10.0-base-dev-llvm-standard_20261020.1/<p>
+<p><B>PRODUCT SNAPSHOT:</B> http://repos.vd.sec.samsung.net/products/tv/development/DO_NOT_DELETE/TIZEN-ONEMAIN-KantSU2e-RELEASE_20261001.3/<p>
+<p><B>BUILD CONF:</B> //SHARED/[TizenBuild_Prj]/[INT]/buildconf/tizen/TEST/migration/10.0/TV/TIZEN_KantSU2E_Clang_build.conf@14368686<p>
+
+
+<h3>Build Status Summary</h3>
+
+<table class = middle>
+    <tr>
+        <th>Total Packages</th>
+        <th>succeeded Packages</th>
+        <th>Export Error Packages</th>
+        <th>Expansion Error Packages</th>
+        <th>Build Error Packages</th>
+    </tr>
+    <tr>
+        <td>2244</td>
+        <td>1479</td>
+        <td>0</td>
+        <td>759</td>
+        <td>6</td>
+    </tr>
+</table>
+
+
+
+
+
+
+<h3>Expansion error details</h3>
+The following packages have build dependencies issue:
+    <table class = middle>
+        <thead>
+            <tr>
+                <th>Package name</th>
+                <th>Package path</th>
+                <th>Expansion error</th>
+            </tr>
+        </thead>
+        <tbody>
+
+              <tr>
+                <td>contextengine-plugin-multiprofile</td>
+<td>//TIZEN_APP/[TV]/[AgenticCore_Prj]/[FET]/[COSMOS]/Contextual/contextengine-plugin-multiprofile/...@14342917(shelve)</td>
+                <td ><font color=blue>nothing provides sdk-rootstraps</font></td>
+              </tr>
+
+              <tr>
+                <td>hdmicec-api-mapi</td>
+<td>//TIZEN/[MAIN]/[TIZENPROD_Prj]/[INT]/PLATFORM/INTERACTION/Hdmi-cec/MAPI_TC/hdmicec-api-mapi/...@13937128</td>
+                <td ><font color=blue>nothing provides sdk-rootstraps</font></td>
+              </tr>
+
+              <tr>
+                <td>csapi-tv-security-unifiedauthentication</td>
+<td>//TIZEN/[MAIN]/[TIZENPROD_Prj]/[INT]/PLATFORM/DOTNET/Csapi/csapi-tv-security-unifiedauthentication/...@14270843</td>
+                <td ><font color=blue>nothing provides csapi-tv-security-nuget<br>nothing provides csapi-tizenfx-full needed by dotnet-build-tools<br>nothing provides csapi-tizenfx-nuget needed by dotnet-nupkgs<br>nothing provides csapi-tv-tizenfx-nuget needed by dotnet-nupkgs<br>nothing provides in
+              </tr>
+
+              <tr>
+                <td>org.tizen.voice-app</td>
+<td>//TIZEN_APP/[TV]/[VoiceInteraction_Prj]/[INT]/voice-app/...@14289899</td>
+                <td ><font color=blue>nothing provides sdk-rootstraps</font></td>
+              </tr>
+
+              <tr>
+                <td>ppi-graphics-control-bm-tc</td>
+<td>//TIZEN/[MAIN]/[TIZENPROD_Prj]/[INT]/PLATFORM/PLATFORM_PORTING/Porting_interface/BM_TC/graphics-control-bm-tc/...@14192832</td>
+                <td ><font color=blue>nothing provides pkgconfig(bm_feature_service)</font></td>
+              </tr>
+
+              <tr>
+                <td>vd-elementary-mapi</td>
+<td>//TIZEN/[MAIN]/[TIZENPROD_Prj]/[INT]/PLATFORM/UIFW/Winset/MAPI_TC/vd-elementary-mapi/...@13687258</td>
+                <td ><font color=blue>nothing provides sdk-rootstraps</font></td>
+              </tr>
+
+              <tr>
+                <td>csapi-tv-service-pisa</td>
+<td>//TIZEN/[MAIN]/[TIZENPROD_Prj]/[INT]/PLATFORM/DOTNET/Csapi/csapi-tv-service-pisa/...@14276064</td>
+                <td ><font color=blue>nothing provides csapi-tizenfx-full needed by dotnet-build-tools<br>nothing provides csapi-tizenfx-nuget needed by dotnet-nupkgs-for-api<br>nothing provides csapi-tv-security-nuget<br>nothing provides csapi-tv-system-nuget</font></td>
+              </tr>
+
+              <tr>

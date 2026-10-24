@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "build_ref": {
+    "backend_id": "fixture",
+    "instance_id": "real-format-fixture",
+    "run_id": "fixture-run",
+    "execution_kind": "local_simulation"
+  },
+  "reports": {
+    "armv7l": [
+      {
+        "path": "report_armv7l.html",
+        "observed_at": "2026-10-24T00:00:00Z",
+        "status_code": 200
+      },
+      {
+        "path": "report_armv7l.html",
+        "observed_at": "2026-10-24T00:02:00Z",
+        "status_code": 200
+      }
+    ],
+    "x86_64": [
+      {
+        "path": "report_x86_64.html",
+        "observed_at": "2026-10-24T00:00:00Z",
+        "status_code": 200
+      },
+      {
+        "path": "report_x86_64.html",
+        "observed_at": "2026-10-24T00:02:00Z",
+        "status_code": 200
+      }
+    ]
+  },
+  "expected_packages": {
+    "armv7l": [
+      {
+        "arch": "armv7l",
+        "name": "consumer",
+        "path": "//example/packages/consumer/..."
+      },
+      {
+        "arch": "armv7l",
+        "name": "odd-consumer",
+        "path": "//example/packages/odd-consumer/..."
+      },
+      {
+        "arch": "armv7l",
+        "name": "provider",
+        "path": "//example/packages/provider/..."
+      },
+      {
+        "arch": "armv7l",
+        "name": "ok",
+        "path": "//example/packages/ok/..."
+      }
+    ],
+    "x86_64": [
+      {
+        "arch": "x86_64",
+        "name": "libdeflate",
+        "path": "//example/packages/libdeflate/..."
+      },
+      {
+        "arch": "x86_64",
+        "name": "host",
+        "path": "//example/packages/host/..."
+      }
+    ]
+  },
+  "detail_page": "detail.html"
+}

@@ -1,0 +1,92 @@
+<html>
+
+<head>
+<title>GBS Build Report</title>
+<style>
+.failed { color: red }
+.succeeded { color: green }
+table {
+    border-collapse:collapse;
+    margin-bottom: 1em;
+}
+
+th { background-color: #F3F3F3 }
+td, th {
+    border: 1px solid grey;
+    padding: 3px
+}
+
+table.middle th { text-align: left }
+
+</style>
+
+</head>
+
+<body>
+
+
+<h1 align="center" >GBS Local Full Build Report</h1>
+
+<p><B>Profile:</B> tizen.393</p>
+<p><B>Arch:</B> armv7l</p>
+<p><B>Start Time:</B> 2026-10-22 13:26 +0900
+</p>
+<p><B>GBS Version:</B> 2.0.1
+</p>
+
+<p><B>BASE SNAPSHOT:</B> http://repos.vd.sec.samsung.net/obs220/tizen-rsa/tizen-10.0-base-dev-llvm/standard/tizen-10.0-base-dev-llvm-standard_20261020.1/<p>
+<p><B>PRODUCT SNAPSHOT:</B> http://repos.vd.sec.samsung.net/products/tv/development/DO_NOT_DELETE/TIZEN-ONEMAIN-KantSU2e-RELEASE_20261001.3/<p>
+<p><B>BUILD CONF:</B> //SHARED/[TizenBuild_Prj]/[INT]/buildconf/tizen/TEST/migration/10.0/TV/TIZEN_KantSU2E_Clang_build.conf@14368686<p>
+
+
+<h3>Build Status Summary</h3>
+
+<table class = middle>
+    <tr>
+        <th>Total Packages</th>
+        <th>succeeded Packages</th>
+        <th>Export Error Packages</th>
+        <th>Expansion Error Packages</th>
+        <th>Build Error Packages</th>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>1</td>
+        <td>0</td>
+        <td>2</td>
+        <td>1</td>
+    </tr>
+</table>
+
+
+<h3>Expansion error details</h3>
+<table class = middle>
+<thead><tr><th>Package name</th><th>Package path</th><th>Status</th></tr></thead>
+<tbody>
+<tr>
+    <td>consumer</td>
+<td>//example/packages/consumer/...@100(shelve)</td>
+    <td ><font color=blue>nothing provides provider &gt;= 2<br>nothing provides other needed by consumer</font></td>
+</tr>
+<tr>
+    <td>odd-consumer</td>
+<td>//example/packages/odd-consumer/...@101</td>
+    <td ><font color=blue>conflict detected: alpha   versus beta</font></td>
+</tr>
+</tbody></table>
+<h3>Build Statis Details</h3>
+<table class = middle>
+<thead><tr><th>Package name</th><th>Package path</th><th>Status</th></tr></thead>
+<tbody>
+<tr>
+    <td>provider</td>
+<td>//example/packages/provider/...@102(shelve)</td>
+    <td ><a href=logs/fail/provider-1.0-1/log.txt class = failed> Failed </a></td>
+</tr>
+<tr>
+    <td>ok</td>
+<td>//example/packages/ok/...@103</td>
+    <td ><a href=logs/success/ok-1.0-1/log.txt class = succeeded> Succeeded </a></td>
+</tr>
+</tbody></table>
+</body></html>

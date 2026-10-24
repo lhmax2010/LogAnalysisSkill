@@ -10,6 +10,8 @@ REPO = CORE.parent
 def config_data(root):
     data = json.loads((CORE / "config.sample.json").read_text())
     data["data_root"] = str(root)
+    data["cosmos"]["status_source"] = None
+    data["cosmos"]["report_markers"]["summary"] = "Summary"
     return data
 
 

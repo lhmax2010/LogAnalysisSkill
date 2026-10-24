@@ -1,0 +1,62 @@
+{
+  "data_root": "../../.runtime/minimal-data",
+  "cosmos": {
+    "archs": [
+      "armv7l",
+      "x86_64"
+    ],
+    "regular_archs": [
+      "armv7l",
+      "x86_64"
+    ],
+    "report_markers": {
+      "report": "GBS Local Full Build Report",
+      "summary": "Summary",
+      "expansion": "Expansion error details",
+      "export": "Export error details"
+    },
+    "detail_table_title_prefix": "Build Statis Details",
+    "header_must_match": [
+      "profile",
+      "build_conf",
+      "base",
+      "product"
+    ],
+    "status_source": null
+  },
+  "poll": {
+    "interval_s": 60,
+    "stall_polls": 6,
+    "expected_hours": 24
+  },
+  "export": {
+    "chunk_bytes": 55000,
+    "allow_types": [
+      "report",
+      "log",
+      "results",
+      "summary",
+      "verification"
+    ]
+  },
+  "prepush": {
+    "words_file": null,
+    "credential_patterns": [
+      "-----BEGIN [A-Z ]*PRIVATE KEY-----",
+      "(?:set-)?cookie\\s*:",
+      "jsessionid\\s*=",
+      "SAML(?:Request|Response)|Relay(?:State)",
+      "wicket\\s*:\\s*interface\\s*=",
+      "(?is)<input\\b(?=[^>]*\\btype\\s*=\\s*[\\x22\\x27]?hidden)(?=[^>]*wicket)[^>]*>",
+      "(?is)<input\\b(?=[^>]*\\btype\\s*=\\s*[\\x22\\x27]?password)(?=[^>]*\\bvalue\\s*=)[^>]*>",
+      "^[^\\s:]+:\\d+=[^:\\s]+:[0-9a-fA-F]{32}\\s*$"
+    ]
+  },
+  "p4": {
+    "config_file": "settings/p4.conf",
+    "env": {}
+  },
+  "budget": {
+    "disk_warning_bytes": 1073741824
+  }
+}

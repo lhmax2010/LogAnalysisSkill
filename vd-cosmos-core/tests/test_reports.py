@@ -3,7 +3,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from helpers import bundle, pkg, report_html
+from helpers import CORE, bundle, pkg, report_html
 from vd_cosmos_core.backends import FixtureReportReader, SavedReportReader
 from vd_cosmos_core.config import load_config
 from vd_cosmos_core.errors import FlowError
@@ -79,12 +79,12 @@ class ReportTests(unittest.TestCase):
         self.assertFalse(result["terminal_prerequisite_met"])
         self.assertIn({"reason": "header_inconsistent"}, result["todos"])
 
-    def test_execution_only_from_configured_detail_markers(self):
+    def test_execution_only_from_configured_detail_title(self):
         detail = self.base / "detail.html"
-        detail.write_text('<div class="build-status">BUILD_COMPLETE</div>')
+        detail.write_text('<div class="build-status" title="Build is failed"></div>')
         self.manifest["detail_page"] = detail.name
         self.assertEqual(self.observed()["execution_state"], "未知")
-        self.config.raw["cosmos"]["status_source"] = {"kind": "detail_page", "complete_markers": ["BUILD_COMPLETE"]}
+        self.config.raw["cosmos"]["status_source"] = json.loads((CORE / "config.sample.json").read_text())["cosmos"]["status_source"]
         self.assertEqual(self.observed()["execution_state"], "已结束")
         self.assertTrue(self.observed()["terminal_prerequisite_met"])
         detail.write_text('<script>BUILD_COMPLETE</script><p>Running</p>')
@@ -92,9 +92,9 @@ class ReportTests(unittest.TestCase):
 
     def test_local_simulation_never_satisfies_cosmos_terminal_prerequisite(self):
         self.manifest["build_ref"]["execution_kind"] = "local_simulation"
-        (self.base / "detail.html").write_text("<p>BUILD_COMPLETE</p>")
+        (self.base / "detail.html").write_text('<p title="Build is failed"></p>')
         self.manifest["detail_page"] = "detail.html"
-        self.config.raw["cosmos"]["status_source"] = {"kind": "detail_page", "complete_markers": ["BUILD_COMPLETE"]}
+        self.config.raw["cosmos"]["status_source"] = json.loads((CORE / "config.sample.json").read_text())["cosmos"]["status_source"]
         self.assertFalse(self.observed()["terminal_prerequisite_met"])
 
     def test_sha_stability_and_poll_interval_are_both_required(self):
