@@ -19,6 +19,7 @@ from .errors import FlowError
 from .export import check_content, export_file
 from .files import atomic_write, digest, json_bytes, load_json
 from .groups import group_expansion
+from .observation import summarize
 
 
 REAL_COUNTS = {
@@ -128,13 +129,7 @@ def run(args, config, directory, result):
             {"path": copied[role].name, "observed_at": now.isoformat(), "status_code": 200}]
     manifest_path = directory / "manifest.json"
     atomic_write(config.data_root, manifest_path, json_bytes(manifest))
-    reader = SavedReportReader(config, manifest_path)
-    first_packages = {arch: reader.read_packages(reader.build_ref, arch)["packages"] for arch in counts}
-    expected_paths = {r[0] for r in rows}
-    # Report names supplement the independent arm paths; they do not establish
-    # an independent name baseline. Counter comparison below verifies CL/shelve.
-    manifest["expected_packages"]["armv7l"] = [p["key"] for p in first_packages["armv7l"]
-                                                 if p["key"]["path"] in expected_paths]
+    manifest['expected_packages']['armv7l'] = [{'path': path, 'cl': cl, 'shelve': shelve} for path, cl, shelve in rows]
     # x86 has no independent expected package set: coverage remains unverified.
     atomic_write(config.data_root, manifest_path, json_bytes(manifest))
     reader = SavedReportReader(config, manifest_path)
@@ -147,7 +142,8 @@ def evaluate(reader, rows, links, counts, config, directory, result):
     expected_paths = {r[0] for r in rows}
     observation = reader.observe(reader.build_ref)
     parsed = {arch: reader.read_packages(reader.build_ref, arch) for arch in counts}
-    apply_rows_coverage(parsed["armv7l"], rows)
+    parsed["armv7l"] = apply_rows_coverage(parsed["armv7l"], rows)
+    observation = summarize(reader.build_ref, config.raw['cosmos'], parsed, observation['execution_evidence'], backend=reader.__class__.__name__)
     inputs = reader.read_inputs(reader.build_ref)
     packages = [p for r in parsed.values() for p in r["packages"]]
     groups = group_expansion(packages, reader.provides())

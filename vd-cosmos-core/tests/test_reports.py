@@ -35,7 +35,7 @@ class ReportTests(unittest.TestCase):
             (self.base / snapshot["path"]).write_text(text)
 
     def parse(self, html, packages, arch="armv7l", stable=True):
-        expected = [{"arch": arch, "name": p["name"], "path": p["path"]} for p in packages]
+        expected = [{"arch": arch, "name": p["name"], "path": p["path"], "cl": p["cl"], "shelve": p["shelve"]} for p in packages]
         return parse_report(html, arch, self.config.raw["cosmos"], expected, stable=stable)
 
     def test_complete_reports_result_failure_independent_of_execution(self):
@@ -77,16 +77,16 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(result["header_consistency"], "不一致")
         self.assertEqual(result["result_state"], "未知")
         self.assertFalse(result["terminal_prerequisite_met"])
-        self.assertIn({"reason": "header_inconsistent"}, result["todos"])
+        self.assertTrue(any(t["reason"] == "header_inconsistent" for t in result["todos"]))
 
     def test_execution_only_from_configured_detail_title(self):
         detail = self.base / "detail.html"
-        detail.write_text('<div class="build-status" title="Build is failed"></div>')
+        detail.write_text('fixture-run <div class="build-status" title="Build is failed"></div>')
         self.manifest["detail_page"] = detail.name
         self.assertEqual(self.observed()["execution_state"], "未知")
         self.config.raw["cosmos"]["status_source"] = json.loads((CORE / "config.sample.json").read_text())["cosmos"]["status_source"]
         self.assertEqual(self.observed()["execution_state"], "已结束")
-        self.assertTrue(self.observed()["terminal_prerequisite_met"])
+        self.assertFalse(self.observed()["terminal_prerequisite_met"])
         detail.write_text('<script>BUILD_COMPLETE</script><p>Running</p>')
         self.assertEqual(self.observed()["execution_state"], "未知")
 
@@ -116,7 +116,7 @@ class ReportTests(unittest.TestCase):
         result = self.observed()
         self.assertTrue(result["observation_failed"])
         self.assertIsNone(result["report_state"])
-        self.assertIsNone(result["execution_state"])
+        self.assertEqual(result["execution_state"], "未知")
         self.assertEqual(result["result_state"], "未知")
         self.assertEqual(result["exit_code"], 5)
 
@@ -170,7 +170,7 @@ class ReportTests(unittest.TestCase):
         changed = self.parse(html, packages[:1])
         self.assertEqual(changed["report_state"], "完整")
         self.assertEqual(changed["package_coverage"], "不一致")
-        self.assertEqual(changed["result_state"], "未知")
+        self.assertEqual(changed["result_state"], "成功")
         result = parse_report(html, "armv7l", self.config.raw["cosmos"], None, stable=True)
         self.assertEqual(result["report_state"], "完整")
         self.assertEqual(result["package_coverage"], "未核")

@@ -4,18 +4,18 @@
 
 本线为 LogAnalyzer 增强版第一版。
 
-- 设计文档：`docs/enhance/vd-cosmos-loganalyzer-hld-v0.5.3.md`（第 2 批权威设计；复制摘要符合指定值，凭据预检通过，未改写。v0.5.2 保留）。
+- 设计文档：`docs/enhance/vd-cosmos-loganalyzer-hld-v0.5.4.md`（第 2.1 批权威设计；原件摘要符合指定值，凭据预检通过，未改写。v0.5.3 保留）。
 - 分支：`vd-cosmos-loganalyzer`。
 - 分支起点：`accd7f4`。
 
 ## 2. 工作约定
 
-- 本分支只新增目录与 `docs/enhance/` 下的文件，不修改仓库已有文件。
+- 本分支只新增目录与 `docs/enhance/` 下的文件，不修改本线以外的仓库已有文件；本批按任务修复四个本线目录既有实现并更新本文件。
 - 已有 skill 只通过命令行调用。
 - 公开仓库约束按 HLD 第 0.3 节执行：内部词表命中只告警，凭据模式命中拦截；本批代码和配置样例只用占位值。
 - 新 Session 开场先读本文件核对。
 - 每个任务收尾在同一个 commit 里更新本文件。
-- 本批按 2026-10-24 第 2 批开发任务、HLD v0.5.3 与 B2-Q01 裁定实施；未授权的后续章节不实现。
+- 本批按 2026-10-24 第 2.1 批任务、HLD v0.5.4 与 B2-Q01 裁定实施；原先“等评审下发”的前提已满足，六条原计划全部并入本批；未授权的后续章节不实现。
 
 ## 3. 计划
 
@@ -26,12 +26,14 @@
 | 1（已完成离线） | core；纯函数报告解析；watch/fetch；固定页面序列 Submitter 桩 | Python 3.10 离线测试、合成夹具、CLI 回放 |
 | 1.1（已完成离线） | 真实格式兼容、执行状态、其它扩展错误、构建机验收脚本 | 78 项测试、真实配置加载、脚本离线回放 |
 | 2（已完成离线） | HTTP 读取、状态拆分、只读 tick/loop、A～E 验收脚本 | 100 项测试、三条 import 约束、本地 HTTP 模拟、真实配置加载 |
-| 2.1（待下发，期间不开工） | 外部评审意见回来后，与设计方已发现的 6 条一并下发 | 等待设计方统一处理与任务安排 |
-| 后续 | 构建机按完整提交号运行第 2 批 A～E；第 3 批按新任务实施 | 第 2 批真实网络尚未验收；P4/浏览器/提交协议未实现 |
+| 2.1（已完成离线） | 三家评审处置与原六条：传输、定型、覆盖、详情、并发恢复、独立验收 | 125 项测试、三条 import 约束、真实 TLS/CONNECT、A～F 离线模拟、真实配置仅加载 |
+| 后续 | 构建机按本批完整提交号运行 A～F；第 3 批含 accept-coverage，按新任务实施 | 本批真实网络未验收；request/previous_report 来源留第 4 批；P4/浏览器/提交协议未实现 |
 
 ## 4. 当前进度
 
-2026-10-24：第 2 批外部评审进行中。三家评审的材料说明位于 `docs/enhance/batch2/review/README.md`，代码改动为 `docs/enhance/batch2/review/batch2-code-678024c.diff`，设计依据为 `docs/enhance/vd-cosmos-loganalyzer-hld-v0.5.3.md`；diff 与 HLD 的 SHA256 均已核对符合设计方指定值。评审对象为 HLD v0.5.3 + 提交 `678024c` 相对 `8ca13b3` 的代码改动。评审方只读、不改仓库，结论回来后由设计方处理。第 2.1 批等评审意见回来后，与设计方已发现的 6 条一并下发；期间不开工。本次仅准备材料和更新状态，不修改代码。
+2026-10-24：第 2.1 批已按设计方统一下发任务完成离线加固。125 项测试、三条 import 约束、三个 SKILL 校验通过；A/B/C/E 本地模拟 PASS，D 未提供 live 构建而跳过，F 已记录目录指纹和详情身份。原配置加载通过；HLD 原件未修改。实现与证据、本 STATUS 同批提交，普通 push。详见 `docs/enhance/batch2.1/DELIVERY.md`；下表逐条映射附录 G。真实服务未访问，实际构建机验收待运行本批脚本。
+
+历史：第 2 批外部评审材料位于 `docs/enhance/batch2/review/README.md` 与 `batch2-code-678024c.diff`，对象为 HLD v0.5.3 + `678024c` 相对 `8ca13b3` 的代码改动。评审结论已由设计方处理并合入 HLD v0.5.4 附录 G 和本次任务；原等待期开工限制已解除。
 
 2026-10-24 第 2 批读取侧实现与离线验收完成，基点 `8ca13b3fd37d53af6dbc5c084e976bfc5bc78843`。新增对账失败与独立包覆盖、修正 arm-only links 验收、HTTP ReportReader 和只读 workflow、构建机 A～E 验收脚本。B2-Q01 按人工裁决实现并闭合，HLD 未改。100 项测试、三条 import 约束及三个 SKILL 校验通过；127.0.0.1 A～E 小规模回放 PASS，2 条合成失败日志只下载一次、导出 1 块。实现、证据与本 STATUS 同批提交；完整索引：`docs/enhance/batch2/DELIVERY.md`。真实服务未访问，构建机 A～E 验收待执行。
 
@@ -44,6 +46,56 @@
 未访问内网、Cosmos 或浏览器，未执行 P4 操作或真实构建提交。第 1.1 批收到的两份 head120 是格式参照，完整真实报告及 2244/43 独立基线验收仍未执行，不能用合成测试替代。
 
 ## 5. 已闭合结论（附证据路径）
+
+- 第 2.1 批 A～G 离线交付通过：`docs/enhance/batch2.1/evidence/test-output.txt`，125 tests / OK，SHA256 `da09291c175dfaaa9afd85925141c89d436b655c349a72afd50dd4a17e64cb31`；三条 import 约束、TLS（未跳过）与三项 SKILL 校验通过。
+- A～F 模拟及来源：`docs/enhance/batch2.1/evidence/offline-A-F-output.txt`、`offline-verify/result.json`、`offline-run.json`、`offline-export/manifest.json`。临时干净源码快照与待交付本线文件逐一一致；backend=http-fixture，两个合成日志只下载一次，一条两包分析待办，一块导出，非真实验收。
+- 原运行配置直接接受、源文件摘要未变、不复制、不访问网络：`docs/enhance/batch2.1/evidence/real-config-load.json`。受保护文件与凭据检查：同目录 `protected-files-check.json`、`prepush-check.json`。
+- 本批脚本 `vd-cosmos-core/scripts/verify_b2_real.sh` SHA256：`b59d5bbceba8921087726722b3ab552197bf9003bf8d2f9724ee6e2f216022d6`。HLD v0.5.4 SHA256：`8fdcb3c9b8c26e592bad0695db59736709b02790adeae9ba87386cfd1b26f2f8`。
+
+### 第 2.1 批附录 G 落实表
+
+下列测试默认位于 `vd-cosmos-core/tests/test_batch21.py`，其它模块单独注明；完整输出见上，A～G 实现路径和更多正反例见 `docs/enhance/batch2.1/DELIVERY.md`。
+
+| G# | 本批落实情况 | 对应测试名 / 依据 |
+|---|---|---|
+| 1 | 先定型；未定型结构问题仅 issues | `test_unsettled_malformed_running_then_terminal_or_settle_deadline` |
+| 2 | 稳定 + 终态或 settle_s；永久缺头/汇总有出口 | `test_truncated_structure_to_full_and_missing_summary_settled`、`test_unsettled_malformed_running_then_terminal_or_settle_deadline` |
+| 3 | 停止后低频观察、内容变化重判并记待办 | `test_stopped_loop_reobserves_changed_report_and_detail_failure_does_not_block` |
+| 4 | 覆盖不再改变报告 result_state | `test_header_only_after_both_settled_and_coverage_projection_pure` |
+| 5 | 按设计留第 3 批 accept-coverage；本批预留人工接受模型，不实现人工命令 | HLD G#5；`test_http_workflow.py::test_missing_expected_package_is_coverage_only_invalid_baseline_is_argument_error` 验证 manual_file 不满足闸门 |
+| 6 | coverage_basis 与闸门来源限制；request/previous_report 实际来源留第 4 批 | 同上；`test_header_only_after_both_settled_and_coverage_projection_pure` |
+| 7 | 路径/CL/shelve 多重集合，差异排序限 20 条 | `test_real_format.py::test_verify_rows_cl_shelve_and_duplicate_replacements_rejected`、`test_difference_list_is_limited_and_retains_total_count` |
+| 8 | 结果已拉取不等于执行终态/起轮授权 | `test_stopped_loop_reobserves_changed_report_and_detail_failure_does_not_block`；README/SKILL 说明 |
+| 9 | 全部架构定型才核对 header | `test_header_only_after_both_settled_and_coverage_projection_pure` |
+| 10 | 身份、全部候选、所选属性/理由/规则/摘要；凭据字段整项净化 | `test_detail_failure_counts_identity_all_candidates_recovery_and_report_failure`；`test_http_workflow.py::test_detail_session_parameters_never_persist_raw` |
+| 11 | 全部文档拒绝跳转、日志逐跳先检查，越界目标 0 请求 | `test_all_document_redirects_refused_before_target_request_and_index_fingerprint`、`test_log_redirect_port_host_and_path_refused_with_zero_target_requests`、TLS 测试 |
+| 12 | 404 需无跳转的 200 目录指纹，无 form/密码框 | `test_all_document_redirects_refused_before_target_request_and_index_fingerprint` |
+| 13 | CL/chunked 完整性，中断正文不落盘不缓存 | `test_content_length_chunked_interruptions_no_cache_and_true_timeouts`、`test_response_evidence_log_active_truncation_differs_from_incomplete` |
+| 14 | 总 deadline 覆盖底层等待，独立 idle timeout | `test_content_length_chunked_interruptions_no_cache_and_true_timeouts` |
+| 15 | 系统 CA + 指定 CA、CONNECT、固定失败类别、逐请求响应证据 | `test_tls_self_signed_extra_ca_hostname_and_downgrade_refused`、`test_response_evidence_log_active_truncation_differs_from_incomplete` |
+| 16 | HTTP 使用前提遵照 HLD §5.4；文档说明无 cookie/凭据，只读配置实例 | `test_http_workflow.py::test_same_host_redirect_limit_and_no_cookie_storage_or_return`；本线 README |
+| 17 | 404 正常等待不记停滞，仅检查预期时长 | `test_monitor_404_timeout_live_disk_and_versioned_todo_identity` |
+| 18 | 新配置默认值、模板/正则校验与 README 补齐 | `test_http_workflow.py::test_fetch_defaults_template_validation_and_real_cli`；`real-config-load.json` |
+| 19 | 按完整 SHA256 存页，历史最多 50 条 | `test_continuous_reset_failure_404_change_config_clock_and_history_bound` |
+| 20 | 按构建 SQL 过滤、仅最新两份产物；损坏缺失可恢复 | `test_wal_reader_error_wrapping_and_other_build_history_not_loaded`、`test_completed_baseline_change_invalidates_and_missing_artifact_recovers` |
+| 21 | 日志连续三次失败一待办 | `test_three_log_failures_have_one_todo` |
+| 22 | 日志步骤重新观察，报告变化先记观察、不下载 | `test_logs_refresh_report_and_cache_bound_to_report_and_limit` |
+| 23 | 缓存绑定报告/上限；完成评估绑定报告/基线/配置/解析器 | 同上；`test_completed_baseline_change_invalidates_and_missing_artifact_recovers` |
+| 24 | 实例含协议/主机/端口/路径，目录统一 build_ref 摘要 | `test_rule_errors_are_not_swallowed_and_instance_scopes_do_not_mix` |
+| 25 | WAL、busy_timeout=2000、SQL 错误结构化 | `test_wal_reader_error_wrapping_and_other_build_history_not_loaded` |
+| 26 | A 页面不同 FAIL；B 必须新鲜完整、非 HTML、重算摘要 | `test_saved_page_difference_fails_A`、`test_truncated_incomplete_and_html_logs_fail_B` |
+| 27 | 完整 HEAD、仅本线干净、real 主机限制、来源记录 | `test_direct_commit_dirty_source_and_real_loopback_rejected_before_output`、`test_clean_snapshots_repeated_independent_A_to_F_and_unrelated_changes` |
+| 28 | 每次独立 data_root，只认本次缓存/状态/事件 | `test_clean_snapshots_repeated_independent_A_to_F_and_unrelated_changes` |
+| 29 | 每次实时 statvfs，身份不含字节数 | `test_monitor_404_timeout_live_disk_and_versioned_todo_identity` |
+| 30 | watch 停止条件返回 3 | `test_http_workflow.py::test_changing_then_stable_inconsistent_report`、`test_missing_expected_package_is_coverage_only_invalid_baseline_is_argument_error` |
+| 31 | observe 仅吞 FlowError(5)，4/6 继续抛出 | `test_rule_errors_are_not_swallowed_and_instance_scopes_do_not_mix` |
+| 32 | 真实超时/TLS/进程崩溃/并发/监控测试 | `test_tls_self_signed_extra_ca_hostname_and_downgrade_refused`、`test_actual_child_crash_after_observe_logs_notify_result_unique_and_cleanup`、`test_round_contention_three_skips_one_todo_and_real_two_process_ticks`、超时/监控测试 |
+| 33 | 仅 loop 限定追加重试，不重做动作；同构建/人工/外部写/显式编号不重试；3 次锁跳过退出 | `test_append_retry_other_build_only_constraint_same_build_and_explicit_no_retry`、`test_tick_concurrent_other_build_append_retries_without_repeating_action`、`test_round_contention_three_skips_one_todo_and_real_two_process_ticks` |
+| 34 | 连续记录不受历史裁剪影响，失败/404/配置/倒时重置 | `test_continuous_reset_failure_404_change_config_clock_and_history_bound` |
+| 35 | 详情两种未知分开、独立计数/清零、不补旧终态 | `test_detail_failure_counts_identity_all_candidates_recovery_and_report_failure`、`test_stopped_loop_reobserves_changed_report_and_detail_failure_does_not_block` |
+| 36 | 待办身份按构建/架构/原因/依据版本，正文排序 | `test_monitor_404_timeout_live_disk_and_versioned_todo_identity`；日志失败/详情失败/重复投影测试 |
+
+### 先前批次已闭合结论
 
 - 第 2 批任务 1～6 离线交付已通过：完整输出 `docs/enhance/batch2/evidence/test-output.txt`，SHA256 `60be2e43bcf43c22e6889835222b30b5af237d73c412d7deeea67e2fc971b57b`。逐条实现、测试名及文件索引：`docs/enhance/batch2/DELIVERY.md`。
 - A～E 本地 HTTP 回放：`docs/enhance/batch2/evidence/offline-A-E-output.txt`、`offline-verify/result.json`、`offline-export/manifest.json`；A/B/C/E PASS，D 如实记录、不设通过条件；这是合成规模，不能替代构建机验收。
@@ -84,11 +136,19 @@
 
 ## 7. 待确认事项
 
-第 2 批外部评审意见待返回；第 2.1 批须等设计方将评审意见与已发现的 6 条合并下发后再开工。材料路径：`docs/enhance/batch2/review/`。
+第 2 批三家评审意见已由设计方统一处理并下发第 2.1 批，读取侧离线加固完成；不再等待原六条。待构建机运行本批 A～F，F 段回答真实目录/详情身份/跳转识别问题；本机仅做 127.0.0.1 模拟。
 
-B1.1-Q01 及“对账失败是否单设”均已闭合。B2-Q01 已按设计方答复闭合：实例锁全生命周期持有，轮次锁及写事务睡眠前释放。第 1.1 批真实验收已收到设计方反馈；links.txt 已修为仅 armv7l 编译失败包，x86 只核失败数量自基线。后续待确认项按 HLD v0.5.3 §14。
+B1.1-Q01 及“对账失败是否单设”均已闭合。B2-Q01 已按设计方答复闭合：实例锁全生命周期持有，轮次锁及写事务睡眠前释放。第 1.1 批真实验收已收到设计方反馈；links.txt 已修为仅 armv7l 编译失败包，x86 只核失败数量自基线。后续待确认项按 HLD v0.5.4 §14。
 
 ## 8. 挂账
+
+### 2026-10-24 第 2.1 批收尾与下一批前提
+
+- 无新增待裁决设计问题。G#5 accept-coverage 按设计留第 3 批；G#6 request/previous_report 来源留第 4 批，当前 manual_file 永不满足起轮闸门。
+- 构建机第 2 批留下的 `rounds/19091860/` 等旧数字目录不读、不迁移、不删除；本批统一按 build_ref 摘要存储，首次使用重新建立稳定记录和缓存。
+- 下一步由设计方审核完整提交号并在构建机运行新版 verify_b2_real.sh，核验真实 7 个失败日志、独立基线与 F 段；本批离线输出不可冒充真实验收。
+- 本批测试、A～F 证据、配置仅加载及受保护范围校验均有文件索引；原范围外的已有改动和未跟踪 v0.3 仍保留，不纳入提交。原任务只允许本线修改，根 CI、现有其它 skill 和依赖文件未动。
+- Export Error 未知表头、分析者、人工处置、浏览器/P4 写入与构建提交协议仍按后续批次提供任务；不基于未知格式猜测。
 
 ### 2026-10-24 第 2 批收尾与下一批前提
 

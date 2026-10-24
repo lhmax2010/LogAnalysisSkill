@@ -1,0 +1,49 @@
+{
+  "action": "notify",
+  "artifact": {
+    "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/owned/verification/b21-6f41f301dd3d4b5ba952c55542a2cf4c/data/rounds/1daf25ebcea281b33ed4268ec8cb4b65db1211b149d1844267f281d6ec22135a/attempt-88ec5b8c950b4666b2899c83437dae1b/workflow-notify.json",
+    "sha256": "af174c3c72be4be30fdc938864efecd5577232fe87a22279eca11edf9fcb5ce1",
+    "size": 296
+  },
+  "exit_code": 0,
+  "interrupted": false,
+  "last_event_id": 8,
+  "ok": true,
+  "phase": "结果已拉取",
+  "tick_results": [
+    {
+      "action": "observe",
+      "artifact": {
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/owned/verification/b21-6f41f301dd3d4b5ba952c55542a2cf4c/data/rounds/1daf25ebcea281b33ed4268ec8cb4b65db1211b149d1844267f281d6ec22135a/attempt-d84e308e082343daad2bd33b0d44a0ee/workflow-observe.json",
+        "sha256": "3168344b7d6f76d48a010f5ebb18056f08ac56acaa0276bbc88393e7fe800865",
+        "size": 16064
+      },
+      "exit_code": 0,
+      "last_event_id": 3,
+      "phase": "报告已完整"
+    },
+    {
+      "action": "logs",
+      "artifact": {
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/owned/verification/b21-6f41f301dd3d4b5ba952c55542a2cf4c/data/rounds/1daf25ebcea281b33ed4268ec8cb4b65db1211b149d1844267f281d6ec22135a/attempt-485b41eddf6c4fae93c40b402599b361/workflow-logs.json",
+        "sha256": "35c3e36e66dcc5b70e1ca97be6eb38be3580599399fbbcf25d3bd9b1c0b668cd",
+        "size": 20784
+      },
+      "exit_code": 0,
+      "last_event_id": 5,
+      "phase": "报告已完整"
+    },
+    {
+      "action": "notify",
+      "artifact": {
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/owned/verification/b21-6f41f301dd3d4b5ba952c55542a2cf4c/data/rounds/1daf25ebcea281b33ed4268ec8cb4b65db1211b149d1844267f281d6ec22135a/attempt-88ec5b8c950b4666b2899c83437dae1b/workflow-notify.json",
+        "sha256": "af174c3c72be4be30fdc938864efecd5577232fe87a22279eca11edf9fcb5ce1",
+        "size": 296
+      },
+      "exit_code": 0,
+      "last_event_id": 8,
+      "phase": "结果已拉取"
+    }
+  ],
+  "ticks": 3
+}

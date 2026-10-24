@@ -15,6 +15,7 @@ class FixtureServer:
         self.fixture = self.root / 'saved';shutil.copytree(CORE / 'fixtures/real_format', self.fixture)
         shutil.copyfile(self.fixture / 'detail.html', self.fixture / 'probe_3bed7e8c.html')
         self.routes, self.requests = {}, []
+        self.wire_routes = {}
         self.active_logs = self.max_active_logs = 0
         self.lock = threading.Lock()
         owner = self
@@ -27,12 +28,15 @@ class FixtureServer:
                 path = urlsplit(self.path).path
                 with owner.lock:
                     owner.requests.append({'path': path, 'request_target': self.path, 'headers': dict(self.headers)})
+                if path in owner.wire_routes:
+                    owner.wire_routes[path](self)
+                    return
                 route = owner.routes.get(path)
                 if route is None:
                     if path.endswith('/log.txt'):
                         route = (200, b'fixture compiler log\n', {}, 0)
                     elif path.endswith('/'):
-                        route = (200, b'<html>directory</html>', {}, 0)
+                        route = (200, b'<html><a href=19091860/>19091860/</a></html>', {}, 0)
                     elif path.startswith('/build/'):
                         route = (200, (owner.fixture / 'detail.html').read_bytes(), {}, 0)
                     else:
@@ -70,6 +74,8 @@ class FixtureServer:
         config['cosmos']['report_root'] = self.url + '/reports/'
         config['cosmos']['status_source']['url_template'] = self.url + '/build/{build_id}'
         config['poll']['interval_s'] = .03
+        config['poll']['settle_s'] = .06
+        config['poll']['stopped_interval_s'] = .03
         config['fetch']['timeout_s'] = .2
         config['fetch']['max_log_bytes'] = 100
         config['fetch']['log_concurrency'] = 2

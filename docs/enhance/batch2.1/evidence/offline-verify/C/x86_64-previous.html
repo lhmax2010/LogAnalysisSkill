@@ -1,0 +1,77 @@
+<html>
+
+<head>
+<title>GBS Build Report</title>
+<style>
+.failed { color: red }
+.succeeded { color: green }
+table {
+    border-collapse:collapse;
+    margin-bottom: 1em;
+}
+
+th { background-color: #F3F3F3 }
+td, th {
+    border: 1px solid grey;
+    padding: 3px
+}
+
+table.middle th { text-align: left }
+
+</style>
+
+</head>
+
+<body>
+
+
+<h1 align="center" >GBS Local Full Build Report</h1>
+
+<p><B>Profile:</B> tizen.393</p>
+<p><B>Arch:</B> x86_64</p>
+<p><B>Start Time:</B> 2026-10-22 13:19 +0900
+</p>
+<p><B>GBS Version:</B> 2.0.1
+</p>
+
+<p><B>BASE SNAPSHOT:</B> http://repos.vd.sec.samsung.net/obs220/tizen-rsa/tizen-10.0-base-dev-llvm/standard/tizen-10.0-base-dev-llvm-standard_20261020.1/<p>
+<p><B>PRODUCT SNAPSHOT:</B> http://repos.vd.sec.samsung.net/products/tv/development/DO_NOT_DELETE/TIZEN-ONEMAIN-KantSU2e-RELEASE_20261001.3/<p>
+<p><B>BUILD CONF:</B> //SHARED/[TizenBuild_Prj]/[INT]/buildconf/tizen/TEST/migration/10.0/TV/TIZEN_KantSU2E_Clang_build.conf@14368686<p>
+
+
+<h3>Build Status Summary</h3>
+
+<table class = middle>
+    <tr>
+        <th>Total Packages</th>
+        <th>succeeded Packages</th>
+        <th>Export Error Packages</th>
+        <th>Expansion Error Packages</th>
+        <th>Build Error Packages</th>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>1</td>
+    </tr>
+</table>
+
+
+<h3>Build Statis Details</h3>
+<table class = middle>
+<thead><tr><th>Package name</th><th>Package path</th><th>Status</th></tr></thead>
+<tbody>
+<tr>
+    <td>libdeflate</td>
+<td>//example/packages/libdeflate/...@200</td>
+    <td ><a href=logs/fail/libdeflate-1.23-0/log.txt class = failed> Failed </a></td>
+</tr>
+<tr>
+    <td>host</td>
+<td>//example/packages/host/...@201</td>
+    <td ><a href=logs/success/host-1.0-1/log.txt class = succeeded> Succeeded </a></td>
+</tr>
+</tbody></table>
+</body></html>

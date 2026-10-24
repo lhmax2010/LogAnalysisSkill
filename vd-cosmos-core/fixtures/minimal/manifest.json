@@ -41,24 +41,32 @@
       {
         "arch": "armv7l",
         "name": "ok",
-        "path": "//example/packages/ok"
+        "path": "//example/packages/ok",
+        "cl": "100",
+        "shelve": false
       },
       {
         "arch": "armv7l",
         "name": "provider",
-        "path": "//example/packages/provider"
+        "path": "//example/packages/provider",
+        "cl": "100",
+        "shelve": false
       },
       {
         "arch": "armv7l",
         "name": "consumer",
-        "path": "//example/packages/consumer"
+        "path": "//example/packages/consumer",
+        "cl": "100",
+        "shelve": false
       }
     ],
     "x86_64": [
       {
         "arch": "x86_64",
         "name": "host",
-        "path": "//example/packages/host"
+        "path": "//example/packages/host",
+        "cl": "100",
+        "shelve": false
       }
     ]
   },

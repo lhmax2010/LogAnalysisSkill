@@ -34,7 +34,7 @@ def main(argv=None):
             if args.command == 'tick':
                 result = tick(config, factory, expected_event=args.expected_event)
             elif args.command == 'loop':
-                result = loop(config, factory, max_ticks=args.max_ticks)
+                result = loop(config, factory, max_ticks=args.max_ticks, expected_event=args.expected_event)
             elif args.command == 'inbox':
                 result = inbox(config)
             else:

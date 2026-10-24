@@ -27,7 +27,8 @@
   "poll": {
     "interval_s": 60,
     "stall_polls": 6,
-    "expected_hours": 24
+    "expected_hours": 24,
+    "settle_s": 60
   },
   "export": {
     "chunk_bytes": 55000,

@@ -1,0 +1,354 @@
+{
+  "note": "临时干净源码快照；与待交付本线文件逐一相同。此 commit 仅用于离线模拟，不是仓库交付提交。",
+  "command": [
+    "bash",
+    "--noprofile",
+    "--norc",
+    "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/source/vd-cosmos-core/scripts/verify_b2_real.sh",
+    "001735ee2a9e33c05a03bc7cfdb85d2078c08865",
+    "--config",
+    "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/config.json",
+    "--build-id",
+    "19091860",
+    "--saved-dir",
+    "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/saved",
+    "--rows",
+    "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/saved/rows.txt",
+    "--links",
+    "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/saved/links.txt",
+    "--mode",
+    "fixture",
+    "--fixture-counts",
+    "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/saved/expected-counts.json"
+  ],
+  "temporary_snapshot_commit": "001735ee2a9e33c05a03bc7cfdb85d2078c08865",
+  "source_tree_sha256": "d8d7d0008766dea7585f6a0d50aefbbd84ecbb84caeced0df4392da4903f417e",
+  "files": [
+    {
+      "path": "vd-cosmos-core/.gitignore",
+      "sha256": "dae94b75e70d57e24b32bff3179772be24b876d3d20e822a84682fcff97dbc12"
+    },
+    {
+      "path": "vd-cosmos-core/.importlinter",
+      "sha256": "53c3325a508cadc4fade0ee8635ab12ecedc2b6d1a86abc35e81d07f87d1f5be"
+    },
+    {
+      "path": "vd-cosmos-core/README.md",
+      "sha256": "b15f0a6b2b0e99f136b530f459a0a1df861828877eef143aa7f5c042ccf8eb90"
+    },
+    {
+      "path": "vd-cosmos-core/config.sample.json",
+      "sha256": "785d237e1c60d07ad0cb6b48ec0b7cdcb13657b6f4a69d7690f479c9c0041f49"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/minimal/armv7l-0.html",
+      "sha256": "ea6aae5e402a939bccf3a646949071b38fa1350d618df0ac10438477180b58cd"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/minimal/armv7l-1.html",
+      "sha256": "ea6aae5e402a939bccf3a646949071b38fa1350d618df0ac10438477180b58cd"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/minimal/armv7l-provider-log.txt",
+      "sha256": "febb32816cc205042d6f0a6df9f3e09e5629cb98f21e7c8be6521d4dbb615a33"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/minimal/config.json",
+      "sha256": "232026a99ef886f3b25f9a559405f648527c4ddf3ef876729110b345b509a99e"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/minimal/manifest.json",
+      "sha256": "72ba753eb963b21bfb0b63db7b23e6614918900934b299eba806e5cedc4dfb02"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/minimal/x86_64-0.html",
+      "sha256": "74b0f2bbd1eeab387938e718fbf1eeebba53c47f6e872ac1dab56390bbd0add0"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/minimal/x86_64-1.html",
+      "sha256": "74b0f2bbd1eeab387938e718fbf1eeebba53c47f6e872ac1dab56390bbd0add0"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/README.md",
+      "sha256": "5db393e281849bfa52763bd3db65d2ed48c84a39d3d53b237458552c534a8440"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/detail.html",
+      "sha256": "159e80f91bda8a3cf465f01bfe9ec75f8ed7b5dec6af60f1c2fa09c5acf761b6"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/expected-counts.json",
+      "sha256": "067d4693bdf16e06bb2fc64bba25e77bee4ab35599021c390a0ba99613814c34"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/links.txt",
+      "sha256": "4ee1dcf881d32e31f0f589ffc393d3049525b5a26ad526ce2b829d8c7e074b04"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/manifest.json",
+      "sha256": "dac48d4ee55cfaffc066993e2aeb7e550f82a1b99f06cb96865a9e8252a8e579"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/report_armv7l.html",
+      "sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/report_x86_64.html",
+      "sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/rows.txt",
+      "sha256": "d69dc2ec9ee1faf49ba193f986d9bd6c6bed6a5edeee879902d5fd60cfe5d85b"
+    },
+    {
+      "path": "vd-cosmos-core/scripts/check_imports.py",
+      "sha256": "bee212c40c3aabf14db47eb5c10a324b05b36aeb70a606fc99e4950feeb58013"
+    },
+    {
+      "path": "vd-cosmos-core/scripts/run.py",
+      "sha256": "e990b40ecf7ec3ed9749aa329447759a57a319dfacf6c4abf7d92eb1704fa8da"
+    },
+    {
+      "path": "vd-cosmos-core/scripts/run_tests.sh",
+      "sha256": "13a70cb1b0640d45d03183ee2ae9a7b8ae1d05d738efd9e8921239b863d50a0a"
+    },
+    {
+      "path": "vd-cosmos-core/scripts/verify_b1_real.py",
+      "sha256": "3a2e27553f6b93c7eaaaffa2327c2432fe1b07f3fcb2ff36658fd0845f7fe33f"
+    },
+    {
+      "path": "vd-cosmos-core/scripts/verify_b1_real.sh",
+      "sha256": "1182226b1e6331ba456da2f9bb835ece5e0aa419c656f2b6228beb7bc1f87e1b"
+    },
+    {
+      "path": "vd-cosmos-core/scripts/verify_b2_real.py",
+      "sha256": "280cc05c56f38bf4786b8596f44f221241487180d47a13bb2ae2df37054cb752"
+    },
+    {
+      "path": "vd-cosmos-core/scripts/verify_b2_real.sh",
+      "sha256": "b59d5bbceba8921087726722b3ab552197bf9003bf8d2f9724ee6e2f216022d6"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/__init__.py",
+      "sha256": "323d9ec59a47bf8cb35d42d0d2239d7b0b19ebb978b7bdc5443626f3fe6c9092"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/backends.py",
+      "sha256": "3a3006e555e3dc44fd853b86ba1d321fb1b0081ff10db0c7c10a655264dfe956"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/baselines.py",
+      "sha256": "e1837c968201ed552ef9e3d7e8eda7216f295c836f33e1e48c38d6854bf1d77a"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/cli.py",
+      "sha256": "6ce51e04430fee6493d06b51683eddfb63e72489114b877b34bb5d89b7faffdd"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/commands.py",
+      "sha256": "f0df36f241237ce1d60d4408463f58825851c2e46aedfa128775f6509e354ef2"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/config.py",
+      "sha256": "b5fad0de1e208a9e5d529498a38e71cdcf9b4c26ac5106a51e7b2859560cc5b3"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/errors.py",
+      "sha256": "fe80c7bb50f2ef68c86387390623640bc1796928cc4431a69176831ca43c44e6"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/export.py",
+      "sha256": "6963279351a3615784eca9b5c0426d53e824c661141b50ff88cc6da3f01c5eb5"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/fake_browser.py",
+      "sha256": "be2a5fa71c908816299033f6daf135715995c9cb5738d0cc0eda81554a804c74"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/files.py",
+      "sha256": "9489b1849367f794af10b359804b302f123648b4fc5d6de725d6be5777c08103"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/groups.py",
+      "sha256": "b6e0392c823ffcd518e7fecf5b054ffa258262027f601abd3429f76d79a74f57"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/http_reader.py",
+      "sha256": "f97e6ade30e28b550ab150a13d0c31c7a20149aaf3f611fe158ad45f9ceb49a5"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/journal.py",
+      "sha256": "5aca4d3f31733a86ba9e5f7fe5739d5fc1cff50dcb424df43e0a00658287fdcd"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/locks.py",
+      "sha256": "eb97702ad36a8907a531acfca36e3bd19d5c7dcaf50d1342f4d6b5c5af447f1d"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/models.py",
+      "sha256": "8baf6cc15a482aef5b85042f406a62b0716bedb1426d3014e22bf47c53c51466"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/observation.py",
+      "sha256": "6b04850c06a038ffae5487ce2e8c71bde963391695af12d6c46857a7c7be854d"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/p4.py",
+      "sha256": "d3474a89f7e51f69bf2d5abddec43ae00202741721725e970803b6638b05ffb9"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/read_ops.py",
+      "sha256": "859a7a6fe7a3d4ad4b4343d75ac5b81182ad08a9e370594395a3a5ad184d1e12"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/report.py",
+      "sha256": "8aa6c397ad95343b9be26b49a09bb6f1638ce2d029a714813f351847eea2a4a2"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/stability.py",
+      "sha256": "984ed66770d87765fc29a0ebb77cc7e9424d9105020a267a3d29f5ebe364b1f1"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/state.py",
+      "sha256": "3135e7bc2473bc75fb9fa5338ec4fc3d29c944d58ce68e4993a70c1e05beb245"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/transport.py",
+      "sha256": "772e95ccd26450a54cef6a22ca2d9a58a16d1e5efba515d16fcead76d88a1b2e"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify.py",
+      "sha256": "bde7eb742dee3915a067d1f038f7a1edf9492ace77f69f7411e58cf3f8909bc9"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b2.py",
+      "sha256": "c0ba7a17158b36dea72dc31cfb760b089542578c60a3bd540770129df5fb43fc"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/versions.py",
+      "sha256": "0ba61f7d1709da086bd6e2d1dd5ef5b6cb75c97175d74db56f40ba95612bc5c2"
+    },
+    {
+      "path": "vd-cosmos-core/tests/helpers.py",
+      "sha256": "e56c0e7be5c49f4c665327fee56515c539d3e103359d00539cc926a8c9b500bc"
+    },
+    {
+      "path": "vd-cosmos-core/tests/http_helpers.py",
+      "sha256": "eccdffa78f9f6c4081e51a950042ee32b6e18d42b725e8d8e5cf8047b4035e74"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "sha256": "d18e5430ef830e010740caa80dc46673202ab26b42b0eade9c2907aff05a8ecc"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "sha256": "3e613ee64dee6022e3211cb997818d46150002c8228d719c28f6f4dfcad74218"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "sha256": "65d27487ac56dc6cf07bca98eefd816bdaa24ae8afcbf81cf70f322f18e58a1b"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "sha256": "8deca3d71e4fb80696d4fc5fc6535cbe0a8c1a46443e7505d7dcba9cafe2706a"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "sha256": "eb5588e7dc076afb9b864e75dbb466bdf3d635e80fc18a35a4c9ad2187e4e180"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "sha256": "70f64197066ab844c9ef90de4acba10f4d3f8f32b7c90a2c1b425d353cf240b8"
+    },
+    {
+      "path": "vd-cosmos-fetch/.gitignore",
+      "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793"
+    },
+    {
+      "path": "vd-cosmos-fetch/SKILL.md",
+      "sha256": "a3b8e9c302cd8c7993438ce77110ff6861245bdc9a1a3b0b4a673440ef448b4a"
+    },
+    {
+      "path": "vd-cosmos-fetch/scripts/run.py",
+      "sha256": "80a5c98405dfb8af36133418623f5b4f1a4a6bc19630ab7bbc833deb8e1bfd31"
+    },
+    {
+      "path": "vd-cosmos-fetch/src/vd_cosmos_fetch/__init__.py",
+      "sha256": "0cf1866fdfbed79b213302ec4ad3df2709c85e7a03283a1b1cf1e2c1b17a01ef"
+    },
+    {
+      "path": "vd-cosmos-fetch/src/vd_cosmos_fetch/api.py",
+      "sha256": "cbb138347b1e0a69ee64696b1d61a9af9d415d383cec5eab7aeefcf5b982fff8"
+    },
+    {
+      "path": "vd-cosmos-fetch/src/vd_cosmos_fetch/cli.py",
+      "sha256": "825ff6e49561f5d1adbbae52399a47ca1f344bde7877e05788bc785bc9c86a8a"
+    },
+    {
+      "path": "vd-cosmos-watch/.gitignore",
+      "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793"
+    },
+    {
+      "path": "vd-cosmos-watch/SKILL.md",
+      "sha256": "8355e6929971d3faffbb59d48ced7cc8bb74d5467f76818bdcd880a0f9c3fa9c"
+    },
+    {
+      "path": "vd-cosmos-watch/scripts/run.py",
+      "sha256": "caa42a026cb3535bfda1ccf042a7dbfd2cb2d9b28cba713a67365093f524568b"
+    },
+    {
+      "path": "vd-cosmos-watch/src/vd_cosmos_watch/__init__.py",
+      "sha256": "a0a30ba23015312f0da6dc5c09c5151cb79708b8b4bfc8330412ce7f0c954cda"
+    },
+    {
+      "path": "vd-cosmos-watch/src/vd_cosmos_watch/api.py",
+      "sha256": "cca3909f1130e3b69cdfb2e1df476f4684cdf246897f1c8d6a5aa9db2b2a9bef"
+    },
+    {
+      "path": "vd-cosmos-watch/src/vd_cosmos_watch/cli.py",
+      "sha256": "b8a80fcf329087bcba8134f11ceff71d12797911078789cd9ef2d926e200bfbf"
+    },
+    {
+      "path": "vd-cosmos-workflow/.gitignore",
+      "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793"
+    },
+    {
+      "path": "vd-cosmos-workflow/SKILL.md",
+      "sha256": "fa3bac49d32f143340fbcf4d2523a4a083f5c34e435be0518ce6dabaf9e5add5"
+    },
+    {
+      "path": "vd-cosmos-workflow/scripts/run.py",
+      "sha256": "fdb4d0e63dcfaa3dd639dd007caf2d5de4a3ec0fb8d02f32cec78eaa3371098d"
+    },
+    {
+      "path": "vd-cosmos-workflow/src/vd_cosmos_workflow/__init__.py",
+      "sha256": "6628f32f846ff57c0fd444110ce02a2fcaa951bc7caaa5c82b723a464e4a372c"
+    },
+    {
+      "path": "vd-cosmos-workflow/src/vd_cosmos_workflow/api.py",
+      "sha256": "d6d7064c35bc0e2e3dc37c557f8456336bd6f027fca2020048503dd8175a8820"
+    },
+    {
+      "path": "vd-cosmos-workflow/src/vd_cosmos_workflow/cli.py",
+      "sha256": "52c823008bfe0f501636c8aa420d881a795afde7fe17ba4f19128f5ce21cf8ca"
+    }
+  ],
+  "config_unchanged": true,
+  "exit_code": 0,
+  "backend": "http-fixture",
+  "network_scope": "127.0.0.1 only",
+  "requests": 15,
+  "log_downloads": [
+    "/reports/b860/19091860/html/Build_Report_x86_64/logs/fail/libdeflate-1.23-0/log.txt",
+    "/reports/b860/19091860/html/Build_Report_armv7l/logs/fail/provider-1.0-1/log.txt"
+  ],
+  "stages": {
+    "A": "PASS",
+    "B": "PASS",
+    "C": "PASS",
+    "D": "INFORMATIONAL",
+    "E": "PASS",
+    "F": "INFORMATIONAL"
+  },
+  "export_blocks": 1
+}

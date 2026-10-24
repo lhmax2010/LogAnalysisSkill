@@ -3,6 +3,7 @@ from .backends import FixtureReportReader, SavedReportReader
 from .http_reader import HTTPReportReader
 from .errors import FlowError
 from .groups import group_expansion
+from .versions import evaluation
 
 
 def make_reader(config, backend, *, build_id=None, manifest=None, expected_rows=None):
@@ -21,6 +22,8 @@ def fetch_logs(reader, observed=None):
     observed = observed if observed is not None else observe(reader)
     if observed['observation_failed']:
         return observed
+    if observed.get('exit_code') == 3:
+        return observed
     reader.require('fetch_log')
     packages = [p for r in observed['reports'].values() for p in r.get('packages', [])
                 if p['category'] in {'build_error', 'export_error'}]
@@ -28,7 +31,7 @@ def fetch_logs(reader, observed=None):
         logs = reader.fetch_logs(packages)
     else:
         logs = [{'key': p['key'], **reader.fetch_log(reader.build_ref, p['key']['arch'], p)} for p in packages]
-    return {'logs': logs, 'todos': observed['todos'], 'observation': observed, 'exit_code': 0}
+    return {'logs': logs, 'todos': observed['todos'], 'observation': observed, 'exit_code': 0, 'evaluation': evaluation(reader, observed)}
 
 
 def read_action(skill, command, reader, arch=None):

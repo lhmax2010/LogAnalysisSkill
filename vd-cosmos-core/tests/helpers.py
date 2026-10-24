@@ -11,6 +11,7 @@ def config_data(root):
     data = json.loads((CORE / "config.sample.json").read_text())
     data["data_root"] = str(root)
     data["cosmos"]["status_source"] = None
+    data["poll"]["settle_s"] = 60
     data["cosmos"]["report_markers"]["summary"] = "Summary"
     return data
 
@@ -76,7 +77,7 @@ def bundle(directory, packages_by_arch=None, *, write_config=True):
             (directory / filename).write_text(html)
             manifest["reports"][arch].append({"path": filename, "observed_at": stamp,
                                              "status_code": 200, "source_url": "https://example.invalid/report/"})
-        manifest["expected_packages"][arch] = [{"arch": arch, "name": p["name"], "path": p["path"]} for p in packages]
+        manifest["expected_packages"][arch] = [{"arch": arch, "name": p["name"], "path": p["path"], "cl": p["cl"], "shelve": p["shelve"]} for p in packages]
         for p in packages:
             if p["category"] in {"build_error", "export_error"}:
                 filename = arch + "-" + p["name"] + "-log.txt"

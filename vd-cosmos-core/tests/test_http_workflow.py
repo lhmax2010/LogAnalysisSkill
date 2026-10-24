@@ -105,7 +105,7 @@ class HTTPTests(unittest.TestCase):
 
     def test_detail_session_parameters_never_persist_raw(self):
         marker = 'wicket' + ':interface=synthetic-session'
-        body = ('<span title="Build is failed"></span><a href="?' + marker + '">next</a>').encode()
+        body = ('19091860 <span title="Build is failed"></span><a href="?' + marker + '">next</a>').encode()
         self.server.routes['/build/19091860'] = (200,body,{},0)
         result = self.observed()
         evidence = result['execution_evidence']
@@ -120,7 +120,7 @@ class HTTPTests(unittest.TestCase):
         self.server.routes[path] = (200,self.server.routes[path][1]+('Cookie'+': synthetic-secret').encode(),{},0)
         result = self.observed()
         self.assertEqual(result['exit_code'], 5)
-        self.assertIn({'arch':'armv7l','reason':'report_credential_pattern_blocked'}, result['todos'])
+        self.assertTrue(any(t['reason']=='report_credential_pattern_blocked' and t['arch']=='armv7l' for t in result['todos']))
         self.assertFalse(list((self.config.data_root/'rounds/19091860/pages/armv7l').glob('*.html')))
 
     def test_changing_then_stable_inconsistent_report(self):
@@ -140,9 +140,9 @@ class HTTPTests(unittest.TestCase):
         rows = self.server.fixture/'rows.txt';rows.write_text(rows.read_text()+'//example/missing/...@9\n')
         result = self.stable(True)
         self.assertEqual(result['report_state'],'完整');self.assertEqual(result['package_coverage'],'不一致')
-        self.assertEqual(result['result_state'],'未知')
+        self.assertEqual(result['result_state'],'失败')
         self.assertTrue(any(t['reason']=='package_coverage_mismatch' for t in result['todos']))
-        rows.write_text(rows.read_text()+rows.read_text().splitlines()[0]+'\n')
+        rows.write_text('invalid-row\n')
         with self.assertRaises(FlowError) as caught:self.reader(True)
         self.assertEqual(caught.exception.code,2)
         html=(self.server.fixture/'report_armv7l.html').read_text()
@@ -199,7 +199,7 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(digest(target.read_bytes()),result['logs'][0]['sha256'])
 
     def test_packages_error_exit_and_original_detail_title(self):
-        self.server.routes['/build/19091860']=(200,b'<span title="Build   is   failed"></span>',{},0)
+        self.server.routes['/build/19091860']=(200,b'19091860 <span title="Build   is   failed"></span>',{},0)
         self.assertEqual(self.observed()['execution_evidence']['title'],'Build   is   failed')
         self.server.routes[self.server.report_path('armv7l')]=(500,b'bad',{},0)
         result=read_action('fetch','packages',self.reader(),'armv7l')
@@ -334,8 +334,9 @@ class WorkflowTests(HTTPTests):
             self.assertEqual(loop(self.config,lambda:HTTPReportReader(self.config,'19091861'),max_ticks=1)['exit_code'],0)
 
     def test_b2_script_A_to_E_and_summary_size(self):
-        head=subprocess.check_output(['git','-C',str(REPO),'rev-parse','HEAD'],text=True).strip()
-        cmd=['bash','--noprofile','--norc',str(CORE/'scripts/verify_b2_real.sh'),head,'--config',str(self.server.config_path),
+        from test_batch21 import isolated_checkout
+        snapshot=self.base/'checkout';head=isolated_checkout(snapshot)
+        cmd=['bash','--noprofile','--norc',str(snapshot/'vd-cosmos-core/scripts/verify_b2_real.sh'),head,'--config',str(self.server.config_path),
              '--build-id','19091860','--saved-dir',str(self.server.fixture),'--rows',str(self.server.fixture/'rows.txt'),
              '--links',str(self.server.fixture/'links.txt'),'--live-build-id','19091861','--mode','fixture',
              '--fixture-counts',str(self.server.fixture/'expected-counts.json')]

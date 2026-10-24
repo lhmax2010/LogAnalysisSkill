@@ -10,7 +10,7 @@ from urllib.parse import urlsplit
 from .errors import FlowError
 from .files import confined, load_json
 
-FETCH_DEFAULTS = {"timeout_s": 60, "max_page_bytes": 20 * 1024 * 1024,
+FETCH_DEFAULTS = {"timeout_s": 60, "deadline_s": 300, "max_page_bytes": 20 * 1024 * 1024,
                   "max_log_bytes": 200 * 1024 * 1024, "log_concurrency": 4,
                   "user_agent": "VD-Cosmos-LogAnalyzer/0.5.3"}
 
@@ -96,12 +96,15 @@ def load_config(path):
         if status is not None:
             required = {"kind", "url_template", "status_title_regex",
                         "terminal_words", "running_words", "queued_words"}
-            if not isinstance(status, dict) or set(status) != required or status["kind"] != "detail_page":
+            if not isinstance(status, dict) or set(status) - {'identity_regex'} != required or status["kind"] != "detail_page":
                 raise ValueError()
             if not isinstance(status["url_template"], str) or not status["url_template"].strip():
                 raise ValueError()
             validate_url(status["url_template"])
             validate_template(status["url_template"], {"build_id"})
+            status.setdefault('identity_regex', r'(?<![0-9]){build_id}(?![0-9])')
+            validate_template(status['identity_regex'], {'build_id'})
+            re.compile(status['identity_regex'].format(build_id='123'))
             if not isinstance(status["status_title_regex"], str) or re.compile(status["status_title_regex"]).groups != 1:
                 raise ValueError()
             seen = set()
@@ -117,10 +120,13 @@ def load_config(path):
             validate_url(cosmos["report_root"])
             validate_template(cosmos["report_path_template"], {"last3", "build_id", "arch"})
         validate_template(cosmos.get("bucket_path_template", "b{last3}/"), {"last3", "build_id"})
+        cosmos.setdefault('index_link_regex', r'^[0-9]+/$')
+        re.compile(cosmos['index_link_regex'])
         raw["fetch"] = FETCH_DEFAULTS | raw.get("fetch", {})
         fetch = raw["fetch"]
-        if type(fetch["timeout_s"]) not in (int, float) or fetch["timeout_s"] <= 0:
-            raise ValueError()
+        for key in ('timeout_s', 'deadline_s'):
+            if type(fetch[key]) not in (int, float) or not 0 < fetch[key] < float('inf'):
+                raise ValueError()
         for key in ("max_page_bytes", "max_log_bytes", "log_concurrency"):
             if type(fetch[key]) is not int or fetch[key] <= 0:
                 raise ValueError()
@@ -137,6 +143,10 @@ def load_config(path):
             raise ValueError()
         if type(raw["poll"]["interval_s"]) not in (int, float) or raw["poll"]["interval_s"] <= 0:
             raise ValueError()
+        for key, default in [('settle_s', 1800), ('stopped_interval_s', 600)]:
+            value = raw['poll'].setdefault(key, default)
+            if type(value) not in (int, float) or not 0 < value < float('inf'):
+                raise ValueError()
         if type(raw["poll"].get("stall_polls", 6)) is not int or raw["poll"].get("stall_polls", 6) < 2:
             raise ValueError()
         if type(raw["poll"].get("expected_hours", 24)) not in (int, float) or raw["poll"].get("expected_hours", 24) <= 0:

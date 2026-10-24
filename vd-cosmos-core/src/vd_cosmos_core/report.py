@@ -195,7 +195,8 @@ def _header_and_counts(document, summary_prefix):
     return headers, counts, malformed
 
 
-def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""):
+def parse_report(html, arch, cosmos, expected_packages=None, *, stable, settled=None, source_url=""):
+    settled = stable if settled is None else settled
     """Return all rows, including duplicates; never deduplicate before reconciliation."""
     try:
         document = Document(html)
@@ -299,36 +300,33 @@ def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""
         issues.append("duplicate_package_key")
     if not disjoint:
         issues.append("category_overlap")
-    missing, extra, coverage = [], [], "未核"
-    if expected_packages is None:
-        issues.append("expected_package_set_missing")
-    else:
+    if not stable:
+        issues.append("not_stable")
+    checks = [i for i in issues if i in {"summary_total_mismatch", "duplicate_package_key",
+               "category_overlap", "architecture_mismatch"} or i.startswith("count_mismatch:")]
+    if settled:
+        for source, target in [('missing_report_header', 'missing_header_settled'), ('missing_summary', 'missing_summary_settled')]:
+            if source in issues:
+                checks.append(target)
+    state = ('部分' if not settled else '结构未知' if malformed else '对账失败' if checks else '完整')
+    result = "未知"
+    if state == "完整":
+        result = "失败" if any(p["category"] != "succeeded" for p in packages) else "成功"
+    parsed = {"arch": arch, "report_state": state, "result_state": result,
+            "headers": headers, "counts": counts, "packages": packages, "input_rows": inputs,
+            "raw_table_titles": titles, "issues": sorted(set(issues + warnings)),
+            "package_coverage": "未核", "coverage_basis": "none", "source_rows": source_rows,
+            "reconciliation_checks": checks,
+            "package_keys_unique": unique, "categories_disjoint": disjoint,
+            "missing_packages": [], "extra_packages": [], "stable": stable, "settled": settled}
+
+    if expected_packages is not None:
+        from .baselines import apply_rows_coverage
         try:
             if not isinstance(expected_packages, list):
                 raise ValueError()
-            expected = [(p.get("arch", arch), p["name"], p["path"]) for p in expected_packages]
-            if len(set(expected)) != len(expected) or any(k[0] != arch or not all(isinstance(v, str) and v for v in k) for k in expected):
-                raise ValueError()
-        except (KeyError, TypeError, ValueError, AttributeError):
-            raise FlowError(2, "invalid_expected_package_set") from None
-        missing, extra = sorted(set(expected) - set(keys)), sorted(set(keys) - set(expected))
-        coverage = "不一致" if missing or extra else "一致"
-        if missing or extra:
-            issues.append("package_set_mismatch")
-    if not stable:
-        issues.append("not_stable")
-    waiting = {"not_stable", "missing_summary", "missing_report_header"}
-    checks = [i for i in issues if i in {"summary_total_mismatch", "duplicate_package_key",
-               "category_overlap", "architecture_mismatch"} or i.startswith("count_mismatch:")]
-    state = ("结构未知" if malformed else "部分" if waiting.intersection(issues)
-             else "对账失败" if checks else "完整")
-    result = "未知"
-    if state == "完整" and coverage != "不一致":
-        result = "失败" if any(p["category"] != "succeeded" for p in packages) else "成功"
-    return {"arch": arch, "report_state": state, "result_state": result,
-            "headers": headers, "counts": counts, "packages": packages, "input_rows": inputs,
-            "raw_table_titles": titles, "issues": sorted(set(issues + warnings)),
-            "package_coverage": coverage, "source_rows": source_rows,
-            "reconciliation_checks": checks,
-            "package_keys_unique": unique, "categories_disjoint": disjoint,
-            "missing_packages": missing, "extra_packages": extra, "stable": stable}
+            rows = [(p['path'], p['cl'], p['shelve']) for p in expected_packages]
+        except (KeyError, TypeError, ValueError):
+            raise FlowError(2, 'invalid_expected_package_set') from None
+        return apply_rows_coverage(parsed, rows)
+    return parsed

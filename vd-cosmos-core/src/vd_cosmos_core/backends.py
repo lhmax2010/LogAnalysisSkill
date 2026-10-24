@@ -1,11 +1,13 @@
-"""Abstract capabilities plus saved-page readers. No HTTP client is implemented."""
+"""Abstract capabilities and local saved-page/fixture readers."""
 from abc import ABC, abstractmethod
 from datetime import datetime
 import re
 
 from .errors import FlowError, unsupported
 from .export import check_content
-from .files import atomic_write, confined, digest, load_json
+from .files import atomic_write, confined, digest, load_json, json_bytes
+from .versions import build_key, parsing_digest
+from .stability import advance, maturity
 from .models import BuildRef
 from .report import normalize, parse_report
 from .observation import detail_state, summarize
@@ -62,6 +64,7 @@ class SavedReportReader(ReportReader):
     capabilities = frozenset({"observe", "read_packages", "read_inputs"})
 
     def __init__(self, config, manifest_path):
+        self._observed = None
         self.config = config
         self.manifest_path = config.source(manifest_path)
         self.base = self.manifest_path.parent
@@ -72,6 +75,9 @@ class SavedReportReader(ReportReader):
                 raise ValueError()
         except (TypeError, KeyError, ValueError):
             raise FlowError(2, "invalid_fixture_manifest") from None
+
+    def expected_digest(self):
+        return digest(json_bytes(self.manifest.get("expected_packages")))
 
     def check_ref(self, build_ref):
         if build_ref != self.build_ref:
@@ -88,7 +94,7 @@ class SavedReportReader(ReportReader):
             raise FlowError(4, "credential_pattern_blocked", hits=checks["credential_hits"])
         return path, content
 
-    def _arch(self, arch):
+    def _arch(self, arch, terminal=False):
         snapshots = self.manifest["reports"].get(arch, [])
         if not snapshots:
             return {"arch": arch, "report_state": "未知", "result_state": "未知",
@@ -100,17 +106,19 @@ class SavedReportReader(ReportReader):
         if latest.get("status_code") != 200 or latest.get("error"):
             raise FlowError(5, "report_observation_failed")
         path, content = self.read_source(latest["path"])
-        stable = False
-        previous_sha = None
-        if len(snapshots) >= 2 and snapshots[-2].get("status_code") == 200 and not snapshots[-2].get("error"):
-            _, previous = self.read_source(snapshots[-2]["path"])
-            previous_sha = digest(previous)
-            stable = (previous_sha == digest(content) and
-                      timestamp(latest["observed_at"]) - timestamp(snapshots[-2]["observed_at"]) >= self.config.raw["poll"]["interval_s"])
+        record, previous_sha = None, None
+        for snapshot in snapshots:
+            if snapshot.get('status_code') != 200 or snapshot.get('error'):
+                record = None
+                continue
+            _, raw = self.read_source(snapshot['path'])
+            previous_sha = record['sha256'] if record else None
+            record = advance(record, digest(raw), snapshot['observed_at'], parsing_digest(self.config))
+        stable, settled = maturity(record, self.config.raw['poll'], terminal)
         expected = self.manifest.get("expected_packages", {}).get(arch)
         try:
             parsed = parse_report(content.decode("utf-8"), arch, self.config.raw["cosmos"], expected,
-                                  stable=stable, source_url=latest.get("source_url", ""))
+                                  stable=stable, settled=settled, source_url=latest.get("source_url", ""))
         except (UnicodeError, KeyError, TypeError):
             raise FlowError(5, "report_parse_failed") from None
         parsed.update({"observed_at": latest["observed_at"],
@@ -124,12 +132,25 @@ class SavedReportReader(ReportReader):
 
     def observe(self, build_ref):
         self.check_ref(build_ref)
+        if self._observed is not None:
+            return self._observed
         cosmos = self.config.raw["cosmos"]
+        execution = {"state": "未知", "trust": "unknown", "basis": "title_not_matched"}
+        status_source, detail = cosmos.get('status_source'), self.manifest.get('detail_page')
+        if status_source and detail:
+            try:
+                detail_path, data = self.read_source(detail)
+                execution = {**detail_state(data, status_source, self.build_ref.run_id),
+                             "source": str(detail_path), "sha256": digest(data), "detail_attempted": True}
+            except FlowError as error:
+                if error.code != 5:
+                    raise
+                execution = {"state": "未知", "trust": "unknown", "basis": "detail_fetch_failed", "failure": error.reason, "detail_attempted": True}
         arches = cosmos["archs"]
         reports, failures = {}, []
         for arch in arches:
             try:
-                reports[arch] = self._arch(arch)
+                reports[arch] = self._arch(arch, execution["state"] == "已结束")
             except FlowError as error:
                 if error.code != 5:
                     raise
@@ -137,19 +158,14 @@ class SavedReportReader(ReportReader):
                 # A failed observation contributes no execution/report status.
                 reports[arch] = {"arch": arch, "observation_failed": True,
                                  "error": error.reason, "headers": {}, "issues": [error.reason]}
-        execution = {"state": "未知", "source": None, "trust": "unknown"}
-        status_source = cosmos.get("status_source")
-        detail = self.manifest.get("detail_page")
-        if status_source and detail:
-            detail_path, data = self.read_source(detail)
-            execution = {**detail_state(data, status_source), "source": str(detail_path), "sha256": digest(data)}
-        return summarize(build_ref, cosmos, reports, execution, backend=self.__class__.__name__)
+        self._observed = summarize(build_ref, cosmos, reports, execution, backend=self.__class__.__name__)
+        return self._observed
 
     def read_packages(self, build_ref, arch):
         self.check_ref(build_ref)
         if arch not in self.config.raw["cosmos"]["archs"]:
             raise FlowError(2, "unexpected_architecture")
-        return self._arch(arch)
+        return self.observe(build_ref)["reports"][arch]
 
     def read_inputs(self, build_ref):
         observed = self.observe(build_ref)
@@ -194,7 +210,7 @@ class FixtureReportReader(SavedReportReader):
                 _, content = self.read_source(entry["path"])
                 if entry.get("sha256") and digest(content) != entry["sha256"]:
                     raise FlowError(4, "log_digest_mismatch")
-                identity = digest(str(sorted(build_ref.to_dict().items())).encode())
+                identity = build_key(self)
                 name = digest(str(sorted(package["key"].items())).encode())
                 return atomic_write(self.config.data_root, f"rounds/{identity}/logs/{name}.txt", content)
         raise FlowError(5, "fixture_log_missing")

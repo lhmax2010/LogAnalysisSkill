@@ -1,0 +1,148 @@
+Python 3.10.12
+Python 3.10 syntax / standard-library import check: 41 files
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 34 files, 98 dependencies.
+-----------------------------------
+
+skills depend on core only KEPT
+watch and fetch are independent KEPT
+workflow cannot depend on write backends KEPT
+
+Contracts: 3 kept, 0 broken.
+test_all_document_redirects_refused_before_target_request_and_index_fingerprint (test_batch21.Batch21Tests) ... ok
+test_log_redirect_port_host_and_path_refused_with_zero_target_requests (test_batch21.Batch21Tests) ... ok
+test_content_length_chunked_interruptions_no_cache_and_true_timeouts (test_batch21.Batch21Tests) ... ok
+test_response_evidence_log_active_truncation_differs_from_incomplete (test_batch21.Batch21Tests) ... ok
+test_unsettled_malformed_running_then_terminal_or_settle_deadline (test_batch21.Batch21Tests) ... ok
+test_truncated_structure_to_full_and_missing_summary_settled (test_batch21.Batch21Tests) ... ok
+test_continuous_reset_failure_404_change_config_clock_and_history_bound (test_batch21.Batch21Tests) ... ok
+test_header_only_after_both_settled_and_coverage_projection_pure (test_batch21.Batch21Tests) ... ok
+test_detail_failure_counts_identity_all_candidates_recovery_and_report_failure (test_batch21.Batch21Tests) ... ok
+test_rule_errors_are_not_swallowed_and_instance_scopes_do_not_mix (test_batch21.Batch21Tests) ... ok
+test_stopped_loop_reobserves_changed_report_and_detail_failure_does_not_block (test_batch21.Workflow21Tests) ... ok
+test_completed_baseline_change_invalidates_and_missing_artifact_recovers (test_batch21.Workflow21Tests) ... ok
+test_logs_refresh_report_and_cache_bound_to_report_and_limit (test_batch21.Workflow21Tests) ... ok
+test_actual_child_crash_after_observe_logs_notify_result_unique_and_cleanup (test_batch21.Workflow21Tests) ... ok
+test_append_retry_other_build_only_constraint_same_build_and_explicit_no_retry (test_batch21.Workflow21Tests) ... ok
+test_tick_concurrent_other_build_append_retries_without_repeating_action (test_batch21.Workflow21Tests) ... ok
+test_round_contention_three_skips_one_todo_and_real_two_process_ticks (test_batch21.Workflow21Tests) ... ok
+test_wal_reader_error_wrapping_and_other_build_history_not_loaded (test_batch21.Workflow21Tests) ... ok
+test_monitor_404_timeout_live_disk_and_versioned_todo_identity (test_batch21.Workflow21Tests) ... ok
+test_three_log_failures_have_one_todo (test_batch21.Workflow21Tests) ... ok
+test_tls_self_signed_extra_ca_hostname_and_downgrade_refused (test_batch21.TLS21Tests) ... ok
+test_clean_snapshots_repeated_independent_A_to_F_and_unrelated_changes (test_batch21.Acceptance21Tests) ... ok
+test_direct_commit_dirty_source_and_real_loopback_rejected_before_output (test_batch21.Acceptance21Tests) ... ok
+test_saved_page_difference_fails_A (test_batch21.Acceptance21Tests) ... ok
+test_truncated_incomplete_and_html_logs_fail_B (test_batch21.Acceptance21Tests) ... ok
+test_all_fetch_commands_produce_files (test_cli.CLITests) ... ok
+test_export_and_prepush_cli_contract (test_cli.CLITests) ... ok
+test_header_inconsistency_writes_todo_without_advancing_ready_state (test_cli.CLITests) ... ok
+test_install_free_entrypoints_work_from_unrelated_directory (test_cli.CLITests) ... ok
+test_invalid_args_and_non_tty_guards_exit_two (test_cli.CLITests) ... ok
+test_observation_failures_exit_five_and_todo_after_three (test_cli.CLITests) ... ok
+test_real_backend_parses_saved_html_but_download_is_unsupported (test_cli.CLITests) ... ok
+test_stale_expected_event_exits_six_without_new_artifact (test_cli.CLITests) ... ok
+test_stall_detection_requires_distinct_observations_without_changing_state (test_cli.CLITests) ... ok
+test_authentication_page_with_empty_field_cannot_be_relabelled_report (test_foundation.FoundationTests) ... ok
+test_bind_uniqueness_includes_backend_instance_and_execution_kind (test_foundation.FoundationTests) ... ok
+test_command_categories_receive_cannot_write_authorization (test_foundation.FoundationTests) ... ok
+test_config_missing_invalid_and_duplicate_keys_rejected (test_foundation.FoundationTests) ... ok
+test_config_relative_paths_and_local_filesystem (test_foundation.FoundationTests) ... ok
+test_credential_pattern_families_block_without_echoing_content (test_foundation.FoundationTests) ... ok
+test_event_journal_cannot_update_or_delete (test_foundation.FoundationTests) ... ok
+test_export_credentials_at_end_block_every_artifact (test_foundation.FoundationTests) ... ok
+test_export_utf8_long_line_roundtrip_sizes_and_full_digests (test_foundation.FoundationTests) ... ok
+test_flock_contention_across_processes_and_release (test_foundation.FoundationTests) ... ok
+test_nfs_cifs_and_stat_failure_refused_before_writes (test_foundation.FoundationTests) ... ok
+test_non_tty_manual_and_external_commands_refused (test_foundation.FoundationTests) ... ok
+test_optimistic_conflict_and_sqlite_immediate_transaction (test_foundation.FoundationTests) ... ok
+test_p4_environment_plan_and_forbidden_commands (test_foundation.FoundationTests) ... ok
+test_path_escape_and_symlink_escape_refused (test_foundation.FoundationTests) ... ok
+test_session_and_click_uniqueness_preserve_failed_preparation_history (test_foundation.FoundationTests) ... ok
+test_terminal_yes_required (test_foundation.FoundationTests) ... ok
+test_word_hits_warn_credential_examples_never_bypass_export (test_foundation.FoundationTests) ... ok
+test_404_requires_readable_bucket_index (test_http_workflow.HTTPTests) ... ok
+test_500_timeout_proxy_page_size_limit_and_cross_host_redirect (test_http_workflow.HTTPTests) ... ok
+test_aggregate_all_priority_branches (test_http_workflow.HTTPTests) ... ok
+test_changing_then_stable_inconsistent_report (test_http_workflow.HTTPTests) ... ok
+test_detail_session_parameters_never_persist_raw (test_http_workflow.HTTPTests) ... ok
+test_fetch_defaults_template_validation_and_real_cli (test_http_workflow.HTTPTests) ... ok
+test_http_states_no_cache_headers_coverage_and_detail_evidence (test_http_workflow.HTTPTests) ... ok
+test_log_redirect_refused_tampered_cache_redownloaded_and_export_error_included (test_http_workflow.HTTPTests) ... ok
+test_logs_boundary_truncation_credential_flag_cache_and_concurrency (test_http_workflow.HTTPTests) ... ok
+test_missing_expected_package_is_coverage_only_invalid_baseline_is_argument_error (test_http_workflow.HTTPTests) ... ok
+test_packages_error_exit_and_original_detail_title (test_http_workflow.HTTPTests) ... ok
+test_page_credentials_refused_without_file_and_with_todo (test_http_workflow.HTTPTests) ... ok
+test_proxy_config_only_and_tls_defaults (test_http_workflow.HTTPTests) ... ok
+test_same_host_redirect_limit_and_no_cookie_storage_or_return (test_http_workflow.HTTPTests) ... ok
+test_notification_result_failure_recovers_without_duplicate_or_missing_todo (test_http_workflow.WorkflowTests) ... ok
+test_views_do_not_append_and_stale_event_and_duplicate_result_rejected (test_http_workflow.WorkflowTests) ... ok
+test_workflow_each_stop_condition_and_three_failures_todo (test_http_workflow.WorkflowTests) ... ok
+test_crash_after_intent_redoes_action_and_has_one_result (test_http_workflow.WorkflowTests) ... ok
+test_sleep_allows_manual_tick_instance_lock_still_excludes_second_loop (test_http_workflow.WorkflowTests) ... ok
+test_sigterm_and_sigint_clean_exit_release_instance_lock (test_http_workflow.WorkflowTests) ... ok
+test_b2_script_A_to_E_and_summary_size (test_http_workflow.WorkflowTests) ... ok
+test_b2_wrong_commit_stops_before_loading_or_writing (test_http_workflow.WorkflowTests) ... ok
+test_configured_regex_does_not_select_a_later_status (test_real_format.RealFormatTests) ... ok
+test_expansion_source_line_wrap_is_whitespace_br_separates_messages (test_real_format.RealFormatTests) ... ok
+test_mixed_known_and_other_messages_require_both_covered (test_real_format.RealFormatTests) ... ok
+test_nested_paragraph_headers_do_not_merge (test_real_format.RealFormatTests) ... ok
+test_new_status_schema_accepts_and_rejects_malformed_old_or_overlap (test_real_format.RealFormatTests) ... ok
+test_other_format_does_not_mask_bad_column_count_or_path (test_real_format.RealFormatTests) ... ok
+test_other_message_is_preserved_complete_manual_only_and_todo (test_real_format.RealFormatTests) ... ok
+test_own_failed_title_precedes_successful_promotion (test_real_format.RealFormatTests) ... ok
+test_real_format_complete_summary_suffix_and_unquoted_link (test_real_format.RealFormatTests) ... ok
+test_running_queued_and_all_terminal_words (test_real_format.RealFormatTests) ... ok
+test_same_signature_other_format_cannot_inherit_standard_blocker (test_real_format.RealFormatTests) ... ok
+test_summary_case_whitespace_and_counts_still_reconcile (test_real_format.RealFormatTests) ... ok
+test_supplied_head120_snippets_never_count_as_complete (test_real_format.RealFormatTests) ... ok
+test_unknown_format_todo_is_written_by_watch (test_real_format.RealFormatTests) ... ok
+test_unknown_or_absent_title_never_falls_through_or_uses_text (test_real_format.RealFormatTests) ... ok
+test_verify_pass_export_reassembly_and_source_immutability (test_real_format.VerifyScriptTests) ... ok
+test_verify_wrong_commit_stops_before_any_output_directory (test_real_format.VerifyScriptTests) ... ok
+test_verify_rows_cl_shelve_and_duplicate_replacements_rejected (test_real_format.VerifyScriptTests) ... ok
+test_verify_links_multiplicity_and_version_checked (test_real_format.VerifyScriptTests) ... ok
+test_verify_unknown_execution_and_header_mismatch_fail (test_real_format.VerifyScriptTests) ... ok
+test_verify_real_counts_cannot_use_fixture_override (test_real_format.VerifyScriptTests) ... ok
+test_verify_credentials_block_copy_and_never_echo_content (test_real_format.VerifyScriptTests) ... ok
+test_difference_list_is_limited_and_retains_total_count (test_real_format.VerifyScriptTests) ... ok
+test_all_success_and_only_expansion_or_export_are_failures (test_reports.ReportTests) ... ok
+test_category_intersection_rejected_even_with_correct_counts (test_reports.ReportTests) ... ok
+test_closed_build_status_set (test_reports.ReportTests) ... ok
+test_complete_reports_result_failure_independent_of_execution (test_reports.ReportTests) ... ok
+test_confirmed_404_and_observation_failure_are_distinct (test_reports.ReportTests) ... ok
+test_duplicate_row_cannot_replace_missing_row_even_when_counts_match (test_reports.ReportTests) ... ok
+test_execution_only_from_configured_detail_title (test_reports.ReportTests) ... ok
+test_expected_package_set_required_and_extra_packages_rejected (test_reports.ReportTests) ... ok
+test_export_nonzero_unknown_table_is_structure_unknown (test_reports.ReportTests) ... ok
+test_fixture_path_escape_is_rejected (test_reports.ReportTests) ... ok
+test_header_mismatch_is_independent_from_complete_report_state (test_reports.ReportTests) ... ok
+test_local_simulation_never_satisfies_cosmos_terminal_prerequisite (test_reports.ReportTests) ... ok
+test_missing_architecture_is_not_a_reduced_request (test_reports.ReportTests) ... ok
+test_prefix_matching_raw_title_line_numbers_and_inputs (test_reports.ReportTests) ... ok
+test_proxy_login_or_malformed_response_is_observation_failure (test_reports.ReportTests) ... ok
+test_read_inputs_includes_all_rows_and_header_consistency (test_reports.ReportTests) ... ok
+test_reduced_architecture_set_result_partial (test_reports.ReportTests) ... ok
+test_saved_parser_has_no_real_downloader_fixture_log_has_digest (test_reports.ReportTests) ... ok
+test_sha_stability_and_poll_interval_are_both_required (test_reports.ReportTests) ... ok
+test_summary_totals_and_each_category_reconcile (test_reports.ReportTests) ... ok
+test_synthetic_full_size_counts_are_not_real_fixture_evidence (test_reports.ReportTests) ... ok
+test_title_drift_is_visible_and_does_not_invalidate_correct_structure (test_reports.ReportTests) ... ok
+test_login_prepare_and_unexpected_sequence_do_not_release (test_reports.BrowserFixtureTests) ... ok
+test_success_rejection_login_unknown_and_crash_sequences (test_reports.BrowserFixtureTests) ... ok
+test_one_missing_item_one_group_and_all_items_must_be_covered (test_reports.GroupTests) ... ok
+test_version_constraints_are_different_signatures (test_reports.GroupTests) ... ok
+test_name_similarity_is_not_tool_fact (test_reports.GroupTests) ... ok
+test_spec_exact_provides_and_repaired_provider_required (test_reports.GroupTests) ... ok
+
+----------------------------------------------------------------------
+Ran 125 tests in 80.466s
+
+OK

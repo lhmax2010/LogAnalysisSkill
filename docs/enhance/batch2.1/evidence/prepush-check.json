@@ -1,0 +1,596 @@
+{
+  "checked_files": 68,
+  "allowed": true,
+  "wordlist_used": true,
+  "files": [
+    {
+      "path": "docs/enhance/batch2.1/DELIVERY.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-A-F-output.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-A-F-stderr.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-export/manifest.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-export/part-00001.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-run.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/A-first.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/A/groups.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/A/inputs.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/A/observe.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/A/packages.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/arm-report.html",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/armv7l-previous.html",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/detail-page.html",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/groups.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/inputs.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/links.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/manifest.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/observe.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/packages.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/rows.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/x86-report.html",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/C/x86_64-previous.html",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/E-loop.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/offline-verify/result.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/preflight.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/prepush-check.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/protected-files-check.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/real-config-load.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/skill-validation.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/staged-source-check.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch2.1/evidence/test-output.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/vd-cosmos-loganalyzer-hld-v0.5.4.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 2
+        },
+        {
+          "word_index": 8
+        },
+        {
+          "word_index": 15
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/README.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/config.sample.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/minimal/config.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/minimal/manifest.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/detail.html",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/manifest.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/scripts/verify_b2_real.sh",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/backends.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/baselines.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/cli.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/config.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/http_reader.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/journal.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/observation.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/read_ops.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/report.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/stability.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/state.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/transport.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b2.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/versions.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/helpers.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/http_helpers.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 15
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-fetch/SKILL.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-watch/SKILL.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-workflow/SKILL.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-workflow/src/vd_cosmos_workflow/api.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-workflow/src/vd_cosmos_workflow/cli.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    }
+  ]
+}

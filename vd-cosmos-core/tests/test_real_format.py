@@ -26,6 +26,7 @@ class RealFormatTests(unittest.TestCase):
         shutil.copytree(CORE / "fixtures/real_format", self.fixture)
         self.raw = json.loads((CORE / "config.sample.json").read_text())
         self.raw["data_root"] = str(self.base / "owned")
+        self.raw["poll"]["settle_s"] = 60
         self.config_path = self.base / "config.json"
         self.config_path.write_text(json.dumps(self.raw))
         self.config = load_config(self.config_path)
@@ -99,7 +100,7 @@ class RealFormatTests(unittest.TestCase):
     def test_running_queued_and_all_terminal_words(self):
         for word, state in [("running", "运行"), ("queued", "排队"), ("waiting", "排队"),
                             *[(w, "已结束") for w in self.raw["cosmos"]["status_source"]["terminal_words"]]]:
-            (self.fixture / "detail.html").write_text('<i title="Build is ' + word + '"></i><i title="Build is successful"></i>')
+            (self.fixture / "detail.html").write_text('fixture-run <i title="Build is ' + word + '"></i><i title="Build is successful"></i>')
             observed = self.observe()
             self.assertEqual(observed["execution_state"], state)
             self.assertEqual(observed["execution_evidence"]["subresult"], word)
@@ -108,7 +109,7 @@ class RealFormatTests(unittest.TestCase):
         for html in ('<i title="Build is unrecognized"></i><i title="Build is failed"></i>',
                      '<p>Build is failed</p><a class="build-status successful">[downstream:BUILD_COMPLETE]</a>',
                      '<script>const markup = \'<i title="Build is failed"></i>\';</script>'):
-            (self.fixture / "detail.html").write_text(html)
+            (self.fixture / "detail.html").write_text("fixture-run " + html)
             result = self.observe()
             self.assertEqual(result["execution_state"], "未知")
             self.assertIn("终态推定", result["terminal_inference"])
@@ -146,7 +147,7 @@ class RealFormatTests(unittest.TestCase):
         self.assertEqual(consumer["other_expansion_messages"], [message])
         self.assertEqual(consumer["missing_dependencies"], [message])
         self.assertEqual(observed["report_state"], "完整")
-        self.assertIn({"arch": "armv7l", "reason": "other_expansion_message_format"}, observed["todos"])
+        self.assertTrue(any(t["arch"] == "armv7l" and t["reason"] == "other_expansion_message_format" for t in observed["todos"]))
         evidence = [{"key": provider["key"], "source_kind": "spec", "sha256": "a" * 64,
                      "evidence_path": "fixture.spec", "verified": True, "provides": [message]}]
         groups = group_expansion(packages, evidence)

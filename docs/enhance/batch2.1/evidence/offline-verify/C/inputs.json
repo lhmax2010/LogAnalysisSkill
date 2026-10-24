@@ -1,0 +1,112 @@
+{
+  "exit_code": 0,
+  "header_consistency": "一致",
+  "package_coverage": "未核",
+  "reports": {
+    "armv7l": {
+      "headers": {
+        "arch": "armv7l",
+        "base": "http://repos.vd.sec.samsung.net/obs220/tizen-rsa/tizen-10.0-base-dev-llvm/standard/tizen-10.0-base-dev-llvm-standard_20261020.1/",
+        "build_conf": "//SHARED/[TizenBuild_Prj]/[INT]/buildconf/tizen/TEST/migration/10.0/TV/TIZEN_KantSU2E_Clang_build.conf@14368686",
+        "gbs_version": "2.0.1",
+        "product": "http://repos.vd.sec.samsung.net/products/tv/development/DO_NOT_DELETE/TIZEN-ONEMAIN-KantSU2e-RELEASE_20261001.3/",
+        "profile": "tizen.393",
+        "start_time": "2026-10-22 13:26 +0900"
+      },
+      "rows": [
+        {
+          "cl": "100",
+          "key": {
+            "arch": "armv7l",
+            "name": "consumer",
+            "path": "//example/packages/consumer/..."
+          },
+          "path": "//example/packages/consumer/...",
+          "raw": "//example/packages/consumer/...@100(shelve)",
+          "shelve": true,
+          "source_line": 66
+        },
+        {
+          "cl": "101",
+          "key": {
+            "arch": "armv7l",
+            "name": "odd-consumer",
+            "path": "//example/packages/odd-consumer/..."
+          },
+          "path": "//example/packages/odd-consumer/...",
+          "raw": "//example/packages/odd-consumer/...@101",
+          "shelve": false,
+          "source_line": 71
+        },
+        {
+          "cl": "102",
+          "key": {
+            "arch": "armv7l",
+            "name": "provider",
+            "path": "//example/packages/provider/..."
+          },
+          "path": "//example/packages/provider/...",
+          "raw": "//example/packages/provider/...@102(shelve)",
+          "shelve": true,
+          "source_line": 81
+        },
+        {
+          "cl": "103",
+          "key": {
+            "arch": "armv7l",
+            "name": "ok",
+            "path": "//example/packages/ok/..."
+          },
+          "path": "//example/packages/ok/...",
+          "raw": "//example/packages/ok/...@103",
+          "shelve": false,
+          "source_line": 86
+        }
+      ]
+    },
+    "x86_64": {
+      "headers": {
+        "arch": "x86_64",
+        "base": "http://repos.vd.sec.samsung.net/obs220/tizen-rsa/tizen-10.0-base-dev-llvm/standard/tizen-10.0-base-dev-llvm-standard_20261020.1/",
+        "build_conf": "//SHARED/[TizenBuild_Prj]/[INT]/buildconf/tizen/TEST/migration/10.0/TV/TIZEN_KantSU2E_Clang_build.conf@14368686",
+        "gbs_version": "2.0.1",
+        "product": "http://repos.vd.sec.samsung.net/products/tv/development/DO_NOT_DELETE/TIZEN-ONEMAIN-KantSU2e-RELEASE_20261001.3/",
+        "profile": "tizen.393",
+        "start_time": "2026-10-22 13:19 +0900"
+      },
+      "rows": [
+        {
+          "cl": "200",
+          "key": {
+            "arch": "x86_64",
+            "name": "libdeflate",
+            "path": "//example/packages/libdeflate/..."
+          },
+          "path": "//example/packages/libdeflate/...",
+          "raw": "//example/packages/libdeflate/...@200",
+          "shelve": false,
+          "source_line": 66
+        },
+        {
+          "cl": "201",
+          "key": {
+            "arch": "x86_64",
+            "name": "host",
+            "path": "//example/packages/host/..."
+          },
+          "path": "//example/packages/host/...",
+          "raw": "//example/packages/host/...@201",
+          "shelve": false,
+          "source_line": 71
+        }
+      ]
+    }
+  },
+  "todos": [
+    {
+      "arch": "armv7l",
+      "basis_version": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb",
+      "reason": "other_expansion_message_format"
+    }
+  ]
+}

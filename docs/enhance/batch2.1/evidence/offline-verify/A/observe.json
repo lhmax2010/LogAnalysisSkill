@@ -1,0 +1,452 @@
+{
+  "backend": "HTTPReportReader",
+  "build_ref": {
+    "backend_id": "cosmos-http",
+    "execution_kind": "cosmos",
+    "instance_id": "http://127.0.0.1:42549/reports",
+    "run_id": "19091860"
+  },
+  "execution_evidence": {
+    "basis": "first_build_status_title",
+    "candidates": [
+      {
+        "element_order": 3,
+        "source_line": 2,
+        "word": "failed"
+      },
+      {
+        "element_order": 4,
+        "source_line": 3,
+        "word": "successful"
+      }
+    ],
+    "detail_attempted": true,
+    "element_order": 3,
+    "failure_count": 0,
+    "failure_started_at": null,
+    "http_status": 200,
+    "identity_match": true,
+    "raw_retained": false,
+    "response": {
+      "Content-Length": "210",
+      "Date": "Sat, 24 Oct 2026 15:41:08 GMT",
+      "ETag": null,
+      "Last-Modified": null,
+      "actual_bytes": 210,
+      "finished_at": "2026-10-24T15:41:08.806050+00:00",
+      "http_status": 200,
+      "sha256": "159e80f91bda8a3cf465f01bfe9ec75f8ed7b5dec6af60f1c2fa09c5acf761b6",
+      "started_at": "2026-10-24T15:41:08.804734+00:00"
+    },
+    "retention_note": "原文未保留",
+    "rule_version": "0.5.4",
+    "selected": {
+      "class": "build-status failed",
+      "id": null,
+      "tag": "span"
+    },
+    "selection_reason": "first_build_status_title",
+    "sha256": "159e80f91bda8a3cf465f01bfe9ec75f8ed7b5dec6af60f1c2fa09c5acf761b6",
+    "source_line": 2,
+    "state": "已结束",
+    "subresult": "failed",
+    "title": "Build is failed",
+    "trust": "configured_detail_title"
+  },
+  "execution_state": "已结束",
+  "exit_code": 0,
+  "header_consistency": "一致",
+  "observation_failed": false,
+  "observed_at": "2026-10-24T15:41:08.839337+00:00",
+  "package_coverage": "未核",
+  "report_state": "完整",
+  "reports": {
+    "armv7l": {
+      "arch": "armv7l",
+      "categories_disjoint": true,
+      "continuous": {
+        "count": 2,
+        "first_seen_at": "2026-10-24T15:41:08.678916+00:00",
+        "last_seen_at": "2026-10-24T15:41:08.821958+00:00",
+        "parsing_version": "391c06d672d5b6381e3c393ac2c272ccf970e4ac2122a81640ad75d37726efc6",
+        "sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb"
+      },
+      "counts": {
+        "build_error": 1,
+        "expansion_error": 2,
+        "export_error": 0,
+        "succeeded": 1,
+        "total": 4
+      },
+      "coverage_basis": "manual_file",
+      "evidence": {
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/owned/verification/b21-6f41f301dd3d4b5ba952c55542a2cf4c/data/rounds/1daf25ebcea281b33ed4268ec8cb4b65db1211b149d1844267f281d6ec22135a/pages/armv7l/54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb.html",
+        "sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb",
+        "size": 2376
+      },
+      "extra_count": 0,
+      "extra_packages": [],
+      "headers": {
+        "arch": "armv7l",
+        "base": "http://repos.vd.sec.samsung.net/obs220/tizen-rsa/tizen-10.0-base-dev-llvm/standard/tizen-10.0-base-dev-llvm-standard_20261020.1/",
+        "build_conf": "//SHARED/[TizenBuild_Prj]/[INT]/buildconf/tizen/TEST/migration/10.0/TV/TIZEN_KantSU2E_Clang_build.conf@14368686",
+        "gbs_version": "2.0.1",
+        "product": "http://repos.vd.sec.samsung.net/products/tv/development/DO_NOT_DELETE/TIZEN-ONEMAIN-KantSU2e-RELEASE_20261001.3/",
+        "profile": "tizen.393",
+        "start_time": "2026-10-22 13:26 +0900"
+      },
+      "http_status": 200,
+      "input_rows": [
+        {
+          "cl": "100",
+          "key": {
+            "arch": "armv7l",
+            "name": "consumer",
+            "path": "//example/packages/consumer/..."
+          },
+          "path": "//example/packages/consumer/...",
+          "raw": "//example/packages/consumer/...@100(shelve)",
+          "shelve": true,
+          "source_line": 66
+        },
+        {
+          "cl": "101",
+          "key": {
+            "arch": "armv7l",
+            "name": "odd-consumer",
+            "path": "//example/packages/odd-consumer/..."
+          },
+          "path": "//example/packages/odd-consumer/...",
+          "raw": "//example/packages/odd-consumer/...@101",
+          "shelve": false,
+          "source_line": 71
+        },
+        {
+          "cl": "102",
+          "key": {
+            "arch": "armv7l",
+            "name": "provider",
+            "path": "//example/packages/provider/..."
+          },
+          "path": "//example/packages/provider/...",
+          "raw": "//example/packages/provider/...@102(shelve)",
+          "shelve": true,
+          "source_line": 81
+        },
+        {
+          "cl": "103",
+          "key": {
+            "arch": "armv7l",
+            "name": "ok",
+            "path": "//example/packages/ok/..."
+          },
+          "path": "//example/packages/ok/...",
+          "raw": "//example/packages/ok/...@103",
+          "shelve": false,
+          "source_line": 86
+        }
+      ],
+      "issues": [
+        "other_expansion_message_format"
+      ],
+      "missing_count": 0,
+      "missing_packages": [],
+      "observed_at": "2026-10-24T15:41:08.821958+00:00",
+      "package_coverage": "一致",
+      "package_keys_unique": true,
+      "packages": [
+        {
+          "category": "expansion_error",
+          "cl": "100",
+          "key": {
+            "arch": "armv7l",
+            "name": "consumer",
+            "path": "//example/packages/consumer/..."
+          },
+          "log_url": null,
+          "missing_dependencies": [
+            "provider >= 2",
+            "other"
+          ],
+          "other_expansion_messages": [],
+          "raw_path": "//example/packages/consumer/...@100(shelve)",
+          "raw_status": "nothing provides provider >= 2 nothing provides other needed by consumer",
+          "shelve": true,
+          "source_line": 66,
+          "version": null
+        },
+        {
+          "category": "expansion_error",
+          "cl": "101",
+          "key": {
+            "arch": "armv7l",
+            "name": "odd-consumer",
+            "path": "//example/packages/odd-consumer/..."
+          },
+          "log_url": null,
+          "missing_dependencies": [
+            "conflict detected: alpha versus beta"
+          ],
+          "other_expansion_messages": [
+            "conflict detected: alpha versus beta"
+          ],
+          "raw_path": "//example/packages/odd-consumer/...@101",
+          "raw_status": "conflict detected: alpha versus beta",
+          "shelve": false,
+          "source_line": 71,
+          "version": null
+        },
+        {
+          "category": "build_error",
+          "cl": "102",
+          "key": {
+            "arch": "armv7l",
+            "name": "provider",
+            "path": "//example/packages/provider/..."
+          },
+          "log_url": "http://127.0.0.1:42549/reports/b860/19091860/html/Build_Report_armv7l/logs/fail/provider-1.0-1/log.txt",
+          "missing_dependencies": [],
+          "other_expansion_messages": [],
+          "raw_path": "//example/packages/provider/...@102(shelve)",
+          "raw_status": "Failed",
+          "shelve": true,
+          "source_line": 81,
+          "version": "1.0-1"
+        },
+        {
+          "category": "succeeded",
+          "cl": "103",
+          "key": {
+            "arch": "armv7l",
+            "name": "ok",
+            "path": "//example/packages/ok/..."
+          },
+          "log_url": "http://127.0.0.1:42549/reports/b860/19091860/html/Build_Report_armv7l/logs/success/ok-1.0-1/log.txt",
+          "missing_dependencies": [],
+          "other_expansion_messages": [],
+          "raw_path": "//example/packages/ok/...@103",
+          "raw_status": "Succeeded",
+          "shelve": false,
+          "source_line": 86,
+          "version": "1.0-1"
+        }
+      ],
+      "raw_table_titles": {
+        "build": "Build Statis Details",
+        "expansion": "Expansion error details"
+      },
+      "reconciliation_checks": [],
+      "report_state": "完整",
+      "response": {
+        "Content-Length": "2376",
+        "Date": "Sat, 24 Oct 2026 15:41:08 GMT",
+        "ETag": null,
+        "Last-Modified": null,
+        "actual_bytes": 2376,
+        "finished_at": "2026-10-24T15:41:08.821930+00:00",
+        "http_status": 200,
+        "sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb",
+        "started_at": "2026-10-24T15:41:08.820815+00:00"
+      },
+      "result_state": "失败",
+      "settled": true,
+      "source_rows": [
+        {
+          "category": "expansion_error",
+          "key": {
+            "arch": "armv7l",
+            "name": "consumer",
+            "path": "//example/packages/consumer/..."
+          },
+          "raw": "<tr>\n    <td>consumer</td>\n<td>//example/packages/consumer/...@100(shelve)</td>\n    <td ><font color=blue>nothing provides provider &gt;= 2<br>nothing provides other needed by consumer</font></td>\n</tr>",
+          "source_line": 66
+        },
+        {
+          "category": "expansion_error",
+          "key": {
+            "arch": "armv7l",
+            "name": "odd-consumer",
+            "path": "//example/packages/odd-consumer/..."
+          },
+          "raw": "<tr>\n    <td>odd-consumer</td>\n<td>//example/packages/odd-consumer/...@101</td>\n    <td ><font color=blue>conflict detected: alpha   versus beta</font></td>\n</tr>",
+          "source_line": 71
+        },
+        {
+          "category": "build_error",
+          "key": {
+            "arch": "armv7l",
+            "name": "provider",
+            "path": "//example/packages/provider/..."
+          },
+          "raw": "<tr>\n    <td>provider</td>\n<td>//example/packages/provider/...@102(shelve)</td>\n    <td ><a href=logs/fail/provider-1.0-1/log.txt class = failed> Failed </a></td>\n</tr>",
+          "source_line": 81
+        },
+        {
+          "category": "succeeded",
+          "key": {
+            "arch": "armv7l",
+            "name": "ok",
+            "path": "//example/packages/ok/..."
+          },
+          "raw": "<tr>\n    <td>ok</td>\n<td>//example/packages/ok/...@103</td>\n    <td ><a href=logs/success/ok-1.0-1/log.txt class = succeeded> Succeeded </a></td>\n</tr>",
+          "source_line": 86
+        }
+      ],
+      "stable": true
+    },
+    "x86_64": {
+      "arch": "x86_64",
+      "categories_disjoint": true,
+      "continuous": {
+        "count": 2,
+        "first_seen_at": "2026-10-24T15:41:08.712762+00:00",
+        "last_seen_at": "2026-10-24T15:41:08.839337+00:00",
+        "parsing_version": "391c06d672d5b6381e3c393ac2c272ccf970e4ac2122a81640ad75d37726efc6",
+        "sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07"
+      },
+      "counts": {
+        "build_error": 1,
+        "expansion_error": 0,
+        "export_error": 0,
+        "succeeded": 1,
+        "total": 2
+      },
+      "coverage_basis": "none",
+      "evidence": {
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b21-offline-final/owned/verification/b21-6f41f301dd3d4b5ba952c55542a2cf4c/data/rounds/1daf25ebcea281b33ed4268ec8cb4b65db1211b149d1844267f281d6ec22135a/pages/x86_64/072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07.html",
+        "sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07",
+        "size": 1852
+      },
+      "extra_packages": [],
+      "headers": {
+        "arch": "x86_64",
+        "base": "http://repos.vd.sec.samsung.net/obs220/tizen-rsa/tizen-10.0-base-dev-llvm/standard/tizen-10.0-base-dev-llvm-standard_20261020.1/",
+        "build_conf": "//SHARED/[TizenBuild_Prj]/[INT]/buildconf/tizen/TEST/migration/10.0/TV/TIZEN_KantSU2E_Clang_build.conf@14368686",
+        "gbs_version": "2.0.1",
+        "product": "http://repos.vd.sec.samsung.net/products/tv/development/DO_NOT_DELETE/TIZEN-ONEMAIN-KantSU2e-RELEASE_20261001.3/",
+        "profile": "tizen.393",
+        "start_time": "2026-10-22 13:19 +0900"
+      },
+      "http_status": 200,
+      "input_rows": [
+        {
+          "cl": "200",
+          "key": {
+            "arch": "x86_64",
+            "name": "libdeflate",
+            "path": "//example/packages/libdeflate/..."
+          },
+          "path": "//example/packages/libdeflate/...",
+          "raw": "//example/packages/libdeflate/...@200",
+          "shelve": false,
+          "source_line": 66
+        },
+        {
+          "cl": "201",
+          "key": {
+            "arch": "x86_64",
+            "name": "host",
+            "path": "//example/packages/host/..."
+          },
+          "path": "//example/packages/host/...",
+          "raw": "//example/packages/host/...@201",
+          "shelve": false,
+          "source_line": 71
+        }
+      ],
+      "issues": [],
+      "missing_packages": [],
+      "observed_at": "2026-10-24T15:41:08.839337+00:00",
+      "package_coverage": "未核",
+      "package_keys_unique": true,
+      "packages": [
+        {
+          "category": "build_error",
+          "cl": "200",
+          "key": {
+            "arch": "x86_64",
+            "name": "libdeflate",
+            "path": "//example/packages/libdeflate/..."
+          },
+          "log_url": "http://127.0.0.1:42549/reports/b860/19091860/html/Build_Report_x86_64/logs/fail/libdeflate-1.23-0/log.txt",
+          "missing_dependencies": [],
+          "other_expansion_messages": [],
+          "raw_path": "//example/packages/libdeflate/...@200",
+          "raw_status": "Failed",
+          "shelve": false,
+          "source_line": 66,
+          "version": "1.23-0"
+        },
+        {
+          "category": "succeeded",
+          "cl": "201",
+          "key": {
+            "arch": "x86_64",
+            "name": "host",
+            "path": "//example/packages/host/..."
+          },
+          "log_url": "http://127.0.0.1:42549/reports/b860/19091860/html/Build_Report_x86_64/logs/success/host-1.0-1/log.txt",
+          "missing_dependencies": [],
+          "other_expansion_messages": [],
+          "raw_path": "//example/packages/host/...@201",
+          "raw_status": "Succeeded",
+          "shelve": false,
+          "source_line": 71,
+          "version": "1.0-1"
+        }
+      ],
+      "raw_table_titles": {
+        "build": "Build Statis Details"
+      },
+      "reconciliation_checks": [],
+      "report_state": "完整",
+      "response": {
+        "Content-Length": "1852",
+        "Date": "Sat, 24 Oct 2026 15:41:08 GMT",
+        "ETag": null,
+        "Last-Modified": null,
+        "actual_bytes": 1852,
+        "finished_at": "2026-10-24T15:41:08.839269+00:00",
+        "http_status": 200,
+        "sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07",
+        "started_at": "2026-10-24T15:41:08.837947+00:00"
+      },
+      "result_state": "失败",
+      "settled": true,
+      "source_rows": [
+        {
+          "category": "build_error",
+          "key": {
+            "arch": "x86_64",
+            "name": "libdeflate",
+            "path": "//example/packages/libdeflate/..."
+          },
+          "raw": "<tr>\n    <td>libdeflate</td>\n<td>//example/packages/libdeflate/...@200</td>\n    <td ><a href=logs/fail/libdeflate-1.23-0/log.txt class = failed> Failed </a></td>\n</tr>",
+          "source_line": 66
+        },
+        {
+          "category": "succeeded",
+          "key": {
+            "arch": "x86_64",
+            "name": "host",
+            "path": "//example/packages/host/..."
+          },
+          "raw": "<tr>\n    <td>host</td>\n<td>//example/packages/host/...@201</td>\n    <td ><a href=logs/success/host-1.0-1/log.txt class = succeeded> Succeeded </a></td>\n</tr>",
+          "source_line": 71
+        }
+      ],
+      "stable": true
+    }
+  },
+  "result_state": "失败",
+  "schema_version": 2,
+  "terminal_inference": null,
+  "terminal_prerequisite_met": false,
+  "todos": [
+    {
+      "arch": "armv7l",
+      "basis_version": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb",
+      "reason": "other_expansion_message_format"
+    }
+  ]
+}

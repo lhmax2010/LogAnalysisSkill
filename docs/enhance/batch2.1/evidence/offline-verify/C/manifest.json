@@ -1,0 +1,60 @@
+{
+  "build_ref": {
+    "backend_id": "saved-report",
+    "execution_kind": "local_simulation",
+    "instance_id": "local-saved-pages",
+    "run_id": "19091860"
+  },
+  "detail_page": "detail-page.html",
+  "expected_packages": {
+    "armv7l": [
+      {
+        "cl": "100",
+        "path": "//example/packages/consumer/...",
+        "shelve": true
+      },
+      {
+        "cl": "101",
+        "path": "//example/packages/odd-consumer/...",
+        "shelve": false
+      },
+      {
+        "cl": "102",
+        "path": "//example/packages/provider/...",
+        "shelve": true
+      },
+      {
+        "cl": "103",
+        "path": "//example/packages/ok/...",
+        "shelve": false
+      }
+    ]
+  },
+  "reports": {
+    "armv7l": [
+      {
+        "observed_at": "2026-10-24T15:41:07.997998+00:00",
+        "path": "armv7l-previous.html",
+        "status_code": 200
+      },
+      {
+        "observed_at": "2026-10-24T15:41:09.027998+00:00",
+        "path": "arm-report.html",
+        "status_code": 200
+      }
+    ],
+    "x86_64": [
+      {
+        "observed_at": "2026-10-24T15:41:07.997998+00:00",
+        "path": "x86_64-previous.html",
+        "status_code": 200
+      },
+      {
+        "observed_at": "2026-10-24T15:41:09.027998+00:00",
+        "path": "x86-report.html",
+        "status_code": 200
+      }
+    ]
+  },
+  "schema_version": 1
+}

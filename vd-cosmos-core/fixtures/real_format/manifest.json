@@ -37,34 +37,46 @@
       {
         "arch": "armv7l",
         "name": "consumer",
-        "path": "//example/packages/consumer/..."
+        "path": "//example/packages/consumer/...",
+        "cl": "100",
+        "shelve": true
       },
       {
         "arch": "armv7l",
         "name": "odd-consumer",
-        "path": "//example/packages/odd-consumer/..."
+        "path": "//example/packages/odd-consumer/...",
+        "cl": "101",
+        "shelve": false
       },
       {
         "arch": "armv7l",
         "name": "provider",
-        "path": "//example/packages/provider/..."
+        "path": "//example/packages/provider/...",
+        "cl": "102",
+        "shelve": true
       },
       {
         "arch": "armv7l",
         "name": "ok",
-        "path": "//example/packages/ok/..."
+        "path": "//example/packages/ok/...",
+        "cl": "103",
+        "shelve": false
       }
     ],
     "x86_64": [
       {
         "arch": "x86_64",
         "name": "libdeflate",
-        "path": "//example/packages/libdeflate/..."
+        "path": "//example/packages/libdeflate/...",
+        "cl": "200",
+        "shelve": false
       },
       {
         "arch": "x86_64",
         "name": "host",
-        "path": "//example/packages/host/..."
+        "path": "//example/packages/host/...",
+        "cl": "201",
+        "shelve": false
       }
     ]
   },

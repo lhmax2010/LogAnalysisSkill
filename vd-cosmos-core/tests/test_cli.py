@@ -86,7 +86,7 @@ class CLITests(unittest.TestCase):
             path = self.base / entry["path"]
             path.write_text(path.read_text().replace("fixture-base", "other-base"))
         result, code = self.cli("watch", "observe")
-        self.assertEqual(code, 0)
+        self.assertEqual(code, 3)
         self.assertEqual(result["header_consistency"], "不一致")
         self.assertEqual(result["result_state"], "未知")
         self.assertIn("header_inconsistent", (self.base / "data/inbox.md").read_text())

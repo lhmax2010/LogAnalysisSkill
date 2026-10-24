@@ -2,7 +2,7 @@
 import json
 import sqlite3
 
-from .commands import authorize_event
+from .commands import authorize_event, COMMANDS, Category
 from .errors import FlowError
 from .files import confined
 
@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS events (
     payload TEXT NOT NULL,
     created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
+CREATE INDEX IF NOT EXISTS by_kind ON events(kind, id);
+CREATE INDEX IF NOT EXISTS by_build ON events(COALESCE(build_key, json_extract(payload, '$.build')), id);
 CREATE TRIGGER IF NOT EXISTS no_update BEFORE UPDATE ON events
 BEGIN SELECT RAISE(ABORT, 'append_only'); END;
 CREATE TRIGGER IF NOT EXISTS no_delete BEFORE DELETE ON events
@@ -65,11 +67,15 @@ class EventStore:
         path = confined(root, "state/state.db")
         path.parent.mkdir(parents=True, exist_ok=True)
         try:
-            self.connection = sqlite3.connect(path, timeout=0, isolation_level=None)
+            self.connection = sqlite3.connect(path, timeout=2, isolation_level=None)
             self.connection.row_factory = sqlite3.Row
+            self.connection.execute("PRAGMA busy_timeout=2000")
+            self.connection.execute("PRAGMA journal_mode=WAL")
             self.connection.executescript(SCHEMA)
-        except sqlite3.Error:
-            raise FlowError(6, "state_unavailable") from None
+        except sqlite3.Error as error:
+            if hasattr(self, "connection"):
+                self.connection.close()
+            raise FlowError(6, classify(error)) from None
 
     def close(self):
         self.connection.close()
@@ -81,22 +87,35 @@ class EventStore:
         self.close()
 
     def head(self):
-        return self.connection.execute("SELECT COALESCE(MAX(id),0) FROM events").fetchone()[0]
+        try:
+            return self.connection.execute("SELECT COALESCE(MAX(id),0) FROM events").fetchone()[0]
+        except sqlite3.Error:
+            raise FlowError(6, 'state_busy') from None
 
-    def events(self):
-        return [dict(row) | {"payload": json.loads(row["payload"])}
-                for row in self.connection.execute("SELECT * FROM events ORDER BY id")]
+    def events(self, build_key=None, *, after=0, kinds=None, latest=False):
+        query, values = 'SELECT * FROM events WHERE id > ?', [after]
+        if build_key is not None:
+            query += " AND COALESCE(build_key,json_extract(payload,'$.build')) = ?"
+            values.append(build_key)
+        if kinds:
+            query += ' AND kind IN (' + ','.join('?' for _ in kinds) + ')'
+            values.extend(kinds)
+        query += ' ORDER BY id ' + ('DESC LIMIT 1' if latest else 'ASC')
+        try:
+            return [dict(row) | {'payload': json.loads(row['payload'])} for row in self.connection.execute(query, values)]
+        except (sqlite3.Error, ValueError):
+            raise FlowError(6, 'state_busy') from None
 
     def append(self, context, kind, payload, expected_previous, *, request_id=None,
                operation_id=None, build_ref=None):
         authorize_event(context, kind)
         if type(expected_previous) is not int or expected_previous < 0:
             raise FlowError(2, "invalid_expected_event")
-        build_key = json.dumps(build_ref.to_dict(), sort_keys=True) if build_ref else None
+        build_key = json.dumps(build_ref.to_dict(), sort_keys=True) if build_ref else payload.get("build")
         try:
             self.connection.execute("BEGIN IMMEDIATE")
             if self.head() != expected_previous:
-                raise FlowError(6, "concurrent_event_conflict")
+                raise FlowError(6, "stale_head")
             cursor = self.connection.execute(
                 "INSERT INTO events(previous_id,kind,command,request_id,operation_id,build_key,payload) "
                 "VALUES(?,?,?,?,?,?,?)",
@@ -105,8 +124,36 @@ class EventStore:
             self.connection.execute("COMMIT")
             return cursor.lastrowid
         except (sqlite3.Error, FlowError) as error:
-            if self.connection.in_transaction:
-                self.connection.execute("ROLLBACK")
+            try:
+                if self.connection.in_transaction:
+                    self.connection.execute("ROLLBACK")
+            except sqlite3.Error:
+                raise FlowError(6, "corrupt") from None
             if isinstance(error, FlowError):
                 raise
-            raise FlowError(6, "state_conflict_or_constraint") from None
+            raise FlowError(6, classify(error)) from None
+
+
+def classify(error):
+    code = getattr(error, 'sqlite_errorcode', 0) & 255
+    # Python 3.10 does not expose sqlite_errorcode on every build.
+    if code in {getattr(sqlite3, 'SQLITE_BUSY', 5), getattr(sqlite3, 'SQLITE_LOCKED', 6)} or str(error) in {'database is locked', 'database table is locked'}:
+        return 'state_busy'
+    if isinstance(error, sqlite3.IntegrityError):
+        return 'stale_head' if str(error) == 'stale_head' else 'constraint'
+    return 'corrupt'
+
+
+def append_retry(store, context, kind, payload, expected, *, retry=False, **identifiers):
+    for attempt in range(4):
+        try:
+            return store.append(context, kind, payload, expected, **identifiers)
+        except FlowError as error:
+            if not retry or attempt == 3 or error.reason not in {'stale_head', 'state_busy'}:
+                raise
+            new_head = store.head()
+            intervening = store.events(after=expected)
+            if any(e['payload'].get('build') == payload.get('build') or
+                   COMMANDS.get(e['command']) in {Category.HUMAN, Category.EXTERNAL} for e in intervening):
+                raise
+            expected = new_head
