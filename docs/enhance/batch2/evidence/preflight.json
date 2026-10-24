@@ -1,0 +1,31 @@
+{
+  "branch": "vd-cosmos-loganalyzer",
+  "head": "8ca13b3fd37d53af6dbc5c084e976bfc5bc78843",
+  "hld_source": "/home/toolchain/Downloads/vd-cosmos-loganalyzer-hld-v0.5.3.md",
+  "hld_destination": "docs/enhance/vd-cosmos-loganalyzer-hld-v0.5.3.md",
+  "source_sha256": "279a96f2e0b50fc91ff983cc37bc2fc588df18307ea07958463f5cf565237b65",
+  "destination_sha256": "279a96f2e0b50fc91ff983cc37bc2fc588df18307ea07958463f5cf565237b65",
+  "copy_matches": true,
+  "hld_modified": false,
+  "credential_precheck": {
+    "allowed": true,
+    "credential_hits": [],
+    "test_exemptions": true
+  },
+  "task_attachment_sha256": "92ae2cd5f880095739bffdbdd30dceaeef8a4f2dda6b04107426ab5468fbe46d",
+  "blocker": "B2-Q01: loop 单实例文件锁是否在睡眠期间持续持有",
+  "implementation_started": false,
+  "tests_run": false,
+  "committed": false,
+  "pushed": false,
+  "real_network_access": false,
+  "record_phase": "Historical preflight, before B2-Q01 ruling",
+  "resolution": {
+    "closed": true,
+    "source": "设计方 2026-10-24 对 B2-Q01 的答复",
+    "hld_unchanged": true,
+    "decision": "实例 flock 覆盖 loop 全生命周期；轮次锁和 SQLite 事务在睡眠前释放；手工 tick 不取实例锁。",
+    "test": "test_sleep_allows_manual_tick_instance_lock_still_excludes_second_loop",
+    "evidence": "docs/enhance/batch2/evidence/test-output.txt"
+  }
+}

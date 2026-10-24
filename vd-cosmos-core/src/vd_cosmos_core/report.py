@@ -24,6 +24,7 @@ class Node:
     line: int
     order: int
     children: list = field(default_factory=list)
+    end_line: int = 0
 
     def text(self):
         result = "".join(x.text() if isinstance(x, Node) else x for x in self.children)
@@ -69,6 +70,7 @@ class Document(HTMLParser):
     def handle_endtag(self, tag):
         for index in range(len(self.stack) - 1, 0, -1):
             if self.stack[index].tag == tag:
+                self.stack[index].end_line = self.getpos()[0]
                 del self.stack[index:]
                 break
 
@@ -203,7 +205,8 @@ def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""
     if marker not in label(document.root.text()):
         raise FlowError(5, "not_a_report")
     headers, counts, malformed = _header_and_counts(document, cosmos["report_markers"]["summary"])
-    packages, inputs, issues, titles, warnings = [], [], [], {}, []
+    packages, inputs, issues, titles, warnings, source_rows = [], [], [], {}, [], []
+    html_lines = html.splitlines()
     prefixes = {"build": cosmos["detail_table_title_prefix"],
                 "expansion": cosmos["report_markers"]["expansion"],
                 "export": cosmos["report_markers"]["export"]}
@@ -264,6 +267,9 @@ def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""
             if other:
                 warnings.append("other_expansion_message_format")
             packages.append(package.to_dict())
+            source_rows.append({"source_line": row.line,
+                                "raw": "\n".join(html_lines[row.line - 1:(row.end_line or row.line)]),
+                                "key": package.key.to_dict(), "category": category})
             inputs.append({"key": package.key.to_dict(), "path": path, "cl": cl,
                            "shelve": shelve, "raw": raw_path, "source_line": row.line})
     required = {"profile", "arch", "start_time", "gbs_version", "base", "product", "build_conf"}
@@ -293,24 +299,36 @@ def parse_report(html, arch, cosmos, expected_packages, *, stable, source_url=""
         issues.append("duplicate_package_key")
     if not disjoint:
         issues.append("category_overlap")
-    missing, extra = [], []
+    missing, extra, coverage = [], [], "未核"
     if expected_packages is None:
         issues.append("expected_package_set_missing")
     else:
-        expected = [(p.get("arch", arch), p["name"], p["path"]) for p in expected_packages]
-        if len(set(expected)) != len(expected) or any(k[0] != arch for k in expected):
-            issues.append("invalid_expected_package_set")
+        try:
+            if not isinstance(expected_packages, list):
+                raise ValueError()
+            expected = [(p.get("arch", arch), p["name"], p["path"]) for p in expected_packages]
+            if len(set(expected)) != len(expected) or any(k[0] != arch or not all(isinstance(v, str) and v for v in k) for k in expected):
+                raise ValueError()
+        except (KeyError, TypeError, ValueError, AttributeError):
+            raise FlowError(2, "invalid_expected_package_set") from None
         missing, extra = sorted(set(expected) - set(keys)), sorted(set(keys) - set(expected))
+        coverage = "不一致" if missing or extra else "一致"
         if missing or extra:
             issues.append("package_set_mismatch")
     if not stable:
         issues.append("not_stable")
-    state = "结构未知" if malformed else ("部分" if issues else "完整")
+    waiting = {"not_stable", "missing_summary", "missing_report_header"}
+    checks = [i for i in issues if i in {"summary_total_mismatch", "duplicate_package_key",
+               "category_overlap", "architecture_mismatch"} or i.startswith("count_mismatch:")]
+    state = ("结构未知" if malformed else "部分" if waiting.intersection(issues)
+             else "对账失败" if checks else "完整")
     result = "未知"
-    if state == "完整":
+    if state == "完整" and coverage != "不一致":
         result = "失败" if any(p["category"] != "succeeded" for p in packages) else "成功"
     return {"arch": arch, "report_state": state, "result_state": result,
             "headers": headers, "counts": counts, "packages": packages, "input_rows": inputs,
             "raw_table_titles": titles, "issues": sorted(set(issues + warnings)),
+            "package_coverage": coverage, "source_rows": source_rows,
+            "reconciliation_checks": checks,
             "package_keys_unique": unique, "categories_disjoint": disjoint,
             "missing_packages": missing, "extra_packages": extra, "stable": stable}

@@ -6,7 +6,7 @@ from .files import confined, digest
 
 class OperationLock:
     def __init__(self, root, kind, identity):
-        if kind not in {"profile", "round"}:
+        if kind not in {"profile", "round", "loop"}:
             raise FlowError(2, "invalid_lock_kind")
         self.path = confined(root, "locks/" + kind + "-" + digest(str(identity).encode()) + ".lock")
         self.stream = None

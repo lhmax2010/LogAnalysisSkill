@@ -1,13 +1,38 @@
-"""Load the batch-one configuration; no network or browser initialization."""
+"""Load configuration and local storage prerequisites, without network I/O."""
 from dataclasses import dataclass
 import os
 from pathlib import Path
 import re
 import subprocess
+from string import Formatter
 from urllib.parse import urlsplit
 
 from .errors import FlowError
 from .files import confined, load_json
+
+FETCH_DEFAULTS = {"timeout_s": 60, "max_page_bytes": 20 * 1024 * 1024,
+                  "max_log_bytes": 200 * 1024 * 1024, "log_concurrency": 4,
+                  "user_agent": "VD-Cosmos-LogAnalyzer/0.5.3"}
+
+
+def validate_template(value, allowed):
+    if not isinstance(value, str) or not value:
+        raise ValueError()
+    for _, field, spec, conversion in Formatter().parse(value):
+        if field is not None and (field not in allowed or spec or conversion):
+            raise ValueError()
+
+
+def validate_url(value):
+    if not isinstance(value, str):
+        raise ValueError()
+    url = urlsplit(value)
+    if url.scheme not in {"http", "https"} or not url.hostname or url.username or url.password or url.fragment:
+        raise ValueError()
+    if any(char.isspace() for char in value):
+        raise ValueError()
+    _ = url.port  # Reject malformed ports while validating configuration.
+    return url
 
 
 def check_filesystem(path):
@@ -75,9 +100,8 @@ def load_config(path):
                 raise ValueError()
             if not isinstance(status["url_template"], str) or not status["url_template"].strip():
                 raise ValueError()
-            url = urlsplit(status["url_template"])
-            if url.scheme not in {"http", "https"} or not url.netloc or url.username or url.password:
-                raise ValueError()
+            validate_url(status["url_template"])
+            validate_template(status["url_template"], {"build_id"})
             if not isinstance(status["status_title_regex"], str) or re.compile(status["status_title_regex"]).groups != 1:
                 raise ValueError()
             seen = set()
@@ -89,6 +113,28 @@ def load_config(path):
                 if len(normalized) != len(words) or normalized & seen:
                     raise ValueError()
                 seen.update(normalized)
+        if "report_root" in cosmos:
+            validate_url(cosmos["report_root"])
+            validate_template(cosmos["report_path_template"], {"last3", "build_id", "arch"})
+        validate_template(cosmos.get("bucket_path_template", "b{last3}/"), {"last3", "build_id"})
+        raw["fetch"] = FETCH_DEFAULTS | raw.get("fetch", {})
+        fetch = raw["fetch"]
+        if type(fetch["timeout_s"]) not in (int, float) or fetch["timeout_s"] <= 0:
+            raise ValueError()
+        for key in ("max_page_bytes", "max_log_bytes", "log_concurrency"):
+            if type(fetch[key]) is not int or fetch[key] <= 0:
+                raise ValueError()
+        if not isinstance(fetch["user_agent"], str) or not fetch["user_agent"].strip() or any(c in fetch["user_agent"] for c in "\r\n"):
+            raise ValueError()
+        network = raw.setdefault("network", {})
+        if not isinstance(network, dict):
+            raise ValueError()
+        if network.get("proxy"):
+            validate_url(network["proxy"])
+        if not isinstance(network.get("no_proxy_hosts", []), list) or not all(isinstance(h, str) and h.strip() for h in network.get("no_proxy_hosts", [])):
+            raise ValueError()
+        if network.get("ca_file") is not None and not isinstance(network["ca_file"], str):
+            raise ValueError()
         if type(raw["poll"]["interval_s"]) not in (int, float) or raw["poll"]["interval_s"] <= 0:
             raise ValueError()
         if type(raw["poll"].get("stall_polls", 6)) is not int or raw["poll"].get("stall_polls", 6) < 2:

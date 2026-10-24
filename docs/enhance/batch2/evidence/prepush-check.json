@@ -1,0 +1,670 @@
+{
+  "checked_files": 70,
+  "credential_blocked_count": 0,
+  "warning_file_count": 19,
+  "test_exemptions": true,
+  "files": [
+    {
+      "file": "docs/enhance/batch2/DELIVERY.md",
+      "sha256": "adfbdca66ae834d784d292c239bea7439bcb091fced73f9b92bacf594654433f",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-A-E-output.txt",
+      "sha256": "c22dbbcb870cd48fadad773aea440a4be6a06933f1df6b1881fd9f33dd3d381c",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-A-E-run.json",
+      "sha256": "e826ff874a84a68a6d7efae0400ebea2b573f2d49aa3c4064b1130b01e4f6721",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-A-E-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-export/manifest.json",
+      "sha256": "0e2e6a0ac2424a03066a12260aa99ebba47c28196f62bf9c0d3f68d9714506a0",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-export/part-00001.txt",
+      "sha256": "daeb5be9bb662c94b2835cf6c92bca549a9681f5fed01a8dbc9c68208fb2c0af",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/A-first.json",
+      "sha256": "7f8fa812f0449ece2608c1e75541b7434134502beb1f800b422170cab2dba5c9",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/A/groups.json",
+      "sha256": "6793f62f1c00b7b5d018f5c9f617876b10f6166b5e0902277a172173cc65d48a",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/A/inputs.json",
+      "sha256": "8c8c39b2af8f59fab4f9108a39cf72ee1af919a8a51a5b0a7014fb26b2b97dc1",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/A/observe.json",
+      "sha256": "7630792a277f70e738350bcce81b884739f6188b7535bf564c7a114fb0fb8d7d",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/A/packages.json",
+      "sha256": "8dedbe9b61a043fa06dfb94710d3b07e2b28ada1f4d5bed3fedbb4394919000b",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/arm-report.html",
+      "sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/armv7l-previous.html",
+      "sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/detail-page.html",
+      "sha256": "3cae1da7fd202f8f3b9261bca41a439b4cabfccc4d504f582e6c663e4491ae99",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/groups.json",
+      "sha256": "6793f62f1c00b7b5d018f5c9f617876b10f6166b5e0902277a172173cc65d48a",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/inputs.json",
+      "sha256": "8c8c39b2af8f59fab4f9108a39cf72ee1af919a8a51a5b0a7014fb26b2b97dc1",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/links.txt",
+      "sha256": "4ee1dcf881d32e31f0f589ffc393d3049525b5a26ad526ce2b829d8c7e074b04",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/manifest.json",
+      "sha256": "8b0e6c9ba2b664e693bba5203a02082261e97b5ee55735f82f674ca4277f9523",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/observe.json",
+      "sha256": "82664afe029fc1bb2ade05a845335e206f76831784aa5c6b8f87a76c228c5068",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/packages.json",
+      "sha256": "5aacc80550cf326b4fc3d3d2a10a0feec6e90c6c8e4f87f6be9ef9b4f3566056",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/rows.txt",
+      "sha256": "d69dc2ec9ee1faf49ba193f986d9bd6c6bed6a5edeee879902d5fd60cfe5d85b",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/x86-report.html",
+      "sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/C/x86_64-previous.html",
+      "sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 4
+        },
+        {
+          "word_index": 9
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/E-loop.json",
+      "sha256": "9cce66988d844b338f7dce2558d6d18fbe527227a3989929a8c1bd2cae40cdeb",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/offline-verify/result.json",
+      "sha256": "daeb5be9bb662c94b2835cf6c92bca549a9681f5fed01a8dbc9c68208fb2c0af",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/preflight.json",
+      "sha256": "a92ad247d780b6149a35dbdc6426f6fd0bde1838f47befaf6ab3a9ada48184f1",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/protected-files-check.json",
+      "sha256": "e5b6695fdc99a2920b6b20eb7a23acd648f632148525ac1b6ba44c3b4e928c43",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/real-config-load.json",
+      "sha256": "4fa5bc8d0441794ff6db79a8236624a6a00ee1d791c3b2767dda0548d1763f70",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/skill-validation.json",
+      "sha256": "a67bf4ee90bf9a87235976945b1a8cb9cad7ec637bc90aa20aed8493124d0eda",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/test-output.txt",
+      "sha256": "60be2e43bcf43c22e6889835222b30b5af237d73c412d7deeea67e2fc971b57b",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/batch2/evidence/tested-source-sha256.json",
+      "sha256": "551ab7db41adb6b7c3c6e1ab7ec07997eaaee4d53eeaac4d8c5bf26f8c8a7d83",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/dev_memory/STATUS.md",
+      "sha256": "21d6f85685d41a8ce5ec3ea9b6403d75aeb86fc99618553457f0078ba35656a6",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "docs/enhance/vd-cosmos-loganalyzer-hld-v0.5.3.md",
+      "sha256": "279a96f2e0b50fc91ff983cc37bc2fc588df18307ea07958463f5cf565237b65",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 0
+        },
+        {
+          "word_index": 2
+        },
+        {
+          "word_index": 8
+        },
+        {
+          "word_index": 15
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "vd-cosmos-core/.importlinter",
+      "sha256": "53c3325a508cadc4fade0ee8635ab12ecedc2b6d1a86abc35e81d07f87d1f5be",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/README.md",
+      "sha256": "6b94fe8a9f7adbdbed1cad2776abcc9011bf2ae005e62e0f057e47c16ccb023c",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 7
+        },
+        {
+          "word_index": 8
+        },
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "vd-cosmos-core/config.sample.json",
+      "sha256": "b3260c09a7eff4709f9d0399d7e64d3d1cfb313b2da093ddebe6b2ac94e5c76a",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/fixtures/real_format/README.md",
+      "sha256": "5db393e281849bfa52763bd3db65d2ed48c84a39d3d53b237458552c534a8440",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/fixtures/real_format/links.txt",
+      "sha256": "4ee1dcf881d32e31f0f589ffc393d3049525b5a26ad526ce2b829d8c7e074b04",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/scripts/check_imports.py",
+      "sha256": "bee212c40c3aabf14db47eb5c10a324b05b36aeb70a606fc99e4950feeb58013",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/scripts/run_tests.sh",
+      "sha256": "13a70cb1b0640d45d03183ee2ae9a7b8ae1d05d738efd9e8921239b863d50a0a",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/scripts/verify_b2_real.py",
+      "sha256": "280cc05c56f38bf4786b8596f44f221241487180d47a13bb2ae2df37054cb752",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/scripts/verify_b2_real.sh",
+      "sha256": "576e418bf19ca147279155ad8b64f834562445a829ebef4b603a0098721526b2",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/backends.py",
+      "sha256": "2e6766130aff9d46c1e1245d938471c8a2d8b4ca8f04bc2e3636179cd293ae05",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/baselines.py",
+      "sha256": "f05322bfc002d5691b48a9f9630d6a2062cb3dbad466f7a4456f51b6ff866c39",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/cli.py",
+      "sha256": "ef8f5c641ace582b1598589a9f1ba8c227ccf5abd5600b985c79a9067b309ef7",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/commands.py",
+      "sha256": "f0df36f241237ce1d60d4408463f58825851c2e46aedfa128775f6509e354ef2",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/config.py",
+      "sha256": "1a8e2e82bc2c26893b9479bf116a30af4a67973630343d0749300d05adaba46f",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/http_reader.py",
+      "sha256": "2428de76b0262bf2bff266781c52f001e91e4c14d7e6fb88cebb0f03b3c33a24",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/journal.py",
+      "sha256": "e4557f0943266f1052cd2b5c9854ee23311811ce7d241e5094a51c385b428e5f",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/locks.py",
+      "sha256": "eb97702ad36a8907a531acfca36e3bd19d5c7dcaf50d1342f4d6b5c5af447f1d",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/observation.py",
+      "sha256": "3bb5f7f12bd1ae9e03813a8b470a3889ac6b4c9feeaf1e8e5c63b9649be6eb6c",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/read_ops.py",
+      "sha256": "7f88d8c8893911a16c1e1192dbb9efd719d2dd5b86de3ac5d82aa7a60b20fe50",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/report.py",
+      "sha256": "08bd76c31ca167479971fbebfac770782033b9ef066e93165a6bd103699a2fb3",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/state.py",
+      "sha256": "a3ac60fbac67b18b1273e0c35ac5037c69a18ee93b2b8fed7aef5b1ea3e48add",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/verify.py",
+      "sha256": "2dc3aa7a40a0239a89752ccd27d9796443f62f66cf79ac1a1ddc4f32c5201ab9",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/src/vd_cosmos_core/verify_b2.py",
+      "sha256": "9549cd10d922e6d4ffeb67639ea430b1b65f7f3326986fd9767753e4225751c3",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/tests/http_helpers.py",
+      "sha256": "6d07b520ef894acbd1a90bcc16da6f7dc3306de37ce1f2ff576c64d202cd0cb3",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "vd-cosmos-core/tests/test_http_workflow.py",
+      "sha256": "73831140e15dfd4fd58f7b1db94e811189522f2018a9c776079f47f2f9fd7726",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [
+        {
+          "word_index": 17
+        }
+      ]
+    },
+    {
+      "file": "vd-cosmos-core/tests/test_real_format.py",
+      "sha256": "4cdb64e9d35d0b35752f21d52275c79b8ad7c19a095373f87ccca1f1b3a08ae9",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-core/tests/test_reports.py",
+      "sha256": "8d721da5d230e624f46de48c15f656aad6149b8b5d1c2290bce81d4ce7f971e8",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-fetch/SKILL.md",
+      "sha256": "88d5750b5b57d9f5fd2dd5c48f7cbbca2d718d39b0351ca9179f793c6278970b",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-fetch/src/vd_cosmos_fetch/api.py",
+      "sha256": "cbb138347b1e0a69ee64696b1d61a9af9d415d383cec5eab7aeefcf5b982fff8",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-watch/SKILL.md",
+      "sha256": "fedd59f98186af5c1ab28649e20394e7e8abe68db896cf23e62a80fa2fd100a6",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-watch/src/vd_cosmos_watch/api.py",
+      "sha256": "cca3909f1130e3b69cdfb2e1df476f4684cdf246897f1c8d6a5aa9db2b2a9bef",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-workflow/.gitignore",
+      "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-workflow/SKILL.md",
+      "sha256": "1d1ad058bb0506ff1ea5a52967f392d9f046264d7974754426b98cbb6e0787be",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-workflow/scripts/run.py",
+      "sha256": "fdb4d0e63dcfaa3dd639dd007caf2d5de4a3ec0fb8d02f32cec78eaa3371098d",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-workflow/src/vd_cosmos_workflow/__init__.py",
+      "sha256": "6628f32f846ff57c0fd444110ce02a2fcaa951bc7caaa5c82b723a464e4a372c",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-workflow/src/vd_cosmos_workflow/api.py",
+      "sha256": "6044cdc7ae1575bf77c5be7ce34e3918647d0512bf2471563babf89a489bb25c",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "file": "vd-cosmos-workflow/src/vd_cosmos_workflow/cli.py",
+      "sha256": "8ba7549c07737a99b6655490eab6c84646fc08a17b137be2c85dec8cf692ac75",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    }
+  ]
+}

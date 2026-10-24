@@ -24,7 +24,7 @@
     ],
     "status_source": {
       "kind": "detail_page",
-      "url_template": "https://example.invalid/build/{run_id}",
+      "url_template": "https://example.invalid/build/{build_id}",
       "status_title_regex": "^Build is (.+)$",
       "terminal_words": [
         "successful",
@@ -40,7 +40,10 @@
         "queued",
         "waiting"
       ]
-    }
+    },
+    "report_root": "https://example.invalid/reports/",
+    "report_path_template": "b{last3}/{build_id}/html/Build_Report_{arch}/index.html",
+    "bucket_path_template": "b{last3}/"
   },
   "poll": {
     "interval_s": 60,
@@ -76,5 +79,21 @@
   },
   "budget": {
     "disk_warning_bytes": 1073741824
+  },
+  "network": {
+    "proxy": null,
+    "no_proxy_hosts": [
+      "127.0.0.1",
+      "localhost",
+      ".example.invalid"
+    ],
+    "ca_file": null
+  },
+  "fetch": {
+    "timeout_s": 60,
+    "max_page_bytes": 20971520,
+    "max_log_bytes": 209715200,
+    "log_concurrency": 4,
+    "user_agent": "VD-Cosmos-LogAnalyzer/0.5.3"
   }
 }

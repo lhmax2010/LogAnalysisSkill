@@ -13,6 +13,7 @@ import shutil
 import uuid
 
 from .backends import SavedReportReader
+from .baselines import baseline_revision, apply_rows_coverage
 from .config import load_config
 from .errors import FlowError
 from .export import check_content, export_file
@@ -27,17 +28,6 @@ REAL_COUNTS = {
                "expansion_error": 0, "build_error": 1},
 }
 
-
-def baseline_revision(line):
-    """Parse the prototype's line format independently of the report parser."""
-    value = line.strip()
-    shelved = value.endswith("(shelve)")
-    if shelved:
-        value = value[:-len("(shelve)")].rstrip()
-    path, separator, revision = value.rpartition("@")
-    if not separator or not path.strip() or not revision.isascii() or not revision.isdecimal():
-        raise FlowError(2, "invalid_baseline_revision")
-    return path.strip(), revision, shelved
 
 
 def read_baselines(rows_data, links_data):
@@ -145,41 +135,51 @@ def run(args, config, directory, result):
     # an independent name baseline. Counter comparison below verifies CL/shelve.
     manifest["expected_packages"]["armv7l"] = [p["key"] for p in first_packages["armv7l"]
                                                  if p["key"]["path"] in expected_paths]
-    manifest["expected_packages"]["x86_64"] = [p["key"] for p in first_packages["x86_64"]]
+    # x86 has no independent expected package set: coverage remains unverified.
     atomic_write(config.data_root, manifest_path, json_bytes(manifest))
     reader = SavedReportReader(config, manifest_path)
+    result.update(simulation_note="离线小规模夹具，不是真实验收" if args.mode == "fixture" else "保存的真实文件；未联网；稳定性为复制模拟",
+                  stability_simulated=True, snapshot_interval_s=(now - previous).total_seconds())
+    evaluate(reader, rows, links, counts, config, directory, result)
+
+
+def evaluate(reader, rows, links, counts, config, directory, result):
+    expected_paths = {r[0] for r in rows}
     observation = reader.observe(reader.build_ref)
     parsed = {arch: reader.read_packages(reader.build_ref, arch) for arch in counts}
+    apply_rows_coverage(parsed["armv7l"], rows)
     inputs = reader.read_inputs(reader.build_ref)
     packages = [p for r in parsed.values() for p in r["packages"]]
     groups = group_expansion(packages, reader.provides())
     actual_rows = [(r["path"], r["cl"], r["shelve"]) for r in inputs["reports"]["armv7l"]["rows"]]
     actual_links = [(p["key"]["name"], p["key"]["name"] + "-" + (p["version"] or ""),
                      p["key"]["path"], p["cl"], p["shelve"])
-                    for p in packages if p["category"] == "build_error"]
+                    for p in parsed["armv7l"]["packages"] if p["category"] == "build_error"]
     row_check, link_check = compare(rows, actual_rows), compare(links, actual_links)
     path_check = compare([(p,) for p in sorted(expected_paths)],
                          [(p,) for p in sorted({r[0] for r in actual_rows})])
     other = [{"key": p["key"], "source_line": p["source_line"], "message": message}
              for p in packages for message in p.get("other_expansion_messages", [])]
     result.update(
-        simulation_note="离线小规模夹具，不是真实验收" if args.mode == "fixture" else "保存的真实文件；未联网；稳定性为复制模拟",
-        stability_simulated=True, snapshot_interval_s=(now - previous).total_seconds(),
         baselines={"armv7l": "rows.txt 独立路径/CL/shelve 多重集合；包名来自报告",
-                   "x86_64": "自基线，未独立核验", "failures": "links.txt 跨架构多重集合"},
+                   "x86_64": "自基线，未独立核验", "failures": "links.txt 仅 armv7l 编译失败包多重集合"},
         reports={arch: {"counts": r["counts"], "expected_counts": counts[arch],
                         "counts_match": r["counts"] == counts[arch],
                         "report_state": r["report_state"], "result_state": r["result_state"],
-                        "issues": r["issues"], "package_keys_unique": r["package_keys_unique"],
+                        "issues": r["issues"], "package_coverage": r["package_coverage"], "package_keys_unique": r["package_keys_unique"],
                         "categories_disjoint": r["categories_disjoint"]} for arch, r in parsed.items()},
         report_state=observation["report_state"], result_state=observation["result_state"],
         header_consistency=observation["header_consistency"], execution_state=observation["execution_state"],
         execution_evidence=observation["execution_evidence"], todos=observation["todos"],
         rows_comparison=row_check, links_comparison=link_check, arm_path_set_comparison=path_check,
         expansion_group_count=len(groups["groups"]),
-        expansion_groups_top15=sorted(groups["groups"], key=lambda g: (-len(g["members"]), g["arch"], g["signature"]))[:15],
+        expansion_groups_top15=[{"arch": g["arch"], "signature": g["signature"], "member_count": len(g["members"])}
+            for g in sorted(groups["groups"], key=lambda g: (-len(g["members"]), g["arch"], g["signature"]))[:15]],
         other_format_message_count=len(other), other_format_messages_first10=other[:10])
-    passed = (all(r["report_state"] == "完整" and r["counts"] == counts[a] for a, r in parsed.items())
+    x86_actual = sum(p["category"] in {"build_error", "export_error"} for p in parsed["x86_64"]["packages"])
+    x86_expected = parsed["x86_64"]["counts"].get("build_error", 0) + parsed["x86_64"]["counts"].get("export_error", 0)
+    result["x86_failure_count"] = {"basis": "自基线", "actual": x86_actual, "expected": x86_expected, "equal": x86_actual == x86_expected}
+    passed = (parsed["armv7l"]["package_coverage"] == "一致" and x86_actual == x86_expected and all(r["report_state"] == "完整" and r["counts"] == counts[a] for a, r in parsed.items())
               and observation["header_consistency"] == "一致"
               and observation["execution_state"] == "已结束"
               and observation["execution_evidence"].get("subresult") == "failed"

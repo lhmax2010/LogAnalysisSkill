@@ -1,0 +1,435 @@
+{
+  "A": {
+    "arm_path_set_comparison": {
+      "actual_count": 4,
+      "difference_count": 0,
+      "differences_first20": [],
+      "equal": true,
+      "expected_count": 4,
+      "result": "相等"
+    },
+    "baselines": {
+      "armv7l": "rows.txt 独立路径/CL/shelve 多重集合；包名来自报告",
+      "failures": "links.txt 仅 armv7l 编译失败包多重集合",
+      "x86_64": "自基线，未独立核验"
+    },
+    "execution_evidence": {
+      "basis": "first_build_status_title",
+      "element_order": 3,
+      "http_status": 200,
+      "observed_at": "2026-10-24T12:08:54.355782+00:00",
+      "raw_retained": false,
+      "retention_note": "原文未保留",
+      "sha256": "3cae1da7fd202f8f3b9261bca41a439b4cabfccc4d504f582e6c663e4491ae99",
+      "source_line": 2,
+      "state": "已结束",
+      "subresult": "failed",
+      "title": "Build is failed",
+      "trust": "configured_detail_title"
+    },
+    "execution_state": "已结束",
+    "exit_code": 0,
+    "expansion_group_count": 3,
+    "expansion_groups_top15": [
+      {
+        "arch": "armv7l",
+        "member_count": 1,
+        "signature": "conflict detected: alpha versus beta"
+      },
+      {
+        "arch": "armv7l",
+        "member_count": 1,
+        "signature": "other"
+      },
+      {
+        "arch": "armv7l",
+        "member_count": 1,
+        "signature": "provider >= 2"
+      }
+    ],
+    "header_consistency": "一致",
+    "links_comparison": {
+      "actual_count": 1,
+      "difference_count": 0,
+      "differences_first20": [],
+      "equal": true,
+      "expected_count": 1,
+      "result": "相等"
+    },
+    "other_format_message_count": 1,
+    "other_format_messages_first10": [
+      {
+        "key": {
+          "arch": "armv7l",
+          "name": "odd-consumer",
+          "path": "//example/packages/odd-consumer/..."
+        },
+        "message": "conflict detected: alpha versus beta",
+        "source_line": 71
+      }
+    ],
+    "report_state": "完整",
+    "reports": {
+      "armv7l": {
+        "categories_disjoint": true,
+        "counts": {
+          "build_error": 1,
+          "expansion_error": 2,
+          "export_error": 0,
+          "succeeded": 1,
+          "total": 4
+        },
+        "counts_match": true,
+        "expected_counts": {
+          "build_error": 1,
+          "expansion_error": 2,
+          "export_error": 0,
+          "succeeded": 1,
+          "total": 4
+        },
+        "issues": [
+          "expected_package_set_missing",
+          "other_expansion_message_format"
+        ],
+        "package_coverage": "一致",
+        "package_keys_unique": true,
+        "report_state": "完整",
+        "result_state": "失败"
+      },
+      "x86_64": {
+        "categories_disjoint": true,
+        "counts": {
+          "build_error": 1,
+          "expansion_error": 0,
+          "export_error": 0,
+          "succeeded": 1,
+          "total": 2
+        },
+        "counts_match": true,
+        "expected_counts": {
+          "build_error": 1,
+          "expansion_error": 0,
+          "export_error": 0,
+          "succeeded": 1,
+          "total": 2
+        },
+        "issues": [
+          "expected_package_set_missing"
+        ],
+        "package_coverage": "未核",
+        "package_keys_unique": true,
+        "report_state": "完整",
+        "result_state": "失败"
+      }
+    },
+    "result_state": "失败",
+    "rows_comparison": {
+      "actual_count": 4,
+      "difference_count": 0,
+      "differences_first20": [],
+      "equal": true,
+      "expected_count": 4,
+      "result": "相等"
+    },
+    "saved_page_comparison": {
+      "armv7l": {
+        "http_sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb",
+        "result": "相同",
+        "saved_sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb"
+      },
+      "x86_64": {
+        "http_sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07",
+        "result": "相同",
+        "saved_sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07"
+      }
+    },
+    "stability_simulated": false,
+    "todos": [
+      {
+        "arch": "armv7l",
+        "reason": "other_expansion_message_format"
+      }
+    ],
+    "verdict": "PASS",
+    "x86_failure_count": {
+      "actual": 1,
+      "basis": "自基线",
+      "equal": true,
+      "expected": 1
+    }
+  },
+  "B": {
+    "counts": {
+      "armv7l": 1,
+      "x86_64": 1
+    },
+    "expected_counts": {
+      "armv7l": 1,
+      "x86_64": 1
+    },
+    "logs": [
+      {
+        "export_allowed": true,
+        "export_note": "可导出",
+        "key": {
+          "arch": "armv7l",
+          "name": "provider",
+          "path": "//example/packages/provider/..."
+        },
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/owned/rounds/19091860/logs/armv7l/provider-1.0-1/log.txt",
+        "sha256": "e2aa4a01c4d7787c7583f0ea28945c20187f631fe2d5da9ec42e0d58cbca4fe3",
+        "size": 21,
+        "skipped": false,
+        "truncated": false,
+        "url_sha256": "f6cb8cc32fe60bc6af0fe7e668052543d062588936ef682e26b761b6c6367e6e"
+      },
+      {
+        "export_allowed": true,
+        "export_note": "可导出",
+        "key": {
+          "arch": "x86_64",
+          "name": "libdeflate",
+          "path": "//example/packages/libdeflate/..."
+        },
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/owned/rounds/19091860/logs/x86_64/libdeflate-1.23-0/log.txt",
+        "sha256": "e2aa4a01c4d7787c7583f0ea28945c20187f631fe2d5da9ec42e0d58cbca4fe3",
+        "size": 21,
+        "skipped": false,
+        "truncated": false,
+        "url_sha256": "e0cd8e65f6256b3972912e39267e887dbb7ab62edfb57af111fd6dd3fbbd4b21"
+      }
+    ],
+    "verdict": "PASS"
+  },
+  "C": {
+    "arm_path_set_comparison": {
+      "actual_count": 4,
+      "difference_count": 0,
+      "differences_first20": [],
+      "equal": true,
+      "expected_count": 4,
+      "result": "相等"
+    },
+    "baselines": {
+      "armv7l": "rows.txt 独立路径/CL/shelve 多重集合；包名来自报告",
+      "failures": "links.txt 仅 armv7l 编译失败包多重集合",
+      "x86_64": "自基线，未独立核验"
+    },
+    "execution_evidence": {
+      "basis": "first_build_status_title",
+      "element_order": 3,
+      "sha256": "3cae1da7fd202f8f3b9261bca41a439b4cabfccc4d504f582e6c663e4491ae99",
+      "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/owned/verification/b2-real-d3b2e1a767dc47f7b2fe8486717f7f19/C/detail-page.html",
+      "source_line": 2,
+      "state": "已结束",
+      "subresult": "failed",
+      "title": "Build is failed",
+      "trust": "configured_detail_title"
+    },
+    "execution_state": "已结束",
+    "exit_code": 0,
+    "expansion_group_count": 3,
+    "expansion_groups_top15": [
+      {
+        "arch": "armv7l",
+        "member_count": 1,
+        "signature": "conflict detected: alpha versus beta"
+      },
+      {
+        "arch": "armv7l",
+        "member_count": 1,
+        "signature": "other"
+      },
+      {
+        "arch": "armv7l",
+        "member_count": 1,
+        "signature": "provider >= 2"
+      }
+    ],
+    "header_consistency": "一致",
+    "links_comparison": {
+      "actual_count": 1,
+      "difference_count": 0,
+      "differences_first20": [],
+      "equal": true,
+      "expected_count": 1,
+      "result": "相等"
+    },
+    "other_format_message_count": 1,
+    "other_format_messages_first10": [
+      {
+        "key": {
+          "arch": "armv7l",
+          "name": "odd-consumer",
+          "path": "//example/packages/odd-consumer/..."
+        },
+        "message": "conflict detected: alpha versus beta",
+        "source_line": 71
+      }
+    ],
+    "report_state": "完整",
+    "reports": {
+      "armv7l": {
+        "categories_disjoint": true,
+        "counts": {
+          "build_error": 1,
+          "expansion_error": 2,
+          "export_error": 0,
+          "succeeded": 1,
+          "total": 4
+        },
+        "counts_match": true,
+        "expected_counts": {
+          "build_error": 1,
+          "expansion_error": 2,
+          "export_error": 0,
+          "succeeded": 1,
+          "total": 4
+        },
+        "issues": [
+          "other_expansion_message_format"
+        ],
+        "package_coverage": "一致",
+        "package_keys_unique": true,
+        "report_state": "完整",
+        "result_state": "失败"
+      },
+      "x86_64": {
+        "categories_disjoint": true,
+        "counts": {
+          "build_error": 1,
+          "expansion_error": 0,
+          "export_error": 0,
+          "succeeded": 1,
+          "total": 2
+        },
+        "counts_match": true,
+        "expected_counts": {
+          "build_error": 1,
+          "expansion_error": 0,
+          "export_error": 0,
+          "succeeded": 1,
+          "total": 2
+        },
+        "issues": [
+          "expected_package_set_missing"
+        ],
+        "package_coverage": "未核",
+        "package_keys_unique": true,
+        "report_state": "完整",
+        "result_state": "失败"
+      }
+    },
+    "result_state": "失败",
+    "rows_comparison": {
+      "actual_count": 4,
+      "difference_count": 0,
+      "differences_first20": [],
+      "equal": true,
+      "expected_count": 4,
+      "result": "相等"
+    },
+    "simulation_note": "离线小规模夹具，不是真实验收",
+    "snapshot_interval_s": 1.03,
+    "source_evidence": [
+      {
+        "copy": "arm-report.html",
+        "role": "arm-report",
+        "sha256": "54e5d78dd6b5c4f7866e8f4d463f382bcd69b7a8005a5e1c345efc64e5ebf6eb",
+        "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/saved/report_armv7l.html",
+        "source_unchanged": true
+      },
+      {
+        "copy": "x86-report.html",
+        "role": "x86-report",
+        "sha256": "072c1ea70e3bdf879a46fbab65a38ddb904c795354bec8ed3e59d80be44cad07",
+        "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/saved/report_x86_64.html",
+        "source_unchanged": true
+      },
+      {
+        "copy": "detail-page.html",
+        "role": "detail-page",
+        "sha256": "3cae1da7fd202f8f3b9261bca41a439b4cabfccc4d504f582e6c663e4491ae99",
+        "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/saved/probe_3bed7e8c.html",
+        "source_unchanged": true
+      },
+      {
+        "copy": "rows.txt",
+        "role": "rows",
+        "sha256": "d69dc2ec9ee1faf49ba193f986d9bd6c6bed6a5edeee879902d5fd60cfe5d85b",
+        "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/saved/rows.txt",
+        "source_unchanged": true
+      },
+      {
+        "copy": "links.txt",
+        "role": "links",
+        "sha256": "4ee1dcf881d32e31f0f589ffc393d3049525b5a26ad526ce2b829d8c7e074b04",
+        "source": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/saved/links.txt",
+        "source_unchanged": true
+      }
+    ],
+    "stability_simulated": true,
+    "todos": [
+      {
+        "arch": "armv7l",
+        "reason": "other_expansion_message_format"
+      }
+    ],
+    "verdict": "PASS",
+    "x86_failure_count": {
+      "actual": 1,
+      "basis": "自基线",
+      "equal": true,
+      "expected": 1
+    }
+  },
+  "D": {
+    "evaluated_for_pass": false,
+    "execution_evidence": {
+      "basis": "first_build_status_title",
+      "element_order": 3,
+      "http_status": 200,
+      "observed_at": "2026-10-24T12:08:55.214162+00:00",
+      "raw_retained": false,
+      "retention_note": "原文未保留",
+      "sha256": "3cae1da7fd202f8f3b9261bca41a439b4cabfccc4d504f582e6c663e4491ae99",
+      "source_line": 2,
+      "state": "已结束",
+      "subresult": "failed",
+      "title": "Build is failed",
+      "trust": "configured_detail_title"
+    },
+    "execution_state": "已结束",
+    "exit_code": 0,
+    "reports": {
+      "armv7l": {
+        "http_status": 404,
+        "report_state": "未发布"
+      },
+      "x86_64": {
+        "http_status": 404,
+        "report_state": "未发布"
+      }
+    }
+  },
+  "E": {
+    "analysis_todos": [
+      {
+        "count": 2,
+        "message": "有 2 个失败包待分析（第 3 批接分析）",
+        "reason": "analysis_pending"
+      }
+    ],
+    "log_sha256_matches_B": true,
+    "no_repeated_downloads": true,
+    "phase": "结果已拉取",
+    "ticks": 3,
+    "verdict": "PASS"
+  },
+  "exit_code": 0,
+  "git_commit": "8ca13b3fd37d53af6dbc5c084e976bfc5bc78843",
+  "mode": "fixture",
+  "note": "本地 HTTP 夹具模拟",
+  "schema_version": 1,
+  "verdict": "PASS"
+}

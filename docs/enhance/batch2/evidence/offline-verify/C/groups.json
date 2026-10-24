@@ -1,0 +1,62 @@
+{
+  "blocking_downstream": [],
+  "groups": [
+    {
+      "arch": "armv7l",
+      "certain_blockers": [],
+      "members": [
+        {
+          "arch": "armv7l",
+          "name": "odd-consumer",
+          "path": "//example/packages/odd-consumer/..."
+        }
+      ],
+      "message_format": "其它格式",
+      "normalization_version": 1,
+      "requires_manual_confirmation": true,
+      "signature": "conflict detected: alpha versus beta",
+      "suspected_blockers": []
+    },
+    {
+      "arch": "armv7l",
+      "certain_blockers": [],
+      "members": [
+        {
+          "arch": "armv7l",
+          "name": "consumer",
+          "path": "//example/packages/consumer/..."
+        }
+      ],
+      "message_format": "nothing provides",
+      "normalization_version": 1,
+      "requires_manual_confirmation": false,
+      "signature": "other",
+      "suspected_blockers": []
+    },
+    {
+      "arch": "armv7l",
+      "certain_blockers": [],
+      "members": [
+        {
+          "arch": "armv7l",
+          "name": "consumer",
+          "path": "//example/packages/consumer/..."
+        }
+      ],
+      "message_format": "nothing provides",
+      "normalization_version": 1,
+      "requires_manual_confirmation": false,
+      "signature": "provider >= 2",
+      "suspected_blockers": [
+        {
+          "basis": "name_similarity_requires_confirmation",
+          "key": {
+            "arch": "armv7l",
+            "name": "provider",
+            "path": "//example/packages/provider/..."
+          }
+        }
+      ]
+    }
+  ]
+}

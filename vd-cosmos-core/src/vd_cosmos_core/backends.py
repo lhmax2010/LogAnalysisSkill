@@ -7,7 +7,8 @@ from .errors import FlowError, unsupported
 from .export import check_content
 from .files import atomic_write, confined, digest, load_json
 from .models import BuildRef
-from .report import Document, normalize, parse_report
+from .report import normalize, parse_report
+from .observation import detail_state, summarize
 
 
 class Capabilities:
@@ -136,68 +137,13 @@ class SavedReportReader(ReportReader):
                 # A failed observation contributes no execution/report status.
                 reports[arch] = {"arch": arch, "observation_failed": True,
                                  "error": error.reason, "headers": {}, "issues": [error.reason]}
-        values = [reports[a].get("report_state") for a in arches]
-        complete = all(state == "完整" for state in values)
-        if failures:
-            state = None
-        elif complete:
-            state = "完整"
-        elif "结构未知" in values:
-            state = "结构未知"
-        elif all(value == "未发布" for value in values):
-            state = "未发布"
-        elif all(value == "未知" for value in values):
-            state = "未知"
-        else:
-            state = "部分"
-        consistency = "未核"
-        keys = cosmos["header_must_match"]
-        if all(all(r.get("headers", {}).get(k) for k in keys) for r in reports.values()):
-            consistency = "一致" if all(len({r["headers"][k] for r in reports.values()}) == 1 for k in keys) else "不一致"
-        result = "未知"
-        if complete and consistency == "一致":
-            if set(arches) < set(cosmos["regular_archs"]):
-                result = "部分"
-            else:
-                result = "失败" if any(r["result_state"] == "失败" for r in reports.values()) else "成功"
         execution = {"state": "未知", "source": None, "trust": "unknown"}
         status_source = cosmos.get("status_source")
         detail = self.manifest.get("detail_page")
         if status_source and detail:
             detail_path, data = self.read_source(detail)
-            document = Document(data.decode("utf-8"))
-            execution.update(source=str(detail_path), sha256=digest(data),
-                             basis="first_build_status_title", subresult=None)
-            for node in document.nodes:
-                title = normalize(node.attrs.get("title") or "")
-                if not re.fullmatch(r"Build is .+", title, re.I):
-                    continue
-                # Never fall through to downstream builds, including when the
-                # first build's word is unknown or fails the configured regex.
-                match = re.fullmatch(status_source["status_title_regex"], title, re.I)
-                word = normalize(match[1]).casefold() if match and match[1] else None
-                execution.update(title=title, source_line=node.line, element_order=node.order,
-                                 subresult=word)
-                for key, state_name in (("terminal_words", "已结束"), ("running_words", "运行"),
-                                        ("queued_words", "排队")):
-                    if word in {normalize(w).casefold() for w in status_source[key]}:
-                        execution.update(state=state_name, trust="configured_detail_title")
-                        break
-                break
-        todos = [{"arch": arch, "reason": reason} for arch, report in reports.items()
-                 for reason in report.get("issues", [])]
-        if consistency == "不一致":
-            todos.append({"reason": "header_inconsistent"})
-        return {"schema_version": 1, "backend": self.__class__.__name__, "build_ref": build_ref.to_dict(),
-                "execution_state": execution["state"] if not failures else None,
-                "execution_evidence": execution if not failures else None,
-                "report_state": state, "result_state": result, "header_consistency": consistency,
-                "terminal_inference": "终态推定（依据：报告完整）" if complete and execution["state"] == "未知" else None,
-                "terminal_prerequisite_met": bool(complete and consistency == "一致" and not failures
-                                                  and execution["state"] == "已结束" and build_ref.execution_kind == "cosmos"),
-                "reports": reports, "todos": todos, "observation_failed": bool(failures),
-                "observed_at": max((r.get("observed_at", "") for r in reports.values()), default=""),
-                "exit_code": 5 if failures else 0}
+            execution = {**detail_state(data, status_source), "source": str(detail_path), "sha256": digest(data)}
+        return summarize(build_ref, cosmos, reports, execution, backend=self.__class__.__name__)
 
     def read_packages(self, build_ref, arch):
         self.check_ref(build_ref)
@@ -207,7 +153,7 @@ class SavedReportReader(ReportReader):
 
     def read_inputs(self, build_ref):
         observed = self.observe(build_ref)
-        return {"header_consistency": observed["header_consistency"],
+        return {"header_consistency": observed["header_consistency"], "package_coverage": observed["package_coverage"],
                 "reports": {a: {"headers": r.get("headers", {}), "rows": r.get("input_rows", [])}
                             for a, r in observed["reports"].items()},
                 "todos": observed["todos"], "exit_code": observed["exit_code"]}

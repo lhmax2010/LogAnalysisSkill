@@ -1,0 +1,49 @@
+{
+  "action": "notify",
+  "artifact": {
+    "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/owned/rounds/3e9cf6073c2cb851ac60c35f483414c3d088038747e093c0a1bc28220de4aca7/attempt-0f3540c8e0e546a5b9253a1ab624a2f8/workflow-notify.json",
+    "sha256": "14cc30bdedd40a365befa3a4b5e453e54392a8700fc1644bf51b8f3d304f0be8",
+    "size": 205
+  },
+  "exit_code": 0,
+  "interrupted": false,
+  "last_event_id": 8,
+  "ok": true,
+  "phase": "结果已拉取",
+  "tick_results": [
+    {
+      "action": "observe",
+      "artifact": {
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/owned/rounds/3e9cf6073c2cb851ac60c35f483414c3d088038747e093c0a1bc28220de4aca7/attempt-d8fbb23167dd4bfa981c0ab7bcb5cda4/workflow-observe.json",
+        "sha256": "92ff84b4154ccfefeed9f9642a625f0889771c34d199b370360d390c8368cb13",
+        "size": 13333
+      },
+      "exit_code": 0,
+      "last_event_id": 3,
+      "phase": "报告已完整"
+    },
+    {
+      "action": "logs",
+      "artifact": {
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/owned/rounds/3e9cf6073c2cb851ac60c35f483414c3d088038747e093c0a1bc28220de4aca7/attempt-da99684a23324e27aac0d93431e9f0d4/workflow-logs.json",
+        "sha256": "044078ba6fa903a92ec41157b3e4075a06e5d9eb97ea5f9015048cb55a641b2f",
+        "size": 15520
+      },
+      "exit_code": 0,
+      "last_event_id": 5,
+      "phase": "报告已完整"
+    },
+    {
+      "action": "notify",
+      "artifact": {
+        "path": "/home/toolchain/development/LogAnalysisSkill/vd-cosmos-core/.runtime/b2-evidence-9d8f953d038449f9a14b3d32d04e6383/owned/rounds/3e9cf6073c2cb851ac60c35f483414c3d088038747e093c0a1bc28220de4aca7/attempt-0f3540c8e0e546a5b9253a1ab624a2f8/workflow-notify.json",
+        "sha256": "14cc30bdedd40a365befa3a4b5e453e54392a8700fc1644bf51b8f3d304f0be8",
+        "size": 205
+      },
+      "exit_code": 0,
+      "last_event_id": 8,
+      "phase": "结果已拉取"
+    }
+  ],
+  "ticks": 3
+}

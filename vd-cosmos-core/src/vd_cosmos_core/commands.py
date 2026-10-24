@@ -16,7 +16,8 @@ class Category(str, Enum):
 COMMANDS = {
     **{name: Category.OBSERVE for name in (
         "watch.observe", "fetch.packages", "fetch.inputs", "fetch.logs", "fetch.groups",
-        "core.export", "core.prepush", "core.status")},
+        "core.export", "core.prepush", "core.status",
+        "workflow.tick", "workflow.loop", "workflow.status", "workflow.inbox")},
     "analyze.prepare": Category.GENERATE,
     "analyze.accept": Category.ACCEPT,
     **{name: Category.HUMAN for name in (
@@ -26,7 +27,8 @@ COMMANDS = {
 }
 EVENTS = {
     Category.OBSERVE: {"observation_started", "observation_recorded", "observation_failed",
-                       "artifact_recorded", "inbox_opened", "fetch_started", "fetch_completed"},
+                       "artifact_recorded", "inbox_opened", "fetch_started", "fetch_completed",
+                       "workflow_intent", "workflow_result"},
     Category.GENERATE: {"analysis_prepared"},
     Category.ACCEPT: {"analysis_received", "analysis_rejected"},
     Category.HUMAN: {"confirmed", "approved", "terminal_confirmed", "attested", "resolved",

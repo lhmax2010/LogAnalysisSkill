@@ -1,6 +1,6 @@
 ---
 name: vd-cosmos-fetch
-description: 离线解析 Cosmos 报告的包、输入和扩展错误分组，并回放夹具日志下载。
+description: 读取 Cosmos HTTP 报告或本地夹具中的包、输入与扩展错误分组，下载失败日志并记录摘要、截断与导出资格。
 ---
 
 # 读取报告内容
@@ -19,5 +19,7 @@ stdout 只有一个 JSON 对象，`artifact.path` 指向详细结果文件。只
 - packages 保留每个解析行的源行号、包键、版本、CL、shelve 标记和结果类别。
 - inputs 保存每架构报告头和全部可解析输入行，不把“未核”说成一致。
 - groups 按单个缺失项分组，版本运算符与版本号保留。名字相近只是疑似；确定阻塞必须有摘要已核对的 spec 或 rpm 元数据。一个包缺多个项目时，必须逐项覆盖。
-- logs 本批只把 manifest 指定的 fixture 日志复制到数据目录并计算摘要。`--backend real` 支持本地报告解析，其日志下载明确返回“不支持”。
+- HTTP 使用 `--backend real --build-id N [--expected-rows FILE]`，packages 另带 --arch；无需 manifest。expected-rows 只核对 armv7l。
+- logs 下载编译失败和 Export Error 的日志；仅接受同主机且在该构建报告目录下的链接。已存文件摘要相符则跳过，超限截断并记录；凭据模式命中仍只存本地、标“禁止导出”。
+- fixture 只复制 manifest 指定的日志；兼容 `--backend real --manifest FILE` 保存页面解析，该模式下载不支持。
 - 退出码：0 成功；2 参数错误；3 需要人工处理；4 规则拒绝；5 文件/后端出错；6 不支持、前置不满足或锁/并发冲突。遇到非零原样回报，不把部分产物当作完成证据。

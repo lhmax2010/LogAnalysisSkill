@@ -1,8 +1,8 @@
-# VD Cosmos 第 1 / 1.1 批：离线公共库与读取侧
+# VD Cosmos 第 2 批：公共库与读取侧
 
 运行代码只依赖 Python 3.10 标准库，适用于带 `flock`、GNU `stat` 的 Linux。无需安装本项目。watch/fetch 的入口把自己的包和本线 core 加入模块路径；不 import 已有 skill 的内部模块。
 
-依据 HLD v0.5.2，以及 2026-10-24 的 B1-Q01、B1-Q02 裁定。三个状态和跨架构一致性分开；结果成功/失败不要求执行终态已证实。
+依据 HLD v0.5.3，以及 2026-10-24 的 B1-Q01、B1-Q02、B2-Q01 裁定。执行、报告、结果状态与报告头/包集合一致性分别记录；结果成功/失败不要求执行终态已证实。
 
 ## 离线运行
 
@@ -19,7 +19,7 @@ python3 vd-cosmos-core/scripts/run.py status --config vd-cosmos-core/config.samp
 
 示例输入是合成数据。minimal 输出写到 `vd-cosmos-core/.runtime/minimal-data/`，配置样例默认写到 `.runtime/demo-data/`。stdout 始终只有一个 JSON 对象，详细内容由 `artifact.path` 引用。`--help` 也返回 JSON。每次读取有独立 attempt 目录；先追加开始事件，产物原子写入后再追加结果事件。`--expected-event N` 可显式传入期望的库末尾事件编号。
 
-`--backend real` 目前是 `SavedReportReader`：按真实报告格式解析已保存 HTML，无 HTTP 访问。网络抓取和真实日志下载未实现，后者明确返回“不支持”（退出码 6）。因此所有本批运行都是离线解析/回放，不代表内网验收。
+`--backend real --build-id N [--expected-rows FILE]` 使用标准库 HTTPReportReader，不需要 manifest；expected-rows 只用于 armv7l。兼容原来的 `--backend real --manifest FILE` 保存页面解析，其日志下载仍明确返回“不支持”。本批测试只访问 127.0.0.1 上的 HTTP 夹具，不代表内网验收。
 
 ## 配置项
 
@@ -36,7 +36,14 @@ python3 vd-cosmos-core/scripts/run.py status --config vd-cosmos-core/config.samp
 | `cosmos.report_markers.export` | 必填；暂用 Export error details；真实 Export 表首次出现时须核实标题和列结构。非零 Export 无可识别明细时结构未知。 |
 | `cosmos.detail_table_title_prefix` | 必填；编译明细标题前缀，默认兼容报告中的 Statis 拼法。匹配时归一化，产物保留原文。 |
 | `cosmos.header_must_match` | 必填；至少含 profile、build_conf、base、product，可附加字段。 |
-| `cosmos.status_source` | 必填，可为 null；非空时必须包含 kind=detail_page、url_template、status_title_regex（恰有一个捕获组）、terminal_words、running_words、queued_words。三个非空词表归一化后不得重复或交叉；url_template 为无内嵌凭据的 HTTP(S) 地址，只登记不访问。旧 complete_markers 结构拒绝。 |
+| `cosmos.status_source` | 必填，可为 null；非空时必须包含 kind=detail_page、url_template、status_title_regex（恰有一个捕获组）、terminal_words、running_words、queued_words。三个非空词表归一化后不得重复或交叉；url_template 为无内嵌凭据的 HTTP(S) 地址，只允许 build_id 占位符。旧 complete_markers 结构拒绝。 |
+| `cosmos.report_root` / `report_path_template` | HTTP 后端必需；根地址与相对模板拼接，模板只接受 last3/build_id/arch，占位符带花括号；构建号只能是数字。 |
+| `cosmos.bucket_path_template` | 可选，默认 b{last3}/；只接受 last3/build_id，用于报告 404 后验证目录索引。 |
+| `network.proxy` / `no_proxy_hosts` | 可选；只采用配置，忽略环境代理。主机匹配域名后缀或字面 IP 网段时直连，其余走 proxy；未配置 proxy 时直连。 |
+| `network.ca_file` | 可选，按配置目录解析；额外加载 CA，保留系统默认信任库和主机名/证书校验。 |
+| `fetch.timeout_s` | 可选，默认 60 秒，请求超时。fetch 整段可省略。 |
+| `fetch.max_page_bytes` / `max_log_bytes` | 可选，默认 20 MiB / 200 MiB。页面超过上限失败；日志只保留上限内字节并标记截断。 |
+| `fetch.log_concurrency` / `user_agent` | 可选，默认 4 / VD-Cosmos-LogAnalyzer/0.5.3。并发日志下载上限和每次请求的 User-Agent。 |
 | `poll.interval_s` | 必填，正数；两份报告观测时间至少间隔这么多秒，且原始字节 sha256 相等才稳定。 |
 | `poll.stall_polls` | 可选，默认 6，至少 2；不同观测时刻连续内容不变且仍未完整时写待办，不改变构建状态。 |
 | `poll.expected_hours` | 可选，默认 24；本地已记录观察窗口超过此值的 1.5 倍时提醒。未实现可信服务器开始时间换算，不能据此宣称构建已超时。 |
@@ -53,9 +60,9 @@ python3 vd-cosmos-core/scripts/run.py status --config vd-cosmos-core/config.samp
 见 `fixtures/minimal/manifest.json`。`schema_version=1`；build_ref 由 backend_id、instance_id、run_id、execution_kind 组成，最后一项只接受 cosmos/local_simulation。
 
 - `reports` 按架构列出时间有序的抓取记录：path、带时区的 observed_at、status_code，以及可选的 source_url、error。最近两条成功记录用于稳定性判断，示例使用两份独立文件。明确 404 还需 host_ok=true；网络错误/代理页/登录页/不可解析响应记观察失败，不能变成“未发布”或终态。失败观察退出 5，连续三次才记相应待办。
-- `expected_packages` 每架构列出 `{arch,name,path}`。必须由冻结请求或上一轮完整报告提供，不能从本轮待检查明细生成。缺基线时只能记部分。本批没有请求生成器；调用者提供这个独立基线。
+- `expected_packages` 每架构列出 `{arch,name,path}`。必须由冻结请求或上一轮完整报告提供，不能从本轮待检查明细生成。缺基线时 package_coverage=未核，不影响报告完整性或结果；格式错误退出 2。
 - `detail_page` 可选，保存的详情页路径。没有配置可信来源时不使用其中的终态字样。
-- `previous_table_titles` 可选，上一轮原始表标题，变化写漂移待办。
+- `previous_table_titles` 可选，上一轮原始表标题，变化保留漂移 issue；正常变化不另写人工待办。
 - `logs` 为 `{key:{arch,name,path},path,sha256?}` 列表；仅 fixture 后端复制这些文件。摘要不符拒绝。
 - `provides_evidence` 可选，每项为 `{key,source_kind,path,sha256}`。source_kind 为 spec 时只读取明确的 `Provides:` 行（不展开宏）；rpm_metadata 时文件内容为 `{"provides":["name >= version"]}`。必须先核对源文件完整摘要；没有来源证据或含未展开宏，不能作为确定阻塞。元数据应由上一轮成功构建的 rpm 提取，实际内网提取工具留后续批次。
 
@@ -64,9 +71,11 @@ manifest 引用的文件必须在其所在目录内，禁止通过 `..` 或符�
 ## 状态契约
 
 - 每架构报告完整才计算结果：全成功为成功；任意 Build/Expansion/Export Error 为失败。非完整为未知。
+- report_state 按结构未知、部分（未稳定/缺头/缺汇总）、对账失败、完整判定。稳定后的计数不符、重复包键、分类交叉和架构不符是对账失败；未稳定时仍为部分。
+- package_coverage 独立表示一致/不一致/未核，汇总优先级为不一致、未核、一致。不一致使结果未知并写缺少/多出各最多 20 条待办；未核不影响结果。
 - 本轮任一期望架构未完整或 header 不一致，结果未知。全完整且 header 一致时，常规集合按任一失败/全成功汇总。本轮架构是常规集合的真子集时，汇总标部分，各架构结果仍完整保留。
 - `header_consistency` 取一致/不一致/未核；不一致不会改写 report_state，但结果变未知并写待办。缺架构或报告头没读齐时未核。
-- `terminal_prerequisite_met` 仅表示读取侧的终态前提：完整、一致、可信已结束、execution_kind=cosmos；它不是提交授权，也不检查下一批的处置/清单闸门。
+- `terminal_prerequisite_met` 仅表示读取侧的终态前提：完整、header 和 package_coverage 一致、可信已结束、execution_kind=cosmos；它不是提交授权，也不检查下一批的处置/清单闸门。
 
 详情页仅选文档顺序上首个 `title="Build is …"` 元素，然后按配置正则捕获状态词。successful/failed/cancelled/timed out/timeout 为已结束，running 为运行，queued/waiting 为排队；同时保存 subresult、title、行号、元素顺序、源文件摘要。首个元素未知或不匹配时不会向后寻找推广构建状态；可见文字和样式本身不作为证据。没有可信终态时，报告完整也只是终态推定。
 
@@ -130,7 +139,7 @@ bash --noprofile --norc vd-cosmos-core/scripts/verify_b1_real.sh EXPECTED_COMMIT
 
 源路径全部参数化；没有网络访问或对源树的写操作。复制前检查凭据模式，复制后核对源文件和副本摘要。两次副本的时间差为 poll.interval_s+1，输出明确标注稳定性是模拟，不能证明源站两次实际抓取稳定。真实模式固定检查 armv7l 2244/1479/0/759/6、x86_64 43/42/0/0/1，不允许覆盖计数。
 
-rows.txt 的独立解析器与 HTML 解析器分开：对 (路径,CL,shelve) 做多重集合比对，不去重；arm 期望包键使用 rows.txt 路径与报告包名，输出明确说明包名不具有独立基线。links.txt 对跨架构失败包的 (包名,包名-版本-发布号,路径,CL,shelve) 做多重集合比对。x86 包集合自基线明确标“自基线，未独立核验”，其失败包仍参与 links.txt 核对。差异最多展示前 20 条，同时给出完整差异数量。
+rows.txt 的独立解析器与 HTML 解析器分开：对 (路径,CL,shelve) 做多重集合比对，不去重；arm 包名来自报告，包覆盖必须一致。links.txt 只对 arm 编译失败包的 (包名,包名-版本-发布号,路径,CL,shelve) 做多重集合比对。x86 包集合未核，失败包数仅与汇总 Build Error + Export Error 比较并标“自基线”。差异最多展示前 20 条，同时给出完整差异数量。
 
 离线模拟将上面五个源路径改为 `vd-cosmos-core/fixtures/real_format/` 对应文件（report_armv7l.html、report_x86_64.html、detail.html、rows.txt、links.txt），run-id 改为 fixture-run，并增加：
 
@@ -139,3 +148,34 @@ rows.txt 的独立解析器与 HTML 解析器分开：对 (路径,CL,shelve) 做
 ```
 
 模拟仍需完整预期提交号和有效配置；可用 config.sample.json。输出固定标记“离线小规模夹具，不是真实验收”，build_ref.execution_kind=local_simulation。结果文件含全部核对、状态、依据、待办、签名前 15 组、其它格式消息数量与前 10 条；完整 observe/packages/inputs/groups 另存同目录。结果经已有 export_file 流程分块，逐块大小和完整 SHA256 在清单中。
+
+## 第 2 批 HTTP 与只读 workflow
+
+HTTP 请求显式带 no-cache、Pragma、User-Agent；忽略环境代理，不保存/回传 cookie，跨主机重定向拒绝，同主机最多 3 次。报告页先过凭据检查，再原子存到 `rounds/<build_id>/pages/<arch>/`；稳定性使用本线记录的时间和摘要，不使用 mtime。详情页原文不落盘，只留状态元素 title 原文、行号、元素序号、页面摘要、时间、HTTP 状态与保留说明。
+
+日志仅接受与报告同源、在该报告目录下的地址，存入 `rounds/<build_id>/logs/<arch>/<nvr>/log.txt`。同时记录大小、完整 SHA256、截断与导出资格；已有文件及元数据摘要相符时不重新下载。命中凭据的日志只存本地，导出流程仍会阻断它。
+
+```bash
+python3 vd-cosmos-watch/scripts/run.py observe --config CONFIG --backend real --build-id N --expected-rows ROWS
+python3 vd-cosmos-fetch/scripts/run.py logs --config CONFIG --backend real --build-id N
+python3 vd-cosmos-workflow/scripts/run.py tick --config CONFIG --build-id N --expected-rows ROWS
+python3 vd-cosmos-workflow/scripts/run.py loop --config CONFIG --build-id N --max-ticks 4 --expected-rows ROWS
+python3 vd-cosmos-workflow/scripts/run.py status --config CONFIG --build-id N
+python3 vd-cosmos-workflow/scripts/run.py inbox --config CONFIG
+```
+
+workflow 仅通过 watch/fetch 公开函数读取；每个 tick 执行观察、下载日志、写分析待办三个阶段之一，先落意图、动作后落唯一结果。完整报告、header 一致、包覆盖非不一致时下载，不要求执行已结束。对账失败/结构未知/header 不一致/覆盖不一致退出 3；观察失败退出 5，loop 下一 tick 重试，三次连续失败写待办。正常等待不写待办。完成后阶段为“结果已拉取”，同一轮重复 tick 不重复通知。
+
+B2-Q01：实例 flock 覆盖 loop 全生命周期，含睡眠；第二个 loop 退出 6。轮次 flock 和 SQLite 写事务在 tick 必要阶段持有，睡眠前释放。手工 observe/logs/tick 只拿轮次锁，可在 loop 睡眠时执行；醒来重读事件。锁冲突和乐观并发冲突仍退出 6。信号只请求停止，当前 tick 完成后退出，内核释放文件锁；没有锁文件清理逻辑。status/inbox 不追加事件。
+
+验收脚本先核对完整提交号，所有产物只写 data_root：
+
+```bash
+bash --noprofile --norc vd-cosmos-core/scripts/verify_b2_real.sh EXPECTED_COMMIT \
+  --config CONFIG --build-id N --saved-dir SAVED_DIRECTORY \
+  --rows ROWS --links LINKS --live-build-id M
+```
+
+保存目录应含 `report_armv7l.html`、`report_x86_64.html`、`probe_3bed7e8c.html`。A：两次 HTTP 读取、与保存页摘要比较及独立基线核对；B：失败日志；C：复用 B1 保存页面验收；D：可选进行中构建，只观察不下载；E：loop 最多 4 次 tick、核验日志复用与唯一分析待办。D 仅如实记录，不影响 PASS。真实模式预期固定为两架构 2244/43 包、6/1 失败日志。
+
+结果摘要仅保留扩展错误前 15 组的签名与成员数量，不包含成员清单；完整明细在 verification 目录。stdout 最后 JSON 给出结果文件、导出清单和是否达到两块目标。离线 HTTP 模拟额外带 `--mode fixture --fixture-counts FILE`，必须明确标注合成规模；不会据此声明真实网络验收通过。

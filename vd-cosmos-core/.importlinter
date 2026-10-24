@@ -1,6 +1,7 @@
 [importlinter]
 root_packages =
     vd_cosmos_core
+    vd_cosmos_workflow
     vd_cosmos_watch
     vd_cosmos_fetch
 
@@ -8,6 +9,7 @@ root_packages =
 name = skills depend on core only
 type = layers
 layers =
+    vd_cosmos_workflow
     vd_cosmos_watch | vd_cosmos_fetch
     vd_cosmos_core
 
@@ -17,3 +19,12 @@ type = independence
 modules =
     vd_cosmos_watch
     vd_cosmos_fetch
+
+[importlinter:contract:workflow_readonly]
+name = workflow cannot depend on write backends
+type = forbidden
+source_modules =
+    vd_cosmos_workflow
+forbidden_modules =
+    vd_cosmos_core.p4
+    vd_cosmos_core.fake_browser

@@ -162,14 +162,19 @@ class ReportTests(unittest.TestCase):
         for counts in ("<td>3</td><td>1</td><td>0</td><td>0</td><td>1</td>",
                        "<td>2</td><td>0</td><td>0</td><td>0</td><td>2</td>"):
             changed = html.replace("<td>2</td><td>1</td><td>0</td><td>0</td><td>1</td>", counts)
-            self.assertEqual(self.parse(changed, packages)["report_state"], "部分")
+            self.assertEqual(self.parse(changed, packages)["report_state"], "对账失败")
 
     def test_expected_package_set_required_and_extra_packages_rejected(self):
         packages = [pkg("one"), pkg("two")]
         html = report_html("armv7l", packages)
-        self.assertEqual(self.parse(html, packages[:1])["report_state"], "部分")
+        changed = self.parse(html, packages[:1])
+        self.assertEqual(changed["report_state"], "完整")
+        self.assertEqual(changed["package_coverage"], "不一致")
+        self.assertEqual(changed["result_state"], "未知")
         result = parse_report(html, "armv7l", self.config.raw["cosmos"], None, stable=True)
-        self.assertEqual(result["report_state"], "部分")
+        self.assertEqual(result["report_state"], "完整")
+        self.assertEqual(result["package_coverage"], "未核")
+        self.assertEqual(result["result_state"], "成功")
 
     def test_prefix_matching_raw_title_line_numbers_and_inputs(self):
         packages = [pkg("item", "build_error")]
@@ -189,7 +194,8 @@ class ReportTests(unittest.TestCase):
         self.manifest["previous_table_titles"] = {"armv7l": {"build": "Build Statis Details old"}}
         result = self.observed()
         self.assertEqual(result["report_state"], "完整")
-        self.assertTrue(any(todo["reason"].startswith("table_title_drift") for todo in result["todos"]))
+        self.assertIn("table_title_drift:build", result["reports"]["armv7l"]["issues"])
+        self.assertFalse(any(todo["reason"].startswith("table_title_drift") for todo in result["todos"]))
 
     def test_read_inputs_includes_all_rows_and_header_consistency(self):
         reader = self.reader()

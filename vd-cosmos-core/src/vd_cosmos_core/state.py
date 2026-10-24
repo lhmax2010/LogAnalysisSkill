@@ -26,6 +26,8 @@ BEGIN SELECT RAISE(ABORT, 'append_only'); END;
 CREATE TRIGGER IF NOT EXISTS expected_head BEFORE INSERT ON events
 WHEN NEW.previous_id != COALESCE((SELECT MAX(id) FROM events), 0)
 BEGIN SELECT RAISE(ABORT, 'stale_head'); END;
+CREATE UNIQUE INDEX IF NOT EXISTS one_workflow_result ON events(operation_id)
+    WHERE kind = 'workflow_result';
 CREATE UNIQUE INDEX IF NOT EXISTS one_click ON events(request_id)
     WHERE kind = 'click_intent';
 CREATE UNIQUE INDEX IF NOT EXISTS one_bind ON events(build_key)

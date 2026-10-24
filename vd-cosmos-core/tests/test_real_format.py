@@ -74,7 +74,7 @@ class RealFormatTests(unittest.TestCase):
         self.assertEqual(self.parse(changed)["report_state"], "完整")
         bad = changed.replace("<td>4</td>", "<td>5</td>", 1)
         self.assertIn("summary_total_mismatch", self.parse(bad)["issues"])
-        self.assertEqual(self.parse(bad)["report_state"], "部分")
+        self.assertEqual(self.parse(bad)["report_state"], "对账失败")
 
     def test_supplied_head120_snippets_never_count_as_complete(self):
         expected_counts = {"armv7l": {"total": 2244, "succeeded": 1479, "export_error": 0, "expansion_error": 759, "build_error": 6},
