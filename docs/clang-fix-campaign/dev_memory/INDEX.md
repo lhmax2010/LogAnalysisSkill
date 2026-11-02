@@ -27,6 +27,7 @@
 | P4 derive_commit | CLOSED | `2ba0e0d`: PM verified review fixes match rulings; FatTank approved, no second review | [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09): 1480 passed/1 skipped, real hook PASSED; new P5 hardening in stage16 transfer list |
 | P5 sandbox-submit | CLOSED | Designer verified `37e27b1`, FatTank approved, 2026-10-10; both review rounds resolved, no further review; P4.5 suppress_policy and gate_view delivered in P5 | [final acceptance](../review/p5-sandbox-submit-closeout.md#8-最终签收); 1937 passed/1 skipped, 94 gates no new failure; [P5Q handoff](stage19_p5_sandbox_submit/progress.md#21-p5q移交清单): EF-5 partial, FatTank business rulings recorded, first real sandbox push remains P12 |
 | P5Q qb-trigger / qb-result-fetch | CLOSED | P5Q-C8-04 accepts C8 recovery 1204698/1204699 PASS with FatTank confirmation; b/e3a/e3b accepted residuals, no retest | [P5Q closeout](../review/p5q-closeout.md); v1.8-FROZEN; latest full regression 2891 passed/1 skipped; 20 residuals/todos retained; docs-only closure |
+| Campaign skeleton batch 1 | STOPPED_BASELINE_FAILED | v1.3-FROZEN; SKEL-B1-01; SKEL-B1-02 baseline failure before any module move | [stage21 progress](stage21_campaign_skeleton/progress.md); [stop report](stage21_campaign_skeleton/evidence/batch1/stop-report.md); no live QB/Gerrit push/gbs |
 
 This index reconstructs the P4.5 implementation history from the files and
 commits present on the `clang-fix-campaign` branch. It is an audit index, not a
@@ -60,6 +61,7 @@ second contract authority. Runtime behavior remains governed by
 | 18 P4 derive_commit | CLOSED | Accepted `2ba0e0d`, 2026-10-09; single reviewer: changes needed; PM verified fixes, FatTank approved | [progress](stage18_p4_derive_commit/progress.md#10-最终签收2026-10-09); [final acceptance](../review/p4-derive-commit-closeout.md#最终签收); [P5 transfers](stage16_p2_submission_identity/progress.md#5-p2-01裁决与移交清单), not yet implemented |
 | 19 P5 sandbox-submit | CLOSED | Accepted code `37e27b1`, closeout `b0ecda4`; designer verified, FatTank approved, 2026-10-10; P4.5 suppress_policy/gate_view delivered | [final acceptance](../review/p5-sandbox-submit-closeout.md#8-最终签收); [progress](stage19_p5_sandbox_submit/progress.md#20-最终签收2026-10-10); 1937/1, 94 gates no new failure; [P5Q handoff](stage19_p5_sandbox_submit/progress.md#21-p5q移交清单), no third review |
 | 20 P5Q QuickBuild trigger | CLOSED | v1.8 authority; C8 recovery accepted by P5Q-C8-04; acceptance residuals and deferred fixes retained | [P5Q closeout](../review/p5q-closeout.md); [closure ruling](stage20_p5q_qb_trigger/progress.md#54-实施裁定-p5q-c8-04p5q-收口); historical stops unchanged; no production/DB/frozen-design changes |
+| 21 Campaign skeleton | STOPPED_BASELINE_FAILED | Base accd7f4; SKEL-B1-02; no module or test changes; batches 2/3/3.5/4 not started | [progress](stage21_campaign_skeleton/progress.md); [stop report](stage21_campaign_skeleton/evidence/batch1/stop-report.md) |
 
 ## Code-Ready Checkpoint
 

@@ -1,0 +1,21 @@
+{
+  "tests": 2903,
+  "passed": 2901,
+  "failures": [
+    {
+      "class": "tests.unit.test_p5q_c8_investigation",
+      "name": "test_post_submit_read_signatures",
+      "message": "AssertionError: CASE_COMPLETE control\n  CASE_COMPLETE idle-script-navigation\n  CASE_COMPLETE racing-script-navigation\n  CASE_COMPLETE racing-meta-refresh\n  CASE_COMPLETE racing-wicket-navigation\n  CASE_COMPLETE injected-missing-root-membership\n  CASE_COMPLETE configuration-connection-abort\n  CASE_COMPLETE configuration-redirect-signin\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  QB_AGENT_STOPPED category=UNKNOWN\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  QB_AGENT_STOPPED category=UNKNOWN\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  QB_AGENT_STOPPED category=UNKNOWN\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  QB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\n  INVESTIGATION_STOPPED AssertionError\n  \nassert 1 == 0\n +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\\nQB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\\nINVESTIGATION_STOPPED AssertionError\\n').returncode"
+    }
+  ],
+  "skips": [
+    {
+      "class": "tests.unit.test_tizen_build_verify",
+      "name": "test_case_insensitive_bypass_is_platform_specific",
+      "message": "case-sensitive filesystem"
+    }
+  ],
+  "errors": 0,
+  "time_seconds": "1012.172",
+  "exit": 1
+}
