@@ -1,0 +1,12 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "--junitxml=docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml"
+  ],
+  "start_utc": "2026-11-02T12:26:21.483514+00:00",
+  "end_utc": "2026-11-02T12:50:06.583606+00:00",
+  "seconds": 1425.1003428330296,
+  "exit": 1
+}

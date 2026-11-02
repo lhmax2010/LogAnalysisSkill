@@ -1,0 +1,12 @@
+{
+  "total": 2903,
+  "passed": 2900,
+  "failed": [
+    "tests.unit.test_p5q_c5a_integration::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "tests.unit.test_p5q_c5a_integration::test_real_cli_browser_submit_bind_pending_pass[no-navigation]"
+  ],
+  "skipped": [
+    "tests.unit.test_tizen_build_verify::test_case_insensitive_bypass_is_platform_specific"
+  ],
+  "functional_gate_passed": false
+}

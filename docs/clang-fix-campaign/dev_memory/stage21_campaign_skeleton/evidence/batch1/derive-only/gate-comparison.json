@@ -1,0 +1,40 @@
+{
+  "scope": "derive-only trial; full split and post-five NOT_RUN_STOPPED",
+  "exempt_nodeid": "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+  "baseline": {
+    "total": 2903,
+    "passed": 2901,
+    "failed": [
+      "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures"
+    ],
+    "skipped": [
+      {
+        "nodeid": "tests/unit/test_tizen_build_verify.py::test_case_insensitive_bypass_is_platform_specific",
+        "reason": "case-sensitive filesystem"
+      }
+    ],
+    "exempt_result": "FAIL",
+    "non_exempt_failed": []
+  },
+  "derive_only": {
+    "total": 2903,
+    "passed": 2900,
+    "failed": [
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]"
+    ],
+    "skipped": [
+      {
+        "nodeid": "tests/unit/test_tizen_build_verify.py::test_case_insensitive_bypass_is_platform_specific",
+        "reason": "case-sensitive filesystem"
+      }
+    ],
+    "exempt_result": "PASS",
+    "non_exempt_failed": [
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]"
+    ]
+  },
+  "skip_list_unchanged": true,
+  "decision": "STOPPED_SKEL_B1_04"
+}

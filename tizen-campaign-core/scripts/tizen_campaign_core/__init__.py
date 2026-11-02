@@ -1,0 +1,1 @@
+"""Shared Clang campaign components."""

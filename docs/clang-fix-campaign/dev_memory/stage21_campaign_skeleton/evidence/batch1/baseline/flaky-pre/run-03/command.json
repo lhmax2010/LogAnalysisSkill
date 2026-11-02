@@ -1,0 +1,15 @@
+{
+  "run": 3,
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/baseline/flaky-pre/run-03/pytest.xml"
+  ],
+  "start_utc": "2026-11-02T12:14:49.513420+00:00",
+  "end_utc": "2026-11-02T12:18:02.911940+00:00",
+  "seconds": 193.3985344240209,
+  "exit": 0,
+  "failure_shapes": []
+}

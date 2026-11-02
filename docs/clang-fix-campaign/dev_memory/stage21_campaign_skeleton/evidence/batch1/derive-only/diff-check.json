@@ -1,0 +1,113 @@
+{
+  "full_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "full_exit": 2,
+  "raw_evidence_whitespace": [
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/baseline/flaky-pre/run-02/pytest.xml",
+      "line": 23
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/baseline/flaky-pre/run-02/stdout.log",
+      "line": 27
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 37
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 42
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 85
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 96
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 97
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 180
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 185
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 228
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 286
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+      "line": 287
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 81
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 86
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 129
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 140
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 141
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 227
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 232
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 275
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 333
+    },
+    {
+      "file": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log",
+      "line": 334
+    }
+  ],
+  "filtered_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/baseline/flaky-pre/run-02/pytest.xml",
+    ":(exclude)docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/baseline/flaky-pre/run-02/stdout.log",
+    ":(exclude)docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/pytest.xml",
+    ":(exclude)docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/derive-only/stdout.log"
+  ],
+  "filtered_exit": 0,
+  "policy": "Preserve raw pytest output bytes; no formatting of evidence"
+}
