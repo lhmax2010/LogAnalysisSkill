@@ -61,7 +61,7 @@ def export_file(config, source, material_type, name):
     relative = path.relative_to(config.data_root)
     if relative.parts[0] in {"browser", "browser-bin", "state", "locks", "run", "tmp", "venv", "settings"}:
         raise FlowError(4, "sensitive_asset_not_exportable")
-    if path == config.output(config.raw["p4"]["config_file"]) or path.name == "config.json":
+    if path == config.output(config.raw["p4"].get("fix_config_file", config.raw["p4"].get("config_file", "settings/p4.conf"))) or path.name == "config.json":
         raise FlowError(4, "configuration_not_exportable")
     if not re.fullmatch(r"[A-Za-z0-9_-]+", name):
         raise FlowError(2, "invalid_export_name")

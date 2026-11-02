@@ -165,11 +165,13 @@ class FoundationTests(unittest.TestCase):
         with patch.dict(os.environ, {"P4PORT": "inherited-connection", "P4CONFIG": "inherited-config"}):
             plan = adapter.plan(["print", "//example/package@1"])
             self.assertNotIn("P4PORT", plan.env)
-            self.assertEqual(plan.env["P4CONFIG"], str(self.config.data_root / "settings/p4.conf"))
+            self.assertTrue(plan.env["P4CONFIG"].startswith(".vd-cosmos-noconfig-"))
+            self.assertEqual(plan.env["P4ENVIRO"], "/dev/null")
             self.assertTrue(plan.cwd.startswith(str(self.config.data_root)))
         for args in (["set"], ["login"], ["client", "-i"], ["submit"], ["-p", "server", "info"]):
             self.assert_code(4, adapter.plan, args)
-        self.assert_code(6, adapter.execute, ["info"])
+        with patch("vd_cosmos_core.p4.subprocess.run", side_effect=FileNotFoundError):
+            self.assert_code(5, adapter.execute, ["info"])
 
     def test_export_utf8_long_line_roundtrip_sizes_and_full_digests(self):
         content = ("很长的一行😀" * 40 + "\nnext line\n").encode()

@@ -1,13 +1,15 @@
 """Abstract capabilities and local saved-page/fixture readers."""
 from abc import ABC, abstractmethod
 from datetime import datetime
+from pathlib import Path
 import re
 
 from .errors import FlowError, unsupported
 from .export import check_content
 from .files import atomic_write, confined, digest, load_json, json_bytes
 from .versions import build_key, parsing_digest
-from .stability import advance, maturity
+from .stability import advance, maturity, execution_clock
+from .receipts import terminal_basis, log_binding, manual_terminal
 from .models import BuildRef
 from .report import normalize, parse_report
 from .observation import detail_state, summarize
@@ -94,7 +96,7 @@ class SavedReportReader(ReportReader):
             raise FlowError(4, "credential_pattern_blocked", hits=checks["credential_hits"])
         return path, content
 
-    def _arch(self, arch, terminal=False):
+    def _arch(self, arch, execution):
         snapshots = self.manifest["reports"].get(arch, [])
         if not snapshots:
             return {"arch": arch, "report_state": "未知", "result_state": "未知",
@@ -106,22 +108,25 @@ class SavedReportReader(ReportReader):
         if latest.get("status_code") != 200 or latest.get("error"):
             raise FlowError(5, "report_observation_failed")
         path, content = self.read_source(latest["path"])
-        record, previous_sha = None, None
+        record, previous_sha, timing = None, None, {}
         for snapshot in snapshots:
             if snapshot.get('status_code') != 200 or snapshot.get('error'):
                 record = None
                 continue
             _, raw = self.read_source(snapshot['path'])
             previous_sha = record['sha256'] if record else None
-            record = advance(record, digest(raw), snapshot['observed_at'], parsing_digest(self.config))
-        stable, settled = maturity(record, self.config.raw['poll'], terminal)
+            timing = execution_clock(timing, execution, snapshot['observed_at'], report_success=True)
+            record = advance(record, digest(raw), snapshot['observed_at'], parsing_digest(self.config), timing)
+        stable, settled = maturity(record, self.config.raw['poll'], timing)
         expected = self.manifest.get("expected_packages", {}).get(arch)
         try:
             parsed = parse_report(content.decode("utf-8"), arch, self.config.raw["cosmos"], expected,
                                   stable=stable, settled=settled, source_url=latest.get("source_url", ""))
         except (UnicodeError, KeyError, TypeError):
             raise FlowError(5, "report_parse_failed") from None
-        parsed.update({"observed_at": latest["observed_at"],
+        execution.update(timing)
+        execution["terminal_basis"] = terminal_basis(execution)
+        parsed.update({"continuous": record, "settled_basis": record["settled_basis"], "observed_at": latest["observed_at"],
                        "evidence": {"path": str(path), "sha256": digest(content),
                                     "previous_sha256": previous_sha}})
         previous_titles = self.manifest.get("previous_table_titles", {}).get(arch, {})
@@ -150,7 +155,7 @@ class SavedReportReader(ReportReader):
         reports, failures = {}, []
         for arch in arches:
             try:
-                reports[arch] = self._arch(arch, execution["state"] == "已结束")
+                reports[arch] = self._arch(arch, execution)
             except FlowError as error:
                 if error.code != 5:
                     raise
@@ -158,6 +163,24 @@ class SavedReportReader(ReportReader):
                 # A failed observation contributes no execution/report status.
                 reports[arch] = {"arch": arch, "observation_failed": True,
                                  "error": error.reason, "headers": {}, "issues": [error.reason]}
+        state_path = self.config.output('rounds/' + build_key(self) + '/fixture-detail.json')
+        previous = load_json(state_path) if state_path.exists() else {}
+        invalidated = previous.get('invalid_manual_events', [])
+        manual = manual_terminal(self.config, build_key(self), reports, invalidated)
+        execution['terminal_basis'] = terminal_basis(execution, manual)
+        execution['manual_conflict'] = bool(manual and execution.get('effective_state') in {'运行', '排队'})
+        if manual:
+            for arch, report in list(reports.items()):
+                if not report.get('continuous'):
+                    continue
+                stable, settled = maturity(report['continuous'], self.config.raw['poll'], execution, manual)
+                raw = parse_report(Path(report['evidence']['path']).read_text(), arch, cosmos,
+                    self.manifest.get('expected_packages', {}).get(arch), stable=stable, settled=settled,
+                    source_url=self.manifest['reports'][arch][-1].get('source_url', ''))
+                raw.update({k: report[k] for k in ('continuous', 'observed_at', 'evidence')})
+                raw['settled_basis'] = report['continuous']['settled_basis']
+                reports[arch] = raw
+        atomic_write(self.config.data_root, state_path, json_bytes({'invalid_manual_events': invalidated}))
         self._observed = summarize(build_ref, cosmos, reports, execution, backend=self.__class__.__name__)
         return self._observed
 
@@ -212,5 +235,12 @@ class FixtureReportReader(SavedReportReader):
                     raise FlowError(4, "log_digest_mismatch")
                 identity = build_key(self)
                 name = digest(str(sorted(package["key"].items())).encode())
-                return atomic_write(self.config.data_root, f"rounds/{identity}/logs/{name}.txt", content)
+                binding = log_binding(self.observe(build_ref), arch, self.config.raw['fetch']['max_log_bytes'], entry['path'])
+                revision = digest(json_bytes({'body': digest(content), 'binding': binding}))
+                receipt = {**atomic_write(self.config.data_root, f"rounds/{identity}/logs/{name}/{revision}/log.txt", content),
+                        'key': package['key'], 'first_failure_observed_at': self.observe(build_ref)['observed_at'],
+                        'binding': binding, 'final': binding['final_stage'], 'transfer_complete': True,
+                        'settled_basis': binding['settled_basis'], 'terminal_basis': binding['terminal_basis']}
+                atomic_write(self.config.data_root, receipt['path'] + '.json', json_bytes(receipt))
+                return receipt
         raise FlowError(5, "fixture_log_missing")

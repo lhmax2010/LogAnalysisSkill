@@ -15,7 +15,7 @@ import unittest
 from urllib.parse import urlsplit
 from unittest.mock import patch
 
-from helpers import CORE, REPO
+from helpers import CORE, REPO, detail_html
 from http_helpers import FixtureServer
 from vd_cosmos_core.config import load_config, FETCH_DEFAULTS
 from vd_cosmos_core.errors import FlowError
@@ -105,7 +105,7 @@ class HTTPTests(unittest.TestCase):
 
     def test_detail_session_parameters_never_persist_raw(self):
         marker = 'wicket' + ':interface=synthetic-session'
-        body = ('19091860 <span title="Build is failed"></span><a href="?' + marker + '">next</a>').encode()
+        body = (detail_html() + '<a href="?' + marker + '">next</a>').encode()
         self.server.routes['/build/19091860'] = (200,body,{},0)
         result = self.observed()
         evidence = result['execution_evidence']
@@ -176,7 +176,7 @@ class HTTPTests(unittest.TestCase):
         self.assertTrue(all(l['truncated'] and l['size']==100 and not l['export_allowed'] for l in logs))
         count=len(self.server.requests)
         cached=reader.fetch_logs(packages)
-        self.assertTrue(all(l['skipped'] for l in cached));self.assertEqual(len(self.server.requests),count)
+        self.assertTrue(all(not l['skipped'] and not l['final'] for l in cached));self.assertGreater(len(self.server.requests),count)
 
     def test_log_redirect_refused_tampered_cache_redownloaded_and_export_error_included(self):
         observed=self.stable();reader=self.reader()
@@ -199,7 +199,7 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(digest(target.read_bytes()),result['logs'][0]['sha256'])
 
     def test_packages_error_exit_and_original_detail_title(self):
-        self.server.routes['/build/19091860']=(200,b'19091860 <span title="Build   is   failed"></span>',{},0)
+        self.server.routes['/build/19091860']=(200,detail_html().replace('Build is failed','Build   is   failed').encode(),{},0)
         self.assertEqual(self.observed()['execution_evidence']['title'],'Build   is   failed')
         self.server.routes[self.server.report_path('armv7l')]=(500,b'bad',{},0)
         result=read_action('fetch','packages',self.reader(),'armv7l')
@@ -317,7 +317,7 @@ class WorkflowTests(HTTPTests):
         with EventStore(self.config.data_root) as store:
             events=store.events()
         self.assertEqual(sum(e['kind']=='inbox_opened' and e['payload']['todo']['reason']=='analysis_pending' for e in events),1)
-        self.assertEqual(tick(self.config,lambda:self.reader())['action'],'none')
+        self.assertEqual(tick(self.config,lambda:self.reader())['action'],'observe')
 
     def test_sigterm_and_sigint_clean_exit_release_instance_lock(self):
         for sig in [signal.SIGTERM,signal.SIGINT]:

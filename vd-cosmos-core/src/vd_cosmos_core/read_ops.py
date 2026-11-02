@@ -37,6 +37,9 @@ def fetch_logs(reader, observed=None):
 def read_action(skill, command, reader, arch=None):
     if skill == 'watch':
         return observe(reader)
+    if command == 'base-list':
+        from .build_inputs import fetch_build_inputs
+        return fetch_build_inputs(reader)
     if command == 'inputs':
         return reader.read_inputs(reader.build_ref)
     if command == 'packages':

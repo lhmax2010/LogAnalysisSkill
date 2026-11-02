@@ -7,7 +7,7 @@ import sys
 import tempfile
 import unittest
 
-from helpers import CORE, REPO
+from helpers import detail_html, CORE, REPO
 from vd_cosmos_core.backends import SavedReportReader
 from vd_cosmos_core.config import load_config
 from vd_cosmos_core.errors import FlowError
@@ -94,13 +94,13 @@ class RealFormatTests(unittest.TestCase):
         self.assertEqual(evidence["subresult"], "failed")
         self.assertEqual(evidence["title"], "Build is failed")
         self.assertEqual(evidence["source_line"], 2)
-        self.assertEqual(evidence["basis"], "first_build_status_title")
+        self.assertEqual(evidence["basis"], "unique_build_header")
         self.assertFalse(observed["terminal_prerequisite_met"])  # local_simulation
 
     def test_running_queued_and_all_terminal_words(self):
         for word, state in [("running", "运行"), ("queued", "排队"), ("waiting", "排队"),
                             *[(w, "已结束") for w in self.raw["cosmos"]["status_source"]["terminal_words"]]]:
-            (self.fixture / "detail.html").write_text('fixture-run <i title="Build is ' + word + '"></i><i title="Build is successful"></i>')
+            (self.fixture / "detail.html").write_text(detail_html(word))
             observed = self.observe()
             self.assertEqual(observed["execution_state"], state)
             self.assertEqual(observed["execution_evidence"]["subresult"], word)
@@ -221,7 +221,7 @@ class VerifyScriptTests(RealFormatTests):
                    '--config', str(self.config_path), '--arm-report', str(self.fixture / 'report_armv7l.html'),
                    '--x86-report', str(self.fixture / 'report_x86_64.html'), '--detail-page', str(self.fixture / 'detail.html'),
                    '--rows', str(self.fixture / 'rows.txt'), '--links', str(self.fixture / 'links.txt'),
-                   '--run-id', 'fixture-run', '--mode', 'fixture', '--fixture-counts', str(self.fixture / 'expected-counts.json')]
+                   '--run-id', '19091860', '--mode', 'fixture', '--fixture-counts', str(self.fixture / 'expected-counts.json')]
         process = subprocess.run(command + list(extra), capture_output=True, text=True, cwd=self.base)
         self.assertEqual(process.stderr, '')
         self.assertEqual(process.stdout.splitlines()[0], head)

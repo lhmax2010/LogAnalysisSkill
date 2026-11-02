@@ -86,3 +86,9 @@ def bundle(directory, packages_by_arch=None, *, write_config=True):
     manifest_path = directory / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     return config_path, manifest_path, manifest
+
+
+def detail_html(word='failed', build='19091860'):
+    return ('<div class="build-header"><span title="Build is '+word+'"></span>'
+            '<a href="/build/'+build+'">own</a><div title="Promoted to build 999">'
+            '<a href="/build/999" title="Build is successful">promotion</a></div></div>')

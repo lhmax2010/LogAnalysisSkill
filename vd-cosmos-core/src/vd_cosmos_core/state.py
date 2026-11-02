@@ -4,7 +4,7 @@ import sqlite3
 
 from .commands import authorize_event, COMMANDS, Category
 from .errors import FlowError
-from .files import confined
+from .files import confined, digest, json_bytes
 
 
 SCHEMA = """
@@ -89,8 +89,8 @@ class EventStore:
     def head(self):
         try:
             return self.connection.execute("SELECT COALESCE(MAX(id),0) FROM events").fetchone()[0]
-        except sqlite3.Error:
-            raise FlowError(6, 'state_busy') from None
+        except sqlite3.Error as error:
+            raise FlowError(6, classify(error)) from None
 
     def events(self, build_key=None, *, after=0, kinds=None, latest=False):
         query, values = 'SELECT * FROM events WHERE id > ?', [after]
@@ -103,15 +103,15 @@ class EventStore:
         query += ' ORDER BY id ' + ('DESC LIMIT 1' if latest else 'ASC')
         try:
             return [dict(row) | {'payload': json.loads(row['payload'])} for row in self.connection.execute(query, values)]
-        except (sqlite3.Error, ValueError):
-            raise FlowError(6, 'state_busy') from None
+        except (sqlite3.Error, ValueError) as error:
+            raise FlowError(6, classify(error)) from None
 
     def append(self, context, kind, payload, expected_previous, *, request_id=None,
                operation_id=None, build_ref=None):
         authorize_event(context, kind)
         if type(expected_previous) is not int or expected_previous < 0:
             raise FlowError(2, "invalid_expected_event")
-        build_key = json.dumps(build_ref.to_dict(), sort_keys=True) if build_ref else payload.get("build")
+        build_key = digest(json_bytes(build_ref.to_dict())) if build_ref else payload.get("build")
         try:
             self.connection.execute("BEGIN IMMEDIATE")
             if self.head() != expected_previous:
@@ -149,11 +149,14 @@ def append_retry(store, context, kind, payload, expected, *, retry=False, **iden
         try:
             return store.append(context, kind, payload, expected, **identifiers)
         except FlowError as error:
-            if not retry or attempt == 3 or error.reason not in {'stale_head', 'state_busy'}:
+            if not retry or error.reason not in {'stale_head', 'state_busy'}:
                 raise
             new_head = store.head()
             intervening = store.events(after=expected)
-            if any(e['payload'].get('build') == payload.get('build') or
+            if any(e.get('build_key') == payload.get('build') or
                    COMMANDS.get(e['command']) in {Category.HUMAN, Category.EXTERNAL} for e in intervening):
+                error.details['intervening_event'] = True
+                raise
+            if attempt == 3:
                 raise
             expected = new_head

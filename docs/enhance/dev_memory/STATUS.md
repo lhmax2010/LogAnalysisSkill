@@ -4,18 +4,18 @@
 
 本线为 LogAnalyzer 增强版第一版。
 
-- 当前评审设计：`docs/enhance/vd-cosmos-loganalyzer-hld-v0.6.md`（2026-10-27 原样复制，摘要符合指定值，凭据预检通过；第 3 批尚未下发）。已交付第 2.1 批的设计依据为 `docs/enhance/vd-cosmos-loganalyzer-hld-v0.5.4.md`，保留原件不删。
+- 当前冻结设计：`docs/enhance/vd-cosmos-loganalyzer-hld-v0.9.5.md`，第 3a-1 批按正文及 B3a1-Q01 裁定实现。第 2.1 批依据 v0.5.4；历次设计与评审原件保留。
 - 分支：`vd-cosmos-loganalyzer`。
 - 分支起点：`accd7f4`。
 
 ## 2. 工作约定
 
-- 本分支只新增目录与 `docs/enhance/` 下的文件，不修改本线以外的仓库已有文件；本批按任务修复四个本线目录既有实现并更新本文件。
+- 本分支只新增目录与 `docs/enhance/` 下的文件，不修改本线以外的仓库已有文件；第 3a-1 批只动 vd-cosmos-*、vd-fix-analyze、vd-fix-register 与 docs/enhance/；已有文档仅更新本文件。
 - 已有 skill 只通过命令行调用。
 - 公开仓库约束按 HLD 第 0.3 节执行：内部词表命中只告警，凭据模式命中拦截；本批代码和配置样例只用占位值。
 - 新 Session 开场先读本文件核对。
 - 每个任务收尾在同一个 commit 里更新本文件。
-- 第 2.1 批实现按 2026-10-24 任务、HLD v0.5.4 与 B2-Q01 裁定；六条原计划已全部并入。2026-10-27 本次只整理外部评审材料、更新状态；第 3 批等评审意见处理后再下发，期间不开工。
+- 第 2.1 批按 v0.5.4 与 B2-Q01 交付；第 3a-1 批已正式下发，只做指定读取与源码快照范围。3a-2、3a-3 等设计方后续任务，不提前实现。核心只用标准库；离线验证不访问真实服务、不执行真实 P4。提交作者/提交者 Hao Lin，普通 push，禁止强推。
 
 ## 3. 计划
 
@@ -27,10 +27,18 @@
 | 1.1（已完成离线） | 真实格式兼容、执行状态、其它扩展错误、构建机验收脚本 | 78 项测试、真实配置加载、脚本离线回放 |
 | 2（已完成离线） | HTTP 读取、状态拆分、只读 tick/loop、A～E 验收脚本 | 100 项测试、三条 import 约束、本地 HTTP 模拟、真实配置加载 |
 | 2.1（构建机真实验收已通过，外部评审进行中） | 三家评审处置与原六条：传输、定型、覆盖、详情、并发恢复、独立验收 | 125 项离线测试；设计方反馈 2026-10-26 构建机 A/B/C/E 全 PASS，F 指纹/身份/跳转检查已核实 |
-| 3（待评审处理后下发） | HLD v0.6 的分析与登记设计；含 accept-coverage | 开工前侦察结论已登记；评审意见处理后由设计方下发，期间不开工 |
+| 3a-1（已完成离线） | 读取加固、本轮输入、P4 只读访问、源码快照、四类人工命令 | 153 项测试、三条 import 约束、两个新 SKILL 校验、真实配置本地加载 PASS |
+| 3a-2（未开工） | 任务包、已有分析器适配、ClineSR 隔离、结果接收、诊断族与位置模型 | 接本段 snapshot manifest、任务输入摘要与通知接口，等设计方任务 |
+| 3a-3（未开工） | 其余人工裁决、处置账本、准确性验收 | 等 3a-2 产物及设计方任务；真实验收另在构建机执行 |
 | 后续 | request/previous_report 来源留第 4 批；按后续任务实施 | P4/浏览器写操作与提交协议仍未实现 |
 
 ## 4. 当前进度
+
+2026-11-03：第 3a-1 批离线实现完成。A：可信/人工/时长定型窗口、身份三档、三类停滞、生产日志完整性与版本保存、完成状态重验、争用分类、真实验收地址/F 结论；B：五变量白名单、不可变 base/shelve 清单与逐项核对；C：隔离的 P4 -G 只读访问、结构化分类与持久化重试；D：路径/来源/合并/精确源码行核对与快照报告；E：confirm-terminal、confirm-input、bind-base-list、inbox done。B3a1-Q01 已按设计方答复闭合并测试。
+
+本段实现、各项 HLD 与测试名、附录 H/J～N 的分段映射和 3a-2/3a-3 接口详见 `docs/enhance/batch3a-1/DELIVERY.md`。完整测试输出 `docs/enhance/batch3a-1/evidence/test-output.txt`，SHA256 `0a2ca96e198a85e2779c55739893c1e4017f6c97f7f2b8c013b94f8d430ffdbe`：153 项通过，三条 import 约束通过，54 个实现/入口文件通过 Python 3.10 语法与标准库导入检查；本机实际 Python 3.12.3。两个新 SKILL 校验通过。`evidence/validation.json` 列出逐测试路径/行号和实现摘要，`evidence/config-load-check.json` 证明 Downloads 真实配置只加载且通过，未移动、未改动、未创建构建机 data_root。未执行真实 P4、真实服务访问或浏览器。
+
+HLD v0.9.5 已按 mv 单独提交并普通推送，提交 `3616628442cd037e7c519eb2efa4c9128d521a17`，SHA256 `5989620912fcb86cab5b399e3a66d868616092570916a6e38433ece659f17f63`；Downloads 无此原件。初次开工暂停和 125 项基线证据保留于 `evidence/preflight.json` 与 `evidence/baseline-test-output.txt`，其等待状态是历史记录，已由本次裁定及交付替代。
 
 2026-10-27：第 2.1 批 + HLD v0.6 三家外部评审进行中。材料说明：`docs/enhance/batch2.1/review/README.md`；代码 diff：`docs/enhance/batch2.1/review/batch21-code-3fd6470.diff`（3157 行）；设计输入为 HLD v0.5.4 附录 G 与 HLD v0.6 本次版本记录。评审方只读、不改仓库，评审意见由设计方处理；第 3 批等处理后再下发，期间不开工。本次只新增评审材料和更新状态，不改代码。
 
@@ -54,6 +62,8 @@
 
 ## 5. 已闭合结论（附证据路径）
 
+- **B3a1-Q01 已闭合（来源：设计方本次答复，2026-11-02）**：报告以 `elapsed_window` 定型、有效执行状态未知、无人工终态时，定型之后重新下载且完整性校验通过的日志属于最终日志，可进入“结果已拉取”；回执记录 `settled_basis=elapsed_window`、终态依据“无”，起轮闸门仍不通过。临时日志条件是报告未定型，或可信来源明确说运行/排队且无有效人工终态；不把未知当作运行。之后首次取得可信终态或身份为强的运行/排队时，当前完成状态失效、产物保留、通知不重发；重新满足定型及最终日志条件后验证或重取。日志摘要不变则原分析结果有效，变化则标“输入已过期”。HLD 措辞由设计方下一版修正，本次不改 HLD。对应测试已通过：`test_elapsed_final_gate_closed_terminal_invalidates_revalidation_result_identity`、`test_elapsed_then_running_rejects_old_snapshot_and_changed_log_expires_result`；完整证据 `docs/enhance/batch3a-1/evidence/test-output.txt`。
+
 - 第 2.1 批构建机真实验收已闭合（来源：设计方 2026-10-27 反馈）：验收日期 2026-10-26，run_id `b21-d45b98d33c5d4fbe9fe8829fa85901d4`；A/B/C/E 全部 PASS；F 目录页指纹匹配 10 个链接、详情页身份核对通过、无跳转。证据在构建机 `/home1/chengkai/vd-cosmos/run/verification/` 下，本机未复制结果文件。
 - 第 3 批开工前侦察已取得结论（同一反馈）：P4 可用且默认 client 为 VD 树所用；日志分析器所需 PyYAML 在构建机专用 venv 实测可用；ClineSR skill 目录在工作区下。设计记录：`docs/enhance/vd-cosmos-loganalyzer-hld-v0.6.md` 本次版本记录；不等同于第 3 批开工授权。
 - 本次评审输入原样归位、摘要核对与凭据预检通过，三份材料的路径、SHA256 和 diff 生成命令见 `docs/enhance/batch2.1/review/README.md`。
@@ -62,6 +72,15 @@
 - A～F 模拟及来源：`docs/enhance/batch2.1/evidence/offline-A-F-output.txt`、`offline-verify/result.json`、`offline-run.json`、`offline-export/manifest.json`。临时干净源码快照与待交付本线文件逐一一致；backend=http-fixture，两个合成日志只下载一次，一条两包分析待办，一块导出，非真实验收。
 - 原运行配置直接接受、源文件摘要未变、不复制、不访问网络：`docs/enhance/batch2.1/evidence/real-config-load.json`。受保护文件与凭据检查：同目录 `protected-files-check.json`、`prepush-check.json`。
 - 本批脚本 `vd-cosmos-core/scripts/verify_b2_real.sh` SHA256：`b59d5bbceba8921087726722b3ab552197bf9003bf8d2f9724ee6e2f216022d6`。HLD v0.5.4 SHA256：`8fdcb3c9b8c26e592bad0695db59736709b02790adeae9ba87386cfd1b26f2f8`。
+
+### 第 3a-1 批已闭合实现结论
+
+- §5.4 / §9.2 / §9.3：窗口和计数落盘；人工窗口不因详情恢复而改用另一依据；日志回执和完成状态按当前观察重验，历史日志按版本保留。测试：`test_terminal_epoch_unknown_since_restart_and_running_never_elapsed`、`test_manual_window_survives_running_failure_and_expires_on_digest_or_withdraw`、`test_three_stall_conditions_without_old_poll_count_false_alarm`、`test_loop_uncounted_and_counted_segments_starvation_and_fatal_errors`。
+- §6.1.1a：2245/545 行合成变量页逐项核对、禁止页外变量落盘、清单不可变、人工两种退路已测试；真实页面未读取。测试：`test_appendix_i_2245_base_545_shelve_and_credential_variable_never_written`、`test_pairing_exact_segments_duplicate_cross_branch_and_shelve_tuple_mismatch`。
+- §3.6 / 附录 I：假 p4 marshal 夹具覆盖默认 code0、退出码一致性、信号/残缺输出、已提交 CL 带文件行；未知错误三次后停止，inbox done 恢复。测试：`test_fake_p4_context_protocol_real_error_shapes_signal_partial_unknown_and_forbidden`、`test_confirm_input_checks_current_describe_and_unknown_retry_gate_recovers`。
+- §6.1.1/1a：来源与行核对分开；所有合并动作、跨分支/跨包、大小/路径/关键字/时间、主错误仅诊断条件有正反路径；附录 I 的 2/1/32 个 edit 形状均原样叠加。测试：`test_shelve_overlay_merge_conflict_advanced_add_delete_move_and_cross_branch`、`test_move_pair_other_actions_cross_package_and_mid_snapshot_mutation`、`test_appendix_i_three_shelve_samples_2_1_32_edits_overlay_without_archive` 等。
+- §0.5 / §8.1.1：四个人工命令登记入能力表，非 TTY 拒绝；真实 PTY 覆盖 override-running 回显/输入构建号/撤回。测试：`test_confirm_terminal_pty_override_echoes_build_and_records_withdraw`、`test_manual_entrypoints_non_tty_and_closed_database_are_classified`。
+- 上述统一证据路径：`docs/enhance/batch3a-1/DELIVERY.md`、`docs/enhance/batch3a-1/evidence/validation.json`、`docs/enhance/batch3a-1/evidence/test-output.txt`。本段只验证离线行为，不结清 §14 的真实同步方式待确认项。
 
 ### 第 2.1 批附录 G 落实表
 
@@ -147,11 +166,28 @@
 
 ## 7. 待确认事项
 
-第 2.1 批真实验收已通过；当前等待第 2.1 批 + HLD v0.6 三家外部评审意见，由设计方统一处理。第 3 批等意见处理后再下发，期间不开工。评审输入：`docs/enhance/batch2.1/review/`。
+第 2.1 批构建机真实验收已由设计方反馈通过；后续评审处置进入冻结 HLD v0.9.5，本次第 3a-1 批已完成离线实现。B1/B1.1/B2 与 B3a1-Q01 均已闭合。
 
-B1.1-Q01 及“对账失败是否单设”均已闭合。B2-Q01 已按设计方答复闭合：实例锁全生命周期持有，轮次锁及写事务睡眠前释放。第 1.1 批真实验收已收到设计方反馈；links.txt 已修为仅 armv7l 编译失败包，x86 只核失败数量自基线。后续待确认项按 HLD v0.6 §14，待本次评审处理后确定第 3 批任务。
+保留 HLD §14 第 14 条有关 shelve 包真实同步与合并内容的待确认条件；本段按正文允许“请求 base（待确认）”及“已合并”作为分析输入，不自行升级为实际编译版本。§14 第 15～16 条的侦察事实以附录 I 为依据，本机没有重做内网侦察。3a-2 的诊断族/分析隔离与 3a-3 的准确性验收等后续任务，不在本段提前实现。
 
 ## 8. 挂账
+
+### 2026-11-03 第 3a-1 批收尾与下一段前提
+
+- 当前没有新增待裁定阻塞项；B3a1-Q01 已闭合。真实环境验收尚未执行，真实配置本地加载 PASS 不表示真实连接参数或构建机验收通过。
+- 3a-2 接 snapshot manifest（逐文件来源、行核对、可编辑条件和仅诊断模式）、task_notice_interface、包键+任务输入摘要；补任务包、接收器、ClineSR/已有工具适配与诊断清单。3a-3 再接其它裁决、账本和准确性脚本。
+- 附录 H/J～N 的各项已落实/分段保留清单见 `docs/enhance/batch3a-1/DELIVERY.md`。正式绑定流程未来应在绑定事件提供 previous_build，使旧 loop 停止；本段未实现提交或伪造绑定。
+- 本段开发只使用合成页面与假 p4。保留 §14.14 的来源待确认标签；3a-2/3a-3 开工仍需设计方任务。
+
+
+### 2026-11-02 第 3a-1 批 B3a1-Q01（已闭合；保留开工挂账）
+
+- 场景：全部期望架构报告按 `elapsed_window` 定型且完整，执行状态为“未知”，没有人工终态确认；此后新下载的日志已通过完整性校验。
+- HLD v0.9.5 §5.4 第 3 条（第 408～409 行）明确讨论“此前已按时长完成读取”和三种定型依据完成后的观察；§8.1 第 1 条（第 729 行）允许没有有效终态依据时下载、分析、准备请求。
+- 同时，§5.4 第 3 条要求定型、最终日志和闸门共用“有效终态依据”口径；§9.2（第 892 行）要求按有效终态依据判断“执行仍在运行”，但没有明确上述“未知 + 按时长定型”场景中日志回执是最终还是临时。两种解释会改变读取完成条件，以及 §9.2 任务输入摘要能否使用该日志，不能由实现者自行选择。
+- 初次提问（历史）：此时能否把新取得的完整日志记为最终日志并进入“结果已拉取”？建议允许读取完成、保持终态闸门关闭；以后首次取得可信终态时仍按 §5.4 使当前完成状态失效，终态窗口完成后重验日志，通知不重复。当时尚未实现；现已按 B3a1-Q01 裁定实现，见第 5 节。
+- 初次暂停现场（历史）：仅 HLD 单文件提交已推送，当时三个准备性源码改动已撤回，代码仍为开工基线；挂账与开工证据留在工作区，未作实现提交。基线测试完整输出及 SHA256 见 `docs/enhance/batch3a-1/evidence/preflight.json`。
+- 3a-2（任务包、结果接收、诊断定性）与 3a-3（其余人工命令、账本、准确性验收）均未开始；本段接口现已交付，见本批 DELIVERY。恢复前提已由设计方 B3a1-Q01 裁定满足，本段离线实现已完成。
 
 ### 2026-10-27 第 2.1 批 + HLD v0.6 外部评审
 

@@ -16,8 +16,9 @@ def sorted_body(value):
 
 
 def write_inbox(store, config):
+    closed = {e['payload'].get('todo_key') for e in store.events(kinds=['inbox_closed'])}
     lines = ['# 待办', ''] + ['- ' + json.dumps(e['payload']['todo'], ensure_ascii=False)
-        for e in store.events(kinds=['inbox_opened'])]
+        for e in store.events(kinds=['inbox_opened']) if e['payload'].get('todo_key') not in closed]
     return atomic_write(config.data_root, 'inbox.md', ('\n'.join(lines) + '\n').encode())
 
 
@@ -63,23 +64,43 @@ def monitor_todos(config, store, build_key, data, *, step='observe'):
         todos.append({'reason': 'three_consecutive_observation_failures' if step == 'observe' else 'log_download_unavailable',
                       'basis_version': failed[-1]['id']})
     if step == 'observe':
-        detail = failure_run(outcomes, lambda p: p.get('detail_failed'))
+        execution = data.get('execution_evidence', {})
         todos = [t for t in todos if t['reason'] != 'detail_page_unavailable']
-        if len(detail) >= 3 or data.get('execution_evidence', {}).get('failure_count', 0) >= 3:
-            todos.append({'reason': 'detail_page_unavailable', 'basis_version': detail[-1]['id'] if detail else store.head()})
-        ordered = [e for e in outcomes if e['payload'].get('observed_at')]
+        if execution.get('failure_count', 0) >= 3:
+            todos.append({'reason': 'detail_page_unavailable', 'basis_version': execution['failure_started_at']})
         reports = data.get('reports', {})
-        waiting = (data.get('report_state') == '部分' and reports and
-                   all(r.get('report_state') != '未发布' for r in reports.values()) and
-                   any(r.get('evidence') for r in reports.values()))
-        if waiting:
-            count = config.raw['poll'].get('stall_polls', 6)
-            recent = ordered[-count:]
-            if len(recent) == count and all(e['payload'].get('content_fingerprint') == fingerprint(data) for e in recent):
-                if timestamp(recent[-1]['payload']['observed_at']) - timestamp(recent[0]['payload']['observed_at']) >= (count - 1) * config.raw['poll']['interval_s']:
-                    todos.append({'reason': 'report_stalled', 'basis_version': fingerprint(data)})
-        if ordered and data.get('observed_at') and timestamp(data['observed_at']) - timestamp(ordered[0]['payload']['observed_at']) > config.raw['poll'].get('expected_hours', 24) * 5400:
-            todos.append({'reason': 'expected_observation_duration_exceeded', 'basis_version': ordered[0]['id']})
+        ordered = [e for e in outcomes if e['payload'].get('observed_at')]
+        if ordered and data.get('observed_at'):
+            age = timestamp(data['observed_at']) - timestamp(ordered[0]['payload']['observed_at'])
+            limit = config.raw['poll'].get('expected_hours', 24) * 5400
+            for arch, report in reports.items():
+                since = report.get('unpublished_since')
+                if since and any(r.get('settled') for r in reports.values()) and timestamp(data['observed_at']) - timestamp(since) >= config.raw['poll']['arch_lag_s']:
+                    todos.append({'reason': 'architecture_lag', 'arch': arch, 'basis_version': since})
+                since = report.get('unsettled_since')
+                continuous = report.get('continuous', {})
+                recent_change = continuous.get('first_seen_at')
+                if (since and report.get('change_count', 0) >= 2 and recent_change
+                        and timestamp(data['observed_at']) - timestamp(since) > limit
+                        and timestamp(data['observed_at']) - timestamp(recent_change) < config.raw['poll']['settle_s']):
+                    todos.append({'reason': 'report_continuously_changing', 'arch': arch, 'basis_version': since})
+            if age > limit and all(r.get('report_state') == '未发布' for r in reports.values()):
+                todos.append({'reason': 'expected_observation_duration_exceeded', 'basis_version': ordered[0]['id']})
+        published = [r for r in reports.values() if r.get('continuous')]
+        if (published and data.get('effective_execution_state') in {'运行', '排队'}
+                and all(timestamp(r['continuous']['last_seen_at']) - timestamp(r['continuous']['first_seen_at']) >= config.raw['poll']['settle_s'] for r in published)):
+            from datetime import timedelta
+            for report in published:
+                try:
+                    start = datetime.fromisoformat(report['headers']['start_time'])
+                    if start.tzinfo is None:
+                        start = start.replace(tzinfo=timezone(timedelta(hours=9)))
+                    if timestamp(data['observed_at']) - start.timestamp() > config.raw['poll'].get('expected_hours', 24) * 5400:
+                        todos.append({'reason': 'running_but_stable', 'basis_version': fingerprint(data),
+                                      'message': '可信来源仍为运行/排队；核实后可 confirm-terminal --override-running 或放弃本轮'})
+                        break
+                except (KeyError, ValueError):
+                    pass
     stats = os.statvfs(config.data_root)
     available = stats.f_bavail * stats.f_frsize
     if available < config.raw.get('budget', {}).get('disk_warning_bytes', 0):

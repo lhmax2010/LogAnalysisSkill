@@ -21,7 +21,7 @@ class Parser(argparse.ArgumentParser):
         raise FlowError(2, "invalid_arguments")
 
 
-PUBLIC = {"watch": ["observe"], "fetch": ["packages", "inputs", "groups", "logs"],
+PUBLIC = {"watch": ["observe"], "fetch": ["packages", "inputs", "groups", "logs", "base-list"],
           "core": ["status", "export", "prepush"]}
 
 

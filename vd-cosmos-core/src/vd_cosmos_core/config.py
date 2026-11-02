@@ -9,10 +9,12 @@ from urllib.parse import urlsplit
 
 from .errors import FlowError
 from .files import confined, load_json
+from .defaults import configure
+from .versions import PARSER_VERSION
 
 FETCH_DEFAULTS = {"timeout_s": 60, "deadline_s": 300, "max_page_bytes": 20 * 1024 * 1024,
                   "max_log_bytes": 200 * 1024 * 1024, "log_concurrency": 4,
-                  "user_agent": "VD-Cosmos-LogAnalyzer/0.5.3"}
+                  "user_agent": "VD-Cosmos-LogAnalyzer/" + PARSER_VERSION}
 
 
 def validate_template(value, allowed):
@@ -96,7 +98,7 @@ def load_config(path):
         if status is not None:
             required = {"kind", "url_template", "status_title_regex",
                         "terminal_words", "running_words", "queued_words"}
-            if not isinstance(status, dict) or set(status) - {'identity_regex'} != required or status["kind"] != "detail_page":
+            if not isinstance(status, dict) or set(status) - {'identity_regex', 'header_rule'} != required or status["kind"] != "detail_page":
                 raise ValueError()
             if not isinstance(status["url_template"], str) or not status["url_template"].strip():
                 raise ValueError()
@@ -163,9 +165,7 @@ def load_config(path):
             if not isinstance(pattern, str) or not pattern:
                 raise ValueError()
             re.compile(pattern)
-        if not isinstance(raw["p4"]["config_file"], str) or not raw["p4"]["config_file"]:
-            raise ValueError()
-        confined(root, raw["p4"]["config_file"])
+        configure(raw)
         if raw.get("budget", {}).get("disk_warning_bytes", 0) < 0:
             raise ValueError()
     except (KeyError, TypeError, ValueError, re.error):

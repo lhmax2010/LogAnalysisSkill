@@ -4,6 +4,7 @@ import shutil
 import signal
 import threading
 import uuid
+import time
 from vd_cosmos_core.commands import command_context
 from vd_cosmos_core.errors import FlowError
 from vd_cosmos_core.files import atomic_write, digest, json_bytes, load_json
@@ -12,6 +13,8 @@ from vd_cosmos_core.locks import OperationLock
 from vd_cosmos_core.observation import stopped
 from vd_cosmos_core.state import EventStore, append_retry
 from vd_cosmos_core.versions import build_key, evaluation
+from vd_cosmos_core.receipts import logs_valid
+from vd_cosmos_core.stability import seconds
 from vd_cosmos_watch.api import observe
 from vd_cosmos_fetch.api import fetch_logs
 
@@ -28,9 +31,19 @@ def projection(config, store, key):
     latest = {}
     for event in store.events(key):
         payload = event['payload']
+        if payload.get('phase') == '停止推进':
+            state['stopped_basis'] = payload.get('content_fingerprint')
+        if payload.get('resolved_stopped_basis'):
+            state['stopped_basis'] = None
         if event['kind'] == 'workflow_result' and payload.get('phase') == '结果已拉取' and not payload.get('exit_code'):
+            if state.get('completed_evaluation') != payload.get('evaluation'):
+                state['completed_at'] = event['created_at']
             state['completed_evaluation'] = payload.get('evaluation')
             state['phase'] = '结果已拉取'
+        if event['kind'] == 'bind' and payload.get('previous_build') == key:
+            state['superseded'] = True
+        if event['kind'] == 'round_abandoned':
+            state['abandoned'] = True
         if event['kind'] not in {'workflow_result', 'observation_recorded', 'observation_failed'}:
             continue
         if payload.get('step') == 'observe' or event['command'] == 'watch.observe':
@@ -44,6 +57,9 @@ def projection(config, store, key):
             state['phase'] = '构建中'
             state['todos'].append({'reason': 'artifact_unavailable', 'arch': field,
                                    'basis_version': payload.get('artifact', {}).get('sha256', payload.get('attempt'))})
+    state['superseded'] = any(e['payload'].get('previous_build') == key for e in store.events(kinds=['bind']))
+    if not ready(state['observation']) or not logs_valid(config, state['logs'], state['observation']):
+        state['phase'] = '构建中'
     return state
 
 
@@ -79,14 +95,14 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
         clean_unfinished(config, store, key)
         state = projection(config, store, key)
         previous = state['observation']
-        if (state['phase'] == '结果已拉取' and previous and state['logs']
-                and state['completed_evaluation'] == evaluation(reader, previous)):
-            write_inbox(store, config)
-            return {'phase': state['phase'], 'exit_code': 0, 'last_event_id': store.head(), 'action': 'none'}
+        if state.get('superseded'):
+            return {'phase': state['phase'], 'exit_code': 0, 'last_event_id': store.head(), 'action': 'none', 'next_round_bound': True}
+        if state.get('abandoned'):
+            return {'phase': '已作废', 'exit_code': 0, 'last_event_id': store.head(), 'action': 'none'}
         step = 'observe'
-        if ready(previous) and not state['todos']:
+        if ready(previous) and not state['todos'] and state['phase'] != '结果已拉取':
             step = 'logs'
-            if (state['logs'] and state['logs'].get('evaluation') == evaluation(reader, previous)):
+            if logs_valid(config, state['logs'], previous) and state['logs'].get('evaluation') == evaluation(reader, previous):
                 step = 'notify'
         # Changed baseline/config requires a fresh observation even with cached
         # complete pages. Projection cannot promote a stale evaluation.
@@ -111,8 +127,8 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
                 count = len(state['logs']['logs'])
                 data = {'exit_code': 0, 'failed_package_count': count,
                         'todos': [{'reason': 'analysis_pending', 'count': count,
-                                   'basis_version': evaluation(reader, previous),
-                                   'message': f'有 {count} 个失败包待分析（第 3 批接分析）'}]}
+                                   'basis_version': fingerprint(previous),
+                                   'message': f'有 {count} 个失败包待分析'}]}
         except FlowError as error:
             data = {'exit_code': error.code, 'error': error.reason,
                     'todos': [error.details['todo']] if error.details.get('todo') else []}
@@ -122,18 +138,23 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
             data = {'exit_code': 5, 'error': 'workflow_action_failed', 'todos': []}
         if step == 'observe':
             data['evaluation'] = evaluation(reader, data)
-            if previous and stopped(previous) and fingerprint(previous) != fingerprint(data):
+            if state.get('stopped_basis') and data.get('reports') and all(r.get('settled') for r in data['reports'].values()) and state['stopped_basis'] != fingerprint(data):
                 data.setdefault('todos', []).append({'reason': 'report_basis_changed', 'basis_version': fingerprint(data),
                     'message': '此前待办所依据的报告已变化，已重新判定'})
         code = data.get('exit_code', 0)
         phase = ('结果已拉取' if step == 'notify' and not code else
                  '停止推进' if step == 'observe' and stopped(data) else
                  '报告已完整' if step in {'logs', 'notify'} or ready(data) else '构建中')
+        if step == 'observe' and ready(data) and logs_valid(config, state['logs'], data) and state['completed_evaluation'] == evaluation(reader, data):
+            phase = '结果已拉取'
         artifact = atomic_write(config.data_root, f'rounds/{key}/attempt-{attempt}/workflow-{step}.json', json_bytes(data))
         payload = {'build': key, 'step': step, 'attempt': attempt, 'phase': phase,
                    'exit_code': code, 'artifact': artifact}
         if step == 'observe':
             payload.update(monitoring_fields(data))
+            payload['resolved_stopped_basis'] = any(t['reason']=='report_basis_changed' for t in data.get('todos', []))
+            if phase == '结果已拉取':
+                payload['evaluation'] = evaluation(reader, data)
         if step == 'notify':
             payload['evaluation'] = evaluation(reader, previous)
             if not code:
@@ -143,7 +164,8 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
         current = append_retry(store, context, 'workflow_result', payload, current, operation_id=attempt, retry=retry)
         todos = monitor_todos(config, store, key, data, step=step) + state['todos']
         current = write_todos(store, context, current, key, todos, config, retry=retry)
-        return {'phase': phase, 'action': step, 'exit_code': code, 'last_event_id': current, 'artifact': artifact}
+        return {'phase': phase, 'action': step, 'exit_code': code, 'last_event_id': current, 'artifact': artifact, 'terminal_basis': (data if step == 'observe' else previous or {}).get('effective_terminal_basis'),
+                'watch_started_at': state.get('completed_at') if state.get('completed_evaluation') == evaluation(reader, data if step == 'observe' else previous or {}) else store.events(key, kinds=['workflow_result'], latest=True)[0]['created_at']}
 
 
 def loop(config, reader_factory, *, max_ticks=None, on_sleep=None, expected_event=None):
@@ -155,6 +177,8 @@ def loop(config, reader_factory, *, max_ticks=None, on_sleep=None, expected_even
         for sig in (signal.SIGINT, signal.SIGTERM):
             old_handlers[sig] = signal.signal(sig, lambda *_: stop.set())
     results, contention = [], 0
+    contention_id, contention_start, completed_start = None, None, None
+    starved_written = False
     try:
         with OperationLock(config.data_root, 'loop', 'singleton'):
             while not stop.is_set() and (max_ticks is None or len(results) < max_ticks):
@@ -163,26 +187,46 @@ def loop(config, reader_factory, *, max_ticks=None, on_sleep=None, expected_even
                     if expected_event is not None:
                         expected_event = result['last_event_id']
                     contention = 0
+                    contention_id, contention_start, starved_written = None, None, False
                 except FlowError as error:
-                    if error.reason != 'operation_locked':
+                    uncounted = bool(error.details.get('intervening_event'))
+                    if (expected_event is not None or error.reason not in {'operation_locked', 'state_busy', 'stale_head'}):
                         raise
-                    contention += 1
-                    result = {'phase': '构建中', 'exit_code': 6, 'action': 'skipped', 'skip_count': contention}
-                    if contention == 3:
+                    if contention_id is None:
+                        contention_id, contention_start = uuid.uuid4().hex, time.monotonic()
+                    if not uncounted:
+                        contention += 1
+                    result = {'phase': '构建中', 'exit_code': 6, 'action': 'skipped', 'skip_count': contention,
+                              'skip_reason': error.reason, 'uncounted': uncounted, 'contention_id': contention_id}
+                    starved = uncounted and time.monotonic() - contention_start >= config.raw['loop']['max_uncounted_skip_s']
+                    if contention == 3 or (starved and not starved_written):
                         key = build_key(reader_factory())
-                        with EventStore(config.data_root) as store:
-                            write_todos(store, command_context('workflow.loop'), store.head(), key,
-                                        [{'reason': 'loop_contention', 'basis_version': 'active_contention'}], config, retry=True)
+                        try:
+                            with EventStore(config.data_root) as store:
+                                write_todos(store, command_context('workflow.loop'), store.head(), key,
+                                    [{'reason': 'loop_contention' if contention == 3 else 'loop_starved',
+                                      'basis_version': contention_id, 'cause': error.reason}], config, retry=True)
+                            starved_written |= starved
+                        except FlowError as failure:
+                            raise FlowError(6, failure.reason, contention_reason=error.reason, contention_id=contention_id) from None
                 results.append(result)
-                if result['phase'] == '结果已拉取' or contention == 3:
+                if result['phase'] == '已作废' or result.get('next_round_bound') or contention == 3:
                     break
                 if result['exit_code'] not in {0, 3, 5} and result['action'] != 'skipped':
                     break
                 if max_ticks is not None and len(results) == max_ticks:
                     break
+                if result['phase'] == '结果已拉取' and result.get('terminal_basis'):
+                    completed_start = seconds(result['watch_started_at']) if result.get('watch_started_at') else completed_start or time.time()
+                    if time.time() - completed_start >= config.raw['poll']['post_terminal_watch_s']:
+                        break
+                else:
+                    completed_start = None
                 if on_sleep:
                     on_sleep()
-                interval = config.raw['poll']['stopped_interval_s'] if result['phase'] == '停止推进' else config.raw['poll']['interval_s']
+                interval = config.raw['poll']['stopped_interval_s'] if result['phase'] in {'停止推进', '结果已拉取'} else config.raw['poll']['interval_s']
+                if result.get('uncounted'):
+                    interval = config.raw['poll']['retry_after_event_s']
                 stop.wait(interval)
     finally:
         for sig, previous in old_handlers.items():

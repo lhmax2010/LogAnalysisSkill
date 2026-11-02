@@ -13,6 +13,8 @@ from types import SimpleNamespace
 from urllib.parse import urlsplit
 import uuid
 from .config import load_config
+from .network_proof import prove_remote, peer_is_remote
+from .transport import not_a_log
 from .errors import FlowError
 from .export import export_file
 from .files import atomic_write, digest, json_bytes, load_json
@@ -36,6 +38,7 @@ def parser():
     result.add_argument('--live-build-id')
     result.add_argument('--mode', choices=['real', 'fixture'], default='real')
     result.add_argument('--fixture-counts')
+    result.add_argument('--budget-s', type=float)
     return result
 
 
@@ -53,18 +56,10 @@ def check_source(args, config, repo):
         raise FlowError(6, 'owned_source_tree_dirty')
     cosmos = config.raw['cosmos']
     urls = [cosmos['report_root'], cosmos['status_source']['url_template']]
-    if args.mode == 'real':
-        for url in urls:
-            host = urlsplit(url).hostname.lower().rstrip('.')
-            try:
-                invalid = ipaddress.ip_address(host).is_loopback
-            except ValueError:
-                invalid = False
-            if invalid or host == 'localhost' or host.endswith('.localhost') or host.endswith('.invalid'):
-                raise FlowError(2, 'real_backend_requires_non_loopback_instance')
+    network_proofs = [prove_remote(url, config.raw.get('network', {})) for url in urls] if args.mode == 'real' else []
     tree = subprocess.check_output(['git', '-C', str(repo), 'ls-tree', '-rz', 'HEAD', '--', *ROOTS])
     return {'commit': head, 'source_tree_sha256': digest(tree), 'script_sha256': digest((repo / 'vd-cosmos-core/scripts/verify_b2_real.sh').read_bytes()),
-            'instances': [endpoint(url) for url in urls], 'backend': 'http-fixture' if args.mode == 'fixture' else 'cosmos-http'}
+            'network_proofs': network_proofs, 'instances': [endpoint(url) for url in urls], 'backend': 'http-fixture' if args.mode == 'fixture' else 'cosmos-http'}
 
 
 def verdict(passed, **values):
@@ -73,7 +68,7 @@ def verdict(passed, **values):
 
 def html_log(data):
     text = data[:65536].decode('utf-8', errors='replace')
-    return bool(re.search(r'<(?:!doctype\s+html|html|head|body|form|input)\b', text, re.I))
+    return not_a_log(data, 'text/html' if text.lstrip().lower().startswith('<html') else '')
 
 
 def run(args, config, directory, result, repo, config_path):
@@ -86,10 +81,14 @@ def run(args, config, directory, result, repo, config_path):
         counts = load_json(args.fixture_counts)
     elif args.fixture_counts:
         raise FlowError(2, 'real_counts_cannot_be_overridden')
+    required_budget = config.raw['poll']['settle_s'] + 3 * (len(counts)+1) * config.raw['fetch']['deadline_s'] + 3 * config.raw['poll']['interval_s']
+    if getattr(args, 'budget_s', None) is not None and args.budget_s < required_budget:
+        raise FlowError(6, 'acceptance_budget_insufficient', required_seconds=required_budget)
+    result['time_budget_seconds'] = required_budget
     reader = HTTPReportReader(config, args.build_id, args.rows)
     first = reader.observe(reader.build_ref)
     atomic_write(config.data_root, directory / 'A-first.json', json_bytes(first))
-    time.sleep(config.raw['poll']['interval_s'])
+    time.sleep(config.raw['poll']['settle_s'] if first.get('effective_execution_state') == '未知' else config.raw['poll']['interval_s'])
     reader = HTTPReportReader(config, args.build_id, args.rows)
     second = reader.observe(reader.build_ref)
     target = config.output(directory / 'A');target.mkdir()
@@ -148,10 +147,10 @@ def run(args, config, directory, result, repo, config_path):
     # is visible. B and E intentionally share this run's freshly downloaded logs.
     script = repo / 'vd-cosmos-workflow/scripts/run.py'
     command = [sys.executable, '-B', str(script), 'loop', '--config', str(config_path), '--backend', 'real',
-               '--build-id', args.build_id, '--expected-rows', args.rows]
+               '--build-id', args.build_id, '--expected-rows', args.rows, '--max-ticks', '3']
     if result['A']['verdict'] == 'PASS' and result['B']['verdict'] == 'PASS':
         try:
-            budget = 3 * (len(counts) + 1) * config.raw['fetch']['deadline_s'] + 3 * config.raw['poll']['interval_s']
+            budget = required_budget
             process = subprocess.run(command, cwd=config.data_root, capture_output=True, text=True, timeout=budget)
             loop_result = json.loads(process.stdout)
         except subprocess.TimeoutExpired:
@@ -180,10 +179,14 @@ def run(args, config, directory, result, repo, config_path):
         index_result = {'http_status': index['status'], 'fingerprint': fingerprint, 'response': index['response']}
     except FlowError as error:
         index_result = {'error': error.reason, 'response': error.details.get('response')}
-    result['F'] = sanitized({'evaluated_for_pass': False, 'index': index_result,
+    result['F'] = sanitized({'evaluated_for_pass': True, 'index': index_result,
         'detail_identity_match': second['execution_evidence'].get('identity_match', False),
         'redirect_responses': [r for r in reader.transport.requests if r.get('http_status') and 300 <= r['http_status'] < 400]}, config)
-    result.update(verdict(all(result[part]['verdict'] == 'PASS' for part in ['A', 'B', 'C', 'E'])))
+    f = result['F']
+    f.update(verdict(f['index'].get('http_status') == 200 and f['index'].get('fingerprint', {}).get('verified')
+        and f['detail_identity_match'] and not f['redirect_responses']
+        and (args.mode == 'fixture' or all(peer_is_remote(r) for r in reader.transport.requests))))
+    result.update(verdict(all(result[part]['verdict'] == 'PASS' for part in ['A', 'B', 'C', 'E', 'F'])))
 
 
 def main(argv=None):
@@ -204,7 +207,6 @@ def main(argv=None):
         outer = original.output('verification/' + run_id)
         raw = deepcopy(original.raw)
         raw['data_root'] = str(outer / 'data')
-        raw['p4']['config_file'] = str(original.output(raw['p4']['config_file']).relative_to(original.data_root))
         for section, key in [('network', 'ca_file'), ('prepush', 'words_file')]:
             if raw.get(section, {}).get(key):
                 raw[section][key] = str(original.source(raw[section][key]))

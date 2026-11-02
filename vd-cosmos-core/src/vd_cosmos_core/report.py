@@ -196,8 +196,8 @@ def _header_and_counts(document, summary_prefix):
 
 
 def parse_report(html, arch, cosmos, expected_packages=None, *, stable, settled=None, source_url=""):
-    settled = stable if settled is None else settled
     """Return all rows, including duplicates; never deduplicate before reconciliation."""
+    settled = stable if settled is None else settled
     try:
         document = Document(html)
     except (ValueError, RecursionError):

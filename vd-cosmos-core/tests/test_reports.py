@@ -81,7 +81,7 @@ class ReportTests(unittest.TestCase):
 
     def test_execution_only_from_configured_detail_title(self):
         detail = self.base / "detail.html"
-        detail.write_text('fixture-run <div class="build-status" title="Build is failed"></div>')
+        detail.write_text('<div class="build-header"><a href="/build/fixture-run">own</a><span title="Build is failed"></span></div>')
         self.manifest["detail_page"] = detail.name
         self.assertEqual(self.observed()["execution_state"], "未知")
         self.config.raw["cosmos"]["status_source"] = json.loads((CORE / "config.sample.json").read_text())["cosmos"]["status_source"]

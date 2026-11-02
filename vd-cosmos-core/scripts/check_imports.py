@@ -5,10 +5,10 @@ from pathlib import Path
 import sys
 
 repo = Path(__file__).resolve().parents[2]
-allowed = set(sys.stdlib_module_names) | {"vd_cosmos_core", "vd_cosmos_watch", "vd_cosmos_fetch", "vd_cosmos_workflow"}
+allowed = set(sys.stdlib_module_names) | {"vd_cosmos_core", "vd_cosmos_watch", "vd_cosmos_fetch", "vd_cosmos_workflow", "vd_fix_analyze", "vd_fix_register"}
 failures = []
 count = 0
-for directory in ("vd-cosmos-core", "vd-cosmos-watch", "vd-cosmos-fetch", "vd-cosmos-workflow"):
+for directory in ("vd-cosmos-core", "vd-cosmos-watch", "vd-cosmos-fetch", "vd-cosmos-workflow", "vd-fix-analyze", "vd-fix-register"):
     for subdir in ("src", "scripts"):
         for path in (repo / directory / subdir).rglob("*.py"):
             count += 1

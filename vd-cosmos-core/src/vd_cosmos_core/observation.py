@@ -5,37 +5,60 @@ from .report import Document, normalize
 from .versions import PARSER_VERSION
 
 
-def detail_state(data, status_source, build_id=None):
+def detail_state(data, status_source, build_id=None, page_url=None):
+    from urllib.parse import urljoin, urlsplit
+    from .versions import parser_digest
     result = {'state': '未知', 'trust': 'unknown', 'basis': 'title_not_matched',
-              'subresult': None, 'rule_version': PARSER_VERSION, 'candidates': [], 'identity_match': False}
+              'subresult': None, 'rule_version': PARSER_VERSION, 'parser_sha256': parser_digest(),
+              'candidates': [], 'identity_match': False, 'identity': 'identity_mismatch'}
     if not status_source:
         return result
     document = Document(data.decode('utf-8'))
-    if build_id is not None:
-        pattern = status_source.get('identity_regex', r'(?<![0-9]){build_id}(?![0-9])').format(build_id=re.escape(build_id))
-        if not re.search(pattern, document.root.text()):
-            return {**result, 'basis': 'detail_fetch_failed', 'failure': 'identity_mismatch'}
-    result['identity_match'] = build_id is not None
-    selected = None
+    page_url = page_url or status_source['url_template'].format(build_id=build_id)
+    headers = [n for n in document.nodes if 'build-header' in (n.attrs.get('class') or '').split()]
+    result['header_count'] = len(headers)
     for node in document.nodes:
         title = normalize(node.attrs.get('title') or '')
-        if not re.fullmatch(r'Build is .+', title, re.I):
+        if re.fullmatch(r'Build is .+', title, re.I) and len(result['candidates']) < 20:
+            result['candidates'].append({'element_order': node.order, 'source_line': node.line, 'title': node.attrs.get('title')})
+    if len(headers) != 1:
+        return {**result, 'basis': 'detail_fetch_failed', 'failure': 'identity_mismatch'}
+    nodes, promotions = [], []
+    def visit(node):
+        if normalize(node.attrs.get('title') or '').startswith('Promoted to build'):
+            promotions.append({'element_order': node.order, 'title': node.attrs.get('title'), 'text': node.text()})
+            return
+        nodes.append(node)
+        for child in node.children:
+            if hasattr(child, 'attrs'):
+                visit(child)
+    visit(headers[0])
+    header = headers[0]
+    result.update(header={'tag': header.tag, 'class': header.attrs.get('class'), 'id': header.attrs.get('id'), 'source_line': header.line},
+                  promotion_exclusions=promotions, selection_reason='unique_build_header')
+    statuses = [n for n in nodes if re.fullmatch(r'Build is .+', normalize(n.attrs.get('title') or ''), re.I)]
+    links, mismatch = [], False
+    for node in nodes:
+        if node.tag != 'a' or not node.attrs.get('href'):
             continue
-        match = re.fullmatch(status_source['status_title_regex'], title, re.I)
-        word = normalize(match[1]).casefold() if match and match[1] else None
-        if len(result['candidates']) < 20:
-            result['candidates'].append({'element_order': node.order, 'source_line': node.line, 'word': word})
-        if selected is None:
-            selected = (node, word)
-    if selected:
-        node, word = selected
-        result.update(title=node.attrs['title'], source_line=node.line, element_order=node.order, subresult=word,
-                      selected={'tag': node.tag, 'class': node.attrs.get('class'), 'id': node.attrs.get('id')},
-                      selection_reason='first_build_status_title')
-        for field, state in [('terminal_words', '已结束'), ('running_words', '运行'), ('queued_words', '排队')]:
-            if word in {normalize(w).casefold() for w in status_source[field]}:
-                result.update(state=state, trust='configured_detail_title', basis='first_build_status_title')
-                break
+        target = urlsplit(urljoin(page_url, node.attrs['href']))
+        if re.fullmatch(r'/build/[^/]+', target.path):
+            links.append({'host': target.hostname, 'path': target.path})
+            mismatch |= target.hostname != urlsplit(page_url).hostname or target.path != '/build/' + str(build_id)
+    result['self_links'] = links
+    if len(statuses) != 1 or mismatch:
+        return {**result, 'basis': 'detail_fetch_failed', 'failure': 'identity_mismatch'}
+    node = statuses[0]
+    title = normalize(node.attrs['title'])
+    match = re.fullmatch(status_source['status_title_regex'], title, re.I)
+    word = normalize(match[1]).casefold() if match and match[1] else None
+    result.update(identity='strong' if links else 'weak', identity_match=bool(links),
+                  title=node.attrs['title'], source_line=node.line, element_order=node.order, subresult=word,
+                  selected={'tag': node.tag, 'class': node.attrs.get('class'), 'id': node.attrs.get('id')})
+    for field, state in [('terminal_words', '已结束'), ('running_words', '运行'), ('queued_words', '排队')]:
+        if word in {normalize(w).casefold() for w in status_source[field]}:
+            result.update(state=state, trust='configured_detail_title' if links else 'weak', basis='unique_build_header')
+            break
     return result
 
 
@@ -105,10 +128,12 @@ def summarize(build_ref, cosmos, reports, execution, *, backend, detail_failed=F
         (r.get('coverage_basis') == 'request' and r.get('package_coverage') == '一致') for r in reports.values())
     data = {'schema_version': 2, 'backend': backend, 'build_ref': build_ref.to_dict(),
             'execution_state': execution['state'], 'execution_evidence': execution,
+            'effective_execution_state': execution.get('effective_state', '未知'),
+            'effective_terminal_basis': execution.get('terminal_basis'),
             'report_state': state, 'result_state': result, 'header_consistency': consistency,
             'package_coverage': coverage, 'terminal_inference': '终态推定（依据：报告完整）' if complete and execution['state'] == '未知' else None,
             'terminal_prerequisite_met': bool(complete and consistency == '一致' and gate_coverage
-                and not failures and execution['state'] == '已结束' and build_ref.execution_kind == 'cosmos'),
+                and not failures and bool(execution.get('terminal_basis')) and build_ref.execution_kind == 'cosmos'),
             'reports': reports, 'todos': todos, 'observation_failed': bool(failures),
             'observed_at': max((r.get('observed_at', '') for r in reports.values()), default=''),
             'exit_code': 5 if failures else 0}

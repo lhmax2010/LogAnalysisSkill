@@ -40,19 +40,35 @@
         "queued",
         "waiting"
       ],
-      "identity_regex": "(?<![0-9]){build_id}(?![0-9])"
+      "header_rule": "unique-build-header-with-own-link"
     },
     "report_root": "https://example.invalid/reports/",
     "report_path_template": "b{last3}/{build_id}/html/Build_Report_{arch}/index.html",
     "bucket_path_template": "b{last3}/",
-    "index_link_regex": "^[0-9]+/$"
+    "index_link_regex": "^[0-9]+/$",
+    "variables_url_template": "https://example.invalid/build/{build_id}/variables",
+    "variables_whitelist": [
+      "PACKAGE_LIST",
+      "SHELVE_LIST",
+      "BASE_REPOS",
+      "BUILD_CONF",
+      "PRODUCT_REPOS"
+    ],
+    "branch_markers": [
+      "[INT]",
+      "[FET]",
+      "[COSMOS]"
+    ]
   },
   "poll": {
     "interval_s": 60,
     "stall_polls": 6,
     "expected_hours": 24,
     "settle_s": 1800,
-    "stopped_interval_s": 600
+    "stopped_interval_s": 600,
+    "arch_lag_s": 14400,
+    "post_terminal_watch_s": 7200,
+    "retry_after_event_s": 5
   },
   "export": {
     "chunk_bytes": 55000,
@@ -79,7 +95,43 @@
   },
   "p4": {
     "config_file": "settings/p4.conf",
-    "env": {}
+    "port": "example.invalid:1666",
+    "user": "configure-user",
+    "expected_server_address": "example.invalid:1666",
+    "no_client_name": "vd-cosmos-noclient",
+    "unknown_client_marker": "*unknown*",
+    "read_config_name": null,
+    "tickets_file": "~/.p4tickets",
+    "executable": "p4",
+    "version": "2026.1",
+    "output_protocol": "-G",
+    "code0_table": {
+      "2026.1": {
+        "554768759": {
+          "category": "file_missing",
+          "severity": 2,
+          "exit_code": 0
+        },
+        "554768749": {
+          "category": "history_missing",
+          "severity": 2,
+          "exit_code": 0
+        },
+        "822220826": {
+          "category": "history_missing",
+          "severity": 3,
+          "exit_code": 1
+        },
+        "807672853": {
+          "category": "not_logged_in",
+          "severity": 3,
+          "exit_code": 1
+        }
+      }
+    },
+    "min_ticket_minutes": 60,
+    "unclassified_retry_limit": 3,
+    "timeout_s": 120
   },
   "budget": {
     "disk_warning_bytes": 1073741824
@@ -98,7 +150,20 @@
     "max_page_bytes": 20971520,
     "max_log_bytes": 209715200,
     "log_concurrency": 4,
-    "user_agent": "VD-Cosmos-LogAnalyzer/0.5.3",
+    "user_agent": "VD-Cosmos-LogAnalyzer/0.9.5",
     "deadline_s": 300
+  },
+  "loop": {
+    "max_uncounted_skip_s": 1800
+  },
+  "snapshot": {
+    "merge_tool": "git-merge-file",
+    "clock_margin_s": 300,
+    "merge_timeout_s": 60
+  },
+  "analyzer": {
+    "snapshot_max_files": 20,
+    "snapshot_max_file_bytes": 2097152,
+    "snapshot_max_total_bytes": 20971520
   }
 }

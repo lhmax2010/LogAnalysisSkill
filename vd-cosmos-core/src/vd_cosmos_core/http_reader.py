@@ -12,7 +12,8 @@ from .models import BuildRef
 from .observation import detail_state, summarize
 from .report import Document, parse_report
 from .baselines import baseline_revision, apply_rows_coverage
-from .stability import advance, maturity
+from .stability import advance, maturity, execution_clock
+from .receipts import manual_terminal, terminal_basis, log_binding
 from .transport import HTTPTransport, direct_host, origin, normalized_path, log_allowed
 from .versions import build_key, parsing_digest, PARSER_VERSION
 
@@ -81,12 +82,12 @@ class HTTPReportReader(ReportReader):
     def record(self, arch, record, response, at, reset=False):
         path = self.config.output(f'{self.folder}/pages/{arch}/continuous.json')
         old = load_json(path) if path.exists() else {'continuous': None, 'history': []}
-        value = {'continuous': None if reset else record,
+        value = {**old, 'continuous': None if reset else record,
                  'history': (old['history'] + [{'observed_at': at, 'response': sanitized(response, self.config),
                                               'continuous': record if not reset else None}])[-50:]}
         atomic_write(self.config.data_root, path, json_bytes(value))
 
-    def _arch(self, arch, terminal):
+    def _arch(self, arch, execution):
         url = self.report_url(arch)
         response = self.transport.get(url, self.config.raw['fetch']['max_page_bytes'])
         stamp, status = self.clock(), response['status']
@@ -117,8 +118,9 @@ class HTTPReportReader(ReportReader):
         folder = f'{self.folder}/pages/{arch}'
         history_path = self.config.output(folder + '/continuous.json')
         old = load_json(history_path).get('continuous') if history_path.exists() else None
-        record = advance(old, digest(data), stamp, parsing_digest(self.config))
-        stable, settled = maturity(record, self.config.raw['poll'], terminal)
+        execution.update(execution_clock(execution, execution, stamp, report_success=True))
+        record = advance(old, digest(data), stamp, parsing_digest(self.config), execution)
+        stable, settled = maturity(record, self.config.raw['poll'], execution)
         try:
             report = parse_report(html, arch, self.cosmos, stable=stable, settled=settled, source_url=url)
         except FlowError as error:
@@ -131,14 +133,16 @@ class HTTPReportReader(ReportReader):
         else:
             artifact = atomic_write(self.config.data_root, path, data)
         self.record(arch, record, response['response'], stamp)
-        report.update(observed_at=stamp, http_status=status, continuous=record, response=sanitized(response['response'], self.config), evidence=artifact)
+        report.update(settled_basis=record['settled_basis'], observed_at=stamp, http_status=status, continuous=record, response=sanitized(response['response'], self.config), evidence=artifact)
         return apply_rows_coverage(report, self.rows if arch == 'armv7l' else None)
 
     def detail(self):
         source = self.cosmos.get('status_source')
         execution = {'state': '未知', 'trust': 'unknown', 'basis': 'title_not_matched'}
         if not source:
-            return execution
+            path = self.config.output(self.folder + '/detail.json')
+            previous = load_json(path) if path.exists() else {}
+            return {**execution, **execution_clock(previous, execution, self.clock()), 'invalid_manual_events': previous.get('invalid_manual_events', [])}
         try:
             response = self.transport.get(source['url_template'].format(build_id=self.build_id), self.config.raw['fetch']['max_page_bytes'])
             if response['status'] != 200:
@@ -156,15 +160,17 @@ class HTTPReportReader(ReportReader):
             execution = {'state': '未知', 'trust': 'unknown', 'basis': 'title_not_matched'}
         path = self.config.output(self.folder + '/detail.json')
         previous = load_json(path) if path.exists() else {'count': 0}
-        failed = execution['state'] == '未知'
-        count = previous['count'] + 1 if failed else 0
-        at = previous.get('first_seen_at') if failed and previous['count'] else self.clock()
+        failed = execution.get('identity') != 'strong' or execution['state'] == '未知'
+        count = previous.get('count', 0) + 1 if failed else 0
+        at = previous.get('first_seen_at') if failed and previous.get('count') else self.clock()
+        execution.update(execution_clock(previous, execution, self.clock()))
+        execution['invalid_manual_events'] = previous.get('invalid_manual_events', [])
         execution.setdefault('identity_match', None)
         execution.setdefault('candidates', [])
         execution.update(failure_count=count, failure_started_at=at if failed else None,
                          rule_version=PARSER_VERSION, detail_attempted=True)
         execution = sanitized(execution, self.config)
-        atomic_write(self.config.data_root, path, json_bytes({'count': count, 'first_seen_at': at, 'evidence': execution}))
+        atomic_write(self.config.data_root, path, json_bytes({**execution, 'count': count, 'first_seen_at': at, 'evidence': execution}))
         return execution
 
     def observe(self, build_ref):
@@ -175,7 +181,7 @@ class HTTPReportReader(ReportReader):
         reports = {}
         for arch in self.cosmos['archs']:
             try:
-                reports[arch] = self._arch(arch, execution['state'] == '已结束')
+                reports[arch] = self._arch(arch, execution)
             except FlowError as error:
                 if error.code != 5:
                     raise
@@ -185,12 +191,51 @@ class HTTPReportReader(ReportReader):
                 reports[arch] = {'arch': arch, 'observation_failed': True, 'headers': {}, 'settled': False,
                                  'error': error.reason, 'http_status': error.details.get('http_status'),
                                  'response': evidence, 'observed_at': stamp}
+        invalidated = execution.setdefault('invalid_manual_events', [])
+        manual = manual_terminal(self.config, build_key(self), reports, invalidated)
+        execution['terminal_basis'] = terminal_basis(execution, manual)
+        execution['manual_conflict'] = bool(manual and execution.get('effective_state') in {'运行', '排队'})
+        for arch, report in list(reports.items()):
+            if not report.get('continuous'):
+                continue
+            record = report['continuous']
+            stable, settled = maturity(record, self.config.raw['poll'], execution, manual)
+            parsed = parse_report(self.config.output(report['evidence']['path']).read_text(), arch, self.cosmos,
+                                  stable=stable, settled=settled, source_url=self.report_url(arch))
+            parsed.update({k: report[k] for k in ('observed_at', 'http_status', 'continuous', 'response', 'evidence')})
+            parsed['settled_basis'] = record['settled_basis']
+            reports[arch] = apply_rows_coverage(parsed, self.rows if arch == 'armv7l' else None)
+        for arch, report in reports.items():
+            history_path = self.config.output(f'{self.folder}/pages/{arch}/continuous.json')
+            history = load_json(history_path) if history_path.exists() else {}
+            stamp = report.get('observed_at', self.clock())
+            if report.get('report_state') == '未发布':
+                history['unpublished_since'] = history.get('unpublished_since') or stamp
+            else:
+                history['unpublished_since'] = None
+            if report.get('continuous') and not report.get('settled'):
+                history['unsettled_since'] = history.get('unsettled_since') or stamp
+                audit = history.get('history', [])
+                previous = audit[-2].get('continuous') if len(audit) >= 2 else None
+                changed = bool(previous and previous['sha256'] != report['continuous']['sha256'])
+                history['change_count'] = history.get('change_count', 0) + int(changed)
+            else:
+                history['unsettled_since'], history['change_count'] = None, 0
+            report.update({k: history.get(k) for k in ('unpublished_since', 'unsettled_since', 'change_count')})
+            first_failures = history.setdefault('first_failures', {})
+            for package in report.get('packages', []):
+                if package['category'] in {'build_error', 'export_error'}:
+                    identity = digest(json_bytes(package['key']))
+                    package['first_failure_observed_at'] = first_failures.setdefault(identity, stamp)
+            atomic_write(self.config.data_root, history_path, json_bytes(history))
+        atomic_write(self.config.data_root, self.folder + '/detail.json', json_bytes({**execution,
+            'count': execution.get('failure_count', 0), 'first_seen_at': execution.get('failure_started_at')}))
         self._observed = summarize(build_ref, self.cosmos, reports, execution, backend=self.__class__.__name__)
         for arch, report in reports.items():
             if report.get('error') == 'credential_blocked':
                 self._observed['todos'].append({'reason': 'report_credential_pattern_blocked', 'arch': arch,
                     'basis_version': report.get('response', {}).get('sha256')})
-        if execution.get('failure_count') == 3:
+        if execution.get('failure_count', 0) >= 3:
             self._observed['todos'].append({'reason': 'detail_page_unavailable', 'basis_version': execution['failure_started_at']})
         return self._observed
 
@@ -222,10 +267,11 @@ class HTTPReportReader(ReportReader):
         relative = f'{self.folder}/logs/{arch}/{nvr}/log.txt'
         destination, meta = self.config.output(relative), self.config.output(relative + '.json')
         report_sha = self.observe(build_ref)['reports'][arch].get('evidence', {}).get('sha256')
-        binding = {'report_sha256': report_sha, 'max_log_bytes': self.config.raw['fetch']['max_log_bytes'], 'url_sha256': digest(url.encode())}
-        if destination.exists() and meta.exists():
+        binding = log_binding(self.observe(build_ref), arch, self.config.raw['fetch']['max_log_bytes'], url)
+        if meta.exists():
             record = load_json(meta)
-            if record.get('binding') == binding and digest(destination.read_bytes()) == record.get('sha256'):
+            destination = self.config.output(record['path'])
+            if record.get('key') == package['key'] and record.get('binding') == binding and record.get('final') and destination.is_file() and destination.stat().st_size == record.get('size') and digest(destination.read_bytes()) == record.get('sha256'):
                 return {**record, 'skipped': True}
         try:
             response = self.transport.get(url, self.config.raw['fetch']['max_log_bytes'], truncate=True, report_url=report_url)
@@ -245,12 +291,14 @@ class HTTPReportReader(ReportReader):
             allowed = check_content(response['body'], self.config)['allowed']
         except FlowError:
             allowed = False
-        artifact = atomic_write(self.config.data_root, relative, response['body'])
-        record = {**artifact, 'truncated': response['truncated'], 'transfer_complete': response['transfer_complete'],
+        revision = digest(json_bytes({'body': digest(response['body']), 'binding': binding}))
+        artifact = atomic_write(self.config.data_root, relative + '.revisions/' + revision + '/log.txt', response['body'])
+        record = {**artifact, 'key': package['key'], 'first_failure_observed_at': package.get('first_failure_observed_at'), 'final': bool(binding['final_stage'] and response['transfer_complete']), 'settled_basis': binding['settled_basis'], 'terminal_basis': binding['terminal_basis'], 'truncated': response['truncated'], 'transfer_complete': response['transfer_complete'],
                   'export_allowed': allowed, 'export_note': '可导出' if allowed else '禁止导出', 'binding': binding,
                   'response': sanitized(response['response'], self.config),
                   'responses': sanitized(response['responses'], self.config)}
         atomic_write(self.config.data_root, meta, json_bytes(record))
+        atomic_write(self.config.data_root, artifact['path'] + '.json', json_bytes(record))
         return {**record, 'skipped': False}
 
     def fetch_logs(self, packages):

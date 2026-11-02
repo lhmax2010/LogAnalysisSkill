@@ -21,7 +21,7 @@ import time
 import unittest
 from unittest.mock import patch
 from urllib.parse import urlsplit
-from helpers import CORE, REPO
+from helpers import CORE, REPO, detail_html
 from http_helpers import FixtureServer
 from vd_cosmos_core.baselines import apply_rows_coverage
 from vd_cosmos_core.commands import command_context, CommandContext, Category
@@ -171,11 +171,12 @@ class Batch21Tests(unittest.TestCase):
     def test_unsettled_malformed_running_then_terminal_or_settle_deadline(self):
         path=self.server.report_path('armv7l');body=self.server.routes[path][1]
         half=body.replace(b'<td>4</td>',b'<td>5</td>',1)
-        self.arm(half);self.server.routes['/build/19091860']=(200,b'19091860 <span title="Build is running"></span>',{},0)
+        self.arm(half);self.server.routes['/build/19091860']=(200,detail_html('running').encode(),{},0)
         for delta in [0,10,10]:
             o=self.observe(delta);self.assertEqual(o['report_state'],'部分');self.assertFalse(o['todos'])
-        self.server.routes['/build/19091860']=(200,b'19091860 <span title="Build is failed"></span>',{},0)
-        o=self.observe(1);self.assertEqual(o['report_state'],'对账失败');self.assertEqual(o['exit_code'],3)
+        self.server.routes['/build/19091860']=(200,detail_html().encode(),{},0)
+        o=self.observe(1);self.assertEqual(o['report_state'],'部分')
+        o=self.observe(10);self.assertEqual(o['report_state'],'对账失败');self.assertEqual(o['exit_code'],3)
         self.server.routes['/build/19091860']=(500,b'',{},0)
         self.arm(half+b' ')
         self.assertEqual(self.observe()['report_state'],'部分')
@@ -229,7 +230,7 @@ class Batch21Tests(unittest.TestCase):
         self.assertEqual(sum(t['reason']=='detail_page_unavailable' for t in o['todos']),1)
         self.server.routes['/build/19091860']=(200,b'123 <span title="Build is failed"></span>',{},0)
         self.assertEqual(self.observe()['execution_evidence']['failure'],'identity_mismatch')
-        self.server.routes['/build/19091860']=(200,b'19091860 <a title="Build is successful"></a><span title="Build is failed"></span>',{},0)
+        self.server.routes['/build/19091860']=(200,detail_html('successful').replace('Build is successful">promotion', 'Build is failed">promotion').encode(),{},0)
         o=self.observe();self.assertEqual(o['execution_evidence']['failure_count'],0)
         self.assertEqual(o['execution_evidence']['subresult'],'successful');self.assertEqual(len(o['execution_evidence']['candidates']),2)
         self.server.routes[self.server.report_path('armv7l')]=(500,b'',{},0)
@@ -367,7 +368,7 @@ class Workflow21Tests(Batch21Tests):
         finally:release.set();process.join(3)
         with EventStore(self.config.data_root) as store:
             self.assertEqual(sum(e['payload']['todo']['reason']=='loop_contention' for e in store.events(kinds=['inbox_opened'])),1)
-        self.server.routes['/build/19091860']=(200,b'19091860 <span title="Build is failed"></span>',{},.15)
+        self.server.routes['/build/19091860']=(200,detail_html().encode(),{},.15)
         command=[sys.executable,str(REPO/'vd-cosmos-workflow/scripts/run.py'),'tick','--config',str(self.server.config_path),'--build-id','19091860']
         first=subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
         deadline=time.monotonic()+3
@@ -404,7 +405,7 @@ class Workflow21Tests(Batch21Tests):
             store.connection.close()
             for action in [store.head,store.events]:
                 with self.assertRaises(FlowError) as caught:action()
-                self.assertEqual(caught.exception.reason,'state_busy')
+                self.assertEqual(caught.exception.reason,'corrupt')
 
     def test_monitor_404_timeout_live_disk_and_versioned_todo_identity(self):
         factory=self.fast();self.config.raw['poll'].update(expected_hours=.000001,stall_polls=2)

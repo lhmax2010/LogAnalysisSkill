@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-02",
+  "batch": "3a-1",
+  "status": "等待 B3a1-Q01 裁定，未保留实现改动",
+  "branch": "vd-cosmos-loganalyzer",
+  "starting_commit": "b6b7c094c1ed4fcd6b0c5d9b919a1bfb300636cd",
+  "hld_commit": "3616628442cd037e7c519eb2efa4c9128d521a17",
+  "hld": {
+    "path": "docs/enhance/vd-cosmos-loganalyzer-hld-v0.9.5.md",
+    "operation": "mv",
+    "source_sha256": "5989620912fcb86cab5b399e3a66d868616092570916a6e38433ece659f17f63",
+    "destination_sha256": "5989620912fcb86cab5b399e3a66d868616092570916a6e38433ece659f17f63",
+    "downloads_source_absent": true,
+    "prepush_credential_check": "PASS"
+  },
+  "baseline_tests": {
+    "command": "bash vd-cosmos-core/scripts/run_tests.sh",
+    "exit_code": 0,
+    "tests": 125,
+    "import_contracts": 3,
+    "output": "docs/enhance/batch3a-1/evidence/baseline-test-output.txt",
+    "sha256": "e9e8fc795f9343ad93685c12df7cde0acdc7b584b90c1af90bbd28d39e34058d"
+  },
+  "batch21_delivery": "STATUS 记载离线交付及设计方反馈的构建机 A/B/C/E PASS、F 身份/目录指纹/无跳转；本次未访问构建机",
+  "scope": {
+    "implementation_changes_retained": [],
+    "real_p4_executed": false,
+    "real_service_accessed": false,
+    "browser_used": false,
+    "real_config_load_check": "尚未执行；配置加载器未交付修改，待裁定后实施并留证"
+  },
+  "blocking_question": {
+    "id": "B3a1-Q01",
+    "scenario": "全部期望架构报告按 elapsed_window 定型且完整；执行状态未知；无人工终态；新下载日志完整性校验通过。",
+    "references": [
+      "HLD v0.9.5 §5.4 第3条，第408–409行",
+      "HLD v0.9.5 §8.1 第1条，第729行",
+      "HLD v0.9.5 §9.2，第891–894行"
+    ],
+    "question": "此时日志可否标为最终并进入结果已拉取，还是只能保留临时日志等待终态依据？",
+    "recommendation_not_implemented": "允许完整日志作为 elapsed_window 读取结果并进入结果已拉取，但无有效终态依据时闸门仍关闭；首次取得可信终态按既有规则使完成状态失效并重验。"
+  }
+}

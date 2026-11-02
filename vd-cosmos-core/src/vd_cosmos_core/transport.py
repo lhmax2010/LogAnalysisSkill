@@ -5,6 +5,7 @@ import io
 import ipaddress
 import posixpath
 import queue
+import re
 import socket
 import ssl
 import threading
@@ -58,6 +59,7 @@ class Deadline:
     def __init__(self, duration, idle):
         self.end = time.monotonic() + duration
         self.idle = idle
+        self.network = {}
 
     def timeout(self):
         remaining = self.end - time.monotonic()
@@ -124,6 +126,7 @@ def connection(address, deadline, source_address=None):
             if source_address:
                 sock.bind(source_address)
             sock.connect(target)
+            deadline.network = {'peer_ip': sock.getpeername()[0], 'local_ip': sock.getsockname()[0]}
             return TimedSocket(sock, deadline)
         except OSError as error:
             last = error
@@ -134,6 +137,40 @@ def connection(address, deadline, source_address=None):
     if last:
         raise last
     raise FlowError(5, 'connect')
+
+
+class StrictResponse(http.client.HTTPResponse):
+    def _read_next_chunk_size(self):
+        line = self.fp.readline(65537)
+        if len(line) > 65536 or not re.fullmatch(rb'[0-9a-fA-F]+(?:;[^\r\n]*)?\r\n', line):
+            raise http.client.IncompleteRead(b'')
+        return int(line.split(b';', 1)[0].strip(), 16)
+
+    def _read_and_discard_trailer(self):
+        total = 0
+        while True:
+            line = self.fp.readline(65537)
+            total += len(line)
+            if line == b'\r\n':
+                self.strict_complete = True
+                return
+            if total > 65536 or not re.fullmatch(rb"[!#$%&'*+.^_`|~0-9A-Za-z-]+:[^\r\n]*\r\n", line):
+                raise http.client.IncompleteRead(b'')
+
+    def _get_chunk_left(self):
+        if self.chunk_left == 0:
+            if self._safe_read(2) != b'\r\n':
+                raise http.client.IncompleteRead(b'')
+            self.chunk_left = None
+        return super()._get_chunk_left()
+
+
+def not_a_log(body, content_type=''):
+    prefix = body[:16384].lstrip().lower()
+    html = prefix.startswith((b'<!doctype html', b'<html', b'<head', b'<form'))
+    if not html and not ('text/html' in content_type.lower() and prefix.startswith(b'<')):
+        return False
+    return bool(re.search(rb'<form\b|<input\b[^>]*type\s*=\s*[\x22\x27]?password|<title[^>]*>[^<]*(?:login|sign in|proxy|authentication|access denied)', prefix))
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -160,11 +197,13 @@ class HTTPTransport:
 
     def opener(self, deadline):
         class HTTPConnection(http.client.HTTPConnection):
+            response_class = StrictResponse
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self._create_connection = lambda address, timeout=None, source_address=None: connection(address, deadline, source_address)
 
         class HTTPSConnection(http.client.HTTPSConnection):
+            response_class = StrictResponse
             def __init__(self, *args, **kwargs):
                 super().__init__(*args, **kwargs)
                 self._create_connection = lambda address, timeout=None, source_address=None: connection(address, deadline, source_address)
@@ -206,7 +245,7 @@ class HTTPTransport:
                 except HTTPError as error:
                     response = error
                 evidence['http_status'] = response.code
-                for key in ('Date', 'Last-Modified', 'ETag', 'Content-Length'):
+                for key in ('Date', 'Last-Modified', 'ETag', 'Content-Length', 'Content-Type', 'Transfer-Encoding'):
                     evidence[key] = response.headers.get(key)
                 if 300 <= response.code < 400:
                     next_url = urljoin(url, response.headers.get('Location', ''))
@@ -234,13 +273,15 @@ class HTTPTransport:
                     length = evidence['Content-Length']
                     if length is not None and (not length.isdecimal() or int(length) != len(body)):
                         raise FlowError(5, 'incomplete_body')
-                    if getattr(response, 'chunked', False) and getattr(response, 'chunk_left', None) != 0:
-                        # HTTPResponse clears chunk_left after consuming the
-                        # terminating zero chunk; isclosed is the reliable EOF.
-                        if not response.isclosed():
-                            raise FlowError(5, 'incomplete_body')
+                    if getattr(response, 'chunked', False) and not getattr(response, 'strict_complete', False):
+                        raise FlowError(5, 'incomplete_body')
+                verifiable = (evidence['Content-Length'] is not None or getattr(response, 'chunked', False))
+                if not verifiable and not truncate:
+                    raise FlowError(5, 'incomplete_body')
+                if truncate and response.code == 200 and not_a_log(bytes(body), evidence.get('Content-Type') or ''):
+                    raise FlowError(5, 'not_a_log')
                 return {'body': bytes(body[:limit]), 'status': response.code, 'truncated': oversized,
-                        'transfer_complete': not oversized, 'final_url': url, 'observed_at': now(), 'response': evidence,
+                        'transfer_complete': not oversized and verifiable, 'final_url': url, 'observed_at': now(), 'response': evidence,
                         'responses': chain}
             except (FlowError, OSError, URLError, http.client.HTTPException, ValueError) as error:
                 underlying = error.reason if isinstance(error, URLError) else error
@@ -255,6 +296,7 @@ class HTTPTransport:
                 evidence['failure'] = reason
                 raise FlowError(code, reason, **{**details, 'http_status': evidence['http_status'], 'response': evidence, 'responses': chain}) from None
             finally:
+                evidence.update(deadline.network)
                 evidence.update(actual_bytes=len(body), sha256=digest(body), finished_at=now())
                 chain.append(evidence)
                 self.requests.append(evidence)

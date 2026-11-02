@@ -1,0 +1,985 @@
+{
+  "date": "2026-11-03",
+  "command": "bash vd-cosmos-core/scripts/run_tests.sh",
+  "exit_code": 0,
+  "tests": 153,
+  "baseline_tests": 125,
+  "new_tests": 28,
+  "import_contracts": 3,
+  "python_runtime": "3.12.3",
+  "python310_syntax_stdlib_checked_files": 54,
+  "output": "docs/enhance/batch3a-1/evidence/test-output.txt",
+  "sha256": "0a2ca96e198a85e2779c55739893c1e4017f6c97f7f2b8c013b94f8d430ffdbe",
+  "source_files": [
+    {
+      "path": "vd-cosmos-core/.importlinter",
+      "sha256": "8e15eace9184d2e7691037269b9e74bc15adf5f5ccfd295535d2baf62807ad14"
+    },
+    {
+      "path": "vd-cosmos-core/config.sample.json",
+      "sha256": "93731b36e0534ccbff0ed0b78d62e623726aa1e54646aa61da497d6ddfba92f0"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/p4/fake_p4.py",
+      "sha256": "5515f300e4270309ea44dcb534a93d3c1542fa6734b0bee3507876e4c5d7027e"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/detail.html",
+      "sha256": "e07778ff4aac35c250e363b5805efee9c54849b8d9d1e1f03206e8ce96358ce1"
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/manifest.json",
+      "sha256": "d15a1b83f20f319ce7142c63b7acce8c5e306f726841577304d36c999a8b40d0"
+    },
+    {
+      "path": "vd-cosmos-core/scripts/check_imports.py",
+      "sha256": "f3d796dd0c18905f3c46062a41710811bd34f129d4644716d1bef82025fb218e"
+    },
+    {
+      "path": "vd-cosmos-core/scripts/run_tests.sh",
+      "sha256": "a5d27a4900149d19b06d4cc61e741c072ada403414e32638da5d47b442fbf8dc"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/backends.py",
+      "sha256": "b5f4470a4a5af9511c25420ef2fc734c42570f390ba49febc2f802687a82cb88"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/build_inputs.py",
+      "sha256": "d218d441e19b374c2d888c12d37abe5ee4bf98d124e8ab938785676a87745327"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/cli.py",
+      "sha256": "e4bc968a638e2aa9620cfcfa4c790255b596f705e2e78e3a501bce038a05a2de"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/commands.py",
+      "sha256": "69a7c986c9d04210fcfe76ee24ada5534e43aab5873f581aa03ad13f625a5d60"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/config.py",
+      "sha256": "1870f6209176cfc28905381832d9ef1bec467845d44f9fd3560ba02ac415f352"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/defaults.py",
+      "sha256": "29cf6bd50e3df0fb3a37d74c80d6a351299584e8ac1203a7dabac8c145739e60"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/export.py",
+      "sha256": "56a55f1f0a17ec1b155142abb1e27346ba80c7e5bbb84c29802afd2ac4a9fcbe"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/http_reader.py",
+      "sha256": "4afbf6bb6b8dc8940f2e3c2ec3cc0f9f4ca84d241fe476e8067ac549cdfc304b"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/journal.py",
+      "sha256": "5f87c54cff2bd3bebd4b114c7c02e6a432a524f727fa577dd507d9cd7b5b824a"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/network_proof.py",
+      "sha256": "24f3ead9b8f994486b0af97502e139930da66d89cda0ba065b5027e700e34c1d"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/observation.py",
+      "sha256": "4e58ecfc6f40fc8d94678f27a9818e58df5c86e93115d8fc22f3f599ac4e773e"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/p4.py",
+      "sha256": "a28b7100241724b8476b3ea38d705206a297909fd66b7208ebd8f67cfe4ca16f"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/read_ops.py",
+      "sha256": "33854de7e9d8eb14bbd11c766cf342e9840a97ce94346ad278a9554e0db147e1"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/receipts.py",
+      "sha256": "243641047f24d4ccba1c3e703540e21e4a02bd209cf4e6f6bf4d64b8f9859f53"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/report.py",
+      "sha256": "16dd457b0d02c20939d4aee73dfece999b1a2694286d9d7b74d0eb401ac5dca9"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/stability.py",
+      "sha256": "2de20c39742ea84ac4489d92de89f7c32ba20362720b037ef8ce17dd69c9018b"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/state.py",
+      "sha256": "566c1f7eba12c2608f90b00c04d7dbe987e30afb4bda94bda219089828d969d3"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/transport.py",
+      "sha256": "adbbe2f646fec1ac0439fd4c1d03c022b195cb7d46e9de1c6e4946b3dba1f9f9"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b2.py",
+      "sha256": "b4b152cfd1d32ee2d8d5be2a3c6a3d60d2ecbb8e5f33bbb171e0a1b5fe0f8bf8"
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/versions.py",
+      "sha256": "50a4569112ad9f59b6edd943b1dc62b449228e54038f6ba51c3730f1d502f8e6"
+    },
+    {
+      "path": "vd-cosmos-core/tests/helpers.py",
+      "sha256": "1a6eec741f13d7048a35b650f9c68eaf91a0d3f17d222e8c307b6042ce474913"
+    },
+    {
+      "path": "vd-cosmos-core/tests/http_helpers.py",
+      "sha256": "2833218bc6e91269f8e9a61328a93bf70c1ee3acf0bd66f88c40ce792c5a3a47"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "sha256": "79dda8f32a2772ccc95bda5af0c17eeaaf91ef472f6edf574e3a9dd84c291be3"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "sha256": "ce4234f94f0099fbe82e54098d0db94f87ea909009405a6c7a5830a46b2e6d73"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "sha256": "7e03a8e665af88ad2d4cdbc77622642ea6ad61cdd3b51928627e5d5addf7613b"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "sha256": "de4d5b28608c7c2cf2ea1ca016402b33a5ab0e1c0d6167ee8d2a7c47cd2185f1"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "sha256": "c288c52eef3f7607534336058354f0a7b203c9989ba70c514d6a2a00b6909736"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "sha256": "c2e5c02802fabbe598a1d7e996254979413d516e74b836cde813120792d6b545"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "sha256": "92f2eb778c5b22d14da0a1b84ecaa8921300e2817ad110bcf17ec2c64da0305f"
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "sha256": "e5e53d020e3ea0f087b02babee543d838a4df904a2bd5d93b3ec02a13173910a"
+    },
+    {
+      "path": "vd-cosmos-workflow/src/vd_cosmos_workflow/api.py",
+      "sha256": "1bc59a2b0b763d5784b64eb4bbcec75fff60e14c939858cb800a68285de44452"
+    },
+    {
+      "path": "vd-fix-analyze/SKILL.md",
+      "sha256": "61b36a99c15c56bdb133049e587ebfe221cf2fad52b3fca408a04168d027afc8"
+    },
+    {
+      "path": "vd-fix-analyze/scripts/run.py",
+      "sha256": "c9f986509b118a0ae8ada1a1d0ad16fe49668d1ccc2f571f89a7f1baca4a3836"
+    },
+    {
+      "path": "vd-fix-analyze/src/vd_fix_analyze/__init__.py",
+      "sha256": "bff1f28e9abc086befa6d98426e8ce77328632374bacb50fb1a5f5e84e60f6e1"
+    },
+    {
+      "path": "vd-fix-analyze/src/vd_fix_analyze/api.py",
+      "sha256": "0a64066c6b0b4b71e920e212f5edb60a4b107faf1ca4df8bcffaad97ab30de0f"
+    },
+    {
+      "path": "vd-fix-analyze/src/vd_fix_analyze/cli.py",
+      "sha256": "10f5f9b036e83dc9f1839e083345b81cf466056eca8fb329647ee46ba21793f8"
+    },
+    {
+      "path": "vd-fix-analyze/src/vd_fix_analyze/snapshot.py",
+      "sha256": "63605e77936fbc407b4d1054d61ab72da6194c0b3f2016317c75f2f5f7639bc7"
+    },
+    {
+      "path": "vd-fix-register/SKILL.md",
+      "sha256": "8e435c2d97dfb04ea4781b1d98a6fe6656f2e1b5a75312057fefc565ce11b19e"
+    },
+    {
+      "path": "vd-fix-register/scripts/run.py",
+      "sha256": "c23dcd4a27076bf95d8bb418f5da038714a361250ad8fa5261aa958a798ce86e"
+    },
+    {
+      "path": "vd-fix-register/src/vd_fix_register/__init__.py",
+      "sha256": "894131b6871d86f0060346325fbc1c606e5c101b4925d4d9e28018363bfd0898"
+    },
+    {
+      "path": "vd-fix-register/src/vd_fix_register/api.py",
+      "sha256": "97a3546b0050c4d832d7b503a56d8110d27f72819bf63bf7ea2b1266f17ed8aa"
+    },
+    {
+      "path": "vd-fix-register/src/vd_fix_register/cli.py",
+      "sha256": "0ca9c846bdb0655618bf2db6f16dd36527a4f8a591cc336f4e271cc296ff932d"
+    }
+  ],
+  "tests_index": [
+    {
+      "name": "test_cli.CLITests.test_install_free_entrypoints_work_from_unrelated_directory",
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "line": 31
+    },
+    {
+      "name": "test_cli.CLITests.test_all_fetch_commands_produce_files",
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "line": 41
+    },
+    {
+      "name": "test_cli.CLITests.test_real_backend_parses_saved_html_but_download_is_unsupported",
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "line": 50
+    },
+    {
+      "name": "test_cli.CLITests.test_invalid_args_and_non_tty_guards_exit_two",
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "line": 57
+    },
+    {
+      "name": "test_cli.CLITests.test_stale_expected_event_exits_six_without_new_artifact",
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "line": 65
+    },
+    {
+      "name": "test_cli.CLITests.test_observation_failures_exit_five_and_todo_after_three",
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "line": 73
+    },
+    {
+      "name": "test_cli.CLITests.test_header_inconsistency_writes_todo_without_advancing_ready_state",
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "line": 84
+    },
+    {
+      "name": "test_cli.CLITests.test_stall_detection_requires_distinct_observations_without_changing_state",
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "line": 94
+    },
+    {
+      "name": "test_cli.CLITests.test_export_and_prepush_cli_contract",
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "line": 110
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_http_states_no_cache_headers_coverage_and_detail_evidence",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 60
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_404_requires_readable_bucket_index",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 78
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_500_timeout_proxy_page_size_limit_and_cross_host_redirect",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 85
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_same_host_redirect_limit_and_no_cookie_storage_or_return",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 96
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_detail_session_parameters_never_persist_raw",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 106
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_page_credentials_refused_without_file_and_with_todo",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 118
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_changing_then_stable_inconsistent_report",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 126
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_missing_expected_package_is_coverage_only_invalid_baseline_is_argument_error",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 139
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_aggregate_all_priority_branches",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 152
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_logs_boundary_truncation_credential_flag_cache_and_concurrency",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 162
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_log_redirect_refused_tampered_cache_redownloaded_and_export_error_included",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 181
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_packages_error_exit_and_original_detail_title",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 201
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_proxy_config_only_and_tls_defaults",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 208
+    },
+    {
+      "name": "test_http_workflow.HTTPTests.test_fetch_defaults_template_validation_and_real_cli",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 221
+    },
+    {
+      "name": "test_http_workflow.WorkflowTests.test_notification_result_failure_recovers_without_duplicate_or_missing_todo",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 238
+    },
+    {
+      "name": "test_http_workflow.WorkflowTests.test_views_do_not_append_and_stale_event_and_duplicate_result_rejected",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 258
+    },
+    {
+      "name": "test_http_workflow.WorkflowTests.test_workflow_each_stop_condition_and_three_failures_todo",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 273
+    },
+    {
+      "name": "test_http_workflow.WorkflowTests.test_crash_after_intent_redoes_action_and_has_one_result",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 297
+    },
+    {
+      "name": "test_http_workflow.WorkflowTests.test_sleep_allows_manual_tick_instance_lock_still_excludes_second_loop",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 306
+    },
+    {
+      "name": "test_http_workflow.WorkflowTests.test_sigterm_and_sigint_clean_exit_release_instance_lock",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 322
+    },
+    {
+      "name": "test_http_workflow.WorkflowTests.test_b2_script_A_to_E_and_summary_size",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 336
+    },
+    {
+      "name": "test_http_workflow.WorkflowTests.test_b2_wrong_commit_stops_before_loading_or_writing",
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "line": 353
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_real_format_complete_summary_suffix_and_unquoted_link",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 46
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_nested_paragraph_headers_do_not_merge",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 61
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_summary_case_whitespace_and_counts_still_reconcile",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 72
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_supplied_head120_snippets_never_count_as_complete",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 80
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_own_failed_title_precedes_successful_promotion",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 90
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_running_queued_and_all_terminal_words",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 100
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_unknown_or_absent_title_never_falls_through_or_uses_text",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 108
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_configured_regex_does_not_select_a_later_status",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 118
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_new_status_schema_accepts_and_rejects_malformed_old_or_overlap",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 122
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_other_message_is_preserved_complete_manual_only_and_todo",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 141
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_mixed_known_and_other_messages_require_both_covered",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 163
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_same_signature_other_format_cannot_inherit_standard_blocker",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 173
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_expansion_source_line_wrap_is_whitespace_br_separates_messages",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 189
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_other_format_does_not_mask_bad_column_count_or_path",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 202
+    },
+    {
+      "name": "test_real_format.RealFormatTests.test_unknown_format_todo_is_written_by_watch",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 208
+    },
+    {
+      "name": "test_real_format.VerifyScriptTests.test_verify_pass_export_reassembly_and_source_immutability",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 232
+    },
+    {
+      "name": "test_real_format.VerifyScriptTests.test_verify_wrong_commit_stops_before_any_output_directory",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 252
+    },
+    {
+      "name": "test_real_format.VerifyScriptTests.test_verify_rows_cl_shelve_and_duplicate_replacements_rejected",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 257
+    },
+    {
+      "name": "test_real_format.VerifyScriptTests.test_verify_links_multiplicity_and_version_checked",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 269
+    },
+    {
+      "name": "test_real_format.VerifyScriptTests.test_verify_unknown_execution_and_header_mismatch_fail",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 278
+    },
+    {
+      "name": "test_real_format.VerifyScriptTests.test_verify_real_counts_cannot_use_fixture_override",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 287
+    },
+    {
+      "name": "test_real_format.VerifyScriptTests.test_verify_credentials_block_copy_and_never_echo_content",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 292
+    },
+    {
+      "name": "test_real_format.VerifyScriptTests.test_difference_list_is_limited_and_retains_total_count",
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 301
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_all_document_redirects_refused_before_target_request_and_index_fingerprint",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 89
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_log_redirect_port_host_and_path_refused_with_zero_target_requests",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 108
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_content_length_chunked_interruptions_no_cache_and_true_timeouts",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 136
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_response_evidence_log_active_truncation_differs_from_incomplete",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 153
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_unsettled_malformed_running_then_terminal_or_settle_deadline",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 171
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_truncated_structure_to_full_and_missing_summary_settled",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 185
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_continuous_reset_failure_404_change_config_clock_and_history_bound",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 195
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_header_only_after_both_settled_and_coverage_projection_pure",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 213
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_detail_failure_counts_identity_all_candidates_recovery_and_report_failure",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 225
+    },
+    {
+      "name": "test_batch21.Batch21Tests.test_rule_errors_are_not_swallowed_and_instance_scopes_do_not_mix",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 239
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_stopped_loop_reobserves_changed_report_and_detail_failure_does_not_block",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 255
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_completed_baseline_change_invalidates_and_missing_artifact_recovers",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 276
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_logs_refresh_report_and_cache_bound_to_report_and_limit",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 289
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_actual_child_crash_after_observe_logs_notify_result_unique_and_cleanup",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 304
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_append_retry_other_build_only_constraint_same_build_and_explicit_no_retry",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 327
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_tick_concurrent_other_build_append_retries_without_repeating_action",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 343
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_round_contention_three_skips_one_todo_and_real_two_process_ticks",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 359
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_wal_reader_error_wrapping_and_other_build_history_not_loaded",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 381
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_monitor_404_timeout_live_disk_and_versioned_todo_identity",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 410
+    },
+    {
+      "name": "test_batch21.Workflow21Tests.test_three_log_failures_have_one_todo",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 429
+    },
+    {
+      "name": "test_batch21.TLS21Tests.test_tls_self_signed_extra_ca_hostname_and_downgrade_refused",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 441
+    },
+    {
+      "name": "test_batch21.Acceptance21Tests.test_clean_snapshots_repeated_independent_A_to_F_and_unrelated_changes",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 520
+    },
+    {
+      "name": "test_batch21.Acceptance21Tests.test_direct_commit_dirty_source_and_real_loopback_rejected_before_output",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 537
+    },
+    {
+      "name": "test_batch21.Acceptance21Tests.test_saved_page_difference_fails_A",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 546
+    },
+    {
+      "name": "test_batch21.Acceptance21Tests.test_truncated_incomplete_and_html_logs_fail_B",
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "line": 550
+    },
+    {
+      "name": "test_batch3a1_extra.SnapshotEdgeTests.test_appendix_i_three_shelve_samples_2_1_32_edits_overlay_without_archive",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 34
+    },
+    {
+      "name": "test_batch3a1_extra.SnapshotEdgeTests.test_move_pair_other_actions_cross_package_and_mid_snapshot_mutation",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 48
+    },
+    {
+      "name": "test_batch3a1_extra.SnapshotEdgeTests.test_keywords_merge_keeps_unexpanded_input_and_corrupt_digest_fails",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 72
+    },
+    {
+      "name": "test_batch3a1_extra.SnapshotEdgeTests.test_info_mismatch_ticket_short_and_override_does_not_offer_login",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 86
+    },
+    {
+      "name": "test_batch3a1_extra.SnapshotEdgeTests.test_deleted_base_is_absent_for_shelve_add_and_interval_uses_earliest_cl",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 99
+    },
+    {
+      "name": "test_batch3a1_extra.ReadingEdgeTests.test_three_stall_conditions_without_old_poll_count_false_alarm",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 119
+    },
+    {
+      "name": "test_batch3a1_extra.ReadingEdgeTests.test_variables_template_https_exact_placeholder_and_credential_block",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 135
+    },
+    {
+      "name": "test_batch3a1_extra.ReadingEdgeTests.test_input_binding_and_inbox_done_are_human_events_and_immutable",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 146
+    },
+    {
+      "name": "test_batch3a1_extra.ManualAndRecoveryTests.test_confirm_input_checks_current_describe_and_unknown_retry_gate_recovers",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 165
+    },
+    {
+      "name": "test_batch3a1_extra.ManualAndRecoveryTests.test_archive_requires_actual_source_and_interval_stays_diagnostic",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 191
+    },
+    {
+      "name": "test_batch3a1_extra.ManualAndRecoveryTests.test_confirm_terminal_pty_override_echoes_build_and_records_withdraw",
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "line": 207
+    },
+    {
+      "name": "test_batch3a1.Reading3a1Tests.test_terminal_epoch_unknown_since_restart_and_running_never_elapsed",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 58
+    },
+    {
+      "name": "test_batch3a1.Reading3a1Tests.test_header_identity_three_levels_promotion_class_tokens_and_resolved_links",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 72
+    },
+    {
+      "name": "test_batch3a1.Reading3a1Tests.test_elapsed_final_gate_closed_terminal_invalidates_revalidation_result_identity",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 85
+    },
+    {
+      "name": "test_batch3a1.Reading3a1Tests.test_manual_window_survives_running_failure_and_expires_on_digest_or_withdraw",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 105
+    },
+    {
+      "name": "test_batch3a1.Reading3a1Tests.test_elapsed_then_running_rejects_old_snapshot_and_changed_log_expires_result",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 130
+    },
+    {
+      "name": "test_batch3a1.Reading3a1Tests.test_wire_strict_trailers_close_delimiting_and_production_not_a_log",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 156
+    },
+    {
+      "name": "test_batch3a1.Reading3a1Tests.test_completed_log_tamper_invalidates_and_max_limit_changes_evaluation",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 179
+    },
+    {
+      "name": "test_batch3a1.Reading3a1Tests.test_loop_uncounted_and_counted_segments_starvation_and_fatal_errors",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 186
+    },
+    {
+      "name": "test_batch3a1.Reading3a1Tests.test_resolved_local_and_mapped_addresses_are_rejected_without_connection",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 202
+    },
+    {
+      "name": "test_batch3a1.Inputs3a1Tests.test_appendix_i_2245_base_545_shelve_and_credential_variable_never_written",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 217
+    },
+    {
+      "name": "test_batch3a1.Inputs3a1Tests.test_pairing_exact_segments_duplicate_cross_branch_and_shelve_tuple_mismatch",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 236
+    },
+    {
+      "name": "test_batch3a1.Snapshot3a1Tests.test_fake_p4_context_protocol_real_error_shapes_signal_partial_unknown_and_forbidden",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 271
+    },
+    {
+      "name": "test_batch3a1.Snapshot3a1Tests.test_shelve_overlay_merge_conflict_advanced_add_delete_move_and_cross_branch",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 286
+    },
+    {
+      "name": "test_batch3a1.Snapshot3a1Tests.test_history_time_confirm_digest_keyword_and_exact_nonascii_line_rules",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 302
+    },
+    {
+      "name": "test_batch3a1.Snapshot3a1Tests.test_paths_limits_symlink_and_merge_tool_error",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 314
+    },
+    {
+      "name": "test_batch3a1.Snapshot3a1Tests.test_persisted_unknown_retry_counter_and_manual_done_reset",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 328
+    },
+    {
+      "name": "test_batch3a1.Snapshot3a1Tests.test_manual_entrypoints_non_tty_and_closed_database_are_classified",
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 338
+    },
+    {
+      "name": "test_reports.ReportTests.test_complete_reports_result_failure_independent_of_execution",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 41
+    },
+    {
+      "name": "test_reports.ReportTests.test_all_success_and_only_expansion_or_export_are_failures",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 50
+    },
+    {
+      "name": "test_reports.ReportTests.test_reduced_architecture_set_result_partial",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 58
+    },
+    {
+      "name": "test_reports.ReportTests.test_missing_architecture_is_not_a_reduced_request",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 65
+    },
+    {
+      "name": "test_reports.ReportTests.test_header_mismatch_is_independent_from_complete_report_state",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 72
+    },
+    {
+      "name": "test_reports.ReportTests.test_execution_only_from_configured_detail_title",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 82
+    },
+    {
+      "name": "test_reports.ReportTests.test_local_simulation_never_satisfies_cosmos_terminal_prerequisite",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 93
+    },
+    {
+      "name": "test_reports.ReportTests.test_sha_stability_and_poll_interval_are_both_required",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 100
+    },
+    {
+      "name": "test_reports.ReportTests.test_confirmed_404_and_observation_failure_are_distinct",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 111
+    },
+    {
+      "name": "test_reports.ReportTests.test_proxy_login_or_malformed_response_is_observation_failure",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 123
+    },
+    {
+      "name": "test_reports.ReportTests.test_duplicate_row_cannot_replace_missing_row_even_when_counts_match",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 130
+    },
+    {
+      "name": "test_reports.ReportTests.test_category_intersection_rejected_even_with_correct_counts",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 139
+    },
+    {
+      "name": "test_reports.ReportTests.test_export_nonzero_unknown_table_is_structure_unknown",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 145
+    },
+    {
+      "name": "test_reports.ReportTests.test_closed_build_status_set",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 151
+    },
+    {
+      "name": "test_reports.ReportTests.test_summary_totals_and_each_category_reconcile",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 159
+    },
+    {
+      "name": "test_reports.ReportTests.test_expected_package_set_required_and_extra_packages_rejected",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 167
+    },
+    {
+      "name": "test_reports.ReportTests.test_prefix_matching_raw_title_line_numbers_and_inputs",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 179
+    },
+    {
+      "name": "test_reports.ReportTests.test_title_drift_is_visible_and_does_not_invalidate_correct_structure",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 193
+    },
+    {
+      "name": "test_reports.ReportTests.test_read_inputs_includes_all_rows_and_header_consistency",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 200
+    },
+    {
+      "name": "test_reports.ReportTests.test_saved_parser_has_no_real_downloader_fixture_log_has_digest",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 207
+    },
+    {
+      "name": "test_reports.ReportTests.test_fixture_path_escape_is_rejected",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 219
+    },
+    {
+      "name": "test_reports.ReportTests.test_synthetic_full_size_counts_are_not_real_fixture_evidence",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 225
+    },
+    {
+      "name": "test_reports.GroupTests.test_one_missing_item_one_group_and_all_items_must_be_covered",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 243
+    },
+    {
+      "name": "test_reports.GroupTests.test_version_constraints_are_different_signatures",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 252
+    },
+    {
+      "name": "test_reports.GroupTests.test_name_similarity_is_not_tool_fact",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 257
+    },
+    {
+      "name": "test_reports.GroupTests.test_spec_exact_provides_and_repaired_provider_required",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 267
+    },
+    {
+      "name": "test_reports.BrowserFixtureTests.test_success_rejection_login_unknown_and_crash_sequences",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 286
+    },
+    {
+      "name": "test_reports.BrowserFixtureTests.test_login_prepare_and_unexpected_sequence_do_not_release",
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "line": 307
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_config_relative_paths_and_local_filesystem",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 44
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_config_missing_invalid_and_duplicate_keys_rejected",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 52
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_nfs_cifs_and_stat_failure_refused_before_writes",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 64
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_path_escape_and_symlink_escape_refused",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 74
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_flock_contention_across_processes_and_release",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 83
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_command_categories_receive_cannot_write_authorization",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 96
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_non_tty_manual_and_external_commands_refused",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 105
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_terminal_yes_required",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 111
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_optimistic_conflict_and_sqlite_immediate_transaction",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 120
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_event_journal_cannot_update_or_delete",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 131
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_session_and_click_uniqueness_preserve_failed_preparation_history",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 139
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_bind_uniqueness_includes_backend_instance_and_execution_kind",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 152
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_p4_environment_plan_and_forbidden_commands",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 163
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_export_utf8_long_line_roundtrip_sizes_and_full_digests",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 176
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_export_credentials_at_end_block_every_artifact",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 193
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_word_hits_warn_credential_examples_never_bypass_export",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 199
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_authentication_page_with_empty_field_cannot_be_relabelled_report",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 212
+    },
+    {
+      "name": "test_foundation.FoundationTests.test_credential_pattern_families_block_without_echoing_content",
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "line": 218
+    }
+  ],
+  "scope": {
+    "real_network_exercised": false,
+    "real_p4_executed": false,
+    "browser_used": false,
+    "new_third_party_runtime_dependencies": false
+  },
+  "config_load_check": "docs/enhance/batch3a-1/evidence/config-load-check.json"
+}

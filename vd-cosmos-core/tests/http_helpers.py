@@ -73,6 +73,7 @@ class FixtureServer:
         config['data_root'] = str(self.root / 'owned')
         config['cosmos']['report_root'] = self.url + '/reports/'
         config['cosmos']['status_source']['url_template'] = self.url + '/build/{build_id}'
+        config['cosmos'].pop('variables_url_template', None)
         config['poll']['interval_s'] = .03
         config['poll']['settle_s'] = .06
         config['poll']['stopped_interval_s'] = .03

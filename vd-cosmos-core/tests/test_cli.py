@@ -105,7 +105,7 @@ class CLITests(unittest.TestCase):
         result, code = self.cli("watch", "observe")
         self.assertEqual(code, 0)
         self.assertEqual(result["report_state"], "部分")
-        self.assertIn("report_stalled", (self.base / "data/inbox.md").read_text())
+        self.assertNotIn("report_stalled", (self.base / "data/inbox.md").read_text())  # deprecated poll-count rule
 
     def test_export_and_prepush_cli_contract(self):
         source = self.base / "data/reports/example.txt"

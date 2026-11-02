@@ -1,0 +1,406 @@
+{
+  "command": "vd_cosmos_core.export.check_content; config.sample.json; test_exemptions=True",
+  "result": "PASS",
+  "files_checked": 57,
+  "files": [
+    {
+      "path": "docs/enhance/batch3a-1/DELIVERY.md",
+      "sha256": "1ccfdbb4a306fc90916fb9719c33b838906998747518f3788f2defdcaf1bfaff",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1/evidence/baseline-test-output.txt",
+      "sha256": "e9e8fc795f9343ad93685c12df7cde0acdc7b584b90c1af90bbd28d39e34058d",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1/evidence/config-load-check.json",
+      "sha256": "00d46c6b73a1657b371b7409f45ebd7985ee9027d94b8ff71aefe7312f8fb13d",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1/evidence/preflight.json",
+      "sha256": "7830c02aeb30c3ca23ba3b66f039393960625c5c21a54e5623ce3eb0c5ea2715",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1/evidence/skill-validation.txt",
+      "sha256": "c391cbda3a8428075c29a070a889c80fd7b619f852c8585f385563a94b2804d3",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1/evidence/test-output.txt",
+      "sha256": "0a2ca96e198a85e2779c55739893c1e4017f6c97f7f2b8c013b94f8d430ffdbe",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1/evidence/validation.json",
+      "sha256": "e1990e0543064496037d95db0e791a72571204c5c7023fe82798d237a0662c4c",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "sha256": "634c6f209577cccb95cdb68bb65479ce530a0ae1ae83cffd8dead8a87f0c185c",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/.importlinter",
+      "sha256": "8e15eace9184d2e7691037269b9e74bc15adf5f5ccfd295535d2baf62807ad14",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/config.sample.json",
+      "sha256": "93731b36e0534ccbff0ed0b78d62e623726aa1e54646aa61da497d6ddfba92f0",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/p4/fake_p4.py",
+      "sha256": "5515f300e4270309ea44dcb534a93d3c1542fa6734b0bee3507876e4c5d7027e",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/detail.html",
+      "sha256": "e07778ff4aac35c250e363b5805efee9c54849b8d9d1e1f03206e8ce96358ce1",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/real_format/manifest.json",
+      "sha256": "d15a1b83f20f319ce7142c63b7acce8c5e306f726841577304d36c999a8b40d0",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/scripts/check_imports.py",
+      "sha256": "f3d796dd0c18905f3c46062a41710811bd34f129d4644716d1bef82025fb218e",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/scripts/run_tests.sh",
+      "sha256": "a5d27a4900149d19b06d4cc61e741c072ada403414e32638da5d47b442fbf8dc",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/backends.py",
+      "sha256": "b5f4470a4a5af9511c25420ef2fc734c42570f390ba49febc2f802687a82cb88",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/build_inputs.py",
+      "sha256": "d218d441e19b374c2d888c12d37abe5ee4bf98d124e8ab938785676a87745327",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/cli.py",
+      "sha256": "e4bc968a638e2aa9620cfcfa4c790255b596f705e2e78e3a501bce038a05a2de",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/commands.py",
+      "sha256": "69a7c986c9d04210fcfe76ee24ada5534e43aab5873f581aa03ad13f625a5d60",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/config.py",
+      "sha256": "1870f6209176cfc28905381832d9ef1bec467845d44f9fd3560ba02ac415f352",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/defaults.py",
+      "sha256": "29cf6bd50e3df0fb3a37d74c80d6a351299584e8ac1203a7dabac8c145739e60",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/export.py",
+      "sha256": "56a55f1f0a17ec1b155142abb1e27346ba80c7e5bbb84c29802afd2ac4a9fcbe",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/http_reader.py",
+      "sha256": "4afbf6bb6b8dc8940f2e3c2ec3cc0f9f4ca84d241fe476e8067ac549cdfc304b",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/journal.py",
+      "sha256": "5f87c54cff2bd3bebd4b114c7c02e6a432a524f727fa577dd507d9cd7b5b824a",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/network_proof.py",
+      "sha256": "24f3ead9b8f994486b0af97502e139930da66d89cda0ba065b5027e700e34c1d",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/observation.py",
+      "sha256": "4e58ecfc6f40fc8d94678f27a9818e58df5c86e93115d8fc22f3f599ac4e773e",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/p4.py",
+      "sha256": "a28b7100241724b8476b3ea38d705206a297909fd66b7208ebd8f67cfe4ca16f",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/read_ops.py",
+      "sha256": "33854de7e9d8eb14bbd11c766cf342e9840a97ce94346ad278a9554e0db147e1",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/receipts.py",
+      "sha256": "243641047f24d4ccba1c3e703540e21e4a02bd209cf4e6f6bf4d64b8f9859f53",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/report.py",
+      "sha256": "16dd457b0d02c20939d4aee73dfece999b1a2694286d9d7b74d0eb401ac5dca9",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/stability.py",
+      "sha256": "2de20c39742ea84ac4489d92de89f7c32ba20362720b037ef8ce17dd69c9018b",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/state.py",
+      "sha256": "566c1f7eba12c2608f90b00c04d7dbe987e30afb4bda94bda219089828d969d3",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/transport.py",
+      "sha256": "adbbe2f646fec1ac0439fd4c1d03c022b195cb7d46e9de1c6e4946b3dba1f9f9",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b2.py",
+      "sha256": "b4b152cfd1d32ee2d8d5be2a3c6a3d60d2ecbb8e5f33bbb171e0a1b5fe0f8bf8",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/versions.py",
+      "sha256": "50a4569112ad9f59b6edd943b1dc62b449228e54038f6ba51c3730f1d502f8e6",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/helpers.py",
+      "sha256": "1a6eec741f13d7048a35b650f9c68eaf91a0d3f17d222e8c307b6042ce474913",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/http_helpers.py",
+      "sha256": "2833218bc6e91269f8e9a61328a93bf70c1ee3acf0bd66f88c40ce792c5a3a47",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch21.py",
+      "sha256": "79dda8f32a2772ccc95bda5af0c17eeaaf91ef472f6edf574e3a9dd84c291be3",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "sha256": "ce4234f94f0099fbe82e54098d0db94f87ea909009405a6c7a5830a46b2e6d73",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "sha256": "7e03a8e665af88ad2d4cdbc77622642ea6ad61cdd3b51928627e5d5addf7613b",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_cli.py",
+      "sha256": "de4d5b28608c7c2cf2ea1ca016402b33a5ab0e1c0d6167ee8d2a7c47cd2185f1",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_foundation.py",
+      "sha256": "c288c52eef3f7607534336058354f0a7b203c9989ba70c514d6a2a00b6909736",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_http_workflow.py",
+      "sha256": "c2e5c02802fabbe598a1d7e996254979413d516e74b836cde813120792d6b545",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "sha256": "92f2eb778c5b22d14da0a1b84ecaa8921300e2817ad110bcf17ec2c64da0305f",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_reports.py",
+      "sha256": "e5e53d020e3ea0f087b02babee543d838a4df904a2bd5d93b3ec02a13173910a",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-workflow/src/vd_cosmos_workflow/api.py",
+      "sha256": "1bc59a2b0b763d5784b64eb4bbcec75fff60e14c939858cb800a68285de44452",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-analyze/SKILL.md",
+      "sha256": "61b36a99c15c56bdb133049e587ebfe221cf2fad52b3fca408a04168d027afc8",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-analyze/scripts/run.py",
+      "sha256": "c9f986509b118a0ae8ada1a1d0ad16fe49668d1ccc2f571f89a7f1baca4a3836",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-analyze/src/vd_fix_analyze/__init__.py",
+      "sha256": "bff1f28e9abc086befa6d98426e8ce77328632374bacb50fb1a5f5e84e60f6e1",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-analyze/src/vd_fix_analyze/api.py",
+      "sha256": "0a64066c6b0b4b71e920e212f5edb60a4b107faf1ca4df8bcffaad97ab30de0f",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-analyze/src/vd_fix_analyze/cli.py",
+      "sha256": "10f5f9b036e83dc9f1839e083345b81cf466056eca8fb329647ee46ba21793f8",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-analyze/src/vd_fix_analyze/snapshot.py",
+      "sha256": "63605e77936fbc407b4d1054d61ab72da6194c0b3f2016317c75f2f5f7639bc7",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-register/SKILL.md",
+      "sha256": "8e435c2d97dfb04ea4781b1d98a6fe6656f2e1b5a75312057fefc565ce11b19e",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-register/scripts/run.py",
+      "sha256": "c23dcd4a27076bf95d8bb418f5da038714a361250ad8fa5261aa958a798ce86e",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-register/src/vd_fix_register/__init__.py",
+      "sha256": "894131b6871d86f0060346325fbc1c606e5c101b4925d4d9e28018363bfd0898",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-register/src/vd_fix_register/api.py",
+      "sha256": "97a3546b0050c4d832d7b503a56d8110d27f72819bf63bf7ea2b1266f17ed8aa",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-fix-register/src/vd_fix_register/cli.py",
+      "sha256": "0ca9c846bdb0655618bf2db6f16dd36527a4f8a591cc336f4e271cc296ff932d",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    }
+  ]
+}

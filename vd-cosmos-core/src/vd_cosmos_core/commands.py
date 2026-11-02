@@ -15,13 +15,14 @@ class Category(str, Enum):
 
 COMMANDS = {
     **{name: Category.OBSERVE for name in (
-        "watch.observe", "fetch.packages", "fetch.inputs", "fetch.logs", "fetch.groups",
+        "watch.observe", "fetch.base-list", "fetch.packages", "fetch.inputs", "fetch.logs", "fetch.groups",
         "core.export", "core.prepush", "core.status",
         "workflow.tick", "workflow.loop", "workflow.status", "workflow.inbox")},
+    "analyze.snapshot": Category.GENERATE,
     "analyze.prepare": Category.GENERATE,
     "analyze.accept": Category.ACCEPT,
     **{name: Category.HUMAN for name in (
-        "confirm", "confirm-group", "confirm-bug", "confirm-terminal", "approve",
+        "confirm-input", "bind-base-list", "inbox.done", "confirm", "confirm-group", "confirm-bug", "confirm-terminal", "approve",
         "attest", "resolve", "bind", "rebind", "parse-override", "round.abandon")},
     **{name: Category.EXTERNAL for name in ("submit", "p4.create-cl", "p4.shelve")},
 }
@@ -29,10 +30,10 @@ EVENTS = {
     Category.OBSERVE: {"observation_started", "observation_recorded", "observation_failed",
                        "artifact_recorded", "inbox_opened", "fetch_started", "fetch_completed",
                        "workflow_intent", "workflow_result"},
-    Category.GENERATE: {"analysis_prepared"},
+    Category.GENERATE: {"analysis_prepared", "snapshot_started", "snapshot_completed", "snapshot_failed", "inbox_opened"},
     Category.ACCEPT: {"analysis_received", "analysis_rejected"},
     Category.HUMAN: {"confirmed", "approved", "terminal_confirmed", "attested", "resolved",
-                     "bind", "rebind", "parse_overridden", "round_abandoned"},
+                     "terminal_withdrawn", "input_confirmed", "base_list_bound", "inbox_closed", "bind", "rebind", "parse_overridden", "round_abandoned"},
     Category.EXTERNAL: {"submit_session_started", "submit_session_finished", "click_intent",
                         "submit_result", "p4_operation_started", "p4_operation_result"},
 }
@@ -52,11 +53,11 @@ def command_context(name):
     confirmed = False
     if category in {Category.HUMAN, Category.EXTERNAL}:
         try:
-            with open("/dev/tty", "r+", encoding="utf-8") as tty:
+            with open("/dev/tty", "r", encoding="utf-8") as tty, open("/dev/tty", "w", encoding="utf-8") as display:
                 if not tty.isatty():
                     raise FlowError(2, "terminal_required")
-                tty.write("Confirm command (yes): ")
-                tty.flush()
+                display.write("Confirm command (yes): ")
+                display.flush()
                 confirmed = tty.readline().strip() == "yes"
         except OSError:
             raise FlowError(2, "terminal_required") from None
