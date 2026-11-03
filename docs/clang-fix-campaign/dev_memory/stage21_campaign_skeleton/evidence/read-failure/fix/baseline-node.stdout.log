@@ -1,0 +1,35 @@
+✔ rejected Fetch.failRequest still stops and records fixed metadata (4.201179ms)
+✔ rejected Fetch.continueRequest still stops and records fixed metadata (0.603314ms)
+✔ rejected Fetch.continueResponse still stops and records fixed metadata (0.467183ms)
+QB_AGENT_STOPPED category=UNKNOWN
+QB_AGENT_STOPPED category=UNKNOWN
+QB_AGENT_STOPPED category=UNKNOWN
+QB_AGENT_STOPPED category=UNKNOWN
+QB_AGENT_STOPPED category=UNKNOWN
+QB_AGENT_STOPPED category=UNKNOWN
+QB_AGENT_STOPPED category=UNKNOWN
+✔ capture scheduling phase and generation, keep first rejection only (0.575998ms)
+✔ read navigation diagnostic REQUEST_ID_INVALID (0.600237ms)
+✔ read navigation diagnostic TARGET_OR_SESSION_CLOSED (0.212561ms)
+✔ read navigation diagnostic NAVIGATION_INTERRUPTED (0.198845ms)
+✔ read navigation diagnostic BLOCKED_BY_CLIENT (0.181743ms)
+✔ read navigation diagnostic CONNECTION_FAILED (0.394644ms)
+✔ read navigation diagnostic TIMEOUT (0.287455ms)
+✔ read navigation diagnostic OTHER (0.162414ms)
+QB_AGENT_STOPPED category=UNKNOWN
+QB_AGENT_STOPPED category=UNKNOWN
+QB_AGENT_STOPPED category=UNKNOWN
+✔ read navigation cancellation concurrent with a rejected Fetch keeps initiating failure (1.279183ms)
+✔ command catch observes read without changing response (0.276857ms)
+✔ command catch observes submit without changing response (0.155258ms)
+✔ released submit response is unchanged even when diagnostics cannot be written (0.21849ms)
+✔ diagnostic sink and exception getters cannot change a guard stop (1.573138ms)
+✔ diagnostic sink failure preserves the original navigation rejection (0.380467ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 64.48406

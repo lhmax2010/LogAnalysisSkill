@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**STOPPED_SKEL_R_03**;诊断捕获Fetch.failRequest请求ID无效,全仓C8出现基线外失败场景,等待裁定。
+日期:2026-11-03。状态:**STOPPED_SKEL_R_05**;SKEL-R-02诊断已验收,SKEL-R-04新停止规则与三个不可改既有断言冲突,等待裁定。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1087,3 +1087,44 @@ racing-meta-refresh不同,触发SKEL-B1-03第3项及SKEL-B1-05第4项停止条�
 收尾核对见`diagnostics/final-checks.json`:设计检查仍0 problem,人工源码/文档
 diff --check通过;全暂存树检查返回2,仅原始夹具HTML、pytest失败输出及逐字
 production.diff的行尾空白,按原证据保留。新自然失败诊断记录键集合/敏感值扫描通过。
+
+## 21. 实施裁定 SKEL-R-04:拒绝已失效请求不再停止
+
+1. SKEL-R-02 的诊断实现验收通过(设计方已审读代理 diff:只增加观测,observeFailure 与 generation 计数自身异常被吞掉,不影响原停止与拒绝)。SKEL-R-03 停止成立。
+2. 诊断确认了一种失败机制:对一个按规则应拒绝的请求调用 Fetch.failRequest 时,该请求已被浏览器取消(导航切换),CDP 返回请求 ID 无效,随后整体停止并关闭浏览器;后续 read 失败、TargetClosedError 均为其下游。
+3. 设计方批准一处窄化(用户已同意):installGuards 中,仅当 operation 为 Fetch.failRequest 且 observeFailure 的分类结果为 REQUEST_ID_INVALID 时,不调用 onStop,改为向 trace 追加 {action: 'DENY_TARGET_GONE', phase, stage, path(pathShape), generation};其它任何操作(Fetch.continueRequest、Fetch.continueResponse)的任何失败,以及 Fetch.failRequest 的其它任何类别,一律照旧 onStop('FETCH_CONTINUE_FAILED')。理由:failRequest 只用于被拒请求;暂停中的请求未经放行不会发出,ID 已失效说明浏览器已丢弃它,不会到达服务器。
+4. 为此 observeFailure 需返回分类结果,或另提供同一分类函数供判断;"只保留第一条起因"的规则只约束 OPERATION_FAILED 记录,DENY_TARGET_GONE 每次都记。
+5. 该改动变更 P5Q 冻结稿的一条停止条件,作为本裁定的一次性例外登记;design.md 第 4.6 节之后追加一条说明。代理 sha256 与前缀 hash 随之变化,登记前后值。
+6. 计时与调查用例规则补充:C8 调查用例的任一场景若出现 OPERATION_FAILED 且 operation=Fetch.failRequest、category=REQUEST_ID_INVALID,视为本裁定已处理的已知形态;修复后该形态不应再导致停止,若仍导致停止即为缺陷。
+
+### 21.1 SKEL-R-05:既有代理测试不可改与新规则冲突
+
+基线`46db465`;开工已重读第20节与`diagnostics/stop-report-SKEL-R-03.md`。
+第20节未验收状态为当时事实,其诊断实现现由SKEL-R-04第1项验收。
+本轮在改生产代码之前发现:第二步第3项要求“既有代理测试与允许/拒绝矩阵不改且全部通过”,
+但`tests/node/test_qb_read_failure_diagnostics.mjs`有三处既有断言与第3项新规则相反:
+
+| 既有Node用例 | 当前断言 | 按本裁定的新结果 |
+|---|---|---|
+| `rejected Fetch.failRequest still stops and records fixed metadata` | :40,stops为[FETCH_CONTINUE_FAILED] | stops应为[];两个continue参数仍应停止 |
+| `capture scheduling phase and generation, keep first rejection only` | :60,目标关闭后再请求ID无效,stops为两个FETCH_CONTINUE_FAILED | 只有第一次停止,第二次记DENY_TARGET_GONE |
+| `read navigation cancellation concurrent with a rejected Fetch keeps initiating failure` | :96,无效ID的failRequest触发停止 | 该Fetch不停止;导航取消原异常路径不变 |
+
+这三项均由既有pytest nodeid
+`tests/unit/test_qb_read_failure_diagnostics.py::test_node_read_failure_diagnostics`
+执行。不能通过添加新测试使相反的旧断言同时成立;也不能按调用者/测试名特殊处理。
+停止报告与离线原树验证证据在`evidence/read-failure/fix/`。
+候选最小裁定:允许只更新上述三处停止次数期望及新增DENY_TARGET_GONE断言,
+保留原参数集合、pytest nodeid及其它断言,尤其两个continue与其它类别仍停止;
+其余既有矩阵不改。候选文字diff在停止报告中,本轮未实施。
+
+生产/测试/代理/驱动/design.md/冻结稿均未修改;尚未启动40次采样、四组安全或
+完整全仓门禁,不以局部验证代替用户要求的完整门禁。未使用-x运行全仓。
+未运行真实QuickBuild/Gerrit/gbs。等待设计方澄清后再执行实现与全部验收。
+
+原树离线验证:`fix/baseline-node.stdout.log`为17 passed/0 failed/0 skipped;
+`fix/baseline-facts.json`记录三处原断言、20核负载前后0.58/0.89/1.04及
+所有已跟踪skill/test/frozen/design文件与46db465逐字节一致。代理diff为0行;
+全文hash前后均`d0e99f7e4caf11104920ddfe7a569a75e100c5a1dc44a3a916d73ef2bacbf823`,
+前缀hash前后均`3bb1c0cc2fbfcb20aef324c8b8a703f06f40a438211317e0e96f2ba30f2be4c2`。
+尚未执行的新用例、安全组、40次采样和完整门禁不计作通过。

@@ -1,0 +1,42 @@
+{
+  "baseline": "46db465",
+  "argv": [
+    "/home/linhao/.local/bin/node",
+    "--test",
+    "tests/node/test_qb_read_failure_diagnostics.mjs"
+  ],
+  "started": "2026-11-03T10:56:13.013118+00:00",
+  "finished": "2026-11-03T10:56:14.234730+00:00",
+  "seconds": 1.2216063500382006,
+  "exit_code": 0,
+  "load_before": "0.58 0.89 1.04 22/2822 3790861",
+  "load_after": "0.58 0.89 1.04 1/2817 3791406",
+  "cpu_count": 20,
+  "agent_before_sha256": "d0e99f7e4caf11104920ddfe7a569a75e100c5a1dc44a3a916d73ef2bacbf823",
+  "agent_after_sha256": "d0e99f7e4caf11104920ddfe7a569a75e100c5a1dc44a3a916d73ef2bacbf823",
+  "prefix_before_sha256": "3bb1c0cc2fbfcb20aef324c8b8a703f06f40a438211317e0e96f2ba30f2be4c2",
+  "prefix_after_sha256": "3bb1c0cc2fbfcb20aef324c8b8a703f06f40a438211317e0e96f2ba30f2be4c2",
+  "protected_files_changed": [],
+  "conflicting_assertions": [
+    {
+      "file": "tests/node/test_qb_read_failure_diagnostics.mjs",
+      "line": 40,
+      "text": "    assert.deepEqual(stops, ['FETCH_CONTINUE_FAILED']);"
+    },
+    {
+      "file": "tests/node/test_qb_read_failure_diagnostics.mjs",
+      "line": 60,
+      "text": "  assert.deepEqual(stops, ['FETCH_CONTINUE_FAILED', 'FETCH_CONTINUE_FAILED']);"
+    },
+    {
+      "file": "tests/node/test_qb_read_failure_diagnostics.mjs",
+      "line": 96,
+      "text": "  assert.deepEqual(stops, ['FETCH_CONTINUE_FAILED']);"
+    }
+  ],
+  "production_implementation_started": false,
+  "full_regression_started": false,
+  "c8_repetitions": 0,
+  "c5a_repetitions": 0,
+  "safety_groups_started": false
+}

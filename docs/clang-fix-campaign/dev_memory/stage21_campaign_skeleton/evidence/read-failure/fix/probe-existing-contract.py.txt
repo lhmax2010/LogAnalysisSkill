@@ -1,0 +1,50 @@
+"""Read-only baseline check for SKEL-R-04's conflicting test requirements."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import time
+
+BASE = '46db465'
+DEST = Path(__file__).resolve().parent
+ROOT = Path.cwd()
+AGENT = Path('tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs')
+TEST = Path('tests/node/test_qb_read_failure_diagnostics.mjs')
+node = Path.home() / '.local/bin/node'
+argv = [str(node), '--test', str(TEST)]
+env = os.environ.copy()
+for key in ('NODE_OPTIONS', 'DEBUG', 'PWDEBUG'):
+    env.pop(key, None)
+before = Path('/proc/loadavg').read_text().strip()
+started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+tick = time.monotonic()
+result = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=30)
+(DEST / 'baseline-node.stdout.log').write_text(result.stdout)
+(DEST / 'baseline-node.stderr.log').write_text(result.stderr)
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+old = subprocess.check_output(['git', 'show', BASE + ':' + str(AGENT)])
+current = AGENT.read_bytes()
+tracked = subprocess.check_output(['git', 'ls-files', '-z'], text=True).split('\0')
+protected = [p for p in tracked if p and (p.startswith(('tizen-', 'tests/')) or 'FROZEN' in p
+                                         or p == 'docs/clang-fix-campaign/design.md')]
+changed = [p for p in protected if not Path(p).is_file()
+           or Path(p).read_bytes() != subprocess.check_output(['git', 'show', BASE + ':' + p])]
+lines = TEST.read_text().splitlines()
+facts = dict(baseline=BASE, argv=argv, started=started,
+             finished=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+             seconds=time.monotonic()-tick, exit_code=result.returncode,
+             load_before=before, load_after=Path('/proc/loadavg').read_text().strip(), cpu_count=os.cpu_count(),
+             agent_before_sha256=sha(old), agent_after_sha256=sha(current),
+             prefix_before_sha256=sha(old.split(b'export class Agent {')[0]),
+             prefix_after_sha256=sha(current.split(b'export class Agent {')[0]),
+             protected_files_changed=changed,
+             conflicting_assertions=[{'file': str(TEST), 'line': n, 'text': lines[n-1]}
+                                     for n in (40, 60, 96)],
+             production_implementation_started=False, full_regression_started=False,
+             c8_repetitions=0, c5a_repetitions=0, safety_groups_started=False)
+(DEST / 'baseline-facts.json').write_text(json.dumps(facts, indent=2) + '\n')
+print(json.dumps(facts, indent=2))
+assert result.returncode == 0 and old == current and not changed
