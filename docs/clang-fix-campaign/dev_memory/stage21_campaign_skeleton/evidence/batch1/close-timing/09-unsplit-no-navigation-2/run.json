@@ -1,0 +1,54 @@
+{
+  "order": 9,
+  "tree": "unsplit",
+  "mode": "no-navigation",
+  "repeat": 2,
+  "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/09-unsplit-no-navigation-2/pytest.xml",
+    "-o",
+    "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/09-unsplit-no-navigation-2/pytest-cache"
+  ],
+  "cwd": "/tmp/loganalysisskill-skel-b1-f203aec-20261103",
+  "start_utc": "2026-11-03T00:31:00.171602+00:00",
+  "end_utc": "2026-11-03T00:32:23.605650+00:00",
+  "seconds": 83.41687678999733,
+  "exit": 0,
+  "result": "PASS",
+  "load_before": "1.15 1.14 0.86 1/2619 2894257",
+  "load_after": "0.94 1.01 0.83 1/2632 2896287",
+  "close_measurements": [
+    {
+      "command_index": 0,
+      "command": "qb-trigger",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07654190063476562,
+      "agent_close_started_unix_ms": 1793665936662,
+      "agent_close_finished_unix_ms": 1793665936704,
+      "agent_close_seconds": 0.042
+    },
+    {
+      "command_index": 1,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07800889015197754,
+      "agent_close_started_unix_ms": 1793665940006,
+      "agent_close_finished_unix_ms": 1793665940045,
+      "agent_close_seconds": 0.039
+    },
+    {
+      "command_index": 2,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.0767982006072998,
+      "agent_close_started_unix_ms": 1793665943452,
+      "agent_close_finished_unix_ms": 1793665943495,
+      "agent_close_seconds": 0.043
+    }
+  ],
+  "directory": "09-unsplit-no-navigation-2"
+}

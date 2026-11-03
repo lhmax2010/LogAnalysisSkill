@@ -1,0 +1,28 @@
+"""External gate observer; does not change tests, reports, or outcomes."""
+
+import json
+import os
+from pathlib import Path
+
+SESSION = None
+C8 = "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures"
+C5 = "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass"
+TIMING = {C8} | {f"{C5}[{mode}]" for mode in (
+    "build", "error-created", "error-no-build", "no-navigation", "delayed-build", "late-build"
+)}
+
+
+def pytest_sessionstart(session):
+    global SESSION
+    SESSION = session
+
+
+def pytest_runtest_logreport(report):
+    if not report.failed:
+        return
+    row = {"nodeid": report.nodeid, "when": report.when,
+           "timing_list": report.nodeid in TIMING}
+    with Path(os.environ["SKEL_GATE_FAILURES"]).open("a") as output:
+        output.write(json.dumps(row) + "\n")
+    if report.nodeid not in TIMING:
+        SESSION.shouldstop = "SKEL-B1-05: failure outside timing-sensitive list"

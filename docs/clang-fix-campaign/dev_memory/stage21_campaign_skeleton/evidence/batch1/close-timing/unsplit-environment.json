@@ -1,0 +1,30 @@
+{
+  "tree": "/tmp/loganalysisskill-skel-b1-f203aec-20261103",
+  "commit": "f203aec380182821ee8a2b311be499cbef0152ea",
+  "python": "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+  "playwright": "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+  "chromium": "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+  "node": "/home/linhao/.local/bin/node",
+  "PYTHONPATH": [
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-gbs-build/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-gbs-log-analysis/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-gbs-build-workflow/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-gbs-patch-suggest/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-ci-triage/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-ci-shared/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-convergence-judge/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-qb-discover/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-gerrit-fetch/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-build-verify/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-gerrit-submit/scripts",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-triage-report/scripts"
+  ],
+  "module_sources": {
+    "python": "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "ci_triage": "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-ci-triage/scripts/ci_triage/__init__.py",
+    "derive_commit": "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-ci-triage/scripts/ci_triage/derive_commit.py",
+    "qb_browser": "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-ci-triage/scripts/ci_triage/qb_browser.py",
+    "shared": "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-ci-shared/scripts/tizen_ci_shared/__init__.py",
+    "build_verify": "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tizen-build-verify/scripts/tizen_build_verify/__init__.py"
+  }
+}

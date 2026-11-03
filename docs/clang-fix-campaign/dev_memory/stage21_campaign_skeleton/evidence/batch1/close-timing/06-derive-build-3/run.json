@@ -1,0 +1,54 @@
+{
+  "order": 6,
+  "tree": "derive",
+  "mode": "build",
+  "repeat": 3,
+  "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/06-derive-build-3/pytest.xml",
+    "-o",
+    "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/06-derive-build-3/pytest-cache"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "start_utc": "2026-11-03T00:27:50.335768+00:00",
+  "end_utc": "2026-11-03T00:28:13.395573+00:00",
+  "seconds": 23.044155879993923,
+  "exit": 0,
+  "result": "PASS",
+  "load_before": "1.58 1.19 0.80 1/2617 2889073",
+  "load_after": "1.43 1.18 0.80 2/2620 2890548",
+  "close_measurements": [
+    {
+      "command_index": 0,
+      "command": "qb-trigger",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07703447341918945,
+      "agent_close_started_unix_ms": 1793665686569,
+      "agent_close_finished_unix_ms": 1793665686611,
+      "agent_close_seconds": 0.042
+    },
+    {
+      "command_index": 1,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07606124877929688,
+      "agent_close_started_unix_ms": 1793665689907,
+      "agent_close_finished_unix_ms": 1793665689946,
+      "agent_close_seconds": 0.039
+    },
+    {
+      "command_index": 2,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07919430732727051,
+      "agent_close_started_unix_ms": 1793665693233,
+      "agent_close_finished_unix_ms": 1793665693276,
+      "agent_close_seconds": 0.043
+    }
+  ],
+  "directory": "06-derive-build-3"
+}

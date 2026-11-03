@@ -1,0 +1,650 @@
+[
+  {
+    "order": 1,
+    "tree": "unsplit",
+    "mode": "build",
+    "repeat": 1,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/01-unsplit-build-1/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/01-unsplit-build-1/pytest-cache"
+    ],
+    "cwd": "/tmp/loganalysisskill-skel-b1-f203aec-20261103",
+    "start_utc": "2026-11-03T00:25:40.734487+00:00",
+    "end_utc": "2026-11-03T00:26:12.778585+00:00",
+    "seconds": 32.02820546599105,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "0.92 0.98 0.68 2/2596 2880997",
+    "load_after": "0.83 0.95 0.68 3/2632 2882948",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07448863983154297,
+        "agent_close_started_unix_ms": 1793665565873,
+        "agent_close_finished_unix_ms": 1793665565911,
+        "agent_close_seconds": 0.038
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07540774345397949,
+        "agent_close_started_unix_ms": 1793665569205,
+        "agent_close_finished_unix_ms": 1793665569241,
+        "agent_close_seconds": 0.036
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07303524017333984,
+        "agent_close_started_unix_ms": 1793665572631,
+        "agent_close_finished_unix_ms": 1793665572669,
+        "agent_close_seconds": 0.038
+      }
+    ],
+    "directory": "01-unsplit-build-1"
+  },
+  {
+    "order": 2,
+    "tree": "derive",
+    "mode": "build",
+    "repeat": 1,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/02-derive-build-1/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/02-derive-build-1/pytest-cache"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "start_utc": "2026-11-03T00:26:12.797185+00:00",
+    "end_utc": "2026-11-03T00:26:36.573873+00:00",
+    "seconds": 23.760712675983086,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "0.83 0.95 0.68 1/2632 2882950",
+    "load_after": "0.92 0.97 0.69 1/2613 2884500",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07547116279602051,
+        "agent_close_started_unix_ms": 1793665589684,
+        "agent_close_finished_unix_ms": 1793665589730,
+        "agent_close_seconds": 0.046
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07449984550476074,
+        "agent_close_started_unix_ms": 1793665593049,
+        "agent_close_finished_unix_ms": 1793665593087,
+        "agent_close_seconds": 0.038
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.0766143798828125,
+        "agent_close_started_unix_ms": 1793665596424,
+        "agent_close_finished_unix_ms": 1793665596466,
+        "agent_close_seconds": 0.042
+      }
+    ],
+    "directory": "02-derive-build-1"
+  },
+  {
+    "order": 3,
+    "tree": "unsplit",
+    "mode": "build",
+    "repeat": 2,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/03-unsplit-build-2/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/03-unsplit-build-2/pytest-cache"
+    ],
+    "cwd": "/tmp/loganalysisskill-skel-b1-f203aec-20261103",
+    "start_utc": "2026-11-03T00:26:36.592592+00:00",
+    "end_utc": "2026-11-03T00:27:03.861197+00:00",
+    "seconds": 27.252958222059533,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "0.92 0.97 0.69 1/2613 2884502",
+    "load_after": "1.04 0.99 0.71 6/2617 2886022",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07795834541320801,
+        "agent_close_started_unix_ms": 1793665613062,
+        "agent_close_finished_unix_ms": 1793665613108,
+        "agent_close_seconds": 0.046
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07714152336120605,
+        "agent_close_started_unix_ms": 1793665616486,
+        "agent_close_finished_unix_ms": 1793665616522,
+        "agent_close_seconds": 0.036
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07950687408447266,
+        "agent_close_started_unix_ms": 1793665619914,
+        "agent_close_finished_unix_ms": 1793665619953,
+        "agent_close_seconds": 0.039
+      }
+    ],
+    "directory": "03-unsplit-build-2"
+  },
+  {
+    "order": 4,
+    "tree": "derive",
+    "mode": "build",
+    "repeat": 2,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/04-derive-build-2/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/04-derive-build-2/pytest-cache"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "start_utc": "2026-11-03T00:27:03.879018+00:00",
+    "end_utc": "2026-11-03T00:27:26.909187+00:00",
+    "seconds": 23.014072717982344,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "1.04 0.99 0.71 3/2617 2886024",
+    "load_after": "1.89 1.21 0.79 1/2617 2887509",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.0752570629119873,
+        "agent_close_started_unix_ms": 1793665640085,
+        "agent_close_finished_unix_ms": 1793665640127,
+        "agent_close_seconds": 0.042
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07672929763793945,
+        "agent_close_started_unix_ms": 1793665643436,
+        "agent_close_finished_unix_ms": 1793665643477,
+        "agent_close_seconds": 0.041
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07603073120117188,
+        "agent_close_started_unix_ms": 1793665646757,
+        "agent_close_finished_unix_ms": 1793665646796,
+        "agent_close_seconds": 0.039
+      }
+    ],
+    "directory": "04-derive-build-2"
+  },
+  {
+    "order": 5,
+    "tree": "unsplit",
+    "mode": "build",
+    "repeat": 3,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/05-unsplit-build-3/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/05-unsplit-build-3/pytest-cache"
+    ],
+    "cwd": "/tmp/loganalysisskill-skel-b1-f203aec-20261103",
+    "start_utc": "2026-11-03T00:27:26.925554+00:00",
+    "end_utc": "2026-11-03T00:27:50.318621+00:00",
+    "seconds": 23.37714110291563,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "1.89 1.21 0.79 1/2617 2887511",
+    "load_after": "1.58 1.19 0.80 1/2617 2889071",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07949209213256836,
+        "agent_close_started_unix_ms": 1793665663402,
+        "agent_close_finished_unix_ms": 1793665663442,
+        "agent_close_seconds": 0.04
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07534313201904297,
+        "agent_close_started_unix_ms": 1793665666800,
+        "agent_close_finished_unix_ms": 1793665666839,
+        "agent_close_seconds": 0.039
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07390570640563965,
+        "agent_close_started_unix_ms": 1793665670173,
+        "agent_close_finished_unix_ms": 1793665670211,
+        "agent_close_seconds": 0.038
+      }
+    ],
+    "directory": "05-unsplit-build-3"
+  },
+  {
+    "order": 6,
+    "tree": "derive",
+    "mode": "build",
+    "repeat": 3,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/06-derive-build-3/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/06-derive-build-3/pytest-cache"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "start_utc": "2026-11-03T00:27:50.335768+00:00",
+    "end_utc": "2026-11-03T00:28:13.395573+00:00",
+    "seconds": 23.044155879993923,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "1.58 1.19 0.80 1/2617 2889073",
+    "load_after": "1.43 1.18 0.80 2/2620 2890548",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07703447341918945,
+        "agent_close_started_unix_ms": 1793665686569,
+        "agent_close_finished_unix_ms": 1793665686611,
+        "agent_close_seconds": 0.042
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07606124877929688,
+        "agent_close_started_unix_ms": 1793665689907,
+        "agent_close_finished_unix_ms": 1793665689946,
+        "agent_close_seconds": 0.039
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07919430732727051,
+        "agent_close_started_unix_ms": 1793665693233,
+        "agent_close_finished_unix_ms": 1793665693276,
+        "agent_close_seconds": 0.043
+      }
+    ],
+    "directory": "06-derive-build-3"
+  },
+  {
+    "order": 7,
+    "tree": "unsplit",
+    "mode": "no-navigation",
+    "repeat": 1,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/07-unsplit-no-navigation-1/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/07-unsplit-no-navigation-1/pytest-cache"
+    ],
+    "cwd": "/tmp/loganalysisskill-skel-b1-f203aec-20261103",
+    "start_utc": "2026-11-03T00:28:13.409294+00:00",
+    "end_utc": "2026-11-03T00:29:36.887437+00:00",
+    "seconds": 83.46093507495243,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "1.43 1.18 0.80 1/2620 2890550",
+    "load_after": "0.94 1.15 0.83 1/2617 2892247",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07976841926574707,
+        "agent_close_started_unix_ms": 1793665769942,
+        "agent_close_finished_unix_ms": 1793665769980,
+        "agent_close_seconds": 0.038
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.0739903450012207,
+        "agent_close_started_unix_ms": 1793665773371,
+        "agent_close_finished_unix_ms": 1793665773410,
+        "agent_close_seconds": 0.039
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07567358016967773,
+        "agent_close_started_unix_ms": 1793665776736,
+        "agent_close_finished_unix_ms": 1793665776774,
+        "agent_close_seconds": 0.038
+      }
+    ],
+    "directory": "07-unsplit-no-navigation-1"
+  },
+  {
+    "order": 8,
+    "tree": "derive",
+    "mode": "no-navigation",
+    "repeat": 1,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/08-derive-no-navigation-1/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/08-derive-no-navigation-1/pytest-cache"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "start_utc": "2026-11-03T00:29:36.904815+00:00",
+    "end_utc": "2026-11-03T00:31:00.152945+00:00",
+    "seconds": 83.23262118001003,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "0.94 1.15 0.83 2/2617 2892249",
+    "load_after": "1.15 1.14 0.86 2/2619 2894255",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07773590087890625,
+        "agent_close_started_unix_ms": 1793665853218,
+        "agent_close_finished_unix_ms": 1793665853261,
+        "agent_close_seconds": 0.043
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07637453079223633,
+        "agent_close_started_unix_ms": 1793665856647,
+        "agent_close_finished_unix_ms": 1793665856686,
+        "agent_close_seconds": 0.039
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07450318336486816,
+        "agent_close_started_unix_ms": 1793665860002,
+        "agent_close_finished_unix_ms": 1793665860038,
+        "agent_close_seconds": 0.036
+      }
+    ],
+    "directory": "08-derive-no-navigation-1"
+  },
+  {
+    "order": 9,
+    "tree": "unsplit",
+    "mode": "no-navigation",
+    "repeat": 2,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/09-unsplit-no-navigation-2/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/09-unsplit-no-navigation-2/pytest-cache"
+    ],
+    "cwd": "/tmp/loganalysisskill-skel-b1-f203aec-20261103",
+    "start_utc": "2026-11-03T00:31:00.171602+00:00",
+    "end_utc": "2026-11-03T00:32:23.605650+00:00",
+    "seconds": 83.41687678999733,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "1.15 1.14 0.86 1/2619 2894257",
+    "load_after": "0.94 1.01 0.83 1/2632 2896287",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07654190063476562,
+        "agent_close_started_unix_ms": 1793665936662,
+        "agent_close_finished_unix_ms": 1793665936704,
+        "agent_close_seconds": 0.042
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07800889015197754,
+        "agent_close_started_unix_ms": 1793665940006,
+        "agent_close_finished_unix_ms": 1793665940045,
+        "agent_close_seconds": 0.039
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.0767982006072998,
+        "agent_close_started_unix_ms": 1793665943452,
+        "agent_close_finished_unix_ms": 1793665943495,
+        "agent_close_seconds": 0.043
+      }
+    ],
+    "directory": "09-unsplit-no-navigation-2"
+  },
+  {
+    "order": 10,
+    "tree": "derive",
+    "mode": "no-navigation",
+    "repeat": 2,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/10-derive-no-navigation-2/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/10-derive-no-navigation-2/pytest-cache"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "start_utc": "2026-11-03T00:32:23.624742+00:00",
+    "end_utc": "2026-11-03T00:33:46.913116+00:00",
+    "seconds": 83.27159587806091,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "0.94 1.01 0.83 1/2632 2896289",
+    "load_after": "0.98 1.11 0.89 2/2603 2898140",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07908773422241211,
+        "agent_close_started_unix_ms": 1793666020047,
+        "agent_close_finished_unix_ms": 1793666020086,
+        "agent_close_seconds": 0.039
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07547497749328613,
+        "agent_close_started_unix_ms": 1793666023402,
+        "agent_close_finished_unix_ms": 1793666023447,
+        "agent_close_seconds": 0.045
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07491111755371094,
+        "agent_close_started_unix_ms": 1793666026759,
+        "agent_close_finished_unix_ms": 1793666026801,
+        "agent_close_seconds": 0.042
+      }
+    ],
+    "directory": "10-derive-no-navigation-2"
+  },
+  {
+    "order": 11,
+    "tree": "unsplit",
+    "mode": "no-navigation",
+    "repeat": 3,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/11-unsplit-no-navigation-3/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/11-unsplit-no-navigation-3/pytest-cache"
+    ],
+    "cwd": "/tmp/loganalysisskill-skel-b1-f203aec-20261103",
+    "start_utc": "2026-11-03T00:33:46.931028+00:00",
+    "end_utc": "2026-11-03T00:35:10.358685+00:00",
+    "seconds": 83.4103960719658,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "0.98 1.11 0.89 1/2603 2898142",
+    "load_after": "0.42 0.88 0.82 1/2618 2900048",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07607650756835938,
+        "agent_close_started_unix_ms": 1793666103401,
+        "agent_close_finished_unix_ms": 1793666103444,
+        "agent_close_seconds": 0.043
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07934331893920898,
+        "agent_close_started_unix_ms": 1793666106768,
+        "agent_close_finished_unix_ms": 1793666106805,
+        "agent_close_seconds": 0.037
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07562017440795898,
+        "agent_close_started_unix_ms": 1793666110197,
+        "agent_close_finished_unix_ms": 1793666110235,
+        "agent_close_seconds": 0.038
+      }
+    ],
+    "directory": "11-unsplit-no-navigation-3"
+  },
+  {
+    "order": 12,
+    "tree": "derive",
+    "mode": "no-navigation",
+    "repeat": 3,
+    "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/12-derive-no-navigation-3/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/12-derive-no-navigation-3/pytest-cache"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "start_utc": "2026-11-03T00:35:10.378426+00:00",
+    "end_utc": "2026-11-03T00:36:33.655661+00:00",
+    "seconds": 83.26125765300822,
+    "exit": 0,
+    "result": "PASS",
+    "load_before": "0.42 0.88 0.82 2/2618 2900050",
+    "load_after": "0.59 0.79 0.79 1/2621 2901800",
+    "close_measurements": [
+      {
+        "command_index": 0,
+        "command": "qb-trigger",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.08043909072875977,
+        "agent_close_started_unix_ms": 1793666186866,
+        "agent_close_finished_unix_ms": 1793666186909,
+        "agent_close_seconds": 0.043
+      },
+      {
+        "command_index": 1,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07712864875793457,
+        "agent_close_started_unix_ms": 1793666190181,
+        "agent_close_finished_unix_ms": 1793666190221,
+        "agent_close_seconds": 0.04
+      },
+      {
+        "command_index": 2,
+        "command": "qb-result-fetch",
+        "cli_exit": 0,
+        "close_to_cli_exit_seconds": 0.07905411720275879,
+        "agent_close_started_unix_ms": 1793666193491,
+        "agent_close_finished_unix_ms": 1793666193529,
+        "agent_close_seconds": 0.038
+      }
+    ],
+    "directory": "12-derive-no-navigation-3"
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "order": 4,
+  "tree": "derive",
+  "mode": "build",
+  "repeat": 2,
+  "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/04-derive-build-2/pytest.xml",
+    "-o",
+    "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/04-derive-build-2/pytest-cache"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "start_utc": "2026-11-03T00:27:03.879018+00:00",
+  "end_utc": "2026-11-03T00:27:26.909187+00:00",
+  "seconds": 23.014072717982344,
+  "exit": 0,
+  "result": "PASS",
+  "load_before": "1.04 0.99 0.71 3/2617 2886024",
+  "load_after": "1.89 1.21 0.79 1/2617 2887509",
+  "close_measurements": [
+    {
+      "command_index": 0,
+      "command": "qb-trigger",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.0752570629119873,
+      "agent_close_started_unix_ms": 1793665640085,
+      "agent_close_finished_unix_ms": 1793665640127,
+      "agent_close_seconds": 0.042
+    },
+    {
+      "command_index": 1,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07672929763793945,
+      "agent_close_started_unix_ms": 1793665643436,
+      "agent_close_finished_unix_ms": 1793665643477,
+      "agent_close_seconds": 0.041
+    },
+    {
+      "command_index": 2,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07603073120117188,
+      "agent_close_started_unix_ms": 1793665646757,
+      "agent_close_finished_unix_ms": 1793665646796,
+      "agent_close_seconds": 0.039
+    }
+  ],
+  "directory": "04-derive-build-2"
+}

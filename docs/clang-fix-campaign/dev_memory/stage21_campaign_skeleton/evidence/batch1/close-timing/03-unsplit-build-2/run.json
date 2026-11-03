@@ -1,0 +1,54 @@
+{
+  "order": 3,
+  "tree": "unsplit",
+  "mode": "build",
+  "repeat": 2,
+  "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "/tmp/loganalysisskill-skel-b1-f203aec-20261103/tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/03-unsplit-build-2/pytest.xml",
+    "-o",
+    "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/03-unsplit-build-2/pytest-cache"
+  ],
+  "cwd": "/tmp/loganalysisskill-skel-b1-f203aec-20261103",
+  "start_utc": "2026-11-03T00:26:36.592592+00:00",
+  "end_utc": "2026-11-03T00:27:03.861197+00:00",
+  "seconds": 27.252958222059533,
+  "exit": 0,
+  "result": "PASS",
+  "load_before": "0.92 0.97 0.69 1/2613 2884502",
+  "load_after": "1.04 0.99 0.71 6/2617 2886022",
+  "close_measurements": [
+    {
+      "command_index": 0,
+      "command": "qb-trigger",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07795834541320801,
+      "agent_close_started_unix_ms": 1793665613062,
+      "agent_close_finished_unix_ms": 1793665613108,
+      "agent_close_seconds": 0.046
+    },
+    {
+      "command_index": 1,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07714152336120605,
+      "agent_close_started_unix_ms": 1793665616486,
+      "agent_close_finished_unix_ms": 1793665616522,
+      "agent_close_seconds": 0.036
+    },
+    {
+      "command_index": 2,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07950687408447266,
+      "agent_close_started_unix_ms": 1793665619914,
+      "agent_close_finished_unix_ms": 1793665619953,
+      "agent_close_seconds": 0.039
+    }
+  ],
+  "directory": "03-unsplit-build-2"
+}

@@ -1,0 +1,54 @@
+{
+  "order": 10,
+  "tree": "derive",
+  "mode": "no-navigation",
+  "repeat": 2,
+  "nodeid": "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/10-derive-no-navigation-2/pytest.xml",
+    "-o",
+    "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/close-timing/10-derive-no-navigation-2/pytest-cache"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "start_utc": "2026-11-03T00:32:23.624742+00:00",
+  "end_utc": "2026-11-03T00:33:46.913116+00:00",
+  "seconds": 83.27159587806091,
+  "exit": 0,
+  "result": "PASS",
+  "load_before": "0.94 1.01 0.83 1/2632 2896289",
+  "load_after": "0.98 1.11 0.89 2/2603 2898140",
+  "close_measurements": [
+    {
+      "command_index": 0,
+      "command": "qb-trigger",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07908773422241211,
+      "agent_close_started_unix_ms": 1793666020047,
+      "agent_close_finished_unix_ms": 1793666020086,
+      "agent_close_seconds": 0.039
+    },
+    {
+      "command_index": 1,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07547497749328613,
+      "agent_close_started_unix_ms": 1793666023402,
+      "agent_close_finished_unix_ms": 1793666023447,
+      "agent_close_seconds": 0.045
+    },
+    {
+      "command_index": 2,
+      "command": "qb-result-fetch",
+      "cli_exit": 0,
+      "close_to_cli_exit_seconds": 0.07491111755371094,
+      "agent_close_started_unix_ms": 1793666026759,
+      "agent_close_finished_unix_ms": 1793666026801,
+      "agent_close_seconds": 0.042
+    }
+  ],
+  "directory": "10-derive-no-navigation-2"
+}

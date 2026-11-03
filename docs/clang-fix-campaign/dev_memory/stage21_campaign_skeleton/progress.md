@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-02。状态:**STOPPED_SKEL_B1_04**。
+日期:2026-11-03。状态:**BATCH1_BULK_MOVE_IN_PROGRESS**。
 开工基线`accd7f4`,分支`clang-fix-campaign`。本批仅skill拆分及design.md追加修订登记;
 完成后停止,等待设计方审读,不开始第2批。
 
@@ -20,7 +20,7 @@
 
 | 批次 | 范围 | 当前状态 |
 |---|---|---|
-| 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | STOPPED_SKEL_B1_04;拆分前5次已完成,derive试搬全仓出现两项非豁免失败 |
+| 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | SKEL-B1-05对照12/12通过,判a;试搬复核2902 passed/1 skipped,进入批量搬家 |
 | 2 | 建档、基线复现、生命周期与放弃屏障 | NOT_STARTED |
 | 3 | 审核提交、启动检查、编排skill与离线端到端 | NOT_STARTED |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
@@ -153,6 +153,8 @@ C8豁免nodeid在这次全仓运行中为PASS,但此结果不能替代最终拆�
 
 ## 9. 停止报告 SKEL-B1-04:derive试搬的非豁免失败
 
+状态:由SKEL-B1-05启动对照处置,原始失败事实与证据保留,不以重跑结果替换。
+
 报告:[stop-report-SKEL-B1-04.md](evidence/batch1/stop-report-SKEL-B1-04.md)。
 失败均为`tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass`
 的参数实例,在第98行`assert 0 <= close_seconds < 5`失败:
@@ -202,3 +204,84 @@ nodeid、补丁目标或skip标记。历史证据目录下脚本未改、未重�
 排除这4份原始输出的检查exit 0。逐行清单、命令与结果:
 `evidence/batch1/derive-only/diff-check.json`。
 此次提交为停止点快照,不是第1批验收通过;不纳入开工前已有的无关工作树变更。
+
+## 10. 实施裁定 SKEL-B1-05:关闭时延失败处置
+
+1. SKEL-B1-04 停止成立。设计方已审读试搬改动(derive_commit 原样移动、旧位置模块别名、pyproject 两行)与失败证据。两例失败中,代理自身记录的关闭耗时分别约 6.5 秒、8.7 秒(close_started/close_finished),即时间耗在浏览器关闭本身,不在派生提交代码路径上;试搬全仓耗时 1423 秒,未拆分基线 1012 秒。初步判断为机器负载导致的计时超限,须经第二步对照确认,本裁定不据此放行。
+2. 不修改测试、不提高 5 秒阈值、不加 skip/xfail;原始失败证据保留,不得用重跑结果替换。
+3. 设立"计时敏感用例清单",初始为:tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures(处置按 SKEL-B1-03),以及 tests/unit/test_p5q_c5a_integration.py 中 test_real_cli_browser_submit_bind_pending_pass 的全部参数。清单只能由设计方裁定增删。
+4. 第 1 批后续每次全仓门禁:清单外任一用例失败 → 立即停止;C5a 清单用例失败 → 在当前树上单独重跑该 nodeid 3 次,3 次全部通过才算门禁通过,任一次失败即停止;C8 用例按 SKEL-B1-03 第 3 项。每次全仓运行前后记录 /proc/loadavg、CPU 核数,以及运行开始时 CPU 占用前 10 的进程(只记进程名与占用,不记命令行参数)。
+
+### 10.1 计时敏感用例清单
+
+仅登记本裁定指定范围,不得自行增删:
+
+- `tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures`,按SKEL-B1-03第3项。
+- `tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]`。
+- `tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[error-created]`。
+- `tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[error-no-build]`。
+- `tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]`。
+- `tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[delayed-build]`。
+- `tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]`。
+
+### 10.2 两树关闭时延对照计划
+
+当前试搬树`3ea6e7c`,临时未拆分worktree固定在`f203aec`。
+两树用当前仓库同一`.venv/bin/python`与同一Playwright/Chromium;
+分别按各树的pyproject包目录设置PYTHONPATH,核对实际模块路径后开始。
+对`build`和`no-navigation`各交替执行未拆分/试搬3轮,每次独立输出目录。
+证据:`evidence/batch1/close-timing/`;保留各次loadavg、命令、UTC起止、exit、
+原始pytest输出、CLI与代理关闭时间。本步骤不修改生产、测试或配置文件。
+只有两树12次全部通过才进入第三步;未拆分也失败判b,只有试搬失败判c。
+结束后移除本次创建的worktree,检查P5Q进程与`/dev/shm/p5q-browser-*`残留。
+
+### 10.3 对照结果与判定
+
+12次均PASS,按裁定第2步第3项a登记为环境负载,允许进入第3步的试搬全仓复核。
+两树均未修改生产、测试、配置;同一venv、Playwright与Chromium,实际模块路径
+分别指向两树,见`close-timing/unsplit-environment.json`与`derive-environment.json`。
+CPU逻辑核数20。下表时间单位秒,每格三个值依次为trigger、首次fetch、终态fetch;
+load为运行前/后的1、5、15分钟值。绝对close_started/close_finished时间戳在
+各运行`run.json`和`node/<mode>/agent-*.json`中保留。
+
+| 次序 | 树 | nodeid参数/轮次 | 结果 | close_to_cli_exit | 代理close耗时 | load前 / 后 |
+|---|---|---|---|---|---|---|
+| 1 | f203aec未拆分 | build/1 | PASS | 0.074,0.075,0.073 | 0.038,0.036,0.038 | 0.92 0.98 0.68 / 0.83 0.95 0.68 |
+| 2 | 3ea6e7c试搬 | build/1 | PASS | 0.075,0.074,0.077 | 0.046,0.038,0.042 | 0.83 0.95 0.68 / 0.92 0.97 0.69 |
+| 3 | f203aec未拆分 | build/2 | PASS | 0.078,0.077,0.080 | 0.046,0.036,0.039 | 0.92 0.97 0.69 / 1.04 0.99 0.71 |
+| 4 | 3ea6e7c试搬 | build/2 | PASS | 0.075,0.077,0.076 | 0.042,0.041,0.039 | 1.04 0.99 0.71 / 1.89 1.21 0.79 |
+| 5 | f203aec未拆分 | build/3 | PASS | 0.079,0.075,0.074 | 0.040,0.039,0.038 | 1.89 1.21 0.79 / 1.58 1.19 0.80 |
+| 6 | 3ea6e7c试搬 | build/3 | PASS | 0.077,0.076,0.079 | 0.042,0.039,0.043 | 1.58 1.19 0.80 / 1.43 1.18 0.80 |
+| 7 | f203aec未拆分 | no-navigation/1 | PASS | 0.080,0.074,0.076 | 0.038,0.039,0.038 | 1.43 1.18 0.80 / 0.94 1.15 0.83 |
+| 8 | 3ea6e7c试搬 | no-navigation/1 | PASS | 0.078,0.076,0.075 | 0.043,0.039,0.036 | 0.94 1.15 0.83 / 1.15 1.14 0.86 |
+| 9 | f203aec未拆分 | no-navigation/2 | PASS | 0.077,0.078,0.077 | 0.042,0.039,0.043 | 1.15 1.14 0.86 / 0.94 1.01 0.83 |
+| 10 | 3ea6e7c试搬 | no-navigation/2 | PASS | 0.079,0.075,0.075 | 0.039,0.045,0.042 | 0.94 1.01 0.83 / 0.98 1.11 0.89 |
+| 11 | f203aec未拆分 | no-navigation/3 | PASS | 0.076,0.079,0.076 | 0.043,0.037,0.038 | 0.98 1.11 0.89 / 0.42 0.88 0.82 |
+| 12 | 3ea6e7c试搬 | no-navigation/3 | PASS | 0.080,0.077,0.079 | 0.043,0.040,0.038 | 0.42 0.88 0.82 / 0.59 0.79 0.79 |
+
+证据根:`evidence/batch1/close-timing/`;汇总`runs.json`、`decision.json`。
+临时worktree`/tmp/loganalysisskill-skel-b1-f203aec-20261103`运行后为clean,
+`git worktree remove` exit 0;路径已不存在,P5Q进程与profile均为空,
+见`worktree-cleanup.json`和`residue-after-tests.json`。
+初始化编排时有一次进程检查误把自身shell中的脚本文本当成Chromium,测试尚未启动;
+只修正编排检查为实际exe与argv匹配,见`setup-precheck-false-positive.json`。
+未改生产或测试,未因此删除任何进程/目录。
+
+### 10.4 试搬全仓复核
+
+证据:`evidence/batch1/derive-recheck/`。保持当前derive试搬源码不变。
+沿用`tests/run_quiet.py`的虚拟显示入口;外置pytest观察插件只在清单外失败时
+设置停止标志,不修改报告、断言、阈值或skip。运行前后记录loadavg与CPU核数,
+开始时只记录CPU前10进程名和占用。全仓结果及必要的独立复跑另行登记。
+
+复核完成:exit 0,2902 passed/0 failed/1 skipped,1030.30秒(编排总计1030.68秒)。
+UTC 2026-11-03 00:37:04.692515至00:54:15.386068;CPU 20核,
+load前`0.66 0.80 0.80`,后`2.08 1.85 1.50`;CPU前10名单见`cpu-top10.txt`。
+C5a六参数与C8调查用例均通过,没有触发3次独立复跑。唯一skip与基线相同,
+`test_case_insensitive_bypass_is_platform_specific`(case-sensitive filesystem)。
+证据:`command.json`、`summary.json`、`pytest.xml`、`pytest.stdout.log`、
+`load-before.json`、`load-after.json`;编排与观察插件原文分别为
+`gate-runner.py.txt`、`gate-observer.py.txt`,本轮运行的是外置`/tmp`版本。
+此结果只放行批量搬家,不替代最终八包验收或拆分后C8五次对照。
+`git diff --check`的告警仅为本地假页面原始HTML的行尾空白,保留证据字节;
+文档无空白告警。不纳入pytest-cache,不提交数据库二进制。
