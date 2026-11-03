@@ -1,8 +1,8 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**BATCH2_READY_FOR_REVIEW**。
+日期:2026-11-03。状态:**BATCH3_STOPPED_SKEL_B3_02**。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
-第1批已由SKEL-B2-01验收;第2批范围与边界见第12节,不开始第3批。
+第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批契约核对停止,见第16节。
 
 ## 1. 冻结输入与开工事实
 
@@ -21,8 +21,8 @@
 | 批次 | 范围 | 当前状态 |
 |---|---|---|
 | 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | ACCEPTED;SKEL-B2-01验收通过 |
-| 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | READY_FOR_REVIEW;SKEL-B1-05口径门禁通过,待设计方审读 |
-| 3 | 审核提交、启动检查、编排skill与离线端到端 | NOT_STARTED |
+| 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | ACCEPTED;SKEL-B3-01验收通过 |
+| 3 | 审核提交、启动检查、编排skill与离线端到端 | STOPPED;SKEL-B3-02:无RESULT提示的state_root来源未定义 |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
 | 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | NOT_STARTED |
 
@@ -730,3 +730,46 @@ C8在本轮全仓为PASS,未触发失败形态比较与补跑;第1批既有前�
 - 状态为READY_FOR_REVIEW,等待设计方审读,不自行标CLOSED,不开始第3批。
 - 提交前`git diff --cached --check`仅报告原始HTML、pytest日志/XML中的行尾空白;
   为保留证据原始字节不做格式化。排除evidence目录后的同项检查exit 0。
+
+## 16. 实施裁定 SKEL-B3-01:第 2 批验收与第 3 批范围
+
+以下照录设计方裁定:
+
+1. 第 2 批验收通过。设计方已审读 sandbox-submit、qb-trigger 的屏障检查(各 +4 行,取锁后、业务动作前,精确匹配)、campaign_lifecycle 三个释放 API、campaign-release-worktrees --abandon 的取锁与写序、campaign-add-unit 的暂存克隆核验与 os.link 发布、baseline-reproduce 的取锁,以及 late-build 原始失败与 3 次重跑记录。SKEL-B2-06 由用户澄清关闭(已绑定无 RESULT:显示父构建号,结果引用为空)。
+2. late-build 原始失败形态为"lookup_reads 期望 10 实际 1;FETCH_CONTINUE_FAILED",不是关闭时延;与 live-01 提交后读取失败同一错误类别。按 SKEL-B1-05 第 4 项放行有效,但登记为"离线可偶发复现的读取失败",在第 3.5 批之前另行安排定位任务,本批不处理。
+3. SKEL-B1-05 第 4 项补充:清单内 C5a 用例若因关闭时延以外的原因失败,3 次重跑全部通过仍可放行,但须在 progress.md 单独登记失败形态(断言原文、AGENT_STOPPED 的 failure_category、harness_failure 类别)并汇总到一张"读取失败观测表",每批累加。
+4. 冻结稿第 6 节第 1 条"同一份本地路径配置下 campaign-add-unit 克隆成功而 campaign-start-check 失败"一条,因 SKEL-B2-03 第 4 项已改为建档在暂存阶段拒绝本地路径,改为"本地路径配置下两者都拒绝(add-unit 为 REJECTED_IDENTITY_MISMATCH 且无产物,start-check 为 PREFLIGHT_FAILED)"。
+5. 离线测试 gerrit_ssh_base 统一为 SKEL-B2-03 的 ssh://gerrit.invalid:29418 加假 SSH;冻结稿第 6 节第 2 条"离线端到端不含启动检查"相应改为:离线端到端第一步运行 campaign-start-check,其 ls-remote 经假 SSH 完成;gbs 子进程仍用假件。
+6. 第 3 批范围:冻结稿第 7 节第 3 批(5.3 review-submit 含取锁、5.5 campaign-start-check 与编排 skill tizen-clang-campaign、第 6 节离线端到端),tizen-review-submit 的 SKILL.md,以及第 2 批延后的"放弃后取到 PASS → review-submit 被拒"用例中 review-submit 部分。
+
+### 16.1 开工核对与读取失败观测表
+
+开工HEAD `1a4ed25`,分支`clang-fix-campaign`;已重读冻结稿第3/5.3/5.5/6节、
+附录C及本进度。冻结稿SHA256仍为
+`1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9`。
+代理SHA256仍为`7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c`。
+用户已有脏文件不改、不提交。技能编写规范已读取skill-creator,但停止前未创建SKILL或业务代码。
+
+| 批次/用例 | 断言原文 | AGENT_STOPPED failure_category | harness_failure | 处置与证据 |
+|---|---|---|---|---|
+| 第2批 C5a late-build | `AssertionError: assert 1 == 10`;`1 = len([{'command': 'read', 'path': '/overview/1917'}])` | `FETCH_CONTINUE_FAILED` | 归档中未记录该字段,不推断类别 | 原`evidence/batch2/implementation/full/stdout.log:160`与`full/c5a/late-build/agent-0.json:312`;独立3/3通过,SKEL-B3-01第2/3项登记为离线可偶发复现的读取失败,第3.5批前另行定位 |
+| 第3批 | NOT_RUN | NOT_RUN | NOT_RUN | 契约核对停止,无新全仓观测 |
+
+### 16.2 停止报告 SKEL-B3-02:无RESULT提示缺少state_root输入
+
+冻结稿5.3要求固定message里的`<state_root>`填实际路径,但继承的design.md
+4.1 review-submit签名没有`--state-root`;campaign_config模板未定义此键;
+QB请求/事件表不存储这个根目录。生产QB命令通过独立的`--state-root`接收它,
+不要求它等于state DB父目录或campaign_workspace。
+尤其无RESULT时,无法从`qb_result_ref`反推,`--qb-result`也不承诺位于该目录。
+新增参数、要求配置新增必填键或改写固定提示均属契约选择,本轮不自行决定。
+
+证据与候选处置:`evidence/batch3/stop-report-SKEL-B3-02.md`;
+离线探针:`evidence/batch3/probe-state-root.py`,结果`probe-state-root.json`。
+该探针只在临时目录构造unit/request并调用生产trace写入函数,证明同一库与request
+可对应不同trace根且库字节不变,不运行浏览器、网络、gbs或git远端命令。
+
+本轮停止在业务实现前。review-submit与start-check未实现,取锁位置未新增;
+三条端到端均NOT_RUN,不虚构状态序列。全量pytest/负载/mypy/import-linter及
+计时重跑均NOT_RUN,不能沿用第2批结果充当本批验收。nodeid未新增或修改;
+四组安全测试按本批边界不重跑。不进入第3.5批。

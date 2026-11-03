@@ -1,0 +1,42 @@
+{
+  "qb_columns": {
+    "campaign_qb_requests": [
+      "request_seq",
+      "request_id",
+      "campaign_unit_key",
+      "sbs_target",
+      "created_at"
+    ],
+    "campaign_qb_events": [
+      "event_id",
+      "request_seq",
+      "event_type",
+      "qb_build_id",
+      "status",
+      "accepted",
+      "sbs_target_echo",
+      "per_arch_status_json",
+      "qb_result_sha256",
+      "qb_result_ref",
+      "degraded",
+      "created_at"
+    ],
+    "campaign_qb_profiles": [
+      "branch",
+      "profile_json",
+      "profile_sha256",
+      "created_at"
+    ]
+  },
+  "result_rows": 0,
+  "trace_locations": [
+    "first-state-root/qb_traces/f985b9053b89.jsonl",
+    "second-state-root/qb_traces/f985b9053b89.jsonl"
+  ],
+  "database_sha256_before": "cef49affe85281528827bd8864d60c1cd3b8e53504510e61ce354522ddc74e55",
+  "database_sha256_after": "cef49affe85281528827bd8864d60c1cd3b8e53504510e61ce354522ddc74e55",
+  "database_unchanged": true,
+  "network_requests": 0,
+  "browser_starts": 0,
+  "conclusion": "pending request does not identify the actual trace root"
+}

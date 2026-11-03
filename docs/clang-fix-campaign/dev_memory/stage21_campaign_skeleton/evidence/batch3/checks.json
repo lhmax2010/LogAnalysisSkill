@@ -1,0 +1,55 @@
+{
+  "baseline": "1a4ed25",
+  "checks": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit_code": 0,
+      "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-respect-gitignore",
+        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3/probe-state-root.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "docs/clang-fix-campaign/dev_memory/INDEX.md",
+        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "production_and_tests_diff": [],
+  "protected": {
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": {
+      "sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+      "unchanged": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": {
+      "sha256": "7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c",
+      "unchanged": true
+    }
+  },
+  "full_pytest": "NOT_RUN",
+  "mypy": "NOT_RUN",
+  "import_linter": "NOT_RUN",
+  "safety_groups": "NOT_RUN",
+  "nodeid_changes": 0
+}
