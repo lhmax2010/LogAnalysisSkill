@@ -524,6 +524,10 @@ def sandbox_submit(options: SandboxSubmitOptions) -> SandboxSubmitOutcome:
         finally:
             conn.close()
         locks.enter_context(_locks(config.workspace / _unit_hash(lock_unit)))
+        from tizen_campaign_core.campaign_lifecycle import is_abandoned
+
+        if is_abandoned(db, lock_unit):
+            raise _Reject("REJECTED_UNIT_ABANDONED", "unit abandoned")
         conn = state._read_connection(db)
         try:
             conn.execute("BEGIN")

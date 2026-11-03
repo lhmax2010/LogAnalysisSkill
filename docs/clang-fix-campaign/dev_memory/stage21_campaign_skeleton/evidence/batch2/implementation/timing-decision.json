@@ -1,0 +1,44 @@
+{
+  "ruling": "SKEL-B1-05(4)",
+  "original_failure": "late-build: expected lookup_reads=10, actual=1; FETCH_CONTINUE_FAILED",
+  "original_close_seconds": 0.045197486877441406,
+  "retries": [
+    {
+      "run": 1,
+      "exit": 0,
+      "seconds": 26.230473735020496,
+      "load_before": "2.96 2.94 2.27 2/2664 3317732",
+      "load_after": "2.68 2.86 2.27 6/2677 3319791",
+      "close_to_cli_exit_seconds": [
+        0.08312821388244629,
+        0.1275186538696289,
+        0.07494783401489258
+      ]
+    },
+    {
+      "run": 2,
+      "exit": 0,
+      "seconds": 27.68352031102404,
+      "load_before": "3.14 2.94 2.32 4/2803 3322931",
+      "load_after": "3.94 3.16 2.42 7/2904 3325097",
+      "close_to_cli_exit_seconds": [
+        0.08176302909851074,
+        0.07514238357543945,
+        0.08133721351623535
+      ]
+    },
+    {
+      "run": 3,
+      "exit": 0,
+      "seconds": 26.09533714596182,
+      "load_before": "5.67 3.72 2.64 2/3002 3325672",
+      "load_after": "5.97 3.95 2.74 2/2893 3327742",
+      "close_to_cli_exit_seconds": [
+        0.07602286338806152,
+        0.0758967399597168,
+        0.08058357238769531
+      ]
+    }
+  ],
+  "decision": "ACCEPTED"
+}

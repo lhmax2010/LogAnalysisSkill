@@ -1,0 +1,71 @@
+import ast
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import xml.etree.ElementTree as ET
+
+ROOT = Path('/home/linhao/Toolchain/development/LogAnalysisSkill')
+E = ROOT/'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/implementation'
+
+def digest(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def save(name, data):
+    (E/name).write_text(json.dumps(data, indent=2, ensure_ascii=False)+'\n')
+
+protected = [
+    'docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md',
+    'docs/clang-fix-campaign/design.md',
+    'tizen-ci-shared/scripts/tizen_ci_shared/state/db.py',
+    'tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py',
+    'tizen-ci-shared/scripts/tizen_ci_shared/state/records.py',
+    'tizen-build-verify/scripts/tizen_build_verify/build_verify.py',
+    'tizen-campaign-core/scripts/tizen_campaign_core/_campaign_workspace.py',
+    'tizen-campaign-core/scripts/tizen_campaign_core/_sandbox_git.py',
+    'tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py',
+    'tizen-qb-verify/scripts/tizen_qb_verify/qb_result_fetch.py',
+    'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs',
+]
+hashes = []
+for name in protected:
+    raw = (ROOT/name).read_bytes()
+    baseline = subprocess.check_output(['git','show','8326fb4:'+name], cwd=ROOT)
+    hashes.append(dict(path=name,sha256=digest(raw),baseline_sha256=digest(baseline),
+                       identical=raw==baseline))
+agent = (ROOT/protected[-1]).read_bytes()
+save('integrity.json',dict(files=hashes,agent_prefix_sha256=digest(agent.split(b'export class Agent {')[0])))
+assert all(row['identical'] for row in hashes)
+
+old = ROOT/'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/bulk/nodeids-final.txt'
+old_ids = {line for line in old.read_text().splitlines() if line.startswith('tests/') and '::' in line}
+new_ids = {line for line in (E/'collect/stdout.log').read_text().splitlines()
+           if line.startswith('tests/') and '::' in line}
+(E/'nodeids-final.txt').write_text('\n'.join(sorted(new_ids))+'\n')
+(E/'nodeids-added.txt').write_text('\n'.join(sorted(new_ids-old_ids))+'\n')
+save('nodeid-comparison.json',dict(batch1_count=len(old_ids),current_count=len(new_ids),
+    missing=sorted(old_ids-new_ids),added_count=len(new_ids-old_ids),
+    preexisting_fake_ssh=sum('test_campaign_fake_ssh.py' in n for n in new_ids-old_ids),
+    new_business=sum('test_campaign_batch2_' in n for n in new_ids-old_ids)))
+assert not old_ids-new_ids
+
+rows = []
+for path in sorted((ROOT/'tests/unit').glob('test_campaign_batch2_*.py')):
+    for node in ast.walk(ast.parse(path.read_text())):
+        if isinstance(node,ast.FunctionDef) and node.name.startswith('test_'):
+            rows.append(dict(path=str(path.relative_to(ROOT)),line=node.lineno,name=node.name))
+save('test-locations.json', rows)
+
+summary = {}
+for folder in E.iterdir():
+    xml = folder/'pytest.xml'
+    if not xml.exists():
+        continue
+    root = ET.parse(xml).getroot()
+    cases=root.findall('.//testcase')
+    summary[folder.name]=dict(collected=len(cases),
+        failed=sum(c.find('failure') is not None or c.find('error') is not None for c in cases),
+        skipped=sum(c.find('skipped') is not None for c in cases),
+        passed=sum(not any(c.find(t) is not None for t in ('failure','error','skipped')) for c in cases))
+save('test-summary.json',summary)
+print(json.dumps(dict(integrity='PASS',nodeids=[len(old_ids),len(new_ids)],tests=summary),indent=2))

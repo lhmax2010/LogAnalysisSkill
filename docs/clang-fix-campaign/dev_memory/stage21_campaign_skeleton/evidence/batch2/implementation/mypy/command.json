@@ -1,0 +1,49 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/mypy",
+    "tizen-ci-shared/scripts/tizen_ci_shared",
+    "tizen-convergence-judge/scripts/tizen_convergence_judge",
+    "tizen-qb-discover/scripts/tizen_qb_discover",
+    "tizen-gerrit-fetch/scripts/tizen_gerrit_fetch",
+    "tizen-build-verify/scripts/tizen_build_verify",
+    "tizen-gerrit-submit/scripts/tizen_gerrit_submit",
+    "tizen-triage-report/scripts/tizen_triage_report",
+    "tizen-campaign-core/scripts/tizen_campaign_core",
+    "tizen-campaign-repair/scripts/tizen_campaign_repair",
+    "tizen-sandbox-submit/scripts/tizen_sandbox_submit",
+    "tizen-qb-verify/scripts/tizen_qb_verify",
+    "tizen-campaign-intake/scripts/tizen_campaign_intake",
+    "tizen-baseline-reproduce/scripts/tizen_baseline_reproduce",
+    "tizen-review-submit/scripts/tizen_review_submit",
+    "tizen-campaign-report/scripts/tizen_campaign_report",
+    "tizen-gbs-log-analysis/scripts/gbs_analyzer",
+    "tizen-gbs-build-workflow/scripts/gbs_workflow",
+    "tizen-gbs-patch-suggest/scripts/gbs_patch_suggest"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started": "2026-11-03T05:23:24.540904+00:00",
+  "finished": "2026-11-03T05:23:25.404461+00:00",
+  "seconds": 0.8635617989348248,
+  "exit_code": 0,
+  "load_before": {
+    "loadavg": "0.72 1.13 1.04 6/2657 3226402",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python           100",
+      "python          42.8",
+      "python          12.4",
+      "chrome           3.1",
+      "code-insiders    3.0",
+      "code-insiders    2.2",
+      "Xorg             1.5",
+      "code-insiders    1.0",
+      "chrome           1.0",
+      "code-insiders    0.9"
+    ]
+  },
+  "load_after": {
+    "loadavg": "0.72 1.13 1.04 2/2650 3226472",
+    "cpu_count": 20
+  }
+}

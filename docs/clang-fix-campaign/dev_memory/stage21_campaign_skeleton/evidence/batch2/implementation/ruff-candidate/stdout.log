@@ -1,0 +1,12 @@
+E501 Line too long (101 > 100)
+  --> tests/unit/test_p5q_c6_offline_fix.py:32:101
+   |
+30 |     paths = browser_paths()
+31 |     argv = [
+32 |         *command, str(ROOT / "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs"), *paths,
+   |                                                                                                     ^
+33 |     ]
+34 |     process = subprocess.Popen(
+   |
+
+Found 1 error.

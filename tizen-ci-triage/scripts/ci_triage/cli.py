@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-import traceback
 from dataclasses import asdict
 from json import JSONDecodeError
 from pathlib import Path
@@ -16,11 +15,9 @@ from tizen_build_verify import (
     build_verify,
     build_verify_to_json,
 )
-from tizen_campaign_core.campaign_state import CampaignStateBusy
 from tizen_campaign_core.suppress_policy import PolicyInputError, SourceKind, evaluate
-from tizen_campaign_repair.campaign_repair_step import (
-    CampaignRepairStepOptions,
-    campaign_repair_step,
+from tizen_campaign_repair.__main__ import (
+    _main_campaign_repair_step,
 )
 from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH
@@ -39,13 +36,8 @@ from tizen_gerrit_submit import (
     write_gerrit_submit_result,
     write_release_result,
 )
-from tizen_sandbox_submit.sandbox_submit import (
-    SandboxSubmitOptions,
-    SandboxSubmitOutcome,
-    empty_payload,
-    invalid_outcome,
-    sandbox_submit,
-)
+from tizen_qb_verify.__main__ import _main_qb_result_fetch, _main_qb_trigger
+from tizen_sandbox_submit.__main__ import _main_sandbox_submit
 
 from ci_triage.runner import TriageOptions, run_triage
 
@@ -170,19 +162,6 @@ def release_worktree_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def campaign_repair_step_parser() -> argparse.ArgumentParser:
-    parser = _CampaignRepairStepParser(
-        prog="ci_triage campaign-repair-step",
-        description="Run one locked, budgeted, and reconciled campaign repair build.",
-    )
-    parser.add_argument("--campaign-unit-key", required=True)
-    parser.add_argument("--state-db", type=Path, required=True)
-    parser.add_argument("--config", type=Path, required=True)
-    parser.add_argument("--round-index", type=int, required=True)
-    parser.add_argument("--edit-spec", type=Path, required=True)
-    parser.add_argument("--arch", required=True)
-    parser.add_argument("--wall-timeout", type=int)
-    return parser
 
 
 def main(
@@ -359,125 +338,14 @@ def _main_release_worktree(argv: list[str], *, stderr: TextIO) -> int:
     return exit_code_for_release(result)
 
 
-def _main_campaign_repair_step(
-    argv: list[str],
-    *,
-    stdout: TextIO,
-    extra_pythonpath: tuple[Path, ...],
-) -> int:
-    try:
-        args = campaign_repair_step_parser().parse_args(argv)
-    except _CampaignCliArgumentError as exc:
-        print(json.dumps(_campaign_cli_error_payload(str(exc)), sort_keys=True), file=stdout)
-        return 5
-    paths = extra_pythonpath or discover_sibling_pythonpath(
-        launcher_path=Path(__file__).resolve().parents[1] / "run_ci_triage.py"
-    )
-    outcome = campaign_repair_step(
-        CampaignRepairStepOptions(
-            campaign_unit_key=args.campaign_unit_key,
-            state_db=StateDatabase(args.state_db),
-            config_path=args.config,
-            round_index=args.round_index,
-            edit_spec_path=args.edit_spec,
-            arch_raw=args.arch,
-            wall_timeout=args.wall_timeout,
-            extra_pythonpath=paths,
-        )
-    )
-    print(json.dumps(outcome.result.to_dict(), sort_keys=True), file=stdout)
-    return outcome.exit_code
 
 
-def _campaign_cli_error_payload(reason: str) -> dict[str, object]:
-    return {
-        "result": "FAIL",
-        "verdict": "n_a",
-        "repair_allowed": "denied",
-        "failure_class": None,
-        "failure_stage": None,
-        "adopted": False,
-        "convergence_reason": reason,
-        "previous_basis": "none",
-        "round_index": 0,
-        "arch_norm": "",
-        "verification_id": None,
-        "evidence_path": None,
-        "reconciliation": {
-            "other_round_relinks": [],
-            "non_campaign_verification_ids": [],
-        },
-        "warnings": [],
-        "invocations_used": 0,
-        "error_code": "INVALID_ARGS",
-    }
 
 
-def _main_qb_result_fetch(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
-    from tizen_qb_verify.qb_result_fetch import QbResultFetchOptions, empty_result, qb_result_fetch
-
-    parser = _CampaignRepairStepParser(prog="ci_triage qb-result-fetch")
-    parser.add_argument("--request-id")
-    parser.add_argument("--qb-build-id")
-    parser.add_argument("--requests-file", type=Path)
-    parser.add_argument("--accept-snapshot-drift", action="store_true")
-    parser.add_argument("--state-db", type=Path, required=True)
-    parser.add_argument("--state-root", type=Path, required=True)
-    parser.add_argument("--config", type=Path, required=True)
-    try:
-        args = parser.parse_args(argv)
-        code, results = qb_result_fetch(QbResultFetchOptions(**vars(args)), stderr=stderr)
-    except _CampaignCliArgumentError:
-        code, results = 2, [dict(empty_result(), error_code="INVALID_ARGS")]
-    print(json.dumps(results, ensure_ascii=False, sort_keys=True), file=stdout)
-    return code
 
 
-def _main_qb_trigger(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
-    from tizen_qb_verify.qb_trigger import QbTriggerOptions, empty_result, qb_trigger
-
-    parser = _CampaignRepairStepParser(prog="ci_triage qb-trigger")
-    selection = parser.add_mutually_exclusive_group(required=True)
-    selection.add_argument("--verification-ids")
-    selection.add_argument("--units-file", type=Path)
-    parser.add_argument("--state-db", type=Path, required=True)
-    parser.add_argument("--state-root", type=Path, required=True)
-    parser.add_argument("--config", type=Path, required=True)
-    parser.add_argument("--retrigger", action="store_true")
-    try:
-        args = parser.parse_args(argv)
-        code, results = qb_trigger(QbTriggerOptions(**vars(args)), stderr=stderr)
-    except _CampaignCliArgumentError:
-        code, results = 2, [dict(empty_result(), error_code="INVALID_ARGS")]
-    print(json.dumps(results, ensure_ascii=False, sort_keys=True), file=stdout)
-    return code
 
 
-def _main_sandbox_submit(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
-    parser = _CampaignRepairStepParser(prog="ci_triage sandbox-submit")
-    parser.add_argument("--verification-ids", required=True)
-    parser.add_argument("--state-db", type=Path, required=True)
-    parser.add_argument("--config", type=Path, required=True)
-    parser.add_argument("--sandbox-branch", required=True)
-    parser.add_argument("--message-brief")
-    parser.add_argument("--edit-source-kind", choices=("t1_cherry_pick", "generated", "suppress"))
-    try:
-        args = parser.parse_args(argv)
-        result = sandbox_submit(SandboxSubmitOptions(**vars(args)))
-    except _CampaignCliArgumentError as exc:
-        result = invalid_outcome(str(exc))
-    except Exception as exc:
-        busy = isinstance(exc, CampaignStateBusy)
-        payload = empty_payload()
-        payload.update(
-            action="busy" if busy else "rejected",
-            error_code="CAMPAIGN_STATE_BUSY" if busy else "INTERNAL_ERROR",
-            reason=f"{type(exc).__name__}: {exc}",
-        )
-        result = SandboxSubmitOutcome(4 if busy else 5, payload)
-        traceback.print_exc(file=stderr)
-    print(json.dumps(result.payload, sort_keys=True), file=stdout)
-    return result.exit_code
 
 
 def _main_suppress_policy(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:

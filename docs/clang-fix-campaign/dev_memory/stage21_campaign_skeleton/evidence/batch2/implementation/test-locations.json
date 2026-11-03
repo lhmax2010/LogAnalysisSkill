@@ -1,0 +1,227 @@
+[
+  {
+    "path": "tests/unit/test_campaign_batch2_barriers_cli.py",
+    "line": 25,
+    "name": "test_sandbox_abandoned_zero_push_and_hook"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_barriers_cli.py",
+    "line": 33,
+    "name": "test_sandbox_barrier_reloaded_after_lock"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_barriers_cli.py",
+    "line": 48,
+    "name": "test_qb_abandoned_zero_start_and_request"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_barriers_cli.py",
+    "line": 57,
+    "name": "test_qb_batch_abandoned_unit_zero_commands"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_barriers_cli.py",
+    "line": 91,
+    "name": "test_extra_marker_key_rejected_by_existing_entries"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_barriers_cli.py",
+    "line": 108,
+    "name": "test_qb_abandoned_release_is_not_barrier"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_barriers_cli.py",
+    "line": 115,
+    "name": "test_qb_after_barrier_check_abandon_is_busy"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_barriers_cli.py",
+    "line": 139,
+    "name": "test_shared_cli_parser_identical_json_and_exit"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 49,
+    "name": "test_baseline_three_arches_real_analyzer_and_fake_gbs"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 73,
+    "name": "test_primary_not_reproduced"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 88,
+    "name": "test_secondary_requires_primary_before_any_event"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 99,
+    "name": "test_secondary_different_failure_and_primary_pass"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 111,
+    "name": "test_baseline_inputs_validated_before_build"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 119,
+    "name": "test_baseline_anchor_tamper_refused"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 127,
+    "name": "test_baseline_abandoned_and_lock"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 140,
+    "name": "test_abandon_cannot_interleave_after_baseline_check"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 155,
+    "name": "test_baseline_tooling_failures_cleanup"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 181,
+    "name": "test_keep_copy_and_residual_cleanup_event"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_baseline.py",
+    "line": 192,
+    "name": "test_reproduce_ignores_count_but_compares_phase_and_identity"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 93,
+    "name": "test_intake_ssh_clone_marker_identity_and_idempotence"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 116,
+    "name": "test_intake_absolute_remote_rejected_in_staging"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 128,
+    "name": "test_existing_source_identity_never_repaired"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 157,
+    "name": "test_evidence_changed_log_preserves_old_bytes"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 167,
+    "name": "test_analyzer_failure_preserves_evidence_without_unit"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 178,
+    "name": "test_intake_lock_preserves_other_staging"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 197,
+    "name": "test_intake_crash_resume"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 233,
+    "name": "test_evidence_concurrent_hardlink_publication"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 265,
+    "name": "test_hardlink_failure_is_not_rename_fallback"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 276,
+    "name": "test_rejected_arch_has_no_analyzer_or_source"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 286,
+    "name": "test_intake_invalid_cli_json"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_intake.py",
+    "line": 292,
+    "name": "test_clone_failure_cleans_staging"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 66,
+    "name": "test_finish_terminal_releases_both_sources_idempotently"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 80,
+    "name": "test_finish_empty_terminal_does_not_call_release"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 90,
+    "name": "test_finish_retained_and_explicit_release"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 106,
+    "name": "test_nonterminal_finish_and_manual_release_rejected"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 117,
+    "name": "test_abandon_terminal_without_barrier_rejected"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 130,
+    "name": "test_abandon_enumerates_and_report_wins_over_later_pass"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 145,
+    "name": "test_abandon_crash_reconciliation"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 177,
+    "name": "test_abandoned_release_is_not_barrier"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 199,
+    "name": "test_abandon_busy_has_no_barrier"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 209,
+    "name": "test_terminal_release_reconciles_reappeared_marker"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 218,
+    "name": "test_report_latest_request_latest_result_pure_database"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 268,
+    "name": "test_empty_confirmation_rejected"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 276,
+    "name": "test_release_crash_reconciliation_and_failed_correction"
+  },
+  {
+    "path": "tests/unit/test_campaign_batch2_lifecycle.py",
+    "line": 309,
+    "name": "test_abandon_accounts_missing_copy_and_new_copy_after_pass"
+  }
+]

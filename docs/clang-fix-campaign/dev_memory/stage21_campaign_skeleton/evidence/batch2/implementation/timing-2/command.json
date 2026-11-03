@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/implementation/timing-2/pytest.xml"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started": "2026-11-03T05:43:46.758785+00:00",
+  "finished": "2026-11-03T05:44:14.442298+00:00",
+  "seconds": 27.68352031102404,
+  "exit_code": 0,
+  "load_before": {
+    "loadavg": "3.14 2.94 2.32 4/2803 3322931",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "code-insiders   38.3",
+      "python          33.3",
+      "code-insiders   26.1",
+      "codex           10.3",
+      "rpm              5.7",
+      "chrome           3.2",
+      "code-insiders    3.1",
+      "systemd-hostnam  3.0",
+      "code-insiders    2.2",
+      "init_buildsyste  2.2"
+    ]
+  },
+  "load_after": {
+    "loadavg": "3.94 3.16 2.42 7/2904 3325097",
+    "cpu_count": 20
+  }
+}

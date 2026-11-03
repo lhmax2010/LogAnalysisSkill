@@ -1,0 +1,104 @@
+[
+  {
+    "argv": [
+      ".venv/bin/python",
+      "/opt/nvme-home/linhao/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+      "tizen-campaign-intake"
+    ],
+    "exit_code": 0,
+    "stdout": "Skill is valid!\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      ".venv/bin/python",
+      "/opt/nvme-home/linhao/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+      "tizen-baseline-reproduce"
+    ],
+    "exit_code": 0,
+    "stdout": "Skill is valid!\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      ".venv/bin/python",
+      "/opt/nvme-home/linhao/.codex/skills/.system/skill-creator/scripts/quick_validate.py",
+      "tizen-campaign-report"
+    ],
+    "exit_code": 0,
+    "stdout": "Skill is valid!\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "tizen_campaign_intake",
+      "campaign-add-unit",
+      "--help"
+    ],
+    "exit_code": 0,
+    "stdout": "usage: tizen_campaign_intake campaign-add-unit [-h] --state-db STATE_DB\n                                               --config CONFIG --ci-log CI_LOG\n                                               --project PROJECT --branch\n                                               BRANCH --spec-name SPEC_NAME\n                                               --base-commit BASE_COMMIT\n                                               --source-build-id\n                                               SOURCE_BUILD_ID --failed-arches\n                                               FAILED_ARCHES\n                                               [--toolchain-profile TOOLCHAIN_PROFILE]\n\noptions:\n  -h, --help            show this help message and exit\n  --state-db STATE_DB\n  --config CONFIG\n  --ci-log CI_LOG\n  --project PROJECT\n  --branch BRANCH\n  --spec-name SPEC_NAME\n  --base-commit BASE_COMMIT\n  --source-build-id SOURCE_BUILD_ID\n  --failed-arches FAILED_ARCHES\n  --toolchain-profile TOOLCHAIN_PROFILE\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "tizen_campaign_intake",
+      "campaign-start-check",
+      "--help"
+    ],
+    "exit_code": 0,
+    "stdout": "usage: tizen_campaign_intake campaign-start-check [-h]\n\noptions:\n  -h, --help  show this help message and exit\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "tizen_baseline_reproduce",
+      "baseline-reproduce",
+      "--help"
+    ],
+    "exit_code": 0,
+    "stdout": "usage: tizen_baseline_reproduce baseline-reproduce [-h] --state-db STATE_DB\n                                                   --config CONFIG --src-clean\n                                                   SRC_CLEAN --gbs-conf\n                                                   GBS_CONF --output-dir\n                                                   OUTPUT_DIR\n                                                   --campaign-unit-key\n                                                   CAMPAIGN_UNIT_KEY\n                                                   --base-commit BASE_COMMIT\n                                                   --package PACKAGE --arch\n                                                   ARCH --profile PROFILE\n                                                   [--evidence-ci EVIDENCE_CI]\n                                                   [--wall-timeout WALL_TIMEOUT]\n                                                   [--keep-copy]\n\noptions:\n  -h, --help            show this help message and exit\n  --state-db STATE_DB\n  --config CONFIG\n  --src-clean SRC_CLEAN\n  --gbs-conf GBS_CONF\n  --output-dir OUTPUT_DIR\n  --campaign-unit-key CAMPAIGN_UNIT_KEY\n  --base-commit BASE_COMMIT\n  --package PACKAGE\n  --arch ARCH\n  --profile PROFILE\n  --evidence-ci EVIDENCE_CI\n  --wall-timeout WALL_TIMEOUT\n  --keep-copy\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "tizen_campaign_report",
+      "campaign-finish-unit",
+      "--help"
+    ],
+    "exit_code": 0,
+    "stdout": "usage: tizen_campaign_report campaign-finish-unit [-h] --state-db STATE_DB\n                                                  --config CONFIG\n                                                  --campaign-unit-key\n                                                  CAMPAIGN_UNIT_KEY\n\noptions:\n  -h, --help            show this help message and exit\n  --state-db STATE_DB\n  --config CONFIG\n  --campaign-unit-key CAMPAIGN_UNIT_KEY\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "tizen_campaign_report",
+      "campaign-release-worktrees",
+      "--help"
+    ],
+    "exit_code": 0,
+    "stdout": "usage: tizen_campaign_report campaign-release-worktrees [-h] --state-db\n                                                        STATE_DB --config\n                                                        CONFIG\n                                                        --campaign-unit-key\n                                                        CAMPAIGN_UNIT_KEY\n                                                        --confirmed-by\n                                                        CONFIRMED_BY\n                                                        [--abandon]\n\noptions:\n  -h, --help            show this help message and exit\n  --state-db STATE_DB\n  --config CONFIG\n  --campaign-unit-key CAMPAIGN_UNIT_KEY\n  --confirmed-by CONFIRMED_BY\n  --abandon\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "tizen_campaign_report",
+      "campaign-report",
+      "--help"
+    ],
+    "exit_code": 0,
+    "stdout": "usage: tizen_campaign_report campaign-report [-h] --state-db STATE_DB\n                                             [--output OUTPUT]\n\noptions:\n  -h, --help           show this help message and exit\n  --state-db STATE_DB\n  --output OUTPUT\n",
+    "stderr": ""
+  }
+]

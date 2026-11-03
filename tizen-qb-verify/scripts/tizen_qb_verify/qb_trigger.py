@@ -633,6 +633,10 @@ def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[
                     result.update(action="submit_failed", error_code=login_failure)
                     continue
                 with _lock(config.workspace / _unit_hash(key)):
+                    from tizen_campaign_core.campaign_lifecycle import is_abandoned
+
+                    if is_abandoned(db, key):
+                        raise _Rejected("REJECTED_UNIT_ABANDONED")
                     snapshot = _snapshot(db, ids, key, qb)
                     if snapshot.profile is not None:
                         frozen_snapshot = json.loads(snapshot.profile["profile_json"])["form"][

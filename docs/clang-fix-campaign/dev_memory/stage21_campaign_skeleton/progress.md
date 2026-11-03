@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**STOPPED_SKEL_B2_06**。
+日期:2026-11-03。状态:**BATCH2_READY_FOR_REVIEW**。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批范围与边界见第12节,不开始第3批。
 
@@ -21,7 +21,7 @@
 | 批次 | 范围 | 当前状态 |
 |---|---|---|
 | 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | ACCEPTED;SKEL-B2-01验收通过 |
-| 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | STOPPED_SKEL_B2_06;SKEL-B2-05已登记,已绑定无RESULT时父构建号的期望冲突待澄清 |
+| 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | READY_FOR_REVIEW;SKEL-B1-05口径门禁通过,待设计方审读 |
 | 3 | 审核提交、启动检查、编排skill与离线端到端 | NOT_STARTED |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
 | 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | NOT_STARTED |
@@ -594,6 +594,8 @@ campaign_state的BUILD_BOUND校验。冻结稿SHA256仍为
 
 ### 14.2 停止报告 SKEL-B2-06:已绑定无RESULT的父构建号期望冲突
 
+状态:已由FatTank在第15节的澄清关闭,下文保留停止时事实。
+
 本轮任务第二步用例原文为“已绑定无 RESULT 时两列为空”。
 但裁定第1(a)条明确允许从最新request的BUILD_BOUND取qb_build_id;
 合法BUILD_BOUND必须有非空qb_build_id,因此两种要求不能同时满足。
@@ -611,3 +613,120 @@ sandbox-submit与qb-trigger屏障diff各0行。未新增或修改测试/nodeid�
 P5Q写入与schema均未改。没有真实QB/Gerrit/gbs操作,不进入第3批。
 文档检查:design.md检查器0 problem,本轮文档diff检查通过,生产/测试diff为空;
 命令与输出见`evidence/batch2/checks-SKEL-B2-06.json`。
+
+## 15. SKEL-B2-05补充澄清与第2批续做
+
+FatTank对“已绑定但无RESULT时是否显示父构建号、仅结果引用为空”的原话:
+“显示父构建号，仅结果引用为空”。据此关闭SKEL-B2-06;未绑定无RESULT时两列为空。
+本轮从8326fb4继续,不恢复WIP;按冻结稿与SKEL-B2-01/03/05重新实现。
+证据放`evidence/batch2/implementation/`,不覆盖历史停止证据。边界和门禁沿用前述裁定。
+
+### 15.1 实现落点
+
+| 冻结条目/裁定 | 落点(仓库相对路径) |
+|---|---|
+| 5.1建档锁、规范化、不可覆盖证据、unit与源码暂存发布 | `tizen-campaign-intake/scripts/tizen_campaign_intake/intake.py:91`、`:44`;入口`:168` |
+| 5.2主架构先行、三态基线、独立副本、finally清理、标准架构锁 | `tizen-baseline-reproduce/scripts/tizen_baseline_reproduce/baseline.py:42`;入口`:182` |
+| design 4.2 reproduce.check | `tizen-campaign-core/scripts/tizen_campaign_core/reproduce.py:17` |
+| 5.4 terminal/held/abandoned释放API、双来源枚举与对账 | `tizen-campaign-core/scripts/tizen_campaign_core/campaign_lifecycle.py:47`、`:98`、`:104`、`:112` |
+| finish-unit / release-worktrees / report | `tizen-campaign-report/scripts/tizen_campaign_report/report.py:17`、`:31`、`:51`;入口`:170` |
+| sandbox持锁后屏障 | `tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py:527`;仅+4/-0行 |
+| qb-trigger持锁后、该unit代理命令前屏障 | `tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py:636`;仅+4/-0行 |
+| SKEL-B2-01四命令解析去重 | `tizen-ci-triage/scripts/ci_triage/cli.py:20`、`:39`、`:40`直接导入执行包同一handler;不再复制解析逻辑 |
+| 三份SKILL | `tizen-campaign-intake/SKILL.md`、`tizen-baseline-reproduce/SKILL.md`、`tizen-campaign-report/SKILL.md` |
+
+解析权威函数仍为执行包`__main__.py`中的`_main_campaign_repair_step:44`、
+`_main_sandbox_submit:32`、`_main_qb_trigger:21`和`_main_qb_result_fetch:41`。
+12条旧/新入口非法参数对照同时断言handler对象相同、JSON相同、exit相同。
+intake仅保留campaign-start-check帮助位置,实际执行明确报未实现,不虚报启动检查通过。
+
+新增内部辅助模块`_campaign_io.py`集中建档/基线共用的JSON参数错误、配置加载、
+sha256、文件锁、原子证据发布与analyzer子进程封装;不改既有helper或业务判据。
+首次克隆在marker之前复用共享身份函数的HEAD/origin判据,已有源码直接调用原函数;
+`_validate_source_identity`、`_normalize_project`与其既有调用点不变。
+secondary的分类与basis使用primary REPRODUCE本地证据,CI hash仍只记录unit级锚点。
+假gbs经测试PATH替换,分析使用真实gbs_analyzer;假SSH沿用已交付fixture,不访问真实远端。
+
+### 15.2 覆盖与验收进行记录
+
+第6节本批逐条对应:`evidence/batch2/implementation/coverage.md`;
+精确用例位置:`test-locations.json`;收集列表:`nodeids-final.txt`。
+新增业务用例99,此前假SSH7例一并重跑:106 passed/0 failed/0 skipped。
+2922个第1批nodeid全部保留,新增106=99+7,总计3028;差集见`nodeid-comparison.json`。
+第3批的review-submit、start-check与完整端到端部分明确留待第3批,不伪装成本批覆盖。
+
+四组P5Q本机安全测试从头重跑4/4,pytest包装1 passed,输出在`safety/`。
+CI同口径mypy的18个包128文件通过;另按pyproject完整包集合运行mypy,
+159文件通过(`mypy-all/`);import-linter 7 kept/0 broken;
+design检查器0 problem。三个SKILL均经quick_validate验证通过。
+全仓原始结果与清单处理见15.3节,不以定向测试替代全仓。
+
+完整脏工作区`ruff check .`首次报告55项:53项来自用户原有未跟踪草稿,
+另2项是第1批机械路径增长留下的E501。原始失败输出`ruff/stdout.log`仅本机保留,
+不把含无关草稿源码片段的诊断原文提交;提交`ruff/diagnostics-summary.json`登记
+文件/行号/规则/计数。不修改、不提交无关草稿。只对`tests/fixtures/p5q_node_entry.py:11`与
+`tests/unit/test_p5q_c6_offline_fix.py:31`换行,不改参数、断言或nodeid;
+两文件去行号AST相同的证明见`format-only-proof.json`。
+完整待提交集合(全部已跟踪Python+本轮新增Python,遵守仓库既有exclude)ruff通过,
+见`ruff-candidate-2/`;首次换行仍超长的输出也保留于`ruff-candidate/`。
+不把脏工作区全目录ruff称为通过。
+
+`integrity.json`核对冻结稿、design.md、安全核心、共享身份/统一Git环境、
+campaign_state与qb-result-fetch均与8326fb4字节相同。代理全文件sha256:
+`7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c`;
+前缀sha256:`40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16`。
+
+### 15.3 全仓门禁、负载与计时清单
+
+证据根为`evidence/batch2/implementation/`;每次运行的argv、UTC起止、exit、
+前后/proc/loadavg、CPU核数与起始CPU前10(仅名称/占用)见相应`command.json`。
+全仓UTC 2026-11-03 05:24:20至05:41:58,20逻辑核,负载前
+1.04/1.13/1.04,后3.71/3.05/2.29。原始pytest结果:
+**3026 passed / 1 failed / 1 skipped**,1056.89秒,exit 1。
+唯一失败是清单内
+`tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]`。
+无清单外失败;C5a其余5参数与C8调查用例均通过。唯一skip为
+`test_case_insensitive_bypass_is_platform_specific`,原因`case-sensitive filesystem`,
+与第1批同nodeid同原因,见`skip-comparison.json`。
+
+原失败是提交后配置页读取返回`QB_BROWSER_UNAVAILABLE/FETCH_CONTINUE_FAILED`,
+lookup_reads实际1次、期望10次;关闭尾段0.045197秒,并非关闭超5秒。
+保留`full/pytest.xml`、`full/stdout.log`和`full/c5a/late-build/`原始记录,
+不声称已查明根因,不改代理、测试、5秒阈值、skip/xfail。
+按SKEL-B1-05第4项在同一代码树单独连续运行原nodeid三次:
+
+| 次数 | 结果 | 命令总耗时秒 | 负载前(1/5/15分钟) | 负载后 | 三次CLI关闭尾段秒 | 证据 |
+|---|---|---|---|---|---|---|
+| 1 | 1 passed/0 failed/0 skipped | 26.230 | 2.96/2.94/2.27 | 2.68/2.86/2.27 | 0.0831/0.1275/0.0749 | timing-1/ |
+| 2 | 1 passed/0 failed/0 skipped | 27.684 | 3.14/2.94/2.32 | 3.94/3.16/2.42 | 0.0818/0.0751/0.0813 | timing-2/ |
+| 3 | 1 passed/0 failed/0 skipped | 26.095 | 5.67/3.72/2.64 | 5.97/3.95/2.74 | 0.0760/0.0759/0.0806 | timing-3/ |
+
+判定:3/3通过,按既定裁定接受本轮门禁;不是“全仓零失败”。
+原始失败不被重跑覆盖,汇总为`timing-decision.json`。
+C8在本轮全仓为PASS,未触发失败形态比较与补跑;第1批既有前后5次原证据不变。
+
+| 门禁 | 本轮结论 | 证据 |
+|---|---|---|
+| 新业务用例 | intake20、baseline18、lifecycle41、barriers/CLI20,共99全部PASS | focused/、new-test-counts.json |
+| 已交付假SSH | 7/7 PASS;upload/receive/非白名单/根外/两类.. /符号链接 | focused/pytest.xml |
+| 全仓 | 按SKEL-B1-05第4项通过,原始3026/1/1 + 单独3/3 PASS | full/、timing-1至3/ |
+| 四组安全 | 4/4 PASS,loopback-only,临时目录清理完成 | safety/stdout.log |
+| mypy | 完整配置包集合159文件通过 | mypy-all/ |
+| import-linter | 7 kept/0 broken | imports/ |
+| ruff | 完整待提交Python集合通过;无关未跟踪草稿53项未纳入 | ruff-candidate-2/、ruff/diagnostics-summary.json |
+| design检查 | 0 problem | design/ |
+| nodeid | 2922个原用例全部保留;当前3028;新增106含此前7例 | nodeid-comparison.json |
+| 入口与SKILL | 6项help成功,3份SKILL校验通过 | skills-and-help.json |
+| 保护文件/代理 | 全部字节不变,代理完整与前缀hash如上 | integrity.json |
+
+### 15.4 交付边界与移交
+
+- SKEL-B2-06已由本节用户澄清关闭:已绑定无RESULT显示父号,结果引用为空。
+- 本批没有新的设计冲突或安全边界变更。内部`_campaign_io`封装与两行路径换行
+  属不改变行为的实现/格式细节,已登记。旧CLI业务handler仅转发到原执行包实现。
+- 测试路径本批未修改;仅两处已登记的格式换行,另新增4个测试文件99例。
+- `review-submit`的屏障、六道校验、启动检查、剧本与离线端到端仍留第3批。
+- 未运行真实QuickBuild/真实gbs,未访问真实Gerrit,未推送Gerrit,未改真实状态库。
+- 状态为READY_FOR_REVIEW,等待设计方审读,不自行标CLOSED,不开始第3批。
+- 提交前`git diff --cached --check`仅报告原始HTML、pytest日志/XML中的行尾空白;
+  为保留证据原始字节不做格式化。排除evidence目录后的同项检查exit 0。

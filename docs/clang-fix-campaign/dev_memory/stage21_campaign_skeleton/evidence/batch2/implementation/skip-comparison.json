@@ -1,0 +1,17 @@
+{
+  "before": [
+    {
+      "classname": "tests.unit.test_tizen_build_verify",
+      "name": "test_case_insensitive_bypass_is_platform_specific",
+      "message": "case-sensitive filesystem"
+    }
+  ],
+  "after": [
+    {
+      "classname": "tests.unit.test_tizen_build_verify",
+      "name": "test_case_insensitive_bypass_is_platform_specific",
+      "message": "case-sensitive filesystem"
+    }
+  ],
+  "identical": true
+}

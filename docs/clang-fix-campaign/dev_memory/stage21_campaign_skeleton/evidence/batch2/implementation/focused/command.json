@@ -1,0 +1,40 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/unit/test_campaign_batch2_barriers_cli.py",
+    "tests/unit/test_campaign_batch2_baseline.py",
+    "tests/unit/test_campaign_batch2_intake.py",
+    "tests/unit/test_campaign_batch2_lifecycle.py",
+    "tests/unit/test_campaign_fake_ssh.py",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/implementation/focused/pytest.xml"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started": "2026-11-03T05:23:14.654594+00:00",
+  "finished": "2026-11-03T05:23:30.685291+00:00",
+  "seconds": 16.03070372599177,
+  "exit_code": 0,
+  "load_before": {
+    "loadavg": "0.66 1.14 1.04 3/2644 3225344",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          40.0",
+      "chrome           3.1",
+      "code-insiders    3.0",
+      "code-insiders    2.2",
+      "Xorg             1.5",
+      "code-insiders    1.0",
+      "chrome           1.0",
+      "code-insiders    0.9",
+      "epp-client-daem  0.9",
+      "gnome-shell      0.8"
+    ]
+  },
+  "load_after": {
+    "loadavg": "0.74 1.13 1.04 2/2647 3226929",
+    "cpu_count": 20
+  }
+}

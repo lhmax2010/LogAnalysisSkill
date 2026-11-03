@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "pytest",
+    "--collect-only",
+    "-q"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started": "2026-11-03T05:24:22.106701+00:00",
+  "finished": "2026-11-03T05:24:23.845931+00:00",
+  "seconds": 1.7392355939373374,
+  "exit_code": 0,
+  "load_before": {
+    "loadavg": "1.04 1.13 1.04 7/2663 3229501",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          33.3",
+      "python          28.0",
+      "chrome           3.1",
+      "code-insiders    3.0",
+      "code-insiders    2.2",
+      "Xvfb             1.7",
+      "python           1.6",
+      "Xorg             1.5",
+      "code-insiders    1.0",
+      "chrome           1.0"
+    ]
+  },
+  "load_after": {
+    "loadavg": "1.12 1.15 1.05 3/2655 3229546",
+    "cpu_count": 20
+  }
+}

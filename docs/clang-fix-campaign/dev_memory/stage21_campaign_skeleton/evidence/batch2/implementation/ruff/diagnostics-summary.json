@@ -1,0 +1,485 @@
+{
+  "exit_code": 1,
+  "initial_count": 55,
+  "remaining_count": 53,
+  "diagnostics": [
+    {
+      "path": "audit_four_sigs.py",
+      "code": "E401",
+      "location": {
+        "column": 1,
+        "row": 4
+      },
+      "message": "Multiple imports on one line"
+    },
+    {
+      "path": "audit_four_sigs.py",
+      "code": "I001",
+      "location": {
+        "column": 1,
+        "row": 4
+      },
+      "message": "Import block is un-sorted or un-formatted"
+    },
+    {
+      "path": "audit_four_sigs.py",
+      "code": "E701",
+      "location": {
+        "column": 17,
+        "row": 27
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "audit_four_sigs.py",
+      "code": "E701",
+      "location": {
+        "column": 8,
+        "row": 34
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "audit_four_sigs.py",
+      "code": "E701",
+      "location": {
+        "column": 23,
+        "row": 35
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "audit_four_sigs.py",
+      "code": "E702",
+      "location": {
+        "column": 55,
+        "row": 48
+      },
+      "message": "Multiple statements on one line (semicolon)"
+    },
+    {
+      "path": "audit_four_sigs.py",
+      "code": "E702",
+      "location": {
+        "column": 66,
+        "row": 48
+      },
+      "message": "Multiple statements on one line (semicolon)"
+    },
+    {
+      "path": "audit_four_sigs.py",
+      "code": "E702",
+      "location": {
+        "column": 57,
+        "row": 54
+      },
+      "message": "Multiple statements on one line (semicolon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/hashobj2.py",
+      "code": "E401",
+      "location": {
+        "column": 1,
+        "row": 7
+      },
+      "message": "Multiple imports on one line"
+    },
+    {
+      "path": "docs/clang-fix-campaign/hashobj2.py",
+      "code": "I001",
+      "location": {
+        "column": 1,
+        "row": 7
+      },
+      "message": "Import block is un-sorted or un-formatted"
+    },
+    {
+      "path": "docs/clang-fix-campaign/hashobj2.py",
+      "code": "E741",
+      "location": {
+        "column": 25,
+        "row": 22
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/hashobj2.py",
+      "code": "E741",
+      "location": {
+        "column": 12,
+        "row": 29
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/hashobj2.py",
+      "code": "E741",
+      "location": {
+        "column": 23,
+        "row": 42
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/hashobj2.py",
+      "code": "E741",
+      "location": {
+        "column": 23,
+        "row": 43
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/hashobj2.py",
+      "code": "E741",
+      "location": {
+        "column": 21,
+        "row": 47
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/hashobj2.py",
+      "code": "E701",
+      "location": {
+        "column": 15,
+        "row": 53
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E401",
+      "location": {
+        "column": 1,
+        "row": 12
+      },
+      "message": "Multiple imports on one line"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "I001",
+      "location": {
+        "column": 1,
+        "row": 12
+      },
+      "message": "Import block is un-sorted or un-formatted"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "B007",
+      "location": {
+        "column": 16,
+        "row": 62
+      },
+      "message": "Loop control variable `t` not used within loop body"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "B007",
+      "location": {
+        "column": 19,
+        "row": 62
+      },
+      "message": "Loop control variable `sec` not used within loop body"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E741",
+      "location": {
+        "column": 26,
+        "row": 69
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E741",
+      "location": {
+        "column": 16,
+        "row": 71
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E741",
+      "location": {
+        "column": 23,
+        "row": 95
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E741",
+      "location": {
+        "column": 23,
+        "row": 96
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E701",
+      "location": {
+        "column": 26,
+        "row": 105
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E741",
+      "location": {
+        "column": 26,
+        "row": 108
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E741",
+      "location": {
+        "column": 24,
+        "row": 111
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E741",
+      "location": {
+        "column": 12,
+        "row": 113
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E701",
+      "location": {
+        "column": 23,
+        "row": 114
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E702",
+      "location": {
+        "column": 36,
+        "row": 114
+      },
+      "message": "Multiple statements on one line (semicolon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E701",
+      "location": {
+        "column": 56,
+        "row": 115
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E701",
+      "location": {
+        "column": 16,
+        "row": 116
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E741",
+      "location": {
+        "column": 12,
+        "row": 118
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E701",
+      "location": {
+        "column": 30,
+        "row": 119
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E702",
+      "location": {
+        "column": 34,
+        "row": 125
+      },
+      "message": "Multiple statements on one line (semicolon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E702",
+      "location": {
+        "column": 53,
+        "row": 144
+      },
+      "message": "Multiple statements on one line (semicolon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E702",
+      "location": {
+        "column": 50,
+        "row": 146
+      },
+      "message": "Multiple statements on one line (semicolon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/ident_check3.py",
+      "code": "E741",
+      "location": {
+        "column": 78,
+        "row": 157
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E401",
+      "location": {
+        "column": 1,
+        "row": 12
+      },
+      "message": "Multiple imports on one line"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "I001",
+      "location": {
+        "column": 1,
+        "row": 12
+      },
+      "message": "Import block is un-sorted or un-formatted"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E741",
+      "location": {
+        "column": 26,
+        "row": 33
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E741",
+      "location": {
+        "column": 24,
+        "row": 35
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E741",
+      "location": {
+        "column": 12,
+        "row": 37
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E702",
+      "location": {
+        "column": 24,
+        "row": 39
+      },
+      "message": "Multiple statements on one line (semicolon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E701",
+      "location": {
+        "column": 16,
+        "row": 42
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E741",
+      "location": {
+        "column": 12,
+        "row": 49
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E701",
+      "location": {
+        "column": 20,
+        "row": 50
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E701",
+      "location": {
+        "column": 17,
+        "row": 52
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E701",
+      "location": {
+        "column": 46,
+        "row": 53
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E701",
+      "location": {
+        "column": 28,
+        "row": 56
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E701",
+      "location": {
+        "column": 26,
+        "row": 59
+      },
+      "message": "Multiple statements on one line (colon)"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E741",
+      "location": {
+        "column": 23,
+        "row": 65
+      },
+      "message": "Ambiguous variable name: `l`"
+    },
+    {
+      "path": "docs/clang-fix-campaign/norm_diff5.py",
+      "code": "E741",
+      "location": {
+        "column": 23,
+        "row": 66
+      },
+      "message": "Ambiguous variable name: `l`"
+    }
+  ],
+  "original_stdout_local_only": true
+}
