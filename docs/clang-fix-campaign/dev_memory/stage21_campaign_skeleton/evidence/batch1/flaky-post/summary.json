@@ -1,0 +1,107 @@
+[
+  {
+    "run": 1,
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-01/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-01/pytest-cache"
+    ],
+    "start_utc": "2026-11-03T01:41:57.785368+00:00",
+    "load_before": "1.36 1.20 1.19 3/2602 3130011",
+    "cpu_count": 20,
+    "end_utc": "2026-11-03T01:45:00.572900+00:00",
+    "exit": 0,
+    "seconds": 182.78749344102107,
+    "load_after": "0.36 0.87 1.07 2/2583 3135225",
+    "failure_shapes": [],
+    "consistent_with_pre": true
+  },
+  {
+    "run": 2,
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-02/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-02/pytest-cache"
+    ],
+    "start_utc": "2026-11-03T01:45:00.579781+00:00",
+    "load_before": "0.36 0.87 1.07 3/2582 3135225",
+    "cpu_count": 20,
+    "end_utc": "2026-11-03T01:48:02.650061+00:00",
+    "exit": 0,
+    "seconds": 182.0702022369951,
+    "load_after": "0.32 0.64 0.94 2/2572 3140525",
+    "failure_shapes": [],
+    "consistent_with_pre": true
+  },
+  {
+    "run": 3,
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-03/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-03/pytest-cache"
+    ],
+    "start_utc": "2026-11-03T01:48:02.654463+00:00",
+    "load_before": "0.32 0.64 0.94 3/2572 3140525",
+    "cpu_count": 20,
+    "end_utc": "2026-11-03T01:51:04.639734+00:00",
+    "exit": 0,
+    "seconds": 181.98524027399253,
+    "load_after": "0.23 0.46 0.81 2/2586 3145783",
+    "failure_shapes": [],
+    "consistent_with_pre": true
+  },
+  {
+    "run": 4,
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-04/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-04/pytest-cache"
+    ],
+    "start_utc": "2026-11-03T01:51:04.644968+00:00",
+    "load_before": "0.23 0.46 0.81 5/2586 3145783",
+    "cpu_count": 20,
+    "end_utc": "2026-11-03T01:54:06.254308+00:00",
+    "exit": 0,
+    "seconds": 181.60923411208205,
+    "load_after": "0.50 0.50 0.76 2/2579 3151100",
+    "failure_shapes": [],
+    "consistent_with_pre": true
+  },
+  {
+    "run": 5,
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "tests/run_quiet.py",
+      "-q",
+      "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-05/pytest.xml",
+      "-o",
+      "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-05/pytest-cache"
+    ],
+    "start_utc": "2026-11-03T01:54:06.259472+00:00",
+    "load_before": "0.50 0.50 0.76 4/2579 3151100",
+    "cpu_count": 20,
+    "end_utc": "2026-11-03T01:57:08.229736+00:00",
+    "exit": 0,
+    "seconds": 181.97014618490357,
+    "load_after": "1.44 0.74 0.79 3/2589 3156408",
+    "failure_shapes": [],
+    "consistent_with_pre": true
+  }
+]

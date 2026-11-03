@@ -1,0 +1,323 @@
+[
+  {
+    "name": "build",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pip",
+      "wheel",
+      "--no-build-isolation",
+      "--no-deps",
+      "--wheel-dir",
+      "/tmp/skel-b1-wheel-c4almurg/wheels",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "seconds": 1.0403721332550049
+  },
+  {
+    "name": "venv-without-pip",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "venv",
+      "--without-pip",
+      "/tmp/skel-b1-wheel-c4almurg/venv"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.0354156494140625
+  },
+  {
+    "name": "install",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pip",
+      "--python",
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "install",
+      "/tmp/skel-b1-wheel-c4almurg/wheels/gbs_analyzer-1.3.0-py3-none-any.whl"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 3.835719585418701
+  },
+  {
+    "name": "import",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-c",
+      "import json,sys,tizen_campaign_core,tizen_qb_verify; print(json.dumps(dict(sys_path=sys.path,core=tizen_campaign_core.__file__,qb=tizen_qb_verify.__file__)))"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.016215801239013672
+  },
+  {
+    "name": "ci_triage-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.09796857833862305
+  },
+  {
+    "name": "ci_triage-qb-trigger-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "qb-trigger",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.10818290710449219
+  },
+  {
+    "name": "ci_triage-qb-result-fetch-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "qb-result-fetch",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.10225844383239746
+  },
+  {
+    "name": "ci_triage-sandbox-submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "sandbox-submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.0971841812133789
+  },
+  {
+    "name": "ci_triage-suppress-policy-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "suppress-policy",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.09224677085876465
+  },
+  {
+    "name": "ci_triage-build-verify-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "build-verify",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.0975182056427002
+  },
+  {
+    "name": "ci_triage-check-convergence-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "check-convergence",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.09419727325439453
+  },
+  {
+    "name": "ci_triage-gerrit-submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "gerrit-submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.09859085083007812
+  },
+  {
+    "name": "ci_triage-release-worktree-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "release-worktree",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.10137486457824707
+  },
+  {
+    "name": "ci_triage-campaign-repair-step-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "campaign-repair-step",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.09709286689758301
+  },
+  {
+    "name": "tizen_campaign_repair-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_campaign_repair",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.06679487228393555
+  },
+  {
+    "name": "tizen_campaign_repair-campaign-repair-step-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_campaign_repair",
+      "campaign-repair-step",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.06703591346740723
+  },
+  {
+    "name": "tizen_sandbox_submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_sandbox_submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.07370495796203613
+  },
+  {
+    "name": "tizen_sandbox_submit-sandbox-submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_sandbox_submit",
+      "sandbox-submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.07192683219909668
+  },
+  {
+    "name": "tizen_qb_verify-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_qb_verify",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.027197837829589844
+  },
+  {
+    "name": "tizen_qb_verify-qb-trigger-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_qb_verify",
+      "qb-trigger",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.07387638092041016
+  },
+  {
+    "name": "tizen_qb_verify-qb-result-fetch-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_qb_verify",
+      "qb-result-fetch",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.07913470268249512
+  },
+  {
+    "name": "tizen_campaign_intake-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_campaign_intake",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.02161407470703125
+  },
+  {
+    "name": "tizen_baseline_reproduce-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_baseline_reproduce",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.020746231079101562
+  },
+  {
+    "name": "tizen_review_submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_review_submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.02121257781982422
+  },
+  {
+    "name": "tizen_campaign_report-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-c4almurg/venv/bin/python",
+      "-m",
+      "tizen_campaign_report",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-c4almurg",
+    "exit": 0,
+    "seconds": 0.017483234405517578
+  }
+]

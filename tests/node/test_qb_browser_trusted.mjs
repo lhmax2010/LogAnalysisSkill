@@ -7,7 +7,7 @@ import { createServer } from 'node:https';
 import test from 'node:test';
 import {
   Agent, createRuntime, FIELDS, ORIGIN, responseText, validateForm,
-} from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+} from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 // Run with the Playwright module and Chromium executable as positional arguments.
 // All responses are synthetic; DNS and the test certificate point only to loopback.

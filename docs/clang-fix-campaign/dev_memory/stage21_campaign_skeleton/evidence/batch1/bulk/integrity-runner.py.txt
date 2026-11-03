@@ -1,0 +1,73 @@
+"""Audit final relocation content and immutable inputs against the unsplit tree."""
+
+import ast
+import difflib
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+root = Path.cwd()
+base = root / 'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1'
+initial = json.loads((base / 'bulk/integrity.json').read_text())
+
+
+def original(path):
+    return subprocess.check_output(['git', 'show', 'f203aec:' + path])
+
+
+class WithoutImports(ast.NodeTransformer):
+    def visit_Import(self, node):
+        return None
+
+    def visit_ImportFrom(self, node):
+        return None
+
+
+def semantic(source):
+    return ast.dump(WithoutImports().visit(ast.parse(source)), include_attributes=False)
+
+
+report = {'moves': [], 'hashes': {}, 'legacy_cli_non_import_ast_equal': False}
+diffs = []
+for item in initial['moves']:
+    old, new = original(item['old']).decode(), (root / item['new']).read_text()
+    assert semantic(old) == semantic(new), item['new']
+    report['moves'].append(dict(item, non_import_ast_equal=True))
+    diffs.extend(difflib.unified_diff(old.splitlines(keepends=True), new.splitlines(keepends=True),
+                                    fromfile='f203aec/' + item['old'], tofile=item['new']))
+cli = 'tizen-ci-triage/scripts/ci_triage/cli.py'
+assert semantic(original(cli).decode()) == semantic((root / cli).read_text())
+report['legacy_cli_non_import_ast_equal'] = True
+for path, digest in initial['hashes'].items():
+    if path in {'agent', 'prefix'}:
+        continue
+    assert hashlib.sha256((root / path).read_bytes()).hexdigest() == digest
+    assert original(path) == (root / path).read_bytes()
+    report['hashes'][path] = digest
+agent = (root / 'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs').read_bytes()
+assert agent == original('tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs')
+for name, data in [('agent', agent), ('prefix', agent.split(b'export class Agent {', 1)[0])]:
+    digest = hashlib.sha256(data).hexdigest()
+    assert digest == initial['hashes'][name], (name, digest)
+    report['hashes'][name] = digest
+physical = json.loads((base / 'bulk/physical-path-changes.json').read_text())
+for path in sorted({row['path'] for row in physical}):
+    expected = original(path).decode().replace('tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs',
+                                               'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs')
+    expected = expected.replace('tizen-ci-triage/scripts/ci_triage/qb_browser.py',
+                                'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py')
+    assert expected == (root / path).read_text(), path
+report['physical_path_changes'] = {'tests': sum(row['path'].startswith('tests/') for row in physical),
+                                   'active_spikes': sum(row['path'].startswith('docs/') for row in physical)}
+changed = subprocess.check_output(['git', 'diff', '--name-only', 'f203aec']).decode().splitlines()
+history = [p for p in changed if '/evidence/' in p and p.endswith(('.py', '.mjs', '.sh'))]
+assert not history, history
+report['historical_evidence_scripts_changed'] = history
+design = (root / 'docs/clang-fix-campaign/design.md').read_text()
+start, end = design.index('### 4.6 v1.5.25'), design.index('## 5. 非功能性需求')
+assert design[:start] + design[end:] == original('docs/clang-fix-campaign/design.md').decode()
+report['design_existing_text_unchanged'] = True
+(base / 'bulk/integrity-final.json').write_text(json.dumps(report, indent=2) + '\n')
+(base / 'bulk/moved-module-import-diffs.patch').write_text(''.join(diffs))
+print(json.dumps(report, indent=2))

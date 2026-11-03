@@ -1,0 +1,26 @@
+{
+  "before": 2903,
+  "after": 2922,
+  "missing": [],
+  "added": [
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[_campaign_workspace-tizen_campaign_core]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[_sandbox_git-tizen_campaign_core]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[aggregate-tizen_campaign_core]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[campaign_repair_step-tizen_campaign_repair]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[campaign_state-tizen_campaign_core]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[derive_commit-tizen_campaign_core]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[previous_evidence-tizen_campaign_core]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[qb_binding-tizen_qb_verify]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[qb_browser-tizen_qb_verify]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[qb_config-tizen_qb_verify]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[qb_discovery-tizen_qb_verify]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[qb_evidence-tizen_qb_verify]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[qb_redact-tizen_qb_verify]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[qb_result_fetch-tizen_qb_verify]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[qb_result_html-tizen_qb_verify]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[qb_trigger-tizen_qb_verify]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[sandbox_submit-tizen_sandbox_submit]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[submission_identity-tizen_campaign_core]",
+    "tests/unit/test_campaign_module_aliases.py::test_legacy_module_is_authoritative_module[suppress_policy-tizen_campaign_core]"
+  ]
+}

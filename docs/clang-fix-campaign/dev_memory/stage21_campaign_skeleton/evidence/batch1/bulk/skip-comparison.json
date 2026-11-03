@@ -1,0 +1,34 @@
+{
+  "skip_sets": {
+    "baseline": [
+      {
+        "classname": "tests.unit.test_tizen_build_verify",
+        "name": "test_case_insensitive_bypass_is_platform_specific",
+        "reason": "case-sensitive filesystem"
+      }
+    ],
+    "derive-recheck": [
+      {
+        "classname": "tests.unit.test_tizen_build_verify",
+        "name": "test_case_insensitive_bypass_is_platform_specific",
+        "reason": "case-sensitive filesystem"
+      }
+    ],
+    "final-gate": [
+      {
+        "classname": "tests.unit.test_tizen_build_verify",
+        "name": "test_case_insensitive_bypass_is_platform_specific",
+        "reason": "case-sensitive filesystem"
+      }
+    ],
+    "final-gate-2": [
+      {
+        "classname": "tests.unit.test_tizen_build_verify",
+        "name": "test_case_insensitive_bypass_is_platform_specific",
+        "reason": "case-sensitive filesystem"
+      }
+    ]
+  },
+  "new_skips": [],
+  "baseline_minus_final": []
+}

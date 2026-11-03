@@ -1,0 +1,285 @@
+--- f203aec/tizen-ci-triage/scripts/ci_triage/campaign_state.py
++++ tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py
+@@ -29,7 +29,7 @@
+     primary_fingerprint as _primary_fingerprint,
+ )
+ 
+-from ci_triage.derive_commit import validate_commit_date
++from tizen_campaign_core.derive_commit import validate_commit_date
+ 
+ CAMPAIGN_SCHEMA_VERSION = "campaign/v1"
+ HELD_FOR_INVESTIGATION = "HELD_FOR_INVESTIGATION"
+--- f203aec/tizen-ci-triage/scripts/ci_triage/_campaign_workspace.py
++++ tizen-campaign-core/scripts/tizen_campaign_core/_campaign_workspace.py
+@@ -10,7 +10,7 @@
+ from typing import Any
+ from urllib.parse import urlsplit
+ 
+-from ci_triage.campaign_state import Unit
++from tizen_campaign_core.campaign_state import Unit
+ 
+ SubprocessRunner = Callable[..., subprocess.CompletedProcess[str]]
+ REJECTED_IDENTITY_MISMATCH = "REJECTED_IDENTITY_MISMATCH"
+--- f203aec/tizen-ci-triage/scripts/ci_triage/previous_evidence.py
++++ tizen-campaign-core/scripts/tizen_campaign_core/previous_evidence.py
+@@ -11,7 +11,7 @@
+ 
+ from tizen_ci_shared.state import StateDatabase
+ 
+-from ci_triage.campaign_state import latest_reproduce
++from tizen_campaign_core.campaign_state import latest_reproduce
+ 
+ _SKIP_NA_REASONS = {
+     "orphan_invocation",
+--- f203aec/tizen-ci-triage/scripts/ci_triage/aggregate.py
++++ tizen-campaign-core/scripts/tizen_campaign_core/aggregate.py
+@@ -7,7 +7,11 @@
+ 
+ from tizen_ci_shared.state import StateDatabase, VerificationRecord, get_record
+ 
+-from ci_triage.campaign_state import ARCH_NORMS, ARCH_RAW_TO_NORM, REJECTED_ARCH_NOT_ALLOWED
++from tizen_campaign_core.campaign_state import (
++    ARCH_NORMS,
++    ARCH_RAW_TO_NORM,
++    REJECTED_ARCH_NOT_ALLOWED,
++)
+ 
+ _MISMATCH = "REJECTED_ARCH_AGGREGATE_MISMATCH"
+ _BINDING_FIELDS = (
+--- f203aec/tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py
++++ tizen-campaign-repair/scripts/tizen_campaign_repair/campaign_repair_step.py
+@@ -16,22 +16,13 @@
+ from typing import Any
+ 
+ import yaml
+-from tizen_build_verify import BuildVerifyOptions, BuildVerifyResult, build_verify
+-from tizen_ci_shared.classify import (
+-    REPAIR_AUTO,
+-    REPAIR_DENIED,
+-    REPAIR_NEEDS_CONFIRMATION,
++from tizen_build_verify.build_verify import BuildVerifyOptions, BuildVerifyResult, build_verify
++from tizen_campaign_core._campaign_workspace import (
++    _StepError,
++    _unit_hash,
++    _validate_source_identity,
+ )
+-from tizen_ci_shared.state import StateDatabase, build_failure_key, get_record
+-from tizen_ci_shared.workspace import (
+-    WorkspaceViolation,
+-    cleanup_disposable_copy,
+-    is_protected,
+-)
+-from tizen_convergence_judge import ConvergenceResult, check_convergence
+-
+-from ci_triage._campaign_workspace import _StepError, _unit_hash, _validate_source_identity
+-from ci_triage.campaign_state import (
++from tizen_campaign_core.campaign_state import (
+     ARCH_RAW_TO_NORM,
+     HELD_FOR_INVESTIGATION,
+     BudgetExhausted,
+@@ -54,7 +45,19 @@
+     link_verification_with_convergence,
+     reconcile_pass_and_invocations,
+ )
+-from ci_triage.previous_evidence import MissingEvidence, ResolvedEvidence, resolve
++from tizen_campaign_core.previous_evidence import MissingEvidence, ResolvedEvidence, resolve
++from tizen_ci_shared.classify import (
++    REPAIR_AUTO,
++    REPAIR_DENIED,
++    REPAIR_NEEDS_CONFIRMATION,
++)
++from tizen_ci_shared.state import StateDatabase, build_failure_key, get_record
++from tizen_ci_shared.workspace import (
++    WorkspaceViolation,
++    cleanup_disposable_copy,
++    is_protected,
++)
++from tizen_convergence_judge import ConvergenceResult, check_convergence
+ 
+ EXIT_OK = 0
+ EXIT_INVALID_ARGS = 5
+--- f203aec/tizen-ci-triage/scripts/ci_triage/sandbox_submit.py
++++ tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py
+@@ -20,20 +20,23 @@
+ from typing import Any, cast
+ 
+ import yaml
+-from tizen_ci_shared.state import StateDatabase, VerificationRecord
+-from tizen_ci_shared.workspace import is_protected
+-
+-from ci_triage import campaign_state as state
+-from ci_triage._campaign_workspace import _StepError, _unit_hash, _validate_source_identity
+-from ci_triage._sandbox_git import SandboxGit
+-from ci_triage.aggregate import _BINDING_FIELDS, AggregateResult, aggregate_verifications
+-from ci_triage.derive_commit import _identity, derive
+-from ci_triage.submission_identity import (
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core._campaign_workspace import (
++    _StepError,
++    _unit_hash,
++    _validate_source_identity,
++)
++from tizen_campaign_core._sandbox_git import SandboxGit
++from tizen_campaign_core.aggregate import _BINDING_FIELDS, AggregateResult, aggregate_verifications
++from tizen_campaign_core.derive_commit import _identity, derive
++from tizen_campaign_core.submission_identity import (
+     ChangeIdHookError,
+     compute_submission_key,
+     generate_change_id_via_hook,
+ )
+-from ci_triage.suppress_policy import PolicyInputError, SourceKind, evaluate
++from tizen_campaign_core.suppress_policy import PolicyInputError, SourceKind, evaluate
++from tizen_ci_shared.state import StateDatabase, VerificationRecord
++from tizen_ci_shared.workspace import is_protected
+ 
+ ARCH_ORDER = ("aarch64", "armv7l", "x86_64")
+ SUBJECT_PREFIX = "Fix build error for clang compiler: "
+--- f203aec/tizen-ci-triage/scripts/ci_triage/qb_trigger.py
++++ tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py
+@@ -21,16 +21,21 @@
+ from typing import Any, TextIO
+ 
+ import yaml
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core._campaign_workspace import _unit_hash
++from tizen_campaign_core.aggregate import aggregate_verifications
+ from tizen_ci_shared.state import StateDatabase
+-
+-from ci_triage import campaign_state as state
+-from ci_triage import qb_discovery as discovery
+-from ci_triage import qb_result_html as pages
+-from ci_triage import sandbox_submit as sandbox
+-from ci_triage._campaign_workspace import _unit_hash
+-from ci_triage.aggregate import aggregate_verifications
+-from ci_triage.qb_browser import QbBrowser, QbBrowserError, _check_diagnostic_strings, driver_failed
+-from ci_triage.qb_config import (
++from tizen_sandbox_submit import sandbox_submit as sandbox
++
++from tizen_qb_verify import qb_discovery as discovery
++from tizen_qb_verify import qb_result_html as pages
++from tizen_qb_verify.qb_browser import (
++    QbBrowser,
++    QbBrowserError,
++    _check_diagnostic_strings,
++    driver_failed,
++)
++from tizen_qb_verify.qb_config import (
+     FORM_KEYS,
+     QbConfigError,
+     QbProjectNotReady,
+@@ -38,7 +43,7 @@
+     parse_qb_config,
+     project_for_branch,
+ )
+-from ci_triage.qb_redact import EvidenceRedactionError, PageRedactor
++from tizen_qb_verify.qb_redact import EvidenceRedactionError, PageRedactor
+ 
+ _STATUSES = {
+     "SANDBOX_PUSHED",
+--- f203aec/tizen-ci-triage/scripts/ci_triage/qb_result_fetch.py
++++ tizen-qb-verify/scripts/tizen_qb_verify/qb_result_fetch.py
+@@ -17,19 +17,19 @@
+ from typing import Any, TextIO
+ 
+ import yaml
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core._campaign_workspace import _unit_hash
+ from tizen_ci_shared.state import StateDatabase
+-
+-from ci_triage import campaign_state as state
+-from ci_triage import qb_binding as binding
+-from ci_triage import qb_discovery as discovery
+-from ci_triage import qb_result_html as pages
+-from ci_triage import qb_trigger as trigger
+-from ci_triage import sandbox_submit as sandbox
+-from ci_triage._campaign_workspace import _unit_hash
+-from ci_triage.qb_browser import QbBrowser, QbBrowserError, _check_diagnostic_strings
+-from ci_triage.qb_config import parse_qb_config
+-from ci_triage.qb_evidence import archive
+-from ci_triage.qb_redact import EvidenceRedactionError, PageRedactor
++from tizen_sandbox_submit import sandbox_submit as sandbox
++
++from tizen_qb_verify import qb_binding as binding
++from tizen_qb_verify import qb_discovery as discovery
++from tizen_qb_verify import qb_result_html as pages
++from tizen_qb_verify import qb_trigger as trigger
++from tizen_qb_verify.qb_browser import QbBrowser, QbBrowserError, _check_diagnostic_strings
++from tizen_qb_verify.qb_config import parse_qb_config
++from tizen_qb_verify.qb_evidence import archive
++from tizen_qb_verify.qb_redact import EvidenceRedactionError, PageRedactor
+ 
+ RESULT_KEYS = frozenset(
+     {
+--- f203aec/tizen-ci-triage/scripts/ci_triage/qb_discovery.py
++++ tizen-qb-verify/scripts/tizen_qb_verify/qb_discovery.py
+@@ -8,14 +8,14 @@
+ from pathlib import Path
+ from typing import Any
+ 
++from tizen_campaign_core import campaign_state as state
+ from tizen_ci_shared.state import StateDatabase
+ 
+-from ci_triage import campaign_state as state
+-from ci_triage import qb_binding as binding
+-from ci_triage import qb_result_html as pages
+-from ci_triage.qb_browser import QbBrowser, QbBrowserError
+-from ci_triage.qb_evidence import archive
+-from ci_triage.qb_redact import EvidenceRedactionError, PageRedactor
++from tizen_qb_verify import qb_binding as binding
++from tizen_qb_verify import qb_result_html as pages
++from tizen_qb_verify.qb_browser import QbBrowser, QbBrowserError
++from tizen_qb_verify.qb_evidence import archive
++from tizen_qb_verify.qb_redact import EvidenceRedactionError, PageRedactor
+ 
+ IDENTITY_CHECKS = frozenset(
+     {
+--- f203aec/tizen-ci-triage/scripts/ci_triage/qb_binding.py
++++ tizen-qb-verify/scripts/tizen_qb_verify/qb_binding.py
+@@ -7,11 +7,11 @@
+ from contextlib import contextmanager
+ from typing import Any
+ 
++from tizen_campaign_core import campaign_state as state
+ from tizen_ci_shared.state import StateDatabase
++from tizen_sandbox_submit import sandbox_submit as sandbox
+ 
+-from ci_triage import campaign_state as state
+-from ci_triage import qb_result_html as pages
+-from ci_triage import sandbox_submit as sandbox
++from tizen_qb_verify import qb_result_html as pages
+ 
+ 
+ @contextmanager
+--- f203aec/tizen-ci-triage/scripts/ci_triage/qb_evidence.py
++++ tizen-qb-verify/scripts/tizen_qb_verify/qb_evidence.py
+@@ -2,7 +2,7 @@
+ 
+ from pathlib import Path
+ 
+-from ci_triage.qb_redact import EvidenceRedactionError, PageRedactor
++from tizen_qb_verify.qb_redact import EvidenceRedactionError, PageRedactor
+ 
+ 
+ def archive(root: Path, request_id: str, path: str, html: str) -> str:
+--- f203aec/tizen-ci-triage/scripts/ci_triage/qb_result_html.py
++++ tizen-qb-verify/scripts/tizen_qb_verify/qb_result_html.py
+@@ -8,7 +8,7 @@
+ from typing import Any
+ from urllib.parse import urljoin, urlsplit
+ 
+-from ci_triage.qb_config import ARCHITECTURES, BASE_URL, child_configuration_path
++from tizen_qb_verify.qb_config import ARCHITECTURES, BASE_URL, child_configuration_path
+ 
+ BINDING = "REJECTED_QB_BINDING_MISMATCH"
+ UNRECOGNIZED = "QB_RESULT_UNRECOGNIZED"
+--- f203aec/tizen-ci-triage/scripts/ci_triage/qb_browser.py
++++ tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py
+@@ -12,7 +12,7 @@
+ from threading import Thread
+ from typing import Any
+ 
+-from ci_triage.qb_redact import PageRedactor
++from tizen_qb_verify.qb_redact import PageRedactor
+ 
+ FAILURE_CATEGORIES = frozenset(
+     {

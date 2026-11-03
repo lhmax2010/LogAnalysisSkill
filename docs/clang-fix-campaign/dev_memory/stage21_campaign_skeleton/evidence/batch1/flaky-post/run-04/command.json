@@ -1,0 +1,21 @@
+{
+  "run": 4,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-04/pytest.xml",
+    "-o",
+    "cache_dir=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1/flaky-post/run-04/pytest-cache"
+  ],
+  "start_utc": "2026-11-03T01:51:04.644968+00:00",
+  "load_before": "0.23 0.46 0.81 5/2586 3145783",
+  "cpu_count": 20,
+  "end_utc": "2026-11-03T01:54:06.254308+00:00",
+  "exit": 0,
+  "seconds": 181.60923411208205,
+  "load_after": "0.50 0.50 0.76 2/2579 3151100",
+  "failure_shapes": [],
+  "consistent_with_pre": true
+}

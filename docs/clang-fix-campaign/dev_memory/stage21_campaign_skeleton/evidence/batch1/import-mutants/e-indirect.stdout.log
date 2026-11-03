@@ -1,0 +1,35 @@
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 107 files, 196 dependencies.
+-------------------------------------
+
+application layers: orchestration -> skills -> shared KEPT
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+campaign compilation only through repair BROKEN
+
+Contracts: 6 kept, 1 broken.
+
+
+----------------
+Broken contracts
+----------------
+
+campaign compilation only through repair
+----------------------------------------
+
+tizen_baseline_reproduce is not allowed to import tizen_build_verify.build_verify:
+
+-   tizen_baseline_reproduce.__skel_import_probe -> tizen_build_verify (l.1)
+    tizen_build_verify -> tizen_build_verify.build_verify (l.3)
+
+

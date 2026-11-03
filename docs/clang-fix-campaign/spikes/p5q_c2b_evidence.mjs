@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import {
   Agent, AgentError, callbackURL, canonical, checkRedacted, createRuntime,
   ORIGIN, FIELDS, pathShape, redactDOM, validateForm,
-} from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+} from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import {
   configurationDOM, normalizeConfigurationDOM, configurationPageChecks, parentConfigurationChecks, parentRegistration,
 } from './p5q_c2b_config_source.mjs';

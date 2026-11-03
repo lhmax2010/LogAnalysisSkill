@@ -1,0 +1,21 @@
+{
+  "argv": [
+    ".venv/bin/ruff",
+    "check",
+    "tizen-campaign-core",
+    "tizen-campaign-repair",
+    "tizen-sandbox-submit",
+    "tizen-qb-verify",
+    "tizen-campaign-intake",
+    "tizen-baseline-reproduce",
+    "tizen-review-submit",
+    "tizen-campaign-report",
+    "tizen-ci-triage/scripts/ci_triage",
+    "tests/unit/test_campaign_module_aliases.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "exit": 0,
+  "start_utc": "2026-11-03T01:02:24.529759+00:00",
+  "end_utc": "2026-11-03T01:02:24.733694+00:00",
+  "seconds": 0.20393915195018053
+}

@@ -1,0 +1,13 @@
+usage: ci_triage suppress-policy [-h] --edit-spec EDIT_SPEC --src-root
+                                 SRC_ROOT
+                                 [--source-kind {t1_cherry_pick,generated,suppress}]
+                                 {check}
+
+positional arguments:
+  {check}
+
+options:
+  -h, --help            show this help message and exit
+  --edit-spec EDIT_SPEC
+  --src-root SRC_ROOT
+  --source-kind {t1_cherry_pick,generated,suppress}

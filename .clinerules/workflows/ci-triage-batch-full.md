@@ -58,7 +58,7 @@ gerrit_user  例如 lhmax2025
 
 环境:
 ```bash
-export PYTHONPATH="<repo>/tizen-ci-triage/scripts:<repo>/tizen-gbs-build/scripts:\
+export PYTHONPATH="<repo>/tizen-campaign-core/scripts:<repo>/tizen-campaign-repair/scripts:<repo>/tizen-sandbox-submit/scripts:<repo>/tizen-qb-verify/scripts:<repo>/tizen-campaign-intake/scripts:<repo>/tizen-baseline-reproduce/scripts:<repo>/tizen-review-submit/scripts:<repo>/tizen-campaign-report/scripts:<repo>/tizen-ci-triage/scripts:<repo>/tizen-gbs-build/scripts:\
 <repo>/tizen-gbs-log-analysis/scripts:<repo>/tizen-gbs-patch-suggest/scripts:\
 <repo>/tizen-gbs-build-workflow/scripts:$PYTHONPATH"
 ```

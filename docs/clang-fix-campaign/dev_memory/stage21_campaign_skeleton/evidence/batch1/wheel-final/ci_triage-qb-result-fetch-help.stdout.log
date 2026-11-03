@@ -1,0 +1,15 @@
+usage: ci_triage qb-result-fetch [-h] [--request-id REQUEST_ID]
+                                 [--qb-build-id QB_BUILD_ID]
+                                 [--requests-file REQUESTS_FILE]
+                                 [--accept-snapshot-drift] --state-db STATE_DB
+                                 --state-root STATE_ROOT --config CONFIG
+
+options:
+  -h, --help            show this help message and exit
+  --request-id REQUEST_ID
+  --qb-build-id QB_BUILD_ID
+  --requests-file REQUESTS_FILE
+  --accept-snapshot-drift
+  --state-db STATE_DB
+  --state-root STATE_ROOT
+  --config CONFIG

@@ -28,7 +28,7 @@ def test_local_login_facts():
 def test_production_entry_close_exits_with_input_held_open(tmp_path):
     command, env = node_command()
     paths = browser_paths()
-    argv = [*command, str(ROOT / "tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs"), *paths]
+    argv = [*command, str(ROOT / "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs"), *paths]
     process = subprocess.Popen(
         argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         text=True, env=env,

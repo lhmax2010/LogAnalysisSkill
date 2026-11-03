@@ -6,8 +6,8 @@ import { inspectAgentSource, inspectDriverSource, assertAgentSourceGuards,
 
 // Never import, execute, or write production code. Every mutant starts afresh
 // from these actual on-disk sources, not from a hand-written passing surrogate.
-const agentURL = new URL('../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', import.meta.url);
-const driverURL = new URL('../../tizen-ci-triage/scripts/ci_triage/qb_browser.py', import.meta.url);
+const agentURL = new URL('../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs', import.meta.url);
+const driverURL = new URL('../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py', import.meta.url);
 const agent = readFileSync(agentURL, 'utf8');
 const driver = readFileSync(driverURL, 'utf8');
 const baseline = inspectAgentSource(agent);

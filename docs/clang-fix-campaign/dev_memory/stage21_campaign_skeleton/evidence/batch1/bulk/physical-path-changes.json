@@ -1,0 +1,254 @@
+[
+  {
+    "path": "docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs",
+    "line": 15,
+    "before": "} from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "} from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "docs/clang-fix-campaign/spikes/p5q_c2b_form_diagnostics.mjs",
+    "line": 5,
+    "before": "} from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "} from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "docs/clang-fix-campaign/spikes/p5q_c2b_form_diagnostics_test.mjs",
+    "line": 10,
+    "before": "} from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "} from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "docs/clang-fix-campaign/spikes/p5q_c2b_form_diagnostics_test.mjs",
+    "line": 38,
+    "before": "  const productionSource = await readFile(new URL('../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', import.meta.url), 'utf8');",
+    "after": "  const productionSource = await readFile(new URL('../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs', import.meta.url), 'utf8');",
+    "kind": "physical_path"
+  },
+  {
+    "path": "docs/clang-fix-campaign/spikes/p5q_c2b_intrinsics.mjs",
+    "line": 20,
+    "before": "  const { createRuntime } = await import('../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs');",
+    "after": "  const { createRuntime } = await import('../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs');",
+    "kind": "physical_path"
+  },
+  {
+    "path": "docs/clang-fix-campaign/spikes/p5q_c5_tools.mjs",
+    "line": 6,
+    "before": "  from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "  from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "docs/clang-fix-campaign/spikes/p5q_compare_raw_active.mjs",
+    "line": 4,
+    "before": "import { Agent, Policy, createRuntime } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, Policy, createRuntime } from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "docs/clang-fix-campaign/spikes/p5q_fill_rehearsal.mjs",
+    "line": 5,
+    "before": "import { Agent, createRuntime, FIELDS, formFacts } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, createRuntime, FIELDS, formFacts } from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/fixtures/p5q_node_entry.py",
+    "line": 11,
+    "before": "    Path(sys.argv[1]).resolve() == root / \"tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs\"",
+    "after": "    Path(sys.argv[1]).resolve() == root / \"tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs\"",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/p5q_c2b_safety.mjs",
+    "line": 8,
+    "before": "import { Agent, createRuntime, ORIGIN } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, createRuntime, ORIGIN } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/p5q_c2c_raw_bytes_probe.mjs",
+    "line": 7,
+    "before": "import { createRuntime, ORIGIN } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { createRuntime, ORIGIN } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/p5q_c2c_raw_bytes_probe.mjs",
+    "line": 34,
+    "before": "  production_sha256: hash(await readFile(new URL('../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', import.meta.url))),",
+    "after": "  production_sha256: hash(await readFile(new URL('../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs', import.meta.url))),",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/p5q_c8_investigation.mjs",
+    "line": 5,
+    "before": "import { Agent, AgentError, createRuntime, adaptProtocol, pathShape } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, AgentError, createRuntime, adaptProtocol, pathShape } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/p5q_cli_agent.mjs",
+    "line": 4,
+    "before": "import { Agent, createRuntime } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, createRuntime } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/p5q_fake_quickbuild.mjs",
+    "line": 8,
+    "before": "import { FIELDS, ORIGIN } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { FIELDS, ORIGIN } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/p5q_h_interception_probe.mjs",
+    "line": 8,
+    "before": "import { installGuards, Policy } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { installGuards, Policy } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/p5q_hung_cdp_agent.mjs",
+    "line": 4,
+    "before": "import { Agent, Policy } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, Policy } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/p5q_login_retry.mjs",
+    "line": 7,
+    "before": "import { Agent, createRuntime, ORIGIN } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, createRuntime, ORIGIN } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/qb_browser_lifecycle.mjs",
+    "line": 2,
+    "before": "import { createRuntime, installFailureHandlers } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { createRuntime, installFailureHandlers } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_p5q_c2b_config_source.mjs",
+    "line": 4,
+    "before": "import { createRuntime } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { createRuntime } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_p5q_c5_tools.mjs",
+    "line": 5,
+    "before": "import { Agent, createRuntime } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, createRuntime } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_p5q_c5b_failure_evidence.mjs",
+    "line": 6,
+    "before": "import { Agent, AgentError, createRuntime } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, AgentError, createRuntime } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_qb_agent_source_guards.mjs",
+    "line": 9,
+    "before": "const agentURL = new URL('../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', import.meta.url);",
+    "after": "const agentURL = new URL('../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs', import.meta.url);",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_qb_agent_source_guards.mjs",
+    "line": 10,
+    "before": "const driverURL = new URL('../../tizen-ci-triage/scripts/ci_triage/qb_browser.py', import.meta.url);",
+    "after": "const driverURL = new URL('../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py', import.meta.url);",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_qb_browser_agent.mjs",
+    "line": 6,
+    "before": "  destructiveListener } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "  destructiveListener } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_qb_browser_agent.mjs",
+    "line": 452,
+    "before": "  const source = readFileSync(new URL('../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', import.meta.url), 'utf8');",
+    "after": "  const source = readFileSync(new URL('../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs', import.meta.url), 'utf8');",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_qb_browser_fields.mjs",
+    "line": 11,
+    "before": "} from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "} from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_qb_browser_runtime.mjs",
+    "line": 8,
+    "before": "  buildDOM, verifiedBuildId, callbackURL, ORIGIN, FIELDS } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "  buildDOM, verifiedBuildId, callbackURL, ORIGIN, FIELDS } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_qb_browser_trusted.mjs",
+    "line": 10,
+    "before": "} from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "} from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_qb_failure_categories.mjs",
+    "line": 5,
+    "before": "  from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "  from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/node/test_qb_login_facts.mjs",
+    "line": 4,
+    "before": "import { Agent, createRuntime, pathShape } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';",
+    "after": "import { Agent, createRuntime, pathShape } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/unit/test_p5q_c6_offline_fix.py",
+    "line": 31,
+    "before": "    argv = [*command, str(ROOT / \"tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs\"), *paths]",
+    "after": "    argv = [*command, str(ROOT / \"tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs\"), *paths]",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/unit/test_qb_browser.py",
+    "line": 551,
+    "before": "            str(ROOT / \"tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs\"),",
+    "after": "            str(ROOT / \"tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs\"),",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/unit/test_qb_browser.py",
+    "line": 681,
+    "before": "    source = (ROOT / \"tizen-ci-triage/scripts/ci_triage/qb_browser.py\").read_text()",
+    "after": "    source = (ROOT / \"tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py\").read_text()",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/unit/test_qb_browser_node.py",
+    "line": 234,
+    "before": "        \"tizen-ci-triage/scripts/ci_triage/qb_browser.py\",",
+    "after": "        \"tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py\",",
+    "kind": "physical_path"
+  },
+  {
+    "path": "tests/unit/test_qb_driver_budget.py",
+    "line": 286,
+    "before": "    source = (ROOT / \"tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs\").read_text()",
+    "after": "    source = (ROOT / \"tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs\").read_text()",
+    "kind": "physical_path"
+  }
+]

@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { Agent, AgentError, Policy, FrameOwnership, adaptProtocol, ORIGIN, FIELDS,
   canonical, fingerprint, callbackURL, readback, validateForm, formFacts, pathShape,
-  destructiveListener } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+  destructiveListener } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 function meta(path, method = 'GET', extra = {}) {
   return { ...adaptProtocol({ requestId: 'r', frameId: 'main', resourceType: 'Document',
@@ -449,7 +449,7 @@ test('read checks exact URL and build id and returns actual HTTP status', async 
   await assert.rejects(a.read('/build/1?x=1'), { code: 'AGENT_PHASE' });
 });
 test('source guards: no HTTP client, credential extraction, debug switch, or login interactions', () => {
-  const source = readFileSync(new URL('../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', import.meta.url), 'utf8');
+  const source = readFileSync(new URL('../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs', import.meta.url), 'utf8');
   assert.doesNotMatch(source, /page\.request|context\.request|request\.newContext|\.cookies\(|storageState|ignoreHTTPSErrors|DEBUG\s*=\s*['"]pw/);
   const login = source.split('  async login(timeout) {')[1].split('  async buildId(')[0];
   assert.doesNotMatch(login, /\b(click|fill|press|type|evaluate)\(/);

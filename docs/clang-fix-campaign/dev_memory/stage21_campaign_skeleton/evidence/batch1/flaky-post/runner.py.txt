@@ -1,0 +1,67 @@
+"""Run the mandated five consecutive C8 observations without changing tests."""
+
+import datetime
+import json
+import os
+import subprocess
+import sys
+import time
+import tomllib
+from pathlib import Path
+
+root = Path.cwd()
+base = root / 'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1'
+out = base / 'flaky-post'
+out.mkdir(exist_ok=False)
+before = json.loads((base / 'baseline/flaky-pre/summary.json').read_text())
+known = [shape for row in before for shape in row['failure_shapes']]
+env = os.environ.copy()
+where = tomllib.loads((root / 'pyproject.toml').read_text())['tool']['setuptools']['packages']['find']['where']
+env['PYTHONPATH'] = os.pathsep.join(str(root / p) for p in where)
+env['PYTHONDONTWRITEBYTECODE'] = '1'
+for key in ('QB_COOKIE', 'QB_PASSWORD', 'DEBUG', 'PWDEBUG', 'NODE_OPTIONS'):
+    env.pop(key, None)
+records = []
+
+
+def utc():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+for number in range(1, 6):
+    dest = out / f'run-{number:02d}'
+    dest.mkdir()
+    env['P5Q_C8_INVESTIGATION'] = str(dest / 'node')
+    argv = [str(root / '.venv/bin/python'), 'tests/run_quiet.py', '-q',
+            'tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures',
+            '--junitxml=' + str(dest / 'pytest.xml'), '-o', 'cache_dir=' + str(dest / 'pytest-cache')]
+    record = {'run': number, 'argv': argv, 'start_utc': utc(),
+              'load_before': Path('/proc/loadavg').read_text().strip(), 'cpu_count': os.cpu_count()}
+    print('START', number, flush=True)
+    start = time.monotonic()
+    with (dest / 'stdout.log').open('w') as stdout, (dest / 'stderr.log').open('w') as stderr:
+        result = subprocess.run(argv, env=env, stdout=stdout, stderr=stderr)
+    record.update(end_utc=utc(), exit=result.returncode, seconds=time.monotonic() - start,
+                  load_after=Path('/proc/loadavg').read_text().strip())
+    shapes = []
+    for path in sorted((dest / 'node').glob('*.json')):
+        facts = json.loads(path.read_text())
+        if not isinstance(facts, dict) or not facts.get('harness_failure'):
+            continue
+        error = facts['harness_failure']
+        shapes.append({'scenario': path.stem, 'class_name': error.get('class_name'),
+                       'category': error.get('category'),
+                       'failure_categories': sorted({t.get('failure_category') for t in facts.get('trace', [])
+                                                    if t.get('action') == 'AGENT_STOPPED'})})
+    record['failure_shapes'] = shapes
+    record['consistent_with_pre'] = result.returncode == 0 or (bool(shapes) and all(s in known for s in shapes))
+    (dest / 'command.json').write_text(json.dumps(record, indent=2) + '\n')
+    records.append(record)
+    (out / 'summary.json').write_text(json.dumps(records, indent=2) + '\n')
+    print(json.dumps(record), flush=True)
+    if not record['consistent_with_pre']:
+        (out / 'decision.json').write_text(json.dumps({'decision': 'STOP_NEW_FAILURE_SHAPE', 'run': number}, indent=2) + '\n')
+        sys.exit(1)
+(out / 'decision.json').write_text(json.dumps({'decision': 'CONSISTENT_WITH_BASELINE', 'runs': 5,
+                                               'passed': sum(r['exit'] == 0 for r in records),
+                                               'failed': sum(r['exit'] != 0 for r in records)}, indent=2) + '\n')

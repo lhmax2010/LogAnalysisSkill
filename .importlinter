@@ -13,12 +13,23 @@ root_packages =
     tizen_triage_report
     gbs_patch_suggest
     ci_triage
+    tizen_campaign_core
+    tizen_campaign_intake
+    tizen_baseline_reproduce
+    tizen_campaign_repair
+    tizen_sandbox_submit
+    tizen_qb_verify
+    tizen_review_submit
+    tizen_campaign_report
 
 [importlinter:contract:root-layers]
 name = application layers: orchestration -> skills -> shared
 type = layers
 layers =
     ci_triage
+    tizen_campaign_intake | tizen_baseline_reproduce | tizen_campaign_repair | tizen_qb_verify | tizen_review_submit | tizen_campaign_report
+    tizen_sandbox_submit
+    tizen_campaign_core
     tizen_convergence_judge | tizen_qb_discover | tizen_gerrit_fetch | tizen_build_verify | tizen_gerrit_submit | tizen_triage_report | gbs_patch_suggest
     tizen_ci_shared
 ignore_imports =
@@ -54,6 +65,14 @@ name = shared must not import orchestration
 type = forbidden
 source_modules = tizen_ci_shared
 forbidden_modules = ci_triage
+    tizen_campaign_core
+    tizen_campaign_intake
+    tizen_baseline_reproduce
+    tizen_campaign_repair
+    tizen_sandbox_submit
+    tizen_qb_verify
+    tizen_review_submit
+    tizen_campaign_report
     tizen_convergence_judge
     tizen_qb_discover
     tizen_gerrit_fetch
@@ -75,3 +94,17 @@ type = independence
 modules =
     tizen_ci_shared.quickbuild_http
     tizen_ci_shared.env
+
+[importlinter:contract:campaign-no-direct-build]
+name = campaign compilation only through repair
+type = forbidden
+source_modules =
+    tizen_campaign_core
+    tizen_campaign_intake
+    tizen_baseline_reproduce
+    tizen_sandbox_submit
+    tizen_qb_verify
+    tizen_review_submit
+    tizen_campaign_report
+forbidden_modules = tizen_build_verify.build_verify
+allow_indirect_imports = false

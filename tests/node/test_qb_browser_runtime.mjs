@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { Agent, TrustedPage, createRuntime, redactDOM, checkRedacted, validateForm,
-  buildDOM, verifiedBuildId, callbackURL, ORIGIN, FIELDS } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+  buildDOM, verifiedBuildId, callbackURL, ORIGIN, FIELDS } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 const [playwright, chromium] = process.argv.slice(2);
 const archive = new URL('../../docs/clang-fix-campaign/dev_memory/stage15_p1_ef_spike/evidence/web-cookie-02/', import.meta.url);

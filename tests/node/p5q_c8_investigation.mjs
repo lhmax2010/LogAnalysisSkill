@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile, access } from 'node:fs/promises';
 import { performance } from 'node:perf_hooks';
-import { Agent, AgentError, createRuntime, adaptProtocol, pathShape } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, AgentError, createRuntime, adaptProtocol, pathShape } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import { fakeQuickBuild, PROJECT, VALUES } from './p5q_fake_quickbuild.mjs';
 
 const [playwright, chromium, output] = process.argv.slice(2);

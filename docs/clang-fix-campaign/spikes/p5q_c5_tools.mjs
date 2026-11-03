@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { AgentError, ORIGIN, adaptProtocol, checkRedacted, canonical }
-  from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+  from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 export const PROJECT = { overview_id: 1917,
   configuration_path: 'root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER',

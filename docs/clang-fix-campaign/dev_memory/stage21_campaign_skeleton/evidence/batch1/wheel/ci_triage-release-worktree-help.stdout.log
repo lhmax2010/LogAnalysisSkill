@@ -1,0 +1,10 @@
+usage: ci_triage release-worktree [-h] --verification-id VERIFICATION_ID
+                                  --state-db STATE_DB [--output OUTPUT]
+
+Release the protected worktree marker for a verification record.
+
+options:
+  -h, --help            show this help message and exit
+  --verification-id VERIFICATION_ID
+  --state-db STATE_DB
+  --output OUTPUT

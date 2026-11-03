@@ -1,0 +1,21 @@
+usage: ci_triage gerrit-submit [-h] --verification-id VERIFICATION_ID
+                               --state-db STATE_DB --gerrit-host GERRIT_HOST
+                               --gerrit-port GERRIT_PORT --gerrit-user
+                               GERRIT_USER --submit-target SUBMIT_TARGET
+                               [--submit-mode {dry-run,submit}]
+                               [--git-ssh-command GIT_SSH_COMMAND] --output
+                               OUTPUT
+
+Validate a GERRIT_READY verification record and emit a dry-run Gerrit push.
+
+options:
+  -h, --help            show this help message and exit
+  --verification-id VERIFICATION_ID
+  --state-db STATE_DB
+  --gerrit-host GERRIT_HOST
+  --gerrit-port GERRIT_PORT
+  --gerrit-user GERRIT_USER
+  --submit-target SUBMIT_TARGET
+  --submit-mode {dry-run,submit}
+  --git-ssh-command GIT_SSH_COMMAND
+  --output OUTPUT

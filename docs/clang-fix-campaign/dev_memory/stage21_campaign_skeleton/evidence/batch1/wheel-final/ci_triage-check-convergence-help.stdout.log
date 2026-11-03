@@ -1,0 +1,13 @@
+usage: ci_triage check-convergence [-h] --current-evidence CURRENT_EVIDENCE
+                                   [--previous-evidence PREVIOUS_EVIDENCE]
+                                   [--touched-files TOUCHED_FILES] --output
+                                   OUTPUT
+
+Decide whether another build-repair iteration should continue.
+
+options:
+  -h, --help            show this help message and exit
+  --current-evidence CURRENT_EVIDENCE
+  --previous-evidence PREVIOUS_EVIDENCE
+  --touched-files TOUCHED_FILES
+  --output OUTPUT

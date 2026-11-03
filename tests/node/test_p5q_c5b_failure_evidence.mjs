@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import test from 'node:test';
-import { Agent, AgentError, createRuntime } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, AgentError, createRuntime } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import { rehearse } from '../../docs/clang-fix-campaign/spikes/p5q_fill_rehearsal.mjs';
 import { comparePages } from '../../docs/clang-fix-campaign/spikes/p5q_compare_raw_active.mjs';
 import { evidenceSession, errorCode, EvidenceError, reportFailure, ROOT }

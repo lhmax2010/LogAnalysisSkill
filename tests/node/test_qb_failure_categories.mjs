@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import test from 'node:test';
 import { Agent, Policy, FAILURE_CATEGORIES, recordFailure, installGuards }
-  from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+  from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 for (const category of FAILURE_CATEGORIES) test(`fixed stop category ${category}`, async t => {
   const lines = [];

@@ -43,6 +43,14 @@ jobs:
           mypy tizen-build-verify/scripts/tizen_build_verify
           mypy tizen-gerrit-submit/scripts/tizen_gerrit_submit
           mypy tizen-triage-report/scripts/tizen_triage_report
+          mypy tizen-campaign-core/scripts/tizen_campaign_core
+          mypy tizen-campaign-repair/scripts/tizen_campaign_repair
+          mypy tizen-sandbox-submit/scripts/tizen_sandbox_submit
+          mypy tizen-qb-verify/scripts/tizen_qb_verify
+          mypy tizen-campaign-intake/scripts/tizen_campaign_intake
+          mypy tizen-baseline-reproduce/scripts/tizen_baseline_reproduce
+          mypy tizen-review-submit/scripts/tizen_review_submit
+          mypy tizen-campaign-report/scripts/tizen_campaign_report
           mypy tizen-gbs-log-analysis/scripts/gbs_analyzer
           mypy tizen-gbs-build-workflow/scripts/gbs_workflow
           mypy tizen-gbs-patch-suggest/scripts/gbs_patch_suggest

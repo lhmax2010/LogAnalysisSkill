@@ -1,0 +1,17 @@
+usage: ci_triage campaign-repair-step [-h] --campaign-unit-key
+                                      CAMPAIGN_UNIT_KEY --state-db STATE_DB
+                                      --config CONFIG --round-index
+                                      ROUND_INDEX --edit-spec EDIT_SPEC --arch
+                                      ARCH [--wall-timeout WALL_TIMEOUT]
+
+Run one locked, budgeted, and reconciled campaign repair build.
+
+options:
+  -h, --help            show this help message and exit
+  --campaign-unit-key CAMPAIGN_UNIT_KEY
+  --state-db STATE_DB
+  --config CONFIG
+  --round-index ROUND_INDEX
+  --edit-spec EDIT_SPEC
+  --arch ARCH
+  --wall-timeout WALL_TIMEOUT

@@ -17,7 +17,7 @@ export function intrinsicsDOM() {
 export async function intrinsicsSelfTest(playwright, chromium) {
   const { default: assert } = await import('node:assert/strict');
   const { readFile } = await import('node:fs/promises');
-  const { createRuntime } = await import('../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs');
+  const { createRuntime } = await import('../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs');
   const { configurationDOM, normalizeConfigurationDOM, parentConfigurationChecks, configurationPageChecks } =
     await import('./p5q_c2b_config_source.mjs');
   const runtime = await createRuntime(playwright, chromium);

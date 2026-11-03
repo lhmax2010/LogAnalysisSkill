@@ -548,7 +548,7 @@ def fake(tmp_path, monkeypatch):
         launches.append((args, kwargs))
         assert args == [
             "node",
-            str(ROOT / "tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs"),
+            str(ROOT / "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs"),
             "/fixture/playwright",
             "/fixture/chromium",
         ]
@@ -678,7 +678,7 @@ def test_submit_process_failure_cannot_claim_not_released(fake, monkeypatch, fai
 
 
 def test_python_production_launcher_never_passes_probe_switches():
-    source = (ROOT / "tizen-ci-triage/scripts/ci_triage/qb_browser.py").read_text()
+    source = (ROOT / "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py").read_text()
     # Diagnostic responses are data, not permission to launch in probe mode.
     launches = [
         node

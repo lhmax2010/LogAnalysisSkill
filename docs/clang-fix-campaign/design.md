@@ -2765,6 +2765,14 @@ P5Q 模块(qb_browser_agent、qb_browser、qb_redact、qb-trigger、qb-result-fe
 13. 新增 `campaign_state` 按连接写入的内部原语;P5Q 的每个写入点在一个事务内完成。
 14. qb_result 的 `status=FAIL` 表示"包含本 unit 目标行的那一次全量构建(`FAIL_FAST=yes`,单个 Build_GBS 步)失败",**不等于本 unit 的修复未通过**:QuickBuild 页面上没有逐包状态。P5R 不得仅凭 FAIL 断言本 unit 的修复失败,须结合结果文件中的 `child_failed_step`、`child_error_message` 由人判读;PASS 的语义不变。
 
+### 4.6 v1.5.25 修订:活动骨架收尾与 skill 拆分
+
+1. `campaign-skeleton-design-v1.3-FROZEN.md`是剩余阶段范围、目录归属与该文件第5节新增行为的权威;未改变的契约继续按原冻结设计。
+2. 新增错误码:`INTAKE_ANALYZER_FAILED`、`INTAKE_CLONE_FAILED`、`REJECTED_UNIT_NOT_TERMINAL`、`REJECTED_UNIT_ABANDONED`。
+3. sandbox-submit、qb-trigger增加放弃屏障检查,按骨架设计文件第5.4节执行。
+4. `campaign_lifecycle`新增第四个释放API `release_abandoned_worktrees`,按骨架设计文件第5.4节执行。
+5. 模块路径以骨架设计文件第4.2节映射表解释。
+
 ## 5. 非功能性需求
 
 ### 5.1 性能预算

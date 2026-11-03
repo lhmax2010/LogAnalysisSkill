@@ -1,0 +1,15 @@
+usage: tizen_sandbox_submit sandbox-submit [-h] --verification-ids
+                                           VERIFICATION_IDS --state-db
+                                           STATE_DB --config CONFIG
+                                           --sandbox-branch SANDBOX_BRANCH
+                                           [--message-brief MESSAGE_BRIEF]
+                                           [--edit-source-kind {t1_cherry_pick,generated,suppress}]
+
+options:
+  -h, --help            show this help message and exit
+  --verification-ids VERIFICATION_IDS
+  --state-db STATE_DB
+  --config CONFIG
+  --sandbox-branch SANDBOX_BRANCH
+  --message-brief MESSAGE_BRIEF
+  --edit-source-kind {t1_cherry_pick,generated,suppress}

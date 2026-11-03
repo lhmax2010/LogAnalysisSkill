@@ -1,0 +1,110 @@
+{
+  "moves": [
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/campaign_state.py",
+      "new": "tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/_campaign_workspace.py",
+      "new": "tizen-campaign-core/scripts/tizen_campaign_core/_campaign_workspace.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/previous_evidence.py",
+      "new": "tizen-campaign-core/scripts/tizen_campaign_core/previous_evidence.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/suppress_policy.py",
+      "new": "tizen-campaign-core/scripts/tizen_campaign_core/suppress_policy.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/aggregate.py",
+      "new": "tizen-campaign-core/scripts/tizen_campaign_core/aggregate.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/derive_commit.py",
+      "new": "tizen-campaign-core/scripts/tizen_campaign_core/derive_commit.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/submission_identity.py",
+      "new": "tizen-campaign-core/scripts/tizen_campaign_core/submission_identity.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/_sandbox_git.py",
+      "new": "tizen-campaign-core/scripts/tizen_campaign_core/_sandbox_git.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/campaign_repair_step.py",
+      "new": "tizen-campaign-repair/scripts/tizen_campaign_repair/campaign_repair_step.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/sandbox_submit.py",
+      "new": "tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/qb_trigger.py",
+      "new": "tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/qb_result_fetch.py",
+      "new": "tizen-qb-verify/scripts/tizen_qb_verify/qb_result_fetch.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/qb_discovery.py",
+      "new": "tizen-qb-verify/scripts/tizen_qb_verify/qb_discovery.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/qb_binding.py",
+      "new": "tizen-qb-verify/scripts/tizen_qb_verify/qb_binding.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/qb_evidence.py",
+      "new": "tizen-qb-verify/scripts/tizen_qb_verify/qb_evidence.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/qb_result_html.py",
+      "new": "tizen-qb-verify/scripts/tizen_qb_verify/qb_result_html.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/qb_browser.py",
+      "new": "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/qb_config.py",
+      "new": "tizen-qb-verify/scripts/tizen_qb_verify/qb_config.py",
+      "non_import_ast_equal": true
+    },
+    {
+      "old": "tizen-ci-triage/scripts/ci_triage/qb_redact.py",
+      "new": "tizen-qb-verify/scripts/tizen_qb_verify/qb_redact.py",
+      "non_import_ast_equal": true
+    }
+  ],
+  "hashes": {
+    "agent": "7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c",
+    "prefix": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py": "afc049e204135017c9f457fea9c7237c7e3fded8f87a60885824510390f21fde",
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py": "0cc7b5d11641074efbf60fc9da9827a03c3ed9d607bd842509c7fd5a8d4f8e86",
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py": "84778014c1a2912418a660f0bfdd567215c06e38ef6dbbc833fb62b13d691fc1",
+    "tizen-build-verify/scripts/tizen_build_verify/build_verify.py": "5a6ab48b9bafd01e464513b6450781fcffdcaaac3b39da911c45923e93093887",
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9"
+  },
+  "existing_tests_and_active_spikes_changes": "physical paths only",
+  "history_evidence_scripts": "unchanged; not rerun"
+}

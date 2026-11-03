@@ -16,6 +16,12 @@ from tizen_build_verify import (
     build_verify,
     build_verify_to_json,
 )
+from tizen_campaign_core.campaign_state import CampaignStateBusy
+from tizen_campaign_core.suppress_policy import PolicyInputError, SourceKind, evaluate
+from tizen_campaign_repair.campaign_repair_step import (
+    CampaignRepairStepOptions,
+    campaign_repair_step,
+)
 from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH
 from tizen_ci_shared.state import StateDatabase
@@ -33,21 +39,15 @@ from tizen_gerrit_submit import (
     write_gerrit_submit_result,
     write_release_result,
 )
-
-from ci_triage.campaign_repair_step import (
-    CampaignRepairStepOptions,
-    campaign_repair_step,
-)
-from ci_triage.campaign_state import CampaignStateBusy
-from ci_triage.runner import TriageOptions, run_triage
-from ci_triage.sandbox_submit import (
+from tizen_sandbox_submit.sandbox_submit import (
     SandboxSubmitOptions,
     SandboxSubmitOutcome,
     empty_payload,
     invalid_outcome,
     sandbox_submit,
 )
-from ci_triage.suppress_policy import PolicyInputError, SourceKind, evaluate
+
+from ci_triage.runner import TriageOptions, run_triage
 
 EXIT_SUCCESS = 0
 EXIT_FAILED = 1
@@ -414,7 +414,7 @@ def _campaign_cli_error_payload(reason: str) -> dict[str, object]:
 
 
 def _main_qb_result_fetch(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
-    from ci_triage.qb_result_fetch import QbResultFetchOptions, empty_result, qb_result_fetch
+    from tizen_qb_verify.qb_result_fetch import QbResultFetchOptions, empty_result, qb_result_fetch
 
     parser = _CampaignRepairStepParser(prog="ci_triage qb-result-fetch")
     parser.add_argument("--request-id")
@@ -434,7 +434,7 @@ def _main_qb_result_fetch(argv: list[str], *, stdout: TextIO, stderr: TextIO) ->
 
 
 def _main_qb_trigger(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
-    from ci_triage.qb_trigger import QbTriggerOptions, empty_result, qb_trigger
+    from tizen_qb_verify.qb_trigger import QbTriggerOptions, empty_result, qb_trigger
 
     parser = _CampaignRepairStepParser(prog="ci_triage qb-trigger")
     selection = parser.add_mutually_exclusive_group(required=True)

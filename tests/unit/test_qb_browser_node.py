@@ -231,7 +231,7 @@ def test_c2b_evidence_entry_is_not_a_submit_or_launch_override_path() -> None:
     assert "if (runtime.failure) stop(runtime.failure)" in source
     assert "check_written" in source
     for relative in (
-        "tizen-ci-triage/scripts/ci_triage/qb_browser.py",
+        "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py",
         "tizen-ci-triage/scripts/ci_triage/cli.py",
     ):
         production = (ROOT / relative).read_text()

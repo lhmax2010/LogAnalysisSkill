@@ -1,0 +1,73 @@
+"""Build and test the wheel in a new venv, outside all source roots."""
+
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import time
+import zipfile
+from pathlib import Path
+
+root = Path.cwd()
+out = root / 'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1' / sys.argv[1]
+out.mkdir(exist_ok=False)
+workspace = Path(tempfile.mkdtemp(prefix='skel-b1-wheel-'))
+env = os.environ.copy()
+env.pop('PYTHONPATH', None)
+env.pop('PYTHONHOME', None)
+records = []
+
+
+def run(name, argv, cwd):
+    start = time.time()
+    result = subprocess.run(argv, cwd=cwd, env=env, text=True, capture_output=True)
+    (out / (name + '.stdout.log')).write_text(result.stdout)
+    (out / (name + '.stderr.log')).write_text(result.stderr)
+    records.append({'name': name, 'argv': argv, 'cwd': str(cwd), 'exit': result.returncode,
+                    'seconds': time.time() - start})
+    (out / 'commands.json').write_text(json.dumps(records, indent=2) + '\n')
+    print(name, result.returncode, flush=True)
+    assert result.returncode == 0, name
+    return result.stdout
+
+
+run('build', [str(root / '.venv/bin/python'), '-m', 'pip', 'wheel', '--no-build-isolation',
+              '--no-deps', '--wheel-dir', str(workspace / 'wheels'), str(root)], root)
+wheel, = (workspace / 'wheels').glob('*.whl')
+run('venv-without-pip', [str(root / '.venv/bin/python'), '-m', 'venv', '--without-pip', str(workspace / 'venv')], workspace)
+python = str(workspace / 'venv/bin/python')
+run('install', [str(root / '.venv/bin/python'), '-m', 'pip', '--python', python, 'install', str(wheel)], workspace)
+info = json.loads(run('import', [python, '-c',
+    'import json,sys,tizen_campaign_core,tizen_qb_verify; '
+    'print(json.dumps(dict(sys_path=sys.path,core=tizen_campaign_core.__file__,qb=tizen_qb_verify.__file__)))'], workspace))
+assert not any(str(root) in item for item in info['sys_path'])
+assert str(workspace / 'venv') in info['core']
+assert str(workspace / 'venv') in info['qb']
+entries = {
+    'ci_triage': ['qb-trigger','qb-result-fetch','sandbox-submit','suppress-policy',
+                  'build-verify','check-convergence','gerrit-submit','release-worktree','campaign-repair-step'],
+    'tizen_campaign_repair': ['campaign-repair-step'],
+    'tizen_sandbox_submit': ['sandbox-submit'],
+    'tizen_qb_verify': ['qb-trigger','qb-result-fetch'],
+    'tizen_campaign_intake': [], 'tizen_baseline_reproduce': [],
+    'tizen_review_submit': [], 'tizen_campaign_report': [],
+}
+for package, commands in entries.items():
+    run(package + '-help', [python, '-m', package, '--help'], workspace)
+    for command in commands:
+        run(package + '-' + command + '-help', [python, '-m', package, command, '--help'], workspace)
+source = root / 'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs'
+with zipfile.ZipFile(wheel) as archive:
+    packaged = archive.read('tizen_qb_verify/qb_browser_agent.mjs')
+assert packaged == source.read_bytes()
+installed = Path(info['qb']).with_name('qb_browser_agent.mjs').read_bytes()
+assert installed == packaged
+summary = {'workspace': str(workspace), 'source_roots_absent': True,
+           'entry_roots': len(entries), 'help_invocations': sum(1 + len(v) for v in entries.values()),
+           'agent_sha256': hashlib.sha256(packaged).hexdigest(),
+           'wheel_sha256': hashlib.sha256(wheel.read_bytes()).hexdigest(),
+           'installed_agent_matches': True, 'failures': 0}
+(out / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+print(json.dumps(summary), flush=True)

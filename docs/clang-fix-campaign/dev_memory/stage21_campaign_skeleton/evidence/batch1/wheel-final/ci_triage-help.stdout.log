@@ -1,0 +1,27 @@
+usage: ci_triage [-h] [--cookie COOKIE] [--output-root OUTPUT_ROOT]
+                 [--spec-name SPEC_NAME] [--arch ARCH]
+                 [--git-ssh-command GIT_SSH_COMMAND]
+                 build_id
+
+Run one QuickBuild failed build through full-log download, Gerrit source
+checkout, gbs_analyzer, and gbs_patch_suggest.
+
+positional arguments:
+  build_id              QuickBuild build id, for example 1118282.
+
+options:
+  -h, --help            show this help message and exit
+  --cookie COOKIE       Browser-exported QuickBuild cookie JSON. Defaults to
+                        /tmp/quickbuild_cookies.json.
+  --output-root OUTPUT_ROOT
+                        Output root. The build report is written below
+                        <output-root>/<build_id>/.
+  --spec-name SPEC_NAME
+                        Failed package spec_name to process when a build has
+                        multiple failed packages.
+  --arch ARCH           QuickBuild GBS report arch, for example standard-
+                        armv7l. Required for automatic failed-package
+                        discovery when --spec-name is omitted.
+  --git-ssh-command GIT_SSH_COMMAND
+                        Optional GIT_SSH_COMMAND for Gerrit fetches; also read
+                        from CI_TRIAGE_GIT_SSH_COMMAND.

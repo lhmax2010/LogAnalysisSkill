@@ -1,7 +1,7 @@
 // Read-only evidence: production guards, one navigation, isolated snapshots.
 import { parseArgs } from 'node:util';
 import { pathToFileURL } from 'node:url';
-import { Agent, Policy, createRuntime } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, Policy, createRuntime } from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import { PROJECT, DEFAULTS, newOutput, comparePage, validatePaths,
   EvidenceError, withEvidence, evidenceSession, reportFailure } from './p5q_c5_tools.mjs';
 

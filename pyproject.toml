@@ -27,6 +27,13 @@ where = [
     "tizen-gbs-patch-suggest/scripts",
     "tizen-ci-triage/scripts",
     "tizen-campaign-core/scripts",
+    "tizen-campaign-repair/scripts",
+    "tizen-sandbox-submit/scripts",
+    "tizen-qb-verify/scripts",
+    "tizen-campaign-intake/scripts",
+    "tizen-baseline-reproduce/scripts",
+    "tizen-review-submit/scripts",
+    "tizen-campaign-report/scripts",
     "tizen-ci-shared/scripts",
     "tizen-convergence-judge/scripts",
     "tizen-qb-discover/scripts",
@@ -42,6 +49,13 @@ include = [
     "gbs_patch_suggest*",
     "ci_triage*",
     "tizen_campaign_core*",
+    "tizen_campaign_repair*",
+    "tizen_sandbox_submit*",
+    "tizen_qb_verify*",
+    "tizen_campaign_intake*",
+    "tizen_baseline_reproduce*",
+    "tizen_review_submit*",
+    "tizen_campaign_report*",
     "tizen_ci_shared*",
     "tizen_convergence_judge*",
     "tizen_qb_discover*",
@@ -53,7 +67,7 @@ include = [
 
 [tool.setuptools.package-data]
 gbs_analyzer = ["patterns/*.yaml", "patterns/*.json", "patterns/*.md"]
-ci_triage = ["*.mjs"]
+tizen_qb_verify = ["*.mjs"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -86,6 +100,13 @@ mypy_path = [
     "tizen-gbs-patch-suggest/scripts",
     "tizen-ci-triage/scripts",
     "tizen-campaign-core/scripts",
+    "tizen-campaign-repair/scripts",
+    "tizen-sandbox-submit/scripts",
+    "tizen-qb-verify/scripts",
+    "tizen-campaign-intake/scripts",
+    "tizen-baseline-reproduce/scripts",
+    "tizen-review-submit/scripts",
+    "tizen-campaign-report/scripts",
     "tizen-ci-shared/scripts",
     "tizen-convergence-judge/scripts",
     "tizen-qb-discover/scripts",
@@ -101,6 +122,13 @@ packages = [
     "gbs_patch_suggest",
     "ci_triage",
     "tizen_campaign_core",
+    "tizen_campaign_repair",
+    "tizen_sandbox_submit",
+    "tizen_qb_verify",
+    "tizen_campaign_intake",
+    "tizen_baseline_reproduce",
+    "tizen_review_submit",
+    "tizen_campaign_report",
     "tizen_ci_shared",
     "tizen_convergence_judge",
     "tizen_qb_discover",

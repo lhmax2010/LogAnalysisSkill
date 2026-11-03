@@ -1,0 +1,13 @@
+usage: ci_triage qb-trigger [-h]
+                            (--verification-ids VERIFICATION_IDS | --units-file UNITS_FILE)
+                            --state-db STATE_DB --state-root STATE_ROOT
+                            --config CONFIG [--retrigger]
+
+options:
+  -h, --help            show this help message and exit
+  --verification-ids VERIFICATION_IDS
+  --units-file UNITS_FILE
+  --state-db STATE_DB
+  --state-root STATE_ROOT
+  --config CONFIG
+  --retrigger

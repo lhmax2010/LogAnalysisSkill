@@ -283,7 +283,7 @@ def test_real_driver_process_or_pipe_failure_unknown(failure):
 
 
 def test_budget_static_contract_and_mutations():
-    source = (ROOT / "tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs").read_text()
+    source = (ROOT / "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs").read_text()
     defaults = inspect.signature(QbBrowser).parameters
 
     def check(

@@ -1,0 +1,35 @@
+{
+  "result": {
+    "ok": false,
+    "error": "QB_LOGIN_TIMEOUT",
+    "login_facts": {
+      "final_path_shape": "/signin",
+      "on_signin": true,
+      "password_present": true,
+      "sign_out_present": false,
+      "checks": 4,
+      "login_posts_released": 0,
+      "login_channel_closed": false,
+      "denied": {}
+    }
+  },
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "received": [
+    {
+      "method": "GET",
+      "path": "/signin",
+      "status": 200,
+      "body": ""
+    }
+  ]
+}

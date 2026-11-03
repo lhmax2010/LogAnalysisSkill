@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdtemp, mkdir, rm, writeFile, readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { Agent, createRuntime } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, createRuntime } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import { comparePages } from '../../docs/clang-fix-campaign/spikes/p5q_compare_raw_active.mjs';
 import { rehearse } from '../../docs/clang-fix-campaign/spikes/p5q_fill_rehearsal.mjs';
 import { validatePaths, PROJECT, ROOT } from '../../docs/clang-fix-campaign/spikes/p5q_c5_tools.mjs';

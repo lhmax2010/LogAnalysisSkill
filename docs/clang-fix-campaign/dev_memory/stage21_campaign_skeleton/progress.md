@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**BATCH1_BULK_MOVE_IN_PROGRESS**。
+日期:2026-11-03。状态:**BATCH1_READY_FOR_REVIEW**。
 开工基线`accd7f4`,分支`clang-fix-campaign`。本批仅skill拆分及design.md追加修订登记;
 完成后停止,等待设计方审读,不开始第2批。
 
@@ -20,7 +20,7 @@
 
 | 批次 | 范围 | 当前状态 |
 |---|---|---|
-| 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | SKEL-B1-05对照12/12通过,判a;试搬复核2902 passed/1 skipped,进入批量搬家 |
+| 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | READY_FOR_REVIEW;最终树2921 passed/1 skipped,C8后5次全PASS;等待设计方审读 |
 | 2 | 建档、基线复现、生命周期与放弃屏障 | NOT_STARTED |
 | 3 | 审核提交、启动检查、编排skill与离线端到端 | NOT_STARTED |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
@@ -65,19 +65,19 @@ d. 按冻结稿第 0.2 节,在 design.md 末尾的修订序列追加一节(版�
 
 | 项目 | 状态 |
 |---|---|
-| 拆分前后nodeid比较/collect/skip | PARTIAL;基线与derive试搬均2903个nodeid,双向差集为空,collect exit 0,相同1 skip;最终八包对照未执行。`derive-only/nodeid-diff.json`、`gate-comparison.json` |
-| 每个旧模块名与新模块对象同一性 | PARTIAL;derive模块对象同一性已直接验证,其余未搬/未新增别名测试。`derive-only/integrity.json` |
-| 新权威源码植入禁止调用,既有静态检查红例 | NOT_RUN_STOPPED;尚未搬静态检查对应的生产模块 |
-| import-linter全绿与a/b/d/e红例(e直接/间接两例) | PARTIAL;原6合约基线与试搬均6 kept/0 broken,八包合约及红例未实施。`derive-only/imports.stdout.log` |
-| .mjs完整hash/前缀hash、四组安全测试 | PARTIAL;原位置hash不变,未迁移/未在新位置重跑。`derive-only/integrity.json` |
-| 干净wheel安装、八入口全部子命令help、资源hash | NOT_RUN_STOPPED;尚未拆包 |
-| 全仓pytest对照 | FAILED;基线2901 passed/1豁免failed/1 skipped,derive试搬2900 passed/2非豁免failed/1 skipped。`derive-only/pytest.xml`、`summary.json`、`gate-comparison.json` |
+| 拆分前后nodeid比较/collect/skip | PASS;旧2903个全部保留,新增19个别名用例;最终树仅原有1 skip,零新增skip。`bulk/nodeid-diff-final.json`、`bulk/skip-comparison.json` |
+| 每个旧模块名与新模块对象同一性 | PASS;19 passed。`bulk/aliases.stdout.log` |
+| 新权威源码植入禁止调用,既有静态检查红例 | PASS;植入后1 failed,恢复后183 passed。`source-mutant/` |
+| import-linter全绿与a/b/d/e红例(e直接/间接两例) | PASS;7 kept/0 broken,五个违规样本均变红且已移除。`bulk/imports-after-cli.stdout.log`、`import-mutants/` |
+| .mjs完整hash/前缀hash、四组安全测试 | PASS;字节不变、新位置4/4。`bulk/integrity-final.json`、`bulk/safety-four.stdout.log` |
+| 干净wheel安装、八入口全部子命令help、资源hash | PASS;最终wheel在无源码路径venv中8入口21次help成功,资源hash一致。`wheel-final/summary.json` |
+| 全仓pytest对照 | PASS(按SKEL-B1-03/05);试搬复核2902/0/1,批量两次均2921/0/1;C8后5次全PASS,无新增失败形态。`derive-recheck/`、`final-gate/`、`final-gate-2/`、`flaky-post/` |
 
-上表证据相对`evidence/batch1/`,只记录试搬事实,不表示八包拆分通过。
+上表证据相对`evidence/batch1/`,七项均完成;本批等待设计方审读,不自行标CLOSED。
 冻结稿第4.4节第7项“历史证据目录脚本不改、不重跑”遵守;
 七项交付验收按原任务顺序在上表列出(全仓对照列为交付第7项)。
-测试物理路径改动清单:0条,未修改任何测试,详见第9.2节。当前停止报告见第9节;
-第6节保留上轮停止历史。
+测试物理路径改动清单:28条,见第11.2节;另有活动spike8条。
+第6、9节保留原始停止历史,不以重跑覆盖。
 
 ## 6. 停止报告 SKEL-B1-02:未拆分基线失败
 
@@ -153,7 +153,7 @@ C8豁免nodeid在这次全仓运行中为PASS,但此结果不能替代最终拆�
 
 ## 9. 停止报告 SKEL-B1-04:derive试搬的非豁免失败
 
-状态:由SKEL-B1-05启动对照处置,原始失败事实与证据保留,不以重跑结果替换。
+状态:已按SKEL-B1-05对照结果a处置,原始失败事实与证据保留,不以重跑结果替换。
 
 报告:[stop-report-SKEL-B1-04.md](evidence/batch1/stop-report-SKEL-B1-04.md)。
 失败均为`tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass`
@@ -285,3 +285,168 @@ C5a六参数与C8调查用例均通过,没有触发3次独立复跑。唯一skip
 此结果只放行批量搬家,不替代最终八包验收或拆分后C8五次对照。
 `git diff --check`的告警仅为本地假页面原始HTML的行尾空白,保留证据字节;
 文档无空白告警。不纳入pytest-cache,不提交数据库二进制。
+
+## 11. 批量搬家实施与验收记录
+
+### 11.1 实施范围
+
+继59d2e36的试搬全仓复核通过后,按第4.2节归属表完成19个Python模块的所有权迁移,
+旧ci_triage位置均为模块对象别名,没有星号转发。core共8模块、repair共1模块、
+sandbox共1模块、qb-verify共9模块;新增lifecycle/reproduce业务留给后批,本批未实现。
+新包不导入ci_triage;三个qb模块的sandbox依赖指向tizen_sandbox_submit。
+搬家文件仅改import,非import AST与f203aec一致,见`bulk/integrity.json`。
+
+七个执行包均有入口;repair/sandbox/qb沿用既有CLI的参数与处理函数,
+ci_triage旧入口、verify子包及运行时patch目标保持。intake/baseline/review/report
+只有__init__.py与空子命令集合的__main__.py,没有业务代码或SKILL。
+三份搬家SKILL采用qb-discover的输入/输出/错误/命令格式;core不写SKILL。
+pyproject登记八包发现、mypy路径与包名、qb的.mjs资源;.importlinter保留原六合约并
+新增campaign-no-direct-build。CI显式mypy列表、README与开发工作流的源码路径同步。
+design.md仅追加4.6节v1.5.25的五条登记,既有条目与冻结稿正文不改。
+
+### 11.2 物理路径改动清单
+
+既有测试28条(24文件),活动spike8条(7文件),合计36条。下表逐条列出原文件行号;
+所有改动仅将`tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs`或
+`qb_browser.py`的前缀替换为`tizen-qb-verify/scripts/tizen_qb_verify/`。
+完整before/after原文见`evidence/batch1/bulk/physical-path-changes.json`。
+既有测试断言、参数化、nodeid、补丁目标不变;历史证据脚本不改、不重跑。
+另新增19参数的`tests/unit/test_campaign_module_aliases.py`,不改既有测试逻辑。
+
+| 序号 | 文件:原行号 | 类别 | 路径目标 |
+|---|---|---|---|
+| 1 | `docs/clang-fix-campaign/spikes/p5q_c2b_evidence.mjs:15` | 活动spike | Node代理 |
+| 2 | `docs/clang-fix-campaign/spikes/p5q_c2b_form_diagnostics.mjs:5` | 活动spike | Node代理 |
+| 3 | `docs/clang-fix-campaign/spikes/p5q_c2b_form_diagnostics_test.mjs:10` | 活动spike | Node代理 |
+| 4 | `docs/clang-fix-campaign/spikes/p5q_c2b_form_diagnostics_test.mjs:38` | 活动spike | Node代理 |
+| 5 | `docs/clang-fix-campaign/spikes/p5q_c2b_intrinsics.mjs:20` | 活动spike | Node代理 |
+| 6 | `docs/clang-fix-campaign/spikes/p5q_c5_tools.mjs:6` | 活动spike | Node代理 |
+| 7 | `docs/clang-fix-campaign/spikes/p5q_compare_raw_active.mjs:4` | 活动spike | Node代理 |
+| 8 | `docs/clang-fix-campaign/spikes/p5q_fill_rehearsal.mjs:5` | 活动spike | Node代理 |
+| 9 | `tests/fixtures/p5q_node_entry.py:11` | 既有测试 | Node代理 |
+| 10 | `tests/node/p5q_c2b_safety.mjs:8` | 既有测试 | Node代理 |
+| 11 | `tests/node/p5q_c2c_raw_bytes_probe.mjs:7` | 既有测试 | Node代理 |
+| 12 | `tests/node/p5q_c2c_raw_bytes_probe.mjs:34` | 既有测试 | Node代理 |
+| 13 | `tests/node/p5q_c8_investigation.mjs:5` | 既有测试 | Node代理 |
+| 14 | `tests/node/p5q_cli_agent.mjs:4` | 既有测试 | Node代理 |
+| 15 | `tests/node/p5q_fake_quickbuild.mjs:8` | 既有测试 | Node代理 |
+| 16 | `tests/node/p5q_h_interception_probe.mjs:8` | 既有测试 | Node代理 |
+| 17 | `tests/node/p5q_hung_cdp_agent.mjs:4` | 既有测试 | Node代理 |
+| 18 | `tests/node/p5q_login_retry.mjs:7` | 既有测试 | Node代理 |
+| 19 | `tests/node/qb_browser_lifecycle.mjs:2` | 既有测试 | Node代理 |
+| 20 | `tests/node/test_p5q_c2b_config_source.mjs:4` | 既有测试 | Node代理 |
+| 21 | `tests/node/test_p5q_c5_tools.mjs:5` | 既有测试 | Node代理 |
+| 22 | `tests/node/test_p5q_c5b_failure_evidence.mjs:6` | 既有测试 | Node代理 |
+| 23 | `tests/node/test_qb_agent_source_guards.mjs:9` | 既有测试 | Node代理 |
+| 24 | `tests/node/test_qb_agent_source_guards.mjs:10` | 既有测试 | Python驱动 |
+| 25 | `tests/node/test_qb_browser_agent.mjs:6` | 既有测试 | Node代理 |
+| 26 | `tests/node/test_qb_browser_agent.mjs:452` | 既有测试 | Node代理 |
+| 27 | `tests/node/test_qb_browser_fields.mjs:11` | 既有测试 | Node代理 |
+| 28 | `tests/node/test_qb_browser_runtime.mjs:8` | 既有测试 | Node代理 |
+| 29 | `tests/node/test_qb_browser_trusted.mjs:10` | 既有测试 | Node代理 |
+| 30 | `tests/node/test_qb_failure_categories.mjs:5` | 既有测试 | Node代理 |
+| 31 | `tests/node/test_qb_login_facts.mjs:4` | 既有测试 | Node代理 |
+| 32 | `tests/unit/test_p5q_c6_offline_fix.py:31` | 既有测试 | Node代理 |
+| 33 | `tests/unit/test_qb_browser.py:551` | 既有测试 | Node代理 |
+| 34 | `tests/unit/test_qb_browser.py:681` | 既有测试 | Python驱动 |
+| 35 | `tests/unit/test_qb_browser_node.py:234` | 既有测试 | Python驱动 |
+| 36 | `tests/unit/test_qb_driver_budget.py:286` | 既有测试 | Node代理 |
+
+### 11.3 已完成的离线验收
+
+以下证据均相对`evidence/batch1/`:
+
+- collect:2922个nodeid,旧2903个全部存在,missing为空,added恰为19个别名用例;
+  `bulk/collect.stdout.log`、`bulk/nodeids.txt`、`bulk/nodeid-diff.json`。
+- 别名测试19 passed:`bulk/aliases.stdout.log`。旧新模块对象相同。
+- import-linter:7 kept/0 broken;`bulk/imports-final.stdout.log`。
+  a/b/d/e五个红例(含e直接、间接)均exit 1,详见`import-mutants/`;
+  临时违规文件均已删除,未改安全核心。
+- 新权威代理源码植入`arbitraryAlias.evaluate`后既有静态检查变红(1 failed),
+  移除后既有源码护栏183 passed/0 failed/0 skipped:`source-mutant/`。
+- 代理完整SHA256为`7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c`,
+  前缀为`40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16`,
+  均与原位置相同;`bulk/integrity.json`。
+- 新位置安全四组4/4通过(pytest入口1 passed):`bulk/safety-four.stdout.log`。
+  Worker组走允许的b分支(browser_fail_closed),shared_worker关闭成功、worker关闭错误;
+  攻击HTTP与WS均0、profile删除。307/308、凭据隔离、逐跳拦截各组通过。
+- 新包mypy:34个文件通过;改动Python范围ruff通过;design检查器0 problem:
+  `bulk/mypy-new.stdout.log`、`bulk/ruff.stdout.log`、`bulk/design-check.stdout.log`。
+- wheel:干净虚拟环境无源码sys.path,core可导入,8入口21次help均exit 0;
+  wheel及安装位置的代理hash等于源码:`wheel/summary.json`、`wheel/commands.json`。
+  首次venv创建因系统Python缺ensurepip失败,原stdout保留;用标准
+  `venv --without-pip`和既有pip的`--python <新venv>`安装wheel后完成验收,
+  未加系统site-packages、未装editable、未改变项目依赖。
+- 批量搬家首轮全仓`final-gate/`:2921 passed/0 failed/1 skipped,1020.49秒,
+  UTC 01:07:09至01:24:10。C5a六参数与C8均通过,未触发单独重跑;
+  load、CPU核数及起始CPU前10记录在该目录,原始证据保留。
+- 全包mypy首跑发现旧CLI从模块别名壳取类型导致21条静态错误;
+  按旧CLI转发到新位置的要求,其6处import改为权威模块,函数体/参数/旧入口保留。
+  repair原有build-verify包根导入也改为同对象的build_verify子模块导入,
+  满足本批新包只用子模块写法的约束;没有新增跨包依赖或修改测试。
+  原失败输出`bulk/mypy-all.stdout.log`保留;调整后全包153文件mypy通过,
+  ruff与7条合约通过:
+  `bulk/{mypy-all-final,ruff-final,imports-after-cli}.stdout.log`。
+- 按最终代码重建wheel,再次8入口21次help通过,资源hash相同:
+  `wheel-final/summary.json`。初次wheel的环境问题与验收仍原样保留。
+- 最终树全仓已通过:`final-gate-2/`,2921 passed/0 failed/1 skipped,
+  1023.81秒。唯一skip与基线同nodeid、同原因;对照为`bulk/skip-comparison.json`。
+  拆分后C8五次对照已完成,见第11.5节。
+
+### 11.4 本轮全仓门禁与负载
+
+均使用同一venv、虚拟显示与外置只观察失败的pytest插件,不修改测试结果。
+逻辑CPU核数均20,每次起始CPU前10(仅进程名/占用)在相应目录的`cpu-top10.txt`。
+
+| 树/证据目录 | UTC起止 | pytest通过/失败/跳过 | pytest秒数 | load前(1/5/15分钟) | load后(1/5/15分钟) | 清单结果 |
+|---|---|---|---|---|---|---|
+| derive-recheck | 00:37:04-00:54:15 | 2902/0/1 | 1030.30 | 0.66/0.80/0.80 | 2.08/1.85/1.50 | C5a六参数与C8均PASS;不触发重跑 |
+| final-gate | 01:07:09-01:24:10 | 2921/0/1 | 1020.49 | 1.83/1.34/1.39 | 1.37/1.13/1.22 | C5a六参数与C8均PASS;不触发重跑 |
+| final-gate-2(最终代码) | 01:24:50-01:41:54 | 2921/0/1 | 1023.81 | 0.76/1.01/1.17 | 1.39/1.20/1.19 | C5a六参数与C8均PASS;不触发重跑 |
+
+日期均2026-11-03。每次的`command.json`、`summary.json`、`pytest.xml`、
+`pytest.stdout.log`、`load-before.json`、`load-after.json`保留原始结果。
+没有清单外失败,没有触发C5a单独3次补跑。第7.1节拆分前C8五次与
+拆分后独立五次的判定单独登记,不以本表的全仓PASS代替。
+
+### 11.5 C8拆分后独立五次与基线比较
+
+只跑原nodeid,每次独立目录,未改测试/阈值/skip/xfail。下表耗时为命令包装器秒数。
+
+| 次数 | 拆分前结果 | 拆分后结果 | 后次耗时 | 后次失败形态 | 证据 |
+|---|---|---|---|---|---|
+| 1 | PASS | PASS | 182.787 | 无 | `flaky-post/run-01/` |
+| 2 | FAIL(racing-meta-refresh) | PASS | 182.070 | 无 | `flaky-post/run-02/` |
+| 3 | PASS | PASS | 181.985 | 无 | `flaky-post/run-03/` |
+| 4 | PASS | PASS | 181.609 | 无 | `flaky-post/run-04/` |
+| 5 | PASS | PASS | 181.970 | 无 | `flaky-post/run-05/` |
+
+拆分前唯一形态仍为第7.1节的`racing-meta-refresh / TargetClosedError /
+OTHER_FRAMEWORK_ERROR / FETCH_CONTINUE_FAILED`。后五次没有失败形态,
+按SKEL-B1-03第3项判定与基线一致;
+`flaky-post/summary.json`、`flaky-post/decision.json`与各次`node/`保存原始记录。
+不声称C8既有时序问题已修复,也不把较早全仓的configuration-redirect-307形态
+加入这五次基线的豁免范围。
+
+### 11.6 最终交付核对
+
+- 最终collect exit 0,2922个nodeid,基线减最终的差集为空;反向增加仅19个别名测试。
+  两份列表为`baseline/nodeids.txt`与`bulk/nodeids-final.txt`,差集为
+  `bulk/nodeid-diff-final.json`;零collect错误、零新增skip。
+- 原六合约保留,第七条及新层级均生效:基线6 kept/0 broken,最终7 kept/0 broken;
+  a/b/d/e五次红例各exit 1,临时违规文件已移除,恢复后合约全绿。
+- 最终非import AST核对含旧CLI,19模块和旧CLI逻辑不变;
+  `bulk/integrity-final.json`、`bulk/moved-module-import-diffs.patch`。
+  安全核心、冻结稿、代理完整/前缀hash不变;design.md既有文本逐字不变,
+  仅插入4.6修订节。最终设计检查器0 problem:
+  `bulk/design-check-final.stdout.log`。
+- 进程与临时资源检查:本次对照worktree已不存在,P5Q进程与
+  `/dev/shm/p5q-browser-*`均为空。仅删除本次创建的两个wheel验收目录,
+  未处理其它历史worktree或其它用户资源:
+  `bulk/cleanup-final.json`。wheel验收命令、安装路径与资源hash已完整归档。
+- 与冻结稿或裁定不一致、做不到的地方:无。保留C8基线时序问题原处置,
+  本批未修复它;系统缺ensurepip的环境准备问题已用标准干净venv方式解决。
+- 提交前diff检查:代码与文档exit 0;含原始证据时exit 2,仅为测试输出、
+  HTML与补丁上下文的行尾空白或末尾空行,保留原始字节不改。
+  完整输出见`bulk/diff-check-final.json`。
+- 本批提交后停止,等待设计方审读;第2、3、3.5、4批均未开始。

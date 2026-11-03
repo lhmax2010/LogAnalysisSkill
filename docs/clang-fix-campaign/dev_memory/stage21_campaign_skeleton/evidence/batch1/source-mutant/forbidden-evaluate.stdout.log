@@ -1,0 +1,33 @@
+✖ C2c production agent satisfies frozen v1.5 section 9.2 source guards (21.286847ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 122.543462
+
+✖ failing tests:
+
+test at tests/node/test_qb_agent_source_guards.mjs:53:1
+✖ C2c production agent satisfies frozen v1.5 section 9.2 source guards (21.286847ms)
+  AssertionError [ERR_ASSERTION]: Agent source guard violations:
+  1000:7 [main-world] evaluate is a main-world execution interface
+  
+  1 !== 0
+  
+      at assertClean (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/qb_agent_source_guards.mjs:312:10)
+      at assertAgentSourceGuards (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/qb_agent_source_guards.mjs:317:51)
+      at TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_agent_source_guards.mjs:53:84)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

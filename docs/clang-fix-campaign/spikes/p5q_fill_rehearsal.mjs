@@ -2,7 +2,7 @@
 import { randomUUID } from 'node:crypto';
 import { parseArgs } from 'node:util';
 import { pathToFileURL } from 'node:url';
-import { Agent, createRuntime, FIELDS, formFacts } from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, createRuntime, FIELDS, formFacts } from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import { PROJECT, DEFAULTS, assertRuntime, newOutput, observeCallbacks,
   EvidenceError, withEvidence, evidenceSession, reportFailure } from './p5q_c5_tools.mjs';
 

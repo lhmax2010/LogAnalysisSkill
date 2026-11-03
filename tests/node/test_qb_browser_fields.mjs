@@ -8,7 +8,7 @@ import test from 'node:test';
 import { pathToFileURL } from 'node:url';
 import {
   Agent, FIELDS, ORIGIN, adaptProtocol, createRuntime, fingerprint, startupSelfTest,
-} from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+} from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 // Run like the other browser tests: NODE this-file PLAYWRIGHT/index.mjs CHROMIUM.
 // Only synthetic HTML and real loopback HTTPS are used, never archived responses.

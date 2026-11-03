@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
   AgentError, createRuntime, FIELDS, formDOM, normalizeFormDOM, ORIGIN, validateForm,
-} from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+} from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import { collectFormDiagnostic, FORM_ACTION, withFormFailureEvidence } from './p5q_c2b_form_diagnostics.mjs';
 
 const PROJECT = 'Tizen-Base-Toolchain';
@@ -35,7 +35,7 @@ function fixture({ extra = '', missing = null, transform = value => value,
 }
 
 export async function formSelfTest(playwright, chromium, python, redactAddress) {
-  const productionSource = await readFile(new URL('../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs', import.meta.url), 'utf8');
+  const productionSource = await readFile(new URL('../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs', import.meta.url), 'utf8');
   assert.ok(productionSource.includes(`const ACTION = ${FORM_ACTION};`));
   assert.ok(productionSource.includes("const PALETTES = new Set(['CHILD_CONFIGURATIONS', 'TARGET_IMAGE']);"));
   const runtime = await createRuntime(playwright, chromium);

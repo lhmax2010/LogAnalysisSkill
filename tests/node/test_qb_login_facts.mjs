@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import test from 'node:test';
-import { Agent, createRuntime, pathShape } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, createRuntime, pathShape } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import { fakeQuickBuild, PROJECT } from './p5q_fake_quickbuild.mjs';
 
 const [playwright, chromium] = process.argv.slice(2);

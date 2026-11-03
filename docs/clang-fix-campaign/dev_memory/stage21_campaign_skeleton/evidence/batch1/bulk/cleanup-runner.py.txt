@@ -1,0 +1,54 @@
+"""Check this batch's process scope and remove only its wheel test venvs."""
+
+import json
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+root = Path.cwd()
+base = root / 'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch1'
+rows = {}
+for proc in Path('/proc').iterdir():
+    if not proc.name.isdigit():
+        continue
+    try:
+        if proc.stat().st_uid != os.getuid():
+            continue
+        argv = [s.decode(errors='replace') for s in (proc / 'cmdline').read_bytes().split(b'\0') if s]
+        exe = str((proc / 'exe').resolve(strict=True))
+        status = dict(line.split(':', 1) for line in (proc / 'status').read_text().splitlines() if ':' in line)
+        rows[int(proc.name)] = {'argv': argv, 'exe': exe, 'name': status['Name'].strip(),
+                                'ppid': int(status['PPid'])}
+    except (OSError, ValueError):
+        continue
+selected = set()
+for pid, row in rows.items():
+    args = row['argv']
+    if any(a.startswith('--user-data-dir=/dev/shm/p5q-browser-') for a in args):
+        selected.add(pid)
+    if not (Path(row['exe']).name in {'node', 'nodejs'} or Path(row['exe']).name.startswith('python')):
+        continue
+    for arg in args[1:]:
+        if arg.endswith(('.mjs', '.py')) and ('p5q' in Path(arg).name or 'qb_browser' in Path(arg).name):
+            if Path(arg).resolve().is_relative_to(root.resolve()):
+                selected.add(pid)
+while True:
+    children = {pid for pid, row in rows.items() if row['ppid'] in selected}
+    if children <= selected:
+        break
+    selected |= children
+report = {'profiles': [str(p) for p in Path('/dev/shm').glob('p5q-browser-*')],
+          'processes': [{'pid': pid, 'name': rows[pid]['name'], 'exe': rows[pid]['exe']} for pid in sorted(selected)],
+          'comparison_worktree_exists': Path('/tmp/loganalysisskill-skel-b1-f203aec-20261103').exists(),
+          'removed_wheel_workspaces': []}
+assert not report['profiles'] and not report['processes'] and not report['comparison_worktree_exists'], report
+for name in ('wheel', 'wheel-final'):
+    workspace = Path(json.loads((base / name / 'summary.json').read_text())['workspace'])
+    assert workspace.parent == Path('/tmp') and workspace.name.startswith('skel-b1-wheel-')
+    assert not any(any(a.startswith(str(workspace) + '/') for a in row['argv']) for row in rows.values())
+    size = int(subprocess.check_output(['du', '-sb', str(workspace)]).split()[0])
+    shutil.rmtree(workspace)
+    report['removed_wheel_workspaces'].append({'path': str(workspace), 'bytes': size, 'removed': not workspace.exists()})
+(base / 'bulk/cleanup-final.json').write_text(json.dumps(report, indent=2) + '\n')
+print(json.dumps(report, indent=2))

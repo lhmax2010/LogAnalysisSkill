@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { createRuntime, installFailureHandlers } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { createRuntime, installFailureHandlers } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 const [mode, playwright, chromium] = process.argv.slice(2);
 const runtime = await createRuntime(playwright, chromium, {

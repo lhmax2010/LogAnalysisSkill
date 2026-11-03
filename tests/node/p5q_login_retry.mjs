@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { createServer } from 'node:https';
 import { existsSync } from 'node:fs';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
-import { Agent, createRuntime, ORIGIN } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, createRuntime, ORIGIN } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 const [playwright, chromium] = process.argv.slice(2);
 const directory = await mkdtemp('/dev/shm/p5q-login-retry-');

@@ -2,7 +2,7 @@
 import {
   AgentError, callbackURL, canonical, checkRedacted, FIELDS, formDOM, normalizeFormDOM,
   ORIGIN, redactDOM, validateForm,
-} from '../../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+} from '../../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 // Private production constants; the offline test pins these copies to source.
 export const FORM_ACTION = /^\d+-\d+\.IFormSubmitListener-form$/;

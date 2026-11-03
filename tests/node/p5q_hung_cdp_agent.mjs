@@ -1,7 +1,7 @@
 // Synthetic CDP adapter; executes the production trusted-read path without a browser.
 import readline from 'node:readline';
 import fs from 'node:fs';
-import { Agent, Policy } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, Policy } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 const hold = process.argv[2];
 const scenario = process.argv[3] ? JSON.parse(fs.readFileSync(process.argv[3], 'utf8')) : { replies: [] };

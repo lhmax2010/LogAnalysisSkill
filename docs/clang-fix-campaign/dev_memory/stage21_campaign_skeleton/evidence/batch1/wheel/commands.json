@@ -1,0 +1,335 @@
+[
+  {
+    "name": "build",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pip",
+      "wheel",
+      "--no-build-isolation",
+      "--no-deps",
+      "--wheel-dir",
+      "/tmp/skel-b1-wheel-aw2rjsn9/wheels",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill"
+    ],
+    "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+    "exit": 0,
+    "seconds": 1.054607629776001
+  },
+  {
+    "name": "venv",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "venv",
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 1,
+    "seconds": 0.05161428451538086
+  },
+  {
+    "name": "venv-without-pip",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "venv",
+      "--without-pip",
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.04181480407714844
+  },
+  {
+    "name": "install",
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pip",
+      "--python",
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "install",
+      "/tmp/skel-b1-wheel-aw2rjsn9/wheels/gbs_analyzer-1.3.0-py3-none-any.whl"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 10.407752990722656
+  },
+  {
+    "name": "import",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-c",
+      "import json,sys,tizen_campaign_core,tizen_qb_verify; print(json.dumps(dict(sys_path=sys.path,core=tizen_campaign_core.__file__,qb=tizen_qb_verify.__file__)))"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.017191171646118164
+  },
+  {
+    "name": "ci_triage-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.09940886497497559
+  },
+  {
+    "name": "ci_triage-qb-trigger-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "qb-trigger",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.10470461845397949
+  },
+  {
+    "name": "ci_triage-qb-result-fetch-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "qb-result-fetch",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.11106061935424805
+  },
+  {
+    "name": "ci_triage-sandbox-submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "sandbox-submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.08816003799438477
+  },
+  {
+    "name": "ci_triage-suppress-policy-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "suppress-policy",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.09929871559143066
+  },
+  {
+    "name": "ci_triage-build-verify-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "build-verify",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.09024429321289062
+  },
+  {
+    "name": "ci_triage-check-convergence-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "check-convergence",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.09010744094848633
+  },
+  {
+    "name": "ci_triage-gerrit-submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "gerrit-submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.09902095794677734
+  },
+  {
+    "name": "ci_triage-release-worktree-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "release-worktree",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.096923828125
+  },
+  {
+    "name": "ci_triage-campaign-repair-step-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "ci_triage",
+      "campaign-repair-step",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.09490847587585449
+  },
+  {
+    "name": "tizen_campaign_repair-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_campaign_repair",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.07304143905639648
+  },
+  {
+    "name": "tizen_campaign_repair-campaign-repair-step-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_campaign_repair",
+      "campaign-repair-step",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.06886553764343262
+  },
+  {
+    "name": "tizen_sandbox_submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_sandbox_submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.07447600364685059
+  },
+  {
+    "name": "tizen_sandbox_submit-sandbox-submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_sandbox_submit",
+      "sandbox-submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.07278203964233398
+  },
+  {
+    "name": "tizen_qb_verify-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_qb_verify",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.029140472412109375
+  },
+  {
+    "name": "tizen_qb_verify-qb-trigger-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_qb_verify",
+      "qb-trigger",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.08655357360839844
+  },
+  {
+    "name": "tizen_qb_verify-qb-result-fetch-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_qb_verify",
+      "qb-result-fetch",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.08165383338928223
+  },
+  {
+    "name": "tizen_campaign_intake-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_campaign_intake",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.02245306968688965
+  },
+  {
+    "name": "tizen_baseline_reproduce-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_baseline_reproduce",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.0190126895904541
+  },
+  {
+    "name": "tizen_review_submit-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_review_submit",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.021683216094970703
+  },
+  {
+    "name": "tizen_campaign_report-help",
+    "argv": [
+      "/tmp/skel-b1-wheel-aw2rjsn9/venv/bin/python",
+      "-m",
+      "tizen_campaign_report",
+      "--help"
+    ],
+    "cwd": "/tmp/skel-b1-wheel-aw2rjsn9",
+    "exit": 0,
+    "seconds": 0.021242618560791016
+  }
+]

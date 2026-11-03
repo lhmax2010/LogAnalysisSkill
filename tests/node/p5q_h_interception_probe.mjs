@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
-import { installGuards, Policy } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { installGuards, Policy } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 // Diagnostic switches live only in this synthetic, loopback-only test entrypoint.
 const [modulePath, executablePath] = process.argv.slice(2);

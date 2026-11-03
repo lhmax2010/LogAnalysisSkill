@@ -1,0 +1,14 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "-s",
+    "tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "exit": 0,
+  "start_utc": "2026-11-03T01:03:11.241023+00:00",
+  "end_utc": "2026-11-03T01:03:19.670482+00:00",
+  "seconds": 8.429462010972202
+}

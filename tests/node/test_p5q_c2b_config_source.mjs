@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { createRuntime } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { createRuntime } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import {
   BUILD_PREFIX, CONFIGURATION_PATH, configurationDOM, configurationPageChecks,
   parentConfigurationChecks, parentRegistration,

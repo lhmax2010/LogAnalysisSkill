@@ -1,0 +1,34 @@
+=============
+Import Linter
+=============
+
+---------
+Contracts
+---------
+
+Analyzed 107 files, 196 dependencies.
+-------------------------------------
+
+application layers: orchestration -> skills -> shared BROKEN
+extracted skills are independent KEPT
+shared internal layers: L1 -> L0 -> types KEPT
+shared must not import orchestration KEPT
+shared L1 domains are independent KEPT
+shared L0 primitives are independent KEPT
+campaign compilation only through repair KEPT
+
+Contracts: 6 kept, 1 broken.
+
+
+----------------
+Broken contracts
+----------------
+
+application layers: orchestration -> skills -> shared
+-----------------------------------------------------
+
+tizen_campaign_core is not allowed to import tizen_campaign_intake:
+
+- tizen_campaign_core.__skel_import_probe -> tizen_campaign_intake (l.1)
+
+

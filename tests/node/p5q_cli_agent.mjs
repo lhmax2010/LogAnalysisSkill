@@ -1,7 +1,7 @@
 // Integration entry only: real Agent, local certificate/DNS and simulated human.
 import { readFile, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
-import { Agent, createRuntime } from '../../tizen-ci-triage/scripts/ci_triage/qb_browser_agent.mjs';
+import { Agent, createRuntime } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 const [playwright, chromium] = process.argv.slice(2);
 const runtime = await createRuntime(playwright, chromium, JSON.parse(await readFile(process.env.P5Q_TEST_SERVER, 'utf8')));
 const agent = new Agent(runtime);

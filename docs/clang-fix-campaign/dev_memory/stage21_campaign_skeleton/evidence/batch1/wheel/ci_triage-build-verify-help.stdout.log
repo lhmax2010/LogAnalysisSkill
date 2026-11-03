@@ -1,0 +1,31 @@
+usage: ci_triage build-verify [-h] --src-clean SRC_CLEAN --base-commit
+                              BASE_COMMIT --edit-spec EDIT_SPEC --gbs-conf
+                              GBS_CONF --package PACKAGE --workspace-root
+                              WORKSPACE_ROOT --baseline-evidence
+                              BASELINE_EVIDENCE --output-dir OUTPUT_DIR
+                              --iter-index ITER_INDEX
+                              [--wall-timeout WALL_TIMEOUT] --state-db
+                              STATE_DB [--ci-system CI_SYSTEM] --build-id
+                              BUILD_ID --project PROJECT --branch BRANCH
+                              --arch ARCH
+
+Apply an edit_spec in a disposable worktree and run one gbs build verify.
+
+options:
+  -h, --help            show this help message and exit
+  --src-clean SRC_CLEAN
+  --base-commit BASE_COMMIT
+  --edit-spec EDIT_SPEC
+  --gbs-conf GBS_CONF
+  --package PACKAGE
+  --workspace-root WORKSPACE_ROOT
+  --baseline-evidence BASELINE_EVIDENCE
+  --output-dir OUTPUT_DIR
+  --iter-index ITER_INDEX
+  --wall-timeout WALL_TIMEOUT
+  --state-db STATE_DB
+  --ci-system CI_SYSTEM
+  --build-id BUILD_ID
+  --project PROJECT
+  --branch BRANCH
+  --arch ARCH
