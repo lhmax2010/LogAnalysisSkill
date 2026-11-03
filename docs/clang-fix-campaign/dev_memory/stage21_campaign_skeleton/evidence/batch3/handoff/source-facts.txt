@@ -1,0 +1,18 @@
+docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md:46:| P6 基线复现 | 三架构本地复现 CI 失败 | **保留,去掉 rebaseline** | 修复轮的首轮输入与 `BASELINE_REPRODUCED` 状态依赖它 | `previous_evidence_missing` 导致的 HELD 只能人工处理(HELD 仍可经 5.4 释放副本,不形成死结) |
+docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md:63:3. 基线复现 `baseline-reproduce`:先主架构,再其余两个架构(`BASELINE_RUNNING` → `BASELINE_REPRODUCED` 或终态 `NOT_REPRODUCED`)。
+docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md:64:4. 修复轮 `campaign-repair-step`(已有):AI 按剧本生成 edit_spec,每轮经该命令编译、记账、判收敛;三架构全过进入 `LOCAL_3ARCH_PASS`,失败终态为 `DENIED` / `STALLED` / `REGRESSED` / `ROUNDS_EXHAUSTED`。
+docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md:217:- 若该 unit 是第 7 节第 3.5 / 4 批的在途包且处于 `LOCAL_3ARCH_PASS`,放弃前须确认不再做第 4 批。
+docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md:281:| 3.5 | 真实 gbs 单包干跑:选一个已有人工修法(shelve CL)的包,由人按该修法写 edit_spec;运行 `campaign-start-check`(含对真实 Gerrit 的只读 `ls-remote`)→ `campaign-add-unit`(含只读克隆)→ `baseline-reproduce` 三架构 → `campaign-repair-step` 直到 `LOCAL_3ARCH_PASS` 或终态。**不执行 sandbox-submit,不运行任何 QuickBuild 命令,不推送 Gerrit**。产出:真实 CI 日志的 analyzer 证据、三架构基线与修复耗时、真实 gbs 失败形态;任一项与冻结稿不符即停,先修再进第 4 批。证据归档 `dev_memory/stage21_campaign_skeleton/evidence/batch3.5/`,含三份副本路径与保护标记 | 真 gbs,不推送、不登录 |
+docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md:284:- 第 3.5 批结束后,不得对该 unit 执行 `campaign-finish-unit` 或 `campaign-release-worktrees`(含 `--abandon`):`LOCAL_3ARCH_PASS` 的三份受保护副本是第 4 批 sandbox-submit 的必需输入,释放后只能重跑第 3.5 批。该约束写入第 3.5 批执行裁定与 progress。
+docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md:285:- 第 3.5 批止于终态(未达 `LOCAL_3ARCH_PASS`)时:该包不进第 4 批;按证据判断是工具缺陷还是修法/环境问题——工具缺陷先修再重跑第 3.5 批,修法或环境问题则另选一个包重跑第 3.5 批。第 4 批不得在未达 `LOCAL_3ARCH_PASS` 的包上开始。
+tizen-baseline-reproduce/scripts/tizen_baseline_reproduce/baseline.py:169:                state.append_status(db, unit.campaign_unit_key, "BASELINE_REPRODUCED")
+tizen-campaign-repair/scripts/tizen_campaign_repair/campaign_repair_step.py:76:REPAIR_ROUND_RUNNING = "REPAIR_ROUND_RUNNING"
+tizen-campaign-repair/scripts/tizen_campaign_repair/campaign_repair_step.py:81:_EXECUTABLE_UNIT_STATUSES = frozenset({REPAIR_ROUND_RUNNING})
+tizen-campaign-repair/scripts/tizen_campaign_repair/campaign_repair_step.py:687:            f"campaign unit status is not executable: {status!r}",
+tests/unit/test_campaign_repair_step.py:25:    REPAIR_ROUND_RUNNING,
+tests/unit/test_campaign_repair_step.py:237:    append_status(db, UNIT_KEY, REPAIR_ROUND_RUNNING)
+tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py:45:    "REPAIR_ROUND_RUNNING",
+tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py:46:    "LOCAL_3ARCH_PASS",
+tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py:592:        if status == "REPAIR_ROUND_RUNNING":
+tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py:593:            state.append_status(db, key, "LOCAL_3ARCH_PASS")
+tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py:594:            status = "LOCAL_3ARCH_PASS"

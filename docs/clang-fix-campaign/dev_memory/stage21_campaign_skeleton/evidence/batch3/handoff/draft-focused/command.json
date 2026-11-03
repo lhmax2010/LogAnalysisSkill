@@ -1,0 +1,14 @@
+{
+  "argv": [
+    ".venv/bin/pytest",
+    "-q",
+    "tests/unit/test_campaign_batch3_review.py",
+    "tests/unit/test_campaign_batch3_start.py"
+  ],
+  "start_utc": "2026-11-03T06:41:11.827437+00:00",
+  "end_utc": "2026-11-03T06:41:18.346545+00:00",
+  "exit_code": 0,
+  "cpu_count": 20,
+  "load_before": "1.18 1.48 2.64 5/3203 3384750",
+  "load_after": "1.16 1.47 2.63 4/3211 3386723"
+}

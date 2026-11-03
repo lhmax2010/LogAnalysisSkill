@@ -1,0 +1,32 @@
+F
+=================================== FAILURES ===================================
+_____________________ test_offline_success_start_to_report _____________________
+
+flow = namespace(args=namespace(state_db=PosixPath('/tmp/pytest-of-linhao/pytest-45/test_offline_success_start_to_0/state.db'...replies.json'), transcript=PosixPath('/tmp/pytest-of-linhao/pytest-45/test_offline_success_start_to_0/commands.jsonl'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e3df2df78f0>
+
+    def test_offline_success_start_to_report(flow, monkeypatch):
+        c = flow
+>       build_and_push(c, monkeypatch)
+
+tests/unit/test_campaign_batch3_e2e.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+c = namespace(args=namespace(state_db=PosixPath('/tmp/pytest-of-linhao/pytest-45/test_offline_success_start_to_0/state.db'...replies.json'), transcript=PosixPath('/tmp/pytest-of-linhao/pytest-45/test_offline_success_start_to_0/commands.jsonl'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e3df2df78f0>
+
+    def build_and_push(c, monkeypatch):
+        monkeypatch.setenv("FAKE_BASELINE_EXIT", "0")
+        ids = []
+        for arch in ("aarch64", "armv7l", "x86_64"):
+            result = campaign_repair_step(replace(c.repair, arch_raw="standard-" + arch))
+>           assert result.exit_code == 0, result.result.to_dict()
+E           AssertionError: {'adopted': False, 'arch_norm': 'aarch64', 'convergence_reason': "campaign unit status is not executable: 'BASELINE_REPRODUCED'", 'error_code': 'REJECTED_STATE_INCONSISTENT', ...}
+E           assert 4 == 0
+E            +  where 4 = CampaignRepairStepOutcome(result=CampaignRepairStepResult(result='FAIL', verdict='n_a', repair_allowed='denied', failu...mpaign_verification_ids': []}, warnings=[], invocations_used=0, error_code='REJECTED_STATE_INCONSISTENT'), exit_code=4).exit_code
+
+tests/unit/test_campaign_batch3_e2e.py:104: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_campaign_batch3_e2e.py::test_offline_success_start_to_report
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 1.15s

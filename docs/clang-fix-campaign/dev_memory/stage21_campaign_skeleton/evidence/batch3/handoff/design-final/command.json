@@ -1,0 +1,13 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/tools/check_design_doc.py",
+    "docs/clang-fix-campaign/design.md"
+  ],
+  "start_utc": "2026-11-03T06:44:11.267122+00:00",
+  "end_utc": "2026-11-03T06:44:11.343961+00:00",
+  "exit_code": 0,
+  "cpu_count": 20,
+  "load_before": "1.44 1.80 2.58 3/3200 3388016",
+  "load_after": "1.44 1.80 2.58 6/3200 3388017"
+}

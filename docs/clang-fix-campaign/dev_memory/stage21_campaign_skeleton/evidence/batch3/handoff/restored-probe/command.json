@@ -1,0 +1,14 @@
+{
+  "argv": [
+    ".venv/bin/pytest",
+    "-q",
+    "-s",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3/handoff/test_probe_handoff.py"
+  ],
+  "start_utc": "2026-11-03T06:43:35.624865+00:00",
+  "end_utc": "2026-11-03T06:43:36.911543+00:00",
+  "exit_code": 0,
+  "cpu_count": 20,
+  "load_before": "1.80 1.91 2.65 5/3202 3387555",
+  "load_after": "1.80 1.91 2.65 3/3187 3387640"
+}

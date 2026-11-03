@@ -1,0 +1,15 @@
+{
+  "argv": [
+    ".venv/bin/ruff",
+    "check",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3/handoff/capture.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3/handoff/checks.py",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3/handoff/test_probe_handoff.py"
+  ],
+  "start_utc": "2026-11-03T06:43:39.886348+00:00",
+  "end_utc": "2026-11-03T06:43:39.956678+00:00",
+  "exit_code": 1,
+  "cpu_count": 20,
+  "load_before": "1.82 1.91 2.64 3/3186 3387667",
+  "load_after": "1.82 1.91 2.64 1/3186 3387700"
+}

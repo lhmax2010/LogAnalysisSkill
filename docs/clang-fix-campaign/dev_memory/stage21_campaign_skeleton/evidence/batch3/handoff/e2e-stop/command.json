@@ -1,0 +1,13 @@
+{
+  "argv": [
+    ".venv/bin/pytest",
+    "-xq",
+    "tests/unit/test_campaign_batch3_e2e.py"
+  ],
+  "start_utc": "2026-11-03T06:41:18.347849+00:00",
+  "end_utc": "2026-11-03T06:41:19.651003+00:00",
+  "exit_code": 1,
+  "cpu_count": 20,
+  "load_before": "1.16 1.47 2.63 3/3211 3386723",
+  "load_after": "1.15 1.46 2.62 2/3210 3386806"
+}

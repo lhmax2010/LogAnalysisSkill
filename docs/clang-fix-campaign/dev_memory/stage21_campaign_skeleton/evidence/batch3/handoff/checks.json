@@ -1,0 +1,65 @@
+{
+  "baseline_nodeids": 3028,
+  "current_nodeids": 3028,
+  "removed": [],
+  "added": [],
+  "integrity": {
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": {
+      "before": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+      "after": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+      "identical": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": {
+      "before": "7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c",
+      "after": "7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c",
+      "identical": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py": {
+      "before": "afc049e204135017c9f457fea9c7237c7e3fded8f87a60885824510390f21fde",
+      "after": "afc049e204135017c9f457fea9c7237c7e3fded8f87a60885824510390f21fde",
+      "identical": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py": {
+      "before": "0cc7b5d11641074efbf60fc9da9827a03c3ed9d607bd842509c7fd5a8d4f8e86",
+      "after": "0cc7b5d11641074efbf60fc9da9827a03c3ed9d607bd842509c7fd5a8d4f8e86",
+      "identical": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py": {
+      "before": "84778014c1a2912418a660f0bfdd567215c06e38ef6dbbc833fb62b13d691fc1",
+      "after": "84778014c1a2912418a660f0bfdd567215c06e38ef6dbbc833fb62b13d691fc1",
+      "identical": true
+    },
+    "tizen-build-verify/scripts/tizen_build_verify/build_verify.py": {
+      "before": "5a6ab48b9bafd01e464513b6450781fcffdcaaac3b39da911c45923e93093887",
+      "after": "5a6ab48b9bafd01e464513b6450781fcffdcaaac3b39da911c45923e93093887",
+      "identical": true
+    },
+    "tizen-campaign-core/scripts/tizen_campaign_core/_campaign_workspace.py": {
+      "before": "b5ccfbb22d7a615c3336b4cae76bd676abbafd0dd5ca9c84f9882828bfc6a238",
+      "after": "b5ccfbb22d7a615c3336b4cae76bd676abbafd0dd5ca9c84f9882828bfc6a238",
+      "identical": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_result_fetch.py": {
+      "before": "c318096992aafc14262df49d173b400b78322f635ab5a203f8edcbec11a57afe",
+      "after": "c318096992aafc14262df49d173b400b78322f635ab5a203f8edcbec11a57afe",
+      "identical": true
+    },
+    "tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py": {
+      "before": "93bd97b0262d1efead2104b6f5f6653e740e67a1a3c94ea17077b81cfe2c6067",
+      "after": "93bd97b0262d1efead2104b6f5f6653e740e67a1a3c94ea17077b81cfe2c6067",
+      "identical": true
+    }
+  },
+  "agent_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+  "production_or_old_test_changes": [],
+  "checks": {
+    "restored-probe-final": 0,
+    "collect-final": 0,
+    "design-final": 0,
+    "ruff-evidence-final": 0
+  },
+  "full_pytest": "NOT_RUN",
+  "mypy": "NOT_RUN",
+  "import_linter": "NOT_RUN",
+  "safety_groups": "NOT_RUN"
+}

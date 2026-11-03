@@ -1,0 +1,1155 @@
+diff --git a/tizen-campaign-intake/scripts/tizen_campaign_intake/__main__.py b/tizen-campaign-intake/scripts/tizen_campaign_intake/__main__.py
+index c9cb9fa..92ed913 100644
+--- a/tizen-campaign-intake/scripts/tizen_campaign_intake/__main__.py
++++ b/tizen-campaign-intake/scripts/tizen_campaign_intake/__main__.py
+@@ -1,21 +1,24 @@
+-"""Manual intake entry point; startup checks remain reserved for batch 3."""
++"""Manual intake and campaign startup entry point."""
+ 
+ import argparse
+ import sys
+ 
+ from tizen_campaign_intake.intake import main as add_unit_main
++from tizen_campaign_intake.start_check import main as start_check_main
+ 
+ 
+ def main(argv: list[str] | None = None) -> int:
+     argv = sys.argv[1:] if argv is None else argv
+     if argv and argv[0] == "campaign-add-unit":
+         return add_unit_main(argv[1:], stdout=sys.stdout)
++    if argv and argv[0] == "campaign-start-check":
++        return start_check_main(argv[1:], stdout=sys.stdout)
+     parser = argparse.ArgumentParser(prog="tizen_campaign_intake")
+     commands = parser.add_subparsers(dest="command", required=True)
+     commands.add_parser("campaign-add-unit", add_help=False)
+-    commands.add_parser("campaign-start-check", help="reserved for batch 3")
++    commands.add_parser("campaign-start-check", add_help=False)
+     parser.parse_args(argv)
+-    parser.error("campaign-start-check is reserved for batch 3")
++    return 0
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/tizen-review-submit/scripts/tizen_review_submit/__main__.py b/tizen-review-submit/scripts/tizen_review_submit/__main__.py
+index b6d4e98..f6bb122 100644
+--- a/tizen-review-submit/scripts/tizen_review_submit/__main__.py
++++ b/tizen-review-submit/scripts/tizen_review_submit/__main__.py
+@@ -1,12 +1,19 @@
+-"""Reserved command entry point for a later campaign skeleton batch."""
++"""Campaign review submission entry point."""
+ 
+ import argparse
++import sys
+ 
++from tizen_review_submit.review_submit import main as review_main
+ 
+-def main() -> int:
++
++def main(argv: list[str] | None = None) -> int:
++    argv = sys.argv[1:] if argv is None else argv
++    if argv and argv[0] == "review-submit":
++        return review_main(argv[1:], stdout=sys.stdout)
+     parser = argparse.ArgumentParser(prog="tizen_review_submit")
+-    parser.add_subparsers(dest="command", required=True)
+-    parser.parse_args()
++    commands = parser.add_subparsers(dest="command", required=True)
++    commands.add_parser("review-submit", add_help=False)
++    parser.parse_args(argv)
+     return 0
+ 
+ 
+diff --git a/tizen-campaign-intake/scripts/tizen_campaign_intake/start_check.py b/tizen-campaign-intake/scripts/tizen_campaign_intake/start_check.py
+new file mode 100644
+index 0000000..9e34c4b
+--- /dev/null
++++ b/tizen-campaign-intake/scripts/tizen_campaign_intake/start_check.py
+@@ -0,0 +1,141 @@
++"""Five offline-friendly campaign startup checks; no QuickBuild interaction."""
++
++from __future__ import annotations
++
++import json
++import re
++import subprocess
++import tempfile
++from pathlib import Path
++from typing import Any, TextIO
++
++import yaml
++from tizen_campaign_core._campaign_io import JsonParser
++from tizen_campaign_core._sandbox_git import SandboxGit
++
++REQUIRED = (
++    "gerrit_ssh_base",
++    "gerrit_user",
++    "git_author_identity",
++    "git_committer_identity",
++    "push_timeout_sec",
++    "push_retry",
++    "target_arches",
++    "campaign_workspace",
++    "clang_conf_path",
++)
++
++
++def check(config: Path, state_root: Path, projects: list[str]) -> dict[str, Any]:
++    # Same project-name grammar as qb_trigger's preflight, before any subprocess.
++    valid_projects = bool(projects) and all(
++        re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/+-]*", p) is not None
++        and ".." not in p
++        and not p.endswith("/")
++        for p in projects
++    )
++    try:
++        settings = yaml.safe_load(config.read_text(encoding="utf-8"))
++        if not isinstance(settings, dict):
++            settings = {}
++    except (OSError, yaml.YAMLError):
++        settings = {}
++    missing = [key for key in REQUIRED if settings.get(key) in (None, "")]
++    checks: list[dict[str, Any]] = [
++        dict(
++            name="config",
++            passed=not missing and valid_projects,
++            reason="invalid_project" if not valid_projects else "missing_keys" if missing else None,
++            missing_keys=missing,
++        )
++    ]
++    conf = settings.get("clang_conf_path")
++    checks.append(
++        dict(
++            name="clang_conf",
++            passed=isinstance(conf, str)
++            and Path(conf).is_file()
++            and "/reference/" not in str(Path(conf).resolve())
++            and "/reference/" not in conf,
++            reason=None,
++        )
++    )
++    base = settings.get("gerrit_ssh_base")
++    valid_base = isinstance(base, str) and base.startswith("ssh://")
++    if missing or not valid_projects:
++        checks.extend(
++            dict(name=name, passed=False, reason="config_failed")
++            for name in ("gbs", "gerrit", "state_directory")
++        )
++    else:
++        try:
++            gbs = subprocess.run(["gbs", "--version"], capture_output=True, timeout=30, check=False)
++            ok = gbs.returncode == 0
++        except (OSError, subprocess.SubprocessError):
++            ok = False
++        checks.append(dict(name="gbs", passed=ok, reason=None if ok else "unavailable"))
++        accessible = []
++        if valid_base:
++            assert isinstance(base, str)
++            for project in projects:
++                try:
++                    result = SandboxGit().run(
++                        None,
++                        "ls-remote",
++                        base.rstrip("/") + "/" + project,
++                        remote=True,
++                        check=False,
++                    )
++                    accessible.append(result.returncode == 0)
++                except (OSError, subprocess.SubprocessError):
++                    accessible.append(False)
++        checks.append(
++            dict(
++                name="gerrit",
++                passed=valid_base and all(accessible),
++                reason="config_not_ssh"
++                if not valid_base
++                else "unreachable"
++                if not all(accessible)
++                else None,
++                projects=[
++                    dict(project=p, passed=ok) for p, ok in zip(projects, accessible, strict=False)
++                ],
++            )
++        )
++        try:
++            state_root.mkdir(parents=True, exist_ok=True)
++            with tempfile.TemporaryFile(dir=state_root) as stream:
++                stream.write(b"startup-check")
++                stream.flush()
++            writable = True
++        except OSError:
++            writable = False
++        checks.append(
++            dict(name="state_directory", passed=writable, reason=None if writable else "unwritable")
++        )
++    ok = all(row["passed"] for row in checks)
++    return dict(checks=checks, error_code=None if ok else "PREFLIGHT_FAILED")
++
++
++def main(argv: list[str], *, stdout: TextIO) -> int:
++    parser = JsonParser(prog="campaign-start-check")
++    parser.add_argument("--config", type=Path, required=True)
++    parser.add_argument("--state-root", type=Path, required=True)
++    parser.add_argument("--project", action="append", required=True)
++    try:
++        args = parser.parse_args(argv)
++        result = check(args.config, args.state_root, args.project)
++    except ValueError:
++        result = dict(
++            error_code="PREFLIGHT_FAILED",
++            checks=[
++                dict(
++                    name="config",
++                    passed=False,
++                    reason="invalid_args",
++                )
++            ],
++        )
++    print(json.dumps(result, sort_keys=True), file=stdout)
++    return 0 if result["error_code"] is None else 4
+diff --git a/tizen-review-submit/scripts/tizen_review_submit/review_submit.py b/tizen-review-submit/scripts/tizen_review_submit/review_submit.py
+new file mode 100644
+index 0000000..924dd2c
+--- /dev/null
++++ b/tizen-review-submit/scripts/tizen_review_submit/review_submit.py
+@@ -0,0 +1,473 @@
++"""Review publication authorized only by bound campaign and QuickBuild evidence."""
++
++from __future__ import annotations
++
++import hashlib
++import json
++import re
++import subprocess
++from collections.abc import Mapping
++from contextlib import ExitStack
++from dataclasses import dataclass
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any, TextIO, cast
++
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core._campaign_io import JsonParser
++from tizen_campaign_core._campaign_workspace import _unit_hash
++from tizen_campaign_core.aggregate import aggregate_verifications
++from tizen_campaign_core.campaign_lifecycle import is_abandoned
++from tizen_campaign_core.submission_identity import compute_submission_key
++from tizen_campaign_core.suppress_policy import PolicyInputError, SourceKind, evaluate
++from tizen_ci_shared.state import StateDatabase
++from tizen_sandbox_submit import sandbox_submit as sandbox
++
++RESULT_KEYS = frozenset(
++    "qb_build_id child_build_id status sbs_target_echo per_arch_status accepted "
++    "configuration_path child_configuration_path parent_status_text child_status_text "
++    "child_build_result_text child_failed_step child_error_message request_marker_echo "
++    "params_echo child_params_echo snapshot_used snapshot_drift_accepted pkg_list_echo "
++    "evidence fetched_at".split()
++)
++
++
++@dataclass(frozen=True)
++class ReviewOptions:
++    verification_ids: str
++    state_db: Path
++    config: Path
++    qb_result: Path
++    review_target: str
++
++
++@dataclass(frozen=True)
++class QbGateResult:
++    ok: bool
++    source: str
++    degraded: bool
++    matched_event_id: int | None
++    reasons: tuple[str, ...]
++
++
++def validate_qb_gate(
++    state_db: StateDatabase,
++    campaign_unit_key: str,
++    qb_result_path: Path,
++    *,
++    allow_manual: bool = False,
++) -> QbGateResult:
++    """Manual evidence never authorizes publication in the skeleton workflow."""
++    try:
++        unit = state.get_unit(state_db, campaign_unit_key)
++        derive = state.gate_view(state_db, campaign_unit_key).derive
++        if derive is None:
++            raise sandbox._held("state_inconsistent", "missing DERIVE")
++        event, _ = _qb_gate(state_db, unit, qb_result_path, str(derive["derived_commit_sha"]))
++        return QbGateResult(True, "first_party", False, int(str(event["event_id"])), ())
++    except sandbox._Reject as exc:
++        return QbGateResult(False, "first_party", False, None, (exc.code, exc.detail))
++
++
++def _trace(root: Path, stage: str, **facts: object) -> None:
++    root.mkdir(parents=True, exist_ok=True)
++    with (root / "review-trace.jsonl").open("a", encoding="utf-8") as stream:
++        stream.write(json.dumps(dict(stage=stage, **facts), ensure_ascii=False, sort_keys=True) + "\n")
++
++
++def pending_message(request_id: str) -> str:
++    return (
++        f"该 unit 最新的验证请求(request_id={request_id})还没有结果。"
++        "若 qb-result-fetch 曾报告结果无法识别(QB_RESULT_UNRECOGNIZED,例如各架构状态非空或快照漂移;"
++        "可在运行 qb-result-fetch 时所用的 state_root 下查看该 request 的 trace 确认),"
++        "重读不会改变结果,请按其输出的指引处置,或用 campaign-release-worktrees --abandon "
++        "放弃该 unit;否则稍后重跑 qb-result-fetch。"
++    )
++
++
++def _request(db: StateDatabase, key: str) -> dict[str, Any] | None:
++    conn = state._read_connection(db)
++    try:
++        row = conn.execute(
++            "SELECT * FROM campaign_qb_requests WHERE campaign_unit_key=? "
++            "ORDER BY request_seq DESC LIMIT 1",
++            (key,),
++        ).fetchone()
++        return dict(row) if row else None
++    finally:
++        conn.close()
++
++
++def _qb_gate(
++    db: StateDatabase,
++    unit: state.Unit,
++    path: Path,
++    derived: str,
++) -> tuple[Mapping[str, object], dict[str, Any]]:
++    request = _request(db, unit.campaign_unit_key)
++    if request is None:
++        raise sandbox._Reject("REJECTED_QB_NOT_VERIFIED", "no verification request")
++    event = state.latest_qb_result(db, unit.campaign_unit_key)
++    if event is None:
++        raise sandbox._Reject("REJECTED_QB_REQUEST_PENDING", pending_message(request["request_id"]))
++    try:
++        raw = path.read_bytes()
++        digest = hashlib.sha256(raw).hexdigest()
++        if digest != event["qb_result_sha256"]:
++            conn = state._read_connection(db)
++            try:
++                old = conn.execute(
++                    "SELECT 1 FROM campaign_qb_events e JOIN campaign_qb_requests r "
++                    "ON r.request_seq=e.request_seq WHERE r.campaign_unit_key=? "
++                    "AND e.event_type='RESULT' AND e.qb_result_sha256=? AND e.event_id<>?",
++                    (unit.campaign_unit_key, digest, event["event_id"]),
++                ).fetchone()
++            finally:
++                conn.close()
++            if old:
++                raise sandbox._Reject("REJECTED_QB_SUPERSEDED", "result is superseded")
++            raise ValueError("result bytes changed")
++        result = json.loads(raw)
++        if not isinstance(result, dict) or set(result) != RESULT_KEYS:
++            raise ValueError("result is not an object")
++        if (
++            not isinstance(result["params_echo"], dict)
++            or set(result["params_echo"])
++            != {
++                "BUILD_TYPE",
++                "BUILD_REFERENCE",
++                "SNAPSHOT_NUM",
++                "PROJECT_BRANCH",
++                "FAIL_FAST",
++            }
++            or not isinstance(result["child_params_echo"], dict)
++            or set(result["child_params_echo"]) != {"BUILD_REFERENCE", "SNAPSHOT_NUM_URL"}
++            or type(result["snapshot_drift_accepted"]) is not bool
++            or type(result["accepted"]) not in {bool, type(None)}
++            or result["accepted"] != event["accepted"]
++        ):
++            raise ValueError("invalid result shape")
++        target = f"{unit.project}@{derived}"
++        if request["sbs_target"] != target or event["sbs_target_echo"] != target:
++            raise ValueError("target does not bind derived commit")
++        for field in ("qb_build_id", "status", "sbs_target_echo"):
++            if result.get(field) != event[field]:
++                raise ValueError("result and event differ")
++        if (
++            result.get("request_marker_echo")
++            != "clang-fix-campaign request=" + request["request_id"]
++        ):
++            raise ValueError("request marker differs")
++        profile = state.qb_profile(db, unit.branch)
++        if profile is None:
++            raise sandbox._held("state_inconsistent", "missing frozen QuickBuild profile")
++        text = profile["profile_json"]
++        if hashlib.sha256(text.encode()).hexdigest() != profile["profile_sha256"]:
++            raise sandbox._held("state_inconsistent", "frozen profile hash differs")
++        require_accept = json.loads(text)["qb_pass_requires_accept"]
++        if type(require_accept) is not bool:
++            raise ValueError("invalid acceptance policy")
++        per_arch = (
++            json.loads(str(event["per_arch_status_json"]))
++            if event["per_arch_status_json"] is not None
++            else None
++        )
++        if result.get("per_arch_status") != per_arch:
++            raise ValueError("architecture status differs")
++    except (OSError, ValueError, KeyError, TypeError) as exc:
++        raise sandbox._Reject("REJECTED_QB_BINDING_MISMATCH", type(exc).__name__) from exc
++    if (
++        event["status"] != "PASS"
++        or require_accept
++        and event["accepted"] != 1
++        or per_arch is not None
++        and (
++            not isinstance(per_arch, dict)
++            or set(per_arch) != state.ARCH_NORMS
++            or any(value != "PASS" for value in per_arch.values())
++        )
++    ):
++        raise sandbox._Reject("REJECTED_QB_NOT_VERIFIED", "QuickBuild pass gate failed")
++    return event, result
++
++
++def run(options: ReviewOptions) -> sandbox.SandboxSubmitOutcome:
++    db = StateDatabase(options.state_db)
++    payload: dict[str, Any] = dict(
++        action=None,
++        status=None,
++        error_code=None,
++        message=None,
++        review_url=None,
++        qb_event_id=None,
++        change_id=None,
++        derived_commit_sha=None,
++        snapshot_drift_accepted=None,
++        snapshot_used=None,
++    )
++    unit = None
++    aggregate = None
++    locks = ExitStack()
++    trace_root = None
++    try:
++        config = sandbox._config(options.config)
++        ids = tuple(item.strip() for item in options.verification_ids.split(","))
++        if len(ids) != 3 or len(set(ids)) != 3 or not all(ids):
++            raise sandbox._Reject(
++                "INVALID_ARGS", "three distinct verification ids required", exit_code=2
++            )
++        conn = state._read_connection(db)
++        try:
++            lock_key = str(sandbox._links(conn, ids)[0]["campaign_unit_key"])
++        finally:
++            conn.close()
++        locks.enter_context(sandbox._locks(config.workspace / _unit_hash(lock_key)))
++        trace_root = config.workspace / _unit_hash(lock_key)
++        _trace(trace_root, "locked")
++        if is_abandoned(db, lock_key):
++            raise sandbox._Reject("REJECTED_UNIT_ABANDONED", "unit abandoned")
++        conn = state._read_connection(db)
++        try:
++            conn.execute("BEGIN")
++            links = sandbox._links(conn, ids)
++            if str(links[0]["campaign_unit_key"]) != lock_key:
++                raise sandbox._held("state_inconsistent", "unit changed during locking")
++            unit = state._require_unit(conn, lock_key)
++            round_ = sandbox._round(conn, lock_key)
++            if round_ is None or links[0]["round_index"] != round_.round_index:
++                raise sandbox._Reject("REJECTED_ROUND_SUPERSEDED", "not the final round")
++            status = sandbox._status(conn, lock_key)
++        finally:
++            conn.close()
++        if options.review_target != "refs/for/" + unit.branch:
++            raise sandbox._Reject("REJECTED_REVIEW_TARGET_MISMATCH", "review branch differs")
++        if sandbox.check_push_ref(options.review_target) != sandbox.RefClass.REVIEW:
++            raise sandbox._Reject("REJECTED_REF_NOT_ALLOWED", "not a review ref")
++        aggregate = aggregate_verifications(ids, db)
++        if not aggregate.ok or any(
++            getattr(aggregate, field) != getattr(unit, field)
++            for field in ("base_commit", "project", "branch", "spec_name")
++        ):
++            raise sandbox._held("aggregate_mismatch", "; ".join(aggregate.reasons))
++        _trace(trace_root, "aggregate_verified")
++        view = state.gate_view(db, lock_key)
++        stored = view.derive
++        if stored is None:
++            raise sandbox._held("state_inconsistent", "missing DERIVE")
++        derived = str(stored["derived_commit_sha"])
++        qb, result = _qb_gate(db, unit, options.qb_result, derived)
++        _trace(trace_root, "qb_verified", event_id=qb["event_id"])
++        payload.update(
++            qb_event_id=qb["event_id"],
++            snapshot_used=result.get("snapshot_used"),
++            snapshot_drift_accepted=result.get("snapshot_drift_accepted"),
++        )
++        edit = sandbox._bound_bytes(
++            round_,
++            (
++                round_.edit_spec_sha256,
++                str(aggregate.edit_spec_sha256),
++                *(r.edit_spec_sha256 for r in aggregate.records),
++            ),
++        )
++        _trace(trace_root, "edit_spec_verified")
++        policy = state.latest_policy_for_round(db, lock_key, round_.round_index)
++        if policy is None or policy.get("edit_source_kind") not in {"generated", "suppress"}:
++            raise sandbox._held("state_inconsistent", "missing or unsupported policy source")
++        src = config.workspace / _unit_hash(lock_key) / "src"
++        sandbox._source(config.git, src, unit)
++        try:
++            verdict = evaluate(edit, src, cast(SourceKind, policy["edit_source_kind"]))
++        except PolicyInputError as exc:
++            raise sandbox._held("edit_spec_rebind_mismatch", str(exc)) from exc
++        if (verdict.verdict, verdict.fix_strategy_final) != (
++            policy["verdict"],
++            policy["fix_strategy_final"],
++        ):
++            raise sandbox._held("state_inconsistent", "stored and recomputed policy differ")
++        if verdict.verdict == "forbidden":
++            raise sandbox._held("suppress_policy_recheck", "forbidden suppression")
++        _trace(trace_root, "policy_verified", fix_strategy_final=verdict.fix_strategy_final)
++        if verdict.fix_strategy_final != "code" or not view.reproduced:
++            state.append_status(db, lock_key, "REVIEW_INELIGIBLE", "review_gate")
++            raise sandbox._Reject("REJECTED_REVIEW_GATE", "A2 quality gate failed")
++        if status not in {
++            "SANDBOX_QB_PASS",
++            "REVIEW_PUSHING",
++            "REVIEW_PUSH_FAILED",
++            "REVIEW_PUSHED",
++        }:
++            raise sandbox._held("state_inconsistent", "review state is not eligible")
++        _trace(trace_root, "quality_gate_verified")
++        submission_key = compute_submission_key(
++            unit.submission_identity_key, str(aggregate.verified_tree_sha)
++        )
++        change_id = state.lookup_change_id(db, submission_key)
++        if change_id is None:
++            raise sandbox._held("state_inconsistent", "missing cached Change-Id")
++        main = Path(next(r.worktree_path for r in aggregate.records if r.arch == unit.primary_arch))
++        inputs = sandbox.DeriveInputs(
++            main,
++            str(aggregate.verified_tree_sha),
++            str(aggregate.base_commit),
++            f"{sandbox.SUBJECT_PREFIX}{stored['message_brief']}\n\nChange-Id: {change_id}\n",
++            *(
++                str(stored[k])
++                for k in ("author_identity", "committer_identity", "author_date", "committer_date")
++            ),
++        )
++        snapshot = sandbox.SubmitSnapshot(
++            unit,
++            round_,
++            links,
++            str(status),
++            aggregate,
++            policy,
++            stored,
++            change_id,
++            submission_key,
++            inputs,
++            derived,
++            config.remote_base.rstrip("/") + "/" + unit.project,
++            config.git,
++            edit,
++        )
++        checked = sandbox.toctou_recheck(db, snapshot, src_clean=src)
++        if not checked.ok:
++            raise sandbox._Reject(
++                str(checked.error_code),
++                str(checked.detail),
++                held=checked.held_reason,
++                arch=checked.held_arch,
++            )
++        again, _ = _qb_gate(db, unit, options.qb_result, derived)
++        if again != qb:
++            raise sandbox._Reject("REJECTED_QB_SUPERSEDED", "result changed during review")
++        _trace(trace_root, "toctou_verified")
++        payload.update(change_id=change_id, derived_commit_sha=derived)
++        _push(
++            db,
++            snapshot,
++            options.review_target,
++            int(str(qb["event_id"])),
++            payload,
++            config.workspace / _unit_hash(lock_key),
++        )
++        return sandbox.SandboxSubmitOutcome(0, payload)
++    except sandbox._Reject as exc:
++        if trace_root is not None:
++            _trace(trace_root, "rejected", error_code=exc.code)
++        payload.update(action="rejected", error_code=exc.code, message=exc.detail)
++        if exc.held and unit:
++            arch = exc.arch
++            if arch is None and exc.held in state._ARCH_SCOPED_HELD_REASONS:
++                arch = state.ARCH_RAW_TO_NORM[unit.primary_arch or ""]
++            state.append_status(
++                db, unit.campaign_unit_key, state.HELD_FOR_INVESTIGATION, exc.held, arch
++            )
++        elif exc.code == "REJECTED_WORKTREE_MISSING" and unit and aggregate:
++            state.append_status(db, unit.campaign_unit_key, "WORKTREE_LOST", exc.detail)
++        if unit:
++            payload["status"] = state.latest_status(db, unit.campaign_unit_key)
++        return sandbox.SandboxSubmitOutcome(exc.exit_code, payload)
++    finally:
++        locks.close()
++
++
++def _push(
++    db: StateDatabase,
++    snapshot: sandbox.SubmitSnapshot,
++    ref: str,
++    qb_event_id: int,
++    payload: dict[str, Any],
++    root: Path,
++) -> None:
++    key = snapshot.unit.campaign_unit_key
++    existing = state.gate_view(db, key)
++    if (
++        existing.review_push
++        and all(
++            existing.review_push.get(k) == v
++            for k, v in (
++                ("ref", ref),
++                ("pushed_sha", snapshot.derived),
++                ("result", "ok"),
++            )
++        )
++        and existing.review
++        and existing.review.get("outcome") == "pushed"
++    ):
++        payload.update(
++            action="already_pushed",
++            status="REVIEW_PUSHED",
++            review_url=existing.review.get("review_url"),
++        )
++        if state.latest_status(db, key) != "REVIEW_PUSHED":
++            state.append_status(db, key, "REVIEW_PUSHED")
++        _trace(root, "already_pushed")
++        return
++    state.append_status(db, key, "REVIEW_PUSHING")
++    try:
++        with sandbox._transport(snapshot, root) as transport:
++            with sandbox._transport_errors():
++                snapshot.git.run(
++                    None, "cat-file", "-e", snapshot.derived + "^{commit}", git_dir=transport
++                )
++                completed = snapshot.git.run(
++                    None,
++                    "push",
++                    "--porcelain",
++                    "--no-verify",
++                    "--no-follow-tags",
++                    "--recurse-submodules=no",
++                    snapshot.remote,
++                    f"{snapshot.derived}:{ref}",
++                    remote=True,
++                    git_dir=transport,
++                )
++    except sandbox._TransportFailure as exc:
++        _trace(root, "push_failed", error_code="PUSH_FAILED")
++        state.append_status(db, key, "REVIEW_PUSH_FAILED")
++        raise sandbox._Reject("PUSH_FAILED", type(exc).__name__, exit_code=5) from exc
++    urls = re.findall(r"https?://[^\s<>]+", completed.stdout + "\n" + completed.stderr)
++    url = urls[0] if urls else None
++    _trace(root, "push_completed", review_url_found=bool(url),
++           reason=None if url else "no_change_url_in_push_output")
++    now = datetime.now(timezone.utc).isoformat()
++    state.append_event(
++        db,
++        key,
++        "PUSH",
++        dict(
++            ref=ref, ref_class="review", pushed_sha=snapshot.derived, result="ok", url=url, at=now
++        ),
++    )
++    state.append_event(
++        db,
++        key,
++        "REVIEW",
++        dict(outcome="pushed", review_url=url, degraded=False, qb_event_id=qb_event_id, at=now),
++    )
++    state.append_status(db, key, "REVIEW_PUSHED")
++    payload.update(action="pushed", status="REVIEW_PUSHED", review_url=url)
++
++
++def main(argv: list[str], *, stdout: TextIO) -> int:
++    try:
++        parser = JsonParser(prog="review-submit")
++        for name in ("verification-ids", "review-target"):
++            parser.add_argument("--" + name, required=True)
++        for name in ("state-db", "config", "qb-result"):
++            parser.add_argument("--" + name, type=Path, required=True)
++        args = parser.parse_args(argv)
++        result = run(ReviewOptions(**vars(args)))
++    except ValueError as exc:
++        result = sandbox.SandboxSubmitOutcome(2, dict(error_code="INVALID_ARGS", message=str(exc)))
++    except state.CampaignStateBusy:
++        result = sandbox.SandboxSubmitOutcome(4, dict(error_code="CAMPAIGN_STATE_BUSY"))
++    except (state.CampaignStateError, OSError, subprocess.SubprocessError) as exc:
++        result = sandbox.SandboxSubmitOutcome(
++            5, dict(error_code="INTERNAL_ERROR", message=type(exc).__name__)
++        )
++    print(json.dumps(dict(result.payload), ensure_ascii=False, sort_keys=True), file=stdout)
++    return result.exit_code
+diff --git a/tests/unit/test_campaign_batch3_start.py b/tests/unit/test_campaign_batch3_start.py
+new file mode 100644
+index 0000000..d394e3f
+--- /dev/null
++++ b/tests/unit/test_campaign_batch3_start.py
+@@ -0,0 +1,86 @@
++import io
++import json
++import subprocess
++
++import pytest
++import yaml
++from test_campaign_batch2_intake import case as case
++from test_campaign_fake_ssh import transport as transport
++from tizen_campaign_core._campaign_workspace import _StepError
++from tizen_campaign_intake import intake, start_check
++
++
++@pytest.fixture
++def ready(case):
++    case.settings.update(
++        gerrit_user="test", git_author_identity="Test <test@example.invalid>",
++        git_committer_identity="Test <test@example.invalid>", push_timeout_sec=120,
++        push_retry=1, target_arches=["aarch64", "armv7l", "x86_64"],
++    )
++    case.args.config.write_text(yaml.safe_dump(case.settings))
++    binary = case.transport[0].parent / "bin/gbs"
++    binary.write_text("#!/bin/sh\nexit 0\n")
++    binary.chmod(0o700)
++    return case
++
++
++def execute(c):
++    output = io.StringIO()
++    code = start_check.main([
++        "--config", str(c.args.config), "--state-root", str(c.root / "state"),
++        "--project", c.args.project,
++    ], stdout=output)
++    return code, json.loads(output.getvalue())
++
++
++def test_start_all_checks_fake_ssh_full_project(ready):
++    code, result = execute(ready)
++    assert code == 0 and len(result["checks"]) == 5
++    calls = [json.loads(line) for line in ready.transport[2].read_text().splitlines()]
++    assert calls[-1] == {"command": "git-upload-pack", "path": str(ready.transport[1])}
++
++
++@pytest.mark.parametrize("failure", ["config", "clang_conf", "gbs", "gerrit", "state_directory"])
++def test_start_each_check_failure(ready, failure):
++    if failure == "config":
++        del ready.settings["git_author_identity"]
++    elif failure == "clang_conf":
++        ready.settings["clang_conf_path"] += ".missing"
++    elif failure == "gbs":
++        (ready.transport[0].parent / "bin/gbs").write_text("#!/bin/sh\nexit 3\n")
++    elif failure == "gerrit":
++        ready.args.project = "missing/project"
++    else:
++        ready.root.mkdir(parents=True)
++        (ready.root / "state").write_text("not a directory")
++    ready.args.config.write_text(yaml.safe_dump(ready.settings))
++    code, result = execute(ready)
++    assert code == 4 and result["error_code"] == "PREFLIGHT_FAILED"
++    check = next(c for c in result["checks"] if c["name"] == failure)
++    assert not check["passed"]
++    if failure == "gerrit":
++        assert check["reason"] == "unreachable"
++
++
++@pytest.mark.parametrize("project", [None, "../escape", "-option", "repo/", "repo name"])
++def test_start_invalid_projects_before_subprocess(ready, monkeypatch, project):
++    def forbidden(*args, **kwargs):
++        raise AssertionError("subprocess must not start")
++    monkeypatch.setattr(subprocess, "run", forbidden)
++    argv = ["--config", str(ready.args.config), "--state-root", str(ready.root / "state")]
++    if project is not None:
++        argv += ["--project=" + project]
++    assert start_check.main(argv, stdout=io.StringIO()) == 4
++
++
++def test_local_path_rejected_by_both_intake_and_preflight(ready):
++    ready.settings["gerrit_ssh_base"] = str(ready.transport[0])
++    ready.args.config.write_text(yaml.safe_dump(ready.settings))
++    code, result = execute(ready)
++    assert code == 4
++    assert next(c for c in result["checks"] if c["name"] == "gerrit")["reason"] == "config_not_ssh"
++    with pytest.raises(_StepError) as error:
++        intake.add_unit(ready.args)
++    assert error.value.code == "REJECTED_IDENTITY_MISMATCH"
++    assert not (ready.root / "src").exists()
++    assert not list(ready.root.glob(".src.staging-*"))
+diff --git a/tests/unit/test_campaign_batch3_review.py b/tests/unit/test_campaign_batch3_review.py
+new file mode 100644
+index 0000000..0e48235
+--- /dev/null
++++ b/tests/unit/test_campaign_batch3_review.py
+@@ -0,0 +1,157 @@
++from __future__ import annotations
++
++import hashlib
++import json
++from dataclasses import replace
++
++import pytest
++import yaml
++from test_campaign_fake_ssh import transport as transport
++from test_sandbox_submit import Campaign, git
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_report import report
++from tizen_review_submit import review_submit as review
++from tizen_sandbox_submit import sandbox_submit as sandbox
++
++
++@pytest.fixture
++def case(tmp_path, monkeypatch, transport):
++    c = Campaign(tmp_path / "case", monkeypatch)
++    monkeypatch.setenv("SKEL_FAKE_SSH_ROOT", str(c.remote_base))
++    settings = yaml.safe_load(c.config.read_text())
++    settings["gerrit_ssh_base"] = "ssh://gerrit.invalid:29418"
++    c.config.write_text(yaml.safe_dump(settings))
++    git(c.src, "remote", "set-url", "origin", "ssh://gerrit.invalid:29418/project")
++    outcome = sandbox.sandbox_submit(c.options)
++    assert outcome.exit_code == 0, outcome.payload
++    c.derived = outcome.payload["derived_commit_sha"]
++    for arch in sandbox.ARCH_ORDER:
++        state.append_event(c.db, c.key, "REPRODUCE", dict(
++            arch_norm=arch, outcome="matched", evidence_local=f"{arch}.json",
++            evidence_sha256="e" * 64, synthetic_zero_error=False, gbs_conf_sha256="f" * 64,
++            ci_evidence_sha256_used="e" * 64, build_log="local.log", basis={},
++        ))
++    conn = c.db.connect()
++    try:
++        with conn:
++            state._insert_qb_profile_on_connection(
++                conn, "tizen", profile_json='{"qb_pass_requires_accept":false}',
++            )
++    finally:
++        conn.close()
++    c.seq = state.create_qb_request(c.db, c.key, request_id="request-one", sbs_target="project@" + c.derived)
++    state.append_qb_event(c.db, request_seq=c.seq, event_type="BUILD_BOUND", qb_build_id="101")
++    c.result = {key: None for key in review.RESULT_KEYS}
++    c.result.update(
++        qb_build_id="101", child_build_id="102", status="PASS", sbs_target_echo="project@" + c.derived,
++        request_marker_echo="clang-fix-campaign request=request-one", snapshot_drift_accepted=False,
++        snapshot_used="test-snapshot", params_echo={k: "" for k in (
++            "BUILD_TYPE", "BUILD_REFERENCE", "SNAPSHOT_NUM", "PROJECT_BRANCH", "FAIL_FAST",
++        )}, child_params_echo=dict(BUILD_REFERENCE="Ref. Snapshot", SNAPSHOT_NUM_URL="test"),
++    )
++    c.result_path = c.root / "result.json"
++    c.result_path.write_text(json.dumps(c.result))
++    state.append_qb_event(
++        c.db, request_seq=c.seq, event_type="RESULT", qb_build_id="101", status="PASS",
++        sbs_target_echo="project@" + c.derived,
++        qb_result_sha256=hashlib.sha256(c.result_path.read_bytes()).hexdigest(),
++        qb_result_ref="qb_results/request-one/result.json",
++    )
++    state.append_status(c.db, c.key, "SANDBOX_QB_PASS")
++    c.review_options = review.ReviewOptions("v0,v1,v2", c.db.path, c.config, c.result_path, "refs/for/tizen")
++    c.before_refs = git(c.remote, "show-ref")
++    c.before_change_ids = c.sql("SELECT * FROM campaign_change_ids")
++    return c
++
++
++def assert_rejected(c, outcome, code):
++    assert outcome.exit_code == 4, outcome.payload
++    assert outcome.payload["error_code"] == code
++    assert git(c.remote, "show-ref") == c.before_refs
++    assert not c.sql("SELECT 1 FROM campaign_gate_events WHERE event_type='REVIEW'")
++
++
++def test_review_success_and_cached_identity(case):
++    result = review.run(case.review_options)
++    assert result.exit_code == 0, result.payload
++    assert git(case.remote, "rev-parse", "refs/for/tizen") == case.derived
++    assert result.payload["review_url"] is None
++    assert state.latest_status(case.db, case.key) == "REVIEW_PUSHED"
++    assert [tuple(r) for r in case.sql("SELECT * FROM campaign_change_ids")] == [tuple(r) for r in case.before_change_ids]
++    count = len(case.events())
++    assert review.run(case.review_options).payload["action"] == "already_pushed"
++    assert len(case.events()) == count
++
++
++@pytest.mark.parametrize("gate", ["aggregate", "qb_bytes", "edit_bytes", "policy", "a2", "toctou"])
++def test_review_six_gate_refusals(case, monkeypatch, gate):
++    code = "REJECTED_STATE_INCONSISTENT"
++    if gate == "aggregate":
++        state.create_round(case.db, case.key, round_index=2, edit_spec_ref=str(case.root / "next.json"), edit_spec_sha256="9" * 64)
++        code = "REJECTED_ROUND_SUPERSEDED"
++    elif gate == "qb_bytes":
++        case.result_path.write_text(case.result_path.read_text() + " ")
++        code = "REJECTED_QB_BINDING_MISMATCH"
++    elif gate == "edit_bytes":
++        case.spec.write_text(case.spec.read_text() + " ")
++        code = "REJECTED_EDIT_SPEC_REBIND_MISMATCH"
++    elif gate == "policy":
++        original = review.evaluate
++        monkeypatch.setattr(review, "evaluate", lambda *a, **k: replace(original(*a, **k), fix_strategy_final="suppress"))
++    elif gate == "a2":
++        case.sql("DELETE FROM campaign_gate_events WHERE event_type='REPRODUCE'")
++        code = "REJECTED_REVIEW_GATE"
++    else:
++        original = sandbox.toctou_recheck
++        def changed(*args, **kwargs):
++            (case.copies[0] / "file.c").write_text("changed\n")
++            return original(*args, **kwargs)
++        monkeypatch.setattr(sandbox, "toctou_recheck", changed)
++        code = "REJECTED_WORKTREE_DIRTY"
++    assert_rejected(case, review.run(case.review_options), code)
++
++
++def test_latest_request_pending_exact_message(case):
++    state.create_qb_request(case.db, case.key, request_id="latest-real-request", sbs_target="project@" + case.derived)
++    result = review.run(case.review_options)
++    assert_rejected(case, result, "REJECTED_QB_REQUEST_PENDING")
++    assert result.payload["message"] == (
++        "该 unit 最新的验证请求(request_id=latest-real-request)还没有结果。若 qb-result-fetch 曾报告结果无法识别"
++        "(QB_RESULT_UNRECOGNIZED,例如各架构状态非空或快照漂移;可在运行 qb-result-fetch 时所用的 state_root "
++        "下查看该 request 的 trace 确认),重读不会改变结果,请按其输出的指引处置,或用 "
++        "campaign-release-worktrees --abandon 放弃该 unit;否则稍后重跑 qb-result-fetch。"
++    )
++
++
++def test_abandoned_pass_rejected_before_copies(case):
++    state.append_event(case.db, case.key, "WORKSPACE_RELEASE", dict(paths=[], reason="abandoned", confirmed_by="test"))
++    for path in case.copies:
++        (path / ".ci_triage_protected").unlink()
++    assert_rejected(case, review.run(case.review_options), "REJECTED_UNIT_ABANDONED")
++    assert state.latest_status(case.db, case.key) == "SANDBOX_QB_PASS"
++    assert report.report(case.db)[0]["workspace_status"] == "已放弃"
++
++
++def test_review_holds_all_locks_through_toctou_and_push(case, monkeypatch):
++    original = sandbox.toctou_recheck
++    seen = []
++    def during(*args, **kwargs):
++        with pytest.raises(sandbox._Reject) as error:
++            report.release(case.db, case.key, {"campaign_workspace": str(case.ws)}, "tester", True)
++        seen.append(error.value.code)
++        return original(*args, **kwargs)
++    monkeypatch.setattr(sandbox, "toctou_recheck", during)
++    result = review.run(case.review_options)
++    assert result.exit_code == 0, result.payload
++    assert seen == ["CAMPAIGN_STATE_BUSY"]
++    assert not any(json.loads(r[1]).get("reason") == "abandoned" for r in case.events())
++
++
++def test_abandon_locks_block_review(case):
++    with sandbox._locks(case.unit_root):
++        assert_rejected(case, review.run(case.review_options), "CAMPAIGN_STATE_BUSY")
++
++
++@pytest.mark.parametrize("target", ["refs/for/other", "refs/heads/tizen"])
++def test_review_target_bound_to_unit(case, target):
++    assert_rejected(case, review.run(replace(case.review_options, review_target=target)), "REJECTED_REVIEW_TARGET_MISMATCH")
+diff --git a/tests/unit/test_campaign_batch3_e2e.py b/tests/unit/test_campaign_batch3_e2e.py
+new file mode 100644
+index 0000000..ad1da05
+--- /dev/null
++++ b/tests/unit/test_campaign_batch3_e2e.py
+@@ -0,0 +1,208 @@
++from __future__ import annotations
++
++import copy
++import hashlib
++import io
++import json
++import subprocess
++import sys
++import uuid
++from dataclasses import replace
++from pathlib import Path
++from types import SimpleNamespace
++
++import pytest
++import yaml
++from qb_discovery_fixtures import configuration, reply
++from test_campaign_batch2_intake import case as case
++from test_campaign_batch3_start import execute, ready as ready
++from test_campaign_fake_ssh import transport as transport
++from test_qb_result_fetch import CONFIG, FROZEN, mutate, summary_change, variable_page
++from test_qb_trigger import ARCHIVE, variables
++from tizen_baseline_reproduce import baseline
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_intake import intake
++from tizen_campaign_repair.campaign_repair_step import CampaignRepairStepOptions, campaign_repair_step
++from tizen_campaign_report import report
++from tizen_qb_verify import qb_result_fetch as fetch
++from tizen_qb_verify import qb_trigger as trigger
++from tizen_qb_verify.qb_config import ARCHITECTURES
++from tizen_review_submit import review_submit as review
++from tizen_sandbox_submit import sandbox_submit as sandbox
++
++
++@pytest.fixture
++def flow(ready, monkeypatch, tmp_path):
++    c = ready
++    assert execute(c)[0] == 0
++    binary = c.transport[0].parent / "bin/gbs"
++    binary.write_text(
++        "#!/usr/bin/env python3\nimport os, pathlib, sys\n"
++        "sys.stdout.write(pathlib.Path(os.environ['FAKE_BASELINE_LOG']).read_text())\n"
++        "sys.exit(int(os.environ['FAKE_BASELINE_EXIT']))\n"
++    )
++    monkeypatch.setenv("FAKE_BASELINE_LOG", str(c.args.ci_log))
++    monkeypatch.setenv("FAKE_BASELINE_EXIT", "1")
++    monkeypatch.setenv("GIT_AUTHOR_NAME", "Offline Test")
++    monkeypatch.setenv("GIT_AUTHOR_EMAIL", "offline@example.invalid")
++    monkeypatch.setenv("GIT_COMMITTER_NAME", "Offline Test")
++    monkeypatch.setenv("GIT_COMMITTER_EMAIL", "offline@example.invalid")
++    created = intake.add_unit(c.args)
++    c.sequence = [state.latest_status(c.db, c.key)]
++    for arch in ("aarch64", "armv7l", "x86_64"):
++        args = SimpleNamespace(
++            state_db=c.db.path, config=c.args.config, arch="standard-" + arch,
++            campaign_unit_key=c.key, src_clean=Path(created["src_clean"]),
++            base_commit=c.args.base_commit, package=c.args.spec_name, profile="clang",
++            gbs_conf=Path(c.settings["clang_conf_path"]), evidence_ci=None,
++            output_dir=tmp_path / ("baseline-" + arch), wall_timeout=10, keep_copy=False,
++        )
++        code, payload = baseline.run(args)
++        assert code == 0, payload
++    c.sequence.append(state.latest_status(c.db, c.key))
++    c.edit = tmp_path / "edit.json"
++    c.edit.write_text(json.dumps(dict(
++        schema_version="gbs_patch_suggest/edit-spec/v1", patch_name="repair",
++        edits=[dict(file="src/clang_case.c", old="return missing", new="return 0")],
++    )))
++    c.repair = CampaignRepairStepOptions(c.key, c.db, c.args.config, 1, c.edit, "standard-aarch64", 10)
++    hook = tmp_path / "commit-msg"
++    hook.write_text('#!/bin/sh\nprintf "\\nChange-Id: I1111111111111111111111111111111111111111\\n" >> "$1"\n')
++    c.project = dict(
++        enabled=True, overview_id=1917, configuration_path=CONFIG,
++        project_name="Tizen-Base-Toolchain", qb_pass_requires_accept=False,
++        form={"BUILD_TYPE": "Full", "REPO_TYPE": "ALL", "BUILD_REFERENCE": "Ref. Snapshot",
++              "SNAPSHOT_NUM": "@freeze", "PROJECT_BRANCH": "tizen_base",
++              "Immediate Stop With Error": True, "CHILD_CONFIGURATIONS": [ARCHITECTURES],
++              "TARGET_IMAGE": [], "Add Package List": "", "Remove Package List": ""},
++    )
++    c.settings.update(
++        gerrit_commit_msg_hook=str(hook), gerrit_commit_msg_hook_sha256=hashlib.sha256(hook.read_bytes()).hexdigest(),
++        qb=dict(base_url="https://quickbuild.tizen.org", projects={"tizen_base": c.project},
++                browser=dict(node=sys.executable, playwright_module=sys.executable,
++                             chromium=sys.executable, login_timeout_seconds=60)),
++    )
++    c.args.config.write_text(yaml.safe_dump(c.settings))
++    c.state_root = tmp_path / "qb-state"
++    c.script, c.transcript = tmp_path / "replies.json", tmp_path / "commands.jsonl"
++    original = subprocess.Popen
++    def popen(argv, *args, **kwargs):
++        if any(str(a).endswith("qb_browser_agent.mjs") for a in argv):
++            argv = [sys.executable, str(Path(__file__).parents[1] / "fixtures/qb_fake_agent.py"),
++                    str(c.script), str(c.transcript)]
++        return original(argv, *args, **kwargs)
++    monkeypatch.setattr(subprocess, "Popen", popen)
++    monkeypatch.setattr(trigger.uuid, "uuid4", lambda: uuid.UUID(int=1))
++    return c
++
++
++def build_and_push(c, monkeypatch):
++    monkeypatch.setenv("FAKE_BASELINE_EXIT", "0")
++    ids = []
++    for arch in ("aarch64", "armv7l", "x86_64"):
++        result = campaign_repair_step(replace(c.repair, arch_raw="standard-" + arch))
++        assert result.exit_code == 0, result.result.to_dict()
++        ids.append(result.result.verification_id)
++    c.ids = ",".join(ids)
++    c.sequence.append(state.latest_status(c.db, c.key))
++    result = sandbox.sandbox_submit(sandbox.SandboxSubmitOptions(
++        c.ids, c.db.path, c.args.config, "refs/heads/sandbox/offline", "repair", "generated",
++    ))
++    assert result.exit_code == 0, result.payload
++    c.target = c.args.project + "@" + result.payload["derived_commit_sha"]
++    c.sequence.append(state.latest_status(c.db, c.key))
++
++
++def request(c):
++    fields = copy.deepcopy(c.project["form"])
++    c.request_id = uuid.UUID(int=1).hex
++    c.marker = "clang-fix-campaign request=" + c.request_id
++    fields.update({"SNAPSHOT_NUM": FROZEN, "Build Package List": c.target, "BUILD NOTES": c.marker})
++    readback = {f"{k}/{'selection' if k in trigger._PALETTES else 'value'}": v for k, v in fields.items()}
++    c.script.write_text(json.dumps(dict(
++        configuration_pages={"/overview/1917": reply(configuration(c.project))},
++        replies=[dict(ok=True), dict(ok=True, released=False),
++                 dict(ok=True, released=False, readback=readback, fingerprint="a" * 64, snapshot_option_count=1),
++                 dict(ok=True, released=True, landed="build", build_id="1193467"),
++                 reply(variables(c.target, c.marker))],
++    )))
++    code, results = trigger.qb_trigger(trigger.QbTriggerOptions(
++        c.db.path, c.state_root, c.args.config, verification_ids=c.ids,
++    ), stderr=io.StringIO())
++    assert code == 0, results
++    assert results[0]["action"] == "submitted_bound"
++    c.sequence.append(state.latest_status(c.db, c.key))
++
++
++def read_result(c):
++    parent = dict(
++        QB_TRIGGER_ID=("", "1193467"), BUILD_PKG_LIST_MODIFY=("Build Package List", c.target),
++        BUILD_NOTES=("BUILD NOTES", c.marker), BUILD_REFERENCE=("", "Ref. Snapshot"),
++        BUILD_TYPE=("", "Full"), PROJECT_BRANCH=("", "tizen_base"),
++        FAIL_FAST=("Immediate Stop With Error", "yes"), CHILD_CONFIGURATIONS=("", ARCHITECTURES),
++        SNAPSHOT_NUM=("", FROZEN),
++    )
++    child = dict(
++        TRIGGER_ID=("", "1193467"), QB_TRIGGER_ID=("", "1193469"), FAIL_FAST=("", "yes"),
++        BUILD_PKG_LIST=("", c.target), REPO_ARCH=("", ARCHITECTURES),
++        CHILD_CONFIGURATIONS=("", ARCHITECTURES), BUILD_REFERENCE=("", "Ref. Snapshot"),
++        SNAPSHOT_NUM_URL=("", fetch.pages.SNAPSHOT_ROOT + FROZEN), EACH_GBS_BUILD_STATUS=("", ""),
++    )
++    c.script.write_text(json.dumps([dict(ok=True),
++        reply((ARCHIVE / "01.response.html").read_text()), reply(variable_page(2, parent)),
++        reply(mutate((ARCHIVE / "03.response.html").read_text(), lambda d: summary_change(d, "Status", "Successful"))),
++        reply(variable_page(4, child)),
++    ]))
++    code, results = fetch.qb_result_fetch(fetch.QbResultFetchOptions(
++        c.db.path, c.state_root, c.args.config, request_id=c.request_id,
++    ), stderr=io.StringIO())
++    assert code == 0, results
++    c.sequence.append(state.latest_status(c.db, c.key))
++    return state.latest_qb_result(c.db, c.key)
++
++
++def test_offline_success_start_to_report(flow, monkeypatch):
++    c = flow
++    build_and_push(c, monkeypatch)
++    request(c)
++    event = read_result(c)
++    outcome = review.run(review.ReviewOptions(c.ids, c.db.path, c.args.config,
++                                             c.state_root / event["qb_result_ref"], "refs/for/tizen_base"))
++    assert outcome.exit_code == 0, outcome.payload
++    c.sequence.append(state.latest_status(c.db, c.key))
++    assert report.finish(c.db, c.key)[0] == 0
++    row = report.report(c.db)[0]
++    assert row["status"] == "REVIEW_PUSHED" and row["workspace_status"] == "已释放"
++    assert c.sequence == ["CI_EVIDENCE_READY", "BASELINE_REPRODUCED", "LOCAL_3ARCH_PASS", "SANDBOX_PUSHED", "QB_TRIGGERED", "SANDBOX_QB_PASS", "REVIEW_PUSHED"]
++    print("STATE_SEQUENCE=" + json.dumps(c.sequence))
++
++
++def test_offline_stalled_finish_report(flow):
++    c = flow
++    outcome = campaign_repair_step(c.repair)
++    assert outcome.exit_code == 4, outcome.result.to_dict()
++    assert state.latest_status(c.db, c.key) == "STALLED"
++    assert report.finish(c.db, c.key)[0] == 0
++    assert report.report(c.db)[0]["status"] == "STALLED"
++    print("STATE_SEQUENCE=" + json.dumps(c.sequence + ["STALLED"]))
++
++
++def test_offline_abandon_triggered_then_late_pass(flow, monkeypatch):
++    c = flow
++    build_and_push(c, monkeypatch)
++    request(c)
++    assert report.finish(c.db, c.key)[0] == 4
++    report.release(c.db, c.key, c.settings, "Offline Operator", True)
++    assert report.report(c.db)[0]["workspace_status"] == "已放弃"
++    event = read_result(c)
++    outcome = review.run(review.ReviewOptions(c.ids, c.db.path, c.args.config,
++                                             c.state_root / event["qb_result_ref"], "refs/for/tizen_base"))
++    assert outcome.exit_code == 4 and outcome.payload["error_code"] == "REJECTED_UNIT_ABANDONED"
++    assert state.latest_status(c.db, c.key) == "SANDBOX_QB_PASS"
++    assert report.report(c.db)[0]["workspace_status"] == "已放弃"
++    conn = state._read_connection(c.db)
++    try:
++        assert conn.execute("SELECT count(*) FROM campaign_gate_events WHERE event_type='REVIEW'").fetchone()[0] == 0
++    finally:
++        conn.close()
++    print("STATE_SEQUENCE=" + json.dumps(c.sequence))

@@ -1,8 +1,8 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**BATCH3_STOPPED_SKEL_B3_02**。
+日期:2026-11-03。状态:**BATCH3_STOPPED_SKEL_B3_04**。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
-第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批契约核对停止,见第16节。
+第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批停点见第17.1节。
 
 ## 1. 冻结输入与开工事实
 
@@ -22,7 +22,7 @@
 |---|---|---|
 | 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | ACCEPTED;SKEL-B2-01验收通过 |
 | 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | ACCEPTED;SKEL-B3-01验收通过 |
-| 3 | 审核提交、启动检查、编排skill与离线端到端 | STOPPED;SKEL-B3-02:无RESULT提示的state_root来源未定义 |
+| 3 | 审核提交、启动检查、编排skill与离线端到端 | STOPPED_SKEL_B3_04;SKEL-B3-02已由SKEL-B3-03关闭 |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
 | 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | NOT_STARTED |
 
@@ -757,6 +757,8 @@ C8在本轮全仓为PASS,未触发失败形态比较与补跑;第1批既有前�
 
 ### 16.2 停止报告 SKEL-B3-02:无RESULT提示缺少state_root输入
 
+状态更新:已由SKEL-B3-03裁定关闭;以下保留原停止事实。
+
 冻结稿5.3要求固定message里的`<state_root>`填实际路径,但继承的design.md
 4.1 review-submit签名没有`--state-root`;campaign_config模板未定义此键;
 QB请求/事件表不存储这个根目录。生产QB命令通过独立的`--state-root`接收它,
@@ -773,3 +775,48 @@ QB请求/事件表不存储这个根目录。生产QB命令通过独立的`--sta
 三条端到端均NOT_RUN,不虚构状态序列。全量pytest/负载/mypy/import-linter及
 计时重跑均NOT_RUN,不能沿用第2批结果充当本批验收。nodeid未新增或修改;
 四组安全测试按本批边界不重跑。不进入第3.5批。
+
+## 17. 实施裁定 SKEL-B3-03:无 RESULT 提示文字
+
+1. SKEL-B3-02 停止成立,属冻结稿 5.3 的规格缺口。采用候选 C 的变体:review-submit 签名不变,不新增 --state-root,不新增配置键,不改 schema。
+2. 无 RESULT 时仍为 exit 4 REJECTED_QB_REQUEST_PENDING,message 固定为:"该 unit 最新的验证请求(request_id=<request_id>)还没有结果。若 qb-result-fetch 曾报告结果无法识别(QB_RESULT_UNRECOGNIZED,例如各架构状态非空或快照漂移;可在运行 qb-result-fetch 时所用的 state_root 下查看该 request 的 trace 确认),重读不会改变结果,请按其输出的指引处置,或用 campaign-release-worktrees --abandon 放弃该 unit;否则稍后重跑 qb-result-fetch。"其中 <request_id> 取该 unit 最新 request 的 request_id;本命令不读 trace、不推定目录。
+3. 第 6 节对应用例改为断言该 message 与实际 request_id 逐字一致。
+4. 编排 skill 的剧本与启动模板中写明 state_root 是所有 QuickBuild 命令共用的同一目录,由启动模板填写。
+
+本轮基线`0417ff3`;其余范围、边界、读取失败观测与门禁按SKEL-B3-01。
+不恢复任何未验收草稿,不改冻结稿/代理/安全核心/共享身份规则/状态库schema。
+
+### 17.1 停止报告 SKEL-B3-04:基线到修复轮的状态推进缺口
+
+本轮review-submit/start-check草稿定向25项通过,包括六道拒绝门、精确request_id提示、
+放弃屏障、两类锁互斥、目标分支与启动五项检查。尚未完成全部契约/全仓验收。
+在新离线端到端首次串联中,建档与三架构基线成功,随后repair-step立即exit4:
+`REJECTED_STATE_INCONSISTENT`,原文
+`campaign unit status is not executable: 'BASELINE_REPRODUCED'`。
+
+已验收baseline写BASELINE_REPRODUCED,已验收repair-step只接受REPAIR_ROUND_RUNNING;
+当前生产命令没有两者之间的状态写入者。独立探针确认零round、零预算、零编译调用,
+DB原始字节不变。另静态查明LOCAL_3ARCH_PASS当前由sandbox-submit写入,
+与第3.5批不运行sandbox-submit而要求到达该状态的目标也需要一并明确职责。
+没有在夹具/剧本中直接补写状态,没有修改repair-step或baseline。
+
+报告:`evidence/batch3/stop-report-SKEL-B3-04.md`。证据根:
+`evidence/batch3/handoff/`,含定向25PASS、端到端1FAIL、独立探针1PASS及原始命令元数据。
+探针PASS仅表示确认拒绝事实,不表示端到端成功。
+候选A为授权现有repair-step承担带校验的入轮与聚合推进;候选B为新增本地编排入口,
+均须明确policy/锁/事务/重入,均未实施。
+
+未验收实现与新测试移出生产路径,仅存`handoff/implementation-wip.patch`作定位资料;
+不得直接套用当交付。两份入口恢复0417ff3。未写SKILL/启动模板。
+全仓pytest、import-linter、mypy、计时敏感重跑NOT_RUN,三条端到端未完成;
+读取失败观测表本批无新P5Q观测。未改代理/未改qb-trigger,四组安全按批次边界不重跑。
+节点收集、冻结稿/代理/安全核心字节核对和文档检查见`handoff/checks.json`。
+停止树3028个nodeid全部保留且零新增;设计检查0 problem,证据脚本ruff通过。
+独立探针在撤下草稿后再次1/1通过。代理完整SHA256仍为
+`7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c`,
+前缀(不含`export class Agent {`)仍为
+`40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16`。
+证据脚本初次ruff的未使用导入已修正,原日志保留;不声称已跑全仓ruff/mypy等门禁。
+暂存diff检查仅报告原始pytest失败日志和参考patch上下文行的尾随空白;
+保留原始证据字节,排除这两个证据文件后的diff检查通过。
+完成停止登记后等待设计方裁定,不进入第3.5批。
