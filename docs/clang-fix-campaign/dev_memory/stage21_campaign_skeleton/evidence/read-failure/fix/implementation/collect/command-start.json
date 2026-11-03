@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "pytest",
+    "--collect-only",
+    "-q"
+  ],
+  "started": "2026-11-03T11:30:20.633410+00:00",
+  "load_before": {
+    "loadavg": "1.12 1.12 1.18 3/2825 3801991",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          75.0",
+      "code-insiders    3.6",
+      "chrome           3.5",
+      "code-insiders    2.6",
+      "Xorg             1.6",
+      "code-insiders    1.4",
+      "chrome           1.2",
+      "epp-client-daem  1.1",
+      "code-insiders    1.0",
+      "gnome-shell      0.9"
+    ]
+  }
+}

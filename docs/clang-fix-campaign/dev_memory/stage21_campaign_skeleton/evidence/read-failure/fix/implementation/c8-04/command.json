@@ -1,0 +1,119 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/c8-04/pytest.xml"
+  ],
+  "started": "2026-11-03T11:43:19.088485+00:00",
+  "load_before": {
+    "loadavg": "3.76 2.48 1.64 3/2819 3832145",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "ps               100",
+      "cmake            6.0",
+      "code-insiders    3.6",
+      "chrome           3.5",
+      "code-insiders    2.6",
+      "Xorg             1.6",
+      "code-insiders    1.5",
+      "chrome           1.2",
+      "epp-client-daem  1.1",
+      "code-insiders    1.0"
+    ]
+  },
+  "exit_code": 1,
+  "seconds": 203.51675470301416,
+  "finished": "2026-11-03T11:46:42.605520+00:00",
+  "load_after": {
+    "loadavg": "9.94 6.42 3.37 3/2838 3838213",
+    "cpu_count": 20
+  },
+  "pytest": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 0
+  },
+  "observations": [
+    {
+      "file": "c8/control.json",
+      "case": "control",
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c8/idle-script-navigation.json",
+      "case": "idle-script-navigation",
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c8/racing-meta-refresh.json",
+      "case": "racing-meta-refresh",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "NAVIGATION_INTERRUPTED"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        },
+        {
+          "action": "DENY_TARGET_GONE",
+          "phase": "idle",
+          "stage": "request",
+          "path": "/wicket/page",
+          "generation": 6
+        },
+        {
+          "action": "DENY_TARGET_GONE",
+          "phase": "idle",
+          "stage": "request",
+          "path": "/wicket/page",
+          "generation": 6
+        }
+      ]
+    },
+    {
+      "file": "c8/racing-script-navigation.json",
+      "case": "racing-script-navigation",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "NAVIGATION_INTERRUPTED"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/racing-wicket-navigation.json",
+      "case": "racing-wicket-navigation",
+      "harness_failure": {
+        "class_name": "TargetClosedError",
+        "agent_code": null,
+        "category": "OTHER_FRAMEWORK_ERROR"
+      },
+      "diagnostics": []
+    }
+  ]
+}

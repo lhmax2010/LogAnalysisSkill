@@ -1,0 +1,13 @@
+{
+  "stage": "aggregate_completed_test_metadata",
+  "wrapper_exit_code": 1,
+  "error_class": "AttributeError",
+  "fixed_category": "SUMMARY_JSON_IS_LIST_NOT_MAPPING",
+  "cause": "C8 summary.json is a list; wrapper attempted mapping.get after pytest completed",
+  "pytest_result_source": "stdout.log and pytest.xml",
+  "subprocess_exit_code": null,
+  "end_load": null,
+  "formal_sampling_member": false,
+  "disposition": "Preserve all original output; fix only evidence wrapper type check; perform 20 new complete recorded runs",
+  "production_or_existing_test_changes": false
+}

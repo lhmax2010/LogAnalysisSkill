@@ -2777,6 +2777,8 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
 
 按骨架设计文件实施裁定 SKEL-R-02 为代理与驱动增加只读诊断,不改变安全规则。
 
+按骨架设计文件实施裁定 SKEL-R-04,仅Fetch.failRequest返回REQUEST_ID_INVALID时不再停止,改记DENY_TARGET_GONE;其它拦截失败仍按原规则停止。
+
 ## 5. 非功能性需求
 
 ### 5.1 性能预算

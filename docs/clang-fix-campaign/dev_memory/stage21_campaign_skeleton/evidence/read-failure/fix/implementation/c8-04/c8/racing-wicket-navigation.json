@@ -1,0 +1,57 @@
+{
+  "case": "racing-wicket-navigation",
+  "observations": [
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "FC5362DB32728337A2BE9BFAF703B9BE",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/signin",
+      "response_status": null
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "FC5362DB32728337A2BE9BFAF703B9BE",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/signin",
+      "response_status": 200
+    }
+  ],
+  "frame_events": [
+    {
+      "phase": "login",
+      "action": "navigated",
+      "frame_id": "FC5362DB32728337A2BE9BFAF703B9BE",
+      "parent_id": null
+    }
+  ],
+  "reads": [],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "server_requests": [
+    {
+      "method": "GET",
+      "path": "/signin",
+      "status": 200
+    }
+  ],
+  "harness_failure": {
+    "class_name": "TargetClosedError",
+    "agent_code": null,
+    "category": "OTHER_FRAMEWORK_ERROR"
+  },
+  "synthetic_submissions": 0,
+  "profile_removed": true
+}

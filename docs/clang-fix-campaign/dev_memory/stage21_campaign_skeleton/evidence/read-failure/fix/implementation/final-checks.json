@@ -1,0 +1,31 @@
+{
+  "source_document_diff_check": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "design_final": {
+    "exit_code": 0,
+    "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+    "stderr": ""
+  },
+  "staged_diff_check": {
+    "exit_code": 2,
+    "output": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/authorized-test.diff:33: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/authorized-test.diff:52: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/c8-04/pytest.xml:26: trailing whitespace.\n+E         \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/c8-04/stdout.log:30: trailing whitespace.\n+E         \n",
+    "note": "Raw pytest failure output and exact source diff whitespace is preserved."
+  },
+  "diagnostic_schema_and_sensitive_scan": {
+    "passed": true,
+    "counts": {
+      "DENY_TARGET_GONE": 4,
+      "OPERATION_FAILED": 34
+    }
+  },
+  "profiles": [],
+  "fixture_directories": [],
+  "p5q_processes": [],
+  "no_temporary_agent_copy_or_stress_process_created": true,
+  "completed_at": "2026-11-03T11:52:52.265917+00:00",
+  "full_regression": "NOT_RUN_STOPPED",
+  "remaining_c8_runs": 16,
+  "remaining_late_runs": 20
+}

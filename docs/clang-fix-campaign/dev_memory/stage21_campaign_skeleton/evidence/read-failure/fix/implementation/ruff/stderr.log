@@ -1,0 +1,7 @@
+error: unexpected argument '--junitxml' found
+
+  tip: a similar argument exists: '--unfixable'
+
+Usage: ruff check --force-exclude --unfixable <RULE_CODE> <FILES>...
+
+For more information, try '--help'.

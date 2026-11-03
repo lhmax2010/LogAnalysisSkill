@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**STOPPED_SKEL_R_05**;SKEL-R-02诊断已验收,SKEL-R-04新停止规则与三个不可改既有断言冲突,等待裁定。
+日期:2026-11-03。状态:**STOPPED_SKEL_R_07**;SKEL-R-04/06已实施,定向与四组安全通过;C8第4次采样出现新的登录阶段TargetClosedError,停止等待裁定。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1128,3 +1128,109 @@ production.diff的行尾空白,按原证据保留。新自然失败诊断记录�
 全文hash前后均`d0e99f7e4caf11104920ddfe7a569a75e100c5a1dc44a3a916d73ef2bacbf823`,
 前缀hash前后均`3bb1c0cc2fbfcb20aef324c8b8a703f06f40a438211317e0e96f2ba30f2be4c2`。
 尚未执行的新用例、安全组、40次采样和完整门禁不计作通过。
+
+## 22. 实施裁定 SKEL-R-06:诊断测试期望更新
+
+1. SKEL-R-05 停止成立。tests/node/test_qb_read_failure_diagnostics.mjs 第 40、60、96 行附近的断言来自 SKEL-R-02 本轮新增(46db465),记录的是旧停止规则,不属于 P5Q 冻结时的既有安全测试;按 SKEL-R-04 允许更新,仅限这三处:
+   a. 第 40 行所在参数化用例:仅 method 为 Fetch.failRequest 时,期望改为 stops 为空、trace 含一条 DENY_TARGET_GONE(phase、stage、path、generation 与原诊断一致);Fetch.continueRequest 与 Fetch.continueResponse 两个参数的期望不变(仍停止、仍记 OPERATION_FAILED)。敏感值扫描保留。
+   b. 第 60 行用例:第一次 Session closed 仍停止;第二次 Invalid requestId 改为不停止、记 DENY_TARGET_GONE;stops 期望从两次改为一次;OPERATION_FAILED 仍只一条且为 TARGET_OR_SESSION_CLOSED。
+   c. 第 96 行用例:failRequest 的请求 ID 无效不再停止,记 DENY_TARGET_GONE;read 仍以 QB_BROWSER_UNAVAILABLE 失败;OPERATION_FAILED 的第一条起因改为 page.goto 的 NAVIGATION_INTERRUPTED;stops 期望为空。用例名可改为反映新语义,nodeid 变化逐条登记。
+2. 这三处之外的任何既有测试仍不得改;若还有其它冲突,停止并报告。
+
+基线`8d60851`;已重读`fix/stop-report-SKEL-R-05.md`,其测试冲突由本裁定关闭。
+继续SKEL-R-04全部实施与验收;证据在`evidence/read-failure/fix/implementation/`,
+原停止报告与原树验证保留。完整全仓不带-x,每次采样使用独立目录。
+
+### 22.1 实现边界与三处断言更新
+
+生产仅修改`tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs`的
+`installGuards`(:191的observeFailure与:229的guarded),diff为+25/-16。
+分类正则不变;先分类再决定是否记录,使已失效的拒绝对象不占用首条
+OPERATION_FAILED。仅Fetch.failRequest/REQUEST_ID_INVALID记DENY_TARGET_GONE
+并跳过onStop,其它操作和类别照旧。诊断写入异常仍不改变判断结果。
+Policy、FrameOwnership、阶段文法、installGuards之外的代理字节、驱动和
+所有其它生产模块保持与8d60851一致。`integrity.json`与`production.diff`为证。
+design.md仅在第4.6节后的修订序列追加本次例外,冻结稿不改。
+
+| tests/node/test_qb_read_failure_diagnostics.mjs | 原断言 | 按SKEL-R-06更新 |
+|---|---|---|
+| :40 参数化Fetch用例 | 三种方法均stops=[FETCH_CONTINUE_FAILED],记OP | 仅failRequest为stops=[],记一条精确DENY;两种continue仍停止并记OP;敏感值扫描保留 |
+| :63 两次失败 | 两次停止,仅首条OP | 第一次Session closed停止;第二次Invalid requestId不停止并记DENY;stops只有一次,首条OP仍TARGET_OR_SESSION_CLOSED |
+| :91 导航取消与拒绝 | failRequest无效ID停止并占首条OP | stops=[],拒绝记DENY;read仍QB_BROWSER_UNAVAILABLE,首条OP为page.goto/NAVIGATION_INTERRUPTED |
+
+该文件diff为+14/-6,三段之外逐字节不变。仅Node用例名从
+`read navigation cancellation concurrent with a rejected Fetch keeps initiating failure`
+改为`read navigation cancellation after a gone deny records navigation as first failure`;
+pytest nodeid不变,不改参数化集合。其它既有测试不改。
+
+新增用例映射:
+- `tests/node/test_qb_deny_target_gone.mjs:31`:3种Fetch操作乘7种固定错误类别,
+  21例矩阵;仅一格不停止,含敏感值扫描。
+- 同文件:49、:64:重复DENY逐次记录且不占首条OP;诊断写入抛错不影响结果。
+- `tests/node/p5q_deny_target_gone_browser.mjs:45`:真实Chromium中取消暂停导航,
+  再调用真实Fetch.failRequest,两次均返回失效ID;假服务器实收这两请求均为0。
+  同会话继续校验普通拒绝、禁止动作、未知帧与307/308,不以伪造CDP错误代替零请求证据。
+- `tests/unit/test_qb_deny_target_gone.py`:新增2个pytest入口,既有3098个nodeid全部保留,
+  collect总数3100。新增Node矩阵23例,真实浏览器场景1例。
+
+| SHA256 | 改前8d60851 | 本轮实现 |
+|---|---|---|
+| 代理全文 | `d0e99f7e4caf11104920ddfe7a569a75e100c5a1dc44a3a916d73ef2bacbf823` | `044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723` |
+| 代理前缀(截至export class Agent之前) | `3bb1c0cc2fbfcb20aef324c8b8a703f06f40a438211317e0e96f2ba30f2be4c2` | `9b7796f02f3e65f97c6f68bbe169109b8bd885854c98bb976d4d55ae5a2bc006` |
+
+### 22.2 验收结果与采样停止
+
+以下路径相对`evidence/read-failure/fix/implementation/`。
+
+| 项目 | 结果 | 证据 |
+|---|---|---|
+| 定向pytest | 223 passed/0 failed/0 skipped | focused/pytest.xml |
+| Node新增/授权更新/既有矩阵 | 新增23、更新后的诊断17、既有矩阵163、停止类别16、静态与负例183全部通过 | focused/stdout.log |
+| 新增真实浏览器场景 | 两次真实failRequest失效且服务器0请求;后续拒绝与307/308仍有效 | focused/deny-gone/browser.json |
+| P5Q四组安全 | 4/4,本机HTTPS与虚拟显示,无真机访问 | safety/stdout.log |
+| mypy/ruff/import-linter/design | 161文件无错/通过/7 kept 0 broken/0 problem | mypy/、ruff-recheck/、imports/、design/ |
+| nodeid | 3098全部保留,新增2,共3100;collect无错误 | collect/、integrity.json |
+| C8独立采样 | 4/20已运行:3 PASS、1 FAIL;停止,余16未运行 | c8-01至c8-04、sampling-results.md |
+| C5a late-build独立采样 | 0/20,NOT_RUN_STOPPED | results.json |
+| 全仓完整门禁 | NOT_RUN_STOPPED;未用-x,不以定向数量代替完整门禁 | 本节及停止报告 |
+
+| C8轮次 | 结果 | 秒 | DENY_TARGET_GONE | FETCH_CONTINUE_FAILED | loadavg前/后(1,5,15分钟) |
+|---|---|---:|---:|---:|---|
+| 01 | PASS | 182.39 | 0 | 0 | 0.70/0.92/1.08 -> 0.46/0.77/0.99 |
+| 02 | PASS | 182.92 | 0 | 0 | 0.46/0.77/0.99 -> 1.96/1.19/1.10 |
+| 03 | PASS | 184.38 | 0 | 0 | 1.96/1.19/1.10 -> 3.76/2.48/1.64 |
+| 04 | FAIL | 203.52 | 2 | 0 | 3.76/2.48/1.64 -> 9.94/6.42/3.37 |
+
+20核,每次CPU前10进程仅名与占用、UTC起止、argv、exit均在各command.json。
+第4轮停于第5场景racing-wicket-navigation,只收到GET /signin 200,
+无登录POST、无submit、无read;harness为TargetClosedError/OTHER_FRAMEWORK_ERROR。
+trace只有框架自检,没有AGENT_STOPPED,其failure_category记NOT_COLLECTED。
+第4轮余6场景没有运行;不将用例名中的racing推断为已进入提交后的导航竞争。
+原5次基线仅racing-meta-refresh/FETCH_CONTINUE_FAILED,此为新形态,
+不在SKEL-R-04第6项的已知失效请求停止范围内。按既有门禁规则停止,不重跑。
+报告:[SKEL-R-07](evidence/read-failure/fix/stop-report-SKEL-R-07.md)。
+
+### 22.3 读取失败观测表增量
+
+| 观测 | 固定错误/断言 | 新诊断与位置 | 处置 |
+|---|---|---|---|
+| c8-04/racing-meta-refresh(场景完成) | read QB_BROWSER_UNAVAILABLE/UNKNOWN;runtime_failure=null,浏览器仍连接 | page.goto/NAVIGATION_INTERRUPTED为首条OP;随后idle/request /wicket/page generation6的DENY两条;无FETCH_CONTINUE_FAILED | 自然观察到本次窄化有效;保留原导航失败语义 |
+| c8-04/racing-wicket-navigation(用例失败) | assert result.returncode==0实际1;内部harness_failure应未定义,实际TargetClosedError/OTHER_FRAMEWORK_ERROR | login阶段,无OP/AGENT_STOPPED;category NOT_COLLECTED;reads=[]、synthetic_submissions=0 | 新失败形态,SKEL-R-07停止,未归因于负载或修复 |
+
+新增诊断完整键集合仍为action/phase/stage/path/generation;无query或错误原文。
+两条自然DENY的来源为`c8-04/c8/racing-meta-refresh.json:1161`及:1168;
+失败场景另见`racing-wicket-navigation.json:50`,不能串用两个场景的诊断。
+
+证据包装器有两次独立错误,不隐去:ruff首次错误附加了pytest的junit参数(exit2),
+修复包装器识别后ruff-recheck通过;第一次C8的pytest通过,包装器因summary.json为
+列表而汇总失败。该原始目录保留为wrapper-error-c8-01,不计正式4次,包装器修复
+仅跳过非对象汇总文件,没有修改测试、断言、阈值或生产代码。
+
+最终收尾:`implementation/final-checks.json`记录源码/文档diff --check通过,
+设计检查0 problem;4条DENY(本机专门场景2条+自然采样2条)与34条OP的
+键集合/封闭类别/敏感值扫描通过。/dev/shm中P5Q profile与本轮证书夹具残留均0,
+P5Q代理/Chromium进程0;未创建临时代理副本或加压进程,无额外清理动作。
+未完成的40次采样与完整全仓门禁明确留待裁定,未进入下一批。
+全暂存树diff --check返回2,仅逐字authorized-test.diff中的两条空上下文行、
+原始pytest.xml与stdout.log各一条断言输出行的行尾空白;为保留证据不改原字节。
+人工源码与文档检查为0,两者不混报。

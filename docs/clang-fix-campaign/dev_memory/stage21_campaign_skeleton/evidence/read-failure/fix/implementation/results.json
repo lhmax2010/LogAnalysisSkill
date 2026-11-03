@@ -1,0 +1,680 @@
+{
+  "groups": {
+    "c8": {
+      "runs": 4,
+      "passed": 3,
+      "failed": 1,
+      "deny_target_gone": 2,
+      "fetch_continue_failed": 0,
+      "rows": [
+        {
+          "run": "c8-01",
+          "exit_code": 0,
+          "pytest": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "passed": 1
+          },
+          "seconds": 182.38540252204984,
+          "deny_target_gone": 0,
+          "fetch_continue_failed": 0,
+          "failures": [],
+          "load_before": {
+            "loadavg": "0.70 0.92 1.08 5/2819 3810372",
+            "cpu_count": 20,
+            "top_cpu_processes": [
+              "COMMAND         %CPU",
+              "python          75.0",
+              "python3         11.8",
+              "python3          8.2",
+              "code-insiders    3.6",
+              "chrome           3.5",
+              "code-insiders    2.6",
+              "Xorg             1.6",
+              "code-insiders    1.5",
+              "chrome           1.2",
+              "epp-client-daem  1.1"
+            ]
+          },
+          "load_after": {
+            "loadavg": "0.46 0.77 0.99 2/2806 3818929",
+            "cpu_count": 20
+          }
+        },
+        {
+          "run": "c8-02",
+          "exit_code": 0,
+          "pytest": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "passed": 1
+          },
+          "seconds": 182.92480306199286,
+          "deny_target_gone": 0,
+          "fetch_continue_failed": 0,
+          "failures": [],
+          "load_before": {
+            "loadavg": "0.46 0.77 0.99 5/2806 3818929",
+            "cpu_count": 20,
+            "top_cpu_processes": [
+              "COMMAND         %CPU",
+              "code-insiders    3.6",
+              "chrome           3.5",
+              "code-insiders    2.6",
+              "Xorg             1.6",
+              "code-insiders    1.5",
+              "chrome           1.2",
+              "epp-client-daem  1.1",
+              "code-insiders    1.0",
+              "gnome-shell      0.9",
+              "code-insiders    0.8"
+            ]
+          },
+          "load_after": {
+            "loadavg": "1.96 1.19 1.10 4/2824 3825651",
+            "cpu_count": 20
+          }
+        },
+        {
+          "run": "c8-03",
+          "exit_code": 0,
+          "pytest": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "passed": 1
+          },
+          "seconds": 184.38082352094352,
+          "deny_target_gone": 0,
+          "fetch_continue_failed": 0,
+          "failures": [],
+          "load_before": {
+            "loadavg": "1.96 1.19 1.10 5/2824 3825652",
+            "cpu_count": 20,
+            "top_cpu_processes": [
+              "COMMAND         %CPU",
+              "cmake           19.5",
+              "code-insiders    3.6",
+              "depanneur        3.6",
+              "chrome           3.5",
+              "code-insiders    2.6",
+              "Xorg             1.6",
+              "code-insiders    1.5",
+              "gbs              1.3",
+              "chrome           1.2",
+              "epp-client-daem  1.1"
+            ]
+          },
+          "load_after": {
+            "loadavg": "3.76 2.48 1.64 4/2820 3832144",
+            "cpu_count": 20
+          }
+        },
+        {
+          "run": "c8-04",
+          "exit_code": 1,
+          "pytest": {
+            "tests": 1,
+            "failures": 1,
+            "errors": 0,
+            "skipped": 0,
+            "passed": 0
+          },
+          "seconds": 203.51675470301416,
+          "deny_target_gone": 2,
+          "fetch_continue_failed": 0,
+          "failures": [
+            {
+              "file": "c8/racing-wicket-navigation.json",
+              "case": "racing-wicket-navigation",
+              "harness_failure": {
+                "class_name": "TargetClosedError",
+                "agent_code": null,
+                "category": "OTHER_FRAMEWORK_ERROR"
+              }
+            }
+          ],
+          "load_before": {
+            "loadavg": "3.76 2.48 1.64 3/2819 3832145",
+            "cpu_count": 20,
+            "top_cpu_processes": [
+              "COMMAND         %CPU",
+              "ps               100",
+              "cmake            6.0",
+              "code-insiders    3.6",
+              "chrome           3.5",
+              "code-insiders    2.6",
+              "Xorg             1.6",
+              "code-insiders    1.5",
+              "chrome           1.2",
+              "epp-client-daem  1.1",
+              "code-insiders    1.0"
+            ]
+          },
+          "load_after": {
+            "loadavg": "9.94 6.42 3.37 3/2838 3838213",
+            "cpu_count": 20
+          }
+        }
+      ]
+    },
+    "late": {
+      "runs": 0,
+      "passed": 0,
+      "failed": 0,
+      "deny_target_gone": 0,
+      "fetch_continue_failed": 0,
+      "rows": []
+    }
+  },
+  "gates": {
+    "collect": {
+      "exit_code": 0,
+      "seconds": 0.7823124910937622,
+      "load_before": {
+        "loadavg": "1.12 1.12 1.18 3/2825 3801991",
+        "cpu_count": 20,
+        "top_cpu_processes": [
+          "COMMAND         %CPU",
+          "python          75.0",
+          "code-insiders    3.6",
+          "chrome           3.5",
+          "code-insiders    2.6",
+          "Xorg             1.6",
+          "code-insiders    1.4",
+          "chrome           1.2",
+          "epp-client-daem  1.1",
+          "code-insiders    1.0",
+          "gnome-shell      0.9"
+        ]
+      },
+      "load_after": {
+        "loadavg": "1.12 1.12 1.18 2/2826 3801994",
+        "cpu_count": 20
+      }
+    },
+    "design": {
+      "exit_code": 0,
+      "seconds": 0.0702604369726032,
+      "load_before": {
+        "loadavg": "0.81 1.04 1.16 2/2959 3803703",
+        "cpu_count": 20,
+        "top_cpu_processes": [
+          "COMMAND         %CPU",
+          "python           100",
+          "chrome           7.2",
+          "MainThread       4.2",
+          "code-insiders    3.6",
+          "chrome           3.5",
+          "code-insiders    2.6",
+          "chrome           2.4",
+          "Xorg             1.6",
+          "code-insiders    1.4",
+          "chrome           1.2"
+        ]
+      },
+      "load_after": {
+        "loadavg": "0.81 1.04 1.16 1/2959 3803705",
+        "cpu_count": 20
+      }
+    },
+    "focused": {
+      "exit_code": 0,
+      "seconds": 18.762089455034584,
+      "load_before": {
+        "loadavg": "1.24 1.10 1.18 6/2828 3798904",
+        "cpu_count": 20,
+        "top_cpu_processes": [
+          "COMMAND         %CPU",
+          "python          75.0",
+          "code-insiders    3.6",
+          "chrome           3.5",
+          "code-insiders    2.6",
+          "Xorg             1.6",
+          "code-insiders    1.4",
+          "chrome           1.2",
+          "epp-client-daem  1.1",
+          "code-insiders    1.0",
+          "gnome-shell      0.9"
+        ]
+      },
+      "load_after": {
+        "loadavg": "1.79 1.23 1.22 3/2823 3799815",
+        "cpu_count": 20
+      },
+      "pytest": {
+        "tests": 223,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 223
+      },
+      "failed": [],
+      "skipped": [],
+      "timing_sensitive": []
+    },
+    "imports": {
+      "exit_code": 0,
+      "seconds": 0.08104564109817147,
+      "load_before": {
+        "loadavg": "0.81 1.04 1.16 4/2959 3803680",
+        "cpu_count": 20,
+        "top_cpu_processes": [
+          "COMMAND         %CPU",
+          "ps               100",
+          "python          50.0",
+          "chrome           7.4",
+          "MainThread       4.2",
+          "code-insiders    3.6",
+          "chrome           3.5",
+          "code-insiders    2.6",
+          "chrome           2.5",
+          "Xorg             1.6",
+          "code-insiders    1.4"
+        ]
+      },
+      "load_after": {
+        "loadavg": "0.81 1.04 1.16 4/2959 3803702",
+        "cpu_count": 20
+      }
+    },
+    "mypy": {
+      "exit_code": 0,
+      "seconds": 0.1252138710115105,
+      "load_before": {
+        "loadavg": "1.02 1.10 1.18 4/2855 3802301",
+        "cpu_count": 20,
+        "top_cpu_processes": [
+          "COMMAND         %CPU",
+          "python          75.0",
+          "MainThread      37.2",
+          "python          10.2",
+          "code-insiders    3.6",
+          "chrome           3.5",
+          "Xvfb             3.5",
+          "code-insiders    2.6",
+          "python           2.4",
+          "Xorg             1.6",
+          "code-insiders    1.4"
+        ]
+      },
+      "load_after": {
+        "loadavg": "1.02 1.10 1.18 6/2880 3802343",
+        "cpu_count": 20
+      }
+    },
+    "ruff": {
+      "exit_code": 2,
+      "seconds": 0.03158673702273518,
+      "load_before": {
+        "loadavg": "0.81 1.04 1.16 1/2959 3803677",
+        "cpu_count": 20,
+        "top_cpu_processes": [
+          "COMMAND         %CPU",
+          "python          80.0",
+          "chrome           7.5",
+          "MainThread       4.2",
+          "code-insiders    3.6",
+          "chrome           3.5",
+          "code-insiders    2.6",
+          "chrome           2.5",
+          "Xorg             1.6",
+          "code-insiders    1.4",
+          "chrome           1.2"
+        ]
+      },
+      "load_after": {
+        "loadavg": "0.81 1.04 1.16 4/2959 3803679",
+        "cpu_count": 20
+      }
+    },
+    "ruff-recheck": {
+      "exit_code": 0,
+      "seconds": 0.012096749036572874,
+      "load_before": {
+        "loadavg": "0.86 1.04 1.15 7/2959 3805370",
+        "cpu_count": 20,
+        "top_cpu_processes": [
+          "COMMAND         %CPU",
+          "python          80.0",
+          "chrome          32.5",
+          "python3          8.3",
+          "chrome           7.8",
+          "chrome           6.9",
+          "code-insiders    3.6",
+          "chrome           3.5",
+          "chrome           3.5",
+          "MainThread       3.2",
+          "code-insiders    2.6"
+        ]
+      },
+      "load_after": {
+        "loadavg": "0.86 1.04 1.15 3/2960 3805409",
+        "cpu_count": 20
+      }
+    },
+    "safety": {
+      "exit_code": 0,
+      "seconds": 8.093185233068652,
+      "load_before": {
+        "loadavg": "1.35 1.16 1.20 3/2827 3800004",
+        "cpu_count": 20,
+        "top_cpu_processes": [
+          "COMMAND         %CPU",
+          "python          75.0",
+          "code-insiders    3.6",
+          "chrome           3.5",
+          "code-insiders    2.6",
+          "Xorg             1.6",
+          "code-insiders    1.4",
+          "chrome           1.2",
+          "epp-client-daem  1.1",
+          "code-insiders    1.0",
+          "gnome-shell      0.9"
+        ]
+      },
+      "load_after": {
+        "loadavg": "1.21 1.14 1.19 2/2818 3801955",
+        "cpu_count": 20
+      }
+    }
+  },
+  "safety": [
+    {
+      "group": "worker-websocket",
+      "ok": true,
+      "requests": [
+        {
+          "group": "worker-websocket",
+          "method": "GET",
+          "path": "/build/1",
+          "host": "quickbuild.tizen.org"
+        }
+      ],
+      "handshakes": [],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "WORKER_BLOCKED",
+          "type": "shared_worker",
+          "paused": true
+        },
+        {
+          "action": "WEBSOCKET_DENIED"
+        },
+        {
+          "action": "WEBSOCKET_DENIED"
+        },
+        {
+          "action": "WORKER_BLOCKED",
+          "type": "worker",
+          "paused": true
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "CLOSE_TARGET_FAILED"
+        }
+      ],
+      "details": {
+        "attackHTTP": 0,
+        "websocketHandshakes": 0,
+        "branch": "b:browser_fail_closed",
+        "workers": [
+          {
+            "action": "WORKER_BLOCKED",
+            "type": "shared_worker",
+            "paused": true
+          },
+          {
+            "action": "WORKER_BLOCKED",
+            "type": "worker",
+            "paused": true
+          }
+        ]
+      },
+      "observations": {
+        "closeTarget": [
+          {
+            "type": "shared_worker",
+            "outcome": "success",
+            "success": true
+          },
+          {
+            "type": "worker",
+            "outcome": "exception",
+            "category": "Error"
+          }
+        ],
+        "failure": "QB_BROWSER_UNAVAILABLE",
+        "browserClosed": true,
+        "temporaryDirectoryRemoved": true
+      }
+    },
+    {
+      "group": "307-308",
+      "ok": true,
+      "requests": [
+        {
+          "group": "307-308",
+          "method": "GET",
+          "path": "/build/307",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "307-308",
+          "method": "GET",
+          "path": "/build/308",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "307-308",
+          "method": "GET",
+          "path": "/build/302",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "307-308",
+          "method": "GET",
+          "path": "/build/999",
+          "host": "quickbuild.tizen.org"
+        }
+      ],
+      "handshakes": [],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "phase": "read",
+          "path": "/build/<id>",
+          "action": "DENIED"
+        },
+        {
+          "phase": "read",
+          "path": "/build/<id>",
+          "action": "DENIED"
+        }
+      ],
+      "details": {
+        "blocked": [
+          307,
+          308
+        ],
+        "allowed": 302
+      }
+    },
+    {
+      "group": "per-hop",
+      "ok": true,
+      "requests": [
+        {
+          "group": "per-hop",
+          "method": "GET",
+          "path": "/build/301",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "per-hop",
+          "method": "GET",
+          "path": "/build/303",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "per-hop",
+          "method": "GET",
+          "path": "/build/304",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "per-hop",
+          "method": "GET",
+          "path": "/signin",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "per-hop",
+          "method": "POST",
+          "path": "/signin?7-1.IFormSubmitListener-content-form",
+          "host": "quickbuild.tizen.org"
+        }
+      ],
+      "handshakes": [],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "phase": "read",
+          "path": "<other>",
+          "action": "DENIED"
+        },
+        {
+          "phase": "read",
+          "path": "/wicket/page",
+          "action": "DENIED"
+        },
+        {
+          "phase": "read",
+          "path": "/build/<id>",
+          "action": "DENIED"
+        },
+        {
+          "phase": "login",
+          "path": "/signin",
+          "action": "DENIED"
+        }
+      ],
+      "details": {
+        "forbiddenSecondHops": 0,
+        "postReplay": 0
+      }
+    },
+    {
+      "group": "credential-isolation",
+      "ok": true,
+      "requests": [
+        {
+          "group": "credential-isolation",
+          "method": "GET",
+          "path": "/signin",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "credential-isolation",
+          "method": "POST",
+          "path": "/signin?1-1.IFormSubmitListener-content-form",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "credential-isolation",
+          "method": "GET",
+          "path": "/overview/0",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "credential-isolation",
+          "method": "GET",
+          "path": "/build/1",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "credential-isolation",
+          "method": "GET",
+          "path": "/build/1",
+          "host": "quickbuild.tizen.org"
+        }
+      ],
+      "handshakes": [],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "IDENTITY_OUTSIDE_REGISTERED",
+          "count": 0
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "ADAPT_FAILED"
+        }
+      ],
+      "details": {
+        "credentialFacts": {
+          "cookie": true,
+          "authorization": true,
+          "password": true
+        },
+        "protocol": {
+          "ok": true,
+          "status": 200,
+          "html_redacted": "<html><head><link rel=\"icon\" href=\"data:,\"><title>LOCAL C2b safety fixture</title></head><body><a class=\"nav-link\">Build (id:1)</a>\n      <span>Welcome! &lt;USER&gt;</span>\n      <input type=\"hidden\" name=\"token\" value=\"&lt;REDACTED&gt;\">\n      <div class=\"build-summary\"><div class=\"box-head\">Summary</div><table>\n      <thead><tr><th>Id</th><th>Triggered By</th></tr></thead>\n      <tbody><tr><td>1</td><td>&lt;USER&gt;</td></tr></tbody></table></div></body></html>",
+          "outside_identity_count": 0
+        },
+        "exception": {
+          "ok": false,
+          "error": "QB_BROWSER_UNAVAILABLE"
+        }
+      }
+    },
+    {
+      "summary": 4,
+      "passed": 4,
+      "failed": 0,
+      "network": "loopback-only",
+      "temporaryDirectoryRemoved": true
+    }
+  ],
+  "preliminary_wrapper_failure_excluded": "wrapper-error-c8-01",
+  "repeated_trace_sensitive_scan_passed": true
+}

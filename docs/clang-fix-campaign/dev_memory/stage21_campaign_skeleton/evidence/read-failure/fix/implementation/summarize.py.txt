@@ -1,0 +1,60 @@
+"""Summarize recorded gates and all formal repetitions without rewriting logs."""
+import json
+from pathlib import Path
+import xml.etree.ElementTree as ET
+
+DEST = Path(__file__).resolve().parent
+groups = {}
+lines = ['# Formal Repetition Results', '', 'All tests use local fixtures and a private virtual display.', '']
+for group in ('c8', 'late'):
+    rows = []
+    lines += [f'## {group}', '', '| Run | Result | Seconds | DENY_TARGET_GONE | FETCH_CONTINUE_FAILED | Failure shape | Load before / after (1,5,15 min) |',
+              '|---|---|---:|---:|---:|---|---|']
+    for path in sorted(DEST.glob(f'{group}-[0-9][0-9]/command.json')):
+        row = json.loads(path.read_text())
+        events = [e for item in row['observations'] for e in item['diagnostics']]
+        denials = [e for e in events if e['action'] == 'DENY_TARGET_GONE']
+        for e in denials:
+            assert set(e) == {'action', 'phase', 'stage', 'path', 'generation'}
+            assert '?' not in e['path'] and 'private' not in json.dumps(e)
+        failures = [{'file': item['file'], 'case': item['case'], 'harness_failure': item['harness_failure']}
+                    for item in row['observations'] if item['harness_failure']]
+        facts = dict(run=path.parent.name, exit_code=row['exit_code'], pytest=row['pytest'],
+                     seconds=row['seconds'], deny_target_gone=len(denials),
+                     fetch_continue_failed=sum(e.get('failure_category') == 'FETCH_CONTINUE_FAILED' for e in events),
+                     failures=failures, load_before=row['load_before'], load_after=row['load_after'])
+        rows.append(facts)
+        before = '/'.join(row['load_before']['loadavg'].split()[:3])
+        after = '/'.join(row['load_after']['loadavg'].split()[:3])
+        shape = '; '.join(f"{e['case']}: {e['harness_failure']}" for e in failures) or ('none' if row['exit_code'] == 0 else 'see stdout.log')
+        lines.append(f"| {facts['run']} | {'PASS' if row['exit_code'] == 0 else 'FAIL'} | {row['seconds']:.2f} | {len(denials)} | {facts['fetch_continue_failed']} | {shape} | {before} / {after} |")
+    groups[group] = dict(runs=len(rows), passed=sum(r['exit_code'] == 0 for r in rows),
+                        failed=sum(r['exit_code'] != 0 for r in rows),
+                        deny_target_gone=sum(r['deny_target_gone'] for r in rows),
+                        fetch_continue_failed=sum(r['fetch_continue_failed'] for r in rows), rows=rows)
+    lines.append('')
+
+gates = {}
+for path in sorted(DEST.glob('*/command.json')):
+    if path.parent.name.startswith(('c8-', 'late-')):
+        continue
+    row = json.loads(path.read_text())
+    facts = {k: row[k] for k in ('exit_code', 'seconds', 'load_before', 'load_after')}
+    if 'pytest' in row:
+        facts['pytest'] = row['pytest']
+        tests = ET.parse(path.parent / 'pytest.xml').getroot().findall('.//testcase')
+        facts['failed'] = [dict(name=t.get('name'), classname=t.get('classname')) for t in tests
+                           if t.find('failure') is not None or t.find('error') is not None]
+        facts['skipped'] = [dict(name=t.get('name'), classname=t.get('classname')) for t in tests if t.find('skipped') is not None]
+        facts['timing_sensitive'] = [dict(name=t.get('name'), seconds=t.get('time'),
+                                         passed=t.find('failure') is None and t.find('error') is None)
+                                     for t in tests if 'test_real_cli_browser_submit_bind_pending_pass' in t.get('name', '')
+                                     or 'test_post_submit_read_signatures' in t.get('name', '')]
+    gates[path.parent.name] = facts
+safety = [json.loads(line) for line in (DEST / 'safety/stdout.log').read_text().splitlines() if line.startswith('{')]
+facts = dict(groups=groups, gates=gates, safety=safety,
+             preliminary_wrapper_failure_excluded='wrapper-error-c8-01',
+             repeated_trace_sensitive_scan_passed=True)
+(DEST / 'results.json').write_text(json.dumps(facts, indent=2) + '\n')
+(DEST / 'sampling-results.md').write_text('\n'.join(lines).rstrip() + '\n')
+print(json.dumps({key: {k: v for k, v in row.items() if k != 'rows'} for key, row in groups.items()}, indent=2))

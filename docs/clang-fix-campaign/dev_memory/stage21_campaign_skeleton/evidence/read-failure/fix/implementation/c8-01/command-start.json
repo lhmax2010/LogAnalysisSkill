@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/c8-01/pytest.xml"
+  ],
+  "started": "2026-11-03T11:34:09.136057+00:00",
+  "load_before": {
+    "loadavg": "0.70 0.92 1.08 5/2819 3810372",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          75.0",
+      "python3         11.8",
+      "python3          8.2",
+      "code-insiders    3.6",
+      "chrome           3.5",
+      "code-insiders    2.6",
+      "Xorg             1.6",
+      "code-insiders    1.5",
+      "chrome           1.2",
+      "epp-client-daem  1.1"
+    ]
+  }
+}

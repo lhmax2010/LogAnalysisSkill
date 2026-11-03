@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="201.842" timestamp="2026-11-03T19:43:19.685849+08:00" hostname="linhao-linux"><testcase classname="tests.unit.test_p5q_c8_investigation" name="test_post_submit_read_signatures" time="200.361"><failure message="AssertionError: CASE_COMPLETE control&#10;  CASE_COMPLETE idle-script-navigation&#10;  CASE_COMPLETE racing-script-navigation&#10;  CASE_COMPLETE racing-meta-refresh&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。&#10;  QB_AGENT_STOPPED category=UNKNOWN&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。&#10;  QB_AGENT_STOPPED category=UNKNOWN&#10;  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。&#10;  INVESTIGATION_STOPPED AssertionError&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...D category=UNKNOWN\n已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nINVESTIGATION_STOPPED AssertionError\n').returncode">tmp_path = PosixPath('/tmp/pytest-of-linhao/pytest-71/test_post_submit_read_signatur0')
+
+    @pytest.mark.integration
+    def test_post_submit_read_signatures(tmp_path: Path) -&gt; None:
+        node, env = node_command()
+        paths = browser_paths()
+        output = Path(os.environ.get("P5Q_C8_INVESTIGATION", str(tmp_path)))
+        output.mkdir(parents=True, exist_ok=True)
+        command = [*node, str(ROOT / "tests/node/p5q_c8_investigation.mjs"), *paths, str(output)]
+        result = subprocess.run(command, env=env, text=True, capture_output=True, timeout=600)
+        (output / "node.stdout.txt").write_text(result.stdout)
+        (output / "node.stderr.txt").write_text(result.stderr)
+&gt;       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: CASE_COMPLETE control
+E         CASE_COMPLETE idle-script-navigation
+E         CASE_COMPLETE racing-script-navigation
+E         CASE_COMPLETE racing-meta-refresh
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         QB_AGENT_STOPPED category=UNKNOWN
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         QB_AGENT_STOPPED category=UNKNOWN
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         INVESTIGATION_STOPPED AssertionError
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...D category=UNKNOWN\n已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nINVESTIGATION_STOPPED AssertionError\n').returncode
+
+tests/unit/test_p5q_c8_investigation.py:26: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,52 @@
+"""Scope, source hashes, and nodeids for SKEL-R-04/06."""
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+BASE = '8d60851'
+DEST = Path(__file__).resolve().parent
+AGENT = 'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs'
+TEST = 'tests/node/test_qb_read_failure_diagnostics.mjs'
+def old(path):
+    return subprocess.check_output(['git', 'show', BASE + ':' + path])
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+before, after = old(AGENT), Path(AGENT).read_bytes()
+first, last = b'export async function installGuards(', b'export function pathShape('
+outside_unchanged = before.split(first)[0] == after.split(first)[0] and before.split(last)[1] == after.split(last)[1]
+assert outside_unchanged
+test_before, test_after = old(TEST).decode(), Path(TEST).read_text()
+def protected_test_parts(text):
+    return [text.split("for (const method of")[0],
+            text.split('const categories = [')[1].split("test('read navigation cancellation")[0],
+            text.split("for (const command of ['read', 'submit'])")[1]]
+assert protected_test_parts(test_before) == protected_test_parts(test_after)
+protected = [p for p in subprocess.check_output(['git', 'ls-files', '-z'], text=True).split('\0')
+             if p and (p.startswith(('tests/', 'tizen-')) or 'FROZEN' in p)]
+changed = [p for p in protected if p not in {AGENT, TEST}
+           and (not Path(p).is_file() or Path(p).read_bytes() != old(p))]
+assert not changed
+def nodeids(text):
+    return {s.strip() for s in text.splitlines() if s.startswith('tests/') and '::' in s}
+old_ids = nodeids((DEST.parents[1] / 'diagnostics/collect/stdout.log').read_text())
+new_ids = nodeids((DEST / 'collect/stdout.log').read_text())
+assert len(old_ids) == 3098 and len(new_ids) == 3100 and not old_ids-new_ids
+facts = {
+    'baseline': BASE,
+    'agent': {'before_sha256': sha(before), 'after_sha256': sha(after),
+              'before_prefix_sha256': sha(before.split(b'export class Agent {')[0]),
+              'after_prefix_sha256': sha(after.split(b'export class Agent {')[0]),
+              'outside_installGuards_unchanged': outside_unchanged},
+    'other_protected_files_changed': changed,
+    'test_parts_outside_three_authorized_cases_unchanged': True,
+    'nodeids': {'before': len(old_ids), 'after': len(new_ids), 'removed': sorted(old_ids-new_ids), 'added': sorted(new_ids-old_ids)},
+    'node_case_renamed': {'before': 'read navigation cancellation concurrent with a rejected Fetch keeps initiating failure',
+                          'after': 'read navigation cancellation after a gone deny records navigation as first failure',
+                          'pytest_nodeid_changed': False},
+    'numstat': subprocess.check_output(['git', 'diff', '--numstat', BASE, '--', AGENT, TEST], text=True),
+}
+(DEST / 'integrity.json').write_text(json.dumps(facts, indent=2) + '\n')
+(DEST / 'production.diff').write_bytes(subprocess.check_output(['git', 'diff', BASE, '--', AGENT]))
+(DEST / 'authorized-test.diff').write_bytes(subprocess.check_output(['git', 'diff', BASE, '--', TEST]))
+print(json.dumps(facts, indent=2))

@@ -1,0 +1,102 @@
+{
+  "network": "loopback-only",
+  "received": [
+    {
+      "method": "GET",
+      "path": "/build/1"
+    },
+    {
+      "method": "GET",
+      "path": "/build/1"
+    },
+    {
+      "method": "GET",
+      "path": "/build/1"
+    },
+    {
+      "method": "GET",
+      "path": "/build/307"
+    },
+    {
+      "method": "GET",
+      "path": "/build/308"
+    },
+    {
+      "method": "GET",
+      "path": "/build/1"
+    }
+  ],
+  "attempts": [
+    {
+      "operation": "Fetch.failRequest",
+      "rejected": true
+    },
+    {
+      "operation": "Fetch.failRequest",
+      "rejected": true
+    }
+  ],
+  "ok": true,
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "action": "DENY_TARGET_GONE",
+      "phase": "read",
+      "stage": "request",
+      "path": "<other>",
+      "generation": 1
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "action": "DENY_TARGET_GONE",
+      "phase": "read",
+      "stage": "request",
+      "path": "<other>",
+      "generation": 2
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "/build/<id>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "/build/<id>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "/build/<id>",
+      "action": "DENIED"
+    }
+  ],
+  "profile_removed": true,
+  "fixture_removed": true
+}

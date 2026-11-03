@@ -1,0 +1,106 @@
+"""Offline SKEL-R-04/06 gates; independent outputs, no fail-fast full suite."""
+import datetime
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import time
+import xml.etree.ElementTree as ET
+
+ROOT = Path.cwd()
+DEST = Path(__file__).resolve().parent
+PY = str(ROOT / '.venv/bin/python')
+def load():
+    return dict(loadavg=Path('/proc/loadavg').read_text().strip(), cpu_count=os.cpu_count())
+
+def run(name, extra=()):
+    folder = DEST / name
+    folder.mkdir(parents=True, exist_ok=False)
+    env = os.environ.copy()
+    env.update(P5Q_C5A_EVIDENCE=str(folder / 'c5a'), P5Q_C8_INVESTIGATION=str(folder / 'c8'),
+               P5Q_DENY_GONE_EVIDENCE=str(folder / 'deny-gone'))
+    env.pop('P5Q_C8_CASES', None)
+    quiet = [PY, 'tests/run_quiet.py', '-q']
+    if name == 'focused':
+        argv = [*quiet, '-s', 'tests/unit/test_qb_deny_target_gone.py', 'tests/unit/test_qb_read_failure_diagnostics.py',
+                'tests/unit/test_qb_browser.py', 'tests/unit/test_qb_browser_node.py::test_node_agent_unit_matrix',
+                'tests/unit/test_qb_browser_node.py::test_node_failure_categories',
+                'tests/unit/test_qb_browser_node.py::test_node_c2c_source_guard_mutations']
+    elif name.startswith('c8-'):
+        argv = [*quiet, 'tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures']
+    elif name.startswith('late-'):
+        argv = [*quiet, 'tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]']
+    elif name.startswith(('full', 'timing-')):
+        argv = [*quiet, *extra]
+    elif name == 'collect':
+        argv = [PY, '-m', 'pytest', '--collect-only', '-q']
+    elif name in {'mypy', 'imports'}:
+        argv = [str(ROOT / '.venv/bin' / ('mypy' if name == 'mypy' else 'lint-imports'))]
+    elif name == 'design':
+        argv = [PY, 'docs/clang-fix-campaign/tools/check_design_doc.py', 'docs/clang-fix-campaign/design.md']
+    elif name.startswith('ruff'):
+        tracked = subprocess.check_output(['git', 'ls-files', '-z'], text=True).split('\0')
+        paths = sorted({p for p in tracked + ['tests/unit/test_qb_deny_target_gone.py']
+                        if p.endswith('.py') and Path(p).is_file()})
+        argv = [str(ROOT / '.venv/bin/ruff'), 'check', '--force-exclude', *paths]
+    elif name == 'safety':
+        env['PATH'] = str(Path.home() / '.local/share/p5q-test-display/usr/bin') + ':' + env['PATH']
+        for key in ('DISPLAY', 'WAYLAND_DISPLAY', 'XAUTHORITY', 'DEBUG', 'PWDEBUG', 'NODE_OPTIONS'):
+            env.pop(key, None)
+        env.update(P5Q_TEST_DISPLAY='virtual', XDG_SESSION_TYPE='x11')
+        node, virtual = shutil.which('node', path=env['PATH']), shutil.which('xvfb-run', path=env['PATH'])
+        assert node and virtual
+        argv = [virtual, '--auto-servernum', '--error-file=/dev/stderr',
+                '--server-args=-screen 0 1920x1080x24 -nolisten tcp', node, 'tests/node/p5q_c2b_safety.mjs',
+                str(Path.home() / '.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs'),
+                str(Path.home() / '.cache/ms-playwright/chromium-1208/chrome-linux64/chrome')]
+    else:
+        raise ValueError(name)
+    if argv[1:2] == ['tests/run_quiet.py']:
+        argv.append('--junitxml=' + str(folder / 'pytest.xml'))
+    before = load()
+    before['top_cpu_processes'] = subprocess.check_output(['ps', '-eo', 'comm,pcpu', '--sort=-pcpu'], text=True).splitlines()[:11]
+    facts = dict(argv=argv, started=datetime.datetime.now(datetime.timezone.utc).isoformat(), load_before=before)
+    (folder / 'command-start.json').write_text(json.dumps(facts, indent=2) + '\n')
+    tick = time.monotonic()
+    with (folder / 'stdout.log').open('w') as out, (folder / 'stderr.log').open('w') as err:
+        result = subprocess.run(argv, cwd=ROOT, env=env, stdout=out, stderr=err)
+    facts.update(exit_code=result.returncode, seconds=time.monotonic() - tick,
+                 finished=datetime.datetime.now(datetime.timezone.utc).isoformat(), load_after=load())
+    if (folder / 'pytest.xml').exists():
+        suites = ET.parse(folder / 'pytest.xml').getroot().findall('testsuite')
+        facts['pytest'] = {key: sum(int(s.get(key, '0')) for s in suites)
+                           for key in ('tests', 'failures', 'errors', 'skipped')}
+        facts['pytest']['passed'] = facts['pytest']['tests'] - sum(facts['pytest'][k] for k in ('failures', 'errors', 'skipped'))
+    traces = []
+    for pattern in ('c8/*.json', 'c5a/*/agent-*.json'):
+        for path in sorted(folder.glob(pattern)):
+            data = json.loads(path.read_text())
+            if not isinstance(data, dict):
+                continue
+            traces.append({'file': str(path.relative_to(folder)), 'case': data.get('case'),
+                           'harness_failure': data.get('harness_failure'),
+                           'diagnostics': [row for row in data.get('trace', [])
+                                           if row.get('action') in {'OPERATION_FAILED', 'DENY_TARGET_GONE', 'AGENT_STOPPED'}]})
+    facts['observations'] = traces
+    (folder / 'command.json').write_text(json.dumps(facts, indent=2) + '\n')
+    print(json.dumps(dict(name=name, exit_code=result.returncode, seconds=facts['seconds'],
+                         pytest=facts.get('pytest'), load_before=before['loadavg'], load_after=facts['load_after']['loadavg'],
+                         deny_target_gone=sum(row['action'] == 'DENY_TARGET_GONE' for t in traces for row in t['diagnostics']),
+                         fetch_continue_failed=sum(row.get('failure_category') == 'FETCH_CONTINUE_FAILED' for t in traces for row in t['diagnostics']))), flush=True)
+    if result.returncode:
+        print((folder / 'stdout.log').read_text()[-5000:], flush=True)
+    return result.returncode
+
+if __name__ == '__main__':
+    name = sys.argv[1]
+    if name.startswith('series-'):
+        group = name.removeprefix('series-')
+        for number in range(int(sys.argv[2]) if len(sys.argv) > 2 else 1, 21):
+            code = run(f'{group}-{number:02}')
+            if code:
+                raise SystemExit(code)
+    else:
+        raise SystemExit(run(name, sys.argv[2:]))

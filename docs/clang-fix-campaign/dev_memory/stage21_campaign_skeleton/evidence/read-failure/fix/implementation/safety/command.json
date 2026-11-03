@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+    "--auto-servernum",
+    "--error-file=/dev/stderr",
+    "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+    "/home/linhao/.local/bin/node",
+    "tests/node/p5q_c2b_safety.mjs",
+    "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+    "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome"
+  ],
+  "started": "2026-11-03T11:30:05.847495+00:00",
+  "load_before": {
+    "loadavg": "1.35 1.16 1.20 3/2827 3800004",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          75.0",
+      "code-insiders    3.6",
+      "chrome           3.5",
+      "code-insiders    2.6",
+      "Xorg             1.6",
+      "code-insiders    1.4",
+      "chrome           1.2",
+      "epp-client-daem  1.1",
+      "code-insiders    1.0",
+      "gnome-shell      0.9"
+    ]
+  },
+  "exit_code": 0,
+  "seconds": 8.093185233068652,
+  "finished": "2026-11-03T11:30:13.940848+00:00",
+  "load_after": {
+    "loadavg": "1.21 1.14 1.19 2/2818 3801955",
+    "cpu_count": 20
+  },
+  "observations": []
+}

@@ -1,0 +1,27 @@
+{
+  "baseline": "8d60851",
+  "agent": {
+    "before_sha256": "d0e99f7e4caf11104920ddfe7a569a75e100c5a1dc44a3a916d73ef2bacbf823",
+    "after_sha256": "044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723",
+    "before_prefix_sha256": "3bb1c0cc2fbfcb20aef324c8b8a703f06f40a438211317e0e96f2ba30f2be4c2",
+    "after_prefix_sha256": "9b7796f02f3e65f97c6f68bbe169109b8bd885854c98bb976d4d55ae5a2bc006",
+    "outside_installGuards_unchanged": true
+  },
+  "other_protected_files_changed": [],
+  "test_parts_outside_three_authorized_cases_unchanged": true,
+  "nodeids": {
+    "before": 3098,
+    "after": 3100,
+    "removed": [],
+    "added": [
+      "tests/unit/test_qb_deny_target_gone.py::test_deny_target_gone_server_receives_zero",
+      "tests/unit/test_qb_deny_target_gone.py::test_deny_target_gone_unit_matrix"
+    ]
+  },
+  "node_case_renamed": {
+    "before": "read navigation cancellation concurrent with a rejected Fetch keeps initiating failure",
+    "after": "read navigation cancellation after a gone deny records navigation as first failure",
+    "pytest_nodeid_changed": false
+  },
+  "numstat": "14\t6\ttests/node/test_qb_read_failure_diagnostics.mjs\n25\t16\ttizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs\n"
+}

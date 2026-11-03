@@ -1,0 +1,209 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/c8-02/pytest.xml"
+  ],
+  "started": "2026-11-03T11:37:11.541688+00:00",
+  "load_before": {
+    "loadavg": "0.46 0.77 0.99 5/2806 3818929",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "code-insiders    3.6",
+      "chrome           3.5",
+      "code-insiders    2.6",
+      "Xorg             1.6",
+      "code-insiders    1.5",
+      "chrome           1.2",
+      "epp-client-daem  1.1",
+      "code-insiders    1.0",
+      "gnome-shell      0.9",
+      "code-insiders    0.8"
+    ]
+  },
+  "exit_code": 0,
+  "seconds": 182.92480306199286,
+  "finished": "2026-11-03T11:40:14.466798+00:00",
+  "load_after": {
+    "loadavg": "1.96 1.19 1.10 4/2824 3825651",
+    "cpu_count": 20
+  },
+  "pytest": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 1
+  },
+  "observations": [
+    {
+      "file": "c8/configuration-connection-abort.json",
+      "case": "configuration-connection-abort",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "CONNECTION_FAILED"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/configuration-redirect-307.json",
+      "case": "configuration-redirect-307",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "BLOCKED_BY_CLIENT"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/configuration-redirect-signin.json",
+      "case": "configuration-redirect-signin",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "BLOCKED_BY_CLIENT"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/control.json",
+      "case": "control",
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c8/delay-only-control.json",
+      "case": "delay-only-control",
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c8/idle-script-navigation.json",
+      "case": "idle-script-navigation",
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c8/injected-competing-navigation.json",
+      "case": "injected-competing-navigation",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "NAVIGATION_INTERRUPTED"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/injected-missing-root-membership.json",
+      "case": "injected-missing-root-membership",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "BLOCKED_BY_CLIENT"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/racing-meta-refresh.json",
+      "case": "racing-meta-refresh",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "Agent.command",
+          "phase": "read",
+          "stage": "command",
+          "path": "/overview/<id>",
+          "generation": 6,
+          "category": "OTHER"
+        }
+      ]
+    },
+    {
+      "file": "c8/racing-script-navigation.json",
+      "case": "racing-script-navigation",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "Agent.command",
+          "phase": "read",
+          "stage": "command",
+          "path": "/overview/<id>",
+          "generation": 6,
+          "category": "OTHER"
+        }
+      ]
+    },
+    {
+      "file": "c8/racing-wicket-navigation.json",
+      "case": "racing-wicket-navigation",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "Agent.command",
+          "phase": "read",
+          "stage": "command",
+          "path": "/overview/<id>",
+          "generation": 6,
+          "category": "OTHER"
+        }
+      ]
+    }
+  ]
+}

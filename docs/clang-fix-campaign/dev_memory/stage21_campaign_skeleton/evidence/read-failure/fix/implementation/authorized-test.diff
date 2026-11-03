@@ -1,0 +1,53 @@
+diff --git a/tests/node/test_qb_read_failure_diagnostics.mjs b/tests/node/test_qb_read_failure_diagnostics.mjs
+index 00901cf..848c8c2 100644
+--- a/tests/node/test_qb_read_failure_diagnostics.mjs
++++ b/tests/node/test_qb_read_failure_diagnostics.mjs
+@@ -37,8 +37,11 @@ for (const method of ['Fetch.failRequest', 'Fetch.continueRequest', 'Fetch.conti
+       paused(root, '/signin'); await flush(); paused(root, '/signin', 200);
+     } else paused(root, method === 'Fetch.failRequest' ? '/private?token=private-query' : '/signin');
+     await flush();
+-    assert.deepEqual(stops, ['FETCH_CONTINUE_FAILED']);
+-    assert.deepEqual(diagnostics(trace), [{ action: 'OPERATION_FAILED', operation: method,
++    assert.deepEqual(stops, method === 'Fetch.failRequest' ? [] : ['FETCH_CONTINUE_FAILED']);
++    assert.deepEqual(trace.filter(row => row.action === 'DENY_TARGET_GONE'),
++      method === 'Fetch.failRequest' ? [{ action: 'DENY_TARGET_GONE', phase: 'login',
++        stage: 'request', path: '<other>', generation: 1 }] : []);
++    assert.deepEqual(diagnostics(trace), method === 'Fetch.failRequest' ? [] : [{ action: 'OPERATION_FAILED', operation: method,
+       phase: 'login', stage: method === 'Fetch.continueResponse' ? 'response' : 'request',
+       path: method === 'Fetch.failRequest' ? '<other>' : '/signin', generation: 1,
+       category: 'REQUEST_ID_INVALID' }]);
+@@ -57,7 +60,9 @@ test('capture scheduling phase and generation, keep first rejection only', async
+   policy.phase = 'read'; primary.emit('Page.frameNavigated', { frame: { id: 'frame' } });
+   reject(new Error('Session closed ' + privateText)); await flush();
+   paused(root, '/private'); reject(new Error('Invalid requestId ' + privateText)); await flush();
+-  assert.deepEqual(stops, ['FETCH_CONTINUE_FAILED', 'FETCH_CONTINUE_FAILED']);
++  assert.deepEqual(stops, ['FETCH_CONTINUE_FAILED']);
++  assert.deepEqual(trace.filter(row => row.action === 'DENY_TARGET_GONE'),
++    [{ action: 'DENY_TARGET_GONE', phase: 'read', stage: 'request', path: '<other>', generation: 2 }]);
+   assert.equal(diagnostics(trace).length, 1);
+   assert.equal(diagnostics(trace)[0].phase, 'submit');
+   assert.equal(diagnostics(trace)[0].generation, 1);
+@@ -83,7 +88,7 @@ for (const [message, category] of categories) test(`read navigation diagnostic $
+   assert.equal(policy.readNavigation, null);
+ });
+ 
+-test('read navigation cancellation concurrent with a rejected Fetch keeps initiating failure', async () => {
++test('read navigation cancellation after a gone deny records navigation as first failure', async () => {
+   const { root, policy, trace, stops } = await fixture(async method => {
+     if (method === 'Fetch.failRequest') throw new Error('Invalid InterceptionId');
+     return {};
+@@ -93,9 +98,12 @@ test('read navigation cancellation concurrent with a rejected Fetch keeps initia
+   } } }); agent.state = 'ready';
+   const response = await agent.command({ command: 'read', path: '/build/1' });
+   assert.equal(response.error, 'QB_BROWSER_UNAVAILABLE');
+-  assert.deepEqual(stops, ['FETCH_CONTINUE_FAILED']);
++  assert.deepEqual(stops, []);
++  assert.deepEqual(trace.filter(row => row.action === 'DENY_TARGET_GONE'),
++    [{ action: 'DENY_TARGET_GONE', phase: 'read', stage: 'request', path: '<other>', generation: 0 }]);
+   assert.equal(diagnostics(trace).length, 1);
+-  assert.equal(diagnostics(trace)[0].operation, 'Fetch.failRequest');
++  assert.equal(diagnostics(trace)[0].operation, 'page.goto');
++  assert.equal(diagnostics(trace)[0].category, 'NAVIGATION_INTERRUPTED');
+ });
+ 
+ for (const command of ['read', 'submit']) test(`command catch observes ${command} without changing response`, async () => {

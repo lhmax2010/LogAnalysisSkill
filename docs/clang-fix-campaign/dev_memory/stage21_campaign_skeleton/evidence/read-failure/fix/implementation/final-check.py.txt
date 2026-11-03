@@ -1,0 +1,76 @@
+"""Read-only closing checks and generated evidence, not an additional test run."""
+import datetime
+import json
+import os
+from pathlib import Path
+import subprocess
+
+ROOT = Path.cwd()
+DEST = Path(__file__).resolve().parent
+checks = {}
+paths = [
+    'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs',
+    'tests/node/test_qb_read_failure_diagnostics.mjs',
+    'docs/clang-fix-campaign/design.md',
+    'docs/clang-fix-campaign/dev_memory/INDEX.md',
+    'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md',
+]
+result = subprocess.run(['git', 'diff', '--check', '8d60851', '--', *paths], capture_output=True, text=True)
+checks['source_document_diff_check'] = {'exit_code': result.returncode, 'output': result.stdout + result.stderr}
+design = subprocess.run([str(ROOT / '.venv/bin/python'), 'docs/clang-fix-campaign/tools/check_design_doc.py',
+                         'docs/clang-fix-campaign/design.md'], capture_output=True, text=True)
+checks['design_final'] = {'exit_code': design.returncode, 'stdout': design.stdout, 'stderr': design.stderr}
+staged = subprocess.run(['git', 'diff', '--cached', '--check'], capture_output=True, text=True)
+checks['staged_diff_check'] = {'exit_code': staged.returncode, 'output': staged.stdout + staged.stderr,
+                               'note': 'Raw pytest failure output and exact source diff whitespace is preserved.'}
+schema_counts = {'DENY_TARGET_GONE': 0, 'OPERATION_FAILED': 0}
+for path in DEST.rglob('*.json'):
+    data = json.loads(path.read_text())
+    if not isinstance(data, dict):
+        continue
+    for row in data.get('trace', []):
+        if row.get('action') not in schema_counts:
+            continue
+        required = {'action', 'phase', 'stage', 'path', 'generation'}
+        if row['action'] == 'OPERATION_FAILED':
+            required |= {'operation', 'category'}
+            assert row['category'] in {'REQUEST_ID_INVALID', 'TARGET_OR_SESSION_CLOSED',
+                                      'NAVIGATION_INTERRUPTED', 'BLOCKED_BY_CLIENT',
+                                      'CONNECTION_FAILED', 'TIMEOUT', 'OTHER'}
+        assert set(row) == required, (path, row)
+        assert row['phase'] in {'login', 'read', 'open_form', 'fill', 'submit', 'idle', 'unknown'}
+        assert row['stage'] in {'request', 'response', 'navigation', 'command', 'unknown'}
+        assert isinstance(row['generation'], int) and row['generation'] >= 0
+        assert '?' not in row['path']
+        for secret in ('private-', 'Authorization', 'Cookie', 'postData', 'headers', 'synthetic-password'):
+            assert secret not in json.dumps(row), (path, secret)
+        schema_counts[row['action']] += 1
+checks['diagnostic_schema_and_sensitive_scan'] = {'passed': True, 'counts': schema_counts}
+checks['profiles'] = sorted(str(p) for p in Path('/dev/shm').glob('p5q-browser-*'))
+checks['fixture_directories'] = sorted(str(p) for p in Path('/dev/shm').glob('p5q-deny-gone-*'))
+processes = []
+for directory in Path('/proc').glob('[0-9]*'):
+    if int(directory.name) == os.getpid():
+        continue
+    try:
+        argv = (directory / 'cmdline').read_bytes().split(b'\0')
+        executable = (directory / 'exe').resolve()
+        text = b' '.join(argv).decode(errors='replace')
+        name = executable.name
+        agent = name in {'node', 'nodejs'} and any('qb_browser_agent.mjs' in a.decode(errors='replace')
+                                                 or 'p5q_cli_agent.mjs' in a.decode(errors='replace') for a in argv)
+        browser = 'chromium-1208' in str(executable) and '/dev/shm/p5q-browser-' in text
+        if agent or browser:
+            processes.append({'pid': int(directory.name), 'name': name, 'kind': 'agent' if agent else 'browser'})
+    except (OSError, RuntimeError):
+        continue
+checks['p5q_processes'] = processes
+checks['no_temporary_agent_copy_or_stress_process_created'] = True
+checks['completed_at'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+checks['full_regression'] = 'NOT_RUN_STOPPED'
+checks['remaining_c8_runs'] = 16
+checks['remaining_late_runs'] = 20
+(DEST / 'final-checks.json').write_text(json.dumps(checks, indent=2) + '\n')
+print(json.dumps(checks, indent=2))
+assert result.returncode == design.returncode == 0
+assert not checks['profiles'] and not checks['fixture_directories'] and not processes

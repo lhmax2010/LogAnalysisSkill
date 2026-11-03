@@ -1,0 +1,65 @@
+diff --git a/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs b/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs
+index 1b0732e..d7e9185 100644
+--- a/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs
++++ b/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs
+@@ -189,27 +189,34 @@ export async function installGuards(browser, context, page, policy, onStop, trac
+   policy.diagnosticGeneration = 0;
+   let firstFailure = false;
+   policy.observeFailure = (error, operation) => {
++    let category = 'OTHER';
+     try {
+-      if (firstFailure) return;
+-      firstFailure = true;
+-      let category = 'OTHER';
+-      try {
+-        const message = typeof error?.message === 'string' ? error.message : '';
+-        if (/Invalid (?:InterceptionId|interceptionId|requestId)|No resource with given identifier/i.test(message)) category = 'REQUEST_ID_INVALID';
+-        else if (/Target.*closed|Session closed|browser has been closed/i.test(message)) category = 'TARGET_OR_SESSION_CLOSED';
+-        else if (/ERR_ABORTED|interrupted by another navigation/i.test(message)) category = 'NAVIGATION_INTERRUPTED';
+-        else if (/ERR_BLOCKED_BY_CLIENT/i.test(message)) category = 'BLOCKED_BY_CLIENT';
+-        else if (/ERR_EMPTY_RESPONSE|ERR_CONNECTION|ERR_HTTP2|ERR_SOCKET/i.test(message)) category = 'CONNECTION_FAILED';
+-        else if (error?.name === 'TimeoutError' || /timed out|timeout/i.test(message)) category = 'TIMEOUT';
+-      } catch { /* Error objects are not trusted diagnostic data. */ }
+-      trace.push({ action: 'OPERATION_FAILED',
+-        operation: ['Fetch.failRequest', 'Fetch.continueRequest', 'Fetch.continueResponse', 'page.goto', 'Agent.command'].includes(operation.name) ? operation.name : 'OTHER',
++      const message = typeof error?.message === 'string' ? error.message : '';
++      if (/Invalid (?:InterceptionId|interceptionId|requestId)|No resource with given identifier/i.test(message)) category = 'REQUEST_ID_INVALID';
++      else if (/Target.*closed|Session closed|browser has been closed/i.test(message)) category = 'TARGET_OR_SESSION_CLOSED';
++      else if (/ERR_ABORTED|interrupted by another navigation/i.test(message)) category = 'NAVIGATION_INTERRUPTED';
++      else if (/ERR_BLOCKED_BY_CLIENT/i.test(message)) category = 'BLOCKED_BY_CLIENT';
++      else if (/ERR_EMPTY_RESPONSE|ERR_CONNECTION|ERR_HTTP2|ERR_SOCKET/i.test(message)) category = 'CONNECTION_FAILED';
++      else if (error?.name === 'TimeoutError' || /timed out|timeout/i.test(message)) category = 'TIMEOUT';
++    } catch { /* Error objects are not trusted diagnostic data. */ }
++    try {
++      const context = {
+         phase: ['login', 'read', 'open_form', 'fill', 'submit', 'idle'].includes(operation.phase) ? operation.phase : 'unknown',
+         stage: ['request', 'response', 'navigation', 'command'].includes(operation.stage) ? operation.stage : 'unknown',
+         path: pathShape(operation.path),
+         generation: Number.isSafeInteger(operation.generation) && operation.generation >= 0 ? operation.generation : 0,
+-        category });
++      };
++      if (operation.name === 'Fetch.failRequest' && category === 'REQUEST_ID_INVALID') {
++        trace.push({ action: 'DENY_TARGET_GONE', ...context });
++        return category;
++      }
++      if (firstFailure) return category;
++      firstFailure = true;
++      trace.push({ action: 'OPERATION_FAILED',
++        operation: ['Fetch.failRequest', 'Fetch.continueRequest', 'Fetch.continueResponse', 'page.goto', 'Agent.command'].includes(operation.name) ? operation.name : 'OTHER',
++        ...context, category });
+     } catch { /* Diagnostics must not prevent the original stop or rejection. */ }
++    return category;
+   };
+   primary.on('Page.frameNavigated', ({ frame }) => {
+     try { if (!frame.parentId) policy.diagnosticGeneration += 1; } catch { /* Observation only. */ }
+@@ -222,7 +229,9 @@ export async function installGuards(browser, context, page, policy, onStop, trac
+   const guarded = (promise, category = 'FETCH_CONTINUE_FAILED', operation = null) => {
+     pending.add(promise);
+     promise.catch(error => {
+-      try { if (operation) policy.observeFailure(error, operation); } catch { /* Preserve stop. */ }
++      let failureCategory;
++      try { if (operation) failureCategory = policy.observeFailure(error, operation); } catch { /* Preserve stop. */ }
++      if (operation?.name === 'Fetch.failRequest' && failureCategory === 'REQUEST_ID_INVALID') return;
+       onStop(category);
+     }).finally(() => pending.delete(promise));
+   };
