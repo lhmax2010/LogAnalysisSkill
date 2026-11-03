@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "docs/clang-fix-campaign/tools/check_design_doc.py",
+    "docs/clang-fix-campaign/design.md"
+  ],
+  "started": "2026-11-03T10:36:45.138524+00:00",
+  "load_before": {
+    "loadavg": "0.68 0.80 0.86 2/2806 3764063",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          50.0",
+      "code-insiders    3.5",
+      "chrome           3.5",
+      "code-insiders    2.5",
+      "Xorg             1.6",
+      "code-insiders    1.4",
+      "chrome           1.1",
+      "epp-client-daem  1.1",
+      "code-insiders    1.0",
+      "code-insiders    1.0"
+    ]
+  },
+  "exit_code": 0,
+  "seconds": 0.06648556608706713,
+  "finished": "2026-11-03T10:36:45.205027+00:00",
+  "load_after": {
+    "loadavg": "0.68 0.80 0.86 3/2806 3764065",
+    "cpu_count": 20
+  }
+}

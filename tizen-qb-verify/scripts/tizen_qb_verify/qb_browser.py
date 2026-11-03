@@ -490,11 +490,21 @@ class QbBrowser:
         except (OSError, subprocess.TimeoutExpired):
             self._terminate(time.monotonic() - started)
         finally:
-            if process.stdin is not None:
-                process.stdin.close()
-            if process.stdout is not None:
-                process.stdout.close()
-            self.process = None
+            try:
+                if process.stdin is not None:
+                    process.stdin.close()
+                if process.stdout is not None:
+                    process.stdout.close()
+                self.process = None
+            finally:
+                try:
+                    self.close_observation = {
+                        "elapsed_ms": max(0, round((time.monotonic() - started) * 1000)),
+                        "returncode": process.poll(),
+                    }
+                except Exception:
+                    # Diagnostic collection must not replace the original outcome.
+                    pass
 
     def __exit__(self, *_args: object) -> None:
         self.close()

@@ -2775,6 +2775,8 @@ P5Q 模块(qb_browser_agent、qb_browser、qb_redact、qb-trigger、qb-result-fe
 
 campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文件的实施裁定 SKEL-B3-05 执行。
 
+按骨架设计文件实施裁定 SKEL-R-02 为代理与驱动增加只读诊断,不改变安全规则。
+
 ## 5. 非功能性需求
 
 ### 5.1 性能预算

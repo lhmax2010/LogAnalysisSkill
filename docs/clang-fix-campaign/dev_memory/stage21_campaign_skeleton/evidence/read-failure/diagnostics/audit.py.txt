@@ -1,0 +1,61 @@
+"""Reproducible, offline SKEL-R-02 scope and nodeid audit."""
+import ast
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+ROOT = Path.cwd()
+DEST = Path(__file__).resolve().parent
+BASE = '6c5f640'
+AGENT = 'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs'
+DRIVER = 'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py'
+
+def original(path):
+    return subprocess.check_output(['git', 'show', BASE + ':' + path])
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+before, after = original(AGENT), Path(AGENT).read_bytes()
+driver_before, driver_after = original(DRIVER), Path(DRIVER).read_bytes()
+prefix = b'export class Agent {'
+def without_close(data):
+    tree = ast.parse(data)
+    cls = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == 'QbBrowser')
+    cls.body = [n for n in cls.body if not isinstance(n, ast.FunctionDef) or n.name != 'close']
+    return ast.dump(tree, include_attributes=False)
+
+def agent_unchanged_parts(data):
+    text = data.decode()
+    parts = [text[:text.index('export async function installGuards(')]]
+    parts.append(text[text.index('export class TrustedPage'):text.index('export class Agent {')])
+    # Agent edits are independently bounded by the exact unified diff below.
+    return parts
+
+baseline = Path('docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3/implementation/collect/stdout.log')
+def nodeids(path):
+    return {line.strip() for line in path.read_text().splitlines() if line.startswith('tests/') and '::' in line}
+old, new = nodeids(baseline), nodeids(DEST / 'collect/stdout.log')
+tracked = subprocess.check_output(['git', 'ls-files', '-z'], text=True).split('\0')
+protected = [p for p in tracked if p and (p.startswith(('tests/', 'tizen-')) or 'FROZEN' in p)]
+changed = [p for p in protected if p not in {AGENT, DRIVER} and Path(p).is_file()
+           and Path(p).read_bytes() != original(p)]
+facts = {
+    'baseline': BASE,
+    'agent': {'before_sha256': sha(before), 'after_sha256': sha(after),
+              'before_prefix_sha256': sha(before.split(prefix)[0]),
+              'after_prefix_sha256': sha(after.split(prefix)[0])},
+    'driver': {'before_sha256': sha(driver_before), 'after_sha256': sha(driver_after),
+               'ast_outside_close_unchanged': without_close(driver_before) == without_close(driver_after)},
+    'agent_policy_and_trusted_page_unchanged': agent_unchanged_parts(before) == agent_unchanged_parts(after),
+    'other_tracked_tests_skills_frozen_changed': changed,
+    'nodeids': {'baseline': len(old), 'current': len(new), 'removed': sorted(old-new), 'added': sorted(new-old)},
+    'production_numstat': subprocess.check_output(['git', 'diff', '--numstat', BASE, '--', AGENT, DRIVER], text=True),
+}
+assert len(old) == 3088 and len(new) == 3098 and not old-new
+assert not changed and facts['driver']['ast_outside_close_unchanged']
+assert facts['agent_policy_and_trusted_page_unchanged']
+(DEST / 'integrity.json').write_text(json.dumps(facts, indent=2) + '\n')
+(DEST / 'production.diff').write_bytes(subprocess.check_output(['git', 'diff', BASE, '--', AGENT, DRIVER]))
+print(json.dumps(facts, indent=2))

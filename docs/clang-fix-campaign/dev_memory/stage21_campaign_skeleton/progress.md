@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**READ_FAILURE_INVESTIGATION_REPORTED**;根因仍开放,等待设计方审读。
+日期:2026-11-03。状态:**STOPPED_SKEL_R_03**;诊断捕获Fetch.failRequest请求ID无效,全仓C8出现基线外失败场景,等待裁定。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1005,3 +1005,85 @@ C读取阶段固定错误分类,D关闭/环境诊断;各含位置、文字diff�
 与裁定不一致或做不到之处:**无**。包装器设置错误已完整披露;根因未唯一确定属于
 调查结论的限制,不声称已修复。第3批已验收,本任务停止于离线定位报告,
 不进入第3.5批或第4批。
+
+## 20. 实施裁定 SKEL-R-02:读取失败只加诊断
+
+1. SKEL-R-01 调查结论认可:late-build 三次失败与主机高负载相关(负载峰值 40.77/20 核、swap 用满),不是读取失败;C8 一次自然 FETCH_CONTINUE_FAILED 发生在提交导航阶段、首次 read 之前,底层被拒调用未定。该问题按 P5Q 设计安全停止,且读取时补绑定已在 C8 live-02 真机验证,不阻塞第 3.5、4 批。
+2. 实施报告中的候选 A(拦截操作失败时记录固定元数据)、C(read 导航失败的固定分类)、D(驱动关闭耗时观测),只增加诊断,不改变任何放行/拒绝判定、停止条件、错误码、返回结构与重试行为。候选 B 不实施。
+3. 诊断字段一律为封闭枚举或固定形态:操作名(Fetch.failRequest / Fetch.continueRequest / Fetch.continueResponse 等)、阶段、脱敏路径形态、导航代次、固定错误类别(请求 ID 无效 / 目标或会话已关闭 / 导航中断 / 被客户端阻止 / 连接失败 / 超时 / 其它);不得写入原始错误文本、URL 查询值、请求头、请求体或页面内容。多次失败只保留第一条起因。
+4. 本次授权修改 qb_browser_agent.mjs 的 installGuards 拦截回调、Agent.read 导航段与 Agent.command 的 catch,以及 qb_browser.py 的关闭段;代理完整 sha256 与前缀 hash 随之变化,登记改动前后值。P5Q 冻结稿中"代理只改两处"的约束以本裁定为准作一次性例外。
+5. design.md 第 4.6 节之后追加一条:按骨架设计文件实施裁定 SKEL-R-02 为代理与驱动增加只读诊断,不改变安全规则。
+
+基线`6c5f640`。只实施A/C/D;诊断保存在代理runtime.trace与驱动close_observation,
+不新增协议应答字段或CLI输出字段。原错误传播、停止调用、关闭等待及Policy判定保持。
+证据目录:`evidence/read-failure/diagnostics/`。既有无关工作树改动不纳入。
+
+### 20.1 实施落点与边界核对
+
+只新增诊断,实现保留供审读,**未通过全仓验收**。报告:
+`evidence/read-failure/diagnostics/stop-report-SKEL-R-03.md`。
+
+| 落点 | 内容 | diff |
+|---|---|---|
+| `tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs:189`、`:222`、`:236` | installGuards第一起固定分类、操作调度时的阶段/路径/代次;仍调用原onStop | 代理合计+52/-4 |
+| 同文件`:652`、`:758` | command catch的read/submit观察;read导航捕获后原异常继续抛出 | 同上 |
+| `tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:478`、`:501` | close结束时记录elapsed_ms/returncode,诊断异常不覆盖原结果 | +15/-5 |
+| `docs/clang-fix-campaign/design.md:2776`之后 | 追加SKEL-R-02授权,不改已有条目 | 只追加 |
+
+新增trace固定键为action/operation/phase/stage/path/generation/category。
+七类为REQUEST_ID_INVALID、TARGET_OR_SESSION_CLOSED、NAVIGATION_INTERRUPTED、
+BLOCKED_BY_CLIENT、CONNECTION_FAILED、TIMEOUT、OTHER;其余字段的完整枚举与
+固定形态见`diagnostics/README.md`。导航代次只观察主帧提交,不参与帧归属判定;
+调度时捕获,后续失败不覆盖第一条。close_observation是驱动内部属性,
+不扩展协议应答/CLI stdout/数据库,未擅自增加CLI trace落盘代码。
+
+`integrity.json`与`production.diff`核对:Policy、TrustedPage、原有测试、其它skill、
+安全核心、共享身份判据、结果写入、schema及冻结稿无改动;Python AST除close外不变。
+候选B未实施,未吞掉任何拦截错误,未增加重试或放宽任何等待阈值。
+
+| SHA256 | 改前6c5f640 | 本轮未验收实现 |
+|---|---|---|
+| 代理全文 | `7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c` | `d0e99f7e4caf11104920ddfe7a569a75e100c5a1dc44a3a916d73ef2bacbf823` |
+| 代理前缀(截至export class Agent之前) | `40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16` | `3bb1c0cc2fbfcb20aef324c8b8a703f06f40a438211317e0e96f2ba30f2be4c2` |
+
+### 20.2 测试与停止事实
+
+| 门禁 | 结果 | diagnostics下证据 |
+|---|---|---|
+| 新增诊断 | Node17/17;新增pytest10/10 | `focused/`;用例逐项对照见README |
+| 定向pytest | 221 passed/0 failed/0 skipped | `focused/pytest.xml` |
+| 既有Node | 矩阵163/163、停止类别16/16、静态与负例183/183 | `focused/stdout.log` |
+| 四组本机拦截安全 | 4/4;Worker走原b分支fail-closed,攻击HTTP/WS均0,profile已删 | `safety/stdout.log` |
+| mypy/ruff/import-linter/design | 161文件无错/通过/7 kept 0 broken/0 problem | 各同名目录(依赖为`imports/`) |
+| nodeid | 第3批3088全保留;新增10;总3098;删除0,collect错误0 | `collect/`、`integrity.json` |
+| 全仓 | **901 passed/1 failed/0 skipped;余2196未运行;不通过** | `full/`,`results.json` |
+
+全仓2026-11-03 10:38:29至10:44:28 UTC;pytest353.98s,包装器358.893s。
+20核,运行前loadavg 1.37/0.94/0.90,后1.40/1.28/1.07;
+启动CPU前10仅进程名与占用见`full/command.json`。C5a六参数全通过,无单独重跑。
+C8失败场景为racing-script-navigation,与第7.1节五次基线唯一失败场景
+racing-meta-refresh不同,触发SKEL-B1-03第3项及SKEL-B1-05第4项停止条件。
+不以SKEL-R-02对历史问题不阻塞后续批次的认可,擅自扩大本轮门禁豁免。
+未继续余下全仓用例,未重跑C8以覆盖现场,不宣称零新增skip已完成全仓核对。
+
+### 20.3 读取失败观测表增量与SKEL-R-03停止报告
+
+| 观测 | 断言/原类别 | 本轮新增第一起诊断 | 处置 |
+|---|---|---|---|
+| SKEL-R-02全仓C8 racing-script-navigation | `assert result.returncode == 0`,实际1;harness TargetClosedError/OTHER_FRAMEWORK_ERROR;AGENT_STOPPED FETCH_CONTINUE_FAILED | Fetch.failRequest / submit / request / /wicket/page / generation=4 / REQUEST_ID_INVALID | 基线外失败场景,立即停止;无重跑豁免 |
+
+`full/c8/racing-script-navigation.json:913`首次捕获具体操作与封闭类别;
+其后仍是原FETCH_CONTINUE_FAILED。模拟提交POST302、落地GET200,随后submit阶段
+被拒GET的failRequest失败;`reads=[]`(:721),harness读取提交后帧树时已关闭(:1036)。
+这是首次read之前的失败,不是read导航错误。样本能确定“拒绝请求的操作报告ID无效”,
+不能确定ID失效原因或证明安全取消;不据此实施候选B,不认定已修复或已证实拆分回归。
+
+候选下一步仅供裁定:如允许,在父树与本树交替运行同一未改测试作对照,
+分别归档,再决定是否扩充已接受失败形态;本轮不执行。详情见停止报告。
+`results.json`确认无P5Q自身进程与/dev/shm profile残留;无临时代理副本、无加压进程。
+未运行真实QuickBuild/Gerrit/gbs,未进入第3.5或第4批。唯一未完成要求是全仓门禁;
+按裁定停止并保留实现与证据,待设计方审读。
+
+收尾核对见`diagnostics/final-checks.json`:设计检查仍0 problem,人工源码/文档
+diff --check通过;全暂存树检查返回2,仅原始夹具HTML、pytest失败输出及逐字
+production.diff的行尾空白,按原证据保留。新自然失败诊断记录键集合/敏感值扫描通过。

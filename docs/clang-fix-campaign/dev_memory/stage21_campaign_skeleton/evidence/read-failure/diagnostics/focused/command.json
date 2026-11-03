@@ -1,0 +1,40 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-s",
+    "tests/unit/test_qb_read_failure_diagnostics.py",
+    "tests/unit/test_qb_browser.py",
+    "tests/unit/test_qb_browser_node.py::test_node_agent_unit_matrix",
+    "tests/unit/test_qb_browser_node.py::test_node_failure_categories",
+    "tests/unit/test_qb_browser_node.py::test_node_c2c_source_guard_mutations",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/focused/pytest.xml"
+  ],
+  "started": "2026-11-03T10:35:08.341092+00:00",
+  "load_before": {
+    "loadavg": "0.60 0.75 0.84 5/2812 3761539",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          50.0",
+      "code-insiders    3.5",
+      "chrome           3.5",
+      "code-insiders    2.5",
+      "Xorg             1.6",
+      "code-insiders    1.4",
+      "chrome           1.1",
+      "epp-client-daem  1.1",
+      "code-insiders    1.0",
+      "code-insiders    1.0"
+    ]
+  },
+  "exit_code": 0,
+  "seconds": 16.64255281595979,
+  "finished": "2026-11-03T10:35:24.983670+00:00",
+  "load_after": {
+    "loadavg": "0.63 0.74 0.84 1/2823 3761813",
+    "cpu_count": 20
+  }
+}

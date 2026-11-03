@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit_code": 0,
+      "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "tizen-qb-verify",
+        "docs/clang-fix-campaign/design.md",
+        "docs/clang-fix-campaign/dev_memory/INDEX.md",
+        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "new_diagnostic_fixed_schema_and_sensitive_scan": true,
+  "natural_failure": {
+    "action": "OPERATION_FAILED",
+    "operation": "Fetch.failRequest",
+    "phase": "submit",
+    "stage": "request",
+    "path": "/wicket/page",
+    "generation": 4,
+    "category": "REQUEST_ID_INVALID"
+  },
+  "c5a_close_to_cli_exit_seconds": {
+    "build": [
+      0.07726788520812988,
+      0.07670116424560547,
+      0.07683253288269043
+    ],
+    "no-navigation": [
+      0.07932686805725098,
+      0.07451128959655762,
+      0.07758903503417969
+    ],
+    "delayed-build": [
+      0.07803773880004883,
+      0.07371687889099121,
+      0.07692074775695801
+    ],
+    "error-created": [
+      0.08009910583496094,
+      0.07515835762023926,
+      0.07414984703063965
+    ],
+    "error-no-build": [
+      0.07956957817077637,
+      null
+    ],
+    "late-build": [
+      0.07650160789489746,
+      0.0785379409790039,
+      0.1250462532043457
+    ]
+  },
+  "regression_status": "STOPPED_SKEL_R_03",
+  "regression_rerun": false,
+  "raw_evidence_diff_check": {
+    "exit_code": 2,
+    "stdout": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/build/qb_evidence/4498ede4e55b4e328151f78f2b7e09ee/01.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/build/qb_evidence/4498ede4e55b4e328151f78f2b7e09ee/03.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/build/qb_evidence/4498ede4e55b4e328151f78f2b7e09ee/05.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/build/qb_evidence/4498ede4e55b4e328151f78f2b7e09ee/07.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/delayed-build/qb_evidence/e23a4fee588346d8a48a6937c14a32d9/03.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/delayed-build/qb_evidence/e23a4fee588346d8a48a6937c14a32d9/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/delayed-build/qb_evidence/e23a4fee588346d8a48a6937c14a32d9/06.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/delayed-build/qb_evidence/e23a4fee588346d8a48a6937c14a32d9/08.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/delayed-build/qb_evidence/e23a4fee588346d8a48a6937c14a32d9/10.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/error-created/qb_evidence/c7b4c0e7b22b49c296b0c452e9113879/03.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/error-created/qb_evidence/c7b4c0e7b22b49c296b0c452e9113879/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/error-created/qb_evidence/c7b4c0e7b22b49c296b0c452e9113879/06.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/error-created/qb_evidence/c7b4c0e7b22b49c296b0c452e9113879/08.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/error-created/qb_evidence/c7b4c0e7b22b49c296b0c452e9113879/10.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/late-build/qb_evidence/f90f99301a62426a82dea8705df33ba9/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/late-build/qb_evidence/f90f99301a62426a82dea8705df33ba9/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/late-build/qb_evidence/f90f99301a62426a82dea8705df33ba9/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/late-build/qb_evidence/f90f99301a62426a82dea8705df33ba9/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/no-navigation/qb_evidence/e6ddbf8d854248e7864bad58f78b21f2/03.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/no-navigation/qb_evidence/e6ddbf8d854248e7864bad58f78b21f2/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/no-navigation/qb_evidence/e6ddbf8d854248e7864bad58f78b21f2/06.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/no-navigation/qb_evidence/e6ddbf8d854248e7864bad58f78b21f2/08.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/c5a/no-navigation/qb_evidence/e6ddbf8d854248e7864bad58f78b21f2/10.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/pytest.xml:21: trailing whitespace.\n+E         \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/full/stdout.log:37: trailing whitespace.\n+E         \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/diagnostics/production.diff:29: trailing whitespace.\n+ \n",
+    "stderr": ""
+  }
+}

@@ -1,0 +1,51 @@
+"""Summarize completed SKEL-R-02 gates without changing raw evidence."""
+import json
+from pathlib import Path
+import re
+import xml.etree.ElementTree as ET
+
+DEST = Path(__file__).resolve().parent
+facts = {}
+for path in sorted(DEST.glob('*/command.json')):
+    command = json.loads(path.read_text())
+    result = {key: command[key] for key in ('exit_code', 'seconds', 'load_before', 'load_after')}
+    junit = path.parent / 'pytest.xml'
+    if junit.exists():
+        suites = ET.parse(junit).getroot().findall('testsuite')
+        totals = {key: sum(int(s.get(key, '0')) for s in suites)
+                  for key in ('tests', 'failures', 'errors', 'skipped')}
+        totals['passed'] = totals['tests'] - totals['failures'] - totals['errors'] - totals['skipped']
+        result['pytest'] = totals
+        result['failed_nodeids'] = [t.get('classname') + '.' + t.get('name') for s in suites
+                                   for t in s.findall('testcase') if t.find('failure') is not None or t.find('error') is not None]
+        result['skipped_nodeids'] = [t.get('classname') + '.' + t.get('name') for s in suites
+                                    for t in s.findall('testcase') if t.find('skipped') is not None]
+        result['timing_sensitive_cases'] = [
+            {'nodeid': t.get('classname') + '.' + t.get('name'), 'seconds': t.get('time'),
+             'passed': t.find('failure') is None and t.find('error') is None and t.find('skipped') is None}
+            for s in suites for t in s.findall('testcase')
+            if 'test_real_cli_browser_submit_bind_pending_pass' in t.get('name', '')
+            or 'test_post_submit_read_signatures' in t.get('name', '')]
+    facts[path.parent.name] = result
+
+focused = (DEST / 'focused/stdout.log').read_text()
+facts['node_suites'] = [{'tests': int(n), 'passed': int(p), 'failed': int(f), 'skipped': int(s)}
+                       for n, p, f, s in re.findall(r'tests (\d+).*?pass (\d+).*?fail (\d+).*?skipped (\d+)', focused, re.S)]
+facts['safety_groups'] = [json.loads(line) for line in (DEST / 'safety/stdout.log').read_text().splitlines()
+                          if line.startswith('{')]
+facts['remaining_profiles'] = sorted(str(p) for p in Path('/dev/shm').glob('p5q-browser-*'))
+facts['remaining_test_processes'] = []
+for proc in Path('/proc').iterdir():
+    if not proc.name.isdigit():
+        continue
+    try:
+        args = (proc / 'cmdline').read_bytes().split(b'\0')
+        if any(b'/dev/shm/p5q-browser-' in arg or arg.endswith(b'/qb_browser_agent.mjs')
+               or arg.endswith(b'/p5q_cli_agent.mjs') for arg in args):
+            facts['remaining_test_processes'].append({'pid': int(proc.name), 'name': (proc / 'comm').read_text().strip()})
+    except (OSError, PermissionError):
+        pass
+facts['temporary_instrumented_copies'] = 'not created'
+facts['cpu_stress_processes'] = 'not started'
+(DEST / 'results.json').write_text(json.dumps(facts, indent=2, ensure_ascii=False) + '\n')
+print(json.dumps({k: v.get('pytest', v.get('exit_code')) for k, v in facts.items() if isinstance(v, dict)}, indent=2))

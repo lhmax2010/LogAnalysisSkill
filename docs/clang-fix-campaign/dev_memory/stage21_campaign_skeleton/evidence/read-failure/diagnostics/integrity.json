@@ -1,0 +1,34 @@
+{
+  "baseline": "6c5f640",
+  "agent": {
+    "before_sha256": "7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c",
+    "after_sha256": "d0e99f7e4caf11104920ddfe7a569a75e100c5a1dc44a3a916d73ef2bacbf823",
+    "before_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+    "after_prefix_sha256": "3bb1c0cc2fbfcb20aef324c8b8a703f06f40a438211317e0e96f2ba30f2be4c2"
+  },
+  "driver": {
+    "before_sha256": "264936ee277f045f83011b763a112f36c57dd779e7b26c20f4fd6bfaefad130c",
+    "after_sha256": "4f70a0d1991ab69f484b410759317ed7407adc8efa8d242f7a23ac231faaf6d8",
+    "ast_outside_close_unchanged": true
+  },
+  "agent_policy_and_trusted_page_unchanged": true,
+  "other_tracked_tests_skills_frozen_changed": [],
+  "nodeids": {
+    "baseline": 3088,
+    "current": 3098,
+    "removed": [],
+    "added": [
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_close_diagnostic_failure_does_not_escape[poll]",
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_close_diagnostic_failure_does_not_escape[sink]",
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_close_observation_preserves_existing_paths[cleanup_error]",
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_close_observation_preserves_existing_paths[normal]",
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_close_observation_preserves_existing_paths[timeout]",
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_close_observation_preserves_existing_paths[write_error]",
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_close_real_process_with_or_without_reply[]",
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_close_real_process_with_or_without_reply[{\"ok\":true}\\n]",
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_close_without_process_is_unchanged",
+      "tests/unit/test_qb_read_failure_diagnostics.py::test_node_read_failure_diagnostics"
+    ]
+  },
+  "production_numstat": "15\t5\ttizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py\n52\t4\ttizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs\n"
+}

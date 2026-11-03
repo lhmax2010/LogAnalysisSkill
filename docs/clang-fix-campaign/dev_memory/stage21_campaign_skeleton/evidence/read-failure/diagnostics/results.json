@@ -1,0 +1,581 @@
+{
+  "collect": {
+    "exit_code": 0,
+    "seconds": 3.736169585958123,
+    "load_before": {
+      "loadavg": "1.47 0.92 0.90 3/2820 3763807",
+      "cpu_count": 20,
+      "top_cpu_processes": [
+        "COMMAND         %CPU",
+        "python          75.0",
+        "code-insiders    3.5",
+        "chrome           3.5",
+        "code-insiders    2.5",
+        "Xorg             1.6",
+        "code-insiders    1.4",
+        "chrome           1.1",
+        "epp-client-daem  1.1",
+        "code-insiders    1.0",
+        "code-insiders    1.0"
+      ]
+    },
+    "load_after": {
+      "loadavg": "1.44 0.93 0.90 3/2827 3763839",
+      "cpu_count": 20
+    }
+  },
+  "design": {
+    "exit_code": 0,
+    "seconds": 0.06648556608706713,
+    "load_before": {
+      "loadavg": "0.68 0.80 0.86 2/2806 3764063",
+      "cpu_count": 20,
+      "top_cpu_processes": [
+        "COMMAND         %CPU",
+        "python          50.0",
+        "code-insiders    3.5",
+        "chrome           3.5",
+        "code-insiders    2.5",
+        "Xorg             1.6",
+        "code-insiders    1.4",
+        "chrome           1.1",
+        "epp-client-daem  1.1",
+        "code-insiders    1.0",
+        "code-insiders    1.0"
+      ]
+    },
+    "load_after": {
+      "loadavg": "0.68 0.80 0.86 3/2806 3764065",
+      "cpu_count": 20
+    }
+  },
+  "focused": {
+    "exit_code": 0,
+    "seconds": 16.64255281595979,
+    "load_before": {
+      "loadavg": "0.60 0.75 0.84 5/2812 3761539",
+      "cpu_count": 20,
+      "top_cpu_processes": [
+        "COMMAND         %CPU",
+        "python          50.0",
+        "code-insiders    3.5",
+        "chrome           3.5",
+        "code-insiders    2.5",
+        "Xorg             1.6",
+        "code-insiders    1.4",
+        "chrome           1.1",
+        "epp-client-daem  1.1",
+        "code-insiders    1.0",
+        "code-insiders    1.0"
+      ]
+    },
+    "load_after": {
+      "loadavg": "0.63 0.74 0.84 1/2823 3761813",
+      "cpu_count": 20
+    },
+    "pytest": {
+      "tests": 221,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 221
+    },
+    "failed_nodeids": [],
+    "skipped_nodeids": [],
+    "timing_sensitive_cases": []
+  },
+  "full": {
+    "exit_code": 1,
+    "seconds": 358.8929940490052,
+    "load_before": {
+      "loadavg": "1.37 0.94 0.90 3/2808 3764305",
+      "cpu_count": 20,
+      "top_cpu_processes": [
+        "COMMAND         %CPU",
+        "python          66.6",
+        "code-insiders    3.6",
+        "chrome           3.5",
+        "code-insiders    2.5",
+        "Xorg             1.6",
+        "code-insiders    1.4",
+        "chrome           1.1",
+        "epp-client-daem  1.1",
+        "code-insiders    1.0",
+        "code-insiders    0.9"
+      ]
+    },
+    "load_after": {
+      "loadavg": "1.40 1.28 1.07 2/2806 3788080",
+      "cpu_count": 20
+    },
+    "pytest": {
+      "tests": 902,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 901
+    },
+    "failed_nodeids": [
+      "tests.unit.test_p5q_c8_investigation.test_post_submit_read_signatures"
+    ],
+    "skipped_nodeids": [],
+    "timing_sensitive_cases": [
+      {
+        "nodeid": "tests.unit.test_p5q_c5a_integration.test_real_cli_browser_submit_bind_pending_pass[build]",
+        "seconds": "23.028",
+        "passed": true
+      },
+      {
+        "nodeid": "tests.unit.test_p5q_c5a_integration.test_real_cli_browser_submit_bind_pending_pass[error-created]",
+        "seconds": "23.201",
+        "passed": true
+      },
+      {
+        "nodeid": "tests.unit.test_p5q_c5a_integration.test_real_cli_browser_submit_bind_pending_pass[error-no-build]",
+        "seconds": "16.669",
+        "passed": true
+      },
+      {
+        "nodeid": "tests.unit.test_p5q_c5a_integration.test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+        "seconds": "83.124",
+        "passed": true
+      },
+      {
+        "nodeid": "tests.unit.test_p5q_c5a_integration.test_real_cli_browser_submit_bind_pending_pass[delayed-build]",
+        "seconds": "23.260",
+        "passed": true
+      },
+      {
+        "nodeid": "tests.unit.test_p5q_c5a_integration.test_real_cli_browser_submit_bind_pending_pass[late-build]",
+        "seconds": "23.496",
+        "passed": true
+      },
+      {
+        "nodeid": "tests.unit.test_p5q_c8_investigation.test_post_submit_read_signatures",
+        "seconds": "48.187",
+        "passed": false
+      }
+    ]
+  },
+  "imports": {
+    "exit_code": 0,
+    "seconds": 0.40231336501892656,
+    "load_before": {
+      "loadavg": "0.68 0.80 0.86 3/2806 3764040",
+      "cpu_count": 20,
+      "top_cpu_processes": [
+        "COMMAND         %CPU",
+        "python          75.0",
+        "code-insiders    3.5",
+        "chrome           3.5",
+        "code-insiders    2.5",
+        "Xorg             1.6",
+        "code-insiders    1.4",
+        "chrome           1.1",
+        "epp-client-daem  1.1",
+        "code-insiders    1.0",
+        "code-insiders    1.0"
+      ]
+    },
+    "load_after": {
+      "loadavg": "0.68 0.80 0.86 1/2806 3764062",
+      "cpu_count": 20
+    }
+  },
+  "mypy": {
+    "exit_code": 0,
+    "seconds": 4.137609261088073,
+    "load_before": {
+      "loadavg": "0.94 0.85 0.87 3/2812 3763903",
+      "cpu_count": 20,
+      "top_cpu_processes": [
+        "COMMAND         %CPU",
+        "python          33.3",
+        "code-insiders    3.5",
+        "chrome           3.5",
+        "code-insiders    2.5",
+        "Xorg             1.6",
+        "code-insiders    1.4",
+        "chrome           1.1",
+        "epp-client-daem  1.1",
+        "code-insiders    1.0",
+        "code-insiders    1.0"
+      ]
+    },
+    "load_after": {
+      "loadavg": "0.95 0.85 0.88 1/2818 3763935",
+      "cpu_count": 20
+    }
+  },
+  "ruff": {
+    "exit_code": 0,
+    "seconds": 0.36162343993782997,
+    "load_before": {
+      "loadavg": "0.68 0.80 0.86 1/2804 3764003",
+      "cpu_count": 20,
+      "top_cpu_processes": [
+        "COMMAND         %CPU",
+        "python          80.0",
+        "code-insiders    3.5",
+        "chrome           3.5",
+        "code-insiders    2.5",
+        "Xorg             1.6",
+        "code-insiders    1.4",
+        "chrome           1.1",
+        "epp-client-daem  1.1",
+        "code-insiders    1.0",
+        "code-insiders    1.0"
+      ]
+    },
+    "load_after": {
+      "loadavg": "0.68 0.80 0.86 1/2806 3764039",
+      "cpu_count": 20
+    }
+  },
+  "safety": {
+    "exit_code": 0,
+    "seconds": 8.399479283951223,
+    "load_before": {
+      "loadavg": "0.92 0.80 0.86 6/2813 3761853",
+      "cpu_count": 20,
+      "top_cpu_processes": [
+        "COMMAND         %CPU",
+        "python          75.0",
+        "code-insiders    3.5",
+        "chrome           3.5",
+        "code-insiders    2.5",
+        "Xorg             1.6",
+        "code-insiders    1.4",
+        "chrome           1.1",
+        "epp-client-daem  1.1",
+        "code-insiders    1.0",
+        "code-insiders    1.0"
+      ]
+    },
+    "load_after": {
+      "loadavg": "1.47 0.92 0.90 5/2822 3763805",
+      "cpu_count": 20
+    }
+  },
+  "node_suites": [
+    {
+      "tests": 17,
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "tests": 163,
+      "passed": 163,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "tests": 16,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "tests": 183,
+      "passed": 183,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "safety_groups": [
+    {
+      "group": "worker-websocket",
+      "ok": true,
+      "requests": [
+        {
+          "group": "worker-websocket",
+          "method": "GET",
+          "path": "/build/1",
+          "host": "quickbuild.tizen.org"
+        }
+      ],
+      "handshakes": [],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "WORKER_BLOCKED",
+          "type": "shared_worker",
+          "paused": true
+        },
+        {
+          "action": "WEBSOCKET_DENIED"
+        },
+        {
+          "action": "WEBSOCKET_DENIED"
+        },
+        {
+          "action": "WORKER_BLOCKED",
+          "type": "worker",
+          "paused": true
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "CLOSE_TARGET_FAILED"
+        }
+      ],
+      "details": {
+        "attackHTTP": 0,
+        "websocketHandshakes": 0,
+        "branch": "b:browser_fail_closed",
+        "workers": [
+          {
+            "action": "WORKER_BLOCKED",
+            "type": "shared_worker",
+            "paused": true
+          },
+          {
+            "action": "WORKER_BLOCKED",
+            "type": "worker",
+            "paused": true
+          }
+        ]
+      },
+      "observations": {
+        "closeTarget": [
+          {
+            "type": "shared_worker",
+            "outcome": "success",
+            "success": true
+          },
+          {
+            "type": "worker",
+            "outcome": "exception",
+            "category": "Error"
+          }
+        ],
+        "failure": "QB_BROWSER_UNAVAILABLE",
+        "browserClosed": true,
+        "temporaryDirectoryRemoved": true
+      }
+    },
+    {
+      "group": "307-308",
+      "ok": true,
+      "requests": [
+        {
+          "group": "307-308",
+          "method": "GET",
+          "path": "/build/307",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "307-308",
+          "method": "GET",
+          "path": "/build/308",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "307-308",
+          "method": "GET",
+          "path": "/build/302",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "307-308",
+          "method": "GET",
+          "path": "/build/999",
+          "host": "quickbuild.tizen.org"
+        }
+      ],
+      "handshakes": [],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "phase": "read",
+          "path": "/build/<id>",
+          "action": "DENIED"
+        },
+        {
+          "phase": "read",
+          "path": "/build/<id>",
+          "action": "DENIED"
+        }
+      ],
+      "details": {
+        "blocked": [
+          307,
+          308
+        ],
+        "allowed": 302
+      }
+    },
+    {
+      "group": "per-hop",
+      "ok": true,
+      "requests": [
+        {
+          "group": "per-hop",
+          "method": "GET",
+          "path": "/build/301",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "per-hop",
+          "method": "GET",
+          "path": "/build/303",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "per-hop",
+          "method": "GET",
+          "path": "/build/304",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "per-hop",
+          "method": "GET",
+          "path": "/signin",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "per-hop",
+          "method": "POST",
+          "path": "/signin?7-1.IFormSubmitListener-content-form",
+          "host": "quickbuild.tizen.org"
+        }
+      ],
+      "handshakes": [],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "phase": "read",
+          "path": "<other>",
+          "action": "DENIED"
+        },
+        {
+          "phase": "read",
+          "path": "/wicket/page",
+          "action": "DENIED"
+        },
+        {
+          "phase": "read",
+          "path": "/build/<id>",
+          "action": "DENIED"
+        },
+        {
+          "phase": "login",
+          "path": "/signin",
+          "action": "DENIED"
+        }
+      ],
+      "details": {
+        "forbiddenSecondHops": 0,
+        "postReplay": 0
+      }
+    },
+    {
+      "group": "credential-isolation",
+      "ok": true,
+      "requests": [
+        {
+          "group": "credential-isolation",
+          "method": "GET",
+          "path": "/signin",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "credential-isolation",
+          "method": "POST",
+          "path": "/signin?1-1.IFormSubmitListener-content-form",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "credential-isolation",
+          "method": "GET",
+          "path": "/overview/0",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "credential-isolation",
+          "method": "GET",
+          "path": "/build/1",
+          "host": "quickbuild.tizen.org"
+        },
+        {
+          "group": "credential-isolation",
+          "method": "GET",
+          "path": "/build/1",
+          "host": "quickbuild.tizen.org"
+        }
+      ],
+      "handshakes": [],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "IDENTITY_OUTSIDE_REGISTERED",
+          "count": 0
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "ADAPT_FAILED"
+        }
+      ],
+      "details": {
+        "credentialFacts": {
+          "cookie": true,
+          "authorization": true,
+          "password": true
+        },
+        "protocol": {
+          "ok": true,
+          "status": 200,
+          "html_redacted": "<html><head><link rel=\"icon\" href=\"data:,\"><title>LOCAL C2b safety fixture</title></head><body><a class=\"nav-link\">Build (id:1)</a>\n      <span>Welcome! &lt;USER&gt;</span>\n      <input type=\"hidden\" name=\"token\" value=\"&lt;REDACTED&gt;\">\n      <div class=\"build-summary\"><div class=\"box-head\">Summary</div><table>\n      <thead><tr><th>Id</th><th>Triggered By</th></tr></thead>\n      <tbody><tr><td>1</td><td>&lt;USER&gt;</td></tr></tbody></table></div></body></html>",
+          "outside_identity_count": 0
+        },
+        "exception": {
+          "ok": false,
+          "error": "QB_BROWSER_UNAVAILABLE"
+        }
+      }
+    },
+    {
+      "summary": 4,
+      "passed": 4,
+      "failed": 0,
+      "network": "loopback-only",
+      "temporaryDirectoryRemoved": true
+    }
+  ],
+  "remaining_profiles": [],
+  "remaining_test_processes": [],
+  "temporary_instrumented_copies": "not created",
+  "cpu_stress_processes": "not started"
+}

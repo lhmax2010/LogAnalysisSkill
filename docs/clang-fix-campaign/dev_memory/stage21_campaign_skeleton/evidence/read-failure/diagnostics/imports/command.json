@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/lint-imports"
+  ],
+  "started": "2026-11-03T10:36:44.673011+00:00",
+  "load_before": {
+    "loadavg": "0.68 0.80 0.86 3/2806 3764040",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          75.0",
+      "code-insiders    3.5",
+      "chrome           3.5",
+      "code-insiders    2.5",
+      "Xorg             1.6",
+      "code-insiders    1.4",
+      "chrome           1.1",
+      "epp-client-daem  1.1",
+      "code-insiders    1.0",
+      "code-insiders    1.0"
+    ]
+  },
+  "exit_code": 0,
+  "seconds": 0.40231336501892656,
+  "finished": "2026-11-03T10:36:45.075343+00:00",
+  "load_after": {
+    "loadavg": "0.68 0.80 0.86 1/2806 3764062",
+    "cpu_count": 20
+  }
+}

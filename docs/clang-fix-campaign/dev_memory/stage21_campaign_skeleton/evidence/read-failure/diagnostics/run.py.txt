@@ -1,0 +1,68 @@
+"""SKEL-R-02 local gates with immutable per-run output and host load facts."""
+import datetime
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import time
+
+ROOT = Path.cwd()
+DEST = Path(__file__).resolve().parent
+PY = str(ROOT / '.venv/bin/python')
+name = sys.argv[1]
+folder = DEST / name
+folder.mkdir(parents=True, exist_ok=False)
+env = os.environ.copy()
+env.update(P5Q_C5A_EVIDENCE=str(folder / 'c5a'), P5Q_C8_INVESTIGATION=str(folder / 'c8'))
+env.pop('P5Q_C8_CASES', None)
+if name == 'focused':
+    argv = [PY, '-m', 'pytest', '-q', '-s', 'tests/unit/test_qb_read_failure_diagnostics.py',
+            'tests/unit/test_qb_browser.py',
+            'tests/unit/test_qb_browser_node.py::test_node_agent_unit_matrix',
+            'tests/unit/test_qb_browser_node.py::test_node_failure_categories',
+            'tests/unit/test_qb_browser_node.py::test_node_c2c_source_guard_mutations',
+            '--junitxml=' + str(folder / 'pytest.xml')]
+elif name.startswith(('full', 'timing-', 'flaky-')):
+    argv = [PY, 'tests/run_quiet.py', '-q', '-x', *sys.argv[2:], '--junitxml=' + str(folder / 'pytest.xml')]
+elif name == 'collect':
+    argv = [PY, '-m', 'pytest', '--collect-only', '-q']
+elif name in {'mypy', 'imports'}:
+    argv = [str(ROOT / '.venv/bin' / ('mypy' if name == 'mypy' else 'lint-imports'))]
+elif name == 'design':
+    argv = [PY, 'docs/clang-fix-campaign/tools/check_design_doc.py', 'docs/clang-fix-campaign/design.md']
+elif name == 'ruff':
+    tracked = subprocess.check_output(['git', 'ls-files', '-z'], text=True).split('\0')
+    paths = sorted({p for p in tracked + ['tests/unit/test_qb_read_failure_diagnostics.py']
+                    if p.endswith('.py') and Path(p).is_file()})
+    argv = [str(ROOT / '.venv/bin/ruff'), 'check', '--force-exclude', *paths]
+elif name == 'safety':
+    env['PATH'] = str(Path.home() / '.local/share/p5q-test-display/usr/bin') + ':' + env['PATH']
+    for key in ('DISPLAY', 'WAYLAND_DISPLAY', 'XAUTHORITY', 'DEBUG', 'PWDEBUG', 'NODE_OPTIONS'):
+        env.pop(key, None)
+    env.update(P5Q_TEST_DISPLAY='virtual', XDG_SESSION_TYPE='x11')
+    node, virtual = shutil.which('node', path=env['PATH']), shutil.which('xvfb-run', path=env['PATH'])
+    assert node and virtual
+    argv = [virtual, '--auto-servernum', '--error-file=/dev/stderr',
+            '--server-args=-screen 0 1920x1080x24 -nolisten tcp', node,
+            'tests/node/p5q_c2b_safety.mjs',
+            str(Path.home() / '.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs'),
+            str(Path.home() / '.cache/ms-playwright/chromium-1208/chrome-linux64/chrome')]
+else:
+    raise ValueError(name)
+def load():
+    return dict(loadavg=Path('/proc/loadavg').read_text().strip(), cpu_count=os.cpu_count())
+before = load()
+before['top_cpu_processes'] = subprocess.check_output(['ps', '-eo', 'comm,pcpu', '--sort=-pcpu'], text=True).splitlines()[:11]
+facts = dict(argv=argv, started=datetime.datetime.now(datetime.timezone.utc).isoformat(), load_before=before)
+tick = time.monotonic()
+with (folder / 'stdout.log').open('w') as out, (folder / 'stderr.log').open('w') as err:
+    result = subprocess.run(argv, cwd=ROOT, env=env, stdout=out, stderr=err)
+facts.update(exit_code=result.returncode, seconds=time.monotonic() - tick,
+             finished=datetime.datetime.now(datetime.timezone.utc).isoformat(), load_after=load())
+(folder / 'command.json').write_text(json.dumps(facts, indent=2) + '\n')
+print(json.dumps(facts, indent=2), flush=True)
+print((folder / 'stdout.log').read_text()[-5000:], flush=True)
+print((folder / 'stderr.log').read_text()[-1500:], flush=True)
+raise SystemExit(result.returncode)

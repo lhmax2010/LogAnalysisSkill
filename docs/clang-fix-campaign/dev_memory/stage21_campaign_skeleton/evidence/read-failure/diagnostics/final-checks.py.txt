@@ -1,0 +1,32 @@
+"""Final documentation and diagnostic-record checks, not a regression rerun."""
+import json
+from pathlib import Path
+import subprocess
+
+DEST = Path(__file__).resolve().parent
+root = 'docs/clang-fix-campaign/'
+paths = ['tizen-qb-verify', root + 'design.md', root + 'dev_memory/INDEX.md',
+         root + 'dev_memory/stage21_campaign_skeleton/progress.md']
+results = []
+for argv in ([str(Path.cwd() / '.venv/bin/python'), root + 'tools/check_design_doc.py', root + 'design.md'],
+             ['git', 'diff', '--check', '--', *paths]):
+    proc = subprocess.run(argv, capture_output=True, text=True)
+    results.append(dict(argv=argv, exit_code=proc.returncode, stdout=proc.stdout, stderr=proc.stderr))
+sample = json.loads((DEST / 'full/c8/racing-script-navigation.json').read_text())
+failures = [row for row in sample['trace'] if row.get('action') == 'OPERATION_FAILED']
+assert len(failures) == 1
+assert failures[0] == dict(action='OPERATION_FAILED', operation='Fetch.failRequest', phase='submit',
+                          stage='request', path='/wicket/page', generation=4, category='REQUEST_ID_INVALID')
+for forbidden in ('cookie', 'Authorization', 'headers', 'postData', '?', 'Invalid InterceptionId'):
+    assert forbidden not in json.dumps(failures)
+close_times = {}
+for path in (DEST / 'full/c5a').glob('*/commands.json'):
+    close_times[path.parent.name] = [row['close_to_cli_exit_seconds'] for row in json.loads(path.read_text())]
+facts = {'checks': results, 'new_diagnostic_fixed_schema_and_sensitive_scan': True,
+         'natural_failure': failures[0], 'c5a_close_to_cli_exit_seconds': close_times,
+         'regression_status': 'STOPPED_SKEL_R_03', 'regression_rerun': False}
+raw = subprocess.run(['git', 'diff', '--cached', '--check'], capture_output=True, text=True)
+facts['raw_evidence_diff_check'] = dict(exit_code=raw.returncode, stdout=raw.stdout, stderr=raw.stderr)
+(DEST / 'final-checks.json').write_text(json.dumps(facts, indent=2, ensure_ascii=False) + '\n')
+print(json.dumps(facts, indent=2, ensure_ascii=False))
+assert all(row['exit_code'] == 0 for row in results)

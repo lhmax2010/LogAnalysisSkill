@@ -185,14 +185,46 @@ export async function installGuards(browser, context, page, policy, onStop, trac
   await primary.send('Page.enable');
   const { frameTree } = await primary.send('Page.getFrameTree');
   const frames = new FrameOwnership(frameTree);
+  // Diagnostic-only state: committed main-frame generations, never ownership input.
+  policy.diagnosticGeneration = 0;
+  let firstFailure = false;
+  policy.observeFailure = (error, operation) => {
+    try {
+      if (firstFailure) return;
+      firstFailure = true;
+      let category = 'OTHER';
+      try {
+        const message = typeof error?.message === 'string' ? error.message : '';
+        if (/Invalid (?:InterceptionId|interceptionId|requestId)|No resource with given identifier/i.test(message)) category = 'REQUEST_ID_INVALID';
+        else if (/Target.*closed|Session closed|browser has been closed/i.test(message)) category = 'TARGET_OR_SESSION_CLOSED';
+        else if (/ERR_ABORTED|interrupted by another navigation/i.test(message)) category = 'NAVIGATION_INTERRUPTED';
+        else if (/ERR_BLOCKED_BY_CLIENT/i.test(message)) category = 'BLOCKED_BY_CLIENT';
+        else if (/ERR_EMPTY_RESPONSE|ERR_CONNECTION|ERR_HTTP2|ERR_SOCKET/i.test(message)) category = 'CONNECTION_FAILED';
+        else if (error?.name === 'TimeoutError' || /timed out|timeout/i.test(message)) category = 'TIMEOUT';
+      } catch { /* Error objects are not trusted diagnostic data. */ }
+      trace.push({ action: 'OPERATION_FAILED',
+        operation: ['Fetch.failRequest', 'Fetch.continueRequest', 'Fetch.continueResponse', 'page.goto', 'Agent.command'].includes(operation.name) ? operation.name : 'OTHER',
+        phase: ['login', 'read', 'open_form', 'fill', 'submit', 'idle'].includes(operation.phase) ? operation.phase : 'unknown',
+        stage: ['request', 'response', 'navigation', 'command'].includes(operation.stage) ? operation.stage : 'unknown',
+        path: pathShape(operation.path),
+        generation: Number.isSafeInteger(operation.generation) && operation.generation >= 0 ? operation.generation : 0,
+        category });
+    } catch { /* Diagnostics must not prevent the original stop or rejection. */ }
+  };
+  primary.on('Page.frameNavigated', ({ frame }) => {
+    try { if (!frame.parentId) policy.diagnosticGeneration += 1; } catch { /* Observation only. */ }
+  });
   primary.on('Page.frameAttached', ({ frameId, parentFrameId }) => frames.attach(frameId, parentFrameId));
   primary.on('Page.frameDetached', ({ frameId }) => frames.detach(frameId));
   primary.on('Page.frameNavigated', ({ frame }) => frames.navigate(frame));
   const root = await browser.newBrowserCDPSession();
   const pending = new Set();
-  const guarded = (promise, category = 'FETCH_CONTINUE_FAILED') => {
+  const guarded = (promise, category = 'FETCH_CONTINUE_FAILED', operation = null) => {
     pending.add(promise);
-    promise.catch(() => onStop(category)).finally(() => pending.delete(promise));
+    promise.catch(error => {
+      try { if (operation) policy.observeFailure(error, operation); } catch { /* Preserve stop. */ }
+      onStop(category);
+    }).finally(() => pending.delete(promise));
   };
   if (useBrowserFetch) {
     root.on('Fetch.requestPaused', (event) => {
@@ -201,6 +233,9 @@ export async function installGuards(browser, context, page, policy, onStop, trac
       const { metadata: m, requestId, frameId } = adapted;
       const allowed = frames.has(frameId) && policy.allow(m, requestId);
       const response = m.response_status !== null;
+      const operation = { name: !allowed ? 'Fetch.failRequest' : response ? 'Fetch.continueResponse' : 'Fetch.continueRequest',
+        phase: policy.phase, stage: response ? 'response' : 'request', path: m.path,
+        generation: policy.diagnosticGeneration };
       if (allowed) policy.lastActivity = Date.now();
       if (!response && policy.fieldWindow && m.method === 'POST' && /IBehaviorListener/.test(m.query)) {
         policy.fieldWindow[allowed ? 'allowed' : 'denied'] += 1;
@@ -233,7 +268,7 @@ export async function installGuards(browser, context, page, policy, onStop, trac
         await root.send(!allowed ? 'Fetch.failRequest' : response ? 'Fetch.continueResponse' : 'Fetch.continueRequest',
           !allowed ? { requestId, errorReason: 'BlockedByClient' } : { requestId });
         if (response && requestId === policy.fieldRequest && allowed) policy.fieldFinished = true;
-      })());
+      })(), 'FETCH_CONTINUE_FAILED', operation);
     });
     await root.send('Fetch.enable', { patterns: [
       { urlPattern: '*', requestStage: 'Request' }, { urlPattern: '*', requestStage: 'Response' },
@@ -615,6 +650,13 @@ export class Agent {
       }
       return { ok: true, ...result };
     } catch (error) {
+      if (command === 'read' || command === 'submit') {
+        try {
+          const path = command === 'read' ? input.path : new URL(this.page.url()).pathname;
+          this.policy.observeFailure?.(error, { name: 'Agent.command', phase: command,
+            stage: 'command', path, generation: this.policy.diagnosticGeneration });
+        } catch { /* Preserve the original command result. */ }
+      }
       if (command === 'fill' || command === 'open_form' || command === 'submit') {
         this.state = 'invalid'; this.policy.invalidate();
       }
@@ -713,7 +755,13 @@ export class Agent {
     this.policy.readNavigation = navigation;
     let response;
     try {
-      response = await this.page.goto(expected, { timeout: 30000 });
+      const generation = this.policy.diagnosticGeneration;
+      try { response = await this.page.goto(expected, { timeout: 30000 }); }
+      catch (error) {
+        try { this.policy.observeFailure?.(error, { name: 'page.goto', phase: 'read',
+          stage: 'navigation', path, generation }); } catch { /* Preserve rejection. */ }
+        throw error;
+      }
       if (this.page.url() !== expected || response?.request().redirectedFrom()) throw new AgentError('QB_READ_REDIRECTED');
       if (this.policy.readNavigation !== navigation || navigation.failed || !navigation.requestId
         || response?.url() !== expected) throw new AgentError('QB_TRUSTED_CONTEXT_UNAVAILABLE');
