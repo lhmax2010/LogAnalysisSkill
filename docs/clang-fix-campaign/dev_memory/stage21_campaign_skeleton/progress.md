@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**STOPPED_SKEL_B2_04**。
+日期:2026-11-03。状态:**STOPPED_SKEL_B2_06**。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批范围与边界见第12节,不开始第3批。
 
@@ -21,7 +21,7 @@
 | 批次 | 范围 | 当前状态 |
 |---|---|---|
 | 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | ACCEPTED;SKEL-B2-01验收通过 |
-| 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | STOPPED_SKEL_B2_04;假SSH前置通过,报告子构建号的数据源契约缺口待裁定 |
+| 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | STOPPED_SKEL_B2_06;SKEL-B2-05已登记,已绑定无RESULT时父构建号的期望冲突待澄清 |
 | 3 | 审核提交、启动检查、编排skill与离线端到端 | NOT_STARTED |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
 | 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | NOT_STARTED |
@@ -534,6 +534,9 @@ GIT_SSH_COMMAND后仍能通过PATH调用该程序。upload-pack与receive-pack�
 
 ### 13.3 停止报告 SKEL-B2-04:报告子构建号缺少数据源
 
+状态:已由SKEL-B2-05裁定处置;删除子构建号列,只输出父构建号及结果文件引用,
+不打开结果文件。下文保留原停止事实。
+
 冻结稿5.4的campaign-report只有state-db与output参数、要求只读状态库并报告
 QuickBuild父/子构建号。现行库没有子构建号列,P5Q写入的qb_result_ref又是相对
 独立state_root的路径;报告无法从现有入口可靠定位结果文件。
@@ -570,3 +573,41 @@ QuickBuild父/子构建号。现行库没有子构建号列,P5Q写入的qb_resul
 没有真实QuickBuild/Gerrit/gbs访问,没有修改既有真实状态库;第3批不开始。
 提交前diff检查:排除WIP补丁时exit 0;完整检查exit 2,仅为补丁上下文空行的
 空格,保留补丁原字节。记录见`ssh-resume/diff-check.json`。
+
+## 14. 实施裁定 SKEL-B2-05:campaign-report 列定义
+
+1. SKEL-B2-04 停止成立,属冻结稿 5.4 自身矛盾(要求子构建号又要求只读状态库)。采用候选 B 的变体:
+   a. campaign-report 删除"QuickBuild 子构建号"列,保留"QuickBuild 父构建号"(取该 unit 最新 request 的 BUILD_BOUND/RESULT 事件中的 qb_build_id,无则为空)。
+   b. 新增"结果文件引用"列,原样输出最新 RESULT 事件的 qb_result_ref 字符串(相对 state_root 的路径),无 RESULT 则为空;报告不解析、不打开该文件。
+   c. 命令签名不变:campaign-report --state-db [--output <md>];仍只读状态库,不增加参数,不增加文件读取与相应失败规则。
+   d. 其余列与 JSON 对应关系照冻结稿 5.4。
+2. ssh-resume/implementation-wip.patch 只作定位资料,不得直接套用;第 2 批业务代码按冻结稿与各裁定重新实现。
+3. 假 SSH 经 PATH 注入的方式(_sandbox_git 覆盖 GIT_SSH_COMMAND 但保留 PATH)予以认可,不改生产代码。
+
+### 14.1 开工核对
+
+基线a7c2337,分支clang-fix-campaign。重读本进度及
+`evidence/batch2/stop-report-SKEL-B2-04.md`,核对冻结稿5.4与现行
+campaign_state的BUILD_BOUND校验。冻结稿SHA256仍为
+`1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9`。
+不恢复WIP,不改生产代码或既有测试;用户既有无关工作树改动保留。
+
+### 14.2 停止报告 SKEL-B2-06:已绑定无RESULT的父构建号期望冲突
+
+本轮任务第二步用例原文为“已绑定无 RESULT 时两列为空”。
+但裁定第1(a)条明确允许从最新request的BUILD_BOUND取qb_build_id;
+合法BUILD_BOUND必须有非空qb_build_id,因此两种要求不能同时满足。
+
+最小状态:最新request只有SUBMITTED与BUILD_BOUND(qb_build_id=101),没有RESULT。
+按1(a)(b)两列为(101,空);按第二步用例为(空,空)。未自行选取一种解释。
+已在对话询问设计方:是否改用例为“父构建号显示已绑定值,仅结果文件引用为空”。
+
+报告、精确条文与候选文字diff:
+`evidence/batch2/stop-report-SKEL-B2-06.md`。
+本轮只登记文档,未开始业务实现;各新命令/API、CLI去重与测试对照仍待完成,
+sandbox-submit与qb-trigger屏障diff各0行。未新增或修改测试/nodeid。
+全仓pytest、负载采样、计时敏感用例、四组安全测试、mypy/ruff/import-linter
+本轮均NOT_RUN,不得把上轮结果算作本轮验收。冻结稿、安全核心、代理、身份函数、
+P5Q写入与schema均未改。没有真实QB/Gerrit/gbs操作,不进入第3批。
+文档检查:design.md检查器0 problem,本轮文档diff检查通过,生产/测试diff为空;
+命令与输出见`evidence/batch2/checks-SKEL-B2-06.json`。

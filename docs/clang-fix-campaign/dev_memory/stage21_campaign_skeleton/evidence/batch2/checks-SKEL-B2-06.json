@@ -1,0 +1,52 @@
+{
+  "utc": "2026-11-03T03:52:42.545170+00:00",
+  "baseline": "a7c2337463de1ac3ba69707490d6b44e61c9c519",
+  "frozen_sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+  "checks": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit": 0,
+      "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "docs/clang-fix-campaign/dev_memory/INDEX.md",
+        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md",
+        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/stop-report-SKEL-B2-06.md"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--name-only",
+        "--",
+        "tizen-campaign-core",
+        "tizen-campaign-intake",
+        "tizen-baseline-reproduce",
+        "tizen-campaign-report",
+        "tizen-sandbox-submit",
+        "tizen-qb-verify",
+        "tizen-ci-shared",
+        "tizen-build-verify",
+        "tests"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "full_acceptance": "NOT_RUN: specification conflict SKEL-B2-06"
+}
