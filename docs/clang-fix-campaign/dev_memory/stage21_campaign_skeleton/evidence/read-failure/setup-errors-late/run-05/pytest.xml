@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.103" timestamp="2026-11-03T16:28:35.815871+08:00" hostname="linhao-linux"><testcase classname="tests.unit.test_p5q_c5a_integration" name="test_real_cli_browser_submit_bind_pending_pass[late-build]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-05'&quot;">self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-05')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-05'
+
+/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError</error></testcase></testsuite></testsuites>

@@ -1,0 +1,38 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______________________ test_post_submit_read_signatures _______________________
+
+tmp_path = PosixPath('/tmp/skel-read-failure-3af2f4ek/regular-c8/run-15/test_post_submit_read_signatur0')
+
+    @pytest.mark.integration
+    def test_post_submit_read_signatures(tmp_path: Path) -> None:
+        node, env = node_command()
+        paths = browser_paths()
+        output = Path(os.environ.get("P5Q_C8_INVESTIGATION", str(tmp_path)))
+        output.mkdir(parents=True, exist_ok=True)
+        command = [*node, str(ROOT / "tests/node/p5q_c8_investigation.mjs"), *paths, str(output)]
+        result = subprocess.run(command, env=env, text=True, capture_output=True, timeout=600)
+        (output / "node.stdout.txt").write_text(result.stdout)
+        (output / "node.stderr.txt").write_text(result.stderr)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: CASE_COMPLETE control
+E         CASE_COMPLETE idle-script-navigation
+E         CASE_COMPLETE racing-script-navigation
+E         CASE_COMPLETE racing-meta-refresh
+E         CASE_COMPLETE racing-wicket-navigation
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E         QB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED
+E         INVESTIGATION_STOPPED AssertionError
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nQB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\nINVESTIGATION_STOPPED AssertionError\n').returncode
+
+tests/unit/test_p5q_c8_investigation.py:26: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures
+1 failed in 100.09s (0:01:40)

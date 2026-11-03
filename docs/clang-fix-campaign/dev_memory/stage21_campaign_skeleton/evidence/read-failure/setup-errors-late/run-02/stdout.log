@@ -1,0 +1,19 @@
+E                                                                        [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_real_cli_browser_submit_bind_pending_pass[late-build] _
+
+self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-02')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-02'
+
+/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError
+=========================== short test summary info ============================
+ERROR tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]
+1 error in 0.10s

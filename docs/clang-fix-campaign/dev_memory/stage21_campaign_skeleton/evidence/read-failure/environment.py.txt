@@ -1,0 +1,19 @@
+"""Read-only host observations, excluding command-line arguments."""
+import datetime
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+dest = Path(__file__).resolve().parent / sys.argv[1]
+rows = subprocess.check_output(['ps', '-eo', 'state,pid,ppid,comm,pcpu'], text=True).splitlines()
+data = dict(utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), cpu_count=os.cpu_count(),
+            loadavg=Path('/proc/loadavg').read_text().strip(),
+            free=subprocess.check_output(['free', '-h'], text=True),
+            disk=subprocess.check_output(['df', '-h', '/tmp', '/dev/shm'], text=True),
+            d_state=[row for row in rows[1:] if row.split()[0] == 'D'],
+            process_names=rows,
+            profiles=sorted(str(path) for path in Path('/dev/shm').glob('p5q-browser-*')))
+dest.write_text(json.dumps(data, indent=2) + '\n')
+print(json.dumps({key: value for key, value in data.items() if key != 'process_names'}, indent=2))

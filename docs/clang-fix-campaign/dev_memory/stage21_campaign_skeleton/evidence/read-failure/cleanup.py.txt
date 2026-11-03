@@ -1,0 +1,48 @@
+"""Delete only temporary roots created and recorded by this investigation."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import shutil
+import subprocess
+
+dest = Path(__file__).resolve().parent
+assert (dest / 'sampling-results.json').is_file()
+assert (dest / 'observation-results.json').is_file()
+paths = [Path(json.loads((dest / name).read_text())['temporary'])
+         for name in ('setup-errors-start.json', 'sampling-start.json')]
+paths.append(Path(json.loads((dest / 'observation-copy.json').read_text())['directory']))
+records = []
+for path in paths:
+    assert path.parent == Path('/tmp')
+    assert path.name.startswith(('skel-read-failure-', 'skel-read-observe-'))
+    assert path.resolve() == path
+    references = []
+    for proc in Path('/proc').iterdir():
+        if not proc.name.isdigit():
+            continue
+        try:
+            if str(path).encode() in (proc / 'cmdline').read_bytes():
+                references.append(dict(pid=int(proc.name), name=(proc / 'comm').read_text().strip()))
+        except (OSError, ProcessLookupError):
+            pass
+    row = dict(path=str(path), existed=path.exists(), referencing_processes=references,
+               deleted_at=None, files=0, bytes=0)
+    if path.exists():
+        files = [entry for entry in path.rglob('*') if entry.is_file() and not entry.is_symlink()]
+        row.update(files=len(files), bytes=sum(entry.stat().st_size for entry in files))
+        if path.name.startswith('skel-read-observe-'):
+            row['hashes_before_deletion'] = {
+                entry.name: hashlib.sha256(entry.read_bytes()).hexdigest() for entry in files}
+        if references:
+            records.append(row)
+            (dest / 'cleanup.json').write_text(json.dumps(records, indent=2) + '\n')
+            raise RuntimeError('TEMPORARY_DIRECTORY_STILL_REFERENCED')
+        shutil.rmtree(path)
+        row['deleted_at'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    row['exists_after'] = path.exists()
+    records.append(row)
+data = dict(directories=records, stress=json.loads((dest / 'sampling-results.json').read_text())['stress'],
+            profiles_remaining=sorted(str(path) for path in Path('/dev/shm').glob('p5q-browser-*')))
+(dest / 'cleanup.json').write_text(json.dumps(data, indent=2) + '\n')
+print(json.dumps(data, indent=2))

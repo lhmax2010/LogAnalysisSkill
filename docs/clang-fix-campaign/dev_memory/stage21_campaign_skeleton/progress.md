@@ -1,8 +1,8 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**BATCH3_READY_FOR_REVIEW**。
+日期:2026-11-03。状态:**READ_FAILURE_INVESTIGATION_REPORTED**;根因仍开放,等待设计方审读。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
-第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批第18节完成,等待设计方审读。
+第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
 ## 1. 冻结输入与开工事实
 
@@ -22,7 +22,7 @@
 |---|---|---|
 | 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | ACCEPTED;SKEL-B2-01验收通过 |
 | 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | ACCEPTED;SKEL-B3-01验收通过 |
-| 3 | 审核提交、启动检查、编排skill与离线端到端 | READY_FOR_REVIEW;3087 passed/1 skipped,新增60例全过 |
+| 3 | 审核提交、启动检查、编排skill与离线端到端 | ACCEPTED;SKEL-R-01验收,3087 passed/1 skipped |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
 | 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | NOT_STARTED |
 
@@ -918,3 +918,90 @@ C8 `test_post_submit_read_signatures`(180.957s)。这里是整例耗时,不是�
 全部外部动作均由本地假件承接,未访问真实Gerrit/QuickBuild或运行真实gbs;
 未改安全核心、共享身份判据、冻结稿、代理或状态库schema。
 stage21停在第3批待审读,不开始第3.5批。第2批读取失败遗留仍开放,不声称已修复。
+
+## 19. 实施裁定 SKEL-R-01:第 3 批验收与读取失败定位
+
+1. 第 3 批验收通过。设计方已审读 repair-step 首轮推进(锁内、身份校验后、SQLite 独占事务内推进,依据 gate_view.reproduced)与 review-submit 的取锁与屏障位置。
+2. 新任务:离线定位 FETCH_CONTINUE_FAILED。已知样本:第 2 批全仓中 C5a late-build 一次(lookup_reads 期望 10 实际 1);第 1 批拆分前 C8 调查 racing-meta-refresh 一次(TargetClosedError);live-01 真机提交后读取失败一次。本任务只定位,不修复。
+
+基线`a58494b`,当前分支`clang-fix-campaign`。已重读第16.1/18.2节读取失败观测表、
+P5Q收口R11/R13/R14及stage20 `evidence/C8/investigation/README.md`。
+历史真机UNKNOWN与离线FETCH_CONTINUE_FAILED仅有相似读失败表象,本轮不预先合并根因。
+采样计划:原树late-build独立50次,C8原调查用例独立20次;若常规late-build 0/50失败,
+再启一个半核数、仅CPU的多线程负载进程,late-build独立50次。全程串行测试,
+每次独立证据/pytest临时目录、虚拟显示,保留原断言与完整场景集合。
+不进入第3.5批,不改生产/测试/冻结稿/安全核心;诊断副本若需要只放仓库外并销毁。
+
+### 19.1 采样方法与运行中事实
+
+`evidence/read-failure/sample.py.txt`只串行调用原有两个nodeid,不修改测试、断言或参数集合。
+每次使用独立pytest basetemp及证据目录,`tests/run_quiet.py`提供独立虚拟显示;
+不弹真实窗口、不访问真实QuickBuild/Gerrit、不运行真实gbs。每2秒记录loadavg,
+完整argv、UTC、exit、断言原文、AGENT_STOPPED与harness_failure存入各次`command.json`。
+
+第一次包装器因没有预建basetemp父目录,产生27次pytest设置错误(夹具未运行),
+另一次启动被主动终止。已保留在`setup-errors-late/`与`setup-errors-start.json`,
+不计入读取失败采样。只修复证据包装器的父目录创建,加入设置错误即停,
+随后使用新的临时根和新证据目录正式执行;没有覆盖上述失败证据。
+
+常规late-build已完成50次:47通过、3失败、0跳过,1分钟load范围1.17–40.77。
+run-40:关闭尾段5.487秒超5秒;run-41:submit返回QB_BROWSER_UNAVAILABLE/UNKNOWN,
+服务器收到0次提交,关闭尾段13.620秒超限;run-42:CLI子进程超过原测试150秒上限。
+三例均非已复现的FETCH_CONTINUE_FAILED,不能与第2批lookup_reads失败直接合并。
+期间发现主机D状态进程及负载上升,见`environment-disturbance.json`;本任务未启动CPU加压,
+未操作其它任务。按SKEL-R-01的条件,常规50次已有失败,不启动条件性50次加压组。
+C8完整调查用例20次仍在执行,最终结果另记,不以中途结果作交付结论。
+
+### 19.2 最终采样结果与失败观测
+
+证据根:`evidence/read-failure/`;汇总`summary.json`、`sampling-results.md`,
+逐例事件摘要`failure-facts.json`,完整分析与候选文字diff见`README.md`。
+
+| 采样组 | 次数 | 通过/失败/跳过 | 失败率 | FETCH_CONTINUE_FAILED | 1分钟负载区间 |
+|---|---:|---|---|---:|---|
+| 常规late-build | 50 | 47/3/0 | 6% | 0 | 1.17–40.77 |
+| 常规C8完整调查 | 20 | 19/1/0 | 5% | 1 | 0.47–14.14 |
+| 条件性半核CPU加压 | 0 | 未触发 | 不适用 | 不适用 | 不适用 |
+
+正式70次共66通过/4失败/0跳过。C8第15次在第6场景提前停止,最终5场景未执行;
+其余19次完整11场景,合计215个场景记录。预期故障注入产生的UNKNOWN不计作pytest失败。
+初始27次包装器设置错误与中止的第28次另存,不混入正式分母。没有修改断言、超时、skip/xfail。
+
+| 批次/样本 | 失败位置与断言 | AGENT_STOPPED / harness | 证据与结论 |
+|---|---|---|---|
+| 第2批late-build(沿用) | 第一条lookup read返回失败,lookup_reads期望10实际1 | FETCH_CONTINUE_FAILED | 原服务器仅2次配置GET(基线/open_form),无lookup GET;属于先前关闭的后果 |
+| 第1批C8(沿用) | submit后Page.getFrameTree失败,reads=[] | FETCH_CONTINUE_FAILED / TargetClosedError,OTHER_FRAMEWORK_ERROR | 原racing-meta-refresh样本未进入read |
+| 本轮late-build 40 | `assert 5.487124443054199 < 5` | 无 / 无 | 10条lookup read均成功;代理close 4.224s,CLI尾段5.487s |
+| 本轮late-build 41 | `assert 13.619728326797485 < 5` | UNKNOWN / 无 | submit返回released=false、服务器0提交;代理close 12.587s;无提交后read |
+| 本轮late-build 42 | subprocess.TimeoutExpired,原CLI上限150s | 未取得 / 无 | 服务器0请求、无agent transcript,不能进一步判定启动内部等待点 |
+| 本轮C8 15 | injected-missing-root-membership场景提前停止 | FETCH_CONTINUE_FAILED / TargetClosedError,OTHER_FRAMEWORK_ERROR | 无injected_fault、reads=[];帧仍owned;POST302→落地GET200→submit阶段GET拒绝→关闭→harness失败 |
+
+本轮C8失败在故障注入之前,不能归咎于人工移除帧归属。历史meta-refresh样本与本轮
+共同指向提交导航交界,不证明read导航冲突。live-01 UNKNOWN仍不能并入同一根因。
+
+### 19.3 补充观测、候选方案与清理
+
+仓库外`/tmp/skel-read-observe-Z6JSX8`复制agent、driver、调查入口;driver副本未改未执行,
+agent只加协议方法/阶段/路径形态/请求ID/固定错误类别日志,入口只调整副本导入。
+未修改任何仓库内生产或测试文件。副本10轮(每轮control、racing-meta-refresh、307),
+30场景全部跑完,没有捕获CDP发送异常;307均正常执行Fetch.failRequest后得到预期UNKNOWN。
+副本日志可能扰动时序,不合并入正式失败率。创建来源与hash见`observation-copy.json`,
+输出在`instrumented/`,运行汇总在`observation-results.json`。
+
+根因判断:**定位到自然失败发生于提交导航交界,但底层CDP拒绝根因未唯一确定**。
+过期/已取消刷新请求的拦截ID是候选,现有证据不能证明;自然帧归属丢失没有证据支持。
+README列四个候选:A固定化CDP操作诊断,B仅在可靠取消证据闭合后的窄化处理,
+C读取阶段固定错误分类,D关闭/环境诊断;各含位置、文字diff、安全影响和新增/复跑测试。
+尤其B需额外设计裁定,不得无条件吞掉invalid-ID错误。全部只写方案,未实施。
+
+`cleanup.json`:2026-11-03 10:08:54 UTC已删除两个本任务pytest临时根与全部副本,
+删除前无引用进程、删除后路径不存在;CPU加压未启动;无p5q-browser profile残留,
+未操作无关进程。`integrity-before/after.json`:全部已跟踪skill/test/frozen文件
+均与a58494b逐字节一致;代理全文与前缀hash不变。design检查0 problem。
+`final-checks.json`:本轮人工文档的git diff --check通过;全证据diff返回2,
+仅为原始pytest输出、夹具HTML及其逐字引用的行尾空白,按证据原样保留,不宣称全diff全绿。
+本任务是采样定位,未另跑全仓门禁,不将66/4当作功能门禁放行。
+
+与裁定不一致或做不到之处:**无**。包装器设置错误已完整披露;根因未唯一确定属于
+调查结论的限制,不声称已修复。第3批已验收,本任务停止于离线定位报告,
+不进入第3.5批或第4批。

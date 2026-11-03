@@ -1,0 +1,151 @@
+"""Serial sampling of unchanged tests; local virtual-display fixtures only."""
+import concurrent.futures
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+import xml.etree.ElementTree as ET
+
+ROOT = Path.cwd()
+DEST = Path(__file__).resolve().parent
+PY = str(ROOT / '.venv/bin/python')
+LATE = 'tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]'
+C8 = 'tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures'
+
+
+def utc():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def load():
+    return dict(loadavg=Path('/proc/loadavg').read_text().strip(), cpu_count=os.cpu_count())
+
+
+def walk(value):
+    if isinstance(value, dict):
+        yield value
+        for child in value.values():
+            yield from walk(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from walk(child)
+
+
+def burn():
+    count = max(1, (os.cpu_count() or 1) // 2)
+    cpus = sorted(os.sched_getaffinity(0))[:count]
+    os.sched_setaffinity(0, cpus)
+    print(json.dumps(dict(pid=os.getpid(), threads=count, affinity=cpus)), flush=True)
+    def worker():
+        while True:
+            hashlib.pbkdf2_hmac('sha256', b'synthetic-load', b'cpu-only', 1000000)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=count) as executor:
+        list(executor.map(lambda _: worker(), range(count)))
+
+
+def sample(group, index, nodeid, base):
+    folder = DEST / group / f'run-{index:02d}'
+    folder.mkdir(parents=True, exist_ok=False)
+    temporary = base / group / f'run-{index:02d}'
+    temporary.parent.mkdir(parents=True, exist_ok=True)
+    env = os.environ.copy()
+    for key in ('P5Q_C8_CASES', 'P5Q_TEST_C6_FAILURE'):
+        env.pop(key, None)
+    env['P5Q_C5A_EVIDENCE'] = str(folder / 'c5a')
+    env['P5Q_C8_INVESTIGATION'] = str(folder / 'c8')
+    argv = [PY, 'tests/run_quiet.py', '-q', nodeid, '--basetemp=' + str(temporary),
+            '--junitxml=' + str(folder / 'pytest.xml')]
+    facts = dict(group=group, index=index, argv=argv, started=utc(), load_before=load())
+    (folder / 'command-start.json').write_text(json.dumps(facts, indent=2) + '\n')
+    tick = time.monotonic()
+    samples = []
+    with (folder / 'stdout.log').open('w') as out, (folder / 'stderr.log').open('w') as err:
+        process = subprocess.Popen(argv, cwd=ROOT, env=env, stdout=out, stderr=err,
+                                   start_new_session=True)
+        while process.poll() is None:
+            samples.append(dict(seconds=round(time.monotonic() - tick, 3), **load()))
+            time.sleep(2)
+            if time.monotonic() - tick > 900:
+                os.killpg(process.pid, signal.SIGTERM)
+                try:
+                    process.wait(timeout=20)
+                except subprocess.TimeoutExpired:
+                    os.killpg(process.pid, signal.SIGKILL)
+                    process.wait()
+                facts['runner_timeout'] = True
+    facts.update(exit_code=process.returncode, finished=utc(), seconds=time.monotonic() - tick,
+                 load_after=load(), load_samples=samples)
+    failures, signals, harness = [], [], []
+    if (folder / 'pytest.xml').exists():
+        for case in ET.parse(folder / 'pytest.xml').iter('testcase'):
+            for kind in ('failure', 'error', 'skipped'):
+                for item in case.findall(kind):
+                    failures.append(dict(name=case.attrib['name'], kind=kind,
+                                         message=item.attrib.get('message'), text=item.text))
+    for path in folder.rglob('*.json'):
+        if path.name.startswith('command'):
+            continue
+        try:
+            data = json.loads(path.read_text())
+        except (ValueError, OSError):
+            continue
+        for item in walk(data):
+            if item.get('action') == 'AGENT_STOPPED':
+                signals.append(dict(file=str(path.relative_to(folder)), facts=item))
+            if 'harness_failure' in item:
+                harness.append(dict(file=str(path.relative_to(folder)), case=item.get('case'),
+                                    facts=item['harness_failure']))
+    facts.update(failures=failures, agent_stopped=signals, harness_failures=harness)
+    # Keep command traces not copied by the existing integration wrapper, no SQLite binaries.
+    traces = folder / 'driver-traces'
+    for path in temporary.rglob('*.jsonl'):
+        target = traces / path.relative_to(temporary)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(path.read_bytes())
+    (folder / 'command.json').write_text(json.dumps(facts, indent=2) + '\n')
+    print(json.dumps(dict(group=group, run=index, exit=process.returncode,
+                          seconds=round(facts['seconds'], 2), agent_stopped=signals,
+                          harness_failures=harness)), flush=True)
+    if any(item['kind'] in {'error', 'skipped'} for item in failures) or facts.get('runner_timeout'):
+        raise RuntimeError('SAMPLING_ENVIRONMENT_STOPPED')
+    return facts
+
+
+def main():
+    base = Path(tempfile.mkdtemp(prefix='skel-read-failure-'))
+    (DEST / 'sampling-start.json').write_text(json.dumps(dict(started=utc(), temporary=str(base),
+        head=subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+        load=load()), indent=2) + '\n')
+    results = []
+    for index in range(1, 51):
+        results.append(sample('regular-late', index, LATE, base))
+    for index in range(1, 21):
+        results.append(sample('regular-c8', index, C8, base))
+    stress = dict(required=not any(r['exit_code'] for r in results if r['group'] == 'regular-late'))
+    if stress['required']:
+        with (DEST / 'stress.stdout.log').open('w') as out, (DEST / 'stress.stderr.log').open('w') as err:
+            process = subprocess.Popen([PY, str(Path(__file__).resolve()), '--cpu-load'],
+                                       stdout=out, stderr=err, start_new_session=True)
+            stress.update(pid=process.pid, started=utc(), threads=max(1, (os.cpu_count() or 1) // 2))
+            try:
+                time.sleep(2)
+                assert process.poll() is None
+                for index in range(1, 51):
+                    results.append(sample('stress-late', index, LATE, base))
+            finally:
+                process.terminate()
+                stress['exit_code'] = process.wait(timeout=20)
+                stress['finished'] = utc()
+                stress['proc_exists_after_wait'] = Path(f'/proc/{process.pid}').exists()
+    (DEST / 'sampling-results.json').write_text(json.dumps(dict(results=results, stress=stress), indent=2) + '\n')
+    print('SAMPLING_COMPLETE ' + json.dumps(stress), flush=True)
+
+
+if __name__ == '__main__':
+    burn() if sys.argv[1:] == ['--cpu-load'] else main()

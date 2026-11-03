@@ -1,0 +1,41 @@
+{
+  "group": "regular-late",
+  "index": 27,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]",
+    "--basetemp=/tmp/skel-read-failure-o4ll2wot/regular-late/run-27",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/regular-late/run-27/pytest.xml"
+  ],
+  "started": "2026-11-03T08:29:20.275116+00:00",
+  "load_before": {
+    "loadavg": "9.16 17.39 16.60 2/3267 3513101",
+    "cpu_count": 20
+  },
+  "exit_code": 1,
+  "finished": "2026-11-03T08:29:22.276795+00:00",
+  "seconds": 2.0015472639352083,
+  "load_after": {
+    "loadavg": "8.83 17.19 16.54 1/3273 3513149",
+    "cpu_count": 20
+  },
+  "load_samples": [
+    {
+      "seconds": 0.001,
+      "loadavg": "9.16 17.39 16.60 5/3268 3513102",
+      "cpu_count": 20
+    }
+  ],
+  "failures": [
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+      "kind": "error",
+      "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-27'\"",
+      "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-27')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-27'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+    }
+  ],
+  "agent_stopped": [],
+  "harness_failures": []
+}

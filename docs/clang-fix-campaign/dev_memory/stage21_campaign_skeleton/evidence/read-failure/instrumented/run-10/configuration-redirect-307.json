@@ -1,0 +1,3625 @@
+{
+  "case": "configuration-redirect-307",
+  "observations": [
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/signin",
+      "response_status": null
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/signin",
+      "response_status": 200
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/signin",
+      "response_status": null
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/signin",
+      "response_status": 302
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/dashboard",
+      "response_status": null
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/dashboard",
+      "response_status": 200
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "response_status": null
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "response_status": 200
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": 302
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "submit",
+      "policy_phase": "submit",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "submit",
+      "policy_phase": "submit",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 302
+    },
+    {
+      "phase": "submit",
+      "policy_phase": "submit",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "submit",
+      "policy_phase": "submit",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "read",
+      "policy_phase": "read",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "response_status": null
+    },
+    {
+      "phase": "read",
+      "policy_phase": "read",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "response_status": 307
+    }
+  ],
+  "frame_events": [
+    {
+      "phase": "login",
+      "action": "navigated",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "phase": "login",
+      "action": "navigated",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "phase": "open_form",
+      "action": "navigated",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "phase": "open_form",
+      "action": "navigated",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "phase": "submit",
+      "action": "navigated",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "phase": "read",
+      "action": "navigated",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    }
+  ],
+  "reads": [
+    {
+      "path": "/overview/1917",
+      "error": {
+        "class_name": "Error",
+        "agent_code": null,
+        "category": "BLOCKED_BY_CLIENT"
+      },
+      "elapsed_ms": 10
+    }
+  ],
+  "trace": [
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 0.023,
+      "phase": "idle",
+      "method": "Fetch.enable",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 0.543,
+      "phase": "idle",
+      "method": "Fetch.enable",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 0.551,
+      "phase": "idle",
+      "method": "Target.setDiscoverTargets",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 1.155,
+      "phase": "idle",
+      "method": "Target.setDiscoverTargets",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 1.174,
+      "phase": "idle",
+      "method": "Target.setAutoAttach",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 1.859,
+      "phase": "idle",
+      "method": "Target.setAutoAttach",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 0.054,
+      "phase": "idle",
+      "method": "Fetch.enable",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 1.002,
+      "phase": "idle",
+      "method": "Fetch.enable",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 1.02,
+      "phase": "idle",
+      "method": "Target.setDiscoverTargets",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 1.442,
+      "phase": "idle",
+      "method": "Target.setDiscoverTargets",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 1.481,
+      "phase": "idle",
+      "method": "Target.setAutoAttach",
+      "request_id": null
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 1.789,
+      "phase": "idle",
+      "method": "Target.setAutoAttach",
+      "request_id": null
+    },
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "observation": true,
+      "action": "PAGE_CLOSE",
+      "milliseconds": 100.084,
+      "phase": "idle"
+    },
+    {
+      "observation": true,
+      "action": "BROWSER_DISCONNECTED",
+      "milliseconds": 107.903,
+      "phase": "idle"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 8.468,
+      "phase": "login",
+      "request_id": "interception-job-1.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/signin",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 8.478,
+      "phase": "login",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-1.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 9.847,
+      "phase": "login",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-1.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 10.418,
+      "phase": "login",
+      "request_id": "interception-job-1.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/signin",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 10.421,
+      "phase": "login",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-1.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 10.708,
+      "phase": "login",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-1.0"
+    },
+    {
+      "observation": true,
+      "action": "FRAME_NAVIGATED",
+      "milliseconds": 13.094,
+      "phase": "login",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 96.776,
+      "phase": "login",
+      "request_id": "interception-job-2.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/signin",
+      "request_kind": "FORM_ACTION",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 96.785,
+      "phase": "login",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-2.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 97.281,
+      "phase": "login",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-2.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 98.918,
+      "phase": "login",
+      "request_id": "interception-job-2.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/signin",
+      "request_kind": "FORM_ACTION",
+      "resource_type": "Document",
+      "response_status": 302,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 98.925,
+      "phase": "login",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-2.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 99.206,
+      "phase": "login",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-2.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 99.897,
+      "phase": "login",
+      "request_id": "interception-job-2.1",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/dashboard",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 99.9,
+      "phase": "login",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-2.1"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 100.145,
+      "phase": "login",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-2.1"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 101.509,
+      "phase": "login",
+      "request_id": "interception-job-2.1",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/dashboard",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 101.524,
+      "phase": "login",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-2.1"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 101.8,
+      "phase": "login",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-2.1"
+    },
+    {
+      "observation": true,
+      "action": "FRAME_NAVIGATED",
+      "milliseconds": 104.212,
+      "phase": "login",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2050.06,
+      "phase": "open_form",
+      "request_id": "interception-job-3.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2050.072,
+      "phase": "open_form",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-3.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2051.157,
+      "phase": "open_form",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-3.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2053.6,
+      "phase": "open_form",
+      "request_id": "interception-job-3.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2053.613,
+      "phase": "open_form",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-3.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2054.356,
+      "phase": "open_form",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-3.0"
+    },
+    {
+      "observation": true,
+      "action": "FRAME_NAVIGATED",
+      "milliseconds": 2056.877,
+      "phase": "open_form",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2140.275,
+      "phase": "open_form",
+      "request_id": "interception-job-4.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2140.291,
+      "phase": "open_form",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-4.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2141.029,
+      "phase": "open_form",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-4.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2146.182,
+      "phase": "open_form",
+      "request_id": "interception-job-4.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": 302,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2146.195,
+      "phase": "open_form",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-4.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2148.684,
+      "phase": "open_form",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-4.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2149.673,
+      "phase": "open_form",
+      "request_id": "interception-job-4.1",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2149.679,
+      "phase": "open_form",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-4.1"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2150.006,
+      "phase": "open_form",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-4.1"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2151.668,
+      "phase": "open_form",
+      "request_id": "interception-job-4.1",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2151.675,
+      "phase": "open_form",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-4.1"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2152,
+      "phase": "open_form",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-4.1"
+    },
+    {
+      "observation": true,
+      "action": "FRAME_NAVIGATED",
+      "milliseconds": 2155.504,
+      "phase": "open_form",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2206.963,
+      "phase": "fill",
+      "request_id": "interception-job-5.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2206.972,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-5.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2207.577,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-5.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2210.936,
+      "phase": "fill",
+      "request_id": "interception-job-5.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2210.946,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-5.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2211.626,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-5.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2513.273,
+      "phase": "fill",
+      "request_id": "interception-job-6.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2513.287,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-6.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2514.214,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-6.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 2863.418,
+      "phase": "fill",
+      "request_id": "interception-job-7.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 2863.432,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-7.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 2864.589,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-7.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 3213.553,
+      "phase": "fill",
+      "request_id": "interception-job-8.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 3213.567,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-8.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 3215.152,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-8.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 3229.423,
+      "phase": "fill",
+      "request_id": "interception-job-9.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 3229.433,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-9.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 3230.521,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-9.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 3233.745,
+      "phase": "fill",
+      "request_id": "interception-job-9.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 3233.757,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-9.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 3234.833,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-9.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 3563.093,
+      "phase": "fill",
+      "request_id": "interception-job-10.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 3563.107,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-10.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 3564.179,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-10.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 3913.295,
+      "phase": "fill",
+      "request_id": "interception-job-11.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 3913.309,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-11.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 3914.517,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-11.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 4250.953,
+      "phase": "fill",
+      "request_id": "interception-job-12.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 4250.964,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-12.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 4251.749,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-12.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 4254.728,
+      "phase": "fill",
+      "request_id": "interception-job-12.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 4254.735,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-12.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 4255.523,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-12.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 4262.933,
+      "phase": "fill",
+      "request_id": "interception-job-13.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 4262.94,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-13.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 4263.74,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-13.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 4612.845,
+      "phase": "fill",
+      "request_id": "interception-job-14.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 4612.856,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-14.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 4613.842,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-14.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 4963.316,
+      "phase": "fill",
+      "request_id": "interception-job-15.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 4963.327,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-15.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 4964.309,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-15.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 5273.847,
+      "phase": "fill",
+      "request_id": "interception-job-16.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 5273.856,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-16.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 5274.588,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-16.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 5277.093,
+      "phase": "fill",
+      "request_id": "interception-job-16.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 5277.098,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-16.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 5277.914,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-16.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 5312.936,
+      "phase": "fill",
+      "request_id": "interception-job-17.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 5312.944,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-17.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 5313.859,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-17.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 5663.173,
+      "phase": "fill",
+      "request_id": "interception-job-18.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 5663.185,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-18.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 5664.103,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-18.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 6012.966,
+      "phase": "fill",
+      "request_id": "interception-job-19.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 6012.978,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-19.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 6014.139,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-19.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 6295.615,
+      "phase": "fill",
+      "request_id": "interception-job-20.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 6295.622,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-20.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 6296.325,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-20.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 6298.546,
+      "phase": "fill",
+      "request_id": "interception-job-20.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 6298.556,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-20.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 6299.41,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-20.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 6363.272,
+      "phase": "fill",
+      "request_id": "interception-job-21.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 6363.283,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-21.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 6364.306,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-21.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 6713.254,
+      "phase": "fill",
+      "request_id": "interception-job-22.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 6713.266,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-22.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 6714.322,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-22.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 7063.31,
+      "phase": "fill",
+      "request_id": "interception-job-23.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 7063.322,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-23.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 7064.128,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-23.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 7320.857,
+      "phase": "fill",
+      "request_id": "interception-job-24.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 7320.864,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-24.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 7321.799,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-24.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 7324.586,
+      "phase": "fill",
+      "request_id": "interception-job-24.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 7324.594,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-24.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 7325.528,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-24.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 7413.369,
+      "phase": "fill",
+      "request_id": "interception-job-25.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 7413.38,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-25.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 7414.355,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-25.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 7763.387,
+      "phase": "fill",
+      "request_id": "interception-job-26.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 7763.401,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-26.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 7764.618,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-26.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 8113.505,
+      "phase": "fill",
+      "request_id": "interception-job-27.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 8113.52,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-27.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 8114.658,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-27.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 8349.968,
+      "phase": "fill",
+      "request_id": "interception-job-28.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 8349.979,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-28.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 8350.7,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-28.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 8353.876,
+      "phase": "fill",
+      "request_id": "interception-job-28.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 8353.883,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-28.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 8354.44,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-28.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 8462.954,
+      "phase": "fill",
+      "request_id": "interception-job-29.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 8462.968,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-29.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 8464.058,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-29.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 8812.994,
+      "phase": "fill",
+      "request_id": "interception-job-30.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 8813.01,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-30.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 8814.181,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-30.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 9163.256,
+      "phase": "fill",
+      "request_id": "interception-job-31.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 9163.27,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-31.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 9164.434,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-31.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 9393.414,
+      "phase": "fill",
+      "request_id": "interception-job-32.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 9393.422,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-32.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 9393.784,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-32.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 9396.428,
+      "phase": "fill",
+      "request_id": "interception-job-32.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 9396.433,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-32.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 9396.699,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-32.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 9513.132,
+      "phase": "fill",
+      "request_id": "interception-job-33.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 9513.145,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-33.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 9514.239,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-33.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 9863.433,
+      "phase": "fill",
+      "request_id": "interception-job-34.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 9863.448,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-34.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 9864.684,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-34.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 10213.817,
+      "phase": "fill",
+      "request_id": "interception-job-35.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 10213.832,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-35.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 10215.073,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-35.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 10418.87,
+      "phase": "fill",
+      "request_id": "interception-job-36.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 10418.884,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-36.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 10419.812,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-36.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 10423.373,
+      "phase": "fill",
+      "request_id": "interception-job-36.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 10423.385,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-36.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 10424.362,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-36.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 10563.537,
+      "phase": "fill",
+      "request_id": "interception-job-37.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 10563.552,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-37.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 10564.721,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-37.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 10913.411,
+      "phase": "fill",
+      "request_id": "interception-job-38.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 10913.427,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-38.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 10914.619,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-38.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 11263.631,
+      "phase": "fill",
+      "request_id": "interception-job-39.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 11263.646,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-39.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 11264.862,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-39.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 11443.272,
+      "phase": "fill",
+      "request_id": "interception-job-40.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 11443.282,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-40.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 11443.893,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-40.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 11446.356,
+      "phase": "fill",
+      "request_id": "interception-job-40.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 11446.362,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-40.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 11446.903,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-40.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 11613.304,
+      "phase": "fill",
+      "request_id": "interception-job-41.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 11613.323,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-41.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 11614.507,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-41.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 11963.633,
+      "phase": "fill",
+      "request_id": "interception-job-42.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 11963.654,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-42.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 11964.817,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-42.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 12313.555,
+      "phase": "fill",
+      "request_id": "interception-job-43.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 12313.574,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-43.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 12314.712,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-43.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 12463.279,
+      "phase": "fill",
+      "request_id": "interception-job-44.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 12463.296,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-44.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 12464.181,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-44.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 12467.338,
+      "phase": "fill",
+      "request_id": "interception-job-44.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 12467.352,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-44.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 12468.37,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-44.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 12663.357,
+      "phase": "fill",
+      "request_id": "interception-job-45.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 12663.375,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-45.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 12664.504,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-45.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 13013.362,
+      "phase": "fill",
+      "request_id": "interception-job-46.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 13013.377,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-46.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 13014.502,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-46.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 13363.363,
+      "phase": "fill",
+      "request_id": "interception-job-47.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 13363.378,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-47.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 13364.651,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-47.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 13498.801,
+      "phase": "fill",
+      "request_id": "interception-job-48.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 13498.812,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-48.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 13499.651,
+      "phase": "fill",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-48.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 13502.344,
+      "phase": "fill",
+      "request_id": "interception-job-48.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FIELD_CALLBACK",
+      "resource_type": "XHR",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 13502.353,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-48.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 13503.423,
+      "phase": "fill",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-48.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 13713.29,
+      "phase": "fill",
+      "request_id": "interception-job-49.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 13713.303,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-49.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 13714.392,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-49.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 14063.057,
+      "phase": "fill",
+      "request_id": "interception-job-50.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 14063.07,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-50.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 14064.214,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-50.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 14413.429,
+      "phase": "fill",
+      "request_id": "interception-job-51.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "REFRESH",
+      "resource_type": "XHR",
+      "response_status": null,
+      "allowed": false
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 14413.441,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-51.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 14414.599,
+      "phase": "fill",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-51.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 14615.5,
+      "phase": "submit",
+      "request_id": "interception-job-52.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FORM_ACTION",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 14615.512,
+      "phase": "submit",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-52.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 14618.777,
+      "phase": "submit",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-52.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 14620.542,
+      "phase": "submit",
+      "request_id": "interception-job-52.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "request_kind": "FORM_ACTION",
+      "resource_type": "Document",
+      "response_status": 302,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 14620.552,
+      "phase": "submit",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-52.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 14620.931,
+      "phase": "submit",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-52.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 14621.704,
+      "phase": "submit",
+      "request_id": "interception-job-52.1",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 14621.71,
+      "phase": "submit",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-52.1"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 14622.042,
+      "phase": "submit",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-52.1"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 14623.486,
+      "phase": "submit",
+      "request_id": "interception-job-52.1",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": 200,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 14623.491,
+      "phase": "submit",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-52.1"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 14623.765,
+      "phase": "submit",
+      "method": "Fetch.continueResponse",
+      "request_id": "interception-job-52.1"
+    },
+    {
+      "observation": true,
+      "action": "FRAME_NAVIGATED",
+      "milliseconds": 14628.061,
+      "phase": "submit",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 14652.152,
+      "phase": "read",
+      "request_id": "interception-job-53.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": null,
+      "allowed": true
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 14652.165,
+      "phase": "read",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-53.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 14652.763,
+      "phase": "read",
+      "method": "Fetch.continueRequest",
+      "request_id": "interception-job-53.0"
+    },
+    {
+      "observation": true,
+      "action": "FETCH_DECISION",
+      "milliseconds": 14653.961,
+      "phase": "read",
+      "request_id": "interception-job-53.0",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "request_kind": "OTHER",
+      "resource_type": "Document",
+      "response_status": 307,
+      "allowed": false
+    },
+    {
+      "phase": "read",
+      "path": "/overview/<id>",
+      "action": "DENIED"
+    },
+    {
+      "observation": true,
+      "action": "CDP_SEND",
+      "milliseconds": 14653.968,
+      "phase": "read",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-53.0"
+    },
+    {
+      "observation": true,
+      "action": "CDP_OK",
+      "milliseconds": 14654.407,
+      "phase": "read",
+      "method": "Fetch.failRequest",
+      "request_id": "interception-job-53.0"
+    },
+    {
+      "action": "AGENT_STOPPED",
+      "failure_category": "UNKNOWN"
+    },
+    {
+      "observation": true,
+      "action": "FRAME_NAVIGATED",
+      "milliseconds": 14667.972,
+      "phase": "idle",
+      "frame_id": "31B94E07AA27B6FBB699E9DB785C6D10",
+      "parent_id": null
+    },
+    {
+      "observation": true,
+      "action": "PAGE_CLOSE",
+      "milliseconds": 14677.326,
+      "phase": "idle"
+    },
+    {
+      "observation": true,
+      "action": "BROWSER_DISCONNECTED",
+      "milliseconds": 14684.242,
+      "phase": "idle"
+    }
+  ],
+  "server_requests": [
+    {
+      "method": "GET",
+      "path": "/signin",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/signin?0-1.IFormSubmitListener-content-form",
+      "status": 302
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?41-1.ILinkListener-run",
+      "status": 302
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?41",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?41-1.IBehaviorListener.0-form-field-0&random=0.6806796824204332",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?42-1.IBehaviorListener.0-form-field-1&random=0.4975847410457799",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?43-1.IBehaviorListener.0-form-field-2&random=0.07717301146111477",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?44-1.IBehaviorListener.0-form-field-3&random=0.29541811415656694",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?45-1.IBehaviorListener.0-form-field-4&random=0.7775489215118293",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?46-1.IBehaviorListener.0-form-field-5&random=0.3742885577177919",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?47-1.IBehaviorListener.0-form-field-6&random=0.5642076251486287",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?48-1.IBehaviorListener.0-form-field-7&random=0.6396933274415791",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?49-1.IBehaviorListener.0-form-field-8&random=0.8647292800475819",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?50-1.IBehaviorListener.0-form-field-9&random=0.6013791264638626",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?51-1.IBehaviorListener.0-form-field-10&random=0.38591560452322393",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?52-1.IBehaviorListener.0-form-field-11&random=0.14633930181175747",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?53-1.IFormSubmitListener-form",
+      "status": 302
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?99",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 307
+    }
+  ],
+  "root_before": "31B94E07AA27B6FBB699E9DB785C6D10",
+  "submit": {
+    "ok": true,
+    "landed": "unknown",
+    "observed": "/wicket/page",
+    "messages": [],
+    "released": true
+  },
+  "root_after_submit": "31B94E07AA27B6FBB699E9DB785C6D10",
+  "response": {
+    "ok": false,
+    "error": "QB_BROWSER_UNAVAILABLE",
+    "failure_category": "UNKNOWN",
+    "status": null
+  },
+  "runtime_failure": null,
+  "browser_connected_after_reply": true,
+  "root_after_read": "31B94E07AA27B6FBB699E9DB785C6D10",
+  "signature": true,
+  "synthetic_submissions": 1,
+  "profile_removed": true
+}

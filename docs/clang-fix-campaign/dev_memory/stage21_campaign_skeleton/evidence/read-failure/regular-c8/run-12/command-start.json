@@ -1,0 +1,17 @@
+{
+  "group": "regular-c8",
+  "index": 12,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+    "--basetemp=/tmp/skel-read-failure-3af2f4ek/regular-c8/run-12",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/regular-c8/run-12/pytest.xml"
+  ],
+  "started": "2026-11-03T09:33:50.921102+00:00",
+  "load_before": {
+    "loadavg": "0.47 1.22 3.04 4/3000 3687557",
+    "cpu_count": 20
+  }
+}

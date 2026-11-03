@@ -1,0 +1,40 @@
+{
+  "directories": [
+    {
+      "path": "/tmp/skel-read-failure-o4ll2wot",
+      "existed": true,
+      "referencing_processes": [],
+      "deleted_at": "2026-11-03T10:08:54.491089+00:00",
+      "files": 0,
+      "bytes": 0,
+      "exists_after": false
+    },
+    {
+      "path": "/tmp/skel-read-failure-3af2f4ek",
+      "existed": true,
+      "referencing_processes": [],
+      "deleted_at": "2026-11-03T10:08:54.627049+00:00",
+      "files": 1821,
+      "bytes": 9748250,
+      "exists_after": false
+    },
+    {
+      "path": "/tmp/skel-read-observe-Z6JSX8",
+      "existed": true,
+      "referencing_processes": [],
+      "deleted_at": "2026-11-03T10:08:54.635056+00:00",
+      "files": 3,
+      "bytes": 83764,
+      "hashes_before_deletion": {
+        "qb_browser_agent.mjs": "03f33f001a9bc8830cb24867974bace26e02e089693953d8b30c27cdee4365c5",
+        "qb_browser.py": "264936ee277f045f83011b763a112f36c57dd779e7b26c20f4fd6bfaefad130c",
+        "p5q_c8_investigation.mjs": "d9ee4215379bd30aa673f4fee9afdcd1399d020e3af391343b7b616b1ebd74a8"
+      },
+      "exists_after": false
+    }
+  ],
+  "stress": {
+    "required": false
+  },
+  "profiles_remaining": []
+}

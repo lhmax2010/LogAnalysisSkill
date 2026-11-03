@@ -1,0 +1,202 @@
+[
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-01"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:00:11.116779+00:00",
+    "load_before": "1.14 1.36 1.57 3/2967 3741014",
+    "exit_code": 0,
+    "seconds": 49.4829250870971,
+    "finished": "2026-11-03T10:01:00.599751+00:00",
+    "load_after": "1.04 1.30 1.54 1/2977 3742565"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-02"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:01:00.600430+00:00",
+    "load_before": "1.04 1.30 1.54 3/2977 3742565",
+    "exit_code": 0,
+    "seconds": 49.31209973501973,
+    "finished": "2026-11-03T10:01:49.912609+00:00",
+    "load_after": "1.36 1.35 1.55 1/2980 3744280"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-03"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:01:49.913042+00:00",
+    "load_before": "1.36 1.35 1.55 3/2980 3744280",
+    "exit_code": 0,
+    "seconds": 49.28592090890743,
+    "finished": "2026-11-03T10:02:39.199015+00:00",
+    "load_after": "1.45 1.40 1.55 2/2966 3745793"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-04"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:02:39.199588+00:00",
+    "load_before": "1.45 1.40 1.55 4/2966 3745793",
+    "exit_code": 0,
+    "seconds": 49.38730152801145,
+    "finished": "2026-11-03T10:03:28.586955+00:00",
+    "load_after": "0.63 1.18 1.47 1/2969 3747345"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-05"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:03:28.587614+00:00",
+    "load_before": "0.63 1.18 1.47 3/2969 3747345",
+    "exit_code": 0,
+    "seconds": 49.368081442895345,
+    "finished": "2026-11-03T10:04:17.955773+00:00",
+    "load_after": "0.87 1.17 1.45 1/2976 3748876"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-06"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:04:17.956396+00:00",
+    "load_before": "0.87 1.17 1.45 4/2976 3748876",
+    "exit_code": 0,
+    "seconds": 49.338853826979175,
+    "finished": "2026-11-03T10:05:07.295323+00:00",
+    "load_after": "1.20 1.20 1.45 3/2974 3750446"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-07"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:05:07.295944+00:00",
+    "load_before": "1.20 1.20 1.45 5/2974 3750446",
+    "exit_code": 0,
+    "seconds": 49.119788971031085,
+    "finished": "2026-11-03T10:05:56.415827+00:00",
+    "load_after": "0.80 1.11 1.40 1/2972 3751982"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-08"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:05:56.416290+00:00",
+    "load_before": "0.80 1.11 1.40 5/2972 3751982",
+    "exit_code": 0,
+    "seconds": 48.827643268043175,
+    "finished": "2026-11-03T10:06:45.243985+00:00",
+    "load_after": "0.94 1.10 1.38 4/2986 3753520"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-09"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:06:45.244282+00:00",
+    "load_before": "0.94 1.10 1.38 7/2986 3753520",
+    "exit_code": 0,
+    "seconds": 49.24858289991971,
+    "finished": "2026-11-03T10:07:34.492894+00:00",
+    "load_after": "0.54 0.96 1.32 1/2955 3755119"
+  },
+  {
+    "argv": [
+      "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+      "--auto-servernum",
+      "--error-file=/dev/stderr",
+      "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+      "/home/linhao/.local/bin/node",
+      "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+      "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+      "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-10"
+    ],
+    "cases": "control,racing-meta-refresh,configuration-redirect-307",
+    "started": "2026-11-03T10:07:34.493386+00:00",
+    "load_before": "0.54 0.96 1.32 6/2955 3755119",
+    "exit_code": 0,
+    "seconds": 48.9457882969873,
+    "finished": "2026-11-03T10:08:23.439232+00:00",
+    "load_after": "0.46 0.88 1.27 1/2968 3756731"
+  }
+]

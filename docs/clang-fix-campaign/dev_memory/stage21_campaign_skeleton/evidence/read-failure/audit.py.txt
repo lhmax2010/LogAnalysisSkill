@@ -1,0 +1,27 @@
+"""Generate integrity evidence without touching production or test sources."""
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+root = Path.cwd()
+dest = Path(__file__).resolve().parent
+phase = sys.argv[1]
+paths = subprocess.check_output(['git', 'ls-files', '-z'], text=True).split('\0')
+records = []
+for name in paths:
+    if not name or not (name.startswith(('tizen-', 'tests/')) or name.endswith('FROZEN.md')):
+        continue
+    path = root / name
+    original = subprocess.check_output(['git', 'show', 'a58494b:' + name])
+    current = path.read_bytes()
+    records.append(dict(path=name, baseline=hashlib.sha256(original).hexdigest(),
+                        actual=hashlib.sha256(current).hexdigest(), equal=current == original))
+agent = (root / 'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs').read_bytes()
+record = dict(phase=phase, files=records, all_equal=all(row['equal'] for row in records),
+    agent_sha256=hashlib.sha256(agent).hexdigest(),
+    agent_prefix_sha256=hashlib.sha256(agent.split(b'export class Agent {', 1)[0]).hexdigest())
+(dest / ('integrity-' + phase + '.json')).write_text(json.dumps(record, indent=2) + '\n')
+print(json.dumps({key: value for key, value in record.items() if key != 'files'}))
+assert record['all_equal']

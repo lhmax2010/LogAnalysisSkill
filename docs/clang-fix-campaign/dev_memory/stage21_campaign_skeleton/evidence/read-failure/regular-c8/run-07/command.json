@@ -1,0 +1,525 @@
+{
+  "group": "regular-c8",
+  "index": 7,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+    "--basetemp=/tmp/skel-read-failure-3af2f4ek/regular-c8/run-07",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/regular-c8/run-07/pytest.xml"
+  ],
+  "started": "2026-11-03T09:18:26.727719+00:00",
+  "load_before": {
+    "loadavg": "0.60 2.06 5.46 5/2990 3654783",
+    "cpu_count": 20
+  },
+  "exit_code": 0,
+  "finished": "2026-11-03T09:21:30.758968+00:00",
+  "seconds": 184.03120727592614,
+  "load_after": {
+    "loadavg": "0.93 1.59 4.68 3/3012 3660690",
+    "cpu_count": 20
+  },
+  "load_samples": [
+    {
+      "seconds": 0.001,
+      "loadavg": "0.60 2.06 5.46 5/2991 3654784",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 2.001,
+      "loadavg": "0.60 2.06 5.46 3/3120 3655274",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 4.001,
+      "loadavg": "0.60 2.06 5.46 2/3119 3655296",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 6.002,
+      "loadavg": "0.64 2.04 5.44 2/3113 3655304",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 8.002,
+      "loadavg": "0.64 2.04 5.44 3/3120 3655312",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 10.002,
+      "loadavg": "0.59 2.01 5.41 2/3121 3655313",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 12.003,
+      "loadavg": "0.59 2.01 5.41 2/3121 3655314",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 14.003,
+      "loadavg": "0.59 2.01 5.41 2/3121 3655316",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 16.003,
+      "loadavg": "0.54 1.98 5.38 3/3127 3655323",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 18.004,
+      "loadavg": "0.54 1.98 5.38 2/3114 3655782",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 20.004,
+      "loadavg": "0.49 1.94 5.35 1/3122 3655790",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 22.004,
+      "loadavg": "0.49 1.94 5.35 1/3123 3655791",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 24.004,
+      "loadavg": "0.49 1.94 5.35 1/3124 3655792",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 26.005,
+      "loadavg": "0.70 1.96 5.34 1/3123 3655799",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 28.005,
+      "loadavg": "0.70 1.96 5.34 1/3122 3655800",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 30.005,
+      "loadavg": "0.64 1.93 5.31 1/3114 3655802",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 32.006,
+      "loadavg": "0.64 1.93 5.31 1/3102 3655802",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 34.006,
+      "loadavg": "0.64 1.93 5.31 2/3106 3656314",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 36.006,
+      "loadavg": "0.91 1.96 5.30 2/3099 3656316",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 38.007,
+      "loadavg": "0.91 1.96 5.30 2/3117 3656335",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 40.007,
+      "loadavg": "0.92 1.95 5.28 1/3117 3656359",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 42.007,
+      "loadavg": "0.92 1.95 5.28 2/3116 3656359",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 44.008,
+      "loadavg": "0.92 1.95 5.28 1/3120 3656365",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 46.008,
+      "loadavg": "0.92 1.93 5.26 1/3127 3656372",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 48.008,
+      "loadavg": "0.92 1.93 5.26 1/3120 3656373",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 50.009,
+      "loadavg": "0.93 1.91 5.23 1/3118 3656380",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 52.009,
+      "loadavg": "0.93 1.91 5.23 1/3121 3656841",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 54.009,
+      "loadavg": "0.93 1.91 5.23 1/3125 3656850",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 56.01,
+      "loadavg": "0.85 1.88 5.20 1/3126 3656858",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 58.01,
+      "loadavg": "0.85 1.88 5.20 1/3128 3656861",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 60.01,
+      "loadavg": "0.79 1.85 5.18 1/3121 3656863",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 62.011,
+      "loadavg": "0.79 1.85 5.18 1/3120 3656863",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 64.011,
+      "loadavg": "0.79 1.85 5.18 1/3119 3656863",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 66.011,
+      "loadavg": "0.72 1.82 5.15 1/3105 3656863",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 68.012,
+      "loadavg": "0.72 1.82 5.15 2/3113 3657092",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 70.012,
+      "loadavg": "0.66 1.79 5.12 1/3097 3657330",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 72.012,
+      "loadavg": "0.66 1.79 5.12 1/3112 3657382",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 74.013,
+      "loadavg": "0.66 1.79 5.12 1/3124 3657396",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 76.013,
+      "loadavg": "0.69 1.78 5.10 1/3133 3657407",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 78.013,
+      "loadavg": "0.69 1.78 5.10 1/3144 3657435",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 80.014,
+      "loadavg": "1.44 1.91 5.12 1/3144 3657442",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 82.014,
+      "loadavg": "1.44 1.91 5.12 3/3129 3657442",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 84.014,
+      "loadavg": "1.44 1.91 5.12 1/3126 3657443",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 86.015,
+      "loadavg": "1.32 1.88 5.10 3/3105 3657857",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 88.015,
+      "loadavg": "1.32 1.88 5.10 2/3125 3657908",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 90.015,
+      "loadavg": "1.30 1.87 5.07 1/3115 3657911",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 92.016,
+      "loadavg": "1.30 1.87 5.07 1/3115 3657911",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 94.016,
+      "loadavg": "1.30 1.87 5.07 5/3110 3657915",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 96.017,
+      "loadavg": "1.35 1.87 5.06 5/3110 3657945",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 98.017,
+      "loadavg": "1.35 1.87 5.06 2/3117 3657952",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 100.017,
+      "loadavg": "1.24 1.84 5.03 5/3125 3657968",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 102.018,
+      "loadavg": "1.24 1.84 5.03 3/3135 3658444",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 104.018,
+      "loadavg": "1.24 1.84 5.03 2/3130 3658447",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 106.019,
+      "loadavg": "1.14 1.81 5.00 1/3137 3658456",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 108.019,
+      "loadavg": "1.14 1.81 5.00 3/3129 3658456",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 110.019,
+      "loadavg": "1.05 1.78 4.98 1/3136 3658463",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 112.02,
+      "loadavg": "1.05 1.78 4.98 1/3131 3658464",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 114.02,
+      "loadavg": "1.05 1.78 4.98 2/3124 3658465",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 116.02,
+      "loadavg": "1.21 1.80 4.96 1/3124 3658473",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 118.021,
+      "loadavg": "1.21 1.80 4.96 1/3117 3658943",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 120.021,
+      "loadavg": "1.19 1.78 4.94 2/3112 3658947",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 122.021,
+      "loadavg": "1.19 1.78 4.94 1/3117 3658954",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 124.021,
+      "loadavg": "1.19 1.78 4.94 1/3116 3658954",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 126.022,
+      "loadavg": "1.34 1.80 4.93 1/3115 3658969",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 128.022,
+      "loadavg": "1.34 1.80 4.93 1/3121 3658976",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 130.023,
+      "loadavg": "1.23 1.77 4.91 1/3121 3658983",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 132.023,
+      "loadavg": "1.23 1.77 4.91 3/3117 3658983",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 134.023,
+      "loadavg": "1.23 1.77 4.91 1/3120 3659459",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 136.024,
+      "loadavg": "1.13 1.74 4.88 1/3129 3659470",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 138.024,
+      "loadavg": "1.13 1.74 4.88 1/3124 3659489",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 140.024,
+      "loadavg": "1.04 1.71 4.85 1/3132 3659498",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 142.025,
+      "loadavg": "1.04 1.71 4.85 1/3133 3659499",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 144.025,
+      "loadavg": "1.04 1.71 4.85 1/3122 3659500",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 146.025,
+      "loadavg": "0.96 1.69 4.83 4/3122 3659511",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 148.026,
+      "loadavg": "0.96 1.69 4.83 3/3023 3659541",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 150.026,
+      "loadavg": "0.88 1.66 4.80 2/3108 3660027",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 152.026,
+      "loadavg": "0.88 1.66 4.80 1/3109 3660028",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 154.026,
+      "loadavg": "0.88 1.66 4.80 1/3115 3660035",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 156.027,
+      "loadavg": "0.89 1.65 4.78 1/3106 3660035",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 158.027,
+      "loadavg": "0.89 1.65 4.78 1/3106 3660042",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 160.027,
+      "loadavg": "0.90 1.64 4.76 5/3117 3660054",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 162.028,
+      "loadavg": "0.90 1.64 4.76 1/3119 3660056",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 164.028,
+      "loadavg": "0.90 1.64 4.76 1/3117 3660056",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 166.028,
+      "loadavg": "0.91 1.62 4.74 8/3067 3660341",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 168.029,
+      "loadavg": "0.91 1.62 4.74 1/3125 3660556",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 170.029,
+      "loadavg": "0.91 1.61 4.72 1/3134 3660565",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 172.029,
+      "loadavg": "0.91 1.61 4.72 3/3136 3660567",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 174.029,
+      "loadavg": "0.91 1.61 4.72 2/3139 3660578",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 176.03,
+      "loadavg": "0.92 1.60 4.70 2/3138 3660608",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 178.03,
+      "loadavg": "0.92 1.60 4.70 1/3141 3660612",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 180.03,
+      "loadavg": "0.93 1.59 4.68 1/3131 3660618",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 182.031,
+      "loadavg": "0.93 1.59 4.68 1/3026 3660637",
+      "cpu_count": 20
+    }
+  ],
+  "failures": [],
+  "agent_stopped": [
+    {
+      "file": "c8/injected-competing-navigation.json",
+      "facts": {
+        "action": "AGENT_STOPPED",
+        "failure_category": "UNKNOWN"
+      }
+    },
+    {
+      "file": "c8/configuration-redirect-signin.json",
+      "facts": {
+        "action": "AGENT_STOPPED",
+        "failure_category": "UNKNOWN"
+      }
+    },
+    {
+      "file": "c8/injected-missing-root-membership.json",
+      "facts": {
+        "action": "AGENT_STOPPED",
+        "failure_category": "UNKNOWN"
+      }
+    },
+    {
+      "file": "c8/configuration-connection-abort.json",
+      "facts": {
+        "action": "AGENT_STOPPED",
+        "failure_category": "UNKNOWN"
+      }
+    },
+    {
+      "file": "c8/configuration-redirect-307.json",
+      "facts": {
+        "action": "AGENT_STOPPED",
+        "failure_category": "UNKNOWN"
+      }
+    }
+  ],
+  "harness_failures": []
+}

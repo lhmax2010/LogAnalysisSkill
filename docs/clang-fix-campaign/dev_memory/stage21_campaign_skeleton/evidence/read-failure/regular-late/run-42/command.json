@@ -1,0 +1,466 @@
+{
+  "group": "regular-late",
+  "index": 42,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]",
+    "--basetemp=/tmp/skel-read-failure-3af2f4ek/regular-late/run-42",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/regular-late/run-42/pytest.xml"
+  ],
+  "started": "2026-11-03T08:50:05.565199+00:00",
+  "load_before": {
+    "loadavg": "12.82 8.65 8.71 5/3295 3583258",
+    "cpu_count": 20
+  },
+  "exit_code": 1,
+  "finished": "2026-11-03T08:52:57.649439+00:00",
+  "seconds": 172.08390331303235,
+  "load_after": {
+    "loadavg": "40.35 18.40 12.15 1/3435 3584758",
+    "cpu_count": 20
+  },
+  "load_samples": [
+    {
+      "seconds": 0.052,
+      "loadavg": "12.82 8.65 8.71 3/3297 3583260",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 2.055,
+      "loadavg": "13.31 8.82 8.76 1/3295 3583277",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 4.056,
+      "loadavg": "13.31 8.82 8.76 2/3297 3583300",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 6.056,
+      "loadavg": "13.69 8.97 8.81 1/3297 3583300",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 8.056,
+      "loadavg": "13.69 8.97 8.81 1/3307 3583335",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 10.057,
+      "loadavg": "13.69 8.97 8.81 2/3302 3583347",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 12.057,
+      "loadavg": "14.11 9.14 8.87 2/3303 3583348",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 14.057,
+      "loadavg": "14.11 9.14 8.87 2/3305 3583378",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 16.058,
+      "loadavg": "13.70 9.14 8.87 1/3321 3583401",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 18.058,
+      "loadavg": "13.70 9.14 8.87 1/3326 3583415",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 20.058,
+      "loadavg": "13.70 9.14 8.87 1/3313 3583416",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 22.059,
+      "loadavg": "13.33 9.14 8.87 1/3314 3583421",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 24.059,
+      "loadavg": "13.33 9.14 8.87 1/3316 3583425",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 26.06,
+      "loadavg": "13.38 9.22 8.90 2/3325 3583442",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 28.06,
+      "loadavg": "13.38 9.22 8.90 1/3312 3583442",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 30.06,
+      "loadavg": "13.38 9.22 8.90 2/3327 3583458",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 32.061,
+      "loadavg": "13.43 9.30 8.93 4/3330 3583463",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 34.061,
+      "loadavg": "13.43 9.30 8.93 1/3330 3583463",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 36.061,
+      "loadavg": "14.44 9.57 9.02 1/3330 3583463",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 38.062,
+      "loadavg": "14.44 9.57 9.02 1/3355 3583489",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 40.062,
+      "loadavg": "14.44 9.57 9.02 4/3360 3583511",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 42.062,
+      "loadavg": "14.64 9.70 9.06 4/3356 3583512",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 44.063,
+      "loadavg": "14.64 9.70 9.06 4/3355 3583520",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 46.063,
+      "loadavg": "14.27 9.70 9.07 4/3361 3583528",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 48.063,
+      "loadavg": "14.27 9.70 9.07 5/3373 3583599",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 50.063,
+      "loadavg": "14.27 9.70 9.07 5/3368 3583608",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 52.064,
+      "loadavg": "14.17 9.76 9.09 5/3366 3583608",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 54.064,
+      "loadavg": "14.17 9.76 9.09 6/3369 3583668",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 56.064,
+      "loadavg": "13.92 9.78 9.10 4/3369 3583769",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 58.064,
+      "loadavg": "13.92 9.78 9.10 3/3370 3583829",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 60.065,
+      "loadavg": "13.92 9.78 9.10 2/3378 3583841",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 62.065,
+      "loadavg": "13.68 9.80 9.11 3/3383 3583850",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 64.065,
+      "loadavg": "13.68 9.80 9.11 5/3405 3583872",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 66.066,
+      "loadavg": "13.87 9.90 9.14 5/3403 3583921",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 68.066,
+      "loadavg": "13.87 9.90 9.14 1/3403 3583979",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 70.066,
+      "loadavg": "13.87 9.90 9.14 4/3401 3583986",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 72.067,
+      "loadavg": "14.36 10.07 9.20 2/3403 3583988",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 74.067,
+      "loadavg": "14.36 10.07 9.20 1/3401 3583992",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 76.067,
+      "loadavg": "14.81 10.24 9.26 1/3403 3583996",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 78.068,
+      "loadavg": "14.81 10.24 9.26 1/3400 3584005",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 80.068,
+      "loadavg": "14.81 10.24 9.26 2/3392 3584007",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 82.068,
+      "loadavg": "14.75 10.30 9.29 1/3435 3584054",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 84.069,
+      "loadavg": "14.75 10.30 9.29 1/3391 3584060",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 86.069,
+      "loadavg": "14.37 10.29 9.29 1/3391 3584060",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 88.069,
+      "loadavg": "14.37 10.29 9.29 2/3389 3584116",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 90.07,
+      "loadavg": "14.37 10.29 9.29 3/3425 3584402",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 92.07,
+      "loadavg": "14.42 10.37 9.32 2/3422 3584404",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 94.07,
+      "loadavg": "14.42 10.37 9.32 2/3422 3584404",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 96.071,
+      "loadavg": "14.62 10.48 9.36 1/3423 3584405",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 98.071,
+      "loadavg": "14.62 10.48 9.36 1/3431 3584413",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 100.071,
+      "loadavg": "14.62 10.48 9.36 1/3418 3584425",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 102.072,
+      "loadavg": "14.73 10.57 9.40 2/3420 3584429",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 104.072,
+      "loadavg": "14.73 10.57 9.40 2/3421 3584430",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 106.072,
+      "loadavg": "14.51 10.60 9.41 2/3421 3584430",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 108.073,
+      "loadavg": "14.51 10.60 9.41 2/3420 3584439",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 110.073,
+      "loadavg": "14.51 10.60 9.41 1/3413 3584447",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 112.073,
+      "loadavg": "14.47 10.65 9.44 1/3411 3584448",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 114.074,
+      "loadavg": "14.47 10.65 9.44 1/3411 3584454",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 116.074,
+      "loadavg": "14.03 10.63 9.44 1/3411 3584455",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 118.075,
+      "loadavg": "14.03 10.63 9.44 1/3392 3584462",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 120.075,
+      "loadavg": "14.03 10.63 9.44 1/3398 3584471",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 122.075,
+      "loadavg": "13.55 10.58 9.43 4/3415 3584490",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 124.076,
+      "loadavg": "13.55 10.58 9.43 1/3439 3584515",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 126.076,
+      "loadavg": "17.75 11.50 9.73 1/3458 3584534",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 128.076,
+      "loadavg": "17.75 11.50 9.73 2/3475 3584558",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 130.077,
+      "loadavg": "17.75 11.50 9.73 1/3477 3584568",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 132.077,
+      "loadavg": "21.86 12.46 10.05 1/3479 3584576",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 134.077,
+      "loadavg": "21.86 12.46 10.05 1/3483 3584587",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 136.078,
+      "loadavg": "25.23 13.31 10.34 2/3483 3584587",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 138.078,
+      "loadavg": "25.23 13.31 10.34 2/3485 3584599",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 140.079,
+      "loadavg": "25.23 13.31 10.34 6/3482 3584604",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 142.079,
+      "loadavg": "27.21 13.92 10.55 5/3487 3584610",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 144.079,
+      "loadavg": "27.21 13.92 10.55 6/3490 3584616",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 146.079,
+      "loadavg": "30.48 14.82 10.86 3/3491 3584618",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 148.08,
+      "loadavg": "30.48 14.82 10.86 5/3489 3584625",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 150.08,
+      "loadavg": "30.48 14.82 10.86 4/3493 3584632",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 152.081,
+      "loadavg": "31.80 15.36 11.06 3/3501 3584643",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 154.081,
+      "loadavg": "31.80 15.36 11.06 3/3432 3584643",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 156.081,
+      "loadavg": "34.94 16.28 11.38 2/3446 3584676",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 158.082,
+      "loadavg": "34.94 16.28 11.38 4/3465 3584718",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 160.082,
+      "loadavg": "34.94 16.28 11.38 3/3456 3584726",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 162.082,
+      "loadavg": "38.15 17.25 11.72 1/3457 3584728",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 164.083,
+      "loadavg": "38.15 17.25 11.72 2/3460 3584731",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 166.083,
+      "loadavg": "38.38 17.65 11.88 2/3462 3584735",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 168.083,
+      "loadavg": "38.38 17.65 11.88 1/3447 3584744",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 170.083,
+      "loadavg": "38.38 17.65 11.88 1/3438 3584745",
+      "cpu_count": 20
+    }
+  ],
+  "failures": [
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+      "kind": "failure",
+      "message": "subprocess.TimeoutExpired: Command '['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py', 'qb-trigger', '--verification-ids', 'u1-v0,u1-v1,u1-v2', '--state-db', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/state.db', '--state-root', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/state', '--config', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/config.yaml']' timed out after 150 seconds",
+      "text": "tmp_path = PosixPath('/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0')\nmode = 'late-build'\n\n    @pytest.mark.integration\n    @pytest.mark.parametrize(\n        \"mode\",\n        [\"build\", \"error-created\", \"error-no-build\", \"no-navigation\", \"delayed-build\", \"late-build\"],\n    )\n    def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):\n        command, env = node_command()\n        playwright, chromium = browser_paths()\n        # Reuse state fixture only, not its fake-agent monkeypatch or CLI shortcuts.\n        with pytest.MonkeyPatch.context() as mp:\n            campaign = Campaign(tmp_path, mp)\n        campaign.project[\"configuration_path\"] = (\n            \"root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER\"\n        )\n        campaign.data[\"qb\"][\"browser\"].update(\n            node=str(ROOT / \"tests/fixtures/p5q_node_entry.py\"),\n            playwright_module=playwright,\n            chromium=chromium,\n        )\n        campaign.save()\n        evidence = Path(os.environ.get(\"P5Q_C5A_EVIDENCE\", str(tmp_path / \"evidence\"))) / mode\n        evidence.mkdir(parents=True, exist_ok=True)\n        config, received = tmp_path / \"local-server.json\", evidence / \"server-requests.json\"\n        env.update(P5Q_TEST_SERVER=str(config), P5Q_TEST_NODE=json.dumps(command))\n        server = subprocess.Popen(\n            [*command, str(ROOT / \"tests/node/p5q_fake_quickbuild.mjs\"), str(config), str(received)],\n            stdin=subprocess.PIPE,\n            stdout=subprocess.PIPE,\n            stderr=subprocess.PIPE,\n            text=True,\n            env=env,\n        )\n        commands = []\n    \n        def server_command(value):\n            server.stdin.write(json.dumps(value) + \"\\n\")\n            server.stdin.flush()\n            assert line(server) == {\"ok\": True}\n    \n        def cli(name, *args, expected_exit=0):\n            env[\"P5Q_TEST_AGENT_LOG\"] = str(evidence / f\"agent-{len(commands)}.json\")\n            argv = [\n                sys.executable,\n                str(ROOT / \"tests/fixtures/p5q_cli_clock.py\"),\n                name,\n                *args,\n                \"--state-db\",\n                str(tmp_path / \"state.db\"),\n                \"--state-root\",\n                str(tmp_path / \"state\"),\n                \"--config\",\n                str(campaign.config),\n            ]\n            run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n            ended = time.time()\n            agent_log = Path(env[\"P5Q_TEST_AGENT_LOG\"])\n            close_seconds = None\n            if agent_log.exists():\n                lifecycle = json.loads(agent_log.read_text())\n                close_started = lifecycle[\"close_started_unix_ms\"]\n                if close_started is not None:\n                    close_seconds = ended - close_started / 1000\n            commands.append(\n                {\n                    \"argv\": argv,\n                    \"exit\": run.returncode,\n                    \"stdout\": run.stdout,\n                    \"stderr\": run.stderr,\n                    \"close_to_cli_exit_seconds\": close_seconds,\n                }\n            )\n            (evidence / \"commands.json\").write_text(\n                json.dumps(commands, ensure_ascii=False, indent=2) + \"\\n\"\n            )\n            server_command({})\n            if close_seconds is not None:\n                assert 0 <= close_seconds < 5\n            elif name == \"qb-result-fetch\" or not commands[:-1]:\n                pytest.fail(\"missing close timing for browser invocation\")\n            assert run.returncode == expected_exit, run.stdout + run.stderr\n            return json.loads(run.stdout)[0]\n    \n        try:\n            assert line(server) == {\"ready\": True}\n            server_command({\"mode\": mode})\n>           triggered = cli(\n                \"qb-trigger\",\n                \"--verification-ids\",\n                \"u1-v0,u1-v1,u1-v2\",\n                expected_exit=5 if mode in {\"error-no-build\", \"late-build\"} else 0,\n            )\n\ntests/unit/test_p5q_c5a_integration.py:107: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/unit/test_p5q_c5a_integration.py:75: in cli\n    run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/subprocess.py:550: in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/subprocess.py:1209: in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/subprocess.py:2116: in _communicate\n    self._check_timeout(endtime, orig_timeout, stdout, stderr)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <Popen: returncode: -9 args: ['/home/linhao/Toolchain/development/LogAnalysi...>\nendtime = 585026.88944954, orig_timeout = 150, stdout_seq = [], stderr_seq = []\nskip_check_and_raise = False\n\n    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,\n                       skip_check_and_raise=False):\n        \"\"\"Convenience for checking if a timeout has expired.\"\"\"\n        if endtime is None:\n            return\n        if skip_check_and_raise or _time() > endtime:\n>           raise TimeoutExpired(\n                    self.args, orig_timeout,\n                    output=b''.join(stdout_seq) if stdout_seq else None,\n                    stderr=b''.join(stderr_seq) if stderr_seq else None)\nE           subprocess.TimeoutExpired: Command '['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py', 'qb-trigger', '--verification-ids', 'u1-v0,u1-v1,u1-v2', '--state-db', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/state.db', '--state-root', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/state', '--config', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/config.yaml']' timed out after 150 seconds\n\n/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired"
+    }
+  ],
+  "agent_stopped": [],
+  "harness_failures": []
+}

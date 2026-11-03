@@ -1,0 +1,57 @@
+"""Run the outside-repository observation copy, after formal samples finish."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import time
+
+root = Path.cwd()
+dest = Path(__file__).resolve().parent
+temporary = Path('/tmp/skel-read-observe-Z6JSX8')
+assert (dest / 'sampling-results.json').is_file()
+assert temporary.is_dir()
+env = os.environ.copy()
+for key in ('DEBUG', 'PWDEBUG', 'NODE_OPTIONS', 'QB_COOKIE', 'QB_PASSWORD', 'DISPLAY',
+            'WAYLAND_DISPLAY', 'XAUTHORITY', 'P5Q_TEST_C6_FAILURE'):
+    env.pop(key, None)
+env.update(P5Q_TEST_DISPLAY='virtual', XDG_SESSION_TYPE='x11',
+           P5Q_C8_CASES='control,racing-meta-refresh,configuration-redirect-307')
+env['PATH'] = str(Path.home() / '.local/share/p5q-test-display/usr/bin') + ':' + env['PATH']
+runner = shutil.which('xvfb-run', path=env['PATH'])
+node = shutil.which('node', path=env['PATH'])
+assert runner and node
+playwright = str(Path.home() / '.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs')
+chromium = str(Path.home() / '.cache/ms-playwright/chromium-1208/chrome-linux64/chrome')
+manifest = dict(directory=str(temporary), copied_from={
+    'qb_browser_agent.mjs': 'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs',
+    'qb_browser.py': 'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py',
+    'p5q_c8_investigation.mjs': 'tests/node/p5q_c8_investigation.mjs'}, files={})
+for path in temporary.iterdir():
+    if path.is_file():
+        manifest['files'][path.name] = dict(bytes=path.stat().st_size,
+            sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+(dest / 'observation-copy.json').write_text(json.dumps(manifest, indent=2) + '\n')
+results = []
+for index in range(1, 11):
+    output = dest / 'instrumented' / f'run-{index:02d}'
+    output.mkdir(parents=True, exist_ok=False)
+    argv = [runner, '--auto-servernum', '--error-file=/dev/stderr',
+            '--server-args=-screen 0 1920x1080x24 -nolisten tcp', node,
+            str(temporary / 'p5q_c8_investigation.mjs'), playwright, chromium, str(output)]
+    facts = dict(argv=argv, cases=env['P5Q_C8_CASES'],
+                 started=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                 load_before=Path('/proc/loadavg').read_text().strip())
+    tick = time.monotonic()
+    with (output / 'stdout.log').open('w') as out, (output / 'stderr.log').open('w') as err:
+        result = subprocess.run(argv, env=env, stdout=out, stderr=err, timeout=600)
+    facts.update(exit_code=result.returncode, seconds=time.monotonic() - tick,
+                 finished=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                 load_after=Path('/proc/loadavg').read_text().strip())
+    (output / 'command.json').write_text(json.dumps(facts, indent=2) + '\n')
+    results.append(facts)
+    print(json.dumps(dict(run=index, exit=result.returncode, seconds=facts['seconds'])), flush=True)
+(dest / 'observation-results.json').write_text(json.dumps(results, indent=2) + '\n')

@@ -1,0 +1,89 @@
+{
+  "group": "regular-late",
+  "index": 7,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]",
+    "--basetemp=/tmp/skel-read-failure-3af2f4ek/regular-late/run-07",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/regular-late/run-07/pytest.xml"
+  ],
+  "started": "2026-11-03T08:33:02.312967+00:00",
+  "load_before": {
+    "loadavg": "1.99 9.91 13.79 5/3274 3523545",
+    "cpu_count": 20
+  },
+  "exit_code": 0,
+  "finished": "2026-11-03T08:33:26.317535+00:00",
+  "seconds": 24.004434834001586,
+  "load_after": {
+    "loadavg": "2.17 9.32 13.49 1/3291 3525164",
+    "cpu_count": 20
+  },
+  "load_samples": [
+    {
+      "seconds": 0.001,
+      "loadavg": "1.99 9.91 13.79 10/3276 3523547",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 2.001,
+      "loadavg": "1.99 9.91 13.79 2/3418 3524059",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 4.002,
+      "loadavg": "2.15 9.81 13.74 2/3416 3524083",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 6.002,
+      "loadavg": "2.15 9.81 13.74 1/3416 3524085",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 8.002,
+      "loadavg": "2.15 9.81 13.74 1/3416 3524087",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 10.002,
+      "loadavg": "2.22 9.70 13.68 3/3414 3524089",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 12.003,
+      "loadavg": "2.22 9.70 13.68 2/3407 3524098",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 14.003,
+      "loadavg": "2.20 9.57 13.62 2/3414 3524105",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 16.003,
+      "loadavg": "2.20 9.57 13.62 3/3427 3524150",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 18.003,
+      "loadavg": "2.20 9.57 13.62 2/3430 3524640",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 20.004,
+      "loadavg": "2.19 9.44 13.56 2/3337 3524662",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 22.004,
+      "loadavg": "2.19 9.44 13.56 1/3428 3525141",
+      "cpu_count": 20
+    }
+  ],
+  "failures": [],
+  "agent_stopped": [],
+  "harness_failures": []
+}

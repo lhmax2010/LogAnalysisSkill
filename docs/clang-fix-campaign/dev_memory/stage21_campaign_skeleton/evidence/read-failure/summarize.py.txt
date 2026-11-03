@@ -1,0 +1,76 @@
+"""Summarize preserved executions, keeping harness setup errors separate."""
+from collections import Counter
+import json
+from pathlib import Path
+
+root = Path(__file__).resolve().parent
+groups = {}
+failures = []
+for name in ('regular-late', 'regular-c8', 'stress-late', 'setup-errors-late'):
+    rows = [json.loads(path.read_text()) for path in sorted((root / name).glob('run-*/command.json'))]
+    loads = [float(sample['loadavg'].split()[0]) for row in rows
+             for sample in [row['load_before'], *row['load_samples'], row['load_after']]]
+    categories = Counter()
+    for row in rows:
+        if not row['exit_code']:
+            continue
+        shapes = [item['facts']['failure_category'] for item in row['agent_stopped']]
+        categories.update(shapes or ['NO_AGENT_STOPPED'])
+        failures.append(dict(group=name, run=row['index'], exit_code=row['exit_code'],
+            file=f"{name}/run-{row['index']:02d}/command.json", failures=row['failures'],
+            agent_stopped=row['agent_stopped'], harness_failures=row['harness_failures']))
+    groups[name] = dict(runs=len(rows), passed=sum(row['exit_code'] == 0 for row in rows),
+        failed=sum(row['exit_code'] != 0 for row in rows),
+        fetch_continue_failed_samples=sum(any(item['facts']['failure_category'] == 'FETCH_CONTINUE_FAILED'
+            for item in row['agent_stopped']) for row in rows),
+        skipped=sum(any(item['kind'] == 'skipped' for item in row['failures']) for row in rows),
+        load_1min_min=min(loads) if loads else None, load_1min_max=max(loads) if loads else None,
+        seconds=sum(row['seconds'] for row in rows), stop_category_counts=dict(categories))
+scenarios = {}
+for path in sorted(root.glob('regular-c8/run-*/c8/*.json')):
+    data = json.loads(path.read_text())
+    if not isinstance(data, dict) or 'case' not in data:
+        continue
+    counts = scenarios.setdefault(data['case'], Counter())
+    response = data.get('response', {})
+    counts['runs'] += 1
+    counts['harness_failure'] += bool(data.get('harness_failure'))
+    counts['result:' + ('ok' if response.get('ok') else str(response.get('error')))] += 1
+    for row in data.get('reads', []):
+        if row.get('error'):
+            counts['read_category:' + row['error']['category']] += 1
+observations = dict(runs=0, failed_runs=0, scenarios=0, cdp_errors=[], stops=[])
+for path in sorted(root.glob('instrumented/run-*/*.json')):
+    data = json.loads(path.read_text())
+    if path.name == 'command.json':
+        observations['runs'] += 1
+        observations['failed_runs'] += data['exit_code'] != 0
+    elif isinstance(data, dict) and 'case' in data:
+        observations['scenarios'] += 1
+        for row in data.get('trace', []):
+            if row.get('action') == 'CDP_ERROR':
+                observations['cdp_errors'].append(dict(file=str(path.relative_to(root)), facts=row))
+            elif row.get('action') == 'AGENT_STOPPED':
+                observations['stops'].append(dict(file=str(path.relative_to(root)), facts=row))
+output = dict(groups=groups, failures=failures,
+              c8_scenario_distributions={name: dict(counts) for name, counts in scenarios.items()},
+              observations=observations)
+(root / 'summary.json').write_text(json.dumps(output, ensure_ascii=False, indent=2) + '\n')
+lines = ['# Sampling Results', '', '| Group | Runs | Pass | Fail | Skip | 1-min load range |',
+         '|---|---:|---:|---:|---:|---|']
+for name, data in groups.items():
+    lines.append(f"| {name} | {data['runs']} | {data['passed']} | {data['failed']} | {data['skipped']} | "
+                 f"{data['load_1min_min']} .. {data['load_1min_max']} |")
+lines += ['', 'Setup errors are wrapper failures before fixture execution, excluded from read-failure rates.',
+          'Each command.json preserves argv, UTC, load samples, exact assertion and fixed failure categories.',
+          '', '## Failed Executions']
+for row in failures:
+    if row['group'] == 'setup-errors-late' and row['run'] != 1:
+        continue
+    lines += ['', f"### {row['group']} / run-{row['run']:02d}", '', f"Evidence: `{row['file']}`", '',
+              '```json', json.dumps({key: value for key, value in row.items() if key != 'failures'},
+                                   ensure_ascii=False, indent=2), '```']
+    for item in row['failures']:
+        lines += ['', '```text', item['text'] or item['message'] or '', '```']
+(root / 'sampling-results.md').write_text('\n'.join(lines) + '\n')
+print(json.dumps(groups, indent=2))

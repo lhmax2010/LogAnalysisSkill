@@ -1,0 +1,111 @@
+{
+  "group": "regular-late",
+  "index": 40,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]",
+    "--basetemp=/tmp/skel-read-failure-3af2f4ek/regular-late/run-40",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/regular-late/run-40/pytest.xml"
+  ],
+  "started": "2026-11-03T08:46:52.834808+00:00",
+  "load_before": {
+    "loadavg": "5.65 4.38 7.63 5/3317 3580556",
+    "cpu_count": 20
+  },
+  "exit_code": 1,
+  "finished": "2026-11-03T08:47:22.841906+00:00",
+  "seconds": 30.006896043079905,
+  "load_after": {
+    "loadavg": "8.28 5.13 7.77 1/3301 3581484",
+    "cpu_count": 20
+  },
+  "load_samples": [
+    {
+      "seconds": 0.001,
+      "loadavg": "5.65 4.38 7.63 4/3318 3580557",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 2.001,
+      "loadavg": "5.65 4.38 7.63 4/3419 3581041",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 4.002,
+      "loadavg": "6.08 4.49 7.65 1/3429 3581091",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 6.002,
+      "loadavg": "6.08 4.49 7.65 1/3426 3581103",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 8.002,
+      "loadavg": "6.08 4.49 7.65 1/3422 3581105",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 10.003,
+      "loadavg": "6.55 4.62 7.67 1/3413 3581123",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 12.003,
+      "loadavg": "6.55 4.62 7.67 1/3413 3581139",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 14.004,
+      "loadavg": "6.99 4.74 7.69 1/3414 3581142",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 16.004,
+      "loadavg": "6.99 4.74 7.69 1/3412 3581198",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 18.004,
+      "loadavg": "6.99 4.74 7.69 1/3413 3581254",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 20.005,
+      "loadavg": "7.23 4.83 7.71 2/3420 3581303",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 22.005,
+      "loadavg": "7.23 4.83 7.71 1/3387 3581330",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 24.006,
+      "loadavg": "7.69 4.96 7.74 2/3316 3581375",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 26.006,
+      "loadavg": "7.69 4.96 7.74 1/3319 3581446",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 28.006,
+      "loadavg": "7.69 4.96 7.74 1/3304 3581451",
+      "cpu_count": 20
+    }
+  ],
+  "failures": [
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+      "kind": "failure",
+      "message": "assert 5.487124443054199 < 5",
+      "text": "tmp_path = PosixPath('/tmp/skel-read-failure-3af2f4ek/regular-late/run-40/test_real_cli_browser_submit_b0')\nmode = 'late-build'\n\n    @pytest.mark.integration\n    @pytest.mark.parametrize(\n        \"mode\",\n        [\"build\", \"error-created\", \"error-no-build\", \"no-navigation\", \"delayed-build\", \"late-build\"],\n    )\n    def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):\n        command, env = node_command()\n        playwright, chromium = browser_paths()\n        # Reuse state fixture only, not its fake-agent monkeypatch or CLI shortcuts.\n        with pytest.MonkeyPatch.context() as mp:\n            campaign = Campaign(tmp_path, mp)\n        campaign.project[\"configuration_path\"] = (\n            \"root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER\"\n        )\n        campaign.data[\"qb\"][\"browser\"].update(\n            node=str(ROOT / \"tests/fixtures/p5q_node_entry.py\"),\n            playwright_module=playwright,\n            chromium=chromium,\n        )\n        campaign.save()\n        evidence = Path(os.environ.get(\"P5Q_C5A_EVIDENCE\", str(tmp_path / \"evidence\"))) / mode\n        evidence.mkdir(parents=True, exist_ok=True)\n        config, received = tmp_path / \"local-server.json\", evidence / \"server-requests.json\"\n        env.update(P5Q_TEST_SERVER=str(config), P5Q_TEST_NODE=json.dumps(command))\n        server = subprocess.Popen(\n            [*command, str(ROOT / \"tests/node/p5q_fake_quickbuild.mjs\"), str(config), str(received)],\n            stdin=subprocess.PIPE,\n            stdout=subprocess.PIPE,\n            stderr=subprocess.PIPE,\n            text=True,\n            env=env,\n        )\n        commands = []\n    \n        def server_command(value):\n            server.stdin.write(json.dumps(value) + \"\\n\")\n            server.stdin.flush()\n            assert line(server) == {\"ok\": True}\n    \n        def cli(name, *args, expected_exit=0):\n            env[\"P5Q_TEST_AGENT_LOG\"] = str(evidence / f\"agent-{len(commands)}.json\")\n            argv = [\n                sys.executable,\n                str(ROOT / \"tests/fixtures/p5q_cli_clock.py\"),\n                name,\n                *args,\n                \"--state-db\",\n                str(tmp_path / \"state.db\"),\n                \"--state-root\",\n                str(tmp_path / \"state\"),\n                \"--config\",\n                str(campaign.config),\n            ]\n            run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n            ended = time.time()\n            agent_log = Path(env[\"P5Q_TEST_AGENT_LOG\"])\n            close_seconds = None\n            if agent_log.exists():\n                lifecycle = json.loads(agent_log.read_text())\n                close_started = lifecycle[\"close_started_unix_ms\"]\n                if close_started is not None:\n                    close_seconds = ended - close_started / 1000\n            commands.append(\n                {\n                    \"argv\": argv,\n                    \"exit\": run.returncode,\n                    \"stdout\": run.stdout,\n                    \"stderr\": run.stderr,\n                    \"close_to_cli_exit_seconds\": close_seconds,\n                }\n            )\n            (evidence / \"commands.json\").write_text(\n                json.dumps(commands, ensure_ascii=False, indent=2) + \"\\n\"\n            )\n            server_command({})\n            if close_seconds is not None:\n                assert 0 <= close_seconds < 5\n            elif name == \"qb-result-fetch\" or not commands[:-1]:\n                pytest.fail(\"missing close timing for browser invocation\")\n            assert run.returncode == expected_exit, run.stdout + run.stderr\n            return json.loads(run.stdout)[0]\n    \n        try:\n            assert line(server) == {\"ready\": True}\n            server_command({\"mode\": mode})\n>           triggered = cli(\n                \"qb-trigger\",\n                \"--verification-ids\",\n                \"u1-v0,u1-v1,u1-v2\",\n                expected_exit=5 if mode in {\"error-no-build\", \"late-build\"} else 0,\n            )\n\ntests/unit/test_p5q_c5a_integration.py:107: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nname = 'qb-trigger', expected_exit = 5\nargs = ('--verification-ids', 'u1-v0,u1-v1,u1-v2')\nargv = ['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py', 'qb-trigger', '--verification-ids', 'u1-v0,u1-v1,u1-v2', '--state-db', ...]\nrun = CompletedProcess(args=['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain...577d2979a51093d5\", \"status\": \"QB_REQUESTED\"}]\\n', stderr='\u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\\n')\n\n    def cli(name, *args, expected_exit=0):\n        env[\"P5Q_TEST_AGENT_LOG\"] = str(evidence / f\"agent-{len(commands)}.json\")\n        argv = [\n            sys.executable,\n            str(ROOT / \"tests/fixtures/p5q_cli_clock.py\"),\n            name,\n            *args,\n            \"--state-db\",\n            str(tmp_path / \"state.db\"),\n            \"--state-root\",\n            str(tmp_path / \"state\"),\n            \"--config\",\n            str(campaign.config),\n        ]\n        run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n        ended = time.time()\n        agent_log = Path(env[\"P5Q_TEST_AGENT_LOG\"])\n        close_seconds = None\n        if agent_log.exists():\n            lifecycle = json.loads(agent_log.read_text())\n            close_started = lifecycle[\"close_started_unix_ms\"]\n            if close_started is not None:\n                close_seconds = ended - close_started / 1000\n        commands.append(\n            {\n                \"argv\": argv,\n                \"exit\": run.returncode,\n                \"stdout\": run.stdout,\n                \"stderr\": run.stderr,\n                \"close_to_cli_exit_seconds\": close_seconds,\n            }\n        )\n        (evidence / \"commands.json\").write_text(\n            json.dumps(commands, ensure_ascii=False, indent=2) + \"\\n\"\n        )\n        server_command({})\n        if close_seconds is not None:\n>           assert 0 <= close_seconds < 5\nE           assert 5.487124443054199 < 5\n\ntests/unit/test_p5q_c5a_integration.py:98: AssertionError"
+    }
+  ],
+  "agent_stopped": [],
+  "harness_failures": []
+}

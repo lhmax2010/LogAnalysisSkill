@@ -1,0 +1,723 @@
+{
+  "groups": {
+    "regular-late": {
+      "runs": 50,
+      "passed": 47,
+      "failed": 3,
+      "fetch_continue_failed_samples": 0,
+      "skipped": 0,
+      "load_1min_min": 1.17,
+      "load_1min_max": 40.77,
+      "seconds": 1813.5550842928933,
+      "stop_category_counts": {
+        "NO_AGENT_STOPPED": 2,
+        "UNKNOWN": 1
+      }
+    },
+    "regular-c8": {
+      "runs": 20,
+      "passed": 19,
+      "failed": 1,
+      "fetch_continue_failed_samples": 1,
+      "skipped": 0,
+      "load_1min_min": 0.47,
+      "load_1min_max": 14.14,
+      "seconds": 3604.675120798871,
+      "stop_category_counts": {
+        "FETCH_CONTINUE_FAILED": 1
+      }
+    },
+    "stress-late": {
+      "runs": 0,
+      "passed": 0,
+      "failed": 0,
+      "fetch_continue_failed_samples": 0,
+      "skipped": 0,
+      "load_1min_min": null,
+      "load_1min_max": null,
+      "seconds": 0,
+      "stop_category_counts": {}
+    },
+    "setup-errors-late": {
+      "runs": 27,
+      "passed": 0,
+      "failed": 27,
+      "fetch_continue_failed_samples": 0,
+      "skipped": 0,
+      "load_1min_min": 8.83,
+      "load_1min_max": 14.57,
+      "seconds": 56.03984810283873,
+      "stop_category_counts": {
+        "NO_AGENT_STOPPED": 27
+      }
+    }
+  },
+  "failures": [
+    {
+      "group": "regular-late",
+      "run": 40,
+      "exit_code": 1,
+      "file": "regular-late/run-40/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "failure",
+          "message": "assert 5.487124443054199 < 5",
+          "text": "tmp_path = PosixPath('/tmp/skel-read-failure-3af2f4ek/regular-late/run-40/test_real_cli_browser_submit_b0')\nmode = 'late-build'\n\n    @pytest.mark.integration\n    @pytest.mark.parametrize(\n        \"mode\",\n        [\"build\", \"error-created\", \"error-no-build\", \"no-navigation\", \"delayed-build\", \"late-build\"],\n    )\n    def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):\n        command, env = node_command()\n        playwright, chromium = browser_paths()\n        # Reuse state fixture only, not its fake-agent monkeypatch or CLI shortcuts.\n        with pytest.MonkeyPatch.context() as mp:\n            campaign = Campaign(tmp_path, mp)\n        campaign.project[\"configuration_path\"] = (\n            \"root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER\"\n        )\n        campaign.data[\"qb\"][\"browser\"].update(\n            node=str(ROOT / \"tests/fixtures/p5q_node_entry.py\"),\n            playwright_module=playwright,\n            chromium=chromium,\n        )\n        campaign.save()\n        evidence = Path(os.environ.get(\"P5Q_C5A_EVIDENCE\", str(tmp_path / \"evidence\"))) / mode\n        evidence.mkdir(parents=True, exist_ok=True)\n        config, received = tmp_path / \"local-server.json\", evidence / \"server-requests.json\"\n        env.update(P5Q_TEST_SERVER=str(config), P5Q_TEST_NODE=json.dumps(command))\n        server = subprocess.Popen(\n            [*command, str(ROOT / \"tests/node/p5q_fake_quickbuild.mjs\"), str(config), str(received)],\n            stdin=subprocess.PIPE,\n            stdout=subprocess.PIPE,\n            stderr=subprocess.PIPE,\n            text=True,\n            env=env,\n        )\n        commands = []\n    \n        def server_command(value):\n            server.stdin.write(json.dumps(value) + \"\\n\")\n            server.stdin.flush()\n            assert line(server) == {\"ok\": True}\n    \n        def cli(name, *args, expected_exit=0):\n            env[\"P5Q_TEST_AGENT_LOG\"] = str(evidence / f\"agent-{len(commands)}.json\")\n            argv = [\n                sys.executable,\n                str(ROOT / \"tests/fixtures/p5q_cli_clock.py\"),\n                name,\n                *args,\n                \"--state-db\",\n                str(tmp_path / \"state.db\"),\n                \"--state-root\",\n                str(tmp_path / \"state\"),\n                \"--config\",\n                str(campaign.config),\n            ]\n            run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n            ended = time.time()\n            agent_log = Path(env[\"P5Q_TEST_AGENT_LOG\"])\n            close_seconds = None\n            if agent_log.exists():\n                lifecycle = json.loads(agent_log.read_text())\n                close_started = lifecycle[\"close_started_unix_ms\"]\n                if close_started is not None:\n                    close_seconds = ended - close_started / 1000\n            commands.append(\n                {\n                    \"argv\": argv,\n                    \"exit\": run.returncode,\n                    \"stdout\": run.stdout,\n                    \"stderr\": run.stderr,\n                    \"close_to_cli_exit_seconds\": close_seconds,\n                }\n            )\n            (evidence / \"commands.json\").write_text(\n                json.dumps(commands, ensure_ascii=False, indent=2) + \"\\n\"\n            )\n            server_command({})\n            if close_seconds is not None:\n                assert 0 <= close_seconds < 5\n            elif name == \"qb-result-fetch\" or not commands[:-1]:\n                pytest.fail(\"missing close timing for browser invocation\")\n            assert run.returncode == expected_exit, run.stdout + run.stderr\n            return json.loads(run.stdout)[0]\n    \n        try:\n            assert line(server) == {\"ready\": True}\n            server_command({\"mode\": mode})\n>           triggered = cli(\n                \"qb-trigger\",\n                \"--verification-ids\",\n                \"u1-v0,u1-v1,u1-v2\",\n                expected_exit=5 if mode in {\"error-no-build\", \"late-build\"} else 0,\n            )\n\ntests/unit/test_p5q_c5a_integration.py:107: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nname = 'qb-trigger', expected_exit = 5\nargs = ('--verification-ids', 'u1-v0,u1-v1,u1-v2')\nargv = ['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py', 'qb-trigger', '--verification-ids', 'u1-v0,u1-v1,u1-v2', '--state-db', ...]\nrun = CompletedProcess(args=['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain...577d2979a51093d5\", \"status\": \"QB_REQUESTED\"}]\\n', stderr='已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\\n')\n\n    def cli(name, *args, expected_exit=0):\n        env[\"P5Q_TEST_AGENT_LOG\"] = str(evidence / f\"agent-{len(commands)}.json\")\n        argv = [\n            sys.executable,\n            str(ROOT / \"tests/fixtures/p5q_cli_clock.py\"),\n            name,\n            *args,\n            \"--state-db\",\n            str(tmp_path / \"state.db\"),\n            \"--state-root\",\n            str(tmp_path / \"state\"),\n            \"--config\",\n            str(campaign.config),\n        ]\n        run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n        ended = time.time()\n        agent_log = Path(env[\"P5Q_TEST_AGENT_LOG\"])\n        close_seconds = None\n        if agent_log.exists():\n            lifecycle = json.loads(agent_log.read_text())\n            close_started = lifecycle[\"close_started_unix_ms\"]\n            if close_started is not None:\n                close_seconds = ended - close_started / 1000\n        commands.append(\n            {\n                \"argv\": argv,\n                \"exit\": run.returncode,\n                \"stdout\": run.stdout,\n                \"stderr\": run.stderr,\n                \"close_to_cli_exit_seconds\": close_seconds,\n            }\n        )\n        (evidence / \"commands.json\").write_text(\n            json.dumps(commands, ensure_ascii=False, indent=2) + \"\\n\"\n        )\n        server_command({})\n        if close_seconds is not None:\n>           assert 0 <= close_seconds < 5\nE           assert 5.487124443054199 < 5\n\ntests/unit/test_p5q_c5a_integration.py:98: AssertionError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "regular-late",
+      "run": 41,
+      "exit_code": 1,
+      "file": "regular-late/run-41/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "failure",
+          "message": "assert 13.619728326797485 < 5",
+          "text": "tmp_path = PosixPath('/tmp/skel-read-failure-3af2f4ek/regular-late/run-41/test_real_cli_browser_submit_b0')\nmode = 'late-build'\n\n    @pytest.mark.integration\n    @pytest.mark.parametrize(\n        \"mode\",\n        [\"build\", \"error-created\", \"error-no-build\", \"no-navigation\", \"delayed-build\", \"late-build\"],\n    )\n    def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):\n        command, env = node_command()\n        playwright, chromium = browser_paths()\n        # Reuse state fixture only, not its fake-agent monkeypatch or CLI shortcuts.\n        with pytest.MonkeyPatch.context() as mp:\n            campaign = Campaign(tmp_path, mp)\n        campaign.project[\"configuration_path\"] = (\n            \"root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER\"\n        )\n        campaign.data[\"qb\"][\"browser\"].update(\n            node=str(ROOT / \"tests/fixtures/p5q_node_entry.py\"),\n            playwright_module=playwright,\n            chromium=chromium,\n        )\n        campaign.save()\n        evidence = Path(os.environ.get(\"P5Q_C5A_EVIDENCE\", str(tmp_path / \"evidence\"))) / mode\n        evidence.mkdir(parents=True, exist_ok=True)\n        config, received = tmp_path / \"local-server.json\", evidence / \"server-requests.json\"\n        env.update(P5Q_TEST_SERVER=str(config), P5Q_TEST_NODE=json.dumps(command))\n        server = subprocess.Popen(\n            [*command, str(ROOT / \"tests/node/p5q_fake_quickbuild.mjs\"), str(config), str(received)],\n            stdin=subprocess.PIPE,\n            stdout=subprocess.PIPE,\n            stderr=subprocess.PIPE,\n            text=True,\n            env=env,\n        )\n        commands = []\n    \n        def server_command(value):\n            server.stdin.write(json.dumps(value) + \"\\n\")\n            server.stdin.flush()\n            assert line(server) == {\"ok\": True}\n    \n        def cli(name, *args, expected_exit=0):\n            env[\"P5Q_TEST_AGENT_LOG\"] = str(evidence / f\"agent-{len(commands)}.json\")\n            argv = [\n                sys.executable,\n                str(ROOT / \"tests/fixtures/p5q_cli_clock.py\"),\n                name,\n                *args,\n                \"--state-db\",\n                str(tmp_path / \"state.db\"),\n                \"--state-root\",\n                str(tmp_path / \"state\"),\n                \"--config\",\n                str(campaign.config),\n            ]\n            run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n            ended = time.time()\n            agent_log = Path(env[\"P5Q_TEST_AGENT_LOG\"])\n            close_seconds = None\n            if agent_log.exists():\n                lifecycle = json.loads(agent_log.read_text())\n                close_started = lifecycle[\"close_started_unix_ms\"]\n                if close_started is not None:\n                    close_seconds = ended - close_started / 1000\n            commands.append(\n                {\n                    \"argv\": argv,\n                    \"exit\": run.returncode,\n                    \"stdout\": run.stdout,\n                    \"stderr\": run.stderr,\n                    \"close_to_cli_exit_seconds\": close_seconds,\n                }\n            )\n            (evidence / \"commands.json\").write_text(\n                json.dumps(commands, ensure_ascii=False, indent=2) + \"\\n\"\n            )\n            server_command({})\n            if close_seconds is not None:\n                assert 0 <= close_seconds < 5\n            elif name == \"qb-result-fetch\" or not commands[:-1]:\n                pytest.fail(\"missing close timing for browser invocation\")\n            assert run.returncode == expected_exit, run.stdout + run.stderr\n            return json.loads(run.stdout)[0]\n    \n        try:\n            assert line(server) == {\"ready\": True}\n            server_command({\"mode\": mode})\n>           triggered = cli(\n                \"qb-trigger\",\n                \"--verification-ids\",\n                \"u1-v0,u1-v1,u1-v2\",\n                expected_exit=5 if mode in {\"error-no-build\", \"late-build\"} else 0,\n            )\n\ntests/unit/test_p5q_c5a_integration.py:107: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nname = 'qb-trigger', expected_exit = 5\nargs = ('--verification-ids', 'u1-v0,u1-v1,u1-v2')\nargv = ['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py', 'qb-trigger', '--verification-ids', 'u1-v0,u1-v1,u1-v2', '--state-db', ...]\nrun = CompletedProcess(args=['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain..._FAILED\"}]\\n', stderr='已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\\nQB_AGENT_STOPPED category=UNKNOWN\\n')\n\n    def cli(name, *args, expected_exit=0):\n        env[\"P5Q_TEST_AGENT_LOG\"] = str(evidence / f\"agent-{len(commands)}.json\")\n        argv = [\n            sys.executable,\n            str(ROOT / \"tests/fixtures/p5q_cli_clock.py\"),\n            name,\n            *args,\n            \"--state-db\",\n            str(tmp_path / \"state.db\"),\n            \"--state-root\",\n            str(tmp_path / \"state\"),\n            \"--config\",\n            str(campaign.config),\n        ]\n        run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n        ended = time.time()\n        agent_log = Path(env[\"P5Q_TEST_AGENT_LOG\"])\n        close_seconds = None\n        if agent_log.exists():\n            lifecycle = json.loads(agent_log.read_text())\n            close_started = lifecycle[\"close_started_unix_ms\"]\n            if close_started is not None:\n                close_seconds = ended - close_started / 1000\n        commands.append(\n            {\n                \"argv\": argv,\n                \"exit\": run.returncode,\n                \"stdout\": run.stdout,\n                \"stderr\": run.stderr,\n                \"close_to_cli_exit_seconds\": close_seconds,\n            }\n        )\n        (evidence / \"commands.json\").write_text(\n            json.dumps(commands, ensure_ascii=False, indent=2) + \"\\n\"\n        )\n        server_command({})\n        if close_seconds is not None:\n>           assert 0 <= close_seconds < 5\nE           assert 13.619728326797485 < 5\n\ntests/unit/test_p5q_c5a_integration.py:98: AssertionError"
+        }
+      ],
+      "agent_stopped": [
+        {
+          "file": "c5a/late-build/agent-0.json",
+          "facts": {
+            "action": "AGENT_STOPPED",
+            "failure_category": "UNKNOWN"
+          }
+        }
+      ],
+      "harness_failures": []
+    },
+    {
+      "group": "regular-late",
+      "run": 42,
+      "exit_code": 1,
+      "file": "regular-late/run-42/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "failure",
+          "message": "subprocess.TimeoutExpired: Command '['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py', 'qb-trigger', '--verification-ids', 'u1-v0,u1-v1,u1-v2', '--state-db', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/state.db', '--state-root', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/state', '--config', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/config.yaml']' timed out after 150 seconds",
+          "text": "tmp_path = PosixPath('/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0')\nmode = 'late-build'\n\n    @pytest.mark.integration\n    @pytest.mark.parametrize(\n        \"mode\",\n        [\"build\", \"error-created\", \"error-no-build\", \"no-navigation\", \"delayed-build\", \"late-build\"],\n    )\n    def test_real_cli_browser_submit_bind_pending_pass(tmp_path, mode):\n        command, env = node_command()\n        playwright, chromium = browser_paths()\n        # Reuse state fixture only, not its fake-agent monkeypatch or CLI shortcuts.\n        with pytest.MonkeyPatch.context() as mp:\n            campaign = Campaign(tmp_path, mp)\n        campaign.project[\"configuration_path\"] = (\n            \"root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER\"\n        )\n        campaign.data[\"qb\"][\"browser\"].update(\n            node=str(ROOT / \"tests/fixtures/p5q_node_entry.py\"),\n            playwright_module=playwright,\n            chromium=chromium,\n        )\n        campaign.save()\n        evidence = Path(os.environ.get(\"P5Q_C5A_EVIDENCE\", str(tmp_path / \"evidence\"))) / mode\n        evidence.mkdir(parents=True, exist_ok=True)\n        config, received = tmp_path / \"local-server.json\", evidence / \"server-requests.json\"\n        env.update(P5Q_TEST_SERVER=str(config), P5Q_TEST_NODE=json.dumps(command))\n        server = subprocess.Popen(\n            [*command, str(ROOT / \"tests/node/p5q_fake_quickbuild.mjs\"), str(config), str(received)],\n            stdin=subprocess.PIPE,\n            stdout=subprocess.PIPE,\n            stderr=subprocess.PIPE,\n            text=True,\n            env=env,\n        )\n        commands = []\n    \n        def server_command(value):\n            server.stdin.write(json.dumps(value) + \"\\n\")\n            server.stdin.flush()\n            assert line(server) == {\"ok\": True}\n    \n        def cli(name, *args, expected_exit=0):\n            env[\"P5Q_TEST_AGENT_LOG\"] = str(evidence / f\"agent-{len(commands)}.json\")\n            argv = [\n                sys.executable,\n                str(ROOT / \"tests/fixtures/p5q_cli_clock.py\"),\n                name,\n                *args,\n                \"--state-db\",\n                str(tmp_path / \"state.db\"),\n                \"--state-root\",\n                str(tmp_path / \"state\"),\n                \"--config\",\n                str(campaign.config),\n            ]\n            run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n            ended = time.time()\n            agent_log = Path(env[\"P5Q_TEST_AGENT_LOG\"])\n            close_seconds = None\n            if agent_log.exists():\n                lifecycle = json.loads(agent_log.read_text())\n                close_started = lifecycle[\"close_started_unix_ms\"]\n                if close_started is not None:\n                    close_seconds = ended - close_started / 1000\n            commands.append(\n                {\n                    \"argv\": argv,\n                    \"exit\": run.returncode,\n                    \"stdout\": run.stdout,\n                    \"stderr\": run.stderr,\n                    \"close_to_cli_exit_seconds\": close_seconds,\n                }\n            )\n            (evidence / \"commands.json\").write_text(\n                json.dumps(commands, ensure_ascii=False, indent=2) + \"\\n\"\n            )\n            server_command({})\n            if close_seconds is not None:\n                assert 0 <= close_seconds < 5\n            elif name == \"qb-result-fetch\" or not commands[:-1]:\n                pytest.fail(\"missing close timing for browser invocation\")\n            assert run.returncode == expected_exit, run.stdout + run.stderr\n            return json.loads(run.stdout)[0]\n    \n        try:\n            assert line(server) == {\"ready\": True}\n            server_command({\"mode\": mode})\n>           triggered = cli(\n                \"qb-trigger\",\n                \"--verification-ids\",\n                \"u1-v0,u1-v1,u1-v2\",\n                expected_exit=5 if mode in {\"error-no-build\", \"late-build\"} else 0,\n            )\n\ntests/unit/test_p5q_c5a_integration.py:107: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/unit/test_p5q_c5a_integration.py:75: in cli\n    run = subprocess.run(argv, cwd=ROOT, env=env, capture_output=True, text=True, timeout=150)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/subprocess.py:550: in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/subprocess.py:1209: in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n/usr/lib/python3.12/subprocess.py:2116: in _communicate\n    self._check_timeout(endtime, orig_timeout, stdout, stderr)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = <Popen: returncode: -9 args: ['/home/linhao/Toolchain/development/LogAnalysi...>\nendtime = 585026.88944954, orig_timeout = 150, stdout_seq = [], stderr_seq = []\nskip_check_and_raise = False\n\n    def _check_timeout(self, endtime, orig_timeout, stdout_seq, stderr_seq,\n                       skip_check_and_raise=False):\n        \"\"\"Convenience for checking if a timeout has expired.\"\"\"\n        if endtime is None:\n            return\n        if skip_check_and_raise or _time() > endtime:\n>           raise TimeoutExpired(\n                    self.args, orig_timeout,\n                    output=b''.join(stdout_seq) if stdout_seq else None,\n                    stderr=b''.join(stderr_seq) if stderr_seq else None)\nE           subprocess.TimeoutExpired: Command '['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py', 'qb-trigger', '--verification-ids', 'u1-v0,u1-v1,u1-v2', '--state-db', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/state.db', '--state-root', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/state', '--config', '/tmp/skel-read-failure-3af2f4ek/regular-late/run-42/test_real_cli_browser_submit_b0/config.yaml']' timed out after 150 seconds\n\n/usr/lib/python3.12/subprocess.py:1253: TimeoutExpired"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "regular-c8",
+      "run": 15,
+      "exit_code": 1,
+      "file": "regular-c8/run-15/command.json",
+      "failures": [
+        {
+          "name": "test_post_submit_read_signatures",
+          "kind": "failure",
+          "message": "AssertionError: CASE_COMPLETE control\n  CASE_COMPLETE idle-script-navigation\n  CASE_COMPLETE racing-script-navigation\n  CASE_COMPLETE racing-meta-refresh\n  CASE_COMPLETE racing-wicket-navigation\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\n  QB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\n  INVESTIGATION_STOPPED AssertionError\n  \nassert 1 == 0\n +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\\nQB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\\nINVESTIGATION_STOPPED AssertionError\\n').returncode",
+          "text": "tmp_path = PosixPath('/tmp/skel-read-failure-3af2f4ek/regular-c8/run-15/test_post_submit_read_signatur0')\n\n    @pytest.mark.integration\n    def test_post_submit_read_signatures(tmp_path: Path) -> None:\n        node, env = node_command()\n        paths = browser_paths()\n        output = Path(os.environ.get(\"P5Q_C8_INVESTIGATION\", str(tmp_path)))\n        output.mkdir(parents=True, exist_ok=True)\n        command = [*node, str(ROOT / \"tests/node/p5q_c8_investigation.mjs\"), *paths, str(output)]\n        result = subprocess.run(command, env=env, text=True, capture_output=True, timeout=600)\n        (output / \"node.stdout.txt\").write_text(result.stdout)\n        (output / \"node.stderr.txt\").write_text(result.stderr)\n>       assert result.returncode == 0, result.stdout + result.stderr\nE       AssertionError: CASE_COMPLETE control\nE         CASE_COMPLETE idle-script-navigation\nE         CASE_COMPLETE racing-script-navigation\nE         CASE_COMPLETE racing-meta-refresh\nE         CASE_COMPLETE racing-wicket-navigation\nE         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nE         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nE         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nE         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nE         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nE         已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nE         QB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\nE         INVESTIGATION_STOPPED AssertionError\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\\nQB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\\nINVESTIGATION_STOPPED AssertionError\\n').returncode\n\ntests/unit/test_p5q_c8_investigation.py:26: AssertionError"
+        }
+      ],
+      "agent_stopped": [
+        {
+          "file": "c8/injected-missing-root-membership.json",
+          "facts": {
+            "action": "AGENT_STOPPED",
+            "failure_category": "FETCH_CONTINUE_FAILED"
+          }
+        }
+      ],
+      "harness_failures": [
+        {
+          "file": "c8/injected-missing-root-membership.json",
+          "case": "injected-missing-root-membership",
+          "facts": {
+            "class_name": "TargetClosedError",
+            "agent_code": null,
+            "category": "OTHER_FRAMEWORK_ERROR"
+          }
+        }
+      ]
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 1,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-01/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-01'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-01')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-01'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 2,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-02/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-02'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-02')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-02'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 3,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-03/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-03'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-03')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-03'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 4,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-04/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-04'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-04')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-04'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 5,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-05/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-05'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-05')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-05'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 6,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-06/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-06'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-06')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-06'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 7,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-07/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-07'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-07')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-07'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 8,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-08/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-08'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-08')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-08'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 9,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-09/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-09'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-09')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-09'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 10,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-10/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-10'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-10')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-10'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 11,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-11/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-11'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-11')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-11'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 12,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-12/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-12'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-12')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-12'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 13,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-13/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-13'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-13')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-13'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 14,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-14/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-14'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-14')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-14'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 15,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-15/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-15'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-15')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-15'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 16,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-16/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-16'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-16')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-16'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 17,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-17/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-17'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-17')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-17'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 18,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-18/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-18'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-18')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-18'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 19,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-19/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-19'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-19')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-19'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 20,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-20/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-20'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-20')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-20'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 21,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-21/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-21'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-21')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-21'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 22,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-22/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-22'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-22')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-22'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 23,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-23/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-23'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-23')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-23'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 24,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-24/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-24'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-24')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-24'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 25,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-25/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-25'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-25')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-25'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 26,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-26/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-26'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-26')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-26'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    },
+    {
+      "group": "setup-errors-late",
+      "run": 27,
+      "exit_code": 1,
+      "file": "setup-errors-late/run-27/command.json",
+      "failures": [
+        {
+          "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+          "kind": "error",
+          "message": "failed on setup with \"FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-27'\"",
+          "text": "self = PosixPath('/tmp/skel-read-failure-o4ll2wot/regular-late/run-27')\nmode = 448, parents = False, exist_ok = False\n\n    def mkdir(self, mode=0o777, parents=False, exist_ok=False):\n        \"\"\"\n        Create a new directory at this given path.\n        \"\"\"\n        try:\n>           os.mkdir(self, mode)\nE           FileNotFoundError: [Errno 2] No such file or directory: '/tmp/skel-read-failure-o4ll2wot/regular-late/run-27'\n\n/usr/lib/python3.12/pathlib.py:1313: FileNotFoundError"
+        }
+      ],
+      "agent_stopped": [],
+      "harness_failures": []
+    }
+  ],
+  "c8_scenario_distributions": {
+    "configuration-connection-abort": {
+      "runs": 19,
+      "harness_failure": 0,
+      "result:QB_BROWSER_UNAVAILABLE": 19,
+      "read_category:NETWORK_RESPONSE_FAILED": 19
+    },
+    "configuration-redirect-307": {
+      "runs": 19,
+      "harness_failure": 0,
+      "result:QB_BROWSER_UNAVAILABLE": 19,
+      "read_category:BLOCKED_BY_CLIENT": 19
+    },
+    "configuration-redirect-signin": {
+      "runs": 19,
+      "harness_failure": 0,
+      "result:QB_BROWSER_UNAVAILABLE": 19,
+      "read_category:BLOCKED_BY_CLIENT": 19
+    },
+    "control": {
+      "runs": 20,
+      "harness_failure": 0,
+      "result:ok": 20
+    },
+    "delay-only-control": {
+      "runs": 19,
+      "harness_failure": 0,
+      "result:ok": 19
+    },
+    "idle-script-navigation": {
+      "runs": 20,
+      "harness_failure": 0,
+      "result:ok": 20
+    },
+    "injected-competing-navigation": {
+      "runs": 19,
+      "harness_failure": 0,
+      "result:QB_BROWSER_UNAVAILABLE": 19,
+      "read_category:NAVIGATION_INTERRUPTED": 19
+    },
+    "injected-missing-root-membership": {
+      "runs": 20,
+      "harness_failure": 1,
+      "result:QB_BROWSER_UNAVAILABLE": 19,
+      "read_category:BLOCKED_BY_CLIENT": 19,
+      "result:None": 1
+    },
+    "racing-meta-refresh": {
+      "runs": 20,
+      "harness_failure": 0,
+      "result:QB_TRUSTED_CONTEXT_UNAVAILABLE": 20,
+      "read_category:OTHER_FRAMEWORK_ERROR": 20
+    },
+    "racing-script-navigation": {
+      "runs": 20,
+      "harness_failure": 0,
+      "result:QB_TRUSTED_CONTEXT_UNAVAILABLE": 20,
+      "read_category:OTHER_FRAMEWORK_ERROR": 20
+    },
+    "racing-wicket-navigation": {
+      "runs": 20,
+      "harness_failure": 0,
+      "result:QB_TRUSTED_CONTEXT_UNAVAILABLE": 20,
+      "read_category:OTHER_FRAMEWORK_ERROR": 20
+    }
+  },
+  "observations": {
+    "runs": 10,
+    "failed_runs": 0,
+    "scenarios": 30,
+    "cdp_errors": [],
+    "stops": [
+      {
+        "file": "instrumented/run-01/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      },
+      {
+        "file": "instrumented/run-02/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      },
+      {
+        "file": "instrumented/run-03/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      },
+      {
+        "file": "instrumented/run-04/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      },
+      {
+        "file": "instrumented/run-05/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      },
+      {
+        "file": "instrumented/run-06/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      },
+      {
+        "file": "instrumented/run-07/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      },
+      {
+        "file": "instrumented/run-08/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      },
+      {
+        "file": "instrumented/run-09/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      },
+      {
+        "file": "instrumented/run-10/configuration-redirect-307.json",
+        "facts": {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      }
+    ]
+  }
+}

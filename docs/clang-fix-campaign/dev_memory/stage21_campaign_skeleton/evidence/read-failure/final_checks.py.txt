@@ -1,0 +1,34 @@
+"""Record final documentation checks; original test logs keep their whitespace."""
+import datetime
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+dest = Path(__file__).resolve().parent
+curated = ['docs/clang-fix-campaign/dev_memory/INDEX.md',
+           'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md',
+           str(dest.relative_to(Path.cwd()) / 'README.md')]
+commands = [
+    [sys.executable, 'docs/clang-fix-campaign/tools/check_design_doc.py',
+     'docs/clang-fix-campaign/design.md'],
+    ['git', 'diff', '--cached', '--check', '--', *curated],
+    ['git', 'diff', '--cached', '--check'],
+]
+results = []
+for argv in commands:
+    result = subprocess.run(argv, capture_output=True, text=True)
+    results.append(dict(argv=argv, exit_code=result.returncode, stdout=result.stdout,
+                        stderr=result.stderr))
+paths = subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z'], text=True).split('\0')
+paths = [path for path in paths if path]
+assert all(path in curated or path.startswith(str(dest.relative_to(Path.cwd())) + '/') for path in paths)
+data = dict(utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), checks=results,
+            staged_file_count=len(paths), only_task_documents_and_evidence=True,
+            binary_state_files=[path for path in paths if path.endswith(('.db', '.sqlite', '.pyc'))])
+(dest / 'final-checks.json').write_text(json.dumps(data, indent=2) + '\n')
+print(json.dumps(dict(checks=[dict(argv=row['argv'], exit=row['exit_code'],
+    output_lines=len(row['stdout'].splitlines())) for row in results],
+    staged_file_count=len(paths), binary_state_files=data['binary_state_files']), indent=2))
+assert results[0]['exit_code'] == results[1]['exit_code'] == 0
+assert not data['binary_state_files']

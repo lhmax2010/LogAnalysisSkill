@@ -1,0 +1,48 @@
+"""Extract per-failure command and server sequence without payloads."""
+import json
+from pathlib import Path
+
+root = Path(__file__).resolve().parent
+facts = []
+for path in sorted(root.glob('regular-*/run-*/command.json')):
+    meta = json.loads(path.read_text())
+    if not meta['exit_code']:
+        continue
+    folder = path.parent
+    item = dict(run=str(folder.relative_to(root)), seconds=meta['seconds'],
+                assertions=[failure['message'] for failure in meta['failures']],
+                agents=[], commands=[], server=None, harness=meta['harness_failures'])
+    for agent_path in sorted(folder.glob('c5a/late-build/agent-*.json')):
+        agent = json.loads(agent_path.read_text())
+        commands = []
+        for entry in agent['transcript']:
+            request, reply = entry['input'], entry['output']
+            commands.append(dict(command=request.get('command'), path=request.get('path'),
+                response={key: reply[key] for key in ('ok', 'error', 'failure_category', 'landed',
+                          'observed', 'released', 'status') if key in reply}))
+        begin, end = agent.get('close_started_unix_ms'), agent.get('close_finished_unix_ms')
+        item['agents'].append(dict(file=str(agent_path.relative_to(root)), commands=commands,
+            close_seconds=(end - begin) / 1000 if begin is not None and end is not None else None,
+            trace_tail=agent['trace'][-12:]))
+    command_path = folder / 'c5a/late-build/commands.json'
+    if command_path.exists():
+        for command in json.loads(command_path.read_text()):
+            item['commands'].append(dict(exit=command['exit'], stdout=command['stdout'],
+                close_to_cli_exit_seconds=command['close_to_cli_exit_seconds'],
+                stderr_categories=[line for line in command['stderr'].splitlines()
+                                   if line.startswith('QB_AGENT_STOPPED')]))
+    server_path = folder / 'c5a/late-build/server-requests.json'
+    if server_path.exists():
+        server = json.loads(server_path.read_text())
+        item['server'] = dict(submissions=len(server['submissions']),
+            received=[{key: row[key] for key in ('method', 'path', 'status')} for row in server['received']])
+    for scenario_path in sorted(folder.glob('c8/*.json')):
+        scenario = json.loads(scenario_path.read_text())
+        if not isinstance(scenario, dict) or not scenario.get('harness_failure'):
+            continue
+        item['scenario'] = {key: scenario.get(key) for key in ('case', 'submit', 'reads',
+            'root_before', 'root_after_submit', 'root_after_read', 'response', 'runtime_failure',
+            'harness_failure', 'observations', 'frame_events', 'trace', 'server_requests')}
+    facts.append(item)
+(root / 'failure-facts.json').write_text(json.dumps(facts, ensure_ascii=False, indent=2) + '\n')
+print(json.dumps([dict(run=row['run'], assertions=row['assertions']) for row in facts], indent=2))

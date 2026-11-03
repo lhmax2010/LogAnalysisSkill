@@ -1,0 +1,17 @@
+{
+  "group": "regular-late",
+  "index": 38,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]",
+    "--basetemp=/tmp/skel-read-failure-3af2f4ek/regular-late/run-38",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/regular-late/run-38/pytest.xml"
+  ],
+  "started": "2026-11-03T08:46:00.812927+00:00",
+  "load_before": {
+    "loadavg": "5.72 4.25 7.79 6/3263 3575450",
+    "cpu_count": 20
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+    "--auto-servernum",
+    "--error-file=/dev/stderr",
+    "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+    "/home/linhao/.local/bin/node",
+    "/tmp/skel-read-observe-Z6JSX8/p5q_c8_investigation.mjs",
+    "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+    "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/instrumented/run-09"
+  ],
+  "cases": "control,racing-meta-refresh,configuration-redirect-307",
+  "started": "2026-11-03T10:06:45.244282+00:00",
+  "load_before": "0.94 1.10 1.38 7/2986 3753520",
+  "exit_code": 0,
+  "seconds": 49.24858289991971,
+  "finished": "2026-11-03T10:07:34.492894+00:00",
+  "load_after": "0.54 0.96 1.32 1/2955 3755119"
+}

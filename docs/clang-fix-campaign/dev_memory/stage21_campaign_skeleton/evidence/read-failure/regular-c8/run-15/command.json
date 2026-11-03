@@ -1,0 +1,309 @@
+{
+  "group": "regular-c8",
+  "index": 15,
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+    "--basetemp=/tmp/skel-read-failure-3af2f4ek/regular-c8/run-15",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/regular-c8/run-15/pytest.xml"
+  ],
+  "started": "2026-11-03T09:43:01.054657+00:00",
+  "load_before": {
+    "loadavg": "1.23 1.14 2.16 4/2993 3707452",
+    "cpu_count": 20
+  },
+  "exit_code": 1,
+  "finished": "2026-11-03T09:44:43.072889+00:00",
+  "seconds": 102.01817642396782,
+  "load_after": {
+    "loadavg": "1.20 1.15 2.05 3/3002 3710589",
+    "cpu_count": 20
+  },
+  "load_samples": [
+    {
+      "seconds": 0.001,
+      "loadavg": "1.23 1.14 2.16 5/2994 3707453",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 2.001,
+      "loadavg": "1.53 1.20 2.17 1/3107 3707933",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 4.001,
+      "loadavg": "1.53 1.20 2.17 1/3115 3707963",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 6.002,
+      "loadavg": "1.41 1.18 2.16 2/3113 3707963",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 8.002,
+      "loadavg": "1.41 1.18 2.16 2/3113 3707963",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 10.002,
+      "loadavg": "1.41 1.18 2.16 1/3113 3707965",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 12.003,
+      "loadavg": "1.30 1.16 2.15 2/3121 3707974",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 14.003,
+      "loadavg": "1.30 1.16 2.15 1/3116 3707986",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 16.003,
+      "loadavg": "1.19 1.14 2.14 2/3023 3708009",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 18.004,
+      "loadavg": "1.19 1.14 2.14 1/3121 3708460",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 20.004,
+      "loadavg": "1.19 1.14 2.14 1/3123 3708462",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 22.004,
+      "loadavg": "1.10 1.12 2.12 1/3123 3708469",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 24.005,
+      "loadavg": "1.10 1.12 2.12 1/3123 3708472",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 26.005,
+      "loadavg": "1.01 1.10 2.11 1/3111 3708475",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 28.006,
+      "loadavg": "1.01 1.10 2.11 1/3108 3708475",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 30.006,
+      "loadavg": "1.01 1.10 2.11 3/3103 3708475",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 32.006,
+      "loadavg": "1.09 1.12 2.11 2/3099 3708494",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 34.006,
+      "loadavg": "1.09 1.12 2.11 4/3101 3708974",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 36.007,
+      "loadavg": "1.08 1.12 2.11 3/3101 3708975",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 38.007,
+      "loadavg": "1.08 1.12 2.11 5/3101 3708976",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 40.007,
+      "loadavg": "1.08 1.12 2.11 4/3101 3708978",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 42.008,
+      "loadavg": "1.07 1.12 2.10 33/3109 3708986",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 44.008,
+      "loadavg": "1.07 1.12 2.10 3/3108 3709007",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 46.009,
+      "loadavg": "0.99 1.10 2.09 5/3117 3709022",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 48.009,
+      "loadavg": "0.99 1.10 2.09 3/3116 3709022",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 50.01,
+      "loadavg": "0.99 1.10 2.09 5/3098 3709167",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 52.01,
+      "loadavg": "1.07 1.11 2.09 2/3115 3709487",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 54.01,
+      "loadavg": "1.07 1.11 2.09 2/3116 3709489",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 56.011,
+      "loadavg": "1.06 1.11 2.08 4/3104 3709491",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 58.011,
+      "loadavg": "1.06 1.11 2.08 1/3102 3709491",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 60.011,
+      "loadavg": "1.06 1.11 2.08 2/3106 3709496",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 62.012,
+      "loadavg": "1.22 1.14 2.09 1/3099 3709496",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 64.012,
+      "loadavg": "1.22 1.14 2.09 1/3110 3709515",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 66.012,
+      "loadavg": "1.36 1.17 2.09 1/3107 3709516",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 68.012,
+      "loadavg": "1.36 1.17 2.09 4/3089 3709875",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 70.013,
+      "loadavg": "1.36 1.17 2.09 1/3109 3709982",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 72.013,
+      "loadavg": "1.33 1.17 2.09 2/3116 3709991",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 74.013,
+      "loadavg": "1.33 1.17 2.09 1/3107 3709991",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 76.014,
+      "loadavg": "1.31 1.17 2.08 1/3116 3710001",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 78.014,
+      "loadavg": "1.31 1.17 2.08 2/3115 3710003",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 80.014,
+      "loadavg": "1.31 1.17 2.08 1/3110 3710003",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 82.015,
+      "loadavg": "1.28 1.16 2.07 1/3110 3710010",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 84.015,
+      "loadavg": "1.28 1.16 2.07 1/3110 3710014",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 86.015,
+      "loadavg": "1.26 1.16 2.07 1/3110 3710475",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 88.016,
+      "loadavg": "1.26 1.16 2.07 1/3115 3710506",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 90.016,
+      "loadavg": "1.26 1.16 2.07 1/3110 3710506",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 92.016,
+      "loadavg": "1.24 1.16 2.06 1/3103 3710506",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 94.017,
+      "loadavg": "1.24 1.16 2.06 1/3108 3710538",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 96.017,
+      "loadavg": "1.22 1.16 2.06 1/3115 3710545",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 98.017,
+      "loadavg": "1.22 1.16 2.06 1/3114 3710545",
+      "cpu_count": 20
+    },
+    {
+      "seconds": 100.018,
+      "loadavg": "1.22 1.16 2.06 1/3113 3710545",
+      "cpu_count": 20
+    }
+  ],
+  "failures": [
+    {
+      "name": "test_post_submit_read_signatures",
+      "kind": "failure",
+      "message": "AssertionError: CASE_COMPLETE control\n  CASE_COMPLETE idle-script-navigation\n  CASE_COMPLETE racing-script-navigation\n  CASE_COMPLETE racing-meta-refresh\n  CASE_COMPLETE racing-wicket-navigation\n  \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\n  \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\n  \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\n  \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\n  \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\n  \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\n  QB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\n  INVESTIGATION_STOPPED AssertionError\n  \nassert 1 == 0\n +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\\nQB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\\nINVESTIGATION_STOPPED AssertionError\\n').returncode",
+      "text": "tmp_path = PosixPath('/tmp/skel-read-failure-3af2f4ek/regular-c8/run-15/test_post_submit_read_signatur0')\n\n    @pytest.mark.integration\n    def test_post_submit_read_signatures(tmp_path: Path) -> None:\n        node, env = node_command()\n        paths = browser_paths()\n        output = Path(os.environ.get(\"P5Q_C8_INVESTIGATION\", str(tmp_path)))\n        output.mkdir(parents=True, exist_ok=True)\n        command = [*node, str(ROOT / \"tests/node/p5q_c8_investigation.mjs\"), *paths, str(output)]\n        result = subprocess.run(command, env=env, text=True, capture_output=True, timeout=600)\n        (output / \"node.stdout.txt\").write_text(result.stdout)\n        (output / \"node.stderr.txt\").write_text(result.stderr)\n>       assert result.returncode == 0, result.stdout + result.stderr\nE       AssertionError: CASE_COMPLETE control\nE         CASE_COMPLETE idle-script-navigation\nE         CASE_COMPLETE racing-script-navigation\nE         CASE_COMPLETE racing-meta-refresh\nE         CASE_COMPLETE racing-wicket-navigation\nE         \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\nE         \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\nE         \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\nE         \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\nE         \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\nE         \u5df2\u6253\u5f00 QuickBuild \u767b\u5f55\u7a97\u53e3,\u8bf7\u5728\u7a97\u53e3\u4e2d\u767b\u5f55;\u82e5\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\nE         QB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\nE         INVESTIGATION_STOPPED AssertionError\nE         \nE       assert 1 == 0\nE        +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node...\u63d0\u793a\u767b\u5f55\u5931\u8d25,\u53ef\u5728\u7a97\u53e3\u4e2d\u91cd\u65b0\u8f93\u5165;\u767b\u5f55\u540e\u5de5\u5177\u4f1a\u81ea\u52a8\u7ee7\u7eed\u3002\\nQB_AGENT_STOPPED category=FETCH_CONTINUE_FAILED\\nINVESTIGATION_STOPPED AssertionError\\n').returncode\n\ntests/unit/test_p5q_c8_investigation.py:26: AssertionError"
+    }
+  ],
+  "agent_stopped": [
+    {
+      "file": "c8/injected-missing-root-membership.json",
+      "facts": {
+        "action": "AGENT_STOPPED",
+        "failure_category": "FETCH_CONTINUE_FAILED"
+      }
+    }
+  ],
+  "harness_failures": [
+    {
+      "file": "c8/injected-missing-root-membership.json",
+      "case": "injected-missing-root-membership",
+      "facts": {
+        "class_name": "TargetClosedError",
+        "agent_code": null,
+        "category": "OTHER_FRAMEWORK_ERROR"
+      }
+    }
+  ]
+}
