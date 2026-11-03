@@ -1,0 +1,61 @@
+"""Offline integrity and collected-node inventory; no network or state DB access."""
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+ROOT = Path.cwd()
+DEST = Path(__file__).resolve().parent
+BASE = '43c2c99'
+paths = [
+    'docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md',
+    'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs',
+    'tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py',
+    'tizen-qb-verify/scripts/tizen_qb_verify/qb_result_fetch.py',
+    'tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py',
+    'tizen-campaign-core/scripts/tizen_campaign_core/_campaign_io.py',
+    'tizen-campaign-core/scripts/tizen_campaign_core/_campaign_workspace.py',
+    'tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py',
+    'tizen-ci-shared/scripts/tizen_ci_shared/state/db.py',
+    'tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py',
+    'tizen-ci-shared/scripts/tizen_ci_shared/state/records.py',
+    'tizen-build-verify/scripts/tizen_build_verify/build_verify.py',
+]
+facts = {}
+for path in paths:
+    old = subprocess.check_output(['git', 'show', BASE + ':' + path])
+    new = (ROOT / path).read_bytes()
+    facts[path] = dict(unchanged=old == new, sha256=hashlib.sha256(new).hexdigest())
+    assert old == new, path
+agent = (ROOT / paths[1]).read_bytes()
+facts['agent_prefix_sha256'] = hashlib.sha256(agent.split(b'export class Agent {')[0]).hexdigest()
+assert facts['agent_prefix_sha256'] == '40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16'
+baseline = ROOT / 'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/implementation/nodeids-final.txt'
+old_ids = set(baseline.read_text().splitlines())
+new_ids = {line for line in (DEST / 'collect/stdout.log').read_text().splitlines()
+           if line.startswith('tests/') and '::' in line}
+facts['nodeids'] = dict(before=len(old_ids), after=len(new_ids),
+                       removed=sorted(old_ids - new_ids), added=sorted(new_ids - old_ids))
+assert len(old_ids) == 3028 and not old_ids - new_ids
+facts['help'] = []
+for package, command in [
+    ('tizen_review_submit', 'review-submit'),
+    ('tizen_campaign_intake', 'campaign-start-check'),
+    ('tizen_campaign_repair', 'suppress-policy'),
+    ('ci_triage', 'suppress-policy'),
+]:
+    argv = [str(ROOT / '.venv/bin/python'), '-m', package, command, '--help']
+    result = subprocess.run(argv, capture_output=True, text=True)
+    facts['help'].append(dict(argv=argv, exit_code=result.returncode,
+                              stdout=result.stdout, stderr=result.stderr))
+    assert result.returncode == 0
+argv = [str(ROOT / '.venv/bin/python'), '-m', 'pytest', '-q',
+        'tests/unit/test_campaign_batch3_script.py']
+result = subprocess.run(argv, capture_output=True, text=True)
+facts['final_script_check'] = dict(argv=argv, exit_code=result.returncode,
+                                 stdout=result.stdout, stderr=result.stderr)
+assert result.returncode == 0
+(DEST / 'nodeids-final.txt').write_text('\n'.join(sorted(new_ids)) + '\n')
+(DEST / 'nodeids-added.txt').write_text('\n'.join(sorted(new_ids - old_ids)) + '\n')
+(DEST / 'audit.json').write_text(json.dumps(facts, indent=2) + '\n')
+print(json.dumps(facts, indent=2))

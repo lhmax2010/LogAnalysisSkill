@@ -5,19 +5,18 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from dataclasses import asdict
 from json import JSONDecodeError
 from pathlib import Path
-from typing import NoReturn, TextIO, cast
+from typing import NoReturn, TextIO
 
 from tizen_build_verify import (
     BuildVerifyOptions,
     build_verify,
     build_verify_to_json,
 )
-from tizen_campaign_core.suppress_policy import PolicyInputError, SourceKind, evaluate
 from tizen_campaign_repair.__main__ import (
     _main_campaign_repair_step,
+    _main_suppress_policy,
 )
 from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH
@@ -346,29 +345,6 @@ def _main_release_worktree(argv: list[str], *, stderr: TextIO) -> int:
 
 
 
-
-
-def _main_suppress_policy(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
-    parser = _CampaignRepairStepParser(prog="ci_triage suppress-policy")
-    parser.add_argument("action", choices=("check",))
-    parser.add_argument("--edit-spec", type=Path, required=True)
-    parser.add_argument("--src-root", type=Path, required=True)
-    parser.add_argument("--source-kind", choices=("t1_cherry_pick", "generated", "suppress"),
-                        default="generated")
-    try:
-        args = parser.parse_args(argv)
-        result = evaluate(
-            _read_json(args.edit_spec), args.src_root, cast(SourceKind, args.source_kind),
-        )
-    except (ValueError, OSError, PolicyInputError) as exc:
-        print(json.dumps({"error_code": "INVALID_ARGS", "reason": str(exc)}, sort_keys=True),
-              file=stdout)
-        return 2
-    print(json.dumps(asdict(result), sort_keys=True), file=stdout)
-    if result.verdict == "forbidden":
-        print("REJECTED_SUPPRESS_POLICY", file=stderr)
-        return 4
-    return 0
 
 
 def _read_json(path: Path) -> dict[str, object]:

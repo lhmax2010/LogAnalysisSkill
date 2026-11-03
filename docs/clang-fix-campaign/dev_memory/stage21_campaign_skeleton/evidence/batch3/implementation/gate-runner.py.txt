@@ -1,0 +1,65 @@
+import datetime
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+ROOT = Path.cwd()
+DEST = Path(__file__).resolve().parent
+PY = str(ROOT / '.venv/bin/python')
+
+
+def load():
+    return dict(loadavg=Path('/proc/loadavg').read_text().strip(), cpu_count=os.cpu_count())
+
+
+name = sys.argv[1]
+folder = DEST / name
+folder.mkdir(exist_ok=False)
+if name == 'focused':
+    argv = [PY, '-m', 'pytest', '-q', '-s',
+            *map(str, sorted(Path('tests/unit').glob('test_campaign_batch3_*.py'))),
+            '--junitxml=' + str(folder / 'pytest.xml')]
+elif name == 'full' or name.startswith('timing-'):
+    argv = [PY, 'tests/run_quiet.py', '-q', *sys.argv[2:],
+            '--junitxml=' + str(folder / 'pytest.xml')]
+elif name == 'collect':
+    argv = [PY, '-m', 'pytest', '--collect-only', '-q']
+elif name == 'mypy':
+    argv = [str(ROOT / '.venv/bin/mypy')]
+elif name == 'imports':
+    argv = [str(ROOT / '.venv/bin/lint-imports')]
+elif name == 'design':
+    argv = [PY, 'docs/clang-fix-campaign/tools/check_design_doc.py',
+            'docs/clang-fix-campaign/design.md']
+elif name == 'ruff':
+    tracked = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+    added = [str(p) for pattern in (
+        'tests/unit/test_campaign_batch3_*.py',
+        'tizen-review-submit/scripts/tizen_review_submit/*.py',
+        'tizen-campaign-intake/scripts/tizen_campaign_intake/*.py') for p in ROOT.glob(pattern)]
+    paths = sorted({p for p in tracked + added if p.endswith('.py') and Path(p).is_file()})
+    argv = [str(ROOT / '.venv/bin/ruff'), 'check', '--force-exclude', *paths]
+else:
+    raise ValueError(name)
+before = load()
+before['top_cpu_processes'] = subprocess.check_output(
+    ['ps', '-eo', 'comm,pcpu', '--sort=-pcpu'], text=True).splitlines()[:11]
+started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+tick = time.monotonic()
+env = os.environ.copy()
+if name.startswith('timing-'):
+    env['P5Q_C5A_EVIDENCE'] = str(folder / 'node')
+with (folder / 'stdout.log').open('w') as out, (folder / 'stderr.log').open('w') as err:
+    completed = subprocess.run(argv, cwd=ROOT, env=env, stdout=out, stderr=err)
+record = dict(argv=argv, cwd=str(ROOT), started=started,
+              finished=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              seconds=time.monotonic() - tick, exit_code=completed.returncode,
+              load_before=before, load_after=load())
+(folder / 'command.json').write_text(json.dumps(record, indent=2) + '\n')
+print(json.dumps(record, indent=2), flush=True)
+print((folder / 'stdout.log').read_text()[-6000:], flush=True)
+print((folder / 'stderr.log').read_text()[-2000:], flush=True)
+raise SystemExit(completed.returncode)

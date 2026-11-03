@@ -1,0 +1,180 @@
+{
+  "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": {
+    "unchanged": true,
+    "sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9"
+  },
+  "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": {
+    "unchanged": true,
+    "sha256": "7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c"
+  },
+  "tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py": {
+    "unchanged": true,
+    "sha256": "a958c5a7a48140908c6405be861c5a88643847d90b96450f8cbd303f8b4c9c7e"
+  },
+  "tizen-qb-verify/scripts/tizen_qb_verify/qb_result_fetch.py": {
+    "unchanged": true,
+    "sha256": "c318096992aafc14262df49d173b400b78322f635ab5a203f8edcbec11a57afe"
+  },
+  "tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py": {
+    "unchanged": true,
+    "sha256": "93bd97b0262d1efead2104b6f5f6653e740e67a1a3c94ea17077b81cfe2c6067"
+  },
+  "tizen-campaign-core/scripts/tizen_campaign_core/_campaign_io.py": {
+    "unchanged": true,
+    "sha256": "1e13ac3525eebdd20b9f3a9fce50b1514c4e294b17bda90821bf75c9b0e06ce7"
+  },
+  "tizen-campaign-core/scripts/tizen_campaign_core/_campaign_workspace.py": {
+    "unchanged": true,
+    "sha256": "b5ccfbb22d7a615c3336b4cae76bd676abbafd0dd5ca9c84f9882828bfc6a238"
+  },
+  "tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py": {
+    "unchanged": true,
+    "sha256": "bac8cc3122fd16abc91fc438e8b3aa8d0f3fe745478ecf937da5e4340876ae52"
+  },
+  "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py": {
+    "unchanged": true,
+    "sha256": "afc049e204135017c9f457fea9c7237c7e3fded8f87a60885824510390f21fde"
+  },
+  "tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py": {
+    "unchanged": true,
+    "sha256": "0cc7b5d11641074efbf60fc9da9827a03c3ed9d607bd842509c7fd5a8d4f8e86"
+  },
+  "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py": {
+    "unchanged": true,
+    "sha256": "84778014c1a2912418a660f0bfdd567215c06e38ef6dbbc833fb62b13d691fc1"
+  },
+  "tizen-build-verify/scripts/tizen_build_verify/build_verify.py": {
+    "unchanged": true,
+    "sha256": "5a6ab48b9bafd01e464513b6450781fcffdcaaac3b39da911c45923e93093887"
+  },
+  "agent_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+  "nodeids": {
+    "before": 3028,
+    "after": 3088,
+    "removed": [],
+    "added": [
+      "tests/unit/test_campaign_batch3_e2e.py::test_stalled_finish_offline_chain",
+      "tests/unit/test_campaign_batch3_e2e.py::test_success_full_offline_chain",
+      "tests/unit/test_campaign_batch3_e2e.py::test_suppress_edit_passes_sandbox_but_fails_review_a2",
+      "tests/unit/test_campaign_batch3_e2e.py::test_triggered_abandon_then_late_pass_offline_chain",
+      "tests/unit/test_campaign_batch3_handoff.py::test_complete_baseline_enters_first_round",
+      "tests/unit/test_campaign_batch3_handoff.py::test_crash_after_transition_before_create_round_resumes",
+      "tests/unit/test_campaign_batch3_handoff.py::test_first_round_preconditions_leave_database_unchanged[existing_round]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_first_round_preconditions_leave_database_unchanged[held]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_first_round_preconditions_leave_database_unchanged[missing_arch]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_first_round_preconditions_leave_database_unchanged[primary_not_matched]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_first_round_preconditions_leave_database_unchanged[round_two]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_first_round_preconditions_leave_database_unchanged[terminal]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_suppress_policy_shared_parser_invalid[args0]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_suppress_policy_shared_parser_invalid[args1]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_suppress_policy_shared_parser_invalid[args2]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_suppress_policy_shared_parser_invalid[args3]",
+      "tests/unit/test_campaign_batch3_handoff.py::test_two_processes_first_round_lock_advances_once",
+      "tests/unit/test_campaign_batch3_review.py::test_abandon_cannot_interleave_with_review[after_barrier]",
+      "tests/unit/test_campaign_batch3_review.py::test_abandon_cannot_interleave_with_review[during_push]",
+      "tests/unit/test_campaign_batch3_review.py::test_abandon_lock_blocks_review",
+      "tests/unit/test_campaign_batch3_review.py::test_cli_invalid_arguments_no_manual_option",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[accept_required]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[arch_fail]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[extra_key]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[fail_status]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[missing_cache]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[missing_file]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[missing_key]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[wrong_branch]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[wrong_marker]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[wrong_target]",
+      "tests/unit/test_campaign_batch3_review.py::test_gate_and_identity_hard_failures[wrong_type]",
+      "tests/unit/test_campaign_batch3_review.py::test_pending_exact_request_message_no_manual_fallback",
+      "tests/unit/test_campaign_batch3_review.py::test_push_failure_has_no_review",
+      "tests/unit/test_campaign_batch3_review.py::test_six_revalidation_refusals[a2]",
+      "tests/unit/test_campaign_batch3_review.py::test_six_revalidation_refusals[aggregate]",
+      "tests/unit/test_campaign_batch3_review.py::test_six_revalidation_refusals[edit_bytes]",
+      "tests/unit/test_campaign_batch3_review.py::test_six_revalidation_refusals[policy]",
+      "tests/unit/test_campaign_batch3_review.py::test_six_revalidation_refusals[qb_bytes]",
+      "tests/unit/test_campaign_batch3_review.py::test_six_revalidation_refusals[toctou]",
+      "tests/unit/test_campaign_batch3_review.py::test_success_cached_change_id_and_retry",
+      "tests/unit/test_campaign_batch3_review.py::test_two_level_latest_result_supersedes_old_file[False]",
+      "tests/unit/test_campaign_batch3_review.py::test_two_level_latest_result_supersedes_old_file[True]",
+      "tests/unit/test_campaign_batch3_script.py::test_orchestration_commands_and_shared_state_root",
+      "tests/unit/test_campaign_batch3_script.py::test_policy_forbidden_cannot_fall_through_to_repair",
+      "tests/unit/test_campaign_batch3_script.py::test_script_forbidden_command_red_examples[gbs build --arch aarch64]",
+      "tests/unit/test_campaign_batch3_script.py::test_script_forbidden_command_red_examples[python -m tizen_build_verify build-verify]",
+      "tests/unit/test_campaign_batch3_script.py::test_script_forbidden_command_red_examples[python -m tizen_campaign_repair campaign-repair-step --path ws/iter_1]",
+      "tests/unit/test_campaign_batch3_start.py::test_all_five_checks_full_ssh_project",
+      "tests/unit/test_campaign_batch3_start.py::test_bad_project_precedes_subprocess[-option]",
+      "tests/unit/test_campaign_batch3_start.py::test_bad_project_precedes_subprocess[../escape]",
+      "tests/unit/test_campaign_batch3_start.py::test_bad_project_precedes_subprocess[None]",
+      "tests/unit/test_campaign_batch3_start.py::test_bad_project_precedes_subprocess[repo name]",
+      "tests/unit/test_campaign_batch3_start.py::test_bad_project_precedes_subprocess[repo/]",
+      "tests/unit/test_campaign_batch3_start.py::test_each_start_failure[clang_conf]",
+      "tests/unit/test_campaign_batch3_start.py::test_each_start_failure[config]",
+      "tests/unit/test_campaign_batch3_start.py::test_each_start_failure[gbs]",
+      "tests/unit/test_campaign_batch3_start.py::test_each_start_failure[gerrit]",
+      "tests/unit/test_campaign_batch3_start.py::test_each_start_failure[state_directory]",
+      "tests/unit/test_campaign_batch3_start.py::test_local_path_both_commands_reject"
+    ]
+  },
+  "help": [
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "tizen_review_submit",
+        "review-submit",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout": "usage: review-submit [-h] --verification-ids VERIFICATION_IDS --review-target\n                     REVIEW_TARGET --state-db STATE_DB --config CONFIG\n                     --qb-result QB_RESULT\n\noptions:\n  -h, --help            show this help message and exit\n  --verification-ids VERIFICATION_IDS\n  --review-target REVIEW_TARGET\n  --state-db STATE_DB\n  --config CONFIG\n  --qb-result QB_RESULT\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "tizen_campaign_intake",
+        "campaign-start-check",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout": "usage: campaign-start-check [-h] --config CONFIG --state-root STATE_ROOT\n                            --project PROJECT\n\noptions:\n  -h, --help            show this help message and exit\n  --config CONFIG\n  --state-root STATE_ROOT\n  --project PROJECT\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "tizen_campaign_repair",
+        "suppress-policy",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout": "usage: ci_triage suppress-policy [-h] --edit-spec EDIT_SPEC --src-root\n                                 SRC_ROOT\n                                 [--source-kind {t1_cherry_pick,generated,suppress}]\n                                 {check}\n\npositional arguments:\n  {check}\n\noptions:\n  -h, --help            show this help message and exit\n  --edit-spec EDIT_SPEC\n  --src-root SRC_ROOT\n  --source-kind {t1_cherry_pick,generated,suppress}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-m",
+        "ci_triage",
+        "suppress-policy",
+        "--help"
+      ],
+      "exit_code": 0,
+      "stdout": "usage: ci_triage suppress-policy [-h] --edit-spec EDIT_SPEC --src-root\n                                 SRC_ROOT\n                                 [--source-kind {t1_cherry_pick,generated,suppress}]\n                                 {check}\n\npositional arguments:\n  {check}\n\noptions:\n  -h, --help            show this help message and exit\n  --edit-spec EDIT_SPEC\n  --src-root SRC_ROOT\n  --source-kind {t1_cherry_pick,generated,suppress}\n",
+      "stderr": ""
+    }
+  ],
+  "final_script_check": {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/unit/test_campaign_batch3_script.py"
+    ],
+    "exit_code": 0,
+    "stdout": ".....                                                                    [100%]\n5 passed in 0.06s\n",
+    "stderr": ""
+  }
+}

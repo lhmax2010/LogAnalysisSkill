@@ -5,9 +5,11 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
-from typing import NoReturn, TextIO
+from typing import NoReturn, TextIO, cast
 
+from tizen_campaign_core.suppress_policy import PolicyInputError, SourceKind, evaluate
 from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.state import StateDatabase
 
@@ -100,11 +102,38 @@ def main(argv: list[str] | None = None) -> int:
         argv = sys.argv[1:]
     if argv and argv[0] == "campaign-repair-step":
         return _main_campaign_repair_step(argv[1:], stdout=sys.stdout, extra_pythonpath=())
+    if argv and argv[0] == "suppress-policy":
+        return _main_suppress_policy(argv[1:], stdout=sys.stdout, stderr=sys.stderr)
     parser = argparse.ArgumentParser(prog="tizen_campaign_repair")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("campaign-repair-step", add_help=False)
+    commands.add_parser("suppress-policy", add_help=False)
     parser.parse_args(argv)
     return 2
+
+
+def _main_suppress_policy(argv: list[str], *, stdout: TextIO, stderr: TextIO) -> int:
+    parser = _CampaignRepairStepParser(prog="ci_triage suppress-policy")
+    parser.add_argument("action", choices=("check",))
+    parser.add_argument("--edit-spec", type=Path, required=True)
+    parser.add_argument("--src-root", type=Path, required=True)
+    parser.add_argument("--source-kind", choices=("t1_cherry_pick", "generated", "suppress"),
+                        default="generated")
+    try:
+        args = parser.parse_args(argv)
+        raw = json.loads(args.edit_spec.read_text(encoding="utf-8"))
+        if not isinstance(raw, dict):
+            raise ValueError(f"{args.edit_spec} must contain a JSON object")
+        result = evaluate(raw, args.src_root, cast(SourceKind, args.source_kind))
+    except (ValueError, OSError, PolicyInputError) as exc:
+        print(json.dumps({"error_code": "INVALID_ARGS", "reason": str(exc)}, sort_keys=True),
+              file=stdout)
+        return 2
+    print(json.dumps(asdict(result), sort_keys=True), file=stdout)
+    if result.verdict == "forbidden":
+        print("REJECTED_SUPPRESS_POLICY", file=stderr)
+        return 4
+    return 0
 
 
 if __name__ == "__main__":

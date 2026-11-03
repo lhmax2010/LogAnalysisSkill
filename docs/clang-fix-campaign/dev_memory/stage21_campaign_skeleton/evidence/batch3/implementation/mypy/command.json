@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/mypy"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "started": "2026-11-03T07:26:03.271947+00:00",
+  "finished": "2026-11-03T07:26:07.220215+00:00",
+  "seconds": 3.9482745099812746,
+  "exit_code": 0,
+  "load_before": {
+    "loadavg": "2.60 2.53 2.11 3/3059 3417132",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          66.6",
+      "python          12.6",
+      "chrome           3.3",
+      "code-insiders    3.3",
+      "code-insiders    2.4",
+      "code-insiders    2.2",
+      "chrome           1.9",
+      "Xorg             1.5",
+      "chrome           1.4",
+      "du               1.3"
+    ]
+  },
+  "load_after": {
+    "loadavg": "2.79 2.57 2.13 9/3067 3418559",
+    "cpu_count": 20
+  }
+}

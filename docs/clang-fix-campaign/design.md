@@ -2773,6 +2773,8 @@ P5Q 模块(qb_browser_agent、qb_browser、qb_redact、qb-trigger、qb-result-fe
 4. `campaign_lifecycle`新增第四个释放API `release_abandoned_worktrees`,按骨架设计文件第5.4节执行。
 5. 模块路径以骨架设计文件第4.2节映射表解释。
 
+campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文件的实施裁定 SKEL-B3-05 执行。
+
 ## 5. 非功能性需求
 
 ### 5.1 性能预算

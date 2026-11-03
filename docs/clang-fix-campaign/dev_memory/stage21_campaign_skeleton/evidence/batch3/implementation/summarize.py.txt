@@ -1,0 +1,39 @@
+import json
+from pathlib import Path
+import xml.etree.ElementTree as ET
+
+DEST = Path(__file__).resolve().parent
+cases = list(ET.parse(DEST / 'full/pytest.xml').iter('testcase'))
+
+
+def outcome(case):
+    if case.find('failure') is not None or case.find('error') is not None:
+        return 'failed'
+    if case.find('skipped') is not None:
+        return 'skipped'
+    return 'passed'
+
+
+def counts(rows):
+    return {kind: sum(outcome(c) == kind for c in rows)
+            for kind in ('passed', 'failed', 'skipped')}
+
+
+summary = dict(total=counts(cases), new_groups={}, sensitive=[], skipped=[])
+for name in ('handoff', 'review', 'start', 'script', 'e2e'):
+    rows = [c for c in cases if c.attrib['classname'].endswith('test_campaign_batch3_' + name)]
+    summary['new_groups'][name] = counts(rows)
+for case in cases:
+    klass, name = case.attrib['classname'], case.attrib['name']
+    if ('test_p5q_c5a_integration' in klass
+            and name.startswith('test_real_cli_browser_submit_bind_pending_pass')) or (
+            'test_p5q_c8_investigation' in klass and name == 'test_post_submit_read_signatures'):
+        summary['sensitive'].append(dict(classname=klass, name=name, outcome=outcome(case),
+                                        seconds=case.attrib['time']))
+    if outcome(case) == 'skipped':
+        summary['skipped'].append(dict(classname=klass, name=name,
+                                       reason=case.find('skipped').attrib.get('message')))
+summary['gates'] = {name: json.loads((DEST / name / 'command.json').read_text())
+                    for name in ('full', 'mypy', 'ruff', 'imports', 'design', 'collect')}
+(DEST / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+print(json.dumps(summary, indent=2))

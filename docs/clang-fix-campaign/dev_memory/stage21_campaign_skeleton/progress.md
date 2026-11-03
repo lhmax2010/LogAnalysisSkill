@@ -1,8 +1,8 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**BATCH3_STOPPED_SKEL_B3_04**。
+日期:2026-11-03。状态:**BATCH3_READY_FOR_REVIEW**。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
-第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批停点见第17.1节。
+第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批第18节完成,等待设计方审读。
 
 ## 1. 冻结输入与开工事实
 
@@ -22,7 +22,7 @@
 |---|---|---|
 | 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | ACCEPTED;SKEL-B2-01验收通过 |
 | 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | ACCEPTED;SKEL-B3-01验收通过 |
-| 3 | 审核提交、启动检查、编排skill与离线端到端 | STOPPED_SKEL_B3_04;SKEL-B3-02已由SKEL-B3-03关闭 |
+| 3 | 审核提交、启动检查、编排skill与离线端到端 | READY_FOR_REVIEW;3087 passed/1 skipped,新增60例全过 |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
 | 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | NOT_STARTED |
 
@@ -788,6 +788,8 @@ QB请求/事件表不存储这个根目录。生产QB命令通过独立的`--sta
 
 ### 17.1 停止报告 SKEL-B3-04:基线到修复轮的状态推进缺口
 
+状态更新:已由SKEL-B3-05裁定关闭;以下保留原停止事实。
+
 本轮review-submit/start-check草稿定向25项通过,包括六道拒绝门、精确request_id提示、
 放弃屏障、两类锁互斥、目标分支与启动五项检查。尚未完成全部契约/全仓验收。
 在新离线端到端首次串联中,建档与三架构基线成功,随后repair-step立即exit4:
@@ -820,3 +822,99 @@ DB原始字节不变。另静态查明LOCAL_3ARCH_PASS当前由sandbox-submit写
 暂存diff检查仅报告原始pytest失败日志和参考patch上下文行的尾随空白;
 保留原始证据字节,排除这两个证据文件后的diff检查通过。
 完成停止登记后等待设计方裁定,不进入第3.5批。
+
+## 18. 实施裁定 SKEL-B3-05:基线与修复轮衔接
+
+用户消息重复粘贴的裁定按完整内容登记一次。
+
+1. SKEL-B3-04 停止成立。原设计中 BASELINE_REPRODUCED → REPAIR_ROUND_RUNNING 的推进属 P10,骨架裁剪时遗漏。采用候选 A 的收窄版本。
+2. campaign-repair-step 首轮推进:在现有锁内、只读身份校验之后、create_round 之前,若 latest_status 为 BASELINE_REPRODUCED,且同时满足 a) 本次 round_index == 1 且该 unit 尚无任何 round;b) 三个架构的最新 REPRODUCE 事件齐备;c) primary_arch 的 outcome 为 matched;则 append_status(REPAIR_ROUND_RUNNING),随后完全按现有流程继续。任一条件不满足 → exit 4 REJECTED_STATE_INCONSISTENT,零 round、零预算、库不变。推进后在 create_round 前崩溃的,重跑看到 REPAIR_ROUND_RUNNING 且零 round,按现有流程进行。除 BASELINE_REPRODUCED 外,可执行状态集合不变;九步顺序、编译预算、对账、保护标记语义不变。
+3. 策略预检:编排剧本在每次 campaign-repair-step 之前调用 suppress-policy check(既有命令,source_kind 按冻结稿只用 generated 或 suppress);在 tizen_campaign_repair 入口下增加同名子命令,与 ci_triage/cli.py 的 suppress-policy 共用同一解析与执行函数(按 SKEL-B2-01 第 3 项的去重做法);剧本可执行命令集合相应增加该子命令。forbidden 即停,不调用 repair-step。sandbox-submit 与 review-submit 内部的权威策略重推不变。
+4. LOCAL_3ARCH_PASS 仍由 sandbox-submit 在聚合与副本校验通过后写入,不改。冻结稿第 5.4 节与第 7 节中"第 3.5 批止于 LOCAL_3ARCH_PASS"一律理解为:同一最终 round_index 下三个架构的 campaign-repair-step 均返回 PASS 且三条 verification 已 link,状态为 REPAIR_ROUND_RUNNING。第 3.5 批后不得释放副本、不得放弃的约束改为针对这一情形;第 4 批从 sandbox-submit 开始,由它写入 LOCAL_3ARCH_PASS。
+5. 既有 repair-step 测试中若有断言"BASELINE_REPRODUCED 在第 1 轮被拒"的用例,允许按本裁定改为新行为,逐条登记 nodeid 与改动前后断言;其它既有断言不改。若改动涉及第 2 项以外的状态,停止并报告。
+6. design.md 第 4.6 节之后追加一条:campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文件的实施裁定 SKEL-B3-05 执行。不改已有条目。
+
+基线`43c2c99`;不直接套用handoff草稿。repair-step仅改本裁定两项,
+安全核心/身份规则/schema/代理/冻结稿保持原字节,全部运行限本地假件。
+
+### 18.1 实施落点与定向验证
+
+| 项 | 落点 | 说明 |
+|---|---|---|
+| 首轮推进 | `tizen-campaign-repair/scripts/tizen_campaign_repair/campaign_repair_step.py:165,727,744` | 现有arch锁内、身份检查后,重用gate_view三架构+primary判据;BEGIN IMMEDIATE内再次查状态/round,只追加一次REPAIR_ROUND_RUNNING;原九步不改 |
+| suppress-policy共享入口 | `tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py:119`; `tizen-ci-triage/scripts/ci_triage/cli.py:19` | 同一函数同一解析器,旧CLI仅导入;原兼容参数保留,编排仅用generated/suppress |
+| review-submit | `tizen-review-submit/scripts/tizen_review_submit/review_submit.py:218` | 第248行取sandbox四锁,先查放弃屏障,到push与REVIEW落库后finally释放;六道检查+Change-Id缓存+隔离传输 |
+| QB gate | 同上`:101,192` | 最新request内最新RESULT;原字节hash/schema/绑定;判据取DB,不接受人工降级;SKEL-B3-03精确message在`:52` |
+| campaign-start-check | `tizen-campaign-intake/scripts/tizen_campaign_intake/start_check.py:29,130` | 五项检查,项目名先校验,完整ssh地址ls-remote,配置与可达性错误分开 |
+| 编排与启动输入 | `tizen-clang-campaign/SKILL.md`; `references/campaign-kickoff-template.md` | 命令确定顺序、每次repair前policy &&、放弃出口、统一STATE_ROOT、适用P11条款;第3.5批保留三份PASS副本 |
+| 设计指引 | `design.md:2776` | 仅在4.6之后追加裁定要求的一条,原条目不改 |
+
+repair-step本体diff为+52/-1;repair包入口+30/-1,ci_triage转发+2/-26。
+按裁定第5项改动的既有测试清单:**无**。旧节点及旧断言均未修改。
+新增60例:handoff 13、review 26、start 12、E2E 4、script 5。
+条目到nodeid的映射见`evidence/batch3/implementation/coverage.md`;
+新增清单见`nodeids-added.txt`。3028个既有nodeid全部保留,最终收集3088个,
+零收集错误;差集与受保护文件hash见`audit.json`。
+
+定向首跑58/58通过(当时尚未添加两条superseded用例),完整状态序列在
+`focused/stdout.log`。两条新增superseded定向复跑2/2通过。
+开发过程中修正了新夹具的HELD arch、aggregate错误码期望、最新request缺少
+BUILD_BOUND前置等搭建错误;未修改任何既有断言,未作为全仓门禁失败处理。
+未套用历史patch,历史停止证据均保留。
+
+三条离线链路均使用生产命令实现、真实本地Git/SQLite/workspace与gbs_analyzer,
+仅gbs与QB代理是假件,远端通过SKEL-B2-03假SSH。成功序列比任务简写多了
+初始DISCOVERED,BASELINE_RUNNING因三个arch各写一次而重复三次;未改代码对齐。
+放弃屏障是事件而非状态,之后fetch可以写SANDBOX_QB_PASS,review仍被拒,
+报告显示已放弃且无WORKTREE_LOST。完整序列见coverage。
+
+已通过:ruff完整候选树、mypy(161源文件)、import-linter(7/7)、design检查
+(0 problem)、两个新SKILL格式检查、新命令及新旧policy入口help。原始输出
+和argv/UTC/负载见`implementation/`相应子目录。全仓最终结果
+在下一节登记,不以定向结果替代全仓。
+
+### 18.2 最终门禁与读取失败观测
+
+证据根:`evidence/batch3/implementation/`。原始输出、JUnit、命令与起止UTC
+分别在对应目录的`stdout.log`、`stderr.log`、`pytest.xml`、`command.json`;
+聚合结果为`summary.json`。
+
+| 门禁 | 结果 | 证据 |
+|---|---|---|
+| 全仓pytest | 3087 passed / 0 failed / 1 skipped;1078.44s | `full/` |
+| 新增handoff/review/start/script/E2E | 13/26/12/5/4,全部PASS | `summary.json`、`full/pytest.xml` |
+| mypy | 161 source files,0 issue | `mypy/` |
+| ruff完整候选树 | all checks passed,无关未跟踪草稿不纳入 | `ruff/` |
+| import-linter | 7 kept / 0 broken | `imports/` |
+| design.md检查 | 0 problem | `design/` |
+| nodeid | 3028既有全部保留,新增60,共3088,零collect错误 | `collect/`、`audit.json` |
+| 安全核心/身份规则/schema/P5Q writer/代理/冻结稿 | 与43c2c99逐字节一致 | `audit.json` |
+
+唯一skip仍是`test_case_insensitive_bypass_is_platform_specific`,原因为
+`case-sensitive filesystem`,零新增skip。全仓07:25:21–07:43:21 UTC,
+20个逻辑CPU,loadavg由`2.46 2.51 2.09`到`3.23 2.23 2.06`;
+开始时CPU前10进程仅记录名称与占用,没有argv,见`full/command.json`。
+stderr为Xvfb的非致命xkbcomp键位警告,不隐去原始日志。
+
+计时敏感清单全过:build(31.954s)、error-created(23.224s)、error-no-build(16.664s)、
+no-navigation(83.153s)、delayed-build(23.230s)、late-build(23.254s),以及
+C8 `test_post_submit_read_signatures`(180.957s)。这里是整例耗时,不是关闭耗时。
+没有触发C5a三次重跑规则,没有触发新的C8失败形态核对,未加skip/xfail或改阈值。
+
+| 批次 | 读取失败观测 | AGENT_STOPPED / harness | 处置与证据 |
+|---|---|---|---|
+| 第2批(沿用) | late-build: `lookup_reads`期望10实际1 | FETCH_CONTINUE_FAILED;其余原文见第16.1节 | 原始失败保留,单独3/3通过;SKEL-B3-01认可,仍待第3.5批前另行定位 |
+| 第3批本轮 | 无新失败;上述7个敏感例全部PASS | 无失败类别 | `full/pytest.xml`、`summary.json` |
+
+代理全文件SHA256仍为`7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c`,
+前缀SHA256仍为`40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16`。
+本批未改单独安全组覆盖的生产路径,按SKEL-B3-01不另开四组安全验收轮;
+全仓所含既有Node/安全用例原样执行且通过。
+
+### 18.3 交付边界
+
+与冻结稿/有效裁定不一致、做不到之处:**无**。
+既有状态序列差异已在18.1与coverage逐项列出,不视为未裁定的新状态。
+全部外部动作均由本地假件承接,未访问真实Gerrit/QuickBuild或运行真实gbs;
+未改安全核心、共享身份判据、冻结稿、代理或状态库schema。
+stage21停在第3批待审读,不开始第3.5批。第2批读取失败遗留仍开放,不声称已修复。

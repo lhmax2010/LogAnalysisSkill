@@ -6,6 +6,7 @@ import fcntl
 import hashlib
 import json
 import os
+import sqlite3
 import subprocess
 import tempfile
 from collections.abc import Callable, Iterator, Mapping
@@ -17,6 +18,7 @@ from typing import Any
 
 import yaml
 from tizen_build_verify.build_verify import BuildVerifyOptions, BuildVerifyResult, build_verify
+from tizen_campaign_core import campaign_state
 from tizen_campaign_core._campaign_workspace import (
     _StepError,
     _unit_hash,
@@ -160,6 +162,7 @@ def campaign_repair_step(
         workspace_root = _workspace_root(config, options.campaign_unit_key, arch_norm)
         with _repair_step_lock(workspace_root):
             unit, reproduce = _read_only_identity(options, arch_norm)
+            _advance_first_round(options)
             return _run_locked(
                 options,
                 unit=unit,
@@ -681,7 +684,13 @@ def _read_only_identity(
             EXIT_REJECTED,
         )
     status = latest_status(options.state_db, options.campaign_unit_key)
-    if status not in _EXECUTABLE_UNIT_STATUSES:
+    if status == "BASELINE_REPRODUCED":
+        conn = campaign_state._read_connection(options.state_db)
+        try:
+            _check_first_round(conn, options)
+        finally:
+            conn.close()
+    elif status not in _EXECUTABLE_UNIT_STATUSES:
         raise _StepError(
             REJECTED_STATE_INCONSISTENT,
             f"campaign unit status is not executable: {status!r}",
@@ -713,6 +722,48 @@ def _read_only_identity(
             EXIT_REJECTED,
         )
     return unit, reproduce
+
+
+def _check_first_round(conn: sqlite3.Connection, options: CampaignRepairStepOptions) -> None:
+    existing = conn.execute(
+        "SELECT 1 FROM campaign_rounds WHERE campaign_unit_key=? LIMIT 1",
+        (options.campaign_unit_key,),
+    ).fetchone()
+    if (
+        options.round_index != 1
+        or existing is not None
+        or not campaign_state._gate_view_on_connection(conn, options.campaign_unit_key).reproduced
+    ):
+        raise _StepError(
+            REJECTED_STATE_INCONSISTENT,
+            "first round requires complete reproduced baselines and no existing round",
+            EXIT_REJECTED,
+        )
+
+
+def _advance_first_round(options: CampaignRepairStepOptions) -> None:
+    if latest_status(options.state_db, options.campaign_unit_key) != "BASELINE_REPRODUCED":
+        return
+    conn = options.state_db.connect()
+    try:
+        # Architecture locks differ; serialize the shared unit transition in SQLite.
+        with campaign_state._immediate_transaction(conn):
+            row = conn.execute(
+                "SELECT status FROM campaign_status_log WHERE campaign_unit_key=? "
+                "ORDER BY log_id DESC LIMIT 1", (options.campaign_unit_key,),
+            ).fetchone()
+            if row is not None and row["status"] == REPAIR_ROUND_RUNNING:
+                return
+            if row is None or row["status"] != "BASELINE_REPRODUCED":
+                raise _StepError(
+                    REJECTED_STATE_INCONSISTENT, "baseline status changed", EXIT_REJECTED
+                )
+            _check_first_round(conn, options)
+            campaign_state._append_status_on_connection(
+                conn, options.campaign_unit_key, REPAIR_ROUND_RUNNING,
+            )
+    finally:
+        conn.close()
 
 
 def _build_options(
