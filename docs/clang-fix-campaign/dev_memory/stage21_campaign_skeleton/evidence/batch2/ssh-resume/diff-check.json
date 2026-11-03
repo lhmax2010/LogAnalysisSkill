@@ -1,0 +1,27 @@
+[
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit": 2,
+    "stdout": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:8: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:13: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:15: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:46: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:47: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:56: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:61: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:63: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:92: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:93: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:102: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:107: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:112: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:164: trailing whitespace.\n+ \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch:165: trailing whitespace.\n+ \n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      ".",
+      ":(exclude)docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/implementation-wip.patch"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

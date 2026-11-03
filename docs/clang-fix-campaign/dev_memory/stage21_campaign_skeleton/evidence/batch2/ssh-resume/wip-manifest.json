@@ -1,0 +1,21 @@
+{
+  "status": "UNACCEPTED_NOT_DELIVERED",
+  "baseline": "51513bd",
+  "tracked": [
+    "tizen-campaign-intake/scripts/tizen_campaign_intake/__main__.py",
+    "tizen-baseline-reproduce/scripts/tizen_baseline_reproduce/__main__.py",
+    "tizen-campaign-report/scripts/tizen_campaign_report/__main__.py",
+    "tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py",
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py"
+  ],
+  "new": [
+    "tizen-campaign-intake/scripts/tizen_campaign_intake/intake.py",
+    "tizen-baseline-reproduce/scripts/tizen_baseline_reproduce/baseline.py",
+    "tizen-campaign-core/scripts/tizen_campaign_core/campaign_lifecycle.py",
+    "tizen-campaign-core/scripts/tizen_campaign_core/reproduce.py",
+    "tizen-campaign-report/scripts/tizen_campaign_report/report.py",
+    "tests/unit/test_campaign_intake.py"
+  ],
+  "reason": "SKEL-B2-04 report child-build source contract gap",
+  "preliminary_test_result": "12 passed in 1.19s (7 fake SSH + 5 draft intake); not full acceptance"
+}

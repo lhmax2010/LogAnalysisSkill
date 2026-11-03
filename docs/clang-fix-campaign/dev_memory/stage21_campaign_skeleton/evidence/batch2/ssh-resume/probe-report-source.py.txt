@@ -1,0 +1,83 @@
+"""Offline contract probe; all database/files are temporary synthetic data."""
+
+import hashlib
+import inspect
+import json
+import tempfile
+from pathlib import Path
+
+from tizen_campaign_core import campaign_state as state
+from tizen_campaign_core.submission_identity import (
+    build_campaign_unit_key,
+    build_submission_identity_key,
+)
+from tizen_ci_shared.state import StateDatabase
+from tizen_qb_verify import qb_result_fetch
+
+
+def main():
+    with tempfile.TemporaryDirectory(prefix="skel-b2-report-") as temporary:
+        root = Path(temporary)
+        db_path = root / "database" / "state.db"
+        db_path.parent.mkdir()
+        db = StateDatabase(db_path)
+        identity = dict(ci_system="quickbuild", source_build_id="1",
+                        project="platform/upstream/example", branch="tizen_base",
+                        spec_name="example", base_commit="a" * 40)
+        key = build_campaign_unit_key(**identity)
+        submission = build_submission_identity_key(
+            **{k: v for k, v in identity.items() if k != "source_build_id"}
+        )
+        state.create_unit(
+            db, campaign_unit_key=key, submission_identity_key=submission,
+            primary_arch="standard-aarch64", failed_arches=["standard-aarch64"],
+            toolchain_profile="clang", ci_evidence_ref="synthetic.json",
+            ci_evidence_sha256=hashlib.sha256(b"{}").hexdigest(),
+            max_rounds=3, max_build_invocations=9, **identity,
+        )
+        target = identity["project"] + "@" + identity["base_commit"]
+        seq = state.create_qb_request(db, key, request_id="offline-report-probe", sbs_target=target)
+        state.append_qb_event(db, request_seq=seq, event_type="BUILD_BOUND", qb_build_id="101")
+        artifacts = root / "independent-artifacts-root"
+        output = artifacts / "qb_results/offline-report-probe/result.json"
+        output.parent.mkdir(parents=True)
+        output.write_text(json.dumps({"child_build_id": "102", "status": "PASS"}))
+        state.append_qb_event(
+            db, request_seq=seq, event_type="RESULT", qb_build_id="101", status="PASS",
+            accepted=False, sbs_target_echo=target, per_arch_status_json=None,
+            qb_result_sha256=hashlib.sha256(output.read_bytes()).hexdigest(),
+            qb_result_ref=str(output.relative_to(artifacts)),
+        )
+        conn = db.connect()
+        try:
+            tables = [r[0] for r in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'campaign_%'"
+            )]
+            columns = {table: [r[1] for r in conn.execute('PRAGMA table_info("' + table + '")')]
+                       for table in tables}
+            row = dict(conn.execute("SELECT * FROM campaign_qb_events WHERE event_type='RESULT'").fetchone())
+        finally:
+            conn.close()
+        assert "child_build_id" not in columns["campaign_qb_events"]
+        assert all("state_root" not in names for names in columns.values())
+        assert row["per_arch_status_json"] is None
+        ref = Path(row["qb_result_ref"])
+        assert not ref.is_absolute()
+        assert not (db_path.parent / ref).exists()
+        assert not ref.exists()
+        assert (artifacts / ref).is_file()
+        source, line = inspect.getsourcelines(qb_result_fetch._persist)
+        anchors = [{"line": line + i, "text": text.rstrip()} for i, text in enumerate(source)
+                   if "qb_result_ref=" in text or "per_arch_status_json=" in text or "qb_build_id=" in text]
+        result = {"status": "SPEC_GAP_CONFIRMED", "campaign_columns": columns,
+                  "result_row": row, "result_json_child": "102",
+                  "source": str(Path(qb_result_fetch.__file__).resolve()), "writer_anchors": anchors,
+                  "ref_is_relative": True, "resolves_from_db_parent": False,
+                  "resolves_from_cwd": False, "resolves_from_explicit_state_root": True,
+                  "network_requests": 0, "synthetic_result_only": True}
+    result["temporary_directory_removed"] = not root.exists()
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    main()

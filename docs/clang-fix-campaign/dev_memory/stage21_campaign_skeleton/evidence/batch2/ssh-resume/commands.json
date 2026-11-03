@@ -1,0 +1,71 @@
+[
+  {
+    "name": "fake-ssh",
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-v",
+      "tests/unit/test_campaign_fake_ssh.py",
+      "--junitxml=docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/fake-ssh.xml"
+    ],
+    "started_utc": "2026-11-03T03:22:40.730957+00:00",
+    "finished_utc": "2026-11-03T03:22:41.130885+00:00",
+    "exit": 0
+  },
+  {
+    "name": "report-source",
+    "argv": [
+      ".venv/bin/python",
+      "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/probe-report-source.py.txt"
+    ],
+    "started_utc": "2026-11-03T03:22:41.130907+00:00",
+    "finished_utc": "2026-11-03T03:22:41.244063+00:00",
+    "exit": 0
+  },
+  {
+    "name": "ruff",
+    "argv": [
+      ".venv/bin/ruff",
+      "check",
+      "tests/fixtures/campaign_fake_ssh.py",
+      "tests/unit/test_campaign_fake_ssh.py"
+    ],
+    "started_utc": "2026-11-03T03:22:41.244085+00:00",
+    "finished_utc": "2026-11-03T03:22:41.256946+00:00",
+    "exit": 0
+  },
+  {
+    "name": "design-check",
+    "argv": [
+      ".venv/bin/python",
+      "docs/clang-fix-campaign/tools/check_design_doc.py",
+      "docs/clang-fix-campaign/design.md"
+    ],
+    "started_utc": "2026-11-03T03:22:41.256962+00:00",
+    "finished_utc": "2026-11-03T03:22:41.331125+00:00",
+    "exit": 0
+  },
+  {
+    "name": "collect",
+    "argv": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "--collect-only",
+      "-q"
+    ],
+    "started_utc": "2026-11-03T03:23:08.517326+00:00",
+    "finished_utc": "2026-11-03T03:23:10.876621+00:00",
+    "exit": 0
+  },
+  {
+    "name": "import-linter",
+    "argv": [
+      ".venv/bin/lint-imports"
+    ],
+    "started_utc": "2026-11-03T03:23:10.876645+00:00",
+    "finished_utc": "2026-11-03T03:23:11.022817+00:00",
+    "exit": 0
+  }
+]

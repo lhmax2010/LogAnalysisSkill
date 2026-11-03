@@ -1,0 +1,18 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.3, pluggy-1.6.0 -- /home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/linhao/Toolchain/development/LogAnalysisSkill
+configfile: pyproject.toml
+plugins: cov-7.1.0
+collecting ... collected 7 items
+
+tests/unit/test_campaign_fake_ssh.py::test_upload_pack_via_unmodified_sandbox_environment PASSED [ 14%]
+tests/unit/test_campaign_fake_ssh.py::test_receive_pack_via_unmodified_sandbox_environment PASSED [ 28%]
+tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[uname -a] PASSED [ 42%]
+tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[git-upload-pack /outside/not-a-repository] PASSED [ 57%]
+tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[git-upload-pack ../outside] PASSED [ 71%]
+tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[git-upload-pack platform/../upstream/example] PASSED [ 85%]
+tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[git-upload-pack escape] PASSED [100%]
+
+- generated xml file: /home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch2/ssh-resume/fake-ssh.xml -
+============================== 7 passed in 0.27s ===============================

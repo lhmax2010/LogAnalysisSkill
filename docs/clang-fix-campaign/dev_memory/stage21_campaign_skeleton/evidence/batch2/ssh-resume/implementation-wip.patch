@@ -1,0 +1,915 @@
+diff --git a/tizen-baseline-reproduce/scripts/tizen_baseline_reproduce/__main__.py b/tizen-baseline-reproduce/scripts/tizen_baseline_reproduce/__main__.py
+index ccda187..c5bc5d0 100644
+--- a/tizen-baseline-reproduce/scripts/tizen_baseline_reproduce/__main__.py
++++ b/tizen-baseline-reproduce/scripts/tizen_baseline_reproduce/__main__.py
+@@ -1,13 +1,37 @@
+-"""Reserved command entry point for a later campaign skeleton batch."""
++"""Baseline reproduction entry point."""
+ 
+ import argparse
++import json
++import sys
++from pathlib import Path
+ 
++from tizen_baseline_reproduce.baseline import BaselineOptions, baseline_reproduce
+ 
+-def main() -> int:
+-    parser = argparse.ArgumentParser(prog="tizen_baseline_reproduce")
+-    parser.add_subparsers(dest="command", required=True)
+-    parser.parse_args()
+-    return 0
++
++class Parser(argparse.ArgumentParser):
++    def error(self, message: str) -> None:
++        raise ValueError(message)
++
++
++def main(argv: list[str] | None = None) -> int:
++    parser = Parser(prog="tizen_baseline_reproduce")
++    commands = parser.add_subparsers(dest="command", required=True)
++    baseline = commands.add_parser("baseline-reproduce")
++    for name in ("src-clean", "gbs-conf", "config", "output-dir", "state-db"):
++        baseline.add_argument("--" + name, type=Path, required=True)
++    for name in ("campaign-unit-key", "base-commit", "package", "arch", "profile"):
++        baseline.add_argument("--" + name, required=True)
++    baseline.add_argument("--evidence-ci", type=Path)
++    baseline.add_argument("--wall-timeout", type=int, default=7200)
++    baseline.add_argument("--keep-copy", action="store_true")
++    try:
++        args = vars(parser.parse_args(sys.argv[1:] if argv is None else argv))
++        args.pop("command")
++        code, payload = baseline_reproduce(BaselineOptions(**args))
++    except ValueError:
++        code, payload = 2, {"error_code": "INVALID_ARGS"}
++    print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
++    return code
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/tizen-campaign-intake/scripts/tizen_campaign_intake/__main__.py b/tizen-campaign-intake/scripts/tizen_campaign_intake/__main__.py
+index 40e29ed..9b7c632 100644
+--- a/tizen-campaign-intake/scripts/tizen_campaign_intake/__main__.py
++++ b/tizen-campaign-intake/scripts/tizen_campaign_intake/__main__.py
+@@ -1,13 +1,35 @@
+-"""Reserved command entry point for a later campaign skeleton batch."""
++"""Campaign intake commands; campaign-start-check is reserved for batch 3."""
+ 
+ import argparse
++import json
++import sys
++from pathlib import Path
+ 
++from tizen_campaign_intake.intake import IntakeOptions, campaign_add_unit
+ 
+-def main() -> int:
+-    parser = argparse.ArgumentParser(prog="tizen_campaign_intake")
+-    parser.add_subparsers(dest="command", required=True)
+-    parser.parse_args()
+-    return 0
++
++class Parser(argparse.ArgumentParser):
++    def error(self, message: str) -> None:
++        raise ValueError(message)
++
++
++def main(argv: list[str] | None = None) -> int:
++    parser = Parser(prog="tizen_campaign_intake")
++    commands = parser.add_subparsers(dest="command", required=True)
++    add = commands.add_parser("campaign-add-unit")
++    for name in ("state-db", "config", "ci-log"):
++        add.add_argument("--" + name, type=Path, required=True)
++    for name in ("project", "branch", "spec-name", "base-commit", "source-build-id", "failed-arches"):
++        add.add_argument("--" + name, required=True)
++    add.add_argument("--toolchain-profile", default="clang")
++    try:
++        args = vars(parser.parse_args(sys.argv[1:] if argv is None else argv))
++        args.pop("command")
++        code, payload = campaign_add_unit(IntakeOptions(**args))
++    except ValueError:
++        code, payload = 2, {"error_code": "INVALID_ARGS"}
++    print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
++    return code
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/tizen-campaign-report/scripts/tizen_campaign_report/__main__.py b/tizen-campaign-report/scripts/tizen_campaign_report/__main__.py
+index c99027d..1f54f1f 100644
+--- a/tizen-campaign-report/scripts/tizen_campaign_report/__main__.py
++++ b/tizen-campaign-report/scripts/tizen_campaign_report/__main__.py
+@@ -1,13 +1,61 @@
+-"""Reserved command entry point for a later campaign skeleton batch."""
++"""Campaign lifecycle and report entry points."""
+ 
+ import argparse
++import json
++import sys
++from pathlib import Path
+ 
++import yaml
++from tizen_campaign_core.campaign_lifecycle import ReleaseNotAllowed
++from tizen_campaign_core.campaign_state import CampaignStateBusy, StateInconsistent
++from tizen_ci_shared.state import StateDatabase
+ 
+-def main() -> int:
+-    parser = argparse.ArgumentParser(prog="tizen_campaign_report")
+-    parser.add_subparsers(dest="command", required=True)
+-    parser.parse_args()
+-    return 0
++from tizen_campaign_report.report import campaign_report, finish_unit, markdown, release_worktrees
++
++
++class Parser(argparse.ArgumentParser):
++    def error(self, message: str) -> None:
++        raise ValueError(message)
++
++
++def main(argv: list[str] | None = None) -> int:
++    parser = Parser(prog="tizen_campaign_report")
++    commands = parser.add_subparsers(dest="command", required=True)
++    for command in ("campaign-finish-unit", "campaign-release-worktrees", "campaign-report"):
++        child = commands.add_parser(command)
++        child.add_argument("--state-db", required=True, type=Path)
++        if command == "campaign-report":
++            child.add_argument("--output", type=Path)
++        else:
++            child.add_argument("--config", required=True, type=Path)
++            child.add_argument("--campaign-unit-key", required=True)
++        if command == "campaign-release-worktrees":
++            child.add_argument("--confirmed-by", required=True)
++            child.add_argument("--abandon", action="store_true")
++    code = 0
++    try:
++        args = parser.parse_args(sys.argv[1:] if argv is None else argv)
++        db = StateDatabase(args.state_db)
++        if args.command == "campaign-report":
++            payload = {"units": campaign_report(db), "error_code": None}
++            if args.output:
++                args.output.write_text(markdown(payload["units"]), encoding="utf-8")
++        elif args.command == "campaign-finish-unit":
++            code, payload = finish_unit(db, args.campaign_unit_key)
++        else:
++            payload = dict(campaign_unit_key=args.campaign_unit_key, error_code=None,
++                           released=release_worktrees(db, args.campaign_unit_key, args.config,
++                                                      confirmed_by=args.confirmed_by, abandon=args.abandon))
++    except (CampaignStateBusy, BlockingIOError):
++        code, payload = 4, {"error_code": "CAMPAIGN_STATE_BUSY"}
++    except ReleaseNotAllowed:
++        code, payload = 4, {"error_code": "ReleaseNotAllowed"}
++    except StateInconsistent:
++        code, payload = 4, {"error_code": "REJECTED_STATE_INCONSISTENT"}
++    except (ValueError, OSError, yaml.YAMLError):
++        code, payload = 2, {"error_code": "INVALID_ARGS"}
++    print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
++    return code
+ 
+ 
+ if __name__ == "__main__":
+diff --git a/tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py b/tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py
+index 3bc005b..17aa3ef 100644
+--- a/tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py
++++ b/tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py
+@@ -633,6 +633,10 @@ def qb_trigger(options: QbTriggerOptions, *, stderr: TextIO) -> tuple[int, list[
+                     result.update(action="submit_failed", error_code=login_failure)
+                     continue
+                 with _lock(config.workspace / _unit_hash(key)):
++                    from tizen_campaign_core.campaign_lifecycle import is_abandoned
++
++                    if is_abandoned(db, key):
++                        raise _Rejected("REJECTED_UNIT_ABANDONED")
+                     snapshot = _snapshot(db, ids, key, qb)
+                     if snapshot.profile is not None:
+                         frozen_snapshot = json.loads(snapshot.profile["profile_json"])["form"][
+diff --git a/tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py b/tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py
+index 80a4428..d72883a 100644
+--- a/tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py
++++ b/tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py
+@@ -524,6 +524,10 @@ def sandbox_submit(options: SandboxSubmitOptions) -> SandboxSubmitOutcome:
+         finally:
+             conn.close()
+         locks.enter_context(_locks(config.workspace / _unit_hash(lock_unit)))
++        from tizen_campaign_core.campaign_lifecycle import is_abandoned
++
++        if is_abandoned(db, lock_unit):
++            raise _Reject("REJECTED_UNIT_ABANDONED", "unit has been abandoned")
+         conn = state._read_connection(db)
+         try:
+             conn.execute("BEGIN")
+--- /dev/null
++++ b/tizen-campaign-intake/scripts/tizen_campaign_intake/intake.py
+@@ -0,0 +1,217 @@
++"""Locked campaign intake with immutable evidence and staged source publication."""
++
++from __future__ import annotations
++
++import fcntl
++import hashlib
++import json
++import os
++import re
++import shutil
++import subprocess
++import sys
++import tempfile
++from contextlib import contextmanager
++from dataclasses import dataclass
++from pathlib import Path
++from typing import Any, Iterator
++
++import yaml
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core._campaign_workspace import (
++    _normalize_project,
++    _StepError,
++    _unit_hash,
++    _validate_source_identity,
++)
++from tizen_campaign_core._sandbox_git import SandboxGit
++from tizen_campaign_core.submission_identity import (
++    build_campaign_unit_key,
++    build_submission_identity_key,
++)
++from tizen_ci_shared.state import StateDatabase
++
++INTAKE_ANALYZER_FAILED = "INTAKE_ANALYZER_FAILED"
++INTAKE_CLONE_FAILED = "INTAKE_CLONE_FAILED"
++
++
++@dataclass(frozen=True)
++class IntakeOptions:
++    state_db: Path
++    config: Path
++    project: str
++    branch: str
++    spec_name: str
++    base_commit: str
++    source_build_id: str
++    failed_arches: str
++    ci_log: Path
++    toolchain_profile: str = "clang"
++
++
++@contextmanager
++def intake_lock(root: Path) -> Iterator[None]:
++    root.mkdir(parents=True, exist_ok=True)
++    with (root / ".intake.lock").open("a+") as stream:
++        try:
++            fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
++        except BlockingIOError as exc:
++            raise state.CampaignStateBusy("CAMPAIGN_STATE_BUSY") from exc
++        try:
++            yield
++        finally:
++            fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
++
++
++def fsync_parent(path: Path) -> None:
++    descriptor = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
++    try:
++        os.fsync(descriptor)
++    finally:
++        os.close(descriptor)
++
++
++def publish_evidence(path: Path, content: bytes) -> None:
++    temporary: Path | None = None
++    try:
++        with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as stream:
++            temporary = Path(stream.name)
++            stream.write(content)
++            stream.flush()
++            os.fsync(stream.fileno())
++        try:
++            os.link(temporary, path)
++        except FileExistsError:
++            if path.read_bytes() != content:
++                raise state.StateInconsistent("CI evidence differs from published bytes")
++        except OSError as exc:
++            raise _StepError("WORKSPACE_FS_UNSUPPORTED", "evidence hard-link failed", 5) from exc
++    finally:
++        if temporary is not None:
++            temporary.unlink(missing_ok=True)
++    fsync_parent(path)
++
++
++def analyze_log(log: Path, directory: Path, package: str) -> bytes:
++    result = subprocess.run(
++        [sys.executable, "-m", "gbs_analyzer", "analyze", str(log),
++         "--output-dir", str(directory), "--output-format", "both", "--package", package],
++        capture_output=True, text=True, check=False,
++    )
++    path = directory / "evidence_packet.json"
++    if result.returncode or not path.is_file():
++        raise _StepError(INTAKE_ANALYZER_FAILED, "analyzer failed or produced no evidence", 5)
++    return path.read_bytes()
++
++
++def prepare_source(root: Path, unit: state.Unit, remote_base: str, git: SandboxGit) -> Path:
++    for leftover in root.glob(".src.staging-*"):
++        if leftover.is_symlink() or not leftover.is_dir():
++            leftover.unlink()
++        else:
++            shutil.rmtree(leftover)
++    canonical = root / "src"
++    if canonical.exists() or canonical.is_symlink():
++        _validate_source_identity(canonical, unit, subprocess_runner=subprocess.run)
++        return canonical
++    staging = Path(tempfile.mkdtemp(prefix=".src.staging-", dir=root))
++    try:
++        git.run(None, "clone", "--", remote_base.rstrip("/") + "/" + unit.project, str(staging), remote=True)
++        git.run(staging, "checkout", "--detach", unit.base_commit)
++        head = git.run(staging, "rev-parse", "HEAD").stdout.strip()
++        origin = git.run(staging, "remote", "get-url", "origin").stdout.strip()
++        if head != unit.base_commit or _normalize_project(origin) != unit.project:
++            raise _StepError("REJECTED_IDENTITY_MISMATCH", "source HEAD or origin does not match campaign unit", 4)
++        marker = dict(unit_key=unit.campaign_unit_key, project=unit.project, base_commit=unit.base_commit)
++        with (staging / ".campaign_clone").open("w", encoding="utf-8") as stream:
++            json.dump(marker, stream, sort_keys=True)
++            stream.flush()
++            os.fsync(stream.fileno())
++        fsync_parent(staging / ".campaign_clone")
++        if canonical.exists() or canonical.is_symlink():
++            raise _StepError("REJECTED_IDENTITY_MISMATCH", "canonical source appeared during intake", 4)
++        os.rename(staging, canonical)
++        fsync_parent(canonical)
++        return canonical
++    except _StepError:
++        raise
++    except (OSError, subprocess.SubprocessError) as exc:
++        raise _StepError(INTAKE_CLONE_FAILED, "source preparation failed", 5) from exc
++    finally:
++        if staging.exists():
++            shutil.rmtree(staging)
++
++
++def campaign_add_unit(options: IntakeOptions) -> tuple[int, dict[str, Any]]:
++    payload: dict[str, Any] = dict(campaign_unit_key=None, primary_arch=None, failed_arches=[],
++                                 ci_evidence_ref=None, ci_evidence_sha256=None, src_clean=None,
++                                 created=False, error_code=None)
++    try:
++        config = yaml.safe_load(options.config.read_text(encoding="utf-8"))
++        if not isinstance(config, dict):
++            raise ValueError("config must be a mapping")
++        for name in ("campaign_workspace", "gerrit_ssh_base"):
++            if not isinstance(config.get(name), str) or not config[name].strip():
++                raise ValueError("missing config field")
++        for name in ("max_rounds", "max_build_invocations"):
++            if type(config.get(name)) is not int or config[name] < 1:
++                raise ValueError("invalid campaign budget")
++        if not (config["gerrit_ssh_base"].startswith("ssh://") or Path(config["gerrit_ssh_base"]).is_absolute()):
++            raise ValueError("invalid remote base")
++        if (not re.fullmatch(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*", options.project)
++                or any(part in {".", ".."} for part in options.project.split("/"))
++                or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", options.base_commit)
++                or not options.branch.strip() or not options.spec_name.strip()
++                or not options.source_build_id.isdecimal() or int(options.source_build_id) < 1
++                or not options.toolchain_profile.strip()):
++            raise ValueError("invalid campaign identity")
++        arches = tuple(sorted(set(part.strip() for part in options.failed_arches.split(","))))
++        if not all(arches):
++            raise ValueError("failed arches must be non-empty")
++        identity = dict(ci_system="quickbuild", source_build_id=options.source_build_id,
++                        project=options.project, branch=options.branch,
++                        spec_name=options.spec_name, base_commit=options.base_commit)
++        key = build_campaign_unit_key(**identity)
++        submission = build_submission_identity_key(**{k: v for k, v in identity.items() if k != "source_build_id"})
++        root = Path(config["campaign_workspace"]).expanduser().resolve() / _unit_hash(key)
++        payload.update(campaign_unit_key=key, failed_arches=list(arches))
++        db = StateDatabase(options.state_db)
++        with intake_lock(root):
++            shared = dict(campaign_unit_key=key, submission_identity_key=submission,
++                          failed_arches=arches, toolchain_profile=options.toolchain_profile,
++                          max_rounds=config["max_rounds"], max_build_invocations=config["max_build_invocations"],
++                          **identity)
++            if any(arch not in state.ARCH_RAW_TO_NORM for arch in arches):
++                state.create_arch_rejected_unit(db, reason="arch_not_allowed", **shared)
++                payload["error_code"] = "REJECTED_ARCH_NOT_ALLOWED"
++                return 4, payload
++            primary = next(arch for arch in ("standard-aarch64", "standard-armv7l", "standard-x86_64") if arch in arches)
++            with tempfile.TemporaryDirectory(prefix=".ci.staging-", dir=root) as directory:
++                content = analyze_log(options.ci_log, Path(directory), options.spec_name)
++            evidence = root / "ci_evidence.json"
++            publish_evidence(evidence, content)
++            digest = hashlib.sha256(content).hexdigest()
++            payload.update(primary_arch=primary, ci_evidence_ref=str(evidence), ci_evidence_sha256=digest)
++            existing = state.get_unit(db, key)
++            state.create_unit(db, primary_arch=primary, ci_evidence_ref=str(evidence), ci_evidence_sha256=digest, **shared)
++            payload["created"] = existing is None
++            if state.latest_status(db, key) is None:
++                state.append_status(db, key, "DISCOVERED")
++            if state.latest_status(db, key) == "DISCOVERED":
++                state.append_status(db, key, "CI_EVIDENCE_READY")
++            unit = state.get_unit(db, key)
++            assert unit is not None
++            payload["src_clean"] = str(prepare_source(root, unit, config["gerrit_ssh_base"], SandboxGit()))
++        return 0, payload
++    except state.CampaignStateBusy:
++        payload["error_code"] = "CAMPAIGN_STATE_BUSY"
++        return 4, payload
++    except state.StateInconsistent:
++        payload["error_code"] = "REJECTED_STATE_INCONSISTENT"
++        return 4, payload
++    except _StepError as exc:
++        payload["error_code"] = exc.code
++        return exc.exit_code, payload
++    except (ValueError, OSError, yaml.YAMLError):
++        payload["error_code"] = "INVALID_ARGS"
++        return 2, payload
+--- /dev/null
++++ b/tizen-baseline-reproduce/scripts/tizen_baseline_reproduce/baseline.py
+@@ -0,0 +1,166 @@
++"""Locked baseline build, evidence anchoring and reproduction bookkeeping."""
++
++from __future__ import annotations
++
++import fcntl
++import hashlib
++import json
++import subprocess
++import sys
++from dataclasses import dataclass
++from pathlib import Path
++from typing import Any
++
++import yaml
++from gbs_build_skill.runner import BuildOptions, run_gbs_build
++from tizen_build_verify.workspace import create_worktree
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core._campaign_workspace import _StepError, _unit_hash, _validate_source_identity
++from tizen_campaign_core.campaign_lifecycle import is_abandoned
++from tizen_campaign_core.reproduce import check
++from tizen_ci_shared.state import StateDatabase
++from tizen_ci_shared.workspace import cleanup_disposable_copy
++from tizen_convergence_judge.convergence import primary_fingerprint
++
++BASELINE_TOOLING_FAILED = "BASELINE_TOOLING_FAILED"
++EMPTY_BASELINE = dict(schema_version="evidence_packet/v1", synthetic=True, reason="baseline_pass", primary_error=None,
++                      error_clusters=dict(schema_version="error_clusters/v1", clusters=[], truncated=False),
++                      cascade_summary="", root_cause_candidates=[])
++
++
++@dataclass(frozen=True)
++class BaselineOptions:
++    campaign_unit_key: str
++    src_clean: Path
++    base_commit: str
++    gbs_conf: Path
++    package: str
++    arch: str
++    profile: str
++    config: Path
++    output_dir: Path
++    state_db: Path
++    evidence_ci: Path | None = None
++    wall_timeout: int = 7200
++    keep_copy: bool = False
++
++
++def _packet(path: Path, digest: str, code: str) -> dict[str, Any]:
++    try:
++        content = path.read_bytes()
++        if hashlib.sha256(content).hexdigest() != digest:
++            raise ValueError("evidence digest mismatch")
++        value = json.loads(content)
++        if not isinstance(value, dict):
++            raise ValueError("evidence must be an object")
++        return value
++    except (OSError, ValueError) as exc:
++        raise _StepError(code, "evidence cannot be validated", 4) from exc
++
++
++def baseline_reproduce(options: BaselineOptions) -> tuple[int, dict[str, Any]]:
++    result: dict[str, Any] = dict(arch_norm=None, outcome=None, is_primary=None, evidence_local=None,
++                                 evidence_sha256=None, synthetic_zero_error=False, gbs_conf_sha256=None,
++                                 build_log=None, basis={}, error_code=None)
++    try:
++        raw = yaml.safe_load(options.config.read_text())
++        if (not isinstance(raw, dict) or not raw.get("campaign_workspace") or not raw.get("clang_conf_path")
++                or options.gbs_conf.resolve() != Path(raw["clang_conf_path"]).expanduser().resolve()
++                or type(options.wall_timeout) is not int or options.wall_timeout <= 0):
++            raise ValueError("invalid baseline configuration")
++        db = StateDatabase(options.state_db)
++        unit = state.get_unit(db, options.campaign_unit_key)
++        if (unit is None or unit.base_commit != options.base_commit or unit.spec_name != options.package
++                or unit.toolchain_profile != options.profile or options.arch not in state.ARCH_RAW_TO_NORM):
++            raise ValueError("invalid baseline identity")
++        arch = state.ARCH_RAW_TO_NORM[options.arch]
++        lock_root = Path(raw["campaign_workspace"]).expanduser().resolve() / _unit_hash(options.campaign_unit_key) / arch
++        lock_root.mkdir(parents=True, exist_ok=True)
++        with (lock_root / ".repair_step.lock").open("a+") as lock:
++            fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
++            if is_abandoned(db, options.campaign_unit_key):
++                raise _StepError("REJECTED_UNIT_ABANDONED", "unit has been abandoned", 4)
++            return _run_locked(options, db, unit, arch, result)
++    except (BlockingIOError, state.CampaignStateBusy):
++        result["error_code"] = "CAMPAIGN_STATE_BUSY"
++        return 4, result
++    except _StepError as exc:
++        result["error_code"] = exc.code
++        return exc.exit_code, result
++    except state.StateInconsistent:
++        result["error_code"] = "REJECTED_STATE_INCONSISTENT"
++        return 4, result
++    except (ValueError, OSError, yaml.YAMLError):
++        result["error_code"] = "INVALID_ARGS"
++        return 2, result
++
++
++def _run_locked(options: BaselineOptions, db: StateDatabase, unit: state.Unit, arch: str, result: dict[str, Any]) -> tuple[int, dict[str, Any]]:
++    _validate_source_identity(options.src_clean, unit, subprocess_runner=subprocess.run)
++    if unit.ci_evidence_ref is None or unit.ci_evidence_sha256 is None or unit.primary_arch is None:
++        raise _StepError("REJECTED_CI_EVIDENCE_MISMATCH", "unit has no CI anchor", 4)
++    anchor = Path(unit.ci_evidence_ref)
++    if options.evidence_ci is not None and options.evidence_ci.resolve() != anchor.resolve():
++        raise _StepError("REJECTED_CI_EVIDENCE_MISMATCH", "CI anchor path differs", 4)
++    ci = _packet(anchor, unit.ci_evidence_sha256, "REJECTED_CI_EVIDENCE_MISMATCH")
++    primary = unit.primary_arch == options.arch
++    primary_event = state.latest_reproduce(db, unit.campaign_unit_key, arch_norm=state.ARCH_RAW_TO_NORM[unit.primary_arch])
++    if not primary and primary_event is None:
++        raise _StepError("REJECTED_PRIMARY_BASELINE_MISSING", "primary baseline must run first", 4)
++    result.update(arch_norm=arch, is_primary=primary, gbs_conf_sha256=hashlib.sha256(options.gbs_conf.read_bytes()).hexdigest())
++    options.output_dir.mkdir(parents=True, exist_ok=True)
++    workspace = options.output_dir / "baseline_ws"
++    copy = workspace / "iter_0"
++    if copy.exists():
++        cleanup_disposable_copy(str(copy), str(workspace))
++        state.append_event(db, unit.campaign_unit_key, "WORKSPACE_CLEANUP", dict(paths=[str(copy)], reason="baseline_resume"))
++    try:
++        state.append_status(db, unit.campaign_unit_key, "BASELINE_RUNNING", arch_norm=arch)
++        handle = create_worktree(str(options.src_clean), unit.base_commit, str(workspace), 0)
++        built = run_gbs_build(BuildOptions(conf=options.gbs_conf, arch=arch, include_all=True,
++                                          output_log=options.output_dir / "baseline.log", timeout=options.wall_timeout,
++                                          cwd=Path(handle.path)))
++        log = built.analysis_log_path or built.failure_log_path or built.log_path
++        result["build_log"] = str(log)
++        if built.timed_out or built.exit_code == 127:
++            raise _StepError(BASELINE_TOOLING_FAILED, "baseline build tooling failed", 5)
++        synthetic = built.exit_code == 0
++        if synthetic:
++            local_path = options.output_dir / "empty_baseline.json"
++            local_path.write_bytes((json.dumps(EMPTY_BASELINE, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n").encode("utf-8"))
++        else:
++            analyzer = options.output_dir / "ev_local"
++            command = [sys.executable, "-m", "gbs_analyzer", "analyze", str(log), "--src-root", str(copy),
++                       "--output-dir", str(analyzer), "--output-format", "both", "--package", unit.spec_name]
++            analyzed = subprocess.run(command, capture_output=True, text=True, check=False)
++            local_path = analyzer / "evidence_packet.json"
++            if analyzed.returncode or not local_path.is_file():
++                raise _StepError(BASELINE_TOOLING_FAILED, "baseline analyzer failed", 5)
++        content = local_path.read_bytes()
++        local = json.loads(content)
++        checked = check(ci, local, package=unit.spec_name, arch_norm=arch, toolchain_profile=unit.toolchain_profile)
++        if synthetic:
++            outcome = "baseline_pass"
++        elif primary:
++            outcome = "matched" if checked.reproduced else "different_failure"
++        else:
++            assert primary_event is not None
++            previous = primary_event["payload"]
++            packet = _packet(Path(str(previous["evidence_local"])), str(previous["evidence_sha256"]), "REJECTED_BASELINE_EVIDENCE_MISMATCH")
++            prior_fp, local_fp = primary_fingerprint(packet), primary_fingerprint(local)
++            outcome = "matched" if prior_fp is not None and prior_fp == local_fp else "different_failure"
++        result.update(outcome=outcome, evidence_local=str(local_path), evidence_sha256=hashlib.sha256(content).hexdigest(),
++                      synthetic_zero_error=synthetic, basis=checked.basis)
++        payload = {key: value for key, value in result.items() if key not in {"is_primary", "error_code"}}
++        payload["ci_evidence_sha256_used"] = unit.ci_evidence_sha256
++        state.append_event(db, unit.campaign_unit_key, "REPRODUCE", payload)
++        failed = primary and outcome != "matched"
++        state.append_status(db, unit.campaign_unit_key, "NOT_REPRODUCED" if failed else "BASELINE_REPRODUCED", arch_norm=arch)
++        if failed:
++            result["error_code"] = "NOT_REPRODUCED"
++        return 4 if failed else 0, result
++    except (OSError, subprocess.SubprocessError, ValueError) as exc:
++        raise _StepError(BASELINE_TOOLING_FAILED, "baseline tooling failed", 5) from exc
++    finally:
++        if copy.exists() and not options.keep_copy:
++            cleanup_disposable_copy(str(copy), str(workspace))
+--- /dev/null
++++ b/tizen-campaign-core/scripts/tizen_campaign_core/campaign_lifecycle.py
+@@ -0,0 +1,108 @@
++"""Release registered campaign copies without deleting their contents."""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++
++from tizen_ci_shared.state import StateDatabase
++from tizen_ci_shared.workspace import is_protected, release_worktree_protection
++
++from tizen_campaign_core import campaign_state as state
++
++REJECTED_UNIT_ABANDONED = "REJECTED_UNIT_ABANDONED"
++REJECTED_UNIT_NOT_TERMINAL = "REJECTED_UNIT_NOT_TERMINAL"
++TERMINAL_RELEASE = frozenset({"REVIEW_PUSHED", "REVIEW_INELIGIBLE", "DENIED", "STALLED", "REGRESSED", "ROUNDS_EXHAUSTED"})
++EMPTY_TERMINAL = frozenset({"NOT_REPRODUCED", "REJECTED_ARCH_NOT_ALLOWED"})
++HELD = frozenset({"HELD_FOR_INVESTIGATION", "WORKTREE_LOST", "SANDBOX_QB_FAILED"})
++TERMINAL = TERMINAL_RELEASE | EMPTY_TERMINAL | HELD | {"REVIEW_MANUAL"}
++
++
++class ReleaseNotAllowed(RuntimeError):
++    pass
++
++
++def is_abandoned(state_db: StateDatabase, campaign_unit_key: str) -> bool:
++    conn = state._read_connection(state_db)
++    try:
++        return any(
++            json.loads(row[0]).get("reason") == "abandoned"
++            for row in conn.execute(
++                "SELECT payload_json FROM campaign_gate_events WHERE campaign_unit_key=? AND event_type='WORKSPACE_RELEASE'",
++                (campaign_unit_key,),
++            )
++        )
++    finally:
++        conn.close()
++
++
++def registered_worktrees(state_db: StateDatabase, campaign_unit_key: str) -> list[str]:
++    conn = state._read_connection(state_db)
++    try:
++        state._require_unit(conn, campaign_unit_key)
++        paths = {str(row[0]) for row in conn.execute(
++            "SELECT vr.worktree_path FROM campaign_verifications cv JOIN verification_records vr "
++            "ON vr.verification_id=cv.verification_id WHERE cv.campaign_unit_key=?", (campaign_unit_key,),
++        )}
++        for row in conn.execute(
++            "SELECT payload_json FROM campaign_gate_events WHERE campaign_unit_key=? AND event_type='ORPHAN_PASS'", (campaign_unit_key,),
++        ):
++            paths.add(str(json.loads(row[0])["worktree_path"]))
++        return sorted(paths)
++    finally:
++        conn.close()
++
++
++def _released_paths(state_db: StateDatabase, key: str, reason: str) -> set[str]:
++    conn = state._read_connection(state_db)
++    try:
++        paths: set[str] = set()
++        for row in conn.execute(
++            "SELECT payload_json FROM campaign_gate_events WHERE campaign_unit_key=? AND event_type='WORKSPACE_RELEASE'", (key,),
++        ):
++            payload = json.loads(row[0])
++            if payload["reason"] == reason:
++                paths.update(payload["paths"])
++        return paths
++    finally:
++        conn.close()
++
++
++def _release(db: StateDatabase, key: str, reason: str, confirmed_by: str | None) -> list[str]:
++    registered = registered_worktrees(db, key)
++    recorded = _released_paths(db, key, reason)
++    pending = [path for path in registered if path not in recorded or (reason != "abandoned_release" and is_protected(path))]
++    for path in pending:
++        try:
++            if Path(path).exists() and is_protected(path):
++                release_worktree_protection(path)
++            if is_protected(path):
++                raise state.StateInconsistent("protection remains after release")
++        except OSError as exc:
++            raise state.StateInconsistent("could not release worktree protection") from exc
++    if pending:
++        payload: dict[str, object] = dict(paths=pending, reason=reason)
++        if confirmed_by is not None:
++            payload["confirmed_by"] = confirmed_by
++        state.append_event(db, key, "WORKSPACE_RELEASE", payload)
++    return pending
++
++
++def release_terminal_worktrees(state_db: StateDatabase, campaign_unit_key: str) -> list[str]:
++    if state.latest_status(state_db, campaign_unit_key) not in TERMINAL_RELEASE:
++        raise ReleaseNotAllowed("unit is not in a terminal release state")
++    return _release(state_db, campaign_unit_key, "terminal", None)
++
++
++def release_held_worktrees(state_db: StateDatabase, campaign_unit_key: str, *, confirmed_by: str) -> list[str]:
++    if not confirmed_by.strip() or state.latest_status(state_db, campaign_unit_key) not in HELD:
++        raise ReleaseNotAllowed("unit is not held or confirmation is empty")
++    return _release(state_db, campaign_unit_key, "held", confirmed_by)
++
++
++def release_abandoned_worktrees(state_db: StateDatabase, campaign_unit_key: str, *, confirmed_by: str) -> list[str]:
++    status = state.latest_status(state_db, campaign_unit_key)
++    if (not confirmed_by.strip() or status is None
++            or (status in TERMINAL and not is_abandoned(state_db, campaign_unit_key))):
++        raise ReleaseNotAllowed("unit is terminal or confirmation is empty")
++    return _release(state_db, campaign_unit_key, "abandoned_release", confirmed_by)
+--- /dev/null
++++ b/tizen-campaign-core/scripts/tizen_campaign_core/reproduce.py
+@@ -0,0 +1,32 @@
++"""Baseline reproduction identity, independent of error-count drift."""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++from typing import Any
++
++from tizen_convergence_judge.convergence import error_count, primary_fingerprint
++
++
++@dataclass(frozen=True)
++class ReproduceResult:
++    reproduced: bool
++    basis: dict[str, Any]
++
++
++def check(evidence_ci: dict[str, Any], evidence_local: dict[str, Any], *, package: str,
++          arch_norm: str, toolchain_profile: str) -> ReproduceResult:
++    ci = primary_fingerprint(evidence_ci)
++    local = primary_fingerprint(evidence_local)
++    ci_count, local_count = error_count(evidence_ci), error_count(evidence_local)
++    fields = dict(package=package, arch=arch_norm, toolchain_profile=toolchain_profile,
++                  failed_phase=evidence_ci.get("failed_phase"))
++    matched = bool(package and arch_norm and toolchain_profile and ci is not None and local is not None
++                   and ci.identity == local.identity
++                   and evidence_ci.get("failed_phase") == evidence_local.get("failed_phase"))
++    if ci is not None:
++        fields.update(normalized_file=ci.normalized_file, diagnostic_code=ci.diagnostic_code, anchor=ci.anchor)
++    return ReproduceResult(matched, dict(matched_fields=fields if matched else {},
++                                        ci_fp=ci.to_dict() if ci else None, local_fp=local.to_dict() if local else None,
++                                        error_count_ci=ci_count, error_count_local=local_count,
++                                        error_count_drift=ci_count != local_count))
+--- /dev/null
++++ b/tizen-campaign-report/scripts/tizen_campaign_report/report.py
+@@ -0,0 +1,93 @@
++"""Campaign release commands and a read-only unit report."""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++from typing import Any
++
++import yaml
++from tizen_campaign_core import campaign_lifecycle as lifecycle
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core._campaign_workspace import _unit_hash
++from tizen_ci_shared.state import StateDatabase
++from tizen_ci_shared.workspace import is_protected
++from tizen_sandbox_submit.sandbox_submit import _locks
++
++
++def finish_unit(db: StateDatabase, key: str) -> tuple[int, dict[str, Any]]:
++    result: dict[str, Any] = dict(campaign_unit_key=key, released=[], retained=False, reason=None, message=None, error_code=None)
++    status = state.latest_status(db, key)
++    if status in lifecycle.TERMINAL_RELEASE:
++        result["released"] = lifecycle.release_terminal_worktrees(db, key)
++    elif status in lifecycle.EMPTY_TERMINAL:
++        pass
++    elif status in lifecycle.HELD:
++        result.update(retained=True, reason=status)
++    else:
++        result.update(error_code=lifecycle.REJECTED_UNIT_NOT_TERMINAL,
++                      message="如决定放弃该 unit,用 campaign-release-worktrees --abandon")
++        return 4, result
++    return 0, result
++
++
++def release_worktrees(db: StateDatabase, key: str, config: Path, *, confirmed_by: str, abandon: bool) -> list[str]:
++    if not confirmed_by.strip():
++        raise lifecycle.ReleaseNotAllowed("confirmation must be non-empty")
++    if not abandon:
++        return lifecycle.release_held_worktrees(db, key, confirmed_by=confirmed_by)
++    raw = yaml.safe_load(config.read_text(encoding="utf-8"))
++    if not isinstance(raw, dict) or not isinstance(raw.get("campaign_workspace"), str) or not raw["campaign_workspace"]:
++        raise ValueError("missing campaign_workspace")
++    root = Path(raw["campaign_workspace"]).expanduser().resolve() / _unit_hash(key)
++    with _locks(root):
++        status = state.latest_status(db, key)
++        abandoned = lifecycle.is_abandoned(db, key)
++        if status is None or (status in lifecycle.TERMINAL and not abandoned):
++            raise lifecycle.ReleaseNotAllowed("unit is terminal")
++        if not abandoned:
++            state.append_event(db, key, "WORKSPACE_RELEASE", dict(paths=[], reason="abandoned", confirmed_by=confirmed_by))
++        return lifecycle.release_abandoned_worktrees(db, key, confirmed_by=confirmed_by)
++
++
++def campaign_report(db: StateDatabase) -> list[dict[str, Any]]:
++    conn = state._read_connection(db)
++    try:
++        units = conn.execute("SELECT * FROM campaign_units ORDER BY created_at, campaign_unit_key").fetchall()
++        rows = []
++        for unit in units:
++            key = str(unit["campaign_unit_key"])
++            status = conn.execute("SELECT status, reason FROM campaign_status_log WHERE campaign_unit_key=? ORDER BY log_id DESC LIMIT 1", (key,)).fetchone()
++            current = str(status["status"]) if status else None
++            reason = status["reason"] if status else None
++            abandoned = lifecycle.is_abandoned(db, key)
++            protected = any(is_protected(path) for path in lifecycle.registered_worktrees(db, key))
++            workspace = "已放弃" if abandoned else "保留待查" if current in lifecycle.HELD else "在用" if protected else "已释放"
++            if abandoned:
++                reason = "abandoned(状态列为放弃时及之后的状态)"
++            review = state.latest_event(db, key, "REVIEW")
++            qb = conn.execute(
++                "SELECT e.* FROM campaign_qb_events e WHERE e.request_seq=(SELECT max(request_seq) FROM campaign_qb_requests WHERE campaign_unit_key=?) ORDER BY e.event_id DESC LIMIT 1", (key,),
++            ).fetchone()
++            child = None
++            if qb and qb["qb_result_ref"]:
++                try:
++                    child = json.loads(Path(qb["qb_result_ref"]).read_text())["child_build_id"]
++                except (OSError, KeyError, ValueError, TypeError):
++                    pass
++            rows.append(dict(campaign_unit_key=key, spec_name=unit["spec_name"], project=unit["project"],
++                             status=current, reason=reason, rounds=conn.execute("SELECT count(*) FROM campaign_rounds WHERE campaign_unit_key=?", (key,)).fetchone()[0],
++                             invocations_used=state.invocations_used(db, key), qb_build_id=qb["qb_build_id"] if qb else None,
++                             child_build_id=child, review_url=review["payload"].get("review_url") if review else None,
++                             worktree_status=workspace))
++        return rows
++    finally:
++        conn.close()
++
++
++def markdown(rows: list[dict[str, Any]]) -> str:
++    keys = ("spec_name", "project", "status", "reason", "rounds", "invocations_used", "qb_build_id", "child_build_id", "review_url", "worktree_status")
++    headings = ("包名", "项目", "最新状态", "终止原因", "修复轮数", "已用编译次数", "QuickBuild父构建", "QuickBuild子构建", "review URL", "副本状态")
++    def cell(value: Any) -> str:
++        return ("" if value is None else str(value)).replace("|", "\\|").replace("\n", "<br>")
++    return "\n".join(["| " + " | ".join(headings) + " |", "| " + " | ".join("---" for _ in keys) + " |"] + ["| " + " | ".join(cell(row[key]) for key in keys) + " |" for row in rows]) + "\n"
+--- /dev/null
++++ b/tests/unit/test_campaign_intake.py
+@@ -0,0 +1,85 @@
++from __future__ import annotations
++
++import json
++import subprocess
++from dataclasses import replace
++from pathlib import Path
++
++import pytest
++import yaml
++from test_campaign_fake_ssh import transport  # noqa: F401
++from tizen_campaign_core._campaign_workspace import _validate_source_identity
++from tizen_campaign_core.campaign_state import get_unit
++from tizen_campaign_intake import intake
++from tizen_ci_shared.state import StateDatabase
++
++
++@pytest.fixture
++def options(tmp_path: Path, transport: tuple[Path, Path, Path]) -> intake.IntakeOptions:  # noqa: F811
++    git = intake.SandboxGit()
++    seed = tmp_path / "seed"
++    git.run(None, "init", str(seed))
++    git.run(seed, "-c", "user.name=Offline Test", "-c", "user.email=test@example.invalid", "commit", "--allow-empty", "-m", "test")
++    commit = git.run(seed, "rev-parse", "HEAD").stdout.strip()
++    git.run(seed, "push", str(transport[1]), "HEAD:refs/heads/master")
++    config = tmp_path / "config.yaml"
++    config.write_text(yaml.safe_dump(dict(campaign_workspace=str(tmp_path / "ws"),
++                                        gerrit_ssh_base="ssh://gerrit.invalid:29418",
++                                        max_rounds=3, max_build_invocations=9)))
++    log = Path(__file__).resolve().parents[1] / "fixtures/e2e_clang_compile/buildlog"
++    return intake.IntakeOptions(tmp_path / "state.db", config, "platform/upstream/example",
++                                "tizen_base", "example", commit, "1", "standard-aarch64", log)
++
++
++def test_intake_fake_ssh_first_clone_and_retry(options: intake.IntakeOptions) -> None:
++    code, payload = intake.campaign_add_unit(options)
++    assert code == 0, payload
++    source = Path(payload["src_clean"])
++    assert intake.SandboxGit().run(source, "remote", "get-url", "origin").stdout.strip() == "ssh://gerrit.invalid:29418/platform/upstream/example"
++    assert set(json.loads((source / ".campaign_clone").read_text())) == {"unit_key", "project", "base_commit"}
++    unit = get_unit(StateDatabase(options.state_db), payload["campaign_unit_key"])
++    assert unit is not None
++    _validate_source_identity(source, unit, subprocess_runner=subprocess.run)
++    second_code, second = intake.campaign_add_unit(options)
++    assert second_code == 0, second
++    assert second == dict(payload, created=False)
++
++
++def test_intake_absolute_local_origin_rejected_before_publish(options: intake.IntakeOptions, transport: tuple[Path, Path, Path]) -> None:  # noqa: F811
++    config = yaml.safe_load(options.config.read_text())
++    config["gerrit_ssh_base"] = str(transport[0])
++    options.config.write_text(yaml.safe_dump(config))
++    code, payload = intake.campaign_add_unit(options)
++    assert code == 4 and payload["error_code"] == "REJECTED_IDENTITY_MISMATCH"
++    root = Path(payload["ci_evidence_ref"]).parent
++    assert not (root / "src").exists()
++    assert not list(root.glob(".src.staging-*"))
++
++
++def test_intake_analyzer_failure_no_unit(options: intake.IntakeOptions, tmp_path: Path) -> None:
++    code, payload = intake.campaign_add_unit(replace(options, ci_log=tmp_path / "missing"))
++    assert code == 5 and payload["error_code"] == "INTAKE_ANALYZER_FAILED"
++    assert not options.state_db.exists()
++
++
++def test_evidence_no_overwrite(tmp_path: Path) -> None:
++    path = tmp_path / "evidence.json"
++    intake.publish_evidence(path, b"first")
++    intake.publish_evidence(path, b"first")
++    with pytest.raises(intake.state.StateInconsistent):
++        intake.publish_evidence(path, b"second")
++    assert path.read_bytes() == b"first"
++
++
++def test_intake_busy_preserves_staging(options: intake.IntakeOptions) -> None:
++    identity = dict(ci_system="quickbuild", source_build_id=options.source_build_id, project=options.project,
++                    branch=options.branch, spec_name=options.spec_name, base_commit=options.base_commit)
++    config = yaml.safe_load(options.config.read_text())
++    root = Path(config["campaign_workspace"]) / intake._unit_hash(intake.build_campaign_unit_key(**identity))
++    with intake.intake_lock(root):
++        staging = root / ".src.staging-other"
++        staging.mkdir()
++        code, payload = intake.campaign_add_unit(options)
++        assert code == 4 and payload["error_code"] == "CAMPAIGN_STATE_BUSY"
++        assert staging.is_dir()
++        assert not options.state_db.exists()

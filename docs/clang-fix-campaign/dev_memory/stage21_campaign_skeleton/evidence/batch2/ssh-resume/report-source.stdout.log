@@ -1,0 +1,132 @@
+{
+  "status": "SPEC_GAP_CONFIRMED",
+  "campaign_columns": {
+    "campaign_units": [
+      "campaign_unit_key",
+      "ci_system",
+      "source_build_id",
+      "project",
+      "branch",
+      "spec_name",
+      "base_commit",
+      "submission_identity_key",
+      "toolchain_profile",
+      "ci_evidence_ref",
+      "ci_evidence_sha256",
+      "primary_arch",
+      "max_rounds",
+      "max_build_invocations",
+      "failed_arches",
+      "created_at",
+      "schema_version"
+    ],
+    "campaign_gate_events": [
+      "event_id",
+      "campaign_unit_key",
+      "round_index",
+      "arch_norm",
+      "verdict",
+      "invocation_event_id",
+      "event_type",
+      "payload_json",
+      "created_at"
+    ],
+    "campaign_status_log": [
+      "log_id",
+      "campaign_unit_key",
+      "status",
+      "reason",
+      "arch_norm",
+      "created_at"
+    ],
+    "campaign_rounds": [
+      "campaign_unit_key",
+      "round_index",
+      "edit_spec_ref",
+      "edit_spec_sha256",
+      "created_at"
+    ],
+    "campaign_verifications": [
+      "link_id",
+      "campaign_unit_key",
+      "arch_raw",
+      "arch_norm",
+      "verification_id",
+      "round_index",
+      "edit_spec_sha256",
+      "campaign_schema_version",
+      "created_at"
+    ],
+    "campaign_qb_requests": [
+      "request_seq",
+      "request_id",
+      "campaign_unit_key",
+      "sbs_target",
+      "created_at"
+    ],
+    "campaign_qb_events": [
+      "event_id",
+      "request_seq",
+      "event_type",
+      "qb_build_id",
+      "status",
+      "accepted",
+      "sbs_target_echo",
+      "per_arch_status_json",
+      "qb_result_sha256",
+      "qb_result_ref",
+      "degraded",
+      "created_at"
+    ],
+    "campaign_change_ids": [
+      "submission_key",
+      "change_id",
+      "source",
+      "hook_sha256",
+      "created_at"
+    ],
+    "campaign_qb_profiles": [
+      "branch",
+      "profile_json",
+      "profile_sha256",
+      "created_at"
+    ]
+  },
+  "result_row": {
+    "event_id": 3,
+    "request_seq": 1,
+    "event_type": "RESULT",
+    "qb_build_id": "101",
+    "status": "PASS",
+    "accepted": 0,
+    "sbs_target_echo": "platform/upstream/example@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "per_arch_status_json": null,
+    "qb_result_sha256": "eb6f48b754a039ea719e325e6019f36568dd1c95667ad23ee3c179cca2d01646",
+    "qb_result_ref": "qb_results/offline-report-probe/result.json",
+    "degraded": 0,
+    "created_at": "2026-11-03T03:22:41.233994+00:00"
+  },
+  "result_json_child": "102",
+  "source": "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_result_fetch.py",
+  "writer_anchors": [
+    {
+      "line": 495,
+      "text": "                qb_build_id=view.build,"
+    },
+    {
+      "line": 499,
+      "text": "                per_arch_status_json=None,"
+    },
+    {
+      "line": 501,
+      "text": "                qb_result_ref=str(output.relative_to(root)),"
+    }
+  ],
+  "ref_is_relative": true,
+  "resolves_from_db_parent": false,
+  "resolves_from_cwd": false,
+  "resolves_from_explicit_state_root": true,
+  "network_requests": 0,
+  "synthetic_result_only": true,
+  "temporary_directory_removed": true
+}

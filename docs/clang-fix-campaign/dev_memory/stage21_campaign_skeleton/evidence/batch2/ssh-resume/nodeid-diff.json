@@ -1,0 +1,14 @@
+{
+  "old_count": 2922,
+  "new_count": 2929,
+  "removed": [],
+  "added": [
+    "tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[git-upload-pack ../outside]",
+    "tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[git-upload-pack /outside/not-a-repository]",
+    "tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[git-upload-pack escape]",
+    "tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[git-upload-pack platform/../upstream/example]",
+    "tests/unit/test_campaign_fake_ssh.py::test_fake_ssh_rejects_unsafe_requests[uname -a]",
+    "tests/unit/test_campaign_fake_ssh.py::test_receive_pack_via_unmodified_sandbox_environment",
+    "tests/unit/test_campaign_fake_ssh.py::test_upload_pack_via_unmodified_sandbox_environment"
+  ]
+}

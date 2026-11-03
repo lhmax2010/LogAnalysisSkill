@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**STOPPED_SKEL_B2_02**。
+日期:2026-11-03。状态:**STOPPED_SKEL_B2_04**。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批范围与边界见第12节,不开始第3批。
 
@@ -21,7 +21,7 @@
 | 批次 | 范围 | 当前状态 |
 |---|---|---|
 | 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | ACCEPTED;SKEL-B2-01验收通过 |
-| 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | STOPPED_SKEL_B2_02;本地克隆origin与现有身份校验冲突,等待裁定 |
+| 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | STOPPED_SKEL_B2_04;假SSH前置通过,报告子构建号的数据源契约缺口待裁定 |
 | 3 | 审核提交、启动检查、编排skill与离线端到端 | NOT_STARTED |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
 | 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | NOT_STARTED |
@@ -471,6 +471,8 @@ OTHER_FRAMEWORK_ERROR / FETCH_CONTINUE_FAILED`。后五次没有失败形态,
 
 ### 12.2 停止报告 SKEL-B2-02:本地克隆origin与身份校验冲突
 
+状态:已由SKEL-B2-03裁定处置;下文保留原始事实,候选扩展身份校验未采纳。
+
 冻结稿5.1要求本地裸仓库克隆并复用现有`_validate_source_identity`;
 该函数却将本地origin完整目录前缀也保留在归一化项目名中,不能与unit.project相等。
 离线实测:真实本地clone/checkout成功,HEAD与三键marker正确,校验仍报
@@ -488,3 +490,83 @@ OTHER_FRAMEWORK_ERROR / FETCH_CONTINUE_FAILED`。后五次没有失败形态,
   未增加nodeid或skip,不以第1批2921/0/1冒充本批验收。
 - 只执行离线规格探针、设计文档检查和完整性核对(见`evidence/batch2/checks.json`),
   没有真实QuickBuild/Gerrit/gbs访问,没有修改真实状态库。停止等待裁定,不进入第3批。
+
+## 13. 实施裁定 SKEL-B2-03:本地远端与身份校验
+
+1. SKEL-B2-02 停止成立。设计方不采纳"扩展共享身份校验的本地远端分支":它会改动已验收的 repair-step、sandbox-submit 身份判断,而冲突只出现在离线测试的搭法上。_validate_source_identity 与 _normalize_project 保持不变,所有调用点不变。
+2. 离线测试改用 ssh 形式的 gerrit_ssh_base(固定为 ssh://gerrit.invalid:29418),传输由测试专用的假 ssh 程序承担:git 通过 GIT_SSH_COMMAND(或等效的测试环境变量)调用该程序,程序只接受 git-upload-pack 与 git-receive-pack 两种命令,把远端路径映射到本次测试临时目录下的裸仓库根,路径规范化后必须仍在该根之内;其它命令、根外路径、带 ..、符号链接逃逸一律非零退出。该程序放在 tests/fixtures/,只在测试中启用,生产代码不得引用。
+3. 冻结稿 5.1"离线测试从本地裸仓库克隆"按本裁定理解为"经假 ssh 传输读取本地裸仓库";克隆出的 origin 原文是 ssh 形式,归一化后等于 project,与正式运行一致。
+4. campaign-add-unit 第 4 步在暂存目录中、写 marker 之前,用现有 _validate_source_identity 所用的同一 HEAD 与 origin 判据核验(可直接复用其 HEAD/origin 部分的同一实现,不另写一套规则);不通过即 exit 4 REJECTED_IDENTITY_MISMATCH,删除暂存目录,不发布。因此 gerrit_ssh_base 为绝对本地路径时,建档在暂存阶段被拒且不留产物。
+5. 前置确认:先核对生产代码执行 git 时的统一环境(_sandbox_git 及 campaign-add-unit 将使用的同一机制)是否会清除或覆盖测试注入的 ssh 程序设置。若会清除,且只有修改生产代码才能注入,则不改生产代码,停止并报告;若不会,按本裁定实施。
+6. 现有 sandbox-submit 测试中"手工设 ssh origin + 另配本地裸仓库传输"的旧搭法不改;新命令与第 3 批离线端到端统一用本裁定的假 ssh 搭法。
+
+### 13.1 前置核对
+
+基线51513bd。`_sandbox_git.py:42-48`清除外部GIT_*并把GIT_SSH_COMMAND设为
+实例的ssh_command(默认ssh),但保留PATH与非GIT_变量。测试通过PATH中的ssh
+假程序与SKEL_FAKE_SSH_ROOT注入,不改生产代码。建档将复用SandboxGit同一机制。
+必须先在该真实调用路径实测,不能只凭静态检查认定通过。
+原probe-local-origin的拒绝结果不作废:它对应本裁定第4项要求的本地路径负例,
+新正例改用SSH形式origin与假传输,不再修改共享身份校验。
+
+### 13.2 假SSH实测与保留交付
+
+前置确认PASS。`tests/fixtures/campaign_fake_ssh.py`只在测试PATH中作为ssh启用,
+非GIT_变量SKEL_FAKE_SSH_ROOT提供临时裸仓库根。现行SandboxGit覆盖外部
+GIT_SSH_COMMAND后仍能通过PATH调用该程序。upload-pack与receive-pack实测均通过,
+没有修改统一环境或身份判据。生产代码没有引用此测试夹具。
+
+| 裁定项 | 测试(均在tests/unit/test_campaign_fake_ssh.py) | 结果 |
+|---|---|---|
+| upload-pack与环境注入 | test_upload_pack_via_unmodified_sandbox_environment | PASS |
+| receive-pack | test_receive_pack_via_unmodified_sandbox_environment | PASS;只写临时本地裸仓库 |
+| 非白名单命令 | test_fake_ssh_rejects_unsafe_requests[uname -a] | PASS;拒绝 |
+| 根外路径 | test_fake_ssh_rejects_unsafe_requests[git-upload-pack /outside/not-a-repository] | PASS;拒绝 |
+| ..路径 | test_fake_ssh_rejects_unsafe_requests[git-upload-pack ../outside]与[git-upload-pack platform/../upstream/example] | 2 PASS;拒绝 |
+| 符号链接逃逸 | test_fake_ssh_rejects_unsafe_requests[git-upload-pack escape] | PASS;拒绝 |
+
+建档草稿曾初跑5例(首次假SSH克隆/三键marker/共享身份校验及重跑;
+绝对本地路径暂存拒绝并清理;分析器失败;证据不覆盖;建档锁忙),
+连同假SSH共12 passed/1.19秒。尚未验收,遇到13.3节缺口后已撤回源码与这5例,
+不宣称baseline-reproduce/repair-step端到端或本批建档验收完成。
+未验收草稿仅归档`evidence/batch2/ssh-resume/implementation-wip.patch`,
+文件清单与性质见`wip-manifest.json`,后续不得直接恢复为交付。
+
+### 13.3 停止报告 SKEL-B2-04:报告子构建号缺少数据源
+
+冻结稿5.4的campaign-report只有state-db与output参数、要求只读状态库并报告
+QuickBuild父/子构建号。现行库没有子构建号列,P5Q写入的qb_result_ref又是相对
+独立state_root的路径;报告无法从现有入口可靠定位结果文件。
+临时数据库探针通过生产状态API证明该情形,不猜目录、不静默空值、不扩展schema。
+
+- 事实、代码行号、候选文字diff、影响和新增夹具要求:
+  `evidence/batch2/stop-report-SKEL-B2-04.md`。
+- 探针:`evidence/batch2/ssh-resume/probe-report-source.py.txt`;
+  输出:`report-source.stdout.log`,exit 0,SPEC_GAP_CONFIRMED。
+- 候选A为显式state-root及受约束的结果文件读取,候选B为纯DB报告缩减子构建列;
+  均只建议,等待设计方裁定。冻结稿和design.md未改。
+- 本轮未验收业务改动全部撤回,生产文件与51513bd逐字一致;
+  sandbox-submit/qb-trigger屏障diff各0行,CLI去重和3份SKILL尚未交付。
+  共享身份函数及所有既有调用点不变。
+
+### 13.4 停止时验收快照
+
+证据根:`evidence/batch2/ssh-resume/`;所有命令、UTC起止和exit见commands.json。
+
+| 检查 | 结果 | 证据 |
+|---|---|---|
+| 假SSH交付用例重跑 | 7 passed/0 failed/0 skipped,0.27秒 | fake-ssh.stdout.log、fake-ssh.xml |
+| 交付fixture/test的ruff | PASS | ruff.stdout.log |
+| collect-only | 2929 collected,exit 0;原2922全部保留,新增仅假SSH7例 | collect.stdout.log、nodeid-diff.json |
+| import-linter | 7 kept/0 broken | import-linter.stdout.log |
+| design.md检查器 | 0 problem | design-check.stdout.log |
+| 冻结稿/安全核心/共享身份/统一Git环境/代理 | 与HEAD字节相同;生产diff为空 | integrity.json |
+| 全量pytest、mypy、全仓ruff、四组安全测试 | NOT_RUN;按设计缺口停下,不是第2批验收通过 | 本节 |
+
+冻结稿SHA256仍为`1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9`;
+代理完整SHA256仍为`7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c`,
+前缀仍为`40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16`。
+没有运行全仓门禁,故没有本轮全仓负载记录或计时清单重跑;不以历史通过替代。
+没有真实QuickBuild/Gerrit/gbs访问,没有修改既有真实状态库;第3批不开始。
+提交前diff检查:排除WIP补丁时exit 0;完整检查exit 2,仅为补丁上下文空行的
+空格,保留补丁原字节。记录见`ssh-resume/diff-check.json`。
