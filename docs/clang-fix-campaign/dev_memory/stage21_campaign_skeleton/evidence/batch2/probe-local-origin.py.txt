@@ -1,0 +1,121 @@
+"""Offline specification probe; no production code or existing state is changed."""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import subprocess
+import tempfile
+from datetime import datetime, timezone
+from pathlib import Path
+
+from tizen_campaign_core._campaign_workspace import (
+    _StepError,
+    _normalize_project,
+    _validate_source_identity,
+)
+from tizen_campaign_core.campaign_state import create_unit, get_unit
+from tizen_campaign_core.submission_identity import (
+    build_campaign_unit_key,
+    build_submission_identity_key,
+)
+from tizen_ci_shared.state import StateDatabase
+
+
+def main() -> None:
+    output = Path(__file__).with_name("probe-local-origin.json")
+    commands: list[dict[str, object]] = []
+    started = datetime.now(timezone.utc).isoformat()
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(
+        GIT_CONFIG_NOSYSTEM="1",
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_ALLOW_PROTOCOL="file",
+        GIT_TERMINAL_PROMPT="0",
+        GIT_AUTHOR_NAME="Offline Probe",
+        GIT_AUTHOR_EMAIL="probe@example.invalid",
+        GIT_COMMITTER_NAME="Offline Probe",
+        GIT_COMMITTER_EMAIL="probe@example.invalid",
+    )
+
+    def run(argv: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        result = subprocess.run(argv, env=env, **kwargs)
+        commands.append(
+            {"argv": argv, "exit": result.returncode, "stdout": result.stdout,
+             "stderr": result.stderr}
+        )
+        return result
+
+    def git(*args: str) -> str:
+        return run(["git", *args], check=True, capture_output=True, text=True).stdout.strip()
+
+    with tempfile.TemporaryDirectory(prefix="skel-b2-origin-") as temporary:
+        root = Path(temporary)
+        seed = root / "seed"
+        base = root / "remotes"
+        project = "platform/upstream/libtirpc"
+        remote = base / project
+        remote.parent.mkdir(parents=True)
+        git("init", "--initial-branch=main", str(seed))
+        git("-C", str(seed), "-c", "core.hooksPath=/dev/null", "commit", "--allow-empty", "-m", "offline probe")
+        sha = git("-C", str(seed), "rev-parse", "HEAD")
+        git("clone", "--bare", str(seed), str(remote))
+        source = root / ".src.staging-probe"
+        git("clone", str(remote), str(source))
+        git("-C", str(source), "checkout", "--detach", sha)
+        identity = dict(ci_system="quickbuild", source_build_id="1", project=project,
+                        branch="tizen_base", spec_name="libtirpc", base_commit=sha)
+        key = build_campaign_unit_key(**identity)
+        submission_identity = {name: value for name, value in identity.items() if name != "source_build_id"}
+        evidence = root / "ci_evidence.json"
+        evidence.write_bytes(b'{}\n')
+        database = StateDatabase(root / "probe.db")
+        create_unit(
+            database, campaign_unit_key=key,
+            submission_identity_key=build_submission_identity_key(**submission_identity),
+            primary_arch="standard-aarch64", failed_arches=["standard-aarch64"],
+            toolchain_profile="clang", ci_evidence_ref=str(evidence),
+            ci_evidence_sha256=hashlib.sha256(evidence.read_bytes()).hexdigest(),
+            max_rounds=3, max_build_invocations=9, **identity,
+        )
+        unit = get_unit(database, key)
+        assert unit is not None
+        marker = {"unit_key": key, "project": project, "base_commit": sha}
+        (source / ".campaign_clone").write_text(json.dumps(marker), encoding="utf-8")
+        origin = git("-C", str(source), "remote", "get-url", "origin")
+        head = git("-C", str(source), "rev-parse", "HEAD")
+        error: dict[str, object] | None = None
+        try:
+            _validate_source_identity(source, unit, subprocess_runner=run)
+        except _StepError as exc:
+            error = {"class": type(exc).__name__, "code": exc.code,
+                     "exit": exc.exit_code, "reason": exc.reason}
+        assert error is not None and error["code"] == "REJECTED_IDENTITY_MISMATCH"
+        assert head == sha and json.loads((source / ".campaign_clone").read_text()) == marker
+
+        # Control changes only local config. This URL is never contacted and is not a proposed workaround.
+        git("-C", str(source), "remote", "set-url", "origin", f"ssh://example.invalid/{project}")
+        _validate_source_identity(source, unit, subprocess_runner=run)
+        git("-C", str(source), "remote", "set-url", "origin", origin)
+        result = {
+            "started_utc": started,
+            "source_module": "tizen_campaign_core._campaign_workspace",
+            "gerrit_ssh_base": str(base), "project": project,
+            "clone_url": str(remote), "origin": origin,
+            "normalized_origin": _normalize_project(origin),
+            "expected_project": project, "head_matches": head == sha,
+            "marker_keys": sorted(marker), "marker_matches": True,
+            "local_origin_validation": error,
+            "control_ssh_origin_validation": "PASS (local config only; no SSH request)",
+            "allowed_git_protocols": "file", "commands": commands,
+        }
+    result["temporary_directory_removed"] = not root.exists()
+    result["finished_utc"] = datetime.now(timezone.utc).isoformat()
+    output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"probe": "SPEC_CONFLICT_CONFIRMED", "error": error,
+                      "control": "PASS", "evidence": str(output)}, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()

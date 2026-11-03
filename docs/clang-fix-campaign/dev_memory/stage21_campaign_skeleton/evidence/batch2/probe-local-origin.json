@@ -1,0 +1,207 @@
+{
+  "started_utc": "2026-11-03T02:37:04.873063+00:00",
+  "source_module": "tizen_campaign_core._campaign_workspace",
+  "gerrit_ssh_base": "/tmp/skel-b2-origin-hjjqh49l/remotes",
+  "project": "platform/upstream/libtirpc",
+  "clone_url": "/tmp/skel-b2-origin-hjjqh49l/remotes/platform/upstream/libtirpc",
+  "origin": "/tmp/skel-b2-origin-hjjqh49l/remotes/platform/upstream/libtirpc",
+  "normalized_origin": "tmp/skel-b2-origin-hjjqh49l/remotes/platform/upstream/libtirpc",
+  "expected_project": "platform/upstream/libtirpc",
+  "head_matches": true,
+  "marker_keys": [
+    "base_commit",
+    "project",
+    "unit_key"
+  ],
+  "marker_matches": true,
+  "local_origin_validation": {
+    "class": "_StepError",
+    "code": "REJECTED_IDENTITY_MISMATCH",
+    "exit": 4,
+    "reason": "source HEAD or origin does not match campaign unit"
+  },
+  "control_ssh_origin_validation": "PASS (local config only; no SSH request)",
+  "allowed_git_protocols": "file",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--initial-branch=main",
+        "/tmp/skel-b2-origin-hjjqh49l/seed"
+      ],
+      "exit": 0,
+      "stdout": "Initialized empty Git repository in /tmp/skel-b2-origin-hjjqh49l/seed/.git/\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/seed",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "commit",
+        "--allow-empty",
+        "-m",
+        "offline probe"
+      ],
+      "exit": 0,
+      "stdout": "[main (root-commit) 280091a] offline probe\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/seed",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "280091a02d429c25f3748c46b09d9a066218f2e2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--bare",
+        "/tmp/skel-b2-origin-hjjqh49l/seed",
+        "/tmp/skel-b2-origin-hjjqh49l/remotes/platform/upstream/libtirpc"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "Cloning into bare repository '/tmp/skel-b2-origin-hjjqh49l/remotes/platform/upstream/libtirpc'...\ndone.\n"
+    },
+    {
+      "argv": [
+        "git",
+        "clone",
+        "/tmp/skel-b2-origin-hjjqh49l/remotes/platform/upstream/libtirpc",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "Cloning into '/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe'...\ndone.\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe",
+        "checkout",
+        "--detach",
+        "280091a02d429c25f3748c46b09d9a066218f2e2"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "HEAD is now at 280091a offline probe\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "exit": 0,
+      "stdout": "/tmp/skel-b2-origin-hjjqh49l/remotes/platform/upstream/libtirpc\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "280091a02d429c25f3748c46b09d9a066218f2e2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "280091a02d429c25f3748c46b09d9a066218f2e2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "exit": 0,
+      "stdout": "/tmp/skel-b2-origin-hjjqh49l/remotes/platform/upstream/libtirpc\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe",
+        "remote",
+        "set-url",
+        "origin",
+        "ssh://example.invalid/platform/upstream/libtirpc"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "280091a02d429c25f3748c46b09d9a066218f2e2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe",
+        "remote",
+        "get-url",
+        "origin"
+      ],
+      "exit": 0,
+      "stdout": "ssh://example.invalid/platform/upstream/libtirpc\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/tmp/skel-b2-origin-hjjqh49l/.src.staging-probe",
+        "remote",
+        "set-url",
+        "origin",
+        "/tmp/skel-b2-origin-hjjqh49l/remotes/platform/upstream/libtirpc"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "temporary_directory_removed": true,
+  "finished_utc": "2026-11-03T02:37:04.929127+00:00"
+}

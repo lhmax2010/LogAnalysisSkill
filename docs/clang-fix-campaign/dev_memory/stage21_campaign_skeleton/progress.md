@@ -1,8 +1,8 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**BATCH1_READY_FOR_REVIEW**。
-开工基线`accd7f4`,分支`clang-fix-campaign`。本批仅skill拆分及design.md追加修订登记;
-完成后停止,等待设计方审读,不开始第2批。
+日期:2026-11-03。状态:**STOPPED_SKEL_B2_02**。
+第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
+第1批已由SKEL-B2-01验收;第2批范围与边界见第12节,不开始第3批。
 
 ## 1. 冻结输入与开工事实
 
@@ -20,13 +20,13 @@
 
 | 批次 | 范围 | 当前状态 |
 |---|---|---|
-| 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | READY_FOR_REVIEW;最终树2921 passed/1 skipped,C8后5次全PASS;等待设计方审读 |
-| 2 | 建档、基线复现、生命周期与放弃屏障 | NOT_STARTED |
+| 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | ACCEPTED;SKEL-B2-01验收通过 |
+| 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | STOPPED_SKEL_B2_02;本地克隆origin与现有身份校验冲突,等待裁定 |
 | 3 | 审核提交、启动检查、编排skill与离线端到端 | NOT_STARTED |
 | 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
 | 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | NOT_STARTED |
 
-本批不新增业务功能、不改函数体、不改断言/参数化/nodeid/运行时补丁目标;
+第1批边界(历史记录):不新增业务功能、不改函数体、不改断言/参数化/nodeid/运行时补丁目标;
 测试只允许机械更新物理路径。历史证据目录脚本不改、不重跑。
 不改/移动tizen-ci-shared的state/db.py、state/keys.py、state/records.py及
 tizen-build-verify的build_verify.py;浏览器代理只移动、内容不改。
@@ -450,3 +450,41 @@ OTHER_FRAMEWORK_ERROR / FETCH_CONTINUE_FAILED`。后五次没有失败形态,
   HTML与补丁上下文的行尾空白或末尾空行,保留原始字节不改。
   完整输出见`bulk/diff-check-final.json`。
 - 本批提交后停止,等待设计方审读;第2、3、3.5、4批均未开始。
+
+## 12. 实施裁定 SKEL-B2-01:第 1 批验收与第 2 批范围
+
+1. 第 1 批验收通过。设计方已逐个比对 18 个搬迁模块与 3ea6e7c 原文件(仅 import 行不同)、旧位置别名、三行必改 import、.importlinter 新合约与 a/b/d/e 红例输出、代理 sha256、安全核心零改动、design.md 第 4.6 节、nodeid 前后比较、wheel 汇总与最终全仓汇总。
+2. 补登记:8 个 docs/clang-fix-campaign/spikes/ 下脚本的 .mjs 物理路径更新,性质同测试物理路径机械改动,予以认可。
+3. 第 2 批须修:各执行包的 __main__ 与 ci_triage/cli.py 对 qb-trigger、qb-result-fetch、sandbox-submit、campaign-repair-step 各有一份独立的参数解析副本。改为 ci_triage/cli.py 的这些子命令直接调用对应执行包入口中的同一函数,只保留一份解析代码;新增测试断言两种入口对同一非法参数输出相同的 JSON 与退出码。
+4. 第 2 批范围:冻结稿第 7 节第 2 批(5.1 建档、5.2 基线复现、5.4 生命周期最小版与放弃屏障,含 sandbox-submit 与 qb-trigger 的屏障检查),以及 tizen-campaign-intake、tizen-baseline-reproduce、tizen-campaign-report 的 SKILL.md(格式照 tizen-qb-discover/SKILL.md)和本裁定第 3 项。campaign-start-check 归第 3 批,本批只在 tizen-campaign-intake 中保留其位置。
+
+### 12.1 第2批开工与边界
+
+- 基线`5b9ecea`,冻结稿实算SHA256仍为
+  `1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9`。
+- 重读冻结稿第0、3、5、6节与附录C,以及本进度的既有裁定、停止记录和验收。
+- 本批只做离线/本机测试;不改安全核心、冻结稿、代理.mjs,不访问真实
+  QuickBuild/Gerrit,不运行真实gbs,不写既有真机状态库。
+- 全仓门禁沿用SKEL-B1-05清单与负载记录;保留第1批2922个nodeid,
+  新用例单列。review-submit和campaign-start-check相关验收留第3批。
+- 现有用户工作树变更原样保留,不纳入本批。证据根为`evidence/batch2/`。
+
+### 12.2 停止报告 SKEL-B2-02:本地克隆origin与身份校验冲突
+
+冻结稿5.1要求本地裸仓库克隆并复用现有`_validate_source_identity`;
+该函数却将本地origin完整目录前缀也保留在归一化项目名中,不能与unit.project相等。
+离线实测:真实本地clone/checkout成功,HEAD与三键marker正确,校验仍报
+`REJECTED_IDENTITY_MISMATCH`(exit 4)。只在临时仓库改为SSH项目形态origin
+的对照通过,未访问该地址。这一对照不是正式实施或测试绕过。
+
+- 报告及候选文字diff、影响与需补用例:
+  `evidence/batch2/stop-report-SKEL-B2-02.md`。
+- 可复跑探针:`evidence/batch2/probe-local-origin.py.txt`;
+  实测argv/结果/UTC/清理事实:`evidence/batch2/probe-local-origin.json`。
+- 候选为受信配置确定的本地远端精确比较,须设计方授权共享校验API及各调用方
+  语义,不自行去前缀或后缀匹配。冻结稿、生产代码、既有测试均未改。
+- 本批命令/API与CLI去重尚未实现;sandbox-submit与qb-trigger屏障diff均0行。
+  第6节本批业务用例、CLI非法参数对照、全仓门禁与安全四组均NOT_RUN,
+  未增加nodeid或skip,不以第1批2921/0/1冒充本批验收。
+- 只执行离线规格探针、设计文档检查和完整性核对(见`evidence/batch2/checks.json`),
+  没有真实QuickBuild/Gerrit/gbs访问,没有修改真实状态库。停止等待裁定,不进入第3批。

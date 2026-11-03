@@ -1,0 +1,77 @@
+{
+  "commands": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "start_utc": "2026-11-03T02:39:12.503085+00:00",
+      "end_utc": "2026-11-03T02:39:12.602610+00:00",
+      "exit": 0,
+      "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "start_utc": "2026-11-03T02:39:12.602633+00:00",
+      "end_utc": "2026-11-03T02:39:12.642628+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "HEAD",
+        "--name-only",
+        "--",
+        "tizen-*",
+        "tests",
+        "pyproject.toml",
+        ".importlinter",
+        "docs/clang-fix-campaign/design.md",
+        "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md"
+      ],
+      "start_utc": "2026-11-03T02:39:12.642656+00:00",
+      "end_utc": "2026-11-03T02:39:12.651783+00:00",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "hashes": {
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": {
+      "sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+      "equals_baseline": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": {
+      "sha256": "7e315a8d5176308429f2ee67ea31bc1cc17769a1d8da53d3c6d73160306c068c",
+      "equals_baseline": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py": {
+      "sha256": "afc049e204135017c9f457fea9c7237c7e3fded8f87a60885824510390f21fde",
+      "equals_baseline": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py": {
+      "sha256": "0cc7b5d11641074efbf60fc9da9827a03c3ed9d607bd842509c7fd5a8d4f8e86",
+      "equals_baseline": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py": {
+      "sha256": "84778014c1a2912418a660f0bfdd567215c06e38ef6dbbc833fb62b13d691fc1",
+      "equals_baseline": true
+    },
+    "tizen-build-verify/scripts/tizen_build_verify/build_verify.py": {
+      "sha256": "5a6ab48b9bafd01e464513b6450781fcffdcaaac3b39da911c45923e93093887",
+      "equals_baseline": true
+    }
+  },
+  "agent_prefix_sha256": "40f8f22bd0f5f4078b6012083c457a7b423e52fd69e5603f03dfc7a09d363a16",
+  "full_gates": "NOT_RUN: stopped before implementation",
+  "production_diff_empty": true
+}
