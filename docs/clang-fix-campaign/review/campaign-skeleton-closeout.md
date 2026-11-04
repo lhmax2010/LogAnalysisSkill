@@ -47,7 +47,7 @@ gbs_patch_suggest.formatter;不把同层关系解释为新增独立性合约。
 | 批次/验收commit | 全仓原始结果(通过/失败/跳过) | 结论与证据 |
 |---|---|---|
 | 第1批 `5b9ecea` | 2921 / 0 / 1 | 拆分、nodeid保留、别名、静态红例、wheel入口与.mjs打包通过;[batch1](../dev_memory/stage21_campaign_skeleton/evidence/batch1/) |
-| 第2批 `1a4ed25` | 3026 / 1 / 1 | late-build原始失败保留,单独3次重跑全过,按SKEL-B1-05/B3-01接受;[coverage](../dev_memory/stage21_campaign_skeleton/evidence/batch2/implementation/coverage.md)、[timing-decision](../dev_memory/stage21_campaign_skeleton/evidence/batch2/implementation/timing-decision.json) |
+| 第2批 `1a4ed25` | 3026 / 1 / 1 | late-build原始失败保留,单独3次重跑全过,按SKEL-B1-05/B3-01接受;[coverage](../dev_memory/stage21_campaign_skeleton/evidence/batch2/implementation/coverage.md)、[timing-decision](../dev_memory/stage21_campaign_skeleton/evidence/batch2/implementation/timing-decision.json)。该失败原始签名为FETCH_CONTINUE_FAILED(见timing-decision.json第3行),后经诊断确认为读取失败缺陷而非计时问题,已由读取失败修复(5b41ee9)解决并按SKEL-R-08验收。 |
 | 第3批 `a58494b` | 3087 / 0 / 1 | 60个新增用例,旧3028个全保留;[coverage](../dev_memory/stage21_campaign_skeleton/evidence/batch3/implementation/coverage.md) |
 | 读取失败修复 `5b41ee9`、`fb549ea`、`fd4c6f6` | 3099 / 0 / 1 | 按SKEL-R-08验收;[final.json](../dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/r08/final.json) |
 

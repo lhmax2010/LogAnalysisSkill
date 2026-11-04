@@ -1469,3 +1469,4 @@ evidence_packet.md的EOF多空行,按原始输出要求保留,未改写。
 - 新收尾文档27个仓内链接逐个检查,全部存在;本次四份文档的`git diff --cached --check`通过。
 - v1.3冻结稿SHA256仍为`1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9`,正文零改动。
 - 本轮不运行pytest或任何业务命令;生产与测试零改动。与SKEL-CLOSE-01不一致或做不到之处:无。
+- SKEL-CLOSE-02:在收尾记录第3节第2批结论后按裁定补充原始FETCH_CONTINUE_FAILED签名、读取失败缺陷而非计时问题及5b41ee9修复并按SKEL-R-08验收的说明;其余内容不改,不运行任何业务命令。
