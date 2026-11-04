@@ -34,6 +34,9 @@
 
 ## 4. 当前进度
 
+- HLD v0.9.6 已归位（sha256 d316bbe3a7ab038928ee584814ce6d728101afaea6621aad5c1c548cb5b80e29）；第 3a-1.1 批（附录 O 的 3a-1 修复 + §8.8 单次提交命令）待评审后开工；37376237 的构建管理端构建号待用户提供。
+- 本线工作目录：/home/toolchain/development/LogAnalysisSkill-vdcosmos（git worktree，分离 HEAD，推送用 git push origin HEAD:vd-cosmos-loganalyzer）；/home/toolchain/development/LogAnalysisSkill 有其它 Session 的未提交改动，本线不在那里操作。
+
 2026-11-03：第 3a-1 批离线实现完成。A：可信/人工/时长定型窗口、身份三档、三类停滞、生产日志完整性与版本保存、完成状态重验、争用分类、真实验收地址/F 结论；B：五变量白名单、不可变 base/shelve 清单与逐项核对；C：隔离的 P4 -G 只读访问、结构化分类与持久化重试；D：路径/来源/合并/精确源码行核对与快照报告；E：confirm-terminal、confirm-input、bind-base-list、inbox done。B3a1-Q01 已按设计方答复闭合并测试。
 
 本段实现、各项 HLD 与测试名、附录 H/J～N 的分段映射和 3a-2/3a-3 接口详见 `docs/enhance/batch3a-1/DELIVERY.md`。完整测试输出 `docs/enhance/batch3a-1/evidence/test-output.txt`，SHA256 `0a2ca96e198a85e2779c55739893c1e4017f6c97f7f2b8c013b94f8d430ffdbe`：153 项通过，三条 import 约束通过，54 个实现/入口文件通过 Python 3.10 语法与标准库导入检查；本机实际 Python 3.12.3。两个新 SKILL 校验通过。`evidence/validation.json` 列出逐测试路径/行号和实现摘要，`evidence/config-load-check.json` 证明 Downloads 真实配置只加载且通过，未移动、未改动、未创建构建机 data_root。未执行真实 P4、真实服务访问或浏览器。
