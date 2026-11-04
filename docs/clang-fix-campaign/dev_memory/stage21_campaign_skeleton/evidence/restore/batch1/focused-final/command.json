@@ -1,0 +1,35 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/unit/test_diff_to_edit_spec.py",
+    "-q",
+    "--junitxml=docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch1/focused-final/pytest.xml"
+  ],
+  "started_utc": "2026-11-04T07:27:53.738206+00:00",
+  "load_before": {
+    "loadavg": "7.20 9.27 7.90 2/3461 1263174",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "qemu-arm        15.0",
+    "qemu-arm        13.3",
+    "python           9.0",
+    "chrome           5.8",
+    "code-insiders    4.4",
+    "code-insiders    4.4",
+    "MainThread       4.3",
+    "chrome           4.0",
+    "chrome           3.7",
+    "code-insiders    2.9"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T07:28:00.982135+00:00",
+  "elapsed_seconds": 7.225453449995257,
+  "load_after": {
+    "loadavg": "8.46 9.49 7.98 1/3431 1263686",
+    "cpu_count": 20
+  }
+}

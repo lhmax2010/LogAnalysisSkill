@@ -1,0 +1,34 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "tizen_campaign_repair",
+    "diff-to-edit-spec",
+    "--help"
+  ],
+  "started_utc": "2026-11-04T07:44:18.761190+00:00",
+  "load_before": {
+    "loadavg": "2.64 3.65 5.81 3/3407 1485305",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python          50.0",
+    "MainThread       9.1",
+    "chrome           8.3",
+    "code-insiders    4.5",
+    "chrome           3.7",
+    "python           3.6",
+    "qemu-arm         2.6",
+    "chrome           2.3",
+    "code-insiders    2.2",
+    "code-insiders    2.1"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T07:44:18.853275+00:00",
+  "elapsed_seconds": 0.07661303004715592,
+  "load_after": {
+    "loadavg": "2.64 3.65 5.81 2/3407 1485325",
+    "cpu_count": 20
+  }
+}

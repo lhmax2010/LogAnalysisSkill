@@ -1,0 +1,35 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/",
+    "--collect-only",
+    "-q"
+  ],
+  "started_utc": "2026-11-04T07:40:12.242327+00:00",
+  "load_before": {
+    "loadavg": "2.86 4.66 6.71 2/3317 1429958",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python          66.6",
+    "python          14.3",
+    "qemu-arm        13.5",
+    "qemu-arm        12.2",
+    "java             6.0",
+    "code-insiders    4.5",
+    "chrome           3.7",
+    "python           2.7",
+    "chrome           2.5",
+    "code-insiders    2.3"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T07:40:13.279741+00:00",
+  "elapsed_seconds": 1.0207937429659069,
+  "load_after": {
+    "loadavg": "3.03 4.66 6.70 2/3331 1430329",
+    "cpu_count": 20
+  }
+}

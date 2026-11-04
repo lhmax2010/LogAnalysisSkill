@@ -1,0 +1,30 @@
+{
+  "argv": [
+    ".venv/bin/mypy"
+  ],
+  "started_utc": "2026-11-04T07:17:31.895734+00:00",
+  "load_before": {
+    "loadavg": "6.87 8.46 5.36 10/3388 1151607",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python           100",
+    "python          66.6",
+    "code-insiders   49.8",
+    "codex-code-mode 16.6",
+    "MainThread      14.1",
+    "python3         12.2",
+    "python          10.3",
+    "chrome           9.3",
+    "code-insiders    6.1",
+    "code-insiders    5.2"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T07:17:32.195108+00:00",
+  "elapsed_seconds": 0.28206508606672287,
+  "load_after": {
+    "loadavg": "6.96 8.46 5.38 2/3398 1151641",
+    "cpu_count": 20
+  }
+}

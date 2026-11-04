@@ -1,0 +1,45 @@
+{
+  "baseline": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/r08/gates/collect/stdout.log",
+  "before": 3100,
+  "after": 3164,
+  "added": 64,
+  "removed": [],
+  "protected_files": {
+    "docs/clang-fix-campaign/design.md": {
+      "same_as_56e74f0": true,
+      "sha256": "bb397e4058098f37cf91a092d40f742da9459b14389430457da864a971f88b42"
+    },
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": {
+      "same_as_56e74f0": true,
+      "sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9"
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": {
+      "same_as_56e74f0": true,
+      "sha256": "044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723"
+    },
+    "tizen-review-submit/scripts/tizen_review_submit/review_submit.py": {
+      "same_as_56e74f0": true,
+      "sha256": "219d2f0095ad75bb0841319a4a345af46e6f11d8cf33c4b30e496b4a4a4d7378"
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py": {
+      "same_as_56e74f0": true,
+      "sha256": "afc049e204135017c9f457fea9c7237c7e3fded8f87a60885824510390f21fde"
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py": {
+      "same_as_56e74f0": true,
+      "sha256": "0cc7b5d11641074efbf60fc9da9827a03c3ed9d607bd842509c7fd5a8d4f8e86"
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py": {
+      "same_as_56e74f0": true,
+      "sha256": "84778014c1a2912418a660f0bfdd567215c06e38ef6dbbc833fb62b13d691fc1"
+    },
+    "tizen-build-verify/scripts/tizen_build_verify/build_verify.py": {
+      "same_as_56e74f0": true,
+      "sha256": "5a6ab48b9bafd01e464513b6450781fcffdcaaac3b39da911c45923e93093887"
+    },
+    "tizen-build-verify/scripts/tizen_build_verify/edit_spec_guard.py": {
+      "same_as_56e74f0": true,
+      "sha256": "212779a84421b619ccac576c688a94370e593aef6656cf0eca4b2be57915526f"
+    }
+  }
+}

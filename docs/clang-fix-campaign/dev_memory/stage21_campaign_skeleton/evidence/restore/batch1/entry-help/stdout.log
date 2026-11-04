@@ -1,0 +1,9 @@
+usage: diff-to-edit-spec [-h] --diff DIFF --src-root SRC_ROOT --output OUTPUT
+                         --patch-name PATCH_NAME
+
+options:
+  -h, --help            show this help message and exit
+  --diff DIFF
+  --src-root SRC_ROOT
+  --output OUTPUT
+  --patch-name PATCH_NAME

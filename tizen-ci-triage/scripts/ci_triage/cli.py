@@ -18,6 +18,7 @@ from tizen_campaign_repair.__main__ import (
     _main_campaign_repair_step,
     _main_suppress_policy,
 )
+from tizen_campaign_repair.diff_cli import main as _main_diff_to_edit_spec
 from tizen_ci_shared.env import discover_sibling_pythonpath
 from tizen_ci_shared.quickbuild_http import DEFAULT_COOKIE_PATH
 from tizen_ci_shared.state import StateDatabase
@@ -180,6 +181,8 @@ def main(
         return _main_sandbox_submit(argv[1:], stdout=stdout, stderr=stderr)
     if argv and argv[0] == "suppress-policy":
         return _main_suppress_policy(argv[1:], stdout=stdout, stderr=stderr)
+    if argv and argv[0] == "diff-to-edit-spec":
+        return _main_diff_to_edit_spec(argv[1:], stdout=stdout)
     if argv and argv[0] == "build-verify":
         return _main_build_verify(argv[1:], stderr=stderr, extra_pythonpath=extra_pythonpath)
     if argv and argv[0] == "check-convergence":

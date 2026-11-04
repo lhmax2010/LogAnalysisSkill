@@ -1,0 +1,32 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/tools/check_design_doc.py",
+    "docs/clang-fix-campaign/design.md"
+  ],
+  "started_utc": "2026-11-04T07:18:42.641751+00:00",
+  "load_before": {
+    "loadavg": "12.24 9.57 5.98 13/3445 1176300",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "qemu-arm         200",
+    "clang-22         101",
+    "qemu-arm         100",
+    "qemu-arm         100",
+    "clang-22         100",
+    "clang-22         100",
+    "clang-22        96.2",
+    "clang-22        92.6",
+    "clang-22        89.4",
+    "clang-22        80.0"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T07:18:42.831102+00:00",
+  "elapsed_seconds": 0.1667076429584995,
+  "load_after": {
+    "loadavg": "12.24 9.57 5.98 22/3445 1176345",
+    "cpu_count": 20
+  }
+}

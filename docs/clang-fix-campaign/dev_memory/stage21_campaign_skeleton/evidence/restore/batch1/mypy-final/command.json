@@ -1,0 +1,30 @@
+{
+  "argv": [
+    ".venv/bin/mypy"
+  ],
+  "started_utc": "2026-11-04T07:40:13.309371+00:00",
+  "load_before": {
+    "loadavg": "3.03 4.66 6.70 4/3331 1430346",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python           100",
+    "python          14.5",
+    "qemu-arm        13.3",
+    "qemu-arm        12.0",
+    "java             6.0",
+    "code-insiders    4.5",
+    "rg               3.8",
+    "chrome           3.7",
+    "chrome           2.5",
+    "code-insiders    2.3"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T07:40:17.233617+00:00",
+  "elapsed_seconds": 3.908695978927426,
+  "load_after": {
+    "loadavg": "3.03 4.66 6.70 2/3309 1430763",
+    "cpu_count": 20
+  }
+}

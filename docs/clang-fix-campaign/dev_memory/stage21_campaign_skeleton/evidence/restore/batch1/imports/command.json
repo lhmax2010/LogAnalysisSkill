@@ -1,0 +1,30 @@
+{
+  "argv": [
+    ".venv/bin/lint-imports"
+  ],
+  "started_utc": "2026-11-04T07:18:32.553622+00:00",
+  "load_before": {
+    "loadavg": "12.10 9.46 5.90 17/3326 1173012",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "qemu-arm         100",
+    "qemu-arm         100",
+    "qemu-arm         100",
+    "qemu-arm         100",
+    "clang-22         100",
+    "clang-22         100",
+    "clang-22        92.8",
+    "python          90.0",
+    "clang-22        76.4",
+    "python          75.0"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T07:18:33.088001+00:00",
+  "elapsed_seconds": 0.5164068239973858,
+  "load_after": {
+    "loadavg": "12.10 9.46 5.90 11/3293 1173171",
+    "cpu_count": 20
+  }
+}

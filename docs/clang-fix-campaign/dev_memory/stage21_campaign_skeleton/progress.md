@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**恢复项开工停止,等待T1审核规则裁定**(SKEL-RESTORE-01,见第26节)。此前骨架阶段离线收尾结论保留:按SKEL-CLOSE-01,第1、2、3批与读取失败修复已验收;第3.5、4批真实端到端仍为“延后”,不是“通过”。预筛合格候选0个,实际build.conf等证据缺口保留。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-04。状态:**恢复第1批离线完成**。SKEL-RESTORE-01停点已由SKEL-RESTORE-02裁定关闭(第27节);审核两处修改随恢复第2批提交。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1504,6 +1504,8 @@ evidence_packet.md的EOF多空行,按原始输出要求保留,未改写。
 
 ### 26.2 开工停止与证据
 
+状态:已由SKEL-RESTORE-02裁定关闭;以下原始停止事实与证据保留。
+
 [停止报告](evidence/restore/stop-report-SKEL-RESTORE-01.md):T1全链路目标与review拒绝规则零改动不能同时满足。
 review_submit.py第298行拒绝t1_cherry_pick来源,第314行拒绝cherry_pick最终策略;
 design.md第182/1881/1147行与恢复任务第二.4.b、第四.2条要求该路径。
@@ -1519,3 +1521,66 @@ suppress仍被A2拒绝。3向量断言通过,exit0,临时夹具已删除。
 尚未实施任何恢复批次,不运行全仓门禁;本次只提交登记/停止证据,等待设计方裁定。
 检查:探针3向量通过、证据脚本ruff通过、design检查0 problem、暂存差异检查通过;
 冻结稿SHA256仍为1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9。
+
+## 27. 实施裁定 SKEL-RESTORE-02:T1审核资格与继续恢复
+
+1. 停止报告属实,冲突源于 SKEL-RESTORE-01 第〇.2 条与第二.4.b/第四.2 条自相矛盾,责任在设计方。
+2. 授权且仅授权 tizen-review-submit/scripts/tizen_review_submit/review_submit.py 两处改动,按停止报告第 3 节候选 diff:
+   a) 来源检查接受 {"generated", "suppress", "t1_cherry_pick"};
+   b) A2 质量门接受 fix_strategy_final ∈ {"code", "cherry_pick"} 且 reproduced。
+   依据:design.md §1.4 A2(:182-185)与 §4.1 review-submit 第 3 步(:1881-1882)。其余检查(取锁、放弃屏障、聚合、QB 结果绑定、edit 字节、存量/重推一致、forbidden 零推送、TOCTOU、身份)一律不变。
+3. SKEL-RESTORE-01 第〇.2 条修订为:除上述两处外,sandbox-submit、qb-trigger、qb-result-fetch、review-submit 的现有行为与拒绝规则不改;第三批浏览器代理改动仍按原第三.1 条先取证后停止。
+4. 记录:design.md 第 4.6 节“恢复项落地裁定”小段加一条,说明骨架冻结稿第 5.3 节“修法来源只有 generated 与 suppress”随 T1 恢复而撤销,审核资格回到 design.md 原 A2;tizen-clang-campaign/SKILL.md 中“Source kind is only generated or suppress”一句在第四批同步改为三种来源及各自去向。
+
+审核改动与指定6类测试随恢复第2批提交,不提前改动。原有六道重校验、放弃屏障、TOCTOU断言不改。
+从恢复第1批开始按原顺序实施;恢复第3批URL形态取证完成后仍停止等裁定。
+
+## 28. 恢复第1批:diff-to-edit-spec
+
+基线56e74f0;权威为SKEL-RESTORE-01第一批、design.md第3.4/4.1/7节Phase7。
+只实现转换器、共享CLI与新增离线测试;产物必须经真实edit_spec_guard,不改guard。
+证据目录:evidence/restore/batch1/。
+
+### 28.1 实施与覆盖
+
+`tizen_campaign_core/diff_to_edit_spec.py`严格解析统一diff,统一判定唯一strip层级,
+每hunk保留context/删除/新增原文,重复old保留line;拒绝模糊匹配与未支持元数据。
+`tizen_campaign_repair/diff_cli.py`为共享命令适配,repair与ci_triage入口均调用同一函数。
+输出前调用真实`edit_spec_guard`,原子发布JSON;不修改或应用到源码。
+两份既有入口仅新增4行与3行,既有业务与测试断言不改。
+
+新增`tests/unit/test_diff_to_edit_spec.py`最终64个用例,逐项见
+[coverage.md](evidence/restore/batch1/coverage.md)。最初61个用例定向通过后,
+补3个P4元数据用例(双路径重命名/binary拒绝、同路径revision对通过),最终定向64 passed。
+第一轮全仓`full/`为3160 passed/0 failed/1既有skip,1129.84秒;
+它在补3个用例前收集,不作为最终树的唯一验收,原证据保留。
+
+最终collect为3164,原3100全部保留,新增64,删除0,见`integrity-final.json`与
+`nodeids-*-final.txt`。mypy-final、ruff-final、imports-final、design-final均exit0;
+依赖合约7 kept/0 broken,design检查0 problem。最终全仓`full-final/`为
+3163 passed/0 failed/1既有skip,pytest耗时1076.48秒,包装进程1079.27秒;
+负载(20核)从`1.98 4.83 6.87`到`2.90 2.65 3.91`。
+skip仍是大小写敏感文件系统上的`test_case_insensitive_bypass_is_platform_specific`,无新增skip。
+每轮完整运行,不加-x,command.json记录前后负载与CPU进程名。
+冻结稿、design.md、代理、review-submit、安全核心与真实guard均与56e74f0字节一致。
+
+### 28.2 观测项
+
+两轮C8调查场景均未记录harness_failure,场景profile_removed均true。
+独立的`test_signal_cleanup_observation[SIGINT]`两轮均观察到已知瞬时目录残留:
+exit130、profile_exists=true、lsof_exit=1、own_residue_removed=true;
+测试自身已回收,未修改断言或生产清理规则。原始记录分别为
+`batch1/full/c8/cleanup-SIGINT.json`与`batch1/full-final/c8/cleanup-SIGINT.json`。
+normal/SIGTERM两轮均exit0且profile_exists=false。此记录不等于新的读取失败,
+也不把已有SIGINT清理待办登记为已修复。
+
+### 28.3 本批交付
+
+实现入口:core转换器`convert`、repair共享适配`diff_cli.main`、repair/ci_triage两入口。
+新增64个测试,既有3100个全部保留,门禁无失败、无需计时敏感用例豁免或单独重跑。
+最终检查`/dev/shm/p5q-browser-*`为空。受保护文件前后hash一致,
+证据索引见[batch1/README.md](evidence/restore/batch1/README.md)。
+只运行离线测试与本地假服务器,不访问真实QuickBuild/Gerrit,不运行真实gbs。
+按本机全局署名提交推送恢复第1批;其余批次未实现,不提前写成已恢复。
+暂存差异仅HTML原始字节的尾空白告警,保留不清洗;其它文件diff检查通过,
+详见batch1/whitespace-check.json。
