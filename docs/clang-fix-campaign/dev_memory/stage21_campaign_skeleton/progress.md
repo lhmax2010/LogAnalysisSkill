@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**恢复第1、2批离线完成;第3批待本地URL取证**。SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-04。状态:**恢复第1、2批离线完成;第3批URL取证完成,按规定停止等待裁定**。SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1763,3 +1763,30 @@ action计数见`c8-observations.json`,注入故障按既有断言处理,不误�
 排除本轮生成证据后exit0,见`whitespace-check.json`,不改写测试证据来消除告警。
 先提交推送本批,再按RESTORE-01第三.1完成本地URL形态文档并停止,
 不在本轮实施发现命令、浏览器扩展或恢复第4批剧本。
+
+## 34. 恢复第3批首步:URL形态取证与规定停点
+
+恢复第2批已由`7484f58`提交并推送`origin/clang-fix-campaign`。
+随后仅按SKEL-RESTORE-01第三.1检索本地资料,结果为
+[discovery-url-shapes.md](evidence/restore/discovery-url-shapes.md)。
+该文第1节列实际搜索目录,第2节逐项列来源文件与行号并区分真实页面、
+历史采集记录、代码/合成夹具;第4节给出待批准的最小策略文字diff,
+第5节列未来Node正负例及服务器实收判据。本轮没有执行这些未来测试。
+
+已确认Base配置1917的Recent Builds、父子变量页及子页的html_report导航链接。
+旧夹具为单架构`gbs_reports/<arch>`与`logs/fail/.../log.txt`,本地历史采集
+记录则为多架构`logfiles/standard/<arch>/<package>.txt`,不能互相替代。
+当前Base报告正文、真实iframe src、正文类型与下载行为、精确URL编码及
+历史分页为UNKNOWN。现有代理只取得主帧导航正文并按HTML解析,
+因此不能仅加路径就宣称支持无损编译日志读取。
+
+依第三.1.c在此停止等待设计方确认:精确登记来源与构建归属引导、
+html_report永久禁止的窄例外、iframe/编码补证方式、纯文本日志读取与脱敏契约。
+这是原任务预定的审批停点,没有将候选diff应用到代理,没有新增发现命令,
+没有进入恢复第4批。全部URL仅来自本地文字,没有访问QuickBuild/Gerrit、
+启动浏览器、运行真实gbs、读取Cookie文件或写真实状态库。
+
+本次第三批提交仅含取证文档、progress与INDEX;design检查器0 problem,
+这三份文档的`git diff --check`通过。代理完整SHA256仍为
+`044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723`。
+第二批全仓与静态门禁以第33.2节原始证据为准,不将其说成第三批功能验收。
