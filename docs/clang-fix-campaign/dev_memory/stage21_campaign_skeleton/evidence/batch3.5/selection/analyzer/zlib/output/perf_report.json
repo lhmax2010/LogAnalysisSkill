@@ -1,0 +1,68 @@
+{
+  "analyzed_at": "2026-11-04T03:29:51Z",
+  "buildlog_size_bytes": 72295,
+  "buildlog_token_estimate": 18073,
+  "decisions": {
+    "candidates_kept": 1,
+    "candidates_ranked": 1,
+    "downgrade_reason": "spec_file_unavailable",
+    "downgraded": true,
+    "evidence_collector": "spec",
+    "level_achieved": 2,
+    "level_preferred": 3,
+    "matched_tier": null,
+    "verdict": "needs_llm",
+    "via": "full_path"
+  },
+  "degradations": [
+    "spec_file_unavailable"
+  ],
+  "execution": {
+    "by_layer": {
+      "L0_scan": 18.2545,
+      "L2_rank": 0.0551,
+      "L3_evidence": 0.0114,
+      "L4a_quick": 5.9885,
+      "L4b_full": 6.045,
+      "L5_assembler": 4.2533
+    },
+    "exit_status": "success",
+    "fast_path_hit": false,
+    "total_ms": 34.6078
+  },
+  "schema_version": "perf_report/v1",
+  "tokens": {
+    "budget": {
+      "evidence_pool_final": 200,
+      "evidence_pool_initial": 650,
+      "limit": 1800,
+      "reclaimed": 150,
+      "used": 862
+    },
+    "by_section": {
+      "command_summary": 1,
+      "header_declarations": 1,
+      "primary_error": 83,
+      "prompt_template": 134,
+      "source_snippets": 93,
+      "structure_overhead": 331,
+      "top_k_summaries": 219
+    },
+    "compression_ratio": 20.9664,
+    "downstream_outputs": {
+      "estimate_method": "tiktoken",
+      "evidence_packet_json_tokens": 1033,
+      "evidence_packet_md_tokens": 384,
+      "scope": "Estimated tokens of analyzer material intended for outer Claude recommended reading. Actual Claude consumption also includes any source files Claude reads on its own.",
+      "source_snippets_tokens": 93,
+      "total_claude_facing_tokens": 384,
+      "usage_note": "Compare this baseline with Cline/client actual token usage; the difference approximates extra material Claude read outside analyzer outputs."
+    },
+    "estimate_method": "tiktoken",
+    "input_log_tokens": 18073,
+    "packet_tokens": 862
+  },
+  "warnings": [
+    "spec_file_unavailable"
+  ]
+}

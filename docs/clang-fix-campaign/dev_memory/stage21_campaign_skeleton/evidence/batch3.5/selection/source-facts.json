@@ -1,0 +1,510 @@
+[
+  {
+    "package": "zlib",
+    "analyzer": {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-B",
+        "-m",
+        "gbs_analyzer",
+        "analyze",
+        "/home/linhao/qb_analysis/1204735_vs_1202044/llvm_1204735/packages/standard/x86_64/failed/zlib.buildlog.txt",
+        "--output-format",
+        "both",
+        "--max-tokens",
+        "1800",
+        "--output-dir",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/analyzer/zlib/output"
+      ],
+      "started_utc": "2026-11-04T03:29:50.837180+00:00",
+      "ended_utc": "2026-11-04T03:29:51.090477+00:00",
+      "seconds": 0.25330214900895953,
+      "exit": 0
+    },
+    "log": "/home/linhao/qb_analysis/1204735_vs_1202044/llvm_1204735/packages/standard/x86_64/failed/zlib.buildlog.txt",
+    "log_sha256": "4f2aa997fd551de6667323bc2587d0f27cf9bd77d893273dbff089abc13bb705",
+    "manifest": "/home/linhao/Downloads/tizen-base-toolchain_20261020.074527_standard.xml",
+    "manifest_sha256": "5b65652870909f0536d7a24c783299d60da6a927da7db4346020ca87188147ac",
+    "project": {
+      "name": "platform/upstream/zlib",
+      "path": "platform/upstream/zlib",
+      "revision": "4cfda05eb588cb28af2d84e21066ff40f0e8f88d"
+    },
+    "failure_rows": [
+      {
+        "package": "zlib",
+        "architecture": "armv7l",
+        "status": "failed",
+        "complete_log_path": "llvm_1204735/packages/standard/armv7l/failed/zlib.buildlog.txt",
+        "source_URL": "https://quickbuild.tizen.org/download/1204735/html/GBS Reports@^@standard-armv7l:aarch64:x86_64/logfiles/standard/armv7l/zlib.txt"
+      },
+      {
+        "package": "zlib",
+        "architecture": "aarch64",
+        "status": "failed",
+        "complete_log_path": "llvm_1204735/packages/standard/aarch64/failed/zlib.buildlog.txt",
+        "source_URL": "https://quickbuild.tizen.org/download/1204735/html/GBS Reports@^@standard-armv7l:aarch64:x86_64/logfiles/standard/aarch64/zlib.txt"
+      },
+      {
+        "package": "zlib",
+        "architecture": "x86_64",
+        "status": "failed",
+        "complete_log_path": "llvm_1204735/packages/standard/x86_64/failed/zlib.buildlog.txt",
+        "source_URL": "https://quickbuild.tizen.org/download/1204735/html/GBS Reports@^@standard-armv7l:aarch64:x86_64/logfiles/standard/x86_64/zlib.txt"
+      }
+    ],
+    "success_rows": [
+      {
+        "arch": "armv7l",
+        "source": "zlib",
+        "status": "succeeded",
+        "log_url": "https://quickbuild.tizen.org/download/1203397/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/logfiles/standard/armv7l/zlib.txt"
+      },
+      {
+        "arch": "aarch64",
+        "source": "zlib",
+        "status": "succeeded",
+        "log_url": "https://quickbuild.tizen.org/download/1203397/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/logfiles/standard/aarch64/zlib.txt"
+      },
+      {
+        "arch": "x86_64",
+        "source": "zlib",
+        "status": "succeeded",
+        "log_url": "https://quickbuild.tizen.org/download/1203397/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/logfiles/standard/x86_64/zlib.txt"
+      }
+    ],
+    "success_time_evidence": [
+      {
+        "arch": "armv7l",
+        "log": "/home/linhao/Toolchain/development/qb_1203397_lld/work/logs/armv7l/zlib.log",
+        "sha256": "af3be1d85ed819a5a4b3809111584e8d592fa5ce28e7b8285955c85bebe1c77f",
+        "boundaries": [
+          {
+            "line": 6,
+            "text": "[    0s] 628aa4815518 started \"build zlib.spec\" at Tue Oct 20 20:33:52 UTC 2026."
+          },
+          {
+            "line": 831,
+            "text": "[  134s] 628aa4815518 finished \"build zlib.spec\" at Tue Oct 20 20:36:06 UTC 2026."
+          }
+        ]
+      },
+      {
+        "arch": "aarch64",
+        "log": "/home/linhao/Toolchain/development/qb_1203397_lld/work/logs/aarch64/zlib.log",
+        "sha256": "dadd49a6a8fc0d627f8f74328a95a457d536bfd34dd2cf490876d634c63c08a9",
+        "boundaries": [
+          {
+            "line": 6,
+            "text": "[    0s] 628aa4815518 started \"build zlib.spec\" at Tue Oct 20 21:41:58 UTC 2026."
+          },
+          {
+            "line": 836,
+            "text": "[  239s] 628aa4815518 finished \"build zlib.spec\" at Tue Oct 20 21:45:57 UTC 2026."
+          }
+        ]
+      },
+      {
+        "arch": "x86_64",
+        "log": "/home/linhao/Toolchain/development/qb_1203397_lld/work/logs/x86_64/zlib.log",
+        "sha256": "3e4ca4a76396205dbd27cc0be851d34c14e13f9cccba6af330ae16cfe11f4865",
+        "boundaries": [
+          {
+            "line": 6,
+            "text": "[    0s] 628aa4815518 started \"build zlib.spec\" at Tue Oct 20 18:10:31 UTC 2026."
+          },
+          {
+            "line": 817,
+            "text": "[  105s] 628aa4815518 finished \"build zlib.spec\" at Tue Oct 20 18:12:16 UTC 2026."
+          }
+        ]
+      }
+    ],
+    "failure_excerpt": [
+      {
+        "line": 6,
+        "text": "[    0s] 3d9c6556ef9c started \"build zlib.spec\" at Thu Oct 22 00:53:57 UTC 2026."
+      },
+      {
+        "line": 12,
+        "text": "[    0s] init_buildsystem --configdir /root/gbsbuild-ROOT/NGBS-ROOT/run/worker/3/build/configs --cachedir /var/cache/build --clean --rpmlist /root/gbsbuild-ROOT/NGBS-ROOT/worker/scratch.3/.build.rpmlist /root/gbsbuild-ROOT/NGBS-ROOT/worker/scratch.3/.build-srcdir/zlib.spec build ..."
+      },
+      {
+        "line": 330,
+        "text": "[  477s] toybox: Unknown command find"
+      },
+      {
+        "line": 333,
+        "text": "[  477s] toybox: Unknown command find"
+      },
+      {
+        "line": 337,
+        "text": "[  477s] + export CC=x86_64-tizen-linux-gnu-clang CXX=x86_64-tizen-linux-gnu-clang++"
+      },
+      {
+        "line": 560,
+        "text": "[  483s] + export CC=x86_64-tizen-linux-gnu-clang CXX=x86_64-tizen-linux-gnu-clang++"
+      },
+      {
+        "line": 582,
+        "text": "[  483s] toybox: Unknown command find"
+      },
+      {
+        "line": 583,
+        "text": "[  483s] toybox: Unknown command xargs"
+      },
+      {
+        "line": 584,
+        "text": "[  483s] error: Bad exit status from /var/tmp/rpm-tmp.ymL9YA (%install)"
+      },
+      {
+        "line": 589,
+        "text": "[  483s]     Bad exit status from /var/tmp/rpm-tmp.ymL9YA (%install)"
+      },
+      {
+        "line": 591,
+        "text": "[  483s] 3d9c6556ef9c failed \"build zlib.spec\" at Thu Oct 22 01:02:00 UTC 2026."
+      }
+    ]
+  },
+  {
+    "package": "libtirpc",
+    "analyzer": {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-B",
+        "-m",
+        "gbs_analyzer",
+        "analyze",
+        "/home/linhao/qb_analysis/1204735_vs_1202044/llvm_1204735/packages/standard/x86_64/failed/libtirpc.buildlog.txt",
+        "--output-format",
+        "both",
+        "--max-tokens",
+        "1800",
+        "--output-dir",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/analyzer/libtirpc/output"
+      ],
+      "started_utc": "2026-11-04T03:29:51.096634+00:00",
+      "ended_utc": "2026-11-04T03:29:51.309689+00:00",
+      "seconds": 0.21307164803147316,
+      "exit": 0
+    },
+    "log": "/home/linhao/qb_analysis/1204735_vs_1202044/llvm_1204735/packages/standard/x86_64/failed/libtirpc.buildlog.txt",
+    "log_sha256": "f74b558fccb1a4dd56fd12ef75a212de7441f9cb24fcbd14b006c536893192a3",
+    "manifest": "/home/linhao/Downloads/tizen-base-toolchain_20261020.074527_standard.xml",
+    "manifest_sha256": "5b65652870909f0536d7a24c783299d60da6a927da7db4346020ca87188147ac",
+    "project": {
+      "name": "platform/upstream/libtirpc",
+      "path": "platform/upstream/libtirpc",
+      "revision": "05ba2378f56fe0e594ad7a6b3679926dc0b7219e"
+    },
+    "failure_rows": [
+      {
+        "package": "libtirpc",
+        "architecture": "armv7l",
+        "status": "failed",
+        "complete_log_path": "llvm_1204735/packages/standard/armv7l/failed/libtirpc.buildlog.txt",
+        "source_URL": "https://quickbuild.tizen.org/download/1204735/html/GBS Reports@^@standard-armv7l:aarch64:x86_64/logfiles/standard/armv7l/libtirpc.txt"
+      },
+      {
+        "package": "libtirpc",
+        "architecture": "aarch64",
+        "status": "failed",
+        "complete_log_path": "llvm_1204735/packages/standard/aarch64/failed/libtirpc.buildlog.txt",
+        "source_URL": "https://quickbuild.tizen.org/download/1204735/html/GBS Reports@^@standard-armv7l:aarch64:x86_64/logfiles/standard/aarch64/libtirpc.txt"
+      },
+      {
+        "package": "libtirpc",
+        "architecture": "x86_64",
+        "status": "failed",
+        "complete_log_path": "llvm_1204735/packages/standard/x86_64/failed/libtirpc.buildlog.txt",
+        "source_URL": "https://quickbuild.tizen.org/download/1204735/html/GBS Reports@^@standard-armv7l:aarch64:x86_64/logfiles/standard/x86_64/libtirpc.txt"
+      }
+    ],
+    "success_rows": [
+      {
+        "arch": "armv7l",
+        "source": "libtirpc",
+        "status": "succeeded",
+        "log_url": "https://quickbuild.tizen.org/download/1203397/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/logfiles/standard/armv7l/libtirpc.txt"
+      },
+      {
+        "arch": "aarch64",
+        "source": "libtirpc",
+        "status": "succeeded",
+        "log_url": "https://quickbuild.tizen.org/download/1203397/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/logfiles/standard/aarch64/libtirpc.txt"
+      },
+      {
+        "arch": "x86_64",
+        "source": "libtirpc",
+        "status": "succeeded",
+        "log_url": "https://quickbuild.tizen.org/download/1203397/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/logfiles/standard/x86_64/libtirpc.txt"
+      }
+    ],
+    "success_time_evidence": [
+      {
+        "arch": "armv7l",
+        "log": "/home/linhao/Toolchain/development/qb_1203397_lld/work/logs/armv7l/libtirpc.log",
+        "sha256": "1a7a3be34b33404c58e9fa753e1e5c467564d8a028e14c3d7e3e53186493ac69",
+        "boundaries": [
+          {
+            "line": 6,
+            "text": "[    0s] 628aa4815518 started \"build libtirpc.spec\" at Tue Oct 20 21:21:05 UTC 2026."
+          },
+          {
+            "line": 1844,
+            "text": "[  234s] 628aa4815518 finished \"build libtirpc.spec\" at Tue Oct 20 21:24:59 UTC 2026."
+          }
+        ]
+      },
+      {
+        "arch": "aarch64",
+        "log": "/home/linhao/Toolchain/development/qb_1203397_lld/work/logs/aarch64/libtirpc.log",
+        "sha256": "fbda37bd728cdc26cb34099a7b7834d62bd971c7783e3807eddab468f09ba598",
+        "boundaries": [
+          {
+            "line": 6,
+            "text": "[    0s] 628aa4815518 started \"build libtirpc.spec\" at Tue Oct 20 23:22:31 UTC 2026."
+          },
+          {
+            "line": 1849,
+            "text": "[  274s] 628aa4815518 finished \"build libtirpc.spec\" at Tue Oct 20 23:27:05 UTC 2026."
+          }
+        ]
+      },
+      {
+        "arch": "x86_64",
+        "log": "/home/linhao/Toolchain/development/qb_1203397_lld/work/logs/x86_64/libtirpc.log",
+        "sha256": "9b6aeb5de2cadd89a05be0b7ccee77d8ff98ff3d097d9e7e12f747f30b06b62f",
+        "boundaries": [
+          {
+            "line": 6,
+            "text": "[    0s] 628aa4815518 started \"build libtirpc.spec\" at Tue Oct 20 18:44:22 UTC 2026."
+          },
+          {
+            "line": 1827,
+            "text": "[  107s] 628aa4815518 finished \"build libtirpc.spec\" at Tue Oct 20 18:46:09 UTC 2026."
+          }
+        ]
+      }
+    ],
+    "failure_excerpt": [
+      {
+        "line": 6,
+        "text": "[    0s] 3d9c6556ef9c started \"build libtirpc.spec\" at Thu Oct 22 04:15:12 UTC 2026."
+      },
+      {
+        "line": 12,
+        "text": "[    0s] init_buildsystem --configdir /root/gbsbuild-ROOT/NGBS-ROOT/run/worker/10/build/configs --cachedir /var/cache/build --clean --rpmlist /root/gbsbuild-ROOT/NGBS-ROOT/worker/scratch.10/.build.rpmlist /root/gbsbuild-ROOT/NGBS-ROOT/worker/scratch.10/.build-srcdir/libtirpc.spec build ..."
+      },
+      {
+        "line": 339,
+        "text": "[  554s] toybox: Unknown command find"
+      },
+      {
+        "line": 342,
+        "text": "[  554s] toybox: Unknown command find"
+      },
+      {
+        "line": 346,
+        "text": "[  554s] + export CC=x86_64-tizen-linux-gnu-clang CXX=x86_64-tizen-linux-gnu-clang++"
+      },
+      {
+        "line": 1678,
+        "text": "[  567s] + export CC=x86_64-tizen-linux-gnu-clang CXX=x86_64-tizen-linux-gnu-clang++"
+      },
+      {
+        "line": 1730,
+        "text": "[  567s] toybox: Unknown command find"
+      },
+      {
+        "line": 1731,
+        "text": "[  567s] toybox: Unknown command xargs"
+      },
+      {
+        "line": 1732,
+        "text": "[  567s] error: Bad exit status from /var/tmp/rpm-tmp.XkCg6P (%install)"
+      },
+      {
+        "line": 1736,
+        "text": "[  567s]     Bad exit status from /var/tmp/rpm-tmp.XkCg6P (%install)"
+      },
+      {
+        "line": 1738,
+        "text": "[  567s] 3d9c6556ef9c failed \"build libtirpc.spec\" at Thu Oct 22 04:24:39 UTC 2026."
+      }
+    ]
+  },
+  {
+    "package": "elfutils",
+    "analyzer": {
+      "argv": [
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+        "-B",
+        "-m",
+        "gbs_analyzer",
+        "analyze",
+        "/home/linhao/qb_analysis/1204735_vs_1202044/llvm_1204735/packages/standard/x86_64/failed/elfutils.buildlog.txt",
+        "--output-format",
+        "both",
+        "--max-tokens",
+        "1800",
+        "--output-dir",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/analyzer/elfutils/output"
+      ],
+      "started_utc": "2026-11-04T03:29:51.318141+00:00",
+      "ended_utc": "2026-11-04T03:29:51.486999+00:00",
+      "seconds": 0.16887329204473644,
+      "exit": 0
+    },
+    "log": "/home/linhao/qb_analysis/1204735_vs_1202044/llvm_1204735/packages/standard/x86_64/failed/elfutils.buildlog.txt",
+    "log_sha256": "093093fd4562dcc12a360eafde8812fecfce29bb7e36c8e0120640f896a282b7",
+    "manifest": "/home/linhao/Downloads/tizen-base-toolchain_20261020.074527_standard.xml",
+    "manifest_sha256": "5b65652870909f0536d7a24c783299d60da6a927da7db4346020ca87188147ac",
+    "project": {
+      "name": "platform/upstream/elfutils",
+      "path": "platform/upstream/elfutils",
+      "revision": "e85c8732d629af7ba3af70405866be2cd95781fe"
+    },
+    "failure_rows": [
+      {
+        "package": "elfutils",
+        "architecture": "armv7l",
+        "status": "failed",
+        "complete_log_path": "llvm_1204735/packages/standard/armv7l/failed/elfutils.buildlog.txt",
+        "source_URL": "https://quickbuild.tizen.org/download/1204735/html/GBS Reports@^@standard-armv7l:aarch64:x86_64/logfiles/standard/armv7l/elfutils.txt"
+      },
+      {
+        "package": "elfutils",
+        "architecture": "aarch64",
+        "status": "failed",
+        "complete_log_path": "llvm_1204735/packages/standard/aarch64/failed/elfutils.buildlog.txt",
+        "source_URL": "https://quickbuild.tizen.org/download/1204735/html/GBS Reports@^@standard-armv7l:aarch64:x86_64/logfiles/standard/aarch64/elfutils.txt"
+      },
+      {
+        "package": "elfutils",
+        "architecture": "x86_64",
+        "status": "failed",
+        "complete_log_path": "llvm_1204735/packages/standard/x86_64/failed/elfutils.buildlog.txt",
+        "source_URL": "https://quickbuild.tizen.org/download/1204735/html/GBS Reports@^@standard-armv7l:aarch64:x86_64/logfiles/standard/x86_64/elfutils.txt"
+      }
+    ],
+    "success_rows": [
+      {
+        "arch": "armv7l",
+        "source": "elfutils",
+        "status": "succeeded",
+        "log_url": "https://quickbuild.tizen.org/download/1203397/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/logfiles/standard/armv7l/elfutils.txt"
+      },
+      {
+        "arch": "aarch64",
+        "source": "elfutils",
+        "status": "succeeded",
+        "log_url": "https://quickbuild.tizen.org/download/1203397/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/logfiles/standard/aarch64/elfutils.txt"
+      },
+      {
+        "arch": "x86_64",
+        "source": "elfutils",
+        "status": "succeeded",
+        "log_url": "https://quickbuild.tizen.org/download/1203397/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/logfiles/standard/x86_64/elfutils.txt"
+      }
+    ],
+    "success_time_evidence": [
+      {
+        "arch": "armv7l",
+        "log": "/home/linhao/Toolchain/development/qb_1203397_lld/work/logs/armv7l/elfutils.log",
+        "sha256": "d5e8c813d16f67c02be0fd59174fc9041bae1c557b048838dd1d6245a4c1e752",
+        "boundaries": [
+          {
+            "line": 6,
+            "text": "[    0s] 628aa4815518 started \"build elfutils.spec\" at Tue Oct 20 20:30:13 UTC 2026."
+          },
+          {
+            "line": 2309,
+            "text": "[  318s] 628aa4815518 finished \"build elfutils.spec\" at Tue Oct 20 20:35:31 UTC 2026."
+          }
+        ]
+      },
+      {
+        "arch": "aarch64",
+        "log": "/home/linhao/Toolchain/development/qb_1203397_lld/work/logs/aarch64/elfutils.log",
+        "sha256": "75575d9f481e5fafd3a3597437e2a5a41d4c13ecd66a9bd3301f25f26d6e9841",
+        "boundaries": [
+          {
+            "line": 6,
+            "text": "[    0s] 628aa4815518 started \"build elfutils.spec\" at Tue Oct 20 21:37:13 UTC 2026."
+          },
+          {
+            "line": 2315,
+            "text": "[  363s] 628aa4815518 finished \"build elfutils.spec\" at Tue Oct 20 21:43:16 UTC 2026."
+          }
+        ]
+      },
+      {
+        "arch": "x86_64",
+        "log": "/home/linhao/Toolchain/development/qb_1203397_lld/work/logs/x86_64/elfutils.log",
+        "sha256": "169ed90af5d9804b3aa5d5b554311d95af848855249792990394fee10ccde81a",
+        "boundaries": [
+          {
+            "line": 6,
+            "text": "[    0s] 628aa4815518 started \"build elfutils.spec\" at Tue Oct 20 18:08:20 UTC 2026."
+          },
+          {
+            "line": 2292,
+            "text": "[  136s] 628aa4815518 finished \"build elfutils.spec\" at Tue Oct 20 18:10:36 UTC 2026."
+          }
+        ]
+      }
+    ],
+    "failure_excerpt": [
+      {
+        "line": 6,
+        "text": "[    0s] 3d9c6556ef9c started \"build elfutils.spec\" at Thu Oct 22 00:36:29 UTC 2026."
+      },
+      {
+        "line": 12,
+        "text": "[    0s] init_buildsystem --configdir /root/gbsbuild-ROOT/NGBS-ROOT/run/worker/12/build/configs --cachedir /var/cache/build --clean --rpmlist /root/gbsbuild-ROOT/NGBS-ROOT/worker/scratch.12/.build.rpmlist /root/gbsbuild-ROOT/NGBS-ROOT/worker/scratch.12/.build-srcdir/elfutils.spec build ..."
+      },
+      {
+        "line": 367,
+        "text": "[  529s] toybox: Unknown command find"
+      },
+      {
+        "line": 370,
+        "text": "[  529s] toybox: Unknown command find"
+      },
+      {
+        "line": 374,
+        "text": "[  529s] + export CC=x86_64-tizen-linux-gnu-clang CXX=x86_64-tizen-linux-gnu-clang++"
+      },
+      {
+        "line": 388,
+        "text": "[  530s] toybox: Unknown command find"
+      },
+      {
+        "line": 389,
+        "text": "[  530s] autopoint: *** infrastructure files for version 0.21.1 not found; this is autopoint from GNU gettext-tools 0.21.1"
+      },
+      {
+        "line": 390,
+        "text": "[  530s] autopoint: *** Stop."
+      },
+      {
+        "line": 391,
+        "text": "[  530s] autoreconf: error: autopoint failed with exit status: 1"
+      },
+      {
+        "line": 393,
+        "text": "[  530s] error: Bad exit status from /var/tmp/rpm-tmp.matlXt (%build)"
+      },
+      {
+        "line": 399,
+        "text": "[  530s]     Bad exit status from /var/tmp/rpm-tmp.matlXt (%build)"
+      },
+      {
+        "line": 401,
+        "text": "[  530s] 3d9c6556ef9c failed \"build elfutils.spec\" at Thu Oct 22 00:45:19 UTC 2026."
+      }
+    ]
+  }
+]

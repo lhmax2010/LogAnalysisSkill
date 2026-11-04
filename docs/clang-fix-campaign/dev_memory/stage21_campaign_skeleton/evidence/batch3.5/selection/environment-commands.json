@@ -1,0 +1,92 @@
+{
+  "free": {
+    "argv": [
+      "free",
+      "-h"
+    ],
+    "started_utc": "2026-11-04T03:29:48.754934+00:00",
+    "ended_utc": "2026-11-04T03:29:48.759976+00:00",
+    "seconds": 0.005048851016908884,
+    "exit": 0
+  },
+  "swap": {
+    "argv": [
+      "swapon",
+      "--show"
+    ],
+    "started_utc": "2026-11-04T03:29:48.760264+00:00",
+    "ended_utc": "2026-11-04T03:29:48.761957+00:00",
+    "seconds": 0.0016956429462879896,
+    "exit": 0
+  },
+  "load": {
+    "argv": [
+      "cat",
+      "/proc/loadavg"
+    ],
+    "started_utc": "2026-11-04T03:29:48.762142+00:00",
+    "ended_utc": "2026-11-04T03:29:48.763212+00:00",
+    "seconds": 0.0010725740576162934,
+    "exit": 0
+  },
+  "nproc": {
+    "argv": [
+      "nproc"
+    ],
+    "started_utc": "2026-11-04T03:29:48.763353+00:00",
+    "ended_utc": "2026-11-04T03:29:48.773525+00:00",
+    "seconds": 0.0101883290335536,
+    "exit": 0
+  },
+  "df": {
+    "argv": [
+      "df",
+      "-h",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill",
+      "/home/linhao/GBS-ROOT-TIZEN-UNIFIED-LLVM",
+      "/home/linhao/GBS-ROOT-TOOLCHAIN-LLVM-R4-20260714",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tmp/GBS-ROOT-TIZEN-UNIFIED-LLVM"
+    ],
+    "started_utc": "2026-11-04T03:29:48.773842+00:00",
+    "ended_utc": "2026-11-04T03:29:48.775263+00:00",
+    "seconds": 0.0014219150179997087,
+    "exit": 0
+  },
+  "vmstat": {
+    "argv": [
+      "vmstat",
+      "1",
+      "3"
+    ],
+    "started_utc": "2026-11-04T03:29:48.775438+00:00",
+    "ended_utc": "2026-11-04T03:29:50.779633+00:00",
+    "seconds": 2.004209707956761,
+    "exit": 0
+  },
+  "top_rss": {
+    "argv": [
+      "ps",
+      "-eo",
+      "comm=,rss=",
+      "--sort=-rss"
+    ],
+    "first_rows": 15,
+    "rows": [
+      "epp-client-daem 2288856",
+      "code-insiders   680544",
+      "code-insiders   640160",
+      "code-insiders   617460",
+      "code-insiders   609624",
+      "chrome          588632",
+      "chrome          580708",
+      "code-insiders   502840",
+      "chrome          488940",
+      "code-insiders   478080",
+      "code-insiders   400248",
+      "code-insiders   377380",
+      "code-insiders   363496",
+      "xdg-desktop-por 348332",
+      "codex           326040"
+    ]
+  }
+}

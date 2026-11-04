@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**READ_FAILURE_FIX_VALIDATED**;按SKEL-R-08口径满足SKEL-R-04验收;C8累计19通过/1历史观测失败,late-build20/20,全仓3099通过/0失败/1既有跳过。等待下一步裁定,不进入第3.5批。
+日期:2026-11-04。状态:**SELECTION_EVIDENCE_INCOMPLETE**;读取失败修复仍按SKEL-R-08口径验收通过。SKEL-B3.5-01白天只读筛选完成,合格候选0个,3个预筛对象的真实analyzer已离线解析;等待补齐同源CI与shelve证据、选包及第3.5批执行裁定,尚未启动第3.5批。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1372,3 +1372,69 @@ PASS,其非阻断处置有明确裁定;新采样、late-build及完整门禁没�
 收尾diff检查:源码与文档exit0;全暂存树exit2,仅103条本机假服务器原始
 qb_evidence HTML的行尾空白,为保留原字节不改写。详见`r08/final.json`的
 whitespace字段。暂存文件无state.db二进制、证书私钥或凭据文件。
+
+## 24. SKEL-B3.5-01:选包候选筛选与环境摸底
+
+2026-11-04上午(Asia/Shanghai),基线`fd4c6f6`;按用户裁定只读筛选,
+不是第3.5批开工。权威冻结稿第7节的包选择要求保持不变。
+范围:本仓库历史证据、开发机既有CI日志/修复报告/本地shelve记录;
+最多5个对象,真实gbs_analyzer离线解析,环境只读查询。
+禁止gbs build、所有campaign命令、浏览器/QB登录、Gerrit访问与推送、
+结束进程、清缓存/GBS-ROOT/swap;不往llvm-optimize写任何内容。
+本轮实际符合上述边界,Git交付仅本仓库clang-fix-campaign。
+
+证据根:`evidence/batch3.5/selection/`。
+详细目录搜索范围见[search.md](evidence/batch3.5/selection/search.md),
+预筛表与来源行号见[candidates.md](evidence/batch3.5/selection/candidates.md),
+资源见[environment.md](evidence/batch3.5/selection/environment.md)。
+
+### 24.1 筛选事实
+
+**没有找到同时满足全部条件的包;不选一个不合格包凑数。**
+已解析三个Base预筛对象,均来自父QB1204735/子1204736:
+
+| 补证排序 | 包 | analyzer exit / verdict / primary | 未入选原因 |
+|---|---|---|---|
+| 1 | elfutils | 0 / needs_llm / raw_error,%build,autopoint失败 | 另有OBS r2的2行源码修法,但不是shelve,也不对应这份日志的首错 |
+| 2 | zlib | 0 / needs_llm / rpm_phase,%install | 原日志toybox find/xargs不存在,未证实Clang编译首错,没有对应shelve/diff |
+| 3 | libtirpc | 0 / needs_llm / rpm_phase,%install | 同类安装工具失败;320处非致命warning不作编译失败;没有对应shelve/diff |
+
+每包真实analyzer只运行一次,未改代码、未改原始日志;argv/UTC/exit/stdout/stderr与
+原始JSON/Markdown/trace/perf在`selection/analyzer/<包>/`。
+`source-facts.json`有三个输入前后hash、三架构状态与历史成功耗时的原行;
+`source-excerpts.json`有配置/人工修法/CL汇总的限定摘录与源文件hash。
+base可确定为`tizen-base-toolchain_20261013.024319`,但实际`./build.conf`字节缺失;
+已有base发布配置与输出仓库配置hash不同,不能任选一份声称完全一致。
+
+实际shelve汇总主要来自VD产品线;libdeflate14337558等不能直接迁移成Base候选,
+其报告指向的`/home1/chengkai/.../quickbuild`在本机不存在。
+glibc/GCC部分链接、Unified的lld失败、历史故障注入或合成PASS均没有冒充合格证据。
+推荐执行包:暂无。仅建议优先补elfutils同源材料,不授权编辑/建档/编译。
+缺失:同一Base编译首错的QB号+本地日志、对应shelve完整diff与源码revision、
+实际build.conf原文/等价性证据;不能把文件数写成改动行数,未知行数明确UNKNOWN。
+
+### 24.2 环境与资源
+
+采样约11:29:20核,loadavg1.09/1.30/0.82;RAM30Gi,available16Gi,
+swap4Gi已用3.9Gi、余109Mi;/home盘余133G、已用93%。仓库与所列GBS-ROOT同盘。
+进程只记名称与RSS前15,无命令行参数。vmstat后两个1秒区间si/so为4/0、0/0,
+不据满swap推断正在持续换出,也不据两秒采样保证未来无压力。
+三个既有scratch可读du共约14.7GiB;受限目录Permission denied导致exit1,
+只作为下界,没有提权或清理。
+
+尚无所选包实测峰值。对zlib/libtirpc级小包的顺序三架构初步规划为
+预留8GiB available和40GiB新增磁盘,不是已测上限/开跑参数;
+当前余量在此规划之上,本轮无需用户清内存或swap。选包后仍须重测,
+swap余量很小、依赖闭包未确定;如执行前持续换出,由用户先释放自己的负载。
+不会因为顺序编译而释放后续第4批需要保留的副本。
+
+### 24.3 交付边界与停点
+
+仅新增筛选证据与本节,未改生产/测试/冻结稿/状态库,未运行全仓测试或campaign命令。
+三次analyzer输入hash不变,三次exit0但均needs_llm;源码与文档差异检查、
+JSON可解析性、限定凭据扫描见`selection/validation.json`。
+手写文档diff检查通过;全暂存树diff检查exit2,仅三个analyzer原始
+evidence_packet.md的EOF多空行,按原始输出要求保留,未改写。
+搜索不是穷尽所有机器,结论仅对实际本地材料有效。
+资源估算因未选包只能是有明确假设的规划,不伪造真实峰值。
+停止于筛选交付,等待用户选包与第3.5批执行裁定。

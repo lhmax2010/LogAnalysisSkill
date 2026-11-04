@@ -1,0 +1,69 @@
+{
+  "analyzed_at": "2026-11-04T03:29:51Z",
+  "buildlog_size_bytes": 125850,
+  "buildlog_token_estimate": 31462,
+  "decisions": {
+    "candidates_kept": 1,
+    "candidates_ranked": 1,
+    "downgrade_reason": "spec_file_unavailable",
+    "downgraded": true,
+    "evidence_collector": "spec",
+    "level_achieved": 2,
+    "level_preferred": 3,
+    "matched_tier": null,
+    "verdict": "needs_llm",
+    "via": "full_path"
+  },
+  "degradations": [
+    "spec_file_unavailable",
+    "packet_truncated_to_token_budget"
+  ],
+  "execution": {
+    "by_layer": {
+      "L0_scan": 17.9507,
+      "L2_rank": 8.0173,
+      "L3_evidence": 0.0183,
+      "L4a_quick": 6.3927,
+      "L4b_full": 6.4885,
+      "L5_assembler": 5.6822
+    },
+    "exit_status": "success",
+    "fast_path_hit": false,
+    "total_ms": 44.5497
+  },
+  "schema_version": "perf_report/v1",
+  "tokens": {
+    "budget": {
+      "evidence_pool_final": 200,
+      "evidence_pool_initial": 650,
+      "limit": 1800,
+      "reclaimed": 150,
+      "used": 1433
+    },
+    "by_section": {
+      "command_summary": 1,
+      "header_declarations": 1,
+      "primary_error": 85,
+      "prompt_template": 135,
+      "source_snippets": 95,
+      "structure_overhead": 894,
+      "top_k_summaries": 222
+    },
+    "compression_ratio": 21.9553,
+    "downstream_outputs": {
+      "estimate_method": "tiktoken",
+      "evidence_packet_json_tokens": 1741,
+      "evidence_packet_md_tokens": 1078,
+      "scope": "Estimated tokens of analyzer material intended for outer Claude recommended reading. Actual Claude consumption also includes any source files Claude reads on its own.",
+      "source_snippets_tokens": 95,
+      "total_claude_facing_tokens": 1078,
+      "usage_note": "Compare this baseline with Cline/client actual token usage; the difference approximates extra material Claude read outside analyzer outputs."
+    },
+    "estimate_method": "tiktoken",
+    "input_log_tokens": 31462,
+    "packet_tokens": 1433
+  },
+  "warnings": [
+    "spec_file_unavailable"
+  ]
+}

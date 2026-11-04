@@ -1,0 +1,39 @@
+{
+  "checked_utc": "2026-11-04T03:36:32.865201+00:00",
+  "inputs": [
+    {
+      "package": "zlib",
+      "input_sha256_unchanged": true,
+      "analyzer_exit": 0,
+      "verdict": "needs_llm"
+    },
+    {
+      "package": "libtirpc",
+      "input_sha256_unchanged": true,
+      "analyzer_exit": 0,
+      "verdict": "needs_llm"
+    },
+    {
+      "package": "elfutils",
+      "input_sha256_unchanged": true,
+      "analyzer_exit": 0,
+      "verdict": "needs_llm"
+    }
+  ],
+  "json_jsonl_files_parsed": 29,
+  "production_and_tests_unchanged": true,
+  "frozen_sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+  "tracked_doc_diff_check": 0,
+  "staged_diff_check_exit": 2,
+  "raw_output_whitespace_preserved": [
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/analyzer/elfutils/output/evidence_packet.md:44: new blank line at EOF.",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/analyzer/libtirpc/output/evidence_packet.md:153: new blank line at EOF.",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/analyzer/zlib/output/evidence_packet.md:46: new blank line at EOF."
+  ],
+  "credential_pattern_hits": [],
+  "credential_scan_scope": "analyzer outputs and selected source excerpts; not a universal detector",
+  "qualified_candidates": 0,
+  "prescreened_analyzed": 3,
+  "full_tests_run": false,
+  "batch_3_5_started": false
+}

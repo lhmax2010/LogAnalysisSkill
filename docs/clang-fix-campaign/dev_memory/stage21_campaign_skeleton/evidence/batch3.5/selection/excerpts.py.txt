@@ -1,0 +1,27 @@
+"""Archive only selected non-credential local source lines, with hashes."""
+import hashlib
+import json
+from pathlib import Path
+
+out = Path(__file__).resolve().parent
+home = Path('/home/linhao')
+sources = [
+    (home / 'qb_analysis/1204735_vs_1202044/llvm_1204735/children/1204736/logs/build_1204736.log',
+     [(310, 312), (326, 326)]),
+    (home / 'Downloads/Summary_Report_2_Tizen_Base_Changes_1030.md', [(27, 27), (125, 188)]),
+    (home / 'Downloads/clang_shelve_cl_eval_all_20261016_zh.md', [(71, 79), (107, 107), (818, 818)]),
+    (home / 'Downloads/Clang_Fix_Evaluation_Table_Complete_1030.md',
+     [(245, 245), (257, 257), (275, 275)]),
+    (home / 'Downloads/LLVM_Base改动说明_20261009_zh.md', [(3, 3), (29, 33)]),
+    (home / 'Downloads/tizen-base-toolchain_20261020.074527_standard.xml',
+     [(44, 44), (97, 97), (218, 218), (236, 236)]),
+]
+result = []
+for path, ranges in sources:
+    raw = path.read_bytes()
+    lines = raw.decode('utf-8').splitlines()
+    result.append({'source': str(path), 'sha256': hashlib.sha256(raw).hexdigest(),
+                   'lines': [{'line': n, 'text': lines[n - 1]}
+                             for start, end in ranges for n in range(start, end + 1)]})
+(out / 'source-excerpts.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
+print('archived', len(result), 'local sources')

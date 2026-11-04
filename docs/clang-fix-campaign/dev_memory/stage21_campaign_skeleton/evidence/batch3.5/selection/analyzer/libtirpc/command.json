@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-B",
+    "-m",
+    "gbs_analyzer",
+    "analyze",
+    "/home/linhao/qb_analysis/1204735_vs_1202044/llvm_1204735/packages/standard/x86_64/failed/libtirpc.buildlog.txt",
+    "--output-format",
+    "both",
+    "--max-tokens",
+    "1800",
+    "--output-dir",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/analyzer/libtirpc/output"
+  ],
+  "started_utc": "2026-11-04T03:29:51.096634+00:00",
+  "ended_utc": "2026-11-04T03:29:51.309689+00:00",
+  "seconds": 0.21307164803147316,
+  "exit": 0
+}

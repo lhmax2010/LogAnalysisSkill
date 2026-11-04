@@ -1,0 +1,126 @@
+{
+  "allowed_next_actions": [
+    "expand"
+  ],
+  "arch": "unknown",
+  "cascade_summary": "",
+  "degraded": true,
+  "degraded_reasons": [
+    "spec_file_unavailable"
+  ],
+  "direct_answer": null,
+  "evidence": {
+    "phase": "%install",
+    "primary_error": {
+      "command_id": "C068",
+      "details": {
+        "phase": "%install"
+      },
+      "id": "E001",
+      "kind": "rpm_phase",
+      "line_no": 584,
+      "message": "error: Bad exit status from /var/tmp/rpm-tmp.ymL9YA (%install)",
+      "phase": "%install",
+      "raw_offset": 71912,
+      "severity": "error"
+    }
+  },
+  "failed_phase": "%install",
+  "matched_patterns": [
+    {
+      "captures": {
+        "phase": "%install"
+      },
+      "confidence": 0.38,
+      "failure_reason": "confidence_below_tier2_threshold",
+      "id": "rpm_phase_failure_tier2",
+      "pattern_id": "rpm_phase_failure_tier2"
+    }
+  ],
+  "matched_tier": null,
+  "package": "unknown",
+  "primary_error": {
+    "command_id": "C068",
+    "details": {
+      "phase": "%install"
+    },
+    "id": "E001",
+    "kind": "rpm_phase",
+    "line_no": 584,
+    "message": "error: Bad exit status from /var/tmp/rpm-tmp.ymL9YA (%install)",
+    "phase": "%install",
+    "raw_offset": 71912,
+    "severity": "error"
+  },
+  "profile": "unknown",
+  "prompt": "请根据 evidence_packet JSON 定位 GBS 构建失败根因并给出最小修复建议。\nFailed phase: %install\nPrimary error: {\"id\":\"E001\",\"kind\":\"rpm_phase\",\"severity\":\"error\",\"message\":\"error: Bad exit status from /var/tmp/rpm-tmp.ymL9YA (%install)\",\"phase\":\"%install\"}\nTop candidate: {\"rank\":1,\"event_id\":\"E001\",\"kind\":\"rpm_phase\",\"semantic_class\":\"generic_error\",\"confidence\":0.38}\nEvidence paths: []\nUse packet.primary_error, packet.root_cause_candidates, and packet.evidence for details.\n",
+  "root_cause_candidates": [
+    {
+      "confidence": 0.38,
+      "confidence_band": "low",
+      "confidence_reason": [
+        {
+          "base": 0.45,
+          "factor": "semantic_class",
+          "value": "generic_error"
+        },
+        {
+          "delta": "-0.12",
+          "factor": "cascade_probability",
+          "probability": 0.4
+        },
+        {
+          "delta": "+0.05",
+          "factor": "has_command"
+        },
+        {
+          "factor": "generic_context_satisfied",
+          "value": false
+        },
+        {
+          "factor": "severity_priority",
+          "priority": 2,
+          "value": "error"
+        }
+      ],
+      "event_id": "E001",
+      "is_terminal": true,
+      "kind": "rpm_phase",
+      "line_no": 584,
+      "message": "error: Bad exit status from /var/tmp/rpm-tmp.ymL9YA (%install)",
+      "rank": 1,
+      "semantic_class": "generic_error",
+      "severity": "error",
+      "summary": "rpm_phase generic_error - error: Bad exit status from /var/tmp/rpm-tmp.ymL9YA (%install)"
+    }
+  ],
+  "schema_version": "evidence_packet/v1",
+  "token_budget": {
+    "conservation_ok": true,
+    "conservation_total": 1400,
+    "estimate_method": "tiktoken",
+    "evidence_pool_final": 200,
+    "evidence_pool_initial": 650,
+    "granted": {
+      "spec": 600
+    },
+    "hard_reserved": 400,
+    "limit": 1400,
+    "limit_with_prompt": 1800,
+    "partial_grants": {},
+    "preferred_grants": {
+      "spec": 600
+    },
+    "reclaimed": 150,
+    "soft_reserved": 350,
+    "soft_used": {
+      "cascade_summary": 0,
+      "raw_excerpt": 0,
+      "top_k_text_summaries": 200
+    },
+    "storage_redaction": "raw_paths_preserved",
+    "used": 862
+  },
+  "verdict": "needs_llm",
+  "via": "full_path"
+}

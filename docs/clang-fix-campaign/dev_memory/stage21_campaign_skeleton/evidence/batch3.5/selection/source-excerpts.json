@@ -1,0 +1,410 @@
+[
+  {
+    "source": "/home/linhao/qb_analysis/1204735_vs_1202044/llvm_1204735/children/1204736/logs/build_1204736.log",
+    "sha256": "da1aeffb70675c26c2fec081ffe6741e187f6c2c1068cc69b12cbe4807fb9bc1",
+    "lines": [
+      {
+        "line": 310,
+        "text": "11:48:42,480 INFO  - After converting, snapshot_num_url : http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319, base_path_url : standard http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319/repos/standard, unified_path_url : , common_path_url : "
+      },
+      {
+        "line": 311,
+        "text": "11:48:42,480 INFO  - base_path_url is: standard http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319/repos/standard"
+      },
+      {
+        "line": 312,
+        "text": "11:48:42,480 INFO  - base_url is: standard http://download.tizen.org/snapshots/TIZEN/Tizen/Tizen-Base-Toolchain/tizen-base-toolchain_20261013.024319/repos/standard"
+      },
+      {
+        "line": 326,
+        "text": "11:48:42,480 INFO  - buildconf=./build.conf"
+      }
+    ]
+  },
+  {
+    "source": "/home/linhao/Downloads/Summary_Report_2_Tizen_Base_Changes_1030.md",
+    "sha256": "8ea0f062809a23c439e796fae2576b3b6de57a9b54852eac4bfae99ec04ed39e",
+    "lines": [
+      {
+        "line": 27,
+        "text": "| 1 | elfutils | r2 | 09-21 | `baseregs[][2]` → `[][3]` in the i386 / x86_64 backends (two patch files) | Clang 22 `-Wunterminated-string-initialization`: a two-character string literal in a `[2]` array has no room for the terminating `\\0`, an error under -Werror. One more byte per entry; the code reads only the first two characters, behaviour unchanged | 20260929.1 | Appendix A.1 |"
+      },
+      {
+        "line": 125,
+        "text": "### A.1 elfutils r2 (committed 09-21, from snapshot 20260929.1)"
+      },
+      {
+        "line": 126,
+        "text": ""
+      },
+      {
+        "line": 127,
+        "text": "```diff"
+      },
+      {
+        "line": 128,
+        "text": "Index: elfutils.spec"
+      },
+      {
+        "line": 129,
+        "text": "==================================================================="
+      },
+      {
+        "line": 130,
+        "text": "--- elfutils.spec (revision 1)"
+      },
+      {
+        "line": 131,
+        "text": "+++ elfutils.spec (revision 2)"
+      },
+      {
+        "line": 132,
+        "text": "@@ -10,6 +10,8 @@"
+      },
+      {
+        "line": 133,
+        "text": " Source:         elfutils-%{version}.tar.bz2"
+      },
+      {
+        "line": 134,
+        "text": " Source2:        baselibs.conf"
+      },
+      {
+        "line": 135,
+        "text": " Source1001:     elfutils.manifest"
+      },
+      {
+        "line": 136,
+        "text": "+Patch1:         fix-clang22-i386-baseregs.patch"
+      },
+      {
+        "line": 137,
+        "text": "+Patch2:         fix-clang22-x86-64-baseregs.patch"
+      },
+      {
+        "line": 138,
+        "text": " Requires:       libdw libelf"
+      },
+      {
+        "line": 139,
+        "text": " BuildRequires:  automake"
+      },
+      {
+        "line": 140,
+        "text": " BuildRequires:  bison"
+      },
+      {
+        "line": 141,
+        "text": "@@ -90,6 +92,8 @@"
+      },
+      {
+        "line": 142,
+        "text": ""
+      },
+      {
+        "line": 143,
+        "text": " %prep"
+      },
+      {
+        "line": 144,
+        "text": " %setup -q -n elfutils-%{version}"
+      },
+      {
+        "line": 145,
+        "text": "+%patch1 -p1"
+      },
+      {
+        "line": 146,
+        "text": "+%patch2 -p1"
+      },
+      {
+        "line": 147,
+        "text": " cp %{SOURCE1001} ."
+      },
+      {
+        "line": 148,
+        "text": ""
+      },
+      {
+        "line": 149,
+        "text": " %build"
+      },
+      {
+        "line": 150,
+        "text": "Index: fix-clang22-i386-baseregs.patch"
+      },
+      {
+        "line": 151,
+        "text": "==================================================================="
+      },
+      {
+        "line": 152,
+        "text": "--- fix-clang22-i386-baseregs.patch (added)"
+      },
+      {
+        "line": 153,
+        "text": "+++ fix-clang22-i386-baseregs.patch (revision 2)"
+      },
+      {
+        "line": 154,
+        "text": "@@ -0,0 +1,13 @@"
+      },
+      {
+        "line": 155,
+        "text": "+diff --git a/backends/i386_regs.c b/backends/i386_regs.c"
+      },
+      {
+        "line": 156,
+        "text": "+index 7ec93bb9fc13..4bca1b1a24d7 100644"
+      },
+      {
+        "line": 157,
+        "text": "+--- a/backends/i386_regs.c"
+      },
+      {
+        "line": 158,
+        "text": "++++ b/backends/i386_regs.c"
+      },
+      {
+        "line": 159,
+        "text": "+@@ -83,7 +83,7 @@ i386_register_info (Ebl *ebl __attribute__ ((unused)),"
+      },
+      {
+        "line": 160,
+        "text": "+"
+      },
+      {
+        "line": 161,
+        "text": "+   switch (regno)"
+      },
+      {
+        "line": 162,
+        "text": "+     {"
+      },
+      {
+        "line": 163,
+        "text": "+-      static const char baseregs[][2] ="
+      },
+      {
+        "line": 164,
+        "text": "++      static const char baseregs[][3] ="
+      },
+      {
+        "line": 165,
+        "text": "+       {"
+      },
+      {
+        "line": 166,
+        "text": "+         \"ax\", \"cx\", \"dx\", \"bx\", \"sp\", \"bp\", \"si\", \"di\", \"ip\""
+      },
+      {
+        "line": 167,
+        "text": "+       };"
+      },
+      {
+        "line": 168,
+        "text": "Index: fix-clang22-x86-64-baseregs.patch"
+      },
+      {
+        "line": 169,
+        "text": "==================================================================="
+      },
+      {
+        "line": 170,
+        "text": "--- fix-clang22-x86-64-baseregs.patch (added)"
+      },
+      {
+        "line": 171,
+        "text": "+++ fix-clang22-x86-64-baseregs.patch (revision 2)"
+      },
+      {
+        "line": 172,
+        "text": "@@ -0,0 +1,13 @@"
+      },
+      {
+        "line": 173,
+        "text": "+diff --git a/backends/x86_64_regs.c b/backends/x86_64_regs.c"
+      },
+      {
+        "line": 174,
+        "text": "+index ef987daf43f0..c92c862a58c8 100644"
+      },
+      {
+        "line": 175,
+        "text": "+--- a/backends/x86_64_regs.c"
+      },
+      {
+        "line": 176,
+        "text": "++++ b/backends/x86_64_regs.c"
+      },
+      {
+        "line": 177,
+        "text": "+@@ -80,7 +80,7 @@ x86_64_register_info (Ebl *ebl __attribute__ ((unused)),"
+      },
+      {
+        "line": 178,
+        "text": "+"
+      },
+      {
+        "line": 179,
+        "text": "+   switch (regno)"
+      },
+      {
+        "line": 180,
+        "text": "+     {"
+      },
+      {
+        "line": 181,
+        "text": "+-      static const char baseregs[][2] ="
+      },
+      {
+        "line": 182,
+        "text": "++      static const char baseregs[][3] ="
+      },
+      {
+        "line": 183,
+        "text": "+       {"
+      },
+      {
+        "line": 184,
+        "text": "+         \"ax\", \"dx\", \"cx\", \"bx\", \"si\", \"di\", \"bp\", \"sp\""
+      },
+      {
+        "line": 185,
+        "text": "+       };"
+      },
+      {
+        "line": 186,
+        "text": "```"
+      },
+      {
+        "line": 187,
+        "text": ""
+      },
+      {
+        "line": 188,
+        "text": "### A.2 gdb r2 + r3 (committed 09-21; r3 on 10-30 only rewrites the patch headers, no code change; from snapshot 20260929.1)"
+      }
+    ]
+  },
+  {
+    "source": "/home/linhao/Downloads/clang_shelve_cl_eval_all_20261016_zh.md",
+    "sha256": "b7afbb8f1f78678f029a0f7295da9a97c1677e6d64146713f0872708a34b5e78",
+    "lines": [
+      {
+        "line": 71,
+        "text": "- Quickbuild b844（fix5l 的 shelve 清单，base `20261009.2`，build.conf `@14333521`）有 27 个包用 Clang 编译失败。"
+      },
+      {
+        "line": 72,
+        "text": "- SIM 在 b844 里没编：它依赖的 trustzone_ext 失败了，deviced 也没编出来。依赖补齐后在本地编，Clang 下会失败。"
+      },
+      {
+        "line": 73,
+        "text": "- **Clang：** 28 个包用的版本都在本地按 Quickbuild 条件编过（base `20261009.2` + product `RELEASE_20261001.3`，build.conf `@14333521`，源码 = manifest + fix5l shelve），改完后又完整编了一次确认。新 base `20261010.1` 上没重编，它和旧 base 只差交叉 binutils 等 10 个包。"
+      },
+      {
+        "line": 74,
+        "text": "- **GCC：** 24 个包的代码版本用 GCC 编过（product 的 GCC 工程配置）。另外 4 个："
+      },
+      {
+        "line": 75,
+        "text": "  - appcore-agent：GCC 环境缺依赖，原代码也编不过；"
+      },
+      {
+        "line": 76,
+        "text": "  - libdeflate：x86_64，GCC 环境只有 armv7l；"
+      },
+      {
+        "line": 77,
+        "text": "  - enlightenment、trustzone_ext：用的是 options 版本，改动都在 `%if clang` 里，GCC 分支是原来那一行。"
+      },
+      {
+        "line": 78,
+        "text": "- **CL 内容：** ctx328 生成 CL 前，逐个文件核对了起点 = manifest + fix5l shelve。shelve 后用 `ctx328_verify.sh` 再核对一次。"
+      },
+      {
+        "line": 79,
+        "text": "- **没做的：** 只编译，没上机；这一批没评估「删参数方案」。"
+      },
+      {
+        "line": 107,
+        "text": "| 8 | libdeflate | 14337558（新建） | Clang 22 去掉了 evex512，整个 target 属性被忽略，AVX-512 函数编不过 | Clang 22 及以上 EVEX512 / NO_EVEX512 为空 | 没有（不是告警问题） | 没编（x86_64） | 无 | 改代码 | 只能改代码；上游 1.25 已去掉 evex512 |"
+      },
+      {
+        "line": 818,
+        "text": "| 8 | libdeflate | 14337558 | 新建 | fix5m（第二次，b776） | Clang 22 去掉了 evex512，整个 target 属性被忽略，AVX-512 函数编不过 | 改代码 | x86_64：b165 Succeeded |"
+      }
+    ]
+  },
+  {
+    "source": "/home/linhao/Downloads/Clang_Fix_Evaluation_Table_Complete_1030.md",
+    "sha256": "4dacccc7a851192ad3fda5b2caa80293952db9b3eb592602735810d3ba3a28c3",
+    "lines": [
+      {
+        "line": 245,
+        "text": "| 140 | tbb | 14319329 | 2 | ours |  | CL description: [Build fix] libtbb: Clang 20 and newer reject \"static const kind_type binding_completed = kind_type(bound+1)\" / (include/tbb/task.h:579) and the following detached / dying constants: 2, 3 and 4 are outside the range [0,1] of enum | code + spec | made before 10-20 (2026-10-06) | — |"
+      },
+      {
+        "line": 257,
+        "text": "| 160 | toybox | 14409741 | 2 | ours | ① Team CL 14176403 removed `CC+=\"gcc $RPM_OPT_FLAGS\"` and with it `$CFLAGS` from `CFLAGS=\"$CFLAGS …\"`; the CFLAGS on the make command line replaces the one of the build environment, so toybox has been built without the platform flags (optimization, debug information, `_FORTIFY_SOURCE`, stack protector), with GCC as well as with Clang. ② `toys/pending/diff.c:800`, `memset(&dir[j], 0, sizeof(dir))`: `dir` is `static struct dir {…} dir[2]`, so for `j = 1` one element is written past its end, into the next static variable (found by the whole-tree scan) | Replaces team CL 14176403: its removal of `CC+=` is kept, `$CFLAGS` restored; the `memset` size is `sizeof(dir[j])` (names unchanged, the loop still clears both elements); both commented, PLEASE CHECK | code (real bug) + build file | Effect on GCC: the flags are as before 14176403; stack-protector / FORTIFY check calls (small toybox) from 0 / 0 back to 1 / 13 (Clang), 1 / 12 (GCC); toybox-full built with FORTIFY runs `diff -r` correctly in the build root. The reason 14176403 gave for removing `$CFLAGS` (an undefined macro in the old build.conf) no longer exists with build.conf @14368686: no `%{` is left in the make lines | -Wno: +2 / -2 (`-Wno-nonnull -Wno-incompatible-pointer-types` of the original spec; they show in the diff because their line changed, they are not new) |"
+      },
+      {
+        "line": 275,
+        "text": "| 205 | zypper | 14335725 | 2 | ours |  | CL description: [Clang] zypper: GCC compatibility of the Clang fixes of shelve 14319327 / spec: the -DCMAKE_CXX_FLAGS_RELEASE argument with -Wno-error=enum-constexpr-conversion is Clang-only; GCC keeps the original argument. | carries options / pragmas, to be re-checked under these rules | made before 10-20 (2026-10-09) | -Wno: +2 / -0 |"
+      }
+    ]
+  },
+  {
+    "source": "/home/linhao/Downloads/LLVM_Base改动说明_20261009_zh.md",
+    "sha256": "f91e54d2fb6110a5ea0d20b1a915cd14ac93ff6501fca04058707718b6559b55",
+    "lines": [
+      {
+        "line": 3,
+        "text": "适用对象：Tizen 10.0 LLVM Base（OBS 工程 Tizen:10.0:Base:Dev:LLVM，LLVM 22.1.8）及 VD TV 产品线 Clang 构建（Quickbuild 项目 TIZEN-ASAN-PUBLIC-KantSU2e，build.conf TIZEN_KantSU2E_Clang_build.conf）。"
+      },
+      {
+        "line": 29,
+        "text": "| build.conf #9 副本 | /home1/chengkai/vd-tree/workspace/temp/r6_prep_20261009/conf_14333521（md5 1ce4eadc9b02，776 行） |"
+      },
+      {
+        "line": 30,
+        "text": "| build.conf 第二版 | /home1/chengkai/vd-tree/config/TIZEN_KantSU2E_Clang_build.ldflags_for_hq.conf（md5 520c4646abcf，760 行），diff：同目录 TIZEN_KantSU2E_Clang_build.ldflags_for_hq.conf.diff |"
+      },
+      {
+        "line": 31,
+        "text": "| 给总部 MIC 验证的 rpm | /home1/chengkai/vd-tree/workspace/temp/for_hq/cert-svc-2.2.2-0.armv7l.clang-fix56.rpm、vd-tpk-backend-1.5.1-1.armv7l.clang-Os-forced.rpm |"
+      },
+      {
+        "line": 32,
+        "text": "| 本地验证日志（10-06） | /home1/chengkai/p4fix_build/*_fix5[6-9].log、*_fix6[0-4].log，console：fix59_console.txt … fix64_console.txt |"
+      },
+      {
+        "line": 33,
+        "text": "| Quickbuild b534 日志（证据） | /home1/chengkai/vd-tree/workspace/quickbuild/1006_1/{tbb,zypper,qte-bm,kldr}.txt |"
+      }
+    ]
+  },
+  {
+    "source": "/home/linhao/Downloads/tizen-base-toolchain_20261020.074527_standard.xml",
+    "sha256": "5b65652870909f0536d7a24c783299d60da6a927da7db4346020ca87188147ac",
+    "lines": [
+      {
+        "line": 44,
+        "text": "  <project name=\"platform/upstream/elfutils\" path=\"platform/upstream/elfutils\" revision=\"e85c8732d629af7ba3af70405866be2cd95781fe\"/>"
+      },
+      {
+        "line": 97,
+        "text": "  <project name=\"platform/upstream/libtirpc\" path=\"platform/upstream/libtirpc\" revision=\"05ba2378f56fe0e594ad7a6b3679926dc0b7219e\"/>"
+      },
+      {
+        "line": 218,
+        "text": "  <project name=\"platform/upstream/toybox\" path=\"platform/upstream/toybox\" revision=\"38807fa88b48968eb07e7cd8960ca059b4ce67d6\"/>"
+      },
+      {
+        "line": 236,
+        "text": "  <project name=\"platform/upstream/zlib\" path=\"platform/upstream/zlib\" revision=\"4cfda05eb588cb28af2d84e21066ff40f0e8f88d\"/>"
+      }
+    ]
+  }
+]

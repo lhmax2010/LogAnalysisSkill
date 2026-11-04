@@ -1,0 +1,68 @@
+"""Validate selection artifacts without running any build or campaign tool."""
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+
+out = Path(__file__).resolve().parent
+repo = Path.cwd()
+facts = json.loads((out / 'source-facts.json').read_text())
+inputs = []
+for item in facts:
+    current = hashlib.sha256(Path(item['log']).read_bytes()).hexdigest()
+    assert current == item['log_sha256']
+    packet = json.loads((out / 'analyzer' / item['package'] / 'output/evidence_packet.json').read_text())
+    inputs.append({'package': item['package'], 'input_sha256_unchanged': True,
+                   'analyzer_exit': item['analyzer']['exit'], 'verdict': packet['verdict']})
+parsed = 0
+for path in out.rglob('*'):
+    if path.suffix == '.json':
+        json.loads(path.read_text())
+        parsed += 1
+    elif path.suffix == '.jsonl':
+        for line in path.read_text().splitlines():
+            if line:
+                json.loads(line)
+        parsed += 1
+production = subprocess.run(['git', 'diff', '--name-only', 'fd4c6f6', '--', 'tests',
+                             'tizen-*', 'pyproject.toml', '.importlinter',
+                             'docs/clang-fix-campaign/design.md'],
+                            capture_output=True, text=True, check=True)
+assert not production.stdout
+freeze = repo / 'docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md'
+freeze_hash = hashlib.sha256(freeze.read_bytes()).hexdigest()
+assert freeze_hash == '1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9'
+diff = subprocess.run(['git', 'diff', '--check', '--',
+                       'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md'],
+                      capture_output=True, text=True, check=False)
+assert diff.returncode == 0
+staged = subprocess.run(['git', 'diff', '--cached', '--check'],
+                        capture_output=True, text=True, check=False)
+expected_raw_warnings = [
+    'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/'
+    f'batch3.5/selection/analyzer/{package}/output/evidence_packet.md:{line}: new blank line at EOF.'
+    for package, line in [('elfutils', 44), ('libtirpc', 153), ('zlib', 46)]
+]
+assert staged.stdout.splitlines() == expected_raw_warnings
+# Restricted scan: generated analysis data, not generic words in prose about credentials.
+pattern = re.compile(r'(?i)(?:authorization\s*:\s*(?:bearer|basic)|'
+                     r'JSESSIONID_8810=|(?:password|passwd|cookie)\s*[=:]\s*[^\s,}]+'
+                     r'|-----BEGIN [A-Z ]*PRIVATE KEY-----)')
+hits = []
+for path in list((out / 'analyzer').rglob('*')) + [out / 'source-excerpts.json']:
+    if path.is_file() and pattern.search(path.read_text()):
+        hits.append(str(path.relative_to(out)))
+assert not hits, hits
+result = {'checked_utc': datetime.now(timezone.utc).isoformat(), 'inputs': inputs,
+          'json_jsonl_files_parsed': parsed, 'production_and_tests_unchanged': True,
+          'frozen_sha256': freeze_hash, 'tracked_doc_diff_check': diff.returncode,
+          'staged_diff_check_exit': staged.returncode,
+          'raw_output_whitespace_preserved': staged.stdout.splitlines(),
+          'credential_pattern_hits': hits,
+          'credential_scan_scope': 'analyzer outputs and selected source excerpts; not a universal detector',
+          'qualified_candidates': 0, 'prescreened_analyzed': 3,
+          'full_tests_run': False, 'batch_3_5_started': False}
+(out / 'validation.json').write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
+print(json.dumps(result, ensure_ascii=False))

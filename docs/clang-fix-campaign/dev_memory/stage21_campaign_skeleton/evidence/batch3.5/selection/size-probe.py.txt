@@ -1,0 +1,24 @@
+"""Read-only, narrowly scoped disk measurements; no traversal of unrelated roots."""
+import json
+from pathlib import Path
+import subprocess
+from datetime import datetime, timezone
+
+out = Path(__file__).resolve().parent / 'environment-raw/sizes'
+out.mkdir(exist_ok=False)
+paths = [
+    '/home/linhao/GBS-ROOT-TIZEN-UNIFIED-LLVM/local/BUILD-ROOTS/scratch.armv7l.0',
+    '/home/linhao/GBS-ROOT-TIZEN-UNIFIED-LLVM/local/BUILD-ROOTS/scratch.aarch64.0',
+    '/home/linhao/GBS-ROOT-TOOLCHAIN-LLVM-R4-20260714/local/BUILD-ROOTS/scratch.x86_64.0',
+    str(Path.cwd() / 'tmp/campaign-smoke/ws/7001e0de6549/src'),
+]
+argv = ['du', '-sx', '--block-size=1', *paths]
+start = datetime.now(timezone.utc).isoformat()
+with (out / 'stdout.txt').open('wb') as stdout, (out / 'stderr.txt').open('wb') as stderr:
+    result = subprocess.run(argv, stdout=stdout, stderr=stderr, check=False)
+(out / 'command.json').write_text(json.dumps({
+    'argv': argv, 'started_utc': start, 'ended_utc': datetime.now(timezone.utc).isoformat(),
+    'exit': result.returncode, 'permission_errors_are_not_overridden': True,
+    'not_a_selected_package_measurement': True,
+}, indent=2) + '\n')
+print(result.returncode)

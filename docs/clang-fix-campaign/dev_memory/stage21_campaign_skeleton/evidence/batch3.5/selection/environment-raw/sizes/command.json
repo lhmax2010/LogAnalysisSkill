@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "du",
+    "-sx",
+    "--block-size=1",
+    "/home/linhao/GBS-ROOT-TIZEN-UNIFIED-LLVM/local/BUILD-ROOTS/scratch.armv7l.0",
+    "/home/linhao/GBS-ROOT-TIZEN-UNIFIED-LLVM/local/BUILD-ROOTS/scratch.aarch64.0",
+    "/home/linhao/GBS-ROOT-TOOLCHAIN-LLVM-R4-20260714/local/BUILD-ROOTS/scratch.x86_64.0",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/tmp/campaign-smoke/ws/7001e0de6549/src"
+  ],
+  "started_utc": "2026-11-04T03:30:58.867983+00:00",
+  "ended_utc": "2026-11-04T03:31:24.805700+00:00",
+  "exit": 1,
+  "permission_errors_are_not_overridden": true,
+  "not_a_selected_package_measurement": true
+}

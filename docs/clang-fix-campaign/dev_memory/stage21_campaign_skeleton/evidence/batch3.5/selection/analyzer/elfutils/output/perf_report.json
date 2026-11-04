@@ -1,0 +1,66 @@
+{
+  "analyzed_at": "2026-11-04T03:29:51Z",
+  "buildlog_size_bytes": 25432,
+  "buildlog_token_estimate": 6358,
+  "decisions": {
+    "candidates_kept": 2,
+    "candidates_ranked": 2,
+    "downgrade_reason": "fallback_raw_context_used",
+    "downgraded": true,
+    "evidence_collector": null,
+    "level_achieved": null,
+    "level_preferred": null,
+    "matched_tier": null,
+    "verdict": "needs_llm",
+    "via": "full_path"
+  },
+  "degradations": [
+    "fallback_raw_context_used"
+  ],
+  "execution": {
+    "by_layer": {
+      "L0_scan": 1.9998,
+      "L2_rank": 0.0691,
+      "L3_evidence": 0.0005,
+      "L4a_quick": 6.431,
+      "L4b_full": 0.0006,
+      "L5_assembler": 6.3078
+    },
+    "exit_status": "success",
+    "fast_path_hit": false,
+    "total_ms": 14.8088
+  },
+  "schema_version": "perf_report/v1",
+  "tokens": {
+    "budget": {
+      "evidence_pool_final": 700,
+      "evidence_pool_initial": 650,
+      "limit": 1800,
+      "reclaimed": 50,
+      "used": 1582
+    },
+    "by_section": {
+      "command_summary": 1,
+      "header_declarations": 1,
+      "primary_error": 73,
+      "prompt_template": 129,
+      "source_snippets": 689,
+      "structure_overhead": 266,
+      "top_k_summaries": 423
+    },
+    "compression_ratio": 4.019,
+    "downstream_outputs": {
+      "estimate_method": "tiktoken",
+      "evidence_packet_json_tokens": 1778,
+      "evidence_packet_md_tokens": 960,
+      "scope": "Estimated tokens of analyzer material intended for outer Claude recommended reading. Actual Claude consumption also includes any source files Claude reads on its own.",
+      "source_snippets_tokens": 689,
+      "total_claude_facing_tokens": 960,
+      "usage_note": "Compare this baseline with Cline/client actual token usage; the difference approximates extra material Claude read outside analyzer outputs."
+    },
+    "estimate_method": "tiktoken",
+    "input_log_tokens": 6358,
+    "packet_tokens": 1582
+  },
+  "warnings": []
+}
