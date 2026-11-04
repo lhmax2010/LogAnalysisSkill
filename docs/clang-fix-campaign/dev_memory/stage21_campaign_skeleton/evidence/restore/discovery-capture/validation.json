@@ -1,0 +1,42 @@
+{
+  "files": [
+    {
+      "path": "live-01/run.json",
+      "sha256": "f70073e136a87e12df2f8caa079e00b005caa1d6e65d5a5a3e414ab75a1902ef",
+      "redaction_check": "PASS"
+    },
+    {
+      "path": "live-01.command.json",
+      "sha256": "2a174353990341037f510ef4f64896d4db3c05ec68dae18eb14a8d8792a67849",
+      "redaction_check": "PASS"
+    },
+    {
+      "path": "live-01.stderr.log",
+      "sha256": "aac088a2e558ba1ffeb24acc8498747daeb80148d0fe327681db620937f2ac30",
+      "redaction_check": "PASS"
+    },
+    {
+      "path": "live-01.stdout.log",
+      "sha256": "a66142dbbc864c1a5fce30f45356ae3064d3209ef86b88c321af42dd8d769315",
+      "redaction_check": "PASS"
+    },
+    {
+      "path": "offline-01/command.json",
+      "sha256": "ec22b86a468740773c687040c64c345fdf1e20c726427c50e5aef4b13afec9e7",
+      "redaction_check": "PASS"
+    },
+    {
+      "path": "offline-01/stderr.log",
+      "sha256": "390ca5e7cc28e209a0cd3939c288186f2f0f5887f2dc64f264654aca156792f2",
+      "redaction_check": "PASS"
+    },
+    {
+      "path": "offline-01/stdout.log",
+      "sha256": "fa0ade0a33612c20d9a8e8893279a1191f3667e3237d2f65af830c9a6e0b7c13",
+      "redaction_check": "PASS"
+    }
+  ],
+  "agent_unchanged": true,
+  "agent_sha256": "044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723",
+  "profile_residue": []
+}

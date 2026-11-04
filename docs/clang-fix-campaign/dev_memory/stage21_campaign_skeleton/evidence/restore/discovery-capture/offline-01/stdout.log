@@ -1,0 +1,23 @@
+✔ exact URLs and UTF-8 are fail-closed (1.844114ms)
+✔ capture-only policy: one main-frame GET, no permanent-denial expansion (0.49245ms)
+已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+▶ real guarded Chromium capture, foreign iframe, 307 and attachment stops
+  ✔ normal (10633.642999ms)
+已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+CAPTURE_STOPPED code=CAPTURE_PATH_UNSUPPORTED
+  ✔ foreign (3141.904545ms)
+已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+CAPTURE_STOPPED code=CAPTURE_REDIRECT_UNSUPPORTED
+  ✔ 307 (2913.513066ms)
+已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+CAPTURE_STOPPED code=QB_DOWNLOAD_UNSUPPORTED
+  ✔ attachment (3248.261347ms)
+✔ real guarded Chromium capture, foreign iframe, 307 and attachment stops (20116.786632ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20211.339264

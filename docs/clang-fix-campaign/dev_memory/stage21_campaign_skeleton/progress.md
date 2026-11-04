@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**恢复第1、2批离线完成;第3批URL取证完成,按规定停止等待裁定**。SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-04。状态:**恢复第1、2批离线完成;第3批真机取证触发安全停止(SKEL-RESTORE-09),等待裁定**。SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1790,3 +1790,77 @@ html_report永久禁止的窄例外、iframe/编码补证方式、纯文本日�
 这三份文档的`git diff --check`通过。代理完整SHA256仍为
 `044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723`。
 第二批全仓与静态门禁以第33.2节原始证据为准,不将其说成第三批功能验收。
+
+## 35. 实施裁定 SKEL-RESTORE-08:发现页面真机只读取证
+
+本节登记对第34节停点的裁定;以下为裁定原文。
+
+一、原则裁定(对 discovery-url-shapes.md 第 4、6 节)
+1. 采用“发现会话专用精确路径表”方案:discoveryScope 未启用时 P5Q 现有行为逐字节不变;表项只能由代理在已核验的上一层页面中解析产生,CLI 不能直接注入 URL;不开放目录前缀、任意构建号、任意 /download/、Wicket 监听器。
+2. 永久禁止列表只批准一项例外:discoveryScope 内、read 阶段、无 query/fragment 的 GET /build/<已核验 id>/html_report。/log、/artifacts、REST、外站、HTTP、WebSocket、全部破坏性监听器、307/308 继续拒绝。
+3. 构建号引导:
+   a) --build-id:先用现有只读路径读 /build/<id>/overview,核验其配置路径属于所选 qb.projects 项目(父构建为 RBS/TRIGGER,子构建为 RBS/build);父构建只登记页面中 Child Build 链接给出的子构建;核验失败即停,不登记任何下游。
+   b) --since:只登记该项目 /overview/<overview_id> 的 Recent Builds 普通链接;本轮不做历史分页,早于窗口的部分在报告中标注 outside_recent_window。
+4. 报告子页面与包日志:不读取子帧,改为对“上一层已核验文档中唯一的 iframe src / 日志 href”所解析出的精确同源 URL 发起一次显式主帧导航读取;解析用标准 URL 解析器一次完成,登记与比较按浏览器实际请求的 path 字节;禁止路径穿越、编码的路径分隔符、跨构建号。只登记主架构所需的那一份日志。
+5. 纯文本日志读取:新增受控应答类型(如 read_text),不经 DOMParser;原始字节按 UTF-8 严格解码,失败则返回 QB_TEXT_ENCODING_UNSUPPORTED,不降级;单份上限 64 MiB,超限拒绝;正文落盘到 <state-root>/discovery/<build_id>/logs/ 后返回路径与 sha256,不把全文放进 trace;沿用 qb_redact 对已登记身份的脱敏。触发浏览器下载(Content-Disposition attachment 或 Download 事件)本轮不支持,返回 QB_DOWNLOAD_UNSUPPORTED。
+
+二、真机只读取证(一次,需要用户在弹出的浏览器窗口登录)
+1. 写一个独立取证脚本放 evidence/restore/discovery-capture/,复用现有浏览器代理的登录流程;不改生产代理,只在该脚本内用硬编码的精确路径清单。
+2. 只读以下页面,全部 GET、不点击任何按钮、不提交任何表单:/overview/1917;/build/1204735/overview 与 /variables;/build/1204736/overview 与 /variables;/build/1204736/html_report;该页面中唯一 iframe src 指向的页面;该报告中一个失败包的日志链接(优先 zlib,主架构 armv7l)。构建号取自 batch3.5 预筛记录;若页面显示与预期不符,立即停止,不改读其它构建。
+3. 每一跳记录:请求 URL(原样字节)、响应状态、Content-Type、Content-Disposition、重定向链、是否触发 Download 事件、所在帧;正文脱敏后归档。不记录 Cookie、账号、请求头值。
+4. 取证结束即关闭浏览器并删除临时 profile;结果写 discovery-capture/README.md,并逐项回填 discovery-url-shapes.md 第 2 节的 UNKNOWN。
+
+三、实施分叉
+1. 取证事实同时满足以下 4 条:iframe 与日志均为 https://quickbuild.tizen.org 同源;无 307/308 和异源 302;日志为纯文本且无 Download 事件;路径符合文档第 4 节候选文法。此时不必停,直接按 SKEL-RESTORE-01 第三.2 至第三.4 条与本裁定第一条实施 campaign-discover、代理精确表、pathShape 新类别与第 5 节全部 Node 正负例,完成后继续第四批。
+2. 任一条不满足:停止并写停止报告,附实测事实与候选调整,不擅自扩大放行。
+
+四、其余要求不变:除本裁定外不改 sandbox-submit、qb-trigger、qb-result-fetch、review-submit 的规则;每批全仓门禁;不推送 Gerrit、不运行真实 gbs;若推送报 Permission denied,提交后停止并回报,由用户本机推送。
+
+### 35.1 取证准备
+
+`evidence/restore/discovery-capture/capture.mjs`独立包装生产runtime/Agent.login,
+生产代理文件未修改。固定六页逐次导航,iframe与唯一zlib/armv7l失败链接只从
+上一层响应惰性文档提取;不执行页面内脚本来取数。自动子帧Document拒绝,
+只有当前精确主帧GET可读。字段操作、运行与提交入口均未调用。
+只读取获准的Content-Type/Content-Disposition响应字段,不读取任何请求头。
+`redact_capture.py`在单个内存上下文中复用生产PageRedactor,写前写后自检,
+纯文本另对已登记身份做单词边界遮蔽,原始正文与身份集合不落盘。
+离线夹具使用私有虚拟显示、回环HTTPS与合成登录,不在用户桌面弹窗。
+
+`discovery-capture/offline-01/`记录首次离线验证:7 passed/0 failed/0 skipped,
+20.21秒,包括完整八页、外站iframe、307与attachment停止;profile全部删除。
+当前尚未执行真机,已在对话中请用户回复“开始”,等待现场登录准备。
+
+### 35.2 唯一一次真机执行与SKEL-RESTORE-09停止
+
+用户确认原话:“开始”。预检本地HEAD=6d73a9f,输出live-01不存在,
+/dev/shm无p5q-browser残留;生产代理完整hash仍为第34节值。
+运行`/home/linhao/.local/bin/node docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/capture.mjs --live`一次。
+UTC 2026-11-04 12:27:40.533至12:28:41.214,exit4,60.681秒;
+命令、stdout/stderr与run.json分别在`discovery-capture/live-01.command.json`、
+`live-01.stdout.log`、`live-01.stderr.log`和`live-01/run.json`。
+
+login ok=true。首个/overview/1917主帧GET返回HTTP200响应元数据,
+Content-Type=text/html;charset=utf-8,未观察到Content-Disposition/Download;
+随后第一条OPERATION_FAILED为Fetch.continueRequest/read/request/<other>/
+generation=2/REQUEST_ID_INVALID,AGENT_STOPPED=FETCH_CONTINUE_FAILED。
+工具返回STOPPED/CAPTURE_ERROR;配置页正文未归档,其它页面全部未读取。
+页面59447ms关闭,浏览器59965ms断开,profile_removed=true;
+事后/dev/shm再次确认无p5q-browser目录。
+
+该continue操作不在SKEL-R-04/R-08的failRequest窄例外内,没有改变停止条件。
+新增读取失败观测见下表。无论其是否与历史读取失败同源,本轮均不重试。
+
+| 样本 | 场景/阶段 | 首条失败与停止 | 结论/证据 |
+| --- | --- | --- | --- |
+| RESTORE-08 live-01 | 登录成功后的首个配置页导航/read | Fetch.continueRequest/REQUEST_ID_INVALID,generation2,path=<other>;AGENT_STOPPED=FETCH_CONTINUE_FAILED;包装CAPTURE_ERROR | 安全停止;`discovery-capture/live-01/run.json:84`;不使用调查测试豁免 |
+
+[停止报告](evidence/restore/discovery-capture/stop-report-SKEL-RESTORE-09.md)列事实、
+不能确定的底层生命周期、离线观测与有上限等待的候选方案,均未实施。
+`discovery-url-shapes.md`第2.1节逐项回填NOT_COLLECTED/UNKNOWN;
+RESTORE-08第三.1四项前提未齐,不进入第三批实现或第四批。
+
+交付复核:新增7份运行记录逐文件通过生产PageRedactor自检,源代理与6d73a9f
+逐字节相同,/dev/shm残留为空,见`discovery-capture/validation.json`。
+取证辅助Python的ruff通过,design检查0 problem,本轮文档diff检查通过。
+本批在规定的真机异常停点结束,没有运行或宣称通过第三批功能的全仓门禁。

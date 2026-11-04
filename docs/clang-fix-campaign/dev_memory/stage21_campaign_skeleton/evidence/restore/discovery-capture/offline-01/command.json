@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+    "--auto-servernum",
+    "--error-file=/dev/stderr",
+    "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+    "/home/linhao/.local/bin/node",
+    "--test",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/offline.test.mjs"
+  ],
+  "started_utc": "2026-11-04T12:10:56.578766+00:00",
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T12:11:17.061582+00:00"
+}

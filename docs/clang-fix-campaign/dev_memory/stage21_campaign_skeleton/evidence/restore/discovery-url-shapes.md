@@ -54,6 +54,27 @@ charset/Content-Disposition、日志是否触发浏览器Download而非主帧导
 iframe到包日志的原始链接字节、多架构编码在浏览器/CDP中的精确表示、超出Recent Builds
 窗口的历史分页。不能从`logfiles/...`反推出`index.html`,也不能把旧夹具当这些事实的补证。
 
+### 2.1 RESTORE-08一次真机补证结果(2026-11-04)
+
+授权脚本、离线7项验证及唯一一次现场执行见[discovery-capture/README.md](discovery-capture/README.md)。
+登录成功后首个`/overview/1917`主帧GET观察到HTTP 200、
+`Content-Type: text/html;charset=utf-8`,未观察到Content-Disposition或Download。
+随后Fetch.continueRequest/REQUEST_ID_INVALID触发FETCH_CONTINUE_FAILED,
+导航未完成,正文未归档。完整重定向链未取得,不能用空数组证明无重定向。
+
+| 原UNKNOWN | 本次补证状态 |
+| --- | --- |
+| Base GBS报告入口正文 | NOT_COLLECTED;未到达html_report |
+| 真实iframe src、内容类型/charset/Content-Disposition | NOT_COLLECTED;保持UNKNOWN |
+| 日志是否为文本或触发Download | NOT_COLLECTED;保持UNKNOWN |
+| 实际重定向链 | 首页请求/响应事件redirect=false,导航未完成;后续链UNKNOWN |
+| iframe到日志原始href、多架构CDP编码 | NOT_COLLECTED;保持UNKNOWN |
+| 历史分页 | 本轮裁定明确不实现;outside_recent_window边界保留 |
+
+第4节原候选原则已由RESTORE-08裁定,但其第三.1自动实施的四项事实前提没有取齐。
+按[SKEL-RESTORE-09停止报告](discovery-capture/stop-report-SKEL-RESTORE-09.md)停止,
+不实施任何代理扩展,不重试。
+
 ## 3. 当前拦截与读取边界
 
 - Agent`:88`的readonly仅含build裸页/overview/variables/step_status和登记overview。
