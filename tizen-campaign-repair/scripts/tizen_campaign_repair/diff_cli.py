@@ -20,7 +20,10 @@ def main(argv: list[str], *, stdout: TextIO) -> int:
     parser.add_argument("--patch-name", required=True)
     try:
         args = parser.parse_args(argv)
-        raw = args.diff.read_text(encoding="utf-8")
+        try:
+            raw = args.diff.read_bytes().decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise DiffUnsupported("unsupported_encoding") from exc
         result = convert(raw, args.src_root, args.patch_name)
         inputs = [args.diff.resolve(), *[
             (args.src_root / edit["file"]).resolve() for edit in result["edits"]

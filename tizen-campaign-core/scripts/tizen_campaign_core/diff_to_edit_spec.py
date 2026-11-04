@@ -105,8 +105,18 @@ def _parse(diff: str) -> list[_File]:
     current: _File | None = None
     index = 0
     pending_git = False
+    last_hunk_end: int | None = None
     while index < len(lines):
         line = lines[index]
+        if line == "-- \n":
+            # A mail signature is terminal metadata, never a separator between patches.
+            if (index != last_hunk_end or index + 1 >= len(lines)
+                    or re.fullmatch(
+                        r"[0-9]+(?:\.[0-9]+)+[A-Za-z0-9.-]*\n?", lines[index + 1]
+                    ) is None
+                    or any(tail != "\n" for tail in lines[index + 2:])):
+                raise DiffUnsupported("unparsed_patch_content")
+            break
         for prefix, reason in _UNSUPPORTED:
             if line.startswith(prefix):
                 raise DiffUnsupported(reason)
@@ -141,6 +151,7 @@ def _parse(diff: str) -> list[_File]:
                 raise DiffUnsupported("hunk_without_file")
             hunk, index = _hunk(lines, index)
             current.hunks.append(hunk)
+            last_hunk_end = index
             continue
         elif line.startswith(("+++ ", "+", "-", " ")) and current and current.hunks:
             raise DiffUnsupported("unparsed_patch_content")

@@ -2781,6 +2781,38 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
 
 **收尾状态。** 按实施裁定 SKEL-CLOSE-01,骨架阶段离线收尾,真实端到端延后。第3.5批真实gbs单包干跑与第4批真实sandbox推送、QuickBuild及review-submit本阶段不执行,状态为“延后”,不是“通过”;待COSMOS build接入与后续执行裁定后补跑。验收依据与未验证项见[骨架收尾记录](review/campaign-skeleton-closeout.md),v1.3冻结稿正文不变。
 
+**恢复项落地裁定(恢复第2批)。** 按SKEL-RESTORE-01/02/04/06:
+
+1. KB写入不再推进KB_APPENDED状态,由独立`campaign-kb-sync`命令幂等同步;
+   sandbox成功后append NEW,最新请求的绑定QB PASS后promote CI_VERIFIED,
+   写独立KB_SYNC gate事件供报告读取,不新增campaign状态。原因:保持骨架状态机不变。
+2. 历史人工修法允许`origin=imported_shelve`的instance,保留原始diff。
+   `kb import-diff`必填`--baseline-commit`(40位十六进制,无效exit2);
+   baseline仍非空且只用于溯源与漂移报告,不作T1匹配硬键。
+   仅该origin允许instance的verified_tree_sha为null,七元公式的tree槽位替换为
+   `"imported:" + sha256(diff原始字节)`。原因:历史diff没有工具验证tree,
+   且同失败的不同修法不能被误去重。其它instance七元公式不变。
+3. `propose-fix`输出固定八键:`mode`、`needs_generation`、`edit_spec_path`、
+   `source_kind`、`kb_precedent_ref`、`context_dir`、`t2_records`、`downgrade_reason`。
+   t1分支needs_generation=false且edit_spec_path与source_kind=t1_cherry_pick必填;
+   generate分支为true、edit_spec_path/source_kind为null且context_dir必填。
+   原因:显式携带是否需要AI生成,本命令自身不调用LLM或编写修法。
+4. 骨架冻结稿第5.3节“修法来源只有generated与suppress”随T1恢复而撤销;
+   review接受generated/suppress/t1_cherry_pick来源,A2回到本设计原契约:
+   final为code或cherry_pick且reproduced。其余取锁、屏障、聚合、QB绑定、
+   字节核验、策略重推与TOCTOU不变;含抑制的T1仍不能进入审核推送。
+5. 仅record_type=seed采用专用去重公式:
+   `sha256(json.dumps(["clang_kb/seed/v1", diagnosed_flag, root_cause_category,
+   toolchain_profile, fix_summary_sha256], ensure_ascii=False, separators=(",", ":")).encode("utf-8"))`。
+   flag/category为字符串或null,不得同时null(append exit2);profile必填非空。
+   summary先Unicode NFC再去首尾空白,为空拒绝;其UTF-8的SHA256十六进制为
+   fix_summary_sha256。同类型/类别/工具链/正文才去重,不同正文各存一条。
+   seed实例字段与initial/final可为null,不伪造溯源;instance校验不因seed放宽。
+   原因:类别策略没有实例包/tree,必须明确其独立的持久化身份。
+
+本批不改变发现阶段的浏览器白名单;该项仍须按SKEL-RESTORE-01第三.1条
+先做URL形态取证,停止等待裁定后才可实施。
+
 ## 5. 非功能性需求
 
 ### 5.1 性能预算

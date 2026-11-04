@@ -61,6 +61,7 @@ _KNOWN_EVENT_TYPES = frozenset(
         "DERIVE",
         "PUSH",
         "KB",
+        "KB_SYNC",
         "REVIEW",
         "CONVERGENCE",
         "SECONDARY_TARGET_ADOPTED",
@@ -2204,6 +2205,7 @@ def _validate_event_payload(
         "DERIVE": _validate_derive,
         "PUSH": _validate_push,
         "KB": _validate_kb,
+        "KB_SYNC": _validate_kb_sync,
         "REVIEW": _validate_review,
         "CONVERGENCE": _validate_convergence_shape,
         "SECONDARY_TARGET_ADOPTED": _validate_adoption,
@@ -2343,6 +2345,31 @@ def _validate_kb(payload: Mapping[str, object]) -> None:
     _require_nonempty_strings(payload, ("kb_id", "at"))
     if not isinstance(payload["dedupe_hit"], bool) or payload["status"] != "NEW":
         raise PayloadSchemaError("invalid KB payload")
+
+
+def _validate_kb_sync(payload: Mapping[str, object]) -> None:
+    _require_keys(payload, {
+        "kb_id", "dedupe_key", "status", "round_index", "source_kind",
+        "kb_precedent_ref", "push_event_id", "qb_event_id", "at",
+    })
+    _require_round_index(payload)
+    _require_nonempty_strings(payload, ("kb_id", "dedupe_key", "at"))
+    digest = _payload_str(payload, "dedupe_key")
+    if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
+        raise PayloadSchemaError("invalid KB_SYNC dedupe_key")
+    if payload["status"] not in {"NEW", "CI_VERIFIED", "MERGED"}:
+        raise PayloadSchemaError("invalid KB_SYNC status")
+    if payload["source_kind"] not in {"generated", "suppress", "t1_cherry_pick"}:
+        raise PayloadSchemaError("invalid KB_SYNC source_kind")
+    precedent = payload["kb_precedent_ref"]
+    if precedent is not None and (not isinstance(precedent, str) or not precedent.strip()):
+        raise PayloadSchemaError("invalid KB_SYNC kb_precedent_ref")
+    for name in ("push_event_id", "qb_event_id"):
+        value = payload[name]
+        if name == "qb_event_id" and value is None:
+            continue
+        if type(value) is not int or value <= 0:
+            raise PayloadSchemaError(f"invalid KB_SYNC {name}")
 
 
 def _validate_review(payload: Mapping[str, object]) -> None:

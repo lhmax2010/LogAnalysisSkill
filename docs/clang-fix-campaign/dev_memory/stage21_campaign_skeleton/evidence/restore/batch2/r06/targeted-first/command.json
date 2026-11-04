@@ -1,0 +1,41 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/unit/test_campaign_kb.py",
+    "tests/unit/test_campaign_kb_cli.py",
+    "tests/unit/test_campaign_kb_sync.py",
+    "tests/unit/test_campaign_propose_fix.py",
+    "tests/unit/test_diff_to_edit_spec.py",
+    "tests/unit/test_diff_format_patch_restore.py",
+    "tests/unit/test_campaign_batch3_review.py",
+    "tests/unit/test_review_restore_t1.py",
+    "-q"
+  ],
+  "started_utc": "2026-11-04T08:47:02.546046+00:00",
+  "load_before": {
+    "loadavg": "8.92 12.00 10.46 4/3106 2059011",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python          75.0",
+    "code-insiders   10.3",
+    "pytest           8.4",
+    "code-insiders    4.6",
+    "chrome           4.0",
+    "code-insiders    3.9",
+    "code-insiders    2.6",
+    "code-insiders    2.4",
+    "python3          2.3",
+    "Xorg             1.7"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T08:47:46.912245+00:00",
+  "elapsed_seconds": 44.3492549629882,
+  "load_after": {
+    "loadavg": "7.81 11.27 10.28 3/3089 2070676",
+    "cpu_count": 20
+  }
+}

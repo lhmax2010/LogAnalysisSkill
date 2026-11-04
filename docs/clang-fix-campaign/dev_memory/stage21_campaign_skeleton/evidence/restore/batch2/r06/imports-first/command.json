@@ -1,0 +1,30 @@
+{
+  "argv": [
+    ".venv/bin/lint-imports"
+  ],
+  "started_utc": "2026-11-04T08:44:47.321920+00:00",
+  "load_before": {
+    "loadavg": "8.15 14.04 10.80 2/3091 2056182",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python          75.0",
+    "code-insiders   10.3",
+    "mypy             8.7",
+    "code-insiders    5.0",
+    "code-insiders    4.6",
+    "bash             4.4",
+    "chrome           4.0",
+    "python3          2.6",
+    "code-insiders    2.6",
+    "code-insiders    2.3"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T08:44:50.100048+00:00",
+  "elapsed_seconds": 2.76207030902151,
+  "load_after": {
+    "loadavg": "8.06 13.92 10.78 3/3094 2056233",
+    "cpu_count": 20
+  }
+}

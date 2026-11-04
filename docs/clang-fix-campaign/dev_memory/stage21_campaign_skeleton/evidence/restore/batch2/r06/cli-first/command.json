@@ -1,0 +1,34 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/unit/test_campaign_kb_cli.py",
+    "-q"
+  ],
+  "started_utc": "2026-11-04T08:44:15.503815+00:00",
+  "load_before": {
+    "loadavg": "8.83 14.74 10.91 2/3105 2054213",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "ps               100",
+    "rpm2cpio        36.8",
+    "code-insiders   10.3",
+    "python           5.8",
+    "code-insiders    5.4",
+    "code-insiders    4.6",
+    "chrome           4.0",
+    "python3          2.6",
+    "code-insiders    2.6",
+    "code-insiders    2.2"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T08:44:20.241344+00:00",
+  "elapsed_seconds": 4.712503858958371,
+  "load_after": {
+    "loadavg": "9.25 14.73 10.92 3/3091 2054263",
+    "cpu_count": 20
+  }
+}

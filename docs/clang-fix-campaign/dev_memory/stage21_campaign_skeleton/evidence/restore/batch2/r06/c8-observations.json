@@ -1,0 +1,259 @@
+{
+  "full": [
+    {
+      "case": "configuration-connection-abort",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "DENY_TARGET_GONE": 1,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "configuration-redirect-307",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "configuration-redirect-signin",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 37,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "control",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 35,
+        "IDENTITY_OUTSIDE_REGISTERED": 1
+      }
+    },
+    {
+      "case": "delay-only-control",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 40,
+        "IDENTITY_OUTSIDE_REGISTERED": 1
+      }
+    },
+    {
+      "case": "idle-script-navigation",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 38,
+        "IDENTITY_OUTSIDE_REGISTERED": 1
+      }
+    },
+    {
+      "case": "injected-competing-navigation",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 37,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "injected-missing-root-membership",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 37,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "racing-meta-refresh",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 41,
+        "OPERATION_FAILED": 1
+      }
+    },
+    {
+      "case": "racing-script-navigation",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 40,
+        "OPERATION_FAILED": 1
+      }
+    },
+    {
+      "case": "racing-wicket-navigation",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 41,
+        "OPERATION_FAILED": 1
+      }
+    }
+  ],
+  "full-final": [
+    {
+      "case": "configuration-connection-abort",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 35,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "configuration-redirect-307",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "configuration-redirect-signin",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "control",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "IDENTITY_OUTSIDE_REGISTERED": 1
+      }
+    },
+    {
+      "case": "delay-only-control",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 41,
+        "IDENTITY_OUTSIDE_REGISTERED": 1
+      }
+    },
+    {
+      "case": "idle-script-navigation",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 37,
+        "IDENTITY_OUTSIDE_REGISTERED": 1
+      }
+    },
+    {
+      "case": "injected-competing-navigation",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 37,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "injected-missing-root-membership",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      }
+    },
+    {
+      "case": "racing-meta-refresh",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 40,
+        "OPERATION_FAILED": 1
+      }
+    },
+    {
+      "case": "racing-script-navigation",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 41,
+        "OPERATION_FAILED": 1
+      }
+    },
+    {
+      "case": "racing-wicket-navigation",
+      "harness_failure": null,
+      "runtime_failure": null,
+      "profile_removed": true,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 40,
+        "OPERATION_FAILED": 1
+      }
+    }
+  ]
+}

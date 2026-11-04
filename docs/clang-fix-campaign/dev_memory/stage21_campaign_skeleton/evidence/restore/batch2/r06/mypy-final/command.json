@@ -1,0 +1,30 @@
+{
+  "argv": [
+    ".venv/bin/mypy"
+  ],
+  "started_utc": "2026-11-04T08:48:39.327803+00:00",
+  "load_before": {
+    "loadavg": "10.50 11.31 10.35 4/3135 2072955",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python          75.0",
+    "clang-22        46.2",
+    "rpm2cpio        35.4",
+    "clang-22        13.5",
+    "python          12.5",
+    "clang-22        11.2",
+    "code-insiders   10.5",
+    "python          10.2",
+    "clang-22         7.5",
+    "clang-22         5.1"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T08:48:52.153235+00:00",
+  "elapsed_seconds": 12.807249548961408,
+  "load_after": {
+    "loadavg": "12.37 11.67 10.48 7/3103 2073108",
+    "cpu_count": 20
+  }
+}

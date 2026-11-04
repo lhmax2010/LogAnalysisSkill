@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**恢复第1批离线完成;第2批seed去重编码待裁定**。SKEL-RESTORE-03已由SKEL-RESTORE-04关闭(第30节);审核两处修改与D2E补修仍随恢复第2批验收,新停点见第31节。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-04。状态:**恢复第1、2批离线完成;第3批待本地URL取证**。SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1645,6 +1645,8 @@ SKEL-RESTORE-02两处审核资格变更及本次D2E补修一起验收。第三�
 
 ## 31. SKEL-RESTORE-05:恢复第2批seed去重停点
 
+状态:已由SKEL-RESTORE-06裁定关闭;原始事实与证据保留。
+
 design.md第818行的七元串拼接,与第1053行seed实例字段置null之间缺少编码规则。
 SKEL-RESTORE-04仅为imported_shelve规定了tree槽位替代值,不覆盖seed。
 这是持久化去重身份的选择,没有自行以空串/null字面量/伪造SHA代替,
@@ -1671,3 +1673,93 @@ design检查0 problem、独立契约探针exit0、探针ruff-final通过。
 不影响探针结论;两轮原始输出都保留。证据索引见`batch2/seed-stop/README.md`。
 暂存差异检查仅两份归档patch的空白上下文行告警,保留统一diff所需前导空格;
 排除这两份生成patch后exit0,详见`seed-stop/whitespace-check.json`。
+
+## 32. 实施裁定 SKEL-RESTORE-06:seed 专用去重
+
+一、裁定:采用候选 B,为 seed 另定专用去重公式;instance(含 imported_shelve)公式保持不变。
+1. 适用范围:仅 record_type=seed。instance 继续使用 design.md §3.4 原七元公式;imported_shelve 的 tree 槽位仍按 SKEL-RESTORE-04。
+2. seed 专用公式:
+   dedupe_key = sha256( UTF-8 编码的 JSON 数组,json.dumps(..., ensure_ascii=False, separators=(",", ":")) )
+   数组固定 5 项且顺序固定:
+   ["clang_kb/seed/v1", diagnosed_flag, root_cause_category, toolchain_profile, fix_summary_sha256]
+   - diagnosed_flag、root_cause_category:字符串或 null,null 按 JSON null 序列化;两者不得同时为 null(否则 seed 无法参与 T2,append 拒绝 exit 2);
+   - toolchain_profile:必填非空字符串;
+   - fix_summary_sha256:fix_summary 先做 Unicode NFC 归一化并去掉首尾空白,再对其 UTF-8 字节取 sha256 十六进制;fix_summary 归一化后为空则拒绝。
+3. 去重粒度(明确接受):告警类型、错误类别、工具链、策略正文全部相同才命中既有 id;正文不同则各存一条。
+4. seed 在 JSONL 中照原设计保存 instance 字段为 null,不伪造包名、仓库路径、baseline_commit 或 tree;instance 的非空校验不因 seed 放宽。
+5. 停止报告提到的草稿问题(误拒历史策略空值)由实现方按原条文修正:design.md 未要求 seed 的 fix_strategy_initial/final 非空,seed 允许为 null;instance 仍按原规则。
+
+二、测试(随第二批提交)
+seed append 成功;同五元重复返回既有 id;并发 append 幂等(与既有锁用例同形态);flag 与 category 同为 null 拒绝;fix_summary 首尾空白差异命中同一 id、正文不同各存一条;seed 只出现在 t2 且按 §3.5 排序;固定黄金向量(至少 3 组 seed 的期望 hash 写死在测试里);普通 instance 与 imported_shelve 的 dedupe 逐字节不变。
+
+三、记录与继续
+本条写入 design.md 第 4.6 节“恢复项落地裁定”。按 SKEL-RESTORE-01/02/04 继续第二批(含 D2E 补修与 T1 审核两处改动同一轮全仓门禁);第三批取证完成后仍按原第三.1.c 条停止等待裁定。
+
+## 33. 恢复第2批:知识库、建议与补修
+
+### 33.1 实现与边界
+
+以f5f748e为基线重新核对实现,没有套用seed-stop的未验收patch。
+权威为design第3.4/3.5/4.1/4.2节、Phase8与RESTORE-01/02/04/06。
+本轮受保护文件与既有测试核对见`evidence/restore/batch2/r06/integrity-before.json`,
+最终核验随门禁归档;不改真实业务状态库,合成KB只写测试临时目录。
+
+| 交付 | 代码落点 | 条文/裁定 |
+| --- | --- | --- |
+| JSONL schema、原子写、锁、去重、单向promote | `tizen-campaign-core/scripts/tizen_campaign_core/kb.py:137,234,266,297,320,337` | design 3.4、RESTORE-04/06 |
+| 归一化parity、T1全部键、T2排序/限流 | 同文件`:65,72,356` | design 3.5、Phase8 |
+| kb query/append/promote/import-diff、sync CLI | `tizen-campaign-kb/scripts/tizen_campaign_kb/cli.py:21,57,94` | design 4.1、RESTORE-01第二.3、RESTORE-04 |
+| KB_SYNC独立审计、绑定溯源、最新PASS晋级 | 同包`sync.py:36,152`;core `campaign_state.py` 的KB_SYNC分支 | RESTORE-01第二.3.c,不新增状态 |
+| propose-fix三条路径、八字段、漂移事实 | `tizen-campaign-repair/scripts/tizen_campaign_repair/propose_fix.py:40,62,83,125,149,228` | RESTORE-01第二.4、RESTORE-04 |
+| D2E终端签名与非UTF-8处理 | core `diff_to_edit_spec.py`;repair `diff_cli.py` | RESTORE-04第二 |
+| T1来源与A2质量门 | `tizen-review-submit/scripts/tizen_review_submit/review_submit.py:298,316` | RESTORE-02,仅两处表达式(+4/-2) |
+| 报告先例/来源两列 | `tizen-campaign-report/scripts/tizen_campaign_report/report.py` | RESTORE-01第二.5 |
+| 同层包与旧入口共享解析 | `.importlinter`, `pyproject.toml`, `ci_triage/cli.py`,repair `__main__.py` | RESTORE-01第二.1 |
+
+seed仅在T2出现,3组固定hash覆盖null、Unicode NFC和中文UTF-8;正文归一化只用于
+去重,存储保留原始策略文字。普通instance七元拼接与imported原始diff哈希另测,
+CRLF不被读文件时的换行转换改变。seed策略可null;历史导入未经过内容策略重推,
+不伪造initial/final,在实际复用审核时仍重推并执行A2。普通instance完整溯源校验不变。
+
+sync使用unit锁和状态库事务快照,核对PUSH/DERIVE/POLICY/三架构verification、
+edit字节、CI锚点、Change-Id与最新请求的PASS绑定。先写幂等KB再写KB_SYNC审计,
+三处崩溃注入均验证重跑不重复;不推进KB_APPENDED或其它状态。
+propose-fix第一轮使用CI锚点,后续使用previous_evidence同架构证据;
+取材在隔离bare仓库,配置SSH基址+匹配project+白名单ref,永不执行gerrit_url。
+生成分支只复用gbs_patch_suggest上下文原语,不写修法、不调用LLM。
+新skill位于`tizen-campaign-kb/SKILL.md`;编排skill和开局模板留恢复第4批。
+
+### 33.2 测试与验收记录
+
+[覆盖对照](evidence/restore/batch2/r06/coverage.md)逐项列出条文与测试函数。
+新增246个用例:core KB 83、KB CLI 25、sync 35、propose-fix 61、D2E补修35、T1审核7。
+原3164个nodeid全部保留,最终3410个、删除0,无既有测试文件改动;
+见`nodeids-final.json`与`nodeids-added-final.txt`。
+局部组合335 passed,末尾公开promote关键字与配置固定错误提示复核108 passed;
+这些局部结果不替代全仓验收。
+
+最终静态门禁已通过:`mypy-complete`为169个源文件success;
+`ruff-complete`完整待提交Python树通过;`imports-complete`为7 kept/0 broken;
+`design-complete`为0 problem。`package-check-final.json`记录离线wheel四文件字节一致、
+六个新旧入口help成功、临时wheel目录已删除。
+全仓首轮`full/`和最终树重跑`full-final/`各保留独立原始日志,均不加-x。
+首轮3407 passed/0 failed/1既有skip,pytest 1265.12秒;
+20核机器loadavg前9.94/11.21/10.31、后4.75/5.26/7.42。
+最终树重跑**3409 passed/0 failed/1既有skip**,pytest 1171.56秒、包装1179.34秒,
+UTC 09:09:48至09:29:28;20核loadavg前4.61/5.22/7.40、后5.48/5.10/5.71。
+skip仍为大小写敏感文件系统上的`test_case_insensitive_bypass_is_platform_specific`,
+没有新增skip、没有timing-sensitive重跑或C8观测豁免。
+两轮C8各11个场景均无harness_failure且profile_removed=true;
+action计数见`c8-observations.json`,注入故障按既有断言处理,不误记为自然回归。
+本轮无新增读取失败观测;既有四条离线端到端与Node代理/安全测试由全仓原样执行。
+
+第二批已完成离线门禁。`integrity-final.json`中的实现hash在最终全仓期间未变化;
+代理SHA256仍为`044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723`,
+骨架及P5Q冻结稿、驱动、sandbox/QB提交与读取、安全核心和身份判据均为基线原字节。
+本轮没有发现新增规格冲突;seed编码按RESTORE-06,八字段与导入槽位按RESTORE-04,
+审核两处按RESTORE-02,没有推广这些例外。实际开发者审定的生产seed数据未导入,
+只提交合成测试夹具与工具,不宣称建立了真实知识库。
+暂存差异检查的告警仅位于生成证据,保留HTML原字节中的空白行;
+排除本轮生成证据后exit0,见`whitespace-check.json`,不改写测试证据来消除告警。
+先提交推送本批,再按RESTORE-01第三.1完成本地URL形态文档并停止,
+不在本轮实施发现命令、浏览器扩展或恢复第4批剧本。

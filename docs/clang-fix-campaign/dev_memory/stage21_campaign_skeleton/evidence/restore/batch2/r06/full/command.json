@@ -1,0 +1,33 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/",
+    "-q"
+  ],
+  "started_utc": "2026-11-04T08:48:37.347770+00:00",
+  "load_before": {
+    "loadavg": "9.94 11.21 10.31 11/3128 2072900",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "ps               100",
+    "rpm2cpio        41.6",
+    "clang-22        13.1",
+    "code-insiders   10.5",
+    "python          10.2",
+    "clang-22         9.8",
+    "clang-22         7.6",
+    "code-insiders    4.6",
+    "chrome           4.0",
+    "code-insiders    3.3"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T09:09:47.213060+00:00",
+  "elapsed_seconds": 1269.8424983210862,
+  "load_after": {
+    "loadavg": "4.75 5.26 7.42 4/3067 2201381",
+    "cpu_count": 20
+  }
+}

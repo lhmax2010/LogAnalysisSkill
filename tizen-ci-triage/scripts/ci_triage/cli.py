@@ -183,6 +183,14 @@ def main(
         return _main_suppress_policy(argv[1:], stdout=stdout, stderr=stderr)
     if argv and argv[0] == "diff-to-edit-spec":
         return _main_diff_to_edit_spec(argv[1:], stdout=stdout)
+    if argv and argv[0] in {"kb", "campaign-kb-sync"}:
+        from tizen_campaign_kb.cli import main as kb_main
+
+        return kb_main(argv, stdout=stdout)
+    if argv and argv[0] == "propose-fix":
+        from tizen_campaign_repair.propose_fix import main as propose_main
+
+        return propose_main(argv[1:], stdout=stdout)
     if argv and argv[0] == "build-verify":
         return _main_build_verify(argv[1:], stderr=stderr, extra_pythonpath=extra_pythonpath)
     if argv and argv[0] == "check-convergence":

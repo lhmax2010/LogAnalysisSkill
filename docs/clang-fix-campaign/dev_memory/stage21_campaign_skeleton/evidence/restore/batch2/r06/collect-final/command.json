@@ -1,0 +1,32 @@
+{
+  "argv": [
+    ".venv/bin/pytest",
+    "--collect-only",
+    "-q"
+  ],
+  "started_utc": "2026-11-04T09:02:14.068182+00:00",
+  "load_before": {
+    "loadavg": "5.36 8.66 9.41 3/3178 2158965",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python           100",
+    "code-insiders   13.7",
+    "code-insiders    4.6",
+    "chrome           4.1",
+    "code-insiders    2.9",
+    "MainThread       2.8",
+    "code-insiders    2.6",
+    "python3          2.4",
+    "python           1.9",
+    "Xorg             1.7"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T09:02:18.977895+00:00",
+  "elapsed_seconds": 4.8931875539710745,
+  "load_after": {
+    "loadavg": "5.25 8.58 9.38 3/3175 2159459",
+    "cpu_count": 20
+  }
+}

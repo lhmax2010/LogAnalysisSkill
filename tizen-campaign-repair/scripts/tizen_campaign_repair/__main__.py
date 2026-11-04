@@ -107,11 +107,16 @@ def main(argv: list[str] | None = None) -> int:
         return _main_suppress_policy(argv[1:], stdout=sys.stdout, stderr=sys.stderr)
     if argv and argv[0] == "diff-to-edit-spec":
         return _main_diff_to_edit_spec(argv[1:], stdout=sys.stdout)
+    if argv and argv[0] == "propose-fix":
+        from tizen_campaign_repair.propose_fix import main as propose_main
+
+        return propose_main(argv[1:], stdout=sys.stdout)
     parser = argparse.ArgumentParser(prog="tizen_campaign_repair")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("campaign-repair-step", add_help=False)
     commands.add_parser("suppress-policy", add_help=False)
     commands.add_parser("diff-to-edit-spec", add_help=False)
+    commands.add_parser("propose-fix", add_help=False)
     parser.parse_args(argv)
     return 2
 

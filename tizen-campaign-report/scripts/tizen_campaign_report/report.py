@@ -117,6 +117,13 @@ def report(db: StateDatabase) -> list[dict[str, Any]]:
             if abandoned:
                 copy_state = "已放弃"
             reviews = [e for kind, e in events if kind == "REVIEW"]
+            latest_round = conn.execute(
+                "SELECT MAX(round_index) FROM campaign_rounds WHERE campaign_unit_key=?", (key,)
+            ).fetchone()[0]
+            policies = [e for kind, e in events if kind == "POLICY"
+                        and e.get("round_index") == latest_round]
+            syncs = [e for kind, e in events if kind == "KB_SYNC"
+                     and e.get("round_index") == latest_round]
             result.append(
                 dict(
                     campaign_unit_key=key,
@@ -133,6 +140,8 @@ def report(db: StateDatabase) -> list[dict[str, Any]]:
                     qb_build_id=parent,
                     qb_result_ref=reference,
                     review_url=reviews[-1].get("review_url") if reviews else None,
+                    kb_precedent_ref=syncs[-1].get("kb_precedent_ref") if syncs else None,
+                    source_kind=policies[-1].get("edit_source_kind") if policies else None,
                     workspace_status=copy_state,
                 )
             )
@@ -152,6 +161,8 @@ def markdown(rows: list[dict[str, Any]]) -> str:
         "qb_build_id": "QuickBuild 父构建号",
         "qb_result_ref": "结果文件引用",
         "review_url": "review URL",
+        "kb_precedent_ref": "先例引用",
+        "source_kind": "修法来源",
         "workspace_status": "副本状态",
     }
     lines = [

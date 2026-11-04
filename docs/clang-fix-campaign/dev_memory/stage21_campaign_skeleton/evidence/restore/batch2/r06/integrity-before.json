@@ -1,0 +1,76 @@
+{
+  "baseline": "f5f748e",
+  "protected": {
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": {
+      "sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+      "unchanged": true
+    },
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": {
+      "sha256": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+      "unchanged": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": {
+      "sha256": "044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723",
+      "unchanged": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py": {
+      "sha256": "4f70a0d1991ab69f484b410759317ed7407adc8efa8d242f7a23ac231faaf6d8",
+      "unchanged": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py": {
+      "sha256": "a958c5a7a48140908c6405be861c5a88643847d90b96450f8cbd303f8b4c9c7e",
+      "unchanged": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_result_fetch.py": {
+      "sha256": "c318096992aafc14262df49d173b400b78322f635ab5a203f8edcbec11a57afe",
+      "unchanged": true
+    },
+    "tizen-sandbox-submit/scripts/tizen_sandbox_submit/sandbox_submit.py": {
+      "sha256": "bac8cc3122fd16abc91fc438e8b3aa8d0f3fe745478ecf937da5e4340876ae52",
+      "unchanged": true
+    },
+    "tizen-campaign-core/scripts/tizen_campaign_core/_campaign_workspace.py": {
+      "sha256": "b5ccfbb22d7a615c3336b4cae76bd676abbafd0dd5ca9c84f9882828bfc6a238",
+      "unchanged": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py": {
+      "sha256": "afc049e204135017c9f457fea9c7237c7e3fded8f87a60885824510390f21fde",
+      "unchanged": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py": {
+      "sha256": "0cc7b5d11641074efbf60fc9da9827a03c3ed9d607bd842509c7fd5a8d4f8e86",
+      "unchanged": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py": {
+      "sha256": "84778014c1a2912418a660f0bfdd567215c06e38ef6dbbc833fb62b13d691fc1",
+      "unchanged": true
+    },
+    "tizen-build-verify/scripts/tizen_build_verify/build_verify.py": {
+      "sha256": "5a6ab48b9bafd01e464513b6450781fcffdcaaac3b39da911c45923e93093887",
+      "unchanged": true
+    },
+    "tizen-build-verify/scripts/tizen_build_verify/edit_spec_guard.py": {
+      "sha256": "212779a84421b619ccac576c688a94370e593aef6656cf0eca4b2be57915526f",
+      "unchanged": true
+    }
+  },
+  "existing_test_files_modified": [],
+  "implementation_hashes": {
+    ".importlinter": "a93d4844c9da624090b24ea3bd5f6afe8138a9eff64df6574ce2bf5c28a64fad",
+    "pyproject.toml": "3a5f9f2fc608dcefd2338dbdb127c3821ea5f35c4b276554fb0c4ae56eb3cf73",
+    "tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py": "4aa8b1ac8d3c8234dad0fcc1fb264a7c08b58a48bfffa9d338f646dca786cfda",
+    "tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py": "b8b82792e0090828e4691af3e2b8025bd542cc203a70044bd4c23b586d7e9355",
+    "tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py": "3f5a9e86c317ead41fb926e33fd01bf95c4427c2f0a228ea78564006bb44b396",
+    "tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py": "7bcec115d3cee2999199bb02a6a5ee266d69826ca2e0e22484a1f53938d0d0ff",
+    "tizen-campaign-report/scripts/tizen_campaign_report/report.py": "50c7c7bfa1371830a37c6fee254db43de0df6d111c213cb8a70bf3b0bef40cbb",
+    "tizen-ci-triage/scripts/ci_triage/cli.py": "b6204d50769078f183cf8a754e225d426319fffd198b4fa012e6021c8c29c403",
+    "tizen-review-submit/scripts/tizen_review_submit/review_submit.py": "b2bb855f718632917c5f3233b3f96155e4e607a952517e32b5782bc9d2a1ecba",
+    "tizen-campaign-core/scripts/tizen_campaign_core/kb.py": "999b8072502e9dbcb2bbf7350aa0b6cf2e46fabfce4f50a394440fa3b8365fed",
+    "tizen-campaign-repair/scripts/tizen_campaign_repair/propose_fix.py": "d24fd1ebb884e089ff2ab7288db60ebeafa3d47a66bd908a652f23f64f296a2b",
+    "tizen-campaign-kb/scripts/tizen_campaign_kb/__init__.py": "8bb449c85aca1d1ab988b94924224f7fc621ec60473e549efec7b2982e0a5922",
+    "tizen-campaign-kb/scripts/tizen_campaign_kb/cli.py": "5f9a1d5d9006d62db57535d5d2dbf5b62f3d2a52ece7c501cbbb71c14b4f9811",
+    "tizen-campaign-kb/scripts/tizen_campaign_kb/__main__.py": "cb325b2410a4dc0d2df1d9c0ebce2d2a58a82d76e78a238191e3befe5cc8f975",
+    "tizen-campaign-kb/scripts/tizen_campaign_kb/sync.py": "2622f2d5c2396c69c6b2833e8f57a11006e79bf2ec5c6dc6c9a9a4334433aa1f"
+  },
+  "review_diff": "4\t2\ttizen-review-submit/scripts/tizen_review_submit/review_submit.py"
+}

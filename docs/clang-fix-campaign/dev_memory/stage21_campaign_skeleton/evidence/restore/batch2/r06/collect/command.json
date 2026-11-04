@@ -1,0 +1,35 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/",
+    "--collect-only",
+    "-q"
+  ],
+  "started_utc": "2026-11-04T08:48:38.175750+00:00",
+  "load_before": {
+    "loadavg": "9.94 11.21 10.31 6/3132 2072925",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python          80.0",
+    "clang-22        58.2",
+    "clang-22        41.1",
+    "clang-22        40.0",
+    "rpm2cpio        38.6",
+    "clang-22        33.3",
+    "python          19.0",
+    "clang-22        13.9",
+    "code-insiders   10.5",
+    "Xvfb             7.5"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T08:49:11.213269+00:00",
+  "elapsed_seconds": 33.02074417890981,
+  "load_after": {
+    "loadavg": "11.64 11.58 10.47 2/3120 2073299",
+    "cpu_count": 20
+  }
+}

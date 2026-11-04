@@ -295,7 +295,9 @@ def run(options: ReviewOptions) -> sandbox.SandboxSubmitOutcome:
         )
         _trace(root, "edit_spec_verified")
         policy = state.latest_policy_for_round(db, key, round_.round_index)
-        if policy is None or policy.get("edit_source_kind") not in {"generated", "suppress"}:
+        if policy is None or policy.get("edit_source_kind") not in {
+            "generated", "suppress", "t1_cherry_pick"
+        }:
             raise sandbox._held("state_inconsistent", "missing or unsupported source kind")
         src = root / "src"
         sandbox._source(config.git, src, unit)
@@ -311,7 +313,7 @@ def run(options: ReviewOptions) -> sandbox.SandboxSubmitOutcome:
         if verdict.verdict == "forbidden":
             raise sandbox._held("suppress_policy_recheck", "forbidden suppression")
         _trace(root, "policy_verified")
-        if verdict.fix_strategy_final != "code" or not view.reproduced:
+        if verdict.fix_strategy_final not in {"code", "cherry_pick"} or not view.reproduced:
             state.append_status(db, key, "REVIEW_INELIGIBLE", "review_gate")
             raise sandbox._Reject("REJECTED_REVIEW_GATE", "A2 quality gate failed")
         if status not in {
