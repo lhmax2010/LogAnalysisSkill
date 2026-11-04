@@ -34,7 +34,8 @@
 
 ## 4. 当前进度
 
-- HLD v0.9.7 已归位（sha256 ae78f655845ef5ee740b7c34a908b6bafa60bd41bca8cae57a2b5aa64ba9188e；附录 P 为 v0.9.6 三家定向核对处置）；第 3a-1.1 批 = 附录 O 的 3a-1 修复 + §8.8 单次提交（只允许不带 shelve）+ §8.9 提交端编号与构建号的对应，待用户决定是否再评审后开工；37376237 的构建管理端构建号待提供。
+- HLD v0.9.8 已归位（sha256 4d8262bb88a46132a99f78c3e44cbbc16d2e86f485bb1e7ed1d960063f98fbd0；附录 Q 为 v0.9.7 三家小范围核对处置）；第 3a-1.1 批 = 附录 O 的 3a-1 修复 + §8.8 单次提交（只允许不带 shelve，含 --base-from-hub）+ §8.9 提交端编号与构建号的对应，待用户确认冻结后开工；37376237 的构建管理端构建号改由 once --base-from-hub 在登录会话里自动取得，不再需要用户提供。
+- HLD v0.9.7 已归位（sha256 ae78f655845ef5ee740b7c34a908b6bafa60bd41bca8cae57a2b5aa64ba9188e；附录 P 为 v0.9.6 三家定向核对处置）；第 3a-1.1 批 = 附录 O 的 3a-1 修复 + §8.8 单次提交（只允许不带 shelve）+ §8.9 提交端编号与构建号的对应，待用户决定是否再评审后开工；（v0.9.8 起改为工具自动取得）。
 - HLD v0.9.6 已归位（sha256 d316bbe3a7ab038928ee584814ce6d728101afaea6621aad5c1c548cb5b80e29）；第 3a-1.1 批（附录 O 的 3a-1 修复 + §8.8 单次提交命令）待评审后开工；37376237 的构建管理端构建号待用户提供。
 - 本线工作目录：/home/toolchain/development/LogAnalysisSkill-vdcosmos（git worktree，分离 HEAD，推送用 git push origin HEAD:vd-cosmos-loganalyzer）；/home/toolchain/development/LogAnalysisSkill 有其它 Session 的未提交改动，本线不在那里操作。
 
