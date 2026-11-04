@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile, access } from 'node:fs/promises';
 import { performance } from 'node:perf_hooks';
-import { Agent, AgentError, createRuntime, adaptProtocol, pathShape } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
+import { Agent, AgentError, createRuntime, adaptProtocol, pathShape, FAILURE_CATEGORIES } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 import { fakeQuickBuild, PROJECT, VALUES } from './p5q_fake_quickbuild.mjs';
 
 const [playwright, chromium, output] = process.argv.slice(2);
@@ -14,12 +14,26 @@ const classify = error => ({ class_name: error.constructor.name,
       : /ERR_EMPTY_RESPONSE|ERR_CONNECTION|ERR_HTTP2|ERR_SOCKET/.test(error.message) ? 'NETWORK_RESPONSE_FAILED'
         : error.name === 'TimeoutError' ? 'TIMEOUT' : 'OTHER_FRAMEWORK_ERROR' });
 
-async function login(agent) {
-  const pending = agent.command({ command: 'login', projects: [PROJECT], login_timeout_seconds: 20 });
+async function login(agent, facts, elapsed) {
+  const step = name => facts.login_observation.steps.push({ step: name, elapsed_ms: elapsed() });
+  step('LOGIN_COMMAND_STARTED');
+  const pending = agent.command({ command: 'login', projects: [PROJECT], login_timeout_seconds: 20 }).then(response => {
+    facts.login_observation.response = {
+      elapsed_ms: elapsed(), ok: response.ok === true,
+      error: response.ok ? null : ['QB_LOGIN_TIMEOUT', 'QB_LOGIN_ABORTED', 'QB_BROWSER_UNAVAILABLE', 'AGENT_PHASE'].includes(response.error) ? response.error : 'OTHER',
+      failure_category: response.failure_category == null ? null : FAILURE_CATEGORIES.includes(response.failure_category) ? response.failure_category : 'UNKNOWN',
+    };
+    return response;
+  });
+  step('FILL_USER');
   await agent.page.locator('input[name=user]').fill('synthetic');
+  step('FILL_PASSWORD');
   await agent.page.locator('input[type=password]').fill('synthetic-password');
+  step('CLICK_LOGIN');
   await agent.page.getByRole('button', { name: 'Login', exact: true }).click();
+  step('AWAIT_LOGIN');
   assert.equal((await pending).ok, true);
+  step('LOGIN_COMPLETE');
 }
 
 async function scenario(name) {
@@ -28,6 +42,11 @@ async function scenario(name) {
   const agent = new Agent(runtime);
   const facts = { case: name, observations: [], frame_events: [], reads: [], trace: [], server_requests: [] };
   let phase = 'setup';
+  const started = performance.now(), elapsed = () => Math.round(performance.now() - started);
+  facts.login_observation = { steps: [], response: null };
+  facts.lifecycle_observation = [];
+  runtime.page.on('close', () => facts.lifecycle_observation.push({ action: 'PAGE_CLOSED', phase, elapsed_ms: elapsed() }));
+  runtime.browser.on('disconnected', () => facts.lifecycle_observation.push({ action: 'BROWSER_DISCONNECTED', phase, elapsed_ms: elapsed() }));
   runtime.guards.primary.on('Page.frameNavigated', ({ frame }) => facts.frame_events.push({
     phase, action: 'navigated', frame_id: frame.id, parent_id: frame.parentId ?? null,
   }));
@@ -51,7 +70,7 @@ async function scenario(name) {
     finally { row.elapsed_ms = Math.round(performance.now() - start); }
   };
   try {
-    phase = 'login'; await login(agent);
+    phase = 'login'; await login(agent, facts, elapsed);
     phase = 'open_form'; assert.equal((await agent.command({ command: 'open_form', overview_id: 1917 })).ok, true);
     phase = 'fill'; const fill = await agent.command({ command: 'fill', fields: VALUES });
     assert.equal(fill.ok, true);

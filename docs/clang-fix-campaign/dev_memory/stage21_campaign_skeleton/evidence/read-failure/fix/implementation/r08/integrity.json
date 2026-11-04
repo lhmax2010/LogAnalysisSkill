@@ -1,0 +1,27 @@
+{
+  "baseline": "5b41ee9",
+  "harness": "tests/node/p5q_c8_investigation.mjs",
+  "changed_line_hunks": [
+    "@@ -5 +5 @@",
+    "@@ -17,2 +17,12 @@",
+    "@@ -19,0 +30 @@",
+    "@@ -20,0 +32 @@",
+    "@@ -21,0 +34 @@",
+    "@@ -22,0 +36 @@",
+    "@@ -30,0 +45,5 @@",
+    "@@ -54 +73 @@"
+  ],
+  "numstat": "23\t4\ttests/node/p5q_c8_investigation.mjs",
+  "assertion_lines_unchanged": true,
+  "scene_list_unchanged": true,
+  "scenario_after_login_unchanged": true,
+  "production_files_changed": [],
+  "preserved_historical_evidence_files": 133,
+  "agent_sha256": "044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723",
+  "agent_prefix_sha256": "9b7796f02f3e65f97c6f68bbe169109b8bd885854c98bb976d4d55ae5a2bc006",
+  "syntax_check": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}

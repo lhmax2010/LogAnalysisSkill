@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-03。状态:**STOPPED_SKEL_R_07**;SKEL-R-04/06已实施,定向与四组安全通过;C8第4次采样出现新的登录阶段TargetClosedError,停止等待裁定。
+日期:2026-11-04。状态:**READ_FAILURE_VALIDATION_RESUMED**;SKEL-R-08已接受窄化实现,SKEL-R-07由本裁定处置;仅增加调查harness观测,续跑采样与完整门禁。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1234,3 +1234,51 @@ P5Q代理/Chromium进程0;未创建临时代理副本或加压进程,无额外�
 全暂存树diff --check返回2,仅逐字authorized-test.diff中的两条空上下文行、
 原始pytest.xml与stdout.log各一条断言输出行的行尾空白;为保留证据不改原字节。
 人工源码与文档检查为0,两者不混报。
+
+## 23. 实施裁定 SKEL-R-08:调查观测与验收续跑
+
+### 一、结论
+1. 接受 5b41ee9 的窄化实现:仅 Fetch.failRequest 且类别为 REQUEST_ID_INVALID 时不停止、逐次记 DENY_TARGET_GONE、不占第一条 OPERATION_FAILED;其它操作与类别保持原停止规则。不再修改 installGuards。
+2. SKEL-R-07 的失败(racing-wicket-navigation 登录阶段 TargetClosedError,无 OPERATION_FAILED/DENY_TARGET_GONE/AGENT_STOPPED)判定为调查用竞争测试自身在负载下的不稳定,与本次修复无因果证据。原始失败证据保留,不得覆盖或删除。
+
+### 二、C8 调查测试改为观测项(覆盖 SKEL-B1-03 第3项、SKEL-B1-05 第4项中对 C8 的“新形态即停”约束)
+1. tests/unit/test_p5q_c8_investigation.py 及其 Node 入口的断言、场景、时限一律不改。它的失败不再阻断门禁,改为逐次登记到“读取失败观测表”,记录:采样序号、场景、阶段、harness_failure 类别、trace 中各 action 计数、采样前后 loadavg。
+2. 授权只对调查 harness(tests/node/p5q_c8_investigation.mjs)增加离线观测字段:固定的模拟登录步骤名、login 命令应答的固定字段、页面关闭与浏览器断开的时间点。不记录错误原文、页面内容或任何凭据;不改断言、不改超时、不吞异常。改动单独提交,并在 integrity.json 中列明改了哪几行。
+3. 以下任一情况仍必须停止并出报告:
+   a) 任何采样出现 AGENT_STOPPED 或 FETCH_CONTINUE_FAILED,且其 trace 中第一条导致停止的失败是 Fetch.failRequest/REQUEST_ID_INVALID(说明窄化失效);
+   b) 同一种非豁免新形态(场景+阶段+harness_failure 类别相同)在 20 次中出现 3 次或以上;
+   c) 任何采样出现 profile_removed=false 或残留浏览器进程。
+
+### 三、继续执行(使用 5b41ee9 + 上面第二.2项 harness 观测改动后的树)
+1. 负载约束:每次采样开始前读取 1 分钟 loadavg,超过 6 则等待至低于 6 再开始,等待时间写入 command.json。不得结束他人进程、不得新增加压进程。如果连续等待超过 30 分钟仍降不下来,暂停并报告当前机器状态。
+2. C8 采样:从第 5 次继续到第 20 次(前 4 次结果原样计入,第 4 次记为观测表首条)。全部 20 次的通过/失败逐次留存。
+3. C5a late-build 采样 20 次,按严格标准:FETCH_CONTINUE_FAILED 必须为 0;任何失败只有在属于既有 timing-sensitive 名单、且 3 次单独重跑全部通过时才可豁免,否则停止。
+4. 以上完成且无第二.3项停止条件后,跑一次完整全仓门禁(不加 -x)。全仓中 C8 调查测试若失败,按第二.1项登记,不计入门禁失败;其余用例按原规则。
+
+### 四、交付
+1. progress.md 更新:本裁定、C8 20 次与 late-build 20 次汇总、观测表、全仓结果、各次 loadavg。
+2. 证据放 evidence/read-failure/fix/ 下按次分目录,命名延续现有规则。
+3. 完成后报告是否满足 SKEL-R-04 验收;不进入第 3.5 批,等待下一步裁定。
+4. 不运行真机 QuickBuild、Gerrit 或真实 gbs。
+
+### 23.1 本轮边界与观测字段
+
+基线5b41ee9,已重读第22节与SKEL-R-07停止报告。旧报告与implementation中
+已归档的c8-01至c8-04全部原样保留。新增元数据与汇总在
+`evidence/read-failure/fix/implementation/r08/`;采样仍用implementation/c8-05至20、
+late-01至20,全仓full-r08,均新建目录,不覆盖历史证据。
+
+唯一测试源改动为`tests/node/p5q_c8_investigation.mjs`:
+- login_observation.steps:LOGIN_COMMAND_STARTED/FILL_USER/FILL_PASSWORD/
+  CLICK_LOGIN/AWAIT_LOGIN/LOGIN_COMPLETE,每项附场景开始后的单调毫秒。
+- login_observation.response:elapsed_ms、ok、error、failure_category;错误与停止类别
+  只取固定枚举,未取得为null,不记录login应答中的自由文本或页面内容。
+- lifecycle_observation:PAGE_CLOSED/BROWSER_DISCONNECTED、当前phase与单调毫秒。
+  只监听事件,不改变关闭、异常传播、等待或测试断言。
+
+代理与全部生产代码不改;assert语句、main场景列表、超时与模拟登录操作原样。
+单独提交前以node --check与`r08/integrity.json`校验;运行结果后续单独登记。
+首次核对:Node语法检查exit0,harness为+23/-4,8个diff hunk逐项列入integrity.json;
+assert行、场景列表、open_form之后全部代码逐字相同,133个历史证据文件未改。
+代理全文hash仍044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723,
+前缀仍9b7796f02f3e65f97c6f68bbe169109b8bd885854c98bb976d4d55ae5a2bc006。

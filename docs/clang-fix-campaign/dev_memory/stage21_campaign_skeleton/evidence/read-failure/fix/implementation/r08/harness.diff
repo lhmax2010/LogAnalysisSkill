@@ -1,0 +1,39 @@
+diff --git a/tests/node/p5q_c8_investigation.mjs b/tests/node/p5q_c8_investigation.mjs
+index 1d52ad2..4ba2034 100644
+--- a/tests/node/p5q_c8_investigation.mjs
++++ b/tests/node/p5q_c8_investigation.mjs
+@@ -5 +5 @@ import { performance } from 'node:perf_hooks';
+-import { Agent, AgentError, createRuntime, adaptProtocol, pathShape } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
++import { Agent, AgentError, createRuntime, adaptProtocol, pathShape, FAILURE_CATEGORIES } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
+@@ -17,2 +17,12 @@ const classify = error => ({ class_name: error.constructor.name,
+-async function login(agent) {
+-  const pending = agent.command({ command: 'login', projects: [PROJECT], login_timeout_seconds: 20 });
++async function login(agent, facts, elapsed) {
++  const step = name => facts.login_observation.steps.push({ step: name, elapsed_ms: elapsed() });
++  step('LOGIN_COMMAND_STARTED');
++  const pending = agent.command({ command: 'login', projects: [PROJECT], login_timeout_seconds: 20 }).then(response => {
++    facts.login_observation.response = {
++      elapsed_ms: elapsed(), ok: response.ok === true,
++      error: response.ok ? null : ['QB_LOGIN_TIMEOUT', 'QB_LOGIN_ABORTED', 'QB_BROWSER_UNAVAILABLE', 'AGENT_PHASE'].includes(response.error) ? response.error : 'OTHER',
++      failure_category: response.failure_category == null ? null : FAILURE_CATEGORIES.includes(response.failure_category) ? response.failure_category : 'UNKNOWN',
++    };
++    return response;
++  });
++  step('FILL_USER');
+@@ -19,0 +30 @@ async function login(agent) {
++  step('FILL_PASSWORD');
+@@ -20,0 +32 @@ async function login(agent) {
++  step('CLICK_LOGIN');
+@@ -21,0 +34 @@ async function login(agent) {
++  step('AWAIT_LOGIN');
+@@ -22,0 +36 @@ async function login(agent) {
++  step('LOGIN_COMPLETE');
+@@ -30,0 +45,5 @@ async function scenario(name) {
++  const started = performance.now(), elapsed = () => Math.round(performance.now() - started);
++  facts.login_observation = { steps: [], response: null };
++  facts.lifecycle_observation = [];
++  runtime.page.on('close', () => facts.lifecycle_observation.push({ action: 'PAGE_CLOSED', phase, elapsed_ms: elapsed() }));
++  runtime.browser.on('disconnected', () => facts.lifecycle_observation.push({ action: 'BROWSER_DISCONNECTED', phase, elapsed_ms: elapsed() }));
+@@ -54 +73 @@ async function scenario(name) {
+-    phase = 'login'; await login(agent);
++    phase = 'login'; await login(agent, facts, elapsed);

@@ -1,0 +1,38 @@
+"""Record the sole permitted harness diff and preserve all previous evidence."""
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+
+ROOT = Path.cwd()
+DEST = Path(__file__).resolve().parent
+BASE = '5b41ee9'
+HARNESS = 'tests/node/p5q_c8_investigation.mjs'
+AGENT = 'tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs'
+old = subprocess.check_output(['git', 'show', BASE + ':' + HARNESS]).decode()
+new = (ROOT / HARNESS).read_text()
+assert re.findall(r'^.*assert\..*$', old, re.M) == re.findall(r'^.*assert\..*$', new, re.M)
+assert old.split('async function main()')[1] == new.split('async function main()')[1]
+assert old.split("phase = 'open_form';")[1] == new.split("phase = 'open_form';")[1]
+diff = subprocess.check_output(['git', 'diff', BASE, '--unified=0', '--', HARNESS], text=True)
+changed = subprocess.check_output(['git', 'diff', '--name-only', BASE, '--', 'tests', 'tizen-*'], text=True).splitlines()
+assert changed == [HARNESS], changed
+agent = (ROOT / AGENT).read_bytes()
+assert agent == subprocess.check_output(['git', 'show', BASE + ':' + AGENT])
+historical = subprocess.check_output(['git', 'ls-tree', '-r', '--name-only', BASE, '--', str(DEST.parent.relative_to(ROOT))], text=True).splitlines()
+assert not subprocess.check_output(['git', 'diff', '--name-only', BASE, '--', *historical], text=True)
+syntax = subprocess.run([str(Path.home() / '.local/bin/node'), '--check', HARNESS], capture_output=True, text=True)
+assert syntax.returncode == 0
+facts = dict(baseline=BASE, harness=HARNESS,
+             changed_line_hunks=re.findall(r'^@@.*@@', diff, re.M),
+             numstat=subprocess.check_output(['git', 'diff', '--numstat', BASE, '--', HARNESS], text=True).strip(),
+             assertion_lines_unchanged=True, scene_list_unchanged=True,
+             scenario_after_login_unchanged=True, production_files_changed=[],
+             preserved_historical_evidence_files=len(historical),
+             agent_sha256=hashlib.sha256(agent).hexdigest(),
+             agent_prefix_sha256=hashlib.sha256(agent.split(b'export class Agent {')[0]).hexdigest(),
+             syntax_check=dict(exit_code=syntax.returncode, stdout=syntax.stdout, stderr=syntax.stderr))
+(DEST / 'integrity.json').write_text(json.dumps(facts, indent=2) + '\n')
+(DEST / 'harness.diff').write_text(diff)
+print(json.dumps(facts, indent=2))
