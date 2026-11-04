@@ -1,0 +1,32 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/tools/check_design_doc.py",
+    "docs/clang-fix-campaign/design.md"
+  ],
+  "started_utc": "2026-11-04T08:00:13.370567+00:00",
+  "load_before": {
+    "loadavg": "1.89 2.43 3.62 5/3086 1801098",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python          66.6",
+    "code-insiders    4.5",
+    "qemu-arm         3.9",
+    "chrome           3.7",
+    "code-insiders    2.3",
+    "Xorg             1.7",
+    "chrome           1.6",
+    "chrome           1.5",
+    "epp-client-daem  1.4",
+    "code-insiders    1.4"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T08:00:13.514020+00:00",
+  "elapsed_seconds": 0.12760288291610777,
+  "load_after": {
+    "loadavg": "1.89 2.43 3.62 5/3085 1801129",
+    "cpu_count": 20
+  }
+}

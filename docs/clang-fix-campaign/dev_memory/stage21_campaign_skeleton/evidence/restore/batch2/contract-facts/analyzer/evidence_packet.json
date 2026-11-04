@@ -1,0 +1,161 @@
+{
+  "allowed_next_actions": [
+    "expand"
+  ],
+  "arch": "unknown",
+  "cascade_summary": "",
+  "degraded": true,
+  "degraded_reasons": [
+    "source_file_unavailable"
+  ],
+  "direct_answer": null,
+  "evidence": {
+    "command_summary": {
+      "argv_full": "clang -c src/clang_case.c",
+      "argv_short": "clang -c src/clang_case.c",
+      "command_degraded": false,
+      "id": "C001",
+      "phase": "%build",
+      "rsp_expanded": {}
+    },
+    "primary_error": {
+      "column": 10,
+      "command_id": "C001",
+      "details": {
+        "is_assembler": false,
+        "tool": "clang"
+      },
+      "file": "src/clang_case.c",
+      "id": "E001",
+      "kind": "compiler",
+      "line": 4,
+      "line_no": 3,
+      "message": "use of undeclared identifier 'clang_missing'",
+      "phase": "%build",
+      "raw_offset": 37,
+      "severity": "error"
+    }
+  },
+  "failed_phase": "%build",
+  "matched_patterns": [
+    {
+      "captures": {
+        "identifier": "clang_missing"
+      },
+      "confidence": 0.76,
+      "failure_reason": "confidence_below_tier2_threshold",
+      "id": "compile_undeclared_identifier_tier2",
+      "pattern_id": "compile_undeclared_identifier_tier2"
+    }
+  ],
+  "matched_tier": null,
+  "package": "unknown",
+  "primary_error": {
+    "column": 10,
+    "command_id": "C001",
+    "details": {
+      "is_assembler": false,
+      "tool": "clang"
+    },
+    "file": "src/clang_case.c",
+    "id": "E001",
+    "kind": "compiler",
+    "line": 4,
+    "line_no": 3,
+    "message": "use of undeclared identifier 'clang_missing'",
+    "phase": "%build",
+    "raw_offset": 37,
+    "severity": "error"
+  },
+  "profile": "unknown",
+  "prompt": "请根据 evidence_packet JSON 定位 GBS 构建失败根因并给出最小修复建议。\nFailed phase: %build\nPrimary error: {\"id\":\"E001\",\"kind\":\"compiler\",\"severity\":\"error\",\"message\":\"use of undeclared identifier 'clang_missing'\",\"phase\":\"%build\",\"file\":\"src/clang_case.c\",\"line\":4}\nTop candidate: {\"rank\":1,\"event_id\":\"E001\",\"kind\":\"compiler\",\"semantic_class\":\"undeclared_identifier\",\"confidence\":0.76}\nEvidence paths: [\"src/clang_case.c\"]\nUse packet.primary_error, packet.root_cause_candidates, and packet.evidence for details.\n",
+  "root_cause_candidates": [
+    {
+      "column": 10,
+      "confidence": 0.76,
+      "confidence_band": "medium_high",
+      "confidence_reason": [
+        {
+          "base": 0.75,
+          "factor": "semantic_class",
+          "value": "undeclared_identifier"
+        },
+        {
+          "delta": "-0.09",
+          "factor": "cascade_probability",
+          "probability": 0.3
+        },
+        {
+          "delta": "+0.05",
+          "factor": "has_command"
+        },
+        {
+          "delta": "+0.05",
+          "factor": "has_location"
+        },
+        {
+          "factor": "severity_priority",
+          "priority": 2,
+          "value": "error"
+        }
+      ],
+      "event_id": "E001",
+      "file": "src/clang_case.c",
+      "is_terminal": true,
+      "kind": "compiler",
+      "line": 4,
+      "line_no": 3,
+      "message": "use of undeclared identifier 'clang_missing'",
+      "rank": 1,
+      "semantic_class": "undeclared_identifier",
+      "severity": "error",
+      "summary": "compiler undeclared_identifier at src/clang_case.c:4 - use of undeclared identifier 'clang_missing'"
+    }
+  ],
+  "schema_version": "evidence_packet/v1",
+  "source_candidates": {
+    "candidate_count": 1,
+    "excluded_summary": {
+      "explicit_parent_count": 0,
+      "missing_file_count": 0,
+      "missing_line_count": 0
+    },
+    "full_candidates_path": "source_candidates.json",
+    "patch_ready_count": 0,
+    "schema_version": "source_candidates/v1",
+    "source_owned_count": 1,
+    "source_reachable_count": 1,
+    "structured_source_candidate_count": 1,
+    "type_not_fixable_count": 0,
+    "type_probably_fixable_count": 0,
+    "type_unknown_count": 1
+  },
+  "token_budget": {
+    "conservation_ok": true,
+    "conservation_total": 1400,
+    "estimate_method": "tiktoken",
+    "evidence_pool_final": 200,
+    "evidence_pool_initial": 650,
+    "granted": {
+      "compile": 600
+    },
+    "hard_reserved": 400,
+    "limit": 1400,
+    "limit_with_prompt": 1800,
+    "partial_grants": {},
+    "preferred_grants": {
+      "compile": 600
+    },
+    "reclaimed": 150,
+    "soft_reserved": 350,
+    "soft_used": {
+      "cascade_summary": 0,
+      "raw_excerpt": 0,
+      "top_k_text_summaries": 200
+    },
+    "storage_redaction": "raw_paths_preserved",
+    "used": 1087
+  },
+  "verdict": "needs_llm",
+  "via": "full_path"
+}

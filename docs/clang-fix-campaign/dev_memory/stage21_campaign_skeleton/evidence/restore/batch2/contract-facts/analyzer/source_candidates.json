@@ -1,0 +1,38 @@
+{
+  "candidates": [
+    {
+      "cascade_status": "none",
+      "column": 10,
+      "command_id": "C001",
+      "dedupe_key": "file=src/src/clang_case.c|line=4|column=10|warning_option=<none>|semantic_class=undeclared_identifier|message=c157ad9fc7f5|command_id=C001|kind=compiler",
+      "degraded_key": true,
+      "event_id": "E001",
+      "exclusion_reason": null,
+      "fatal_detection_source": "severity",
+      "file": "src/clang_case.c",
+      "kind": "compiler",
+      "line": 4,
+      "line_no": 3,
+      "message": "use of undeclared identifier 'clang_missing'",
+      "normalized_file": "src/src/clang_case.c",
+      "parent": null,
+      "semantic_class": "undeclared_identifier",
+      "source_located": true,
+      "source_owned": true,
+      "source_ownership_status": "project_owned",
+      "source_reachable": true,
+      "source_resolution_status": "mapped_to_source_root",
+      "type_fixability": "unknown",
+      "type_fixability_reason": "no_matching_fixability_rule",
+      "warning_option": null,
+      "warning_option_source": "none"
+    }
+  ],
+  "excluded_source_diagnostics": [],
+  "excluded_summary": {
+    "explicit_parent_count": 0,
+    "missing_file_count": 0,
+    "missing_line_count": 0
+  },
+  "schema_version": "source_candidate_sidecar/v1"
+}

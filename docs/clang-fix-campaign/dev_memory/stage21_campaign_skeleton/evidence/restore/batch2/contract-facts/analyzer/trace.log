@@ -1,0 +1,8 @@
+2026-11-04T07:45:50.272Z INFO wrapper analysis_started {"buildlog_path": "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/e2e_clang_compile/buildlog"}
+2026-11-04T07:45:50.272Z INFO L0_scan scan_started {"path": "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/e2e_clang_compile/buildlog"}
+2026-11-04T07:45:50.272Z INFO L0_scan phase_marker_detected {"gbs_seconds": null, "line_no": 1, "offset": 0, "phase": "%build", "raw_text": "+ %build", "text": "+ %build"}
+2026-11-04T07:45:50.272Z INFO L0_scan command_boundary_detected {"command_id": "C001", "gbs_seconds": null, "line_no": 2, "offset": 9, "phase": "%build", "raw_text": "+ clang -c src/clang_case.c", "text": "clang -c src/clang_case.c"}
+2026-11-04T07:45:50.272Z INFO L0_scan diagnostic_detected {"event_id": "E001", "gbs_seconds": null, "kind": "compiler", "line_no": 3, "offset": 37, "phase": "%build", "raw_text": "src/clang_case.c:4:10: error: use of undeclared identifier 'clang_missing'", "text": "src/clang_case.c:4:10: error: use of undeclared identifier 'clang_missing'"}
+2026-11-04T07:45:50.272Z INFO L0_scan scan_completed {"commands": 1, "events": 1, "failed_phase": "%build"}
+2026-11-04T07:45:50.292Z INFO L5_assembler packet_assembled {"conservation_ok": true, "tokens": 1087, "verdict": "needs_llm"}
+2026-11-04T07:45:50.293Z INFO wrapper analysis_completed {"verdict": "needs_llm", "via": "full_path"}

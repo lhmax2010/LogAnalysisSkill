@@ -1,0 +1,8 @@
+{"buildlog_path": "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/e2e_clang_compile/buildlog", "event": "analysis_started", "layer": "wrapper", "level": "INFO", "ts": "2026-11-04T07:45:50.272Z"}
+{"event": "scan_started", "layer": "L0_scan", "level": "INFO", "path": "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/e2e_clang_compile/buildlog", "ts": "2026-11-04T07:45:50.272Z"}
+{"event": "phase_marker_detected", "gbs_seconds": null, "layer": "L0_scan", "level": "INFO", "line_no": 1, "offset": 0, "phase": "%build", "raw_text": "+ %build", "text": "+ %build", "ts": "2026-11-04T07:45:50.272Z"}
+{"command_id": "C001", "event": "command_boundary_detected", "gbs_seconds": null, "layer": "L0_scan", "level": "INFO", "line_no": 2, "offset": 9, "phase": "%build", "raw_text": "+ clang -c src/clang_case.c", "text": "clang -c src/clang_case.c", "ts": "2026-11-04T07:45:50.272Z"}
+{"event": "diagnostic_detected", "event_id": "E001", "gbs_seconds": null, "kind": "compiler", "layer": "L0_scan", "level": "INFO", "line_no": 3, "offset": 37, "phase": "%build", "raw_text": "src/clang_case.c:4:10: error: use of undeclared identifier 'clang_missing'", "text": "src/clang_case.c:4:10: error: use of undeclared identifier 'clang_missing'", "ts": "2026-11-04T07:45:50.272Z"}
+{"commands": 1, "event": "scan_completed", "events": 1, "failed_phase": "%build", "layer": "L0_scan", "level": "INFO", "ts": "2026-11-04T07:45:50.272Z"}
+{"conservation_ok": true, "event": "packet_assembled", "layer": "L5_assembler", "level": "INFO", "tokens": 1087, "ts": "2026-11-04T07:45:50.292Z", "verdict": "needs_llm"}
+{"event": "analysis_completed", "layer": "wrapper", "level": "INFO", "ts": "2026-11-04T07:45:50.293Z", "verdict": "needs_llm", "via": "full_path"}

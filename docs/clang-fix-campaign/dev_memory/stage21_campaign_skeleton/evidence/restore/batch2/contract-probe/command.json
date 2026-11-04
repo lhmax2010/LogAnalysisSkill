@@ -1,0 +1,32 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch2/probe-contract.py",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch2/contract-facts"
+  ],
+  "started_utc": "2026-11-04T07:45:50.087794+00:00",
+  "load_before": {
+    "loadavg": "2.77 3.43 5.53 6/3421 1508772",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python          75.0",
+    "code-insiders    4.5",
+    "chrome           4.2",
+    "chrome           3.7",
+    "python           2.7",
+    "MainThread       2.7",
+    "qemu-arm         2.6",
+    "chrome           2.2",
+    "code-insiders    2.2",
+    "chrome           2.0"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T07:45:50.320320+00:00",
+  "elapsed_seconds": 0.2142423610202968,
+  "load_after": {
+    "loadavg": "2.77 3.43 5.53 3/3422 1508822",
+    "cpu_count": 20
+  }
+}

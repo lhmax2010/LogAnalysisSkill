@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**恢复第1批离线完成**。SKEL-RESTORE-01停点已由SKEL-RESTORE-02裁定关闭(第27节);审核两处修改随恢复第2批提交。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-04。状态:**恢复第1批离线完成;第2批契约停点待裁定**。SKEL-RESTORE-01停点已由SKEL-RESTORE-02裁定关闭(第27节);审核两处修改随恢复第2批提交,新停点见第29节。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1584,3 +1584,31 @@ normal/SIGTERM两轮均exit0且profile_exists=false。此记录不等于新的�
 按本机全局署名提交推送恢复第1批;其余批次未实现,不提前写成已恢复。
 暂存差异仅HTML原始字节的尾空白告警,保留不清洗;其它文件diff检查通过,
 详见batch1/whitespace-check.json。
+
+## 29. SKEL-RESTORE-03:恢复第2批契约核对停止
+
+恢复第1批已以`b92573f`提交并推送origin/clang-fix-campaign,
+最终3163 passed/1既有skip、64新增用例、其余门禁全部通过(第28节)。
+第2批开始前核对新增CLI与clang_kb/v1时发现两处未闭合的契约,
+按SKEL-RESTORE-01第五.2条停止,不自行选择解释。
+
+1. 第二.4.c要求输出`needs_generation=true`,4.d固定七字段却不含它。
+   需要明确是新增第八字段,还是以mode=generate替代独立布尔字段。
+2. import-diff无baseline_commit输入,而design第3.4节将其列入schema与七元去重,
+   第3.5节要求instance完整溯源;本次仅明确允许imported_shelve的verified_tree_sha为空。
+   真实analyzer对现有3行编译日志夹具exit0但不产出commit/revision。
+   需要明确新增baseline输入,或该origin可空及其去重/冲突语义;不能从diff的blob ID猜commit。
+
+[停止报告与候选文字diff](evidence/restore/stop-report-SKEL-RESTORE-03.md)逐项列出来源、
+副作用与所需测试。[离线探针](evidence/restore/batch2/probe-contract.py)真实调用analyzer,
+归档全部结构键与两种JSON形状,命令/UTC/输出见`batch2/contract-probe/`,
+原始analyzer产物见`batch2/contract-facts/analyzer/`;探针exit0,ruff通过。
+两处问题已在对话中提出,截至本次记录尚未收到设计方澄清。
+
+本次停止记录不增加业务代码,不写KB或state DB;未实施第二批两处审核改动,
+未进入第三批URL取证或第四批剧本。SKEL-RESTORE-02的T1资格裁定继续有效,
+不重开原停点。设计与骨架冻结稿、代理、安全核心、所有既有拒绝规则保持原字节。
+第二次提交仅为本停点记录与离线事实证据,不声称第二批验收完成。
+停止记录的design检查0 problem;analyzer原始Markdown保留末尾空行,
+差异检查仅此生成证据告警,手写文档与探针无空白告警。通用忽略规则中的
+analyzer产物已显式纳入证据提交,不改.gitignore。

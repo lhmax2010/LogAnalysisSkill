@@ -1,0 +1,32 @@
+{
+  "argv": [
+    ".venv/bin/ruff",
+    "check",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch2/probe-contract.py"
+  ],
+  "started_utc": "2026-11-04T07:49:49.788284+00:00",
+  "load_before": {
+    "loadavg": "3.42 3.01 4.84 3/3414 1579026",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python           100",
+    "chrome           5.9",
+    "code-insiders    4.5",
+    "chrome           3.7",
+    "MainThread       3.4",
+    "qemu-arm         2.6",
+    "code-insiders    2.3",
+    "chrome           2.0",
+    "python           1.7",
+    "code-insiders    1.7"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T07:49:49.812518+00:00",
+  "elapsed_seconds": 0.007662240997888148,
+  "load_after": {
+    "loadavg": "3.42 3.01 4.84 2/3414 1579062",
+    "cpu_count": 20
+  }
+}
