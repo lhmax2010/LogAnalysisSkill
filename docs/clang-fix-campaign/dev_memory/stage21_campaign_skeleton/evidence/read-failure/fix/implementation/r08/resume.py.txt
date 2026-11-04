@@ -1,0 +1,226 @@
+"""SKEL-R-08 serial, load-gated sampling. Original test commands remain unchanged."""
+from collections import Counter
+import datetime
+import json
+import os
+from pathlib import Path
+import runpy
+import subprocess
+import sys
+import time
+import xml.etree.ElementTree as ET
+
+HERE = Path(__file__).resolve().parent
+DEST = HERE.parent
+ROOT = Path.cwd()
+RUN = runpy.run_path(str(DEST / 'run.py.txt'))['run']
+C8 = 'tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures'
+C5A = 'tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass'
+EXEMPT = ('racing-wicket-navigation', 'login', 'TargetClosedError', 'OTHER_FRAMEWORK_ERROR')
+
+def save(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+def leftovers():
+    processes = []
+    for directory in Path('/proc').glob('[0-9]*'):
+        try:
+            argv = (directory / 'cmdline').read_bytes().split(b'\0')
+            exe = str((directory / 'exe').resolve())
+            text = b' '.join(argv).decode(errors='replace')
+            agent = Path(exe).name in {'node', 'nodejs'} and any(
+                a.endswith((b'/qb_browser_agent.mjs', b'/p5q_cli_agent.mjs')) for a in argv)
+            browser = 'chromium-1208' in exe and '/dev/shm/p5q-browser-' in text
+            if agent or browser:
+                processes.append(dict(pid=int(directory.name), name=Path(exe).name,
+                                      kind='agent' if agent else 'browser'))
+        except (OSError, RuntimeError):
+            continue
+    return dict(profiles=sorted(str(p) for p in Path('/dev/shm').glob('p5q-browser-*')),
+                processes=processes)
+
+def stop(reason, **facts):
+    save(HERE / 'stop.json', dict(reason=reason, utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), **facts))
+    print(json.dumps(dict(stopped=reason, **facts)), flush=True)
+    raise SystemExit(2)
+
+def wait_load(name):
+    started = time.monotonic()
+    samples = []
+    while True:
+        now = time.monotonic()
+        raw = Path('/proc/loadavg').read_text().strip()
+        samples.append(dict(elapsed_seconds=round(now-started, 3), loadavg=raw))
+        facts = dict(wait_seconds=round(now-started, 3), samples=samples, threshold=6, maximum_wait_seconds=1800)
+        save(HERE / 'load-waits' / (name + '.json'), facts)
+        if float(raw.split()[0]) < 6:
+            return facts
+        if now-started >= 1800:
+            folder = DEST / name
+            folder.mkdir(exist_ok=False)
+            save(folder / 'command.json', dict(status='NOT_RUN_LOAD_PAUSE', load_wait=facts,
+                                              memory=subprocess.check_output(['free', '-h'], text=True)))
+            stop('LOAD_WAIT_EXCEEDED', sample=name, load_wait=facts)
+        print(json.dumps(dict(waiting_for_load=name, loadavg=raw, wait_seconds=facts['wait_seconds'])), flush=True)
+        time.sleep(10)
+
+def case_facts(folder):
+    cases = []
+    for pattern in ('c8/*.json', 'c5a/*/agent-*.json'):
+        for path in sorted(folder.glob(pattern)):
+            data = json.loads(path.read_text())
+            if not isinstance(data, dict) or 'trace' not in data:
+                continue
+            trace = data['trace']
+            failure = data.get('harness_failure')
+            stage = 'NOT_COLLECTED'
+            if failure:
+                login = data.get('login_observation', {})
+                steps = login.get('steps', [])
+                if steps and steps[-1]['step'] != 'LOGIN_COMPLETE':
+                    stage = 'login'
+                elif data.get('observations'):
+                    stage = data['observations'][-1]['phase']
+            first = next((r for r in trace if r.get('action') == 'OPERATION_FAILED'), None)
+            stopped = any(r.get('action') == 'AGENT_STOPPED' or r.get('failure_category') == 'FETCH_CONTINUE_FAILED' for r in trace)
+            broken = stopped and first and first.get('operation') == 'Fetch.failRequest' and first.get('category') == 'REQUEST_ID_INVALID'
+            login = data.get('login_observation')
+            if login:
+                assert set(login) == {'steps', 'response'}
+                for row in login['steps']:
+                    assert set(row) == {'step', 'elapsed_ms'}
+                    assert row['step'] in {'LOGIN_COMMAND_STARTED', 'FILL_USER', 'FILL_PASSWORD', 'CLICK_LOGIN', 'AWAIT_LOGIN', 'LOGIN_COMPLETE'}
+                reply = login['response']
+                if reply:
+                    assert set(reply) == {'elapsed_ms', 'ok', 'error', 'failure_category'}
+                    assert reply['error'] in {None, 'QB_LOGIN_TIMEOUT', 'QB_LOGIN_ABORTED', 'QB_BROWSER_UNAVAILABLE', 'AGENT_PHASE', 'OTHER'}
+                for row in data['lifecycle_observation']:
+                    assert set(row) == {'action', 'phase', 'elapsed_ms'}
+                    assert row['action'] in {'PAGE_CLOSED', 'BROWSER_DISCONNECTED'}
+                serialized = json.dumps([login, data['lifecycle_observation']])
+                for forbidden in ('synthetic', 'password', 'Cookie', 'Authorization', '?', 'stack', 'message'):
+                    assert forbidden not in serialized
+            cases.append(dict(file=str(path.relative_to(DEST)), case=data.get('case', path.parent.name), stage=stage,
+                              harness_failure=failure, actions=dict(Counter(r.get('action', 'UNKNOWN') for r in trace)),
+                              fetch_continue_failed=sum(r.get('failure_category') == 'FETCH_CONTINUE_FAILED' for r in trace),
+                              invalid_deny_stopped=bool(broken), profile_removed=data.get('profile_removed'),
+                              login_observation=login, lifecycle_observation=data.get('lifecycle_observation')))
+    return cases
+
+def refresh():
+    rows, observations = [], []
+    counts = Counter()
+    for group in ('c8', 'late'):
+        for path in sorted(DEST.glob(f'{group}-[0-9][0-9]/command.json')):
+            command = json.loads(path.read_text())
+            if 'exit_code' not in command:
+                continue
+            cases = case_facts(path.parent)
+            row = dict(sample=path.parent.name, exit_code=command['exit_code'], seconds=command['seconds'],
+                       pytest=command['pytest'], load_before=command['load_before'], load_after=command['load_after'],
+                       load_wait=command.get('load_wait', 'NOT_COLLECTED_PRE_R08'), cases=cases,
+                       deny_target_gone=sum(c['actions'].get('DENY_TARGET_GONE', 0) for c in cases),
+                       fetch_continue_failed=sum(c['fetch_continue_failed'] for c in cases))
+            rows.append(row)
+            for case in cases:
+                if case['harness_failure']:
+                    shape = (case['case'], case['stage'], case['harness_failure']['class_name'], case['harness_failure']['category'])
+                    exempt = shape == EXEMPT
+                    if group == 'c8' and not exempt:
+                        counts[shape] += 1
+                    observations.append(dict(sample=row['sample'], **case, exempt_skel_r_08_1_2=exempt,
+                                             load_before=row['load_before'], load_after=row['load_after']))
+    summary = dict(groups={g: dict(runs=sum(r['sample'].startswith(g+'-') for r in rows),
+                                   passed=sum(r['sample'].startswith(g+'-') and r['exit_code'] == 0 for r in rows),
+                                   failed=sum(r['sample'].startswith(g+'-') and r['exit_code'] != 0 for r in rows)) for g in ('c8', 'late')},
+                   rows=rows, observations=observations,
+                   nonexempt_shapes=[dict(shape=list(k), count=v) for k, v in counts.items()])
+    save(HERE / 'results.json', summary)
+    lines = ['# SKEL-R-08 Sampling', '', '| Sample | Result | Seconds | DENY | FETCH_CONTINUE_FAILED | Wait seconds | Load before / after (1,5,15) |',
+             '|---|---|---:|---:|---:|---:|---|']
+    for row in rows:
+        before = '/'.join(row['load_before']['loadavg'].split()[:3])
+        after = '/'.join(row['load_after']['loadavg'].split()[:3])
+        waiting = row['load_wait']['wait_seconds'] if isinstance(row['load_wait'], dict) else 'NOT_COLLECTED'
+        lines.append(f"| {row['sample']} | {'PASS' if row['exit_code'] == 0 else 'FAIL (observation)' if row['sample'].startswith('c8-') else 'FAIL'} | {row['seconds']:.2f} | {row['deny_target_gone']} | {row['fetch_continue_failed']} | {waiting} | {before} / {after} |")
+    lines += ['', '## Failure Observations', '']
+    for item in observations:
+        lines.append(f"- {item['sample']}: {item['case']} / {item['stage']} / {item['harness_failure']}; actions={item['actions']}; exempt={item['exempt_skel_r_08_1_2']}; source={item['file']}")
+    (HERE / 'sampling-results.md').write_text('\n'.join(lines) + '\n')
+    return summary
+
+def run(name, extra=()):
+    assert not (DEST / name).exists(), name
+    residual = leftovers()
+    if residual['profiles'] or residual['processes']:
+        stop('PREEXISTING_P5Q_RESIDUE', sample=name, residual=residual)
+    waiting = wait_load(name)
+    code = RUN(name, extra)
+    path = DEST / name / 'command.json'
+    facts = json.loads(path.read_text())
+    facts['load_wait'] = waiting
+    facts['residual_after'] = leftovers()
+    cases = case_facts(path.parent)
+    facts['r08_cases'] = cases
+    save(path, facts)
+    summary = refresh()
+    print(json.dumps(dict(completed=name, exit_code=code, groups=summary['groups'])), flush=True)
+    if facts['residual_after']['profiles'] or facts['residual_after']['processes'] or any(c['profile_removed'] is False for c in cases):
+        stop('RESIDUE_AFTER_SAMPLE', sample=name, residual=facts['residual_after'])
+    if any(c['invalid_deny_stopped'] for c in cases):
+        stop('INVALID_DENY_STILL_STOPS', sample=name)
+    if any(s['count'] >= 3 for s in summary['nonexempt_shapes']):
+        stop('REPEATED_NONEXEMPT_SHAPE', sample=name, shapes=summary['nonexempt_shapes'])
+    return code, facts
+
+def late(number):
+    name = f'late-{number:02}'
+    code, facts = run(name)
+    if any(c['fetch_continue_failed'] for c in facts['r08_cases']):
+        stop('LATE_FETCH_CONTINUE_FAILED', sample=name)
+    if code:
+        for retry in range(1, 4):
+            rerun, recorded = run(f'timing-r08-{name}-{retry}', [C5A + '[late-build]'])
+            if rerun or any(c['fetch_continue_failed'] for c in recorded['r08_cases']):
+                stop('LATE_RETRY_FAILED', sample=name, retry=retry)
+
+if __name__ == '__main__':
+    mode = sys.argv[1]
+    if mode == 'c8':
+        for number in range(int(sys.argv[2]) if len(sys.argv) > 2 else 5, 21):
+            run(f'c8-{number:02}')
+    elif mode == 'late':
+        for number in range(int(sys.argv[2]) if len(sys.argv) > 2 else 1, 21):
+            late(number)
+    elif mode == 'full':
+        code, facts = run('full-r08')
+        tests = ET.parse(DEST / 'full-r08/pytest.xml').getroot().findall('.//testcase')
+        failures = [t for t in tests if t.find('failure') is not None or t.find('error') is not None]
+        if code and not failures:
+            stop('FULL_UNCLASSIFIED_EXIT', exit_code=code)
+        decisions = []
+        for item in failures:
+            module = item.get('classname', '')
+            name = item.get('name', '')
+            if module.endswith('test_p5q_c8_investigation') and name == 'test_post_submit_read_signatures':
+                decisions.append(dict(test=name, decision='C8_OBSERVATION_ONLY'))
+            elif module.endswith('test_p5q_c5a_integration') and name.startswith('test_real_cli_browser_submit_bind_pending_pass['):
+                for retry in range(1, 4):
+                    result, _ = run(f'timing-r08-full-{len(decisions)}-{retry}', ['tests/unit/test_p5q_c5a_integration.py::' + name])
+                    if result:
+                        stop('FULL_TIMING_RETRY_FAILED', test=name, retry=retry)
+                decisions.append(dict(test=name, decision='THREE_STANDALONE_PASSES'))
+            else:
+                stop('FULL_NONEXEMPT_FAILURE', test=module + '::' + name)
+        save(HERE / 'full-verdict.json', dict(raw_exit_code=code, pytest=facts.get('pytest'), decisions=decisions,
+                                             accepted=not failures or len(decisions) == len(failures)))
+    elif mode == 'summary':
+        print(json.dumps(refresh()['groups']))
+    elif mode == 'gates':
+        RUN.__globals__['DEST'] = HERE / 'gates'
+        for gate in ('mypy', 'ruff', 'imports', 'design', 'collect'):
+            if RUN(gate):
+                stop('STATIC_GATE_FAILED', gate=gate)
+    else:
+        raise SystemExit('UNKNOWN_MODE')

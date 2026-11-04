@@ -1,0 +1,124 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-12/pytest.xml"
+  ],
+  "started": "2026-11-04T02:24:29.786542+00:00",
+  "load_before": {
+    "loadavg": "0.80 0.57 0.73 2/2403 829430",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "code-insiders    4.3",
+      "code-insiders    4.1",
+      "chrome           3.5",
+      "chrome           3.2",
+      "code-insiders    2.8",
+      "Xorg             1.6",
+      "epp-client-daem  1.3",
+      "gnome-shell      1.0",
+      "code-insiders    0.9",
+      "code-insiders    0.8"
+    ]
+  },
+  "exit_code": 0,
+  "seconds": 23.642122586024925,
+  "finished": "2026-11-04T02:24:53.428827+00:00",
+  "load_after": {
+    "loadavg": "0.72 0.57 0.73 3/2391 830962",
+    "cpu_count": 20
+  },
+  "pytest": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 1
+  },
+  "observations": [
+    {
+      "file": "c5a/late-build/agent-0.json",
+      "case": null,
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c5a/late-build/agent-1.json",
+      "case": null,
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c5a/late-build/agent-2.json",
+      "case": null,
+      "harness_failure": null,
+      "diagnostics": []
+    }
+  ],
+  "load_wait": {
+    "wait_seconds": 0.0,
+    "samples": [
+      {
+        "elapsed_seconds": 0.0,
+        "loadavg": "0.80 0.57 0.73 1/2403 829430"
+      }
+    ],
+    "threshold": 6,
+    "maximum_wait_seconds": 1800
+  },
+  "residual_after": {
+    "profiles": [],
+    "processes": []
+  },
+  "r08_cases": [
+    {
+      "file": "late-12/c5a/late-build/agent-0.json",
+      "case": "late-build",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "IDENTITY_OUTSIDE_REGISTERED": 11,
+        "DENIED": 35
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": null,
+      "login_observation": null,
+      "lifecycle_observation": null
+    },
+    {
+      "file": "late-12/c5a/late-build/agent-1.json",
+      "case": "late-build",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "IDENTITY_OUTSIDE_REGISTERED": 5
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": null,
+      "login_observation": null,
+      "lifecycle_observation": null
+    },
+    {
+      "file": "late-12/c5a/late-build/agent-2.json",
+      "case": "late-build",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "IDENTITY_OUTSIDE_REGISTERED": 4
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": null,
+      "login_observation": null,
+      "lifecycle_observation": null
+    }
+  ]
+}

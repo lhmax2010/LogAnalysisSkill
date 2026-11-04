@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**READ_FAILURE_VALIDATION_RESUMED**;SKEL-R-08已接受窄化实现,SKEL-R-07由本裁定处置;仅增加调查harness观测,续跑采样与完整门禁。
+日期:2026-11-04。状态:**READ_FAILURE_FIX_VALIDATED**;按SKEL-R-08口径满足SKEL-R-04验收;C8累计19通过/1历史观测失败,late-build20/20,全仓3099通过/0失败/1既有跳过。等待下一步裁定,不进入第3.5批。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1282,3 +1282,93 @@ late-01至20,全仓full-r08,均新建目录,不覆盖历史证据。
 assert行、场景列表、open_form之后全部代码逐字相同,133个历史证据文件未改。
 代理全文hash仍044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723,
 前缀仍9b7796f02f3e65f97c6f68bbe169109b8bd885854c98bb976d4d55ae5a2bc006。
+
+### 23.2 40次采样与读取失败观测表
+
+harness观测单独提交并推送为`fb549ea`。本轮证据路径下文相对
+`evidence/read-failure/fix/implementation/`。
+C8从05续到20,16次全PASS;连同原01至04,累计19 PASS/1 FAIL/0 skip。
+第04次仍为原始FAIL,只按本裁定一.2计作不阻断观测,不改其exit或原日志。
+20次共214份场景记录;第04次余6场景原本未运行,本轮不补写。
+late-build 01至20全部PASS,0失败/0 skip,每次FETCH_CONTINUE_FAILED均0,
+没有触发三次单独重跑豁免。两组均无profile_removed=false或P5Q进程残留。
+
+| 采样 | 场景/阶段 | harness_failure | trace各action计数 | loadavg前 -> 后(1/5/15分钟) | 判定 |
+|---|---|---|---|---|---|
+| c8-04(观测首条,原证据) | racing-wicket-navigation/login | TargetClosedError/OTHER_FRAMEWORK_ERROR | FRAMEWORK_SELF_TEST=1;其它0 | 3.76/2.48/1.64 -> 9.94/6.42/3.37 | SKEL-R-08一.2已接受;不重跑、不覆盖 |
+| c8-11(新增有效窄化观测) | delay-only-control/submit | 无 | DENIED=41,DENY_TARGET_GONE=1,FRAMEWORK_SELF_TEST=1,IDENTITY_OUTSIDE_REGISTERED=1;其它0 | 4.47/1.61/1.27 -> 3.70/2.65/1.74 | 后续read成功HTTP200,runtime_failure=null,浏览器保持连接 |
+
+完整每场景action计数、阶段、harness类别、登录步骤与关闭时点在
+`r08/results.json`的rows/cases;失败观测在observations。非豁免新形态计数为空,
+没有任何失效failRequest引起停止的样本。c8-11的DENY来源为
+`c8-11/c8/delay-only-control.json:988`,submit/request,/wicket/page,generation4。
+加上原c8-04其它场景的2条,累计自然DENY=3,FETCH_CONTINUE_FAILED=0。
+
+所有新采样在开始前重新读取1分钟loadavg,均低于6,实际等待均0秒;
+每次command.json有load_wait字段,等待采样原文另存`r08/load-waits/`。
+原01至04的等待时间未采集,保持NOT_COLLECTED,不倒填0。没有终止他人进程,
+没有新增加压进程。下表列每次1分钟loadavg前后,完整1/5/15分钟值与耗时见
+`r08/sampling-results.md`和各次command.json;CPU为20核,top10只记录名称与占用。
+
+| 序号 | C8结果 | C8 load前 -> 后 | late-build结果 | late load前 -> 后 |
+|---|---|---|---|---|
+| 01 | PASS | 0.70 -> 0.46 | PASS | 0.04 -> 0.41 |
+| 02 | PASS | 0.46 -> 1.96 | PASS | 0.41 -> 0.49 |
+| 03 | PASS | 1.96 -> 3.76 | PASS | 0.49 -> 0.98 |
+| 04 | FAIL(已接受观测) | 3.76 -> 9.94 | PASS | 0.98 -> 0.83 |
+| 05 | PASS | 0.85 -> 0.69 | PASS | 0.83 -> 0.59 |
+| 06 | PASS | 0.69 -> 0.64 | PASS | 0.59 -> 0.53 |
+| 07 | PASS | 0.64 -> 0.48 | PASS | 0.53 -> 0.64 |
+| 08 | PASS | 0.48 -> 0.60 | PASS | 0.64 -> 0.91 |
+| 09 | PASS | 0.60 -> 0.46 | PASS | 0.91 -> 0.65 |
+| 10 | PASS | 0.46 -> 4.47 | PASS | 0.65 -> 0.65 |
+| 11 | PASS | 4.47 -> 3.70 | PASS | 0.65 -> 0.80 |
+| 12 | PASS | 3.70 -> 1.32 | PASS | 0.80 -> 0.72 |
+| 13 | PASS | 1.32 -> 0.69 | PASS | 0.72 -> 0.88 |
+| 14 | PASS | 0.69 -> 0.55 | PASS | 0.88 -> 0.91 |
+| 15 | PASS | 0.55 -> 0.88 | PASS | 0.91 -> 0.85 |
+| 16 | PASS | 0.88 -> 0.87 | PASS | 0.85 -> 0.61 |
+| 17 | PASS | 0.87 -> 0.69 | PASS | 0.61 -> 0.91 |
+| 18 | PASS | 0.69 -> 0.33 | PASS | 0.91 -> 0.75 |
+| 19 | PASS | 0.33 -> 0.24 | PASS | 0.75 -> 0.71 |
+| 20 | PASS | 0.24 -> 0.04 | PASS | 0.71 -> 0.58 |
+
+### 23.3 完整门禁与交付结论
+
+全仓命令:`.venv/bin/python tests/run_quiet.py -q --junitxml=<implementation/full-r08/pytest.xml>`。
+原始完整argv、UTC起止、exit、CPU前10、负载与stdout/stderr在`full-r08/`。
+没有-x/--maxfail,没有跳过调查用例或计时名单;原始exit=0,
+**3099 passed/0 failed/0 error/1 skipped**,3100用例全部运行到结尾。
+UTC 2026-11-04 02:28:07.588938起,包装器1061.027秒;pytest1060.65秒。
+20核,loadavg前0.53/0.62/0.72,后1.17/1.00/0.98;启动无需负载等待。
+唯一skip仍为`test_case_insensitive_bypass_is_platform_specific`,理由
+`case-sensitive filesystem`;非新增skip。全仓C8调查通过,未调用观测豁免;
+6个C5a参数全部通过,未调用3次重跑豁免,`r08/full-verdict.json`的decisions为空。
+
+| 门禁 | 结果 | 证据 |
+|---|---|---|
+| 完整pytest | 3099/0/1(通过/失败/跳过),exit0 | full-r08/pytest.xml、stdout.log |
+| P5Q四组本机安全 | 全仓再次运行test_node_c2b_local_https_safety并通过,内部断言4 passed/0 failed | full-r08/pytest.xml;先前专跑原始四组日志safety/保持不变 |
+| 代理矩阵、诊断、静态负例、新增DENY用例 | 既有包装用例全部包含在完整pytest且通过 | full-r08/pytest.xml |
+| mypy | 161 source files,无错 | r08/gates/mypy/ |
+| ruff | All checks passed | r08/gates/ruff/ |
+| import-linter | 7 kept/0 broken | r08/gates/imports/ |
+| design检查器 | 0 problem | r08/gates/design/ |
+| collect/nodeid | 前后均3100,新增0/删除0,collect错误0 | r08/gates/collect/、r08/final.json |
+| 生产与冻结稿 | 全部未改,代理全文/前缀同5b41ee9 | r08/integrity.json、r08/final.json |
+| 原证据保留 | 133个旧implementation证据文件未修改,SKEL-R-07原报告保留 | r08/integrity.json |
+| 最终残留 | P5Q profile=0,代理/Chromium进程=0 | r08/final.json |
+
+全仓计时名单耗时:build22.944s,error-created23.060s,error-no-build16.718s,
+no-navigation83.062s,delayed-build22.947s,late-build23.333s,均原次PASS;
+这些是用例总耗时,不是关闭耗时,不据83秒推断关闭失败。
+本轮所有模拟浏览器均在私有虚拟显示中,只访问本机假HTTPS服务;
+未运行真机QuickBuild、真实Gerrit或真实gbs,未启动额外负载或终止他人进程。
+
+结论:**按SKEL-R-08的验收口径满足SKEL-R-04**。C8历史第04次原始失败不改写为
+PASS,其非阻断处置有明确裁定;新采样、late-build及完整门禁没有新增失败。
+没有窄化失效、没有3次非豁免同形态、没有残留条件。未放宽任何额外规则,
+未再修改installGuards。交付停在本阶段,等待下一步裁定,不进入第3.5批。
+收尾diff检查:源码与文档exit0;全暂存树exit2,仅103条本机假服务器原始
+qb_evidence HTML的行尾空白,为保留原字节不改写。详见`r08/final.json`的
+whitespace字段。暂存文件无state.db二进制、证书私钥或凭据文件。

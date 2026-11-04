@@ -1,0 +1,1177 @@
+{
+  "case": "delay-only-control",
+  "observations": [
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/signin",
+      "response_status": null
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/signin",
+      "response_status": 200
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/signin",
+      "response_status": null
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/signin",
+      "response_status": 302
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/dashboard",
+      "response_status": null
+    },
+    {
+      "phase": "login",
+      "policy_phase": "login",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/dashboard",
+      "response_status": 200
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "response_status": null
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "response_status": 200
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": 302
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "open_form",
+      "policy_phase": "open_form",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "fill",
+      "policy_phase": "fill",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "submit",
+      "policy_phase": "submit",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "submit",
+      "policy_phase": "submit",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "POST",
+      "path": "/wicket/page",
+      "response_status": 302
+    },
+    {
+      "phase": "submit",
+      "policy_phase": "submit",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "submit",
+      "policy_phase": "submit",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": 200
+    },
+    {
+      "phase": "read",
+      "policy_phase": "read",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "response_status": null
+    },
+    {
+      "phase": "read",
+      "policy_phase": "read",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "read",
+      "policy_phase": "read",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "read",
+      "policy_phase": "read",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "read",
+      "policy_phase": "read",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "read",
+      "policy_phase": "read",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/wicket/page",
+      "response_status": null
+    },
+    {
+      "phase": "read",
+      "policy_phase": "read",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "frame_owned": true,
+      "method": "GET",
+      "path": "/overview/<id>",
+      "response_status": 200
+    }
+  ],
+  "frame_events": [
+    {
+      "phase": "login",
+      "action": "navigated",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "parent_id": null
+    },
+    {
+      "phase": "login",
+      "action": "navigated",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "parent_id": null
+    },
+    {
+      "phase": "open_form",
+      "action": "navigated",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "parent_id": null
+    },
+    {
+      "phase": "open_form",
+      "action": "navigated",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "parent_id": null
+    },
+    {
+      "phase": "submit",
+      "action": "navigated",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "parent_id": null
+    },
+    {
+      "phase": "read",
+      "action": "navigated",
+      "frame_id": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+      "parent_id": null
+    }
+  ],
+  "reads": [
+    {
+      "path": "/overview/1917",
+      "error": null,
+      "elapsed_ms": 1841
+    }
+  ],
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "fill",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    }
+  ],
+  "server_requests": [
+    {
+      "method": "GET",
+      "path": "/signin",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/signin?0-1.IFormSubmitListener-content-form",
+      "status": 302
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?41-1.ILinkListener-run",
+      "status": 302
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?41",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?41-1.IBehaviorListener.0-form-field-0&random=0.6373126292725034",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?42-1.IBehaviorListener.0-form-field-1&random=0.9804150388603385",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?43-1.IBehaviorListener.0-form-field-2&random=0.038965679071949255",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?44-1.IBehaviorListener.0-form-field-3&random=0.3429628464053366",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?45-1.IBehaviorListener.0-form-field-4&random=0.10723546482321245",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?46-1.IBehaviorListener.0-form-field-5&random=0.9416901766189029",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?47-1.IBehaviorListener.0-form-field-6&random=0.8615893395794297",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?48-1.IBehaviorListener.0-form-field-7&random=0.3057928321865423",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?49-1.IBehaviorListener.0-form-field-8&random=0.3963481090026507",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?50-1.IBehaviorListener.0-form-field-9&random=0.942180853395943",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?51-1.IBehaviorListener.0-form-field-10&random=0.43611077659905706",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?52-1.IBehaviorListener.0-form-field-11&random=0.5981689860415784",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?53-1.IFormSubmitListener-form",
+      "status": 302
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?99",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 200
+    }
+  ],
+  "login_observation": {
+    "steps": [
+      {
+        "step": "LOGIN_COMMAND_STARTED",
+        "elapsed_ms": 0
+      },
+      {
+        "step": "FILL_USER",
+        "elapsed_ms": 0
+      },
+      {
+        "step": "FILL_PASSWORD",
+        "elapsed_ms": 37
+      },
+      {
+        "step": "CLICK_LOGIN",
+        "elapsed_ms": 39
+      },
+      {
+        "step": "AWAIT_LOGIN",
+        "elapsed_ms": 108
+      },
+      {
+        "step": "LOGIN_COMPLETE",
+        "elapsed_ms": 2045
+      }
+    ],
+    "response": {
+      "elapsed_ms": 2045,
+      "ok": true,
+      "error": null,
+      "failure_category": null
+    }
+  },
+  "lifecycle_observation": [
+    {
+      "action": "PAGE_CLOSED",
+      "phase": "close",
+      "elapsed_ms": 16469
+    },
+    {
+      "action": "BROWSER_DISCONNECTED",
+      "phase": "close",
+      "elapsed_ms": 16479
+    }
+  ],
+  "root_before": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+  "submit": {
+    "ok": true,
+    "landed": "unknown",
+    "observed": "/wicket/page",
+    "messages": [],
+    "released": true
+  },
+  "root_after_submit": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+  "response": {
+    "ok": true,
+    "error": null,
+    "failure_category": null,
+    "status": 200
+  },
+  "runtime_failure": null,
+  "browser_connected_after_reply": true,
+  "root_after_read": "B1B1C14EFFBD669F077BD5CC4E120EDA",
+  "signature": false,
+  "synthetic_submissions": 1,
+  "profile_removed": true
+}

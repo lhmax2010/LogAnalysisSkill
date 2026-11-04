@@ -1,0 +1,84 @@
+"""Final evidence checks only; no browser, test retry or network action."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import re
+import runpy
+import subprocess
+import xml.etree.ElementTree as ET
+
+HERE = Path(__file__).resolve().parent
+ROOT = Path.cwd()
+DEST = HERE.parent
+helpers = runpy.run_path(str(HERE / 'resume.py.txt'))
+summary = helpers['refresh']()
+assert all(summary['groups'][g]['runs'] == 20 for g in ('c8', 'late'))
+assert all(r['fetch_continue_failed'] == 0 for r in summary['rows'] if r['sample'].startswith('late-'))
+assert all(not c['invalid_deny_stopped'] and c['profile_removed'] is not False
+           for r in summary['rows'] for c in r['cases'])
+assert all(s['count'] < 3 for s in summary['nonexempt_shapes'])
+for row in summary['rows']:
+    if row['sample'].startswith('late-') and row['exit_code']:
+        for retry in range(1, 4):
+            assert json.loads((DEST / f"timing-r08-{row['sample']}-{retry}/command.json").read_text())['exit_code'] == 0
+full = json.loads((DEST / 'full-r08/command.json').read_text())
+verdict = json.loads((HERE / 'full-verdict.json').read_text())
+assert verdict['accepted']
+tests = ET.parse(DEST / 'full-r08/pytest.xml').getroot().findall('.//testcase')
+failures = [dict(name=t.get('name'), classname=t.get('classname')) for t in tests if t.find('failure') is not None or t.find('error') is not None]
+skips = [dict(name=t.get('name'), classname=t.get('classname'), reason=t.find('skipped').get('message')) for t in tests if t.find('skipped') is not None]
+gates = {p.parent.name: json.loads(p.read_text()) for p in (HERE / 'gates').glob('*/command.json')}
+assert set(gates) == {'mypy', 'ruff', 'imports', 'design', 'collect'}
+assert all(r['exit_code'] == 0 for r in gates.values())
+def ids(path):
+    return {line.strip() for line in path.read_text().splitlines() if line.startswith('tests/') and '::' in line}
+before = ids(DEST / 'collect/stdout.log')
+after = ids(HERE / 'gates/collect/stdout.log')
+assert len(before) == 3100 and after == before
+runpy.run_path(str(HERE / 'audit.py.txt'))
+remaining = helpers['leftovers']()
+assert not remaining['profiles'] and not remaining['processes']
+frozen_paths = [p for p in subprocess.check_output(['git', 'ls-files'], text=True).splitlines() if 'FROZEN' in p and p.endswith('.md')]
+frozen = {}
+for path in frozen_paths:
+    raw = Path(path).read_bytes()
+    assert raw == subprocess.check_output(['git', 'show', '5b41ee9:' + path])
+    frozen[path] = hashlib.sha256(raw).hexdigest()
+summary_rows = []
+for group in ('c8', 'late'):
+    rows = [r for r in summary['rows'] if r['sample'].startswith(group+'-')]
+    loads = [float(r[k]['loadavg'].split()[0]) for r in rows for k in ('load_before', 'load_after')]
+    waits = [r['load_wait']['wait_seconds'] for r in rows if isinstance(r['load_wait'], dict)]
+    summary_rows.append(dict(group=group, **summary['groups'][group], deny_target_gone=sum(r['deny_target_gone'] for r in rows),
+                             fetch_continue_failed=sum(r['fetch_continue_failed'] for r in rows),
+                             load_1min_min=min(loads), load_1min_max=max(loads), wait_seconds=sum(waits)))
+full_cases = helpers['case_facts'](DEST / 'full-r08')
+staged = subprocess.run(['git', 'diff', '--cached', '--check'], capture_output=True, text=True)
+warnings = [line for line in staged.stdout.splitlines() if ': trailing whitespace.' in line]
+assert staged.returncode in {0, 2}
+assert all(re.search(r'/qb_evidence/[^/]+/[^/]+\.html:\d+: trailing whitespace\.$', line) for line in warnings)
+assert all(line.startswith('+') or line in warnings for line in staged.stdout.splitlines())
+staged_files = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines()
+assert not [p for p in staged_files if Path(p).suffix in {'.db', '.pem', '.key'}]
+source_check = subprocess.run(['git', 'diff', '--check', '5b41ee9', '--', 'tests/node/p5q_c8_investigation.mjs',
+                               'docs/clang-fix-campaign/dev_memory/INDEX.md',
+                               'docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md'], capture_output=True, text=True)
+assert source_check.returncode == 0
+facts = dict(completed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+             groups=summary_rows, formal_observations=summary['observations'],
+             full=dict(raw_exit=full['exit_code'], pytest=full['pytest'], failures=failures, skipped=skips,
+                       verdict=verdict, seconds=full['seconds'], load_before=full['load_before'], load_after=full['load_after'],
+                       scenario_cases=full_cases,
+                       timing_sensitive=[dict(name=t.get('name'), seconds=t.get('time'), passed=t.find('failure') is None)
+                                         for t in tests if t.get('name', '').startswith('test_real_cli_browser_submit_bind_pending_pass')],
+                       safety=[dict(name=t.get('name'), passed=t.find('failure') is None)
+                               for t in tests if t.get('name') == 'test_node_c2b_local_https_safety']),
+             gates={k: dict(exit_code=v['exit_code'], seconds=v['seconds']) for k, v in gates.items()},
+             nodeids=dict(before=len(before), after=len(after), added=sorted(after-before), removed=sorted(before-after)),
+             frozen_hashes=frozen, residual=remaining, accepted_skel_r_04=True,
+             whitespace=dict(source_exit=source_check.returncode, staged_exit=staged.returncode,
+                             raw_html_warnings=len(warnings), output=staged.stdout, preserved_raw_bytes=True),
+             staged_db_or_key_files=[])
+(HERE / 'final.json').write_text(json.dumps(facts, indent=2, ensure_ascii=False) + '\n')
+print(json.dumps({k: v for k, v in facts.items() if k in {'groups', 'gates', 'nodeids', 'residual', 'accepted_skel_r_04'}}, indent=2))

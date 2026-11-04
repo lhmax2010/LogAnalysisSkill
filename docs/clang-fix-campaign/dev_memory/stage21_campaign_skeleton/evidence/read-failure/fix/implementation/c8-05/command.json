@@ -1,0 +1,891 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "-q",
+    "tests/unit/test_p5q_c8_investigation.py::test_post_submit_read_signatures",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/c8-05/pytest.xml"
+  ],
+  "started": "2026-11-04T01:31:13.030520+00:00",
+  "load_before": {
+    "loadavg": "0.85 1.90 1.70 2/2421 723730",
+    "cpu_count": 20,
+    "top_cpu_processes": [
+      "COMMAND         %CPU",
+      "python          80.0",
+      "chrome           6.3",
+      "code-insiders    5.1",
+      "chrome           4.6",
+      "code-insiders    4.2",
+      "chrome           4.2",
+      "code-insiders    3.0",
+      "code-insiders    2.8",
+      "chrome           1.7",
+      "chrome           1.6"
+    ]
+  },
+  "exit_code": 0,
+  "seconds": 189.67992830695584,
+  "finished": "2026-11-04T01:34:22.710721+00:00",
+  "load_after": {
+    "loadavg": "0.69 1.39 1.54 2/2416 729545",
+    "cpu_count": 20
+  },
+  "pytest": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 1
+  },
+  "observations": [
+    {
+      "file": "c8/configuration-connection-abort.json",
+      "case": "configuration-connection-abort",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "CONNECTION_FAILED"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/configuration-redirect-307.json",
+      "case": "configuration-redirect-307",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "BLOCKED_BY_CLIENT"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/configuration-redirect-signin.json",
+      "case": "configuration-redirect-signin",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "BLOCKED_BY_CLIENT"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/control.json",
+      "case": "control",
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c8/delay-only-control.json",
+      "case": "delay-only-control",
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c8/idle-script-navigation.json",
+      "case": "idle-script-navigation",
+      "harness_failure": null,
+      "diagnostics": []
+    },
+    {
+      "file": "c8/injected-competing-navigation.json",
+      "case": "injected-competing-navigation",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "NAVIGATION_INTERRUPTED"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/injected-missing-root-membership.json",
+      "case": "injected-missing-root-membership",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "page.goto",
+          "phase": "read",
+          "stage": "navigation",
+          "path": "/overview/<id>",
+          "generation": 5,
+          "category": "BLOCKED_BY_CLIENT"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "UNKNOWN"
+        }
+      ]
+    },
+    {
+      "file": "c8/racing-meta-refresh.json",
+      "case": "racing-meta-refresh",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "Agent.command",
+          "phase": "read",
+          "stage": "command",
+          "path": "/overview/<id>",
+          "generation": 6,
+          "category": "OTHER"
+        }
+      ]
+    },
+    {
+      "file": "c8/racing-script-navigation.json",
+      "case": "racing-script-navigation",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "Agent.command",
+          "phase": "read",
+          "stage": "command",
+          "path": "/overview/<id>",
+          "generation": 6,
+          "category": "OTHER"
+        }
+      ]
+    },
+    {
+      "file": "c8/racing-wicket-navigation.json",
+      "case": "racing-wicket-navigation",
+      "harness_failure": null,
+      "diagnostics": [
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "Agent.command",
+          "phase": "read",
+          "stage": "command",
+          "path": "/overview/<id>",
+          "generation": 6,
+          "category": "OTHER"
+        }
+      ]
+    }
+  ],
+  "load_wait": {
+    "wait_seconds": 0.0,
+    "samples": [
+      {
+        "elapsed_seconds": 0.0,
+        "loadavg": "0.85 1.90 1.70 1/2421 723730"
+      }
+    ],
+    "threshold": 6,
+    "maximum_wait_seconds": 1800
+  },
+  "residual_after": {
+    "profiles": [],
+    "processes": []
+  },
+  "r08_cases": [
+    {
+      "file": "c8-05/c8/configuration-connection-abort.json",
+      "case": "configuration-connection-abort",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 38
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 44
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 103
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2042
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2042,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 14805
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 14817
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/configuration-redirect-307.json",
+      "case": "configuration-redirect-307",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 35
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 38
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 137
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2041
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2041,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 14684
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 14693
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/configuration-redirect-signin.json",
+      "case": "configuration-redirect-signin",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 35
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 42
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 121
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2041
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2041,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 14788
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 14797
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/control.json",
+      "case": "control",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 35,
+        "IDENTITY_OUTSIDE_REGISTERED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 1
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 165
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 179
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 282
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2183
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2183,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 14960
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 14971
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/delay-only-control.json",
+      "case": "delay-only-control",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 40,
+        "IDENTITY_OUTSIDE_REGISTERED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 37
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 39
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 108
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2045
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2045,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 16469
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 16479
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/idle-script-navigation.json",
+      "case": "idle-script-navigation",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 37,
+        "IDENTITY_OUTSIDE_REGISTERED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 40
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 45
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 107
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2047
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2047,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 15324
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 15331
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/injected-competing-navigation.json",
+      "case": "injected-competing-navigation",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 33
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 37
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 103
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2039
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2039,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 14936
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 14944
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/injected-missing-root-membership.json",
+      "case": "injected-missing-root-membership",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 36,
+        "OPERATION_FAILED": 1,
+        "AGENT_STOPPED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 32
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 34
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 129
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2039
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2039,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 14782
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 14791
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/racing-meta-refresh.json",
+      "case": "racing-meta-refresh",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 41,
+        "OPERATION_FAILED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 37
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 45
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 107
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2042
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2042,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 16635
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 16645
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/racing-script-navigation.json",
+      "case": "racing-script-navigation",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 40,
+        "OPERATION_FAILED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 43
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 46
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 110
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2046
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2046,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 16390
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 16398
+        }
+      ]
+    },
+    {
+      "file": "c8-05/c8/racing-wicket-navigation.json",
+      "case": "racing-wicket-navigation",
+      "stage": "NOT_COLLECTED",
+      "harness_failure": null,
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1,
+        "DENIED": 40,
+        "OPERATION_FAILED": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": {
+        "steps": [
+          {
+            "step": "LOGIN_COMMAND_STARTED",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_USER",
+            "elapsed_ms": 0
+          },
+          {
+            "step": "FILL_PASSWORD",
+            "elapsed_ms": 42
+          },
+          {
+            "step": "CLICK_LOGIN",
+            "elapsed_ms": 49
+          },
+          {
+            "step": "AWAIT_LOGIN",
+            "elapsed_ms": 113
+          },
+          {
+            "step": "LOGIN_COMPLETE",
+            "elapsed_ms": 2046
+          }
+        ],
+        "response": {
+          "elapsed_ms": 2046,
+          "ok": true,
+          "error": null,
+          "failure_category": null
+        }
+      },
+      "lifecycle_observation": [
+        {
+          "action": "PAGE_CLOSED",
+          "phase": "close",
+          "elapsed_ms": 16480
+        },
+        {
+          "action": "BROWSER_DISCONNECTED",
+          "phase": "close",
+          "elapsed_ms": 16488
+        }
+      ]
+    }
+  ]
+}

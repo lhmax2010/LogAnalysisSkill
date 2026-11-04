@@ -1,0 +1,1142 @@
+{
+  "completed_utc": "2026-11-04T02:49:40.700707+00:00",
+  "groups": [
+    {
+      "group": "c8",
+      "runs": 20,
+      "passed": 19,
+      "failed": 1,
+      "deny_target_gone": 3,
+      "fetch_continue_failed": 0,
+      "load_1min_min": 0.04,
+      "load_1min_max": 9.94,
+      "wait_seconds": 0.0
+    },
+    {
+      "group": "late",
+      "runs": 20,
+      "passed": 20,
+      "failed": 0,
+      "deny_target_gone": 0,
+      "fetch_continue_failed": 0,
+      "load_1min_min": 0.04,
+      "load_1min_max": 0.98,
+      "wait_seconds": 0.0
+    }
+  ],
+  "formal_observations": [
+    {
+      "sample": "c8-04",
+      "file": "c8-04/c8/racing-wicket-navigation.json",
+      "case": "racing-wicket-navigation",
+      "stage": "login",
+      "harness_failure": {
+        "class_name": "TargetClosedError",
+        "agent_code": null,
+        "category": "OTHER_FRAMEWORK_ERROR"
+      },
+      "actions": {
+        "FRAMEWORK_SELF_TEST": 1
+      },
+      "fetch_continue_failed": 0,
+      "invalid_deny_stopped": false,
+      "profile_removed": true,
+      "login_observation": null,
+      "lifecycle_observation": null,
+      "exempt_skel_r_08_1_2": true,
+      "load_before": {
+        "loadavg": "3.76 2.48 1.64 3/2819 3832145",
+        "cpu_count": 20,
+        "top_cpu_processes": [
+          "COMMAND         %CPU",
+          "ps               100",
+          "cmake            6.0",
+          "code-insiders    3.6",
+          "chrome           3.5",
+          "code-insiders    2.6",
+          "Xorg             1.6",
+          "code-insiders    1.5",
+          "chrome           1.2",
+          "epp-client-daem  1.1",
+          "code-insiders    1.0"
+        ]
+      },
+      "load_after": {
+        "loadavg": "9.94 6.42 3.37 3/2838 3838213",
+        "cpu_count": 20
+      }
+    }
+  ],
+  "full": {
+    "raw_exit": 0,
+    "pytest": {
+      "tests": 3100,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "passed": 3099
+    },
+    "failures": [],
+    "skipped": [
+      {
+        "name": "test_case_insensitive_bypass_is_platform_specific",
+        "classname": "tests.unit.test_tizen_build_verify",
+        "reason": "case-sensitive filesystem"
+      }
+    ],
+    "verdict": {
+      "raw_exit_code": 0,
+      "pytest": {
+        "tests": 3100,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1,
+        "passed": 3099
+      },
+      "decisions": [],
+      "accepted": true
+    },
+    "seconds": 1061.0266156210564,
+    "load_before": {
+      "loadavg": "0.53 0.62 0.72 2/2425 843394",
+      "cpu_count": 20,
+      "top_cpu_processes": [
+        "COMMAND         %CPU",
+        "python          66.6",
+        "code-insiders    4.3",
+        "code-insiders    4.1",
+        "chrome           3.4",
+        "chrome           3.1",
+        "code-insiders    2.8",
+        "Xorg             1.6",
+        "epp-client-daem  1.3",
+        "gnome-shell      1.0",
+        "code-insiders    0.9"
+      ]
+    },
+    "load_after": {
+      "loadavg": "1.17 1.00 0.98 2/2392 928384",
+      "cpu_count": 20
+    },
+    "scenario_cases": [
+      {
+        "file": "full-r08/c8/configuration-connection-abort.json",
+        "case": "configuration-connection-abort",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 35,
+          "OPERATION_FAILED": 1,
+          "AGENT_STOPPED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 34
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 37
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 93
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2039
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2039,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 14596
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 14605
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/configuration-redirect-307.json",
+        "case": "configuration-redirect-307",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 36,
+          "OPERATION_FAILED": 1,
+          "AGENT_STOPPED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 38
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 41
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 99
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2043
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2043,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 14685
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 14694
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/configuration-redirect-signin.json",
+        "case": "configuration-redirect-signin",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 36,
+          "OPERATION_FAILED": 1,
+          "AGENT_STOPPED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 37
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 42
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 91
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2044
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2044,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 14640
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 14648
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/control.json",
+        "case": "control",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 35,
+          "IDENTITY_OUTSIDE_REGISTERED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 1
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 56
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 59
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 122
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2061
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2061,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 14694
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 14705
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/delay-only-control.json",
+        "case": "delay-only-control",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 40,
+          "IDENTITY_OUTSIDE_REGISTERED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 41
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 46
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 116
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2048
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2048,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 16505
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 16514
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/idle-script-navigation.json",
+        "case": "idle-script-navigation",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 37,
+          "IDENTITY_OUTSIDE_REGISTERED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 41
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 47
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 116
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2042
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2042,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 15394
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 15401
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/injected-competing-navigation.json",
+        "case": "injected-competing-navigation",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 36,
+          "OPERATION_FAILED": 1,
+          "AGENT_STOPPED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 42
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 48
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 113
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2050
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2050,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 15027
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 15034
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/injected-missing-root-membership.json",
+        "case": "injected-missing-root-membership",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 36,
+          "OPERATION_FAILED": 1,
+          "AGENT_STOPPED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 38
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 46
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 105
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2044
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2044,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 14697
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 14705
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/racing-meta-refresh.json",
+        "case": "racing-meta-refresh",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 41,
+          "OPERATION_FAILED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 40
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 45
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 101
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2045
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2045,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 16631
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 16641
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/racing-script-navigation.json",
+        "case": "racing-script-navigation",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 40,
+          "OPERATION_FAILED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 41
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 48
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 103
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2048
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2048,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 16451
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 16460
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c8/racing-wicket-navigation.json",
+        "case": "racing-wicket-navigation",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "DENIED": 40,
+          "OPERATION_FAILED": 1
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": true,
+        "login_observation": {
+          "steps": [
+            {
+              "step": "LOGIN_COMMAND_STARTED",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_USER",
+              "elapsed_ms": 0
+            },
+            {
+              "step": "FILL_PASSWORD",
+              "elapsed_ms": 41
+            },
+            {
+              "step": "CLICK_LOGIN",
+              "elapsed_ms": 47
+            },
+            {
+              "step": "AWAIT_LOGIN",
+              "elapsed_ms": 97
+            },
+            {
+              "step": "LOGIN_COMPLETE",
+              "elapsed_ms": 2049
+            }
+          ],
+          "response": {
+            "elapsed_ms": 2049,
+            "ok": true,
+            "error": null,
+            "failure_category": null
+          }
+        },
+        "lifecycle_observation": [
+          {
+            "action": "PAGE_CLOSED",
+            "phase": "close",
+            "elapsed_ms": 16592
+          },
+          {
+            "action": "BROWSER_DISCONNECTED",
+            "phase": "close",
+            "elapsed_ms": 16603
+          }
+        ]
+      },
+      {
+        "file": "full-r08/c5a/build/agent-0.json",
+        "case": "build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 2,
+          "DENIED": 35
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/build/agent-1.json",
+        "case": "build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/build/agent-2.json",
+        "case": "build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/delayed-build/agent-0.json",
+        "case": "delayed-build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 5,
+          "DENIED": 35
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/delayed-build/agent-1.json",
+        "case": "delayed-build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/delayed-build/agent-2.json",
+        "case": "delayed-build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/error-created/agent-0.json",
+        "case": "error-created",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4,
+          "DENIED": 35
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/error-created/agent-1.json",
+        "case": "error-created",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/error-created/agent-2.json",
+        "case": "error-created",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/error-no-build/agent-0.json",
+        "case": "error-no-build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 11,
+          "DENIED": 36
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/late-build/agent-0.json",
+        "case": "late-build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 11,
+          "DENIED": 36
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/late-build/agent-1.json",
+        "case": "late-build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 5
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/late-build/agent-2.json",
+        "case": "late-build",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/no-navigation/agent-0.json",
+        "case": "no-navigation",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4,
+          "DENIED": 207
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/no-navigation/agent-1.json",
+        "case": "no-navigation",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      },
+      {
+        "file": "full-r08/c5a/no-navigation/agent-2.json",
+        "case": "no-navigation",
+        "stage": "NOT_COLLECTED",
+        "harness_failure": null,
+        "actions": {
+          "FRAMEWORK_SELF_TEST": 1,
+          "IDENTITY_OUTSIDE_REGISTERED": 4
+        },
+        "fetch_continue_failed": 0,
+        "invalid_deny_stopped": false,
+        "profile_removed": null,
+        "login_observation": null,
+        "lifecycle_observation": null
+      }
+    ],
+    "timing_sensitive": [
+      {
+        "name": "test_real_cli_browser_submit_bind_pending_pass[build]",
+        "seconds": "22.944",
+        "passed": true
+      },
+      {
+        "name": "test_real_cli_browser_submit_bind_pending_pass[error-created]",
+        "seconds": "23.060",
+        "passed": true
+      },
+      {
+        "name": "test_real_cli_browser_submit_bind_pending_pass[error-no-build]",
+        "seconds": "16.718",
+        "passed": true
+      },
+      {
+        "name": "test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+        "seconds": "83.062",
+        "passed": true
+      },
+      {
+        "name": "test_real_cli_browser_submit_bind_pending_pass[delayed-build]",
+        "seconds": "22.947",
+        "passed": true
+      },
+      {
+        "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+        "seconds": "23.333",
+        "passed": true
+      }
+    ],
+    "safety": [
+      {
+        "name": "test_node_c2b_local_https_safety",
+        "passed": true
+      }
+    ]
+  },
+  "gates": {
+    "ruff": {
+      "exit_code": 0,
+      "seconds": 0.8144440050236881
+    },
+    "mypy": {
+      "exit_code": 0,
+      "seconds": 3.570840657921508
+    },
+    "design": {
+      "exit_code": 0,
+      "seconds": 0.11753330496139824
+    },
+    "imports": {
+      "exit_code": 0,
+      "seconds": 0.3847398270154372
+    },
+    "collect": {
+      "exit_code": 0,
+      "seconds": 0.6132403460796922
+    }
+  },
+  "nodeids": {
+    "before": 3100,
+    "after": 3100,
+    "added": [],
+    "removed": []
+  },
+  "frozen_hashes": {
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+    "docs/clang-fix-campaign/history/clang-fix-campaign-design-v1.5.16-FROZEN.md": "ff73f5e3c6d54a75ae60771b98eadcfc1a4d1422ca8faf337a3de09eee4346ff",
+    "docs/clang-fix-campaign/history/clang-fix-campaign-design-v1.5.17-FROZEN.md": "f6d669de11df2ae98848a8ec8036b741af0c791cb231192836772aa2891fc2dc",
+    "docs/clang-fix-campaign/history/clang-fix-campaign-design-v1.5.18-FROZEN.md": "37b5399af21bcd4aa8e5d6f2ae4cbc70b4a28484c606683f51352d58f3028160",
+    "docs/clang-fix-campaign/history/p49-skill1-convergence-judge-design-v1.4-FROZEN.md": "0dc2b93aac0fafa498bf3bdc14cd9afc22577ea5aa6d6f6e0c1f82f41f816c90",
+    "docs/clang-fix-campaign/history/p49-skill2-qb-discover-design-v1.3-FROZEN.md": "f2e8e5c845286d6ff317a34d6e1bee047ffd38bf276b53ab2bd763b318e96f9e",
+    "docs/clang-fix-campaign/history/p49-skill3-gerrit-fetch-design-v1.3.1-FROZEN.md": "835402d9280033f2daf8351def2b2aec026af76c2f4f5151308c817101e33fca",
+    "docs/clang-fix-campaign/history/p49-skill6-triage-report-design-v1.8-FROZEN.md": "b7af458a505c47c28a9fecf038e1f9e28590dc4ba806d2ec6fe164c0419a9930",
+    "docs/clang-fix-campaign/history/p49-step0-design-v2.1-FROZEN.md": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+    "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12-FROZEN.md": "c0f730ab378b97b1f0a5483e508c9003d864248c7225db2405c71e955f618408",
+    "docs/clang-fix-campaign/history/skill4/p49-skill4-build-verify-design-v1.12.1-FROZEN.md": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+    "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3-FROZEN.md": "e7e490daf680c11f69c8a775edb5573d6afe3dd00214a8df3b7a6244ac9b742f",
+    "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.1-FROZEN.md": "05d18f79e612b838430587c0de207c91c6b282b12990126c9a27f6da49776ad8",
+    "docs/clang-fix-campaign/history/skill5/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md": "0e2de5ff80c7f36940e455ec75f4f6872caa4fd93be360ad0fcfd0e59c755f27",
+    "docs/clang-fix-campaign/history/skill6/p49-skill6-triage-report-design-v1.8-FROZEN.md": "b7af458a505c47c28a9fecf038e1f9e28590dc4ba806d2ec6fe164c0419a9930",
+    "docs/clang-fix-campaign/p49-skill1-convergence-judge-design-v1.4-FROZEN.md": "0dc2b93aac0fafa498bf3bdc14cd9afc22577ea5aa6d6f6e0c1f82f41f816c90",
+    "docs/clang-fix-campaign/p49-skill2-qb-discover-design-v1.3-FROZEN.md": "f2e8e5c845286d6ff317a34d6e1bee047ffd38bf276b53ab2bd763b318e96f9e",
+    "docs/clang-fix-campaign/p49-skill3-gerrit-fetch-design-v1.3.1-FROZEN.md": "4c2549c7a64d1b32baaa037758ce3e5bdcb46ba927ec902622e87fce4d22ce37",
+    "docs/clang-fix-campaign/p49-skill4-build-verify-design-v1.12.1-FROZEN.md": "5e413fed78e0238d9419d377fb10d602fe5167d8e9a9fa58d4aa060bf8a232bd",
+    "docs/clang-fix-campaign/p49-skill5-gerrit-submit-design-v1.3.2-FROZEN.md": "9c9e4cd13f735254712e127fe048a17179812513948245edb80694f8ec953937",
+    "docs/clang-fix-campaign/p49-skill6-triage-report-design-v1.8-FROZEN.md": "b7af458a505c47c28a9fecf038e1f9e28590dc4ba806d2ec6fe164c0419a9930",
+    "docs/clang-fix-campaign/p49-step0-design-v2.1-FROZEN.md": "82372821e4a32e330b8a7b8ddf36d63aab3531b24eae5d640dedc901bb7342da",
+    "docs/clang-fix-campaign/p49-terminal-batch-design-v1.31-FROZEN.md": "b9d720028164faec8c91d87a02cfa75475e1f8e1fff86e8244a2c0ef55bedaf0",
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.2-FROZEN.md": "0a3f5e0b3848ac077e836fea208aec4bd540d2458f9f4d627d8ae3f842191950",
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.5-FROZEN.md": "f16621bb1e09ac6fbf16371c6130d24a281293e0cf5a102a548c409dfedcf91c",
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364"
+  },
+  "residual": {
+    "profiles": [],
+    "processes": []
+  },
+  "accepted_skel_r_04": true,
+  "whitespace": {
+    "source_exit": 0,
+    "staged_exit": 2,
+    "raw_html_warnings": 103,
+    "output": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/build/qb_evidence/01c79d97964d4e2bbbbd11c199dbc329/01.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/build/qb_evidence/01c79d97964d4e2bbbbd11c199dbc329/03.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/build/qb_evidence/01c79d97964d4e2bbbbd11c199dbc329/05.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/build/qb_evidence/01c79d97964d4e2bbbbd11c199dbc329/07.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/delayed-build/qb_evidence/2a06479b30a149b784ed04bbbf30b83c/03.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/delayed-build/qb_evidence/2a06479b30a149b784ed04bbbf30b83c/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/delayed-build/qb_evidence/2a06479b30a149b784ed04bbbf30b83c/06.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/delayed-build/qb_evidence/2a06479b30a149b784ed04bbbf30b83c/08.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/delayed-build/qb_evidence/2a06479b30a149b784ed04bbbf30b83c/10.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/error-created/qb_evidence/bfb76b2611ec4907bdb8eb2f9bdfa8e4/03.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/error-created/qb_evidence/bfb76b2611ec4907bdb8eb2f9bdfa8e4/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/error-created/qb_evidence/bfb76b2611ec4907bdb8eb2f9bdfa8e4/06.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/error-created/qb_evidence/bfb76b2611ec4907bdb8eb2f9bdfa8e4/08.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/error-created/qb_evidence/bfb76b2611ec4907bdb8eb2f9bdfa8e4/10.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/late-build/qb_evidence/a818bb787b02455181dac2ab0b0a0340/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/late-build/qb_evidence/a818bb787b02455181dac2ab0b0a0340/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/late-build/qb_evidence/a818bb787b02455181dac2ab0b0a0340/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/late-build/qb_evidence/a818bb787b02455181dac2ab0b0a0340/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/no-navigation/qb_evidence/34a8fb0a04f548fd898cdc43db6606ca/03.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/no-navigation/qb_evidence/34a8fb0a04f548fd898cdc43db6606ca/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/no-navigation/qb_evidence/34a8fb0a04f548fd898cdc43db6606ca/06.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/no-navigation/qb_evidence/34a8fb0a04f548fd898cdc43db6606ca/08.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/full-r08/c5a/no-navigation/qb_evidence/34a8fb0a04f548fd898cdc43db6606ca/10.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-01/c5a/late-build/qb_evidence/08cb44bc2b2342bf9b2dfa6b54fd560e/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-01/c5a/late-build/qb_evidence/08cb44bc2b2342bf9b2dfa6b54fd560e/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-01/c5a/late-build/qb_evidence/08cb44bc2b2342bf9b2dfa6b54fd560e/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-01/c5a/late-build/qb_evidence/08cb44bc2b2342bf9b2dfa6b54fd560e/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-02/c5a/late-build/qb_evidence/88469a53de6e454c936950584a9ad940/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-02/c5a/late-build/qb_evidence/88469a53de6e454c936950584a9ad940/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-02/c5a/late-build/qb_evidence/88469a53de6e454c936950584a9ad940/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-02/c5a/late-build/qb_evidence/88469a53de6e454c936950584a9ad940/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-03/c5a/late-build/qb_evidence/55596a53c7b34ee88e487e5411ba7a32/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-03/c5a/late-build/qb_evidence/55596a53c7b34ee88e487e5411ba7a32/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-03/c5a/late-build/qb_evidence/55596a53c7b34ee88e487e5411ba7a32/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-03/c5a/late-build/qb_evidence/55596a53c7b34ee88e487e5411ba7a32/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-04/c5a/late-build/qb_evidence/bd48f3f583a041879a96a285e120c9e2/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-04/c5a/late-build/qb_evidence/bd48f3f583a041879a96a285e120c9e2/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-04/c5a/late-build/qb_evidence/bd48f3f583a041879a96a285e120c9e2/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-04/c5a/late-build/qb_evidence/bd48f3f583a041879a96a285e120c9e2/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-05/c5a/late-build/qb_evidence/6c78c15089734eb0b1edffb135ef8a49/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-05/c5a/late-build/qb_evidence/6c78c15089734eb0b1edffb135ef8a49/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-05/c5a/late-build/qb_evidence/6c78c15089734eb0b1edffb135ef8a49/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-05/c5a/late-build/qb_evidence/6c78c15089734eb0b1edffb135ef8a49/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-06/c5a/late-build/qb_evidence/a66cd16bfb6041ed81e931c00c97e475/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-06/c5a/late-build/qb_evidence/a66cd16bfb6041ed81e931c00c97e475/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-06/c5a/late-build/qb_evidence/a66cd16bfb6041ed81e931c00c97e475/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-06/c5a/late-build/qb_evidence/a66cd16bfb6041ed81e931c00c97e475/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-07/c5a/late-build/qb_evidence/08e62b93a5c2412ca0ca4ecfa9b8e575/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-07/c5a/late-build/qb_evidence/08e62b93a5c2412ca0ca4ecfa9b8e575/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-07/c5a/late-build/qb_evidence/08e62b93a5c2412ca0ca4ecfa9b8e575/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-07/c5a/late-build/qb_evidence/08e62b93a5c2412ca0ca4ecfa9b8e575/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-08/c5a/late-build/qb_evidence/8b323370f6d047c7b902d1ca8c867b5e/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-08/c5a/late-build/qb_evidence/8b323370f6d047c7b902d1ca8c867b5e/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-08/c5a/late-build/qb_evidence/8b323370f6d047c7b902d1ca8c867b5e/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-08/c5a/late-build/qb_evidence/8b323370f6d047c7b902d1ca8c867b5e/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-09/c5a/late-build/qb_evidence/e0ed4052539f472582f11eba41c96e0e/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-09/c5a/late-build/qb_evidence/e0ed4052539f472582f11eba41c96e0e/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-09/c5a/late-build/qb_evidence/e0ed4052539f472582f11eba41c96e0e/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-09/c5a/late-build/qb_evidence/e0ed4052539f472582f11eba41c96e0e/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-10/c5a/late-build/qb_evidence/2da02f7fdf4c4808b668f213f68f6f7f/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-10/c5a/late-build/qb_evidence/2da02f7fdf4c4808b668f213f68f6f7f/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-10/c5a/late-build/qb_evidence/2da02f7fdf4c4808b668f213f68f6f7f/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-10/c5a/late-build/qb_evidence/2da02f7fdf4c4808b668f213f68f6f7f/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-11/c5a/late-build/qb_evidence/4a4450021f744b7ba28c63b3eab5fb37/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-11/c5a/late-build/qb_evidence/4a4450021f744b7ba28c63b3eab5fb37/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-11/c5a/late-build/qb_evidence/4a4450021f744b7ba28c63b3eab5fb37/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-11/c5a/late-build/qb_evidence/4a4450021f744b7ba28c63b3eab5fb37/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-12/c5a/late-build/qb_evidence/c458fd1bb77b4b9698afde46554709b9/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-12/c5a/late-build/qb_evidence/c458fd1bb77b4b9698afde46554709b9/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-12/c5a/late-build/qb_evidence/c458fd1bb77b4b9698afde46554709b9/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-12/c5a/late-build/qb_evidence/c458fd1bb77b4b9698afde46554709b9/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-13/c5a/late-build/qb_evidence/314e01ba1aba45abad94dd9ff49b9005/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-13/c5a/late-build/qb_evidence/314e01ba1aba45abad94dd9ff49b9005/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-13/c5a/late-build/qb_evidence/314e01ba1aba45abad94dd9ff49b9005/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-13/c5a/late-build/qb_evidence/314e01ba1aba45abad94dd9ff49b9005/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-14/c5a/late-build/qb_evidence/7c3cb5b363fa42698c30bdd84e1d6082/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-14/c5a/late-build/qb_evidence/7c3cb5b363fa42698c30bdd84e1d6082/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-14/c5a/late-build/qb_evidence/7c3cb5b363fa42698c30bdd84e1d6082/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-14/c5a/late-build/qb_evidence/7c3cb5b363fa42698c30bdd84e1d6082/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-15/c5a/late-build/qb_evidence/ca3f0c243bee4090ac1327c89d5e5172/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-15/c5a/late-build/qb_evidence/ca3f0c243bee4090ac1327c89d5e5172/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-15/c5a/late-build/qb_evidence/ca3f0c243bee4090ac1327c89d5e5172/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-15/c5a/late-build/qb_evidence/ca3f0c243bee4090ac1327c89d5e5172/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-16/c5a/late-build/qb_evidence/f19012a556794007839d4e5f5ee179e2/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-16/c5a/late-build/qb_evidence/f19012a556794007839d4e5f5ee179e2/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-16/c5a/late-build/qb_evidence/f19012a556794007839d4e5f5ee179e2/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-16/c5a/late-build/qb_evidence/f19012a556794007839d4e5f5ee179e2/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-17/c5a/late-build/qb_evidence/bd661b0718e14cb7b75bc6185f09161a/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-17/c5a/late-build/qb_evidence/bd661b0718e14cb7b75bc6185f09161a/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-17/c5a/late-build/qb_evidence/bd661b0718e14cb7b75bc6185f09161a/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-17/c5a/late-build/qb_evidence/bd661b0718e14cb7b75bc6185f09161a/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-18/c5a/late-build/qb_evidence/d5be2a8080c34cf598e31bbc09937e7f/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-18/c5a/late-build/qb_evidence/d5be2a8080c34cf598e31bbc09937e7f/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-18/c5a/late-build/qb_evidence/d5be2a8080c34cf598e31bbc09937e7f/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-18/c5a/late-build/qb_evidence/d5be2a8080c34cf598e31bbc09937e7f/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-19/c5a/late-build/qb_evidence/d32bf483030d43da8b3422c1978de414/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-19/c5a/late-build/qb_evidence/d32bf483030d43da8b3422c1978de414/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-19/c5a/late-build/qb_evidence/d32bf483030d43da8b3422c1978de414/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-19/c5a/late-build/qb_evidence/d32bf483030d43da8b3422c1978de414/09.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-20/c5a/late-build/qb_evidence/afd0847180a242e9b8892a4c8f17183a/04.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-20/c5a/late-build/qb_evidence/afd0847180a242e9b8892a4c8f17183a/05.1193469-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-20/c5a/late-build/qb_evidence/afd0847180a242e9b8892a4c8f17183a/07.1193467-overview.html:10: trailing whitespace.\n+    \ndocs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/late-20/c5a/late-build/qb_evidence/afd0847180a242e9b8892a4c8f17183a/09.1193469-overview.html:10: trailing whitespace.\n+    \n",
+    "preserved_raw_bytes": true
+  },
+  "staged_db_or_key_files": []
+}
