@@ -1,8 +1,8 @@
 # SKEL-RESTORE-08 发现页面只读取证
 
-状态:用户回复“开始”后执行一次,登录成功,首个配置页导航触发安全停止。
-已关闭浏览器并删除profile;不重试,不进入第三批实施或第四批。
-生产代理、Policy、installGuards及驱动均未改。
+当前状态:RESTORE-10修复后唯一一次live-02在iframe原始路径空格处停止,
+六页已取齐,iframe/日志未读取;等待SKEL-RESTORE-11裁定,不重试。
+live-01历史结果与工具原样保留。本次真机没有再改生产代理、Policy或驱动。
 
 ## 工具
 
@@ -62,3 +62,19 @@ Node **7 passed / 0 failed / 0 skipped**,20.21秒:
 首个配置页正文尚未归档;其它五个固定页、iframe和包日志均未读取。
 四项实施条件没有取齐,不能宣称通过。详见
 [stop-report-SKEL-RESTORE-09.md](stop-report-SKEL-RESTORE-09.md)。
+
+## RESTORE-10重取证:live-02
+
+修复提交b29d6f3先完成离线门禁并推送,用户再次回复“开始”后启动。
+调用原capture导出函数,仅输出目录改为live-02;完整命令/UTC/exit见
+`live-02/command.json`,exit4,190.095秒。登录成功,固定六页200并归档,
+无重定向/Download,均text/html;charset=utf-8,无Content-Disposition。
+
+`06.response.html:803`唯一iframe src为
+`/download/1204736/html/HTML REPORT/index.html`;原exactLink在URL解析前拒绝空格,
+故CAPTURE_PATH_UNSUPPORTED。没有显式读取iframe或日志,没有绕路与重试。
+离线标准解析与原工具拒绝的对照见`live-02/path-probe.json`。
+父overview身份计数为2,其余五页0;未输出名字,需人工确认新身份位置。
+trace无OPERATION_FAILED/AGENT_STOPPED,最终profile删除且无残留。
+
+详见[SKEL-RESTORE-11停止报告](stop-report-SKEL-RESTORE-11.md)。

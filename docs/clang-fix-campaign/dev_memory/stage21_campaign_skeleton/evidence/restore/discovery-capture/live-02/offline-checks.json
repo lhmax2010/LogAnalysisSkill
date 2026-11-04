@@ -1,0 +1,35 @@
+{
+  "utc": "2026-11-04T14:37:14.528750+00:00",
+  "commands": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/probe-live-02-path.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\n  \"raw\": \"/download/1204736/html/HTML REPORT/index.html\",\n  \"standard_url\": \"https://quickbuild.tizen.org/download/1204736/html/HTML%20REPORT/index.html\",\n  \"origin\": \"https://quickbuild.tizen.org\",\n  \"path\": \"/download/1204736/html/HTML%20REPORT/index.html\",\n  \"query\": \"\",\n  \"fragment\": \"\",\n  \"capture\": {\n    \"ok\": false,\n    \"error\": \"CAPTURE_PATH_UNSUPPORTED\"\n  },\n  \"network_requests\": 0,\n  \"source\": \"live-02/06.response.html\",\n  \"line\": 803,\n  \"note\": \"Computed offline, not an observed iframe response or browser request URL.\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "--force-exclude",
+        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/probe-live-02-path.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "exit_code": 0,
+      "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+      "stderr": ""
+    }
+  ]
+}

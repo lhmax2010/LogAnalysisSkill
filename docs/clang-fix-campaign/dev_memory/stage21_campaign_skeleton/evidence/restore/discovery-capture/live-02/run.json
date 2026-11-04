@@ -1,0 +1,426 @@
+{
+  "started_utc": "2026-11-04T14:26:50.586Z",
+  "status": "STOPPED",
+  "stage": "https://quickbuild.tizen.org/build/1204736/html_report",
+  "pages": [
+    {
+      "requested_url": "https://quickbuild.tizen.org/overview/1917",
+      "started_ms": 166592,
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "content_disposition": null,
+      "redirect_chain": [
+        "https://quickbuild.tizen.org/overview/1917"
+      ],
+      "download": false,
+      "frame": "main",
+      "body": {
+        "file": "01.response.html",
+        "ok": true,
+        "sha256": "0c015b6866a07624e76db4248edaadb6835ba713b2d6a7325306195606d1e10e",
+        "bytes": 49471,
+        "outside_identity_count": 0
+      },
+      "identity_verified": true,
+      "finished_ms": 169144
+    },
+    {
+      "requested_url": "https://quickbuild.tizen.org/build/1204735/overview",
+      "started_ms": 169145,
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "content_disposition": null,
+      "redirect_chain": [
+        "https://quickbuild.tizen.org/build/1204735/overview"
+      ],
+      "download": false,
+      "frame": "main",
+      "body": {
+        "file": "02.response.html",
+        "ok": true,
+        "sha256": "79ecf35dc7f581b45e1fb5f26fa459bd5473f423d2642b73f297fe747882d93d",
+        "bytes": 44898,
+        "outside_identity_count": 2
+      },
+      "identity_verified": true,
+      "finished_ms": 170060
+    },
+    {
+      "requested_url": "https://quickbuild.tizen.org/build/1204735/variables",
+      "started_ms": 170060,
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "content_disposition": null,
+      "redirect_chain": [
+        "https://quickbuild.tizen.org/build/1204735/variables"
+      ],
+      "download": false,
+      "frame": "main",
+      "body": {
+        "file": "03.response.html",
+        "ok": true,
+        "sha256": "586f46a2b4f88627970548519078800f8cc0342a609b96c13b8b52224d2c6773",
+        "bytes": 64470,
+        "outside_identity_count": 0
+      },
+      "identity_verified": true,
+      "finished_ms": 170681
+    },
+    {
+      "requested_url": "https://quickbuild.tizen.org/build/1204736/overview",
+      "started_ms": 170681,
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "content_disposition": null,
+      "redirect_chain": [
+        "https://quickbuild.tizen.org/build/1204736/overview"
+      ],
+      "download": false,
+      "frame": "main",
+      "body": {
+        "file": "04.response.html",
+        "ok": true,
+        "sha256": "f607b4e83927e357d976010716ba93f3714692ac09ed451e12f94b15eb406e1e",
+        "bytes": 42712,
+        "outside_identity_count": 0
+      },
+      "identity_verified": true,
+      "finished_ms": 171133
+    },
+    {
+      "requested_url": "https://quickbuild.tizen.org/build/1204736/variables",
+      "started_ms": 171133,
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "content_disposition": null,
+      "redirect_chain": [
+        "https://quickbuild.tizen.org/build/1204736/variables"
+      ],
+      "download": false,
+      "frame": "main",
+      "body": {
+        "file": "05.response.html",
+        "ok": true,
+        "sha256": "84422f12d983706f1f5f78e9dbb3d1376bb53f85416bd1ffa56e3963dce1d710",
+        "bytes": 59267,
+        "outside_identity_count": 0
+      },
+      "identity_verified": true,
+      "finished_ms": 171757
+    },
+    {
+      "requested_url": "https://quickbuild.tizen.org/build/1204736/html_report",
+      "started_ms": 171757,
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "content_disposition": null,
+      "redirect_chain": [
+        "https://quickbuild.tizen.org/build/1204736/html_report"
+      ],
+      "download": false,
+      "frame": "main",
+      "body": {
+        "file": "06.response.html",
+        "ok": true,
+        "sha256": "5b32619e336f597e93bb6d3ff2988e35503881554ad4b682818ce2bef62ae89b",
+        "bytes": 36257,
+        "outside_identity_count": 0
+      },
+      "identity_verified": true,
+      "finished_ms": 173057
+    }
+  ],
+  "requests": [
+    {
+      "elapsed_ms": 166595,
+      "url": "https://quickbuild.tizen.org/overview/1917",
+      "method": "GET",
+      "frame": "main",
+      "response_status": null,
+      "redirect": false,
+      "registered": true
+    },
+    {
+      "elapsed_ms": 167038,
+      "url": "https://quickbuild.tizen.org/overview/1917",
+      "method": "GET",
+      "frame": "main",
+      "response_status": 200,
+      "redirect": false,
+      "registered": true,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "elapsed_ms": 169148,
+      "url": "https://quickbuild.tizen.org/build/1204735/overview",
+      "method": "GET",
+      "frame": "main",
+      "response_status": null,
+      "redirect": false,
+      "registered": true
+    },
+    {
+      "elapsed_ms": 169591,
+      "url": "https://quickbuild.tizen.org/build/1204735/overview",
+      "method": "GET",
+      "frame": "main",
+      "response_status": 200,
+      "redirect": false,
+      "registered": true,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "elapsed_ms": 170064,
+      "url": "https://quickbuild.tizen.org/build/1204735/variables",
+      "method": "GET",
+      "frame": "main",
+      "response_status": null,
+      "redirect": false,
+      "registered": true
+    },
+    {
+      "elapsed_ms": 170367,
+      "url": "https://quickbuild.tizen.org/build/1204735/variables",
+      "method": "GET",
+      "frame": "main",
+      "response_status": 200,
+      "redirect": false,
+      "registered": true,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "elapsed_ms": 170684,
+      "url": "https://quickbuild.tizen.org/build/1204736/overview",
+      "method": "GET",
+      "frame": "main",
+      "response_status": null,
+      "redirect": false,
+      "registered": true
+    },
+    {
+      "elapsed_ms": 170995,
+      "url": "https://quickbuild.tizen.org/build/1204736/overview",
+      "method": "GET",
+      "frame": "main",
+      "response_status": 200,
+      "redirect": false,
+      "registered": true,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "elapsed_ms": 171135,
+      "url": "https://quickbuild.tizen.org/build/1204736/variables",
+      "method": "GET",
+      "frame": "main",
+      "response_status": null,
+      "redirect": false,
+      "registered": true
+    },
+    {
+      "elapsed_ms": 171435,
+      "url": "https://quickbuild.tizen.org/build/1204736/variables",
+      "method": "GET",
+      "frame": "main",
+      "response_status": 200,
+      "redirect": false,
+      "registered": true,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "elapsed_ms": 171761,
+      "url": "https://quickbuild.tizen.org/build/1204736/html_report",
+      "method": "GET",
+      "frame": "main",
+      "response_status": null,
+      "redirect": false,
+      "registered": true
+    },
+    {
+      "elapsed_ms": 172060,
+      "url": "https://quickbuild.tizen.org/build/1204736/html_report",
+      "method": "GET",
+      "frame": "main",
+      "response_status": 200,
+      "redirect": false,
+      "registered": true,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "elapsed_ms": 172297,
+      "url": "<UNREGISTERED>",
+      "method": "GET",
+      "frame": "other",
+      "response_status": null,
+      "redirect": false,
+      "registered": false
+    }
+  ],
+  "downloads": [],
+  "events": [
+    {
+      "action": "PAGE_CLOSED",
+      "elapsed_ms": 173269
+    },
+    {
+      "action": "BROWSER_DISCONNECTED",
+      "elapsed_ms": 173794
+    }
+  ],
+  "login": {
+    "ok": true
+  },
+  "failure": "CAPTURE_PATH_UNSUPPORTED",
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "/wicket/page",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    }
+  ],
+  "profile_removed": true,
+  "finished_utc": "2026-11-04T14:29:45.436Z"
+}

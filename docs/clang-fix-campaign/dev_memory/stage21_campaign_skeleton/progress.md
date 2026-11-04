@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**恢复第1、2批离线完成;RESTORE-10窄化修复离线验收完成,待一次真机只读取证**。SKEL-RESTORE-09由RESTORE-10处置(第36节),原失败证据保留;SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-04。状态:**恢复第1、2批离线完成;RESTORE-10修复已推送,live-02取证在iframe路径空格处停止(SKEL-RESTORE-11)**。SKEL-RESTORE-09由RESTORE-10处置(第36节),原失败证据保留;SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1972,3 +1972,38 @@ C8调查11个场景全部完成,harness_failure均为空,各场景profile_remove
 修复及离线证据单独提交推送后,再请用户确认开始一次只读取证;
 使用原capture工具输出到新`discovery-capture/live-02`,live-01不覆盖。
 此处尚未进行真机操作,第三批发现功能与第四批编排未宣称完成。
+
+### 36.5 live-02执行与SKEL-RESTORE-11停止
+
+上段为修复提交时的边界记录。`b29d6f3`已推送后,用户再次确认原话“开始”,
+于2026-11-04 14:26:36.495–14:29:46.590 UTC执行唯一一次只读取证,
+exit4,190.095秒。原capture工具未修改,只调用其导出函数并使用新目录;
+命令与stdout/stderr在`evidence/restore/discovery-capture/live-02/command.json`等文件。
+前置确认目录不存在、无P5Q进程/profile残留、代理与冻结稿hash符合已验收值。
+
+登录ok,六个固定页面均200、text/html;charset=utf-8、无Content-Disposition,
+无重定向/Download;六份脱敏HTML归档。前五页配置/构建/父子关系核验通过。
+登记位置外身份计数依次0/2/0/0/0/0,父overview的2需人工确认是否新身份位置,
+不输出名字、不自行扩大脱敏范围。
+
+第六页唯一iframe原文(`06.response.html:803`)为
+`/download/1204736/html/HTML REPORT/index.html`。
+capture.mjs:23在调用标准URL解析器前拒绝空格,报CAPTURE_PATH_UNSUPPORTED;
+未执行iframe/日志的显式主帧导航。离线HTMLParser+标准URL对照确认解析后为
+同源`/download/1204736/html/HTML%20REPORT/index.html`,无query/fragment,
+但原exactLink拒绝;这只是离线计算,不是实际iframe响应或wire URL证据。
+探针与输出为`probe-live-02-path.py`、`live-02/path-probe.json`,零网络。
+
+trace只有自检1与DENIED28(login9/read19),无OPERATION_FAILED/AGENT_STOPPED,
+也未出现CONTINUE_TARGET_GONE;不能宣称此次现场触发验证了新豁免。
+PAGE_CLOSED=173269ms,disconnected=173794ms,profile_removed=true;
+事后P5Q进程/profile无残留。新归档逐文件脱敏检查通过,
+正文hash与run.json一致,live-01/原capture/生产代理逐字节未变,见validation.json。
+
+按RESTORE-10第五条停止,不重试、不换路径、不实施恢复第三/四批。
+报告`evidence/restore/discovery-capture/stop-report-SKEL-RESTORE-11.md`
+记录已取得与仍UNKNOWN的四项条件、候选工具预检查调整及所需离线用例;
+候选只写方案,等待设计方裁定。本轮没有运行表单/提交/真实gbs/Gerrit推送。
+本次仅证据与文档收尾:离线路径探针、该探针ruff、design检查(0 problem)
+全部通过,见`live-02/offline-checks.json`;13份输出加validation本身逐文件
+通过脱敏检查。不重跑或冒称完成第三批业务功能的全仓验收。

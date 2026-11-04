@@ -75,6 +75,27 @@ iframe到包日志的原始链接字节、多架构编码在浏览器/CDP中的�
 按[SKEL-RESTORE-09停止报告](discovery-capture/stop-report-SKEL-RESTORE-09.md)停止,
 不实施任何代理扩展,不重试。
 
+### 2.2 RESTORE-10重取证结果:live-02(2026-11-04)
+
+修复b29d6f3与完整离线门禁先行,用户回复“开始”后一次执行,没有重试。
+六个固定页面均200且已脱敏归档;详见`discovery-capture/live-02/run.json`。
+父/子overview配置身份与1204735→1204736关系核验通过。
+
+| 原UNKNOWN | 本次取得的事实与来源 |
+| --- | --- |
+| Base GBS入口完整正文 | `/build/1204736/html_report`,`live-02/06.response.html`;200,text/html;charset=utf-8,无Content-Disposition/Download |
+| 唯一iframe src | `06.response.html:803`原文`/download/1204736/html/HTML REPORT/index.html`;目录名为HTML REPORT |
+| iframe实际wire path与响应元数据 | 未取得。标准URL离线计算为`/download/1204736/html/HTML%20REPORT/index.html`,不是观测到的网络响应;`live-02/path-probe.json` |
+| 日志href、文本/Download、编码与重定向 | 全部NOT_COLLECTED,保持UNKNOWN;未到报告内容页 |
+| 实际重定向链 | 六个固定主帧导航均单跳;iframe与日志仍UNKNOWN |
+| 历史分页 | 仍不实施,outside_recent_window边界不变 |
+
+取证工具在标准URL解析前拒绝原始src的ASCII空格,CAPTURE_PATH_UNSUPPORTED,
+exit4。未出现OPERATION_FAILED/AGENT_STOPPED,profile已删除。
+父overview登记位置外身份计数2,其余五页0,需要人工确认新身份位置。
+四条件尚未齐备,不能进入实现;见
+[SKEL-RESTORE-11](discovery-capture/stop-report-SKEL-RESTORE-11.md)。
+
 ## 3. 当前拦截与读取边界
 
 - Agent`:88`的readonly仅含build裸页/overview/variables/step_status和登记overview。

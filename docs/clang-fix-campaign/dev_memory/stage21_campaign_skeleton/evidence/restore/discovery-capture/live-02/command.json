@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/home/linhao/.local/bin/node",
+    "--input-type=module",
+    "-e",
+    "import {capture,fixedError} from './docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/capture.mjs'; try { const r=await capture('docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/live-02'); console.log(JSON.stringify({status:r.status,failure:r.failure,pages:r.pages.length,profile_removed:r.profile_removed})); process.exitCode=r.status==='CAPTURED'?0:4; } catch(error) { console.error('CAPTURE_STOPPED code='+fixedError(error)); process.exitCode=4; }"
+  ],
+  "started_utc": "2026-11-04T14:26:36.494851+00:00",
+  "authorization": "开始",
+  "mode": "read-only",
+  "output": "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/live-02",
+  "finished_utc": "2026-11-04T14:29:46.589771+00:00",
+  "exit_code": 4,
+  "elapsed_seconds": 190.09481319610495
+}
