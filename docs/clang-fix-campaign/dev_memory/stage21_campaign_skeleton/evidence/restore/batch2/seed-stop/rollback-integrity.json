@@ -1,0 +1,154 @@
+{
+  "base": "aecf55a9858f3f2f7ac0b8a39f9330d15b16f0f7",
+  "restored_files": [
+    {
+      "path": ".importlinter",
+      "restored": true,
+      "sha256": "0aee4161e9c9ce2c1054fc0d6a2f87ae524e669ebcb3fb5ee1fd38eef7d3bad0"
+    },
+    {
+      "path": "pyproject.toml",
+      "restored": true,
+      "sha256": "a5cbca6edc8d61ced737bee7dc47efb7edf0e3971abee1037f41ac69b2580839"
+    },
+    {
+      "path": "tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py",
+      "restored": true,
+      "sha256": "93bd97b0262d1efead2104b6f5f6653e740e67a1a3c94ea17077b81cfe2c6067"
+    },
+    {
+      "path": "tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py",
+      "restored": true,
+      "sha256": "15d35790f33724d79c5f5dd52fc50a6ef398eae5cf1c882c838454372b34d16e"
+    },
+    {
+      "path": "tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py",
+      "restored": true,
+      "sha256": "55ce4bf4f64748b664c974b0d85be2b44f40d1de50bcb92bd18efeaf8dc2b24f"
+    },
+    {
+      "path": "tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py",
+      "restored": true,
+      "sha256": "d0c578ae5cf03f3b7cdefa677dc9fb81adc40bec39284e060f332412e0ea7559"
+    },
+    {
+      "path": "tizen-campaign-report/scripts/tizen_campaign_report/report.py",
+      "restored": true,
+      "sha256": "e2f2793e347db32a5c0d2ea7a526df573a31d9ec69713e7c996de0f9060852de"
+    },
+    {
+      "path": "tizen-ci-triage/scripts/ci_triage/cli.py",
+      "restored": true,
+      "sha256": "3c0f8076609e9d6af91cf89aa775435a5226a88cef896ea40119d86c585f5ca9"
+    },
+    {
+      "path": "tizen-review-submit/scripts/tizen_review_submit/review_submit.py",
+      "restored": true,
+      "sha256": "219d2f0095ad75bb0841319a4a345af46e6f11d8cf33c4b30e496b4a4a4d7378"
+    },
+    {
+      "path": "tizen-campaign-core/scripts/tizen_campaign_core/kb.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tizen-campaign-repair/scripts/tizen_campaign_repair/propose_fix.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tests/unit/test_campaign_kb_cli.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tests/unit/test_campaign_kb_sync.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tests/unit/test_campaign_propose_fix.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tests/unit/test_diff_format_patch_restore.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tests/unit/test_review_restore_t1.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tizen-campaign-kb/SKILL.md",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tizen-campaign-kb/scripts/tizen_campaign_kb/__init__.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tizen-campaign-kb/scripts/tizen_campaign_kb/__main__.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tizen-campaign-kb/scripts/tizen_campaign_kb/cli.py",
+      "restored": true,
+      "sha256": null
+    },
+    {
+      "path": "tizen-campaign-kb/scripts/tizen_campaign_kb/sync.py",
+      "restored": true,
+      "sha256": null
+    }
+  ],
+  "protected_files": {
+    "docs/clang-fix-campaign/design.md": {
+      "sha256": "bb397e4058098f37cf91a092d40f742da9459b14389430457da864a971f88b42",
+      "unchanged": true
+    },
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": {
+      "sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+      "unchanged": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": {
+      "sha256": "044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723",
+      "unchanged": true
+    },
+    "tizen-review-submit/scripts/tizen_review_submit/review_submit.py": {
+      "sha256": "219d2f0095ad75bb0841319a4a345af46e6f11d8cf33c4b30e496b4a4a4d7378",
+      "unchanged": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py": {
+      "sha256": "afc049e204135017c9f457fea9c7237c7e3fded8f87a60885824510390f21fde",
+      "unchanged": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py": {
+      "sha256": "0cc7b5d11641074efbf60fc9da9827a03c3ed9d607bd842509c7fd5a8d4f8e86",
+      "unchanged": true
+    },
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py": {
+      "sha256": "84778014c1a2912418a660f0bfdd567215c06e38ef6dbbc833fb62b13d691fc1",
+      "unchanged": true
+    },
+    "tizen-build-verify/scripts/tizen_build_verify/build_verify.py": {
+      "sha256": "5a6ab48b9bafd01e464513b6450781fcffdcaaac3b39da911c45923e93093887",
+      "unchanged": true
+    },
+    "tizen-build-verify/scripts/tizen_build_verify/edit_spec_guard.py": {
+      "sha256": "212779a84421b619ccac576c688a94370e593aef6656cf0eca4b2be57915526f",
+      "unchanged": true
+    }
+  },
+  "nodeids_before": 3164,
+  "nodeids_after": 3164,
+  "added": [],
+  "removed": [],
+  "editable_environment_restored": true,
+  "full_gate_run": false
+}

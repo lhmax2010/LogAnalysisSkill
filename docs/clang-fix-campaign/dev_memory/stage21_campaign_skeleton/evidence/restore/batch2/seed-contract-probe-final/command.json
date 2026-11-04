@@ -1,0 +1,31 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch2/probe-seed-dedupe.py"
+  ],
+  "started_utc": "2026-11-04T08:23:02.445774+00:00",
+  "load_before": {
+    "loadavg": "6.94 5.05 4.05 33/3164 1975924",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "python          60.0",
+    "bash             5.5",
+    "code-insiders    4.5",
+    "chrome           3.8",
+    "code-insiders    3.2",
+    "code-insiders    2.5",
+    "depanneur        2.0",
+    "chrome           2.0",
+    "Xorg             1.7",
+    "chrome           1.5"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T08:23:02.491959+00:00",
+  "elapsed_seconds": 0.026781007065437734,
+  "load_after": {
+    "loadavg": "6.94 5.05 4.05 10/3164 1975926",
+    "cpu_count": 20
+  }
+}

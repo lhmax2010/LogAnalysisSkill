@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**恢复第1批离线完成;第2批契约停点待裁定**。SKEL-RESTORE-01停点已由SKEL-RESTORE-02裁定关闭(第27节);审核两处修改随恢复第2批提交,新停点见第29节。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-04。状态:**恢复第1批离线完成;第2批seed去重编码待裁定**。SKEL-RESTORE-03已由SKEL-RESTORE-04关闭(第30节);审核两处修改与D2E补修仍随恢复第2批验收,新停点见第31节。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1587,6 +1587,8 @@ normal/SIGTERM两轮均exit0且profile_exists=false。此记录不等于新的�
 
 ## 29. SKEL-RESTORE-03:恢复第2批契约核对停止
 
+状态:已由SKEL-RESTORE-04裁定关闭;以下原始停止记录保留。
+
 恢复第1批已以`b92573f`提交并推送origin/clang-fix-campaign,
 最终3163 passed/1既有skip、64新增用例、其余门禁全部通过(第28节)。
 第2批开始前核对新增CLI与clang_kb/v1时发现两处未闭合的契约,
@@ -1612,3 +1614,60 @@ normal/SIGTERM两轮均exit0且profile_exists=false。此记录不等于新的�
 停止记录的design检查0 problem;analyzer原始Markdown保留末尾空行,
 差异检查仅此生成证据告警,手写文档与探针无空白告警。通用忽略规则中的
 analyzer产物已显式纳入证据提交,不改.gitignore。
+
+## 30. 实施裁定 SKEL-RESTORE-04:第二批接口与第一批补修
+
+### 30.1 裁定原文
+
+一、第二批接口裁定
+
+① propose-fix 输出 JSON 增加布尔字段 needs_generation,固定字段变为 8 个:mode、needs_generation、edit_spec_path、source_kind、kb_precedent_ref、context_dir、t2_records、downgrade_reason。mode=t1 时 needs_generation=false,edit_spec_path 与 source_kind=t1_cherry_pick 必填;mode=generate 时 needs_generation=true,edit_spec_path 与 source_kind 为 null,context_dir 必填。补字段一致性测试。
+
+② kb import-diff 新增必填参数 --baseline-commit(该 diff 所基于的源码 commit,40 位十六进制,格式不符 exit 2;来源由导入人提供,如 shelve/Gerrit change 的 parent 或 QuickBuild 构建所用 commit)。instance 的 baseline_commit 对所有 origin 保持非空,不开 null 例外。去重仍为 design.md §3.4 七元 dedupe_key;仅 origin=imported_shelve 时 verified_tree_sha 为 null,计算 dedupe_key 时该槽位用字符串 "imported:" + sha256(diff 原始字节) 代替。baseline_commit 不作 T1 匹配硬键(按 §3.5),只用于溯源与漂移报告。补测试:缺 --baseline-commit 拒绝;同 diff 重复导入命中既有 id;同失败不同 diff 各存一条;非 imported_shelve 记录的 dedupe 与原规则逐字节一致。
+两处偏差写入 design.md 第 4.6 节“恢复项落地裁定”。
+
+二、第一批补修(tizen_campaign_core/diff_to_edit_spec.py 与 tizen_campaign_repair/diff_cli.py)
+
+1. git format-patch 尾部签名:最后一个文件的最后一个 hunk 之后,允许且仅允许出现形如 "-- \n" 加一行版本号(可再跟空行)的签名块,直到文件结束;签名块之后再出现任何内容仍按 unparsed_patch_content 拒绝。签名块出现在两个文件之间或 hunk 之前也拒绝。
+2. diff 文件非 UTF-8 可解码时,返回 exit 4 DIFF_CONVERT_UNSUPPORTED、reason=unsupported_encoding,不再归为 INVALID_ARGS。
+3. 补测试:真实 git format-patch 产物(单文件、多文件、带邮件头与 Signed-off-by)转换成功并过真实 guard;签名块后追加内容被拒;签名块夹在文件之间被拒;latin-1 diff 返回 unsupported_encoding。
+
+三、继续
+
+补修随第二批同一轮门禁验证(全仓 pytest 不加 -x、mypy、ruff、lint-imports、design 检查);然后按 SKEL-RESTORE-01/02 继续第二批,第三批取证完成后仍按原第三.1.c 条停止等待裁定。
+
+### 30.2 本轮范围
+
+基线aecf55a;原3164个nodeid保留,只新增用例。第二批的KB、sync、propose-fix与
+SKEL-RESTORE-02两处审核资格变更及本次D2E补修一起验收。第三批仅做本地URL证据,
+提交后停止。历史无关工作树改动不纳入;不访问真实Gerrit/QuickBuild,不运行真实gbs,
+不改代理或安全核心,不写知识库实际数据到仓库。
+
+## 31. SKEL-RESTORE-05:恢复第2批seed去重停点
+
+design.md第818行的七元串拼接,与第1053行seed实例字段置null之间缺少编码规则。
+SKEL-RESTORE-04仅为imported_shelve规定了tree槽位替代值,不覆盖seed。
+这是持久化去重身份的选择,没有自行以空串/null字面量/伪造SHA代替,
+也没有通过拒绝所有seed来缩减Phase8验收。
+
+[停止报告](evidence/restore/stop-report-SKEL-RESTORE-05.md)含原文定位、候选文字diff、
+副作用与补测清单。[独立探针](evidence/restore/batch2/probe-seed-dedupe.py)
+仅试算三种候选得到不同hash,不调用草稿库、不写KB或state DB;exit0,
+原始stdout和命令/UTC/负载在`batch2/seed-contract-probe/`。
+
+本轮实现草稿已存`batch2/seed-stop/implementation-wip.patch`,只作定位资料;
+撤回本轮9个既有文件改动与12个新增实现/测试文件,逐项hash清单及恢复核验同目录。
+无关用户改动原样保留。editable安装已离线恢复为基线pyproject配置。
+局部D2E99、审核33、propose-fix32通过均不等于本批门禁;
+sync后续运行主动中断、KB CLI有3个草稿校验失败也如实列于报告。
+未完成全仓pytest/mypy/ruff/import验收,未单独交付D2E或审核改动,
+符合补修必须随第二批同轮验收的要求。design.md与冻结稿仍为基线原字节,
+不提前写成恢复完成。第三批取证与第四批未进入,无真实网络业务操作。
+
+停止交付核验:collect-only exit0、3164个nodeid与恢复第1批最终集合完全一致;
+9个受保护文件hash不变、21个草稿涉及路径已恢复至基线或移除。
+design检查0 problem、独立契约探针exit0、探针ruff-final通过。
+首轮探针ruff的两处zip缺strict告警保留,补strict=True后重跑通过,
+不影响探针结论;两轮原始输出都保留。证据索引见`batch2/seed-stop/README.md`。
+暂存差异检查仅两份归档patch的空白上下文行告警,保留统一diff所需前导空格;
+排除这两份生成patch后exit0,详见`seed-stop/whitespace-check.json`。

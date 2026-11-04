@@ -1,0 +1,23 @@
+{
+  "kind": "contract_probe_not_implementation_acceptance",
+  "seed_seven_slots": {
+    "package": null,
+    "gerrit_path": null,
+    "baseline_commit": null,
+    "verified_tree_sha": null,
+    "diagnosed_flag": "-Wexample",
+    "toolchain_profile": "clang",
+    "error_signature_normalized": "example #"
+  },
+  "literal_concatenation": "TypeError",
+  "candidate_hashes_not_adopted": {
+    "null_to_empty": "dd917bb901839ac88686e9adbbe07b1798f02a201c3441e19f995cff2d4a6b5d",
+    "null_to_literal": "5de48b8852780c7124ec421da9f3680dc61516de1abc3ac34aa03eb6854a1b90",
+    "tagged_json": "4335e51db2aa33b81d64fc3220c7fee6aae9138662ee5708a884d7589791afa0"
+  },
+  "ordinary_formula_sha256": "0c022d344540e7527c63ed273a3e957408b31c8273ed9ac3208e24acbaf36ba8",
+  "encoding_alters_seed_identity": true,
+  "production_rule_selected": false,
+  "kb_or_state_db_written": false,
+  "network_requests": 0
+}

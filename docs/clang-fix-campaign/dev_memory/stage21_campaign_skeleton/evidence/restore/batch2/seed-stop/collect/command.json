@@ -1,0 +1,35 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/",
+    "--collect-only",
+    "-q"
+  ],
+  "started_utc": "2026-11-04T08:22:37.360155+00:00",
+  "load_before": {
+    "loadavg": "7.23 4.95 3.99 2/3141 1972059",
+    "cpu_count": 20
+  },
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "ps               100",
+    "python          75.0",
+    "gbs             12.6",
+    "code-insiders    4.5",
+    "chrome           3.8",
+    "code-insiders    3.0",
+    "code-insiders    2.5",
+    "chrome           1.9",
+    "Xorg             1.7",
+    "chrome           1.5"
+  ],
+  "exit_code": 0,
+  "finished_utc": "2026-11-04T08:22:41.060714+00:00",
+  "elapsed_seconds": 3.6834723689826205,
+  "load_after": {
+    "loadavg": "7.13 4.97 4.01 4/3138 1972087",
+    "cpu_count": 20
+  }
+}

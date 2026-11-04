@@ -1,0 +1,2385 @@
+diff --git a/.importlinter b/.importlinter
+index d4841ed..2b5764c 100644
+--- a/.importlinter
++++ b/.importlinter
+@@ -14,6 +14,7 @@ root_packages =
+     gbs_patch_suggest
+     ci_triage
+     tizen_campaign_core
++    tizen_campaign_kb
+     tizen_campaign_intake
+     tizen_baseline_reproduce
+     tizen_campaign_repair
+@@ -27,7 +28,7 @@ name = application layers: orchestration -> skills -> shared
+ type = layers
+ layers =
+     ci_triage
+-    tizen_campaign_intake | tizen_baseline_reproduce | tizen_campaign_repair | tizen_qb_verify | tizen_review_submit | tizen_campaign_report
++    tizen_campaign_intake | tizen_baseline_reproduce | tizen_campaign_repair | tizen_qb_verify | tizen_review_submit | tizen_campaign_report | tizen_campaign_kb
+     tizen_sandbox_submit
+     tizen_campaign_core
+     tizen_convergence_judge | tizen_qb_discover | tizen_gerrit_fetch | tizen_build_verify | tizen_gerrit_submit | tizen_triage_report | gbs_patch_suggest
+@@ -66,6 +67,7 @@ type = forbidden
+ source_modules = tizen_ci_shared
+ forbidden_modules = ci_triage
+     tizen_campaign_core
++    tizen_campaign_kb
+     tizen_campaign_intake
+     tizen_baseline_reproduce
+     tizen_campaign_repair
+@@ -100,6 +102,7 @@ name = campaign compilation only through repair
+ type = forbidden
+ source_modules =
+     tizen_campaign_core
++    tizen_campaign_kb
+     tizen_campaign_intake
+     tizen_baseline_reproduce
+     tizen_sandbox_submit
+diff --git a/pyproject.toml b/pyproject.toml
+index 986292e..e17178f 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -27,6 +27,7 @@ where = [
+     "tizen-gbs-patch-suggest/scripts",
+     "tizen-ci-triage/scripts",
+     "tizen-campaign-core/scripts",
++    "tizen-campaign-kb/scripts",
+     "tizen-campaign-repair/scripts",
+     "tizen-sandbox-submit/scripts",
+     "tizen-qb-verify/scripts",
+@@ -49,6 +50,7 @@ include = [
+     "gbs_patch_suggest*",
+     "ci_triage*",
+     "tizen_campaign_core*",
++    "tizen_campaign_kb*",
+     "tizen_campaign_repair*",
+     "tizen_sandbox_submit*",
+     "tizen_qb_verify*",
+@@ -100,6 +102,7 @@ mypy_path = [
+     "tizen-gbs-patch-suggest/scripts",
+     "tizen-ci-triage/scripts",
+     "tizen-campaign-core/scripts",
++    "tizen-campaign-kb/scripts",
+     "tizen-campaign-repair/scripts",
+     "tizen-sandbox-submit/scripts",
+     "tizen-qb-verify/scripts",
+@@ -122,6 +125,7 @@ packages = [
+     "gbs_patch_suggest",
+     "ci_triage",
+     "tizen_campaign_core",
++    "tizen_campaign_kb",
+     "tizen_campaign_repair",
+     "tizen_sandbox_submit",
+     "tizen_qb_verify",
+diff --git a/tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py b/tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py
+index 1344b96..722c93d 100644
+--- a/tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py
++++ b/tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py
+@@ -61,6 +61,7 @@ _KNOWN_EVENT_TYPES = frozenset(
+         "DERIVE",
+         "PUSH",
+         "KB",
++        "KB_SYNC",
+         "REVIEW",
+         "CONVERGENCE",
+         "SECONDARY_TARGET_ADOPTED",
+@@ -2204,6 +2205,7 @@ def _validate_event_payload(
+         "DERIVE": _validate_derive,
+         "PUSH": _validate_push,
+         "KB": _validate_kb,
++        "KB_SYNC": _validate_kb_sync,
+         "REVIEW": _validate_review,
+         "CONVERGENCE": _validate_convergence_shape,
+         "SECONDARY_TARGET_ADOPTED": _validate_adoption,
+@@ -2345,6 +2347,31 @@ def _validate_kb(payload: Mapping[str, object]) -> None:
+         raise PayloadSchemaError("invalid KB payload")
+ 
+ 
++def _validate_kb_sync(payload: Mapping[str, object]) -> None:
++    _require_keys(payload, {
++        "kb_id", "dedupe_key", "status", "round_index", "source_kind",
++        "kb_precedent_ref", "push_event_id", "qb_event_id", "at",
++    })
++    _require_round_index(payload)
++    _require_nonempty_strings(payload, ("kb_id", "dedupe_key", "at"))
++    digest = _payload_str(payload, "dedupe_key")
++    if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
++        raise PayloadSchemaError("invalid KB_SYNC dedupe_key")
++    if payload["status"] not in {"NEW", "CI_VERIFIED", "MERGED"}:
++        raise PayloadSchemaError("invalid KB_SYNC status")
++    if payload["source_kind"] not in {"generated", "suppress", "t1_cherry_pick"}:
++        raise PayloadSchemaError("invalid KB_SYNC source_kind")
++    precedent = payload["kb_precedent_ref"]
++    if precedent is not None and (not isinstance(precedent, str) or not precedent.strip()):
++        raise PayloadSchemaError("invalid KB_SYNC kb_precedent_ref")
++    for name in ("push_event_id", "qb_event_id"):
++        value = payload[name]
++        if name == "qb_event_id" and value is None:
++            continue
++        if type(value) is not int or value <= 0:
++            raise PayloadSchemaError(f"invalid KB_SYNC {name}")
++
++
+ def _validate_review(payload: Mapping[str, object]) -> None:
+     _require_keys(payload, {"outcome", "review_url", "degraded", "qb_event_id", "at"})
+     if payload["outcome"] not in {"pushed", "manual", "ineligible"}:
+diff --git a/tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py b/tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py
+index d7b7123..fcc3d59 100644
+--- a/tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py
++++ b/tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py
+@@ -105,8 +105,18 @@ def _parse(diff: str) -> list[_File]:
+     current: _File | None = None
+     index = 0
+     pending_git = False
++    last_hunk_end: int | None = None
+     while index < len(lines):
+         line = lines[index]
++        if line == "-- \n":
++            # A mail signature is terminal metadata, never a separator between patches.
++            if (index != last_hunk_end or index + 1 >= len(lines)
++                    or re.fullmatch(
++                        r"[0-9]+(?:\.[0-9]+)+[A-Za-z0-9.-]*\n?", lines[index + 1]
++                    ) is None
++                    or any(tail != "\n" for tail in lines[index + 2:])):
++                raise DiffUnsupported("unparsed_patch_content")
++            break
+         for prefix, reason in _UNSUPPORTED:
+             if line.startswith(prefix):
+                 raise DiffUnsupported(reason)
+@@ -141,6 +151,7 @@ def _parse(diff: str) -> list[_File]:
+                 raise DiffUnsupported("hunk_without_file")
+             hunk, index = _hunk(lines, index)
+             current.hunks.append(hunk)
++            last_hunk_end = index
+             continue
+         elif line.startswith(("+++ ", "+", "-", " ")) and current and current.hunks:
+             raise DiffUnsupported("unparsed_patch_content")
+diff --git a/tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py b/tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py
+index fedb1e0..6d3e060 100644
+--- a/tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py
++++ b/tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py
+@@ -107,11 +107,16 @@ def main(argv: list[str] | None = None) -> int:
+         return _main_suppress_policy(argv[1:], stdout=sys.stdout, stderr=sys.stderr)
+     if argv and argv[0] == "diff-to-edit-spec":
+         return _main_diff_to_edit_spec(argv[1:], stdout=sys.stdout)
++    if argv and argv[0] == "propose-fix":
++        from tizen_campaign_repair.propose_fix import main as propose_main
++
++        return propose_main(argv[1:], stdout=sys.stdout)
+     parser = argparse.ArgumentParser(prog="tizen_campaign_repair")
+     commands = parser.add_subparsers(dest="command", required=True)
+     commands.add_parser("campaign-repair-step", add_help=False)
+     commands.add_parser("suppress-policy", add_help=False)
+     commands.add_parser("diff-to-edit-spec", add_help=False)
++    commands.add_parser("propose-fix", add_help=False)
+     parser.parse_args(argv)
+     return 2
+ 
+diff --git a/tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py b/tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py
+index 25ec477..bfbdad2 100644
+--- a/tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py
++++ b/tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py
+@@ -20,7 +20,10 @@ def main(argv: list[str], *, stdout: TextIO) -> int:
+     parser.add_argument("--patch-name", required=True)
+     try:
+         args = parser.parse_args(argv)
+-        raw = args.diff.read_text(encoding="utf-8")
++        try:
++            raw = args.diff.read_bytes().decode("utf-8")
++        except UnicodeDecodeError as exc:
++            raise DiffUnsupported("unsupported_encoding") from exc
+         result = convert(raw, args.src_root, args.patch_name)
+         inputs = [args.diff.resolve(), *[
+             (args.src_root / edit["file"]).resolve() for edit in result["edits"]
+diff --git a/tizen-campaign-report/scripts/tizen_campaign_report/report.py b/tizen-campaign-report/scripts/tizen_campaign_report/report.py
+index da5ae13..3847743 100644
+--- a/tizen-campaign-report/scripts/tizen_campaign_report/report.py
++++ b/tizen-campaign-report/scripts/tizen_campaign_report/report.py
+@@ -117,6 +117,17 @@ def report(db: StateDatabase) -> list[dict[str, Any]]:
+             if abandoned:
+                 copy_state = "已放弃"
+             reviews = [e for kind, e in events if kind == "REVIEW"]
++            latest_round = conn.execute(
++                "SELECT MAX(round_index) FROM campaign_rounds WHERE campaign_unit_key=?", (key,)
++            ).fetchone()[0]
++            policies = [
++                e for kind, e in events
++                if kind == "POLICY" and e.get("round_index") == latest_round
++            ]
++            syncs = [
++                e for kind, e in events
++                if kind == "KB_SYNC" and e.get("round_index") == latest_round
++            ]
+             result.append(
+                 dict(
+                     campaign_unit_key=key,
+@@ -133,6 +144,8 @@ def report(db: StateDatabase) -> list[dict[str, Any]]:
+                     qb_build_id=parent,
+                     qb_result_ref=reference,
+                     review_url=reviews[-1].get("review_url") if reviews else None,
++                    kb_precedent_ref=syncs[-1].get("kb_precedent_ref") if syncs else None,
++                    source_kind=policies[-1].get("edit_source_kind") if policies else None,
+                     workspace_status=copy_state,
+                 )
+             )
+@@ -152,6 +165,8 @@ def markdown(rows: list[dict[str, Any]]) -> str:
+         "qb_build_id": "QuickBuild 父构建号",
+         "qb_result_ref": "结果文件引用",
+         "review_url": "review URL",
++        "kb_precedent_ref": "先例引用",
++        "source_kind": "修法来源",
+         "workspace_status": "副本状态",
+     }
+     lines = [
+diff --git a/tizen-ci-triage/scripts/ci_triage/cli.py b/tizen-ci-triage/scripts/ci_triage/cli.py
+index d02c6e8..03a14c7 100644
+--- a/tizen-ci-triage/scripts/ci_triage/cli.py
++++ b/tizen-ci-triage/scripts/ci_triage/cli.py
+@@ -183,6 +183,14 @@ def main(
+         return _main_suppress_policy(argv[1:], stdout=stdout, stderr=stderr)
+     if argv and argv[0] == "diff-to-edit-spec":
+         return _main_diff_to_edit_spec(argv[1:], stdout=stdout)
++    if argv and argv[0] in {"kb", "campaign-kb-sync"}:
++        from tizen_campaign_kb.cli import main as kb_main
++
++        return kb_main(argv, stdout=stdout)
++    if argv and argv[0] == "propose-fix":
++        from tizen_campaign_repair.propose_fix import main as propose_main
++
++        return propose_main(argv[1:], stdout=stdout)
+     if argv and argv[0] == "build-verify":
+         return _main_build_verify(argv[1:], stderr=stderr, extra_pythonpath=extra_pythonpath)
+     if argv and argv[0] == "check-convergence":
+diff --git a/tizen-review-submit/scripts/tizen_review_submit/review_submit.py b/tizen-review-submit/scripts/tizen_review_submit/review_submit.py
+index edce96c..e921791 100644
+--- a/tizen-review-submit/scripts/tizen_review_submit/review_submit.py
++++ b/tizen-review-submit/scripts/tizen_review_submit/review_submit.py
+@@ -295,7 +295,9 @@ def run(options: ReviewOptions) -> sandbox.SandboxSubmitOutcome:
+         )
+         _trace(root, "edit_spec_verified")
+         policy = state.latest_policy_for_round(db, key, round_.round_index)
+-        if policy is None or policy.get("edit_source_kind") not in {"generated", "suppress"}:
++        if policy is None or policy.get("edit_source_kind") not in {
++            "generated", "suppress", "t1_cherry_pick"
++        }:
+             raise sandbox._held("state_inconsistent", "missing or unsupported source kind")
+         src = root / "src"
+         sandbox._source(config.git, src, unit)
+@@ -311,7 +313,7 @@ def run(options: ReviewOptions) -> sandbox.SandboxSubmitOutcome:
+         if verdict.verdict == "forbidden":
+             raise sandbox._held("suppress_policy_recheck", "forbidden suppression")
+         _trace(root, "policy_verified")
+-        if verdict.fix_strategy_final != "code" or not view.reproduced:
++        if verdict.fix_strategy_final not in {"code", "cherry_pick"} or not view.reproduced:
+             state.append_status(db, key, "REVIEW_INELIGIBLE", "review_gate")
+             raise sandbox._Reject("REJECTED_REVIEW_GATE", "A2 quality gate failed")
+         if status not in {
+diff --git a/tizen-campaign-core/scripts/tizen_campaign_core/kb.py b/tizen-campaign-core/scripts/tizen_campaign_core/kb.py
+new file mode 100644
+index 0000000..bdfba03
+--- /dev/null
++++ b/tizen-campaign-core/scripts/tizen_campaign_core/kb.py
+@@ -0,0 +1,362 @@
++"""Validated, atomic JSONL knowledge records and conservative T1/T2 retrieval."""
++
++from __future__ import annotations
++
++import copy
++import fcntl
++import hashlib
++import json
++import math
++import os
++import re
++import tempfile
++import uuid
++from dataclasses import dataclass
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any
++
++from tizen_convergence_judge.convergence import primary_fingerprint
++
++SCHEMA_VERSION = "clang_kb/v1"
++NORMALIZER_VERSION = "campaign.v1(parity: convergence)"
++STATUSES = ("NEW", "CI_VERIFIED", "MERGED")
++_SHA = re.compile(r"[0-9a-fA-F]{40}")
++_REF = re.compile(r"refs/changes/[0-9]{2}/[0-9]+/[0-9]+")
++_WARNING = re.compile(r"-W[A-Za-z0-9_+=.-]+")
++_NULLABLE = (
++    "origin", "reused_from", "quickbuild_id", "sandbox_branch", "gerrit_url",
++    "change_ref", "change_id", "promoted_at",
++)
++_LISTS = ("warning_flags", "files", "error_lines", "verified_archs")
++_INSTANCE = (
++    "package", "gerrit_path", "baseline_commit", "verified_tree_sha",
++    "fix_strategy_initial", "fix_strategy_final",
++)
++_TEXT = (
++    "diagnosed_flag", "root_cause_category", "toolchain_profile",
++    "error_signature_raw", "error_signature_normalized", "fix_summary",
++)
++
++
++class KbSchemaError(ValueError):
++    """Invalid record, query, or transition; no partial write is permitted."""
++
++
++KbError = KbSchemaError
++
++
++class KbCorrupt(KbError):
++    """An existing JSONL cannot be trusted in its entirety."""
++
++
++@dataclass(frozen=True)
++class QueryResult:
++    t1: list[dict[str, Any]]
++    t2: list[dict[str, Any]]
++
++
++@dataclass(frozen=True)
++class AppendResult:
++    id: str
++    deduped: bool
++
++
++def normalize_signature(value: str) -> str:
++    """Independent implementation, golden-tested against convergence."""
++    value = value.lower()
++    value = re.sub(r"(:\d+){1,2}", ":#", value)
++    value = re.sub(r"\b\d+\b", "#", value)
++    return re.sub(r"\s+", " ", value).strip()
++
++
++def describe_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
++    primary = evidence.get("primary_error")
++    if not isinstance(primary, dict):
++        raise KbError("missing_primary_error")
++    raw = primary.get("message")
++    if not isinstance(raw, str) or not raw.strip():
++        raise KbError("missing_primary_message")
++    fingerprint = primary_fingerprint(evidence, touched_files=None)
++    if fingerprint is None:
++        raise KbError("missing_primary_fingerprint")
++    category = primary.get("semantic_class") or primary.get("kind")
++    candidates = evidence.get("root_cause_candidates", [])
++    if not isinstance(candidates, list):
++        raise KbError("invalid_root_cause_candidates")
++    for candidate in candidates:
++        if (isinstance(candidate, dict) and primary.get("id") is not None
++                and candidate.get("event_id") == primary["id"]
++                and candidate.get("semantic_class")):
++            category = candidate["semantic_class"]
++            break
++    if not isinstance(category, str) or not category:
++        raise KbError("missing_root_cause_category")
++    flags = set(_WARNING.findall(raw))
++    for value in (primary.get("warning_option"), fingerprint.diagnostic_code):
++        if isinstance(value, str):
++            flags.update(_WARNING.findall(value))
++    return {
++        "diagnosed_flag": fingerprint.diagnostic_code,
++        "root_cause_category": category,
++        "warning_flags": sorted(flags),
++        "error_signature_raw": raw,
++    }
++
++
++def make_record(**metadata: Any) -> dict[str, Any]:
++    """Complete defaults, without manufacturing provenance or a final strategy."""
++    record: dict[str, Any] = {key: None for key in _NULLABLE}
++    record.update({key: [] for key in _LISTS})
++    record.update(schema_version=SCHEMA_VERSION, record_type="instance", status="NEW",
++                  confidence=0, normalizer_version=NORMALIZER_VERSION)
++    record.update(copy.deepcopy(metadata))
++    if isinstance(record.get("error_signature_raw"), str):
++        record.setdefault("error_signature_normalized",
++                          normalize_signature(record["error_signature_raw"]))
++    _validate(record, stored=False)
++    return record
++
++
++def _text(value: Any) -> bool:
++    return isinstance(value, str) and bool(value.strip())
++
++
++def _timestamp(value: Any) -> bool:
++    if not isinstance(value, str):
++        return False
++    try:
++        stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
++        return stamp.tzinfo is not None and stamp.utcoffset() == timezone.utc.utcoffset(stamp)
++    except ValueError:
++        return False
++
++
++def _validate(record: dict[str, Any], *, stored: bool) -> None:
++    required = set(_NULLABLE + _LISTS + _INSTANCE + _TEXT) | {
++        "schema_version", "record_type", "status", "confidence", "normalizer_version",
++    }
++    if stored:
++        required |= {"id", "dedupe_key", "created_at"}
++    if required - record.keys():
++        raise KbError("missing_record_fields:" + ",".join(sorted(required - record.keys())))
++    if record["schema_version"] != SCHEMA_VERSION:
++        raise KbError("invalid_schema_version")
++    if record["record_type"] not in ("instance", "seed"):
++        raise KbError("invalid_record_type")
++    if record["status"] not in STATUSES:
++        raise KbError("invalid_status")
++    if record["normalizer_version"] != NORMALIZER_VERSION:
++        raise KbError("invalid_normalizer_version")
++    for key in _TEXT:
++        if not _text(record[key]):
++            raise KbError("invalid_" + key)
++    if record["error_signature_normalized"] != normalize_signature(record["error_signature_raw"]):
++        raise KbError("signature_normalization_mismatch")
++    for key in _INSTANCE:
++        value = record[key]
++        if value is None and (record["record_type"] == "seed" or (
++            key == "verified_tree_sha" and record["origin"] == "imported_shelve"
++        )):
++            continue
++        if not _text(value):
++            raise KbError("invalid_" + key)
++    for key in ("baseline_commit", "verified_tree_sha"):
++        if record[key] is not None and not _SHA.fullmatch(record[key]):
++            raise KbError("invalid_" + key)
++    for key in ("fix_strategy_initial", "fix_strategy_final"):
++        if record[key] is not None and record[key] not in ("code", "cherry_pick", "suppress"):
++            raise KbError("invalid_" + key)
++    for key in _LISTS:
++        value = record[key]
++        if record["record_type"] == "seed" and key != "warning_flags" and value is None:
++            continue
++        if not isinstance(value, list):
++            raise KbError("invalid_" + key)
++        if key == "error_lines":
++            if any(not ((type(item) is int and item > 0) or _text(item)) for item in value):
++                raise KbError("invalid_error_lines")
++        elif any(not _text(item) for item in value):
++            raise KbError("invalid_" + key)
++    for key in _NULLABLE:
++        value = record[key]
++        if value is None:
++            continue
++        if key == "quickbuild_id":
++            if type(value) is not int or value <= 0:
++                raise KbError("invalid_quickbuild_id")
++        elif not _text(value):
++            raise KbError("invalid_" + key)
++    confidence = record["confidence"]
++    if (isinstance(confidence, bool) or not isinstance(confidence, (int, float))
++            or not math.isfinite(confidence)):
++        raise KbError("invalid_confidence")
++    if record["change_ref"] is not None and not _REF.fullmatch(record["change_ref"]):
++        raise KbError("invalid_change_ref")
++    if record["origin"] == "imported_shelve":
++        if record["record_type"] != "instance" or not _text(record.get("diff")):
++            raise KbError("invalid_imported_diff")
++        try:
++            record["diff"].encode("utf-8", errors="strict")
++        except UnicodeError as exc:
++            raise KbError("invalid_diff_encoding") from exc
++    if record["promoted_at"] is not None and not _timestamp(record["promoted_at"]):
++        raise KbError("invalid_promoted_at")
++    if stored:
++        try:
++            if str(uuid.UUID(record["id"])) != record["id"]:
++                raise ValueError
++        except (ValueError, TypeError, AttributeError) as exc:
++            raise KbError("invalid_id") from exc
++        if not _timestamp(record["created_at"]):
++            raise KbError("invalid_created_at")
++        if record["dedupe_key"] != dedupe_key(record):
++            raise KbError("dedupe_key_mismatch")
++
++
++def dedupe_key(record: dict[str, Any]) -> str:
++    tree = record["verified_tree_sha"]
++    if record.get("origin") == "imported_shelve":
++        tree = "imported:" + hashlib.sha256(record["diff"].encode("utf-8")).hexdigest()
++    parts = [record["package"], record["gerrit_path"], record["baseline_commit"], tree,
++             record["diagnosed_flag"], record["toolchain_profile"],
++             record["error_signature_normalized"]]
++    if any(not isinstance(part, str) for part in parts):
++        raise KbError("seed_dedupe_encoding_requires_ruling")
++    return hashlib.sha256("".join(parts).encode("utf-8")).hexdigest()
++
++
++def _pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
++    result: dict[str, Any] = {}
++    for key, value in pairs:
++        if key in result:
++            raise KbCorrupt("duplicate_json_key")
++        result[key] = value
++    return result
++
++
++def records(db: Path) -> list[dict[str, Any]]:
++    """Read one atomic snapshot; any corrupt row invalidates the whole database."""
++    try:
++        data = db.read_bytes().decode("utf-8", errors="strict")
++    except FileNotFoundError:
++        return []
++    except UnicodeError as exc:
++        raise KbCorrupt("invalid_jsonl_encoding") from exc
++    result: list[dict[str, Any]] = []
++    ids: set[str] = set()
++    keys: set[str] = set()
++    for line in data.splitlines():
++        try:
++            record = json.loads(line, object_pairs_hook=_pairs)
++            if not isinstance(record, dict):
++                raise KbError("record_not_object")
++            _validate(record, stored=True)
++            if record["id"] in ids or record["dedupe_key"] in keys:
++                raise KbError("duplicate_record")
++            ids.add(record["id"])
++            keys.add(record["dedupe_key"])
++            result.append(record)
++        except (ValueError, TypeError, KeyError) as exc:
++            raise KbCorrupt("invalid_jsonl_record") from exc
++    return result
++
++
++def _write(db: Path, rows: list[dict[str, Any]]) -> None:
++    payload = "".join(json.dumps(row, ensure_ascii=False, sort_keys=True, allow_nan=False)
++                      + "\n" for row in rows).encode("utf-8")
++    descriptor, name = tempfile.mkstemp(prefix="." + db.name + ".", dir=db.parent)
++    temporary = Path(name)
++    try:
++        with os.fdopen(descriptor, "wb") as stream:
++            stream.write(payload)
++            stream.flush()
++            os.fsync(stream.fileno())
++        os.replace(temporary, db)
++        parent = os.open(db.parent, os.O_RDONLY | os.O_DIRECTORY)
++        try:
++            os.fsync(parent)
++        finally:
++            os.close(parent)
++    finally:
++        temporary.unlink(missing_ok=True)
++
++
++def append(db: Path, record: dict[str, Any]) -> AppendResult:
++    candidate = make_record(**record)
++    key = dedupe_key(candidate)
++    db.parent.mkdir(parents=True, exist_ok=True)
++    with (db.parent / ".lock").open("a+b") as lock:
++        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
++        rows = records(db)
++        for row in rows:
++            if row["dedupe_key"] == key:
++                return AppendResult(row["id"], True)
++        candidate.update(id=str(uuid.uuid4()), dedupe_key=key,
++                         created_at=datetime.now(timezone.utc).isoformat())
++        _validate(candidate, stored=True)
++        _write(db, rows + [candidate])
++        return AppendResult(candidate["id"], False)
++
++
++def promote(db: Path, id: str, to: str) -> dict[str, Any]:
++    if to not in STATUSES:
++        raise KbError("invalid_status")
++    db.parent.mkdir(parents=True, exist_ok=True)
++    with (db.parent / ".lock").open("a+b") as lock:
++        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
++        rows = records(db)
++        for row in rows:
++            if row["id"] != id:
++                continue
++            if STATUSES.index(to) < STATUSES.index(row["status"]):
++                raise KbError("status_downgrade")
++            if row["status"] != to:
++                row.update(status=to, promoted_at=datetime.now(timezone.utc).isoformat())
++                _validate(row, stored=True)
++                _write(db, rows)
++            return row
++        raise KbError("unknown_record_id")
++
++
++def query(
++    db: Path, *, diagnosed_flag: str, package: str | None = None,
++    gerrit_path: str | None = None, category: str | None = None,
++    warning_flags: list[str] | None = None, toolchain_profile: str | None = None,
++    error_signature: str | None = None, min_status: str = "CI_VERIFIED", limit_t2: int = 5,
++) -> QueryResult:
++    if not _text(diagnosed_flag) or min_status not in STATUSES:
++        raise KbError("invalid_query")
++    if type(limit_t2) is not int or limit_t2 < 0:
++        raise KbError("invalid_limit_t2")
++    if warning_flags is not None and (
++        not isinstance(warning_flags, list) or any(not _text(v) for v in warning_flags)
++    ):
++        raise KbError("invalid_warning_flags")
++    for value in (package, gerrit_path, category, toolchain_profile, error_signature):
++        if value is not None and not _text(value):
++            raise KbError("invalid_query")
++    rows = [row for row in records(db) if row["status"] != "NEW"
++            and STATUSES.index(row["status"]) >= STATUSES.index(min_status)]
++    complete = all(value is not None for value in (
++        package, gerrit_path, category, warning_flags, toolchain_profile, error_signature,
++    ))
++    signature = normalize_signature(error_signature) if error_signature is not None else None
++    t1 = [row for row in rows if complete and row["record_type"] == "instance"
++          and row["package"] == package and row["gerrit_path"] == gerrit_path
++          and row["diagnosed_flag"] == diagnosed_flag and row["root_cause_category"] == category
++          and set(row["warning_flags"]) == set(warning_flags or [])
++          and row["toolchain_profile"] == toolchain_profile
++          and row["error_signature_normalized"] == signature]
++    t2 = [row for row in rows if row["diagnosed_flag"] == diagnosed_flag
++          or (category is not None and row["root_cause_category"] == category)]
++
++    def rank(row: dict[str, Any]) -> tuple[int, float]:
++        exact = category is not None and row["root_cause_category"] == category
++        if row["record_type"] == "seed":
++            priority = 0 if exact else 1
++        else:
++            priority = 2 if row["status"] == "MERGED" and exact else 3
++        return priority, -float(row["confidence"])
++
++    return QueryResult(t1=t1, t2=sorted(t2, key=rank)[:limit_t2])
+diff --git a/tizen-campaign-repair/scripts/tizen_campaign_repair/propose_fix.py b/tizen-campaign-repair/scripts/tizen_campaign_repair/propose_fix.py
+new file mode 100644
+index 0000000..74c2384
+--- /dev/null
++++ b/tizen-campaign-repair/scripts/tizen_campaign_repair/propose_fix.py
+@@ -0,0 +1,206 @@
++"""Prepare a guarded T1 edit spec or a context-only generation handoff."""
++
++from __future__ import annotations
++
++import hashlib
++import json
++import re
++import subprocess
++import tempfile
++from pathlib import Path
++from typing import Any, TextIO
++from urllib.parse import urlsplit
++
++import yaml
++from gbs_patch_suggest.ingest import extract_first_diagnostic
++from gbs_patch_suggest.render import write_outputs
++from gbs_patch_suggest.resolver import resolve_context
++from tizen_build_verify.edit_spec_guard import validate_edit_spec
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core import previous_evidence
++from tizen_campaign_core._campaign_io import JsonParser, config, lock, publish
++from tizen_campaign_core._campaign_workspace import (
++    _StepError,
++    _unit_hash,
++    _validate_source_identity,
++)
++from tizen_campaign_core._sandbox_git import SandboxGit
++from tizen_campaign_core.diff_to_edit_spec import DiffUnsupported, convert
++from tizen_ci_shared.state import StateDatabase
++
++
++def _identity_runner(argv: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
++    return SandboxGit().run(Path(argv[2]), *argv[3:])
++
++
++def _evidence(
++    db: StateDatabase, unit: state.Unit, arch: str, round_index: int
++) -> dict[str, Any]:
++    if round_index > 1:
++        resolved = previous_evidence.resolve(db, unit.campaign_unit_key, arch_norm=arch)
++        if isinstance(resolved, previous_evidence.MissingEvidence):
++            raise _StepError("REJECTED_STATE_INCONSISTENT", "previous_evidence_missing", 4)
++        return resolved.evidence
++    try:
++        if not unit.ci_evidence_ref or not unit.ci_evidence_sha256:
++            raise ValueError("missing anchor")
++        raw = Path(unit.ci_evidence_ref).read_bytes()
++        if hashlib.sha256(raw).hexdigest() != unit.ci_evidence_sha256:
++            raise ValueError("anchor digest mismatch")
++        evidence = json.loads(raw)
++        if not isinstance(evidence, dict):
++            raise ValueError("anchor must be an object")
++        return evidence
++    except (OSError, ValueError) as exc:
++        raise _StepError("REJECTED_CI_EVIDENCE_MISMATCH", "CI evidence anchor differs", 4) from exc
++
++
++def _lookup(
++    db: Path, unit: state.Unit, evidence: dict[str, Any]
++) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
++    from tizen_campaign_core import kb
++
++    description = kb.describe_evidence(evidence)
++    result = kb.query(
++        db,
++        diagnosed_flag=description["diagnosed_flag"],
++        package=unit.spec_name,
++        gerrit_path=unit.project,
++        category=description["root_cause_category"],
++        warning_flags=description["warning_flags"],
++        toolchain_profile=unit.toolchain_profile,
++        error_signature=description["error_signature_raw"],
++        min_status="CI_VERIFIED",
++        limit_t2=5,
++    )
++    return result.t1, result.t2[:5]
++
++
++def _fetch_diff(record: dict[str, Any], settings: dict[str, Any], project: str) -> str:
++    ref = record.get("change_ref")
++    if not isinstance(ref, str) or re.fullmatch(r"refs/changes/\d{2}/\d+/\d+", ref) is None:
++        raise DiffUnsupported("invalid_change_ref")
++    if record.get("gerrit_path") != project:
++        raise DiffUnsupported("precedent_project_mismatch")
++    if (re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/+-]*", project) is None
++            or ".." in project or project.endswith("/")):
++        raise DiffUnsupported("invalid_project")
++    base = settings.get("gerrit_ssh_base")
++    if not isinstance(base, str):
++        raise ValueError("gerrit_ssh_base must be an SSH URL")
++    parsed = urlsplit(base)
++    if (parsed.scheme != "ssh" or not parsed.hostname or parsed.password
++            or parsed.query or parsed.fragment or any(c.isspace() for c in base)):
++        raise ValueError("gerrit_ssh_base must be an SSH URL")
++    remote = base.rstrip("/") + "/" + project
++    git = SandboxGit()
++    # Fetch and diff never run in the canonical clone or a build worktree.
++    with tempfile.TemporaryDirectory(prefix="campaign-propose-", dir="/tmp") as directory:
++        transport = Path(directory) / "transport.git"
++        git.run(None, "init", "--bare", str(transport))
++        git.run(
++            None, "fetch", "--no-tags", "--no-recurse-submodules", remote, ref,
++            git_dir=transport, remote=True,
++        )
++        parents = git.run(
++            None, "show", "--no-patch", "--format=%P", "FETCH_HEAD", git_dir=transport
++        ).stdout.split()
++        if len(parents) != 1:
++            raise DiffUnsupported("change_requires_single_parent")
++        return git.run(
++            None, "diff", "--no-renames", "--binary", parents[0], "FETCH_HEAD", "--",
++            git_dir=transport,
++        ).stdout
++
++
++def _json_bytes(value: Any) -> bytes:
++    return (json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode("utf-8")
++
++
++def _propose(args: Any) -> dict[str, Any]:
++    arch = state.ARCH_RAW_TO_NORM.get(args.arch)
++    if arch is None or args.round_index < 1:
++        raise ValueError("invalid arch or round-index")
++    settings = config(args.config)
++    kb_path = settings.get("kb_db")
++    if not isinstance(kb_path, str) or not Path(kb_path).is_absolute():
++        raise ValueError("kb_db must be an absolute path")
++    db = StateDatabase(args.state_db)
++    root = Path(settings["campaign_workspace"]).resolve() / _unit_hash(args.campaign_unit_key)
++    source = root / "src"
++    output = args.output_dir.resolve()
++    if output == source.resolve() or source.resolve() in output.parents:
++        raise ValueError("output-dir must not be in the canonical source")
++    with lock(root / arch / ".repair_step.lock"):
++        unit = state.get_unit(db, args.campaign_unit_key)
++        if unit is None:
++            raise _StepError("REJECTED_IDENTITY_MISMATCH", "unknown campaign unit", 4)
++        _validate_source_identity(source, unit, subprocess_runner=_identity_runner)
++        evidence = _evidence(db, unit, arch, args.round_index)
++        t1, t2 = _lookup(Path(kb_path), unit, evidence)
++        # A fresh output prevents a failed conversion from exposing an old edit spec.
++        output.mkdir(parents=True, exist_ok=False)
++        result: dict[str, Any] = dict(
++            mode="generate", needs_generation=True, edit_spec_path=None, source_kind=None,
++            kb_precedent_ref=None, context_dir=None, t2_records=t2, downgrade_reason=None,
++        )
++        if t1:
++            record = t1[0]
++            precedent = record.get("id")
++            if not isinstance(precedent, str) or not precedent:
++                raise _StepError("REJECTED_STATE_INCONSISTENT", "precedent id missing", 4)
++            result["kb_precedent_ref"] = precedent
++            try:
++                if record.get("origin") == "imported_shelve":
++                    diff = record.get("diff")
++                    if not isinstance(diff, str):
++                        raise DiffUnsupported("imported_diff_missing")
++                else:
++                    diff = _fetch_diff(record, settings, unit.project)
++                spec = convert(diff, source, "campaign-t1")
++                spec["kb_precedent_ref"] = precedent
++                validate_edit_spec(spec, str(source))
++            except DiffUnsupported as exc:
++                result["downgrade_reason"] = str(exc)
++            except (OSError, subprocess.SubprocessError, UnicodeError):
++                result["downgrade_reason"] = "t1_material_unavailable"
++            else:
++                path = output / "edit_spec.json"
++                publish(path, _json_bytes(spec))
++                result.update(
++                    mode="t1", needs_generation=False, edit_spec_path=str(path),
++                    source_kind="t1_cherry_pick",
++                )
++                return result
++        context = output / "context"
++        evidence_path = context / "evidence_packet.json"
++        publish(evidence_path, _json_bytes(evidence))
++        # The full patch-suggest CLI also emits skeleton edits in some modes.
++        # Its context-only primitives do not create edits or invoke a model.
++        write_outputs(
++            resolve_context(extract_first_diagnostic(evidence), src_root=source),
++            context, evidence_path=evidence_path,
++        )
++        publish(context / "t2_records.json", _json_bytes(t2))
++        result["context_dir"] = str(context)
++        return result
++
++
++def main(argv: list[str], *, stdout: TextIO) -> int:
++    parser = JsonParser(prog="tizen_campaign_repair propose-fix")
++    for name in ("state-db", "config", "output-dir"):
++        parser.add_argument("--" + name, type=Path, required=True)
++    for name in ("campaign-unit-key", "arch"):
++        parser.add_argument("--" + name, required=True)
++    parser.add_argument("--round-index", type=int, required=True)
++    try:
++        result, code = _propose(parser.parse_args(argv)), 0
++    except _StepError as exc:
++        result, code = dict(error_code=exc.code, reason=exc.reason), exc.exit_code
++    except state.StateInconsistent:
++        result = dict(error_code="REJECTED_STATE_INCONSISTENT", reason="state_inconsistent")
++        code = 4
++    except (OSError, ValueError, yaml.YAMLError) as exc:
++        result, code = dict(error_code="INVALID_ARGS", reason=type(exc).__name__), 2
++    print(json.dumps(result, ensure_ascii=False, sort_keys=True), file=stdout)
++    return code
+diff --git a/tests/unit/test_campaign_kb_cli.py b/tests/unit/test_campaign_kb_cli.py
+new file mode 100644
+index 0000000..91e5af8
+--- /dev/null
++++ b/tests/unit/test_campaign_kb_cli.py
+@@ -0,0 +1,116 @@
++from __future__ import annotations
++
++import hashlib
++import io
++import json
++from pathlib import Path
++
++import pytest
++from ci_triage.cli import main as legacy_main
++from tizen_campaign_core import kb
++from tizen_campaign_kb.cli import main
++
++LOG = Path(__file__).resolve().parents[1] / "fixtures/e2e_clang_compile/buildlog"
++
++
++def invoke(args):
++    output = io.StringIO()
++    code = main(args, stdout=output)
++    return code, json.loads(output.getvalue())
++
++
++@pytest.fixture
++def imported(tmp_path):
++    diff = tmp_path / "fix.diff"
++    diff.write_bytes(b"--- a/file.c\n+++ b/file.c\n@@ -1 +1 @@\n-old\n+new\n")
++    db = tmp_path / "kb/records.jsonl"
++    args = ["kb", "import-diff", "--db", str(db), "--diff", str(diff),
++            "--ci-log", str(LOG), "--package", "example", "--gerrit-path",
++            "platform/upstream/example", "--toolchain-profile", "clang",
++            "--fix-summary", "Offline repair", "--baseline-commit", "a" * 40]
++    return args, db, diff
++
++
++@pytest.mark.parametrize("commit", [None, "", "a" * 39, "g" * 40, "a" * 41])
++def test_import_requires_valid_baseline_before_analyzer(imported, monkeypatch, commit):
++    import tizen_campaign_kb.cli as cli
++
++    args, db, _ = imported
++    args = args[:-2]
++    if commit is not None:
++        args += ["--baseline-commit", commit]
++    monkeypatch.setattr(cli, "analyze", lambda *a: pytest.fail("analyzer ran"))
++    code, out = invoke(args)
++    assert code == 2 and out["error_code"] == "INVALID_ARGS"
++    assert not db.exists()
++
++
++def test_real_analyzer_import_dedupe_and_different_diff(imported):
++    args, db, diff = imported
++    code, first = invoke(args)
++    assert code == 0, first
++    raw = db.read_bytes()
++    code, again = invoke(args)
++    assert code == 0 and again == {"id": first["id"], "deduped": True}
++    assert db.read_bytes() == raw
++    record = kb.records(db)[0]
++    assert record["origin"] == "imported_shelve" and record["status"] == "NEW"
++    assert record["baseline_commit"] == "a" * 40 and record["verified_tree_sha"] is None
++    assert record["diff"].encode() == diff.read_bytes()
++    assert record["error_signature_raw"] and record["error_signature_normalized"]
++    diff.write_bytes(diff.read_bytes().replace(b"+new", b"+other"))
++    code, changed = invoke(args)
++    assert code == 0 and changed["id"] != first["id"] and not changed["deduped"]
++    assert len(kb.records(db)) == 2
++
++
++def test_import_crlf_hashes_original_bytes_and_supplied_ci(imported):
++    args, db, diff = imported
++    diff.write_bytes(diff.read_bytes().replace(b"\n", b"\r\n"))
++    code, out = invoke(args + ["--quickbuild-id", "123", "--change-ref", "refs/changes/12/12/1"])
++    assert code == 0, out
++    record = kb.records(db)[0]
++    assert record["diff"].encode() == diff.read_bytes()
++    assert record["status"] == "CI_VERIFIED" and str(record["quickbuild_id"]) == "123"
++    parts = [record[k] for k in ("package", "gerrit_path", "baseline_commit")]
++    parts += ["imported:" + hashlib.sha256(diff.read_bytes()).hexdigest(),
++              record["diagnosed_flag"], record["toolchain_profile"],
++              record["error_signature_normalized"]]
++    assert record["dedupe_key"] == hashlib.sha256("".join(parts).encode()).hexdigest()
++
++
++@pytest.mark.parametrize("extra", [
++    ["--change-ref", "refs/heads/main"], ["--quickbuild-id", "0"],
++    ["--quickbuild-id", "invalid"], ["--toolchain-profile", "gcc"],
++])
++def test_bad_import_arguments_never_write(imported, extra):
++    args, db, _ = imported
++    code, out = invoke(args + extra)
++    assert code == 2 and out["error_code"] == "INVALID_ARGS"
++    assert not db.exists()
++
++
++def test_cli_query_promote_and_corrupt_jsonl(imported):
++    args, db, _ = imported
++    code, stored = invoke(args)
++    assert code == 0
++    record = kb.records(db)[0]
++    query = ["kb", "query", "--db", str(db), "--diagnosed-flag", record["diagnosed_flag"]]
++    assert invoke(query) == (0, {"t1_records": [], "t2_records": []})
++    assert invoke(["kb", "promote", "--db", str(db), "--id", stored["id"],
++                   "--to", "CI_VERIFIED"])[0] == 0
++    assert len(invoke(query)[1]["t2_records"]) == 1
++    raw = db.read_bytes()
++    invoke(["kb", "promote", "--db", str(db), "--id", stored["id"], "--to", "CI_VERIFIED"])
++    assert db.read_bytes() == raw
++    db.write_bytes(raw + b"invalid json\n")
++    assert invoke(query)[1]["error_code"] == "KB_SCHEMA_INVALID"
++    assert db.read_bytes() == raw + b"invalid json\n"
++
++
++@pytest.mark.parametrize("args", [["kb"], ["kb", "import-diff"], ["campaign-kb-sync"]])
++def test_legacy_and_package_invalid_args_same(args):
++    stdout = io.StringIO()
++    expected = invoke(args)
++    code = legacy_main(args, stdout=stdout)
++    assert (code, json.loads(stdout.getvalue())) == expected
+diff --git a/tests/unit/test_campaign_kb_sync.py b/tests/unit/test_campaign_kb_sync.py
+new file mode 100644
+index 0000000..e13346e
+--- /dev/null
++++ b/tests/unit/test_campaign_kb_sync.py
+@@ -0,0 +1,342 @@
++from __future__ import annotations
++
++import hashlib
++import json
++import multiprocessing
++from pathlib import Path
++
++import pytest
++import yaml
++from test_campaign_fake_ssh import transport as transport
++from test_sandbox_submit import Campaign, git
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core import kb
++from tizen_campaign_core._campaign_io import analyze
++from tizen_campaign_kb import sync
++from tizen_campaign_report import report
++from tizen_ci_shared.state import StateDatabase
++from tizen_sandbox_submit import sandbox_submit as sandbox
++
++
++@pytest.fixture(scope="module")
++def ci_anchor(tmp_path_factory):
++    return analyze(
++        Path(__file__).parents[1] / "fixtures/e2e_clang_compile/buildlog",
++        tmp_path_factory.mktemp("kb-sync-analyzer"),
++    )
++
++
++@pytest.fixture
++def campaign(tmp_path, monkeypatch, transport, ci_anchor):
++    c = Campaign(tmp_path / "case", monkeypatch)
++    monkeypatch.setenv("SKEL_FAKE_SSH_ROOT", str(c.remote_base))
++    c.settings = yaml.safe_load(c.config.read_text())
++    c.settings.update(
++        gerrit_ssh_base="ssh://gerrit.invalid:29418", kb_db=str(tmp_path / "kb/records.jsonl"),
++    )
++    c.config.write_text(yaml.safe_dump(c.settings))
++    git(c.src, "remote", "set-url", "origin", "ssh://gerrit.invalid:29418/project")
++    c.anchor = c.root / "ci-evidence.json"
++    c.anchor.write_bytes(ci_anchor.read_bytes())
++    c.sql(
++        "UPDATE campaign_units SET ci_evidence_ref=?,ci_evidence_sha256=?",
++        (str(c.anchor), hashlib.sha256(c.anchor.read_bytes()).hexdigest()),
++    )
++    c.kb_db = Path(c.settings["kb_db"])
++    return c
++
++
++def pushed(c, *, source="generated", precedent=None):
++    if precedent is not None:
++        spec = json.loads(c.spec.read_text())
++        spec["kb_precedent_ref"] = precedent
++        c.spec.write_text(json.dumps(spec))
++        digest = hashlib.sha256(c.spec.read_bytes()).hexdigest()
++        for table in ("campaign_rounds", "campaign_verifications", "verification_records"):
++            c.sql(f"UPDATE {table} SET edit_spec_sha256=?", (digest,), foreign_keys=False)
++    outcome = c.run(edit_source_kind=source)
++    assert outcome.exit_code == 0, outcome.payload
++    c.derived = outcome.payload["derived_commit_sha"]
++
++
++def qb_result(c, status="PASS", *, new=True):
++    if new:
++        index = len(c.sql("SELECT * FROM campaign_qb_requests")) + 1
++        c.seq = state.create_qb_request(
++            c.db, c.key, request_id=f"request-{index}", sbs_target="project@" + c.derived,
++        )
++        state.append_qb_event(c.db, request_seq=c.seq, event_type="BUILD_BOUND", qb_build_id="101")
++    if status is not None:
++        state.append_qb_event(
++            c.db, request_seq=c.seq, event_type="RESULT", status=status, qb_build_id="101",
++            sbs_target_echo="project@" + c.derived, qb_result_sha256="a" * 64,
++            qb_result_ref="qb_results/result.json",
++        )
++
++
++def audits(c):
++    return c.sql("SELECT * FROM campaign_gate_events WHERE event_type='KB_SYNC'")
++
++
++def test_append_new_complete_bound_provenance_and_byte_stable_repeat(campaign):
++    c = campaign
++    pushed(c)
++    statuses = c.statuses()
++    first = sync.run(c.db, c.key, c.settings)
++    stored, = kb.records(c.kb_db)
++    policy = state.latest_policy_for_round(c.db, c.key, 1)
++    assert stored["status"] == "NEW"
++    assert stored["baseline_commit"] == c.base and stored["verified_tree_sha"] == c.tree
++    assert stored["verified_archs"] == sorted(state.ARCH_NORMS)
++    assert stored["files"] == ["file.c"] and stored["fix_summary"] == "correct value"
++    assert stored["sandbox_branch"] == "refs/heads/sandbox/test" and stored["quickbuild_id"] == 1
++    assert stored["change_id"] == "I" + "1" * 40 and stored["reused_from"] is None
++    assert stored["fix_strategy_initial"] == policy["fix_strategy_initial"]
++    assert stored["fix_strategy_final"] == policy["fix_strategy_final"]
++    assert stored["error_lines"]
++    for name, value in kb.describe_evidence(json.loads(c.anchor.read_text())).items():
++        assert stored[name] == value
++    before = c.db.path.read_bytes(), c.kb_db.read_bytes()
++    second = sync.run(c.db, c.key, c.settings)
++    assert second["kb_id"] == first["kb_id"] and second["deduped"]
++    assert second["event_id"] == first["event_id"]
++    assert before == (c.db.path.read_bytes(), c.kb_db.read_bytes())
++    assert c.statuses() == statuses and len(audits(c)) == 1
++
++
++def test_only_latest_request_latest_result_pass_promotes(campaign):
++    c = campaign
++    pushed(c)
++    first = sync.run(c.db, c.key, c.settings)
++    qb_result(c)
++    qb_result(c, None)
++    assert sync.run(c.db, c.key, c.settings)["status"] == "NEW"
++    qb_result(c, "FAIL", new=False)
++    assert sync.run(c.db, c.key, c.settings)["status"] == "NEW"
++    qb_result(c, "PASS", new=False)
++    statuses = c.statuses()
++    result = sync.run(c.db, c.key, c.settings)
++    assert result["status"] == "CI_VERIFIED" and result["kb_id"] == first["kb_id"]
++    assert len(kb.records(c.kb_db)) == 1 and len(audits(c)) == 2
++    before = c.db.path.read_bytes(), c.kb_db.read_bytes()
++    assert sync.run(c.db, c.key, c.settings)["event_id"] == result["event_id"]
++    assert before == (c.db.path.read_bytes(), c.kb_db.read_bytes())
++    assert c.statuses() == statuses
++
++
++@pytest.mark.parametrize("fault", ["no_push", "failed_push", "push_sha", "derive_tree",
++                                  "missing_link", "edit_bytes", "ci_bytes", "policy", "cache"])
++def test_unverified_provenance_refused_without_kb_or_database_writes(campaign, fault):
++    c = campaign
++    pushed(c)
++    if fault == "no_push":
++        c.sql("DELETE FROM campaign_gate_events WHERE event_type='PUSH'")
++    elif fault in {"failed_push", "push_sha"}:
++        payload = dict(state.gate_view(c.db, c.key).sandbox_push)
++        payload["result" if fault == "failed_push" else "pushed_sha"] = (
++            "failed" if fault == "failed_push" else "f" * 40
++        )
++        state.append_event(c.db, c.key, "PUSH", payload)
++    elif fault == "derive_tree":
++        c.sql("UPDATE verification_records SET verified_tree_sha=?", ("f" * 40,))
++    elif fault == "missing_link":
++        c.sql("DELETE FROM campaign_verifications WHERE arch_norm='aarch64'")
++    elif fault == "edit_bytes":
++        c.spec.write_text(c.spec.read_text() + " ")
++    elif fault == "ci_bytes":
++        c.anchor.write_text(c.anchor.read_text() + " ")
++    elif fault == "policy":
++        c.sql("DELETE FROM campaign_gate_events WHERE event_type='POLICY'")
++    else:
++        c.sql("DELETE FROM campaign_change_ids")
++    before = c.db.path.read_bytes()
++    with pytest.raises(state.StateInconsistent):
++        sync.run(c.db, c.key, c.settings)
++    assert c.db.path.read_bytes() == before
++    assert not c.kb_db.exists() and not audits(c)
++
++
++@pytest.mark.parametrize("fault", ["request_target", "result_echo", "build_binding"])
++def test_pass_binding_cannot_promote_other_result(campaign, fault):
++    c = campaign
++    pushed(c)
++    qb_result(c)
++    if fault == "request_target":
++        c.sql("UPDATE campaign_qb_requests SET sbs_target='other@bad'")
++    elif fault == "result_echo":
++        c.sql("UPDATE campaign_qb_events SET sbs_target_echo='other@bad' WHERE event_type='RESULT'")
++    else:
++        c.sql("UPDATE campaign_qb_events SET qb_build_id='999' WHERE event_type='RESULT'")
++    before = c.db.path.read_bytes()
++    with pytest.raises(state.StateInconsistent):
++        sync.run(c.db, c.key, c.settings)
++    assert c.db.path.read_bytes() == before and not c.kb_db.exists()
++
++
++@pytest.mark.parametrize("point", ["append", "promote", "audit"])
++def test_cross_file_crash_retries_same_record_and_single_audit(campaign, monkeypatch, point):
++    c = campaign
++    pushed(c)
++    qb_result(c)
++    owner, name = (state, "_append_event_on_connection") if point == "audit" else (kb, point)
++    original = getattr(owner, name)
++
++    def crash(*args, **kwargs):
++        original(*args, **kwargs)
++        raise RuntimeError("injected crash after publication")
++
++    before = c.db.path.read_bytes()
++    with monkeypatch.context() as patch:
++        patch.setattr(owner, name, crash)
++        with pytest.raises(RuntimeError, match="injected crash"):
++            sync.run(c.db, c.key, c.settings)
++    assert c.db.path.read_bytes() == before and not audits(c)
++    stored, = kb.records(c.kb_db)
++    retried = sync.run(c.db, c.key, c.settings)
++    assert retried["kb_id"] == stored["id"] and retried["status"] == "CI_VERIFIED"
++    assert len(kb.records(c.kb_db)) == len(audits(c)) == 1
++
++
++def test_report_db_only_source_and_precedent_match_bound_round(campaign, monkeypatch):
++    c = campaign
++    pushed(c, source="t1_cherry_pick", precedent="prior-kb-instance")
++    sync.run(c.db, c.key, c.settings)
++    assert kb.records(c.kb_db)[0]["reused_from"] == "prior-kb-instance"
++    before = c.db.path.read_bytes()
++
++    def forbidden(*args, **kwargs):
++        pytest.fail("report must not open provenance or KB files")
++
++    with monkeypatch.context() as patch:
++        patch.setattr(Path, "read_bytes", forbidden)
++        patch.setattr(Path, "read_text", forbidden)
++        row, = report.report(c.db)
++        assert row["source_kind"] == "t1_cherry_pick"
++        assert row["kb_precedent_ref"] == "prior-kb-instance"
++        assert "prior-kb-instance" in report.markdown([row])
++        assert "t1_cherry_pick" in report.markdown([row])
++    assert c.db.path.read_bytes() == before
++    state.create_round(c.db, c.key, round_index=2, edit_spec_ref="later", edit_spec_sha256="8" * 64)
++    row, = report.report(c.db)
++    assert row["source_kind"] is None and row["kb_precedent_ref"] is None
++
++
++def test_t1_without_bound_precedent_refused(campaign):
++    c = campaign
++    pushed(c, source="t1_cherry_pick")
++    with pytest.raises(state.StateInconsistent, match="precedent"):
++        sync.run(c.db, c.key, c.settings)
++    assert not c.kb_db.exists()
++
++
++def test_latest_result_fail_overrides_prior_pass_without_status_inference(campaign):
++    c = campaign
++    pushed(c)
++    qb_result(c)
++    qb_result(c, "FAIL", new=False)
++    state.append_status(c.db, c.key, "SANDBOX_QB_PASS")
++    assert sync.run(c.db, c.key, c.settings)["status"] == "NEW"
++    row, = report.report(c.db)
++    assert row["source_kind"] == "generated" and row["kb_precedent_ref"] is None
++
++
++def test_existing_merged_record_not_demoted_by_sync(campaign):
++    c = campaign
++    pushed(c)
++    qb_result(c)
++    first = sync.run(c.db, c.key, c.settings)
++    kb.promote(c.kb_db, first["kb_id"], "MERGED")
++    assert sync.run(c.db, c.key, c.settings)["status"] == "MERGED"
++    before = c.db.path.read_bytes(), c.kb_db.read_bytes()
++    sync.run(c.db, c.key, c.settings)
++    assert before == (c.db.path.read_bytes(), c.kb_db.read_bytes())
++
++
++def test_corrupt_kb_is_not_replaced_and_writes_no_audit(campaign):
++    c = campaign
++    pushed(c)
++    c.kb_db.parent.mkdir()
++    c.kb_db.write_bytes(b"not JSON\n")
++    before = c.db.path.read_bytes(), c.kb_db.read_bytes()
++    with pytest.raises(ValueError):
++        sync.run(c.db, c.key, c.settings)
++    assert before == (c.db.path.read_bytes(), c.kb_db.read_bytes())
++
++
++@pytest.mark.parametrize("name,value", [("kb_db", "relative"), ("kb_db", None),
++                                      ("campaign_workspace", "relative")])
++def test_invalid_configuration_does_not_touch_database(campaign, name, value):
++    c = campaign
++    before = c.db.path.read_bytes()
++    settings = dict(c.settings, **{name: value})
++    with pytest.raises(ValueError):
++        sync.run(c.db, c.key, settings)
++    assert before == c.db.path.read_bytes() and not c.kb_db.exists()
++
++
++def test_previously_audited_kb_row_cannot_disappear_silently(campaign):
++    c = campaign
++    pushed(c)
++    sync.run(c.db, c.key, c.settings)
++    c.kb_db.unlink()
++    before = c.db.path.read_bytes()
++    with pytest.raises(state.StateInconsistent, match="missing or rebound"):
++        sync.run(c.db, c.key, c.settings)
++    assert c.db.path.read_bytes() == before and not c.kb_db.exists()
++
++
++def _sync_child(db_path, key, settings, queue):
++    try:
++        queue.put(sync.run(StateDatabase(db_path), key, settings))
++    except sandbox._Reject as exc:
++        queue.put({"error_code": exc.code})
++
++
++def test_concurrent_sync_locks_out_duplicate_audit(campaign, monkeypatch):
++    c = campaign
++    pushed(c)
++    ctx = multiprocessing.get_context("fork")
++    started, release, queue = ctx.Event(), ctx.Event(), ctx.Queue()
++    original = kb.append
++
++    def paused(*args, **kwargs):
++        started.set()
++        assert release.wait(15)
++        return original(*args, **kwargs)
++
++    monkeypatch.setattr(kb, "append", paused)
++    process = ctx.Process(target=_sync_child, args=(c.db.path, c.key, c.settings, queue))
++    process.start()
++    try:
++        assert started.wait(15)
++        with pytest.raises(sandbox._Reject) as caught:
++            sync.run(c.db, c.key, c.settings)
++        assert caught.value.code == "CAMPAIGN_STATE_BUSY"
++    finally:
++        release.set()
++        process.join(15)
++        if process.is_alive():
++            process.terminate()
++            process.join()
++    assert process.exitcode == 0
++    first = queue.get(timeout=5)
++    second = sync.run(c.db, c.key, c.settings)
++    assert second["event_id"] == first["event_id"]
++    assert len(kb.records(c.kb_db)) == len(audits(c)) == 1
++
++
++@pytest.mark.parametrize("name,value", [
++    ("status", "PASS"), ("source_kind", "unknown"), ("kb_id", ""),
++    ("push_event_id", True), ("qb_event_id", -1), ("dedupe_key", "A" * 64),
++    ("kb_precedent_ref", {}), ("round_index", 0),
++])
++def test_kb_sync_validator_refuses_invalid_payload_without_writes(campaign, name, value):
++    c = campaign
++    payload = dict(kb_id="id", dedupe_key="a" * 64, status="NEW", round_index=1,
++                   source_kind="generated", kb_precedent_ref=None, push_event_id=1,
++                   qb_event_id=None, at="2026-11-04T00:00:00+00:00")
++    payload[name] = value
++    before = c.db.path.read_bytes()
++    with pytest.raises(state.PayloadSchemaError):
++        state.append_event(c.db, c.key, "KB_SYNC", payload)
++    assert c.db.path.read_bytes() == before
+diff --git a/tests/unit/test_campaign_propose_fix.py b/tests/unit/test_campaign_propose_fix.py
+new file mode 100644
+index 0000000..0764401
+--- /dev/null
++++ b/tests/unit/test_campaign_propose_fix.py
+@@ -0,0 +1,359 @@
++from __future__ import annotations
++
++import hashlib
++import importlib
++import io
++import json
++from pathlib import Path
++from types import SimpleNamespace
++
++import pytest
++import tizen_campaign_core
++import yaml
++from test_campaign_batch2_intake import case as case
++from test_campaign_fake_ssh import transport as transport
++from tizen_build_verify.edit_spec_guard import validate_edit_spec
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core._sandbox_git import SandboxGit
++from tizen_campaign_intake import intake
++from tizen_campaign_repair import propose_fix
++from tizen_campaign_repair.campaign_repair_step import _read_edit_spec
++
++KEYS = {
++    "mode", "needs_generation", "edit_spec_path", "source_kind", "kb_precedent_ref",
++    "context_dir", "t2_records", "downgrade_reason",
++}
++DIFF = (
++    "diff --git a/src/clang_case.c b/src/clang_case.c\n"
++    "--- a/src/clang_case.c\n+++ b/src/clang_case.c\n@@ -1 +1 @@\n"
++    "-int main() { return missing; }\n+int main() { return 0; }\n"
++)
++
++
++@pytest.fixture
++def proposal(case, monkeypatch, tmp_path):
++    intake.add_unit(case.args)
++    case.settings["kb_db"] = str(tmp_path / "knowledge.jsonl")
++    case.args.config.write_text(yaml.safe_dump(case.settings))
++    case.source = case.root / "src"
++    case.output = tmp_path / "proposal"
++    case.t1 = []
++    case.t2 = []
++    case.queries = []
++    case.described = []
++
++    def describe(evidence):
++        case.described.append(evidence)
++        return dict(
++            diagnosed_flag="-Werror", root_cause_category="undeclared_identifier",
++            warning_flags=[], error_signature_raw="missing identifier",
++        )
++
++    def query(db, **kwargs):
++        case.queries.append((db, kwargs))
++        return SimpleNamespace(t1=case.t1, t2=case.t2)
++
++    monkeypatch.setattr(
++        tizen_campaign_core, "kb", SimpleNamespace(describe_evidence=describe, query=query),
++        raising=False,
++    )
++    return case
++
++
++def invoke(case, *, arch="standard-x86_64", round_index=1):
++    before = case.db.path.read_bytes()
++    source = (case.source / "src/clang_case.c").read_bytes()
++    stream = io.StringIO()
++    code = propose_fix.main([
++        "--state-db", str(case.args.state_db), "--config", str(case.args.config),
++        "--campaign-unit-key", case.key, "--arch", arch, "--round-index", str(round_index),
++        "--output-dir", str(case.output),
++    ], stdout=stream)
++    assert case.db.path.read_bytes() == before
++    assert (case.source / "src/clang_case.c").read_bytes() == source
++    result = json.loads(stream.getvalue())
++    if code == 0:
++        assert set(result) == KEYS
++        if result["mode"] == "t1":
++            assert result["needs_generation"] is False
++            assert result["source_kind"] == "t1_cherry_pick"
++            assert Path(result["edit_spec_path"]).is_file()
++            assert result["context_dir"] is None
++        else:
++            assert result["mode"] == "generate"
++            assert result["needs_generation"] is True
++            assert result["source_kind"] is result["edit_spec_path"] is None
++            assert Path(result["context_dir"]).is_dir()
++            assert not list(case.output.rglob("*edit_spec*"))
++    return code, result
++
++
++def imported(diff=DIFF):
++    return dict(id="kb-1", origin="imported_shelve", diff=diff)
++
++
++def test_imported_t1_guard_provenance_and_readonly_state(proposal):
++    proposal.t1 = [imported()]
++    code, result = invoke(proposal)
++    assert code == 0 and result["mode"] == "t1"
++    assert result["kb_precedent_ref"] == "kb-1"
++    path = Path(result["edit_spec_path"])
++    spec = json.loads(path.read_bytes())
++    assert spec["kb_precedent_ref"] == "kb-1"
++    validate_edit_spec(spec, str(proposal.source))
++    raw, digest = _read_edit_spec(path)
++    assert raw == path.read_bytes()
++    assert digest == hashlib.sha256(raw).hexdigest()
++    assert spec["edits"][0]["new"] == "int main() { return 0; }\n"
++    assert proposal.queries == [(Path(proposal.settings["kb_db"]), dict(
++        diagnosed_flag="-Werror", package="example", gerrit_path="platform/upstream/example",
++        category="undeclared_identifier", warning_flags=[], toolchain_profile="clang",
++        error_signature="missing identifier", min_status="CI_VERIFIED", limit_t2=5,
++    ))]
++
++
++def test_no_t1_context_only_and_t2_limit_preserves_query_order(proposal):
++    proposal.t2 = [dict(id=f"seed-{i}", fix_summary=f"strategy-{i}") for i in range(8)]
++    code, result = invoke(proposal)
++    assert code == 0 and result["mode"] == "generate"
++    assert result["kb_precedent_ref"] is result["downgrade_reason"] is None
++    assert result["t2_records"] == proposal.t2[:5]
++    context = Path(result["context_dir"])
++    assert "did not call an LLM" in (context / "context.md").read_text()
++    assert json.loads((context / "t2_records.json").read_text()) == proposal.t2[:5]
++    assert json.loads((context / "evidence_packet.json").read_text()) == proposal.described[0]
++
++
++@pytest.mark.parametrize("diff,reason", [
++    (DIFF.replace("return missing", "return different"), "guard_rejected"),
++    ("diff --git a/x b/y\nrename from x\nrename to y\n", "rename"),
++    (None, "imported_diff_missing"),
++])
++def test_t1_conversion_downgrades_without_partial_spec(proposal, diff, reason):
++    proposal.t1 = [imported(diff)]
++    code, result = invoke(proposal)
++    assert code == 0 and result["mode"] == "generate"
++    assert reason in result["downgrade_reason"]
++    assert result["kb_precedent_ref"] == "kb-1"
++
++
++def prepare_change(proposal):
++    git = SandboxGit()
++    seed = proposal.args.config.parent / "seed"
++    (seed / "src/clang_case.c").write_text("int main() { return 0; }\n")
++    git.run(seed, "add", ".")
++    git.run(seed, "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
++            "commit", "-m", "fix")
++    ref = "refs/changes/12/312/1"
++    git.run(seed, "push", str(proposal.transport[1]), "HEAD:" + ref)
++    return dict(
++        id="kb-change", change_ref=ref, gerrit_path="platform/upstream/example",
++        gerrit_url="ssh://must-not-be-contacted.invalid/poison?secret=yes",
++    )
++
++
++def test_change_ref_uses_derived_remote_and_isolated_git(proposal, monkeypatch):
++    proposal.t1 = [prepare_change(proposal)]
++    original = SandboxGit.run
++    calls = []
++
++    def record(self, cwd, *args, **kwargs):
++        calls.append((cwd, args, kwargs))
++        return original(self, cwd, *args, **kwargs)
++
++    monkeypatch.setattr(SandboxGit, "run", record)
++    code, result = invoke(proposal)
++    assert code == 0 and result["mode"] == "t1"
++    fetch = [call for call in calls if call[1][0] == "fetch"]
++    assert len(fetch) == 1
++    assert fetch[0][0] is None
++    assert fetch[0][1][-2:] == (
++        "ssh://gerrit.invalid:29418/platform/upstream/example", "refs/changes/12/312/1",
++    )
++    assert fetch[0][2]["remote"] is True
++    assert not fetch[0][2]["git_dir"].exists()
++    assert all(call[0] is None for call in calls if call[1][0] in {"fetch", "diff"})
++    assert "must-not-be-contacted" not in repr(calls)
++    requests = [json.loads(line) for line in proposal.transport[2].read_text().splitlines()]
++    assert requests[-1] == dict(command="git-upload-pack", path=str(proposal.transport[1]))
++    assert json.loads(Path(result["edit_spec_path"]).read_text())["kb_precedent_ref"] == "kb-change"
++
++
++@pytest.mark.parametrize("ref", [
++    "refs/heads/main", "refs/for/main", "refs/changes/1/312/1", "--upload-pack=evil",
++    "refs/changes/12/312/1;evil", "refs/changes/12/312/1\n", None,
++])
++def test_invalid_ref_downgrades_without_transport(proposal, monkeypatch, ref):
++    proposal.t1 = [dict(id="kb-1", change_ref=ref, gerrit_path="platform/upstream/example")]
++    original = SandboxGit.run
++
++    def forbid_fetch(self, cwd, *args, **kwargs):
++        assert args[0] != "fetch"
++        return original(self, cwd, *args, **kwargs)
++
++    monkeypatch.setattr(SandboxGit, "run", forbid_fetch)
++    code, result = invoke(proposal)
++    assert code == 0 and result["downgrade_reason"] == "invalid_change_ref"
++
++
++def test_fetch_failure_downgrades_and_cleans_transport(proposal):
++    proposal.t1 = [dict(
++        id="kb-1", change_ref="refs/changes/12/999/1", gerrit_path="platform/upstream/example",
++    )]
++    before = set(Path("/tmp").glob("campaign-propose-*"))
++    code, result = invoke(proposal)
++    assert code == 0 and result["downgrade_reason"] == "t1_material_unavailable"
++    assert set(Path("/tmp").glob("campaign-propose-*")) == before
++
++
++def test_first_round_corrupt_anchor_rejected_before_kb_and_outputs(proposal):
++    unit = state.get_unit(proposal.db, proposal.key)
++    Path(unit.ci_evidence_ref).write_text("{}")
++    code, result = invoke(proposal)
++    assert code == 4 and result["error_code"] == "REJECTED_CI_EVIDENCE_MISMATCH"
++    assert proposal.queries == [] and not proposal.output.exists()
++
++
++def reproduce(case, arch, message):
++    packet = dict(primary_error=dict(kind="compiler", message=message))
++    path = case.root / f"{arch}-reproduce.json"
++    path.write_text(json.dumps(packet))
++    unit = state.get_unit(case.db, case.key)
++    state.append_event(case.db, case.key, "REPRODUCE", dict(
++        arch_norm=arch, outcome="matched", evidence_local=str(path),
++        evidence_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
++        synthetic_zero_error=False, gbs_conf_sha256="a" * 64,
++        ci_evidence_sha256_used=unit.ci_evidence_sha256, build_log="offline.log", basis="test",
++    ))
++    return packet, path
++
++
++def test_later_round_resolves_previous_same_arch_not_latest_other_arch(proposal):
++    x86, _ = reproduce(proposal, "x86_64", "x86 previous")
++    reproduce(proposal, "aarch64", "other arch latest")
++    code, result = invoke(proposal, round_index=2)
++    assert code == 0 and result["mode"] == "generate"
++    assert proposal.described == [x86]
++
++
++def test_later_round_uses_convergence_instead_of_ci_or_baseline(proposal):
++    reproduce(proposal, "x86_64", "baseline")
++    state.create_round(proposal.db, proposal.key, round_index=1,
++                       edit_spec_ref=str(proposal.root / "prior.json"), edit_spec_sha256="b" * 64)
++    invocation = state.consume_build_invocation(
++        proposal.db, proposal.key, round_index=1, arch_norm="x86_64",
++    )
++    previous = dict(primary_error=dict(kind="compiler", message="previous build"))
++    path = proposal.root / "previous.json"
++    path.write_text(json.dumps(previous))
++    state.append_event(proposal.db, proposal.key, "CONVERGENCE", dict(
++        round_index=1, arch_norm="x86_64", invocation_event_id=invocation.event_id,
++        result="FAIL", verdict="advance", reason="build_failed", evidence_path=str(path),
++        evidence_sha256=hashlib.sha256(path.read_bytes()).hexdigest(), verification_id=None,
++        actual_changed_paths=["src/clang_case.c"], previous_basis="reproduce",
++        at="2026-11-04T00:00:00+00:00",
++    ))
++    reproduce(proposal, "aarch64", "other arch newer")
++    code, _ = invoke(proposal, round_index=2)
++    assert code == 0 and proposal.described == [previous]
++
++
++@pytest.mark.parametrize("failure", ["missing", "digest"])
++def test_later_round_missing_or_corrupt_evidence_does_not_fall_back_to_ci(proposal, failure):
++    if failure == "digest":
++        _, path = reproduce(proposal, "x86_64", "before")
++        path.write_text("{}")
++    code, result = invoke(proposal, round_index=2)
++    assert code == 4 and result["error_code"] == "REJECTED_STATE_INCONSISTENT"
++    assert not proposal.described and not proposal.output.exists()
++
++
++@pytest.mark.parametrize("part", ["marker", "origin", "head"])
++def test_source_identity_reused_without_writes(proposal, part):
++    git = SandboxGit()
++    if part == "marker":
++        (proposal.source / ".campaign_clone").write_text("{}")
++    elif part == "origin":
++        git.run(proposal.source, "remote", "set-url", "origin", "ssh://gerrit.invalid/other")
++    else:
++        git.run(proposal.source, "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
++                "commit", "--allow-empty", "-m", "other")
++    code, result = invoke(proposal)
++    assert code == 4 and result["error_code"] == "REJECTED_IDENTITY_MISMATCH"
++    assert not proposal.queries and not proposal.output.exists()
++
++
++@pytest.mark.parametrize("arch,round_index", [("x86_64", 1), ("standard-x86_64", 0)])
++def test_invalid_arguments_before_queries(proposal, arch, round_index):
++    code, result = invoke(proposal, arch=arch, round_index=round_index)
++    assert code == 2 and result["error_code"] == "INVALID_ARGS"
++    assert not proposal.queries
++
++
++def test_output_cannot_target_source(proposal):
++    proposal.output = proposal.source / "new-directory"
++    code, result = invoke(proposal)
++    assert code == 2 and result["error_code"] == "INVALID_ARGS"
++    assert not proposal.output.exists()
++
++
++def test_cli_missing_arguments_json():
++    output = io.StringIO()
++    assert propose_fix.main([], stdout=output) == 2
++    assert json.loads(output.getvalue())["error_code"] == "INVALID_ARGS"
++
++
++@pytest.mark.parametrize("kind", ["imported", "change_ref", "none"])
++def test_real_kb_dataclass_query_and_all_three_paths(proposal, monkeypatch, kind):
++    kb = importlib.import_module("tizen_campaign_core.kb")
++    monkeypatch.setattr(tizen_campaign_core, "kb", kb)
++    unit = state.get_unit(proposal.db, proposal.key)
++    evidence = json.loads(Path(unit.ci_evidence_ref).read_text())
++    record = dict(
++        **kb.describe_evidence(evidence), package=unit.spec_name, gerrit_path=unit.project,
++        toolchain_profile=unit.toolchain_profile, baseline_commit=unit.base_commit,
++        verified_tree_sha="a" * 40, fix_strategy_initial="code", fix_strategy_final="code",
++        fix_summary="Use a defined return value", status="CI_VERIFIED",
++    )
++    precedent = None
++    if kind == "imported":
++        record.update(origin="imported_shelve", diff=DIFF, verified_tree_sha=None)
++    elif kind == "change_ref":
++        change = prepare_change(proposal)
++        record.update(change_ref=change["change_ref"], gerrit_url=change["gerrit_url"])
++    db = Path(proposal.settings["kb_db"])
++    if kind != "none":
++        precedent = kb.append(db, record).id
++    before = db.read_bytes() if db.exists() else None
++    code, result = invoke(proposal)
++    assert code == 0
++    assert result["mode"] == ("generate" if kind == "none" else "t1")
++    assert result["kb_precedent_ref"] == precedent
++    assert (db.read_bytes() if db.exists() else None) == before
++
++
++def test_corrupt_kb_is_not_silently_treated_as_no_precedent(proposal, monkeypatch):
++    kb = importlib.import_module("tizen_campaign_core.kb")
++    monkeypatch.setattr(tizen_campaign_core, "kb", kb)
++    path = Path(proposal.settings["kb_db"])
++    path.write_bytes(b"invalid json\n")
++    code, result = invoke(proposal)
++    assert code != 0 and result["error_code"] == "INVALID_ARGS"
++    assert path.read_bytes() == b"invalid json\n"
++    assert not proposal.output.exists()
++
++
++def test_existing_output_is_not_overwritten(proposal):
++    proposal.output.mkdir()
++    prior = proposal.output / "edit_spec.json"
++    prior.write_bytes(b"existing bound artifact")
++    code, result = invoke(proposal)
++    assert code == 2 and result["error_code"] == "INVALID_ARGS"
++    assert prior.read_bytes() == b"existing bound artifact"
++
++
++def test_unknown_unit_rejected_before_queries(proposal):
++    proposal.key = "unknown"
++    code, result = invoke(proposal)
++    assert code == 4 and result["error_code"] == "REJECTED_IDENTITY_MISMATCH"
++    assert not proposal.queries and not proposal.output.exists()
+diff --git a/tests/unit/test_diff_format_patch_restore.py b/tests/unit/test_diff_format_patch_restore.py
+new file mode 100644
+index 0000000..a483e1c
+--- /dev/null
++++ b/tests/unit/test_diff_format_patch_restore.py
+@@ -0,0 +1,159 @@
++from __future__ import annotations
++
++import io
++import json
++import os
++import subprocess
++
++import pytest
++from tizen_build_verify.edit_spec_guard import validate_edit_spec
++from tizen_campaign_core.diff_to_edit_spec import DiffUnsupported, convert
++from tizen_campaign_repair.diff_cli import main
++
++
++@pytest.fixture
++def format_patch(tmp_path):
++    repo = tmp_path / "repo"
++    repo.mkdir()
++    home = tmp_path / "home"
++    home.mkdir()
++    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
++    env.update(HOME=str(home), XDG_CONFIG_HOME=str(home), GIT_CONFIG_NOSYSTEM="1",
++               GIT_CONFIG_GLOBAL=os.devnull, GIT_AUTHOR_NAME="Offline Test",
++               GIT_AUTHOR_EMAIL="offline@example.invalid", GIT_COMMITTER_NAME="Offline Test",
++               GIT_COMMITTER_EMAIL="offline@example.invalid")
++
++    def git(*args):
++        return subprocess.run(
++            ["git", "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgSign=false",
++             "-C", str(repo), *args], env=env, check=True, capture_output=True,
++        ).stdout
++
++    git("init", "--quiet")
++    originals = {"one.c": "before\nold\nafter\n", "two.c": "first\nold\nlast\n"}
++    for name, text in originals.items():
++        (repo / name).write_text(text, encoding="utf-8")
++    git("add", ".")
++    git("commit", "--quiet", "-m", "Base")
++
++    def generate(count):
++        names = list(originals)[:count]
++        for name in names:
++            (repo / name).write_text(originals[name].replace("old", "new"), encoding="utf-8")
++        git("add", ".")
++        git("commit", "--quiet", "--signoff", "-m", "Fix offline fixture")
++        patch = git("format-patch", "--stdout", "-1").decode("utf-8")
++        for name, text in originals.items():
++            (repo / name).write_text(text, encoding="utf-8")
++        return repo, patch, names, originals
++
++    return generate
++
++
++@pytest.mark.parametrize("count", [1, 2])
++@pytest.mark.parametrize("ending", ["original", "no_blank", "extra_blanks", "version_at_eof"])
++def test_actual_format_patch_and_real_guard(format_patch, tmp_path, count, ending):
++    root, patch, names, originals = format_patch(count)
++    assert patch.startswith("From ")
++    assert "Subject: [PATCH] Fix offline fixture\n" in patch
++    assert "Signed-off-by: Offline Test <offline@example.invalid>\n" in patch
++    assert "\n-- \n" in patch
++    if ending == "no_blank":
++        patch = patch.rstrip("\n") + "\n"
++    elif ending == "extra_blanks":
++        patch += "\n\n"
++    elif ending == "version_at_eof":
++        patch = patch.rstrip("\n")
++    spec = convert(patch, root, "offline-fix")
++    validate_edit_spec(spec, str(root))
++    assert [edit["file"] for edit in spec["edits"]] == names
++    for edit in spec["edits"]:
++        assert edit["old"] == originals[edit["file"]]
++        assert edit["new"] == originals[edit["file"]].replace("old", "new")
++    path, output = tmp_path / "input.patch", tmp_path / "edit.json"
++    path.write_bytes(patch.encode("utf-8"))
++    stdout = io.StringIO()
++    assert main(["--diff", str(path), "--src-root", str(root), "--output", str(output),
++                 "--patch-name", "offline-fix"], stdout=stdout) == 0
++    assert json.loads(output.read_text()) == spec
++    validate_edit_spec(json.loads(output.read_text()), str(root))
++    assert {name: (root / name).read_text() for name in originals} == originals
++
++
++@pytest.mark.parametrize("version", ["2.39.2", "2.39.2.windows.1", "2.39.2-rc1"])
++def test_git_version_tokens_accepted(format_patch, version):
++    root, patch, _, _ = format_patch(1)
++    body, _ = patch.rsplit("-- \n", 1)
++    spec = convert(body + "-- \n" + version + "\n\n", root, "offline-fix")
++    validate_edit_spec(spec, str(root))
++
++
++@pytest.mark.parametrize("version", [
++    "2 arbitrary payload", "2.39.2 arbitrary payload", "2.39.2 ",
++    "2.39.2\tpayload", "2.39.2\rpayload", "2.39.2\x1bpayload",
++    "2.39.2\x7fpayload", "2.39.2\vpayload", "2.39.2+payload",
++    "2", "2windows.1",
++])
++def test_invalid_version_tokens_rejected(format_patch, version):
++    root, patch, _, _ = format_patch(1)
++    body, _ = patch.rsplit("-- \n", 1)
++    with pytest.raises(DiffUnsupported, match="^unparsed_patch_content$"):
++        convert(body + "-- \n" + version + "\n", root, "offline-fix")
++
++
++@pytest.mark.parametrize("placement", [
++    "after_signature", "between_files", "before_hunk", "before_headers",
++    "between_hunks", "missing_version", "empty_version", "non_version",
++    "extra_version", "separator_crlf", "blank_before_signature",
++])
++def test_signature_outside_terminal_position_rejected(format_patch, placement):
++    root, patch, _, _ = format_patch(2)
++    body, signature = patch.rsplit("-- \n", 1)
++    footer = "-- \n" + signature
++    if placement == "after_signature":
++        patch += "extra content\n"
++    elif placement == "between_files":
++        position = body.index("diff --git ", body.index("diff --git ") + 1)
++        patch = body[:position] + footer + body[position:]
++    elif placement == "before_hunk":
++        position = body.index("@@ ")
++        patch = body[:position] + footer + body[position:]
++    elif placement == "before_headers":
++        patch = footer + body
++    elif placement == "between_hunks":
++        patch += "@@ -2 +2 @@\n-old\n+new\n"
++    elif placement == "missing_version":
++        patch = body + "-- \n"
++    elif placement == "empty_version":
++        patch = body + "-- \n\n"
++    elif placement == "non_version":
++        patch = body + "-- \nextra content\n"
++    elif placement == "extra_version":
++        patch += "2.39.2\n"
++    elif placement == "separator_crlf":
++        patch = body + "-- \r\n" + signature
++    else:
++        patch = body + "\n" + footer
++    with pytest.raises(DiffUnsupported, match="^unparsed_patch_content$"):
++        convert(patch, root, "offline-fix")
++
++
++@pytest.mark.parametrize("existing_output", [False, True])
++def test_latin1_diff_is_unsupported_encoding(format_patch, tmp_path, existing_output):
++    root, patch, _, originals = format_patch(1)
++    path, output = tmp_path / "latin1.patch", tmp_path / "edit.json"
++    path.write_bytes(patch.replace("Fix offline fixture", "Fix caf\u00e9").encode("latin-1"))
++    if existing_output:
++        output.write_bytes(b"existing output\n")
++    stdout = io.StringIO()
++    assert main(["--diff", str(path), "--src-root", str(root), "--output", str(output),
++                 "--patch-name", "offline-fix"], stdout=stdout) == 4
++    assert json.loads(stdout.getvalue()) == {
++        "error_code": "DIFF_CONVERT_UNSUPPORTED", "reason": "unsupported_encoding",
++    }
++    if existing_output:
++        assert output.read_bytes() == b"existing output\n"
++    else:
++        assert not output.exists()
++    assert not list(tmp_path.glob(".edit-spec-*"))
++    assert {name: (root / name).read_text() for name in originals} == originals
+diff --git a/tests/unit/test_review_restore_t1.py b/tests/unit/test_review_restore_t1.py
+new file mode 100644
+index 0000000..02c73f4
+--- /dev/null
++++ b/tests/unit/test_review_restore_t1.py
+@@ -0,0 +1,116 @@
++from __future__ import annotations
++
++import hashlib
++import json
++from dataclasses import asdict
++
++import pytest
++from test_campaign_batch3_review import case as case
++from test_campaign_batch3_review import rejected
++from test_campaign_batch3_review import transport as transport
++from test_sandbox_submit import git
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core.suppress_policy import evaluate
++from tizen_review_submit import review_submit as review
++
++
++def record_policy(c, source="t1_cherry_pick"):
++    verdict = evaluate(json.loads(c.spec.read_text()), c.src, source)
++    policy = dict(state.latest_policy_for_round(c.db, c.key, 1))
++    policy.update(
++        edit_source_kind=source,
++        fix_strategy_initial="cherry_pick" if source == "t1_cherry_pick" else "code",
++        fix_strategy_final=verdict.fix_strategy_final,
++        verdict=verdict.verdict,
++        hits=[asdict(hit) for hit in verdict.hits],
++    )
++    state.append_event(c.db, c.key, "POLICY", policy)
++    return verdict
++
++
++def bind_policy_rejection_edit(c, new):
++    # Rebind the synthetic evidence hashes to reach the real policy gate, not the
++    # earlier edit-byte gate. These rejection cases must never reach publication.
++    edit = json.loads(c.spec.read_text())
++    edit["edits"][0]["new"] = new
++    c.spec.write_text(json.dumps(edit))
++    digest = hashlib.sha256(c.spec.read_bytes()).hexdigest()
++    conn = c.db.connect()
++    try:
++        with conn:
++            conn.execute("BEGIN")
++            conn.execute("PRAGMA defer_foreign_keys=ON")
++            for table in ("campaign_rounds", "campaign_verifications", "verification_records"):
++                conn.execute(f"UPDATE {table} SET edit_spec_sha256=?", (digest,))
++    finally:
++        conn.close()
++
++
++def assert_rejected(c, code):
++    c.calls.clear()
++    rejected(c, review.run(c.review_options), code)
++    assert c.pushes() == []
++
++
++def test_non_suppressing_t1_qb_pass_reproduced_pushes(case):
++    verdict = record_policy(case)
++    assert (verdict.verdict, verdict.fix_strategy_final) == ("allowed", "cherry_pick")
++    assert state.gate_view(case.db, case.key).reproduced
++    assert review.validate_qb_gate(case.db, case.key, case.result_path).ok
++    case.calls.clear()
++    outcome = review.run(case.review_options)
++    assert outcome.exit_code == 0, outcome.payload
++    assert git(case.remote, "rev-parse", "refs/for/tizen") == case.derived
++    assert len(case.pushes()) == 1
++    assert len(case.sql("SELECT 1 FROM campaign_gate_events WHERE event_type='REVIEW'")) == 1
++    assert state.latest_status(case.db, case.key) == "REVIEW_PUSHED"
++
++
++def test_t1_suppressing_content_fails_a2(case):
++    bind_policy_rejection_edit(
++        case, '#pragma GCC diagnostic ignored "-Wunused-variable"\nint value = 2;'
++    )
++    verdict = record_policy(case)
++    assert (verdict.verdict, verdict.fix_strategy_final) == ("allowed", "suppress")
++    assert_rejected(case, "REJECTED_REVIEW_GATE")
++
++
++def test_t1_forbidden_content_still_rejected(case):
++    bind_policy_rejection_edit(
++        case, '#pragma GCC diagnostic ignored "-Weverything"\nint value = 2;'
++    )
++    verdict = record_policy(case)
++    assert verdict.verdict == "forbidden" and verdict.fix_strategy_final is None
++    assert_rejected(case, "REJECTED_SUPPRESS_POLICY")
++
++
++def test_t1_without_reproduction_still_rejected(case):
++    record_policy(case)
++    case.sql("DELETE FROM campaign_gate_events WHERE event_type='REPRODUCE'")
++    assert not state.gate_view(case.db, case.key).reproduced
++    assert_rejected(case, "REJECTED_REVIEW_GATE")
++
++
++def test_unknown_source_still_state_inconsistent(case):
++    record_policy(case)
++    policy = dict(state.latest_policy_for_round(case.db, case.key, 1))
++    policy["edit_source_kind"] = "unknown"
++    # The public event API rejects this source; simulate a corrupt stored event.
++    case.sql(
++        "UPDATE campaign_gate_events SET payload_json=? WHERE event_id="
++        "(SELECT MAX(event_id) FROM campaign_gate_events WHERE event_type='POLICY')",
++        (json.dumps(policy),),
++    )
++    assert_rejected(case, "REJECTED_STATE_INCONSISTENT")
++
++
++@pytest.mark.parametrize(
++    ("source", "recomputed", "stored"),
++    [("generated", "code", "cherry_pick"), ("t1_cherry_pick", "cherry_pick", "code")],
++)
++def test_stored_and_recomputed_strategy_mismatch_still_rejected(case, source, recomputed, stored):
++    assert record_policy(case, source).fix_strategy_final == recomputed
++    policy = dict(state.latest_policy_for_round(case.db, case.key, 1))
++    policy["fix_strategy_final"] = stored
++    state.append_event(case.db, case.key, "POLICY", policy)
++    assert_rejected(case, "REJECTED_STATE_INCONSISTENT")
+diff --git a/tizen-campaign-kb/SKILL.md b/tizen-campaign-kb/SKILL.md
+new file mode 100644
+index 0000000..0fdcc08
+--- /dev/null
++++ b/tizen-campaign-kb/SKILL.md
+@@ -0,0 +1,41 @@
++---
++name: tizen-campaign-kb
++description: Query, import and synchronize Clang campaign repair precedents in an external JSONL knowledge base. Use for offline repair reuse and audit, not for compilation, QuickBuild submission or review approval.
++---
++
++# Tizen Campaign Knowledge Base
++
++## Inputs And Commands
++
++Keep `kb_db` as an absolute JSONL path outside the repository. All writers use
++its sibling `.lock`; do not edit records while a command is running.
++
++```bash
++python -m tizen_campaign_kb kb query --db /work/kb/records.jsonl --diagnosed-flag '<flag>' --package '<package>' --gerrit-path '<project>' --category '<category>' --warning-flags '<csv>' --toolchain-profile clang --error-signature '<diagnostic>'
++python -m tizen_campaign_kb kb append --db /work/kb/records.jsonl --record /work/record.json
++python -m tizen_campaign_kb kb promote --db /work/kb/records.jsonl --id '<id>' --to CI_VERIFIED
++python -m tizen_campaign_kb kb import-diff --db /work/kb/records.jsonl --diff /work/fix.diff --ci-log /work/ci.log --package '<package>' --gerrit-path '<project>' --toolchain-profile clang --fix-summary '<summary>' --baseline-commit '<40-hex-source-commit>'
++python -m tizen_campaign_kb campaign-kb-sync --state-db /work/state.db --config /work/campaign.yaml --campaign-unit-key '<key>'
++```
++
++The importer supplies the original source commit, not a blob ID from a diff
++header. Optional `--change-ref` must be a Gerrit change ref; optional
++`--quickbuild-id` records the supplied CI verification provenance. Without it,
++imports are NEW and cannot match T1 or T2. Do not invent CI verification.
++
++## Selection And Synchronization
++
++T1 requires all recorded identity and diagnostic keys to match and a verified
++instance. T2 returns at most the requested limit (default five), with curated
++seed strategies first. `gerrit_url` is display-only; never execute it.
++
++Run sync after the sandbox push and again after the latest QuickBuild result.
++It appends a NEW record, promotes only on PASS, and records KB_SYNC without
++changing campaign state. Repeats are idempotent. The review gate still recomputes
++policy from the bound edit; a KB precedent is not permission to push.
++
++## Failures
++
++Exit 2 is INVALID_ARGS; exit 4 reports KB_SCHEMA_INVALID or state inconsistency.
++Stop on damaged JSONL rather than dropping rows or recreating the database.
++Promotion is monotone. The command performs no build, push or QuickBuild access.
+diff --git a/tizen-campaign-kb/scripts/tizen_campaign_kb/__init__.py b/tizen-campaign-kb/scripts/tizen_campaign_kb/__init__.py
+new file mode 100644
+index 0000000..16ba00a
+--- /dev/null
++++ b/tizen-campaign-kb/scripts/tizen_campaign_kb/__init__.py
+@@ -0,0 +1 @@
++"""Campaign knowledge-base commands; storage lives in campaign core."""
+diff --git a/tizen-campaign-kb/scripts/tizen_campaign_kb/__main__.py b/tizen-campaign-kb/scripts/tizen_campaign_kb/__main__.py
+new file mode 100644
+index 0000000..8ea16d7
+--- /dev/null
++++ b/tizen-campaign-kb/scripts/tizen_campaign_kb/__main__.py
+@@ -0,0 +1,8 @@
++"""Standalone campaign knowledge-base entry point."""
++
++import sys
++
++from tizen_campaign_kb.cli import main
++
++if __name__ == "__main__":
++    raise SystemExit(main(sys.argv[1:], stdout=sys.stdout))
+diff --git a/tizen-campaign-kb/scripts/tizen_campaign_kb/cli.py b/tizen-campaign-kb/scripts/tizen_campaign_kb/cli.py
+new file mode 100644
+index 0000000..51e4587
+--- /dev/null
++++ b/tizen-campaign-kb/scripts/tizen_campaign_kb/cli.py
+@@ -0,0 +1,126 @@
++"""JSON-only adapters for the offline campaign knowledge base."""
++
++from __future__ import annotations
++
++import json
++import re
++import subprocess
++import tempfile
++from dataclasses import asdict
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any, TextIO
++
++from tizen_campaign_core import campaign_state, kb
++from tizen_campaign_core._campaign_io import JsonParser, analyze, config
++from tizen_ci_shared.state import StateDatabase
++
++
++def _parser() -> JsonParser:
++    parser = JsonParser(prog="tizen_campaign_kb")
++    commands = parser.add_subparsers(dest="command", required=True)
++    store = commands.add_parser("kb")
++    actions = store.add_subparsers(dest="action", required=True)
++    for name in ("query", "append", "promote", "import-diff"):
++        action = actions.add_parser(name)
++        action.add_argument("--db", type=Path, required=True)
++        if name == "query":
++            action.add_argument("--diagnosed-flag", required=True)
++            for key in ("package", "gerrit-path", "category", "toolchain-profile",
++                        "error-signature", "warning-flags"):
++                action.add_argument("--" + key)
++            action.add_argument("--min-status", choices=("CI_VERIFIED", "MERGED"),
++                                default="CI_VERIFIED")
++            action.add_argument("--limit-t2", type=int, default=5)
++        elif name == "append":
++            action.add_argument("--record", type=Path, required=True)
++        elif name == "promote":
++            action.add_argument("--id", required=True)
++            action.add_argument("--to", choices=("CI_VERIFIED", "MERGED"), required=True)
++        else:
++            action.add_argument("--diff", type=Path, required=True)
++            action.add_argument("--ci-log", type=Path, required=True)
++            for key in ("package", "gerrit-path", "fix-summary", "baseline-commit"):
++                action.add_argument("--" + key, required=True)
++            action.add_argument("--toolchain-profile", choices=("clang",), required=True)
++            action.add_argument("--change-ref")
++            action.add_argument("--quickbuild-id")
++    sync = commands.add_parser("campaign-kb-sync")
++    sync.add_argument("--state-db", type=Path, required=True)
++    sync.add_argument("--config", type=Path, required=True)
++    sync.add_argument("--campaign-unit-key", required=True)
++    return parser
++
++
++def _import_diff(args: Any) -> dict[str, Any]:
++    if re.fullmatch(r"[0-9a-fA-F]{40}", args.baseline_commit) is None:
++        raise ValueError("baseline-commit must be 40 hexadecimal characters")
++    if args.change_ref is not None and re.fullmatch(
++        r"refs/changes/\d{2}/\d+/\d+", args.change_ref, flags=re.ASCII
++    ) is None:
++        raise ValueError("invalid change-ref")
++    if args.quickbuild_id is not None and re.fullmatch(r"[1-9][0-9]*", args.quickbuild_id) is None:
++        raise ValueError("quickbuild-id must be a positive integer")
++    # Decode without universal-newline conversion: the dedupe slot binds original bytes.
++    diff = args.diff.read_bytes().decode("utf-8")
++    if not diff:
++        raise ValueError("diff must not be empty")
++    with tempfile.TemporaryDirectory(prefix="campaign-kb-import-") as temporary:
++        evidence = json.loads(analyze(args.ci_log, Path(temporary)).read_bytes())
++    signature = kb.describe_evidence(evidence)
++    primary = evidence.get("primary_error") or {}
++    stamp = datetime.now(timezone.utc).isoformat()
++    status = "CI_VERIFIED" if args.quickbuild_id is not None else "NEW"
++    record = dict(
++        schema_version="clang_kb/v1", record_type="instance", origin="imported_shelve",
++        package=args.package, gerrit_path=args.gerrit_path,
++        baseline_commit=args.baseline_commit, verified_tree_sha=None, diff=diff,
++        toolchain_profile=args.toolchain_profile, fix_summary=args.fix_summary,
++        fix_strategy_initial=None, fix_strategy_final=None, reused_from=None,
++        files=[primary["file"]] if isinstance(primary.get("file"), str) else [],
++        error_lines=[primary["line"]] if type(primary.get("line")) is int else [],
++        confidence=0.0, verified_archs=[], sandbox_branch=None, gerrit_url=None,
++        change_ref=args.change_ref, change_id=None, quickbuild_id=args.quickbuild_id,
++        status=status, created_at=stamp, promoted_at=stamp if status == "CI_VERIFIED" else None,
++        **signature,
++    )
++    return asdict(kb.append(args.db, record))
++
++
++def main(argv: list[str], *, stdout: TextIO) -> int:
++    try:
++        args = _parser().parse_args(argv)
++        result: Any
++        if args.command == "campaign-kb-sync":
++            from tizen_campaign_kb.sync import run
++
++            result = run(StateDatabase(args.state_db), args.campaign_unit_key, config(args.config))
++        elif args.action == "query":
++            if args.limit_t2 < 0:
++                raise ValueError("limit-t2 must be nonnegative")
++            found = kb.query(
++                args.db, diagnosed_flag=args.diagnosed_flag, package=args.package,
++                gerrit_path=args.gerrit_path, category=args.category,
++                toolchain_profile=args.toolchain_profile, error_signature=args.error_signature,
++                warning_flags=None if args.warning_flags is None else args.warning_flags.split(",")
++                if args.warning_flags else [],
++                min_status=args.min_status, limit_t2=args.limit_t2,
++            )
++            result = dict(t1_records=found.t1, t2_records=found.t2)
++        elif args.action == "append":
++            result = asdict(kb.append(args.db, json.loads(args.record.read_bytes())))
++        elif args.action == "promote":
++            result = kb.promote(args.db, args.id, args.to)
++        else:
++            result = _import_diff(args)
++        code = 0
++    except kb.KbSchemaError as exc:
++        code, result = 4, dict(error_code="KB_SCHEMA_INVALID", reason=str(exc))
++    except campaign_state.StateInconsistent as exc:
++        code, result = 4, dict(error_code="REJECTED_STATE_INCONSISTENT", reason=str(exc))
++    except subprocess.SubprocessError:
++        code, result = 4, dict(error_code="KB_SCHEMA_INVALID", reason="analyzer_failed")
++    except (ValueError, OSError) as exc:
++        code, result = 2, dict(error_code="INVALID_ARGS", reason=str(exc))
++    print(json.dumps(result, ensure_ascii=False, sort_keys=True), file=stdout)
++    return code
+diff --git a/tizen-campaign-kb/scripts/tizen_campaign_kb/sync.py b/tizen-campaign-kb/scripts/tizen_campaign_kb/sync.py
+new file mode 100644
+index 0000000..e8daef2
+--- /dev/null
++++ b/tizen-campaign-kb/scripts/tizen_campaign_kb/sync.py
+@@ -0,0 +1,201 @@
++"""Synchronize audited campaign provenance to the knowledge store, without state transitions."""
++
++from __future__ import annotations
++
++import hashlib
++import json
++import sqlite3
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Any
++
++from tizen_campaign_core import campaign_state as state
++from tizen_campaign_core import kb
++from tizen_campaign_core._campaign_workspace import _unit_hash
++from tizen_campaign_core.aggregate import aggregate_verifications
++from tizen_campaign_core.submission_identity import compute_submission_key
++from tizen_ci_shared.state import StateDatabase
++from tizen_sandbox_submit.sandbox_submit import _locks, _SnapshotDatabase
++
++
++def _bound_json(path: str | None, digest: str | None) -> dict[str, Any]:
++    try:
++        if not path or not digest:
++            raise ValueError("missing artifact binding")
++        raw = Path(path).read_bytes()
++        if hashlib.sha256(raw).hexdigest() != digest:
++            raise ValueError("artifact digest differs")
++        value = json.loads(raw)
++        if not isinstance(value, dict):
++            raise ValueError("artifact is not an object")
++        return value
++    except (ValueError, OSError) as exc:
++        raise state.StateInconsistent("KB provenance artifact is unavailable or changed") from exc
++
++
++def _provenance(
++    conn: sqlite3.Connection, db: StateDatabase, key: str,
++) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any] | None]:
++    unit = state._require_unit(conn, key)
++    view = state._gate_view_on_connection(conn, key)
++    push, derive = view.sandbox_push, view.derive
++    if not push or push.get("result") != "ok" or not derive:
++        raise state.StateInconsistent("KB synchronization requires a successful sandbox PUSH")
++    if push.get("pushed_sha") != derive.get("derived_commit_sha"):
++        raise state.StateInconsistent("sandbox PUSH and DERIVE differ")
++    row = conn.execute(
++        "SELECT * FROM campaign_rounds WHERE campaign_unit_key=? ORDER BY round_index DESC LIMIT 1",
++        (key,),
++    ).fetchone()
++    if row is None:
++        raise state.StateInconsistent("KB synchronization requires a bound round")
++    round_index = row["round_index"]
++    policy = state._policy_on_connection(conn, key, round_index)
++    if not policy or policy.get("verdict") == "forbidden":
++        raise state.StateInconsistent("KB synchronization requires an allowed bound POLICY")
++    source = policy.get("edit_source_kind")
++    if source not in {"generated", "suppress", "t1_cherry_pick"}:
++        raise state.StateInconsistent("invalid bound POLICY source")
++    if policy.get("fix_strategy_initial") != {
++        "generated": "code", "suppress": "suppress", "t1_cherry_pick": "cherry_pick",
++    }[source] or policy.get("fix_strategy_final") not in {"code", "suppress", "cherry_pick"}:
++        raise state.StateInconsistent("invalid bound POLICY strategy")
++    links = conn.execute(
++        "SELECT * FROM campaign_verifications WHERE campaign_unit_key=? AND round_index=?",
++        (key, round_index),
++    ).fetchall()
++    aggregate = aggregate_verifications(
++        [link["verification_id"] for link in links], _SnapshotDatabase(db.path, conn),
++    )
++    if not aggregate.ok or any((
++        aggregate.verified_tree_sha != derive.get("verified_tree_sha"),
++        aggregate.edit_spec_sha256 != row["edit_spec_sha256"],
++        aggregate.base_commit != unit.base_commit,
++        aggregate.project != unit.project,
++        aggregate.branch != unit.branch,
++        aggregate.spec_name != unit.spec_name,
++    )) or any(
++        link["edit_spec_sha256"] != row["edit_spec_sha256"]
++        or link["arch_norm"] != state.ARCH_RAW_TO_NORM.get(link["arch_raw"])
++        or not any(record.verification_id == link["verification_id"]
++                   and record.arch == link["arch_raw"] for record in aggregate.records)
++        for link in links
++    ):
++        raise state.StateInconsistent("KB provenance verification binding differs")
++    spec = _bound_json(row["edit_spec_ref"], row["edit_spec_sha256"])
++    evidence = _bound_json(unit.ci_evidence_ref, unit.ci_evidence_sha256)
++    precedent = spec.get("kb_precedent_ref")
++    if precedent is not None and (not isinstance(precedent, str) or not precedent.strip()):
++        raise state.StateInconsistent("invalid bound precedent reference")
++    if source == "t1_cherry_pick" and precedent is None:
++        raise state.StateInconsistent("T1 provenance requires a bound precedent reference")
++    edits = spec.get("edits")
++    if not isinstance(edits, list) or not edits or any(
++        not isinstance(edit, dict) or not isinstance(edit.get("file"), str)
++        or not edit["file"] for edit in edits
++    ):
++        raise state.StateInconsistent("invalid bound edit entries")
++    change_id = state._cached_change_id(
++        conn, compute_submission_key(
++            unit.submission_identity_key, str(aggregate.verified_tree_sha),
++        ),
++    )
++    if not change_id:
++        raise state.StateInconsistent("KB provenance requires the cached Change-Id")
++    push_row = conn.execute(
++        "SELECT event_id FROM campaign_gate_events WHERE campaign_unit_key=? "
++        "AND event_type='PUSH' AND json_extract(payload_json,'$.ref_class')='sandbox' "
++        "ORDER BY event_id DESC LIMIT 1", (key,),
++    ).fetchone()
++    description = kb.describe_evidence(evidence)
++    if not unit.source_build_id.isascii() or not unit.source_build_id.isdigit():
++        raise state.StateInconsistent("invalid CI build provenance")
++    record = kb.make_record(
++        schema_version="clang_kb/v1", record_type="instance",
++        fix_strategy_initial=policy["fix_strategy_initial"],
++        fix_strategy_final=policy["fix_strategy_final"], reused_from=precedent,
++        package=unit.spec_name, gerrit_path=unit.project,
++        files=sorted({edit["file"] for edit in edits}),
++        error_lines=[description["error_signature_raw"]],
++        fix_summary=derive["message_brief"], confidence=0,
++        quickbuild_id=int(unit.source_build_id), baseline_commit=unit.base_commit,
++        verified_tree_sha=aggregate.verified_tree_sha,
++        verified_archs=sorted(state.ARCH_NORMS), sandbox_branch=push["ref"],
++        gerrit_url=None, change_ref=None, change_id=change_id, status="NEW",
++        created_at=push["at"], promoted_at=None, toolchain_profile=unit.toolchain_profile,
++        **description,
++    )
++    audit = dict(
++        round_index=round_index, source_kind=source, kb_precedent_ref=precedent,
++        push_event_id=push_row["event_id"], qb_event_id=None,
++    )
++    result = state._qb_result_on_connection(conn, key)
++    if result is not None and result["status"] == "PASS":
++        request = conn.execute(
++            "SELECT * FROM campaign_qb_requests WHERE request_seq=?", (result["request_seq"],),
++        ).fetchone()
++        target = unit.project + "@" + str(derive["derived_commit_sha"])
++        bound = conn.execute(
++            "SELECT qb_build_id FROM campaign_qb_events WHERE request_seq=? "
++            "AND event_type='BUILD_BOUND' ORDER BY event_id DESC LIMIT 1",
++            (result["request_seq"],),
++        ).fetchone()
++        if (request is None or request["sbs_target"] != target
++                or result["sbs_target_echo"] != target or bound is None
++                or bound["qb_build_id"] != result["qb_build_id"]):
++            raise state.StateInconsistent("latest QB PASS binding differs")
++    else:
++        result = None
++    return record, audit, result
++
++
++def run(state_db: StateDatabase, key: str, settings: dict[str, Any]) -> dict[str, Any]:
++    """Retry safely across a KB publication followed by an interrupted DB commit."""
++    path = settings.get("kb_db")
++    workspace = settings.get("campaign_workspace")
++    if (not isinstance(path, str) or not Path(path).is_absolute()
++            or not isinstance(workspace, str) or not Path(workspace).is_absolute()):
++        raise ValueError("kb_db and campaign_workspace must be absolute paths")
++    kb_db = Path(path)
++    with _locks(Path(workspace) / _unit_hash(key)):
++        conn = state_db.connect()
++        try:
++            # Keep all provenance and the latest-request decision in one snapshot.
++            # KB publication precedes the audit; append/promote are idempotent on retry.
++            with state._immediate_transaction(conn):
++                record, audit, result = _provenance(conn, state_db, key)
++                previous = conn.execute(
++                    "SELECT event_id,payload_json FROM campaign_gate_events "
++                    "WHERE campaign_unit_key=? AND event_type='KB_SYNC' "
++                    "AND round_index=? ORDER BY event_id DESC LIMIT 1", (key, audit["round_index"]),
++                ).fetchone()
++                old = json.loads(previous["payload_json"]) if previous is not None else {}
++                if old:
++                    known = [item for item in kb.records(kb_db) if item["id"] == old["kb_id"]]
++                    if (len(known) != 1 or known[0]["dedupe_key"] != old["dedupe_key"]
++                            or old["dedupe_key"] != kb.dedupe_key(record)):
++                        raise state.StateInconsistent("audited KB record is missing or rebound")
++                appended = kb.append(kb_db, record)
++                matches = [item for item in kb.records(kb_db) if item["id"] == appended.id]
++                if len(matches) != 1 or matches[0]["dedupe_key"] != kb.dedupe_key(record):
++                    raise state.StateInconsistent("published KB record could not be read back")
++                stored = matches[0]
++                if result is not None:
++                    audit["qb_event_id"] = result["event_id"]
++                    if stored["status"] == "NEW":
++                        stored = kb.promote(kb_db, appended.id, "CI_VERIFIED")
++                audit.update(
++                    kb_id=stored["id"], dedupe_key=stored["dedupe_key"], status=stored["status"],
++                )
++                if all(old.get(name) == value for name, value in audit.items()):
++                    event_id = previous["event_id"]
++                else:
++                    audit["at"] = datetime.now(timezone.utc).isoformat()
++                    event_id = state._append_event_on_connection(conn, key, "KB_SYNC", audit)
++                return dict(
++                    kb_id=stored["id"], status=stored["status"], deduped=appended.deduped,
++                    event_id=event_id, kb_precedent_ref=audit["kb_precedent_ref"],
++                    source_kind=audit["source_kind"],
++                )
++        finally:
++            conn.close()

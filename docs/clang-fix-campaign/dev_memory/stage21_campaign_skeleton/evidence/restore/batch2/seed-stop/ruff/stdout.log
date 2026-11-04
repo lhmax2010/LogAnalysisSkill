@@ -1,0 +1,28 @@
+B905 `zip()` without an explicit `strict=` parameter
+  --> docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch2/probe-seed-dedupe.py:18:17
+   |
+16 |         "diagnosed_flag", "toolchain_profile", "error_signature_normalized",
+17 |     )
+18 |     seed = dict(zip(keys, (None, None, None, None, "-Wexample", "clang", "example #")))
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+19 |     try:
+20 |         "".join(seed[key] for key in keys)
+   |
+help: Add explicit value for parameter `strict=`
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch2/probe-seed-dedupe.py:29:21
+   |
+27 |       tagged = digest("seed:" + json.dumps([seed[key] for key in keys], separators=(",", ":")))
+28 |       assert len({empty, literal, tagged}) == 3
+29 |       ordinary = dict(zip(keys, ("pkg", "platform/upstream/pkg", "a" * 40, "b" * 40,
+   |  _____________________^
+30 | |                                "-Wexample", "clang", "example #")))
+   | |__________________________________________________________________^
+31 |       expected = digest("".join(ordinary[key] for key in keys))
+32 |       assert digest("".join(ordinary[key] or "" for key in keys)) == expected
+   |
+help: Add explicit value for parameter `strict=`
+
+Found 2 errors.
+No fixes available (2 hidden fixes can be enabled with the `--unsafe-fixes` option).

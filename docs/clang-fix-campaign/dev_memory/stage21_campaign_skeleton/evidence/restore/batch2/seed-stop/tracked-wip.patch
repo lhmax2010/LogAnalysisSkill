@@ -1,0 +1,276 @@
+diff --git a/.importlinter b/.importlinter
+index d4841ed..2b5764c 100644
+--- a/.importlinter
++++ b/.importlinter
+@@ -14,6 +14,7 @@ root_packages =
+     gbs_patch_suggest
+     ci_triage
+     tizen_campaign_core
++    tizen_campaign_kb
+     tizen_campaign_intake
+     tizen_baseline_reproduce
+     tizen_campaign_repair
+@@ -27,7 +28,7 @@ name = application layers: orchestration -> skills -> shared
+ type = layers
+ layers =
+     ci_triage
+-    tizen_campaign_intake | tizen_baseline_reproduce | tizen_campaign_repair | tizen_qb_verify | tizen_review_submit | tizen_campaign_report
++    tizen_campaign_intake | tizen_baseline_reproduce | tizen_campaign_repair | tizen_qb_verify | tizen_review_submit | tizen_campaign_report | tizen_campaign_kb
+     tizen_sandbox_submit
+     tizen_campaign_core
+     tizen_convergence_judge | tizen_qb_discover | tizen_gerrit_fetch | tizen_build_verify | tizen_gerrit_submit | tizen_triage_report | gbs_patch_suggest
+@@ -66,6 +67,7 @@ type = forbidden
+ source_modules = tizen_ci_shared
+ forbidden_modules = ci_triage
+     tizen_campaign_core
++    tizen_campaign_kb
+     tizen_campaign_intake
+     tizen_baseline_reproduce
+     tizen_campaign_repair
+@@ -100,6 +102,7 @@ name = campaign compilation only through repair
+ type = forbidden
+ source_modules =
+     tizen_campaign_core
++    tizen_campaign_kb
+     tizen_campaign_intake
+     tizen_baseline_reproduce
+     tizen_sandbox_submit
+diff --git a/pyproject.toml b/pyproject.toml
+index 986292e..e17178f 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -27,6 +27,7 @@ where = [
+     "tizen-gbs-patch-suggest/scripts",
+     "tizen-ci-triage/scripts",
+     "tizen-campaign-core/scripts",
++    "tizen-campaign-kb/scripts",
+     "tizen-campaign-repair/scripts",
+     "tizen-sandbox-submit/scripts",
+     "tizen-qb-verify/scripts",
+@@ -49,6 +50,7 @@ include = [
+     "gbs_patch_suggest*",
+     "ci_triage*",
+     "tizen_campaign_core*",
++    "tizen_campaign_kb*",
+     "tizen_campaign_repair*",
+     "tizen_sandbox_submit*",
+     "tizen_qb_verify*",
+@@ -100,6 +102,7 @@ mypy_path = [
+     "tizen-gbs-patch-suggest/scripts",
+     "tizen-ci-triage/scripts",
+     "tizen-campaign-core/scripts",
++    "tizen-campaign-kb/scripts",
+     "tizen-campaign-repair/scripts",
+     "tizen-sandbox-submit/scripts",
+     "tizen-qb-verify/scripts",
+@@ -122,6 +125,7 @@ packages = [
+     "gbs_patch_suggest",
+     "ci_triage",
+     "tizen_campaign_core",
++    "tizen_campaign_kb",
+     "tizen_campaign_repair",
+     "tizen_sandbox_submit",
+     "tizen_qb_verify",
+diff --git a/tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py b/tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py
+index 1344b96..722c93d 100644
+--- a/tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py
++++ b/tizen-campaign-core/scripts/tizen_campaign_core/campaign_state.py
+@@ -61,6 +61,7 @@ _KNOWN_EVENT_TYPES = frozenset(
+         "DERIVE",
+         "PUSH",
+         "KB",
++        "KB_SYNC",
+         "REVIEW",
+         "CONVERGENCE",
+         "SECONDARY_TARGET_ADOPTED",
+@@ -2204,6 +2205,7 @@ def _validate_event_payload(
+         "DERIVE": _validate_derive,
+         "PUSH": _validate_push,
+         "KB": _validate_kb,
++        "KB_SYNC": _validate_kb_sync,
+         "REVIEW": _validate_review,
+         "CONVERGENCE": _validate_convergence_shape,
+         "SECONDARY_TARGET_ADOPTED": _validate_adoption,
+@@ -2345,6 +2347,31 @@ def _validate_kb(payload: Mapping[str, object]) -> None:
+         raise PayloadSchemaError("invalid KB payload")
+ 
+ 
++def _validate_kb_sync(payload: Mapping[str, object]) -> None:
++    _require_keys(payload, {
++        "kb_id", "dedupe_key", "status", "round_index", "source_kind",
++        "kb_precedent_ref", "push_event_id", "qb_event_id", "at",
++    })
++    _require_round_index(payload)
++    _require_nonempty_strings(payload, ("kb_id", "dedupe_key", "at"))
++    digest = _payload_str(payload, "dedupe_key")
++    if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
++        raise PayloadSchemaError("invalid KB_SYNC dedupe_key")
++    if payload["status"] not in {"NEW", "CI_VERIFIED", "MERGED"}:
++        raise PayloadSchemaError("invalid KB_SYNC status")
++    if payload["source_kind"] not in {"generated", "suppress", "t1_cherry_pick"}:
++        raise PayloadSchemaError("invalid KB_SYNC source_kind")
++    precedent = payload["kb_precedent_ref"]
++    if precedent is not None and (not isinstance(precedent, str) or not precedent.strip()):
++        raise PayloadSchemaError("invalid KB_SYNC kb_precedent_ref")
++    for name in ("push_event_id", "qb_event_id"):
++        value = payload[name]
++        if name == "qb_event_id" and value is None:
++            continue
++        if type(value) is not int or value <= 0:
++            raise PayloadSchemaError(f"invalid KB_SYNC {name}")
++
++
+ def _validate_review(payload: Mapping[str, object]) -> None:
+     _require_keys(payload, {"outcome", "review_url", "degraded", "qb_event_id", "at"})
+     if payload["outcome"] not in {"pushed", "manual", "ineligible"}:
+diff --git a/tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py b/tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py
+index d7b7123..fcc3d59 100644
+--- a/tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py
++++ b/tizen-campaign-core/scripts/tizen_campaign_core/diff_to_edit_spec.py
+@@ -105,8 +105,18 @@ def _parse(diff: str) -> list[_File]:
+     current: _File | None = None
+     index = 0
+     pending_git = False
++    last_hunk_end: int | None = None
+     while index < len(lines):
+         line = lines[index]
++        if line == "-- \n":
++            # A mail signature is terminal metadata, never a separator between patches.
++            if (index != last_hunk_end or index + 1 >= len(lines)
++                    or re.fullmatch(
++                        r"[0-9]+(?:\.[0-9]+)+[A-Za-z0-9.-]*\n?", lines[index + 1]
++                    ) is None
++                    or any(tail != "\n" for tail in lines[index + 2:])):
++                raise DiffUnsupported("unparsed_patch_content")
++            break
+         for prefix, reason in _UNSUPPORTED:
+             if line.startswith(prefix):
+                 raise DiffUnsupported(reason)
+@@ -141,6 +151,7 @@ def _parse(diff: str) -> list[_File]:
+                 raise DiffUnsupported("hunk_without_file")
+             hunk, index = _hunk(lines, index)
+             current.hunks.append(hunk)
++            last_hunk_end = index
+             continue
+         elif line.startswith(("+++ ", "+", "-", " ")) and current and current.hunks:
+             raise DiffUnsupported("unparsed_patch_content")
+diff --git a/tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py b/tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py
+index fedb1e0..6d3e060 100644
+--- a/tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py
++++ b/tizen-campaign-repair/scripts/tizen_campaign_repair/__main__.py
+@@ -107,11 +107,16 @@ def main(argv: list[str] | None = None) -> int:
+         return _main_suppress_policy(argv[1:], stdout=sys.stdout, stderr=sys.stderr)
+     if argv and argv[0] == "diff-to-edit-spec":
+         return _main_diff_to_edit_spec(argv[1:], stdout=sys.stdout)
++    if argv and argv[0] == "propose-fix":
++        from tizen_campaign_repair.propose_fix import main as propose_main
++
++        return propose_main(argv[1:], stdout=sys.stdout)
+     parser = argparse.ArgumentParser(prog="tizen_campaign_repair")
+     commands = parser.add_subparsers(dest="command", required=True)
+     commands.add_parser("campaign-repair-step", add_help=False)
+     commands.add_parser("suppress-policy", add_help=False)
+     commands.add_parser("diff-to-edit-spec", add_help=False)
++    commands.add_parser("propose-fix", add_help=False)
+     parser.parse_args(argv)
+     return 2
+ 
+diff --git a/tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py b/tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py
+index 25ec477..bfbdad2 100644
+--- a/tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py
++++ b/tizen-campaign-repair/scripts/tizen_campaign_repair/diff_cli.py
+@@ -20,7 +20,10 @@ def main(argv: list[str], *, stdout: TextIO) -> int:
+     parser.add_argument("--patch-name", required=True)
+     try:
+         args = parser.parse_args(argv)
+-        raw = args.diff.read_text(encoding="utf-8")
++        try:
++            raw = args.diff.read_bytes().decode("utf-8")
++        except UnicodeDecodeError as exc:
++            raise DiffUnsupported("unsupported_encoding") from exc
+         result = convert(raw, args.src_root, args.patch_name)
+         inputs = [args.diff.resolve(), *[
+             (args.src_root / edit["file"]).resolve() for edit in result["edits"]
+diff --git a/tizen-campaign-report/scripts/tizen_campaign_report/report.py b/tizen-campaign-report/scripts/tizen_campaign_report/report.py
+index da5ae13..3847743 100644
+--- a/tizen-campaign-report/scripts/tizen_campaign_report/report.py
++++ b/tizen-campaign-report/scripts/tizen_campaign_report/report.py
+@@ -117,6 +117,17 @@ def report(db: StateDatabase) -> list[dict[str, Any]]:
+             if abandoned:
+                 copy_state = "已放弃"
+             reviews = [e for kind, e in events if kind == "REVIEW"]
++            latest_round = conn.execute(
++                "SELECT MAX(round_index) FROM campaign_rounds WHERE campaign_unit_key=?", (key,)
++            ).fetchone()[0]
++            policies = [
++                e for kind, e in events
++                if kind == "POLICY" and e.get("round_index") == latest_round
++            ]
++            syncs = [
++                e for kind, e in events
++                if kind == "KB_SYNC" and e.get("round_index") == latest_round
++            ]
+             result.append(
+                 dict(
+                     campaign_unit_key=key,
+@@ -133,6 +144,8 @@ def report(db: StateDatabase) -> list[dict[str, Any]]:
+                     qb_build_id=parent,
+                     qb_result_ref=reference,
+                     review_url=reviews[-1].get("review_url") if reviews else None,
++                    kb_precedent_ref=syncs[-1].get("kb_precedent_ref") if syncs else None,
++                    source_kind=policies[-1].get("edit_source_kind") if policies else None,
+                     workspace_status=copy_state,
+                 )
+             )
+@@ -152,6 +165,8 @@ def markdown(rows: list[dict[str, Any]]) -> str:
+         "qb_build_id": "QuickBuild 父构建号",
+         "qb_result_ref": "结果文件引用",
+         "review_url": "review URL",
++        "kb_precedent_ref": "先例引用",
++        "source_kind": "修法来源",
+         "workspace_status": "副本状态",
+     }
+     lines = [
+diff --git a/tizen-ci-triage/scripts/ci_triage/cli.py b/tizen-ci-triage/scripts/ci_triage/cli.py
+index d02c6e8..03a14c7 100644
+--- a/tizen-ci-triage/scripts/ci_triage/cli.py
++++ b/tizen-ci-triage/scripts/ci_triage/cli.py
+@@ -183,6 +183,14 @@ def main(
+         return _main_suppress_policy(argv[1:], stdout=stdout, stderr=stderr)
+     if argv and argv[0] == "diff-to-edit-spec":
+         return _main_diff_to_edit_spec(argv[1:], stdout=stdout)
++    if argv and argv[0] in {"kb", "campaign-kb-sync"}:
++        from tizen_campaign_kb.cli import main as kb_main
++
++        return kb_main(argv, stdout=stdout)
++    if argv and argv[0] == "propose-fix":
++        from tizen_campaign_repair.propose_fix import main as propose_main
++
++        return propose_main(argv[1:], stdout=stdout)
+     if argv and argv[0] == "build-verify":
+         return _main_build_verify(argv[1:], stderr=stderr, extra_pythonpath=extra_pythonpath)
+     if argv and argv[0] == "check-convergence":
+diff --git a/tizen-review-submit/scripts/tizen_review_submit/review_submit.py b/tizen-review-submit/scripts/tizen_review_submit/review_submit.py
+index edce96c..e921791 100644
+--- a/tizen-review-submit/scripts/tizen_review_submit/review_submit.py
++++ b/tizen-review-submit/scripts/tizen_review_submit/review_submit.py
+@@ -295,7 +295,9 @@ def run(options: ReviewOptions) -> sandbox.SandboxSubmitOutcome:
+         )
+         _trace(root, "edit_spec_verified")
+         policy = state.latest_policy_for_round(db, key, round_.round_index)
+-        if policy is None or policy.get("edit_source_kind") not in {"generated", "suppress"}:
++        if policy is None or policy.get("edit_source_kind") not in {
++            "generated", "suppress", "t1_cherry_pick"
++        }:
+             raise sandbox._held("state_inconsistent", "missing or unsupported source kind")
+         src = root / "src"
+         sandbox._source(config.git, src, unit)
+@@ -311,7 +313,7 @@ def run(options: ReviewOptions) -> sandbox.SandboxSubmitOutcome:
+         if verdict.verdict == "forbidden":
+             raise sandbox._held("suppress_policy_recheck", "forbidden suppression")
+         _trace(root, "policy_verified")
+-        if verdict.fix_strategy_final != "code" or not view.reproduced:
++        if verdict.fix_strategy_final not in {"code", "cherry_pick"} or not view.reproduced:
+             state.append_status(db, key, "REVIEW_INELIGIBLE", "review_gate")
+             raise sandbox._Reject("REJECTED_REVIEW_GATE", "A2 quality gate failed")
+         if status not in {
