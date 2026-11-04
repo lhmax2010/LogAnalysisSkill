@@ -2779,6 +2779,8 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
 
 按骨架设计文件实施裁定 SKEL-R-04,仅Fetch.failRequest返回REQUEST_ID_INVALID时不再停止,改记DENY_TARGET_GONE;其它拦截失败仍按原规则停止。
 
+**收尾状态。** 按实施裁定 SKEL-CLOSE-01,骨架阶段离线收尾,真实端到端延后。第3.5批真实gbs单包干跑与第4批真实sandbox推送、QuickBuild及review-submit本阶段不执行,状态为“延后”,不是“通过”;待COSMOS build接入与后续执行裁定后补跑。验收依据与未验证项见[骨架收尾记录](review/campaign-skeleton-closeout.md),v1.3冻结稿正文不变。
+
 ## 5. 非功能性需求
 
 ### 5.1 性能预算

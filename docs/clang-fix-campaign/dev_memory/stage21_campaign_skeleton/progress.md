@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**SELECTION_EVIDENCE_INCOMPLETE**;读取失败修复仍按SKEL-R-08口径验收通过。SKEL-B3.5-01白天只读筛选完成,合格候选0个,3个预筛对象的真实analyzer已离线解析;等待补齐同源CI与shelve证据、选包及第3.5批执行裁定,尚未启动第3.5批。
+日期:2026-11-04。状态:**骨架阶段离线收尾,真实端到端延后**。按SKEL-CLOSE-01,第1、2、3批与读取失败修复的离线验收作为本阶段收尾依据;第3.5、4批均为“延后”,不是“通过”。预筛合格候选0个,实际build.conf等证据缺口保留;待COSMOS build接入与后续执行裁定后补跑。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -23,8 +23,8 @@
 | 1 | 第4节拆分,先derive_commit全仓验证再批量;第9节第3项修订登记;第4.4节验收 | ACCEPTED;SKEL-B2-01验收通过 |
 | 2 | 建档、基线复现、生命周期与放弃屏障,CLI解析去重 | ACCEPTED;SKEL-B3-01验收通过 |
 | 3 | 审核提交、启动检查、编排skill与离线端到端 | ACCEPTED;SKEL-R-01验收,3087 passed/1 skipped |
-| 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | NOT_STARTED |
-| 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | NOT_STARTED |
+| 3.5 | 经后续批准的真实gbs单包干跑,不推送/不登录QB | 延后;SKEL-CLOSE-01,未执行、未验收通过 |
+| 4 | 同包sandbox推送、QB与审核提交,另行人工授权 | 延后;SKEL-CLOSE-01,未执行、未验收通过 |
 
 第1批边界(历史记录):不新增业务功能、不改函数体、不改断言/参数化/nodeid/运行时补丁目标;
 测试只允许机械更新物理路径。历史证据目录脚本不改、不重跑。
@@ -1438,3 +1438,34 @@ evidence_packet.md的EOF多空行,按原始输出要求保留,未改写。
 搜索不是穷尽所有机器,结论仅对实际本地材料有效。
 资源估算因未选包只能是有明确假设的规划,不伪造真实峰值。
 停止于筛选交付,等待用户选包与第3.5批执行裁定。
+
+## 25. 实施裁定 SKEL-CLOSE-01:骨架收尾
+
+### 25.1 设计方裁定
+
+1. 第 3.5 批(真实 gbs 单包干跑)与第 4 批(真实 sandbox 推送、QuickBuild、review-submit)本阶段不执行,状态记为“延后”,不是“通过”。
+2. 延后理由:SKEL-B3.5-01 预筛合格候选为 0(96b5776);对应 QuickBuild 实际使用的 build.conf 原件在本地不可得,无法满足“本地验证条件须与 QuickBuild 一致”;后续构建后端将接入 COSMOS build,真实端到端届时在真实包上一并执行。
+3. 骨架阶段以离线验收收尾:第 1、2、3 批验收(5b9ecea、1a4ed25、a58494b)+ 读取失败修复验收(5b41ee9、fb549ea、fd4c6f6,按 SKEL-R-08 口径)。
+4. 冻结稿 v1.3 不改正文;在 design.md 第 4.6 节末尾追加“收尾状态”小段,写明第 3.5、4 批延后及本裁定编号。
+
+### 25.2 收尾交付与边界
+
+[campaign-skeleton-closeout.md](../../review/campaign-skeleton-closeout.md)分六节登记交付、裁剪、
+验收、未经真机验证项、遗留与观测项、以后补跑的进入条件。INDEX与本文件状态已同步。
+最后一次全仓结果沿用`fd4c6f6`的3099 passed/0 failed/1既有skip,不是本轮重新执行的结果。
+第2批原始失败与3次重跑、第4次C8历史失败及全部采样证据均保留,未以收尾改写历史结论。
+资源8GiB available/40GiB新增磁盘仅为selection/environment.md的小包规划估算,
+不是实测下限;选包与后续执行裁定必须重新校准。真实analyzer三次均needs_llm,
+不把“解析进程exit0”登记为真实Clang失败分类已验证。
+
+本轮只改四份文档,不改生产代码、测试、冻结稿、状态库或历史证据。
+不运行gbs build、任何campaign命令、QuickBuild登录、Gerrit推送或refs/for fetch;
+不向llvm-optimize写入内容。提交署名沿用本机全局配置。
+文档检查结果在本节末尾登记后,同一commit推送clang-fix-campaign并停止。
+
+### 25.3 本轮检查
+
+- `check_design_doc.py docs/clang-fix-campaign/design.md`:exit0,0 problem。
+- 新收尾文档27个仓内链接逐个检查,全部存在;本次四份文档的`git diff --cached --check`通过。
+- v1.3冻结稿SHA256仍为`1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9`,正文零改动。
+- 本轮不运行pytest或任何业务命令;生产与测试零改动。与SKEL-CLOSE-01不一致或做不到之处:无。
