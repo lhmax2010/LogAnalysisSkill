@@ -1,0 +1,454 @@
+{
+  "mode": "before",
+  "network": "loopback-only",
+  "samples": [
+    {
+      "index": 1,
+      "events": [
+        {
+          "action": "PAUSED",
+          "seq": 1,
+          "type": "Stylesheet",
+          "generation": 2,
+          "ms": 20810
+        },
+        {
+          "action": "PAUSED",
+          "seq": 2,
+          "type": "Script",
+          "generation": 2,
+          "ms": 20810
+        },
+        {
+          "action": "PAUSED",
+          "seq": 3,
+          "type": "Image",
+          "generation": 2,
+          "ms": 20810
+        },
+        {
+          "action": "READ_STARTED",
+          "generation": 2,
+          "ms": 22370
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 2,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 22385
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 1,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 22385
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 3,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 22385
+        },
+        {
+          "action": "CANCELS_CONFIRMED",
+          "generation": 3,
+          "ms": 22391
+        }
+      ],
+      "operations": [
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 1,
+          "type": "Stylesheet",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 22391,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 2,
+          "type": "Script",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 22391,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 3,
+          "type": "Image",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 22391,
+          "category": "REQUEST_ID_INVALID"
+        }
+      ],
+      "received": [
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "kind": "login",
+          "status": 302
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "delayed-image",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        }
+      ],
+      "cancelled": [
+        2,
+        1,
+        3
+      ],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "Fetch.continueRequest",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "FETCH_CONTINUE_FAILED"
+        }
+      ],
+      "read": {
+        "ok": false,
+        "error": "QB_BROWSER_UNAVAILABLE",
+        "has_body": false
+      },
+      "ok": true,
+      "profile_removed": true
+    },
+    {
+      "index": 2,
+      "events": [
+        {
+          "action": "PAUSED",
+          "seq": 1,
+          "type": "Stylesheet",
+          "generation": 2,
+          "ms": 1029
+        },
+        {
+          "action": "PAUSED",
+          "seq": 2,
+          "type": "Script",
+          "generation": 2,
+          "ms": 1029
+        },
+        {
+          "action": "PAUSED",
+          "seq": 3,
+          "type": "Image",
+          "generation": 2,
+          "ms": 1029
+        },
+        {
+          "action": "READ_STARTED",
+          "generation": 2,
+          "ms": 2945
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 2,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 2961
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 3,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 2961
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 1,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 2961
+        },
+        {
+          "action": "CANCELS_CONFIRMED",
+          "generation": 3,
+          "ms": 2966
+        }
+      ],
+      "operations": [
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 1,
+          "type": "Stylesheet",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 2966,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 2,
+          "type": "Script",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 2966,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 3,
+          "type": "Image",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 2966,
+          "category": "REQUEST_ID_INVALID"
+        }
+      ],
+      "received": [
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "kind": "login",
+          "status": 302
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "delayed-image",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        }
+      ],
+      "cancelled": [
+        2,
+        3,
+        1
+      ],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "Fetch.continueRequest",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "FETCH_CONTINUE_FAILED"
+        }
+      ],
+      "read": {
+        "ok": false,
+        "error": "QB_BROWSER_UNAVAILABLE",
+        "has_body": false
+      },
+      "ok": true,
+      "profile_removed": true
+    },
+    {
+      "index": 3,
+      "events": [
+        {
+          "action": "PAUSED",
+          "seq": 1,
+          "type": "Stylesheet",
+          "generation": 2,
+          "ms": 1296
+        },
+        {
+          "action": "PAUSED",
+          "seq": 2,
+          "type": "Script",
+          "generation": 2,
+          "ms": 1297
+        },
+        {
+          "action": "PAUSED",
+          "seq": 3,
+          "type": "Image",
+          "generation": 2,
+          "ms": 1297
+        },
+        {
+          "action": "READ_STARTED",
+          "generation": 2,
+          "ms": 3137
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 2,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 3150
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 3,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 3150
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 1,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 3150
+        },
+        {
+          "action": "CANCELS_CONFIRMED",
+          "generation": 3,
+          "ms": 3156
+        }
+      ],
+      "operations": [
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 1,
+          "type": "Stylesheet",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 3156,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 2,
+          "type": "Script",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 3157,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 3,
+          "type": "Image",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 3157,
+          "category": "REQUEST_ID_INVALID"
+        }
+      ],
+      "received": [
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "kind": "login",
+          "status": 302
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "delayed-image",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        }
+      ],
+      "cancelled": [
+        2,
+        3,
+        1
+      ],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "OPERATION_FAILED",
+          "operation": "Fetch.continueRequest",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "action": "AGENT_STOPPED",
+          "failure_category": "FETCH_CONTINUE_FAILED"
+        }
+      ],
+      "read": {
+        "ok": false,
+        "error": "QB_BROWSER_UNAVAILABLE",
+        "has_body": false
+      },
+      "ok": true,
+      "profile_removed": true
+    }
+  ],
+  "ok": true
+}

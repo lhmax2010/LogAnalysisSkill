@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/home/linhao/.local/share/p5q-test-display/usr/bin/xvfb-run",
+    "--auto-servernum",
+    "--error-file=/dev/stderr",
+    "--server-args=-screen 0 1920x1080x24 -nolisten tcp",
+    "/home/linhao/.local/bin/node",
+    "tests/node/p5q_continue_target_gone_browser.mjs",
+    "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+    "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/continue-gone/reproduce-01/result.json",
+    "before"
+  ],
+  "started_utc": "2026-11-04T13:28:03.898988+00:00",
+  "finished_utc": "2026-11-04T13:28:33.941235+00:00",
+  "exit_code": 0,
+  "load_before": "16.20 16.63 10.60 5/3298 2355051",
+  "load_after": "11.00 15.33 10.36 1/3299 2356942",
+  "cpu_count": 20
+}

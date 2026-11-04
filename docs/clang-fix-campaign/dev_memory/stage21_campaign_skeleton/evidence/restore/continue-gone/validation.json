@@ -1,0 +1,77 @@
+{
+  "html_self_check_passed": 68,
+  "html_self_check_failures": [],
+  "safety": [
+    {
+      "group": "worker-websocket",
+      "ok": true,
+      "details": {
+        "attackHTTP": 0,
+        "websocketHandshakes": 0,
+        "branch": "b:browser_fail_closed",
+        "workers": [
+          {
+            "action": "WORKER_BLOCKED",
+            "type": "shared_worker",
+            "paused": true
+          },
+          {
+            "action": "WORKER_BLOCKED",
+            "type": "worker",
+            "paused": true
+          }
+        ]
+      }
+    },
+    {
+      "group": "307-308",
+      "ok": true,
+      "details": {
+        "blocked": [
+          307,
+          308
+        ],
+        "allowed": 302
+      }
+    },
+    {
+      "group": "per-hop",
+      "ok": true,
+      "details": {
+        "forbiddenSecondHops": 0,
+        "postReplay": 0
+      }
+    },
+    {
+      "group": "credential-isolation",
+      "ok": true,
+      "details": {
+        "credentialFacts": {
+          "cookie": true,
+          "authorization": true,
+          "password": true
+        },
+        "protocol": {
+          "ok": true,
+          "status": 200,
+          "html_redacted": "<html><head><link rel=\"icon\" href=\"data:,\"><title>LOCAL C2b safety fixture</title></head><body><a class=\"nav-link\">Build (id:1)</a>\n      <span>Welcome! &lt;USER&gt;</span>\n      <input type=\"hidden\" name=\"token\" value=\"&lt;REDACTED&gt;\">\n      <div class=\"build-summary\"><div class=\"box-head\">Summary</div><table>\n      <thead><tr><th>Id</th><th>Triggered By</th></tr></thead>\n      <tbody><tr><td>1</td><td>&lt;USER&gt;</td></tr></tbody></table></div></body></html>",
+          "outside_identity_count": 0
+        },
+        "exception": {
+          "ok": false,
+          "error": "QB_BROWSER_UNAVAILABLE"
+        }
+      }
+    }
+  ],
+  "safety_summary": {
+    "summary": 4,
+    "passed": 4,
+    "failed": 0,
+    "network": "loopback-only",
+    "temporaryDirectoryRemoved": true
+  },
+  "residual_profiles": [],
+  "agent_sha256": "431b27137c857f5089053737b320ea35f2317d66493892b3dec5f7608db2e26c",
+  "residual_owned_processes": []
+}

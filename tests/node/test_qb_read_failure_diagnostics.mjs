@@ -37,11 +37,15 @@ for (const method of ['Fetch.failRequest', 'Fetch.continueRequest', 'Fetch.conti
       paused(root, '/signin'); await flush(); paused(root, '/signin', 200);
     } else paused(root, method === 'Fetch.failRequest' ? '/private?token=private-query' : '/signin');
     await flush();
-    assert.deepEqual(stops, method === 'Fetch.failRequest' ? [] : ['FETCH_CONTINUE_FAILED']);
+    const gone = method !== 'Fetch.continueResponse';
+    assert.deepEqual(stops, gone ? [] : ['FETCH_CONTINUE_FAILED']);
     assert.deepEqual(trace.filter(row => row.action === 'DENY_TARGET_GONE'),
       method === 'Fetch.failRequest' ? [{ action: 'DENY_TARGET_GONE', phase: 'login',
         stage: 'request', path: '<other>', generation: 1 }] : []);
-    assert.deepEqual(diagnostics(trace), method === 'Fetch.failRequest' ? [] : [{ action: 'OPERATION_FAILED', operation: method,
+    assert.deepEqual(trace.filter(row => row.action === 'CONTINUE_TARGET_GONE'),
+      method === 'Fetch.continueRequest' ? [{ action: 'CONTINUE_TARGET_GONE', phase: 'login',
+        stage: 'request', path: '/signin', generation: 1 }] : []);
+    assert.deepEqual(diagnostics(trace), gone ? [] : [{ action: 'OPERATION_FAILED', operation: method,
       phase: 'login', stage: method === 'Fetch.continueResponse' ? 'response' : 'request',
       path: method === 'Fetch.failRequest' ? '<other>' : '/signin', generation: 1,
       category: 'REQUEST_ID_INVALID' }]);

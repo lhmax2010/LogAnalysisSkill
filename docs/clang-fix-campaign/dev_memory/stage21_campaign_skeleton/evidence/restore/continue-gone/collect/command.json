@@ -1,0 +1,13 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/",
+    "--collect-only",
+    "-q"
+  ],
+  "started_utc": "2026-11-04T13:32:47.593168+00:00",
+  "finished_utc": "2026-11-04T13:32:52.788027+00:00",
+  "exit_code": 0
+}

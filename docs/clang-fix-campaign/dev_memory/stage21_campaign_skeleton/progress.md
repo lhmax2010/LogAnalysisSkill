@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**恢复第1、2批离线完成;第3批真机取证触发安全停止(SKEL-RESTORE-09),等待裁定**。SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-04。状态:**恢复第1、2批离线完成;RESTORE-10窄化修复离线验收完成,待一次真机只读取证**。SKEL-RESTORE-09由RESTORE-10处置(第36节),原失败证据保留;SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1864,3 +1864,111 @@ RESTORE-08第三.1四项前提未齐,不进入第三批实现或第四批。
 逐字节相同,/dev/shm残留为空,见`discovery-capture/validation.json`。
 取证辅助Python的ruff通过,design检查0 problem,本轮文档diff检查通过。
 本批在规定的真机异常停点结束,没有运行或宣称通过第三批功能的全仓门禁。
+
+## 36. 实施裁定 SKEL-RESTORE-10:continueRequest失效先复现再窄化
+
+一、裁定
+1. 停止正确;R-04 豁免只覆盖 Fetch.failRequest,本次 continueRequest 失败按原规则停止无误。
+2. 处置路线:离线复现 → 窄化豁免 → 全量门禁 → 再做一次真机只读取证。不在真机上试错。
+
+二、离线复现(先做,复现不出则停止报告,不改代理)
+1. 用现有 P5Q 假 HTTPS 服务器与真实 Chromium:登录后页面带若干静态资源(css/js/图片,其中至少一个延迟响应),在这些资源请求处于 Fetch 暂停期间触发对 /overview/<id> 的主帧导航,使旧页面资源被浏览器取消;记录每个被取消资源上 continueRequest 的返回类别。
+2. 只用于定位的临时观测字段(资源类型、匿名请求序号、导航代次、相对时间)可放在测试入口或临时副本,不进生产代理,不记录 URL 查询值或正文。
+3. 判定:若稳定复现出 Fetch.continueRequest 返回 REQUEST_ID_INVALID 且来源为已被取消的请求,进入第三条;否则停止并写报告。
+
+三、窄化(复现成立后实施,仅改 installGuards 的失败分类,其余不动)
+1. 仅 operation=Fetch.continueRequest 且 category=REQUEST_ID_INVALID:不调用 onStop,逐次记 trace 动作 CONTINUE_TARGET_GONE(字段同 DENY_TARGET_GONE:phase、stage、path 形态、generation),不占第一条 OPERATION_FAILED。
+2. Fetch.continueResponse 的任何失败、continueRequest 的其它类别、failRequest 以外的其它操作失败,一律保持原停止规则。
+3. 被读取的主帧文档若因此没有正文,read 必须按现有正文/地址/Build 标签核对失败返回错误,不得把“请求已失效”当成功;为此补断言。
+
+四、测试
+1. 新增真实 Chromium 用例:导航取消静态资源 → continueRequest 失效被记录且不停止,后续 read 成功;主帧目标文档的 continue 失效 → read 失败、不产出正文。
+2. Node 矩阵补:continueRequest 其它类别仍停止;continueResponse/REQUEST_ID_INVALID 仍停止;failRequest 豁免行为不变;trace 不含 URL 查询与正文。
+3. 既有 C5a、C8(按 SKEL-R-08 观测规则)、四组安全测试与全部代理静态断言不改并通过;全仓 pytest(不加 -x)、mypy、ruff、lint-imports、design 检查通过。
+4. 改动单独 commit,写入 progress 与 design.md 第 4.6 节(“恢复项落地裁定”下加一条,说明与 R-04 同类、范围与理由)。
+
+五、再做一次真机只读取证
+门禁全过后,按 SKEL-RESTORE-08 第二条原样再执行一次(需用户在弹出窗口登录);之后按 SKEL-RESTORE-08 第三条分叉。若再次出现任何未豁免的失败,停止报告,不再自行重跑。
+
+六、其余要求不变。推送报 Permission denied 时提交后停止回报,由用户本机推送。
+
+### 36.1 复现设计
+
+基线c68b800。只在P5Q假服务器增加默认关闭的dashboard资源与静态资源夹具,
+不改生产代理。测试入口暂缓三份资源的真实Fetch.continueRequest调用,
+待Network.loadingFailed(canceled=true)确认取消后才送出原CDP调用;
+资源类型、匿名序号、导航代次、相对时间留测试证据,不记录原始错误文本。
+另一路图片在服务器延迟响应,所有流量经测试证书/解析规则限制到回环。
+拟在原树独立重复三次,稳定成立前不修改代理。
+
+### 36.2 复现成立与最小实现
+
+`evidence/restore/continue-gone/reproduce-01/`原树连续3次均复现,
+每次3个真实资源(Stylesheet/Script/Image)都先有Network.loadingFailed且
+canceled=true,再调用真实CDP,9/9返回REQUEST_ID_INVALID,服务器实收这三条资源为0。
+各次AGENT_STOPPED=FETCH_CONTINUE_FAILED,read返回QB_BROWSER_UNAVAILABLE且无正文;
+所有profile删除。另一路图片确实到假服务器且延迟3000ms响应。
+证据只记录匿名序号、类型、代次、时间与类别,没有伪造CDP返回或记录原始错误文本。
+复现窗口的请求在login代次2被暂停、read切换到代次3后调用continue;
+这坐实取消机制,不宣称还原了真机<other>资源的具体路径与全部调度时序。
+
+复现成立后,生产仅`qb_browser_agent.mjs`的installGuards两处判断及动作名称
+共+3/-3行:observeFailure为continueRequest失效逐次记CONTINUE_TARGET_GONE,
+guarded只对此组合不停止。Policy、FrameOwnership、Agent.read、驱动与其它生产文件
+完全未改。动作字段仍仅action/phase/stage/path/generation;其它类别枚举不变。
+详见`integrity.json`;代理完整hash:
+`044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723`
+→`431b27137c857f5089053737b320ea35f2317d66493892b3dec5f7608db2e26c`;
+以export class Agent之前为前缀:
+`9b7796f02f3e65f97c6f68bbe169109b8bd885854c98bb976d4d55ae5a2bc006`
+→`1708c9567418043345c6f8a1e875aff93e1f21ce627540583f734fc5eeafb2ed`。
+
+`fixed-01/`复跑3次9个资源均CONTINUE_TARGET_GONE,不占OPERATION_FAILED,
+当前配置页及下一次build overview均读取成功。主文档取消另测1次:
+确认浏览器取消后真实continue同样失效,read仍QB_BROWSER_UNAVAILABLE/无正文,
+服务器实收该文档为0;首条OPERATION_FAILED为page.goto/NAVIGATION_INTERRUPTED,
+UNKNOWN停止分类来自原命令错误映射,没有因豁免伪造成功。
+
+旧诊断矩阵只更新continueRequest/REQUEST_ID_INVALID对应期望:
+`tests/node/test_qb_deny_target_gone.mjs`从停止/OPERATION_FAILED改为
+不停止/CONTINUE_TARGET_GONE;`test_qb_read_failure_diagnostics.mjs`同一参数期望同步。
+failRequest、continueResponse与其它类别旧期望不变,nodeid不改;
+新增逐次记录不占首因与诊断写入异常两例。真实浏览器回归新增一个pytest入口,
+3410个既有nodeid全部保留,最终collect3411;见`nodeids.json`。
+既有C5a/C8入口、四组安全脚本与代理静态断言均逐字节未改。
+
+### 36.3 门禁与观测
+
+静态门禁mypy、ruff(完整tracked Python+新增入口)、7项import合约、design全部通过;
+Node矩阵、既有允许/拒绝测试与静态负例共388 passed/0 failed/0 skipped,
+原始输出与完整argv分别在`mypy/`、`ruff/`、`imports/`、`design/`、`node-matrix/`。
+完整全仓不加-x,3410 passed/0 failed/1 skipped,1211.96秒;
+既有跳过为大小写敏感文件系统上的
+`test_tizen_build_verify.py::test_case_insensitive_bypass_is_platform_specific`。
+输出与JUnit在`full/`;20核,开始负载15.78/14.25/10.71,
+结束8.29/6.28/7.38,开始时CPU前10名称与占用见`full/command.json`。
+3410个旧nodeid保留,只新增1个,无新增skip;没有使用计时豁免或重跑覆盖结果。
+
+四组安全测试独立重跑4/4,Worker/WebSocket、307/308、逐跳拦截、凭据隔离
+全部通过,假服务器请求/握手清单与原始trace见`safety/stdout.log`;
+临时目录删除,全程回环HTTPS。全部门禁结束后P5Q进程与profile残留均为空,
+68份归档HTML逐文件通过生产PageRedactor自检,见`validation.json`。
+代码与说明文档diff检查通过;23份原始脱敏HTML的行尾空白原样保留,
+例外清单见`diff-check.json`,不为清理格式而改证据字节。
+
+读取失败观测表本轮增量见`observations.json`:
+C5a六个落点场景通过,OPERATION_FAILED/AGENT_STOPPED均0,
+可观测关闭尾段0.074–2.183秒(error-no-build的无浏览器命令为null)。
+C8调查11个场景全部完成,harness_failure均为空,各场景profile_removed=true;
+竞争导航的可信环境失败与主动注入的UNKNOWN失败按原断言通过,
+没有自然FETCH_CONTINUE_FAILED或新的失败豁免。
+独立SIGINT清理探针仍复现已知短暂目录残留,own_residue_removed=true,
+其记录`full/c8/cleanup-SIGINT.json`原样保留,不宣称修复该既有遗留。
+
+### 36.4 后续边界
+
+本次生产仅上述installGuards窄例外,未扩大任何URL/动作白名单,
+未改冻结稿、安全核心、身份判据、P5Q结果写入或schema。
+修复及离线证据单独提交推送后,再请用户确认开始一次只读取证;
+使用原capture工具输出到新`discovery-capture/live-02`,live-01不覆盖。
+此处尚未进行真机操作,第三批发现功能与第四批编排未宣称完成。

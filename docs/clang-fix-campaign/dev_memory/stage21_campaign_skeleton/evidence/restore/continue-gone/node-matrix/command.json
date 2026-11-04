@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "/home/linhao/.local/bin/node",
+    "--test",
+    "tests/node/test_qb_deny_target_gone.mjs",
+    "tests/node/test_qb_read_failure_diagnostics.mjs",
+    "tests/node/test_qb_browser_agent.mjs",
+    "tests/node/test_qb_agent_source_guards.mjs"
+  ],
+  "started_utc": "2026-11-04T13:32:35.630488+00:00",
+  "finished_utc": "2026-11-04T13:32:47.593043+00:00",
+  "exit_code": 0
+}

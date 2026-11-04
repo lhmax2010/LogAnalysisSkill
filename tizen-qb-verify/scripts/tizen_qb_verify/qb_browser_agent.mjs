@@ -206,8 +206,8 @@ export async function installGuards(browser, context, page, policy, onStop, trac
         path: pathShape(operation.path),
         generation: Number.isSafeInteger(operation.generation) && operation.generation >= 0 ? operation.generation : 0,
       };
-      if (operation.name === 'Fetch.failRequest' && category === 'REQUEST_ID_INVALID') {
-        trace.push({ action: 'DENY_TARGET_GONE', ...context });
+      if (['Fetch.failRequest', 'Fetch.continueRequest'].includes(operation.name) && category === 'REQUEST_ID_INVALID') {
+        trace.push({ action: operation.name === 'Fetch.failRequest' ? 'DENY_TARGET_GONE' : 'CONTINUE_TARGET_GONE', ...context });
         return category;
       }
       if (firstFailure) return category;
@@ -231,7 +231,7 @@ export async function installGuards(browser, context, page, policy, onStop, trac
     promise.catch(error => {
       let failureCategory;
       try { if (operation) failureCategory = policy.observeFailure(error, operation); } catch { /* Preserve stop. */ }
-      if (operation?.name === 'Fetch.failRequest' && failureCategory === 'REQUEST_ID_INVALID') return;
+      if (['Fetch.failRequest', 'Fetch.continueRequest'].includes(operation?.name) && failureCategory === 'REQUEST_ID_INVALID') return;
       onStop(category);
     }).finally(() => pending.delete(promise));
   };

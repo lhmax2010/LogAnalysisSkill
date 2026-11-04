@@ -1,0 +1,572 @@
+{
+  "mode": "after",
+  "network": "loopback-only",
+  "samples": [
+    {
+      "index": 1,
+      "events": [
+        {
+          "action": "PAUSED",
+          "seq": 1,
+          "type": "Stylesheet",
+          "generation": 2,
+          "ms": 9186
+        },
+        {
+          "action": "PAUSED",
+          "seq": 2,
+          "type": "Script",
+          "generation": 2,
+          "ms": 9186
+        },
+        {
+          "action": "PAUSED",
+          "seq": 3,
+          "type": "Image",
+          "generation": 2,
+          "ms": 9186
+        },
+        {
+          "action": "READ_STARTED",
+          "generation": 2,
+          "ms": 9390
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 2,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 9490
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 1,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 9490
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 3,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 9490
+        },
+        {
+          "action": "CANCELS_CONFIRMED",
+          "generation": 3,
+          "ms": 9493
+        }
+      ],
+      "operations": [
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 1,
+          "type": "Stylesheet",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 9493,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 2,
+          "type": "Script",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 9493,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 3,
+          "type": "Image",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 9493,
+          "category": "REQUEST_ID_INVALID"
+        }
+      ],
+      "received": [
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "kind": "login",
+          "status": 302
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "delayed-image",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        }
+      ],
+      "cancelled": [
+        2,
+        1,
+        3
+      ],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "CONTINUE_TARGET_GONE",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2
+        },
+        {
+          "action": "CONTINUE_TARGET_GONE",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2
+        },
+        {
+          "action": "CONTINUE_TARGET_GONE",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2
+        },
+        {
+          "action": "IDENTITY_OUTSIDE_REGISTERED",
+          "count": 0
+        },
+        {
+          "action": "IDENTITY_OUTSIDE_REGISTERED",
+          "count": 0
+        }
+      ],
+      "read": {
+        "ok": true,
+        "error": null,
+        "has_body": true
+      },
+      "next_read_ok": true,
+      "ok": true,
+      "profile_removed": true
+    },
+    {
+      "index": 2,
+      "events": [
+        {
+          "action": "PAUSED",
+          "seq": 1,
+          "type": "Stylesheet",
+          "generation": 2,
+          "ms": 10808
+        },
+        {
+          "action": "PAUSED",
+          "seq": 2,
+          "type": "Script",
+          "generation": 2,
+          "ms": 10808
+        },
+        {
+          "action": "PAUSED",
+          "seq": 3,
+          "type": "Image",
+          "generation": 2,
+          "ms": 10808
+        },
+        {
+          "action": "READ_STARTED",
+          "generation": 2,
+          "ms": 10813
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 2,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 10883
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 3,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 10883
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 1,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 10883
+        },
+        {
+          "action": "CANCELS_CONFIRMED",
+          "generation": 3,
+          "ms": 10883
+        }
+      ],
+      "operations": [
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 1,
+          "type": "Stylesheet",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 10883,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 2,
+          "type": "Script",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 10884,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 3,
+          "type": "Image",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 10884,
+          "category": "REQUEST_ID_INVALID"
+        }
+      ],
+      "received": [
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "kind": "login",
+          "status": 302
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "delayed-image",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        }
+      ],
+      "cancelled": [
+        2,
+        3,
+        1
+      ],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "CONTINUE_TARGET_GONE",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2
+        },
+        {
+          "action": "CONTINUE_TARGET_GONE",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2
+        },
+        {
+          "action": "CONTINUE_TARGET_GONE",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2
+        },
+        {
+          "action": "IDENTITY_OUTSIDE_REGISTERED",
+          "count": 0
+        },
+        {
+          "action": "IDENTITY_OUTSIDE_REGISTERED",
+          "count": 0
+        }
+      ],
+      "read": {
+        "ok": true,
+        "error": null,
+        "has_body": true
+      },
+      "next_read_ok": true,
+      "ok": true,
+      "profile_removed": true
+    },
+    {
+      "index": 3,
+      "events": [
+        {
+          "action": "PAUSED",
+          "seq": 1,
+          "type": "Stylesheet",
+          "generation": 2,
+          "ms": 1104
+        },
+        {
+          "action": "PAUSED",
+          "seq": 2,
+          "type": "Script",
+          "generation": 2,
+          "ms": 1104
+        },
+        {
+          "action": "PAUSED",
+          "seq": 3,
+          "type": "Image",
+          "generation": 2,
+          "ms": 1104
+        },
+        {
+          "action": "READ_STARTED",
+          "generation": 2,
+          "ms": 3020
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 2,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 3036
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 3,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 3036
+        },
+        {
+          "action": "NETWORK_LOADING_FAILED",
+          "seq": 1,
+          "cancelled": true,
+          "generation": 2,
+          "ms": 3036
+        },
+        {
+          "action": "CANCELS_CONFIRMED",
+          "generation": 3,
+          "ms": 3040
+        }
+      ],
+      "operations": [
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 1,
+          "type": "Stylesheet",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 3040,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 2,
+          "type": "Script",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 3041,
+          "category": "REQUEST_ID_INVALID"
+        },
+        {
+          "operation": "Fetch.continueRequest",
+          "seq": 3,
+          "type": "Image",
+          "cancelled_before_call": true,
+          "generation": 3,
+          "ms": 3041,
+          "category": "REQUEST_ID_INVALID"
+        }
+      ],
+      "received": [
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "kind": "login",
+          "status": 302
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "delayed-image",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "kind": "document",
+          "status": 200
+        }
+      ],
+      "cancelled": [
+        2,
+        3,
+        1
+      ],
+      "trace": [
+        {
+          "action": "FRAMEWORK_SELF_TEST",
+          "playwright_version": "1.58.2",
+          "counts": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "action": "CONTINUE_TARGET_GONE",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2
+        },
+        {
+          "action": "CONTINUE_TARGET_GONE",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2
+        },
+        {
+          "action": "CONTINUE_TARGET_GONE",
+          "phase": "login",
+          "stage": "request",
+          "path": "<other>",
+          "generation": 2
+        },
+        {
+          "action": "IDENTITY_OUTSIDE_REGISTERED",
+          "count": 0
+        },
+        {
+          "action": "IDENTITY_OUTSIDE_REGISTERED",
+          "count": 0
+        }
+      ],
+      "read": {
+        "ok": true,
+        "error": null,
+        "has_body": true
+      },
+      "next_read_ok": true,
+      "ok": true,
+      "profile_removed": true
+    }
+  ],
+  "main_document": {
+    "operations": [
+      {
+        "operation": "Fetch.continueRequest",
+        "cancelled_before_call": true,
+        "category": "REQUEST_ID_INVALID"
+      }
+    ],
+    "events": [
+      {
+        "action": "MAIN_DOCUMENT_CANCELLED"
+      }
+    ],
+    "read": {
+      "ok": false,
+      "error": "QB_BROWSER_UNAVAILABLE",
+      "has_body": false
+    },
+    "ok": true,
+    "profile_removed": true,
+    "trace": [
+      {
+        "action": "FRAMEWORK_SELF_TEST",
+        "playwright_version": "1.58.2",
+        "counts": [
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "action": "OPERATION_FAILED",
+        "operation": "page.goto",
+        "phase": "read",
+        "stage": "navigation",
+        "path": "/build/<id>/overview",
+        "generation": 0,
+        "category": "NAVIGATION_INTERRUPTED"
+      },
+      {
+        "action": "AGENT_STOPPED",
+        "failure_category": "UNKNOWN"
+      },
+      {
+        "action": "CONTINUE_TARGET_GONE",
+        "phase": "read",
+        "stage": "request",
+        "path": "/build/<id>/overview",
+        "generation": 0
+      }
+    ]
+  },
+  "ok": true
+}

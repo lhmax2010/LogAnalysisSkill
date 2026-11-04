@@ -151,7 +151,8 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
         redirect(fixture.loginRedirect ?? '/dashboard');
       } else if (url.pathname === '/dashboard') response.end(fixture.dashboardNoSignOut || fixture.loginCase === 'no-signout'
         ? '<!doctype html><link rel="icon" href="data:,"><h1>Dashboard without signout</h1>'
-        : page('<h1>Dashboard</h1>' + (fixture.loginCase === 'password-remains' ? '<input type="password">' : '')));
+        : page('<h1>Dashboard</h1>' + (fixture.loginCase === 'password-remains' ? '<input type="password">' : '')
+          + (fixture.dashboardResources ?? '')));
       else if (url.pathname === '/overview/1917') {
         if (fixture.submissions.length) fixture.lookupRounds++;
         if (fixture.submissions.length && fixture.configurationDelayMs) {
@@ -193,6 +194,11 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
         if (tab === 'variables') response.end(variables(id, fixture.submitted));
         else if (tab === 'step_status') response.end(page(`<a class="nav-link">Build (id:${id})</a><div class="step failed"><div class="step-head"><span class="step-name">Build_GBS</span></div></div>`));
         else response.end(overview(id, fixture.childStatus, fixture.compare));
+      } else if (row.method === 'GET' && fixture.staticResources?.has(url.pathname)) {
+        const resource = fixture.staticResources.get(url.pathname);
+        if (resource.delayMs) await new Promise(resolve => setTimeout(resolve, resource.delayMs));
+        response.setHeader('Content-Type', resource.contentType);
+        response.end(resource.body);
       } else { row.status = 404; fixture.errors.push(row); response.writeHead(404); response.end(); }
     })().catch(() => { fixture.errors.push({ category: 'FAKE_SERVER_ERROR' }); response.destroy(); });
   });

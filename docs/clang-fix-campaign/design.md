@@ -2809,6 +2809,12 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
    fix_summary_sha256。同类型/类别/工具链/正文才去重,不同正文各存一条。
    seed实例字段与initial/final可为null,不伪造溯源;instance校验不因seed放宽。
    原因:类别策略没有实例包/tree,必须明确其独立的持久化身份。
+6. 按SKEL-RESTORE-10,在真实Chromium确认旧页面资源取消后继续请求返回
+   REQUEST_ID_INVALID的离线复现基础上,增加与R-04同类的窄例外:
+   仅Fetch.continueRequest/REQUEST_ID_INVALID不停止,逐次记CONTINUE_TARGET_GONE,
+   不占第一条OPERATION_FAILED。Fetch.continueResponse任何失败及continueRequest
+   其它类别仍停止,failRequest原窄例外不变。读取的主帧若没有正文仍按现有地址、
+   原始正文与Build标签核验报错,不把失效请求当作读取成功;放行规则不变。
 
 本批不改变发现阶段的浏览器白名单;该项仍须按SKEL-RESTORE-01第三.1条
 先做URL形态取证,停止等待裁定后才可实施。

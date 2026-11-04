@@ -34,9 +34,10 @@ for (const method of ['Fetch.failRequest', 'Fetch.continueRequest', 'Fetch.conti
     if (method === 'Fetch.continueResponse') { pause('/signin'); await flush(); pause('/signin', 200); }
     else pause(method === 'Fetch.failRequest' ? '/rest/blocked?token=private-query' : '/signin');
     await flush();
-    const gone = method === 'Fetch.failRequest' && category === 'REQUEST_ID_INVALID';
+    const gone = ['Fetch.failRequest', 'Fetch.continueRequest'].includes(method) && category === 'REQUEST_ID_INVALID';
     assert.deepEqual(stops, gone ? [] : ['FETCH_CONTINUE_FAILED']);
-    assert.equal(trace.filter(row => row.action === 'DENY_TARGET_GONE').length, gone ? 1 : 0);
+    assert.equal(trace.filter(row => row.action === 'DENY_TARGET_GONE').length, gone && method === 'Fetch.failRequest' ? 1 : 0);
+    assert.equal(trace.filter(row => row.action === 'CONTINUE_TARGET_GONE').length, gone && method === 'Fetch.continueRequest' ? 1 : 0);
     const failures = trace.filter(row => row.action === 'OPERATION_FAILED');
     assert.equal(failures.length, gone ? 0 : 1);
     if (!gone) assert.equal(failures[0].category, category);
@@ -68,4 +69,31 @@ test('gone trace sink failure does not change the narrowly allowed outcome', asy
   pause('/rest/one'); await flush(); pause('/rest/two'); await flush();
   assert.deepEqual(stops, []);
   assert.ok(!JSON.stringify(trace).includes('private-'));
+});
+
+test('every gone continue is recorded without consuming the first failure', async () => {
+  let message = 'Invalid requestId';
+  const { pause, trace, stops } = await fixture(method => method === 'Fetch.continueRequest' ? message : null);
+  pause('/signin'); await flush(); pause('/signin'); await flush();
+  assert.deepEqual(stops, []);
+  assert.equal(trace.filter(row => row.action === 'OPERATION_FAILED').length, 0);
+  assert.deepEqual(trace.filter(row => row.action === 'CONTINUE_TARGET_GONE'), [0, 1].map(() => ({
+    action: 'CONTINUE_TARGET_GONE', phase: 'login', stage: 'request', path: '/signin', generation: 0,
+  })));
+  message = 'Session closed'; pause('/signin'); await flush();
+  assert.deepEqual(stops, ['FETCH_CONTINUE_FAILED']);
+  assert.equal(trace.filter(row => row.action === 'OPERATION_FAILED')[0].category, 'TARGET_OR_SESSION_CLOSED');
+  message = 'Invalid requestId'; pause('/signin'); await flush();
+  assert.equal(trace.filter(row => row.action === 'CONTINUE_TARGET_GONE').length, 3);
+  assert.equal(trace.filter(row => row.action === 'OPERATION_FAILED').length, 1);
+  assert.ok(!JSON.stringify(trace).includes('private-'));
+});
+
+test('gone continue trace sink failure cannot turn an expired ID into a stop', async () => {
+  const { pause, trace, stops } = await fixture(method => method === 'Fetch.continueRequest' ? 'Invalid requestId' : null);
+  const push = trace.push.bind(trace);
+  trace.push = row => { if (row.action === 'CONTINUE_TARGET_GONE') throw new Error(secret); return push(row); };
+  pause('/signin'); await flush(); pause('/signin'); await flush();
+  assert.deepEqual(stops, []);
+  assert.equal(trace.filter(row => row.action === 'OPERATION_FAILED').length, 0);
 });

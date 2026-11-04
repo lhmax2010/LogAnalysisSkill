@@ -1,0 +1,28 @@
+{
+  "before": {
+    "sha256": "044ae065ee223093b4d63e3444f37a812dd2831266e6334fac526bf116ec7723",
+    "prefix_sha256": "9b7796f02f3e65f97c6f68bbe169109b8bd885854c98bb976d4d55ae5a2bc006"
+  },
+  "after": {
+    "sha256": "431b27137c857f5089053737b320ea35f2317d66493892b3dec5f7608db2e26c",
+    "prefix_sha256": "1708c9567418043345c6f8a1e875aff93e1f21ce627540583f734fc5eeafb2ed"
+  },
+  "outside_installGuards_unchanged": true,
+  "protected": {
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py": true,
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_trigger.py": true,
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_result_fetch.py": true,
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/db.py": true,
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/keys.py": true,
+    "tizen-ci-shared/scripts/tizen_ci_shared/state/records.py": true,
+    "tizen-build-verify/scripts/tizen_build_verify/build_verify.py": true,
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": true,
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": true,
+    "tests/node/p5q_c2b_safety.mjs": true,
+    "tests/node/qb_agent_source_guards.mjs": true,
+    "tests/node/test_qb_agent_source_guards.mjs": true,
+    "tests/node/p5q_c8_investigation.mjs": true,
+    "tests/unit/test_p5q_c8_investigation.py": true,
+    "tests/unit/test_p5q_c5a_integration.py": true
+  }
+}
