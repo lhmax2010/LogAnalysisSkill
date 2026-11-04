@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**骨架阶段离线收尾,真实端到端延后**。按SKEL-CLOSE-01,第1、2、3批与读取失败修复的离线验收作为本阶段收尾依据;第3.5、4批均为“延后”,不是“通过”。预筛合格候选0个,实际build.conf等证据缺口保留;待COSMOS build接入与后续执行裁定后补跑。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-04。状态:**恢复项开工停止,等待T1审核规则裁定**(SKEL-RESTORE-01,见第26节)。此前骨架阶段离线收尾结论保留:按SKEL-CLOSE-01,第1、2、3批与读取失败修复已验收;第3.5、4批真实端到端仍为“延后”,不是“通过”。预筛合格候选0个,实际build.conf等证据缺口保留。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -1470,3 +1470,52 @@ evidence_packet.md的EOF多空行,按原始输出要求保留,未改写。
 - v1.3冻结稿SHA256仍为`1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9`,正文零改动。
 - 本轮不运行pytest或任何业务命令;生产与测试零改动。与SKEL-CLOSE-01不一致或做不到之处:无。
 - SKEL-CLOSE-02:在收尾记录第3节第2批结论后按裁定补充原始FETCH_CONTINUE_FAILED签名、读取失败缺陷而非计时问题及5b41ee9修复并按SKEL-R-08验收的说明;其余内容不改,不运行任何业务命令。
+
+## 26. SKEL-RESTORE-01:恢复项开工对照与停止
+
+### 26.1 权威输入与计划
+
+收到四批离线恢复任务,以design.md指定契约与本次明确偏差为准;已通读所列章节。
+基线`f93b890`,此前SKEL-CLOSE-01/02记录不删除,真实第3.5/4批仍延后。
+恢复批次不同于此前骨架批次:恢复1=D2E,恢复2=KB/sync/propose-fix,
+恢复3=发现(先URL取证、提交后停等裁定),恢复4=剧本/模板/E2E/文档。
+各批须独立提交推送并通过全仓门禁,未验收不得声称已恢复。
+
+| 权威条文 | 本轮逐条核对与实施落点 | 当前结论 |
+|---|---|---|
+| design 3.3第1步 | failed_arches/primary → 日志 → analyzer证据/sha → create_unit同事务锚定;恢复3复用intake | 已读,尚未实现 |
+| design 3.4 kb schema | clang_kb/v1、七元dedupe、JSONL锁/原子写与promote;恢复2 core.kb | 已读,尚未实现 |
+| design 3.4 guard | 真实tizen_build_verify.edit_spec_guard;路径/符号链接/唯一性/line/重叠;恢复1 core.diff_to_edit_spec | 已读,不自建guard |
+| design 3.4 arch门 | 非白名单整unit拒绝、规范化优先序与拒绝落库;恢复3 | 已读,尚未实现 |
+| design 3.5 T1/T2 | instance+CI_VERIFIED完整键、NEW不匹配、T2限5与稳定排序 | 已读,恢复2待实施 |
+| design 3.5取材 | gerrit_ssh_base+gerrit_path与change_ref白名单,gerrit_url不执行 | 已读,仅本地假SSH验证 |
+| design 4.1 D2E | repair执行包入口,0/2/4与DIFF_CONVERT_UNSUPPORTED;不支持形态显式reason | 已读,恢复1未启动实现 |
+| design 4.1 kb query/append/promote | 固定双列表、幂等写入与单向promote;恢复2新执行包 | 已读,待实施 |
+| design 7 Phase7 DoD | 全部不支持形态、真实guard拒绝/符号链接正例、多hunk与p4/git头 | 已读,未运行 |
+| design 7 Phase8 DoD | 黄金向量parity、自建非私有归一化、normalizer_version、并发与损坏fail-closed | 已读,以该节D-5的细化为准,未实现 |
+| design 7 Phase9 DoD | 发现加法扩展与旧模式回归;新人工浏览器会话先本地URL证据审批 | 已读,不得提前改代理 |
+| design A2/3.7/4.1审核契约 | T1非抑制应为cherry_pick并有review资格;现有review仅接受generated/suppress且final仅code | 冲突,触发本任务第五.2条停止 |
+
+本任务批准的有意偏差仅登记为待落地:KB_APPENDED改独立campaign-kb-sync与KB_SYNC事件;
+历史人工修法允许origin=imported_shelve及该origin的verified_tree_sha为空;
+发现不用Cookie文件而用人工登录的只读代理会话。尚未实现,不在design.md或收尾记录写成已恢复。
+依赖合约不放宽、不加状态;不改四个提交/读取命令的现有拒绝规则;
+不运行真实Gerrit/gbs/QuickBuild,不向llvm-optimize写内容。
+
+### 26.2 开工停止与证据
+
+[停止报告](evidence/restore/stop-report-SKEL-RESTORE-01.md):T1全链路目标与review拒绝规则零改动不能同时满足。
+review_submit.py第298行拒绝t1_cherry_pick来源,第314行拒绝cherry_pick最终策略;
+design.md第182/1881/1147行与恢复任务第二.4.b、第四.2条要求该路径。
+未把T1标成generated,未故意使转换失败,未改审核安全规则。
+
+[只读探针](evidence/restore/probe-review-t1.py)真实调用guard/policy,随后求值未修改的两条AST条件:
+generated→code通过两条件;t1_cherry_pick→cherry_pick被两条件拒绝;
+suppress仍被A2拒绝。3向量断言通过,exit0,临时夹具已删除。
+不是完整review CLI执行,无数据库/网络/推送。argv、UTC、stdout、stderr同目录归档。
+候选是对review来源集合与A2集合授权两行窄修改,保留其它所有拒绝与抑制优先级;
+具体diff、副作用、待补测试见报告,仅提案不实施。
+
+尚未实施任何恢复批次,不运行全仓门禁;本次只提交登记/停止证据,等待设计方裁定。
+检查:探针3向量通过、证据脚本ruff通过、design检查0 problem、暂存差异检查通过;
+冻结稿SHA256仍为1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9。

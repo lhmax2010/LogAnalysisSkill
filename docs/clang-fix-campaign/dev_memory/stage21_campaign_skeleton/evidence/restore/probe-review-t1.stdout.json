@@ -1,0 +1,36 @@
+{
+  "scope": "real guard/policy and unmodified AST predicates, not an end-to-end review run",
+  "source": "tizen-review-submit/scripts/tizen_review_submit/review_submit.py",
+  "source_sha256": "219d2f0095ad75bb0841319a4a345af46e6f11d8cf33c4b30e496b4a4a4d7378",
+  "source_gate_line": 298,
+  "source_gate_predicate": "policy is None or policy.get('edit_source_kind') not in {'generated', 'suppress'}",
+  "a2_gate_line": 314,
+  "a2_gate_predicate": "verdict.fix_strategy_final != 'code' or not view.reproduced",
+  "results": [
+    {
+      "source_kind": "generated",
+      "policy_verdict": "allowed",
+      "fix_strategy_final": "code",
+      "current_source_gate_rejects": false,
+      "current_a2_rejects_if_reached": false
+    },
+    {
+      "source_kind": "t1_cherry_pick",
+      "policy_verdict": "allowed",
+      "fix_strategy_final": "cherry_pick",
+      "current_source_gate_rejects": true,
+      "current_a2_rejects_if_reached": true
+    },
+    {
+      "source_kind": "suppress",
+      "policy_verdict": "allowed",
+      "fix_strategy_final": "suppress",
+      "current_source_gate_rejects": false,
+      "current_a2_rejects_if_reached": true
+    }
+  ],
+  "temporary_fixture": "/tmp/skel-restore-policy-qsp3s04w",
+  "temporary_fixture_removed": true,
+  "review_command_executed": false,
+  "network_or_database_used": false
+}
