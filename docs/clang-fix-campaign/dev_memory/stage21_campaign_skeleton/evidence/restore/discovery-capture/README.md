@@ -1,8 +1,8 @@
 # SKEL-RESTORE-08 发现页面只读取证
 
-当前状态:RESTORE-12路径与脱敏修复已实施;RESTORE-13历史停止由RESTORE-14处置,
-三次独立重跑及最终全仓门禁通过(见`../redaction-14/README.md`),等待用户开始确认。
-六页读取事实保留,iframe/日志未读取,没有重新启动真机。
+当前状态:RESTORE-14门禁通过后,用户确认的一次live-03在首个html_report脱敏失败,
+按RESTORE-15停止。正文零归档,iframe/日志未读,没有重试。
+六页旧读取事实保留;离线门禁见`../redaction-14/README.md`。
 
 ## RESTORE-12存档修正
 
@@ -97,3 +97,24 @@ Node **7 passed / 0 failed / 0 skipped**,20.21秒:
 trace无OPERATION_FAILED/AGENT_STOPPED,最终profile删除且无残留。
 
 详见[SKEL-RESTORE-11停止报告](stop-report-SKEL-RESTORE-11.md)。
+
+## RESTORE-14唯一一次剩余三页取证:live-03
+
+用户回复“开始”,在41ce708门禁通过并推送后执行一次。
+完整命令在`live-03.command.json`,paths只给`[PATHS.at(-1)]`;
+没有重读overview/variables,没有运行表单、提交或换包。
+UTC 2026-11-05 06:03:42.545至06:04:35.243,52.698秒,exit4。
+
+登录成功后,`/build/1204736/html_report`主帧GET返回200、
+`text/html;charset=utf-8`,单跳、无Content-Disposition/Download。
+正文交给writer后以QB_EVIDENCE_REDACTION_FAILED结束,未归档任何正文。
+替换次数和身份残留结果均未取得,不能用0表示通过。
+iframe自动other帧请求未登记被拒,没有其显式主帧读取,也没有访问日志。
+trace为FRAMEWORK_SELF_TEST 1、DENIED 8,无AGENT_STOPPED/OPERATION_FAILED。
+浏览器已关闭,profile_removed=true,事后无P5Q进程/profile残留。
+
+`live-03/run.json`、同级命令/输出及`live-03/validation.json`保留固定元数据,
+没有原始正文、账号、密码或Cookie。纯合成的`offline-worker-probe.json`
+只说明单项Welcome不能满足当前实现的复合身份完整性要求,不能证明现场命中此分支。
+worker统一错误码无法进一步定位,没有现场改工具或再读页面。
+详见[SKEL-RESTORE-15停止报告](stop-report-SKEL-RESTORE-15.md)。

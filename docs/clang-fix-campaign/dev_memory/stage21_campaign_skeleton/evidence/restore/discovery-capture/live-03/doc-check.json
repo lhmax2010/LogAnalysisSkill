@@ -1,0 +1,11 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/tools/check_design_doc.py",
+    "docs/clang-fix-campaign/design.md"
+  ],
+  "exit_code": 0,
+  "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n",
+  "stderr": "",
+  "scope": "documentation and metadata only; no new full test claim"
+}

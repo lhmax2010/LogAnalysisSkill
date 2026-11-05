@@ -1,0 +1,27 @@
+{
+  "network_used": false,
+  "live_root_cause_proven": false,
+  "cases": [
+    {
+      "synthetic_case": "compound",
+      "worker_exit": 0,
+      "reply": {
+        "ok": true,
+        "sha256": "e26f24f20d22c7e57202f6ac0f81e550f5ab0254e9be0660e83cb9e313344ed5",
+        "bytes": 47,
+        "identity_replacement_count": 1,
+        "identity_remaining_count": 0
+      },
+      "body_created": true
+    },
+    {
+      "synthetic_case": "single",
+      "worker_exit": 0,
+      "reply": {
+        "ok": false,
+        "error": "QB_EVIDENCE_REDACTION_FAILED"
+      },
+      "body_created": false
+    }
+  ]
+}

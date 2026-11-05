@@ -1,0 +1,74 @@
+{
+  "files": [
+    {
+      "file": "discovery-capture/live-03/doc-check.json",
+      "sha256": "b9a3475de6fac1a4985e3132cfda619ed5f4cda362ada11ffa7fccc7c34cf701",
+      "bytes": 341,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-capture/live-03/offline-worker-probe.json",
+      "sha256": "befe4cc39d28cc06c88e924373d4e4cee76f634a6f61284fa709ad5afff0393c",
+      "bytes": 606,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-capture/live-03/run.json",
+      "sha256": "a27c08450f15b188a3131b9ffdff6f8b9523b8b151f1a95646789ac1f28fe92e",
+      "bytes": 2496,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-capture/live-03/validation.json",
+      "sha256": "bb452d3047589452adcd638285d69c37bbad4f3a895f898bb20bf27609564542",
+      "bytes": 2733,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-capture/live-03.command.json",
+      "sha256": "0b9e56aaef902029d16cc70dbaa6acde2ea27e7f389a989bbc7da9db16b74b5e",
+      "bytes": 1028,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-capture/live-03.preflight.json",
+      "sha256": "5cce9a3070d358005980280233a6357b65a37c805aa9c453a8ed7965ca3a141b",
+      "bytes": 1647,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-capture/live-03.stdout.log",
+      "sha256": "a444b4be50cec4c74410007b8d883b594834a2c3126bbf0cc3444e4d2a845aa3",
+      "bytes": 95,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-capture/live-03.stderr.log",
+      "sha256": "d2a294198eb24b236cf74666893a6a06cc5a74d338cc52219b1016a402c12b1a",
+      "bytes": 190,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-capture/README.md",
+      "sha256": "f6486ee000343f723e1f34b85aed4c383c5a45b22895f261cde4503a1c35518a",
+      "bytes": 7372,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-capture/stop-report-SKEL-RESTORE-15.md",
+      "sha256": "deb9c14334ceca682b06cc29428749e50f7b4d46d50d26a4a24dd51864ea0d6e",
+      "bytes": 4103,
+      "check": "passed"
+    },
+    {
+      "file": "discovery-url-shapes.md",
+      "sha256": "fc17cd702505d555122c28997dab16d006d05010ab05333a5812f5ea338731e1",
+      "bytes": 16758,
+      "check": "passed"
+    }
+  ],
+  "body_count": 0,
+  "source_changes": [],
+  "real_browser_runs": 1,
+  "retries": 0
+}

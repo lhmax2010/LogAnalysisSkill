@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-14最终树门禁通过(3435通过/1既有跳过),等待用户确认唯一一次三页只读取证,未启动真机**。RESTORE-13由RESTORE-14处置(第38节),原失败证据保留;RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-14门禁通过,唯一一次live-03取证在首个html_report的脱敏阶段停止(SKEL-RESTORE-15),正文零归档,未读iframe/日志**。RESTORE-13由RESTORE-14处置(第38节),原失败证据保留;RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -2161,3 +2161,44 @@ C5a六参数、C8调查、代理允许/拒绝矩阵、源码负例、可信读�
 `/build/1204736/html_report` → 唯一iframe → zlib/armv7l唯一失败日志,
 新目录`discovery-capture/live-03`尚不存在;须用户回复“开始”后执行一次。
 不重复前六页,不打开运行表单、不提交、不访问真实Gerrit或运行真实gbs。
+
+## 39. RESTORE-14唯一一次三页取证:live-03与停止SKEL-RESTORE-15
+
+基线41ce708已推送,最终树门禁见第38节。用户确认原话:“开始”。
+本次没有改生产代码、取证工具或测试,也没有重跑/覆盖旧现场证据。
+新证据在`evidence/restore/discovery-capture/live-03/`;
+同级`live-03.preflight.json`、`live-03.command.json`、`live-03.stdout.log`、
+`live-03.stderr.log`记录完整前置、argv、UTC起止、exit与固定输出。
+只调用capture导出入口,paths为`[PATHS.at(-1)]`,没有测试解析器/证书启动参数。
+前置与41ce708源码hash一致,冻结稿hash一致,P5Q进程/profile无残留。
+
+| 项目 | 实测 | 来源 |
+| --- | --- | --- |
+| 一次执行 | 2026-11-05 06:03:42.545–06:04:35.243 UTC,52.698秒,exit4 | `live-03.command.json` |
+| 登录 | ok=true | `live-03/run.json:61` |
+| 唯一业务主帧页 | GET /build/1204736/html_report,HTTP200,text/html;charset=utf-8 | `run.json:7`,`:23`,`:32` |
+| 重定向/下载 | 单跳最终地址一致,Content-Disposition=null,Download=false | `run.json:11`,`:12`,`:15` |
+| 停止 | QB_EVIDENCE_REDACTION_FAILED | `run.json:64`;`live-03.stderr.log` |
+| 正文 | 0份;没有body/hash/替换次数应答,身份残留检查结果NOT_COLLECTED,不写0 | `live-03/validation.json` |
+| iframe/日志 | 没有显式主帧读取;一个未登记other帧Document请求被拒 | `run.json:40` |
+| 关闭 | PAGE_CLOSED=48386ms,disconnected=48428ms,profile_removed=true | `run.json:53`,`:57`,`:116` |
+| 事后检查 | P5Q自身进程/profile均0,6份元数据逐文件检查通过,validation自身也检查通过 | `live-03/validation.json` |
+
+trace只有FRAMEWORK_SELF_TEST 1与DENIED 8(login4/read4),没有OPERATION_FAILED、
+AGENT_STOPPED、CONTINUE_TARGET_GONE或DENY_TARGET_GONE。没有放宽拦截或重试。
+前六页没有重复读取,仅从获准html_report开始,未运行任何表单/提交命令。
+
+停止位于`capture.mjs:219`的正文writer调用。worker将身份登记、脱敏映射、
+写前/写后检查及文件操作异常统一折叠为一个错误码,因此具体失败分支未知。
+一个实现限制值得核对:SessionPageRedactor目前只从Welcome片段中识别
+`account (display)`复合格式,才把session_identity_complete设为true;
+这不是由现场已知事实证明的唯一身份展示格式。离线纯合成探针:
+复合格式通过,只有单项则同样返回QB_EVIDENCE_REDACTION_FAILED且不归档。
+见`live-03/offline-worker-probe.json`;它只证明候选机制存在,不证明本次根因。
+不从旧会话猜本次身份,不保存原始正文,不重新请求来补原因。
+
+按RESTORE-12第三.3/RESTORE-08第三.2停止。四项实施前提未取齐,
+iframe/日志的同源、跳转、Content-Type/Download、href/wire path仍UNKNOWN。
+`discovery-url-shapes.md`第2.3节已回填;具体停止事实和未实施的候选诊断方案见
+`discovery-capture/stop-report-SKEL-RESTORE-15.md`。没有进入正式发现CLI或第四批。
+本次仅归档与文档检查,不把第38节的离线门禁冒称为真机取证通过。

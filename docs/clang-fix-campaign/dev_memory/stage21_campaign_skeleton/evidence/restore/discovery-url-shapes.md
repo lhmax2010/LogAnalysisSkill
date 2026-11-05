@@ -96,6 +96,28 @@ exit4。未出现OPERATION_FAILED/AGENT_STOPPED,profile已删除。
 四条件尚未齐备,不能进入实现;见
 [SKEL-RESTORE-11](discovery-capture/stop-report-SKEL-RESTORE-11.md)。
 
+### 2.3 RESTORE-14补读结果:live-03(2026-11-05)
+
+41ce708离线门禁完成,用户确认“开始”后只执行一次剩余三页入口。
+登录ok=true,首个`/build/1204736/html_report`主帧单跳GET为200、
+text/html;charset=utf-8,无Content-Disposition/Download,
+但正文worker返回QB_EVIDENCE_REDACTION_FAILED,未归档正文,立即停止。
+见`discovery-capture/live-03/run.json:7`、`:61`、`:64`。
+
+| 原UNKNOWN | 本次结果 |
+| --- | --- |
+| iframe实际wire path及响应元数据 | 仍UNKNOWN;未进行显式主帧读取 |
+| 日志href、编码、Content-Type、Download与跳转 | 仍UNKNOWN;未到iframe内容页 |
+| html_report响应元数据 | 再次确认主帧HTTP200、单跳,但本次没有正文可复核src |
+| 会话身份全页遮蔽与复检 | 本次失败,替换次数/残留均NOT_COLLECTED,不能写0 |
+
+RESTORE-12已确认live-02旧身份计数2实际涉及漏遮蔽并完成后处理;
+第2.2节历史计数不作为身份安全通过依据。坏标签保留,见capture README。
+新取证没有重读前六页、没有请求其它包、没有重试;
+四条件未齐备,不进入第三/四批实现。
+[SKEL-RESTORE-15报告](discovery-capture/stop-report-SKEL-RESTORE-15.md)给出事实与候选诊断,
+不把统一错误码推断为已证实的具体根因。
+
 ## 3. 当前拦截与读取边界
 
 - Agent`:88`的readonly仅含build裸页/overview/variables/step_status和登记overview。

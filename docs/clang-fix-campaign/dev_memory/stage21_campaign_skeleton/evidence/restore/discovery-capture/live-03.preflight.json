@@ -1,0 +1,41 @@
+{
+  "utc": "2026-11-05T06:03:42.540893+00:00",
+  "head": "41ce708ed7e753b6f0571954f1ce77fb1aabe05d",
+  "output_preexisted": false,
+  "checks": {
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": {
+      "sha256": "431b27137c857f5089053737b320ea35f2317d66493892b3dec5f7608db2e26c",
+      "matches_commit": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_redact.py": {
+      "sha256": "6301d2d169af61569eba0728367baf2b79c16b4ba71bade0ecb5555982bca810",
+      "matches_commit": true
+    },
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/capture.mjs": {
+      "sha256": "68708f6f1cd67b77d377a4f75dd1ea2cf63b9f27368a175103489f79b0767cf1",
+      "matches_commit": true
+    },
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/redact_capture.py": {
+      "sha256": "0db1e50f19b77dd1a82061120d1a42f60abdec81cae3a9f7f9a119af058aa077",
+      "matches_commit": true
+    },
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": {
+      "sha256": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+      "matches_commit": true
+    },
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": {
+      "sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+      "matches_commit": true
+    }
+  },
+  "profiles": [],
+  "own_processes": [],
+  "display_available": true,
+  "loadavg": "1.77 0.79 0.79 1/2748 286897",
+  "authorization": "开始",
+  "paths": [
+    "/build/1204736/html_report",
+    "unique iframe src",
+    "unique zlib armv7l failed log href"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "utc": "2026-11-05T06:06:56.136939+00:00",
+  "source_checks": {
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": {
+      "sha256": "431b27137c857f5089053737b320ea35f2317d66493892b3dec5f7608db2e26c",
+      "unchanged": true
+    },
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_redact.py": {
+      "sha256": "6301d2d169af61569eba0728367baf2b79c16b4ba71bade0ecb5555982bca810",
+      "unchanged": true
+    },
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/capture.mjs": {
+      "sha256": "68708f6f1cd67b77d377a4f75dd1ea2cf63b9f27368a175103489f79b0767cf1",
+      "unchanged": true
+    },
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/redact_capture.py": {
+      "sha256": "0db1e50f19b77dd1a82061120d1a42f60abdec81cae3a9f7f9a119af058aa077",
+      "unchanged": true
+    },
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": {
+      "sha256": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364",
+      "unchanged": true
+    },
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": {
+      "sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+      "unchanged": true
+    }
+  },
+  "profiles": [],
+  "own_processes": [],
+  "trace_actions": {
+    "FRAMEWORK_SELF_TEST": 1,
+    "DENIED": 8
+  },
+  "body_count": 0,
+  "identity_replacement_count": null,
+  "identity_remaining_count": null,
+  "identity_checks_status": "NOT_COLLECTED: failed body never archived",
+  "metadata_checks": [
+    {
+      "file": "live-03/offline-worker-probe.json",
+      "bytes": 606,
+      "sha256": "befe4cc39d28cc06c88e924373d4e4cee76f634a6f61284fa709ad5afff0393c",
+      "credential_check": "passed"
+    },
+    {
+      "file": "live-03/run.json",
+      "bytes": 2496,
+      "sha256": "a27c08450f15b188a3131b9ffdff6f8b9523b8b151f1a95646789ac1f28fe92e",
+      "credential_check": "passed"
+    },
+    {
+      "file": "live-03.command.json",
+      "bytes": 1028,
+      "sha256": "0b9e56aaef902029d16cc70dbaa6acde2ea27e7f389a989bbc7da9db16b74b5e",
+      "credential_check": "passed"
+    },
+    {
+      "file": "live-03.preflight.json",
+      "bytes": 1647,
+      "sha256": "5cce9a3070d358005980280233a6357b65a37c805aa9c453a8ed7965ca3a141b",
+      "credential_check": "passed"
+    },
+    {
+      "file": "live-03.stdout.log",
+      "bytes": 95,
+      "sha256": "a444b4be50cec4c74410007b8d883b594834a2c3126bbf0cc3444e4d2a845aa3",
+      "credential_check": "passed"
+    },
+    {
+      "file": "live-03.stderr.log",
+      "bytes": 190,
+      "sha256": "d2a294198eb24b236cf74666893a6a06cc5a74d338cc52219b1016a402c12b1a",
+      "credential_check": "passed"
+    }
+  ]
+}

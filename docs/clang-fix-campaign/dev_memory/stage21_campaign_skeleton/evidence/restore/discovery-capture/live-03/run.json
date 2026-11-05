@@ -1,0 +1,118 @@
+{
+  "started_utc": "2026-11-05T06:03:46.692Z",
+  "status": "STOPPED",
+  "stage": "https://quickbuild.tizen.org/build/1204736/html_report",
+  "pages": [
+    {
+      "requested_url": "https://quickbuild.tizen.org/build/1204736/html_report",
+      "started_ms": 47816,
+      "status": 200,
+      "content_type": "text/html;charset=utf-8",
+      "content_disposition": null,
+      "redirect_chain": [
+        "https://quickbuild.tizen.org/build/1204736/html_report"
+      ],
+      "download": false,
+      "frame": "main",
+      "finished_ms": 48337
+    }
+  ],
+  "requests": [
+    {
+      "elapsed_ms": 47819,
+      "url": "https://quickbuild.tizen.org/build/1204736/html_report",
+      "method": "GET",
+      "frame": "main",
+      "response_status": null,
+      "redirect": false,
+      "registered": true
+    },
+    {
+      "elapsed_ms": 48267,
+      "url": "https://quickbuild.tizen.org/build/1204736/html_report",
+      "method": "GET",
+      "frame": "main",
+      "response_status": 200,
+      "redirect": false,
+      "registered": true,
+      "content_type": "text/html;charset=utf-8"
+    },
+    {
+      "elapsed_ms": 48304,
+      "url": "<UNREGISTERED>",
+      "method": "GET",
+      "frame": "other",
+      "response_status": null,
+      "redirect": false,
+      "registered": false
+    }
+  ],
+  "downloads": [],
+  "events": [
+    {
+      "action": "PAGE_CLOSED",
+      "elapsed_ms": 48386
+    },
+    {
+      "action": "BROWSER_DISCONNECTED",
+      "elapsed_ms": 48428
+    }
+  ],
+  "login": {
+    "ok": true
+  },
+  "failure": "QB_EVIDENCE_REDACTION_FAILED",
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "login",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    },
+    {
+      "phase": "read",
+      "path": "<other>",
+      "action": "DENIED"
+    }
+  ],
+  "profile_removed": true,
+  "finished_utc": "2026-11-05T06:04:35.190Z"
+}
