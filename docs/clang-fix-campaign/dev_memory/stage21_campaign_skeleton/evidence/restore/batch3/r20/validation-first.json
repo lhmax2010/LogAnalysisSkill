@@ -1,0 +1,66 @@
+{
+  "commands": [
+    {
+      "name": "probe",
+      "argv": [
+        ".venv/bin/python",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r20/probe_offline_intake.py"
+      ],
+      "started_utc": "2026-11-05T08:58:08.369577+00:00",
+      "finished_utc": "2026-11-05T08:58:08.917331+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "imports",
+      "argv": [
+        ".venv/bin/lint-imports",
+        "--no-cache"
+      ],
+      "started_utc": "2026-11-05T08:58:08.917343+00:00",
+      "finished_utc": "2026-11-05T08:58:10.130776+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "design",
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "started_utc": "2026-11-05T08:58:10.130791+00:00",
+      "finished_utc": "2026-11-05T08:58:10.242519+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "ruff",
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-respect-gitignore",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r20"
+      ],
+      "started_utc": "2026-11-05T08:58:10.242541+00:00",
+      "finished_utc": "2026-11-05T08:58:12.458947+00:00",
+      "exit_code": 1
+    },
+    {
+      "name": "diff",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "docs/clang-fix-campaign/design.md",
+        "docs/clang-fix-campaign/dev_memory/INDEX.md",
+        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md"
+      ],
+      "started_utc": "2026-11-05T08:58:12.458967+00:00",
+      "finished_utc": "2026-11-05T08:58:12.561743+00:00",
+      "exit_code": 0
+    }
+  ],
+  "protected_count": 560,
+  "unchanged": true,
+  "full_pytest_run": false,
+  "live_commands_run": false
+}

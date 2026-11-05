@@ -2832,6 +2832,14 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
    离线登记、脱敏、写前写后检查并扫描整个discovery-capture目录,身份残留必须为0。
    归档成功删除私有原文,失败保留以供离线重做,只报告封闭阶段码和计数。
    不改变生产代理、网络安全停止条件或放行规则;门禁通过后仍须新一次“开始”授权。
+10. 按SKEL-RESTORE-20,撤销RESTORE-01第三.2.a的单命令发现入口,
+    改为`python -m tizen_qb_verify qb-discover`先读取并发布
+    `clang_discover_manifest/v1`清单与日志,再由
+    `python -m tizen_campaign_intake campaign-discover --manifest ... --state-root ...`
+    校验路径/schema/hash并离线分析、建档。清单文件交接而非跨包import或子进程桥接;
+    包分层与.importlinter保持逐字不变。原因:避免发现入口复用QB驱动违反同层独立。
+    本条登记接口裁定,不表示实现验收通过;完全不联网与既有add_unit首次源码克隆
+    的冲突见stage21停止报告SKEL-RESTORE-21,待裁定后继续。
 
 本批不改变发现阶段的浏览器白名单;该项仍须按SKEL-RESTORE-01第三.1条
 先做URL形态取证,停止等待裁定后才可实施。

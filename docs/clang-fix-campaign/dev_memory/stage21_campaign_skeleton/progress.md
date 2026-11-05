@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-18结束取证系列并批准第3/4批;实现前依赖探针确认intake复用QB驱动与同层独立合约冲突,停止SKEL-RESTORE-19(第42节),未改生产代码**。RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-20以两命令文件交接处置RESTORE-19;离线探针确认“不联网”与add_unit首次源码克隆冲突,停止SKEL-RESTORE-21(第43节),未改生产代码**。RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -2390,3 +2390,63 @@ discovery-url-shapes、现行Agent/驱动/建档与依赖规则。停止RESTORE-
 没有修改已有测试、冻结稿、生产源码、状态库及无关工作树文件。
 本轮结果:依赖探针4/4符合预期(1绿/3红);现行import-linter 7 kept/0 broken;
 design 0 problem;新增证据脚本ruff通过;文档diff检查通过。未增加业务测试nodeid。
+
+## 43. 实施裁定 SKEL-RESTORE-20:两命令文件交接
+
+SKEL-RESTORE-19已由本裁定处置;候选A/B均不采纳,原停止报告与探针保留。
+以下为裁定原文:
+
+一、裁定
+1. 不采用候选 A(依赖例外)与 B(子进程桥接)。包分层与 .importlinter 合约保持逐字不变。
+2. 发现拆为两个命令,通过 state-root 下的清单文件交接(同 qb-result-fetch → review-submit 的既有模式):
+   a) python -m tizen_qb_verify qb-discover --config <yaml> --state-root <dir> --qb-project <key> (--build-id <id> | --since <ISO 日期>):唯一上网的一步。按 SKEL-RESTORE-18 第二.1–二.4 条与 SKEL-RESTORE-08 第一条完成登录、构建核验、报告链、Details 表解析、构建变量解析与主架构日志 read_text;写出 <state-root>/discovery/<build_id>/discover-manifest.json 与 logs/<package>.<arch>.txt。不调用 analyzer、不建档、不写状态库。
+   b) python -m tizen_campaign_intake campaign-discover --manifest <path> --state-db <db> --config <yaml> [--dry-run] [--include-non-compile]:不上网。校验清单 schema、清单与日志均位于配置的 state-root 之下(resolve 后判定,拒绝符号链接越界)、每份日志 sha256 与清单一致;然后按 SKEL-RESTORE-01 第三.2.c–e 条做 analyzer、编译阶段过滤、arch 前置门、主架构优先序、intake.add_unit 建档(串行、幂等);写 discover.json/discover.md。
+3. 清单 schema(clang_discover_manifest/v1)固定字段:schema_version、qb_project、build_id(父)、child_build_id、captured_at、report_dir、packages[];每个 package:spec_name、failed_arches(raw 名,规范化排序)、primary_arch、project、branch、base_commit、log_path(相对清单目录)、log_sha256、status(ok | DISCOVERY_SOURCE_UNRESOLVED | DISCOVERY_LOG_UNREADABLE | DISCOVERY_REPORT_AMBIGUOUS | ARCH_NOT_ALLOWED)、reason(固定原因码或 null)。清单与日志写入用 temp+fsync+rename,写后不再修改;同一 build 重复运行写新子目录(带时间戳),不覆盖旧清单。
+4. --state-root 解析:qb-discover 使用命令行 --state-root;campaign-discover 从清单路径向上核验其属于 <state-root>/discovery/ 结构,并要求与同次运行传入的 --state-root 一致(为此 campaign-discover 也增加必填 --state-root)。
+
+二、测试
+1. qb-discover:用 P5Q 假 HTTPS 服务器与 live-04 归档形态夹具覆盖报告链、四列表解析、无 class 的 failed 链接、空格目录、ambiguous 各形态、日志 read_text 各 fail-closed 原因、清单字段与原子写;Node 安全矩阵与既有 C5a/C8/四组安全测试全过。
+2. campaign-discover:清单 schema 负例、路径越界与符号链接负例、sha256 篡改拒绝、各 status 透传进报告、过滤/arch 门/幂等/dry-run;断言该命令不发起任何网络请求(禁用网络的测试夹具)。
+3. 依赖合约:lint-imports 7/7 不变;新增静态断言 tizen_campaign_intake 不导入 tizen_qb_verify。
+
+三、文档与剧本
+SKILL.md 与开局模板写明两步顺序(先 qb-discover、再 campaign-discover --manifest);design.md 第 4.6 节“恢复项落地裁定”加一条说明本次拆分及理由,并撤销 SKEL-RESTORE-01 第三.2.a 中单命令入口的写法。
+
+四、其余按 SKEL-RESTORE-18 第二至五条执行(含 trace elapsed_ms、continueResponse 规则不变、第四批、完成后全仓门禁、不运行真实发现)。遇冲突按既有纪律停止报告;推送报 Permission denied 时提交后停止,由用户本机推送。
+
+### 43.1 首次建档网络边界探针与停止SKEL-RESTORE-21
+
+基线0931cb4。两命令分包/file交接可避免第42节直接import冲突,不需要更改.importlinter。
+开工核对新命令调用链时发现RESTORE-20第一.2.b的“不上网”与必用的既有
+`intake.add_unit`首次建档行为冲突:冻结稿5.1第4步要求源码暂存克隆与身份核验;
+`intake.py:155`调用`_prepare_source`,缺少canonical副本时`:57`发起ssh远端clone。
+这不只是QB访问;新包/新构建的首次建档正是需要源码克隆的路径。
+
+离线探针`evidence/restore/batch3/r20/probe_offline_intake.py`:
+临时配置使用ssh://gerrit.invalid:29418,临时库/工作区,真实intake与真实gbs_analyzer;
+仅在测试进程内替换SandboxGit.run,记录请求的操作并在git子进程创建前抛固定异常。
+未启动git传输,未访问QB/Gerrit,未修改任何生产函数/断言或真实状态库。
+
+| 项目 | 实测 | 证据 |
+| --- | --- | --- |
+| Git调用意图 | clone,remote=true,ssh://gerrit.invalid:29418/platform/upstream/example | `batch3/r20/probe.json` attempts |
+| 该调用前 | evidence已发布,unit已建立,状态CI_EVIDENCE_READY | 同文件unit_exists_at_call/status_at_call |
+| 禁止Git后 | exit5 INTAKE_CLONE_FAILED,canonical源码不存在,暂存残留0 | 同文件failure/canonical_source_exists/staging_remaining |
+| 清理 | 仓外临时目录连同临时DB均已删除 | 同文件temporary_directory_removed=true |
+| 完整性 | 生产源码、既有测试、冻结稿、.importlinter前后hash相同 | 同文件protected_hashes/protected_unchanged |
+
+这是既有可重跑的克隆失败路径,不将其描述为新发现的状态库缺陷。
+但不能据此宣称新命令既能首次完整建档又严格不上网,也不能把禁用网络测试
+改成只禁Python socket而漏掉git/ssh子进程。不能自行绕过源码准备或更改身份判据。
+
+[SKEL-RESTORE-21停止报告](evidence/restore/stop-report-SKEL-RESTORE-21.md)
+列出候选A:澄清只禁止QB访问、允许既有只读克隆;候选B:保持绝对离线并另裁定
+建档/源码准备分离的API、输出及后续入口。两个候选均未实施。
+design第4.6节已追加RESTORE-20的文件交接裁定,明确尚未验收;剧本暂不宣称新命令可用。
+本轮只做探针、依赖/设计/证据脚本/diff检查,完整日志见`batch3/r20/validation.json`;
+全仓pytest、mypy、四组安全测试未运行。无新业务命令、无新业务nodeid。
+按RESTORE-20第四条停止,不继续第三/四批实现,等待网络边界裁定。
+检查结果:离线探针符合预期;import-linter 7 kept/0 broken;design 0 problem;
+新增探针及检查脚本ruff通过;文档diff检查通过;560个已跟踪源码/冻结稿/合约hash不变。
+首次证据脚本ruff发现一行103字符(E501),已仅折行修正;原输出保留为
+`ruff-first.stdout.log`与`validation-first.json`,最终检查为`validation.json`。

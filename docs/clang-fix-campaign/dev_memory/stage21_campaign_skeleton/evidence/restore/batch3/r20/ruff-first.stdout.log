@@ -1,0 +1,12 @@
+E501 Line too long (103 > 100)
+  --> docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r20/probe_offline_intake.py:76:101
+   |
+74 |         result = {
+75 |             "utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+76 |             "head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+   |                                                                                                     ^^^
+77 |             "real_intake": True, "real_analyzer": True,
+78 |             "git_intercepted_before_subprocess": True, "git_processes_started": 0,
+   |
+
+Found 1 error.
