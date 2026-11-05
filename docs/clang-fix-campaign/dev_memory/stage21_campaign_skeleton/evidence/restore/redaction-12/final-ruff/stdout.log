@@ -1,0 +1,11 @@
+E501 Line too long (103 > 100)
+   --> tizen-qb-verify/scripts/tizen_qb_verify/qb_redact.py:414:101
+    |
+412 |         edits: list[tuple[int, int]] = []
+413 |         for start, end in _IdentityValues(text).spans:
+414 |             edits.extend((start + a, start + b) for a, b in _identity_ranges(text[start:end], pattern))
+    |                                                                                                     ^^^
+415 |         return edits
+    |
+
+Found 1 error.

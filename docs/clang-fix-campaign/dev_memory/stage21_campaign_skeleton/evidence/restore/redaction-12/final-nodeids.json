@@ -1,0 +1,32 @@
+{
+  "before": 3411,
+  "after": 3436,
+  "removed": [],
+  "added": [
+    "tests/unit/test_restore_capture_browser.py::test_capture_spaces_session_redaction_and_remaining_three_pages",
+    "tests/unit/test_restore_capture_redaction.py::test_capture_worker_checks_before_and_after_writing[False]",
+    "tests/unit/test_restore_capture_redaction.py::test_capture_worker_checks_before_and_after_writing[True]",
+    "tests/unit/test_restore_capture_redaction.py::test_credential_attribute_offsets_follow_htmlparser[\\r]",
+    "tests/unit/test_restore_capture_redaction.py::test_credential_attribute_offsets_follow_htmlparser[\\u2028]",
+    "tests/unit/test_restore_capture_redaction.py::test_credential_attribute_offsets_follow_htmlparser[\\x0b]",
+    "tests/unit/test_restore_capture_redaction.py::test_encoded_identity_attribute_and_text_keep_other_bytes",
+    "tests/unit/test_restore_capture_redaction.py::test_identity_fragments_never_rewrite_html_names[<td>]",
+    "tests/unit/test_restore_capture_redaction.py::test_identity_fragments_never_rewrite_html_names[A\"B]",
+    "tests/unit/test_restore_capture_redaction.py::test_identity_fragments_never_rewrite_html_names[A&B]",
+    "tests/unit/test_restore_capture_redaction.py::test_identity_fragments_never_rewrite_html_names[USER]",
+    "tests/unit/test_restore_capture_redaction.py::test_identity_fragments_never_rewrite_html_names[d>]",
+    "tests/unit/test_restore_capture_redaction.py::test_identity_fragments_never_rewrite_html_names[thead]",
+    "tests/unit/test_restore_capture_redaction.py::test_partial_multi_character_entity_fails_instead_of_claiming_zero_remaining",
+    "tests/unit/test_restore_capture_redaction.py::test_registered_cell_offsets_follow_htmlparser[\\r\\n]",
+    "tests/unit/test_restore_capture_redaction.py::test_registered_cell_offsets_follow_htmlparser[\\r]",
+    "tests/unit/test_restore_capture_redaction.py::test_registered_cell_offsets_follow_htmlparser[\\u2028]",
+    "tests/unit/test_restore_capture_redaction.py::test_registered_cell_offsets_follow_htmlparser[\\x0b]",
+    "tests/unit/test_restore_capture_redaction.py::test_registered_cell_offsets_follow_htmlparser[\\x0c]",
+    "tests/unit/test_restore_capture_redaction.py::test_registered_cell_offsets_follow_htmlparser[\\x85]",
+    "tests/unit/test_restore_capture_redaction.py::test_remaining_session_identity_is_a_redaction_failure",
+    "tests/unit/test_restore_capture_redaction.py::test_session_credentials_are_still_scrubbed",
+    "tests/unit/test_restore_capture_redaction.py::test_session_identity_must_not_be_inferred_from_other_users",
+    "tests/unit/test_restore_capture_redaction.py::test_session_mode_does_not_claim_to_repair_historical_damaged_tags",
+    "tests/unit/test_restore_capture_redaction.py::test_session_user_is_masked_in_all_values_without_serializing_tags"
+  ]
+}

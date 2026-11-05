@@ -1,0 +1,15 @@
+{
+  "argv": [
+    ".venv/bin/pytest",
+    "tests/unit/test_qb_redact.py",
+    "tests/unit/test_restore_capture_redaction.py",
+    "-q"
+  ],
+  "started_utc": "2026-11-05T03:10:26.661484+00:00",
+  "load_before": "4.16 4.55 4.29 14/2642 114293",
+  "cpu_count": 20,
+  "exit_code": 0,
+  "elapsed_seconds": 0.4078824270000041,
+  "finished_utc": "2026-11-05T03:10:27.069366+00:00",
+  "load_after": "4.16 4.55 4.29 3/2642 114335"
+}

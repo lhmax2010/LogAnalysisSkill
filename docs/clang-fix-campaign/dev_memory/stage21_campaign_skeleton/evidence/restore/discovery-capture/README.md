@@ -1,8 +1,27 @@
 # SKEL-RESTORE-08 发现页面只读取证
 
-当前状态:RESTORE-10修复后唯一一次live-02在iframe原始路径空格处停止,
-六页已取齐,iframe/日志未读取;等待SKEL-RESTORE-11裁定,不重试。
-live-01历史结果与工具原样保留。本次真机没有再改生产代理、Policy或驱动。
+当前状态:RESTORE-12路径与脱敏修复已实施,全仓既有字段测试失败,
+按RESTORE-13停止(见`../redaction-12/stop-report-SKEL-RESTORE-13.md`),未获真机门禁。
+六页读取事实保留,iframe/日志未读取,没有重新启动真机。
+
+## RESTORE-12存档修正
+
+原PageRedactor使用splitlines偏移,与HTMLParser的LF行号不一致,独立CR导致
+身份单元格漏遮蔽且标签被误改。旧run/validation记录中的“检查通过”不代表
+没有此缺陷。按裁定对live-01(无正文)、live-02全部六份正文后处理,
+只改02.response.html中的完整会话身份一次,全六份复检残留0;
+前后hash与计数见`archive-redaction-12.json`。历史run中的原hash保留,
+当前文件hash以该清单为准,不改写git历史。
+
+`02.response.html`中的`</thea&lt;USER&gt;`保留原样:原始未脱敏正文没有存盘,
+无法逐字恢复被覆盖片段,不能凭猜测修补标签。该文件只作为读取/脱敏后处理
+证据,不作为原始HTML结构完全保真的样本。
+
+新worker显式使用SessionPageRedactor,仅在内存记住本次会话账号与显示名,
+对文本和属性值全局替换,不动标签名或属性名;凭据检查不放宽。
+元数据改记identity_replacement_count(替换次数)和identity_remaining_count(必须0),
+不再以登记位置外计数代替残留检查。新捕获只读html_report及其两级唯一链接,
+使用live-03新目录;须完成门禁并由用户确认开始,不复读其它前置六页。
 
 ## 工具
 
@@ -15,7 +34,7 @@ live-01历史结果与工具原样保留。本次真机没有再改生产代理�
 - `offline.test.mjs`:私有Xvfb、本地HTTPS与测试证书;只有此测试入口模拟登录。
   现场入口不传host-resolver或测试证书参数。
 
-现场命令(只执行一次;输出目录必须不存在):
+历史live-01命令(不可复用;RESTORE-12只允许剩余三页,当前尚未获真机门禁):
 
 ```sh
 /home/linhao/.local/bin/node docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/capture.mjs --live

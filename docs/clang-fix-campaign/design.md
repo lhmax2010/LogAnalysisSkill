@@ -2815,6 +2815,11 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
    不占第一条OPERATION_FAILED。Fetch.continueResponse任何失败及continueRequest
    其它类别仍停止,failRequest原窄例外不变。读取的主帧若没有正文仍按现有地址、
    原始正文与Build标签核验报错,不把失效请求当作读取成功;放行规则不变。
+7. 按SKEL-RESTORE-12,修正Python脱敏源码偏移与HTMLParser不一致的问题
+   (只按LF计算行号)。取证显式使用会话身份全页遮蔽,只匹配文本/属性值中的
+   完整账号或显示名,不改标签/属性名;计替换次数并在写前写后要求身份残留0。
+   取证唯一链接允许路径段内空格经标准URL一次编码为%20,其余精确读取与
+   拒绝规则不变;正式发现表沿用同一规则,不得拼接历史GBS Reports目录。
 
 本批不改变发现阶段的浏览器白名单;该项仍须按SKEL-RESTORE-01第三.1条
 先做URL形态取证,停止等待裁定后才可实施。

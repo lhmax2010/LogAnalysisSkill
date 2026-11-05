@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-04。状态:**恢复第1、2批离线完成;RESTORE-10修复已推送,live-02取证在iframe路径空格处停止(SKEL-RESTORE-11)**。SKEL-RESTORE-09由RESTORE-10处置(第36节),原失败证据保留;SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-12脱敏/空格修复与存档清理已实施,完整门禁因既有字段测试失败停止(SKEL-RESTORE-13),未启动真机**。RESTORE-11由RESTORE-12裁定处置(第37节),原读取事实保留、泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -2007,3 +2007,94 @@ PAGE_CLOSED=173269ms,disconnected=173794ms,profile_removed=true;
 本次仅证据与文档收尾:离线路径探针、该探针ruff、design检查(0 problem)
 全部通过,见`live-02/offline-checks.json`;13份输出加validation本身逐文件
 通过脱敏检查。不重跑或冒称完成第三批业务功能的全仓验收。
+
+## 37. 实施裁定 SKEL-RESTORE-12:会话身份脱敏与iframe空格
+
+一、脱敏缺陷(先修,修完再做任何真机读取)
+1. 事实:live-02/02.response.html 第 930 行构建表“触发人”列原样保留了登录账号与显示名;同文件 </thead> 被改写成 </thea&lt;USER&gt;。即登记位置外身份未脱敏,且替换误伤了 HTML 标签。
+2. 修复取证脱敏(capture 工具与其 PageRedactor;生产 qb_redact 若有同类问题一并修):对本次会话已登录用户的账号名与显示名,在整页任意位置(不止登记位置)替换为固定占位符;只按完整的身份字符串匹配,不得匹配到标签或属性名的片段;查清 </thead> 被改写的原因并修正。
+3. 存档清理:对 discovery-capture 下 live-01、live-02 全部已归档正文做一次修复后的脱敏后处理,新 commit 提交;无法从存档恢复的被误改标签保持原样并在 README 注明。不改写 git 历史、不强推。
+4. 补测试:身份出现在表格单元格、标题栏、链接文本、属性值中均被替换;含 "d>"、"thead"、"<td>" 等片段的正常标签不被改动;替换前后除占位符外字节一致;outside_identity_count 改为“替换次数”并要求归档后复检为 0。
+
+二、iframe 路径空格(批准候选)
+1. 取证工具:路径段内允许 ASCII 空格;仍拒绝控制字符(0x00–0x1f、0x7f)、反斜线、首尾空白、路径穿越、编码的路径分隔符、跨构建号、外站、userinfo、query、fragment;用标准 URL 解析器解析一次,把解析结果(空格为 %20)登记为唯一主帧读取地址,与浏览器实际请求的 path 逐字节比较。
+2. 第三批正式实现的精确路径表按同一规则处理;目录名以真实页面为准(本次为 HTML REPORT),不得用历史 GBS Reports 夹具拼接替代地址。
+3. 补离线用例:字面空格与等价 %20 的唯一 src 正例;上述各类负例;服务器只收到登记的那一次主帧请求。
+
+三、补做一次真机只读取证(第一、二条门禁通过后;需用户在弹出窗口登录)
+1. 只读:/build/1204736/html_report → 其唯一 iframe src 页面 → 该页中 zlib(主架构 armv7l)失败日志的唯一链接;若 iframe 页中找不到 zlib 或链接不唯一,立即停止,不改读其它包。前六页不重复读取,沿用 live-02 事实。
+2. 每一跳记录要求、结束清理要求同 SKEL-RESTORE-08 第二.3、二.4 条;所有正文经修复后的脱敏并复检身份替换后为 0 才能归档。
+3. 之后按 SKEL-RESTORE-08 第三条分叉:四条件全部满足则直接实施 campaign-discover 与第四批;任一不满足则停止报告。
+
+四、其余要求不变。全仓门禁、单独 commit、推送报 Permission denied 时提交后停止由用户本机推送。
+
+### 37.1 根因与实施范围
+
+基线57cac6e,日期2026-11-05。尚未进行任何真机读取。
+生产`qb_redact.py`的_UserFields与_Fields均用splitlines构建源码偏移,
+而HTMLParser.updatepos只以LF更新行号。父构建归档含394个CR,其中10个独立CR,
+导致位置错位。`evidence/restore/redaction-12/root-cause-before.json`
+用无凭据合成HTML稳定复现“标签损坏且身份仍在”的同类问题。
+两处共用LF偏移函数,生产默认登记位置规则不变。
+
+新增显式选用的SessionPageRedactor供取证worker使用:从Welcome区域仅在内存
+登记本会话身份及account(display)两部分,全页文本/注释/脚本文本/属性值作完整
+身份匹配;HTMLParser识别结构,源码区间替换不重新序列化,不替换标签名或属性名。
+解码HTML实体仅用于匹配并映射回原始区间,除占位符外保留原字节。
+凭据仍按原规则清除。固定结构JSON不做身份键名替换,不包含身份值;
+HTML/日志应答计数改为identity_replacement_count,新增identity_remaining_count=0,
+写前写后均验证残留为0。其它生产调用仍使用PageRedactor原规则。
+
+取证exactLink允许路径段内ASCII空格,其它拒绝规则不变;标准URL只解析一次,
+scope.current仍精确匹配实际请求。新增remaining三页入口,只允许既定html_report
+作为起始页,不能由CLI注入其它路径。尚未启用正式discoveryScope或改生产代理。
+
+### 37.2 存档后处理
+
+`discovery-capture/sanitize_archives.py`只从裁定指定的历史单元格在内存取得
+账号/显示名,不打印、不存身份值。live-01无正文;live-02六份正文全部处理和复检,
+只有02.response.html替换一处完整复合身份,其余五份字节不变。
+坏标签原样保留,没有猜测补回被覆盖的字节。前后hash、替换次数与残留0见
+`discovery-capture/archive-redaction-12.json`。旧run.json/validation.json是历史记录,
+不篡改当时计数和hash,当前正文hash以新后处理清单为准;旧“自检通过”不能证明
+没有此次缺陷,本裁定明确撤回这一推断。不改git历史、不强推。
+
+### 37.3 门禁与停止 SKEL-RESTORE-13
+
+证据根:`evidence/restore/redaction-12/`。实现位置:
+`tizen-qb-verify/scripts/tizen_qb_verify/qb_redact.py`(LF偏移、SessionPageRedactor),
+`discovery-capture/redact_capture.py`(完整会话身份要求、双重检查、计数),
+`capture.mjs`(空格URL与仅剩三页入口),`sanitize_archives.py`(一次性后处理)。
+未改生产代理、驱动、四个提交/读取命令、安全核心、冻结稿,见`integrity-final.json`。
+
+| 检查 | 结果 | 证据 |
+| --- | --- | --- |
+| 最终脱敏专项 | 115 passed,0 failed,0 skipped(91既有+24新增) | `final-focused/` |
+| 本机HTTPS取证 | Node 9 passed,0 failed,0 skipped;字面空格/%20、唯一主帧请求、仅剩三页、脱敏与负例 | `capture-node/`;全仓新增browser封装用例亦通过 |
+| 全仓,不加-x | **3433 passed,1 failed,1既有skip**,1147.496秒,exit 1 | `full/command.json`, `full/stdout.log`, `full/pytest.xml` |
+| C5a/C8 | C5a六参数与C8调查均通过,无豁免重跑 | `gate-summary.json`, `full/c5a/`, `full/c8/` |
+| 安全矩阵/静态负例/四组安全测试 | 对应pytest封装全部通过;没有改允许/拒绝逻辑 | `gate-summary.json`, `full/pytest.xml` |
+| mypy / ruff | 169源码通过 / 通过(新行长错误已仅换行修正,原失败留存) | `final-mypy/`, `final-ruff-format/`;原`final-ruff/` |
+| import-linter / design | 7 kept,0 broken / 0 problem | `imports/`, `design/` |
+| nodeid | 最终3436,原3411全部保留,新增25,无collect错误 | `final-collect/`, `final-nodeids.json` |
+| 历史正文最终复检 | 六份,身份残留全部0 | `final-archive-check.json` |
+| 清理 | profile 0,本仓代理/该profile浏览器0 | `cleanup.json` |
+
+全仓前后loadavg为2.95/2.94/4.57与3.69/3.73/3.98,20核;
+开跑CPU前十只记进程名/占用,见`full/command.json`。
+失败nodeid:`tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs]`。
+Node子例`continuous denied refresh GETs do not extend quiet; uncheck and @freeze still complete`
+在`tests/node/test_qb_browser_fields.mjs:530`断言
+`Build Package List: denied refresh must not extend quiet`失败(字段窗口须小于3000ms)。
+实际单字段时长未输出;不能据此认定负载或放行规则故障。
+它不在计时敏感名单中,按SKEL-B1-05停止,未改断言、未重跑放行。
+详细事实与候选处理见`stop-report-SKEL-RESTORE-13.md`。
+
+完整运行收集后,新增脱敏代码由逐字符偏移改为只映射实际匹配边界,
+并增加多码点HTML实体部分匹配的失败负例(避免64MiB日志的逐字符辅助对象开销)。
+因此全仓收集3435与最终3436差1;最后实现的专项115通过,
+但本次全仓**不能作为最终树完整验收**。原计划最终树再跑门禁,
+因上述非豁免失败取消,必须待裁定后重新完整验证。
+未执行RESTORE-12第三条真机读取,live-03不存在;未进入正式discovery实现或第四批。
+源码/文档diff-check通过;29处原始合成HTML/pytest输出/JUnit行尾空白原样保留,
+未把证据格式化来掩盖原始失败。停止报告与修复同一提交,不作为最终门禁验收。

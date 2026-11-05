@@ -27,6 +27,11 @@ def _identity_pattern(value: str) -> re.Pattern[str]:
     return re.compile(r"(?<![A-Za-z0-9_])" + re.escape(value) + r"(?![A-Za-z0-9_])")
 
 
+def _line_offsets(source: str) -> list[int]:
+    # HTMLParser.updatepos counts LF only, not the other splitlines separators.
+    return [0, *(match.end() for match in re.finditer("\n", source))]
+
+
 class EvidenceRedactionError(ValueError):
     code = "QB_EVIDENCE_REDACTION_FAILED"
 
@@ -52,13 +57,12 @@ class _UserFields(HTMLParser):
     def __init__(self, source: str) -> None:
         super().__init__(convert_charrefs=False)
         self.source = source
-        self.offsets = [0]
-        for line in source.splitlines(keepends=True):
-            self.offsets.append(self.offsets[-1] + len(line))
+        self.offsets = _line_offsets(source)
         self.tags: list[str] = []
         self.tables: list[_UserTable] = []
         self.spans: list[tuple[int, int]] = []
         self.welcome: tuple[int, int] | None = None
+        self.welcome_spans: list[tuple[int, int]] = []
 
     def source_offset(self) -> int:
         line, column = self.getpos()
@@ -115,6 +119,7 @@ class _UserFields(HTMLParser):
     def handle_endtag(self, tag: str) -> None:
         if self.welcome and len(self.tags) == self.welcome[0] and self.tags[-1] == tag:
             self.spans.append((self.welcome[1], self.source_offset()))
+            self.welcome_spans.append((self.welcome[1], self.source_offset()))
             self.welcome = None
         if self.tables:
             table = self.tables[-1]
@@ -157,9 +162,7 @@ def redact_user_fields(text: str) -> str:
 class _Fields(HTMLParser):
     def __init__(self, source: str) -> None:
         super().__init__()
-        self.offsets = [0]
-        for line in source.splitlines(keepends=True):
-            self.offsets.append(self.offsets[-1] + len(line))
+        self.offsets = _line_offsets(source)
         self.hidden: list[tuple[int, str]] = []
         self.secrets: set[str] = set()
         self.invalid_hidden = False
@@ -223,6 +226,9 @@ class PageRedactor:
             if identity and identity != "<USER>":
                 self.identities.add(identity)
         text = redact_user_fields(text)
+        return self._redact_credentials(text)
+
+    def _redact_credentials(self, text: str) -> str:
         text = HEADERS.sub(MASK, text)
         fields = _Fields(text)
         for value in fields.secrets:
@@ -240,7 +246,7 @@ class PageRedactor:
         self.check_bytes(text.encode("utf-8"))
         return text
 
-    def check_bytes(self, raw: bytes) -> None:
+    def check_bytes(self, raw: bytes, *, registered_positions: bool = True) -> None:
         text = raw.decode("utf-8")
         decoded = unescape(text)
         visible = text.replace(MASK, "").replace("<REDACTED>", "")
@@ -253,7 +259,7 @@ class PageRedactor:
             or HEADERS.search(text)
             or fields.invalid_hidden
             or any(value not in {"", "<REDACTED>"} for value in fields.secrets)
-            or any(
+            or registered_positions and any(
                 "".join(_Text(text[start:end]).parts).strip() not in {"", "<USER>"}
                 for start, end in users.spans
             )
@@ -278,3 +284,152 @@ class PageRedactor:
         except (ValueError, OSError):
             path.unlink(missing_ok=True)
             raise EvidenceRedactionError("evidence redaction self-check failed") from None
+
+
+class _IdentityValues(HTMLParser):
+    """Source ranges for text and attribute values; never HTML names or delimiters."""
+
+    def __init__(self, source: str) -> None:
+        super().__init__(convert_charrefs=False)
+        self.source = source
+        self.offsets = _line_offsets(source)
+        self.spans: list[tuple[int, int]] = []
+        self.feed(source)
+        self.close()
+
+    def source_offset(self) -> int:
+        line, column = self.getpos()
+        return self.offsets[line - 1] + column
+
+    def add(self, start: int, end: int) -> None:
+        if self.spans and self.spans[-1][1] == start:
+            self.spans[-1] = (self.spans[-1][0], end)
+        else:
+            self.spans.append((start, end))
+
+    def handle_data(self, data: str) -> None:
+        self.add(self.source_offset(), self.source_offset() + len(data))
+
+    def handle_entityref(self, name: str) -> None:
+        start = self.source_offset()
+        length = len(name) + 1
+        if self.source[start + length:start + length + 1] == ";":
+            length += 1
+        self.add(start, start + length)
+
+    def handle_charref(self, name: str) -> None:
+        self.handle_entityref("#" + name)
+
+    def handle_comment(self, data: str) -> None:
+        self.add(self.source_offset() + 4, self.source_offset() + 4 + len(data))
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        raw = self.get_starttag_text() or ""
+        head = re.match(r"<\s*[^\s/>]+", raw)
+        if head is None:
+            raise EvidenceRedactionError("invalid start tag")
+        # HTMLParser supplies structure; this lexer locates original value bytes only.
+        attr = re.compile(r'''[^\s=/>]+(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?''')
+        for match in attr.finditer(raw, head.end()):
+            for group in (1, 2, 3):
+                if match.group(group) is not None:
+                    start, end = match.span(group)
+                    self.add(self.source_offset() + start, self.source_offset() + end)
+                    break
+
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.handle_starttag(tag, attrs)
+
+
+def _identity_ranges(raw: str, pattern: re.Pattern[str]) -> list[tuple[int, int]]:
+    """Map only match boundaries, not every character of a potentially 64 MiB log."""
+    decoded = unescape(raw)
+    placeholders = list(re.finditer(r"<(?:USER|REDACTED)>", decoded))
+    matches = [m.span() for m in pattern.finditer(decoded)
+               if not any(p.start() <= m.start() and m.end() <= p.end() for p in placeholders)]
+    if not matches:
+        return []
+    boundaries = sorted({p for pair in matches for p in pair})
+    mapped: dict[int, int] = {}
+    index = 0
+
+    def consume(begin: int, end: int, raw_begin: int, raw_end: int, literal: bool) -> None:
+        nonlocal index
+        while index < len(boundaries) and boundaries[index] <= end:
+            boundary = boundaries[index]
+            if literal:
+                mapped[boundary] = raw_begin + boundary - begin
+            elif boundary == begin:
+                mapped[boundary] = raw_begin
+            elif boundary == end:
+                mapped[boundary] = raw_end
+            else:
+                # A partial multi-character entity cannot be replaced byte-preservingly.
+                raise EvidenceRedactionError("identity crosses entity boundary")
+            index += 1
+
+    cursor = decoded_cursor = 0
+    for match in re.finditer(r"&(?:#[xX][0-9a-fA-F]+|#[0-9]+|[A-Za-z][A-Za-z0-9]+);?", raw):
+        end = decoded_cursor + match.start() - cursor
+        consume(decoded_cursor, end, cursor, match.start(), True)
+        value = unescape(match.group())
+        consume(end, end + len(value), match.start(), match.end(), value == match.group())
+        decoded_cursor = end + len(value)
+        cursor = match.end()
+    end = decoded_cursor + len(raw) - cursor
+    consume(decoded_cursor, end, cursor, len(raw), True)
+    if end != len(decoded) or index != len(boundaries):
+        raise EvidenceRedactionError("identity source mapping failed")
+    return [(mapped[start], mapped[end]) for start, end in matches]
+
+
+class SessionPageRedactor(PageRedactor):
+    """Opt-in capture policy: mask only known session identities across all HTML values."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.identity_replacement_count = 0
+        self.session_identity_complete = False
+
+    def remember_session_identity(self, value: str) -> None:
+        value = value.strip()
+        if not value or value in {"<USER>", "<REDACTED>"}:
+            return
+        self.identities.add(value)
+        combined = re.fullmatch(r"(.+?)\s+\(([^()]+)\)", value)
+        if combined:
+            self.identities.update(part.strip() for part in combined.groups())
+            self.session_identity_complete = all(part.strip() for part in combined.groups())
+
+    def _edits(self, text: str) -> list[tuple[int, int]]:
+        if not self.identities:
+            return []
+        pattern = re.compile(
+            r"(?<![A-Za-z0-9_])(?:"
+            + "|".join(re.escape(s) for s in sorted(self.identities, key=len, reverse=True))
+            + r")(?![A-Za-z0-9_])"
+        )
+        edits: list[tuple[int, int]] = []
+        for start, end in _IdentityValues(text).spans:
+            edits.extend(
+                (start + a, start + b) for a, b in _identity_ranges(text[start:end], pattern)
+            )
+        return edits
+
+    def redact(self, text: str) -> str:
+        fields = _UserFields(text)
+        fields.feed(text)
+        for start, end in fields.welcome_spans:
+            self.remember_session_identity("".join(_Text(text[start:end]).parts))
+        edits = self._edits(text)
+        self.identity_replacement_count = len(edits)
+        for start, end in reversed(edits):
+            text = text[:start] + "&lt;USER&gt;" + text[end:]
+        return self._redact_credentials(text)
+
+    def check_bytes(self, raw: bytes, *, registered_positions: bool = False) -> None:
+        super().check_bytes(raw, registered_positions=False)
+        remaining = len(self._edits(raw.decode("utf-8")))
+        self.identity_outside_registered_count = remaining
+        if remaining:
+            raise EvidenceRedactionError("session identity remains")

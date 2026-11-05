@@ -1,0 +1,59 @@
+{
+  "total": 3435,
+  "passed": 3433,
+  "failed": 1,
+  "skipped": 1,
+  "failures": [
+    {
+      "class": "tests.unit.test_qb_browser_node",
+      "name": "test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs]"
+    }
+  ],
+  "selected": [
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[build]",
+      "status": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[error-created]",
+      "status": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[error-no-build]",
+      "status": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+      "status": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[delayed-build]",
+      "status": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+      "status": "passed"
+    },
+    {
+      "name": "test_post_submit_read_signatures",
+      "status": "passed"
+    },
+    {
+      "name": "test_node_agent_unit_matrix",
+      "status": "passed"
+    },
+    {
+      "name": "test_node_c2c_source_guard_mutations",
+      "status": "passed"
+    },
+    {
+      "name": "test_node_c2b_local_https_safety",
+      "status": "passed"
+    },
+    {
+      "name": "test_capture_spaces_session_redaction_and_remaining_three_pages",
+      "status": "passed"
+    }
+  ],
+  "final_tree_full_gate": "NOT_RUN: stop on non-exempt existing test failure; sparse boundary mapping and one focused test added after collection"
+}

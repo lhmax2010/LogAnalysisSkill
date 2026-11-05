@@ -1,0 +1,15 @@
+{
+  "argv": [
+    ".venv/bin/pytest",
+    "tests/",
+    "--collect-only",
+    "-q"
+  ],
+  "started_utc": "2026-11-05T02:55:11.888502+00:00",
+  "load_before": "2.31 2.82 4.55 6/2562 41982",
+  "cpu_count": 20,
+  "exit_code": 0,
+  "finished_utc": "2026-11-05T02:55:20.187146+00:00",
+  "elapsed_seconds": 8.298494898000172,
+  "load_after": "2.95 2.94 4.57 3/2539 42041"
+}

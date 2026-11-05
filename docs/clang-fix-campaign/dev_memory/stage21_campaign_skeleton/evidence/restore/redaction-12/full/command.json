@@ -1,0 +1,29 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/",
+    "-q",
+    "--junitxml=docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/redaction-12/full/pytest.xml"
+  ],
+  "started_utc": "2026-11-05T02:55:20.188114+00:00",
+  "load_before": "2.95 2.94 4.57 5/2539 42041",
+  "cpu_count": 20,
+  "top_cpu_names": [
+    "COMMAND         %CPU",
+    "code-insiders   56.9",
+    "code-insiders   12.2",
+    "code-insiders    7.5",
+    "code-insiders    5.0",
+    "code-insiders    4.7",
+    "code-insiders    4.7",
+    "chrome           3.8",
+    "Xorg             3.3",
+    "code-insiders    3.0",
+    "epp-client-daem  2.9"
+  ],
+  "exit_code": 1,
+  "finished_utc": "2026-11-05T03:14:27.702852+00:00",
+  "elapsed_seconds": 1147.4963709780004,
+  "load_after": "3.69 3.73 3.98 4/2636 139968"
+}

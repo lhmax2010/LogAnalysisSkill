@@ -1,0 +1,55 @@
+{
+  "ruling": "SKEL-RESTORE-12",
+  "files": [
+    {
+      "file": "live-02/01.response.html",
+      "before_sha256": "0c015b6866a07624e76db4248edaadb6835ba713b2d6a7325306195606d1e10e",
+      "after_sha256": "0c015b6866a07624e76db4248edaadb6835ba713b2d6a7325306195606d1e10e",
+      "identity_replacement_count": 0,
+      "identity_remaining_count": 0,
+      "damaged_tag_preserved": false
+    },
+    {
+      "file": "live-02/02.response.html",
+      "before_sha256": "79ecf35dc7f581b45e1fb5f26fa459bd5473f423d2642b73f297fe747882d93d",
+      "after_sha256": "a3efca3e87f100b285a2efee143c95a9054a100ff91e78004b9bf99f00fdb6e9",
+      "identity_replacement_count": 1,
+      "identity_remaining_count": 0,
+      "damaged_tag_preserved": true
+    },
+    {
+      "file": "live-02/03.response.html",
+      "before_sha256": "586f46a2b4f88627970548519078800f8cc0342a609b96c13b8b52224d2c6773",
+      "after_sha256": "586f46a2b4f88627970548519078800f8cc0342a609b96c13b8b52224d2c6773",
+      "identity_replacement_count": 0,
+      "identity_remaining_count": 0,
+      "damaged_tag_preserved": false
+    },
+    {
+      "file": "live-02/04.response.html",
+      "before_sha256": "f607b4e83927e357d976010716ba93f3714692ac09ed451e12f94b15eb406e1e",
+      "after_sha256": "f607b4e83927e357d976010716ba93f3714692ac09ed451e12f94b15eb406e1e",
+      "identity_replacement_count": 0,
+      "identity_remaining_count": 0,
+      "damaged_tag_preserved": false
+    },
+    {
+      "file": "live-02/05.response.html",
+      "before_sha256": "84422f12d983706f1f5f78e9dbb3d1376bb53f85416bd1ffa56e3963dce1d710",
+      "after_sha256": "84422f12d983706f1f5f78e9dbb3d1376bb53f85416bd1ffa56e3963dce1d710",
+      "identity_replacement_count": 0,
+      "identity_remaining_count": 0,
+      "damaged_tag_preserved": false
+    },
+    {
+      "file": "live-02/06.response.html",
+      "before_sha256": "5b32619e336f597e93bb6d3ff2988e35503881554ad4b682818ce2bef62ae89b",
+      "after_sha256": "5b32619e336f597e93bb6d3ff2988e35503881554ad4b682818ce2bef62ae89b",
+      "identity_replacement_count": 0,
+      "identity_remaining_count": 0,
+      "damaged_tag_preserved": false
+    }
+  ],
+  "identity_values_recorded": false,
+  "live_01_body_count": 0
+}

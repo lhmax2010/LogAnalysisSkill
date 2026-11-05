@@ -1,0 +1,168 @@
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+........................................................................ [ 14%]
+........................................................................ [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 35%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+.........................................F.............................. [ 46%]
+........................................................................ [ 48%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 60%]
+........................................................................ [ 62%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 73%]
+........................................................................ [ 75%]
+........................................................................ [ 77%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 94%]
+........................................................................ [ 96%]
+.....................s.................................................. [ 98%]
+...................................................                      [100%]
+=================================== FAILURES ===================================
+______ test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs] ______
+
+script = 'test_qb_browser_fields.mjs'
+
+    @pytest.mark.integration
+    @pytest.mark.parametrize("script", ["test_qb_browser_trusted.mjs", "test_qb_browser_fields.mjs"])
+    def test_node_c2c_trusted_reads_and_fields(script: str) -> None:
+        command, env = node_command()
+        paths = browser_paths()
+        if not shutil.which("openssl"):
+            pytest.skip("openssl unavailable for synthetic local C2c TLS certificate")
+        result = subprocess.run(
+            [*command, str(ROOT / "tests/node" / script), *paths],
+            env=env, capture_output=True, text=True, timeout=240,
+        )
+        print(result.stdout)
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: ▶ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only
+E           ✔ startup self-test: real counts, version trace, disposable page and zero server requests (1530.085351ms)
+E           ✔ startup self-test: count 0 closes browser with fixed stderr (879.057498ms)
+E           ✔ startup self-test: count 2 closes browser with fixed stderr (927.279269ms)
+E           ✔ open_form rejects duplicate option text with a real passive diagnostic (902.974548ms)
+E           ✔ duplicate ordinary options produce passive diagnostic: SNAPSHOT_NUM/@freeze (997.109661ms)
+E           ✔ duplicate ordinary options produce passive diagnostic: SNAPSHOT_NUM/snapshot-42 (1042.985321ms)
+E           ✔ duplicate ordinary options produce passive diagnostic: BUILD_TYPE/Full (939.832173ms)
+E           ✔ all 12 unequal fields: native changes, text blur, palette buttons and new callback versions (14692.961617ms)
+E           ✔ all 12 equal fields including @freeze: unchanged bytes and one explicit change each (14367.260438ms)
+E           ✔ an extra change is denied and invalidates the current field despite only one server POST (1169.424337ms)
+E           ✔ text fill plus artificial change without blur: next field focus produces a denied late native callback (10056.828473ms)
+E           ✔ delayed change during next-field snapshot fails (10067.033709ms)
+E           ✔ delayed change during final readback fails (14659.557948ms)
+E           ✔ swallowed equal-value change: actual 30-second timeout, invalid form and no submit (32268.534736ms)
+E           ✖ continuous denied refresh GETs do not extend quiet; uncheck and @freeze still complete (16710.952669ms)
+E         ✖ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only (121336.159012ms)
+E         ℹ swallowed change elapsed 31270ms; server POSTs=0
+E         ℹ tests 16
+E         ℹ suites 0
+E         ℹ pass 14
+E         ℹ fail 2
+E         ℹ cancelled 0
+E         ℹ skipped 0
+E         ℹ todo 0
+E         ℹ duration_ms 121338.236313
+E         
+E         ✖ failing tests:
+E         
+E         test at tests/node/test_qb_browser_fields.mjs:509:13
+E         ✖ continuous denied refresh GETs do not extend quiet; uncheck and @freeze still complete (16710.952669ms)
+E           AssertionError [ERR_ASSERTION]: Build Package List: denied refresh must not extend quiet
+E               at file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_fields.mjs:530:18
+E               at async withForm (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_fields.mjs:240:5)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_fields.mjs:510:7)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_fields.mjs:509:5)
+E               at async Test.run (node:internal/test_runner/test:1409:7)
+E               at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+E             generatedMessage: false,
+E             code: 'ERR_ASSERTION',
+E             actual: false,
+E             expected: true,
+E             operator: '==',
+E             diff: 'simple'
+E           }
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/linhao/.local/bin/node', '/home/linhao/Toolchain/development/LogAnalysisSkill/tests/node... 'ERR_ASSERTION',\n    actual: false,\n    expected: true,\n    operator: '==',\n    diff: 'simple'\n  }\n", stderr='').returncode
+
+tests/unit/test_qb_browser_node.py:99: AssertionError
+----------------------------- Captured stdout call -----------------------------
+▶ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only
+  ✔ startup self-test: real counts, version trace, disposable page and zero server requests (1530.085351ms)
+  ✔ startup self-test: count 0 closes browser with fixed stderr (879.057498ms)
+  ✔ startup self-test: count 2 closes browser with fixed stderr (927.279269ms)
+  ✔ open_form rejects duplicate option text with a real passive diagnostic (902.974548ms)
+  ✔ duplicate ordinary options produce passive diagnostic: SNAPSHOT_NUM/@freeze (997.109661ms)
+  ✔ duplicate ordinary options produce passive diagnostic: SNAPSHOT_NUM/snapshot-42 (1042.985321ms)
+  ✔ duplicate ordinary options produce passive diagnostic: BUILD_TYPE/Full (939.832173ms)
+  ✔ all 12 unequal fields: native changes, text blur, palette buttons and new callback versions (14692.961617ms)
+  ✔ all 12 equal fields including @freeze: unchanged bytes and one explicit change each (14367.260438ms)
+  ✔ an extra change is denied and invalidates the current field despite only one server POST (1169.424337ms)
+  ✔ text fill plus artificial change without blur: next field focus produces a denied late native callback (10056.828473ms)
+  ✔ delayed change during next-field snapshot fails (10067.033709ms)
+  ✔ delayed change during final readback fails (14659.557948ms)
+  ✔ swallowed equal-value change: actual 30-second timeout, invalid form and no submit (32268.534736ms)
+  ✖ continuous denied refresh GETs do not extend quiet; uncheck and @freeze still complete (16710.952669ms)
+✖ C2c frozen v1.5 fields and startup self-test, loopback HTTPS only (121336.159012ms)
+ℹ swallowed change elapsed 31270ms; server POSTs=0
+ℹ tests 16
+ℹ suites 0
+ℹ pass 14
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 121338.236313
+
+✖ failing tests:
+
+test at tests/node/test_qb_browser_fields.mjs:509:13
+✖ continuous denied refresh GETs do not extend quiet; uncheck and @freeze still complete (16710.952669ms)
+  AssertionError [ERR_ASSERTION]: Build Package List: denied refresh must not extend quiet
+      at file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_fields.mjs:530:18
+      at async withForm (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_fields.mjs:240:5)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_fields.mjs:510:7)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async TestContext.<anonymous> (file:///home/linhao/Toolchain/development/LogAnalysisSkill/tests/node/test_qb_browser_fields.mjs:509:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+=========================== short test summary info ============================
+FAILED tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs]
+1 failed, 3433 passed, 1 skipped in 1146.92s (0:19:06)

@@ -1,0 +1,7 @@
+{
+  "input": "<p>before\rafter</p>\n<table><thead><tr><th>Triggered By</th></tr></thead>\n<tbody><tr><td>SyntheticUser</td></tr></tbody></table>",
+  "output": "<p>before\rafter</p>\n<table><thead><&lt;USER&gt;red By</th></tr></thead>\n<tbody><tr><td>SyntheticUser</td></tr></tbody></table>",
+  "identity_leaked": true,
+  "tag_corrupted": true,
+  "cause": "splitlines counts standalone CR; HTMLParser positions count only LF"
+}

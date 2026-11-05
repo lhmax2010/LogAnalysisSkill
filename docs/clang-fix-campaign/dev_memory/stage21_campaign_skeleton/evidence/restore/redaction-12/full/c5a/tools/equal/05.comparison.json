@@ -1,0 +1,90 @@
+{
+  "path": "/build/1193469/step_status",
+  "navigation": "VERIFIED",
+  "raw_file": "05.raw-redacted.html",
+  "active_file": "05.active-redacted.html",
+  "raw_outside_identity_count": 0,
+  "active_outside_identity_count": 0,
+  "comparison": [
+    {
+      "field": "navigation",
+      "result": "一致",
+      "raw": [
+        "Build (id:1193469)"
+      ],
+      "active": [
+        "Build (id:1193469)"
+      ]
+    },
+    {
+      "field": "summary",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "child_build",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "variables",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "configuration_tabs",
+      "result": "一致",
+      "raw": [
+        [],
+        [],
+        []
+      ],
+      "active": [
+        [],
+        [],
+        []
+      ]
+    },
+    {
+      "field": "breadcrumb",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "copy_path",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "build_name",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    },
+    {
+      "field": "failed_steps",
+      "result": "一致",
+      "raw": [
+        [
+          "Build_GBS"
+        ]
+      ],
+      "active": [
+        [
+          "Build_GBS"
+        ]
+      ]
+    },
+    {
+      "field": "error_message",
+      "result": "一致",
+      "raw": [],
+      "active": []
+    }
+  ]
+}

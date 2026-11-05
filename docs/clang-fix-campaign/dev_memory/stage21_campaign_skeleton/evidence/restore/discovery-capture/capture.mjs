@@ -20,7 +20,7 @@ export const fixedError = error => error instanceof AgentError ? error.code
   : ['TimeoutError', 'TargetClosedError'].includes(error?.name) ? error.name : 'CAPTURE_ERROR';
 
 export function exactLink(href, base) {
-  if (typeof href !== 'string' || !href || /[\x00-\x20\\]/.test(href)
+  if (typeof href !== 'string' || !href || href !== href.trim() || /[\x00-\x1f\x7f\\]/.test(href)
     || /%(?:2f|5c|2e|25)/i.test(href) || /(?:^|\/)\.\.(?:\/|$)/.test(href)) fail('CAPTURE_PATH_UNSUPPORTED');
   let url;
   try { url = new URL(href, base); } catch { fail('CAPTURE_PATH_UNSUPPORTED'); }
@@ -128,7 +128,9 @@ export function decodeText(bytes) {
   catch { fail('QB_TEXT_ENCODING_UNSUPPORTED'); }
 }
 
-export async function capture(output, runtimeFactory = () => createRuntime(DEFAULTS.playwright, DEFAULTS.chromium)) {
+export async function capture(output, runtimeFactory = () => createRuntime(DEFAULTS.playwright, DEFAULTS.chromium),
+  paths = PATHS) {
+  if (paths !== PATHS && !(paths.length === 1 && paths[0] === PATHS.at(-1))) fail('CAPTURE_PATH_UNSUPPORTED');
   await mkdir(output, { recursive: false });
   const writer = new Writer(output);
   const record = { started_utc: new Date().toISOString(), status: 'RUNNING', stage: 'startup',
@@ -234,7 +236,7 @@ export async function capture(output, runtimeFactory = () => createRuntime(DEFAU
       }
     };
     let report;
-    for (const path of PATHS) report = await read(ORIGIN + path);
+    for (const path of paths) report = await read(ORIGIN + path);
     if (report.iframes.length !== 1) fail('CAPTURE_IFRAME_COUNT');
     const iframe = exactLink(report.iframes[0], ORIGIN + PATHS.at(-1));
     const table = await read(iframe);

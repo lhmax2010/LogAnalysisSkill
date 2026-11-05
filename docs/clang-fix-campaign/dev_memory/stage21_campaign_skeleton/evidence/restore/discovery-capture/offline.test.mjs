@@ -11,14 +11,18 @@ import { ROOT, PATHS, LIMIT, exactLink, capturePolicy, capture, decodeText } fro
 const { Policy, createRuntime } = await import(pathToFileURL(`${ROOT}/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs`));
 const { DEFAULTS, PROJECT } = await import(pathToFileURL(`${ROOT}/docs/clang-fix-campaign/spikes/p5q_c5_tools.mjs`));
 const ORIGIN = 'https://quickbuild.tizen.org';
-const REPORT = '/download/1204736/html/GBS%20Reports%40%5E%40standard-armv7l%3Aaarch64%3Ax86_64/index.html';
+const REPORT = '/download/1204736/html/HTML%20REPORT/index.html';
 const LOG = REPORT.replace('index.html', 'logfiles/standard/armv7l/zlib.txt');
 const HERE = dirname(fileURLToPath(import.meta.url));
 
 test('exact URLs and UTF-8 are fail-closed', () => {
   assert.equal(exactLink(REPORT, ORIGIN), ORIGIN + REPORT);
+  assert.equal(exactLink(REPORT.replace('%20', ' '), ORIGIN), ORIGIN + REPORT);
   for (const value of ['https://else.invalid' + REPORT, REPORT + '?x=1', REPORT + '#x',
     REPORT.replace('1204736', '1204735'), '../x', REPORT + '/%2f', REPORT + '/%252e',
+    ' ' + REPORT, REPORT + ' ', REPORT + '\t', REPORT + '\n', REPORT + '\r',
+    REPORT + '\x00', REPORT + '\x1f', REPORT + '\x7f', REPORT + '\\x',
+    REPORT + '/%5c', REPORT + '/../x', REPORT + '/%2e%2e/x',
     'http://quickbuild.tizen.org' + REPORT, 'https://user@quickbuild.tizen.org' + REPORT]) {
     assert.throws(() => exactLink(value, ORIGIN), { code: 'CAPTURE_PATH_UNSUPPORTED' });
   }
@@ -51,7 +55,8 @@ function body(path, mode) {
     : PROJECT.configuration_path.replace(/TRIGGER$/, 'build');
   const nav = `<a class="nav-link">Build (id:${id})</a>`;
   const head = `<title>QuickBuild - ${config}</title><link rel="icon" href="data:,">`;
-  const identity = '<span>Welcome! SyntheticIdentity</span><a>Sign Out</a>';
+  const identity = '<span>Welcome! SyntheticAccount (SyntheticIdentity)</span><a>Sign Out</a>'
+    + '\r<div title="SyntheticIdentity"><a>SyntheticAccount</a></div>';
   let content = '';
   if (path.endsWith('/overview') || path === '/overview/1917') {
     content = `<script>function onCopyClipboardLinkDomReady(){};onCopyClipboardLinkDomReady('id','${config}')</script>
@@ -63,7 +68,7 @@ function body(path, mode) {
     content = `<table><tr><td>Name</td><td>Display Name</td><td>Value</td></tr><tr><td>TRIGGER_ID</td><td></td><td>1204735</td></tr>
       <tr><td>BUILD_PKG_LIST</td><td></td><td>platform/upstream/zlib@${'a'.repeat(40)}</td></tr></table>`;
   } else if (path.endsWith('/html_report')) {
-    content = `<iframe src="${mode === 'foreign' ? 'https://outside.invalid' : ''}${REPORT}"></iframe>`;
+    content = `<iframe src="${mode === 'foreign' ? 'https://outside.invalid' : ''}${mode === 'encoded' ? REPORT : REPORT.replace('%20', ' ')}"></iframe>`;
   } else if (path === REPORT) {
     content = `<table><tr><th>Package Name</th><th>Package Path</th><th>Build Status</th></tr>
       <tr><td>zlib</td><td>zlib-1</td><td><a class="failed" href="logfiles/standard/armv7l/zlib.txt">failed</a></td></tr></table>`;
@@ -99,7 +104,7 @@ test('real guarded Chromium capture, foreign iframe, 307 and attachment stops', 
   const args = ['--no-proxy-server', `--host-resolver-rules=MAP quickbuild.tizen.org 127.0.0.1:${server.address().port}`,
     `--ignore-certificate-errors-spki-list=${spki}`];
   try {
-    for (const item of ['', 'foreign', '307', 'attachment']) await t.test(item || 'normal', async () => {
+    for (const item of ['', 'encoded', 'remaining', 'foreign', '307', 'attachment']) await t.test(item || 'normal', async () => {
       mode = item; received = [];
       let rt;
       let resolveRuntime;
@@ -108,7 +113,7 @@ test('real guarded Chromium capture, foreign iframe, 307 and attachment stops', 
       const pending = capture(output, async () => {
         rt = await createRuntime(DEFAULTS.playwright, DEFAULTS.chromium, { launchArgs: args });
         resolveRuntime(); return rt;
-      });
+      }, item === 'remaining' ? [PATHS.at(-1)] : PATHS);
       await available;
       try {
         // Test fixture only; production capture never fills or clicks the login form.
@@ -116,18 +121,26 @@ test('real guarded Chromium capture, foreign iframe, 307 and attachment stops', 
         await rt.page.getByRole('button', { name: 'Login' }).click();
         const result = await pending;
         assert.equal(result.profile_removed, true);
-        assert.equal(result.status, item ? 'STOPPED' : 'CAPTURED');
+        const stopped = ['foreign', '307', 'attachment'].includes(item);
+        assert.equal(result.status, stopped ? 'STOPPED' : 'CAPTURED');
         assert.equal(result.failure, item === 'foreign' ? 'CAPTURE_PATH_UNSUPPORTED'
           : item === '307' ? 'CAPTURE_REDIRECT_UNSUPPORTED'
             : item === 'attachment' ? 'QB_DOWNLOAD_UNSUPPORTED' : null);
         assert.ok(!received.some(row => row.path === '/forbidden'));
-        if (!item) {
-          assert.equal(result.pages.length, 8);
+        if (!stopped) {
+          assert.equal(result.pages.length, item === 'remaining' ? 3 : 8);
           assert.equal(received.filter(row => row.path === REPORT).length, 1, 'iframe auto-load denied');
           assert.equal(received.filter(row => row.path === LOG).length, 1);
-          const log = await readFile(`${output}/08.response.txt`, 'utf8');
+          if (item === 'remaining') assert.ok(!received.some(row => PATHS.slice(0,-1).includes(row.path)));
+          const log = await readFile(`${output}/${item === 'remaining' ? '03' : '08'}.response.txt`, 'utf8');
           assert.ok(log.includes('vector<T>'));
           assert.ok(!log.includes('SyntheticIdentity') && !log.includes('SYNTHETIC_SECRET'));
+          for (const page of result.pages) {
+            assert.equal(page.body.identity_remaining_count, 0);
+            assert.ok(page.body.identity_replacement_count > 0);
+            const bytes = await readFile(`${output}/${page.body.file}`, 'utf8');
+            assert.ok(!bytes.includes('SyntheticIdentity') && !bytes.includes('SyntheticAccount'));
+          }
         }
         const recorded = await readFile(`${output}/run.json`, 'utf8');
         assert.ok(!recorded.includes('SyntheticIdentity') && !recorded.includes('synthetic-password'));
