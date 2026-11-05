@@ -1,0 +1,45 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs]",
+    "-q",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/redaction-14/fields-rerun-01/pytest.xml"
+  ],
+  "started_utc": "2026-11-05T03:48:56.295740+00:00",
+  "before": {
+    "loadavg": "5.49 4.37 4.35 2/2650 159684",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   54.6",
+      "code-insiders   12.1",
+      "chrome           4.8",
+      "code-insiders    4.1",
+      "code-insiders    4.1",
+      "Xorg             3.8",
+      "epp-client-daem  3.2",
+      "chrome           2.6",
+      "code-insiders    2.5",
+      "gnome-shell      2.5"
+    ]
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 122.11766720299966,
+  "finished_utc": "2026-11-05T03:50:58.431669+00:00",
+  "after": {
+    "loadavg": "2.78 3.74 4.12 4/2626 167160",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   55.1",
+      "code-insiders   12.2",
+      "chrome           4.8",
+      "code-insiders    4.1",
+      "code-insiders    4.1",
+      "Xorg             3.8",
+      "epp-client-daem  3.2",
+      "chrome           2.6",
+      "code-insiders    2.5",
+      "gnome-shell      2.4"
+    ]
+  }
+}

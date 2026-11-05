@@ -1,0 +1,45 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/",
+    "-q",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/redaction-14/full/pytest.xml"
+  ],
+  "started_utc": "2026-11-05T03:54:54.666742+00:00",
+  "before": {
+    "loadavg": "1.75 2.94 3.72 3/2636 181594",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "ps               100",
+      "code-insiders   56.0",
+      "code-insiders   12.5",
+      "chrome           4.8",
+      "code-insiders    4.2",
+      "code-insiders    4.1",
+      "Xorg             3.8",
+      "epp-client-daem  3.2",
+      "chrome           2.7",
+      "gnome-shell      2.5"
+    ]
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 1163.9828574029998,
+  "finished_utc": "2026-11-05T04:14:18.664721+00:00",
+  "after": {
+    "loadavg": "2.25 2.49 3.49 3/2594 279178",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "ps               100",
+      "code-insiders   57.8",
+      "code-insiders   13.1",
+      "chrome           4.7",
+      "code-insiders    4.1",
+      "code-insiders    4.0",
+      "Xorg             3.8",
+      "epp-client-daem  3.5",
+      "chrome           2.7",
+      "gnome-shell      2.4"
+    ]
+  }
+}

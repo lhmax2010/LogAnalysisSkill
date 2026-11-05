@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-12脱敏/空格修复与存档清理已实施,完整门禁因既有字段测试失败停止(SKEL-RESTORE-13),未启动真机**。RESTORE-11由RESTORE-12裁定处置(第37节),原读取事实保留、泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-14最终树门禁通过(3435通过/1既有跳过),等待用户确认唯一一次三页只读取证,未启动真机**。RESTORE-13由RESTORE-14处置(第38节),原失败证据保留;RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -223,6 +223,7 @@ nodeid、补丁目标或skip标记。历史证据目录下脚本未改、未重�
 - `tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[no-navigation]`。
 - `tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[delayed-build]`。
 - `tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[late-build]`。
+- `tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs]`,由SKEL-RESTORE-14(第38节)新增,三次单独重跑全部通过方可放行。C8后续改为观测项,按SKEL-R-08。
 
 ### 10.2 两树关闭时延对照计划
 
@@ -2098,3 +2099,65 @@ Node子例`continuous denied refresh GETs do not extend quiet; uncheck and @free
 未执行RESTORE-12第三条真机读取,live-03不存在;未进入正式discovery实现或第四批。
 源码/文档diff-check通过;29处原始合成HTML/pytest输出/JUnit行尾空白原样保留,
 未把证据格式化来掩盖原始失败。停止报告与修复同一提交,不作为最终门禁验收。
+
+## 38. 实施裁定 SKEL-RESTORE-14:既有字段窗口计时断言失败
+
+一、裁定
+1. 该失败为既有 Node 计时断言(test_qb_browser_fields.mjs:530,3000ms 静默窗口),本次改动未触及生产代理与该用例;同类于 SKEL-B1-05 计时敏感项。不另做定位调查。
+2. 将 nodeid tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs] 加入计时敏感名单,规则与 C5a 相同:失败原样留证,在当前树上单独重跑 3 次,3 次全部通过才算门禁通过,任一次失败即停止并按停止报告第 3 节候选方式调查。不改断言、不调阈值、不加 skip/xfail。名单变更写入 progress 与 design.md 第 4.6 节“恢复项落地裁定”。
+
+二、门禁(最终树)
+1. 因全仓开始后脱敏实现又有改动,必须在最终树上重新完整运行全仓 pytest(tests/run_quiet.py tests/ -q,不加 -x),并重跑 mypy、ruff、lint-imports、design 检查;运行前后记录 loadavg 与 CPU 前十进程(只记进程名与占用)。
+2. 全仓若该 nodeid 失败,按第一.2 条处理;计时敏感名单外的任何失败即停止。
+3. 本次 RESTORE-13 失败证据原样保留,不覆盖。
+
+三、门禁通过后
+按 SKEL-RESTORE-12 第三条执行唯一一次真机只读取证(html_report → iframe 页 → zlib armv7l 日志;需用户在弹出窗口登录),之后按 SKEL-RESTORE-08 第三条分叉:四条件全满足则直接实施 campaign-discover 与第四批,任一不满足则停止报告。
+
+四、其余要求不变。推送报 Permission denied 时提交后停止,由用户本机推送。
+
+### 38.1 执行登记
+
+基线f6216ec。先重跑RESTORE-13失败nodeid三次,再做最终树完整门禁;
+新证据仅写`evidence/restore/redaction-14/`,不覆盖redaction-12。
+各次运行前后记录loadavg、CPU核数、CPU前十进程名/占用,不记录命令行。
+本轮目前只改名单说明与门禁记录,不改生产代码或既有测试。
+尚未启动真机,第三条唯一一次三页取证仍待全部门禁通过和用户开始确认。
+
+### 38.2 最终树门禁通过
+
+RESTORE-13历史停止已按RESTORE-14处置:先在f6216ec最终实现上单独三次,
+全部通过;随后完整全仓中该字段nodeid亦通过,无需门禁后追加重跑。
+测试断言、3000ms阈值与skip/xfail均未改,未另作定位调查。
+证据根:`evidence/restore/redaction-14/`,运行器`run_gates.py`仅调用既有离线入口。
+
+| 运行 | 结果 | wrapper耗时(s) | 前/后loadavg(1/5/15分钟) | 证据子目录 |
+| --- | --- | --- | --- | --- |
+| 字段独立1 | 1通过,0失败 | 122.118 | 5.49/4.37/4.35 → 2.78/3.74/4.12 | `fields-rerun-01/` |
+| 字段独立2 | 1通过,0失败 | 117.935 | 2.78/3.74/4.12 → 3.12/3.48/3.97 | `fields-rerun-02/` |
+| 字段独立3 | 1通过,0失败 | 118.226 | 3.12/3.48/3.97 → 1.75/2.94/3.72 | `fields-rerun-03/` |
+| 全仓,不加-x | **3435通过,0失败,1既有跳过** | 1163.983 | 1.75/2.94/3.72 → 2.25/2.49/3.49 | `full/` |
+
+全仓pytest自身耗时1158.44秒,共3436 nodeid;唯一跳过为
+`test_case_insensitive_bypass_is_platform_specific`(case-sensitive filesystem),与此前相同。
+每个`command.json`均有完整argv、UTC起止、exit、前后CPU前十(只有进程名/占用)
+及20核记录。额外中间负载见`load-samples.jsonl`,非连续采样,不宣称是完整峰值。
+C5a六参数、C8调查、代理允许/拒绝矩阵、源码负例、可信读取/字段、
+四组本机拦截安全测试封装、新capture空格/三页用例均通过,见`summary.json`。
+没有新的失败观测或豁免结果,没有改变全仓断言。
+
+| 其它门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| mypy | 169源码,0错误 | `mypy/` |
+| ruff | 通过;证据运行器另作不忽略路径的检查亦通过 | `ruff/`, `runner-ruff/` |
+| import-linter | 7 kept,0 broken | `imports/` |
+| design检查 | 0 problem | `design/` |
+| 源码与原失败证据 | 526份既有.py/.mjs、193份redaction-12文件前后hash相同 | `inputs.json`, `unchanged-after.json` |
+| 清理 | P5Q profile 0,自身代理/该profile浏览器0 | `cleanup.json` |
+
+代理、驱动、冻结稿与安全核心仍为第37节已登记hash。本轮只改名单/进度说明,
+新增门禁运行器和证据;用户原有其它脏树文件未碰。
+门禁通过不代表RESTORE-08的四项真机事实已齐备。下一步仅允许
+`/build/1204736/html_report` → 唯一iframe → zlib/armv7l唯一失败日志,
+新目录`discovery-capture/live-03`尚不存在;须用户回复“开始”后执行一次。
+不重复前六页,不打开运行表单、不提交、不访问真实Gerrit或运行真实gbs。

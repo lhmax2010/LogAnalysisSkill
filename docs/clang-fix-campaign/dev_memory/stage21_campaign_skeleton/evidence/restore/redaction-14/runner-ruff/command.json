@@ -1,0 +1,44 @@
+{
+  "argv": [
+    ".venv/bin/ruff",
+    "check",
+    "--no-force-exclude",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/redaction-14/run_gates.py"
+  ],
+  "started_utc": "2026-11-05T04:15:02.834829+00:00",
+  "before": {
+    "loadavg": "2.04 2.39 3.42 2/2602 279365",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   57.7",
+      "python          33.3",
+      "code-insiders   13.1",
+      "chrome           4.6",
+      "code-insiders    4.1",
+      "code-insiders    4.0",
+      "Xorg             3.8",
+      "epp-client-daem  3.5",
+      "chrome           2.7",
+      "gnome-shell      2.4"
+    ]
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 0.013671657001395943,
+  "finished_utc": "2026-11-05T04:15:02.862719+00:00",
+  "after": {
+    "loadavg": "2.04 2.39 3.42 3/2602 279399",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   57.7",
+      "python          25.0",
+      "code-insiders   13.1",
+      "chrome           4.6",
+      "code-insiders    4.1",
+      "code-insiders    4.0",
+      "Xorg             3.8",
+      "epp-client-daem  3.5",
+      "chrome           2.7",
+      "gnome-shell      2.4"
+    ]
+  }
+}

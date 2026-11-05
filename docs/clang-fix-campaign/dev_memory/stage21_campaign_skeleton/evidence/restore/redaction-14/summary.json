@@ -1,0 +1,117 @@
+{
+  "passed": 3435,
+  "failed": 0,
+  "skipped": 1,
+  "collected": 3436,
+  "skips": [
+    {
+      "name": "test_case_insensitive_bypass_is_platform_specific",
+      "reason": {
+        "type": "pytest.skip",
+        "message": "case-sensitive filesystem"
+      }
+    }
+  ],
+  "selected": [
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[build]",
+      "result": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[error-created]",
+      "result": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[error-no-build]",
+      "result": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[no-navigation]",
+      "result": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[delayed-build]",
+      "result": "passed"
+    },
+    {
+      "name": "test_real_cli_browser_submit_bind_pending_pass[late-build]",
+      "result": "passed"
+    },
+    {
+      "name": "test_post_submit_read_signatures",
+      "result": "passed"
+    },
+    {
+      "name": "test_node_agent_unit_matrix",
+      "result": "passed"
+    },
+    {
+      "name": "test_node_c2c_source_guard_mutations",
+      "result": "passed"
+    },
+    {
+      "name": "test_node_c2c_trusted_reads_and_fields[test_qb_browser_trusted.mjs]",
+      "result": "passed"
+    },
+    {
+      "name": "test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs]",
+      "result": "passed"
+    },
+    {
+      "name": "test_node_c2b_local_https_safety",
+      "result": "passed"
+    },
+    {
+      "name": "test_capture_spaces_session_redaction_and_remaining_three_pages",
+      "result": "passed"
+    }
+  ],
+  "fields-rerun-01": {
+    "exit": 0,
+    "seconds": 122.11766720299966,
+    "load_before": "5.49 4.37 4.35 2/2650 159684",
+    "load_after": "2.78 3.74 4.12 4/2626 167160"
+  },
+  "fields-rerun-02": {
+    "exit": 0,
+    "seconds": 117.93508219400064,
+    "load_before": "2.78 3.74 4.12 6/2625 167161",
+    "load_after": "3.12 3.48 3.97 3/2637 174330"
+  },
+  "fields-rerun-03": {
+    "exit": 0,
+    "seconds": 118.22603183499996,
+    "load_before": "3.12 3.48 3.97 7/2636 174331",
+    "load_after": "1.75 2.94 3.72 5/2637 181593"
+  },
+  "full": {
+    "exit": 0,
+    "seconds": 1163.9828574029998,
+    "load_before": "1.75 2.94 3.72 3/2636 181594",
+    "load_after": "2.25 2.49 3.49 3/2594 279178"
+  },
+  "mypy": {
+    "exit": 0,
+    "seconds": 4.445529151000301,
+    "load_before": "2.25 2.49 3.49 4/2593 279179",
+    "load_after": "2.25 2.49 3.49 1/2590 279204"
+  },
+  "ruff": {
+    "exit": 0,
+    "seconds": 1.234849423999549,
+    "load_before": "2.25 2.49 3.49 3/2590 279205",
+    "load_after": "2.23 2.48 3.48 1/2591 279261"
+  },
+  "imports": {
+    "exit": 0,
+    "seconds": 0.5109400080000341,
+    "load_before": "2.23 2.48 3.48 3/2591 279262",
+    "load_after": "2.23 2.48 3.48 3/2591 279284"
+  },
+  "design": {
+    "exit": 0,
+    "seconds": 0.19328832800056261,
+    "load_before": "2.23 2.48 3.48 3/2591 279285",
+    "load_after": "2.23 2.48 3.48 1/2591 279287"
+  }
+}

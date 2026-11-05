@@ -1,7 +1,7 @@
 # SKEL-RESTORE-08 发现页面只读取证
 
-当前状态:RESTORE-12路径与脱敏修复已实施,全仓既有字段测试失败,
-按RESTORE-13停止(见`../redaction-12/stop-report-SKEL-RESTORE-13.md`),未获真机门禁。
+当前状态:RESTORE-12路径与脱敏修复已实施;RESTORE-13历史停止由RESTORE-14处置,
+三次独立重跑及最终全仓门禁通过(见`../redaction-14/README.md`),等待用户开始确认。
 六页读取事实保留,iframe/日志未读取,没有重新启动真机。
 
 ## RESTORE-12存档修正
@@ -34,7 +34,7 @@
 - `offline.test.mjs`:私有Xvfb、本地HTTPS与测试证书;只有此测试入口模拟登录。
   现场入口不传host-resolver或测试证书参数。
 
-历史live-01命令(不可复用;RESTORE-12只允许剩余三页,当前尚未获真机门禁):
+历史live-01命令(不可复用;RESTORE-12只允许剩余三页,须新的用户开始确认):
 
 ```sh
 /home/linhao/.local/bin/node docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/capture.mjs --live

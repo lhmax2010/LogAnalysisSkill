@@ -2820,6 +2820,12 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
    完整账号或显示名,不改标签/属性名;计替换次数并在写前写后要求身份残留0。
    取证唯一链接允许路径段内空格经标准URL一次编码为%20,其余精确读取与
    拒绝规则不变;正式发现表沿用同一规则,不得拼接历史GBS Reports目录。
+8. 按SKEL-RESTORE-14,将既有
+   `tests/unit/test_qb_browser_node.py::test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs]`
+   加入计时敏感名单。失败原样留证,当前树单独重跑三次全部通过才可放行;
+   任一次失败即停止并按RESTORE-13报告候选方式调查。
+   不改断言、3000ms阈值或skip/xfail;最终树仍须完整全仓门禁,
+   名单外失败仍停止。此条不改变任何生产安全规则。
 
 本批不改变发现阶段的浏览器白名单;该项仍须按SKEL-RESTORE-01第三.1条
 先做URL形态取证,停止等待裁定后才可实施。
