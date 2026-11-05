@@ -1,0 +1,57 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-m",
+    "tizen_campaign_intake",
+    "campaign-start-check",
+    "--config",
+    "/home/linhao/Toolchain/campaign-discover-trial/r01/config.yaml",
+    "--state-root",
+    "/home/linhao/Toolchain/campaign-discover-trial/r01/state-root",
+    "--project",
+    "platform/upstream/libtirpc"
+  ],
+  "started_utc": "2026-11-05T12:27:13.559192+00:00",
+  "finished_utc": "2026-11-05T12:27:17.806392+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "checks": [
+      {
+        "missing_keys": [],
+        "name": "config",
+        "passed": true,
+        "reason": null
+      },
+      {
+        "name": "clang_conf",
+        "passed": true,
+        "reason": null
+      },
+      {
+        "name": "gbs",
+        "passed": true,
+        "reason": null
+      },
+      {
+        "name": "gerrit",
+        "passed": true,
+        "projects": [
+          {
+            "passed": true,
+            "project": "platform/upstream/libtirpc"
+          }
+        ],
+        "reason": null
+      },
+      {
+        "name": "state_directory",
+        "passed": true,
+        "reason": null
+      }
+    ],
+    "error_code": null
+  },
+  "stderr_bytes": 0,
+  "state_db_exists": false,
+  "config_sha256": "68b4f39b1ad768629acff344fdd6e8e1812d109d74924330a9ceec3cb24dda44"
+}

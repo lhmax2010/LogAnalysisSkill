@@ -2,6 +2,7 @@
 
 日期:2026-11-05。状态:**恢复第1至4批离线完成;RESTORE-24关闭RESTORE-23,第三/四批最终树3501 passed、0 failed、1既有skip(第45、46节);首次真实发现待另行裁定**。RESTORE-19由RESTORE-20两命令文件交接处置;RESTORE-21由RESTORE-22处置;RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
+最新真机试运行准备:RESTORE-25只读预检通过,因归档通道缺口在弹窗前停止RESTORE-26(第47节),唯一一次执行未使用。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
 ## 1. 冻结输入与开工事实
@@ -2603,3 +2604,35 @@ SANDBOX_QB_PASS → REVIEW_PUSHING → REVIEW_PUSHED;副本释放,
 消费端全部argv与0 HTTP/浏览器为`consumer-processes.json`。
 第四批与第三批使用45.3所列同一最终树完整门禁,不是只测文档。
 本轮结束停在离线交付,不进入真实发现。
+
+## 47. SKEL-RESTORE-25:首次真机发现试运行前置与停止
+
+基线6f5e801。授权目标1204735,只读qb-discover后离线campaign-discover --dry-run,
+单次、失败不重试;浏览器必须另等用户“开始”。本轮尚未请求或收到该次确认。
+
+新建仓外`/home/linhao/Toolchain/campaign-discover-trial/r01/`,config.yaml与state-root;
+state.db、kb.jsonl仅指定全新路径,没有创建/写入数据库。qb配置逐项沿用C8 preparation,
+真实Gerrit SSH来源为本机~/.ssh/config的review.tizen.org条目,地址
+`ssh://review.tizen.org:29418`;不猜测、不使用C8的本地镜像地址。
+其它键按启动模板填写,clang_conf_path为本机已存在gbs_llvm.conf,不代表已确认
+1204735实际build.conf,且本次不编译。完整配置留仓外,不归档账号身份。
+
+一次campaign-start-check使用历史预筛确认的platform/upstream/libtirpc:
+UTC12:27:13–12:27:17,exit0,五项通过,实际只读Gerrit ls-remote通过;
+既有gbs检查为--version,未执行build。argv/UTC/exit/固定JSON见
+`evidence/restore/live-dryrun-01/preflight-command.json`。
+config SHA256为`68b4f39b1ad768629acff344fdd6e8e1812d109d74924330a9ceec3cb24dda44`。
+
+真机前发现RESTORE-25第三.1的取证通道缺口:生产CLI不输出带elapsed_ms的runtime.trace,
+read_text应答没有Content-Type/跳转/Download元数据;它们虽然参加运行时核验,
+并未作为事实回传。不能推测或把测试harness输出混称生产CLI输出。
+据既有契约冲突纪律写[停止报告SKEL-RESTORE-26](evidence/restore/live-dryrun-01/stop-report-SKEL-RESTORE-26.md),
+附准确代码位置与候选A封闭观测补修/B明确接受NOT_COLLECTED,均未实施。
+唯一一次真机机会未使用;无日志正文、无失败包清单、无安全停止事件可供判定,
+不是“安全事件为0”的真机结论。自动发现真机只读保持未验证。
+
+入仓前对本轮两个证据文件执行PageRedactor.check_bytes,凭据检查通过;
+从仓外配置取已知本机账号/署名作完整词边界残留扫描,计数0,不输出原文。
+未登录QB,会话身份扫描标为NOT_APPLICABLE_NO_LOGIN,不伪称已经扫描未知登录身份。
+state-root为空,状态库与KB文件不存在;受检生产文件与6f5e801逐字一致。
+design检查0 problem、git diff --check通过;没有运行全仓测试或任何QB命令。

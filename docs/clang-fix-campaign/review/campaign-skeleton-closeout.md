@@ -89,6 +89,11 @@ DENY_TARGET_GONE共3次且未导致停止。逐次结果、负载及原始失败
 
 下列项均不以离线通过替代真实验收,依据SKEL-CLOSE-01与冻结稿第7节:
 
+- 自动发现真机只读:**未验证**。RESTORE-25新运行目录及只读启动预检通过,
+  但CLI未提供所要求的代理trace/elapsed_ms和日志响应元数据,在弹窗前停止;
+  未消耗一次执行机会,未运行dry-run消费或真实建档。
+  [RESTORE-26停止报告](../dev_memory/stage21_campaign_skeleton/evidence/restore/live-dryrun-01/stop-report-SKEL-RESTORE-26.md)。
+
 - 真实gbs失败形态与三架构基线/修复耗时:第3.5批未执行,无真实单包全链路测量。
 - 真实CI日志上的analyzer有效诊断:预筛3次均exit0但needs_llm,不能证明与人工Clang修法对应;[candidates.md](../dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/candidates.md)。
 - campaign-start-check对真实Gerrit的ls-remote:本阶段只有假SSH用例;`a58494b`。
