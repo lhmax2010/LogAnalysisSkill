@@ -1,0 +1,76 @@
+{
+  "source": "02.response.html",
+  "offline_only": true,
+  "header": [
+    {
+      "text": "name",
+      "line": 47,
+      "links": []
+    },
+    {
+      "text": "standard armv7l",
+      "line": 48,
+      "links": []
+    },
+    {
+      "text": "standard aarch64",
+      "line": 49,
+      "links": []
+    },
+    {
+      "text": "standard x86_64",
+      "line": 50,
+      "links": []
+    }
+  ],
+  "zlib_rows": [
+    [
+      {
+        "text": "zlib",
+        "line": 1596,
+        "links": []
+      },
+      {
+        "text": "failed",
+        "line": 1597,
+        "links": [
+          {
+            "text": "failed",
+            "line": 1597,
+            "href": "logfiles/standard/armv7l/zlib.txt",
+            "class": null
+          }
+        ]
+      },
+      {
+        "text": "failed",
+        "line": 1598,
+        "links": [
+          {
+            "text": "failed",
+            "line": 1598,
+            "href": "logfiles/standard/aarch64/zlib.txt",
+            "class": null
+          }
+        ]
+      },
+      {
+        "text": "failed",
+        "line": 1599,
+        "links": [
+          {
+            "text": "failed",
+            "line": 1599,
+            "href": "logfiles/standard/x86_64/zlib.txt",
+            "class": null
+          }
+        ]
+      }
+    ]
+  ],
+  "zlib_row_count": 1,
+  "current_class_failed_matches": 0,
+  "armv7l_href_count": 1,
+  "resolved_url_not_requested": "https://quickbuild.tizen.org/download/1204736/html/HTML%20REPORT/logfiles/standard/armv7l/zlib.txt",
+  "observed_log_requests": 0
+}

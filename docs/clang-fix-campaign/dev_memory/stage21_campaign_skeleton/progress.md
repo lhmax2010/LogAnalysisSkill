@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-16身份登记与私有原文流程最终树门禁通过(3453 passed/1既有skip),等待用户确认开始;本轮未真机读取**。RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-16门禁通过后单次live-04取证已停止(SKEL-RESTORE-17):两页脱敏归档成功,日志链接class假设不符,日志未读;另记未豁免continueResponse失败**。RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -2283,3 +2283,45 @@ loadavg前2.43/2.57/2.29,后5.52/4.17/3.58,20核;CPU前十名称/占用见
 四条件仍须现场事实齐备后才允许进入正式campaign-discover与第四批。
 暂存后`git diff --cached --check`只报告C5a原样归档HTML的23处行尾空格,
 不改写响应字节;排除这些原始夹具证据后exit0,详见`redaction-16/diff-check.json`。
+
+## 41. RESTORE-16唯一一次剩余三页取证:live-04与停止SKEL-RESTORE-17
+
+基线5721a32已推送;用户本次确认原话:“开始”。执行前重读第40节与工具,
+核对源码/受保护文件hash与门禁一致,输出目录不存在,P5Q进程/profile/私有run均0,
+DISPLAY存在。loadavg为7.57/4.44/3.68,见`discovery-capture/live-04.preflight.json`。
+没有改工具或生产代码,没有注入本机测试参数,没有读取凭据或要求终端登录。
+
+只调用capture导出入口一次,paths=`[PATHS.at(-1)]`,输出新目录`discovery-capture/live-04`。
+argv、UTC起止、授权、exit见`live-04.command.json`;08:18:21.154–08:19:42.051 UTC,
+80.831秒,exit4。完整stdout/stderr为同级`live-04.stdout.log`、`live-04.stderr.log`。
+
+| 项目 | 事实 | 证据(相对discovery-capture) |
+| --- | --- | --- |
+| 登录 | ok=true | `live-04/run.json:110` |
+| html_report | 主帧GET200,text/html;charset=utf-8,单跳,无Disposition/Download | `run.json:7`;`01.response.html` |
+| iframe显式主帧 | GET `/download/1204736/html/HTML%20REPORT/index.html`,200,text/html; charset=utf-8,inline,单跳,无Download | `run.json:28`;`02.response.html` |
+| 源src与wire编码 | 源码空格,实际请求%20,目录确为HTML REPORT | `01.response.html:803`;`run.json:80` |
+| 日志选择 | 唯一zlib行、主架构href恰好一个,文字failed,无class属性 | `02.response.html:1596,1597`;`report-structure.json` |
+| 工具首个停止 | class=failed匹配0,CAPTURE_LOG_LINK_MISMATCH;日志未请求 | `run.json:113`;`capture.mjs:120` |
+| 附加安全停止 | Fetch.continueResponse/REQUEST_ID_INVALID,idle,response,generation5;FETCH_CONTINUE_FAILED | `run.json:205,214` |
+| 脱敏 | Welcome1、登记身份1、替换1;两页替换次数1/0,残留均0,全目录扫描后删除原文 | `run.json:17,38,221` |
+| 关闭 | PAGE_CLOSED78863ms,disconnected78988ms,profile_removed=true,私有run删除 | `run.json:100,219,227` |
+
+日志选择失败与附加安全停止分别记录,不把后者推定为前者的原因;trace没有其独立时间戳,
+不能确定continueResponse错误是否由关闭动作引起。没有扩大RESTORE-10的豁免。
+`live-04/inspect_report.py`只解析已脱敏归档,不联网、不改取证工具;
+结果为zlib行1、class匹配0、armv7l href1、日志请求0。
+后验清理、逐文件检查、源码完整性见`live-04/validation.json`。
+原文严格在仓外私有目录中暂存,归档成功后已删除;没有把原文或身份原文加入Git。
+
+四项实施前提未齐:iframe同源/编码/响应已确认,日志href已取得但响应Content-Type、
+Download与跳转仍UNKNOWN。按RESTORE-08第三.2及RESTORE-16第三.2停止,
+同时记录RESTORE-10第五条要求停止的未豁免失败。没有再读任何页面、换包或重试,
+没有进入campaign-discover正式实现或第四批。
+
+[停止报告](evidence/restore/discovery-capture/stop-report-SKEL-RESTORE-17.md)
+给出候选:按实测四列表头/链接文字精确定位zlib主架构链接并补正负例;
+continueResponse仍按原规则停止,如需调查关闭竞争须另行裁定。
+本轮仅新增证据、离线结构摘录与文档检查,不将第40节全仓结果冒称为本轮重跑。
+设计检查0 problem,离线摘录脚本ruff通过;暂存diff仅两份响应HTML的476处原始空白警告,
+保留CR/LF和响应字节不格式化,非HTML文件检查exit0(`live-04/diff-check.json`)。

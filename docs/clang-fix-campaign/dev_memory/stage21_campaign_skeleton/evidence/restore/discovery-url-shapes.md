@@ -118,6 +118,26 @@ RESTORE-12已确认live-02旧身份计数2实际涉及漏遮蔽并完成后处�
 [SKEL-RESTORE-15报告](discovery-capture/stop-report-SKEL-RESTORE-15.md)给出事实与候选诊断,
 不把统一错误码推断为已证实的具体根因。
 
+### 2.4 RESTORE-16补读结果:live-04(2026-11-05)
+
+5721a32最终树门禁通过并收到新的“开始”后只执行一次。登录成功,
+html_report与其唯一iframe均主帧GET200、单跳、无Download,已脱敏归档。
+
+| 原UNKNOWN | 本次取得事实 |
+| --- | --- |
+| iframe实际wire path | `/download/1204736/html/HTML%20REPORT/index.html`;`discovery-capture/live-04/run.json:28,80` |
+| iframe响应 | text/html; charset=utf-8,`inline;filename*=UTF-8''index.html`,200;`run.json:30` |
+| 报告表结构 | name / standard armv7l / standard aarch64 / standard x86_64;`02.response.html:47` |
+| zlib日志原始href | `logfiles/standard/armv7l/zlib.txt`,唯一zlib行中主架构唯一链接,链接文字failed,没有class属性;`02.response.html:1596,1597` |
+| 日志响应/编码/Download/跳转 | NOT_COLLECTED;工具class=failed选择器未匹配,日志未读取 |
+| 脱敏/私有原文 | 两页替换次数1/0,身份残留0,归档后私有原文已删除;`run.json:221` |
+
+CAPTURE_LOG_LINK_MISMATCH为工具首个停止原因。退出过程中trace另记
+Fetch.continueResponse/REQUEST_ID_INVALID(idle,response,generation5)与
+FETCH_CONTINUE_FAILED;此操作没有豁免。没有重试/读其它包,
+四项事实未齐备,不进入第三/四批实现。见
+[SKEL-RESTORE-17报告](discovery-capture/stop-report-SKEL-RESTORE-17.md)。
+
 ## 3. 当前拦截与读取边界
 
 - Agent`:88`的readonly仅含build裸页/overview/variables/step_status和登记overview。

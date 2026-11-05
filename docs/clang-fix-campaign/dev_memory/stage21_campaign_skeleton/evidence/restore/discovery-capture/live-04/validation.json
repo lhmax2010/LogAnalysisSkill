@@ -1,0 +1,45 @@
+{
+  "ok": true,
+  "body_count": 2,
+  "log_read": false,
+  "new_files_checked": [
+    "live-04/01.response.html",
+    "live-04/02.response.html",
+    "live-04/inspect_report.py",
+    "live-04/report-structure.json",
+    "live-04/run.json",
+    "live-04.command.json",
+    "live-04.preflight.json",
+    "live-04.stdout.log",
+    "live-04.stderr.log"
+  ],
+  "current_identity_scan": {
+    "source": "worker before private-original deletion",
+    "welcome_regions": 1,
+    "registered_identities": 1,
+    "replacements": 1,
+    "remaining": 0
+  },
+  "historical_identity_pre_add_scan": {
+    "files": 57,
+    "remaining": 0,
+    "values_logged": false
+  },
+  "private_run_deleted": true,
+  "profiles": [],
+  "p5q_processes": [],
+  "baseline_sources_unchanged": 530,
+  "protected_hashes_unchanged": true,
+  "trace_counts": {
+    "FRAMEWORK_SELF_TEST": 1,
+    "DENIED": 16,
+    "OPERATION_FAILED": 1,
+    "AGENT_STOPPED": 1
+  },
+  "denied_groups": {
+    "login <other>": 7,
+    "login /wicket/page": 5,
+    "read <other>": 4
+  },
+  "final_metadata_selfcheck": true
+}

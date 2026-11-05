@@ -151,3 +151,19 @@ worker统一错误码无法进一步定位,没有现场改工具或再读页面�
 失败原文不可git add/推送;修复后先离线重做,不得为了脱敏问题再次登录。
 覆盖用例位于`tests/unit/test_restore_capture_redaction.py`、
 `tests/unit/test_restore_capture_archive.py`与本目录`offline.test.mjs`。
+
+## RESTORE-16一次剩余三页取证:live-04
+
+用户确认“开始”,5721a32前置核对通过后单次执行,80.831秒,exit4。
+html_report与iframe报告页均主帧200、单跳、无Download;
+iframe实际URL为空格编码后的`HTML%20REPORT/index.html`,响应Content-Disposition为inline。
+两页脱敏与全目录身份检查通过,替换次数1/0,已登记身份残留0;
+浏览器/profile清理完成,私有原文成功删除。
+
+报告页有唯一zlib行和唯一armv7l日志href,但用文字failed而不是class=failed表示失败。
+现有工具匹配0条而停止CAPTURE_LOG_LINK_MISMATCH,日志没有请求。
+退出过程中另记未豁免的Fetch.continueResponse/REQUEST_ID_INVALID与FETCH_CONTINUE_FAILED。
+没有修工具后重跑,没有访问其它包或重复前六页。
+归档`live-04/01.response.html`、`02.response.html`、`run.json`;
+离线事实`report-structure.json`;后验检查`validation.json`。
+详见[SKEL-RESTORE-17停止报告](stop-report-SKEL-RESTORE-17.md),四项实施前提仍未全部取得。
