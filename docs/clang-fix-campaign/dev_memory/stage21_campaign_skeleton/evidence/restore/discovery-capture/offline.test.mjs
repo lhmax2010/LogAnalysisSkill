@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { execFileSync } from 'node:child_process';
 import { createHash, X509Certificate } from 'node:crypto';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, readdir } from 'node:fs/promises';
 import { createServer } from 'node:https';
 import { dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -55,7 +55,7 @@ function body(path, mode) {
     : PROJECT.configuration_path.replace(/TRIGGER$/, 'build');
   const nav = `<a class="nav-link">Build (id:${id})</a>`;
   const head = `<title>QuickBuild - ${config}</title><link rel="icon" href="data:,">`;
-  const identity = '<span>Welcome! SyntheticAccount (SyntheticIdentity)</span><a>Sign Out</a>'
+  const identity = (mode === 'no-welcome' ? '' : '<span>Welcome! SyntheticAccount (SyntheticIdentity)</span>') + '<a>Sign Out</a>'
     + '\r<div title="SyntheticIdentity"><a>SyntheticAccount</a></div>';
   let content = '';
   if (path.endsWith('/overview') || path === '/overview/1917') {
@@ -78,6 +78,9 @@ function body(path, mode) {
 
 test('real guarded Chromium capture, foreign iframe, 307 and attachment stops', { timeout: 180000 }, async t => {
   const temp = await mkdtemp('/tmp/restore08-capture-');
+  const oldHome = process.env.HOME;
+  process.env.HOME = `${temp}/private-home`;
+  await mkdir(`${temp}/public`);
   execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', `${temp}/key`,
     '-out', `${temp}/cert`, '-days', '1', '-subj', '/CN=quickbuild.tizen.org',
     '-addext', 'subjectAltName=DNS:quickbuild.tizen.org'], { stdio: 'ignore' });
@@ -104,16 +107,22 @@ test('real guarded Chromium capture, foreign iframe, 307 and attachment stops', 
   const args = ['--no-proxy-server', `--host-resolver-rules=MAP quickbuild.tizen.org 127.0.0.1:${server.address().port}`,
     `--ignore-certificate-errors-spki-list=${spki}`];
   try {
-    for (const item of ['', 'encoded', 'remaining', 'foreign', '307', 'attachment']) await t.test(item || 'normal', async () => {
+    for (const item of ['', 'encoded', 'remaining', 'foreign', '307', 'attachment', 'no-welcome']) await t.test(item || 'normal', async () => {
       mode = item; received = [];
       let rt;
       let resolveRuntime;
       const available = new Promise(resolve => { resolveRuntime = resolve; });
-      const output = `${temp}/${item || 'normal'}`;
+      const output = `${temp}/public/${item || 'normal'}`;
       const pending = capture(output, async () => {
         rt = await createRuntime(DEFAULTS.playwright, DEFAULTS.chromium, { launchArgs: args });
+        const originalClose = rt.close.bind(rt);
+        rt.close = async () => {
+          assert.deepEqual(await readdir(output), [], 'no repository bodies before browser cleanup');
+          await originalClose();
+          rt.close = originalClose;
+        };
         resolveRuntime(); return rt;
-      }, item === 'remaining' ? [PATHS.at(-1)] : PATHS);
+      }, ['remaining', 'no-welcome'].includes(item) ? [PATHS.at(-1)] : PATHS);
       await available;
       try {
         // Test fixture only; production capture never fills or clicks the login form.
@@ -121,6 +130,17 @@ test('real guarded Chromium capture, foreign iframe, 307 and attachment stops', 
         await rt.page.getByRole('button', { name: 'Login' }).click();
         const result = await pending;
         assert.equal(result.profile_removed, true);
+        assert.equal(result.browser_closed, true);
+        if (item === 'no-welcome') {
+          assert.equal(result.status, 'STOPPED');
+          assert.equal(result.archive.stage, 'IDENTITY_EMPTY');
+          assert.equal(result.archive.private_removed, false);
+          assert.equal(result.page_count, 3, 'redaction failure cannot interrupt reads');
+          assert.equal(received.filter(row => row.path === LOG).length, 1);
+          assert.deepEqual(await readdir(output), ['run.json']);
+          return;
+        }
+        assert.equal(result.archive.private_removed, true);
         const stopped = ['foreign', '307', 'attachment'].includes(item);
         assert.equal(result.status, stopped ? 'STOPPED' : 'CAPTURED');
         assert.equal(result.failure, item === 'foreign' ? 'CAPTURE_PATH_UNSUPPORTED'
@@ -146,5 +166,8 @@ test('real guarded Chromium capture, foreign iframe, 307 and attachment stops', 
         assert.ok(!recorded.includes('SyntheticIdentity') && !recorded.includes('synthetic-password'));
       } finally { await rt.close(); await pending; }
     });
-  } finally { await new Promise(resolve => server.close(resolve)); await rm(temp, { recursive: true, force: true }); }
+  } finally {
+    process.env.HOME = oldHome;
+    await new Promise(resolve => server.close(resolve)); await rm(temp, { recursive: true, force: true });
+  }
 });

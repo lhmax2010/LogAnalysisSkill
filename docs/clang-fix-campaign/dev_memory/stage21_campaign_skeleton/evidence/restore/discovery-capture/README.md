@@ -118,3 +118,36 @@ trace为FRAMEWORK_SELF_TEST 1、DENIED 8,无AGENT_STOPPED/OPERATION_FAILED。
 只说明单项Welcome不能满足当前实现的复合身份完整性要求,不能证明现场命中此分支。
 worker统一错误码无法进一步定位,没有现场改工具或再读页面。
 详见[SKEL-RESTORE-15停止报告](stop-report-SKEL-RESTORE-15.md)。
+
+## RESTORE-16:私有读取与离线归档
+
+本节替代前文“读取时立即脱敏”的工具行为说明,不改历史运行事实。
+`capture.mjs`的网络、导航、下载、身份核验与唯一链接检查保持原规则;
+仅把正文writer改为私有spool,关闭浏览器并确认profile删除后再调用离线归档。
+当前仍未执行新的真机读取,须最终门禁通过后用户重新回复“开始”。
+
+- worker:`redact_capture.py`;私有保存和归档:`capture_archive.py`。
+- 目录固定为`~/.local/state/campaign-capture-private/capture-<随机值>/`,目录0700,
+  文件0600,拒绝符号链接与仓库/归档树内路径。每页`.raw`保留原始响应字节,
+  `.utf8`保留按原严格解码得到的文本,均不进入仓库;CR/LF不被规范化。
+- 读取期间不做身份登记或脱敏。浏览器关闭后保存私有manifest和运行元数据,
+  从HTML的非空Welcome登记身份,单账号、单显示名、复合形式均可;
+  用已登记身份补全同页文本/属性中的完整配对,不从其它人的Triggered By猜身份。
+  iframe或纯文本日志不必重复携带Welcome,沿用本会话已登记集合。
+- 两遍登记使后续页发现的别名也用于先前页脱敏。正文逐份写前/写后检查,
+  再扫描整个`discovery-capture/`目录的已登记身份残留;只在全为0后删除私有原文。
+  目录扫描为身份扫描,新归档文件另有凭据自检;测试源码中的合成凭据不当作现场泄漏。
+- 成功的`run.json`记录每页替换次数、剩余0、会话计数与private_removed。
+  失败只记录六种封闭阶段之一及计数,移除本次新写的正文、保留仓外原文,
+  不输出身份、异常文本、堆栈。读取安全失败仍立即停止,不换路径、不重试。
+
+离线重做入口(不启动浏览器、不联网;原文保留时才可用,新输出目录必须不存在):
+
+```sh
+.venv/bin/python docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/redact_capture.py --replay capture-<run.json中的随机值> --output <新的归档目录>
+```
+
+`--replay`只能选择固定私有根下的run名,不能提供任意原文路径。
+失败原文不可git add/推送;修复后先离线重做,不得为了脱敏问题再次登录。
+覆盖用例位于`tests/unit/test_restore_capture_redaction.py`、
+`tests/unit/test_restore_capture_archive.py`与本目录`offline.test.mjs`。

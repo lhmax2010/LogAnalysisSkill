@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-14门禁通过,唯一一次live-03取证在首个html_report的脱敏阶段停止(SKEL-RESTORE-15),正文零归档,未读iframe/日志**。RESTORE-13由RESTORE-14处置(第38节),原失败证据保留;RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-16身份登记与私有原文流程最终树门禁通过(3453 passed/1既有skip),等待用户确认开始;本轮未真机读取**。RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -2202,3 +2202,84 @@ iframe/日志的同源、跳转、Content-Type/Download、href/wire path仍UNKNO
 `discovery-url-shapes.md`第2.3节已回填;具体停止事实和未实施的候选诊断方案见
 `discovery-capture/stop-report-SKEL-RESTORE-15.md`。没有进入正式发现CLI或第四批。
 本次仅归档与文档检查,不把第38节的离线门禁冒称为真机取证通过。
+
+## 40. 实施裁定 SKEL-RESTORE-16:身份登记与私有原文离线归档
+
+SKEL-RESTORE-15 由本裁定处理;原现场与失败证据不改。本轮先实施离线修改和门禁,
+门禁通过后等待用户重新回复“开始”,不复用上一轮授权。
+
+### 40.1 裁定原文
+
+一、身份登记规则修正(qb_redact.SessionPageRedactor 与 capture worker)
+1. Welcome 区域的身份文本无论是单项(仅账号或仅显示名)还是“账号 (显示名)”复合形式都登记;不再以“必须是复合形式”作为完整性前提。
+2. 补全:在同一页正文中,凡形如“X (Y)”且 X 或 Y 等于已登记身份的文本,把另一半也登记(仅按完整字符串、词边界匹配,只作用于文本节点与属性值,不作用于标签/属性名)。
+3. 完整性判据改为:至少登记到一个非空身份,且归档前后复检所有已登记身份残留为 0。Welcome 区域不存在或为空才判失败。
+4. 失败时输出封闭的阶段码(IDENTITY_REGISTER、IDENTITY_EMPTY、REDACT、PRECHECK、WRITE、POSTCHECK 之一)及计数(Welcome 区域数、已登记身份数、替换次数);不输出身份原文、异常原文、堆栈或页面内容。
+5. 离线测试:单项账号、单项显示名、复合形式三种 Welcome 均能归档且残留 0;“X (Y)”补全生效;Welcome 缺失返回 IDENTITY_EMPTY;各阶段失败码各有一例;输出中扫描不到任何身份原文。
+
+二、取证流程调整(只改取证工具,不改生产代理)
+1. 三个目标页(html_report、唯一 iframe 页、zlib armv7l 日志)按原规则逐页读取;读取阶段的网络/导航/下载等安全停止条件不变。
+2. 原始正文只写入仓库外私有目录 ~/.local/state/campaign-capture-private/<run>/(目录 0700、文件 0600),不写入仓库、不 git add、不推送;读取过程中不做脱敏判定,脱敏失败不再中断读取。
+3. 浏览器关闭、profile 删除后,离线对私有目录中的原文做脱敏并归档到仓库 evidence;git add 前对整个 discovery-capture 目录做一次身份残留扫描,必须为 0。
+4. 归档成功后删除私有目录原文并记录删除;若脱敏失败,原文保留在私有目录,写停止报告(含阶段码),等待裁定,后续离线修复后直接对该原文重做,不需要再次登录。
+5. 离线测试覆盖:私有目录权限、仓库内不出现原文、残留扫描拦截、成功后删除。
+
+三、执行
+1. 第一、二条完成后跑全仓门禁(不加 -x)及 mypy、ruff、lint-imports、design 检查;计时敏感名单按既有规则。
+2. 门禁通过后回报“等待用户确认开始”;用户回复“开始”后执行一次真机只读取证(三页,需用户在弹窗登录),然后按 SKEL-RESTORE-08 第三条分叉:四条件全满足则直接实施 campaign-discover 与第四批,任一不满足则停止报告。
+3. 其余要求不变。推送报 Permission denied 时提交后停止,由用户本机推送。
+
+### 40.2 实现与证据边界
+
+- `tizen_qb_verify/qb_redact.py`:只改SessionPageRedactor及其值范围解析辅助器;
+  默认PageRedactor的位置脱敏规则不改。Welcome单项也完整,配对补全使用完整身份,
+  注释不作为新别名来源(已知身份仍会在注释中遮蔽),标签/属性名不参与匹配。
+- `discovery-capture/capture.mjs`:读取时只调用private store;三页原有请求、正文、
+  地址、下载与唯一链接检查不变。finally先关闭浏览器/确认profile删除,再finish归档。
+- `discovery-capture/redact_capture.py`与新增`capture_archive.py`:固定仓外私有根,
+  0700/0600、排除仓库和符号链接、保留原始字节与严格解码文本。浏览器清理后统一登记,
+  双重自检、全目录身份扫描、成功删除;失败保留原文并有不联网的--replay入口。
+- `tests/unit/test_restore_capture_redaction.py`:原“单项不完整”的两项worker参数用例
+  由新归档测试替代;“不从其它用户推定身份”用例只将完整性断言改为true,
+  仍断言没有登记其它用户。其余原字节/标签/凭据保护断言保持。
+- 新增`tests/unit/test_restore_capture_archive.py`15项,覆盖三种Welcome、缺失/空值、
+  六阶段失败、权限、源码不进仓库、全目录拦截后离线重做、清理前不得脱敏与路径防护。
+  Node本机HTTPS增加no-welcome:服务器收到全部三页后才报IDENTITY_EMPTY;
+  正文零归档、原文保留,证明脱敏失败不再中断网络读取。
+
+门禁根:`evidence/restore/redaction-16/`。定向初查43个pytest项通过
+(包含1个真实Chromium包装,内部10个Node测试);正式输出由该目录focused重新归档。
+所有Chromium为本机假服/虚拟显示;没有真实QB登录、提交、Gerrit访问或真实gbs。
+全目录历史身份复检:`archive-scan.json`,取RESTORE-12已经确认的历史cell只在内存登记,
+扫描44个文件,已登记身份残留0,没有改写历史正文或输出身份。新真机会话将重新登记,
+本结果不冒充未来会话的扫描结果。
+
+### 40.3 最终树门禁与停点
+
+全仓UTC 2026-11-05 06:57:01开始,完整运行1152.59秒;pytest自身1152.14秒,
+不加-x。**3453通过、0失败、1既有跳过**,共3454项,相对上一轮净增18项。
+唯一跳过仍为`test_case_insensitive_bypass_is_platform_specific`(case-sensitive filesystem)。
+loadavg前2.43/2.57/2.29,后5.52/4.17/3.58,20核;CPU前十名称/占用见
+`redaction-16/full/command.json`,没有保存进程命令行参数。
+
+| 门禁 | 结果 | 证据 |
+| --- | --- | --- |
+| 定向 | 43通过,0失败/跳过;内部Node10项 | `redaction-16/focused/` |
+| 全仓 | 3453通过,0失败,1既有跳过 | `redaction-16/full/pytest.xml`, `stdout.log` |
+| mypy | 169源码,0错误 | `redaction-16/mypy/` |
+| ruff | 完整原配置清单加本轮新增Python;取证/helper另作不忽略路径检查通过 | `redaction-16/ruff/`, `capture-ruff/` |
+| import-linter | 7 kept,0 broken | `redaction-16/imports/` |
+| design检查 | 0 problem | `redaction-16/design/` |
+| P5Q既有回归 | 可信读取/字段、静态断言、允许拒绝矩阵、四组安全封装均通过 | 全仓JUnit对应Node包装 |
+| 计时敏感/调查 | C5a六参数、C8调查、字段窗口均通过;无需豁免或三次重跑 | 全仓JUnit; `full/c5a/`, `full/c8/` |
+| 完整性/清理 | 530源码门禁前后不变;12受保护文件hash不变;P5Q进程/profile=0,私有真机run=0 | `integrity-after.json`, `protected-final.json`, `cleanup.json` |
+
+汇总:`redaction-16/summary.json`;实现与逐项测试:`redaction-16/README.md`。
+本轮没有新的读取失败观测,没有任何真实QB/Gerrit/gbs操作,没有覆盖原失败证据。
+代理完整hash仍为431b27137c857f5089053737b320ea35f2317d66493892b3dec5f7608db2e26c,
+前缀仍为1708c9567418043345c6f8a1e875aff93e1f21ce627540583f734fc5eeafb2ed。
+无与RESTORE-16不一致或做不到之处。现在停在**等待用户确认开始**:
+新确认后只执行html_report→唯一iframe→zlib armv7l日志一次,不重复前六页;
+四条件仍须现场事实齐备后才允许进入正式campaign-discover与第四批。
+暂存后`git diff --cached --check`只报告C5a原样归档HTML的23处行尾空格,
+不改写响应字节;排除这些原始夹具证据后exit0,详见`redaction-16/diff-check.json`。

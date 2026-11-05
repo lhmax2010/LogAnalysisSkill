@@ -1,0 +1,43 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/tools/check_design_doc.py",
+    "docs/clang-fix-campaign/design.md"
+  ],
+  "started_utc": "2026-11-05T06:57:01.073724+00:00",
+  "before": {
+    "loadavg": "2.43 2.57 2.29 3/2933 304380",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   30.5",
+      "code-insiders   10.2",
+      "code-insiders    3.7",
+      "chrome           3.7",
+      "Xorg             3.2",
+      "code-insiders    2.8",
+      "chrome           2.3",
+      "code-insiders    2.2",
+      "epp-client-daem  2.0",
+      "gnome-shell      2.0"
+    ]
+  },
+  "exit_code": 0,
+  "elapsed_seconds": 0.09238974399704603,
+  "finished_utc": "2026-11-05T06:57:01.182740+00:00",
+  "after": {
+    "loadavg": "2.43 2.57 2.29 2/2935 304384",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   30.5",
+      "code-insiders   10.2",
+      "code-insiders    3.7",
+      "chrome           3.7",
+      "Xorg             3.2",
+      "code-insiders    2.8",
+      "chrome           2.3",
+      "code-insiders    2.2",
+      "epp-client-daem  2.0",
+      "gnome-shell      2.0"
+    ]
+  }
+}

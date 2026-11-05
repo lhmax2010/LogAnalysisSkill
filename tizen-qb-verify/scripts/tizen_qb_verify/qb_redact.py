@@ -289,11 +289,12 @@ class PageRedactor:
 class _IdentityValues(HTMLParser):
     """Source ranges for text and attribute values; never HTML names or delimiters."""
 
-    def __init__(self, source: str) -> None:
+    def __init__(self, source: str, *, comments: bool = True) -> None:
         super().__init__(convert_charrefs=False)
         self.source = source
         self.offsets = _line_offsets(source)
         self.spans: list[tuple[int, int]] = []
+        self.comments = comments
         self.feed(source)
         self.close()
 
@@ -321,7 +322,8 @@ class _IdentityValues(HTMLParser):
         self.handle_entityref("#" + name)
 
     def handle_comment(self, data: str) -> None:
-        self.add(self.source_offset() + 4, self.source_offset() + 4 + len(data))
+        if self.comments:
+            self.add(self.source_offset() + 4, self.source_offset() + 4 + len(data))
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         raw = self.get_starttag_text() or ""
@@ -390,6 +392,7 @@ class SessionPageRedactor(PageRedactor):
         super().__init__()
         self.identity_replacement_count = 0
         self.session_identity_complete = False
+        self.welcome_count = 0
 
     def remember_session_identity(self, value: str) -> None:
         value = value.strip()
@@ -398,8 +401,37 @@ class SessionPageRedactor(PageRedactor):
         self.identities.add(value)
         combined = re.fullmatch(r"(.+?)\s+\(([^()]+)\)", value)
         if combined:
-            self.identities.update(part.strip() for part in combined.groups())
-            self.session_identity_complete = all(part.strip() for part in combined.groups())
+            self.identities.update(part.strip() for part in combined.groups() if part.strip())
+        self.session_identity_complete = bool(self.identities)
+
+    def register(self, text: str) -> None:
+        """Welcome anchors the session; only matching literal pairs can add aliases."""
+        self.welcome_count = 0
+        fields = _UserFields(text)
+        fields.feed(text)
+        self.welcome_count = len(fields.welcome_spans)
+        for start, end in fields.welcome_spans:
+            self.remember_session_identity("".join(_Text(text[start:end]).parts))
+        values = [unescape(text[a:b]) for a, b in _IdentityValues(text, comments=False).spans]
+        pairs: set[tuple[str, str]] = set()
+        for value in values:
+            value = re.sub(r"^\s*Welcome!\s*", "", value)
+            whole = re.fullmatch(r"\s*([^()]+?)\s+\(([^()]+)\)\s*", value)
+            if whole:
+                pairs.add((whole[1].strip(), whole[2].strip()))
+            else:
+                # Embedded account/display pairs, with a complete token on the account side.
+                pairs.update((m[1].strip(), m[2].strip()) for m in re.finditer(
+                    r"(?<![A-Za-z0-9_])([^\s()]+)\s+\(([^()\r\n]+)\)(?![A-Za-z0-9_])",
+                    value,
+                ))
+        while True:
+            before = set(self.identities)
+            for left, right in pairs:
+                if left and right and (left in before or right in before):
+                    self.remember_session_identity(f"{left} ({right})")
+            if self.identities == before:
+                break
 
     def _edits(self, text: str) -> list[tuple[int, int]]:
         if not self.identities:
@@ -417,10 +449,10 @@ class SessionPageRedactor(PageRedactor):
         return edits
 
     def redact(self, text: str) -> str:
-        fields = _UserFields(text)
-        fields.feed(text)
-        for start, end in fields.welcome_spans:
-            self.remember_session_identity("".join(_Text(text[start:end]).parts))
+        self.register(text)
+        return self.redact_registered(text)
+
+    def redact_registered(self, text: str) -> str:
         edits = self._edits(text)
         self.identity_replacement_count = len(edits)
         for start, end in reversed(edits):

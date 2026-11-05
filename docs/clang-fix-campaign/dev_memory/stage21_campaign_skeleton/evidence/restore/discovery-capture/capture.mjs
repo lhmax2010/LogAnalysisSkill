@@ -61,15 +61,20 @@ export class Writer {
     this.exit = new Promise(resolveExit => this.child.on('close', resolveExit));
     this.child.on('error', () => {});
   }
-  async write(name, text, mode = 'json') {
-    this.child.stdin.write(JSON.stringify({ path: `${this.output}/${name}`, text, mode }) + '\n');
+  async request(item, allowFailure = false) {
+    this.child.stdin.write(JSON.stringify(item) + '\n');
     const reply = await this.iterator.next();
     if (reply.done) fail('QB_EVIDENCE_REDACTION_FAILED');
     let value;
     try { value = JSON.parse(reply.value); } catch { fail('QB_EVIDENCE_REDACTION_FAILED'); }
-    if (!value.ok) fail('QB_EVIDENCE_REDACTION_FAILED');
-    return { file: name, ...value };
+    if (!value.ok && !allowFailure) fail('QB_EVIDENCE_REDACTION_FAILED');
+    return value;
   }
+  async start() { return this.request({ command: 'start', output: this.output }); }
+  async store(name, text, raw, mode) {
+    return this.request({ command: 'store', name, text, raw: raw.toString('base64'), mode });
+  }
+  async finish(record) { return this.request({ command: 'finish', record }, true); }
   async close() { this.child.stdin.end(); await this.exit; }
 }
 
@@ -146,6 +151,7 @@ export async function capture(output, runtimeFactory = () => createRuntime(DEFAU
     if (record.downloads.length) fail('QB_DOWNLOAD_UNSUPPORTED');
   };
   try {
+    await writer.start();
     runtime = await runtimeFactory(); agent = new Agent(runtime);
     const rootFrame = () => [...runtime.guards.frames.parents].find(([, parent]) => parent === null)?.[0];
     scope = capturePolicy(runtime.policy, rootFrame, frames);
@@ -212,11 +218,11 @@ export async function capture(output, runtimeFactory = () => createRuntime(DEFAU
         const name = String(record.pages.length).padStart(2, '0');
         if (text) {
           if (!/^text\/plain(?:\s*;|$)/i.test(page.content_type ?? '')) fail('CAPTURE_LOG_NOT_TEXT');
-          page.body = await writer.write(`${name}.response.txt`, decodeText(navigation.body), 'text');
+          page.body = await writer.store(`${name}.response.txt`, decodeText(navigation.body), navigation.body, 'text');
           return null;
         }
         const raw = await responseText(response, navigation.body);
-        page.body = await writer.write(`${name}.response.html`, raw, 'html');
+        page.body = await writer.store(`${name}.response.html`, raw, navigation.body, 'html');
         const path = new URL(url).pathname;
         if (/^\/build\/\d+\/(overview|variables)$/.test(path)) await agent.buildId(path, raw);
         const value = await agent.trusted.run(facts, raw);
@@ -250,13 +256,20 @@ export async function capture(output, runtimeFactory = () => createRuntime(DEFAU
   } finally {
     if (runtime) {
       try { await runtime.close(); } catch { record.status = 'STOPPED'; record.failure ??= 'CAPTURE_CLOSE_FAILED'; }
+      record.browser_closed = !runtime.browser.isConnected();
       record.trace = runtime.trace;
       try { await access(runtime.profile); record.profile_removed = false; }
       catch (error) { record.profile_removed = error.code === 'ENOENT'; }
       if (!record.profile_removed) { record.status = 'STOPPED'; record.failure ??= 'CAPTURE_PROFILE_REMAINS'; }
     }
     record.finished_utc = new Date().toISOString();
-    try { await writer.write('run.json', JSON.stringify(record, null, 2) + '\n'); }
+    try {
+      const archived = await writer.finish(record);
+      if (!archived.ok) {
+        process.stderr.write(`CAPTURE_STOPPED code=QB_EVIDENCE_REDACTION_FAILED stage=${archived.stage}\n`);
+      }
+      Object.assign(record, archived.record);
+    }
     finally { await writer.close(); }
   }
   return record;

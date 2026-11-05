@@ -1,0 +1,270 @@
+{
+  "tests": 3454,
+  "passed": 3453,
+  "failed": [],
+  "skipped": [
+    {
+      "nodeid": "tests.unit.test_tizen_build_verify::test_case_insensitive_bypass_is_platform_specific",
+      "reason": "case-sensitive filesystem"
+    }
+  ],
+  "gates": {
+    "focused": {
+      "before": {
+        "loadavg": "2.89 2.67 2.32 2/2943 300950",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.8",
+          "chrome           3.6",
+          "Xorg             3.1",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "python           2.0"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 27.3323343560005,
+      "after": {
+        "loadavg": "2.47 2.58 2.30 2/2934 304297",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.8",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      }
+    },
+    "mypy": {
+      "before": {
+        "loadavg": "2.47 2.58 2.30 4/2933 304298",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.8",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.12617621300159954,
+      "after": {
+        "loadavg": "2.47 2.58 2.30 1/2933 304300",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "ps               100",
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.8",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0"
+        ]
+      }
+    },
+    "ruff": {
+      "before": {
+        "loadavg": "2.47 2.58 2.30 2/2933 304301",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.8",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.30624743400039733,
+      "after": {
+        "loadavg": "2.47 2.58 2.30 2/2933 304335",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.8",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      }
+    },
+    "imports": {
+      "before": {
+        "loadavg": "2.47 2.58 2.30 4/2933 304336",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.8",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 1.0199372750030307,
+      "after": {
+        "loadavg": "2.43 2.57 2.29 2/2933 304379",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.7",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      }
+    },
+    "design": {
+      "before": {
+        "loadavg": "2.43 2.57 2.29 3/2933 304380",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.7",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.09238974399704603,
+      "after": {
+        "loadavg": "2.43 2.57 2.29 2/2935 304384",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.7",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      }
+    },
+    "capture-ruff": {
+      "before": {
+        "loadavg": "2.43 2.57 2.29 3/2935 304385",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "ps               100",
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.7",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 0.013356808998651104,
+      "after": {
+        "loadavg": "2.43 2.57 2.29 1/2935 304419",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.7",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      }
+    },
+    "full": {
+      "before": {
+        "loadavg": "2.43 2.57 2.29 4/2935 304420",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   30.5",
+          "code-insiders   10.2",
+          "code-insiders    3.7",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "code-insiders    2.8",
+          "chrome           2.3",
+          "code-insiders    2.2",
+          "epp-client-daem  2.0",
+          "gnome-shell      2.0"
+        ]
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 1152.5901431359998,
+      "after": {
+        "loadavg": "5.52 4.17 3.58 2/2963 410345",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "qemu-arm        40.0",
+          "code-insiders   28.7",
+          "code-insiders   10.8",
+          "python3          7.2",
+          "chrome           3.7",
+          "Xorg             3.2",
+          "rpm              3.2",
+          "code-insiders    3.0",
+          "code-insiders    2.6",
+          "chrome           2.4"
+        ]
+      }
+    }
+  },
+  "timing_reruns": 0,
+  "new_failures": 0,
+  "real_quickbuild_runs": 0,
+  "new_pytest_net_count": 18,
+  "browser_node_tests": 10
+}

@@ -1,10 +1,6 @@
 """RESTORE-12: byte-preserving session identity masking and HTMLParser positions."""
 
-import json
-import subprocess
-import sys
 from html import escape
-from pathlib import Path
 
 import pytest
 from tizen_qb_verify.qb_redact import (
@@ -118,36 +114,31 @@ def test_session_identity_must_not_be_inferred_from_other_users() -> None:
     redactor = SessionPageRedactor()
     redactor.redact('<span>Welcome! AccountOnly</span><table><tr><th>Triggered By</th></tr>'
                     '<tr><td>OtherAccount (OtherName)</td></tr></table>')
-    assert not redactor.session_identity_complete
+    assert redactor.session_identity_complete
     assert redactor.identities == {"AccountOnly"}
 
 
-@pytest.mark.parametrize("complete", [True, False])
-def test_capture_worker_checks_before_and_after_writing(tmp_path: Path, complete: bool) -> None:
-    script = Path(__file__).resolve().parents[2] / (
-        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/"
-        "discovery-capture/redact_capture.py"
-    )
-    identity = "SyntheticAccount (SyntheticIdentity)" if complete else "SyntheticAccount"
-    path = tmp_path / "page.html"
-    messages = [json.dumps({"path": str(path), "mode": "html",
-                           "text": f'<span>Welcome! {identity}</span><a>SyntheticIdentity</a>'})]
-    if complete:
-        messages.append(json.dumps({
-            "path": str(tmp_path / "log.txt"), "mode": "text",
-            "text": "SyntheticAccount error: vector<T> SyntheticIdentity\n",
-        }))
-    process = subprocess.run([sys.executable, str(script)], input="\n".join(messages) + "\n",
-                             capture_output=True, text=True, check=True)
-    replies = [json.loads(line) for line in process.stdout.splitlines()]
-    assert replies[0]["ok"] is complete
-    assert path.exists() is complete
-    if complete:
-        for reply in replies:
-            assert reply["identity_replacement_count"] == 2
-            assert reply["identity_remaining_count"] == 0
-            assert "outside_identity_count" not in reply
-        assert (tmp_path / "log.txt").read_text() == "<USER> error: vector<T> <USER>\n"
-        assert "Synthetic" not in path.read_text()
-    else:
-        assert replies == [{"ok": False, "error": "QB_EVIDENCE_REDACTION_FAILED"}]
+@pytest.mark.parametrize("identity", [
+    "SyntheticAccount", "Display Name", "SyntheticAccount (Display Name)",
+])
+def test_single_and_compound_welcome_are_complete(identity: str) -> None:
+    redactor = SessionPageRedactor()
+    result = redactor.redact(f'<span>Welcome! {identity}</span>')
+    assert redactor.session_identity_complete
+    assert redactor.welcome_count == 1
+    assert result == '<span>Welcome! &lt;USER&gt;</span>'
+    redactor.check_bytes(result.encode())
+
+
+@pytest.mark.parametrize("anchor", ["SyntheticAccount", "Display Name"])
+def test_pair_completes_only_matching_text_and_attribute_values(anchor: str) -> None:
+    redactor = SessionPageRedactor()
+    source = (f'<span>Welcome! {anchor}</span><td>SyntheticAccount (Display Name)</td>'
+              '<a title="SyntheticAccount (Second Name)">Second Name</a>'
+              '<p>OtherAccount (Other Name)</p><p>prefixSyntheticAccount (Wrong)</p>'
+              '<!-- SyntheticAccount (Comment Alias) -->')
+    result = redactor.redact(source)
+    assert {"SyntheticAccount", "Display Name", "Second Name"} <= redactor.identities
+    assert not {"OtherAccount", "Other Name", "Wrong", "Comment Alias"} & redactor.identities
+    assert 'title="&lt;USER&gt;">&lt;USER&gt;' in result
+    redactor.check_bytes(result.encode())

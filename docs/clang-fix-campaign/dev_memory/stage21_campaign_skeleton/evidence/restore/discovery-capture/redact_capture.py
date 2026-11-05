@@ -1,59 +1,52 @@
-"""Evidence-only redaction worker. Private context stays in this process's memory."""
+"""Capture protocol and offline replay; responses never contain raw exceptions."""
 
 from __future__ import annotations
 
-import hashlib
-import html
+import argparse
+import base64
 import json
 import sys
 from pathlib import Path
 
-from tizen_qb_verify.qb_redact import PageRedactor, SessionPageRedactor
+from capture_archive import Archive
 
 
 def main() -> None:
-    redactor = SessionPageRedactor()
-    for line in sys.stdin:
-        path: Path | None = None
-        created = False
-        try:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--replay")
+    parser.add_argument("--output", type=Path)
+    args = parser.parse_args()
+    archive: Archive | None = None
+    try:
+        if args.replay:
+            if args.output is None:
+                raise ValueError
+            args.output.mkdir()
+            archive = Archive(args.output, replay=args.replay)
+            record = json.loads((archive.private / "record.json").read_text())
+            reply = archive.finish(record, replay=True)
+            print(json.dumps(reply), flush=True)
+            raise SystemExit(0 if reply["ok"] else 4)
+        for line in sys.stdin:
             item = json.loads(line)
-            mode = item["mode"]
-            source = item["text"]
-            if mode not in {"html", "text", "json"}:
+            if item["command"] == "start":
+                if archive is not None:
+                    raise ValueError
+                archive = Archive(Path(item["output"]))
+                reply = {"ok": True}
+            elif item["command"] == "store" and archive is not None:
+                reply = archive.store(item["name"], item["mode"],
+                                      base64.b64decode(item["raw"], validate=True), item["text"])
+            elif item["command"] == "finish" and archive is not None:
+                reply = archive.finish(item["record"])
+            else:
                 raise ValueError
-            # Metadata has fixed keys, not page identity-bearing text. Never replace its keys.
-            checker: PageRedactor = redactor
-            if mode == "json":
-                checker = PageRedactor()
-                checker.secrets = redactor.secrets
-            # Escape text before the HTML-aware checker; preserve compiler angle brackets.
-            safe = checker.redact(html.escape(source) if mode == "text" else source)
-            if mode != "json" and not redactor.session_identity_complete:
-                raise ValueError("SESSION_IDENTITY_INCOMPLETE")
-            count = redactor.identity_replacement_count if mode != "json" else 0
-            if mode == "text":
-                safe = html.unescape(safe)
-            raw = safe.encode("utf-8")
-            checker.check_bytes(html.escape(safe).encode() if mode == "text" else raw)
-            path = Path(item["path"])
-            with path.open("xb") as stream:
-                created = True
-                stream.write(raw)
-                stream.flush()
-            written = path.read_bytes()
-            checker.check_bytes(
-                html.escape(written.decode("utf-8")).encode() if mode == "text" else written
-            )
-            if written != raw:
-                raise ValueError
-            print(json.dumps({"ok": True, "sha256": hashlib.sha256(raw).hexdigest(),
-                              "bytes": len(raw), "identity_replacement_count": count,
-                              "identity_remaining_count": 0}), flush=True)
-        except Exception:
-            if created and path is not None:
-                path.unlink(missing_ok=True)
-            print('{"ok":false,"error":"QB_EVIDENCE_REDACTION_FAILED"}', flush=True)
+            print(json.dumps(reply), flush=True)
+    except Exception:
+        print(json.dumps({"ok": False, "error": "QB_EVIDENCE_REDACTION_FAILED", "stage": "WRITE",
+                          **(archive.counts() if archive else {"welcome_regions": 0,
+                             "registered_identities": 0, "identity_replacement_count": 0})}),
+              flush=True)
 
 
 if __name__ == "__main__":
