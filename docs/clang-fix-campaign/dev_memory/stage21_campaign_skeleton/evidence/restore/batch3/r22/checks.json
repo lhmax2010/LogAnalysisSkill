@@ -1,0 +1,52 @@
+{
+  "checks": [
+    {
+      "cmd": ".venv/bin/python docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r22/probe_process_boundary.py",
+      "started": "2026-11-05T09:57:16.720Z",
+      "chunk_id": "e4cfd3",
+      "wall_time_seconds": 0.443230927,
+      "exit_code": 0,
+      "original_token_count": 22,
+      "output": "first subprocess is python -m gbs_analyzer; blocked before launch; assertions passed\n"
+    },
+    {
+      "cmd": ".venv/bin/lint-imports --no-cache",
+      "started": "2026-11-05T09:57:17.342Z",
+      "chunk_id": "4c6d7a",
+      "wall_time_seconds": 0.000008724,
+      "exit_code": 0,
+      "original_token_count": 113,
+      "output": "=============\nImport Linter\n=============\n\n---------\nContracts\n---------\n\nAnalyzed 122 files, 272 dependencies.\n-------------------------------------\n\napplication layers: orchestration -> skills -> shared KEPT\nextracted skills are independent KEPT\nshared internal layers: L1 -> L0 -> types KEPT\nshared must not import orchestration KEPT\nshared L1 domains are independent KEPT\nshared L0 primitives are independent KEPT\ncampaign compilation only through repair KEPT\n\nContracts: 7 kept, 0 broken.\n"
+    },
+    {
+      "cmd": ".venv/bin/python docs/clang-fix-campaign/tools/check_design_doc.py docs/clang-fix-campaign/design.md",
+      "started": "2026-11-05T09:57:34.616Z",
+      "chunk_id": "6430b8",
+      "wall_time_seconds": 0.000016485,
+      "exit_code": 0,
+      "original_token_count": 20,
+      "output": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n"
+    },
+    {
+      "cmd": ".venv/bin/ruff check --no-respect-gitignore docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r22/probe_process_boundary.py",
+      "started": "2026-11-05T09:57:34.782Z",
+      "chunk_id": "62740e",
+      "wall_time_seconds": 0.000013901,
+      "exit_code": 0,
+      "original_token_count": 5,
+      "output": "All checks passed!\n"
+    },
+    {
+      "cmd": "git diff --check -- docs/clang-fix-campaign/design.md docs/clang-fix-campaign/dev_memory/INDEX.md docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md",
+      "started": "2026-11-05T09:57:34.836Z",
+      "chunk_id": "d1a8fe",
+      "wall_time_seconds": 0.0000172,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  ],
+  "full_pytest": false,
+  "mypy": false,
+  "safety_groups": false
+}

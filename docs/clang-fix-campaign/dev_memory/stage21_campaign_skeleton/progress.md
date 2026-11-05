@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-20以两命令文件交接处置RESTORE-19;离线探针确认“不联网”与add_unit首次源码克隆冲突,停止SKEL-RESTORE-21(第43节),未改生产代码**。RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-22处置RESTORE-21克隆边界;“唯一外部进程为git”与保持add_unit内analyzer子进程不变冲突,停止SKEL-RESTORE-23(第44节),未改生产代码**。RESTORE-19由RESTORE-20两命令文件交接处置;RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -2450,3 +2450,36 @@ design第4.6节已追加RESTORE-20的文件交接裁定,明确尚未验收;剧�
 新增探针及检查脚本ruff通过;文档diff检查通过;560个已跟踪源码/冻结稿/合约hash不变。
 首次证据脚本ruff发现一行103字符(E501),已仅折行修正;原输出保留为
 `ruff-first.stdout.log`与`validation-first.json`,最终检查为`validation.json`。
+
+## 44. 实施裁定 SKEL-RESTORE-22:campaign-discover与建档克隆
+
+SKEL-RESTORE-21由本裁定处置,保留原证据。裁定原文:
+
+一、裁定:采用候选 1。
+1. SKEL-RESTORE-20 第一.2.b 条中“不上网”修订为:campaign-discover 不访问 QuickBuild(不登录、不读页面、不启动浏览器、不导入 tizen_qb_verify);允许并仅允许经 intake.add_unit 既有路径、通过 SandboxGit 对 gerrit_ssh_base + project 执行的只读克隆与 checkout,行为与手工 campaign-add-unit 完全相同。不新增任何其它网络访问。
+2. 不采用候选 2(建档与源码准备分离),intake.add_unit 不改。
+
+二、测试修订
+SKEL-RESTORE-20 第二.2 条的“禁用网络”断言改为:campaign-discover 运行期间不发生任何 HTTP(S) 请求、不启动浏览器或 node 进程;唯一外部进程为经 SandboxGit 的 git(测试中走既有假 SSH + 本地裸库夹具),其目标地址必须等于 gerrit_ssh_base.rstrip('/') + '/' + 清单中的 project。补一例:清单 project 被篡改为非法名时在克隆前被拒。
+
+三、其余按 SKEL-RESTORE-20、SKEL-RESTORE-18 执行;本条写入 design.md 第 4.6 节“恢复项落地裁定”。遇冲突按既有纪律停止报告;推送报 Permission denied 时提交后停止,由用户本机推送。
+
+### 44.1 进程白名单核对与停止SKEL-RESTORE-23
+
+基线b7e4272。第43节克隆冲突已处置,但本次第二条新增的“唯一外部进程为git”
+与第一.2要求intake.add_unit不改不能同时满足。`intake.py:134`必经analyze;
+`_campaign_io.py:79`组装`sys.executable -m gbs_analyzer analyze`,`:93`执行子进程。
+这是正常建档的CI证据生成,不是浏览器、真实gbs编译或Gerrit网络访问。
+
+离线探针`evidence/restore/batch3/r22/probe_process_boundary.py`调用现有add_unit,
+临时配置/工作区/库与现有本地日志,在subprocess.run边界记录首个argv并阻断进程创建。
+实测首个argv正是Python analyzer,阻断后exit5 INTAKE_ANALYZER_FAILED;
+git/analyzer实际子进程均0,网络请求0,DB未创建,临时目录已删除。
+原始结果`batch3/r22/probe.json`,没有修改生产代码/测试断言/.importlinter/冻结稿。
+
+[停止报告](evidence/restore/stop-report-SKEL-RESTORE-23.md)提供最小文字diff:
+将既有本地analyzer子进程加入允许集合,仍禁止HTTP、浏览器/node与额外远端操作,
+对git按SandboxGit精确目标断言。该例外未实施,不把“外部进程”自行解释为“联网进程”。
+design第4.6节已追加RESTORE-22;本轮只做离线探针、7条依赖合约、设计/ruff/diff检查,
+输出见`batch3/r22/checks.json`。没有新增业务命令或业务测试nodeid,未跑全仓pytest、
+mypy或四组安全测试,第三/四批仍未完成。未访问真实QB/Gerrit或运行真实gbs。

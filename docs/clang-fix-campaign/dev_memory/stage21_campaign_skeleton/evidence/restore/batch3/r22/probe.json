@@ -1,0 +1,34 @@
+{
+  "utc": "2026-11-05T09:57:17.323290+00:00",
+  "observed_argv": [
+    [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "-m",
+      "gbs_analyzer",
+      "analyze",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/e2e_clang_compile/buildlog",
+      "--output-dir",
+      "<temporary>/ws/047d82af7e48/.analysis-dc81fcc8",
+      "--output-format",
+      "both"
+    ]
+  ],
+  "interception": "subprocess.run before process creation",
+  "processes_started_by_intake": 0,
+  "network_requests": 0,
+  "failure": {
+    "error_code": "INTAKE_ANALYZER_FAILED",
+    "exit_code": 5
+  },
+  "state_db_created": false,
+  "temporary_removed": true,
+  "protected_unchanged": true,
+  "hashes": {
+    ".importlinter": "a93d4844c9da624090b24ea3bd5f6afe8138a9eff64df6574ce2bf5c28a64fad",
+    "tizen-campaign-intake/scripts/tizen_campaign_intake/intake.py": "bcdb6639cf3a7ff565d35eb275d1c993844aafde5e6d18038ea3de1085eb08e2",
+    "tizen-campaign-core/scripts/tizen_campaign_core/_campaign_io.py": "1e13ac3525eebdd20b9f3a9fce50b1514c4e294b17bda90821bf75c9b0e06ce7",
+    "tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs": "431b27137c857f5089053737b320ea35f2317d66493892b3dec5f7608db2e26c",
+    "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9",
+    "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364"
+  }
+}

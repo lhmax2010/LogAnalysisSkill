@@ -2840,6 +2840,12 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
     包分层与.importlinter保持逐字不变。原因:避免发现入口复用QB驱动违反同层独立。
     本条登记接口裁定,不表示实现验收通过;完全不联网与既有add_unit首次源码克隆
     的冲突见stage21停止报告SKEL-RESTORE-21,待裁定后继续。
+11. 按SKEL-RESTORE-22,上述RESTORE-21冲突采用保留既有克隆的处置:
+    campaign-discover不访问QuickBuild、不启动浏览器、不导入tizen_qb_verify;
+    允许且仅允许经既有intake.add_unit/SandboxGit路径执行源码只读clone与checkout,
+    不拆开建档与源码准备,intake.add_unit不改。清单中的非法project须在克隆前拒绝。
+    “唯一外部进程为git”与既有analyzer子进程的冲突另见SKEL-RESTORE-23;
+    本条不擅自增加analyzer进程例外,不表示发现命令已实现。
 
 本批不改变发现阶段的浏览器白名单;该项仍须按SKEL-RESTORE-01第三.1条
 先做URL形态取证,停止等待裁定后才可实施。
