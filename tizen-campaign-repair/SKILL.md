@@ -40,3 +40,13 @@ python -m tizen_campaign_repair campaign-repair-step \
 
 The existing locking, reconciliation, and budget rules remain authoritative.
 Do not create worktree paths or verification records outside that workflow.
+
+## Precedents And Conversion
+
+Run `propose-fix --state-db --config --campaign-unit-key --round-index --arch
+--output-dir` before generating a repair. It either returns a guarded T1
+`edit_spec_path` with `source_kind=t1_cherry_pick`, or `needs_generation=true`
+and a context directory with ordered T2 suggestions. The latter is an instruction
+to generate a new fix, not a successful edit specification. Preserve provenance.
+`diff-to-edit-spec --help` documents standalone patch conversion; it does not
+compile, commit or relax edit guards. Every repair still passes suppress-policy.

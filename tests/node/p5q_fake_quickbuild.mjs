@@ -140,6 +140,7 @@ export async function fakeQuickBuild({ mode = 'build', compare = '', childStatus
       response.setHeader('Content-Type', 'text/html; charset=utf-8');
       const redirect = path => { row.status = 302; response.writeHead(302, { Location: path }); response.end(); };
       const url = new URL(request.url, ORIGIN);
+      if (fixture.discoveryHandler?.(url, response, row)) return;
       if (row.method === 'GET' && url.pathname === '/signin') {
         if (fixture.loginCookie) response.setHeader('Set-Cookie', `synthetic-session=${fixture.loginCookie}; Secure; HttpOnly`);
         if (fixture.loginCase === 'unregistered-landing') { redirect('/not-registered'); return; }

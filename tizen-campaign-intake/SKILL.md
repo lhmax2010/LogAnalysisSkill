@@ -1,6 +1,6 @@
 ---
 name: tizen-campaign-intake
-description: Register a manually selected Clang campaign unit from a local CI log and prepare its source clone. Use before baseline reproduction; not for QuickBuild discovery, compilation, or submission.
+description: Validate campaign startup and register Clang units from local CI logs or a qb-discover manifest, preparing source clones. Use before baseline reproduction; this skill does not access QuickBuild, compile, or submit.
 ---
 
 # Tizen Campaign Intake
@@ -26,7 +26,24 @@ without overwrite. The clone is staged, checked and marked before publication.
 Same-input retries reuse existing evidence and validate existing source; do not
 repair an identity mismatch manually or overwrite its evidence to force a retry.
 The command clones read-only; it does not push, compile or access QuickBuild.
-campaign-start-check remains reserved for batch 3, not implemented here.
+campaign-start-check validates configuration and read-only repository reachability.
+
+## Discovery Handoff
+
+First run authorized `tizen_qb_verify qb-discover` to obtain an immutable manifest.
+Then consume that exact path with the same state root:
+
+```bash
+python -m tizen_campaign_intake campaign-discover --manifest "$DISCOVERY_MANIFEST" --state-root "$STATE_ROOT" --state-db "$STATE_DB" --config "$CONFIG" --dry-run
+```
+
+Remove --dry-run only with authorization to register the reported units and clone
+their source. Schema, resolved paths and log hashes are checked before intake.
+The default filter keeps compile failures; --include-non-compile is explicit.
+Unknown architectures retain the existing arch gate. Output discover.json and
+discover.md record every package; source-unresolved/unreadable packages are not
+silently retried. This consumer runs only Git through SandboxGit and the local
+Python gbs_analyzer, never a browser, Node, HTTP client or real gbs.
 
 ## Errors
 

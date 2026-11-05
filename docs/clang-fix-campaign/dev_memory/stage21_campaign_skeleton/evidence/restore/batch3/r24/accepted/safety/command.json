@@ -1,0 +1,45 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety",
+    "-q",
+    "-s"
+  ],
+  "before": {
+    "loadavg": "2.36 2.03 3.15 3/2936 665777",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   16.3",
+      "code-insiders   14.1",
+      "epp-client-daem 11.0",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.2",
+      "code-insiders    2.6",
+      "gnome-shell      2.1",
+      "chrome           2.0",
+      "code-insiders    1.6"
+    ]
+  },
+  "started_utc": "2026-11-05T11:20:43.120587+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 8.248961872996006,
+  "after": {
+    "loadavg": "2.46 2.06 3.15 2/2956 667782",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   16.2",
+      "code-insiders   14.1",
+      "epp-client-daem 11.0",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.2",
+      "code-insiders    2.6",
+      "gnome-shell      2.1",
+      "chrome           2.0",
+      "code-insiders    1.6"
+    ]
+  },
+  "finished_utc": "2026-11-05T11:20:51.385424+00:00"
+}

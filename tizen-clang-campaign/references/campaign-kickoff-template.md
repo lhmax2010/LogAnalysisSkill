@@ -10,6 +10,11 @@ session data here. Missing entries require a question, not a guessed default.
 - STATE_ROOT: one absolute evidence/trace/results root shared by ALL QuickBuild
   commands, including trigger, result fetch and later rereads.
 - REPORT_PATH: report output path.
+- KB_DB: absolute knowledge JSONL path, supplied as config `kb_db`.
+- Discovery selection: QB_PROJECT and either SOURCE_BUILD_ID or SINCE (ISO date).
+  qb-discover produces DISCOVERY_MANIFEST; campaign-discover consumes it with the
+  same STATE_ROOT. Inspect its dry-run report before allowing intake clones.
+- PROPOSAL_OUTPUT: fresh directory for each round's propose-fix result/context.
 - Operator / CONFIRMED_BY: human identity for explicit release confirmations.
 - Git author identity and Git committer identity: `Name <email>`, frozen in CONFIG.
 - Authorization: current batch and permitted external actions; batch 3.5 forbids
@@ -32,7 +37,7 @@ session data here. Missing entries require a question, not a guessed default.
 | SANDBOX_BRANCH (sandbox/... name, not refs/heads/...) | |
 | REVIEW_TARGET (refs/for/ followed by BRANCH) | |
 | MESSAGE_BRIEF | |
-| SOURCE_KIND (generated or suppress) | |
+| SOURCE_KIND (generated, suppress or t1_cherry_pick; from proposal/provenance) | |
 | MAX_ROUNDS and max_build_invocations | |
 
 UNIT_KEY, SRC_CLEAN and primary architecture come from add-unit. ROUND_INDEX and

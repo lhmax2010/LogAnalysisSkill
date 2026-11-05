@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import test from 'node:test';
+import { withoutElapsed } from './elapsed_trace.mjs';
 import { installGuards, Policy } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 const flush = () => new Promise(resolve => setImmediate(resolve));
@@ -77,7 +78,7 @@ test('every gone continue is recorded without consuming the first failure', asyn
   pause('/signin'); await flush(); pause('/signin'); await flush();
   assert.deepEqual(stops, []);
   assert.equal(trace.filter(row => row.action === 'OPERATION_FAILED').length, 0);
-  assert.deepEqual(trace.filter(row => row.action === 'CONTINUE_TARGET_GONE'), [0, 1].map(() => ({
+  assert.deepEqual(withoutElapsed(trace.filter(row => row.action === 'CONTINUE_TARGET_GONE')), [0, 1].map(() => ({
     action: 'CONTINUE_TARGET_GONE', phase: 'login', stage: 'request', path: '/signin', generation: 0,
   })));
   message = 'Session closed'; pause('/signin'); await flush();

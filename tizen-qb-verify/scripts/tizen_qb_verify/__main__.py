@@ -61,6 +61,10 @@ def _main_qb_result_fetch(argv: list[str], *, stdout: TextIO, stderr: TextIO) ->
 def main(argv: list[str] | None = None) -> int:
     if argv is None:
         argv = sys.argv[1:]
+    if argv and argv[0] == "qb-discover":
+        from tizen_qb_verify.qb_collect import main as discover_main
+
+        return discover_main(argv[1:], stdout=sys.stdout)
     if argv and argv[0] == "qb-trigger":
         return _main_qb_trigger(argv[1:], stdout=sys.stdout, stderr=sys.stderr)
     if argv and argv[0] == "qb-result-fetch":
@@ -69,6 +73,7 @@ def main(argv: list[str] | None = None) -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("qb-trigger", add_help=False)
     commands.add_parser("qb-result-fetch", add_help=False)
+    commands.add_parser("qb-discover", add_help=False)
     parser.parse_args(argv)
     return 2
 

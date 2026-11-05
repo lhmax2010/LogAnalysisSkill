@@ -1,0 +1,41 @@
+{
+  "argv": [
+    ".venv/bin/lint-imports"
+  ],
+  "before": {
+    "loadavg": "2.21 2.00 3.15 3/2938 665630",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   16.3",
+      "code-insiders   14.1",
+      "epp-client-daem 11.0",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.2",
+      "code-insiders    2.6",
+      "gnome-shell      2.1",
+      "chrome           2.0",
+      "code-insiders    1.6"
+    ]
+  },
+  "started_utc": "2026-11-05T11:20:36.924060+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.24927369999932125,
+  "after": {
+    "loadavg": "2.21 2.00 3.15 3/2937 665652",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   16.3",
+      "code-insiders   14.1",
+      "epp-client-daem 11.0",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.2",
+      "code-insiders    2.6",
+      "gnome-shell      2.1",
+      "chrome           2.0",
+      "code-insiders    1.6"
+    ]
+  },
+  "finished_utc": "2026-11-05T11:20:37.188532+00:00"
+}

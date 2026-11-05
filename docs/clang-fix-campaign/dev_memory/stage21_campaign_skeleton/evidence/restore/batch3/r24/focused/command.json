@@ -1,0 +1,49 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_campaign_discovery.py",
+    "tests/unit/test_qb_collect.py",
+    "tests/unit/test_qb_discovery_node.py",
+    "tests/unit/test_campaign_restore_e2e.py",
+    "tests/unit/test_campaign_batch3_script.py",
+    "-q",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r24/focused/pytest.xml"
+  ],
+  "before": {
+    "loadavg": "3.69 4.86 5.98 2/2958 539432",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   17.0",
+      "code-insiders   13.9",
+      "epp-client-daem 11.2",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.3",
+      "python           3.3",
+      "code-insiders    2.5",
+      "sha256sum        2.1",
+      "chrome           2.0"
+    ]
+  },
+  "started_utc": "2026-11-05T10:54:33.337520+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 75.71299719599483,
+  "after": {
+    "loadavg": "5.33 5.13 5.98 2/2981 545183",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   17.0",
+      "code-insiders   14.0",
+      "epp-client-daem 11.2",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.3",
+      "code-insiders    2.5",
+      "chrome           2.1",
+      "gnome-shell      2.0",
+      "code-insiders    1.8"
+    ]
+  },
+  "finished_utc": "2026-11-05T10:55:49.067395+00:00"
+}

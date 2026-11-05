@@ -244,3 +244,26 @@ arch前置门先于日志读取,只读失败不自动试另一条路径。新sco
 UNKNOWN不当作不存在,也不当作可放行。第二批的完整离线门禁见
 `batch2/r06/README.md`;第三批本次仅文档,不宣称campaign-discover已实现,
 不进入恢复第4批。
+
+## 7. RESTORE-18/20/22/24实施回填
+
+第6节为历史停点,已由后续裁定关闭。live-04确认HTML REPORT空格目录、唯一iframe、
+Details四列表及无class的failed链接;日志响应未取齐的UNKNOWN不推断为通过,
+由RESTORE-18授权在read_text逐次检查。历史分页不实现,报告明确outside_recent_window。
+
+实现: `qb_discovery_scope.mjs`只从核验页面产生精确表;`qb_browser_agent.mjs`
+提供discovery_start/discovery_read/read_text;`qb_collect.py`发布清单,
+`tizen_campaign_intake.discover`核验后调用原intake。后者不导入QB包,
+不访问HTTP/浏览器,仅允许RESTORE-24明确的Git/analyzer进程。
+
+| 第5节组 | 实现验收位置 |
+| --- | --- |
+| 作用域与精确GET | tests/node/test_qb_discovery_scope.mjs的identity mismatch、scope-only grammar、verified document chain |
+| iframe与包日志 | 同文件canonical registration、16个路径反例、primary ordering、unknown arch、ambiguous各例;tests/node/test_qb_discovery_browser.mjs断言服务器仅一次主帧report请求 |
+| 内容与逐跳 | test_qb_discovery_node.py的status/redirect/encoding/attachment/binary/large参数;既有四组拦截安全回归 |
+| 不扩权 | 既有代理矩阵、C5a/C8与静态断言,结果见batch3/r24/accepted;旧read导航选项保持原样 |
+| trace | 六类elapsed_ms整数检查;elapsed_trace.mjs只剥离新增时间供既有结构断言使用,其它旧期望不变 |
+| 文件交接 | test_campaign_discovery.py的schema/root/符号链接/hash/arch/过滤/幂等/dry-run及完整子进程白名单;test_real_qb_discover_cli_manifest |
+
+本轮只有本地假HTTPS/Chromium和本地裸库/假SSH,没有真实发现。最终结论与计数以
+[progress第45节](../../progress.md)和[本轮证据](batch3/r24/)为准。

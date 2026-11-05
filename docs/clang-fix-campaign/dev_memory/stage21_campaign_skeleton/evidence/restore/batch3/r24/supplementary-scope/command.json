@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "/home/linhao/.local/bin/node",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r24/scope-matrix.mjs",
+    "/home/linhao/.bun/install/cache/playwright-core/1.58.2@@@1/index.mjs",
+    "/home/linhao/.cache/ms-playwright/chromium-1208/chrome-linux64/chrome"
+  ],
+  "before": {
+    "loadavg": "0.58 1.02 1.56 11/2897 769406",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python           100",
+      "code-insiders   15.6",
+      "code-insiders   14.1",
+      "epp-client-daem 10.8",
+      "code-insiders    3.5",
+      "Xorg             3.5",
+      "chrome           3.2",
+      "code-insiders    2.7",
+      "gnome-shell      2.1",
+      "chrome           1.9"
+    ]
+  },
+  "started_utc": "2026-11-05T11:42:53.206605+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.5058076679997612,
+  "after": {
+    "loadavg": "0.93 1.09 1.58 3/2900 769533",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   15.6",
+      "code-insiders   14.1",
+      "epp-client-daem 10.8",
+      "python           5.4",
+      "code-insiders    3.5",
+      "Xorg             3.5",
+      "chrome           3.2",
+      "code-insiders    2.7",
+      "gnome-shell      2.1",
+      "chrome           1.9"
+    ]
+  },
+  "finished_utc": "2026-11-05T11:42:53.728445+00:00"
+}

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import test from 'node:test';
+import { withoutElapsed } from './elapsed_trace.mjs';
 import { Agent, Policy, installGuards } from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
 const flush = () => new Promise(resolve => setImmediate(resolve));
@@ -23,7 +24,7 @@ function paused(root, url, status) {
       headers: { Cookie: 'private-cookie', Authorization: 'private-header' },
       postData: 'private-body' } });
 }
-const diagnostics = trace => trace.filter(row => row.action === 'OPERATION_FAILED');
+const diagnostics = trace => withoutElapsed(trace.filter(row => row.action === 'OPERATION_FAILED'));
 
 for (const method of ['Fetch.failRequest', 'Fetch.continueRequest', 'Fetch.continueResponse']) {
   test(`rejected ${method} still stops and records fixed metadata`, async () => {
@@ -39,10 +40,10 @@ for (const method of ['Fetch.failRequest', 'Fetch.continueRequest', 'Fetch.conti
     await flush();
     const gone = method !== 'Fetch.continueResponse';
     assert.deepEqual(stops, gone ? [] : ['FETCH_CONTINUE_FAILED']);
-    assert.deepEqual(trace.filter(row => row.action === 'DENY_TARGET_GONE'),
+    assert.deepEqual(withoutElapsed(trace.filter(row => row.action === 'DENY_TARGET_GONE')),
       method === 'Fetch.failRequest' ? [{ action: 'DENY_TARGET_GONE', phase: 'login',
         stage: 'request', path: '<other>', generation: 1 }] : []);
-    assert.deepEqual(trace.filter(row => row.action === 'CONTINUE_TARGET_GONE'),
+    assert.deepEqual(withoutElapsed(trace.filter(row => row.action === 'CONTINUE_TARGET_GONE')),
       method === 'Fetch.continueRequest' ? [{ action: 'CONTINUE_TARGET_GONE', phase: 'login',
         stage: 'request', path: '/signin', generation: 1 }] : []);
     assert.deepEqual(diagnostics(trace), gone ? [] : [{ action: 'OPERATION_FAILED', operation: method,
@@ -65,7 +66,7 @@ test('capture scheduling phase and generation, keep first rejection only', async
   reject(new Error('Session closed ' + privateText)); await flush();
   paused(root, '/private'); reject(new Error('Invalid requestId ' + privateText)); await flush();
   assert.deepEqual(stops, ['FETCH_CONTINUE_FAILED']);
-  assert.deepEqual(trace.filter(row => row.action === 'DENY_TARGET_GONE'),
+  assert.deepEqual(withoutElapsed(trace.filter(row => row.action === 'DENY_TARGET_GONE')),
     [{ action: 'DENY_TARGET_GONE', phase: 'read', stage: 'request', path: '<other>', generation: 2 }]);
   assert.equal(diagnostics(trace).length, 1);
   assert.equal(diagnostics(trace)[0].phase, 'submit');
@@ -103,7 +104,7 @@ test('read navigation cancellation after a gone deny records navigation as first
   const response = await agent.command({ command: 'read', path: '/build/1' });
   assert.equal(response.error, 'QB_BROWSER_UNAVAILABLE');
   assert.deepEqual(stops, []);
-  assert.deepEqual(trace.filter(row => row.action === 'DENY_TARGET_GONE'),
+  assert.deepEqual(withoutElapsed(trace.filter(row => row.action === 'DENY_TARGET_GONE')),
     [{ action: 'DENY_TARGET_GONE', phase: 'read', stage: 'request', path: '<other>', generation: 0 }]);
   assert.equal(diagnostics(trace).length, 1);
   assert.equal(diagnostics(trace)[0].operation, 'page.goto');

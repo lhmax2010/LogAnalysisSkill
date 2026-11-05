@@ -27,10 +27,15 @@ FAILURE_CATEGORIES = frozenset(
         "UNKNOWN",
     }
 )
-_COMMANDS = frozenset({"login", "open_form", "fill", "read", "submit", "close"})
+_COMMANDS = frozenset({"login", "open_form", "fill", "read", "submit", "close",
+                       "discovery_start", "discovery_read", "read_text"})
+_DISCOVERY_ERRORS = frozenset({"DISCOVERY_REPORT_AMBIGUOUS", "DISCOVERY_LOG_UNREADABLE",
+                             "QB_TEXT_ENCODING_UNSUPPORTED", "QB_DOWNLOAD_UNSUPPORTED"})
 _PATH_SHAPES = frozenset(
     {"/", "/dashboard", "/wicket/page", "/signin", "<other>", "/overview/<id>"}
     | {f"/build/<id>{suffix}" for suffix in ("", "/overview", "/variables", "/step_status")}
+    | {"/build/<id>/html_report", "/download/<id>/html/<report>",
+       "/download/<id>/html/<report>/<package-log>"}
 )
 _AGENT_CODES = frozenset(
     {
@@ -45,7 +50,7 @@ _AGENT_CODES = frozenset(
         "QB_READ_ID_MISMATCH",
         "QB_EVIDENCE_REDACTION_FAILED",
         "QB_TRUSTED_CONTEXT_UNAVAILABLE",
-    }
+    } | _DISCOVERY_ERRORS
 )
 
 
@@ -75,6 +80,7 @@ class QbBrowserError(RuntimeError):
         self.agent_exited: bool | None = None
         self.agent_exit_code: int | None = None
         self.trace_written = False
+        self.reason: str | None = None
 
     def failure_facts(self) -> dict[str, Any]:
         facts: dict[str, Any] = {
@@ -228,6 +234,12 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
             code = response.get("error")
             if isinstance(code, str) and code in _AGENT_CODES:
                 exc.agent_code = code
+            if command in {"discovery_read", "read_text"}:
+                from tizen_campaign_core.discovery_manifest import REASONS
+
+                reason = response.get("reason")
+                if isinstance(reason, str) and reason in REASONS:
+                    exc.reason = reason
         raise
 
 
@@ -312,12 +324,16 @@ def _decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[
             "QB_BROWSER_UNAVAILABLE": "QB_BROWSER_UNAVAILABLE",
             "QB_EVIDENCE_REDACTION_FAILED": "QB_EVIDENCE_REDACTION_FAILED",
         }.get(code if isinstance(code, str) else "", "INTERNAL_ERROR")
-        if command == "read" and code in ("QB_READ_REDIRECTED", "QB_READ_ID_MISMATCH"):
+        if command in {"discovery_read", "read_text"} and code in _DISCOVERY_ERRORS:
+            mapped = str(code)
+        if command in {"read", "discovery_read", "read_text"} and code in (
+            "QB_READ_REDIRECTED", "QB_READ_ID_MISMATCH"
+        ):
             mapped = "QB_FETCH_FAILED"
         if code == "QB_TRUSTED_CONTEXT_UNAVAILABLE":
             mapped = (
                 "QB_FETCH_FAILED"
-                if command == "read"
+                if command in {"read", "discovery_read", "read_text"}
                 else "REJECTED_QB_FORM_CHANGED"
                 if command in {"open_form", "fill", "submit"}
                 else "INTERNAL_ERROR"
@@ -435,6 +451,8 @@ class QbBrowser:
             if command == "submit"
             else None
         )
+        if command in {"discovery_read", "read_text"}:
+            timeout = self.read_timeout
         try:
             raw = replies.get(timeout=timeout)
         except Empty:

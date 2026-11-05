@@ -1,0 +1,46 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/",
+    "--collect-only",
+    "-q"
+  ],
+  "before": {
+    "loadavg": "2.46 2.06 3.15 4/2955 667783",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   16.2",
+      "code-insiders   14.1",
+      "epp-client-daem 11.0",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.2",
+      "code-insiders    2.6",
+      "gnome-shell      2.1",
+      "chrome           2.0",
+      "code-insiders    1.6"
+    ]
+  },
+  "started_utc": "2026-11-05T11:20:51.402381+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 2.9361599500043667,
+  "after": {
+    "loadavg": "2.42 2.06 3.14 3/2951 667831",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   16.2",
+      "code-insiders   14.1",
+      "epp-client-daem 11.0",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.2",
+      "code-insiders    2.6",
+      "gnome-shell      2.1",
+      "chrome           2.0",
+      "code-insiders    1.6"
+    ]
+  },
+  "finished_utc": "2026-11-05T11:20:54.353371+00:00"
+}

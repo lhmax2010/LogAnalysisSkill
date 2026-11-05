@@ -1,6 +1,6 @@
 ---
 name: tizen-clang-campaign
-description: Orchestrate an explicitly authorized GCC-to-Clang campaign using the campaign CLI chain, shared state, and bound evidence. Use for manual package intake through review and cleanup, not discovery, ad hoc builds, or direct Git/QuickBuild operations.
+description: Orchestrate an explicitly authorized GCC-to-Clang campaign from verified discovery or manual intake through precedent reuse, review and cleanup. Use the campaign commands and bound evidence, never ad hoc builds or direct Git/QuickBuild operations.
 ---
 
 # Tizen Clang Campaign
@@ -31,6 +31,22 @@ the last package. A confirmed abandonment advances to the next package.
 python -m tizen_campaign_intake campaign-start-check --config "$CONFIG" --state-root "$STATE_ROOT" --project "$PROJECT"
 ```
 
+For authorized discovery, first collect an immutable manifest, then consume it.
+Only qb-discover logs in to QuickBuild. campaign-discover uses local logs and the
+existing read-only source-clone path, never a browser. Start with --dry-run;
+remove it only after confirming the reported packages and source revisions.
+The two commands share STATE_ROOT. Use an emitted manifest path, not a guessed one.
+
+```bash
+python -m tizen_qb_verify qb-discover --config "$CONFIG" --state-root "$STATE_ROOT" --qb-project "$QB_PROJECT" --build-id "$SOURCE_BUILD_ID"
+```
+
+```bash
+python -m tizen_campaign_intake campaign-discover --manifest "$DISCOVERY_MANIFEST" --state-db "$STATE_DB" --state-root "$STATE_ROOT" --config "$CONFIG" --dry-run
+```
+
+Manual intake remains available for supplied CI evidence:
+
 ```bash
 python -m tizen_campaign_intake campaign-add-unit --state-db "$STATE_DB" --config "$CONFIG" --ci-log "$CI_LOG" --project "$PROJECT" --branch "$BRANCH" --spec-name "$SPEC_NAME" --base-commit "$BASE_COMMIT" --source-build-id "$SOURCE_BUILD_ID" --failed-arches "$FAILED_ARCHES" --toolchain-profile "$TOOLCHAIN_PROFILE"
 ```
@@ -45,8 +61,18 @@ primary outcome is matched.
 python -m tizen_baseline_reproduce baseline-reproduce --state-db "$STATE_DB" --config "$CONFIG" --campaign-unit-key "$UNIT_KEY" --src-clean "$SRC_CLEAN" --base-commit "$BASE_COMMIT" --gbs-conf "$CLANG_CONF" --package "$SPEC_NAME" --arch "$ARCH_RAW" --profile "$TOOLCHAIN_PROFILE" --output-dir "$BASELINE_OUTPUT"
 ```
 
-Generate an edit_spec for the current round. Source kind is only `generated` or
-`suppress`; never use a different provenance to bypass policy. Check policy
+Before generating each round's edit_spec, query the existing precedent path:
+
+```bash
+python -m tizen_campaign_repair propose-fix --state-db "$STATE_DB" --config "$CONFIG" --campaign-unit-key "$UNIT_KEY" --round-index "$ROUND_INDEX" --arch "$ARCH_RAW" --output-dir "$PROPOSAL_OUTPUT"
+```
+
+For mode=t1 and needs_generation=false use its edit_spec_path and source_kind
+`t1_cherry_pick`. For mode=generate and needs_generation=true, give context_dir
+and its ordered T2 suggestions to the AI, then create a `generated` or narrowly
+scoped `suppress` specification. Never fabricate an edit spec from a failed T1
+application. A non-suppress T1 with reproduced baselines may reach review;
+suppression remains sandbox-only, and forbidden always stops. Check policy
 before EVERY repair-step, including additional architectures and later rounds.
 The `&&` is a control barrier: policy forbidden (exit 4) stops this command block,
 so repair-step is not invoked. Sandbox/review still recompute authoritative policy.
@@ -77,6 +103,12 @@ authorized. sandbox-submit performs aggregation and writes LOCAL_3ARCH_PASS.
 python -m tizen_sandbox_submit sandbox-submit --verification-ids "$VERIFICATION_IDS" --state-db "$STATE_DB" --config "$CONFIG" --sandbox-branch "$SANDBOX_BRANCH" --message-brief "$MESSAGE_BRIEF" --edit-source-kind "$SOURCE_KIND"
 ```
 
+After successful sandbox submission, synchronize the bound fix into the KB as NEW:
+
+```bash
+python -m tizen_campaign_kb campaign-kb-sync --state-db "$STATE_DB" --config "$CONFIG" --campaign-unit-key "$UNIT_KEY"
+```
+
 QuickBuild login happens only when the production command needs it. Never click
 Accept/Ready to Accept, issue a direct Run, or submit again after an uncertain
 result. Follow the request ID returned by the tool; no manual result fallback.
@@ -94,6 +126,12 @@ available for the next read; do not run an unattended polling/login loop.
 Use the returned result-file reference under the shared STATE_ROOT as QB_RESULT.
 An unrecognized result requires its printed instructions, not repeated fetches
 or fabricated PASS. A deliberate abandonment remains possible below.
+
+Only after a bound QB PASS, synchronize again to promote the same record:
+
+```bash
+python -m tizen_campaign_kb campaign-kb-sync --state-db "$STATE_DB" --config "$CONFIG" --campaign-unit-key "$UNIT_KEY"
+```
 
 ```bash
 python -m tizen_review_submit review-submit --verification-ids "$VERIFICATION_IDS" --state-db "$STATE_DB" --config "$CONFIG" --qb-result "$QB_RESULT" --review-target "$REVIEW_TARGET"
@@ -133,13 +171,13 @@ creating a different identity. Exceptions to this workflow require a design ruli
 ## Retained P11 Requirements
 
 以下照录 design.md 第 7 节 P11 中本骨架仍适用的条款;启动自检以骨架
-第 5.5 节五项替代旧 A0,知识库、D2E、T1 与人工降级不适用。
+第 5.5 节五项替代旧 A0。知识库、D2E、T1按恢复项裁定恢复,人工降级仍不适用。
 
 - 启动输入契约(campaign-launch-template:必填项缺任一 fail-closed
   停下询问不猜;敏感项 cookie 只用于 fetch 不回显)。本版登录在浏览器
   会话内完成,不向人索取 cookie。
 - suppress-policy 调用的 source_kind 赋值规则:新生成 = generated,
-  受约束抑制 = suppress。
+  受约束抑制 = suppress,已验证先例转换 = t1_cherry_pick。
 - 双闸与全链口径(v1.4.4):修复轮的"建 round → 计费 → 编译 → link"
   一律经 `campaign-repair-step`(唯一入口),禁止直调裸 `build-verify`,
   也禁止剧本自行拼装 workspace/iter 路径。

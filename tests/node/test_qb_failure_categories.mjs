@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import test from 'node:test';
+import { withoutElapsed } from './elapsed_trace.mjs';
 import { Agent, Policy, FAILURE_CATEGORIES, recordFailure, installGuards }
   from '../../tizen-qb-verify/scripts/tizen_qb_verify/qb_browser_agent.mjs';
 
@@ -14,7 +15,7 @@ for (const category of FAILURE_CATEGORIES) test(`fixed stop category ${category}
     ok: false, error: 'QB_BROWSER_UNAVAILABLE', failure_category: category,
   });
   assert.deepEqual(lines, [`QB_AGENT_STOPPED category=${category}\n`]);
-  assert.deepEqual(runtime.trace, [{ action: 'AGENT_STOPPED', failure_category: category }]);
+  assert.deepEqual(withoutElapsed(runtime.trace), [{ action: 'AGENT_STOPPED', failure_category: category }]);
 });
 
 async function guards(mode) {

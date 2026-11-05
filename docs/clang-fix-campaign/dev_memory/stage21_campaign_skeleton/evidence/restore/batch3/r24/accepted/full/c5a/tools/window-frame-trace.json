@@ -1,0 +1,24 @@
+[
+  {
+    "action": "FRAMEWORK_SELF_TEST",
+    "playwright_version": "1.58.2",
+    "counts": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "action": "PAGE_CLOSED",
+    "elapsed_ms": 36840
+  },
+  {
+    "action": "BROWSER_DISCONNECTED",
+    "elapsed_ms": 36847
+  },
+  {
+    "phase": "idle",
+    "path": "/build/<id>",
+    "action": "DENIED"
+  }
+]

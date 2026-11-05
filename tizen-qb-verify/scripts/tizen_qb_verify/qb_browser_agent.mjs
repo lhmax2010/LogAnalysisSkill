@@ -1,7 +1,12 @@
 import { createHash } from 'node:crypto';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, mkdir, open, rename, realpath, lstat } from 'node:fs/promises';
+import { isAbsolute, join } from 'node:path';
 import { createInterface } from 'node:readline';
 import { pathToFileURL } from 'node:url';
+import { DiscoveryScope, DiscoveryError, discoveryDOM, redactDiscoveryText, TEXT_LIMIT } from './qb_discovery_scope.mjs';
+
+const startedAt = performance.now();
+const elapsed = () => Math.max(0, Math.floor(performance.now() - startedAt));
 
 export const ORIGIN = 'https://quickbuild.tizen.org';
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -25,7 +30,7 @@ export function recordFailure(runtime, category = 'UNKNOWN') {
   }
   if (!runtime.failure_reported) {
     runtime.failure_reported = true;
-    runtime.trace.push({ action: 'AGENT_STOPPED', failure_category: runtime.failure_category });
+    runtime.trace.push({ action: 'AGENT_STOPPED', failure_category: runtime.failure_category, elapsed_ms: elapsed() });
     process.stderr.write(`QB_AGENT_STOPPED category=${runtime.failure_category}\n`);
   }
   return runtime.failure_category;
@@ -77,6 +82,7 @@ export class Policy {
     this.loginPostCount = 0;
     this.loginPostsClosed = false;
     this.loginPostRequests = new Set();
+    this.discoveryScope = null;
   }
   get phase() { return this._phase; }
   set phase(value) {
@@ -84,6 +90,7 @@ export class Policy {
     this._phase = value;
   }
   readonly(path) {
+    if (this.discoveryScope) return this.discoveryScope.entries.has(path);
     return /^\/build\/\d+(?:\/(overview|variables|step_status))?$/.test(path)
       || /^\/overview\/\d+$/.test(path) && this.overviewIds.has(path.split('/').at(-1));
   }
@@ -107,11 +114,17 @@ export class Policy {
     // Close both login channels even when the redirect itself is denied (307/308).
     if (this.loginPostRequests.has(requestId)
       && m.response_status >= 300 && m.response_status < 400) this.loginPostsClosed = true;
+    const discoveryGET = this.discoveryScope && this.phase === 'read' && m.method === 'GET'
+      && !m.query && m.resource_type === 'Document' && this.discoveryScope.entries.has(m.path);
+    const reportGET = discoveryGET && /^\/build\/[1-9]\d*\/html_report$/.test(m.path)
+      && this.discoveryScope.entries.get(m.path).kind === 'report-entry';
     if (m.protocol !== 'https:' || m.host !== 'quickbuild.tizen.org'
       || m.resource_type === 'WebSocket' || m.path.startsWith('/rest/')
       || destructiveListener(m.query) || /ILinkListener-form-cancel/i.test(m.query)
-      || /^\/build\/\d+\/(log|html_report|artifacts)(?:\/|$)/.test(m.path)
+      || /^\/build\/\d+\/(log|html_report|artifacts)(?:\/|$)/.test(m.path) && !reportGET
       || [307, 308].includes(m.response_status)) return false;
+    if (this.discoveryScope && m.resource_type === 'Document' && this.phase !== 'login'
+      && (!discoveryGET || m.redirect_source !== null || m.response_status >= 300 && m.response_status < 400)) return false;
     // Responses cannot consume one-shot registrations a second time.
     if (m.response_status !== null) return this.active.has(requestId);
     if (m.method === 'GET' && STATIC.some((path) => m.path.startsWith(path))
@@ -129,6 +142,7 @@ export class Policy {
       if (this.loginPostCount >= 5) this.loginPostsClosed = true;
       return true;
     }
+    if (this.discoveryScope) return Boolean(discoveryGET);
     if (['read', 'open_form', 'fill'].includes(this.phase)
       && m.method === 'GET' && this.readonly(m.path) && !m.query) return true;
     if (this.phase === 'open_form') {
@@ -207,14 +221,14 @@ export async function installGuards(browser, context, page, policy, onStop, trac
         generation: Number.isSafeInteger(operation.generation) && operation.generation >= 0 ? operation.generation : 0,
       };
       if (['Fetch.failRequest', 'Fetch.continueRequest'].includes(operation.name) && category === 'REQUEST_ID_INVALID') {
-        trace.push({ action: operation.name === 'Fetch.failRequest' ? 'DENY_TARGET_GONE' : 'CONTINUE_TARGET_GONE', ...context });
+        trace.push({ action: operation.name === 'Fetch.failRequest' ? 'DENY_TARGET_GONE' : 'CONTINUE_TARGET_GONE', ...context, elapsed_ms: elapsed() });
         return category;
       }
       if (firstFailure) return category;
       firstFailure = true;
       trace.push({ action: 'OPERATION_FAILED',
         operation: ['Fetch.failRequest', 'Fetch.continueRequest', 'Fetch.continueResponse', 'page.goto', 'Agent.command'].includes(operation.name) ? operation.name : 'OTHER',
-        ...context, category });
+        ...context, category, elapsed_ms: elapsed() });
     } catch { /* Diagnostics must not prevent the original stop or rejection. */ }
     return category;
   };
@@ -240,7 +254,8 @@ export async function installGuards(browser, context, page, policy, onStop, trac
       let adapted;
       try { adapted = adaptProtocol(event); } catch { onStop('ADAPT_FAILED'); return; }
       const { metadata: m, requestId, frameId } = adapted;
-      const allowed = frames.has(frameId) && policy.allow(m, requestId);
+      const allowed = frames.has(frameId) && (!policy.discoveryScope || m.resource_type !== 'Document'
+        || frames.parents.get(frameId) === null) && policy.allow(m, requestId);
       const response = m.response_status !== null;
       const operation = { name: !allowed ? 'Fetch.failRequest' : response ? 'Fetch.continueResponse' : 'Fetch.continueRequest',
         phase: policy.phase, stage: response ? 'response' : 'request', path: m.path,
@@ -253,6 +268,8 @@ export async function installGuards(browser, context, page, policy, onStop, trac
       if (allowed && !response) policy.active.add(requestId);
       if (response || !allowed) policy.active.delete(requestId);
       const navigation = policy.readNavigation;
+      if (navigation?.discovery && frames.parents.get(frameId) === null && m.resource_type === 'Document'
+        && m.path === new URL(navigation.url).pathname && response) navigation.status = m.response_status;
       const matchesRead = allowed && policy.phase === 'read' && navigation
         && frames.parents.get(frameId) === null && m.resource_type === 'Document' && m.method === 'GET'
         && m.redirect_source === null
@@ -265,12 +282,20 @@ export async function installGuards(browser, context, page, policy, onStop, trac
         // Playwright's response.body() may already have transcoded invalid text.
         if (matchesRead && response && navigation.requestId === requestId && navigation.frameId === frameId
           && !(m.response_status >= 300 && m.response_status < 400)) {
+          if (navigation.text) {
+            const header = name => (event.responseHeaders ?? []).find(h => h.name.toLowerCase() === name)?.value ?? '';
+            if (/attachment/i.test(header('content-disposition'))) navigation.textReason = 'DOWNLOAD';
+            else if (!/^text\/[A-Za-z0-9.+-]+(?:\s*;|\s*$)/i.test(header('content-type'))) navigation.textReason = 'CONTENT_TYPE';
+            else if (/^\d+$/.test(header('content-length')) && Number(header('content-length')) > TEXT_LIMIT) navigation.textReason = 'TOO_LARGE';
+          }
           try {
+            if (navigation.textReason) throw new Error('unsupported text response');
             const result = await root.send('Fetch.getResponseBody', { requestId });
             if (result.base64Encoded !== true || typeof result.body !== 'string') throw new Error('non-byte body');
             const body = Buffer.from(result.body, 'base64');
             if (body.toString('base64') !== result.body) throw new Error('invalid base64 body');
-            if (policy.readNavigation === navigation && policy.phase === 'read') navigation.body = body;
+            if (navigation.text && body.length > TEXT_LIMIT) navigation.textReason = 'TOO_LARGE';
+            else if (policy.readNavigation === navigation && policy.phase === 'read') navigation.body = body;
             else navigation.failed = true;
           } catch { navigation.failed = true; }
         }
@@ -310,6 +335,9 @@ export async function installGuards(browser, context, page, policy, onStop, trac
 }
 
 export function pathShape(path) {
+  if (/^\/build\/\d+\/html_report$/.test(path)) return '/build/<id>/<report>';
+  if (/^\/download\/\d+\/html\/[^/]+\/index\.html$/.test(path)) return '/download/<id>/html/<report>';
+  if (/^\/download\/\d+\/html\/[^/]+\/logfiles\/standard\/[^/]+\/[^/]+\.txt$/.test(path)) return '/download/<id>/html/<report>/<package-log>';
   if (/^\/build\/\d+(?:\/(overview|variables|step_status))?$/.test(path)) return path.replace(/\d+/, '<id>');
   if (/^\/overview\/\d+$/.test(path)) return '/overview/<id>';
   if (path === '/' || path === '/dashboard' || path === '/wicket/page' || path === '/signin') return path;
@@ -627,12 +655,13 @@ export class Agent {
   }
   async command(input) {
     const allowed = { login: ['new'], read: ['ready', 'form', 'filled', 'invalid'], open_form: ['ready', 'form', 'filled', 'invalid'],
-      fill: ['form'], submit: ['filled'] };
+      fill: ['form'], submit: ['filled'], discovery_start: ['ready'], discovery_read: ['ready'], read_text: ['ready'] };
     const command = input?.command;
     if (command === 'close') { await this.runtime.close(); this.state = 'closed'; return { ok: true }; }
     if (!allowed[command]?.includes(this.state)) return { ok: false, error: 'AGENT_PHASE' };
+    if (this.policy.discoveryScope && !['discovery_read', 'read_text'].includes(command)) return { ok: false, error: 'AGENT_PHASE' };
     if (this.runtime.failure) return failureReply(this.runtime, { ok: false, error: this.runtime.failure });
-    this.policy.phase = command;
+    this.policy.phase = ['discovery_read', 'read_text'].includes(command) ? 'read' : command;
     this.rawRead = null;
     try {
       let result;
@@ -646,6 +675,17 @@ export class Agent {
           this.policy.overviewIds.add(String(project.overview_id));
         }
         result = await this.login(input.login_timeout_seconds); this.state = 'ready';
+      } else if (command === 'discovery_start') {
+        const project = this.projects.get(input.overview_id);
+        if (!project || this.policy.discoveryScope || typeof input.output_dir !== 'string' || !isAbsolute(input.output_dir)) throw new AgentError('AGENT_PHASE');
+        this.discoveryOutput = await realpath(input.output_dir);
+        this.policy.invalidate();
+        this.policy.discoveryScope = new DiscoveryScope(project, input.build_id ?? null);
+        result = { path: this.policy.discoveryScope.initial };
+      } else if (command === 'discovery_read') {
+        result = await this.discoveryRead(input.path);
+      } else if (command === 'read_text') {
+        result = await this.discoveryText(input.build_id, input.spec_name, input.run_dir);
       } else if (command === 'read') {
         this.state = 'ready'; this.policy.invalidate(); result = await this.read(input.path);
       }
@@ -670,7 +710,8 @@ export class Agent {
         this.state = 'invalid'; this.policy.invalidate();
       }
       if (command === 'submit' && this.policy.released) return { ok: true, landed: 'unknown', released: true, observed: '<other>', messages: [] };
-      const response = { ok: false, error: error instanceof AgentError ? error.code : 'QB_BROWSER_UNAVAILABLE' };
+      const response = { ok: false, error: error instanceof AgentError || error instanceof DiscoveryError ? error.code : 'QB_BROWSER_UNAVAILABLE' };
+      if (error instanceof DiscoveryError && error.reason) response.reason = error.reason;
       if (command === 'login' && ['QB_LOGIN_TIMEOUT', 'QB_LOGIN_ABORTED'].includes(response.error)) {
         response.login_facts = this.loginFacts;
       }
@@ -790,6 +831,91 @@ export class Agent {
       outside_identity_count: redacted.outside_identity_count };
   }
   async snapshot() { return normalizeFormDOM(await this.trusted.run(formDOM)); }
+  async discoveryNavigate(path, text = false) {
+    const scope = this.policy.discoveryScope;
+    if (!scope?.entries.has(path) || (scope.entries.get(path).kind === 'text') !== text) throw new AgentError('AGENT_PHASE');
+    const expected = ORIGIN + path;
+    const navigation = { url: expected, requestId: null, frameId: null, body: null, failed: false, discovery: true, text };
+    this.policy.readNavigation = navigation;
+    let downloaded = false;
+    const download = () => { downloaded = true; };
+    this.page.on('download', download);
+    try {
+      let response;
+      try { response = await this.page.goto(expected, { timeout: 30000, waitUntil: 'commit' }); }
+      catch {
+        if (this.runtime.failure) throw new AgentError(this.runtime.failure);
+        throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', navigation.textReason ?? (downloaded ? 'DOWNLOAD'
+          : navigation.status >= 300 && navigation.status < 400 ? 'REDIRECT' : 'NAVIGATION'));
+      }
+      if (this.runtime.failure) throw new AgentError(this.runtime.failure);
+      if (navigation.textReason) throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', navigation.textReason);
+      if (downloaded || /attachment/i.test(await response?.headerValue('content-disposition') ?? '')) throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', 'DOWNLOAD');
+      if (response?.request().redirectedFrom() || response?.url() !== expected || this.page.url() !== expected) throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', 'REDIRECT');
+      if (response.status() !== 200) throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', 'HTTP_STATUS');
+      if (navigation.textReason) throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', navigation.textReason);
+      if (navigation.failed || !Buffer.isBuffer(navigation.body) || !navigation.requestId) throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', 'NO_BODY');
+      const contentType = await response.headerValue('content-type') ?? '';
+      if (text) {
+        if (!/^text\/[A-Za-z0-9.+-]+(?:\s*;|\s*$)/i.test(contentType)) throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', 'CONTENT_TYPE');
+        try { return new TextDecoder('utf-8', { fatal: true }).decode(navigation.body); }
+        catch { throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', 'ENCODING'); }
+      }
+      if (!/^text\/html(?:\s*;|\s*$)/i.test(contentType)) throw new DiscoveryError('DISCOVERY_LOG_UNREADABLE', 'CONTENT_TYPE');
+      return await responseText(response, navigation.body);
+    } finally {
+      this.page.off('download', download); navigation.body = null;
+      if (this.policy.readNavigation === navigation) this.policy.readNavigation = null;
+    }
+  }
+  async discoveryRead(path) {
+    const raw = await this.discoveryNavigate(path);
+    if (/^\/build\//.test(path)) {
+      const id = path.split('/')[2];
+      if (await this.buildId(path, raw) !== id) throw new AgentError('QB_READ_ID_MISMATCH');
+    }
+    const facts = await this.trusted.run(discoveryDOM, raw);
+    const discovery = this.policy.discoveryScope.consume(path, facts);
+    const redacted = await this.passive(raw);
+    return { status: 200, html_redacted: redacted.html_redacted, outside_identity_count: redacted.outside_identity_count, discovery };
+  }
+  async discoveryText(build, name, runDir) {
+    const scope = this.policy.discoveryScope;
+    if (!scope || typeof runDir !== 'string' || !/^[A-Za-z0-9._-]+$/.test(runDir) || runDir === '.' || runDir === '..') throw new AgentError('AGENT_PHASE');
+    const selected = scope.log(build, name);
+    try {
+      const raw = await this.discoveryNavigate(selected.path, true);
+      if (!scope.identities.size) throw new AgentError('QB_EVIDENCE_REDACTION_FAILED');
+      const text = redactDiscoveryText(raw, scope.identities); checkRedacted(text);
+      const parent = scope.builds.get(build).parent;
+      if (!/^[1-9]\d*$/.test(parent)) throw new AgentError('AGENT_PHASE');
+      const directory = join(this.discoveryOutput, 'discovery', parent, runDir, 'logs');
+      if (await realpath(join(this.discoveryOutput, 'discovery', parent, runDir)) !== join(this.discoveryOutput, 'discovery', parent, runDir)) throw new AgentError('AGENT_PHASE');
+      await mkdir(directory, { recursive: true });
+      if (await realpath(directory) !== directory) throw new AgentError('AGENT_PHASE');
+      const path = join(directory, `${name}.${selected.package.primary_arch}.txt`);
+      const exists = await lstat(path).then(() => true, error => {
+        if (error.code === 'ENOENT') return false;
+        throw error;
+      });
+      if (exists) throw new AgentError('AGENT_PHASE');
+      const temporary = `${path}.tmp`;
+      const stream = await open(temporary, 'wx', 0o600);
+      try { await stream.writeFile(text, 'utf8'); await stream.sync(); } finally { await stream.close(); }
+      // Each package is registered once and each run directory is exclusively owned.
+      await rename(temporary, path);
+      const dir = await open(directory, 'r'); try { await dir.sync(); } finally { await dir.close(); }
+      const written = await readFile(path);
+      if (written.toString('utf8') !== text || redactDiscoveryText(text, scope.identities) !== text) {
+        await rm(path); throw new AgentError('QB_EVIDENCE_REDACTION_FAILED');
+      }
+      return { path, sha256: createHash('sha256').update(written).digest('hex') };
+    } catch (error) {
+      if (error instanceof DiscoveryError && error.reason === 'ENCODING') throw new DiscoveryError('QB_TEXT_ENCODING_UNSUPPORTED', 'ENCODING');
+      if (error instanceof DiscoveryError && error.reason === 'DOWNLOAD') throw new DiscoveryError('QB_DOWNLOAD_UNSUPPORTED', 'DOWNLOAD');
+      throw error;
+    } finally { scope.entries.delete(selected.path); }
+  }
   async openForm(id) {
     const project = this.projects.get(id);
     if (!project) throw new AgentError('QB_FORM_CHANGED');
@@ -997,6 +1123,7 @@ async function launchRuntime(modulePath, chromiumPath, testOptions = {}) {
     });
     runtime.browser = await launching;
     runtime.browser.on('disconnected', () => {
+      runtime.trace.push({ action: 'BROWSER_DISCONNECTED', elapsed_ms: elapsed() });
       if (!runtime.closing) recordFailure(runtime, 'BROWSER_DISCONNECTED');
     });
     runtime.context = await runtime.browser.newContext({ acceptDownloads: false, serviceWorkers: 'block' });
@@ -1006,6 +1133,7 @@ async function launchRuntime(modulePath, chromiumPath, testOptions = {}) {
     }));
     runtime.page = await runtime.context.newPage();
     runtime.page.on('close', () => {
+      runtime.trace.push({ action: 'PAGE_CLOSED', elapsed_ms: elapsed() });
       // A browser disconnect also closes its page; await the error response so
       // that a disconnect can be distinguished from closing only this page.
       if (!runtime.closing && !runtime.failure_category) runtime.failure_category = 'PAGE_CLOSED';

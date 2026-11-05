@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-22处置RESTORE-21克隆边界;“唯一外部进程为git”与保持add_unit内analyzer子进程不变冲突,停止SKEL-RESTORE-23(第44节),未改生产代码**。RESTORE-19由RESTORE-20两命令文件交接处置;RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-05。状态:**恢复第1至4批离线完成;RESTORE-24关闭RESTORE-23,第三/四批最终树3501 passed、0 failed、1既有skip(第45、46节);首次真实发现待另行裁定**。RESTORE-19由RESTORE-20两命令文件交接处置;RESTORE-21由RESTORE-22处置;RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -2483,3 +2483,123 @@ git/analyzer实际子进程均0,网络请求0,DB未创建,临时目录已删除�
 design第4.6节已追加RESTORE-22;本轮只做离线探针、7条依赖合约、设计/ruff/diff检查,
 输出见`batch3/r22/checks.json`。没有新增业务命令或业务测试nodeid,未跑全仓pytest、
 mypy或四组安全测试,第三/四批仍未完成。未访问真实QB/Gerrit或运行真实gbs。
+
+## 45. 实施裁定 SKEL-RESTORE-24:campaign-discover允许的本地子进程
+
+SKEL-RESTORE-23由本裁定关闭,原探针与停止证据保留。裁定原文:
+
+一、裁定
+1. SKEL-RESTORE-22 第二条修订为:campaign-discover 运行期间允许的外部进程限于两类——(a) 经 SandboxGit 的 git,目标地址等于 gerrit_ssh_base.rstrip('/') + '/' + 清单中的 project;(b) 以当前解释器 sys.executable 运行的 python -m gbs_analyzer(intake.add_unit 与 campaign-discover 编译阶段过滤的既有/同形调用)。禁止:任何 HTTP(S) 请求、node/浏览器进程、gbs、curl/wget 及其它外部进程。intake.add_unit 不改。
+2. 测试断言相应改为:记录全部子进程 argv,只允许上述两类;对 (b) 断言 argv[0] 为 sys.executable、模块为 gbs_analyzer、子命令为 analyze;任何第三类进程或 HTTP 请求即失败。
+
+二、执行纪律补充(仅限本恢复任务剩余部分)
+若冲突仅源于设计方裁定的测试/措辞要求与“复用未修改的既有代码路径”之间,且不涉及网络访问范围、QuickBuild、Gerrit 推送、浏览器代理规则、脱敏或任何安全拒绝规则,则按既有代码行为实现,在 progress 记录“措辞冲突按既有行为处理”及具体条目,继续执行,不必停止。涉及上述安全面的冲突仍按原纪律停止报告。
+
+三、其余按 SKEL-RESTORE-18/20/22 执行;本条写入 design.md 第 4.6 节“恢复项落地裁定”。推送报 Permission denied 时提交后停止,由用户本机推送。
+
+### 45.1 实施范围与措辞处理
+
+基线4936377。继续第三批两命令清单交接及第四批剧本/离线链路;不运行真实发现。
+intake.add_unit与.importlinter保持不变。措辞冲突按既有行为处理:
+SandboxGit的本地rev-parse、origin核对与checkout不含远端地址参数,仍属既有建档路径;
+测试对实际clone的目标作精确等值断言,并逐条记录全部Git/analyzer子进程。
+以下为实施与最终树验收结果;历史停止与开发失败证据均保留。
+
+### 45.2 第三批落点与边界
+
+| 裁定条目 | 实现位置 | 本轮事实 |
+| --- | --- | --- |
+| RESTORE-20文件交接/24进程边界 | core/discovery_manifest.py:82、:142、:159;intake/discover.py:32 | 固定schema、resolve越界/哈希前置校验;新run目录原子发布;原add_unit不改 |
+| RESTORE-08/18作用域 | qb_discovery_scope.mjs:85;qb_browser_agent.mjs:112、:675 | CLI只给已登记项目/id,不能给下游URL;父子身份与链接核验后登记精确路径;旧会话scope为空 |
+| RESTORE-12/18真实报告形态 | qb_discovery_scope.mjs:17、:57 | HTML REPORT空格标准解析;四列表、无class的failed;歧义停止该构建,未知arch前置拒绝 |
+| RESTORE-18文本fail-closed | qb_browser_agent.mjs:834、:882;qb_collect.py:22 | 单跳/最终地址/Content-Type/下载/UTF-8/64MiB;日志仅返回文件路径与SHA;逐包失败无重试 |
+| RESTORE-18观测 | agent:26、:221、:1126、:1136 | 六类trace的elapsed_ms为非负整数;continueResponse规则不变 |
+| RESTORE-20生产入口 | qb_collect.py:139;intake/discover.py:114 | qb-discover采集、不建库;campaign-discover消费、不访问QB;两步各有CLI入口 |
+
+路径缩写:core为`tizen-campaign-core/scripts/tizen_campaign_core`,
+intake为`tizen-campaign-intake/scripts/tizen_campaign_intake`,
+qb文件均为`tizen-qb-verify/scripts/tizen_qb_verify`。
+
+既有三个Node诊断测试只把新增elapsed_ms先断言为非负整数,再对剩余对象执行原deepEqual;
+helper为`tests/node/elapsed_trace.mjs`,没有修改原停止次数、类别、路径或敏感值断言。
+假HTTPS服务增加可选discoveryHandler,未启用时既有场景原样。
+wheel的既有`*.mjs`package-data覆盖新增纯解析辅助模块,无需调整包列表或依赖合约。
+
+开发过程保留:首轮r24定向51通过,mypy通过,ruff指出intake入口import排序,仅排序修复。
+final定向期间审阅发现waitUntil被误加到旧read,已撤回到原timeout:30000,
+该选项只留新增discoveryNavigate。修正时间早于完整全仓启动;
+`r24/full-source-proof.json`记录mtime、启动时间与哈希,不把混合树定向结果当最终源码证明。
+完整全仓、静态与安全组均在修正后启动,最终结论另记。
+
+### 45.3 最终树门禁与保护文件
+
+权威证据目录为`evidence/restore/batch3/r24/accepted/`,不是此前的`final/`。
+每项的command.json记录完整argv、UTC起止、exit、耗时、前后loadavg、20核及CPU前十进程名/占用。
+
+| 门禁 | 结果 | 证据(相对r24) |
+| --- | --- | --- |
+| 发现与恢复定向 | 53 passed,0 failed | accepted/focused/pytest.xml |
+| 完整全仓,不加-x | 3501 passed,0 failed,1既有skip;1161.39秒 | accepted/full/pytest.xml |
+| mypy / ruff / import-linter | 172文件无问题 / 通过 / 7 kept,0 broken | accepted/mypy、ruff、imports |
+| design / Node静态及负例 | 0 problem / 183 passed,0 failed | accepted/design、static |
+| P5Q四组安全 | 4/4,仅loopback,profile删除 | accepted/safety/stdout.log |
+| nodeid | 旧3454全部保留,新增48,合计3502 | nodeids.json |
+| 补充真实归档结构/拒绝矩阵 | 21 passed,0 failed,0网络请求 | supplementary-scope/ |
+| 封版源码一致性 | 定向到全仓结束零变化 | accepted/source-proof.json、integrity-after.json |
+
+全仓UTC 11:20:54至11:40:16;loadavg三值由2.42/2.06/3.14变为1.65/1.44/1.78。
+C5a全部参数、C8调查与RESTORE-14字段窗口用例均通过,无需计时敏感重跑,无新增自然读取失败观测。
+唯一skip为既有大小写不敏感文件系统用例。补充矩阵以C6b第05页归档为输入,
+验证Recent Builds六列表、身份/重复ID/链接查询/>50行拒绝、各阶段文法与iframe个数;
+只在about:blank隔离惰性文档中解析,没有真实QB访问。
+
+Worker安全组走b:browser_fail_closed;shared_worker closeTarget成功,
+worker closeTarget异常Error;攻击HTTP=0、WS握手=0、浏览器关闭且临时目录删除。
+其它三组307/308、逐跳、凭据隔离通过;停止/拒绝断言未放宽。
+
+`protected-final.json`证明intake.add_unit、.importlinter、sandbox-submit、qb-trigger、
+qb-result-fetch、review-submit、安全核心和两冻结稿不变。代理完整SHA256:
+`431b27137c857f5089053737b320ea35f2317d66493892b3dec5f7608db2e26c` →
+`309e7ab8877fe652d60cb6b27733431c633ef799a05ede5403358d147f4e22bb`;
+前缀SHA256:
+`1708c9567418043345c6f8a1e875aff93e1f21ce627540583f734fc5eeafb2ed` →
+`594107e04912b90ef803b3f2a1142b5b42afab83399829dba4e3c8e95664095c`。
+变化限RESTORE-08/18授权的发现作用域、文本读取和六类elapsed_ms;
+Fetch.continueResponse失败停止规则及旧read导航参数保持不变。
+
+提交前复核:design仍0 problem,证据脚本ruff通过,保护hash/nodeid审计通过。
+`git diff --cached --check`仅报告假服务原始脱敏HTML中的46处既有行尾空格,
+不修剪证据正文;排除本轮证据HTML后exit0。完整输出为`r24/diff-evidence/`,
+源码/文档检查为`r24/diff-source/`。无DB二进制、pyc或符号链接加入提交。
+
+### 45.4 偏差与停点
+
+授权偏差已逐条并入design第4.6节:两命令清单交接替代单命令;
+消费端允许既有SandboxGit与Python analyzer;未实测日志响应由运行时fail-closed;
+仅登记的html_report GET作永久禁止例外。唯一措辞处理见45.1,不扩展网络或拒绝规则。
+无未获授权的契约偏差。未运行真实qb-discover/campaign-discover、QuickBuild登录、
+真实Gerrit或gbs;第一次针对1204735的真实dry-run等待另行裁定。
+
+## 46. 恢复第四批:剧本、模板与离线完整链路
+
+`tizen-clang-campaign/SKILL.md`与`references/campaign-kickoff-template.md`纳入
+qb-discover→campaign-discover清单交接、propose-fix、generated/suppress/t1_cherry_pick
+三种来源及审核去向、sandbox后kb sync与QB PASS后kb sync;相关intake/repair/qb skill同步。
+state-root统一,首次真实发现仍不自动执行。design第4.6节与INDEX/收尾记录同步,
+骨架原真实第3.5/4批仍为延后,不与恢复任务第四批混淆。
+
+新增`test_campaign_restore_e2e.py::test_discovery_precedent_review_offline_chain`
+实际调用采集逻辑(假代理协议)产出清单,再经真实analyzer/假SSH建档、三架构基线、
+导入T1/建议/修复、sandbox、KB追加、QB PASS、KB升级、review与释放/报告。
+另有真实Python CLI→生产代理→本地假HTTPS/Chromium的采集用例,两类证据不混称。
+序列为DISCOVERED → CI_EVIDENCE_READY → BASELINE_RUNNING(三条) →
+BASELINE_REPRODUCED → REPAIR_ROUND_RUNNING → LOCAL_3ARCH_PASS →
+SANDBOX_PUSHING → SANDBOX_PUSHED → QB_REQUESTED → QB_TRIGGERED →
+SANDBOX_QB_PASS → REVIEW_PUSHING → REVIEW_PUSHED;副本释放,
+先例来源t1_cherry_pick,KB从NEW到CI_VERIFIED。
+
+证据:`r24/accepted/focused/discovery/restored-chain.json`;
+采集CLI与服务器清单为同目录`cli.json`、`producer-requests.json`;
+消费端全部argv与0 HTTP/浏览器为`consumer-processes.json`。
+第四批与第三批使用45.3所列同一最终树完整门禁,不是只测文档。
+本轮结束停在离线交付,不进入真实发现。

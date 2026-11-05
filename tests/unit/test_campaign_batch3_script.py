@@ -7,11 +7,12 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 SKILL = ROOT / "tizen-clang-campaign/SKILL.md"
 COMMANDS = {
-    "tizen_campaign_intake": {"campaign-start-check", "campaign-add-unit"},
+    "tizen_campaign_intake": {"campaign-start-check", "campaign-add-unit", "campaign-discover"},
     "tizen_baseline_reproduce": {"baseline-reproduce"},
-    "tizen_campaign_repair": {"suppress-policy", "campaign-repair-step"},
+    "tizen_campaign_repair": {"suppress-policy", "campaign-repair-step", "propose-fix"},
+    "tizen_campaign_kb": {"campaign-kb-sync"},
     "tizen_sandbox_submit": {"sandbox-submit"},
-    "tizen_qb_verify": {"qb-trigger", "qb-result-fetch"},
+    "tizen_qb_verify": {"qb-trigger", "qb-result-fetch", "qb-discover"},
     "tizen_review_submit": {"review-submit"},
     "tizen_campaign_report": {
         "campaign-finish-unit",

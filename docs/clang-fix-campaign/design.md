@@ -2846,9 +2846,27 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
     不拆开建档与源码准备,intake.add_unit不改。清单中的非法project须在克隆前拒绝。
     “唯一外部进程为git”与既有analyzer子进程的冲突另见SKEL-RESTORE-23;
     本条不擅自增加analyzer进程例外,不表示发现命令已实现。
+12. 按SKEL-RESTORE-24,上述RESTORE-23冲突关闭:campaign-discover仅允许
+    既有SandboxGit的Git路径,以及sys.executable -m gbs_analyzer analyze;
+    clone目标须精确等于gerrit_ssh_base.rstrip('/')+'/'+清单project。
+    禁止HTTP(S)、node/浏览器、真实gbs及其它外部进程,intake.add_unit不改。
+    仅非安全面的测试措辞与未修改既有路径冲突可登记后按既有行为处理;
+    网络、代理、脱敏与拒绝规则冲突仍停止报告。
 
 本批不改变发现阶段的浏览器白名单;该项仍须按SKEL-RESTORE-01第三.1条
 先做URL形态取证,停止等待裁定后才可实施。
+
+**恢复第3/4批落地补记。** 上段是恢复第2批时的边界,现已由
+SKEL-RESTORE-08/12/18/20/22/24授权继续:发现会话独立精确路径表,
+仅由已核验文档产生下游地址,唯一永久禁令例外为登记子构建的GET html_report。
+报告使用唯一iframe、真实HTML REPORT目录与Details架构列的failed文字,
+只登记主架构日志。read_text对同源单跳、最终地址、text/*、无attachment/Download、
+UTF-8与64MiB逐项fail-closed;Fetch.continueResponse停止规则不变。
+日志与clang_discover_manifest/v1以新run目录原子发布;消费端核验根目录、schema与SHA,
+按RESTORE-24的Git/analyzer白名单调用原建档路径。两个命令不跨执行包依赖。
+六类停止/拦截观测trace增加elapsed_ms,不增加查询值、身份或正文。
+剧本恢复发现、先例复用与两次KB同步;T1仍须策略预检与审核重推。
+日志响应元数据尚未真机实测,按RESTORE-18改为运行时核对,不宣称真机通过。
 
 ## 5. 非功能性需求
 

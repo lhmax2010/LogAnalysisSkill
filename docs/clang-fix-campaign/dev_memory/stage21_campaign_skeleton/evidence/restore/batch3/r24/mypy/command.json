@@ -1,0 +1,41 @@
+{
+  "argv": [
+    ".venv/bin/mypy"
+  ],
+  "before": {
+    "loadavg": "5.33 5.13 5.98 3/2980 545184",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   17.0",
+      "code-insiders   14.0",
+      "epp-client-daem 11.2",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.3",
+      "code-insiders    2.5",
+      "chrome           2.1",
+      "gnome-shell      2.0",
+      "code-insiders    1.8"
+    ]
+  },
+  "started_utc": "2026-11-05T10:55:49.081435+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 5.112126488995273,
+  "after": {
+    "loadavg": "5.38 5.14 5.98 1/2979 545212",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   17.0",
+      "code-insiders   14.0",
+      "epp-client-daem 11.2",
+      "code-insiders    3.7",
+      "Xorg             3.5",
+      "chrome           3.3",
+      "code-insiders    2.5",
+      "chrome           2.1",
+      "gnome-shell      2.0",
+      "code-insiders    1.8"
+    ]
+  },
+  "finished_utc": "2026-11-05T10:55:54.209664+00:00"
+}

@@ -1,0 +1,49 @@
+{
+  "discovery_commands": [
+    {
+      "command": "discovery_start"
+    },
+    {
+      "command": "discovery_read"
+    },
+    {
+      "command": "discovery_read"
+    },
+    {
+      "command": "discovery_read"
+    },
+    {
+      "command": "discovery_read"
+    },
+    {
+      "command": "discovery_read"
+    },
+    {
+      "command": "discovery_read"
+    },
+    {
+      "command": "read_text"
+    }
+  ],
+  "states": [
+    "DISCOVERED",
+    "CI_EVIDENCE_READY",
+    "BASELINE_RUNNING",
+    "BASELINE_RUNNING",
+    "BASELINE_RUNNING",
+    "BASELINE_REPRODUCED",
+    "REPAIR_ROUND_RUNNING",
+    "LOCAL_3ARCH_PASS",
+    "SANDBOX_PUSHING",
+    "SANDBOX_PUSHED",
+    "QB_REQUESTED",
+    "QB_TRIGGERED",
+    "SANDBOX_QB_PASS",
+    "REVIEW_PUSHING",
+    "REVIEW_PUSHED"
+  ],
+  "source_kind": "t1_cherry_pick",
+  "kb_precedent_ref": "61fb9061-bcc4-4b4b-9ec6-068e2e99b702",
+  "final_status": "REVIEW_PUSHED",
+  "workspace_status": "\u5df2\u91ca\u653e"
+}

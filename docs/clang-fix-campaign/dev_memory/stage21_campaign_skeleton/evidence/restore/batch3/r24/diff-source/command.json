@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r24/**/*.html"
+  ],
+  "before": {
+    "loadavg": "2.07 1.47 1.55 2/2911 770265",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python          30.0",
+      "code-insiders   15.5",
+      "code-insiders   14.1",
+      "epp-client-daem 10.7",
+      "Xorg             3.5",
+      "code-insiders    3.5",
+      "chrome           3.2",
+      "code-insiders    2.7",
+      "gnome-shell      2.1",
+      "chrome           1.9"
+    ]
+  },
+  "started_utc": "2026-11-05T11:49:19.073649+00:00",
+  "exit_code": 0,
+  "elapsed_seconds": 0.02001236199430423,
+  "after": {
+    "loadavg": "2.07 1.47 1.55 1/2911 770267",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python          23.0",
+      "code-insiders   15.5",
+      "code-insiders   14.1",
+      "epp-client-daem 10.7",
+      "Xorg             3.5",
+      "code-insiders    3.5",
+      "chrome           3.2",
+      "code-insiders    2.7",
+      "gnome-shell      2.1",
+      "chrome           1.9"
+    ]
+  },
+  "finished_utc": "2026-11-05T11:49:19.109306+00:00"
+}

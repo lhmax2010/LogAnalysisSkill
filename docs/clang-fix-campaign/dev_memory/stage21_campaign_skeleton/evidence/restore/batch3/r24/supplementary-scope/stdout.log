@@ -1,0 +1,29 @@
+{
+  "passed": 21,
+  "failed": 0,
+  "checks": [
+    "archived Recent Builds six-column parse and exact registrations",
+    "Recent Builds refuses identity before registrations",
+    "Recent Builds refuses headers before registrations",
+    "Recent Builds refuses duplicate-id before registrations",
+    "Recent Builds refuses link-id before registrations",
+    "Recent Builds refuses link-query before registrations",
+    "Recent Builds refuses too-many before registrations",
+    "exact report refusal {\"method\":\"HEAD\"}",
+    "exact report refusal {\"path\":\"/build/102/html_report/x\"}",
+    "exact report refusal {\"path\":\"/build/102/html_reporu\"}",
+    "exact report refusal {\"query\":\"0-1.ILinkListener-form-stop\"}",
+    "exact report refusal {\"resource_type\":\"WebSocket\"}",
+    "exact report refusal {\"path\":\"/wicket/page\",\"query\":\"1-1.IFormSubmitListener-form\"}",
+    "report denied in login",
+    "report denied in idle",
+    "report denied in open_form",
+    "report denied in fill",
+    "report denied in submit",
+    "unknown frame rejected",
+    "iframe cardinality 0 denied before download registrations",
+    "iframe cardinality 2 denied before download registrations"
+  ],
+  "network_requests": 0,
+  "source": "archived C6b HTML, inert isolated document"
+}

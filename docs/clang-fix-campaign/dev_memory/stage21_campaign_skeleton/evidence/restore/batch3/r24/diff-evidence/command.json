@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "before": {
+    "loadavg": "2.07 1.47 1.55 2/2911 770262",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python          75.0",
+      "code-insiders   15.5",
+      "code-insiders   14.1",
+      "epp-client-daem 10.7",
+      "Xorg             3.5",
+      "code-insiders    3.5",
+      "chrome           3.2",
+      "code-insiders    2.7",
+      "gnome-shell      2.1",
+      "chrome           1.9"
+    ]
+  },
+  "started_utc": "2026-11-05T11:49:19.016899+00:00",
+  "exit_code": 2,
+  "elapsed_seconds": 0.023909386996820103,
+  "after": {
+    "loadavg": "2.07 1.47 1.55 2/2911 770264",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python          37.5",
+      "code-insiders   15.5",
+      "code-insiders   14.1",
+      "epp-client-daem 10.7",
+      "Xorg             3.5",
+      "code-insiders    3.5",
+      "chrome           3.2",
+      "code-insiders    2.7",
+      "gnome-shell      2.1",
+      "chrome           1.9"
+    ]
+  },
+  "finished_utc": "2026-11-05T11:49:19.057159+00:00"
+}
