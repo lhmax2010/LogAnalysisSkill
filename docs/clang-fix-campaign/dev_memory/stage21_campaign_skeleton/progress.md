@@ -1,6 +1,6 @@
 # Stage21 Clang Campaign Skeleton
 
-日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-16门禁通过后单次live-04取证已停止(SKEL-RESTORE-17):两页脱敏归档成功,日志链接class假设不符,日志未读;另记未豁免continueResponse失败**。RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
+日期:2026-11-05。状态:**恢复第1、2批离线完成;RESTORE-18结束取证系列并批准第3/4批;实现前依赖探针确认intake复用QB驱动与同层独立合约冲突,停止SKEL-RESTORE-19(第42节),未改生产代码**。RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
@@ -2325,3 +2325,68 @@ continueResponse仍按原规则停止,如需调查关闭竞争须另行裁定。
 本轮仅新增证据、离线结构摘录与文档检查,不将第40节全仓结果冒称为本轮重跑。
 设计检查0 problem,离线摘录脚本ruff通过;暂存diff仅两份响应HTML的476处原始空白警告,
 保留CR/LF和响应字节不格式化,非HTML文件检查exit0(`live-04/diff-check.json`)。
+
+## 42. 实施裁定 SKEL-RESTORE-18:结束取证系列,直接实施campaign-discover与第四批
+
+以下为裁定原文:
+
+一、已确认事实(作为实现依据)
+1. iframe:属性原文 /download/<id>/html/HTML REPORT/index.html,实际请求 /download/<id>/html/HTML%20REPORT/index.html,同源 HTTPS,200,text/html,inline,单跳,无 Download。
+2. iframe 页 Details 表:表头 name | standard armv7l | standard aarch64 | standard x86_64;每包一行;失败以该架构列中链接文字 failed 表示,链接无 class;href 为相对 iframe 页的 logfiles/standard/<arch>/<package>.txt。
+3. 日志响应(Content-Type、Download、跳转)未实测;不再为此单独取证,改为正式实现中的运行时 fail-closed 检查(见第二.4 条)。
+
+二、campaign-discover 实施(按 SKEL-RESTORE-01 第三.2、SKEL-RESTORE-08 第一条及以下修正)
+1. 报告链:/build/<已核验子构建 id>/html_report → 唯一 iframe src(按 SKEL-RESTORE-12 第二条的空格与解析规则)→ Details 表。
+2. 失败包解析:按表头定位架构列(“standard <arch>” 映射为 standard-<arch>;无法映射的列名视为非白名单 arch,交给 arch 前置门);包名按 name 列完整文本精确匹配;某包在某架构列存在唯一链接且链接文字精确为 failed,即该架构失败;同一单元格多个链接、表头缺失或重复、包名重复,均判该构建 DISCOVERY_REPORT_AMBIGUOUS 并停止该构建,不猜。不再使用 class 匹配。
+3. 只为主架构日志登记一次精确读取:href 用标准 URL 解析器相对 iframe 最终 URL 解析一次,必须同源 HTTPS、无 userinfo/query/fragment、构建号一致、路径以 /download/<id>/html/<报告目录>/logfiles/standard/<主架构>/<包名>.txt 结尾。
+4. 日志读取 read_text 运行时检查:单跳且最终地址等于登记地址;无 Download 事件、无 Content-Disposition attachment;Content-Type 为 text/*;UTF-8 严格解码;≤64 MiB。任一不满足 → 该包记 DISCOVERY_LOG_UNREADABLE(附固定原因码),不建档,继续处理下一个包;不重试、不换路径。
+5. 其余按原设计:arch 前置门、主架构固定优先序、构建变量解析 project/branch/base_commit(解析不出 → DISCOVERY_SOURCE_UNRESOLVED)、默认只为编译阶段失败建档、--dry-run、幂等、discover.json/discover.md 报告、串行。
+
+三、浏览器代理
+1. Fetch.continueResponse 失败的停止规则不变;不扩大任何豁免。
+2. 仅为 trace 中 OPERATION_FAILED、DENY_TARGET_GONE、CONTINUE_TARGET_GONE、AGENT_STOPPED、PAGE_CLOSED、BROWSER_DISCONNECTED 事件增加相对启动时间 elapsed_ms(整数毫秒),不记录 URL 查询、正文或身份;补断言。
+3. 精确路径表、html_report 例外与 read_text 按 SKEL-RESTORE-08 第一条实施;补 discovery-url-shapes.md 第 5 节全部 Node 正负例,并加入本次真实结构的归档形态夹具(四列表、无 class 的 failed 链接、空格目录)。
+
+四、第四批
+按 SKEL-RESTORE-01 第四条执行(剧本与模板、离线全流程新增发现→先例复用→评审链路、design.md 第 4.6 节与收尾记录更新、progress/INDEX)。
+
+五、验收与停止
+1. 全部完成后跑全仓门禁(不加 -x)及 mypy、ruff、lint-imports、design 检查;计时敏感名单按既有规则。
+2. 完成后停止并回报:各 commit、新增命令、测试数量、与原设计的偏差清单。不运行真实 campaign-discover;首次真机运行(--dry-run,针对 1204735)另行裁定,届时需用户登录。
+3. 实施中遇到契约冲突或安全规则需要变动时,按既有纪律停止报告。推送报 Permission denied 时提交后停止,由用户本机推送。
+
+### 42.1 开工核对与依赖冲突停点SKEL-RESTORE-19
+
+基线79cbe9f;通读RESTORE-01第三/四批、RESTORE-08/12/16/18、
+discovery-url-shapes、现行Agent/驱动/建档与依赖规则。停止RESTORE-17由本裁定处置;
+日志的未知响应改为运行时核验,不再要求新登录或补取证。原始停止证据不覆盖。
+
+另发现代码层契约冲突:RESTORE-01第〇.2要求包分层/import-linter不放宽,
+第三.2同时指定intake入口复用qb-verify浏览器驱动;骨架冻结稿§4.3明确
+同层包互不依赖,`.importlinter:31`将这两包列在同一独立层。
+不能自行添加ignore、把`|`换为`:`、动态导入或复制驱动绕过合约。
+
+离线探针`evidence/restore/batch3/r18/probe_dependencies.py`使用当前全部root_packages
+及实际LayersContract.check,在内存图里分别加入单条拟议import,从未写生产源码:
+
+| 探针 | root-layers结果 | 证据 |
+| --- | --- | --- |
+| 当前未修改依赖图 | kept=true | `batch3/r18/probe.json:7` |
+| intake.campaign_discover → qb_verify.qb_browser | kept=false | `probe.json:16` |
+| intake.campaign_discover → qb_verify.qb_config | kept=false | `probe.json:45` |
+| intake.campaign_discover → qb_verify.qb_redact | kept=false | `probe.json:74` |
+
+4项均符合探针预期;558个已跟踪Python/Node源码、冻结稿与.importlinter的hash
+前后相同。这里只证明现行直接复用违反合约,不声称所有架构选择都无法实现。
+新增独立子进程桥接可以作为候选,但没有现成只读入口且需要另定进程协议/依赖边界,
+本轮不自行用该方式绕开同层约束。候选A为精确模块依赖例外,候选B为批准只读桥接;
+具体文字diff、副作用和验收建议见
+[停止报告](evidence/restore/stop-report-SKEL-RESTORE-19.md)。
+
+按RESTORE-18第五.3停止,没有实现新命令、代理扩权、第四批剧本或新业务测试。
+本轮只运行离线依赖探针、现有import-linter、设计检查及新增探针ruff/diff检查;
+完整输出与命令见`batch3/r18/validation.json`。全仓pytest/mypy及四组安全测试未运行,
+不以RESTORE-16的3453通过结果冒充本轮验收。没有访问QB/Gerrit、启动浏览器或gbs,
+没有修改已有测试、冻结稿、生产源码、状态库及无关工作树文件。
+本轮结果:依赖探针4/4符合预期(1绿/3红);现行import-linter 7 kept/0 broken;
+design 0 problem;新增证据脚本ruff通过;文档diff检查通过。未增加业务测试nodeid。

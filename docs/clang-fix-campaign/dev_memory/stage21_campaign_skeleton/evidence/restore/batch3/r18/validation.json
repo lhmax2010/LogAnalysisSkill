@@ -1,0 +1,55 @@
+{
+  "commands": [
+    {
+      "name": "imports",
+      "argv": [
+        ".venv/bin/lint-imports",
+        "--no-cache"
+      ],
+      "started_utc": "2026-11-05T08:40:59.363085+00:00",
+      "finished_utc": "2026-11-05T08:40:59.835242+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "design",
+      "argv": [
+        ".venv/bin/python",
+        "docs/clang-fix-campaign/tools/check_design_doc.py",
+        "docs/clang-fix-campaign/design.md"
+      ],
+      "started_utc": "2026-11-05T08:40:59.835259+00:00",
+      "finished_utc": "2026-11-05T08:40:59.985595+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "ruff",
+      "argv": [
+        ".venv/bin/ruff",
+        "check",
+        "--no-respect-gitignore",
+        "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r18"
+      ],
+      "started_utc": "2026-11-05T08:40:59.985608+00:00",
+      "finished_utc": "2026-11-05T08:41:00.505018+00:00",
+      "exit_code": 0
+    },
+    {
+      "name": "diff",
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md",
+        "docs/clang-fix-campaign/dev_memory/INDEX.md"
+      ],
+      "started_utc": "2026-11-05T08:41:00.505035+00:00",
+      "finished_utc": "2026-11-05T08:41:00.522947+00:00",
+      "exit_code": 0
+    }
+  ],
+  "protected_count": 558,
+  "unchanged": true,
+  "full_pytest_run": false,
+  "business_commands_run": false
+}
