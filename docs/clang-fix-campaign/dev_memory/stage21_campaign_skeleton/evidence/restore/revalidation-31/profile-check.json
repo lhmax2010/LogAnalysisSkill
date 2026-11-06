@@ -1,0 +1,32 @@
+{
+  "utc": "2026-11-06T07:28:38.837317+00:00",
+  "path": "/dev/shm/p5q-browser-3ByKn8",
+  "exists": true,
+  "is_symlink": false,
+  "producer": "qb_browser_agent.mjs:createRuntime mkdtemp('/dev/shm/p5q-browser-')",
+  "test_entry": "tests/node/p5q_cli_agent.mjs calls production createRuntime",
+  "commands": [
+    {
+      "argv": [
+        "fuser",
+        "-v",
+        "/dev/shm/p5q-browser-3ByKn8"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "lsof",
+        "-nP",
+        "+D",
+        "/dev/shm/p5q-browser-3ByKn8"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "deleted": false
+}

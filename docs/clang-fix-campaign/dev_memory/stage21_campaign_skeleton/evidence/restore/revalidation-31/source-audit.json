@@ -1,0 +1,42 @@
+{
+  "baseline": "b7a55d8",
+  "current": "582c65de501edbff26fb6ee415271033bb5b4626",
+  "agent_prefix_unchanged": true,
+  "prefix_sha256": "594107e04912b90ef803b3f2a1142b5b42afab83399829dba4e3c8e95664095c",
+  "agent_from_fill_to_end_unchanged": true,
+  "driver_entire_QbBrowser_class_AST_unchanged": true,
+  "agent_before_sha256": "309e7ab8877fe652d60cb6b27733431c633ef799a05ede5403358d147f4e22bb",
+  "agent_after_sha256": "5583d6bec7504fb3ef595bcd5612450a8b577340581f16b3a6fd981afd239ac1",
+  "protected_files": [
+    {
+      "path": "tests/node/p5q_cli_agent.mjs",
+      "unchanged": true,
+      "sha256": "01d1f4b62c4a36e79b8f374c50abcbd516178e288bdcda8881e55ddf2ce9b67c"
+    },
+    {
+      "path": "tests/unit/test_p5q_c5a_integration.py",
+      "unchanged": true,
+      "sha256": "603a746692d8390796a2a22282c234bad1fb5c0cdbf5909579c3fd327a5805fe"
+    },
+    {
+      "path": "tests/node/p5q_c8_investigation.mjs",
+      "unchanged": true,
+      "sha256": "03d87197f6f02dbc703b1109d972086d86c77a961c5d3be8cfd5dcc8ebe15ff4"
+    },
+    {
+      "path": "tests/unit/test_p5q_c8_investigation.py",
+      "unchanged": true,
+      "sha256": "2f38d0a4eee5b7ae2901187c854e106416e906e1d19e783094122e104f874bdf"
+    },
+    {
+      "path": "docs/clang-fix-campaign/campaign-skeleton-design-v1.3-FROZEN.md",
+      "unchanged": true,
+      "sha256": "1d66247c78ed4ab36a37f81149fbec6a648b10830ec15b38a2a454a93ee2fec9"
+    },
+    {
+      "path": "docs/clang-fix-campaign/p5q-qb-trigger-design-v1.8-FROZEN.md",
+      "unchanged": true,
+      "sha256": "d0242ca8b708e9c1e3e714387bae963f8f6f16fc765179e6ed60d8be56493364"
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 日期:2026-11-05。状态:**恢复第1至4批离线完成;RESTORE-24关闭RESTORE-23,第三/四批最终树3501 passed、0 failed、1既有skip(第45、46节);首次真实发现待另行裁定**。RESTORE-19由RESTORE-20两命令文件交接处置;RESTORE-21由RESTORE-22处置;RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 最新真机试运行:RESTORE-25/27唯一一次qb-discover以DISCOVERY_REPORT_AMBIGUOUS/REPORT_STRUCTURE停止(第49节);未运行dry-run,不重试。RESTORE-26已由RESTORE-27处置。
-当前任务:RESTORE-29离线复现与封闭诊断已实施但未验收(第50节);全仓失败后的第二次单独重跑失败,按SKEL-RESTORE-30停止,未执行真机r02。
+当前任务:RESTORE-31认可582c65d解析修复与诊断;重新验收因swap前置等待30分钟未达标,按RESTORE-32停止(第51节)。未启动测试或真机r02,RESTORE-30原始失败保留。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
 ## 1. 冻结输入与开工事实
@@ -2839,3 +2839,60 @@ mtime为2026-11-06 14:35:45 +08:00;未擅自清理或结束进程。
 收集输出与完整pytest XML中与身份字符串重合的测试标识符做脱敏,不改失败正文;
 前后hash记录于`test-identifier-redaction.json`,nodeid比较对两侧作同样替换。
 残留profile进程引用检查未发现携带该类user-data-dir参数的进程,不推断目录可删除。
+
+## 51. 实施裁定 SKEL-RESTORE-31:解析认可与计时敏感重新验收
+
+基线582c65d。裁定原文:
+
+一、解析修复与诊断:设计方已审阅 qb_discovery_scope.mjs / qb_browser_agent.mjs / qb_browser.py 改动、test_qb_discovery_diagnostics.py、replay-before/after 输出及 live-04/02.response.html 第1482行说明行,判定修复符合真实页面结构、未放宽任何安全规则,代码层面认可。“包只在部分架构 unresolvable 时说明行被拒”保持失败关闭,记入收尾文档已知限制,本轮不改。
+
+二、C5a 失败归属:
+1. 先书面列出本次 diff 中所有可能影响 fill/submit/close 路径的改动点并逐条说明(设计方判断:agent 新增字段仅在 discovery_read/read_text 生效,decode_response 新分支仅在应答含 page_kind/first_failed_check/counts 时进入),若发现任何触及该路径的改动,停止报告。
+2. 计时敏感重新验收:从头执行一轮“三次单独重跑”,三次全过才算通过。每次开始前除既有条件(available≥6G、load1≤10)外,额外等待 load1≤4 且 swap 可用≥512MiB,最长等 30 分钟;超时则停止报告,不放宽、不结束他人进程、不清缓存。资源限制同 SKEL-RESTORE-27。
+3. 若三次中任一失败:在仓外 git worktree 检出 b7a55d8,同样条件下单独跑同一 nodeid 三次作对照,记录结果后停止报告,不进入真机。
+
+三、残留 /dev/shm/p5q-browser-3ByKn8:用 fuser/lsof 确认无进程引用,且名称前缀与 C5a 测试工具创建的浏览器临时目录一致,则删除并在证据中记录检查输出;任一条件不满足则保留并在报告中说明。
+
+四、第二条三次全过后,补跑一次完整 pytest(不加 -x,资源限制同前);其中 C5a 若再次失败,按既有计时清单规则处理。全部通过则更新 progress.md 与收尾文档(含第一条已知限制),提交推送后回报“等待用户确认开始”;用户回复“开始”后按 SKEL-RESTORE-29 第五条执行 r02 真机试运行(qb-discover 成功则接 campaign-discover --dry-run),失败即停止报告,不重试。
+
+五、推送报 Permission denied 时提交后停止,由用户本机推送。
+
+### 51.1 路径审查与残留处理
+
+[路径审查](evidence/restore/revalidation-31/path-audit.md)逐项覆盖582c65d的三个生产
+文件和测试/文档改动。合法fill/submit/close的实现、输入输出、超时与关闭路径均未改;
+共享异常对象仅新增默认None属性,合法常规应答不含新字段,不进入新诊断分支。
+discoveryScope未启用的C5a不会调用新增的说明行解析。没有以此认定先前UNKNOWN的根因。
+本轮不改生产代码、旧测试断言、资源限制或冻结稿。
+
+2026-11-06 15:28:38 +08:00,fuser -v与lsof -nP +D均exit1、stdout/stderr为空;
+再次检查仍无引用,且目录不是符号链接。C5a测试入口调用生产createRuntime,
+其mkdtemp('/dev/shm/p5q-browser-')前缀一致。15:29:00 +08:00仅删除
+`/dev/shm/p5q-browser-3ByKn8`,exit0,之后exists=false。
+见`revalidation-31/profile-check.json`、`profile-removal.json`,未处理其它目录/进程。
+
+重新验收以`revalidation-31/run_one.py`记录每10秒前置采样,满足available≥6GiB、
+load1≤4、SwapFree≥512MiB才启动;最多等待1800秒。测试启动时强制
+systemd user scope CPU400%/MemoryMax6GiB/MemorySwapMax0及nice10,
+不使用-x或并行参数。首轮开始等待时swap余约28MiB,尚未启动测试。
+
+### 51.2 资源等待超时:停止报告 SKEL-RESTORE-32
+
+2026-11-06 15:28:18至15:58:18 +08:00,共181次采样,单调时钟等待1800.025秒。
+SwapFree在0–28752KiB之间(最高约28.08MiB),始终低于524288KiB门槛。
+MemAvailable范围6373816–7300576KiB,load1范围0.05–2.69,两者始终达标;
+唯一持续阻塞项为swap余量。最后available7035MiB、swap余约1MiB、load1=0.39。
+原始free -m、loadavg、CPU前十及UTC逐次写入
+`evidence/restore/revalidation-31/retry-1/command.json`。
+
+等待器exit125、stop=RESOURCE_WAIT_TIMEOUT、started=false。这是资源前置停止,
+不是pytest失败:本轮测试执行0次,通过/失败/跳过均不适用;第2、3次未启动;
+不满足“测试中任一次失败”的基线对照分支,未创建b7a55d8仓外worktree。
+未补跑全仓、未执行r02、未弹登录窗口,没有清缓存、swap操作或结束进程。
+指定废弃profile已按51.1完成删除,与swap等待条件分开记录。
+
+[SKEL-RESTORE-32停止报告](evidence/restore/revalidation-31/stop-report-SKEL-RESTORE-32.md)
+与[本轮说明](evidence/restore/revalidation-31/README.md)记录结果。
+收尾文档第5节已列“部分架构unresolvable说明行仍被拒”的已知限制。
+生产、测试、design.md、冻结稿均未修改;仅文档/证据提交。先前失败证据未覆盖。
+资源达标后仍需从头完成三次重验及全仓门禁,当前不进入“等待用户确认开始”阶段。

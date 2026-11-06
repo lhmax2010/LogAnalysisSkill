@@ -106,6 +106,13 @@ DENY_TARGET_GONE共3次且未导致停止。逐次结果、负载及原始失败
 
 ## 5. 遗留与观测
 
+- RESTORE-31认可`582c65d`的发现报告说明行修复与封闭诊断;若包只在部分架构
+  unresolvable,其说明行仍被拒绝,保持fail-closed,本轮不扩展解析。依据:
+  [progress第51节及路径审查](../dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-31/path-audit.md)、
+  [真实归档说明行](../dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/live-04/02.response.html)。
+  代码层认可不等于重新门禁或真机r02通过。
+  RESTORE-31重新验收在测试启动前因swap余量连续30分钟不足512MiB停止,
+  没有新增测试失败或真机操作;见[RESTORE-32](../dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-31/stop-report-SKEL-RESTORE-32.md)。
 - 恢复任务的首轮真实`qb-discover`已按RESTORE-25/27执行但结构核验停止(见第4节)。报告iframe与Details四列表以
   [live-04](../dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/live-04/)和RESTORE-18为依据;
   日志响应类型、编码、大小、跳转、Download尚无真机样本,由read_text逐包运行时fail-closed,
