@@ -2,7 +2,7 @@
 
 日期:2026-11-05。状态:**恢复第1至4批离线完成;RESTORE-24关闭RESTORE-23,第三/四批最终树3501 passed、0 failed、1既有skip(第45、46节);首次真实发现待另行裁定**。RESTORE-19由RESTORE-20两命令文件交接处置;RESTORE-21由RESTORE-22处置;RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
-最新真机试运行准备:RESTORE-25只读预检通过,因归档通道缺口在弹窗前停止RESTORE-26(第47节),唯一一次执行未使用。
+最新真机试运行准备:RESTORE-27已处置RESTORE-26归档通道缺口(第48节),资源限制实测通过;等待用户本次回复“开始”,唯一一次执行未使用。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
 ## 1. 冻结输入与开工事实
@@ -2636,3 +2636,47 @@ read_text应答没有Content-Type/跳转/Download元数据;它们虽然参加运
 未登录QB,会话身份扫描标为NOT_APPLICABLE_NO_LOGIN,不伪称已经扫描未知登录身份。
 state-root为空,状态库与KB文件不存在;受检生产文件与6f5e801逐字一致。
 design检查0 problem、git diff --check通过;没有运行全仓测试或任何QB命令。
+
+## 48. 实施裁定 SKEL-RESTORE-27:试运行归档字段与开发机资源限制
+
+2026-11-06,基线24fe825。RESTORE-26由本裁定处置,保留原停止报告和前置记录。
+裁定原文:
+
+一、归档字段裁定
+1. 接受代理 trace(含 elapsed_ms)与日志逐项元数据(Content-Type 原值、跳转链、Download 事件)在本次试运行中记为 NOT_COLLECTED;不为本次试运行修改生产 CLI 或代理。
+2. 等价证据:每份 status=ok 的日志,记录“已通过 read_text 运行时检查(text/*、单跳且地址一致、无 Download/attachment、UTF-8 严格解码、≤64MiB)”及 sha256、字节数;每份失败的日志记录其固定原因码。任何安全停止以 CLI 返回的错误码为准写入报告。
+3. SKEL-RESTORE-25 第三.1 条相应修订,其余不变。
+
+二、开发机资源限制(本条线后续所有任务的常设要求)
+1. 全仓 pytest、mypy 等门禁及任何浏览器/真机命令,一律在 systemd-run --user --scope -p CPUQuota=400% -p MemoryMax=6G -p MemorySwapMax=0 下运行;本次 qb-discover 与 campaign-discover 用 -p CPUQuota=200% -p MemoryMax=3G -p MemorySwapMax=0。
+2. 另加 nice -n 10;禁止并行跑两组门禁;不使用 pytest-xdist 或其它并行参数。
+3. 每次运行前后记录 free -m 与 /proc/loadavg;若运行前可用内存 < 6G 或 1 分钟负载 > 10,等待至满足再开始(最长 30 分钟,超时停止报告)。
+4. 若 systemd-run --user 不可用,停止并报告,不在无限制状态下运行。
+5. 计时敏感用例在受限资源下若失败,按既有 3 次单独重跑规则处理(重跑同样受限),不放宽资源限制规则。
+
+三、继续
+按 SKEL-RESTORE-25(含本裁定修订)执行:前置已完成,回报“等待用户确认开始”;用户回复“开始”后执行唯一一次 qb-discover 与 campaign-discover --dry-run。其余要求不变;推送报 Permission denied 时提交后停止,由用户本机推送。
+
+### 48.1 资源边界检查与待执行点
+
+未重跑第47节campaign-start-check,没有QB/Gerrit业务访问,没有启动浏览器。
+仅运行systemd scope能力探针,再在受限scope内读取自身cgroup值并断言:
+cpu.max=`200000 100000`,memory.max=`3221225472`,memory.swap.max=`0`,nice=`10`;
+exit0。实际资源限制可用,不是只凭systemd-run返回成功推断。
+前置可用内存14353MiB,1分钟loadavg=3.45;运行后14277MiB,loadavg仍3.45;
+无需等待。free -m原文、三项loadavg、UTC/argv/exit与实际限额见
+`evidence/restore/live-dryrun-01/resource-preflight-27.json`。
+既有swap已用4092MiB,仅记录,没有清理或结束他人进程;新scope禁止swap。
+
+仓外r01配置SHA256仍为
+`68b4f39b1ad768629acff344fdd6e8e1812d109d74924330a9ceec3cb24dda44`,
+state-root为空,不复用状态库。生产CLI、代理、测试均不改。
+真正执行两个命令之前还会分别重新读取free -m/loadavg,不复用本次即时资源读数;
+不满足时最多等待30分钟,systemd失败不回退无限制执行。
+只有收到本次“开始”后才执行qb-discover一次,成功后再执行campaign-discover --dry-run一次;
+任一步失败停止,不换构建、不重试。原始日志只留仓外。
+
+后续报告将代理trace/elapsed_ms与原始日志响应元数据明确标NOT_COLLECTED,
+status=ok只记裁定允许的运行时检查通过及SHA/大小,失败只记固定原因码,
+不会把缺失trace解释为“安全事件为0”。当前为**等待用户确认开始**,
+尚无本次失败包/日志读取/dry-run结果,真机发现仍未验证。

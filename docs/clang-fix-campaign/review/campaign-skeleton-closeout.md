@@ -93,6 +93,8 @@ DENY_TARGET_GONE共3次且未导致停止。逐次结果、负载及原始失败
   但CLI未提供所要求的代理trace/elapsed_ms和日志响应元数据,在弹窗前停止;
   未消耗一次执行机会,未运行dry-run消费或真实建档。
   [RESTORE-26停止报告](../dev_memory/stage21_campaign_skeleton/evidence/restore/live-dryrun-01/stop-report-SKEL-RESTORE-26.md)。
+  2026-11-06 RESTORE-27已接受本次元数据NOT_COLLECTED并规定等价证据;
+  资源scope检查通过,等待用户确认开始,本项仍不标真机通过。
 
 - 真实gbs失败形态与三架构基线/修复耗时:第3.5批未执行,无真实单包全链路测量。
 - 真实CI日志上的analyzer有效诊断:预筛3次均exit0但needs_llm,不能证明与人工Clang修法对应;[candidates.md](../dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/candidates.md)。

@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=200%",
+    "-p",
+    "MemoryMax=3G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-c",
+    "import json,os; from pathlib import Path\ngroup=next(line.split(':',2)[2] for line in Path('/proc/self/cgroup').read_text().splitlines() if line.startswith('0::'))\nroot=Path('/sys/fs/cgroup') / group.lstrip('/')\nfacts={k:(root/k).read_text().strip() for k in ('cpu.max','memory.max','memory.swap.max')}\nfacts['nice']=os.getpriority(os.PRIO_PROCESS,0)\nprint(json.dumps(facts))\nquota,period=facts['cpu.max'].split()\nassert quota!='max' and int(quota)==2*int(period)\nassert facts['memory.max']==str(3*1024**3)\nassert facts['memory.swap.max']=='0' and facts['nice']==10\n"
+  ],
+  "before": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       17187        2194        1046       13839       14353\nSwap:           4095        4092           3\n",
+    "loadavg": "3.45 4.60 5.14 8/2728 1056463",
+    "available_kib": 14713528
+  },
+  "wait_samples": [
+    {
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       17187        2194        1046       13839       14353\nSwap:           4095        4092           3\n",
+      "loadavg": "3.45 4.60 5.14 8/2728 1056463",
+      "available_kib": 14713528
+    }
+  ],
+  "wait_seconds": 0.005,
+  "started_utc": "2026-11-06T03:40:50.971757+00:00",
+  "finished_utc": "2026-11-06T03:40:51.023469+00:00",
+  "exit_code": 0,
+  "stdout": "{\"cpu.max\": \"200000 100000\", \"memory.max\": \"3221225472\", \"memory.swap.max\": \"0\", \"nice\": 10}\n",
+  "stderr": "Running as unit: run-r7f77aa47bb7b4155b00dda419655fbcb.scope; invocation ID: 4a95d98e93df42388601af6435c18780\n",
+  "after": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       17263        2117        1042       13835       14277\nSwap:           4095        4092           3\n",
+    "loadavg": "3.45 4.60 5.14 12/2728 1056465",
+    "available_kib": 14618272
+  },
+  "browser_started": false,
+  "business_commands_run": false
+}
