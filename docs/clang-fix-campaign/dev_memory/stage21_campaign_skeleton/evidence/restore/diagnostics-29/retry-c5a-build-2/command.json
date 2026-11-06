@@ -1,0 +1,90 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "-q",
+    "--junitxml=docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/retry-c5a-build-2/pytest.xml"
+  ],
+  "samples": [
+    {
+      "elapsed": 0.017,
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25137        1593        1166        6821        6403\nSwap:           4095        4095           0\n",
+      "loadavg": "2.48 4.53 5.67 2/3121 1241035",
+      "available_kib": 6557484,
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "python          66.6",
+        "code-insiders   13.0",
+        "code-insiders   10.6",
+        "chrome           5.8",
+        "epp-client-daem  5.7",
+        "code-insiders    5.3",
+        "Xorg             3.6",
+        "code-insiders    2.5",
+        "chrome           2.4",
+        "code-insiders    1.9"
+      ]
+    }
+  ],
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "-q",
+    "--junitxml=docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/retry-c5a-build-2/pytest.xml"
+  ],
+  "before": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25137        1593        1166        6821        6403\nSwap:           4095        4095           0\n",
+    "loadavg": "2.48 4.53 5.67 2/3121 1241035",
+    "available_kib": 6557484,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python          66.6",
+      "code-insiders   13.0",
+      "code-insiders   10.6",
+      "chrome           5.8",
+      "epp-client-daem  5.7",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "chrome           2.4",
+      "code-insiders    1.9"
+    ]
+  },
+  "wait_seconds": 0.017,
+  "start_utc": "2026-11-06T06:55:30.109722+00:00",
+  "elapsed_seconds": 88.315,
+  "end_utc": "2026-11-06T06:56:58.425283+00:00",
+  "exit_code": 1,
+  "after": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24905        1662        1105        6536        6635\nSwap:           4095        4095           0\n",
+    "loadavg": "14.83 8.35 6.93 3/3124 1241984",
+    "available_kib": 6794816,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   12.9",
+      "code-insiders   10.6",
+      "git              6.6",
+      "chrome           5.8",
+      "epp-client-daem  5.7",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "tar              3.4",
+      "code-insiders    2.5",
+      "chrome           2.4"
+    ]
+  }
+}

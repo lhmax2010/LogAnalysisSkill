@@ -3,6 +3,7 @@
 日期:2026-11-05。状态:**恢复第1至4批离线完成;RESTORE-24关闭RESTORE-23,第三/四批最终树3501 passed、0 failed、1既有skip(第45、46节);首次真实发现待另行裁定**。RESTORE-19由RESTORE-20两命令文件交接处置;RESTORE-21由RESTORE-22处置;RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 最新真机试运行:RESTORE-25/27唯一一次qb-discover以DISCOVERY_REPORT_AMBIGUOUS/REPORT_STRUCTURE停止(第49节);未运行dry-run,不重试。RESTORE-26已由RESTORE-27处置。
+当前任务:RESTORE-29离线复现与封闭诊断已实施但未验收(第50节);全仓失败后的第二次单独重跑失败,按SKEL-RESTORE-30停止,未执行真机r02。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
 ## 1. 冻结输入与开工事实
@@ -2720,3 +2721,121 @@ NOT_COLLECTED。state.db、kb.jsonl、ws未创建,未克隆/建档/提交/推送
 design 0 problem、git diff --check通过、生产/测试与97217e0零diff;
 证据目录凭据检查通过、已知本机身份残留0。前后free -m/loadavg及完整argv
 见`live-dryrun-01/final-checks-command.json`。不运行全仓或任何第二次真机命令。
+
+## 50. 实施裁定 SKEL-RESTORE-29:REPORT_STRUCTURE 离线复现与封闭诊断
+
+基线 b7a55d8。裁定原文:
+
+一、离线复现(不登录、不联网)
+1. 用仓内已有的真实脱敏归档,按 qb-discover --build-id 1204735 的实际调用顺序,逐页送入当前生产 discoveryDOM / DiscoveryScope.consume:live-02 的 /build/1204735/overview、/variables,/build/1204736/overview、/variables,/build/1204736/html_report;live-04 的 iframe 页(HTML%20REPORT/index.html)。若当前代码的调用顺序或页面集合与此不同,以代码实际顺序为准并写明。
+2. 记录第一个失败的页面类型与检查项;若失败仅由归档本身的已知缺陷(live-02/02.response.html 被误改的 </thead>)引起,单独标注,不据此修改解析规则,改用其它不受影响的归档页验证同一检查。
+3. 若全部归档均通过而无法复现,写明并进入第二条,不修改解析逻辑。
+
+二、封闭诊断字段(无论是否复现都实施)
+DISCOVERY_REPORT_AMBIGUOUS 及其它发现阶段结构错误的应答增加:page_kind(parent_overview | parent_variables | child_overview | child_variables | report_entry | report | log 之一)与 first_failed_check(固定枚举,至少覆盖 identity_mismatch、child_link_count、variables_missing、iframe_count、header_missing、header_duplicate、arch_unmapped、package_duplicate、cell_multi_link、link_text、link_path),外加相关计数;不输出 URL、页面文本、身份或包名之外的内容(包名可输出)。补 Node/Python 用例逐项断言。
+
+三、修复
+1. 若复现出的失败源于解析假设与真实页面结构不符,按真实结构修正解析规则,并把对应真实归档页作为回归夹具加入测试(只用已脱敏归档,入仓前残留扫描为 0)。
+2. 不得放宽:身份核对、帧归属、精确路径登记、html_report 例外范围、失败单元格“唯一链接且文字为 failed”的规则、read_text 运行时检查。若修复必须放宽其中任一项,停止报告。
+
+四、门禁
+全仓 pytest(不加 -x)、mypy、ruff、lint-imports、design 检查,全部按 SKEL-RESTORE-27 第二条资源限制运行;计时敏感名单按既有规则。
+
+五、再次真机试运行
+门禁通过后回报“等待用户确认开始”;用户回复“开始”后,用与 SKEL-RESTORE-28 相同的命令、新的仓外运行目录(r02)执行一次 qb-discover;成功则接着执行 campaign-discover --manifest ... --dry-run。失败则停止报告(应答中应已含第二条诊断字段),不重试。归档与回报要求同 SKEL-RESTORE-25/27。推送报 Permission denied 时提交后停止,由用户本机推送。
+
+### 50.1 执行边界与修改前复现
+
+只处理本裁定,不复用此前“开始”的真机授权。`qb_collect.collect` 的实际顺序与
+裁定六页一致;使用生产 `TrustedPage.run(discoveryDOM, raw)` 在 about:blank
+隔离环境解析归档,再串行调用生产 `DiscoveryScope.consume`。禁止全部网络请求,
+不执行归档脚本、不登录。脚本与原始结果放在 `evidence/restore/diagnostics-29/`。
+每次浏览器/门禁运行均经 `run_limited.py` 检查资源、最多等待30分钟,
+再用 systemd user scope CPU400%/6GiB/swap0/nice10 串行运行,记录前后资源。
+既有无关工作树改动不纳入本次提交。
+
+### 50.2 复现结论与实现
+
+`replay-before/stdout.txt`与`replay-checks/stdout.txt`:前五页通过,第六页
+`live-04/02.response.html`(report)为首个失败页。Details四列表共259行,
+零基第238行(归档第1482–1485行)是`toybox - details`,原`packageOK`包名检查失败。
+该行四格无链接,紧邻的toybox行三架构均为unresolvable。并非`failed`链接无class的问题,
+也不是live-02/02.response.html的已知坏标签:该父overview直接通过,原始坏标签未改。
+复现没有网络请求;仅本机Chromium/about:blank+隔离DOMParser。
+
+修复仅允许这种紧邻、包名完全对应、前行三列均无链接且unresolvable、说明行无链接
+的说明行不作为包处理;不登记它的日志。不改变普通包名正则,失败单元格仍须唯一
+failed链接。孤立/异名说明行、说明行有链接、前行failed、重复说明行、缺格均拒绝。
+真实六页归档直接作为`test_qb_discovery_archives.mjs`夹具输入,不修改、不复制原文。
+修复后`replay-after`六页通过;报告中的zlib/libtirpc/elfutils可识别,
+这仅为离线结构结果,没有读取任何真实包日志,不提前推断analyzer分类。
+
+封闭诊断:代理结构错误应答增加page_kind/first_failed_check/counts;
+Python严格校验类型、枚举、计数键与0至2^53-1的非布尔整数范围,错误落入
+QB_BROWSER_UNAVAILABLE协议错误。有效字段保留在QbBrowserError.discovery_facts,
+沿既有failure_facts进入CLI的failure及驱动trace;既有错误码映射不变。
+counts只允许actual_count、expected_count、row_index、column_index,不含文本/URL。
+枚举表和用例见本轮README与tests/unit/test_qb_discovery_diagnostics.py。
+
+配置页枚举缺口已询问用户,原话:**“批准增加 configuration”**。
+因此page_kind为原七种加configuration,不把--since配置页错误混称parent_overview;
+已写design.md第4.6节恢复项落地裁定第13条。无其它授权扩展。
+
+开发定向检查原记录保留:focused为51失败/21通过(新增诊断校验在JSON解码前引用response,
+本次实现错误已修);focused-2为1失败/71通过(新增测试误认为驱动不映射Build ID错误,
+实际既有契约为QB_FETCH_FAILED且agent_code保留QB_READ_ID_MISMATCH,只修新测试)。
+这两次均为开发定向检查,非完整门禁;未改既有断言或放宽计时阈值。
+
+### 50.3 门禁与停止报告 SKEL-RESTORE-30
+
+证据根目录为`evidence/restore/diagnostics-29/`。全部运行串行、CPU400%、
+MemoryMax6GiB、MemorySwapMax0、nice10;资源不足先等待,没有放宽限制。
+
+| 检查 | 实际结果 | 证据子目录 |
+| --- | --- | --- |
+| mypy | 172文件,exit0 | mypy |
+| ruff | 完整待提交代码检查通过 | ruff |
+| import-linter | 7 kept / 0 broken | imports |
+| design检查 | 0 problem | design |
+| 代理静态/单元 | 183 Node测试通过,pytest包装1通过 | static |
+| 四组拦截安全 | 4/4,pytest包装1通过 | safety |
+| collect | 3550 nodeid,既有3502全保留,新增48 | collect |
+| 完整pytest,无-x | 3548通过 / 1失败 / 1既有skip,1477.96秒 | full |
+| build单独重跑1 | 1通过,26.61秒 | retry-c5a-build-1 |
+| build单独重跑2 | 1失败,87.93秒 | retry-c5a-build-2 |
+| build单独重跑3 | 未运行:任一次失败即停 | 不适用 |
+
+全仓唯一失败为`test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]`:
+假qb-trigger子进程150秒TimeoutExpired,假服务器received为空,没有agent日志。
+清单允许的独立重跑第二次又失败,未满足3次全通过,不把门禁算通过。
+本轮新增用例及C8调查包装在完整门禁中通过,没有新增skip或修改旧断言。
+
+| 运行 | 前available MiB / load1 | 后available MiB / load1 |
+| --- | --- | --- |
+| full | 6658 / 3.37 | 6420 / 3.29 |
+| retry2 | 6403 / 2.48 | 6635 / 14.83 |
+
+每次完整free -m、三项loadavg、CPU核数及CPU前十进程名/占用见对应command.json;
+retry1及其它门禁同样留存。后负载升高不构成放宽门禁依据。
+
+读取失败观测表新增一行(不替换此前观测):
+
+| 采样 | 阶段与断言原文 | harness_failure | trace | 处置 |
+| --- | --- | --- | --- | --- |
+| RESTORE29 retry-c5a-build-2 | fill返回QB_BROWSER_UNAVAILABLE/UNKNOWN;close断言`assert 0 <= close_seconds < 5`,实际20.91734027862549 | 未提供该字段 | OPERATION_FAILED=0;AGENT_STOPPED=1,UNKNOWN | 停止,不归因为已确认的纯计时问题 |
+
+代理close_started/close_finished差18.400秒;服务器submissions为空、builds=0,
+仅本机夹具,没有真实提交。事后发现`/dev/shm/p5q-browser-3ByKn8`残留,
+mtime为2026-11-06 14:35:45 +08:00;未擅自清理或结束进程。
+证据检查最初因残留断言失败,原记录保留;之后改为如实记录,不是把清理算通过。
+
+[停止报告](evidence/restore/diagnostics-29/stop-report-SKEL-RESTORE-30.md)
+保留本轮未验收实现与原始失败。未启动r02、未要求登录、未运行真实QuickBuild/Gerrit/gbs,
+未写任何专用状态库。下一步须设计方裁定,不复用过去的“开始”。
+
+完整性记录见本轮`integrity-and-archive-scan.json`:代理前缀前后相同
+(`594107e04912b90ef803b3f2a1142b5b42afab83399829dba4e3c8e95664095c`),
+完整门禁后的生产/测试源文件无变化。六份真实归档不修改且复检身份残留0。
+收集输出与完整pytest XML中与身份字符串重合的测试标识符做脱敏,不改失败正文;
+前后hash记录于`test-identifier-redaction.json`,nodeid比较对两侧作同样替换。
+残留profile进程引用检查未发现携带该类user-data-dir参数的进程,不推断目录可删除。

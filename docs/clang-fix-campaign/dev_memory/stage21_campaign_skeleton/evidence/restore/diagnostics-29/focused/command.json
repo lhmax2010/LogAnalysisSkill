@@ -1,0 +1,56 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_qb_discovery_diagnostics.py",
+    "tests/unit/test_qb_collect.py",
+    "tests/unit/test_qb_discovery_node.py",
+    "-q",
+    "-s",
+    "--junitxml=docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/focused/pytest.xml"
+  ],
+  "samples": [
+    {
+      "elapsed": 0.002,
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24354         911        1137        7879        7186\nSwap:           4095        4095           0\n",
+      "loadavg": "3.61 4.49 4.70 4/3075 1120605",
+      "available_kib": 7360628
+    }
+  ],
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_qb_discovery_diagnostics.py",
+    "tests/unit/test_qb_collect.py",
+    "tests/unit/test_qb_discovery_node.py",
+    "-q",
+    "-s",
+    "--junitxml=docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/focused/pytest.xml"
+  ],
+  "before": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24354         911        1137        7879        7186\nSwap:           4095        4095           0\n",
+    "loadavg": "3.61 4.49 4.70 4/3075 1120605",
+    "available_kib": 7360628
+  },
+  "wait_seconds": 0.002,
+  "start_utc": "2026-11-06T06:22:57.184747+00:00",
+  "end_utc": "2026-11-06T06:25:25.449370+00:00",
+  "exit_code": 1,
+  "after": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24776         617        1135        7739        6764\nSwap:           4095        4095           0\n",
+    "loadavg": "6.04 5.50 5.06 2/3083 1125808",
+    "available_kib": 6927164
+  }
+}

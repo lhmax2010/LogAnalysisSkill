@@ -2852,6 +2852,11 @@ campaign-repair-step 首轮推进与 suppress-policy 子命令按骨架设计文
     禁止HTTP(S)、node/浏览器、真实gbs及其它外部进程,intake.add_unit不改。
     仅非安全面的测试措辞与未修改既有路径冲突可登记后按既有行为处理;
     网络、代理、脱敏与拒绝规则冲突仍停止报告。
+13. 按SKEL-RESTORE-29与用户补充确认,发现结构错误增加封闭的page_kind、
+    first_failed_check及非负整数计数;page_kind另含configuration(用户原话:
+    “批准增加 configuration”),不将配置页误报为父构建页。Details表允许已取证的
+    紧邻unresolvable包的无链接“包名 - details”说明行,不把该说明行作为包或日志来源;
+    不改变失败单元格唯一failed链接、身份核对、精确路径及read_text安全检查。
 
 本批不改变发现阶段的浏览器白名单;该项仍须按SKEL-RESTORE-01第三.1条
 先做URL形态取证,停止等待裁定后才可实施。

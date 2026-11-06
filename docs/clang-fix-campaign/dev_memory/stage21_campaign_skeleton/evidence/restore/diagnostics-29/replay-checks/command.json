@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "/home/linhao/.local/bin/node",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/replay.mjs"
+  ],
+  "samples": [
+    {
+      "elapsed": 0.003,
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24323        1040        1206        7856        7217\nSwap:           4095        4095           0\n",
+      "loadavg": "3.70 5.25 4.93 3/3094 1119172",
+      "available_kib": 7394400
+    }
+  ],
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    "/home/linhao/.local/bin/node",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/replay.mjs"
+  ],
+  "before": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24323        1040        1206        7856        7217\nSwap:           4095        4095           0\n",
+    "loadavg": "3.70 5.25 4.93 3/3094 1119172",
+    "available_kib": 7394400
+  },
+  "wait_seconds": 0.003,
+  "start_utc": "2026-11-06T06:18:20.487193+00:00",
+  "end_utc": "2026-11-06T06:19:09.092752+00:00",
+  "exit_code": 4,
+  "after": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24432         790        1169        8101        7108\nSwap:           4095        4095           0\n",
+    "loadavg": "4.33 5.19 4.93 3/3082 1119483",
+    "available_kib": 7279088
+  }
+}

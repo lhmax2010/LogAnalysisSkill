@@ -1,0 +1,91 @@
+{
+  "received": [
+    {
+      "method": "GET",
+      "path": "/signin",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "POST",
+      "path": "/signin?0-1.IFormSubmitListener-content-form",
+      "status": 302,
+      "body": "<SYNTHETIC_LOGIN_REDACTED>"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/overview/1917",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?41-1.ILinkListener-run",
+      "status": 302,
+      "body": ""
+    },
+    {
+      "method": "GET",
+      "path": "/wicket/page?41",
+      "status": 200,
+      "body": ""
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?41-1.IBehaviorListener.0-form-field-0&random=0.8232711911058918",
+      "status": 200,
+      "body": "field=BUILD_TYPE&value=opaque-0-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?42-1.IBehaviorListener.0-form-field-1&random=0.41547332591787745",
+      "status": 200,
+      "body": "field=REPO_TYPE&value=opaque-1-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?43-1.IBehaviorListener.0-form-field-2&random=0.3194802960120736",
+      "status": 200,
+      "body": "field=BUILD_REFERENCE&value=opaque-2-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?44-1.IBehaviorListener.0-form-field-3&random=0.5084393925521503",
+      "status": 200,
+      "body": "field=SNAPSHOT_NUM&value=opaque-3-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?45-1.IBehaviorListener.0-form-field-4&random=0.7731122565857567",
+      "status": 200,
+      "body": "field=PROJECT_BRANCH&value=opaque-4-0"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?46-1.IBehaviorListener.0-form-field-5&random=0.9500866715200993",
+      "status": 200,
+      "body": "field=Immediate+Stop+With+Error&value=on"
+    },
+    {
+      "method": "POST",
+      "path": "/wicket/page?47-1.IBehaviorListener.0-form-field-6&random=0.016797801181425265",
+      "status": 200,
+      "body": "field=CHILD_CONFIGURATIONS&value=7374616e646172642d61726d76376c3a616172636836343a7838365f3634"
+    }
+  ],
+  "submissions": [],
+  "builds": 0,
+  "errors": []
+}

@@ -31,6 +31,17 @@ _COMMANDS = frozenset({"login", "open_form", "fill", "read", "submit", "close",
                        "discovery_start", "discovery_read", "read_text"})
 _DISCOVERY_ERRORS = frozenset({"DISCOVERY_REPORT_AMBIGUOUS", "DISCOVERY_LOG_UNREADABLE",
                              "QB_TEXT_ENCODING_UNSUPPORTED", "QB_DOWNLOAD_UNSUPPORTED"})
+DISCOVERY_PAGE_KINDS = frozenset({
+    "parent_overview", "parent_variables", "child_overview", "child_variables",
+    "report_entry", "report", "log", "configuration",
+})
+DISCOVERY_CHECKS = frozenset({
+    "identity_mismatch", "child_link_count", "variables_missing", "iframe_count",
+    "header_missing", "header_duplicate", "arch_unmapped", "package_duplicate",
+    "cell_multi_link", "link_text", "link_path", "structure_invalid", "table_count",
+    "cell_count", "package_name", "row_limit", "variable_duplicate", "package_count",
+})
+DISCOVERY_COUNT_KEYS = frozenset({"actual_count", "expected_count", "row_index", "column_index"})
 _PATH_SHAPES = frozenset(
     {"/", "/dashboard", "/wicket/page", "/signin", "<other>", "/overview/<id>"}
     | {f"/build/<id>{suffix}" for suffix in ("", "/overview", "/variables", "/step_status")}
@@ -81,6 +92,7 @@ class QbBrowserError(RuntimeError):
         self.agent_exit_code: int | None = None
         self.trace_written = False
         self.reason: str | None = None
+        self.discovery_facts: dict[str, Any] | None = None
 
     def failure_facts(self) -> dict[str, Any]:
         facts: dict[str, Any] = {
@@ -100,7 +112,23 @@ class QbBrowserError(RuntimeError):
         }
         if self.login_facts is not None:
             facts["login_facts"] = self.login_facts
+        if self.discovery_facts is not None:
+            facts.update(self.discovery_facts)
         return facts
+
+
+def validate_discovery_facts(value: dict[str, Any]) -> dict[str, Any]:
+    page, check, counts = (
+        value.get(key) for key in ("page_kind", "first_failed_check", "counts")
+    )
+    if (
+        not isinstance(page, str) or page not in DISCOVERY_PAGE_KINDS
+        or not isinstance(check, str) or check not in DISCOVERY_CHECKS
+        or not isinstance(counts, dict) or not counts.keys() <= DISCOVERY_COUNT_KEYS
+        or any(type(n) is not int or not 0 <= n <= 2**53 - 1 for n in counts.values())
+    ):
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    return {"page_kind": page, "first_failed_check": check, "counts": dict(counts)}
 
 
 def validate_login_facts(value: object) -> dict[str, Any]:
@@ -197,11 +225,27 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
     """Retain fixed diagnostic metadata without changing existing error mapping."""
     category = None
     login_facts = None
+    discovery_facts = None
     try:
         response = json.loads(raw)
     except (ValueError, TypeError):
         response = None
     try:
+        if (
+            isinstance(response, dict)
+            and {"page_kind", "first_failed_check", "counts"} & response.keys()
+        ):
+            if (
+                command not in {"discovery_read", "read_text"}
+                or response.get("ok") is not False
+                or not isinstance(response.get("error"), str)
+                or response.get("error") not in _DISCOVERY_ERRORS | {"QB_READ_ID_MISMATCH"}
+                or _sensitive_key(response)
+            ):
+                if submit_sent:
+                    return _unknown()
+                raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+            discovery_facts = validate_discovery_facts(response)
         if isinstance(response, dict) and "login_facts" in response:
             if (
                 command != "login"
@@ -230,6 +274,7 @@ def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[s
         exc.command = command if command in _COMMANDS else None
         exc.failure_category = category
         exc.login_facts = login_facts
+        exc.discovery_facts = discovery_facts
         if isinstance(response, dict) and not _sensitive_key(response):
             code = response.get("error")
             if isinstance(code, str) and code in _AGENT_CODES:

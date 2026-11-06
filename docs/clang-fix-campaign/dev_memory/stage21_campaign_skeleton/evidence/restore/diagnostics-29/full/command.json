@@ -1,0 +1,90 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/",
+    "-q",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/full/pytest.xml"
+  ],
+  "samples": [
+    {
+      "elapsed": 0.016,
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24882         921        1186        7754        6658\nSwap:           4095        4094           1\n",
+      "loadavg": "3.37 4.66 4.84 3/3056 1133383",
+      "available_kib": 6817920,
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "python          33.3",
+        "code-insiders   14.8",
+        "code-insiders   10.5",
+        "chrome           5.8",
+        "epp-client-daem  5.6",
+        "code-insiders    5.3",
+        "Xorg             3.6",
+        "code-insiders    2.5",
+        "chrome           2.3",
+        "code-insiders    1.7"
+      ]
+    }
+  ],
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/",
+    "-q",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/full/pytest.xml"
+  ],
+  "before": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24882         921        1186        7754        6658\nSwap:           4095        4094           1\n",
+    "loadavg": "3.37 4.66 4.84 3/3056 1133383",
+    "available_kib": 6817920,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python          33.3",
+      "code-insiders   14.8",
+      "code-insiders   10.5",
+      "chrome           5.8",
+      "epp-client-daem  5.6",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "chrome           2.3",
+      "code-insiders    1.7"
+    ]
+  },
+  "wait_seconds": 0.016,
+  "start_utc": "2026-11-06T06:30:01.102394+00:00",
+  "elapsed_seconds": 1484.897,
+  "end_utc": "2026-11-06T06:54:45.999620+00:00",
+  "exit_code": 1,
+  "after": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25119         620        1149        7794        6420\nSwap:           4095        4095           0\n",
+    "loadavg": "3.29 5.01 5.88 2/3115 1239423",
+    "available_kib": 6566424,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   13.0",
+      "code-insiders   10.6",
+      "chrome           5.8",
+      "epp-client-daem  5.7",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "chrome           2.4",
+      "chrome           2.0",
+      "code-insiders    1.9"
+    ]
+  }
+}

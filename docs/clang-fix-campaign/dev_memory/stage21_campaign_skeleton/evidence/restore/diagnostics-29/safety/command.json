@@ -1,0 +1,90 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety",
+    "-q",
+    "-s"
+  ],
+  "samples": [
+    {
+      "elapsed": 0.018,
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24581        1021        1206        7613        6958\nSwap:           4095        4095           0\n",
+      "loadavg": "5.15 5.15 5.00 3/3068 1131367",
+      "available_kib": 7125956,
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "ps               100",
+        "python          33.3",
+        "code-insiders   14.8",
+        "code-insiders   10.5",
+        "chrome           5.8",
+        "epp-client-daem  5.6",
+        "code-insiders    5.3",
+        "Xorg             3.6",
+        "code-insiders    2.5",
+        "chrome           2.3"
+      ]
+    }
+  ],
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    ".venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_qb_browser_node.py::test_node_c2b_local_https_safety",
+    "-q",
+    "-s"
+  ],
+  "before": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24581        1021        1206        7613        6958\nSwap:           4095        4095           0\n",
+    "loadavg": "5.15 5.15 5.00 3/3068 1131367",
+    "available_kib": 7125956,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "ps               100",
+      "python          33.3",
+      "code-insiders   14.8",
+      "code-insiders   10.5",
+      "chrome           5.8",
+      "epp-client-daem  5.6",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "chrome           2.3"
+    ]
+  },
+  "wait_seconds": 0.018,
+  "start_utc": "2026-11-06T06:29:06.660718+00:00",
+  "elapsed_seconds": 34.083,
+  "end_utc": "2026-11-06T06:29:40.743953+00:00",
+  "exit_code": 0,
+  "after": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25344         507        1181        7702        6196\nSwap:           4095        4095           0\n",
+    "loadavg": "3.91 4.84 4.90 3/3058 1133309",
+    "available_kib": 6345376,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "ps               100",
+      "code-insiders   14.8",
+      "code-insiders   10.5",
+      "chrome           5.8",
+      "epp-client-daem  5.6",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "chrome           2.3",
+      "code-insiders    1.7"
+    ]
+  }
+}

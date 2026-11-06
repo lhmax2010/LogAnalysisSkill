@@ -1,0 +1,21 @@
+[
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/tests/fixtures/p5q_cli_clock.py",
+      "qb-trigger",
+      "--verification-ids",
+      "u1-v0,u1-v1,u1-v2",
+      "--state-db",
+      "/tmp/pytest-of-linhao/pytest-31/test_real_cli_browser_submit_b0/state.db",
+      "--state-root",
+      "/tmp/pytest-of-linhao/pytest-31/test_real_cli_browser_submit_b0/state",
+      "--config",
+      "/tmp/pytest-of-linhao/pytest-31/test_real_cli_browser_submit_b0/config.yaml"
+    ],
+    "exit": 5,
+    "stdout": "[{\"action\": \"rejected\", \"campaign_unit_key\": \"u1\", \"diagnostic_dir\": null, \"error_code\": \"QB_BROWSER_UNAVAILABLE\", \"message\": null, \"qb_build_id\": null, \"request_id\": \"8eecb5da163a407d8bb02608ee627c9d\", \"request_seq\": null, \"sbs_target\": \"u1@a97acc260d52515199247d53577d2979a51093d5\", \"status\": \"SANDBOX_PUSHED\"}]\n",
+    "stderr": "已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。\nQB_AGENT_STOPPED category=UNKNOWN\n",
+    "close_to_cli_exit_seconds": 20.91734027862549
+  }
+]

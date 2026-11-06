@@ -1,0 +1,92 @@
+{
+  "argv": [
+    ".venv/bin/ruff",
+    "format",
+    "tests/unit/test_qb_discovery_diagnostics.py",
+    "tests/unit/test_qb_discovery_node.py",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/run_limited.py",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/run_gates.py"
+  ],
+  "samples": [
+    {
+      "elapsed": 0.021,
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25078         658        1147        7782        6462\nSwap:           4095        4095           0\n",
+      "loadavg": "4.99 5.20 5.00 6/3089 1130759",
+      "available_kib": 6620764,
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "python          50.0",
+        "code-insiders   15.0",
+        "code-insiders   10.4",
+        "chrome           5.8",
+        "epp-client-daem  5.6",
+        "code-insiders    5.3",
+        "Xorg             3.6",
+        "code-insiders    2.5",
+        "chrome           2.3",
+        "code-insiders    1.7"
+      ]
+    }
+  ],
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    ".venv/bin/ruff",
+    "format",
+    "tests/unit/test_qb_discovery_diagnostics.py",
+    "tests/unit/test_qb_discovery_node.py",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/run_limited.py",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/diagnostics-29/run_gates.py"
+  ],
+  "before": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25078         658        1147        7782        6462\nSwap:           4095        4095           0\n",
+    "loadavg": "4.99 5.20 5.00 6/3089 1130759",
+    "available_kib": 6620764,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python          50.0",
+      "code-insiders   15.0",
+      "code-insiders   10.4",
+      "chrome           5.8",
+      "epp-client-daem  5.6",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "chrome           2.3",
+      "code-insiders    1.7"
+    ]
+  },
+  "wait_seconds": 0.021,
+  "start_utc": "2026-11-06T06:27:17.948427+00:00",
+  "elapsed_seconds": 4.927,
+  "end_utc": "2026-11-06T06:27:22.875548+00:00",
+  "exit_code": 0,
+  "after": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25071         637        1151        7814        6469\nSwap:           4095        4095           0\n",
+    "loadavg": "4.83 5.16 4.99 3/3092 1130809",
+    "available_kib": 6623520,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   15.0",
+      "code-insiders   10.4",
+      "chrome           5.8",
+      "epp-client-daem  5.6",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "chrome           2.3",
+      "code-insiders    1.7",
+      "gnome-shell      1.7"
+    ]
+  }
+}

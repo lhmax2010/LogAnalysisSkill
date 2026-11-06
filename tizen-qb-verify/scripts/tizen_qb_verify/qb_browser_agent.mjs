@@ -712,6 +712,11 @@ export class Agent {
       if (command === 'submit' && this.policy.released) return { ok: true, landed: 'unknown', released: true, observed: '<other>', messages: [] };
       const response = { ok: false, error: error instanceof AgentError || error instanceof DiscoveryError ? error.code : 'QB_BROWSER_UNAVAILABLE' };
       if (error instanceof DiscoveryError && error.reason) response.reason = error.reason;
+      if (['discovery_read', 'read_text'].includes(command) && error.page_kind) {
+        response.page_kind = error.page_kind;
+        response.first_failed_check = error.first_failed_check;
+        response.counts = error.counts;
+      }
       if (command === 'login' && ['QB_LOGIN_TIMEOUT', 'QB_LOGIN_ABORTED'].includes(response.error)) {
         response.login_facts = this.loginFacts;
       }
@@ -872,7 +877,12 @@ export class Agent {
     const raw = await this.discoveryNavigate(path);
     if (/^\/build\//.test(path)) {
       const id = path.split('/')[2];
-      if (await this.buildId(path, raw) !== id) throw new AgentError('QB_READ_ID_MISMATCH');
+      if (await this.buildId(path, raw) !== id) {
+        const error = new AgentError('QB_READ_ID_MISMATCH');
+        error.page_kind = this.policy.discoveryScope.pageKind(path);
+        error.first_failed_check = 'identity_mismatch'; error.counts = {};
+        throw error;
+      }
     }
     const facts = await this.trusted.run(discoveryDOM, raw);
     const discovery = this.policy.discoveryScope.consume(path, facts);

@@ -1,0 +1,82 @@
+.............................................F...............{"page_kinds":["parent_overview","parent_variables","child_overview","child_variables","report_entry","report","log","configuration"],"checks":["identity_mismatch","child_link_count","variables_missing","iframe_count","header_missing","header_duplicate","arch_unmapped","package_duplicate","cell_multi_link","link_text","link_path","structure_invalid","table_count","cell_count","package_name","row_limit","variable_duplicate","package_count"],"count_keys":["actual_count","expected_count","row_index","column_index"]}
+✔ parent_overview: first check identity_mismatch (1.625569ms)
+✔ parent_overview: first check child_link_count (0.221243ms)
+✔ parent_variables: first check variables_missing (0.114873ms)
+✔ child_variables: first check variables_missing (0.108161ms)
+✔ child_overview: first check identity_mismatch (0.128359ms)
+✔ report_entry: first check iframe_count (3.360046ms)
+✔ report_entry: first check link_path (0.199469ms)
+✔ report: first check header_missing (0.266162ms)
+✔ report: first check header_duplicate (0.141127ms)
+✔ report: first check package_duplicate (0.299768ms)
+✔ report: first check cell_multi_link (0.137674ms)
+✔ report: first check package_name (0.09926ms)
+✔ report: first check cell_count (0.080234ms)
+✔ report: first check table_count (0.059891ms)
+✔ report: first check link_text (0.094546ms)
+✔ configuration: first check identity_mismatch (0.062997ms)
+✔ log arch gate stays closed and emits arch_unmapped (0.262887ms)
+✔ build identity failure keeps its error code and returns fixed discovery facts (0.181145ms)
+✔ closed diagnostic response identity_mismatch (0.053096ms)
+✔ closed diagnostic response child_link_count (0.029057ms)
+✔ closed diagnostic response variables_missing (0.023885ms)
+✔ closed diagnostic response iframe_count (0.024823ms)
+✔ closed diagnostic response header_missing (0.023167ms)
+✔ closed diagnostic response header_duplicate (0.023498ms)
+✔ closed diagnostic response arch_unmapped (0.022621ms)
+✔ closed diagnostic response package_duplicate (0.023133ms)
+✔ closed diagnostic response cell_multi_link (0.021997ms)
+✔ closed diagnostic response link_text (0.024481ms)
+✔ closed diagnostic response link_path (0.032754ms)
+✔ closed diagnostic response structure_invalid (0.024373ms)
+✔ closed diagnostic response table_count (0.02268ms)
+✔ closed diagnostic response cell_count (0.026753ms)
+✔ closed diagnostic response package_name (0.021087ms)
+✔ closed diagnostic response row_limit (0.029947ms)
+✔ closed diagnostic response variable_duplicate (0.022016ms)
+✔ closed diagnostic response package_count (0.023053ms)
+✔ diagnostic enums exported for driver parity (0.330772ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13.421328
+
+.{"pages":6,"passed":6,"explanation_rows":1,"rejected_mutations":6,"network_requests":0}
+
+.{"mode":"ok","commands":[{"command":"login","ok":true},{"command":"discovery_start","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"read_text","ok":true}],"requests":[{"method":"GET","path":"/signin"},{"method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form"},{"method":"GET","path":"/dashboard"},{"method":"GET","path":"/build/1193467/overview"},{"method":"GET","path":"/build/1193469/overview"},{"method":"GET","path":"/build/1193469/variables"},{"method":"GET","path":"/build/1193469/html_report"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/index.html"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/logfiles/standard/armv7l/zlib.txt"}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"PAGE_CLOSED","elapsed_ms":906},{"action":"BROWSER_DISCONNECTED","elapsed_ms":917},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"phase":"read","path":"/download/<id>/html/<report>","action":"DENIED"},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}]}
+
+.{"mode":"ambiguous","commands":[{"command":"login","ok":true},{"command":"discovery_start","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":false,"error":"DISCOVERY_REPORT_AMBIGUOUS","reason":"REPORT_STRUCTURE"}],"requests":[{"method":"GET","path":"/signin"},{"method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form"},{"method":"GET","path":"/dashboard"},{"method":"GET","path":"/build/1193467/overview"},{"method":"GET","path":"/build/1193469/overview"},{"method":"GET","path":"/build/1193469/variables"},{"method":"GET","path":"/build/1193469/html_report"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/index.html"}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"PAGE_CLOSED","elapsed_ms":18418},{"action":"BROWSER_DISCONNECTED","elapsed_ms":18425},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"phase":"read","path":"/download/<id>/html/<report>","action":"DENIED"},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}]}
+
+.{"mode":"status","commands":[{"command":"login","ok":true},{"command":"discovery_start","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"read_text","ok":false,"error":"DISCOVERY_LOG_UNREADABLE","reason":"HTTP_STATUS"}],"requests":[{"method":"GET","path":"/signin"},{"method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form"},{"method":"GET","path":"/dashboard"},{"method":"GET","path":"/build/1193467/overview"},{"method":"GET","path":"/build/1193469/overview"},{"method":"GET","path":"/build/1193469/variables"},{"method":"GET","path":"/build/1193469/html_report"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/index.html"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/logfiles/standard/armv7l/zlib.txt"}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"PAGE_CLOSED","elapsed_ms":767},{"action":"BROWSER_DISCONNECTED","elapsed_ms":775},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"phase":"read","path":"/download/<id>/html/<report>","action":"DENIED"},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}]}
+
+.{"mode":"redirect","commands":[{"command":"login","ok":true},{"command":"discovery_start","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"read_text","ok":false,"error":"DISCOVERY_LOG_UNREADABLE","reason":"REDIRECT"}],"requests":[{"method":"GET","path":"/signin"},{"method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form"},{"method":"GET","path":"/dashboard"},{"method":"GET","path":"/build/1193467/overview"},{"method":"GET","path":"/build/1193469/overview"},{"method":"GET","path":"/build/1193469/variables"},{"method":"GET","path":"/build/1193469/html_report"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/index.html"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/logfiles/standard/armv7l/zlib.txt"}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"PAGE_CLOSED","elapsed_ms":735},{"action":"BROWSER_DISCONNECTED","elapsed_ms":743},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"phase":"read","path":"/download/<id>/html/<report>","action":"DENIED"},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"phase":"read","path":"/download/<id>/html/<report>/<package-log>","action":"DENIED"}]}
+
+.{"mode":"encoding","commands":[{"command":"login","ok":true},{"command":"discovery_start","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"read_text","ok":false,"error":"QB_TEXT_ENCODING_UNSUPPORTED","reason":"ENCODING"}],"requests":[{"method":"GET","path":"/signin"},{"method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form"},{"method":"GET","path":"/dashboard"},{"method":"GET","path":"/build/1193467/overview"},{"method":"GET","path":"/build/1193469/overview"},{"method":"GET","path":"/build/1193469/variables"},{"method":"GET","path":"/build/1193469/html_report"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/index.html"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/logfiles/standard/armv7l/zlib.txt"}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"PAGE_CLOSED","elapsed_ms":895},{"action":"BROWSER_DISCONNECTED","elapsed_ms":903},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"phase":"read","path":"/download/<id>/html/<report>","action":"DENIED"},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}]}
+
+.{"mode":"attachment","commands":[{"command":"login","ok":true},{"command":"discovery_start","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"read_text","ok":false,"error":"QB_DOWNLOAD_UNSUPPORTED","reason":"DOWNLOAD"}],"requests":[{"method":"GET","path":"/signin"},{"method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form"},{"method":"GET","path":"/dashboard"},{"method":"GET","path":"/build/1193467/overview"},{"method":"GET","path":"/build/1193469/overview"},{"method":"GET","path":"/build/1193469/variables"},{"method":"GET","path":"/build/1193469/html_report"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/index.html"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/logfiles/standard/armv7l/zlib.txt"}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"PAGE_CLOSED","elapsed_ms":816},{"action":"BROWSER_DISCONNECTED","elapsed_ms":825},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"phase":"read","path":"/download/<id>/html/<report>","action":"DENIED"},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}]}
+
+.{"mode":"binary","commands":[{"command":"login","ok":true},{"command":"discovery_start","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"read_text","ok":false,"error":"DISCOVERY_LOG_UNREADABLE","reason":"CONTENT_TYPE"}],"requests":[{"method":"GET","path":"/signin"},{"method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form"},{"method":"GET","path":"/dashboard"},{"method":"GET","path":"/build/1193467/overview"},{"method":"GET","path":"/build/1193469/overview"},{"method":"GET","path":"/build/1193469/variables"},{"method":"GET","path":"/build/1193469/html_report"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/index.html"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/logfiles/standard/armv7l/zlib.txt"}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"PAGE_CLOSED","elapsed_ms":792},{"action":"BROWSER_DISCONNECTED","elapsed_ms":802},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"phase":"read","path":"/download/<id>/html/<report>","action":"DENIED"},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}]}
+
+.{"mode":"large","commands":[{"command":"login","ok":true},{"command":"discovery_start","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"discovery_read","ok":true},{"command":"read_text","ok":false,"error":"DISCOVERY_LOG_UNREADABLE","reason":"TOO_LARGE"}],"requests":[{"method":"GET","path":"/signin"},{"method":"POST","path":"/signin?0-1.IFormSubmitListener-content-form"},{"method":"GET","path":"/dashboard"},{"method":"GET","path":"/build/1193467/overview"},{"method":"GET","path":"/build/1193469/overview"},{"method":"GET","path":"/build/1193469/variables"},{"method":"GET","path":"/build/1193469/html_report"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/index.html"},{"method":"GET","path":"/download/1193469/html/HTML%20REPORT/logfiles/standard/armv7l/zlib.txt"}],"trace":[{"action":"FRAMEWORK_SELF_TEST","playwright_version":"1.58.2","counts":[1,1,1]},{"action":"PAGE_CLOSED","elapsed_ms":916},{"action":"BROWSER_DISCONNECTED","elapsed_ms":927},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"phase":"read","path":"/download/<id>/html/<report>","action":"DENIED"},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0},{"action":"IDENTITY_OUTSIDE_REGISTERED","count":0}]}
+
+..
+=================================== FAILURES ===================================
+________________ test_discovery_build_identity_keeps_error_code ________________
+
+    def test_discovery_build_identity_keeps_error_code():
+        with pytest.raises(QbBrowserError) as caught:
+            decode(response(error="QB_READ_ID_MISMATCH", first_failed_check="identity_mismatch"))
+>       assert caught.value.code == "QB_READ_ID_MISMATCH"
+E       AssertionError: assert 'QB_FETCH_FAILED' == 'QB_READ_ID_MISMATCH'
+E         
+E         - QB_READ_ID_MISMATCH
+E         + QB_FETCH_FAILED
+
+tests/unit/test_qb_discovery_diagnostics.py:88: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_qb_discovery_diagnostics.py::test_discovery_build_identity_keeps_error_code
+1 failed, 71 passed in 66.29s (0:01:06)

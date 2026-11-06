@@ -1,0 +1,153 @@
+{
+  "output": {
+    "commands": [
+      {
+        "command": "login",
+        "ok": true
+      },
+      {
+        "command": "discovery_start",
+        "ok": true
+      },
+      {
+        "command": "discovery_read",
+        "ok": true
+      },
+      {
+        "command": "discovery_read",
+        "ok": true
+      },
+      {
+        "command": "discovery_read",
+        "ok": true
+      },
+      {
+        "command": "discovery_read",
+        "ok": true
+      },
+      {
+        "command": "discovery_read",
+        "ok": true
+      },
+      {
+        "command": "discovery_read",
+        "ok": true
+      },
+      {
+        "command": "read_text",
+        "ok": true
+      }
+    ],
+    "error_code": null,
+    "identity_counts": [
+      {
+        "count": 0,
+        "path": "/build/1193467/overview"
+      },
+      {
+        "count": 0,
+        "path": "/build/1193467/variables"
+      },
+      {
+        "count": 0,
+        "path": "/build/1193469/overview"
+      },
+      {
+        "count": 0,
+        "path": "/build/1193469/variables"
+      },
+      {
+        "count": 0,
+        "path": "/build/1193469/html_report"
+      },
+      {
+        "count": 0,
+        "path": "/download/1193469/html/HTML%20REPORT/index.html"
+      }
+    ],
+    "manifests": [
+      "/tmp/pytest-of-linhao/pytest-28/test_real_qb_discover_cli_mani0/state/discovery/1193467/20261106T062701.304817Z-0a8b5rth/discover-manifest.json"
+    ],
+    "outside_recent_window": []
+  },
+  "manifest": {
+    "schema_version": "clang_discover_manifest/v1",
+    "qb_project": "tizen_base",
+    "build_id": "1193467",
+    "child_build_id": "1193469",
+    "captured_at": "2026-11-06T06:27:01.304817+00:00",
+    "report_dir": "HTML REPORT",
+    "packages": [
+      {
+        "spec_name": "zlib",
+        "failed_arches": [
+          "standard-armv7l"
+        ],
+        "primary_arch": "standard-armv7l",
+        "project": "platform/upstream/zlib",
+        "branch": "tizen_base",
+        "base_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "log_path": "logs/zlib.standard-armv7l.txt",
+        "log_sha256": "4093200540186a8fdb4ffb6bb0892f085e87acc19888e64ba357adf227385cb4",
+        "status": "ok",
+        "reason": null
+      }
+    ]
+  },
+  "trace": [
+    {
+      "action": "FRAMEWORK_SELF_TEST",
+      "playwright_version": "1.58.2",
+      "counts": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "action": "PAGE_CLOSED",
+      "elapsed_ms": 2161
+    },
+    {
+      "action": "BROWSER_DISCONNECTED",
+      "elapsed_ms": 2170
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "phase": "read",
+      "path": "/download/<id>/html/<report>",
+      "action": "DENIED"
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "IDENTITY_OUTSIDE_REGISTERED",
+      "count": 0
+    },
+    {
+      "action": "PAGE_CLOSED",
+      "elapsed_ms": 11336
+    },
+    {
+      "action": "BROWSER_DISCONNECTED",
+      "elapsed_ms": 11347
+    }
+  ]
+}

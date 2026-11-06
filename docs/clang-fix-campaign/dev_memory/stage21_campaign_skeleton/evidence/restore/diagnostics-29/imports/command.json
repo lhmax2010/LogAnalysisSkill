@@ -1,0 +1,82 @@
+{
+  "argv": [
+    ".venv/bin/lint-imports"
+  ],
+  "samples": [
+    {
+      "elapsed": 0.016,
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24853         968        1270        7834        6687\nSwap:           4095        4095           0\n",
+      "loadavg": "4.55 5.05 4.97 3/3070 1131128",
+      "available_kib": 6847752,
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "python          50.0",
+        "code-insiders   14.9",
+        "code-insiders   10.5",
+        "chrome           5.8",
+        "epp-client-daem  5.6",
+        "code-insiders    5.3",
+        "Xorg             3.6",
+        "code-insiders    2.5",
+        "chrome           2.3",
+        "code-insiders    1.7"
+      ]
+    }
+  ],
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    ".venv/bin/lint-imports"
+  ],
+  "before": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24853         968        1270        7834        6687\nSwap:           4095        4095           0\n",
+    "loadavg": "4.55 5.05 4.97 3/3070 1131128",
+    "available_kib": 6847752,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python          50.0",
+      "code-insiders   14.9",
+      "code-insiders   10.5",
+      "chrome           5.8",
+      "epp-client-daem  5.6",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "chrome           2.3",
+      "code-insiders    1.7"
+    ]
+  },
+  "wait_seconds": 0.016,
+  "start_utc": "2026-11-06T06:28:51.468931+00:00",
+  "elapsed_seconds": 3.613,
+  "end_utc": "2026-11-06T06:28:55.082268+00:00",
+  "exit_code": 0,
+  "after": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25133         664        1277        7855        6407\nSwap:           4095        4095           0\n",
+    "loadavg": "4.43 5.01 4.96 2/3094 1131223",
+    "available_kib": 6561196,
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "ps               100",
+      "code-insiders   14.9",
+      "code-insiders   10.5",
+      "chrome           5.8",
+      "epp-client-daem  5.6",
+      "code-insiders    5.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "chrome           2.3",
+      "code-insiders    1.7"
+    ]
+  }
+}

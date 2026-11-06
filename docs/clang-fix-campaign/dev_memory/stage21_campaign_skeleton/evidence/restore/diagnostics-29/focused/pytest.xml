@@ -1,0 +1,1764 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="51" skipped="0" tests="72" time="141.938" timestamp="2026-11-06T14:23:03.181838+08:00" hostname="linhao-linux"><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_page_kind_round_trip[child_overview]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">page_kind = 'child_overview'
+
+    @pytest.mark.parametrize("page_kind", sorted(DISCOVERY_PAGE_KINDS))
+    def test_discovery_page_kind_round_trip(page_kind):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(page_kind=page_kind))
+
+tests/unit/test_qb_discovery_diagnostics.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "child_overview", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_page_kind_round_trip[child_variables]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">page_kind = 'child_variables'
+
+    @pytest.mark.parametrize("page_kind", sorted(DISCOVERY_PAGE_KINDS))
+    def test_discovery_page_kind_round_trip(page_kind):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(page_kind=page_kind))
+
+tests/unit/test_qb_discovery_diagnostics.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "child_variables", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_page_kind_round_trip[configuration]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">page_kind = 'configuration'
+
+    @pytest.mark.parametrize("page_kind", sorted(DISCOVERY_PAGE_KINDS))
+    def test_discovery_page_kind_round_trip(page_kind):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(page_kind=page_kind))
+
+tests/unit/test_qb_discovery_diagnostics.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "configuration", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_page_kind_round_trip[log]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">page_kind = 'log'
+
+    @pytest.mark.parametrize("page_kind", sorted(DISCOVERY_PAGE_KINDS))
+    def test_discovery_page_kind_round_trip(page_kind):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(page_kind=page_kind))
+
+tests/unit/test_qb_discovery_diagnostics.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "log", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_page_kind_round_trip[parent_overview]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">page_kind = 'parent_overview'
+
+    @pytest.mark.parametrize("page_kind", sorted(DISCOVERY_PAGE_KINDS))
+    def test_discovery_page_kind_round_trip(page_kind):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(page_kind=page_kind))
+
+tests/unit/test_qb_discovery_diagnostics.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "parent_overview", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_page_kind_round_trip[parent_variables]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">page_kind = 'parent_variables'
+
+    @pytest.mark.parametrize("page_kind", sorted(DISCOVERY_PAGE_KINDS))
+    def test_discovery_page_kind_round_trip(page_kind):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(page_kind=page_kind))
+
+tests/unit/test_qb_discovery_diagnostics.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "parent_variables", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_page_kind_round_trip[report]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">page_kind = 'report'
+
+    @pytest.mark.parametrize("page_kind", sorted(DISCOVERY_PAGE_KINDS))
+    def test_discovery_page_kind_round_trip(page_kind):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(page_kind=page_kind))
+
+tests/unit/test_qb_discovery_diagnostics.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_page_kind_round_trip[report_entry]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">page_kind = 'report_entry'
+
+    @pytest.mark.parametrize("page_kind", sorted(DISCOVERY_PAGE_KINDS))
+    def test_discovery_page_kind_round_trip(page_kind):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(page_kind=page_kind))
+
+tests/unit/test_qb_discovery_diagnostics.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report_entry", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[arch_unmapped]" time="0.001"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9a345160&gt;
+check = 'arch_unmapped'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "arch_unmapped", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[cell_count]" time="0.001"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9a3462d0&gt;
+check = 'cell_count'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "cell_count", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[cell_multi_link]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9a3275f0&gt;
+check = 'cell_multi_link'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "cell_multi_link", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[child_link_count]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9afaf020&gt;
+check = 'child_link_count'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "child_link_count", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[header_duplicate]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9afafdd0&gt;
+check = 'header_duplicate'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "header_duplicate", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[header_missing]" time="0.001"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9afaf5f0&gt;
+check = 'header_missing'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "header_missing", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[identity_mismatch]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9afaedb0&gt;
+check = 'identity_mismatch'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "identity_mismatch", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[iframe_count]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9afafb00&gt;
+check = 'iframe_count'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "iframe_count", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[link_path]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9afad340&gt;
+check = 'link_path'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "link_path", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[link_text]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9b125c70&gt;
+check = 'link_text'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "link_text", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[package_count]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9a345250&gt;
+check = 'package_count'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_count", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[package_duplicate]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9a9643b0&gt;
+check = 'package_duplicate'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_duplicate", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[package_name]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9afae870&gt;
+check = 'package_name'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[row_limit]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9a344b60&gt;
+check = 'row_limit'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "row_limit", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[structure_invalid]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9a344f20&gt;
+check = 'structure_invalid'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "structure_invalid", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[table_count]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9a347320&gt;
+check = 'table_count'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "table_count", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[variable_duplicate]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9afae600&gt;
+check = 'variable_duplicate'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "variable_duplicate", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_check_reaches_cli_and_trace[variables_missing]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f0a9a353380&gt;
+check = 'variables_missing'
+
+    @pytest.mark.parametrize("check", sorted(DISCOVERY_CHECKS))
+    def test_discovery_check_reaches_cli_and_trace(monkeypatch, check):
+        def fail(_args):
+            decode(response(first_failed_check=check))
+    
+        monkeypatch.setattr(qb_collect, "collect", fail)
+        out = io.StringIO()
+&gt;       code = qb_collect.main(
+            ["--config", "unused", "--state-root", "unused", "--qb-project", "tizen_base",
+             "--build-id", "1204735"], stdout=out,
+        )
+
+tests/unit/test_qb_discovery_diagnostics.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py:148: in main
+    result, code = collect(parser.parse_args(argv)), 0
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_qb_discovery_diagnostics.py:39: in fail
+    decode(response(first_failed_check=check))
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "variables_missing", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change0]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'page_kind': 'private-title'}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "private-title", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change1]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'page_kind': []}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": [], "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change2]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'first_failed_check': 'private-error'}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "private-error", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change3]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'first_failed_check': None}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": null, "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change4]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'counts': {'url': 'https://secret.invalid/?token=private'}}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"url": "https://secret.invalid/?token=private"}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change5]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'counts': {'actual_count': True}}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"actual_count": true}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change6]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'counts': {'actual_count': -1}}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"actual_count": -1}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change7]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'counts': {'actual_count': 1.5}}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"actual_count": 1.5}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change8]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'counts': {'actual_count': 9007199254740992}}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"actual_count": 9007199254740992}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change9]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'counts': None}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": null}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change10]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'ok': True}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": true, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_malformed_discovery_diagnostics_are_protocol_error[change11]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">change = {'error': 'QB_BROWSER_UNAVAILABLE'}
+
+    @pytest.mark.parametrize("change", [
+        {"page_kind": "private-title"}, {"page_kind": []},
+        {"first_failed_check": "private-error"}, {"first_failed_check": None},
+        {"counts": {"url": "https://secret.invalid/?token=private"}},
+        {"counts": {"actual_count": True}}, {"counts": {"actual_count": -1}},
+        {"counts": {"actual_count": 1.5}}, {"counts": {"actual_count": 2**53}},
+        {"counts": None}, {"ok": True}, {"error": "QB_BROWSER_UNAVAILABLE"},
+    ])
+    def test_malformed_discovery_diagnostics_are_protocol_error(change):
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(**change))
+
+tests/unit/test_qb_discovery_diagnostics.py:65: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "QB_BROWSER_UNAVAILABLE", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_incomplete_diagnostics_are_protocol_error[page_kind]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">missing = 'page_kind'
+
+    @pytest.mark.parametrize("missing", ["page_kind", "first_failed_check", "counts"])
+    def test_incomplete_diagnostics_are_protocol_error(missing):
+        value = response()
+        del value[missing]
+        with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+&gt;           decode(value)
+
+tests/unit/test_qb_discovery_diagnostics.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_incomplete_diagnostics_are_protocol_error[first_failed_check]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">missing = 'first_failed_check'
+
+    @pytest.mark.parametrize("missing", ["page_kind", "first_failed_check", "counts"])
+    def test_incomplete_diagnostics_are_protocol_error(missing):
+        value = response()
+        del value[missing]
+        with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+&gt;           decode(value)
+
+tests/unit/test_qb_discovery_diagnostics.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_incomplete_diagnostics_are_protocol_error[counts]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">missing = 'counts'
+
+    @pytest.mark.parametrize("missing", ["page_kind", "first_failed_check", "counts"])
+    def test_incomplete_diagnostics_are_protocol_error(missing):
+        value = response()
+        del value[missing]
+        with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+&gt;           decode(value)
+
+tests/unit/test_qb_discovery_diagnostics.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name"}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_diagnostics_cannot_change_other_command_contracts[read]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">command = 'read'
+
+    @pytest.mark.parametrize("command", ["read", "fill", "login", "submit"])
+    def test_discovery_diagnostics_cannot_change_other_command_contracts(command):
+        with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+&gt;           decode(response(), command)
+
+tests/unit/test_qb_discovery_diagnostics.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_diagnostics_cannot_change_other_command_contracts[fill]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">command = 'fill'
+
+    @pytest.mark.parametrize("command", ["read", "fill", "login", "submit"])
+    def test_discovery_diagnostics_cannot_change_other_command_contracts(command):
+        with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+&gt;           decode(response(), command)
+
+tests/unit/test_qb_discovery_diagnostics.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_diagnostics_cannot_change_other_command_contracts[login]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">command = 'login'
+
+    @pytest.mark.parametrize("command", ["read", "fill", "login", "submit"])
+    def test_discovery_diagnostics_cannot_change_other_command_contracts(command):
+        with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+&gt;           decode(response(), command)
+
+tests/unit/test_qb_discovery_diagnostics.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_diagnostics_cannot_change_other_command_contracts[submit]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">command = 'submit'
+
+    @pytest.mark.parametrize("command", ["read", "fill", "login", "submit"])
+    def test_discovery_diagnostics_cannot_change_other_command_contracts(command):
+        with pytest.raises(QbBrowserError, match="QB_BROWSER_UNAVAILABLE"):
+&gt;           decode(response(), command)
+
+tests/unit/test_qb_discovery_diagnostics.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_REPORT_AMBIGUOUS", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "package_name", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_discovery_diagnostics" name="test_discovery_build_identity_keeps_error_code" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">def test_discovery_build_identity_keeps_error_code():
+        with pytest.raises(QbBrowserError) as caught:
+&gt;           decode(response(error="QB_READ_ID_MISMATCH", first_failed_check="identity_mismatch"))
+
+tests/unit/test_qb_discovery_diagnostics.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/unit/test_qb_discovery_diagnostics.py:25: in decode
+    return decode_response(json.dumps(value), submit_sent=False, command=command)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "QB_READ_ID_MISMATCH", "reason": "REPORT_STRUCTURE", "page_kind": "report", "first_failed_check": "identity_mismatch", "counts": {"row_index": 238}}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_collect" name="test_producer_manifest_repeat_no_database_or_analyzer[None-None]" time="0.064" /><testcase classname="tests.unit.test_qb_collect" name="test_producer_manifest_repeat_no_database_or_analyzer[None-2026-10-01]" time="0.056" /><testcase classname="tests.unit.test_qb_collect" name="test_producer_manifest_repeat_no_database_or_analyzer[ENCODING-None]" time="0.048" /><testcase classname="tests.unit.test_qb_collect" name="test_producer_manifest_repeat_no_database_or_analyzer[ENCODING-2026-10-01]" time="0.051" /><testcase classname="tests.unit.test_qb_collect" name="test_producer_manifest_repeat_no_database_or_analyzer[DOWNLOAD-None]" time="0.049" /><testcase classname="tests.unit.test_qb_collect" name="test_producer_manifest_repeat_no_database_or_analyzer[DOWNLOAD-2026-10-01]" time="0.046" /><testcase classname="tests.unit.test_qb_collect" name="test_producer_manifest_repeat_no_database_or_analyzer[TOO_LARGE-None]" time="0.049" /><testcase classname="tests.unit.test_qb_collect" name="test_producer_manifest_repeat_no_database_or_analyzer[TOO_LARGE-2026-10-01]" time="0.047" /><testcase classname="tests.unit.test_qb_collect" name="test_read_text_driver_fixed_errors[QB_TEXT_ENCODING_UNSUPPORTED-ENCODING]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">code = 'QB_TEXT_ENCODING_UNSUPPORTED', reason = 'ENCODING'
+
+    @pytest.mark.parametrize(
+        "code,reason",
+        [
+            ("QB_TEXT_ENCODING_UNSUPPORTED", "ENCODING"),
+            ("QB_DOWNLOAD_UNSUPPORTED", "DOWNLOAD"),
+            ("DISCOVERY_LOG_UNREADABLE", "TOO_LARGE"),
+        ],
+    )
+    def test_read_text_driver_fixed_errors(code, reason):
+        import json
+    
+        with pytest.raises(QbBrowserError) as error:
+&gt;           decode_response(
+                json.dumps(dict(ok=False, error=code, reason=reason)),
+                submit_sent=False,
+                command="read_text",
+            )
+
+tests/unit/test_qb_collect.py:137: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "QB_TEXT_ENCODING_UNSUPPORTED", "reason": "ENCODING"}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_collect" name="test_read_text_driver_fixed_errors[QB_DOWNLOAD_UNSUPPORTED-DOWNLOAD]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">code = 'QB_DOWNLOAD_UNSUPPORTED', reason = 'DOWNLOAD'
+
+    @pytest.mark.parametrize(
+        "code,reason",
+        [
+            ("QB_TEXT_ENCODING_UNSUPPORTED", "ENCODING"),
+            ("QB_DOWNLOAD_UNSUPPORTED", "DOWNLOAD"),
+            ("DISCOVERY_LOG_UNREADABLE", "TOO_LARGE"),
+        ],
+    )
+    def test_read_text_driver_fixed_errors(code, reason):
+        import json
+    
+        with pytest.raises(QbBrowserError) as error:
+&gt;           decode_response(
+                json.dumps(dict(ok=False, error=code, reason=reason)),
+                submit_sent=False,
+                command="read_text",
+            )
+
+tests/unit/test_qb_collect.py:137: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "QB_DOWNLOAD_UNSUPPORTED", "reason": "DOWNLOAD"}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_collect" name="test_read_text_driver_fixed_errors[DISCOVERY_LOG_UNREADABLE-TOO_LARGE]" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">code = 'DISCOVERY_LOG_UNREADABLE', reason = 'TOO_LARGE'
+
+    @pytest.mark.parametrize(
+        "code,reason",
+        [
+            ("QB_TEXT_ENCODING_UNSUPPORTED", "ENCODING"),
+            ("QB_DOWNLOAD_UNSUPPORTED", "DOWNLOAD"),
+            ("DISCOVERY_LOG_UNREADABLE", "TOO_LARGE"),
+        ],
+    )
+    def test_read_text_driver_fixed_errors(code, reason):
+        import json
+    
+        with pytest.raises(QbBrowserError) as error:
+&gt;           decode_response(
+                json.dumps(dict(ok=False, error=code, reason=reason)),
+                submit_sent=False,
+                command="read_text",
+            )
+
+tests/unit/test_qb_collect.py:137: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_LOG_UNREADABLE", "reason": "TOO_LARGE"}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_collect" name="test_discovery_driver_error_does_not_change_ordinary_read" time="0.000"><failure message="UnboundLocalError: cannot access local variable 'response' where it is not associated with a value">def test_discovery_driver_error_does_not_change_ordinary_read():
+        import json
+    
+        raw = json.dumps(dict(ok=False, error="DISCOVERY_LOG_UNREADABLE", reason="ENCODING"))
+        with pytest.raises(QbBrowserError) as error:
+&gt;           decode_response(raw, submit_sent=False, command="read")
+
+tests/unit/test_qb_collect.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+raw = '{"ok": false, "error": "DISCOVERY_LOG_UNREADABLE", "reason": "ENCODING"}'
+
+    def decode_response(raw: str, *, submit_sent: bool, command: str = "") -&gt; dict[str, Any]:
+        """Retain fixed diagnostic metadata without changing existing error mapping."""
+        category = None
+        login_facts = None
+        discovery_facts = None
+        try:
+&gt;           if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+                          ^^^^^^^^
+E           UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+
+tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py:228: UnboundLocalError</failure></testcase><testcase classname="tests.unit.test_qb_collect" name="test_discovery_invalid_yaml_is_fixed_json[False]" time="0.471" /><testcase classname="tests.unit.test_qb_collect" name="test_discovery_invalid_yaml_is_fixed_json[True]" time="0.002" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_scope_node" time="8.081" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_closed_diagnostics_and_real_archives[diagnostics]" time="0.050" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_closed_diagnostics_and_real_archives[archives]" time="78.022" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_local_https_browser[ok]" time="16.214" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_local_https_browser[ambiguous]" time="3.774" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_local_https_browser[status]" time="3.471" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_local_https_browser[redirect]" time="3.593" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_local_https_browser[encoding]" time="3.462" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_local_https_browser[attachment]" time="3.722" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_local_https_browser[binary]" time="3.703" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_discovery_local_https_browser[large]" time="3.567" /><testcase classname="tests.unit.test_qb_discovery_node" name="test_real_qb_discover_cli_manifest" time="5.350"><failure message="AssertionError: 已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。&#10;  Traceback (most recent call last):&#10;    File &quot;&lt;frozen runpy&gt;&quot;, line 198, in _run_module_as_main&#10;    File &quot;&lt;frozen runpy&gt;&quot;, line 88, in _run_code&#10;    File &quot;/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/__main__.py&quot;, line 82, in &lt;module&gt;&#10;      raise SystemExit(main())&#10;                       ^^^^^^&#10;    File &quot;/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/__main__.py&quot;, line 67, in main&#10;      return discover_main(argv[1:], stdout=sys.stdout)&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py&quot;, line 148, in main&#10;      result, code = collect(parser.parse_args(argv)), 0&#10;                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py&quot;, line 36, in collect&#10;      browser.login()&#10;    File &quot;/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py&quot;, line 526, in login&#10;      return self.command(&#10;             ^^^^^^^^^^^^^&#10;    File &quot;/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py&quot;, line 441, in command&#10;      response = self._command(command, **fields)&#10;                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py&quot;, line 504, in _command&#10;      return decode_response(raw, submit_sent=command == &quot;submit&quot;, command=command)&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py&quot;, line 228, in decode_response&#10;      if isinstance(response, dict) and {&quot;page_kind&quot;, &quot;first_failed_check&quot;, &quot;counts&quot;} &amp; response.keys():&#10;                    ^^^^^^^^&#10;  UnboundLocalError: cannot access local variable 'response' where it is not associated with a value&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '-m', 'tizen_qb_verify'...     ^^^^^^^^\nUnboundLocalError: cannot access local variable \'response\' where it is not associated with a value\n').returncode">tmp_path = PosixPath('/tmp/pytest-of-linhao/pytest-27/test_real_qb_discover_cli_mani0')
+
+    def test_real_qb_discover_cli_manifest(tmp_path):
+        command, env = node_command()
+        playwright, chromium = browser_paths()
+        overrides, requests = tmp_path / "server.json", tmp_path / "requests.json"
+        server = subprocess.Popen(
+            [
+                *command,
+                str(ROOT / "tests/node/p5q_discovery_server.mjs"),
+                str(overrides),
+                str(requests),
+            ],
+            env=env,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            text=True,
+        )
+        try:
+            assert select.select([server.stdout], [], [], 30)[0]
+            assert json.loads(server.stdout.readline()) == {"ready": True}
+            config = tmp_path / "config.yaml"
+            config.write_text(
+                yaml.safe_dump(
+                    {
+                        "qb": {
+                            "base_url": "https://quickbuild.tizen.org",
+                            "browser": {
+                                "node": str(ROOT / "tests/fixtures/p5q_node_entry.py"),
+                                "playwright_module": playwright,
+                                "chromium": chromium,
+                                "login_timeout_seconds": 30,
+                            },
+                            "projects": {
+                                "tizen_base": {
+                                    "enabled": True,
+                                    "overview_id": 1917,
+                                    "configuration_path": (
+                                        "root/CI_TIZEN/TIZEN/Tizen/Tizen-Base-Toolchain/RBS/TRIGGER"
+                                    ),
+                                    "project_name": "Tizen-Base-Toolchain",
+                                    "qb_pass_requires_accept": False,
+                                    "form": {
+                                        "BUILD_TYPE": "Full",
+                                        "REPO_TYPE": "ALL",
+                                        "BUILD_REFERENCE": "Ref. Snapshot",
+                                        "SNAPSHOT_NUM": "@freeze",
+                                        "PROJECT_BRANCH": "tizen_base",
+                                        "Immediate Stop With Error": True,
+                                        "CHILD_CONFIGURATIONS": ["standard-armv7l:aarch64:x86_64"],
+                                        "TARGET_IMAGE": [],
+                                        "Add Package List": "",
+                                        "Remove Package List": "",
+                                    },
+                                }
+                            },
+                        }
+                    }
+                )
+            )
+            env.update(
+                P5Q_TEST_NODE=json.dumps(command),
+                P5Q_TEST_SERVER=str(overrides),
+                P5Q_TEST_AGENT_LOG=str(tmp_path / "agent.json"),
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "tizen_qb_verify",
+                    "qb-discover",
+                    "--config",
+                    str(config),
+                    "--state-root",
+                    str(tmp_path / "state"),
+                    "--qb-project",
+                    "tizen_base",
+                    "--build-id",
+                    "1193467",
+                ],
+                cwd=ROOT,
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+&gt;           assert result.returncode == 0, result.stdout + result.stderr
+E           AssertionError: 已打开 QuickBuild 登录窗口,请在窗口中登录;若提示登录失败,可在窗口中重新输入;登录后工具会自动继续。
+E             Traceback (most recent call last):
+E               File "&lt;frozen runpy&gt;", line 198, in _run_module_as_main
+E               File "&lt;frozen runpy&gt;", line 88, in _run_code
+E               File "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/__main__.py", line 82, in &lt;module&gt;
+E                 raise SystemExit(main())
+E                                  ^^^^^^
+E               File "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/__main__.py", line 67, in main
+E                 return discover_main(argv[1:], stdout=sys.stdout)
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py", line 148, in main
+E                 result, code = collect(parser.parse_args(argv)), 0
+E                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_collect.py", line 36, in collect
+E                 browser.login()
+E               File "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py", line 526, in login
+E                 return self.command(
+E                        ^^^^^^^^^^^^^
+E               File "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py", line 441, in command
+E                 response = self._command(command, **fields)
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py", line 504, in _command
+E                 return decode_response(raw, submit_sent=command == "submit", command=command)
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               File "/home/linhao/Toolchain/development/LogAnalysisSkill/tizen-qb-verify/scripts/tizen_qb_verify/qb_browser.py", line 228, in decode_response
+E                 if isinstance(response, dict) and {"page_kind", "first_failed_check", "counts"} &amp; response.keys():
+E                               ^^^^^^^^
+E             UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+E             
+E           assert 1 == 0
+E            +  where 1 = CompletedProcess(args=['/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python', '-m', 'tizen_qb_verify'...     ^^^^^^^^\nUnboundLocalError: cannot access local variable \'response\' where it is not associated with a value\n').returncode
+
+tests/unit/test_qb_discovery_node.py:138: AssertionError</failure></testcase></testsuite></testsuites>

@@ -24,6 +24,20 @@ def test_discovery_scope_node():
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+@pytest.mark.parametrize("script", ["diagnostics", "archives"])
+def test_discovery_closed_diagnostics_and_real_archives(script):
+    command, env = node_command()
+    result = subprocess.run(
+        [*command, str(ROOT / f"tests/node/test_qb_discovery_{script}.mjs"), *browser_paths()],
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=150,
+    )
+    print(result.stdout)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 @pytest.mark.parametrize(
     "mode", ["ok", "ambiguous", "status", "redirect", "encoding", "attachment", "binary", "large"]
 )
