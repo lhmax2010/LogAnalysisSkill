@@ -2,7 +2,7 @@
 
 日期:2026-11-05。状态:**恢复第1至4批离线完成;RESTORE-24关闭RESTORE-23,第三/四批最终树3501 passed、0 failed、1既有skip(第45、46节);首次真实发现待另行裁定**。RESTORE-19由RESTORE-20两命令文件交接处置;RESTORE-21由RESTORE-22处置;RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
-最新真机试运行准备:RESTORE-27已处置RESTORE-26归档通道缺口(第48节),资源限制实测通过;等待用户本次回复“开始”,唯一一次执行未使用。
+最新真机试运行:RESTORE-25/27唯一一次qb-discover以DISCOVERY_REPORT_AMBIGUOUS/REPORT_STRUCTURE停止(第49节);未运行dry-run,不重试。RESTORE-26已由RESTORE-27处置。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
 ## 1. 冻结输入与开工事实
@@ -2680,3 +2680,43 @@ state-root为空,不复用状态库。生产CLI、代理、测试均不改。
 status=ok只记裁定允许的运行时检查通过及SHA/大小,失败只记固定原因码,
 不会把缺失trace解释为“安全事件为0”。当前为**等待用户确认开始**,
 尚无本次失败包/日志读取/dry-run结果,真机发现仍未验证。
+
+## 49. RESTORE-25/27真机执行与停止SKEL-RESTORE-28
+
+2026-11-06,基线97217e0。用户确认原话:“开始”。新运行目录仍为r01,
+没有复用旧state-root或状态库。确认后初次资源查询available9284MiB、load1=12.96,
+未启动浏览器;准备记录工具期间下降,正式运行前重新查询available9555MiB、
+loadavg=6.86/6.95/4.09才启动。未清理资源或结束他人进程。
+
+唯一一次qb-discover的UTC起止05:45:48.258756–05:47:25.550388,97.291秒,exit4。
+外层systemd-run --user --scope CPUQuota=200%、MemoryMax=3G、MemorySwapMax=0,
+内部nice10;实查scope值为2s/3221225472/0。运行后available9277MiB,
+loadavg=3.65/5.81/3.96。完整argv、资源原文与CLI应答见
+`evidence/restore/live-dryrun-01/producer-command.json`。
+
+CLI返回DISCOVERY_REPORT_AMBIGUOUS,reason=REPORT_STRUCTURE,
+failure.command=discovery_read,failure_category=null;
+错误捕获时agent_exited=false、agent_exit_code=null。当前应答不含具体页面或首个失败项,
+不据错误名猜测Details、包名或架构列有何问题。stderr未见固定AGENT_STOPPED行,
+但trace/elapsed_ms未收集,不推定安全事件为0。停止依据就是CLI错误码。
+
+state-root为空,没有清单/包日志,故campaign-discover --dry-run未运行。
+zlib/libtirpc/elfutils均为NOT_COLLECTED,不是已确认“默认过滤跳过”;
+没有status=ok日志可填等价运行时证据。日志元数据及完整代理trace按RESTORE-27记
+NOT_COLLECTED。state.db、kb.jsonl、ws未创建,未克隆/建档/提交/推送。
+执行后scope inactive/dead,本仓库代理与p5q-browser-*残留均未发现。
+
+[停止报告SKEL-RESTORE-28](evidence/restore/live-dryrun-01/stop-report-SKEL-RESTORE-28.md)
+记录上述事实及候选离线核验/封闭诊断方案,均未实施。唯一一次机会已使用,
+不重跑、不换构建、不补读。收尾记录的实际结论为“已执行但未通过验证”。
+
+结构化证据归档/扫描在CPU400%、MemoryMax6G、swap0、nice10的scope内完成;
+前available9137MiB、loadavg2.01/4.76/3.75,后9030MiB、loadavg相同。
+固定CLI应答键值逐项校验、PageRedactor凭据检查通过,已知本机身份残留0;
+没有读取/输出本次QB身份原文,会话身份字符串本身NOT_COLLECTED。
+仓内仅命令/资源事实、固定应答和报告,没有日志正文、配置或DB二进制。
+
+最终文档/证据检查亦在CPU400%/6GiB/swap0/nice10 scope内串行完成,exit0:
+design 0 problem、git diff --check通过、生产/测试与97217e0零diff;
+证据目录凭据检查通过、已知本机身份残留0。前后free -m/loadavg及完整argv
+见`live-dryrun-01/final-checks-command.json`。不运行全仓或任何第二次真机命令。

@@ -89,12 +89,12 @@ DENY_TARGET_GONE共3次且未导致停止。逐次结果、负载及原始失败
 
 下列项均不以离线通过替代真实验收,依据SKEL-CLOSE-01与冻结稿第7节:
 
-- 自动发现真机只读:**未验证**。RESTORE-25新运行目录及只读启动预检通过,
-  但CLI未提供所要求的代理trace/elapsed_ms和日志响应元数据,在弹窗前停止;
-  未消耗一次执行机会,未运行dry-run消费或真实建档。
-  [RESTORE-26停止报告](../dev_memory/stage21_campaign_skeleton/evidence/restore/live-dryrun-01/stop-report-SKEL-RESTORE-26.md)。
-  2026-11-06 RESTORE-27已接受本次元数据NOT_COLLECTED并规定等价证据;
-  资源scope检查通过,等待用户确认开始,本项仍不标真机通过。
+- 自动发现真机只读:**已执行但未通过验证**。RESTORE-27接受本次元数据
+  NOT_COLLECTED后,2026-11-06在CPU200%/3GiB/swap0/nice10下执行唯一一次
+  qb-discover(1204735),exit4 DISCOVERY_REPORT_AMBIGUOUS/REPORT_STRUCTURE。
+  没有清单/包日志,未运行dry-run消费或真实建档;具体失败页面/检查项尚未定位,
+  不重试。见[RESTORE-28停止报告](../dev_memory/stage21_campaign_skeleton/evidence/restore/live-dryrun-01/stop-report-SKEL-RESTORE-28.md),
+  [命令与资源](../dev_memory/stage21_campaign_skeleton/evidence/restore/live-dryrun-01/producer-command.json)。
 
 - 真实gbs失败形态与三架构基线/修复耗时:第3.5批未执行,无真实单包全链路测量。
 - 真实CI日志上的analyzer有效诊断:预筛3次均exit0但needs_llm,不能证明与人工Clang修法对应;[candidates.md](../dev_memory/stage21_campaign_skeleton/evidence/batch3.5/selection/candidates.md)。
@@ -106,10 +106,10 @@ DENY_TARGET_GONE共3次且未导致停止。逐次结果、负载及原始失败
 
 ## 5. 遗留与观测
 
-- 恢复任务的首轮真实`qb-discover`尚未运行。报告iframe与Details四列表以
+- 恢复任务的首轮真实`qb-discover`已按RESTORE-25/27执行但结构核验停止(见第4节)。报告iframe与Details四列表以
   [live-04](../dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/live-04/)和RESTORE-18为依据;
   日志响应类型、编码、大小、跳转、Download尚无真机样本,由read_text逐包运行时fail-closed,
-  不把本地夹具测试写成真机通过。首次真实发现需另行裁定,本轮不登录。
+  不把本地夹具测试写成真机通过。后续执行须另行裁定,本轮不重试。
 - RESTORE-14将`test_node_c2c_trusted_reads_and_fields[test_qb_browser_fields.mjs]`
   纳入计时敏感名单,失败保留并单独重跑3次全过才接受;不调阈值或加skip。
 

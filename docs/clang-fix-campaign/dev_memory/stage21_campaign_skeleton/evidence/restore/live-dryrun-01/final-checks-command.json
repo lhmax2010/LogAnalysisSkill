@@ -1,0 +1,41 @@
+{
+  "argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "-c",
+    "import json,re,subprocess; from pathlib import Path; import yaml\nfrom tizen_qb_verify.qb_redact import PageRedactor\nroot=Path('/home/linhao/Toolchain/campaign-discover-trial/r01')\nevidence=Path('docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/live-dryrun-01')\nconfig=yaml.safe_load((root/'config.yaml').read_text())\nidentities={config['gerrit_user'],config['git_author_identity'].split(' <')[0]}\nscanned=[]\nfor p in sorted(evidence.iterdir()):\n raw=p.read_bytes(); PageRedactor().check_bytes(raw)\n assert all(not re.search(r'(?<![A-Za-z0-9_])'+re.escape(v)+r'(?![A-Za-z0-9_])',raw.decode()) for v in identities)\n scanned.append(p.name)\nfor cmd in [['.venv/bin/python','docs/clang-fix-campaign/tools/check_design_doc.py','docs/clang-fix-campaign/design.md'],['git','diff','--check']]:\n subprocess.run(cmd,check=True)\npaths=['tizen-qb-verify','tizen-campaign-intake','tizen-campaign-core','tests','docs/clang-fix-campaign/design.md']\nassert not subprocess.check_output(['git','diff','97217e0','--',*paths])\nassert not (root/'state.db').exists() and not (root/'consumer').exists()\nprint(json.dumps({'evidence_files_scanned':scanned,'known_local_identity_residuals':0,'credential_check':'PASS','production_and_tests_unchanged':True,'state_db_exists':False,'consumer_run':False}))\n"
+  ],
+  "before": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       22691         420        1166       10426        8849\nSwap:           4095        4095           0\n",
+    "loadavg": "2.85 4.16 3.66 1/3055 1072514",
+    "available_kib": 9061600
+  },
+  "wait_samples": [
+    {
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       22691         420        1166       10426        8849\nSwap:           4095        4095           0\n",
+      "loadavg": "2.85 4.16 3.66 1/3055 1072514",
+      "available_kib": 9061600
+    }
+  ],
+  "started_utc": "2026-11-06T05:50:53.812956+00:00",
+  "after": {
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       22416         395        1164       10352        9124\nSwap:           4095        4095           0\n",
+    "loadavg": "2.85 4.16 3.66 2/3059 1072564",
+    "available_kib": 9343780
+  },
+  "finished_utc": "2026-11-06T05:50:55.100075+00:00",
+  "exit_code": 0,
+  "stdout": "== check_design_doc: docs/clang-fix-campaign/design.md ==\n-- OK: 0 problem --\n{\"evidence_files_scanned\": [\"preflight-command.json\", \"producer-command.json\", \"resource-preflight-27.json\", \"result-summary.json\", \"stop-report-SKEL-RESTORE-26.md\", \"stop-report-SKEL-RESTORE-28.md\"], \"known_local_identity_residuals\": 0, \"credential_check\": \"PASS\", \"production_and_tests_unchanged\": true, \"state_db_exists\": false, \"consumer_run\": false}\n",
+  "stderr": "Running as unit: run-r912f9820c2f64afca155bf1bf90ac233.scope; invocation ID: e665baaec728427580ca21afd4ff62b9\n"
+}

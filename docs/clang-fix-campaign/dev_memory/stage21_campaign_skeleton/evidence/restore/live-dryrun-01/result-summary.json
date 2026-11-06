@@ -1,0 +1,44 @@
+{
+  "status": "STOPPED",
+  "target_build_id": "1204735",
+  "producer": {
+    "error_code": "DISCOVERY_REPORT_AMBIGUOUS",
+    "failure": {
+      "agent_error_code": "DISCOVERY_REPORT_AMBIGUOUS",
+      "agent_exit_code": null,
+      "agent_exited": false,
+      "command": "discovery_read",
+      "failure_category": null
+    },
+    "reason": "REPORT_STRUCTURE"
+  },
+  "consumer": "NOT_RUN_PRODUCER_FAILED",
+  "packages": "NOT_COLLECTED",
+  "manifest_files": [],
+  "log_files": [],
+  "log_read_outcome": "NOT_COLLECTED",
+  "agent_trace": "NOT_COLLECTED",
+  "agent_trace_elapsed_ms": "NOT_COLLECTED",
+  "log_response_metadata": "NOT_COLLECTED",
+  "safety_assessment": "CLI_ERROR_ONLY_TRACE_NOT_COLLECTED",
+  "stderr_agent_stopped_lines": 0,
+  "state_db_exists": false,
+  "workspace_exists": false,
+  "kb_db_exists": false,
+  "read_page": "NOT_COLLECTED",
+  "failed_structure_check": "NOT_COLLECTED",
+  "scope_observed": {
+    "CPUQuotaPerSecUSec": "2s",
+    "MemoryMax": 3221225472,
+    "MemorySwapMax": 0,
+    "after": "inactive/dead"
+  },
+  "postrun_p5q_profile_directories": [],
+  "postrun_repository_agent_pids": [],
+  "redaction_scan": {
+    "fixed_response_shape_validated": true,
+    "known_local_identity_residuals": 0,
+    "qb_identity_values": "NOT_COLLECTED",
+    "raw_page_or_log_archived": false
+  }
+}
