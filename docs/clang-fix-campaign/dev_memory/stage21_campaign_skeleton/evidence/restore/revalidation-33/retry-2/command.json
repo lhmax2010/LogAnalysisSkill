@@ -1,0 +1,167 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "-q",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-2/pytest.xml"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "samples": [
+    {
+      "wait_seconds": 0.018,
+      "utc": "2026-11-06T08:17:29.664985+00:00",
+      "available_kib": 5810504,
+      "swap_free_kib": 18412,
+      "loadavg": "1.41 1.45 1.54 1/3163 1266339",
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25866         638        1168        7035        5674\nSwap:           4095        4078          17\n",
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "ps               100",
+        "python          33.3",
+        "code-insiders   10.8",
+        "code-insiders    9.2",
+        "chrome           5.7",
+        "epp-client-daem  5.5",
+        "code-insiders    5.0",
+        "chrome           4.4",
+        "Xorg             3.6",
+        "code-insiders    2.5"
+      ]
+    },
+    {
+      "wait_seconds": 10.039,
+      "utc": "2026-11-06T08:17:39.684068+00:00",
+      "available_kib": 6078544,
+      "swap_free_kib": 18412,
+      "loadavg": "1.58 1.49 1.55 1/3152 1266342",
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25604         899        1168        7035        5936\nSwap:           4095        4078          17\n",
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "code-insiders   10.8",
+        "code-insiders    9.2",
+        "chrome           5.7",
+        "epp-client-daem  5.5",
+        "code-insiders    5.0",
+        "chrome           4.4",
+        "Xorg             3.6",
+        "code-insiders    2.5",
+        "code-insiders    1.9",
+        "chrome           1.8"
+      ]
+    },
+    {
+      "wait_seconds": 20.062,
+      "utc": "2026-11-06T08:17:49.705346+00:00",
+      "available_kib": 6258276,
+      "swap_free_kib": 18412,
+      "loadavg": "1.42 1.46 1.54 1/3155 1266353",
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25429        1074        1162        7030        6111\nSwap:           4095        4078          17\n",
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "code-insiders   10.8",
+        "code-insiders    9.2",
+        "chrome           5.7",
+        "epp-client-daem  5.5",
+        "code-insiders    5.0",
+        "chrome           4.4",
+        "Xorg             3.6",
+        "code-insiders    2.5",
+        "code-insiders    1.9",
+        "chrome           1.8"
+      ]
+    },
+    {
+      "wait_seconds": 30.08,
+      "utc": "2026-11-06T08:17:59.727219+00:00",
+      "available_kib": 6346468,
+      "swap_free_kib": 18412,
+      "loadavg": "1.42 1.46 1.54 1/3159 1266366",
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25343        1161        1156        7022        6197\nSwap:           4095        4078          17\n",
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "code-insiders   10.8",
+        "code-insiders    9.2",
+        "chrome           5.7",
+        "epp-client-daem  5.5",
+        "code-insiders    5.0",
+        "chrome           4.4",
+        "Xorg             3.6",
+        "code-insiders    2.5",
+        "code-insiders    1.9",
+        "chrome           1.8"
+      ]
+    }
+  ],
+  "started": true,
+  "limits": {
+    "available_kib": 6291456,
+    "load1_max": 4,
+    "swap_gate": false,
+    "wait_max_seconds": 1800
+  },
+  "before": {
+    "utc": "2026-11-06T08:17:59.727219+00:00",
+    "available_kib": 6346468,
+    "swap_free_kib": 18412,
+    "loadavg": "1.42 1.46 1.54 1/3159 1266366",
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25343        1161        1156        7022        6197\nSwap:           4095        4078          17\n",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   10.8",
+      "code-insiders    9.2",
+      "chrome           5.7",
+      "epp-client-daem  5.5",
+      "code-insiders    5.0",
+      "chrome           4.4",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "code-insiders    1.9",
+      "chrome           1.8"
+    ]
+  },
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "-q",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-2/pytest.xml"
+  ],
+  "wait_seconds": 30.08,
+  "start_utc": "2026-11-06T08:17:59.727219+00:00",
+  "exit_code": 0,
+  "after": {
+    "utc": "2026-11-06T08:18:23.138130+00:00",
+    "available_kib": 5747340,
+    "swap_free_kib": 18420,
+    "loadavg": "1.22 1.41 1.52 2/3165 1267807",
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25928         574        1167        7036        5612\nSwap:           4095        4078          17\n",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   10.8",
+      "code-insiders    9.2",
+      "chrome           5.7",
+      "epp-client-daem  5.5",
+      "code-insiders    5.0",
+      "chrome           4.3",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "code-insiders    1.9",
+      "chrome           1.8"
+    ]
+  },
+  "elapsed_seconds": 23.41,
+  "end_utc": "2026-11-06T08:18:23.156006+00:00"
+}

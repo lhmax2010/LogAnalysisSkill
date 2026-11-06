@@ -3,7 +3,7 @@
 日期:2026-11-05。状态:**恢复第1至4批离线完成;RESTORE-24关闭RESTORE-23,第三/四批最终树3501 passed、0 failed、1既有skip(第45、46节);首次真实发现待另行裁定**。RESTORE-19由RESTORE-20两命令文件交接处置;RESTORE-21由RESTORE-22处置;RESTORE-17由RESTORE-18处置,live-04原证据保留;RESTORE-15由RESTORE-16处置(第40节),live-03原失败证据保留;RESTORE-13由RESTORE-14处置(第38节);RESTORE-11由RESTORE-12裁定处置(第37节),泄漏正文已后处理;SKEL-RESTORE-09由RESTORE-10处置(第36节);SKEL-RESTORE-03/05分别由SKEL-RESTORE-04/06关闭(第30/32节);审核两处修改与D2E补修已随恢复第2批同轮验收。此前骨架离线收尾结论保留,真实第3.5/4批仍延后。[收尾记录](../../review/campaign-skeleton-closeout.md)。
 第1批开工基线`accd7f4`,第2批开工基线`5b9ecea`,分支`clang-fix-campaign`。
 最新真机试运行:RESTORE-25/27唯一一次qb-discover以DISCOVERY_REPORT_AMBIGUOUS/REPORT_STRUCTURE停止(第49节);未运行dry-run,不重试。RESTORE-26已由RESTORE-27处置。
-当前任务:RESTORE-31认可582c65d解析修复与诊断;重新验收因swap前置等待30分钟未达标,按RESTORE-32停止(第51节)。未启动测试或真机r02,RESTORE-30原始失败保留。
+当前任务:RESTORE-33重新验收通过:三次单独重跑全过,完整pytest 3549 passed/0 failed/1既有skip(第52节)。RESTORE-30/32原始证据保留;证据提交推送后等待用户确认开始,未执行真机r02。
 第1批已由SKEL-B2-01验收;第2批已由SKEL-B3-01验收;第3批已由SKEL-R-01验收。
 
 ## 1. 冻结输入与开工事实
@@ -2896,3 +2896,63 @@ MemAvailable范围6373816–7300576KiB,load1范围0.05–2.69,两者始终达标
 收尾文档第5节已列“部分架构unresolvable说明行仍被拒”的已知限制。
 生产、测试、design.md、冻结稿均未修改;仅文档/证据提交。先前失败证据未覆盖。
 资源达标后仍需从头完成三次重验及全仓门禁,当前不进入“等待用户确认开始”阶段。
+
+## 52. 实施裁定 SKEL-RESTORE-33:SwapFree只观测与重新验收
+
+基线dbdc8ee。裁定原文:
+
+一、撤销 SKEL-RESTORE-31 第二.2条新增的“swap 可用≥512MiB”前置条件。理由:已换出页面在空闲后不会自动回收,SwapFree 不反映当前内存压力;且测试 scope 已设 MemorySwapMax=0。SwapFree 继续每次采样记录,仅作观测,不作门槛。
+
+二、其余前置条件不变:每次开始前 available≥6G 且 load1≤4,最长等待 30 分钟;超时停止报告,不放宽、不结束他人进程、不清缓存、不执行 swapoff/swapon。资源限制同 SKEL-RESTORE-27。
+
+三、从头执行 SKEL-RESTORE-31 第二.2条的三次单独重跑(同一 nodeid,三次全过才算通过);任一失败按其第二.3条在仓外 worktree 检出 b7a55d8 做三次对照后停止报告。
+
+四、三次全过后按 SKEL-RESTORE-31 第四条执行完整 pytest、更新 progress.md 与收尾文档、提交推送,回报“等待用户确认开始”;用户回复“开始”后按 SKEL-RESTORE-29 第五条执行 r02 真机试运行,失败即停止报告,不重试。
+
+五、推送报 Permission denied 时提交后停止,由用户本机推送。
+
+本轮证据新建于`evidence/restore/revalidation-33/`,不修改31/32证据。
+run_one.py继续记录SwapFree,不再比较其值;其余资源门槛不变,每次测试使用
+systemd user scope CPU400%/MemoryMax6G/MemorySwapMax0/nice10。
+run_three.py串行运行同一build参数,任一非零立即返回,不并行、不加-x、不改断言。
+生产、测试、冻结稿不改;51.1的路径审查与指定残留清理结论继续有效。
+
+### 52.1 三次独立重跑
+
+同一nodeid的retry-1/2/3分别1 passed,pytest耗时30.78/23.13/23.27秒。
+每次均重新满足资源前置,其中retry-2等待30.080秒、retry-3等待10.039秒。
+每轮实际触发CLI与两次读取CLI的关闭尾段均约0.073–0.079秒,没有UNKNOWN停止。
+详见`revalidation-33/README.md`、各次`c5a/build/commands.json`及代理trace。
+三次全过,不触发b7a55d8仓外对照分支。随后以同样资源限制启动完整pytest,
+不加-x;完整结果另记,不提前标为全仓通过。
+
+### 52.2 完整门禁与交付边界
+
+2026-11-06 16:19:10至16:38:51 +08:00,完整pytest exit0:
+**3549 passed、0 failed、1既有skipped**,pytest耗时1180.28秒,scope包裹耗时1180.841秒。
+完整运行未使用-x,无新增skip/xfail,计时清单本轮无失败、无需追加重跑。
+运行前available6744872KiB/load1=0.98,运行后6766016KiB/load1=2.44;
+SwapFree分别4/100KiB只观测,MemorySwapMax=0始终保持。
+原始argv/UTC/exit/free/loadavg/CPU前十见`revalidation-33/full/command.json`,
+stdout/stderr、JUnit与C5a/C8记录均归档。C8包装通过;竞争/故障注入场景的预期
+拒绝保留在`full/c8/`,不将它们混称为新的门禁失败。
+
+546份生产/测试/冻结稿等文件前后hash一致;代理、驱动、测试断言均无本轮改动,
+所以没有新增nodeid,3550项完整保留。未复跑mypy/import-linter等无代码变化的门禁,
+沿用RESTORE-29已通过的记录;本轮按RESTORE-31/33只重验三次C5a与完整pytest。
+结束后未发现p5q-browser-*残留。详见`source-before.json`与`summary.json`。
+
+证据全文扫描已登记历史身份残留0;完整JUnit的4处测试标识符与身份字符串重合,
+仅这些标识符替换为[REDACTED_IDENTITY],测试结果不变,原失败正文未改(本轮无失败)。
+前后hash/替换次数见`identifier-redaction.json`;未输出或保存历史身份原文。
+仅本机假HTTPS与临时裸库,未创建r02目录/配置/状态库,未运行任何真机命令或登录。
+
+RESTORE-30的UNKNOWN根因未另行确定,不因本轮通过而改写历史停止报告。
+按RESTORE-33口径重新验收通过;收尾第3/5节同步结论与已知限制。
+证据提交推送之后**等待用户确认开始**;收到新的“开始”才按RESTORE-29第五条
+执行一次r02,成功后接dry-run,任一步失败即停,不复用以前的确认。
+
+附加文档/证据检查在同样资源限制下串行执行。doc-checks首次仅新证据脚本的5处
+import排序未过Ruff,整理后doc-checks-2 exit0:证据脚本Ruff通过、design检查0 problem、
+文档diff --check通过、源码变化0、身份残留0。未改生产或测试,没有重跑/覆盖功能测试。
+原始pytest输出及合成HTML证据的行尾空白保留,不清洗原始日志。

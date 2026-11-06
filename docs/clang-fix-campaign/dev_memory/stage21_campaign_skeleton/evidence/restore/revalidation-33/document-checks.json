@@ -1,0 +1,44 @@
+[
+  {
+    "argv": [
+      ".venv/bin/ruff",
+      "format",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33"
+    ],
+    "exit": 0
+  },
+  {
+    "argv": [
+      ".venv/bin/ruff",
+      "check",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33"
+    ],
+    "exit": 0
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "docs/clang-fix-campaign/tools/check_design_doc.py",
+      "docs/clang-fix-campaign/design.md"
+    ],
+    "exit": 0
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/progress.md",
+      "docs/clang-fix-campaign/review/campaign-skeleton-closeout.md"
+    ],
+    "exit": 0
+  },
+  {
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/finalize_evidence.py"
+    ],
+    "exit": 0
+  }
+]

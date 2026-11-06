@@ -1,0 +1,44 @@
+[
+  {
+    "number": 1,
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/run_one.py",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-1",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "tests/run_quiet.py",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "-q",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-1/pytest.xml"
+    ],
+    "exit": 0
+  },
+  {
+    "number": 2,
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/run_one.py",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-2",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "tests/run_quiet.py",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "-q",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-2/pytest.xml"
+    ],
+    "exit": 0
+  },
+  {
+    "number": 3,
+    "argv": [
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/run_one.py",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-3",
+      "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+      "tests/run_quiet.py",
+      "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+      "-q",
+      "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-3/pytest.xml"
+    ],
+    "exit": 0
+  }
+]

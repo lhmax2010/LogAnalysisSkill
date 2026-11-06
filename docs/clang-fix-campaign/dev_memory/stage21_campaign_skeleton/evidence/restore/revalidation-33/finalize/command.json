@@ -1,0 +1,98 @@
+{
+  "argv": [
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/finalize_evidence.py"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "samples": [
+    {
+      "wait_seconds": 0.022,
+      "utc": "2026-11-06T08:39:41.387189+00:00",
+      "available_kib": 6782232,
+      "swap_free_kib": 52,
+      "loadavg": "2.25 1.63 1.43 2/3179 1366809",
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24918        1899        1137        6317        6622\nSwap:           4095        4095           0\n",
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "rpm             28.1",
+        "python          14.2",
+        "code-insiders   10.8",
+        "code-insiders    8.6",
+        "chrome           5.6",
+        "epp-client-daem  5.5",
+        "code-insiders    5.0",
+        "Xorg             3.6",
+        "code-insiders    2.5",
+        "code-insiders    1.9"
+      ]
+    }
+  ],
+  "started": true,
+  "limits": {
+    "available_kib": 6291456,
+    "load1_max": 4,
+    "swap_gate": false,
+    "wait_max_seconds": 1800
+  },
+  "before": {
+    "utc": "2026-11-06T08:39:41.387189+00:00",
+    "available_kib": 6782232,
+    "swap_free_kib": 52,
+    "loadavg": "2.25 1.63 1.43 2/3179 1366809",
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24918        1899        1137        6317        6622\nSwap:           4095        4095           0\n",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "rpm             28.1",
+      "python          14.2",
+      "code-insiders   10.8",
+      "code-insiders    8.6",
+      "chrome           5.6",
+      "epp-client-daem  5.5",
+      "code-insiders    5.0",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "code-insiders    1.9"
+    ]
+  },
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    ".venv/bin/python",
+    "docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/finalize_evidence.py"
+  ],
+  "wait_seconds": 0.022,
+  "start_utc": "2026-11-06T08:39:41.387189+00:00",
+  "exit_code": 0,
+  "after": {
+    "utc": "2026-11-06T08:39:52.714275+00:00",
+    "available_kib": 6868268,
+    "swap_free_kib": 52,
+    "loadavg": "2.82 1.77 1.48 1/3159 1366825",
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24833        1433        1118        6861        6707\nSwap:           4095        4095           0\n",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "ps               100",
+      "rpm             45.3",
+      "code-insiders   10.8",
+      "code-insiders    8.6",
+      "chrome           5.6",
+      "epp-client-daem  5.5",
+      "code-insiders    5.0",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "code-insiders    1.9"
+    ]
+  },
+  "elapsed_seconds": 11.323,
+  "end_utc": "2026-11-06T08:39:52.732318+00:00"
+}

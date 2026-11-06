@@ -1,0 +1,104 @@
+{
+  "argv": [
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "-q",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-1/pytest.xml"
+  ],
+  "cwd": "/home/linhao/Toolchain/development/LogAnalysisSkill",
+  "samples": [
+    {
+      "wait_seconds": 0.025,
+      "utc": "2026-11-06T08:16:51.745954+00:00",
+      "available_kib": 6625156,
+      "swap_free_kib": 18376,
+      "loadavg": "1.06 1.41 1.53 6/3153 1264716",
+      "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25070        1838        1174        6387        6469\nSwap:           4095        4078          17\n",
+      "cpu_count": 20,
+      "top_cpu_names": [
+        "python          33.3",
+        "python          16.6",
+        "code-insiders   10.8",
+        "code-insiders    9.3",
+        "chrome           5.7",
+        "epp-client-daem  5.5",
+        "code-insiders    5.0",
+        "chrome           4.6",
+        "Xorg             3.6",
+        "code-insiders    2.5"
+      ]
+    }
+  ],
+  "started": true,
+  "limits": {
+    "available_kib": 6291456,
+    "load1_max": 4,
+    "swap_gate": false,
+    "wait_max_seconds": 1800
+  },
+  "before": {
+    "utc": "2026-11-06T08:16:51.745954+00:00",
+    "available_kib": 6625156,
+    "swap_free_kib": 18376,
+    "loadavg": "1.06 1.41 1.53 6/3153 1264716",
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25070        1838        1174        6387        6469\nSwap:           4095        4078          17\n",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "python          33.3",
+      "python          16.6",
+      "code-insiders   10.8",
+      "code-insiders    9.3",
+      "chrome           5.7",
+      "epp-client-daem  5.5",
+      "code-insiders    5.0",
+      "chrome           4.6",
+      "Xorg             3.6",
+      "code-insiders    2.5"
+    ]
+  },
+  "scope_argv": [
+    "systemd-run",
+    "--user",
+    "--scope",
+    "-p",
+    "CPUQuota=400%",
+    "-p",
+    "MemoryMax=6G",
+    "-p",
+    "MemorySwapMax=0",
+    "nice",
+    "-n",
+    "10",
+    "/home/linhao/Toolchain/development/LogAnalysisSkill/.venv/bin/python",
+    "tests/run_quiet.py",
+    "tests/unit/test_p5q_c5a_integration.py::test_real_cli_browser_submit_bind_pending_pass[build]",
+    "-q",
+    "--junitxml=/home/linhao/Toolchain/development/LogAnalysisSkill/docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/retry-1/pytest.xml"
+  ],
+  "wait_seconds": 0.025,
+  "start_utc": "2026-11-06T08:16:51.745954+00:00",
+  "exit_code": 0,
+  "after": {
+    "utc": "2026-11-06T08:17:29.616990+00:00",
+    "available_kib": 5810352,
+    "swap_free_kib": 18412,
+    "loadavg": "1.41 1.45 1.54 2/3164 1266336",
+    "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25866         638        1168        7035        5674\nSwap:           4095        4078          17\n",
+    "cpu_count": 20,
+    "top_cpu_names": [
+      "code-insiders   10.8",
+      "code-insiders    9.2",
+      "chrome           5.7",
+      "epp-client-daem  5.5",
+      "code-insiders    5.0",
+      "chrome           4.4",
+      "Xorg             3.6",
+      "code-insiders    2.5",
+      "code-insiders    1.9",
+      "chrome           1.8"
+    ]
+  },
+  "elapsed_seconds": 37.864,
+  "end_utc": "2026-11-06T08:17:29.635004+00:00"
+}

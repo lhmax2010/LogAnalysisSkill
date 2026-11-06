@@ -1,0 +1,245 @@
+{
+  "cases": [
+    {
+      "name": "retry-1",
+      "exit": 0,
+      "suite": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 1,
+        "failures_list": []
+      },
+      "wait_seconds": 0.025,
+      "elapsed_seconds": 37.864,
+      "before": {
+        "utc": "2026-11-06T08:16:51.745954+00:00",
+        "available_kib": 6625156,
+        "swap_free_kib": 18376,
+        "loadavg": "1.06 1.41 1.53 6/3153 1264716",
+        "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25070        1838        1174        6387        6469\nSwap:           4095        4078          17\n",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "python          33.3",
+          "python          16.6",
+          "code-insiders   10.8",
+          "code-insiders    9.3",
+          "chrome           5.7",
+          "epp-client-daem  5.5",
+          "code-insiders    5.0",
+          "chrome           4.6",
+          "Xorg             3.6",
+          "code-insiders    2.5"
+        ]
+      },
+      "after": {
+        "utc": "2026-11-06T08:17:29.616990+00:00",
+        "available_kib": 5810352,
+        "swap_free_kib": 18412,
+        "loadavg": "1.41 1.45 1.54 2/3164 1266336",
+        "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25866         638        1168        7035        5674\nSwap:           4095        4078          17\n",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   10.8",
+          "code-insiders    9.2",
+          "chrome           5.7",
+          "epp-client-daem  5.5",
+          "code-insiders    5.0",
+          "chrome           4.4",
+          "Xorg             3.6",
+          "code-insiders    2.5",
+          "code-insiders    1.9",
+          "chrome           1.8"
+        ]
+      },
+      "close_seconds": [
+        0.07569742202758789,
+        0.07462596893310547,
+        0.07869482040405273
+      ]
+    },
+    {
+      "name": "retry-2",
+      "exit": 0,
+      "suite": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 1,
+        "failures_list": []
+      },
+      "wait_seconds": 30.08,
+      "elapsed_seconds": 23.41,
+      "before": {
+        "utc": "2026-11-06T08:17:59.727219+00:00",
+        "available_kib": 6346468,
+        "swap_free_kib": 18412,
+        "loadavg": "1.42 1.46 1.54 1/3159 1266366",
+        "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25343        1161        1156        7022        6197\nSwap:           4095        4078          17\n",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   10.8",
+          "code-insiders    9.2",
+          "chrome           5.7",
+          "epp-client-daem  5.5",
+          "code-insiders    5.0",
+          "chrome           4.4",
+          "Xorg             3.6",
+          "code-insiders    2.5",
+          "code-insiders    1.9",
+          "chrome           1.8"
+        ]
+      },
+      "after": {
+        "utc": "2026-11-06T08:18:23.138130+00:00",
+        "available_kib": 5747340,
+        "swap_free_kib": 18420,
+        "loadavg": "1.22 1.41 1.52 2/3165 1267807",
+        "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25928         574        1167        7036        5612\nSwap:           4095        4078          17\n",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   10.8",
+          "code-insiders    9.2",
+          "chrome           5.7",
+          "epp-client-daem  5.5",
+          "code-insiders    5.0",
+          "chrome           4.3",
+          "Xorg             3.6",
+          "code-insiders    2.5",
+          "code-insiders    1.9",
+          "chrome           1.8"
+        ]
+      },
+      "close_seconds": [
+        0.07676315307617188,
+        0.07309412956237793,
+        0.07707571983337402
+      ]
+    },
+    {
+      "name": "retry-3",
+      "exit": 0,
+      "suite": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 1,
+        "failures_list": []
+      },
+      "wait_seconds": 10.039,
+      "elapsed_seconds": 24.0,
+      "before": {
+        "utc": "2026-11-06T08:18:33.203163+00:00",
+        "available_kib": 6920540,
+        "swap_free_kib": 0,
+        "loadavg": "1.03 1.36 1.50 1/3164 1267830",
+        "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24783        1364        1162        7013        6757\nSwap:           4095        4095           0\n",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "ps               100",
+          "code-insiders   10.8",
+          "code-insiders    9.2",
+          "chrome           5.7",
+          "epp-client-daem  5.5",
+          "code-insiders    5.0",
+          "chrome           4.3",
+          "Xorg             3.6",
+          "code-insiders    2.5",
+          "code-insiders    1.9"
+        ]
+      },
+      "after": {
+        "utc": "2026-11-06T08:18:57.207459+00:00",
+        "available_kib": 6658048,
+        "swap_free_kib": 4,
+        "loadavg": "0.97 1.32 1.48 4/3155 1269264",
+        "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       25029        1133        1157        7013        6511\nSwap:           4095        4095           0\n",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "code-insiders   10.8",
+          "code-insiders    9.2",
+          "chrome           5.7",
+          "epp-client-daem  5.5",
+          "code-insiders    5.0",
+          "chrome           4.1",
+          "Xorg             3.6",
+          "code-insiders    2.5",
+          "code-insiders    1.9",
+          "chrome           1.8"
+        ]
+      },
+      "close_seconds": [
+        0.07705879211425781,
+        0.0767977237701416,
+        0.07461166381835938
+      ]
+    },
+    {
+      "name": "full",
+      "exit": 0,
+      "suite": {
+        "tests": 3550,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1,
+        "passed": 3549,
+        "failures_list": []
+      },
+      "wait_seconds": 0.018,
+      "elapsed_seconds": 1180.841,
+      "before": {
+        "utc": "2026-11-06T08:19:10.678586+00:00",
+        "available_kib": 6744872,
+        "swap_free_kib": 4,
+        "loadavg": "0.98 1.30 1.48 1/3154 1269290",
+        "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24954        1204        1153        7013        6586\nSwap:           4095        4095           0\n",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "python          66.6",
+          "code-insiders   10.8",
+          "code-insiders    9.2",
+          "chrome           5.7",
+          "epp-client-daem  5.5",
+          "code-insiders    5.0",
+          "chrome           4.1",
+          "Xorg             3.6",
+          "code-insiders    2.5",
+          "code-insiders    1.9"
+        ]
+      },
+      "after": {
+        "utc": "2026-11-06T08:38:51.477925+00:00",
+        "available_kib": 6766016,
+        "swap_free_kib": 100,
+        "loadavg": "2.44 1.54 1.39 3/3165 1364223",
+        "free_m": "               total        used        free      shared  buff/cache   available\nMem:           31540       24910        1118        1112        7081        6629\nSwap:           4095        4095           0\n",
+        "cpu_count": 20,
+        "top_cpu_names": [
+          "gzip            27.4",
+          "git             15.5",
+          "gbs             12.3",
+          "code-insiders   10.8",
+          "code-insiders    8.6",
+          "chrome           5.6",
+          "epp-client-daem  5.5",
+          "code-insiders    5.0",
+          "Xorg             3.6",
+          "code-insiders    2.5"
+        ]
+      },
+      "close_seconds": [
+        0.0756235122680664,
+        0.07614684104919434,
+        0.07684612274169922
+      ]
+    }
+  ],
+  "changed_sources": [],
+  "scanned_files": 228,
+  "identity_hit_files": [],
+  "profiles_remaining": [],
+  "historic_identity_written": false
+}

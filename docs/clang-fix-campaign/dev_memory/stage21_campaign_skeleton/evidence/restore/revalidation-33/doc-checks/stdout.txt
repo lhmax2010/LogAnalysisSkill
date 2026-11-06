@@ -1,0 +1,83 @@
+5 files reformatted
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/document_checks.py:3:1
+  |
+1 |   """Sequential evidence-script and document checks inside the bounded scope."""
+2 |
+3 | / import json
+4 | | from pathlib import Path
+5 | | import subprocess
+6 | | import sys
+  | |__________^
+7 |
+8 |   HERE = Path(__file__).resolve().parent
+  |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/finalize_evidence.py:3:1
+   |
+ 1 |   """Summarize completed tests and check evidence without exposing historical identities."""
+ 2 |
+ 3 | / import hashlib
+ 4 | | import html
+ 5 | | import importlib.util
+ 6 | | import json
+ 7 | | from pathlib import Path
+ 8 | | import re
+ 9 | | import subprocess
+10 | | import xml.etree.ElementTree as ET
+   | |__________________________________^
+11 |
+12 |   HERE = Path(__file__).resolve().parent
+   |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/run_one.py:3:1
+  |
+1 |   """RESTORE-33 serial resource gate; swap is observation only."""
+2 |
+3 | / import datetime
+4 | | import json
+5 | | import os
+6 | | from pathlib import Path
+7 | | import subprocess
+8 | | import sys
+9 | | import time
+  | |___________^
+  |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/run_three.py:3:1
+  |
+1 |   """Run three independent C5a cases serially; stop immediately on a nonzero exit."""
+2 |
+3 | / import json
+4 | | from pathlib import Path
+5 | | import subprocess
+6 | | import sys
+  | |__________^
+7 |
+8 |   HERE = Path(__file__).resolve().parent
+  |
+help: Organize imports
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> docs/clang-fix-campaign/dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/source_snapshot.py:3:1
+  |
+1 |   """Record tracked production/test bytes before the full test gate."""
+2 |
+3 | / import hashlib
+4 | | import json
+5 | | from pathlib import Path
+6 | | import subprocess
+  | |_________________^
+7 |
+8 |   HERE = Path(__file__).resolve().parent
+  |
+help: Organize imports
+
+Found 5 errors.
+[*] 5 fixable with the `--fix` option.

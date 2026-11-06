@@ -1,6 +1,6 @@
 # Clang 修复活动骨架收尾
 
-日期:2026-11-05。状态:**骨架阶段及恢复四批离线完成,真实端到端延后**。
+日期:2026-11-06。状态:**骨架阶段及恢复四批离线完成,RESTORE-33重新验收通过,真实端到端延后**。
 依据:[stage21 progress 第25节 SKEL-CLOSE-01](../dev_memory/stage21_campaign_skeleton/progress.md)。
 第3.5、4批是“延后”,不是“通过”;预筛0个合格候选(`96b5776`),实际QuickBuild
 build.conf原件本地不可得,不能证明本地验证条件与QuickBuild一致,真实端到端留待COSMOS build接入后另行裁定执行。
@@ -54,7 +54,7 @@ gbs_patch_suggest.formatter;不把同层关系解释为新增独立性合约。
 
 ## 3. 离线验收
 
-下表前四行为SKEL-CLOSE-01的既有验收记录,最后一行为恢复第三/四批最终树离线门禁。
+下表前四行为SKEL-CLOSE-01的既有验收记录,其后为恢复第三/四批及发现解析修复的离线门禁。
 
 | 批次/验收commit | 全仓原始结果(通过/失败/跳过) | 结论与证据 |
 |---|---|---|
@@ -63,6 +63,7 @@ gbs_patch_suggest.formatter;不把同层关系解释为新增独立性合约。
 | 第3批 `a58494b` | 3087 / 0 / 1 | 60个新增用例,旧3028个全保留;[coverage](../dev_memory/stage21_campaign_skeleton/evidence/batch3/implementation/coverage.md) |
 | 读取失败修复 `5b41ee9`、`fb549ea`、`fd4c6f6` | 3099 / 0 / 1 | 按SKEL-R-08验收;[final.json](../dev_memory/stage21_campaign_skeleton/evidence/read-failure/fix/implementation/r08/final.json) |
 | RESTORE-24恢复第三/四批 | 3501 / 0 / 1 | 旧3454 nodeid全保留、新增48;[r24门禁](../dev_memory/stage21_campaign_skeleton/evidence/restore/batch3/r24/README.md) |
+| RESTORE-29/31/33解析修复重新验收 | 3549 / 0 / 1 | 582c65d代码层认可;三次C5a单例全过后完整pytest通过,3550项保留;[revalidation-33](../dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/README.md) |
 
 骨架原各批mypy、ruff、import-linter、design检查均验收通过;当时import-linter为7通过/0失败,
 mypy检查161文件,design为0 problem。读取失败修复的P5Q四组安全测试4/4;
@@ -92,8 +93,10 @@ DENY_TARGET_GONE共3次且未导致停止。逐次结果、负载及原始失败
 - 自动发现真机只读:**已执行但未通过验证**。RESTORE-27接受本次元数据
   NOT_COLLECTED后,2026-11-06在CPU200%/3GiB/swap0/nice10下执行唯一一次
   qb-discover(1204735),exit4 DISCOVERY_REPORT_AMBIGUOUS/REPORT_STRUCTURE。
-  没有清单/包日志,未运行dry-run消费或真实建档;具体失败页面/检查项尚未定位,
-  不重试。见[RESTORE-28停止报告](../dev_memory/stage21_campaign_skeleton/evidence/restore/live-dryrun-01/stop-report-SKEL-RESTORE-28.md),
+  没有清单/包日志,未运行dry-run消费或真实建档;该次现场未取得具体页面/检查项。
+  后续RESTORE-29离线复现定位到iframe报告的说明行,RESTORE-31认可修复,
+  RESTORE-33重新门禁通过;真机r02仍待用户另行确认,未执行。
+  见[RESTORE-28停止报告](../dev_memory/stage21_campaign_skeleton/evidence/restore/live-dryrun-01/stop-report-SKEL-RESTORE-28.md),
   [命令与资源](../dev_memory/stage21_campaign_skeleton/evidence/restore/live-dryrun-01/producer-command.json)。
 
 - 真实gbs失败形态与三架构基线/修复耗时:第3.5批未执行,无真实单包全链路测量。
@@ -113,6 +116,9 @@ DENY_TARGET_GONE共3次且未导致停止。逐次结果、负载及原始失败
   代码层认可不等于重新门禁或真机r02通过。
   RESTORE-31重新验收在测试启动前因swap余量连续30分钟不足512MiB停止,
   没有新增测试失败或真机操作;见[RESTORE-32](../dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-31/stop-report-SKEL-RESTORE-32.md)。
+  RESTORE-33撤销SwapFree门槛(继续观测),三次C5a重跑及完整pytest已通过,
+  资源scope仍为CPU400%/6GiB/swap0/nice10;见[重新验收汇总](../dev_memory/stage21_campaign_skeleton/evidence/restore/revalidation-33/summary.json)。
+  RESTORE-30的UNKNOWN起因没有因此被证明,原始失败证据保留。
 - 恢复任务的首轮真实`qb-discover`已按RESTORE-25/27执行但结构核验停止(见第4节)。报告iframe与Details四列表以
   [live-04](../dev_memory/stage21_campaign_skeleton/evidence/restore/discovery-capture/live-04/)和RESTORE-18为依据;
   日志响应类型、编码、大小、跳转、Download尚无真机样本,由read_text逐包运行时fail-closed,
