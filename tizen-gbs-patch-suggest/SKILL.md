@@ -1,0 +1,406 @@
+---
+name: tizen-gbs-patch-suggest
+description: Prepares LLM-ready patch-generation context from analyzer Evidence Packet JSON or a Tizen gbs build log for compiler, Werror, or .spec toolchain flag diagnostics. Use when the user wants help generating a source fix patch, candidate unified diff, or repair strategy for a compiler error, -Werror failure, warnings-as-errors diagnostic, Clang unknown warning option, or .spec CFLAGS/CXXFLAGS compatibility issue, and has an Evidence Packet, analyzer output directory, or buildlog. This skill writes context.md for Claude to read; it is not a semantic patch generator and never applies changes.
+compatibility: Requires local access to analyzer Evidence Packet JSON or a Tizen gbs build log and the gbs_patch_suggest Python package or this skill folder. Buildlog mode also requires gbs_analyzer installed or a sibling tizen-gbs-log-analysis skill folder. Optional source context collection requires access to the Tizen package source tree. Built for local AI assistants such as Claude Code or Cline.
+---
+
+# Tizen gbs Patch Suggest Context
+
+Use this skill when the user wants a source patch suggestion for a Tizen `gbs`
+compiler or Werror source diagnostic and analyzer evidence or a build log is available.
+
+This skill is a context preparer, not a semantic patch generator. It reads analyzer
+`evidence_packet.json`, or runs analyzer on a build log to create that evidence,
+writes `context.md`, `README.md`, and `meta.json`, then stops. The outer Claude
+or Cline assistant reads `context.md`, decides the repair semantics, writes an
+explicit `edit_spec.json`, and may call the deterministic `format-patch`
+formatter to create candidate `.patch` files.
+
+This skill does not call an LLM, does not decide what the repair should be, does
+not apply patches, and does not modify the source tree. The formatter only turns
+Claude's explicit edit spec into a correctly formatted patch.
+
+## Triggers
+
+Invoke patch-suggest when any of these are true:
+
+- The user has analyzer output and asks for a source patch or candidate fix for a
+  compiler or Werror source diagnostic.
+- The user mentions `evidence_packet.json`, a Tizen `gbs` build log, `context.md`,
+  patch context, `-Werror`, warnings treated as errors, or generating a unified
+  diff from a compiler failure.
+- The user asks Claude or Cline to prepare enough context to fix a compiler or
+  Werror diagnostic without applying changes.
+- The analyzer primary error is `compiler` or `werror` and the next step is patch
+  drafting rather than more log analysis.
+- The diagnostic is Clang `unknown warning option` / `-Wunknown-warning-option`
+  and the option may come from `.spec` `CFLAGS` or `CXXFLAGS`.
+
+Do not use this skill for linker, dependency-resolution, patch-application,
+spec-script, or install failures. Use the workflow suggesters for those fault
+classes.
+
+## Examples
+
+### Example 1: User has analyzer evidence and wants a patch suggestion
+
+User says: "Use this evidence packet to suggest a fix patch for this source
+diagnostic."
+
+Actions:
+
+1. Confirm the `evidence_packet.json` path. If it was not provided, ask:
+   "Which evidence_packet.json should I use?"
+2. If the user provides the package source root, pass it with `--src-root`.
+3. If the user does not provide a source root, do not ask and do not guess.
+   Omit `--src-root`; the skill may produce a Level B advisory, and Claude will
+   read the reported file itself before generating a patch.
+4. If the user did not specify an output directory, use `./.gbs_patch_suggest`.
+5. Run the skill, then read `README.md` and `meta.json` to identify the output
+   mode.
+6. If status is `fix_all_context_available`, process
+   `.gbs_patch_suggest/fix_all_context/files/` one file at a time and fill the
+   matching skeleton in `.gbs_patch_suggest/fix_all_context/edit_specs/`.
+7. If the skill fell back to a legacy or single-diagnostic status, follow that
+   context exactly.
+8. Run the `format-patch` formatter for each completed edit spec to create a
+   candidate patch file.
+9. Do not apply the patch. Tell the user to review the file before applying it
+   themselves.
+
+Result: the skill guides Claude through fix-all by file when source candidates
+are available, and the formatter creates patch files for review without changing
+the source tree.
+
+### Example 2: User only points to an analyzer output directory
+
+User says: "The analyzer output is in .gbs_analysis. Help me patch this source
+diagnostic."
+
+Actions:
+
+1. Use `.gbs_analysis/evidence_packet.json` if it exists. If not, ask for the
+   evidence path.
+2. Run patch-suggest with that evidence and default output directory
+   `./.gbs_patch_suggest`.
+3. Read `README.md` and `meta.json`; if fix-all output is available, process one
+   file context and one edit spec at a time.
+4. If the resulting context says source context is unavailable, Claude must open
+   the reported `file:line` itself, read the source, and only then generate
+   candidate patches.
+5. Follow the relevant `How to generate the patch` and
+   `Instructions — MUST follow` sections.
+6. If a patch candidate is generated, save or fill its edit spec, run the
+   formatter to create a patch file, and do not run `git apply` or edit the
+   source tree.
+
+Result: Claude uses the context package as a disciplined patch-generation prompt,
+including Level B fallback when the skill could not read source context.
+
+### Example 3: User has a build log but no Evidence Packet
+
+User says: "Here is the failed buildlog. Prepare patch context for the -Werror failure."
+
+Actions:
+
+1. Use `--buildlog /path/to/buildlog` instead of `--evidence`; do not open,
+   read, or summarize the raw build log yourself.
+2. If the user provides the package source root, pass it with `--src-root`.
+3. The skill runs analyzer internally and writes analyzer evidence under
+   `.gbs_patch_suggest/analyzer_output/`.
+4. Read `.gbs_patch_suggest/README.md` and `.gbs_patch_suggest/meta.json`, then
+   follow the selected output mode. For fix-all output, process
+   `.gbs_patch_suggest/fix_all_context/files/` one file at a time. Do not apply
+   generated patches.
+
+Result: One command turns a build log into patch-generation context.
+
+### Example 4: Clang rejects GCC-only warning flags from .spec
+
+User says: "Clang fails on unknown warning option -Wno-stringop-overflow from this package."
+
+Actions:
+
+1. Run patch-suggest with the evidence or build log and pass the package source
+   root with `--src-root` so the skill can inspect the `.spec`.
+2. If status is `spec_toolchain_flag_context_available`, read `context.md` and
+   use the generated edit spec under `spec_toolchain_flag_context/`.
+3. The generated spec patch must preserve the original `CFLAGS` and `CXXFLAGS`
+   lines. Do not delete GCC-only flags from those original lines.
+4. Run the formatter to create the candidate patch. Do not apply it.
+
+Result: GCC keeps the original flags, while Clang strips only the unknown
+options inside a `%{toolchain_is clang}` branch.
+
+### Example 5: Evidence is not a compiler or Werror source diagnostic
+
+User says: "Generate a source patch from this depsolve evidence."
+
+Actions:
+
+1. Run patch-suggest only if the user explicitly asks to check applicability, or
+   inspect the evidence directly.
+2. If the output status is `not_applicable`, do not generate a source patch from
+   this skill.
+3. Use `tizen-gbs-build-workflow` suggestion files or the relevant workflow
+   suggester instead.
+
+Result: Non-source-diagnostic failures are routed away from patch-suggest.
+
+## Required Workflow
+
+### Run the skill
+
+> **Token rule: do not read raw logs yourself.**
+>
+> Treat patch-suggest like the log-analysis skill: give it the Evidence Packet
+> path or build-log path, then read the skill output. Do **not** open, read,
+> summarize, or scan the raw build log yourself in either `--evidence` or
+> `--buildlog` mode. In `--buildlog` mode, patch-suggest runs analyzer
+> internally and compresses the raw log into evidence plus `context.md`
+> (for example, a large log can become roughly 1k tokens of Claude-facing
+> context). Reading the raw log yourself defeats that compression and can waste
+> around 10k tokens. After running the skill, read only its generated
+> `README.md`, `meta.json`, `context.md`, and the per-file contexts or edit
+> specs those outputs explicitly point to.
+
+1. Identify the input. Use exactly one of:
+   - `--evidence /path/to/evidence_packet.json`
+   - `--buildlog /path/to/buildlog`
+2. If the user provided neither evidence nor build log, ask:
+   "Which evidence_packet.json or build log should I use?" Do not guess; the
+   skill cannot run without one of these inputs.
+3. Identify optional source root. If the user provided a package source root,
+   pass it with `--src-root`.
+4. If the user did not provide a source root, do not ask and do not guess. Omit
+   `--src-root`. This is intentional: the skill can produce a Level B advisory,
+   and Claude can then open the reported `file:line` itself to read source before
+   generating the patch.
+5. Identify output directory. If the user did not specify one, use
+   `./.gbs_patch_suggest` without asking.
+6. Fix-all-by-file mode is the default. Do not add a flag to enable it. Use
+   `--no-fix-all` only when the user explicitly asks to temporarily fall back to
+   the legacy cluster, multi-candidate, or single-diagnostic path.
+7. Run patch-suggest through one of the stable entry points. `--evidence` and
+   `--buildlog` are mutually exclusive; do not pass both. Use `python3`; use
+   `python` only if `python3` is unavailable. Modern systems commonly expose
+   Python as `python3`.
+
+   Prefer `python3 -m gbs_patch_suggest` first; when it works, no launcher path
+   is needed. If `python3 -m gbs_patch_suggest` fails with
+   `No module named gbs_patch_suggest` or `command not found`, this is EXPECTED
+   in skill-folder mode because the package may not be pip-installed.
+   Immediately switch to `python3 scripts/run_patch_suggest.py`. Do not retry,
+   investigate, or list files.
+
+   If `python3 -m` is unavailable for any other reason, use the direct-folder
+   launcher at the fixed relative path `scripts/run_patch_suggest.py` next to
+   this `SKILL.md`. Do not list or scan the skill directory to discover the
+   launcher; you already know this `SKILL.md` location, and the launcher is
+   beside it under `scripts/`.
+
+   If `gbs_patch_suggest` is installed in the current Python environment:
+
+   ```bash
+   python3 -m gbs_patch_suggest \
+       --evidence /path/to/evidence_packet.json \
+       --src-root /path/to/source \
+       --output-dir .gbs_patch_suggest
+   ```
+
+   To start from a build log, let patch-suggest run analyzer internally:
+
+   ```bash
+   python3 -m gbs_patch_suggest \
+       --buildlog /path/to/buildlog \
+       --src-root /path/to/source \
+       --output-dir .gbs_patch_suggest
+   ```
+
+   If the source root is unavailable, omit `--src-root`:
+
+   ```bash
+   python3 -m gbs_patch_suggest \
+       --evidence /path/to/evidence_packet.json \
+       --output-dir .gbs_patch_suggest
+   ```
+
+   If using the skill folder directly without installing the Python package,
+   run this from the `tizen-gbs-patch-suggest` skill directory:
+
+   ```bash
+   python3 scripts/run_patch_suggest.py \
+       --buildlog /path/to/buildlog \
+       --src-root /path/to/source \
+       --output-dir .gbs_patch_suggest
+   ```
+
+### After the skill finishes
+
+1. Read `.gbs_patch_suggest/README.md` first for the output summary, then read
+   `.gbs_patch_suggest/meta.json` to identify the status and mode.
+2. If status is `spec_toolchain_flag_context_available`, process the generated
+   `.spec` compatibility edit spec:
+   - Read `.gbs_patch_suggest/context.md`.
+   - Use `.gbs_patch_suggest/spec_toolchain_flag_context/edit_spec_spec_toolchain_flags.json`.
+   - Do not delete options from the original `.spec` `CFLAGS` or `CXXFLAGS`
+     lines; GCC must keep those flags.
+   - The patch should only insert a `%{toolchain_is clang}` branch that strips
+     the Clang-unknown options.
+3. If status is `spec_toolchain_flag_advisory`, do not guess a `.spec` patch.
+   Confirm the flag source and insertion point with the user or by inspecting
+   the `.spec` before preparing any edit.
+4. If status is `fix_all_context_available`, process fix-all output one file at
+   a time:
+   - Read `.gbs_patch_suggest/context.md` for the overview and file order.
+   - Open exactly one `.gbs_patch_suggest/fix_all_context/files/*.md` file.
+   - Fill the matching skeleton under
+     `.gbs_patch_suggest/fix_all_context/edit_specs/` by changing only `new`
+     values and preserving `file`, `line`, and `old`.
+   - Run the formatter for that file's edit spec and produce that file's
+     candidate patch.
+   - Then move to the next per-file context. Do not load every per-file context
+     or every edit spec at once.
+5. If status is `cluster_context_available`, process the cluster output one
+   file at a time from `.gbs_patch_suggest/cluster_context/`.
+6. If status is `multi_candidate_context_available`, process one candidate at a
+   time from `.gbs_patch_suggest/candidate_context/`.
+7. For single-diagnostic statuses such as `source_context_available`,
+   `source_context_unavailable`, `source_context_ambiguous`, `diagnostic_only`,
+   or `not_applicable`, read `.gbs_patch_suggest/context.md` as the primary
+   prompt.
+8. If a context already contains Level A source context, do not re-read the
+   whole source file or large source areas. The context window is the primary
+   source material for patch drafting.
+9. Targeted root-cause verification is still allowed and expected: search or
+   grep for a specific referenced function or symbol before preserving it. This
+   focused check is different from reading a whole log or broad source tree.
+10. If a context says source context is unavailable or ambiguous, Claude must
+   inspect the reported file or candidate paths before generating any patch.
+11. Decide candidate repairs yourself as the outer assistant, following the
+   relevant context exactly:
+   - write explicit `edit_spec_N.json` candidate(s)
+   - include approach, explicit assumption, and confidence
+   - question whether the reported error is only a symptom
+   - verify referenced functions or symbols exist before preserving them
+   - do not fabricate functions or headers
+   - if the same `old` text appears in multiple places, write multiple edits
+     with their own `line` values instead of making `old` a giant multi-line
+     block
+12. For each candidate, run the deterministic formatter to create the patch file:
+
+   ```bash
+   python3 -m gbs_patch_suggest format-patch \
+       --src-root /path/to/source \
+       --edit-spec .gbs_patch_suggest/edit_spec_N.json \
+       --output .gbs_patch_suggest/candidate_N.patch \
+       --check
+   ```
+
+   If using the skill folder directly, run the same subcommand through the fixed
+   launcher path:
+
+   ```bash
+   python3 scripts/run_patch_suggest.py format-patch \
+       --src-root /path/to/source \
+       --edit-spec .gbs_patch_suggest/edit_spec_N.json \
+       --output .gbs_patch_suggest/candidate_N.patch \
+       --check
+   ```
+13. If the formatter fails, revise the edit spec and rerun the formatter.
+   Do not hand-write a unified diff as a fallback. If the formatter reports
+   `old_not_unique` or `context_not_unique`, use the error code and candidate
+   line numbers to add `line`, `before`, or `after`. Do not read the formatter
+   source code to infer rules, and do not make `old` huge just to force
+   uniqueness.
+14. Tell the user where each candidate patch file was written.
+15. Writing a `.patch` file only saves the suggestion to disk for review. It does
+   not mean the patch should be applied. Writing the file and applying it are
+   completely separate actions.
+16. Do not apply patches. Do not run `git apply` or `patch`. Do not modify the
+   source tree. The user reviews the patch file and decides whether to apply it.
+
+## Output Contract
+
+The skill writes a `.gbs_patch_suggest/` directory:
+
+```text
+.gbs_patch_suggest/
+├── analyzer_output/
+│   └── evidence_packet.json
+├── spec_toolchain_flag_context/
+├── fix_all_context/
+│   ├── files/
+│   └── edit_specs/
+├── cluster_context/
+├── candidate_context/
+├── README.md
+├── context.md
+└── meta.json
+```
+
+Files:
+
+- `README.md`: short summary of the selected diagnostic and which file to read.
+- `analyzer_output/`: present when `--buildlog` was used; contains analyzer output
+  including `evidence_packet.json`.
+- `context.md`: overview or single-diagnostic LLM-facing patch-generation
+  context, depending on status.
+- `spec_toolchain_flag_context/`: `.spec` compatibility edit spec for Clang
+  unknown warning options caused by GCC-only CFLAGS/CXXFLAGS.
+- `fix_all_context/`: default fix-all-by-file per-file contexts and edit spec
+  skeletons when analyzer source candidates are available.
+- `cluster_context/`: legacy large-scale cluster context when fix-all is
+  disabled or unavailable and a large-scale cluster is present.
+- `candidate_context/`: legacy per-candidate context when fix-all is disabled
+  or unavailable and multiple terminal candidates are present.
+- `meta.json`: machine-readable status, level, fault class, semantic class,
+  primary error, source-context metadata, candidate paths, and output paths.
+
+`candidate_N.patch` files are not produced by the initial context-generation
+subprocess. They may be written later by the formatter subcommand from explicit
+Claude-authored `edit_spec_N.json` files. These files are suggestion drafts for
+user review and must not be auto-applied.
+
+Statuses:
+
+- `fix_all_context_available`: default fix-all-by-file output was written.
+- `spec_toolchain_flag_context_available`: `.spec` toolchain flag compatibility
+  output was written.
+- `spec_toolchain_flag_advisory`: Clang unknown warning options were detected,
+  but the skill could not safely confirm `.spec` source or insertion point.
+- `cluster_context_available`: legacy large-scale cluster output was written.
+- `multi_candidate_context_available`: legacy multi-candidate output was written.
+- `source_context_available`: Level A. Source context is included.
+- `source_context_unavailable`: Level B. File and line are known, but source
+  context was not read by the skill.
+- `source_context_ambiguous`: Level B. Multiple source candidates were found.
+- `diagnostic_only`: Level C. No usable file and line were available.
+- `not_applicable`: the Evidence Packet primary error is not a compiler or Werror
+  source diagnostic.
+
+Exit codes:
+
+- `0`: context output was written, including degraded or not-applicable output.
+- `1`: fatal patch-suggest error.
+- `3`: evidence file was unreadable.
+
+## Relationship to Other Skills
+
+Patch-suggest consumes `tizen-gbs-log-analysis` output. You can provide an
+existing `evidence_packet.json`, or use `--buildlog` so patch-suggest runs
+analyzer as a subprocess and consumes the generated evidence.
+
+Patch-suggest can also be used after `tizen-gbs-build-workflow` by reading
+`.gbs_workflow/analyzer_output/evidence_packet.json`. It does not replace the
+workflow suggesters and does not handle non-source-diagnostic fault classes.
+
+Patch-suggest has no direct relationship to `tizen-gbs-build` except that build
+or workflow runs may produce the logs that analyzer later converts into evidence.
+
+## Disclaimer
+
+This skill prepares context only. It does not call an LLM, does not generate the
+final patch itself, does not apply patches, and does not modify source files.
+Claude may write `.patch` suggestion files after reading `context.md`, but that
+is only saving a draft for review. The user decides whether to apply it.

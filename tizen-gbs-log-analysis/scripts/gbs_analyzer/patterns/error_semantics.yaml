@@ -1,0 +1,69 @@
+schema_version: 1
+
+semantic_classes:
+  syntax_error:
+    base_confidence: 0.90
+    cascade_probability: 0.05
+    default_level: 1
+    patterns:
+      - "syntax error"
+      - "expected [^\\n]+ before"
+      - "expected .+"
+
+  undeclared_identifier:
+    base_confidence: 0.75
+    cascade_probability: 0.30
+    default_level: "2 + grep header"
+    patterns:
+      - "use of undeclared identifier"
+      - "'[^']+' undeclared"
+      - "was not declared in this scope"
+
+  no_member:
+    base_confidence: 0.80
+    cascade_probability: 0.20
+    default_level: "3 (struct/class)"
+    patterns:
+      - "no member named"
+      - "has no member named"
+      - "has no member"
+
+  type_mismatch:
+    base_confidence: 0.85
+    cascade_probability: 0.15
+    default_level: "2 + typedef"
+    patterns:
+      - "cannot convert"
+      - "invalid conversion"
+      - "no matching function for call"
+      - "conflicting types"
+
+  template_instantiation:
+    base_confidence: 0.60
+    cascade_probability: 0.50
+    default_level: "3 (template)"
+    patterns:
+      - "template instantiation"
+      - "instantiated from"
+      - "substitution failure"
+
+  undefined_reference:
+    base_confidence: 0.85
+    cascade_probability: 0.20
+    default_level: null
+    patterns:
+      - "undefined reference to"
+
+  missing_lib:
+    base_confidence: 0.95
+    cascade_probability: 0.05
+    default_level: null
+    patterns:
+      - "cannot find -l"
+
+  generic_error:
+    base_confidence: 0.45
+    gated_base_confidence: 0.70
+    cascade_probability: 0.40
+    default_level: 2
+    patterns: []

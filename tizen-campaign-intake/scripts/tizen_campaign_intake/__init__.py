@@ -1,0 +1,1 @@
+"""tizen campaign intake package."""

@@ -1,0 +1,573 @@
+"""Serial JSON driver for the credential-isolated QuickBuild browser agent."""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import subprocess
+import time
+from pathlib import Path
+from queue import Empty, Queue
+from threading import Thread
+from typing import Any
+
+from tizen_qb_verify.qb_redact import PageRedactor
+
+FAILURE_CATEGORIES = frozenset(
+    {
+        "NEW_PAGE",
+        "WORKER_BLOCKED",
+        "WORKER_NOT_PAUSED",
+        "CLOSE_TARGET_FAILED",
+        "BROWSER_DISCONNECTED",
+        "PAGE_CLOSED",
+        "ADAPT_FAILED",
+        "FETCH_CONTINUE_FAILED",
+        "UNKNOWN",
+    }
+)
+_COMMANDS = frozenset({"login", "open_form", "fill", "read", "submit", "close",
+                       "discovery_start", "discovery_read", "read_text"})
+_DISCOVERY_ERRORS = frozenset({"DISCOVERY_REPORT_AMBIGUOUS", "DISCOVERY_LOG_UNREADABLE",
+                             "QB_TEXT_ENCODING_UNSUPPORTED", "QB_DOWNLOAD_UNSUPPORTED"})
+DISCOVERY_PAGE_KINDS = frozenset({
+    "parent_overview", "parent_variables", "child_overview", "child_variables",
+    "report_entry", "report", "log", "configuration",
+})
+DISCOVERY_CHECKS = frozenset({
+    "identity_mismatch", "child_link_count", "variables_missing", "iframe_count",
+    "header_missing", "header_duplicate", "arch_unmapped", "package_duplicate",
+    "cell_multi_link", "link_text", "link_path", "structure_invalid", "table_count",
+    "cell_count", "package_name", "row_limit", "variable_duplicate", "package_count",
+})
+DISCOVERY_COUNT_KEYS = frozenset({"actual_count", "expected_count", "row_index", "column_index"})
+_PATH_SHAPES = frozenset(
+    {"/", "/dashboard", "/wicket/page", "/signin", "<other>", "/overview/<id>"}
+    | {f"/build/<id>{suffix}" for suffix in ("", "/overview", "/variables", "/step_status")}
+    | {"/build/<id>/html_report", "/download/<id>/html/<report>",
+       "/download/<id>/html/<report>/<package-log>"}
+)
+_AGENT_CODES = frozenset(
+    {
+        "QB_BROWSER_UNAVAILABLE",
+        "AGENT_PHASE",
+        "QB_LOGIN_TIMEOUT",
+        "QB_LOGIN_ABORTED",
+        "QB_FORM_CHANGED",
+        "QB_FORM_VALUE_UNAVAILABLE",
+        "QB_FORM_READBACK_MISMATCH",
+        "QB_READ_REDIRECTED",
+        "QB_READ_ID_MISMATCH",
+        "QB_EVIDENCE_REDACTION_FAILED",
+        "QB_TRUSTED_CONTEXT_UNAVAILABLE",
+    } | _DISCOVERY_ERRORS
+)
+
+
+class QbBrowserError(RuntimeError):
+    def __init__(
+        self,
+        code: str,
+        *,
+        released: bool | None = None,
+        diagnostic: dict[str, Any] | None = None,
+        diagnostic_failed: bool = False,
+        snapshot_state: dict[str, Any] | None = None,
+        agent_code: str | None = None,
+        failure_category: str | None = None,
+        command: str | None = None,
+    ) -> None:
+        super().__init__(code)
+        self.code = code
+        self.released = released
+        self.diagnostic = diagnostic
+        self.diagnostic_failed = diagnostic_failed
+        self.snapshot_state = snapshot_state
+        self.login_facts: dict[str, Any] | None = None
+        self.agent_code = agent_code
+        self.failure_category = failure_category
+        self.command = command
+        self.agent_exited: bool | None = None
+        self.agent_exit_code: int | None = None
+        self.trace_written = False
+        self.reason: str | None = None
+        self.discovery_facts: dict[str, Any] | None = None
+
+    def failure_facts(self) -> dict[str, Any]:
+        facts: dict[str, Any] = {
+            "command": self.command if self.command in _COMMANDS else None,
+            "agent_error_code": (
+                self.agent_code
+                if self.agent_code in _AGENT_CODES
+                else "UNKNOWN"
+                if self.agent_code is not None
+                else None
+            ),
+            "failure_category": (
+                self.failure_category if self.failure_category in FAILURE_CATEGORIES else None
+            ),
+            "agent_exited": self.agent_exited,
+            "agent_exit_code": self.agent_exit_code,
+        }
+        if self.login_facts is not None:
+            facts["login_facts"] = self.login_facts
+        if self.discovery_facts is not None:
+            facts.update(self.discovery_facts)
+        return facts
+
+
+def validate_discovery_facts(value: dict[str, Any]) -> dict[str, Any]:
+    page, check, counts = (
+        value.get(key) for key in ("page_kind", "first_failed_check", "counts")
+    )
+    if (
+        not isinstance(page, str) or page not in DISCOVERY_PAGE_KINDS
+        or not isinstance(check, str) or check not in DISCOVERY_CHECKS
+        or not isinstance(counts, dict) or not counts.keys() <= DISCOVERY_COUNT_KEYS
+        or any(type(n) is not int or not 0 <= n <= 2**53 - 1 for n in counts.values())
+    ):
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    return {"page_kind": page, "first_failed_check": check, "counts": dict(counts)}
+
+
+def validate_login_facts(value: object) -> dict[str, Any]:
+    booleans = {"on_signin", "password_present", "sign_out_present", "login_channel_closed"}
+    counts = {"checks", "login_posts_released"}
+    if not isinstance(value, dict) or set(value) != booleans | counts | {
+        "final_path_shape",
+        "denied",
+    }:
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    path = value["final_path_shape"]
+    denied = value["denied"]
+    if (
+        not isinstance(path, str)
+        or path not in _PATH_SHAPES
+        or any(type(value[key]) is not bool for key in booleans)
+        or any(type(value[key]) is not int or value[key] < 0 for key in counts)
+        or not isinstance(denied, dict)
+        or any(
+            key not in _PATH_SHAPES or type(count) is not int or count < 0
+            for key, count in denied.items()
+        )
+    ):
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    return value
+
+
+def validate_snapshot_state(value: object) -> dict[str, Any]:
+    if not isinstance(value, dict) or set(value) != {"selected", "option_count"}:
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    selected = value["selected"]
+    if (
+        type(value["option_count"]) is not int
+        or value["option_count"] < 0
+        or selected is not None
+        and (
+            not isinstance(selected, list)
+            or any(
+                not isinstance(item, str)
+                or len(item) > 200
+                or re.fullmatch(r"[A-Za-z0-9._:+-]+", item) is None
+                for item in selected
+            )
+        )
+    ):
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    return value
+
+
+def _sensitive_key(value: object) -> bool:
+    if isinstance(value, dict):
+        return any(
+            str(key).casefold() in {"cookie", "set-cookie", "authorization"} or _sensitive_key(item)
+            for key, item in value.items()
+        )
+    if isinstance(value, list):
+        return any(_sensitive_key(item) for item in value)
+    return False
+
+
+def _check_diagnostic_strings(value: object, redactor: PageRedactor) -> None:
+    if isinstance(value, str):
+        redactor.check_bytes(value.encode("utf-8"))
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            _check_diagnostic_strings(key, redactor)
+            _check_diagnostic_strings(item, redactor)
+    elif isinstance(value, list):
+        for item in value:
+            _check_diagnostic_strings(item, redactor)
+
+
+class _DriverUnknown(dict[str, Any]):
+    """Provenance is a Python type, never part of the serialized response."""
+
+
+def driver_failed(response: dict[str, Any]) -> bool:
+    return isinstance(response, _DriverUnknown)
+
+
+def _unknown() -> dict[str, Any]:
+    return _DriverUnknown(
+        {
+            "ok": True,
+            "landed": "unknown",
+            "released": True,
+            "observed": "<other>",
+            "messages": [],
+        }
+    )
+
+
+def decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[str, Any]:
+    """Retain fixed diagnostic metadata without changing existing error mapping."""
+    category = None
+    login_facts = None
+    discovery_facts = None
+    try:
+        response = json.loads(raw)
+    except (ValueError, TypeError):
+        response = None
+    try:
+        if (
+            isinstance(response, dict)
+            and {"page_kind", "first_failed_check", "counts"} & response.keys()
+        ):
+            if (
+                command not in {"discovery_read", "read_text"}
+                or response.get("ok") is not False
+                or not isinstance(response.get("error"), str)
+                or response.get("error") not in _DISCOVERY_ERRORS | {"QB_READ_ID_MISMATCH"}
+                or _sensitive_key(response)
+            ):
+                if submit_sent:
+                    return _unknown()
+                raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+            discovery_facts = validate_discovery_facts(response)
+        if isinstance(response, dict) and "login_facts" in response:
+            if (
+                command != "login"
+                or response.get("ok") is not False
+                or response.get("error") not in ("QB_LOGIN_TIMEOUT", "QB_LOGIN_ABORTED")
+                or _sensitive_key(response)
+            ):
+                if submit_sent:
+                    return _unknown()
+                raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+            login_facts = validate_login_facts(response["login_facts"])
+        if isinstance(response, dict) and "failure_category" in response:
+            value = response["failure_category"]
+            if (
+                response.get("ok") is not False
+                or not isinstance(response.get("error"), str)
+                or not isinstance(value, str)
+                or value not in FAILURE_CATEGORIES
+            ):
+                if submit_sent:
+                    return _unknown()
+                raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+            category = value
+        return _decode_response(raw, submit_sent=submit_sent, command=command)
+    except QbBrowserError as exc:
+        exc.command = command if command in _COMMANDS else None
+        exc.failure_category = category
+        exc.login_facts = login_facts
+        exc.discovery_facts = discovery_facts
+        if isinstance(response, dict) and not _sensitive_key(response):
+            code = response.get("error")
+            if isinstance(code, str) and code in _AGENT_CODES:
+                exc.agent_code = code
+            if command in {"discovery_read", "read_text"}:
+                from tizen_campaign_core.discovery_manifest import REASONS
+
+                reason = response.get("reason")
+                if isinstance(reason, str) and reason in REASONS:
+                    exc.reason = reason
+        raise
+
+
+def _decode_response(raw: str, *, submit_sent: bool, command: str = "") -> dict[str, Any]:
+    """Map only the frozen response table; never echo an agent payload in errors."""
+    try:
+        response = json.loads(raw)
+    except (ValueError, TypeError):
+        if submit_sent:
+            return _unknown()
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE") from None
+    if _sensitive_key(response):
+        if submit_sent:
+            return _unknown()
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    if not isinstance(response, dict) or type(response.get("ok")) is not bool:
+        if submit_sent:
+            return _unknown()
+        raise QbBrowserError("INTERNAL_ERROR")
+    snapshot_state = None
+    snapshot_error = (
+        command == "fill"
+        and response.get("error") == "QB_FORM_VALUE_UNAVAILABLE"
+        and response.get("field") == "SNAPSHOT_NUM"
+        and response["ok"] is False
+    )
+    if snapshot_error:
+        snapshot_state = validate_snapshot_state(response.get("snapshot_state"))
+    elif "snapshot_state" in response:
+        if submit_sent:
+            return _unknown()
+        raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+    if submit_sent:
+        if response["ok"]:
+            build_id = response.get("build_id")
+            valid_build = (
+                response.get("landed") == "build"
+                and isinstance(build_id, str)
+                and build_id.isascii()
+                and build_id.isdecimal()
+            )
+            valid_unknown = (
+                response.get("landed") == "unknown"
+                and isinstance(response.get("observed"), str)
+                and isinstance(response.get("messages"), list)
+                and all(isinstance(message, str) for message in response["messages"])
+            )
+            if (
+                response.get("released") is not True
+                or not (valid_build or valid_unknown)
+                or "html_redacted" in response
+            ):
+                return _unknown()
+        elif response.get("released") is not False or not isinstance(response.get("error"), str):
+            return _unknown()
+    if response["ok"]:
+        if "outside_identity_count" in response and (
+            type(response["outside_identity_count"]) is not int
+            or response["outside_identity_count"] < 0
+        ):
+            raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+        if "html_redacted" in response:
+            html = response["html_redacted"]
+            if not isinstance(html, str):
+                raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+            PageRedactor().check_bytes(html.encode("utf-8"))
+        return response
+    code = response.get("error")
+    if code == "QB_FORM_VALUE_UNAVAILABLE":
+        mapped = (
+            "REJECTED_QB_SNAPSHOT_UNAVAILABLE"
+            if response.get("field") == "SNAPSHOT_NUM"
+            else "REJECTED_QB_FORM_MISMATCH"
+        )
+    else:
+        mapped = {
+            "QB_FORM_CHANGED": "REJECTED_QB_FORM_CHANGED",
+            "QB_FORM_READBACK_MISMATCH": "REJECTED_QB_FORM_MISMATCH",
+            "QB_LOGIN_TIMEOUT": "QB_LOGIN_TIMEOUT",
+            "QB_LOGIN_ABORTED": "QB_LOGIN_ABORTED",
+            "AGENT_PHASE": "QB_BROWSER_UNAVAILABLE",
+            "QB_BROWSER_UNAVAILABLE": "QB_BROWSER_UNAVAILABLE",
+            "QB_EVIDENCE_REDACTION_FAILED": "QB_EVIDENCE_REDACTION_FAILED",
+        }.get(code if isinstance(code, str) else "", "INTERNAL_ERROR")
+        if command in {"discovery_read", "read_text"} and code in _DISCOVERY_ERRORS:
+            mapped = str(code)
+        if command in {"read", "discovery_read", "read_text"} and code in (
+            "QB_READ_REDIRECTED", "QB_READ_ID_MISMATCH"
+        ):
+            mapped = "QB_FETCH_FAILED"
+        if code == "QB_TRUSTED_CONTEXT_UNAVAILABLE":
+            mapped = (
+                "QB_FETCH_FAILED"
+                if command in {"read", "discovery_read", "read_text"}
+                else "REJECTED_QB_FORM_CHANGED"
+                if command in {"open_form", "fill", "submit"}
+                else "INTERNAL_ERROR"
+            )
+    diagnostic = response.get("diagnostic")
+    if diagnostic is not None:
+        if not isinstance(diagnostic, dict) or not isinstance(diagnostic.get("html_redacted"), str):
+            raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+        redactor = PageRedactor()
+        redactor.check_bytes(diagnostic["html_redacted"].encode("utf-8"))
+        # Validate decoded strings, never JSON escape sequences as HTML attributes.
+        _check_diagnostic_strings(
+            {key: value for key, value in diagnostic.items() if key != "html_redacted"},
+            redactor,
+        )
+    raise QbBrowserError(
+        mapped,
+        released=False if submit_sent else None,
+        diagnostic=diagnostic,
+        diagnostic_failed=response.get("diagnostic_failed") is True,
+        snapshot_state=snapshot_state,
+        agent_code=code if isinstance(code, str) else None,
+    )
+
+
+class QbBrowser:
+    """One agent and one login per CLI invocation; commands are synchronous."""
+
+    def __init__(
+        self, qb: dict[str, Any], *, read_timeout: float = 60, submit_timeout: float = 150
+    ) -> None:
+        self.qb = qb
+        self.process: subprocess.Popen[str] | None = None
+        self.trace: list[dict[str, Any]] = []
+        self.read_timeout = read_timeout
+        self.submit_timeout = submit_timeout
+        self.termination_records: list[dict[str, Any]] = []
+        self.unavailable = False
+
+    def __enter__(self) -> QbBrowser:
+        browser = self.qb["browser"]
+        env = os.environ.copy()
+        for name in ("DEBUG", "PWDEBUG", "NODE_OPTIONS", "QB_COOKIE", "QB_PASSWORD"):
+            env.pop(name, None)
+        try:
+            self.process = subprocess.Popen(
+                [
+                    browser["node"],
+                    str(Path(__file__).with_name("qb_browser_agent.mjs")),
+                    browser["playwright_module"],
+                    browser["chromium"],
+                ],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                text=True,
+                encoding="utf-8",
+                env=env,
+            )
+        except OSError:
+            raise QbBrowserError("QB_BROWSER_UNAVAILABLE") from None
+        return self
+
+    def command(self, command: str, **fields: Any) -> dict[str, Any]:
+        try:
+            response = self._command(command, **fields)
+        except QbBrowserError as exc:
+            if exc.code == "QB_BROWSER_UNAVAILABLE" or exc.agent_code is None:
+                self.unavailable = True
+            exc.command = command if command in _COMMANDS else None
+            if self.process is not None:
+                exc.agent_exit_code = self.process.poll()
+                exc.agent_exited = exc.agent_exit_code is not None
+            self.trace.append({"ok": False, **exc.failure_facts()})
+            raise
+        if driver_failed(response):
+            self.unavailable = True
+        self.trace.append({"command": command if command in _COMMANDS else None, "ok": True})
+        return response
+
+    def _command(self, command: str, **fields: Any) -> dict[str, Any]:
+        process = self.process
+        if (
+            process is None
+            or process.poll() is not None
+            or process.stdin is None
+            or process.stdout is None
+        ):
+            if command == "submit":
+                return _unknown()
+            raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+        if _sensitive_key(fields):
+            raise QbBrowserError("QB_BROWSER_UNAVAILABLE")
+        replies: Queue[str] = Queue(maxsize=1)
+
+        def exchange() -> None:
+            try:
+                assert process.stdin is not None and process.stdout is not None
+                process.stdin.write(
+                    json.dumps({"command": command, **fields}, ensure_ascii=False) + "\n"
+                )
+                process.stdin.flush()
+                raw = process.stdout.readline()
+            except (OSError, UnicodeError, ValueError):
+                raw = ""
+            replies.put(raw)
+
+        # Bound the complete exchange, including a partial line or blocked pipe write.
+        started = time.monotonic()
+        worker = Thread(target=exchange, daemon=True)
+        worker.start()
+        timeout = (
+            self.read_timeout
+            if command == "read"
+            else self.submit_timeout
+            if command == "submit"
+            else None
+        )
+        if command in {"discovery_read", "read_text"}:
+            timeout = self.read_timeout
+        try:
+            raw = replies.get(timeout=timeout)
+        except Empty:
+            self._terminate(time.monotonic() - started)
+            worker.join(timeout=5)
+            if command == "submit":
+                return _unknown()
+            raise QbBrowserError("QB_FETCH_FAILED") from None
+        return decode_response(raw, submit_sent=command == "submit", command=command)
+
+    def _terminate(self, waited: float) -> None:
+        process = self.process
+        if process is None or process.poll() is not None:
+            return
+        if process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=35)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+        self.termination_records.append(
+            {
+                "event": "agent_terminated",
+                "waited_seconds": int(waited),
+                "exit_code": process.returncode,
+            }
+        )
+
+    def login(self) -> dict[str, Any]:
+        return self.command(
+            "login",
+            login_timeout_seconds=self.qb["browser"]["login_timeout_seconds"],
+            projects=[
+                {key: value[key] for key in ("overview_id", "configuration_path", "project_name")}
+                for value in self.qb["projects"].values()
+                if value["enabled"]
+            ],
+        )
+
+    def close(self) -> None:
+        process = self.process
+        if process is None:
+            return
+        started = time.monotonic()
+        try:
+            if process.poll() is None and process.stdin is not None and not process.stdin.closed:
+                process.stdin.write('{"command":"close"}\n')
+                process.stdin.flush()
+            if process.stdin is not None:
+                process.stdin.close()
+            process.wait(timeout=35)
+        except (OSError, subprocess.TimeoutExpired):
+            self._terminate(time.monotonic() - started)
+        finally:
+            try:
+                if process.stdin is not None:
+                    process.stdin.close()
+                if process.stdout is not None:
+                    process.stdout.close()
+                self.process = None
+            finally:
+                try:
+                    self.close_observation = {
+                        "elapsed_ms": max(0, round((time.monotonic() - started) * 1000)),
+                        "returncode": process.poll(),
+                    }
+                except Exception:
+                    # Diagnostic collection must not replace the original outcome.
+                    pass
+
+    def __exit__(self, *_args: object) -> None:
+        self.close()
