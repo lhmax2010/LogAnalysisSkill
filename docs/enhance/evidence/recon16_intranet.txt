@@ -1,0 +1,49 @@
+五条命令全部成功执行，无错误。原始输出如下：
+
+recon16.py 校验值：5048e2d216e0dc8f1b8bcf1d4d1dd9caa0f59de91de0da433bd8ad14ccfc8218  /home1/chengkai/vd-cosmos/run/recon-b3/recon16.py
+recon16.txt 行数：36 /home1/chengkai/vd-cosmos/run/recon-b3/recon16.txt
+recon16.txt 第一行：== 开始 2026-11-05 21:24:22
+recon16.txt 最后一行：== 结束 2026-11-05 21:24:41 用时 18s
+task 文档之后新建或改过的文件（find 原样输出，每个一行）：
+2026-11-05 21:25 /home1/chengkai/vd-cosmos/run/recon-b3/recon16_report.md
+2026-11-05 21:24 /home1/chengkai/vd-cosmos/run/recon-b3/recon16.txt
+2026-11-05 21:24 /home1/chengkai/vd-cosmos/run/recon-b3/recon16.py
+
+chengkai@risc-v-Alienware-Aurora-R16:vd-cosmos$ cat  /home1/chengkai/vd-cosmos/run/recon-b3/recon16.txt
+== 开始 2026-11-05 21:24:22
+== A 历史列表 /history/4362 的翻页方式（不登录）
+  第 1 页：状态 200，91037 字符；"Showing" 文字：'Showing 1 to 30 of 33761'
+  翻页链接 14 个（文字 → 地址形状）：
+     '<<' → ''
+     '<' → ''
+     '1' → ''
+     '2' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-navigation-1-pageLink'
+     '3' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-navigation-2-pageLink'
+     '4' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-navigation-3-pageLink'
+     '5' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-navigation-4-pageLink'
+     '6' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-navigation-5-pageLink'
+     '7' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-navigation-6-pageLink'
+     '8' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-navigation-7-pageLink'
+     '9' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-navigation-8-pageLink'
+     '10' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-navigation-9-pageLink'
+     '>' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-next'
+     '>>' → '/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-last'
+  页面上的下拉框 name：[]
+  第 2 页不带会话读取：状态 302，跳转 '/history/4362'；改为带匿名会话重试（会话只在内存里）
+  第 2 页：地址形状 'vdcosmos-bm.sec.samsung.net/history/4362?0-1.ILinkListener-builds-topToolbars-toolbars-1-span-navigator-next'，状态 302，行 0；首 []，尾 []
+  小结：共 1 页、30 行；构建号跨页严格递减 True；重复 0 个；开始时间单调不增 True；时间范围 ['2026-11-05 18:12:52'] ～ ['2026-11-05 22:05:12']；用了匿名会话 True
+  开始时间倒挂的相邻对（前 5 个）：[]
+== B 逐个读历史列表里的详情页（最多 300 个，间隔 0.2 秒）
+  19246592 的提交端链接：元素属性 id=[] class=[]；链接前 80 字（去标签）：' Log Variables ♦ Hub Link : <a'
+  19246592：状态 200；页面身份 ['19246592']；提交端链接 ['37443794']；编号对 []；版本 ['TIZEN-RBS-SolaML-Partial-261105.220512']
+  19246004 的提交端链接：元素属性 id=[] class=[]；链接前 80 字（去标签）：'uild_report_x86_64"> Build_Report_x86_64 Profiling_Report_x86_64 ♦ Hub Link : <a'
+  19246004：状态 200；页面身份 ['19246004']；提交端链接 ['37442892']；编号对 []；版本 ['TIZEN-RBS-OscarP-Full-261105.210121']
+  19246002 的提交端链接：元素属性 id=[] class=[]；链接前 80 字（去标签）：'uild_report_x86_64"> Build_Report_x86_64 Profiling_Report_x86_64 ♦ Hub Link : <a'
+  19246002：状态 200；页面身份 ['19246002']；提交端链接 ['37442879']；编号对 []；版本 ['TIZEN-RBS-PontusM-Full-261105.210108']
+  19246000：状态 200；页面身份 ['19246000']；提交端链接 ['37442860']；编号对 []；版本 ['TIZEN-RBS-KantSU2e-Full-261105.210106']
+  19245998：状态 200；页面身份 ['19245998']；提交端链接 ['37442859']；编号对 []；版本 ['TIZEN-RBS-OscarS-Full-261105.210101']
+  19091860：状态 200；页面身份 ['19091860']；提交端链接 ['37174546']；编号对 [('37174546', '19091860', 'BUILD_COMPLETE')]；版本 ['TIZEN-RBS-KantSU2e-Full-261022.125159']；已知应为 37174546
+  19226913：状态 200；页面身份 ['19226913']；提交端链接 ['37412299']；编号对 [('37412299', '19226913', 'BUILD_COMPLETE')]；版本 ['TIZEN-RBS-MT8532-Partial-261104.150136']；已知应为 37412299
+  小结：读了 32 个；不同的提交端编号 32 个，其中只对应 1 个构建的 32 个；对应多个构建的 0 个：
+== 结束 2026-11-05 21:24:41 用时 18s
+chengkai@risc-v-Alienware-Aurora-R16:vd-cosmos$ 

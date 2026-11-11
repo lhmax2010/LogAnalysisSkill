@@ -1,0 +1,160 @@
+8 条命令全部执行完毕，无任何报错。按要求格式回报原始输出：
+
+recon15.py 校验值：
+```
+9bee3096b69f3000c6c890fb7b02c26f64fcbd7b52bef63ead94e3b3acb3e775  recon15.py
+```
+
+recon15.txt 行数：
+```
+103 recon15.txt
+```
+
+recon15.txt 第一行：
+```
+== 开始 2026-11-05 15:58:40
+```
+
+recon15.txt 最后一行：
+```
+== 结束 2026-11-05 15:59:51 用时 70s
+```
+
+"== " 开头的行数：
+```
+6
+```
+
+列表快照与报告文件（ls 原样输出）：
+```
+-rw-rw-r-- 1 chengkai chengkai  504 Nov  5 15:58 recon15_list_20261105_155841_overview_4362.txt
+-rw-rw-r-- 1 chengkai chengkai  270 Nov  5 15:58 recon15_list_20261105_155842_history_4362.txt
+-rw-rw-r-- 1 chengkai chengkai 1140 Nov  5 16:05 recon15_report.md
+```
+
+task 文档之后新建或改过的文件（find 原样输出，每个一行）：
+```
+2026-11-05 13:31 /home1/chengkai/vd-cosmos/run/recon-b3/recon15_diag.md
+2026-11-05 13:38 /home1/chengkai/vd-cosmos/run/recon-b3/recon15_diag_tail.txt
+2026-11-05 15:57 /home1/chengkai/vd-cosmos/run/recon-b3/recon15.py
+2026-11-05 15:58 /home1/chengkai/vd-cosmos/run/recon-b3/recon15_list_20261105_155841_overview_4362.txt
+2026-11-05 15:58 /home1/chengkai/vd-cosmos/run/recon-b3/recon15_list_20261105_155842_history_4362.txt
+2026-11-05 15:59 /home1/chengkai/vd-cosmos/run/recon-b3/recon15.txt
+2026-11-05 16:05 /home1/chengkai/vd-cosmos/run/recon-b3/recon15_report.md
+```
+
+执行说明（非命令输出部分）：首轮把 8 条命令一次性执行时，终端集成只捕获到最后一条 find 的输出，前面 6 条因此逐条重跑补齐（命令文本未变，仅各自带上 `cd` 前缀保证在同一目录执行）；未修改、删除任何文件。
+
+chengkai@risc-v-Alienware-Aurora-R16:recon-b3$ cat recon15
+recon15_diag.md                                 recon15_list_20261105_155842_history_4362.txt   recon15_task.md
+recon15_diag_tail.txt                           recon15.py                                      recon15.txt
+recon15_list_20261105_155841_overview_4362.txt  recon15_report.md                               
+chengkai@risc-v-Alienware-Aurora-R16:recon-b3$ cat recon15
+recon15_diag.md                                 recon15_list_20261105_155842_history_4362.txt   recon15_task.md
+recon15_diag_tail.txt                           recon15.py                                      recon15.txt
+recon15_list_20261105_155841_overview_4362.txt  recon15_report.md                               
+chengkai@risc-v-Alienware-Aurora-R16:recon-b3$ cat recon15.txt 
+== 开始 2026-11-05 15:58:40
+== A 构建管理端配置 4362 的列表页（不登录）
+  /overview/4362：状态 200，97135 字节，构建号 56 个（按页面出现顺序）；严格递减 False，严格递增 False
+     前 6 个 ['19241462', '19238873', '19238883', '19238934', '19239524', '19239939']；后 6 个 ['19240872', '19240875', '19240881', '19240885', '19242228', '19242230']
+     含构建号的表格行 76 行；下面是前 3 行和后 2 行去掉标签后的样子（敏感样式不显示）：
+         Build_Runner 2026-11-05 15:42:50 7 RUNNING_BUILD [CRON_SCHEDULER] TIZEN-RBS-OscarP-MLED-Partial-261105.154250 PRODUCT/OscarP_MLED_OSU_2023/RELEASE 37432138 CRON_SCHEDULER 
+         Build_Runner 2026-11-05 12:05:38 6 RUNNING_BUILD [CRON_SCHEDULER] TIZEN-RBS-SLF-FHD-LIC-Full-261105.120539 PRODUCT/SLF_FHD_LIC/RELEASE 37432135 CRON_SCHEDULER 
+         Build_Runner 2026-11-05 12:05:54 6 RUNNING_BUILD [CRON_SCHEDULER] TIZEN-RBS-SLML-UHD-LIC-Full-261105.120555 PRODUCT/SLML_UHD_LIC/RELEASE 37432144 CRON_SCHEDULER 
+         19241364 [release.sec] TIZEN-RBS-NikeM2-Partial-261105.153615 27% 2026-11-05 15:36:15 1h:14m:28s Build_Runner 
+         19241328 [release.sec] TIZEN-RBS-NikeM2-Partial-261105.153214 28% 2026-11-05 15:32:14 1h:18m:30s Build_Runner 
+     表头： [' Id ', ' Next Build Version ', ' Schedule ', ' Requested By ', ' Schedule Date ', ' Priority ', ' Process Status ', ' Build Version ', ' Configuration Path ', ' Hub ID ', ' Requester ', ' Id ', ' Version ', ' Begin Date ', ' Duration ']
+     列表快照已写：/home1/chengkai/vd-cosmos/run/recon-b3/recon15_list_20261105_155841_overview_4362.txt（以后再跑一次，两份对比就能看出列表怎么滚动）
+  /history/4362：状态 200，98472 字节，构建号 30 个（按页面出现顺序）；严格递减 True，严格递增 False
+     前 6 个 ['19242534', '19242528', '19242435', '19242405', '19242384', '19242230']；后 6 个 ['19240892', '19240890', '19240888', '19240885', '19240884', '19240881']
+     含构建号的表格行 30 行；下面是前 3 行和后 2 行去掉标签后的样子（敏感样式不显示）：
+         19242534 [release.sec] TIZEN-RBS-KantSU2e-Partial-261105.165013 0% B4515DRG:8811 2026-11-05 16:50:13 31 seconds Build_Runner 
+         19242528 [release.sec] TIZEN-RBS-KantSU2e-Partial-261105.164913 1% B3207DRG:8811 2026-11-05 16:49:13 1 minute 31 seconds Build_Runner 
+         19242435 [release.sec] TIZEN-RBS-PontusML-Partial-261105.164115 3% B4503DRG:8811 2026-11-05 16:41:15 9 minutes 29 seconds Build_Runner 
+         19240884 [CRON_SCHEDULER] TIZEN-RBS-MT8532-Partial-261105.150107 A0703LHG:8811 2026-11-05 15:01:07 1 hour 20 minutes 19 seconds Build_Runner 
+         19240881 [CRON_SCHEDULER] TIZEN-RBS-RoseP-LFD-Partial-261105.150104 39% A0205LHG:8811 2026-11-05 15:01:04 1 hour 49 minutes 40 seconds Build_Runner 
+     表头： [' ', ' User ', ' ', ' Node ', ' Showing 1 to 30 of 33700 << <…', ' Version ', ' Master Node ', ' Begin Date ', ' Duration ', ' Triggered By ']
+     列表快照已写：/home1/chengkai/vd-cosmos/run/recon-b3/recon15_list_20261105_155842_history_4362.txt（以后再跑一次，两份对比就能看出列表怎么滚动）
+== B 按列表顺序读详情页（最多 120 个，间隔 0.2 秒），每个构建一行
+  19241462：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241462 Running', '2026-11-05 15:42:50')]；本页编号对 []；引用 []；页内其它构建号 ['37432138']；配置 ['4362']
+     [Begin] 附近： ng.net/build/37432138 Summary Id Status Begin Date Duration Triggered By #Dependents #Dependencies 19241462 Running 2026-11-05 15:42:50 1 hour 7 minutes 56 seco
+     [Trigger] 附近： 8 Summary Id Status Begin Date Duration Triggered By #Dependents #Dependencies 19241462 Running 2026-11-05 15:42:50 1 hour 7 minutes 56 seconds Build_Runner 0 b
+     [Duration] 附近： d/37432138 Summary Id Status Begin Date Duration Triggered By #Dependents #Dependencies 19241462 Running 2026-11-05 15:42:50 1 hour 7 minutes 56 seconds Build_R
+     [Status] 附近： c.samsung.net/build/37432138 Summary Id Status Begin Date Duration Triggered By #Dependents #Dependencies 19241462 Running 2026-11-05 15:42:50 1 hour 7 minutes 
+     [Child] 附近：  Overview Build (id:19241462) Pipelines Children [CRON_SCHEDULER] TIZEN-RBS-OscarP-MLED-Partial-261105.154250 24% Overview Log Variables Build_Report_x86_64 Pro
+  19238873：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19238873 Running', '2026-11-05 12:05:39')]；本页编号对 []；引用 []；页内其它构建号 ['37432135']；配置 ['4362']
+     [Begin] 附近： ng.net/build/37432135 Summary Id Status Begin Date Duration Triggered By #Dependents #Dependencies 19238873 Running 2026-11-05 12:05:39 4 hours 45 minutes 9 sec
+     [Trigger] 附近： 5 Summary Id Status Begin Date Duration Triggered By #Dependents #Dependencies 19238873 Running 2026-11-05 12:05:39 4 hours 45 minutes 9 seconds Build_Runner 0 
+     [Duration] 附近： d/37432135 Summary Id Status Begin Date Duration Triggered By #Dependents #Dependencies 19238873 Running 2026-11-05 12:05:39 4 hours 45 minutes 9 seconds Build_
+     [Status] 附近： c.samsung.net/build/37432135 Summary Id Status Begin Date Duration Triggered By #Dependents #Dependencies 19238873 Running 2026-11-05 12:05:39 4 hours 45 minute
+     [Child] 附近：  Overview Build (id:19238873) Pipelines Children [CRON_SCHEDULER] TIZEN-RBS-SLF-FHD-LIC-Full-261105.120539 100% Overview Log Variables Build_Report_armv7l Build
+  19238883：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19238883 Running', '2026-11-05 12:05:55')]；本页编号对 []；引用 []；页内其它构建号 ['37432144']；配置 ['4362']
+  19238934：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19238934 Running', '2026-11-05 12:10:35')]；本页编号对 []；引用 []；页内其它构建号 ['37432237']；配置 ['4362']
+  19239524：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19239524 Running', '2026-11-05 13:09:24')]；本页编号对 []；引用 []；页内其它构建号 ['37433224']；配置 ['4362']
+  19239939：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19239939 Running', '2026-11-05 13:49:12')]；本页编号对 []；引用 []；页内其它构建号 ['37433727']；配置 ['4362']
+  19240342：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240342 Running', '2026-11-05 14:25:15')]；本页编号对 []；引用 []；页内其它构建号 ['37434358']；配置 ['4362']
+  19240417：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240417 Running', '2026-11-05 14:29:15')]；本页编号对 []；引用 []；页内其它构建号 ['37434432']；配置 ['4362']
+  19240452：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240452 Running', '2026-11-05 14:32:15')]；本页编号对 []；引用 []；页内其它构建号 ['37434466']；配置 ['4362']
+  19240460：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240460 Running', '2026-11-05 14:33:15')]；本页编号对 []；引用 []；页内其它构建号 ['37434479']；配置 ['4362']
+  19240489：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240489 Running', '2026-11-05 14:34:13')]；本页编号对 []；引用 []；页内其它构建号 ['37434515']；配置 ['4362']
+  19240503：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240503 Running', '2026-11-05 14:35:14')]；本页编号对 []；引用 []；页内其它构建号 ['37434544']；配置 ['4362']
+  19240551：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240551 Running', '2026-11-05 14:42:03')]；本页编号对 []；引用 []；页内其它构建号 ['37434631']；配置 ['4362']
+  19240570：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240570 Running', '2026-11-05 14:44:14')]；本页编号对 []；引用 []；页内其它构建号 ['37434648']；配置 ['4362']
+  19240613：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240613 Running', '2026-11-05 14:48:14')]；本页编号对 []；引用 []；页内其它构建号 ['37434697']；配置 ['4362']
+  19240713：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240713 Running', '2026-11-05 14:52:15')]；本页编号对 []；引用 []；页内其它构建号 ['37435085']；配置 ['4362']
+  19240732：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240732 Running', '2026-11-05 14:54:17')]；本页编号对 []；引用 []；页内其它构建号 ['37435168']；配置 ['4362']
+  19240846：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240846 Running', '2026-11-05 14:59:15')]；本页编号对 []；引用 []；页内其它构建号 ['37435375']；配置 ['4362']
+  19240852：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240852 Running', '2026-11-05 15:00:27')]；本页编号对 []；引用 []；页内其它构建号 ['37435407']；配置 ['4362']
+  19240870：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240870 Running', '2026-11-05 15:00:46')]；本页编号对 []；引用 []；页内其它构建号 ['37435437']；配置 ['4362']
+  19240876：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240876 Running', '2026-11-05 15:00:59')]；本页编号对 []；引用 []；页内其它构建号 ['37435463']；配置 ['4362']
+  19240879：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240879 Running', '2026-11-05 15:01:03')]；本页编号对 []；引用 []；页内其它构建号 ['37435465']；配置 ['4362']
+  19240888：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240888 Running', '2026-11-05 15:01:13')]；本页编号对 []；引用 []；页内其它构建号 ['37435491']；配置 ['4362']
+  19240890：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240890 Running', '2026-11-05 15:01:18')]；本页编号对 []；引用 []；页内其它构建号 ['37435498']；配置 ['4362']
+  19240892：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240892 Running', '2026-11-05 15:01:22')]；本页编号对 []；引用 []；页内其它构建号 ['37435485']；配置 ['4362']
+  19240913：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240913 Running', '2026-11-05 15:04:18')]；本页编号对 []；引用 []；页内其它构建号 ['37435547']；配置 ['4362']
+  19241101：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241101 Running', '2026-11-05 15:10:43')]；本页编号对 []；引用 []；页内其它构建号 ['37435690']；配置 ['4362']
+  19241107：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241107 Running', '2026-11-05 15:11:05')]；本页编号对 []；引用 []；页内其它构建号 ['37435708']；配置 ['4362']
+  19241293：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241293 Running', '2026-11-05 15:29:14')]；本页编号对 []；引用 []；页内其它构建号 ['37436083']；配置 ['4362']
+  19241328：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241328 Running', '2026-11-05 15:32:14')]；本页编号对 []；引用 []；页内其它构建号 ['37436123']；配置 ['4362']
+  19241364：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241364 Running', '2026-11-05 15:36:15')]；本页编号对 []；引用 []；页内其它构建号 ['37436181']；配置 ['4362']
+  19241644：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241644 Running', '2026-11-05 15:54:13')]；本页编号对 []；引用 []；页内其它构建号 ['37436488']；配置 ['4362']
+  19241770：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241770 Running', '2026-11-05 16:00:23')]；本页编号对 []；引用 []；页内其它构建号 ['37436638']；配置 ['4362']
+  19241778：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241778 Running', '2026-11-05 16:00:28')]；本页编号对 []；引用 []；页内其它构建号 ['37436643']；配置 ['4362']
+  19241780：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241780 Running', '2026-11-05 16:00:36')]；本页编号对 []；引用 []；页内其它构建号 ['37436656']；配置 ['4362']
+  19241782：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241782 Running', '2026-11-05 16:00:37')]；本页编号对 []；引用 []；页内其它构建号 ['37436657']；配置 ['4362']
+  19241783：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241783 Running', '2026-11-05 16:00:38')]；本页编号对 []；引用 []；页内其它构建号 ['37436661']；配置 ['4362']
+  19241786：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241786 Running', '2026-11-05 16:00:40')]；本页编号对 []；引用 []；页内其它构建号 ['37436655']；配置 ['4362']
+  19241790：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241790 Running', '2026-11-05 16:00:56')]；本页编号对 []；引用 []；页内其它构建号 ['37436687']；配置 ['4362']
+  19241792：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241792 Running', '2026-11-05 16:01:08')]；本页编号对 []；引用 []；页内其它构建号 ['37436695']；配置 ['4362']
+  19241797：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19241797 Running', '2026-11-05 16:01:15')]；本页编号对 []；引用 []；页内其它构建号 ['37436704']；配置 ['4362']
+  19242384：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19242384 Running', '2026-11-05 16:37:15')]；本页编号对 []；引用 []；页内其它构建号 ['37437490']；配置 ['4362']
+  19242405：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19242405 Running', '2026-11-05 16:39:14')]；本页编号对 []；引用 []；页内其它构建号 ['37437559']；配置 ['4362']
+  19242435：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19242435 Running', '2026-11-05 16:41:15')]；本页编号对 []；引用 []；页内其它构建号 ['37437595']；配置 ['4362']
+  19242528：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19242528 Running', '2026-11-05 16:49:13')]；本页编号对 []；引用 []；页内其它构建号 ['37437742']；配置 ['4362']
+  19242534：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19242534 Running', '2026-11-05 16:50:13')]；本页编号对 []；引用 []；页内其它构建号 ['37437781']；配置 ['4362']
+  19239694：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19239694 Running', '2026-11-05 13:29:01')]；本页编号对 []；引用 []；页内其它构建号 ['37433462']；配置 ['4362']
+  19239802：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19239802 Running', '2026-11-05 13:38:42')]；本页编号对 []；引用 []；页内其它构建号 ['37433593']；配置 ['4362']
+  19240678：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240678 Running', '2026-11-05 14:50:41')]；本页编号对 []；引用 []；页内其它构建号 ['37434966']；配置 ['4362']
+  19240702：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240702 Running', '2026-11-05 14:51:11')]；本页编号对 []；引用 []；页内其它构建号 ['37435025']；配置 ['4362']
+  19240872：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240872 Running', '2026-11-05 15:00:48')]；本页编号对 []；引用 []；页内其它构建号 ['37435453']；配置 ['4362']
+  19240875：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240875 Running', '2026-11-05 15:00:58')]；本页编号对 []；引用 []；页内其它构建号 ['37435457']；配置 ['4362']
+  19240881：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240881 Running', '2026-11-05 15:01:04')]；本页编号对 []；引用 []；页内其它构建号 ['37435468']；配置 ['4362']
+  19240885：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19240885 Running', '2026-11-05 15:01:07')]；本页编号对 []；引用 []；页内其它构建号 ['37435472']；配置 ['4362']
+  19242228：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19242228 Running', '2026-11-05 16:28:42')]；本页编号对 []；引用 []；页内其它构建号 ['37437304']；配置 ['4362']
+  19242230：状态码 200；状态词 ['RUNNING', 'SUCCESSFUL']；时间 [('encies 19242230 Running', '2026-11-05 16:28:51')]；本页编号对 []；引用 []；页内其它构建号 ['37437310']；配置 ['4362']
+  小结：读了 56 个；带本页自己编号对的 0 个；带"引用"编号对的 0 个；页内出现其它构建号的 56 个
+  同一个提交端编号对应多个构建（重跑是否沿用原编号的线索）：窗口里没有
+  按列表顺序的第一个时间（用于判断列表是否按开始时间排序）： [('19241462', '2026-11-05 15:42:50'), ('19238873', '2026-11-05 12:05:39'), ('19238883', '2026-11-05 12:05:55'), ('19238934', '2026-11-05 12:10:35'), ('19239524', '2026-11-05 13:09:24'), ('19239939', '2026-11-05 13:49:12'), ('19240342', '2026-11-05 14:25:15'), ('19240417', '2026-11-05 14:29:15')] … [('19240881', '2026-11-05 15:01:04'), ('19240885', '2026-11-05 15:01:07'), ('19242228', '2026-11-05 16:28:42'), ('19242230', '2026-11-05 16:28:51')]
+== C 提交端认证跳转链（不登录、只跟跳转，最多 8 跳）
+  第 1 跳：vdcosmos-hub.sec.samsung.net/build/37376237 → 状态 302，跳到 vdcosmos-hub.sec.samsung.net/signin?redirect-url-after-sign-in=…
+  第 2 跳：vdcosmos-hub.sec.samsung.net/signin?redirect-url-after-sign-in=… → 状态 302，跳到 vdcosmos-hub.sec.samsung.net/sso-initiate?redirect-url-after-sign-in=…
+  第 3 跳：vdcosmos-hub.sec.samsung.net/sso-initiate?redirect-url-after-sign-in=… → 状态 302，跳到 sts.secsso.net/adfs/ls/?SigAlg=…&SAMLRequest=<值已去除>&RelayState=<值已去除>&Signature=…
+  第 4 跳：sts.secsso.net/adfs/ls/?SigAlg=…&SAMLRequest=<值已去除>&RelayState=<值已去除>&Signature=… → 状态 200
+  最后一页：标题 'Sign In'；有密码框 True；表单提交到 ['/adfs/ls/?SigAlg=…&SAMLRequest=<值已去除>&RelayState=<值已去除>&Signature=…&client-request-id=…', 'sts.secsso.net:443/adfs/ls/?SigAlg=…&SAMLRequest=<值已去除>&RelayState=<值已去除>&Signature=…&client-request-id=…']
+  脚本来源 0 个： []
+  页内出现 WebSocket / ws:// / wss:// / EventSource：False
+== D 解析 /home1/chengkai/vd-cosmos/run/recon-b3/pages 下用户保存的页面（.html/.htm）和 HAR（.har）
+  没有找到文件（还没保存的话这一段跳过）
+== 结束 2026-11-05 15:59:51 用时 70s
+chengkai@risc-v-Alienware-Aurora-R16:recon-b3$ 

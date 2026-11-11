@@ -1,0 +1,1551 @@
+=====BEGIN recon15.py  sha256 9bee3096b69f3000c6c890fb7b02c26f64fcbd7b52bef63ead94e3b3acb3e775=====
+# 第十五次只读侦察：为提交命令的"请求闸门"和查号规则取证据。只读 https、不登录、不提交任何表单、不执行 p4；
+# 只打印结构（路径、方法、状态、字段名），不打印任何字段值；只写 recon-b3 下的列表快照 recon15_list_<时间>.txt
+import glob, html, json, os, re, time, urllib.error, urllib.parse, urllib.request
+BM = 'https://vdcosmos-bm.sec.samsung.net'
+HUB = 'https://vdcosmos-hub.sec.samsung.net'
+CONFIG, HUB_ID, DETAIL_MAX = '4362', '37376237', 120
+D = '/home1/chengkai/vd-cosmos/run/recon-b3'
+PAGES = D + '/pages'
+T0 = time.time()
+def say(*a): print(*a, flush=True)
+def cut(s, n=200):
+    s = str(s)
+    return s if len(s) <= n else s[:n] + '…'
+CRED = re.compile(r'passw|passwd|token|secret|apikey|api_key|authorization|cookie|saml|relaystate|ticket|session|code=|state=', re.I)
+def mask(s):
+    s = re.sub(r'://[^/@\s]+@', '://<已去除>@', str(s))
+    s = re.sub(r';jsessionid=[^?#\s"\']*', ';jsessionid=<已去除>', s, flags=re.I)
+    return '[含敏感样式，不显示]' if CRED.search(s) else s
+def urlshape(u):
+    # 只给 主机 + 路径 + 查询串的形状：查询串里只保留键名和 Wicket 监听/组件路径这类结构，不保留值
+    p = urllib.parse.urlsplit(html.unescape(u))
+    path = re.sub(r';jsessionid=[^/?#]*', '', p.path, flags=re.I)
+    q = p.query
+    keys = []
+    for part in q.split('&') if q else []:
+        k = part.split('=', 1)[0]
+        if '=' in part and CRED.search(k):
+            keys.append(k + '=<值已去除>')
+        elif '=' in part:
+            keys.append(k + '=…')
+        else:
+            keys.append(k if not CRED.search(k) else '<已去除>')
+    qs = ('?' + '&'.join(keys)) if keys else ''
+    return (p.netloc or '') + path + cut(qs, 160)
+class NoRedir(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir())
+def get(url):
+    try:
+        with OPENER.open(urllib.request.Request(url, headers={'User-Agent': 'vd-cosmos-recon'}), timeout=120) as r:
+            return r.status, r.read(30 * 1024 * 1024), dict(r.headers)
+    except urllib.error.HTTPError as e:
+        return e.code, b'', dict(e.headers or {})
+    except Exception as e:
+        return type(e).__name__, b'', {}
+def plain(t): return html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]*>', ' ', t)))
+DT = re.compile(r'(\d{4}-\d{2}-\d{2}[ T]\d{1,2}:\d{2}(?::\d{2})?(?:\s*[+-]\d{4})?|\d{1,2}/\d{1,2}/\d{4}\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?)')
+STATUS = re.compile(r'\b(RUNNING|QUEUED|WAITING|PENDING|SUCCESSFUL|SUCCESS|FAILED|FAILURE|CANCELLED|CANCELED|TIMEOUT|TIMED_OUT|RECOMMENDED|BUILD_COMPLETE|BUILD_FAILED|ABORTED)\b', re.I)
+PAIR = re.compile(r'UPDATE_BUILDINFO:\s*\[(\d{6,9}):(\d{6,9}):([A-Z_]+)\]')
+def dts_with_label(text, n=4):
+    out = []
+    for m in DT.finditer(text):
+        lab = text[max(0, m.start() - 24):m.start()].strip()
+        out.append((cut(mask(lab), 24), m.group(1)))
+        if len(out) >= n: break
+    return out
+say('== 开始', time.strftime('%F %T'))
+
+# ---------- A 构建管理端列表页：顺序、行内容的样子
+say('== A 构建管理端配置 ' + CONFIG + ' 的列表页（不登录）')
+lists = {}
+for p in ['/overview/' + CONFIG, '/history/' + CONFIG]:
+    st, body, _ = get(BM + p)
+    t = body.decode('utf-8', 'replace')
+    order = []
+    for m in re.findall(r'/build/(\d{6,9})\b', t):
+        if m not in order: order.append(m)
+    lists[p] = order
+    nums = [int(x) for x in order]
+    desc = all(nums[i] > nums[i + 1] for i in range(len(nums) - 1))
+    asc = all(nums[i] < nums[i + 1] for i in range(len(nums) - 1))
+    say(f'  {p}：状态 {st}，{len(body)} 字节，构建号 {len(order)} 个（按页面出现顺序）；严格递减 {desc}，严格递增 {asc}')
+    say(f'     前 6 个 {order[:6]}；后 6 个 {order[-6:]}')
+    rows = [r for r in re.findall(r'<tr[^>]*>(.*?)</tr>', t, re.S | re.I) if re.search(r'/build/\d{6,9}', r)]
+    say(f'     含构建号的表格行 {len(rows)} 行；下面是前 3 行和后 2 行去掉标签后的样子（敏感样式不显示）：')
+    for r in rows[:3] + rows[-2:]:
+        say('       ', cut(mask(plain(r)), 220))
+    if rows:
+        heads = re.findall(r'<th[^>]*>(.*?)</th>', t, re.S | re.I)
+        say('     表头：', [cut(mask(plain(h)), 30) for h in heads[:15]])
+    snap = f'{D}/recon15_list_{time.strftime("%Y%m%d_%H%M%S")}_{p.strip("/").replace("/", "_")}.txt'
+    try:
+        with open(snap, 'w') as f: f.write('\n'.join(order) + '\n')
+        say(f'     列表快照已写：{snap}（以后再跑一次，两份对比就能看出列表怎么滚动）')
+    except Exception as e:
+        say('     列表快照没写成：', type(e).__name__)
+    time.sleep(0.3)
+
+# ---------- B 逐个读详情页：状态词、时间、编号对、引用的其它构建
+ids = lists.get('/overview/' + CONFIG, [])[:DETAIL_MAX]
+say(f'== B 按列表顺序读详情页（最多 {DETAIL_MAX} 个，间隔 0.2 秒），每个构建一行')
+recs = []
+first_shown = 0
+for bid in ids:
+    st, body, _ = get(BM + '/build/' + bid)
+    t = body.decode('utf-8', 'replace')
+    pt = plain(t)
+    pairs = PAIR.findall(pt)
+    own = [x for x in pairs if x[1] == bid]
+    refs = [x for x in pairs if x[1] != bid]
+    others = sorted({x for x in re.findall(r'/build/(\d{6,9})\b', t) if x != bid})
+    cfg = sorted(set(re.findall(r'/overview/(\d+)', t)))
+    stw = sorted({m.upper() for m in STATUS.findall(pt)})
+    dts = dts_with_label(pt)
+    recs.append((bid, own, refs, others, cfg, stw, dts))
+    say(f'  {bid}：状态码 {st}；状态词 {stw[:4]}；时间 {dts[:3]}；本页编号对 {own[:2]}；引用 {refs[:2]}；页内其它构建号 {others[:4]}；配置 {cfg[:3]}')
+    if first_shown < 2 and st == 200:
+        first_shown += 1
+        for kw in ['Start', 'Begin', 'Trigger', 'Duration', 'Status', 'Submitter', 'Requester', 'Parent', 'Child', 'Rerun', 'Rebuild']:
+            i = pt.find(kw)
+            if i >= 0: say(f'     [{kw}] 附近：', cut(mask(pt[max(0, i - 40):i + 120]), 170))
+    time.sleep(0.2)
+own_all = [(r[0], r[1][0]) for r in recs if r[1]]
+say(f'  小结：读了 {len(recs)} 个；带本页自己编号对的 {len(own_all)} 个；带"引用"编号对的 {sum(1 for r in recs if r[2])} 个；页内出现其它构建号的 {sum(1 for r in recs if r[3])} 个')
+byhub = {}
+for bid, x in own_all: byhub.setdefault(x[0], []).append((bid, x[2]))
+multi = {h: v for h, v in byhub.items() if len(v) > 1}
+say(f'  同一个提交端编号对应多个构建（重跑是否沿用原编号的线索）：{multi if multi else "窗口里没有"}')
+starts = [(r[0], r[6][0][1] if r[6] else '') for r in recs]
+say('  按列表顺序的第一个时间（用于判断列表是否按开始时间排序）：', starts[:8], '…', starts[-4:])
+
+# ---------- C 提交端不登录时的认证跳转链（只跟 GET 跳转，不提交任何表单）
+say('== C 提交端认证跳转链（不登录、只跟跳转，最多 8 跳）')
+url, hops = HUB + '/build/' + HUB_ID, 0
+last_body = b''
+while url and hops < 8:
+    st, body, hd = get(url)
+    loc = hd.get('Location') or hd.get('location') or ''
+    say(f'  第 {hops + 1} 跳：{urlshape(url)} → 状态 {st}' + (f'，跳到 {urlshape(urllib.parse.urljoin(url, loc))}' if loc else ''))
+    last_body = body
+    url = urllib.parse.urljoin(url, loc) if loc and str(st).startswith('3') else ''
+    hops += 1
+t = last_body.decode('utf-8', 'replace')
+if t:
+    title = re.findall(r'<title[^>]*>(.*?)</title>', t, re.S | re.I)
+    forms = re.findall(r'<form[^>]*action\s*=\s*["\']([^"\']*)', t, re.I)
+    scripts = sorted({urlshape(s) for s in re.findall(r'<script[^>]*src\s*=\s*["\']([^"\']+)', t, re.I)})
+    has_pw = bool(re.search(r'type\s*=\s*["\']?password', t, re.I))
+    has_ws = bool(re.search(r'WebSocket|wss?://|EventSource', t))
+    ttl = cut(mask(plain(title[0])) if title else '', 60)
+    say(f'  最后一页：标题 {ttl!r}；有密码框 {has_pw}；表单提交到 {[urlshape(f) for f in forms][:3]}')
+    say(f'  脚本来源 {len(scripts)} 个：', scripts[:12])
+    say(f'  页内出现 WebSocket / ws:// / wss:// / EventSource：{has_ws}')
+
+# ---------- D 用户在自己浏览器里保存的页面与 HAR（只解析结构、不打印任何值）
+say('== D 解析 ' + PAGES + ' 下用户保存的页面（.html/.htm）和 HAR（.har）')
+files = sorted(glob.glob(PAGES + '/*.htm*') + glob.glob(PAGES + '/*.har')) if os.path.isdir(PAGES) else []
+if not files: say('  没有找到文件（还没保存的话这一段跳过）')
+KW = re.compile(r'rerun|re-run|rebuild|resubmit|run again|run|trigger|cancel|stop|retry|submit|request', re.I)
+for fn in files:
+    say(f'  ---- {os.path.basename(fn)}（{os.path.getsize(fn)} 字节）')
+    try:
+        raw = open(fn, 'rb').read().decode('utf-8', 'replace')
+    except Exception as e:
+        say('    读不了：', type(e).__name__); continue
+    if fn.endswith('.har'):
+        try:
+            entries = json.loads(raw).get('log', {}).get('entries', [])
+        except Exception as e:
+            say('    HAR 解析失败：', type(e).__name__); continue
+        say(f'    共 {len(entries)} 条请求；下面只列非静态资源（方法、地址形状、状态、跳转、表单字段名）：')
+        ws = 0
+        for e in entries:
+            rq, rs = e.get('request', {}), e.get('response', {})
+            u = rq.get('url', '')
+            rt = e.get('_resourceType', '')
+            if rt == 'websocket' or e.get('_webSocketMessages') is not None or u.startswith('ws'):
+                ws += 1
+            if re.search(r'\.(js|css|png|jpe?g|gif|svg|ico|woff2?|ttf|map)(\?|$)', u, re.I): continue
+            names = []
+            pd = rq.get('postData') or {}
+            for prm in pd.get('params') or []: names.append(prm.get('name', ''))
+            if not names and pd.get('text') and 'urlencoded' in (pd.get('mimeType') or ''):
+                names = [kv.split('=', 1)[0] for kv in pd['text'].split('&')]
+            names = [urllib.parse.unquote_plus(n) for n in names]
+            red = rs.get('redirectURL') or ''
+            say(f'    {rq.get("method")} {urlshape(u)} → {rs.get("status")}' + (f' 跳到 {urlshape(urllib.parse.urljoin(u, red))}' if red else '') + (f'；类型 {rt}' if rt else '') + (f'；请求体类型 {pd.get("mimeType")}，字段名 {[mask(n) for n in names][:40]}' if pd else ''))
+        say(f'    WebSocket 条目：{ws} 条')
+        continue
+    t = raw
+    title = re.findall(r'<title[^>]*>(.*?)</title>', t, re.S | re.I)
+    ttl = cut(mask(plain(title[0])) if title else '', 60)
+    has_ws = bool(re.search(r'WebSocket|wss?://|EventSource', t))
+    say(f'    标题 {ttl!r}；WebSocket / ws:// / wss:// / EventSource：{has_ws}；Wicket.Ajax：{t.count("Wicket.Ajax")} 处')
+    for fm in re.finditer(r'<form\b([^>]*)>(.*?)</form>', t, re.S | re.I):
+        attrs, inner = fm.group(1), fm.group(2)
+        fid = re.findall(r'\bid\s*=\s*["\']([^"\']+)', attrs)
+        act = re.findall(r'action\s*=\s*["\']([^"\']*)', attrs)
+        meth = re.findall(r'method\s*=\s*["\']([^"\']*)', attrs)
+        ctl = []
+        for c in re.finditer(r'<(input|textarea|select|button)\b([^>]*)>', inner, re.I):
+            a = c.group(2)
+            g = lambda k: (re.findall(r'\b' + k + r'\s*=\s*["\']([^"\']*)', a, re.I) or [''])[0]
+            ctl.append(f'{c.group(1).lower()}:{g("type")}:{mask(g("name"))}#{mask(g("id"))}' + ('（有默认值）' if g('value') else ''))
+        say(f'    表单 id={fid[:1]} method={meth[:1]} action={[urlshape(x) for x in act][:1]}；控件 {len(ctl)} 个：')
+        for i in range(0, len(ctl), 6): say('      ', ctl[i:i + 6])
+    shown = 0
+    for b in re.finditer(r'<(button|a|input)\b([^>]*)>([^<]{0,60})', t, re.I):
+        a, txt = b.group(2), plain(b.group(3)).strip()
+        val = (re.findall(r'\bvalue\s*=\s*["\']([^"\']{0,40})', a, re.I) or [''])[0] if b.group(1).lower() == 'input' and re.search(r'type\s*=\s*["\']?(submit|button)', a, re.I) else ''
+        label = txt or val
+        if not label or not KW.search(label): continue
+        href = (re.findall(r'href\s*=\s*["\']([^"\']*)', a, re.I) or [''])[0]
+        bid_ = (re.findall(r'\bid\s*=\s*["\']([^"\']*)', a, re.I) or [''])[0]
+        shown += 1
+        if shown > 40: break
+        say(f'    按钮/链接 {b.group(1).lower()} 文字 {cut(mask(label), 30)!r} id={mask(bid_)!r} href={urlshape(href) if href else ""!r}')
+    for m in re.finditer(r'Wicket\.Ajax\.ajax\((\{.*?\})\);', t, re.S):
+        js = m.group(1)
+        g = lambda k: (re.findall(r'"' + k + r'"\s*:\s*"([^"]*)"', js) or [''])[0]
+        say(f'    Wicket 绑定：元素 c={mask(g("c"))!r} 事件 e={g("e")!r} 方法 m={g("m") or "GET"!r} 表单 f={mask(g("f"))!r} 提交元素 sc={mask(g("sc"))!r} 地址 u={urlshape(g("u"))!r}')
+    bm = re.findall(r'<a\b([^>]*href\s*=\s*["\']https?://vdcosmos-bm[^"\']*?/build/\d+[^"\']*["\'][^>]*)>', t, re.I)
+    for a in bm[:5]:
+        href = re.findall(r'href\s*=\s*["\']([^"\']*)', a, re.I)[0]
+        aid = re.findall(r'\bid\s*=\s*["\']([^"\']*)', a)[:1]
+        acl = re.findall(r'class\s*=\s*["\']([^"\']*)', a)[:1]
+        say(f'    指向构建管理端的链接 {urlshape(href)!r}；元素属性 id={aid} class={acl}')
+say('== 结束', time.strftime('%F %T'), f'用时 {int(time.time() - T0)}s')
+=====END recon15.py=====
+
+=====BEGIN recon16.py  sha256 5048e2d216e0dc8f1b8bcf1d4d1dd9caa0f59de91de0da433bd8ad14ccfc8218=====
+# 第十六次只读侦察：构建管理端历史列表的翻页、详情页里指向提交端的链接、同一提交端编号对应几个构建。
+# 只读 https、不登录、不提交任何表单、不执行 p4；只打印结构和编号，不打印页面原文；不写任何文件（结果只打印）。
+import html, http.cookiejar, re, time, urllib.error, urllib.parse, urllib.request
+BM = 'https://vdcosmos-bm.sec.samsung.net'
+CONFIG, MAX_PAGES, MAX_DETAIL = '4362', 10, 300
+KNOWN = {'19091860': '37174546', '19226913': '37412299'}
+T0 = time.time()
+def say(*a): print(*a, flush=True)
+def cut(s, n=200):
+    s = str(s)
+    return s if len(s) <= n else s[:n] + '…'
+CRED = re.compile(r'passw|passwd|token|secret|apikey|api_key|authorization|cookie|saml|relaystate|ticket|session|code=|state=', re.I)
+def mask(s):
+    s = re.sub(r'://[^/@\s]+@', '://<已去除>@', str(s))
+    s = re.sub(r';jsessionid=[^?#\s"\']*', ';jsessionid=<已去除>', s, flags=re.I)
+    return '[含敏感样式，不显示]' if CRED.search(s) else s
+def urlshape(u):
+    p = urllib.parse.urlsplit(html.unescape(u))
+    path = re.sub(r';jsessionid=[^/?#]*', '', p.path, flags=re.I)
+    keys = []
+    for part in p.query.split('&') if p.query else []:
+        k = part.split('=', 1)[0]
+        if CRED.search(k): keys.append('<已去除>')
+        elif '=' in part: keys.append(k + '=' + cut(part.split('=', 1)[1], 12))
+        else: keys.append(k)
+    return (p.netloc or '') + path + (('?' + '&'.join(keys)) if keys else '')
+class NoRedir(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+JAR = http.cookiejar.CookieJar()
+PLAIN_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir())
+JAR_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir(), urllib.request.HTTPCookieProcessor(JAR))
+def get(url, jar=False):
+    op = JAR_OPENER if jar else PLAIN_OPENER
+    try:
+        with op.open(urllib.request.Request(url, headers={'User-Agent': 'vd-cosmos-recon'}), timeout=120) as r:
+            return r.status, r.read(30 * 1024 * 1024).decode('utf-8', 'replace'), dict(r.headers)
+    except urllib.error.HTTPError as e:
+        return e.code, '', dict(e.headers or {})
+    except Exception as e:
+        return type(e).__name__, '', {}
+def plain(t): return html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]*>', ' ', t)))
+DT = re.compile(r'\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}')
+HUBLINK = re.compile(r'<a\b([^>]*href\s*=\s*["\']https?://vdcosmos-hub[^"\']*?/build/(\d{6,9})[^"\']*["\'][^>]*)>', re.I)
+PAIR = re.compile(r'UPDATE_BUILDINFO:\s*\[(\d{6,9}):(\d{6,9}):([A-Z_]+)\]')
+def rows_of(t):
+    out = []
+    for r in re.findall(r'<tr[^>]*>(.*?)</tr>', t, re.S | re.I):
+        m = re.search(r'/build/(\d{6,9})\b', r)
+        if not m: continue
+        pr = plain(r)
+        d = DT.search(pr)
+        out.append((m.group(1), d.group(0) if d else ''))
+    return out
+say('== 开始', time.strftime('%F %T'))
+
+# ---------- A 历史列表翻页
+say('== A 历史列表 /history/' + CONFIG + ' 的翻页方式（不登录）')
+pages, url, used_jar = [], BM + '/history/' + CONFIG, False
+st, t, hd = get(url)
+showing = cut(mask(' '.join(re.findall(r'Showing[^<]{0,60}', t)[:1])), 80)
+say(f'  第 1 页：状态 {st}，{len(t)} 字符；"Showing" 文字：{showing!r}')
+navs = []
+for a in re.finditer(r'<a\b([^>]*)>(.*?)</a>', t, re.S | re.I):
+    txt = plain(a.group(2)).strip()
+    if re.fullmatch(r'(<<|<|>|>>|«|‹|›|»|\d{1,3}|Next|Prev|Previous|Last|First|下一页|上一页)', txt, re.I):
+        href = (re.findall(r'href\s*=\s*["\']([^"\']*)', a.group(1), re.I) or [''])[0]
+        navs.append((txt, href))
+say(f'  翻页链接 {len(navs)} 个（文字 → 地址形状）：')
+for txt, href in navs[:20]: say(f'     {txt!r} → {urlshape(href)!r}')
+sels = re.findall(r'<select\b[^>]*name\s*=\s*["\']([^"\']*)', t, re.I)
+say(f'  页面上的下拉框 name：{[mask(s) for s in sels][:6]}')
+pages.append(rows_of(t))
+nxt = [h for x, h in navs if x in ('>', '›', 'Next')]
+for n in range(2, MAX_PAGES + 1):
+    if not nxt or not nxt[0] or nxt[0].startswith('javascript'):
+        say(f'  没有可用的"下一页"普通链接，停在第 {n - 1} 页'); break
+    url = urllib.parse.urljoin(url, html.unescape(nxt[0]))
+    st, t2, hd = get(url, jar=used_jar)
+    if (not t2 or str(st).startswith('3')) and not used_jar:
+        loc = urlshape(hd.get('Location') or hd.get('location') or '')
+        say(f'  第 {n} 页不带会话读取：状态 {st}，跳转 {loc!r}；改为带匿名会话重试（会话只在内存里）')
+        used_jar = True
+        st0, t0, _ = get(BM + '/history/' + CONFIG, jar=True)
+        navs0 = []
+        for a in re.finditer(r'<a\b([^>]*)>(.*?)</a>', t0, re.S | re.I):
+            if plain(a.group(2)).strip() in ('>', '›', 'Next'):
+                navs0.append((re.findall(r'href\s*=\s*["\']([^"\']*)', a.group(1), re.I) or [''])[0])
+        if not navs0: say('  带会话后第 1 页也没有"下一页"链接，停止'); break
+        url = urllib.parse.urljoin(BM + '/history/' + CONFIG, html.unescape(navs0[0]))
+        st, t2, hd = get(url, jar=True)
+    rs = rows_of(t2)
+    say(f'  第 {n} 页：地址形状 {urlshape(url)!r}，状态 {st}，行 {len(rs)}；首 {rs[:1]}，尾 {rs[-1:]}')
+    if not rs: break
+    pages.append(rs)
+    nxt = []
+    for a in re.finditer(r'<a\b([^>]*)>(.*?)</a>', t2, re.S | re.I):
+        if plain(a.group(2)).strip() in ('>', '›', 'Next'):
+            nxt.append((re.findall(r'href\s*=\s*["\']([^"\']*)', a.group(1), re.I) or [''])[0])
+    time.sleep(0.3)
+allrows = [r for p in pages for r in p]
+ids = [int(r[0]) for r in allrows]
+dup = len(ids) - len(set(ids))
+desc = all(ids[i] > ids[i + 1] for i in range(len(ids) - 1))
+times = [r[1] for r in allrows if r[1]]
+tdesc = all(times[i] >= times[i + 1] for i in range(len(times) - 1))
+say(f'  小结：共 {len(pages)} 页、{len(allrows)} 行；构建号跨页严格递减 {desc}；重复 {dup} 个；开始时间单调不增 {tdesc}；时间范围 {times[-1:]} ～ {times[:1]}；用了匿名会话 {used_jar}')
+bad = [(allrows[i], allrows[i + 1]) for i in range(len(allrows) - 1) if allrows[i][1] and allrows[i + 1][1] and allrows[i][1] < allrows[i + 1][1]]
+say(f'  开始时间倒挂的相邻对（前 5 个）：{bad[:5]}')
+
+# ---------- B 详情页：本页身份、指向提交端的链接、编号对
+say(f'== B 逐个读历史列表里的详情页（最多 {MAX_DETAIL} 个，间隔 0.2 秒）')
+targets = [r[0] for r in allrows][:MAX_DETAIL] + [k for k in KNOWN if k not in [r[0] for r in allrows]]
+byhub, shown, n = {}, 0, 0
+for bid in targets:
+    st, t, _ = get(BM + '/build/' + bid)
+    n += 1
+    pt = plain(t)
+    ident = re.findall(r'Build \(id:(\d+)\)', pt)
+    links = HUBLINK.findall(t)
+    hubs = sorted({x[1] for x in links})
+    pairs = PAIR.findall(pt)
+    ver = re.findall(r'TIZEN-[A-Za-z0-9._-]+', pt)[:1]
+    for h in hubs: byhub.setdefault(h, []).append((bid, ver[0] if ver else ''))
+    if shown < 3 and links:
+        shown += 1
+        a = links[0][0]
+        i = t.find(links[0][0])
+        aid = re.findall(r'\bid\s*=\s*["\']([^"\']*)', a)[:1]
+        acl = re.findall(r'class\s*=\s*["\']([^"\']*)', a)[:1]
+        before = cut(mask(plain(t[max(0, i - 400):i])[-80:]), 90)
+        say(f'  {bid} 的提交端链接：元素属性 id={aid} class={acl}；链接前 80 字（去标签）：{before!r}')
+    if bid in KNOWN or n <= 5 or len(hubs) != 1:
+        say(f'  {bid}：状态 {st}；页面身份 {ident[:2]}；提交端链接 {hubs}；编号对 {pairs[:2]}；版本 {ver}' + (f'；已知应为 {KNOWN[bid]}' if bid in KNOWN else ''))
+    time.sleep(0.2)
+one = sum(1 for v in byhub.values() if len(v) == 1)
+multi = {h: v for h, v in byhub.items() if len(v) > 1}
+say(f'  小结：读了 {n} 个；不同的提交端编号 {len(byhub)} 个，其中只对应 1 个构建的 {one} 个；对应多个构建的 {len(multi)} 个：')
+for h, v in list(multi.items())[:15]: say(f'     提交端 {h} → {v}')
+say('== 结束', time.strftime('%F %T'), f'用时 {int(time.time() - T0)}s')
+=====END recon16.py=====
+
+=====BEGIN recon17.py  sha256 37757857dbca92b6526e992db77ad4b60b3cf8373cb7a417520ab93359ad20fe=====
+# 第十七次只读侦察：用匿名会话翻构建管理端的历史列表（只跟同主机、同列表路径的跳转），并在 11-02～11-03 的构建里找提交端编号 37376237 对应的构建号。
+# 只读 https、不登录、不提交任何表单、不执行 p4；匿名会话只在内存里；只打印编号、时间和地址形状，不打印页面原文；不写任何文件。
+import html, http.cookiejar, re, time, urllib.error, urllib.parse, urllib.request
+BM_HOST = 'vdcosmos-bm.sec.samsung.net'
+BM = 'https://' + BM_HOST
+LIST_PATH = '/history/4362'
+WANT_HUB = '37376237'
+WIN_FROM, WIN_TO = '2026-11-02 12:00:00', '2026-11-03 12:00:00'   # 服务器时间（页面显示的时间）
+MAX_PAGES, MAX_DETAIL = 40, 250
+T0 = time.time()
+def say(*a): print(*a, flush=True)
+def cut(s, n=200):
+    s = str(s)
+    return s if len(s) <= n else s[:n] + '…'
+def urlshape(u):
+    p = urllib.parse.urlsplit(html.unescape(u))
+    path = re.sub(r';jsessionid=[^/?#]*', '', p.path, flags=re.I)
+    return (p.netloc or '') + path + (('?' + cut(p.query, 90)) if p.query else '')
+class NoRedir(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+JAR = http.cookiejar.CookieJar()
+OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir(), urllib.request.HTTPCookieProcessor(JAR))
+PLAIN = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir())
+def get(url, op):
+    try:
+        with op.open(urllib.request.Request(url, headers={'User-Agent': 'vd-cosmos-recon'}), timeout=120) as r:
+            return r.status, r.read(30 * 1024 * 1024).decode('utf-8', 'replace'), dict(r.headers)
+    except urllib.error.HTTPError as e:
+        return e.code, '', dict(e.headers or {})
+    except Exception as e:
+        return type(e).__name__, '', {}
+def get_follow(url, hops_log):
+    # 只跟同主机、路径以列表路径开头的跳转，最多 3 跳
+    for _ in range(4):
+        st, t, hd = get(url, OPENER)
+        loc = hd.get('Location') or hd.get('location') or ''
+        if str(st).startswith('3') and loc:
+            nu = urllib.parse.urljoin(url, loc)
+            p = urllib.parse.urlsplit(nu)
+            hops_log.append(f'{st}→{urlshape(nu)}')
+            if p.netloc != BM_HOST or not re.sub(r';jsessionid=[^/?#]*', '', p.path).startswith(LIST_PATH):
+                hops_log.append('跳到列表以外，停止')
+                return st, '', url
+            url = nu
+            continue
+        return st, t, url
+    return 'too_many_redirects', '', url
+def plain(t): return html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]*>', ' ', t)))
+DT = re.compile(r'\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}')
+def rows_of(t):
+    out = []
+    for r in re.findall(r'<tr[^>]*>(.*?)</tr>', t, re.S | re.I):
+        m = re.search(r'/build/(\d{6,9})\b', r)
+        if not m: continue
+        pr = plain(r)
+        d = DT.search(pr)
+        v = re.search(r'TIZEN-[A-Za-z0-9._-]+', pr)
+        out.append((m.group(1), d.group(0) if d else '', v.group(0) if v else ''))
+    return out
+def next_href(t):
+    for a in re.finditer(r'<a\b([^>]*)>(.*?)</a>', t, re.S | re.I):
+        if plain(a.group(2)).strip() in ('>', '›', 'Next'):
+            h = re.findall(r'href\s*=\s*["\']([^"\']*)', a.group(1), re.I)
+            return html.unescape(h[0]) if h else ''
+    return ''
+HUBLINK = re.compile(r'Hub Link\s*:\s*(?:<[^a][^>]*>\s*)*<a\b[^>]*href\s*=\s*["\']https?://vdcosmos-hub[^"\']*?/build/(\d{6,9})', re.I)
+ANYHUB = re.compile(r'href\s*=\s*["\']https?://vdcosmos-hub[^"\']*?/build/(\d{6,9})', re.I)
+say('== 开始', time.strftime('%F %T'))
+
+# ---------- A 用匿名会话翻页
+say(f'== A 用匿名会话翻 {LIST_PATH}（最多 {MAX_PAGES} 页，翻到早于 {WIN_FROM} 为止）')
+hops = []
+st, t, url = get_follow(BM + LIST_PATH, hops)
+say(f'  第 1 页：状态 {st}，{len(t)} 字符，Showing：{cut(" ".join(re.findall(r"Showing[^<]{0,40}", t)[:1]), 60)!r}，跳转 {hops}；拿到的会话 cookie 个数 {len(JAR)}')
+pages = [rows_of(t)]
+for n in range(2, MAX_PAGES + 1):
+    h = next_href(t)
+    if not h:
+        say(f'  第 {n - 1} 页上没有"下一页"链接，停止'); break
+    hops = []
+    st, t, url = get_follow(urllib.parse.urljoin(url, h), hops)
+    rs = rows_of(t)
+    showing = cut(' '.join(re.findall(r'Showing[^<]{0,40}', t)[:1]), 60)
+    say(f'  第 {n} 页：状态 {st}，行 {len(rs)}，Showing {showing!r}，跳转 {hops}；首 {rs[0][:2] if rs else None}，尾 {rs[-1][:2] if rs else None}')
+    if not rs: break
+    pages.append(rs)
+    if rs[-1][1] and rs[-1][1] < WIN_FROM:
+        say(f'  已翻到早于 {WIN_FROM} 的构建，停止'); break
+    time.sleep(0.3)
+allrows = [r for p in pages for r in p]
+ids = [int(r[0]) for r in allrows]
+desc = all(ids[i] > ids[i + 1] for i in range(len(ids) - 1))
+dup = len(ids) - len(set(ids))
+times = [r[1] for r in allrows if r[1]]
+inv = sum(1 for i in range(len(times) - 1) if times[i] < times[i + 1])
+say(f'  小结：共 {len(pages)} 页、{len(allrows)} 行；构建号跨页严格递减 {desc}；重复 {dup} 个；开始时间倒挂的相邻对 {inv} 个；时间范围 {times[-1:]} ～ {times[:1]}')
+
+# ---------- B 在时间窗内找 37376237
+win = [r for r in allrows if r[1] and WIN_FROM <= r[1] <= WIN_TO]
+say(f'== B 时间窗 {WIN_FROM} ～ {WIN_TO} 内有 {len(win)} 个构建，逐个读详情页（最多 {MAX_DETAIL} 个，不用会话，间隔 0.2 秒）')
+byhub, hit, n, lab_ok, lab_miss = {}, [], 0, 0, 0
+for bid, begin, ver in win[:MAX_DETAIL]:
+    st, d, _ = get(BM + '/build/' + bid, PLAIN)
+    n += 1
+    lab = HUBLINK.findall(d)
+    anyh = sorted(set(ANYHUB.findall(d)))
+    ident = re.findall(r'Build \(id:(\d+)\)', plain(d))
+    if lab: lab_ok += 1
+    else: lab_miss += 1
+    hub = lab[0] if lab else ''
+    if hub: byhub.setdefault(hub, []).append(bid)
+    mark = ''
+    if WANT_HUB in anyh:
+        hit.append((bid, begin, ver, lab, anyh, ident)); mark = '  ★'
+    say(f'  {bid} {begin} {ver}：状态 {st}；页面身份 {ident[:1]}；"Hub Link" 后的提交端编号 {lab[:2]}；页内全部提交端链接 {anyh[:3]}{mark}')
+    time.sleep(0.2)
+multi = {h: v for h, v in byhub.items() if len(v) > 1}
+say(f'  小结：读了 {n} 个；"Hub Link" 标签能取到编号的 {lab_ok} 个、取不到的 {lab_miss} 个；不同提交端编号 {len(byhub)} 个；对应多个构建的：{multi if multi else "无"}')
+say(f'  {WANT_HUB} 的查找结果：{hit if hit else "时间窗内没有找到"}')
+say('== 结束', time.strftime('%F %T'), f'用时 {int(time.time() - T0)}s')
+=====END recon17.py=====
+
+=====BEGIN recon18.py  sha256 28faa11daf5e52df595e002f416c73750c552adbd1ae063e86bba98610692eb2=====
+# 第十八次只读侦察：同第十七次，翻得更深（最多 120 页），时间窗收窄到 11-02 22:00～11-03 08:00（服务器时间），找到 37376237 就停。
+# 只读 https、不登录、不提交任何表单、不执行 p4；匿名会话只在内存里；只打印编号、时间和地址形状，不打印页面原文；不写任何文件。
+import html, http.cookiejar, re, time, urllib.error, urllib.parse, urllib.request
+BM_HOST = 'vdcosmos-bm.sec.samsung.net'
+BM = 'https://' + BM_HOST
+LIST_PATH = '/history/4362'
+WANT_HUB = '37376237'
+WIN_FROM, WIN_TO = '2026-11-02 22:00:00', '2026-11-03 08:00:00'   # 服务器时间（页面显示的时间）
+MAX_PAGES, MAX_DETAIL = 120, 300
+T0 = time.time()
+def say(*a): print(*a, flush=True)
+def cut(s, n=200):
+    s = str(s)
+    return s if len(s) <= n else s[:n] + '…'
+def urlshape(u):
+    p = urllib.parse.urlsplit(html.unescape(u))
+    path = re.sub(r';jsessionid=[^/?#]*', '', p.path, flags=re.I)
+    return (p.netloc or '') + path + (('?' + cut(p.query, 90)) if p.query else '')
+class NoRedir(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+JAR = http.cookiejar.CookieJar()
+OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir(), urllib.request.HTTPCookieProcessor(JAR))
+PLAIN = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir())
+def get(url, op):
+    try:
+        with op.open(urllib.request.Request(url, headers={'User-Agent': 'vd-cosmos-recon'}), timeout=120) as r:
+            return r.status, r.read(30 * 1024 * 1024).decode('utf-8', 'replace'), dict(r.headers)
+    except urllib.error.HTTPError as e:
+        return e.code, '', dict(e.headers or {})
+    except Exception as e:
+        return type(e).__name__, '', {}
+def get_follow(url, hops_log):
+    # 只跟同主机、路径以列表路径开头的跳转，最多 3 跳
+    for _ in range(4):
+        st, t, hd = get(url, OPENER)
+        loc = hd.get('Location') or hd.get('location') or ''
+        if str(st).startswith('3') and loc:
+            nu = urllib.parse.urljoin(url, loc)
+            p = urllib.parse.urlsplit(nu)
+            hops_log.append(f'{st}→{urlshape(nu)}')
+            if p.netloc != BM_HOST or not re.sub(r';jsessionid=[^/?#]*', '', p.path).startswith(LIST_PATH):
+                hops_log.append('跳到列表以外，停止')
+                return st, '', url
+            url = nu
+            continue
+        return st, t, url
+    return 'too_many_redirects', '', url
+def plain(t): return html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]*>', ' ', t)))
+DT = re.compile(r'\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}')
+def rows_of(t):
+    out = []
+    for r in re.findall(r'<tr[^>]*>(.*?)</tr>', t, re.S | re.I):
+        m = re.search(r'/build/(\d{6,9})\b', r)
+        if not m: continue
+        pr = plain(r)
+        d = DT.search(pr)
+        v = re.search(r'TIZEN-[A-Za-z0-9._-]+', pr)
+        out.append((m.group(1), d.group(0) if d else '', v.group(0) if v else ''))
+    return out
+def next_href(t):
+    for a in re.finditer(r'<a\b([^>]*)>(.*?)</a>', t, re.S | re.I):
+        if plain(a.group(2)).strip() in ('>', '›', 'Next'):
+            h = re.findall(r'href\s*=\s*["\']([^"\']*)', a.group(1), re.I)
+            return html.unescape(h[0]) if h else ''
+    return ''
+HUBLINK = re.compile(r'Hub Link\s*:\s*(?:<[^a][^>]*>\s*)*<a\b[^>]*href\s*=\s*["\']https?://vdcosmos-hub[^"\']*?/build/(\d{6,9})', re.I)
+ANYHUB = re.compile(r'href\s*=\s*["\']https?://vdcosmos-hub[^"\']*?/build/(\d{6,9})', re.I)
+say('== 开始', time.strftime('%F %T'))
+
+# ---------- A 用匿名会话翻页
+say(f'== A 用匿名会话翻 {LIST_PATH}（最多 {MAX_PAGES} 页，翻到早于 {WIN_FROM} 为止）')
+hops = []
+st, t, url = get_follow(BM + LIST_PATH, hops)
+say(f'  第 1 页：状态 {st}，{len(t)} 字符，Showing：{cut(" ".join(re.findall(r"Showing[^<]{0,40}", t)[:1]), 60)!r}，跳转 {hops}；拿到的会话 cookie 个数 {len(JAR)}')
+pages = [rows_of(t)]
+for n in range(2, MAX_PAGES + 1):
+    h = next_href(t)
+    if not h:
+        say(f'  第 {n - 1} 页上没有"下一页"链接，停止'); break
+    hops = []
+    st, t, url = get_follow(urllib.parse.urljoin(url, h), hops)
+    rs = rows_of(t)
+    showing = cut(' '.join(re.findall(r'Showing[^<]{0,40}', t)[:1]), 60)
+    if n % 10 == 0 or not rs or len(rs) != 30:
+        say(f'  第 {n} 页：状态 {st}，行 {len(rs)}，Showing {showing!r}，跳转 {hops}；首 {rs[0][:2] if rs else None}，尾 {rs[-1][:2] if rs else None}')
+    if not rs: break
+    pages.append(rs)
+    if rs[-1][1] and rs[-1][1] < WIN_FROM:
+        say(f'  已翻到早于 {WIN_FROM} 的构建，停止'); break
+    time.sleep(0.3)
+allrows = [r for p in pages for r in p]
+ids = [int(r[0]) for r in allrows]
+desc = all(ids[i] > ids[i + 1] for i in range(len(ids) - 1))
+dup = len(ids) - len(set(ids))
+times = [r[1] for r in allrows if r[1]]
+inv = sum(1 for i in range(len(times) - 1) if times[i] < times[i + 1])
+say(f'  小结：共 {len(pages)} 页、{len(allrows)} 行；构建号跨页严格递减 {desc}；重复 {dup} 个；开始时间倒挂的相邻对 {inv} 个；时间范围 {times[-1:]} ～ {times[:1]}')
+
+# ---------- B 在时间窗内找 37376237
+win = [r for r in allrows if r[1] and WIN_FROM <= r[1] <= WIN_TO]
+say(f'== B 时间窗 {WIN_FROM} ～ {WIN_TO} 内有 {len(win)} 个构建，逐个读详情页（最多 {MAX_DETAIL} 个，不用会话，间隔 0.2 秒）')
+byhub, hit, n, lab_ok, lab_miss = {}, [], 0, 0, 0
+for bid, begin, ver in win[:MAX_DETAIL]:
+    st, d, _ = get(BM + '/build/' + bid, PLAIN)
+    n += 1
+    lab = HUBLINK.findall(d)
+    anyh = sorted(set(ANYHUB.findall(d)))
+    ident = re.findall(r'Build \(id:(\d+)\)', plain(d))
+    if lab: lab_ok += 1
+    else: lab_miss += 1
+    hub = lab[0] if lab else ''
+    if hub: byhub.setdefault(hub, []).append(bid)
+    mark = ''
+    if WANT_HUB in anyh:
+        hit.append((bid, begin, ver, lab, anyh, ident)); mark = '  ★'
+        say(f'  {bid} {begin} {ver}：状态 {st}；页面身份 {ident[:1]}；"Hub Link" 后的提交端编号 {lab[:2]}；页内全部提交端链接 {anyh[:3]}{mark}')
+        say('  已找到，停止读详情页'); break
+    if n <= 3 or n % 50 == 0 or not lab:
+        say(f'  {bid} {begin} {ver}：状态 {st}；页面身份 {ident[:1]}；"Hub Link" 后的提交端编号 {lab[:2]}；页内全部提交端链接 {anyh[:3]}')
+    time.sleep(0.2)
+multi = {h: v for h, v in byhub.items() if len(v) > 1}
+say(f'  小结：读了 {n} 个；"Hub Link" 标签能取到编号的 {lab_ok} 个、取不到的 {lab_miss} 个；不同提交端编号 {len(byhub)} 个；对应多个构建的：{multi if multi else "无"}')
+say(f'  {WANT_HUB} 的查找结果：{hit if hit else "时间窗内没有找到"}')
+say('== 结束', time.strftime('%F %T'), f'用时 {int(time.time() - T0)}s')
+=====END recon18.py=====
+
+=====BEGIN recon19.py  sha256 c157582a697911cfc36a07bf4aa2541a3e738a6b856ee8a3a262ec9da0fd69b9=====
+# 第十九次只读侦察：同第十八次，时间窗改为 11-02 21:30～11-03 01:15（服务器时间，第十八次没读到的那一段），找到 37376237 就停。
+# 只读 https、不登录、不提交任何表单、不执行 p4；匿名会话只在内存里；只打印编号、时间和地址形状，不打印页面原文；不写任何文件。
+import html, http.cookiejar, re, time, urllib.error, urllib.parse, urllib.request
+BM_HOST = 'vdcosmos-bm.sec.samsung.net'
+BM = 'https://' + BM_HOST
+LIST_PATH = '/history/4362'
+WANT_HUB = '37376237'
+WIN_FROM, WIN_TO = '2026-11-02 21:30:00', '2026-11-03 01:15:00'   # 服务器时间（页面显示的时间）
+MAX_PAGES, MAX_DETAIL = 120, 250
+T0 = time.time()
+def say(*a): print(*a, flush=True)
+def cut(s, n=200):
+    s = str(s)
+    return s if len(s) <= n else s[:n] + '…'
+def urlshape(u):
+    p = urllib.parse.urlsplit(html.unescape(u))
+    path = re.sub(r';jsessionid=[^/?#]*', '', p.path, flags=re.I)
+    return (p.netloc or '') + path + (('?' + cut(p.query, 90)) if p.query else '')
+class NoRedir(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+JAR = http.cookiejar.CookieJar()
+OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir(), urllib.request.HTTPCookieProcessor(JAR))
+PLAIN = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir())
+def get(url, op):
+    try:
+        with op.open(urllib.request.Request(url, headers={'User-Agent': 'vd-cosmos-recon'}), timeout=120) as r:
+            return r.status, r.read(30 * 1024 * 1024).decode('utf-8', 'replace'), dict(r.headers)
+    except urllib.error.HTTPError as e:
+        return e.code, '', dict(e.headers or {})
+    except Exception as e:
+        return type(e).__name__, '', {}
+def get_follow(url, hops_log):
+    # 只跟同主机、路径以列表路径开头的跳转，最多 3 跳
+    for _ in range(4):
+        st, t, hd = get(url, OPENER)
+        loc = hd.get('Location') or hd.get('location') or ''
+        if str(st).startswith('3') and loc:
+            nu = urllib.parse.urljoin(url, loc)
+            p = urllib.parse.urlsplit(nu)
+            hops_log.append(f'{st}→{urlshape(nu)}')
+            if p.netloc != BM_HOST or not re.sub(r';jsessionid=[^/?#]*', '', p.path).startswith(LIST_PATH):
+                hops_log.append('跳到列表以外，停止')
+                return st, '', url
+            url = nu
+            continue
+        return st, t, url
+    return 'too_many_redirects', '', url
+def plain(t): return html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]*>', ' ', t)))
+DT = re.compile(r'\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}')
+def rows_of(t):
+    out = []
+    for r in re.findall(r'<tr[^>]*>(.*?)</tr>', t, re.S | re.I):
+        m = re.search(r'/build/(\d{6,9})\b', r)
+        if not m: continue
+        pr = plain(r)
+        d = DT.search(pr)
+        v = re.search(r'TIZEN-[A-Za-z0-9._-]+', pr)
+        out.append((m.group(1), d.group(0) if d else '', v.group(0) if v else ''))
+    return out
+def next_href(t):
+    for a in re.finditer(r'<a\b([^>]*)>(.*?)</a>', t, re.S | re.I):
+        if plain(a.group(2)).strip() in ('>', '›', 'Next'):
+            h = re.findall(r'href\s*=\s*["\']([^"\']*)', a.group(1), re.I)
+            return html.unescape(h[0]) if h else ''
+    return ''
+HUBLINK = re.compile(r'Hub Link\s*:\s*(?:<[^a][^>]*>\s*)*<a\b[^>]*href\s*=\s*["\']https?://vdcosmos-hub[^"\']*?/build/(\d{6,9})', re.I)
+ANYHUB = re.compile(r'href\s*=\s*["\']https?://vdcosmos-hub[^"\']*?/build/(\d{6,9})', re.I)
+say('== 开始', time.strftime('%F %T'))
+
+# ---------- A 用匿名会话翻页
+say(f'== A 用匿名会话翻 {LIST_PATH}（最多 {MAX_PAGES} 页，翻到早于 {WIN_FROM} 为止）')
+hops = []
+st, t, url = get_follow(BM + LIST_PATH, hops)
+say(f'  第 1 页：状态 {st}，{len(t)} 字符，Showing：{cut(" ".join(re.findall(r"Showing[^<]{0,40}", t)[:1]), 60)!r}，跳转 {hops}；拿到的会话 cookie 个数 {len(JAR)}')
+pages = [rows_of(t)]
+for n in range(2, MAX_PAGES + 1):
+    h = next_href(t)
+    if not h:
+        say(f'  第 {n - 1} 页上没有"下一页"链接，停止'); break
+    hops = []
+    st, t, url = get_follow(urllib.parse.urljoin(url, h), hops)
+    rs = rows_of(t)
+    showing = cut(' '.join(re.findall(r'Showing[^<]{0,40}', t)[:1]), 60)
+    if n % 10 == 0 or not rs or len(rs) != 30:
+        say(f'  第 {n} 页：状态 {st}，行 {len(rs)}，Showing {showing!r}，跳转 {hops}；首 {rs[0][:2] if rs else None}，尾 {rs[-1][:2] if rs else None}')
+    if not rs: break
+    pages.append(rs)
+    if rs[-1][1] and rs[-1][1] < WIN_FROM:
+        say(f'  已翻到早于 {WIN_FROM} 的构建，停止'); break
+    time.sleep(0.3)
+allrows = [r for p in pages for r in p]
+ids = [int(r[0]) for r in allrows]
+desc = all(ids[i] > ids[i + 1] for i in range(len(ids) - 1))
+dup = len(ids) - len(set(ids))
+times = [r[1] for r in allrows if r[1]]
+inv = sum(1 for i in range(len(times) - 1) if times[i] < times[i + 1])
+say(f'  小结：共 {len(pages)} 页、{len(allrows)} 行；构建号跨页严格递减 {desc}；重复 {dup} 个；开始时间倒挂的相邻对 {inv} 个；时间范围 {times[-1:]} ～ {times[:1]}')
+
+# ---------- B 在时间窗内找 37376237
+win = [r for r in allrows if r[1] and WIN_FROM <= r[1] <= WIN_TO]
+say(f'== B 时间窗 {WIN_FROM} ～ {WIN_TO} 内有 {len(win)} 个构建，逐个读详情页（最多 {MAX_DETAIL} 个，不用会话，间隔 0.2 秒）')
+byhub, hit, n, lab_ok, lab_miss = {}, [], 0, 0, 0
+for bid, begin, ver in win[:MAX_DETAIL]:
+    st, d, _ = get(BM + '/build/' + bid, PLAIN)
+    n += 1
+    lab = HUBLINK.findall(d)
+    anyh = sorted(set(ANYHUB.findall(d)))
+    ident = re.findall(r'Build \(id:(\d+)\)', plain(d))
+    if lab: lab_ok += 1
+    else: lab_miss += 1
+    hub = lab[0] if lab else ''
+    if hub: byhub.setdefault(hub, []).append(bid)
+    mark = ''
+    if WANT_HUB in anyh:
+        hit.append((bid, begin, ver, lab, anyh, ident)); mark = '  ★'
+        say(f'  {bid} {begin} {ver}：状态 {st}；页面身份 {ident[:1]}；"Hub Link" 后的提交端编号 {lab[:2]}；页内全部提交端链接 {anyh[:3]}{mark}')
+        say('  已找到，停止读详情页'); break
+    if n <= 3 or n % 20 == 0 or not lab:
+        say(f'  {bid} {begin} {ver}：状态 {st}；页面身份 {ident[:1]}；"Hub Link" 后的提交端编号 {lab[:2]}；页内全部提交端链接 {anyh[:3]}')
+    time.sleep(0.2)
+multi = {h: v for h, v in byhub.items() if len(v) > 1}
+say(f'  小结：读了 {n} 个；"Hub Link" 标签能取到编号的 {lab_ok} 个、取不到的 {lab_miss} 个；不同提交端编号 {len(byhub)} 个；对应多个构建的：{multi if multi else "无"}')
+say(f'  {WANT_HUB} 的查找结果：{hit if hit else "时间窗内没有找到"}')
+say('== 结束', time.strftime('%F %T'), f'用时 {int(time.time() - T0)}s')
+=====END recon19.py=====
+
+=====BEGIN recon20.py  sha256 98052c85dac1603be286dafbb66de61adfd5081575da18df307541a4fb64ba4e=====
+# 第二十次侦察：登录后的提交端页面结构（阶段 A，只读，请求闸门拦下一切写操作）+ 用户手工起一次不带 shelve 的测试构建（阶段 B，只观察）。
+# 只写 /home1/chengkai/vd-cosmos/run/recon-b3 下的 recon20.txt（标准输出重定向）、test_base_19206687.txt、临时目录 r20tmp（结束时删除）、停止标记 recon20.stop（用户可选）。
+# 不安装任何东西；不读、不记 cookie、请求头、响应正文、字段内容和密码；只记方法、地址形状、字段名、长度和摘要。不等终端输入。
+import hashlib, html.parser, json, os, re, shutil, signal, subprocess, sys, time, urllib.error, urllib.parse, urllib.request
+OUT = '/home1/chengkai/vd-cosmos/run/recon-b3'
+TMP = OUT + '/r20tmp'
+STOP = OUT + '/recon20.stop'
+BASEF = OUT + '/test_base_19206687.txt'
+CHROME = '/opt/google/chrome/chrome'
+HUB_HOST = 'vdcosmos-hub.sec.samsung.net'
+BM_HOST = 'vdcosmos-bm.sec.samsung.net'
+SSO_HOST = 'sts.secsso.net'
+HUB, BM = 'https://' + HUB_HOST, 'https://' + BM_HOST
+HUB_ID, BM_ID = '37376237', '19206687'
+LOGIN_WAIT, PHASE_B_MAX = 900, 6000
+T0 = time.time()
+def say(*a): print(f'[{time.time() - T0:7.1f}]', *a, flush=True)
+EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
+def clean(s, n=80):
+    s = EMAIL.sub('<邮箱>', re.sub(r'\s+', ' ', str(s or '')).strip())
+    return s if len(s) <= n else s[:n] + '…'
+def shape(u, base=None):
+    try:
+        if base: u = urllib.parse.urljoin(base, u)
+        s = urllib.parse.urlsplit(u)
+    except Exception: return '<无法解析>'
+    if s.scheme in ('data', 'blob', 'about', 'javascript'): return s.scheme + ':…'
+    path = re.sub(r';jsessionid=[^/?#]*', ';jsessionid=…', s.path, flags=re.I)
+    path = path if len(path) <= 160 else path[:160] + '…'
+    q = ''
+    if s.query:
+        ks = []
+        for part in s.query.split('&')[:12]:
+            k = urllib.parse.unquote_plus(part.split('=', 1)[0])[:120]
+            ks.append(k + ('=…' if '=' in part else ''))
+        q = '?' + '&'.join(ks) + ('&…' if s.query.count('&') >= 12 else '')
+    host = (s.hostname or '') + (f':{s.port}' if s.port else '')
+    return clean(f'{s.scheme}://{host}{path}{q}', 300)
+def host_of(u):
+    try: return urllib.parse.urlsplit(u).hostname or ''
+    except Exception: return ''
+WL = re.compile(r'^(\d+)-(\d+)\.(?:(I[A-Za-z]+Listener)(?:\.(\d+))?|(\d*))-?(.*)$')
+def listener(u):
+    try: q = urllib.parse.urlsplit(u).query
+    except Exception: return None
+    first = urllib.parse.unquote_plus(q.split('&')[0].split('=')[0]) if q else ''
+    m = WL.match(first)
+    if m: return {'iface': m.group(3) or '', 'behavior': m.group(4) or m.group(5) or '', 'path': m.group(6)[:120]}
+    if 'Listener' in q or 'wicket:interface' in q: return {'iface': '?', 'behavior': '', 'path': clean(q, 120)}
+    return None
+SENS = re.compile(r'pass|pwd|secret|token|saml|credential|auth|otp|cookie|session|csrf', re.I)
+def norm(v): return '\n'.join(l.rstrip() for l in v.replace('\r\n', '\n').replace('\r', '\n').split('\n') if l.strip())
+def dig(v): return hashlib.sha256(norm(v).encode()).hexdigest()[:16]
+def fields(req):
+    try: b = req.post_data_buffer
+    except Exception: return '取不到请求体'
+    if not b: return '无请求体'
+    ct = (req.headers.get('content-type') or '').lower()
+    out = []
+    if 'multipart/form-data' in ct:
+        names = re.findall(rb'name="([^"]{0,120})"', b)
+        return f'multipart 字段名 {[clean(n.decode("utf-8", "replace"), 60) for n in names[:80]]}（共 {len(names)} 个，未解析内容）'
+    t = b.decode('utf-8', 'replace')
+    if t.lstrip().startswith(('{', '[')):
+        try:
+            j = json.loads(t)
+            return f'JSON 主体 {len(b)} 字节，键名 {[clean(k, 40) for k in j.keys()][:40] if isinstance(j, dict) else type(j).__name__}'
+        except Exception: pass
+    try: pairs = urllib.parse.parse_qsl(t, keep_blank_values=True)
+    except Exception: return f'无法解析的主体 {len(b)} 字节'
+    for k, v in pairs[:120]:
+        if SENS.search(k): out.append(f'{clean(k, 60)}=<敏感字段，不记>'); continue
+        n = len(norm(v).split('\n')) if norm(v) else 0
+        d = f' 摘要 {dig(v)}' if n >= 5 else ''
+        out.append(f'{clean(k, 60)}=<长 {len(v)}，非空行 {n}{d}>')
+    return f'表单字段 {len(pairs)} 个：' + '；'.join(out)
+
+say('== 0 预检')
+say('  python', sys.version.split()[0], '| DISPLAY', os.environ.get('DISPLAY', '<无>'))
+try:
+    import importlib.metadata as im; say('  playwright', im.version('playwright'))
+except Exception as e: say('  playwright 版本读取失败', type(e).__name__)
+try: say('  chrome', subprocess.run([CHROME, '--version'], capture_output=True, text=True, timeout=30, stdin=subprocess.DEVNULL).stdout.strip())
+except Exception as e: say('  chrome 版本读取失败', type(e).__name__)
+def phpcount():
+    try:
+        o = subprocess.run(['dpkg', '-l'], capture_output=True, text=True, timeout=60, stdin=subprocess.DEVNULL).stdout
+        return sum(1 for l in o.split('\n') if l.startswith('ii') and 'php' in l.lower())
+    except Exception as e: return type(e).__name__
+PHP0 = phpcount(); say('  已装 php 相关包个数', PHP0)
+PKI0 = os.path.isdir(os.path.expanduser('~/.pki/nssdb')); say('  ~/.pki/nssdb 已存在', PKI0)
+
+say('== 1 读构建管理端 19206687 的变量页，取 PACKAGE_LIST 写成测试用 base 清单（匿名、不跟随重定向、正文只在内存里解析）')
+VOID = {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}
+class HP(html.parser.HTMLParser):
+    def __init__(s):
+        super().__init__(convert_charrefs=True); s.root = {'tag': '#root', 'attrs': {}, 'kids': []}; s.cur = [s.root]
+    def handle_starttag(s, tag, attrs):
+        n = {'tag': tag, 'attrs': dict((k, v or '') for k, v in attrs), 'kids': []}
+        s.cur[-1]['kids'].append(n)
+        if tag == 'br': s.cur[-1]['kids'].append('\n')
+        if tag not in VOID: s.cur.append(n)
+    def handle_endtag(s, tag):
+        for i in range(len(s.cur) - 1, 0, -1):
+            if s.cur[i]['tag'] == tag: del s.cur[i:]; break
+    def handle_data(s, d): s.cur[-1]['kids'].append(d)
+def text(n):
+    if isinstance(n, str): return n
+    t = ''.join(text(k) for k in n['kids'])
+    return t + '\n' if n['tag'] in ('tr', 'p', 'div', 'li', 'pre') else t
+def walk(n):
+    if isinstance(n, str): return
+    yield n
+    for k in n['kids']: yield from walk(k)
+class NoRedir(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+BASE_DIG = None
+def s1():
+    global BASE_DIG
+    op = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir())
+    try:
+        with op.open(urllib.request.Request(f'{BM}/build/{BM_ID}/variables', headers={'User-Agent': 'vd-cosmos-recon'}), timeout=60) as r:
+            st, b = r.status, r.read(30 * 1024 * 1024)
+    except urllib.error.HTTPError as e: st, b = e.code, b''
+    except Exception as e: st, b = type(e).__name__, b''
+    say(f'  状态 {st}，字节数 {len(b)}')
+    if not b: return
+    p = HP(); p.feed(b.decode('utf-8', 'replace')); del b
+    selfl = sum(1 for n in walk(p.root) if n['tag'] == 'a' and re.search(rf'/build/{BM_ID}(?:[/?#]|$)', n['attrs'].get('href', '')))
+    say('  页内指向 /build/19206687 的链接数', selfl)
+    got = {}
+    for tr in (n for n in walk(p.root) if n['tag'] == 'tr'):
+        cells = [k for k in tr['kids'] if isinstance(k, dict) and k['tag'] in ('td', 'th')]
+        if len(cells) >= 2:
+            name = text(cells[0]).strip()
+            if name in ('PACKAGE_LIST', 'SHELVE_LIST'): got.setdefault(name, []).append(''.join(text(c) for c in cells[1:]))
+    say('  表格行命中：', {k: len(v) for k, v in got.items()} or '无')
+    sh = got.get('SHELVE_LIST')
+    if sh and len(sh) == 1: say('  SHELVE_LIST 非空行数', len(norm(sh[0]).split('\n')) if norm(sh[0]) else 0, '（只记行数）')
+    pk = got.get('PACKAGE_LIST')
+    if not pk or len(pk) != 1: say('  PACKAGE_LIST 没有恰好一行，不写文件；阶段 B 请用户从变量页手工复制'); return
+    lines = [l.strip() for l in pk[0].replace('\r', '\n').split('\n') if l.strip()]
+    good = sum(1 for l in lines if re.fullmatch(r'//\S+@\d+', l))
+    say(f'  PACKAGE_LIST 非空行 {len(lines)}，其中 //路径@CL 写法 {good}，其它写法 {len(lines) - good}')
+    if re.search(r'://[^/\s@]+:[^/\s@]+@', pk[0]) or 'PASSWD' in pk[0].upper():
+        say('  命中凭据检查，不写文件'); return
+    data = '\n'.join(lines) + '\n'
+    with open(BASEF, 'w', encoding='utf-8') as f: f.write(data)
+    BASE_DIG = dig(data)
+    say(f'  已写 {BASEF}：{len(data.encode())} 字节，sha256 {hashlib.sha256(data.encode()).hexdigest()}，规范化摘要 {BASE_DIG}')
+try: s1()
+except Exception as e: say('  本段出错：', type(e).__name__, getattr(e.__traceback__, 'tb_lineno', ''))
+
+say('== 2 启动浏览器（临时 profile，结束后删除；不保存密码）')
+from playwright.sync_api import sync_playwright, Error as PWError
+os.makedirs(TMP, exist_ok=True); os.environ['TMPDIR'] = TMP
+ENV = {k: v for k, v in os.environ.items() if 'proxy' not in k.lower()}
+PH = {'p': 'L', 'nav_ok': set(), 'sso': False, 'bshow': 0}
+NAVS, NONGET, BLOCKED, SEEN, STATIC, WSL, BUILDS, CAND = [], [], [], {}, {}, [], [], []
+def tag(): return PH['p']
+def gate(route, req):
+    u, m, p = req.url, req.method, tag()
+    dec = 'allow'
+    try:
+        lst, h = listener(u), host_of(u)
+        wa = bool(req.headers.get('wicket-ajax'))
+        if p == 'L':
+            if h == HUB_HOST and (lst or wa): dec = '拦下：Wicket 回调'
+        elif p == 'A':
+            if m not in ('GET', 'HEAD'): dec = '拦下：非 GET'
+            elif lst or wa: dec = '拦下：Wicket 回调'
+            elif h not in (HUB_HOST, BM_HOST, SSO_HOST): dec = '拦下：其它主机'
+            elif req.is_navigation_request() and urllib.parse.urldefrag(u)[0] not in PH['nav_ok']: dec = '拦下：非预定导航'
+    except Exception as e: dec = '拦下：判定出错 ' + type(e).__name__
+    if dec != 'allow':
+        BLOCKED.append((p, m, shape(u)))
+        say(f'  [闸门 {p}] {dec} {m} {shape(u)}' + (f' 监听 {listener(u)}' if listener(u) else ''))
+        if m != 'GET' and p != 'B': say('    被拦请求的', fields(req))
+        try: route.abort('blockedbyclient')
+        except Exception: pass
+        return
+    try: route.continue_()
+    except Exception as e: say('  continue 出错', type(e).__name__)
+def on_req(req):
+    try:
+        u, m, rt = req.url, req.method, req.resource_type
+        h = host_of(u)
+        if m == 'GET' and rt in ('image', 'stylesheet', 'font', 'script', 'media', 'manifest', 'texttrack'):
+            STATIC[(tag(), h)] = STATIC.get((tag(), h), 0) + 1; return
+        key = (tag(), m, rt, re.sub(r'\d+', 'N', shape(u)))
+        SEEN[key] = SEEN.get(key, 0) + 1
+        nav = req.is_navigation_request()
+        rf = req.redirected_from
+        line = f'{tag()} {m} {rt}{" 导航" if nav else ""}{" ←重定向" if rf else ""} {shape(u)}'
+        lst = listener(u)
+        if lst: line += f' 监听 {lst}'
+        if req.headers.get('wicket-ajax'): line += ' [wicket-ajax]'
+        if m != 'GET':
+            fl = fields(req)
+            NONGET.append((tag(), time.time() - T0, m, shape(u), lst, fl))
+            if BASE_DIG and BASE_DIG in fl: CAND.append((time.time() - T0, m, shape(u), lst)); line += ' ★带测试 base 清单'
+            if len(NONGET) <= 400: say('  请求', line); say('    ', fl)
+        elif SEEN[key] <= 3: say('  请求', line)
+    except Exception as e: say('  记录请求出错', type(e).__name__)
+def on_resp(resp):
+    try:
+        req = resp.request
+        if req.method == 'GET' and req.resource_type in ('image', 'stylesheet', 'font', 'script', 'media', 'manifest', 'texttrack'): return
+        key = (tag(), req.method, req.resource_type, re.sub(r'\d+', 'N', shape(req.url)))
+        if req.method == 'GET' and SEEN.get(key, 0) > 3 and resp.status < 300: return
+        hd = resp.headers
+        loc = hd.get('location') or hd.get('ajax-location')
+        say(f'  响应 {tag()} {resp.status} {req.method} {shape(req.url)} 类型 {clean(hd.get("content-type", ""), 40)}' + (f' 跳到 {shape(loc, req.url)}' if loc else ''))
+    except Exception as e: say('  记录响应出错', type(e).__name__)
+def on_fail(req):
+    try:
+        f = req.failure
+        if 'BLOCKED_BY_CLIENT' in str(f) or 'blockedbyclient' in str(f): return
+        say(f'  失败 {tag()} {req.method} {shape(req.url)} {clean(f, 60)}')
+    except Exception: pass
+def on_nav(frame):
+    try:
+        if frame.parent_frame is None:
+            u = frame.url; NAVS.append((tag(), time.time() - T0, shape(u)))
+            say(f'  导航 {tag()} {shape(u)}')
+            if host_of(u) == SSO_HOST: PH['sso'] = True
+            mm = re.match(rf'https://{re.escape(HUB_HOST)}/build/(\d+)', u)
+            if mm: BUILDS.append((tag(), time.time() - T0, mm.group(1)))
+    except Exception: pass
+def on_ws(ws):
+    try:
+        WSL.append((tag(), shape(ws.url))); say(f'  WebSocket {tag()} {shape(ws.url)}')
+        cnt = {'s': 0, 'r': 0}
+        ws.on('framesent', lambda *_: cnt.__setitem__('s', cnt['s'] + 1))
+        ws.on('framereceived', lambda *_: cnt.__setitem__('r', cnt['r'] + 1))
+        ws.on('close', lambda *_: say(f'  WebSocket 关闭 {shape(ws.url)} 发 {cnt["s"]} 收 {cnt["r"]} 帧（不记内容）'))
+    except Exception: pass
+def ws_gate(wr):
+    try:
+        say(f'  WebSocket 路由 {tag()} {shape(wr.url)}' + ('（阶段 A 不连接服务器）' if tag() == 'A' else ''))
+        if tag() != 'A': wr.connect_to_server()
+        else: wr.close()
+    except Exception as e: say('  WebSocket 路由出错', type(e).__name__)
+def on_page(pg):
+    pg.on('framenavigated', on_nav); pg.on('websocket', on_ws)
+
+JS = r'''() => {
+ const T=(s,n)=>(s||'').replace(/\s+/g,' ').trim().slice(0,n);
+ const fi=f=>f?(f.id||f.getAttribute('name')||('#'+[...document.forms].indexOf(f))):'';
+ const lab=e=>{let l='';try{if(e.id){const x=document.querySelector('label[for="'+CSS.escape(e.id)+'"]');if(x)l=x.innerText;}
+  if(!l){const p=e.closest('label');if(p)l=p.innerText;} if(!l){const tr=e.closest('tr');if(tr){const c=tr.querySelector('th,td');if(c&&!c.contains(e))l=c.innerText;}}}catch(_){} return T(l,60);};
+ const vis=e=>!!(e.offsetWidth||e.offsetHeight||e.getClientRects().length);
+ const forms=[...document.forms].map(f=>({id:fi(f),action:f.getAttribute('action')||'',method:(f.getAttribute('method')||'get').toLowerCase(),enctype:f.getAttribute('enctype')||'',n:f.elements.length}));
+ const ctl=[...document.querySelectorAll('input,select,textarea')].map(e=>{const t=(e.type||'').toLowerCase();
+  const o={tag:e.tagName.toLowerCase(),type:t,name:T(e.name,80),id:T(e.id,60),label:lab(e),form:fi(e.form),req:!!e.required,dis:!!e.disabled,ro:!!e.readOnly,vis:vis(e)};
+  if(e.tagName==='SELECT'){o.multiple=!!e.multiple;o.nopt=e.options.length;o.options=[...e.options].slice(0,40).map(x=>T(x.text,40));o.nsel=[...e.options].filter(x=>x.selected).length;}
+  else if(['submit','button','reset','image'].includes(t)){o.btn=T(e.value,40);}
+  else if(t==='checkbox'||t==='radio'){o.vlabel=T(e.value,40);o.checked=!!e.checked;}
+  else if(t!=='password'){o.vlen=(e.value||'').length;} return o;});
+ const btns=[...document.querySelectorAll('button,a[onclick],[role=button],input[type=submit],input[type=button]')].slice(0,80).map(e=>({tag:e.tagName.toLowerCase(),type:(e.getAttribute('type')||''),id:T(e.id,60),name:T(e.getAttribute('name'),60),text:T(e.innerText||e.value||e.title,40),href:e.getAttribute('href')||'',onclick:e.hasAttribute('onclick'),vis:vis(e)}));
+ const ajax=[];const re=/\{[^{}]*"u":"([^"]+)"[^{}]*\}/g;
+ for(const s of document.scripts){const t=s.text||'';let m;while((m=re.exec(t))&&ajax.length<80){let j={};try{j=JSON.parse(m[0]);}catch(_){j={u:m[1]};}
+  ajax.push({u:j.u||'',c:j.c||'',e:j.e||'',m:j.m||'',f:j.f||'',sc:j.sc||'',dt:j.dt||''});}}
+ const kre=/\b(re-?run|rebuild|retry|re-?submit|resubmit|cancel|stop|abort|run|request|trigger|copy|clone|delete|remove|promote|accept|submit|save|ok)\b/i;
+ const kw=[...document.querySelectorAll('a,button,input[type=submit],input[type=button],[onclick],[role=button]')].filter(e=>kre.test(e.innerText||e.value||e.title||'')).slice(0,60)
+  .map(e=>({tag:e.tagName.toLowerCase(),text:T(e.innerText||e.value||e.title,40),href:e.getAttribute('href')||'',onclick:e.hasAttribute('onclick'),id:T(e.id,60)}));
+ const links=[...document.links].slice(0,600).map(a=>({href:a.getAttribute('href')||'',text:T(a.innerText||a.title,40)}));
+ return {url:location.href,title:T(document.title,80),ready:document.readyState,pw:document.querySelectorAll('input[type=password]').length,
+  heads:[...document.querySelectorAll('h1,h2,h3,h4,legend')].slice(0,20).map(h=>T(h.innerText,60)),forms,ctl,btns,ajax,kw,links,frames:window.frames.length};
+}'''
+def snap(pg):
+    try: return pg.evaluate(JS)
+    except Exception as e: return {'err': type(e).__name__}
+def fp(s):
+    if 'err' in s: return 'err'
+    k = {'u': shape(s['url']), 't': s['title'], 'f': s['forms'], 'c': [{x: y for x, y in c.items() if x not in ('vlen', 'checked', 'nsel')} for c in s['ctl']],
+         'b': [{x: y for x, y in b.items() if x != 'vis'} for b in s['btns']], 'a': s['ajax']}
+    return hashlib.sha256(json.dumps(k, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:16]
+def show(s, title, links=True):
+    if 'err' in s: say(f'  【{title}】取不到页面结构：{s["err"]}'); return
+    u = s['url']
+    say(f'  【{title}】{shape(u)} | 标题 {clean(s["title"])} | 状态 {s["ready"]} | 密码框 {s["pw"]} | 子框架 {s["frames"]} | 结构指纹 {fp(s)}')
+    say('    标题行', [clean(h, 60) for h in s['heads']])
+    for f in s['forms']: say(f'    表单 id={clean(f["id"], 40)} method={f["method"]} enctype={clean(f["enctype"], 40)} 控件数 {f["n"]} action={shape(f["action"], u) if f["action"] else "<无>"}')
+    agg = {}
+    for i, c in enumerate(s['ctl']):
+        if i < 150:
+            extra = ''
+            if 'options' in c: extra = f' 多选={c["multiple"]} 选项{c["nopt"]}个 已选{c["nsel"]} {c["options"][:12]}'
+            elif 'btn' in c: extra = f' 按钮文字={c["btn"]}'
+            elif 'vlabel' in c: extra = f' 值标签={c["vlabel"]} 勾选={c["checked"]}'
+            elif 'vlen' in c: extra = f' 值长度={c["vlen"]}'
+            say(f'    控件 {c["tag"]}/{c["type"]} name={c["name"]} id={c["id"]} 标签={c["label"]} 所属表单={c["form"]} 必填={c["req"]} 禁用={c["dis"]} 只读={c["ro"]} 可见={c["vis"]}{extra}')
+        else:
+            k = (c['tag'], c['type'], re.sub(r'\d+', 'N', c['name'])); agg[k] = agg.get(k, 0) + 1
+    if agg: say('    其余控件（按类型、名字形状计数）', agg)
+    for b in s['btns'][:40]: say(f'    按钮 {b["tag"]} type={b["type"]} id={b["id"]} name={b["name"]} 文字={b["text"]} onclick={b["onclick"]} 可见={b["vis"]}' + (f' href={shape(b["href"], u)}' if b['href'] else ''))
+    for a in s['ajax']: say(f'    Wicket 绑定 事件={a["e"]} 方法={a["m"] or "GET"} 元素={a["c"]} 表单={a["f"]} 提交按钮={a["sc"]} 地址={shape(a["u"], u)} 监听={listener(urllib.parse.urljoin(u, a["u"]))}')
+    for k in s['kw']: say(f'    关键字元素 {k["tag"]} 文字={k["text"]} id={k["id"]} onclick={k["onclick"]}' + (f' href={shape(k["href"], u)}' if k['href'] else ''))
+    bm = sorted({mm.group(1) for l in s['links'] for mm in [re.search(rf'{re.escape(BM_HOST)}/build/(\d+)', l['href'])] if mm})
+    say('    指向构建管理端 /build/<号> 的链接：', bm or '无')
+    if links:
+        ls = {}
+        for l in s['links']:
+            k = re.sub(r'\d{3,}', 'N', shape(l['href'], u)) if l['href'] else '<无 href>'
+            ls.setdefault(k, [0, l['text']]); ls[k][0] += 1
+        say(f'    链接形状 {len(ls)} 种（前 60 种，数字串记作 N）：')
+        for k, (n, t) in list(ls.items())[:60]: say(f'      {n}× {k} 文字={t}')
+LOGGED = r'''() => document.readyState==='complete' && document.querySelectorAll('input[type=password]').length===0'''
+LOGOUT = r'''() => [...document.links].some(a => /sign ?out|log ?out|logout|signout/i.test((a.innerText||'') + ' ' + (a.getAttribute('href')||'')))'''
+def alive(ctx, br):
+    try: return br.is_connected() and any(not p.is_closed() for p in ctx.pages)
+    except Exception: return False
+def pump(ctx, ms):
+    for p in ctx.pages:
+        if not p.is_closed():
+            try: p.wait_for_timeout(ms); return True
+            except Exception: continue
+    return False
+GUIDE = '''<html><head><meta charset="utf-8"><title>侦察说明</title></head><body style="font:20px sans-serif;margin:30px">{}</body></html>'''
+G_L = '<h2>阶段 L：请登录</h2><p>请到第二个标签页（Cosmos hub）完成公司 SSO 登录。浏览器若问是否保存密码，选"不保存"或直接关掉提示。</p><p>如果页面没有自动跳到登录页，点页面上的 Sign In / 登录 链接。</p><p><b>登录后不要点页面上的任何东西</b>，工具会自动读几个页面（阶段 A，约 1～2 分钟，期间所有写操作都会被拦下）。等这一页变成"阶段 B"再操作。</p>'
+G_B = '''<h2>阶段 B：现在可以操作了</h2><ol>
+<li>到第二个标签页（Cosmos hub），按你平时的方式进入提交页。</li>
+<li>PACKAGE_LIST：{}</li>
+<li>SHELVE_LIST：<b>留空</b>。其它字段照平时：BUILD_TYPE Full、ARCH armv7l、KS_LIST 全选、EXTRA_BUILD_PARAMETER --threads 32、EMAIL_CC 照常。</li>
+<li>点提交，等页面显示出新构建（能看到新构建号）。</li>
+<li>关闭整个浏览器窗口，记录即结束。</li></ol>
+<p>记录只包含请求方法、地址形状、字段名、长度和摘要，不记录字段内容、cookie 和密码。</p>'''
+def sigterm(*_): raise KeyboardInterrupt
+signal.signal(signal.SIGTERM, sigterm)
+END = '未知'
+try:
+    with sync_playwright() as pw:
+        br = pw.chromium.launch(executable_path=CHROME, headless=False, env=ENV, artifacts_dir=TMP, downloads_path=TMP, timeout=60000,
+                                args=['--no-proxy-server', '--no-first-run', '--no-default-browser-check', '--disable-sync', '--password-store=basic'])
+        say('  浏览器版本', br.version)
+        ctx = br.new_context(no_viewport=True, accept_downloads=False)
+        ctx.on('page', on_page); ctx.on('request', on_req); ctx.on('response', on_resp); ctx.on('requestfailed', on_fail)
+        ctx.route('**/*', gate)
+        try: ctx.route_web_socket(re.compile('.*'), ws_gate); say('  WebSocket 路由已装')
+        except Exception as e: say('  WebSocket 路由不可用，只记录', type(e).__name__)
+        guide = ctx.new_page(); guide.set_content(GUIDE.format(G_L))
+        hub = ctx.new_page()
+        say('== 3 阶段 L：打开提交端首页，等待用户登录（最多 900 秒；登录期间放行 SSO，只拦提交端的 Wicket 回调）')
+        try: hub.goto(HUB + '/', wait_until='domcontentloaded', timeout=60000)
+        except PWError as e: say('  首次打开出错', clean(str(e).split('\n')[0], 100))
+        t1, ok, stable = time.time(), False, 0
+        while time.time() - t1 < LOGIN_WAIT and alive(ctx, br) and not os.path.exists(STOP):
+            pump(ctx, 1000)
+            try:
+                u = hub.url; s = urllib.parse.urlsplit(u)
+                good = s.hostname == HUB_HOST and not s.path.startswith(('/signin', '/sso-initiate')) and hub.evaluate(LOGGED)
+            except Exception: good = False
+            if good and not PH['sso']:
+                try: good = hub.evaluate(LOGOUT)
+                except Exception: good = False
+            stable = stable + 1 if good else 0
+            if stable >= 3: ok = True; break
+        if not ok:
+            END = '没有检测到登录完成（超时、窗口被关或停止标记）'; raise KeyboardInterrupt
+        say(f'  检测到已登录，用时 {int(time.time() - t1)} 秒（经过 SSO 页面 {PH["sso"]}）；切换到阶段 A')
+        PH['p'] = 'A'
+        show(snap(hub), '登录后落地页')
+        say('== 4 阶段 A：只读结构（除下面两次预定导航外，导航、非 GET、Wicket 回调一律拦下）')
+        for title, url in (('提交端构建页 37376237', f'{HUB}/build/{HUB_ID}'), ('提交入口 /wicket/page?3（只渲染，不填写）', f'{HUB}/wicket/page?3')):
+            PH['nav_ok'] = {url}
+            try:
+                r = hub.goto(url, wait_until='domcontentloaded', timeout=60000)
+                say(f'  打开 {title}：状态 {r.status if r else "无响应"}，最终 {shape(hub.url)}')
+            except PWError as e: say(f'  打开 {title} 出错', clean(str(e).split('\n')[0], 120))
+            pump(ctx, 4000)
+            show(snap(hub), title)
+        PH['nav_ok'] = set()
+        say('== 5 阶段 B：只观察（全部放行，只记录）。等待用户手工提交并关闭窗口（最多 6000 秒，或出现停止标记）')
+        PH['p'] = 'B'
+        step2 = '打开第三个标签页，按 Ctrl+A、Ctrl+C 复制全部内容，粘贴进 PACKAGE_LIST。' if BASE_DIG else '工具没能生成清单文件，请从构建管理端 19206687 的变量页手工复制 PACKAGE_LIST。'
+        guide.set_content(GUIDE.format(G_B.format(step2)))
+        if BASE_DIG:
+            fpg = ctx.new_page()
+            try: fpg.goto('file://' + BASEF, timeout=30000)
+            except PWError as e: say('  打开清单文件标签页出错', clean(str(e).split('\n')[0], 100))
+        try: hub.goto(HUB + '/', wait_until='domcontentloaded', timeout=60000)
+        except PWError as e: say('  回到首页出错', clean(str(e).split('\n')[0], 100))
+        guide.bring_to_front()
+        last, t2 = {}, time.time()
+        while time.time() - t2 < PHASE_B_MAX and alive(ctx, br) and not os.path.exists(STOP):
+            pump(ctx, 2000)
+            for i, p in enumerate(list(ctx.pages)):
+                if p is guide or p.is_closed() or not p.url.startswith('https://'): continue
+                s = snap(p)
+                if 'err' in s: continue
+                f = fp(s)
+                if last.get(id(p)) != f:
+                    last[id(p)] = f; PH['bshow'] += 1
+                    if PH['bshow'] <= 40: show(s, f'阶段 B 标签页{i} 结构变化', links=False)
+                    else: say(f'  阶段 B 标签页{i} 结构变化（超过 40 次，只记地址和指纹）{shape(s["url"])} {f}')
+        END = '窗口已关闭' if not alive(ctx, br) else ('停止标记' if os.path.exists(STOP) else '阶段 B 超时')
+        try: br.close()
+        except Exception: pass
+except KeyboardInterrupt:
+    if END == '未知': END = '被终止（SIGTERM/中断）'
+except Exception as e:
+    END = f'出错 {type(e).__name__}: {clean(str(e).split(chr(10))[0], 160)}'
+say('== 6 小结')
+say('  结束原因：', END)
+say('  阶段 L 主框架导航（登录链路）：')
+for p, t, u in NAVS:
+    if p == 'L': say(f'    {t:7.1f}s {u}')
+say('  被闸门拦下的请求：', len(BLOCKED))
+for p, m, u in BLOCKED[:60]: say(f'    {p} {m} {u}')
+say('  非 GET 请求：', len(NONGET), '（按阶段）', {k: sum(1 for x in NONGET if x[0] == k) for k in 'LAB'})
+for p, t, m, u, lst, fl in NONGET:
+    if p == 'B': say(f'    B {t:7.1f}s {m} {u} 监听 {lst} | {clean(fl, 400)}')
+say('  带测试 base 清单摘要的请求（提交候选）：', len(CAND))
+for t, m, u, lst in CAND: say(f'    {t:7.1f}s {m} {u} 监听 {lst}')
+say('  阶段 B 主框架导航：')
+for p, t, u in NAVS:
+    if p == 'B': say(f'    {t:7.1f}s {u}')
+say('  提交端 /build/<号> 出现顺序：', [(p, round(t, 1), b) for p, t, b in BUILDS])
+if CAND:
+    after = [b for p, t, b in BUILDS if p == 'B' and t >= CAND[0][0] and b != HUB_ID]
+    say('  提交候选之后出现的第一个提交端构建号：', after[0] if after else '无')
+say('  WebSocket：', WSL or '无')
+say('  静态资源请求计数（阶段, 主机）：', STATIC)
+say('  动态请求形状计数（前 40 种）：')
+for k, n in sorted(SEEN.items(), key=lambda x: -x[1])[:40]: say(f'    {n}× {k}')
+shutil.rmtree(TMP, ignore_errors=True)
+say('  临时目录已删除：', not os.path.exists(TMP))
+say('  ~/.pki/nssdb 运行前已存在', PKI0, '运行后存在', os.path.isdir(os.path.expanduser('~/.pki/nssdb')))
+say('  已装 php 相关包个数：运行前', PHP0, '运行后', phpcount())
+say('== 结束', time.strftime('%F %T'), f'用时 {int(time.time() - T0)}s')
+=====END recon20.py=====
+
+=====BEGIN recon21.py  sha256 38313f313c0d0fe30a19ca42c88d45878781cd4fd6c07559384fc9029cb62348=====
+# 第二十一次只读侦察：找出用户 11-09 下午在提交端起的两次构建（第一次内容有误，第二次是不带 shelve 的测试构建）在构建管理端的构建号，并把它们的输入与 19206687 逐项比对。
+# 只读 https、不登录、不提交任何表单、不执行 p4；匿名会话只在内存里；不写任何文件；变量页只按白名单取值，凭据类一律不读。
+import hashlib, html, html.parser, http.cookiejar, re, time, urllib.error, urllib.parse, urllib.request
+BM_HOST = 'vdcosmos-bm.sec.samsung.net'
+BM = 'https://' + BM_HOST
+CONFIG = '4362'
+REF_BM = '19206687'
+WIN_FROM = '2026-11-09 16:30:00'   # 服务器时间（韩国时间）；两次提交约在 16:42 和 16:45
+MAX_PAGES, MAX_DETAIL = 15, 200
+DIG_TEST, DIG_WRONG, DIG_WRONG_SHELVE = 'b4831e2ede7a38d9', 'f70853aaf5e71a79', 'd522141f10d750a3'
+WHITE = ['PACKAGE_LIST', 'SHELVE_LIST', 'BASE_REPOS', 'BUILD_CONF', 'PRODUCT_REPOS', 'ARCH', 'BUILD_TYPE', 'KS_LIST', 'EXTRA_BUILD_PARAMETER', 'EMAIL_CC']
+T0 = time.time()
+def say(*a): print(*a, flush=True)
+def cut(s, n=200):
+    s = str(s)
+    return s if len(s) <= n else s[:n] + '…'
+class NoRedir(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+JAR = http.cookiejar.CookieJar()
+OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir(), urllib.request.HTTPCookieProcessor(JAR))
+PLAIN = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir())
+def get(url, op):
+    try:
+        with op.open(urllib.request.Request(url, headers={'User-Agent': 'vd-cosmos-recon'}), timeout=120) as r:
+            return r.status, r.read(30 * 1024 * 1024).decode('utf-8', 'replace'), dict(r.headers)
+    except urllib.error.HTTPError as e:
+        return e.code, '', dict(e.headers or {})
+    except Exception as e:
+        return type(e).__name__, '', {}
+def get_follow(url):
+    for _ in range(4):
+        st, t, hd = get(url, OPENER)
+        loc = hd.get('Location') or hd.get('location') or ''
+        if str(st).startswith('3') and loc:
+            nu = urllib.parse.urljoin(url, loc); p = urllib.parse.urlsplit(nu)
+            if p.netloc != BM_HOST or not re.sub(r';jsessionid=[^/?#]*', '', p.path).startswith('/history/' + CONFIG): return st, '', url
+            url = nu; continue
+        return st, t, url
+    return 'too_many_redirects', '', url
+def plain(t): return html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]*>', ' ', t)))
+DT = re.compile(r'\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}')
+def rows_of(t):
+    out = []
+    for r in re.findall(r'<tr[^>]*>(.*?)</tr>', t, re.S | re.I):
+        m = re.search(r'/build/(\d{6,9})\b', r)
+        if not m: continue
+        pr = plain(r); d = DT.search(pr); v = re.search(r'TIZEN-[A-Za-z0-9._-]+', pr)
+        out.append((m.group(1), d.group(0) if d else '', v.group(0) if v else ''))
+    return out
+def next_href(t):
+    for a in re.finditer(r'<a\b([^>]*)>(.*?)</a>', t, re.S | re.I):
+        if plain(a.group(2)).strip() in ('>', '›', 'Next'):
+            h = re.findall(r'href\s*=\s*["\']([^"\']*)', a.group(1), re.I)
+            return html.unescape(h[0]) if h else ''
+    return ''
+HUBLINK = re.compile(r'Hub Link\s*:\s*(?:<[^a][^>]*>\s*)*<a\b[^>]*href\s*=\s*["\']https?://vdcosmos-hub[^"\']*?/build/(\d{6,9})', re.I)
+STATUS = re.compile(r'title\s*=\s*["\'](Build is [^"\']{1,40})["\']', re.I)
+
+VOID = {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}
+class HP(html.parser.HTMLParser):
+    def __init__(s):
+        super().__init__(convert_charrefs=True); s.root = {'tag': '#root', 'attrs': {}, 'kids': []}; s.cur = [s.root]
+    def handle_starttag(s, tag, attrs):
+        n = {'tag': tag, 'attrs': dict((k, v or '') for k, v in attrs), 'kids': []}
+        s.cur[-1]['kids'].append(n)
+        if tag == 'br': s.cur[-1]['kids'].append('\n')
+        if tag not in VOID: s.cur.append(n)
+    def handle_endtag(s, tag):
+        for i in range(len(s.cur) - 1, 0, -1):
+            if s.cur[i]['tag'] == tag: del s.cur[i:]; break
+    def handle_data(s, d): s.cur[-1]['kids'].append(d)
+def text(n):
+    if isinstance(n, str): return n
+    t = ''.join(text(k) for k in n['kids'])
+    return t + '\n' if n['tag'] in ('tr', 'p', 'div', 'li', 'pre') else t
+def walk(n):
+    if isinstance(n, str): return
+    yield n
+    for k in n['kids']: yield from walk(k)
+def norm(v): return '\n'.join(l.strip() for l in v.replace('\r\n', '\n').replace('\r', '\n').split('\n') if l.strip())
+def dig(v): return hashlib.sha256(norm(v).encode()).hexdigest()[:16]
+def strip_cred(v): return re.sub(r'(://)[^/\s@:]+:[^/\s@]+@', r'\1<凭据已去除>@', v)
+def variables(bm):
+    st, t, _ = get(f'{BM}/build/{bm}/variables', PLAIN)
+    if not t: return st, None
+    p = HP(); p.feed(t); del t
+    got = {}
+    for tr in (n for n in walk(p.root) if n['tag'] == 'tr'):
+        cells = [k for k in tr['kids'] if isinstance(k, dict) and k['tag'] in ('td', 'th')]
+        if len(cells) >= 2:
+            name = text(cells[0]).strip()
+            if name in WHITE: got.setdefault(name, []).append(''.join(text(c) for c in cells[1:]))
+    return st, got
+def summarize(got):
+    out = {}
+    for k in WHITE:
+        v = got.get(k)
+        if v is None: out[k] = ('缺失', '', 0, ''); continue
+        if len(v) != 1: out[k] = ('重复', '', 0, ''); continue
+        n = norm(v[0]); lines = n.split('\n') if n else []
+        out[k] = ('有', n, len(lines), dig(v[0]))
+    return out
+
+say('== 开始', time.strftime('%F %T'))
+say(f'== A 构建管理端 /overview/{CONFIG}（运行中 / 排队）里与 hao.lin 有关的行')
+st, t, _ = get(f'{BM}/overview/{CONFIG}', PLAIN)
+say(f'  状态 {st}，{len(t)} 字符')
+cand = {}
+if t:
+    p = HP(); p.feed(t)
+    for ti, tb in enumerate(n for n in walk(p.root) if n['tag'] == 'table'):
+        trs = [n for n in walk(tb) if n['tag'] == 'tr']
+        heads = []
+        for tr in trs:
+            hs = [text(k).strip() for k in tr['kids'] if isinstance(k, dict) and k['tag'] == 'th']
+            if hs: heads = hs; break
+        if 'Hub ID' not in heads and 'Requester' not in heads and 'Requested By' not in heads: continue
+        body = [tr for tr in trs if any(isinstance(k, dict) and k['tag'] == 'td' for k in tr['kids'])]
+        say(f'  表 {ti}：表头 {heads}，数据行 {len(body)}')
+        for tr in body:
+            cells = [cut(re.sub(r'\s+', ' ', text(k)).strip(), 70) for k in tr['kids'] if isinstance(k, dict) and k['tag'] == 'td']
+            links = sorted({mm for n in walk(tr) if n['tag'] == 'a' for mm in re.findall(r'/build/(\d{6,9})\b', n['attrs'].get('href', ''))})
+            if 'hao.lin' in ' '.join(cells):
+                say(f'    ★ {dict(zip(heads, cells)) if len(heads) == len(cells) else cells}；行内构建链接 {links}')
+                for b in links: cand.setdefault(b, set()).add('overview')
+
+say(f'== B 用匿名会话翻 /history/{CONFIG}，到开始时间早于 {WIN_FROM} 为止（最多 {MAX_PAGES} 页）')
+st, t, url = get_follow(f'{BM}/history/{CONFIG}')
+say(f'  第 1 页：状态 {st}，Showing：{cut(" ".join(re.findall(r"Showing[^<]{0,40}", t)[:1]), 60)!r}')
+allrows = rows_of(t)
+for n in range(2, MAX_PAGES + 1):
+    if allrows and allrows[-1][1] and allrows[-1][1] < WIN_FROM: break
+    h = next_href(t)
+    if not h: say(f'  第 {n - 1} 页没有"下一页"链接，停止'); break
+    st, t, url = get_follow(urllib.parse.urljoin(url, h))
+    rs = rows_of(t)
+    if not rs: say(f'  第 {n} 页：状态 {st}，没有行，停止'); break
+    allrows += rs; time.sleep(0.3)
+seen, rows = set(), []
+for r in allrows:
+    if r[0] not in seen: seen.add(r[0]); rows.append(r)
+win = [r for r in rows if r[1] and r[1] >= WIN_FROM]
+say(f'  共 {len(rows)} 个不重复构建（去重前 {len(allrows)}），时间范围 {rows[-1][1] if rows else ""} ～ {rows[0][1] if rows else ""}；时间窗内 {len(win)} 个')
+
+say(f'== C 逐个读时间窗内构建的详情页（最多 {MAX_DETAIL} 个），找页面上有 hao.lin 的')
+for bid, begin, ver in win[:MAX_DETAIL]:
+    st, d, _ = get(f'{BM}/build/{bid}', PLAIN)
+    pd = plain(d)
+    if 'hao.lin' in pd:
+        hub = HUBLINK.findall(d); stw = STATUS.findall(d)
+        ident = re.findall(r'Build \(id:(\d+)\)', pd)
+        say(f'  ★ {bid} 开始 {begin} 版本 {ver}：状态码 {st}；页面身份 {ident[:1]}；状态 {stw[:1]}；Hub Link {hub[:2]}')
+        cand.setdefault(bid, set()).add('history')
+    time.sleep(0.2)
+say(f'  与 hao.lin 有关的构建号：{sorted(cand)}（来源 {dict((k, sorted(v)) for k, v in cand.items())}）')
+
+say(f'== D 变量页比对：参照 {REF_BM}（37376237 那一轮）')
+st, g = variables(REF_BM)
+say(f'  参照变量页状态 {st}')
+ref = summarize(g or {})
+for k in WHITE: say(f'    参照 {k}：{ref[k][0]}，非空行 {ref[k][2]}，摘要 {ref[k][3]}')
+for bid in sorted(cand):
+    if bid == REF_BM: continue
+    st, g = variables(bid)
+    say(f'  ---- {bid}：变量页状态 {st}')
+    if g is None: continue
+    cur = summarize(g)
+    for k in WHITE:
+        has, n, cnt, d = cur[k]
+        same = '与参照相同' if (has, d) == (ref[k][0], ref[k][3]) else '与参照不同'
+        extra = ''
+        if k == 'PACKAGE_LIST': extra = f'；等于测试清单 {d == DIG_TEST}；等于第一次误提交的清单 {d == DIG_WRONG}'
+        elif k == 'SHELVE_LIST': extra = f'；等于第一次误提交的 shelve 清单 {d == DIG_WRONG_SHELVE}'
+        elif k == 'EMAIL_CC': extra = f'；地址个数 {len(re.findall(r"@", n))}'
+        elif has == '有' and k in ('BASE_REPOS', 'BUILD_CONF', 'PRODUCT_REPOS', 'ARCH', 'BUILD_TYPE', 'KS_LIST', 'EXTRA_BUILD_PARAMETER'):
+            v = strip_cred(n)
+            if re.search(r'passw|token|secret', v, re.I): v = '<疑似凭据，不显示>'
+            extra = f'；值 {cut(v.replace(chr(10), " | "), 240)}'
+            if same == '与参照不同' and ref[k][0] == '有':
+                rv = strip_cred(ref[k][1])
+                if re.search(r'passw|token|secret', rv, re.I): rv = '<疑似凭据，不显示>'
+                extra += f'；参照值 {cut(rv.replace(chr(10), " | "), 240)}'
+        say(f'    {k}：{has}，非空行 {cnt}，摘要 {d}，{same}{extra}')
+say('== 结束', time.strftime('%F %T'), f'用时 {int(time.time() - T0)}s')
+=====END recon21.py=====
+
+=====BEGIN recon22.py  sha256 c7e0016888b5825cf2fe23da0f6bba3f1e58188e3682bb15d756c2301af01116=====
+# 第二十二次只读侦察：同第二十一次，翻页加深到 11-09 16:30（服务器时间）之前，并逐行检查历史列表里的提交人标记，找出用户 11-09 下午起的两次构建；已知 19287341（11-10 晚上那一轮）不是要找的。
+# 只读 https、不登录、不提交任何表单、不执行 p4；匿名会话只在内存里；不写任何文件；变量页只按白名单取值，凭据类一律不读。
+import hashlib, html, html.parser, http.cookiejar, re, time, urllib.error, urllib.parse, urllib.request
+BM_HOST = 'vdcosmos-bm.sec.samsung.net'
+BM = 'https://' + BM_HOST
+CONFIG = '4362'
+REF_BM = '19206687'
+WIN_FROM = '2026-11-09 16:30:00'   # 服务器时间（韩国时间）；两次提交约在 16:42 和 16:45
+MAX_PAGES, MAX_DETAIL = 45, 1000
+DIG_TEST, DIG_WRONG, DIG_WRONG_SHELVE = 'b4831e2ede7a38d9', 'f70853aaf5e71a79', 'd522141f10d750a3'
+WHITE = ['PACKAGE_LIST', 'SHELVE_LIST', 'BASE_REPOS', 'BUILD_CONF', 'PRODUCT_REPOS', 'ARCH', 'BUILD_TYPE', 'KS_LIST', 'EXTRA_BUILD_PARAMETER', 'EMAIL_CC']
+T0 = time.time()
+def say(*a): print(*a, flush=True)
+def cut(s, n=200):
+    s = str(s)
+    return s if len(s) <= n else s[:n] + '…'
+class NoRedir(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+JAR = http.cookiejar.CookieJar()
+OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir(), urllib.request.HTTPCookieProcessor(JAR))
+PLAIN = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedir())
+def get(url, op):
+    try:
+        with op.open(urllib.request.Request(url, headers={'User-Agent': 'vd-cosmos-recon'}), timeout=120) as r:
+            return r.status, r.read(30 * 1024 * 1024).decode('utf-8', 'replace'), dict(r.headers)
+    except urllib.error.HTTPError as e:
+        return e.code, '', dict(e.headers or {})
+    except Exception as e:
+        return type(e).__name__, '', {}
+def get_follow(url):
+    for _ in range(4):
+        st, t, hd = get(url, OPENER)
+        loc = hd.get('Location') or hd.get('location') or ''
+        if str(st).startswith('3') and loc:
+            nu = urllib.parse.urljoin(url, loc); p = urllib.parse.urlsplit(nu)
+            if p.netloc != BM_HOST or not re.sub(r';jsessionid=[^/?#]*', '', p.path).startswith('/history/' + CONFIG): return st, '', url
+            url = nu; continue
+        return st, t, url
+    return 'too_many_redirects', '', url
+def plain(t): return html.unescape(re.sub(r'\s+', ' ', re.sub(r'<[^>]*>', ' ', t)))
+DT = re.compile(r'\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}')
+def rows_of(t):
+    out = []
+    for r in re.findall(r'<tr[^>]*>(.*?)</tr>', t, re.S | re.I):
+        m = re.search(r'/build/(\d{6,9})\b', r)
+        if not m: continue
+        pr = plain(r); d = DT.search(pr); v = re.search(r'TIZEN-[A-Za-z0-9._-]+', pr)
+        out.append((m.group(1), d.group(0) if d else '', v.group(0) if v else '', 'hao.lin' in pr))
+    return out
+def next_href(t):
+    for a in re.finditer(r'<a\b([^>]*)>(.*?)</a>', t, re.S | re.I):
+        if plain(a.group(2)).strip() in ('>', '›', 'Next'):
+            h = re.findall(r'href\s*=\s*["\']([^"\']*)', a.group(1), re.I)
+            return html.unescape(h[0]) if h else ''
+    return ''
+HUBLINK = re.compile(r'Hub Link\s*:\s*(?:<[^a][^>]*>\s*)*<a\b[^>]*href\s*=\s*["\']https?://vdcosmos-hub[^"\']*?/build/(\d{6,9})', re.I)
+STATUS = re.compile(r'title\s*=\s*["\'](Build is [^"\']{1,40})["\']', re.I)
+
+VOID = {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}
+class HP(html.parser.HTMLParser):
+    def __init__(s):
+        super().__init__(convert_charrefs=True); s.root = {'tag': '#root', 'attrs': {}, 'kids': []}; s.cur = [s.root]
+    def handle_starttag(s, tag, attrs):
+        n = {'tag': tag, 'attrs': dict((k, v or '') for k, v in attrs), 'kids': []}
+        s.cur[-1]['kids'].append(n)
+        if tag == 'br': s.cur[-1]['kids'].append('\n')
+        if tag not in VOID: s.cur.append(n)
+    def handle_endtag(s, tag):
+        for i in range(len(s.cur) - 1, 0, -1):
+            if s.cur[i]['tag'] == tag: del s.cur[i:]; break
+    def handle_data(s, d): s.cur[-1]['kids'].append(d)
+def text(n):
+    if isinstance(n, str): return n
+    t = ''.join(text(k) for k in n['kids'])
+    return t + '\n' if n['tag'] in ('tr', 'p', 'div', 'li', 'pre') else t
+def walk(n):
+    if isinstance(n, str): return
+    yield n
+    for k in n['kids']: yield from walk(k)
+def norm(v): return '\n'.join(l.strip() for l in v.replace('\r\n', '\n').replace('\r', '\n').split('\n') if l.strip())
+def dig(v): return hashlib.sha256(norm(v).encode()).hexdigest()[:16]
+def strip_cred(v): return re.sub(r'(://)[^/\s@:]+:[^/\s@]+@', r'\1<凭据已去除>@', v)
+def variables(bm):
+    st, t, _ = get(f'{BM}/build/{bm}/variables', PLAIN)
+    if not t: return st, None
+    p = HP(); p.feed(t); del t
+    got = {}
+    for tr in (n for n in walk(p.root) if n['tag'] == 'tr'):
+        cells = [k for k in tr['kids'] if isinstance(k, dict) and k['tag'] in ('td', 'th')]
+        if len(cells) >= 2:
+            name = text(cells[0]).strip()
+            if name in WHITE: got.setdefault(name, []).append(''.join(text(c) for c in cells[1:]))
+    return st, got
+def summarize(got):
+    out = {}
+    for k in WHITE:
+        v = got.get(k)
+        if v is None: out[k] = ('缺失', '', 0, ''); continue
+        if len(v) != 1: out[k] = ('重复', '', 0, ''); continue
+        n = norm(v[0]); lines = n.split('\n') if n else []
+        out[k] = ('有', n, len(lines), dig(v[0]))
+    return out
+
+say('== 开始', time.strftime('%F %T'))
+say(f'== A 构建管理端 /overview/{CONFIG}（运行中 / 排队）里与 hao.lin 有关的行')
+st, t, _ = get(f'{BM}/overview/{CONFIG}', PLAIN)
+say(f'  状态 {st}，{len(t)} 字符')
+cand = {}
+if t:
+    p = HP(); p.feed(t)
+    for ti, tb in enumerate(n for n in walk(p.root) if n['tag'] == 'table'):
+        trs = [n for n in walk(tb) if n['tag'] == 'tr']
+        heads = []
+        for tr in trs:
+            hs = [text(k).strip() for k in tr['kids'] if isinstance(k, dict) and k['tag'] == 'th']
+            if hs: heads = hs; break
+        if 'Hub ID' not in heads and 'Requester' not in heads and 'Requested By' not in heads: continue
+        body = [tr for tr in trs if any(isinstance(k, dict) and k['tag'] == 'td' for k in tr['kids'])]
+        say(f'  表 {ti}：表头 {heads}，数据行 {len(body)}')
+        for tr in body:
+            cells = [cut(re.sub(r'\s+', ' ', text(k)).strip(), 70) for k in tr['kids'] if isinstance(k, dict) and k['tag'] == 'td']
+            links = sorted({mm for n in walk(tr) if n['tag'] == 'a' for mm in re.findall(r'/build/(\d{6,9})\b', n['attrs'].get('href', ''))})
+            if 'hao.lin' in ' '.join(cells):
+                say(f'    ★ {dict(zip(heads, cells)) if len(heads) == len(cells) else cells}；行内构建链接 {links}')
+                for b in links: cand.setdefault(b, set()).add('overview')
+
+say(f'== B 用匿名会话翻 /history/{CONFIG}，到开始时间早于 {WIN_FROM} 为止（最多 {MAX_PAGES} 页）')
+st, t, url = get_follow(f'{BM}/history/{CONFIG}')
+say(f'  第 1 页：状态 {st}，Showing：{cut(" ".join(re.findall(r"Showing[^<]{0,40}", t)[:1]), 60)!r}')
+allrows = rows_of(t)
+for n in range(2, MAX_PAGES + 1):
+    if allrows and allrows[-1][1] and allrows[-1][1] < WIN_FROM: break
+    h = next_href(t)
+    if not h: say(f'  第 {n - 1} 页没有"下一页"链接，停止'); break
+    st, t, url = get_follow(urllib.parse.urljoin(url, h))
+    rs = rows_of(t)
+    if not rs: say(f'  第 {n} 页：状态 {st}，没有行，停止'); break
+    allrows += rs; time.sleep(0.3)
+seen, rows = set(), []
+for r in allrows:
+    if r[0] not in seen: seen.add(r[0]); rows.append(r)
+win = [r for r in rows if r[1] and r[1] >= WIN_FROM]
+say(f'  共 {len(rows)} 个不重复构建（去重前 {len(allrows)}），时间范围 {rows[-1][1] if rows else ""} ～ {rows[0][1] if rows else ""}；时间窗内 {len(win)} 个；是否已翻到早于时间窗起点 {bool(rows) and rows[-1][1] < WIN_FROM}')
+for r in rows:
+    if r[3]: say(f'  ★ 列表行里带 hao.lin：{r[0]} 开始 {r[1]} 版本 {r[2]}'); cand.setdefault(r[0], set()).add('history-row')
+
+say(f'== C 逐个读时间窗内构建的详情页（最多 {MAX_DETAIL} 个），找页面上有 hao.lin 的')
+say(f'  时间窗内 {len(win)} 个，本次读 {min(len(win), MAX_DETAIL)} 个')
+for bid, begin, ver, _ in win[:MAX_DETAIL]:
+    st, d, _ = get(f'{BM}/build/{bid}', PLAIN)
+    pd = plain(d)
+    if 'hao.lin' in pd:
+        hub = HUBLINK.findall(d); stw = STATUS.findall(d)
+        ident = re.findall(r'Build \(id:(\d+)\)', pd)
+        say(f'  ★ {bid} 开始 {begin} 版本 {ver}：状态码 {st}；页面身份 {ident[:1]}；状态 {stw[:1]}；Hub Link {hub[:2]}')
+        cand.setdefault(bid, set()).add('history')
+    time.sleep(0.2)
+say(f'  与 hao.lin 有关的构建号：{sorted(cand)}（来源 {dict((k, sorted(v)) for k, v in cand.items())}）')
+
+say(f'== D 变量页比对：参照 {REF_BM}（37376237 那一轮）')
+st, g = variables(REF_BM)
+say(f'  参照变量页状态 {st}')
+ref = summarize(g or {})
+for k in WHITE: say(f'    参照 {k}：{ref[k][0]}，非空行 {ref[k][2]}，摘要 {ref[k][3]}')
+for bid in sorted(cand):
+    if bid == REF_BM: continue
+    st, g = variables(bid)
+    say(f'  ---- {bid}：变量页状态 {st}')
+    if g is None: continue
+    cur = summarize(g)
+    for k in WHITE:
+        has, n, cnt, d = cur[k]
+        same = '与参照相同' if (has, d) == (ref[k][0], ref[k][3]) else '与参照不同'
+        extra = ''
+        if k == 'PACKAGE_LIST': extra = f'；等于测试清单 {d == DIG_TEST}；等于第一次误提交的清单 {d == DIG_WRONG}'
+        elif k == 'SHELVE_LIST': extra = f'；等于第一次误提交的 shelve 清单 {d == DIG_WRONG_SHELVE}'
+        elif k == 'EMAIL_CC': extra = f'；地址个数 {len(re.findall(r"@", n))}'
+        elif has == '有' and k in ('BASE_REPOS', 'BUILD_CONF', 'PRODUCT_REPOS', 'ARCH', 'BUILD_TYPE', 'KS_LIST', 'EXTRA_BUILD_PARAMETER'):
+            v = strip_cred(n)
+            if re.search(r'passw|token|secret', v, re.I): v = '<疑似凭据，不显示>'
+            extra = f'；值 {cut(v.replace(chr(10), " | "), 240)}'
+            if same == '与参照不同' and ref[k][0] == '有':
+                rv = strip_cred(ref[k][1])
+                if re.search(r'passw|token|secret', rv, re.I): rv = '<疑似凭据，不显示>'
+                extra += f'；参照值 {cut(rv.replace(chr(10), " | "), 240)}'
+        say(f'    {k}：{has}，非空行 {cnt}，摘要 {d}，{same}{extra}')
+say('== 结束', time.strftime('%F %T'), f'用时 {int(time.time() - T0)}s')
+=====END recon22.py=====
+

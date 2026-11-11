@@ -1,0 +1,35 @@
+== 开始 2026-11-10 22:11:33
+== A 构建管理端 /overview/4362（运行中 / 排队）里与 hao.lin 有关的行
+  状态 200，96962 字符
+  表 1：表头 ['Requested By', 'Schedule Date', 'Priority', 'Process Status', 'Build Version', 'Configuration Path', 'Hub ID', 'Requester']，数据行 57
+    ★ {'Requested By': 'Build_Runner', 'Schedule Date': '2026-11-10 21:48:34', 'Priority': '5', 'Process Status': 'RUNNING_BUILD', 'Build Version': '[hao.lin] TIZEN-RBS-KantSU2e-Full-261110.214834', 'Configuration Path': 'ASAN_PUBLIC/KantSU2e/RELEASE', 'Hub ID': '37518055', 'Requester': 'hao.lin'}；行内构建链接 ['19287341']
+== B 用匿名会话翻 /history/4362，到开始时间早于 2026-11-09 16:30:00 为止（最多 15 页）
+  第 1 页：状态 200，Showing：'Showing 1 to 30 of 33166'
+  共 450 个不重复构建（去重前 450），时间范围 2026-11-10 02:11:23 ～ 2026-11-10 23:02:46；时间窗内 450 个
+== C 逐个读时间窗内构建的详情页（最多 200 个），找页面上有 hao.lin 的
+  ★ 19287341 开始 2026-11-10 21:48:34 版本 TIZEN-RBS-KantSU2e-Full-261110.214834：状态码 200；页面身份 ['19287341']；状态 ['Build is running']；Hub Link ['37518055']
+  与 hao.lin 有关的构建号：['19287341']（来源 {'19287341': ['history', 'overview']}）
+== D 变量页比对：参照 19206687（37376237 那一轮）
+  参照变量页状态 200
+    参照 PACKAGE_LIST：有，非空行 2245，摘要 b4831e2ede7a38d9
+    参照 SHELVE_LIST：有，非空行 893，摘要 249832d7df09e0f2
+    参照 BASE_REPOS：有，非空行 1，摘要 b8696f73240379bf
+    参照 BUILD_CONF：有，非空行 1，摘要 7f50bb0b56e0fac7
+    参照 PRODUCT_REPOS：有，非空行 1，摘要 f7abd4777ae2857b
+    参照 ARCH：有，非空行 1，摘要 8a3f6cb1b8a37c2f
+    参照 BUILD_TYPE：有，非空行 1，摘要 008dacb6d1e85bd8
+    参照 KS_LIST：有，非空行 1，摘要 4731ccf67d3a8a88
+    参照 EXTRA_BUILD_PARAMETER：有，非空行 1，摘要 c8d86e0c038db735
+    参照 EMAIL_CC：缺失，非空行 0，摘要
+  ---- 19287341：变量页状态 200
+    PACKAGE_LIST：有，非空行 2245，摘要 8b1b19fed8d77859，与参照不同；等于测试清单 False；等于第一次误提交的清单 False
+    SHELVE_LIST：有，非空行 907，摘要 13b21f95bac54941，与参照不同；等于第一次误提交的 shelve 清单 False
+    BASE_REPOS：有，非空行 1，摘要 71c2c398939ba007，与参照不同；值 http://repos.vd.sec.samsung.net/obs220/tizen-rsa/tizen-10.0-base-dev-llvm/standard/tizen-10.0-base-dev-llvm-standard_20261105.1/；参照值 http://repos.vd.sec.samsung.net/obs220/tizen-rsa/tizen-10.0-base-dev-llvm/standard/tizen-10.0-base-dev-llvm-standard_20261029.1/
+    BUILD_CONF：有，非空行 1，摘要 ee211dbdea88e484，与参照不同；值 //SHARED/[TizenBuild_Prj]/[INT]/buildconf/tizen/TEST/migration/10.0/TV/TIZEN_KantSU2E_Clang_build.conf@14431365；参照值 //SHARED/[TizenBuild_Prj]/[INT]/buildconf/tizen/TEST/migration/10.0/TV/TIZEN_KantSU2E_Clang_build.conf@14368686
+    PRODUCT_REPOS：有，非空行 1，摘要 f7abd4777ae2857b，与参照相同；值 http://repos.vd.sec.samsung.net/products/tv/development/DO_NOT_DELETE/TIZEN-ONEMAIN-KantSU2e-RELEASE_20261001.3/
+    ARCH：有，非空行 1，摘要 8a3f6cb1b8a37c2f，与参照相同；值 armv7l
+    BUILD_TYPE：有，非空行 1，摘要 008dacb6d1e85bd8，与参照相同；值 Full
+    KS_LIST：有，非空行 1，摘要 4731ccf67d3a8a88，与参照相同；值 T-KSU2EJAKUC-0101-PERF.ks,T-KSU2EJAKUC-0101-REL.ks,T-KSU2EJAKUC-0101.ks
+    EXTRA_BUILD_PARAMETER：有，非空行 1，摘要 c8d86e0c038db735，与参照相同；值 --threads 32
+    EMAIL_CC：缺失，非空行 0，摘要 ，与参照相同；地址个数 0
+== 结束 2026-11-10 22:13:30 用时 116s
