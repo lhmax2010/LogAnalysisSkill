@@ -23,8 +23,8 @@ COMMANDS = {
     "analyze.accept": Category.ACCEPT,
     **{name: Category.HUMAN for name in (
         "confirm-input", "bind-base-list", "inbox.done", "confirm", "confirm-group", "confirm-bug", "confirm-terminal", "approve",
-        "attest", "resolve", "bind", "rebind", "parse-override", "round.abandon")},
-    **{name: Category.EXTERNAL for name in ("submit", "p4.create-cl", "p4.shelve")},
+        "attest", "resolve", "recover", "bind", "rebind", "parse-override", "round.abandon")},
+    **{name: Category.EXTERNAL for name in ("submit", "submit.once", "p4.create-cl", "p4.shelve")},
 }
 EVENTS = {
     Category.OBSERVE: {"observation_started", "observation_recorded", "observation_failed",
@@ -33,9 +33,9 @@ EVENTS = {
     Category.GENERATE: {"analysis_prepared", "snapshot_started", "snapshot_completed", "snapshot_failed", "inbox_opened"},
     Category.ACCEPT: {"analysis_received", "analysis_rejected"},
     Category.HUMAN: {"confirmed", "approved", "terminal_confirmed", "attested", "resolved",
-                     "terminal_withdrawn", "input_confirmed", "base_list_bound", "inbox_closed", "bind", "rebind", "parse_overridden", "round_abandoned", "submit_decision", "submit_rerun_resolved"},
+                     "terminal_withdrawn", "input_confirmed", "base_list_bound", "inbox_closed", "bind", "rebind", "parse_overridden", "round_abandoned", "submit_decision", "submit_rerun_resolved", "submit_recovery", "submit_session_finished", "manual_action_pending"},
     Category.EXTERNAL: {"submit_session_started", "submit_session_finished", "click_intent",
-                        "submit_form_exposed", "hub_page_exposed", "manual_action_pending", "submit_result", "submit_request", "submit_outcome", "p4_operation_started", "p4_operation_result"},
+                        "base_source_attest", "submit_recovery", "submit_form_exposed", "hub_page_exposed", "manual_action_pending", "submit_result", "submit_request", "submit_outcome", "p4_operation_started", "p4_operation_result"},
 }
 
 

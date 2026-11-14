@@ -9,6 +9,8 @@ from zoneinfo import ZoneInfo
 
 from vd_cosmos_core.cli import Parser
 from vd_cosmos_core.config import load_config
+from vd_cosmos_core.commands import Category
+from vd_cosmos_core import submit_once, submit_sessions
 from vd_cosmos_core.errors import FlowError
 from vd_cosmos_core.bm_reader import Reader, FixtureTransport
 from vd_cosmos_core.submit_doctor import doctor
@@ -17,23 +19,23 @@ from vd_cosmos_core import submit_claim, submit_terminal, submit_watch
 from vd_cosmos_core.files import atomic_write, json_bytes
 from vd_cosmos_core.export import check_content
 
-COMMANDS = ['lookup', 'doctor', 'watch', 'attest', 'bind', 'rebind', 'abandon', 'resolve']
+COMMANDS = ['lookup', 'doctor', 'watch', 'attest', 'bind', 'rebind', 'abandon', 'resolve', 'once', 'recover']
 
 
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     try:
         if '--help' in argv:
-            result = {'commands': COMMANDS, 'exit_code': 0, 'checkpoint': 'B1; browser paths unavailable'}
+            result = {'commands': COMMANDS, 'exit_code': 0, 'checkpoint': 'B2a preparation; browser driver pending'}
         else:
             parser = Parser(add_help=False)
             parser.add_argument('command', choices=COMMANDS)
             parser.add_argument('--config', required=True)
             parser.add_argument('--backend', choices=['real', 'fixture'], default='fixture')
             parser.add_argument('--fixture')
-            for name in ('hub-id', 'build-id', 'request', 'session', 'reason', 'checked-at', 'since'):
+            for name in ('hub-id', 'build-id', 'request', 'session', 'reason', 'checked-at', 'since', 'base-list', 'base-from-hub', 'bm-build', 'shelve-list', 'resubmit-of'):
                 parser.add_argument('--' + name)
-            for name in ('via-hub', 'online', 'read-only', 'manual-submit', 'manual-rerun', 'not-submitted', 'no-manual-submit'):
+            for name in ('via-hub', 'online', 'read-only', 'manual-submit', 'manual-rerun', 'not-submitted', 'no-manual-submit', 'rehearse', 'holder-gone'):
                 parser.add_argument('--' + name, action='store_true')
             parser.add_argument('--max-scans', type=int)
             args = parser.parse_args(argv)
@@ -41,6 +43,8 @@ def main(argv=None):
             context = None
             if args.command in {'attest', 'bind', 'rebind', 'abandon', 'resolve'}:
                 context = submit_terminal.human_context('round.abandon' if args.command == 'abandon' else args.command)
+            if args.command=='once':context=submit_terminal.human_context('submit.once', Category.EXTERNAL)
+            if args.command=='recover':context=submit_terminal.human_context('recover')
             config = load_config(args.config)
             def factory(cache=None):
                 transport = None
@@ -50,7 +54,14 @@ def main(argv=None):
                 return Reader(config, transport=transport, cache=cache)
             reader = None
             try:
-                if args.command == 'doctor':
+                if args.command == 'once':
+                    result=submit_once.run(config,args,context,factory,lambda value:submit_terminal.ask(json.dumps(value,ensure_ascii=False)+'\n确认：'))
+                elif args.command == 'recover':
+                    if not args.session or not args.reason:raise FlowError(2,'recovery_arguments_required')
+                    with submit_sessions.target_lock(config):
+                        submit_sessions.recover_locked(config,context,submit_sessions.Processes(),session_id=args.session,holder_gone=args.holder_gone,reason=args.reason)
+                    result={'exit_code':0,'recovered':args.session}
+                elif args.command == 'doctor':
                     reader = factory() if args.online else None
                     result = doctor(config, reader=reader)
                 elif args.command == 'lookup':

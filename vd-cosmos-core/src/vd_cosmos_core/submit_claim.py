@@ -132,6 +132,9 @@ def merge_scan(config, r, scan, context, *, now=None):
 
 
 def hard_checks(config, r, d, all_requests):
+    with EventStore(config.data_root) as store:
+        if any(e['payload']['basis']['build_id']==d['build_id'] for e in store.events(kinds=['base_source_attest'])):
+            raise FlowError(4,'base_source_not_bindable')
     if d['build_id'] in {'19270877', '19206687'}:
         raise FlowError(4, 'verification_source_or_erroneous_build_not_bindable')
     if d['identity'] != 'strong' or not d['hub_id'] or d['conflict']:

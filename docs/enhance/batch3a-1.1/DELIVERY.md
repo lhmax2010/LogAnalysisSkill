@@ -333,3 +333,17 @@ B1.2 全量测试：Python 3.10 语法/标准库检查、三条 import 约束（
 新增 11 项回归。evidence-b12/config-load-check.json 证明真实旧配置共享加载 PASS、P4 使用点报预期 p4_config_legacy_format；未改原件、未执行 P4。validation.json/source-manifest.json 记录源码和运行结果。B3a11-Q03 已闭合：diag27.py 第 7 行词表字面量（规则索引 3）和第 11 行会话删除正则（规则索引 2）分别获批且精确登记，最终凭据预检通过；A+B1 命令仍不变。旧 prepush-before-q03.json 仅保存裁定前历史阻塞，最终以 prepush-final.json 为准。
 
 设计方常设授权（2026-11-14）：对设计方提供且声明 SHA256 的证据脚本，可直接登记用于检测、过滤或脱敏凭据的正则/词表字面量命中；严格沿用 Q02 精确约束，每条列入 DELIVERY，无需再次询问。命中像实际票据、口令、Cookie、token 或会话值，或脚本并非设计方提供且声明摘要时，必须停止询问。此授权不适用于运行时检查或其它文件。
+
+## Checkpoint B2a — 浏览器之前（2026-11-14）
+
+基线 e5d4afa；本阶段不启动浏览器。实现 once 的参数/外部写能力门、控制终端/祖先进程检查、来源白名单首读冻结与报告头提取、来源认定、跨请求保护、目标 profile 锁和会话恢复。
+
+| HLD | 文件 | 测试（test_batch3a11b2a.B2aTests） |
+|---|---|---|
+| §8.8 1/1a，§6.4 | submit_once.py、submit_source.py、submit_terminal.py、submit CLI | test_cli_non_tty_and_argument_shelve_rejections、test_fake_ancestor_table_blocks_cline_and_unreadable、test_source_whitelist_header_only_and_no_bind_round_or_shelve_artifact、test_source_invalid_identity_missing_values_and_confirmation_never_create_request |
+| §8.8 2 | submit_sessions.py、commands.py、submit_claim.py | test_profile_lock_and_session_unique_and_mode、test_recovery_alive_unknown_and_pre_exposure、test_exposed_no_click_survives_cleanup_crash_and_manual_override、test_click_crash_uncertain_and_accepted_crash_keeps_result、test_duplicate_parsed_list_and_wrong_resubmit_reference |
+
+B3a11-Q04 — assumed: 配置未显式给全 18 项表单值时拒绝准备，不猜测第一次演练前尚未确认的默认值；属性对应表仍未确认，非演练退出 4 并产生待办。
+B3a11-Q05 — assumed: 来源认定每次都重新回显并确认，暂不复用旧认定；这是比允许复用更保守的选择。来源读取仅取显式变量白名单和报告头，禁止把来源构建送入轮次/分析队列。
+
+测试证据：evidence-b2a/python310.txt、python312.txt；完整摘要见 evidence-b2a/validation.json。后续 B2b 接入浏览器，目前准备完成后明确返回 browser_driver_unavailable。

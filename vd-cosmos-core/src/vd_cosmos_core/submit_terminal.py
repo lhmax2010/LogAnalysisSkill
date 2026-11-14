@@ -8,12 +8,12 @@ from .commands import Category, CommandContext
 from .errors import FlowError
 
 
-def ancestors_allowed():
-    pid = os.getppid(); visited = set()
+def ancestors_allowed(proc_root=Path("/proc"), parent_pid=None):
+    pid = os.getppid() if parent_pid is None else parent_pid; visited = set()
     while pid > 1 and pid not in visited:
         visited.add(pid)
         try:
-            base = Path('/proc') / str(pid)
+            base = Path(proc_root) / str(pid)
             command = (base / 'cmdline').read_bytes().replace(b'\0', b' ').decode(errors='replace').casefold()
             if 'cline' in command or 'extensionhost' in command or 'extension-host' in command:
                 raise FlowError(4, 'ai_process_ancestor_refused')
@@ -29,11 +29,11 @@ def available():
     except OSError: return False
 
 
-def human_context(command):
+def human_context(command, category=Category.HUMAN):
     if not available(): raise FlowError(2, 'terminal_required')
     ancestors_allowed()
     if ask('Confirm command (yes): ') != 'yes': raise FlowError(3, 'confirmation_required')
-    return CommandContext(command, Category.HUMAN, True)
+    return CommandContext(command, category, True)
 
 
 def ask(prompt):

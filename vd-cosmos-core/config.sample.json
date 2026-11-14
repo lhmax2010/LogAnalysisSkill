@@ -205,6 +205,11 @@
       ".re",
       ".rl",
       ".gperf"
+    ],
+    "source_compare_vars": [
+      "BASE_REPOS",
+      "PRODUCT_REPOS",
+      "BUILD_CONF"
     ]
   },
   "submit": {
@@ -377,6 +382,17 @@
         "request_text_verified": false,
         "observed_values": []
       }
-    }
+    },
+    "property_map_confirmed": false,
+    "copy_from_source_vars": [
+      "PACKAGE_LIST",
+      "BASE_REPOS",
+      "BUILD_CONF",
+      "PRODUCT_REPOS",
+      "ARCH",
+      "BUILD_TYPE",
+      "KS_LIST",
+      "EXTRA_BUILD_PARAMETER"
+    ]
   }
 }

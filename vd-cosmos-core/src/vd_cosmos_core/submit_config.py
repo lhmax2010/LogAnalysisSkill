@@ -62,6 +62,9 @@ def configure(raw):
     for key in ('target_instance', 'target_config', 'target_config_id', 'account'):
         if not isinstance(submit[key], str) or not submit[key] or any(ch in submit[key] for ch in '\n\r\0'):
             raise FlowError(2, 'invalid_submit_configuration')
+    submit.setdefault('property_map_confirmed', False)
+    submit.setdefault('copy_from_source_vars', ['PACKAGE_LIST','BASE_REPOS','BUILD_CONF','PRODUCT_REPOS','ARCH','BUILD_TYPE','KS_LIST','EXTRA_BUILD_PARAMETER'])
+    raw.setdefault('analyzer', {}).setdefault('source_compare_vars', ['BASE_REPOS','PRODUCT_REPOS','BUILD_CONF'])
     props = submit.setdefault('property_map', {})
     if set(props) - set(PROPERTIES):
         raise FlowError(2, 'unknown_submit_property')
