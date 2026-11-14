@@ -1,0 +1,32 @@
+{
+  "base": "b6cb3724c4348e89cdd54112e698310fd7f0360f",
+  "runs": [
+    {
+      "version": "Python 3.10.12",
+      "path": "docs/enhance/batch3a-1.1/evidence-b11-followup/test-output-python310.txt",
+      "sha256": "28b4f074092f038aeaad1d38f765513962e3b1ebc6fb8e5c59ad9a43e4bfc6b9",
+      "tests": 236,
+      "seconds": 42.88,
+      "result": "PASS"
+    },
+    {
+      "version": "Python 3.12.3",
+      "path": "docs/enhance/batch3a-1.1/evidence-b11-followup/test-output-python312.txt",
+      "sha256": "2d528b1a6092a2f545bd5da3314bab5a739b164bc89b89005cc3fc99d9590964",
+      "tests": 236,
+      "seconds": 43.014,
+      "result": "PASS"
+    }
+  ],
+  "source_manifest_sha256": "510cf5d5bc1687bbca80b0b172254a5e7f28786fa5a73f36047f4465facb4464",
+  "source_count": 103,
+  "source_unchanged_after_tests": true,
+  "import_linter": "2.3",
+  "nice": 19,
+  "parallel_heavy_tests": false,
+  "test_tmpdir_filesystem": "tmpfs",
+  "real_network_access": false,
+  "browser_opened": false,
+  "scripts_executed": false,
+  "open_blockers": []
+}

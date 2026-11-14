@@ -82,9 +82,9 @@ class RelationAndComparisonTests(B1Case):
         prop=self.config.raw['submit']['property_map']['EXTRA_BUILD_PARAMETER']
         prop.update(variable='EXTRA_BUILD_PARAMETER',encoding='text')
         result=bm_pages.compare({'form':form},vals,self.config)
-        self.assertIn('比较规则未确认',result['fields']['EXTRA_BUILD_PARAMETER'])
+        self.assertEqual(result['fields']['EXTRA_BUILD_PARAMETER'],'不一致')
         prop['request_text_verified']=True
-        self.assertIn('比较规则未确认',bm_pages.compare({'form':form},vals,self.config)['fields']['EXTRA_BUILD_PARAMETER'])
+        self.assertEqual(bm_pages.compare({'form':form},vals,self.config)['fields']['EXTRA_BUILD_PARAMETER'],'不一致')
         vals['EXTRA_BUILD_PARAMETER']['value']='--threads 32';vals['SHELVE_LIST']={'value':'//x@903'}
         self.assertFalse(bm_pages.compare({'form':form},vals,self.config)['matches'])
         vals['SHELVE_LIST']['value']='';vals['EMAIL_CC']={'value':'different'}

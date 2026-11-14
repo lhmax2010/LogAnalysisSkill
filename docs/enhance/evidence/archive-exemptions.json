@@ -10,6 +10,26 @@
       "reason": "regex literal that strips session ids; no credential value",
       "date": "2026-11-14",
       "approved_by": "designer 2026-11-14"
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/recon25.py",
+      "sha256": "6fd9ccd174dae8a1bb264213fe460b812387d9d9742b06a3aaf173573777202d",
+      "line": 38,
+      "matched_text": "jsessionid\u003d",
+      "credential_rule": "jsessionid\\s*=",
+      "reason": "regex literal that strips session ids; no credential value",
+      "date": "2026-11-14",
+      "approved_by": "designer 2026-11-14"
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/recon26.py",
+      "sha256": "e8b6a8be6de243b5c82b4a3928664fdf7c7d24021afe4c916f87e3ac1de61cf4",
+      "line": 38,
+      "matched_text": "jsessionid\u003d",
+      "credential_rule": "jsessionid\\s*=",
+      "reason": "regex literal that strips session ids; no credential value",
+      "date": "2026-11-14",
+      "approved_by": "designer 2026-11-14"
     }
   ]
 }

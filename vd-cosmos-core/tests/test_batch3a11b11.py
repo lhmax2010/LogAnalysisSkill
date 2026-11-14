@@ -32,6 +32,7 @@ class VariablePageTests(B1Case):
 
     def test_three_columns_nonempty_display_pre_shared_callers_exact_value(self):
         body=detail(variables=dict(self.values,BART_PASSWD='DO_NOT_STORE_THIS'))
+        body=body.replace(b'</td><td></td><td>',b'</td><td>Display label only</td><td>')
         a,note=build_inputs.variables(body,self.config,'900',self.url)
         b=bm_pages.variables(body,self.config,'900',set(self.values))
         self.assertEqual(a,self.values)
@@ -130,14 +131,50 @@ class VariablePageTests(B1Case):
         self.assertIn('变量页已变化',r['todos'])
         self.assertIsNone(r['binding'])
 
-    def test_text_stays_unverified_and_shipped_map_unregistered(self):
+    def test_registered_text_compares_and_shipped_map_stays_unregistered(self):
         for entry in self.config.raw['submit']['property_map'].values():
             self.assertIsNone(entry['variable']);self.assertIsNone(entry['encoding'])
         p=self.config.raw['submit']['property_map']['EXTRA_BUILD_PARAMETER']
         p.update(variable='EXTRA_BUILD_PARAMETER',encoding='text',request_text_verified=True)
         result=bm_pages.compare({'form':dict.fromkeys(PROPERTIES,'')|{'PACKAGE_LIST':BASE}},
             {'PACKAGE_LIST':{'value':BASE},'EXTRA_BUILD_PARAMETER':{'value':'a different value'}},self.config)
-        self.assertEqual(result['fields']['EXTRA_BUILD_PARAMETER'],'未核验（比较规则未确认）')
+        self.assertEqual(result['fields']['EXTRA_BUILD_PARAMETER'],'不一致')
+        self.assertFalse(result['matches'])
+
+    def test_recon25_empty_display_column_four_builds_and_exact_shapes(self):
+        # recon25 confirms header/empty labels and these public vocabulary values.
+        values=dict(self.values,BUILD_TYPE='Full',ARCH='armv7l',EXTRA_BUILD_PARAMETER='--threads 32')
+        for build in ('19206687','19270912','19091860','19287341'):
+            body=detail(b=build,variables=values)
+            self.assertIn(b'<th>Name</th><th>Display Name</th><th>Value</th>',body)
+            self.assertNotIn(b'Display label only',body)
+            parsed=bm_pages.variables(body,self.config,build,set(values))
+            for name in ('BUILD_TYPE','ARCH','EXTRA_BUILD_PARAMETER'):
+                item=parsed[name]
+                self.assertEqual(item['value'],values[name])
+                self.assertEqual((item['leading_blank_lines'],item['trailing_blank_lines'],item['indented_lines']),(0,0,0))
+            again=bm_pages.variables(body,self.config,build,set(values))
+            self.assertEqual(parsed,again)
+        self.assertFalse(list((self.config.data_root/'inputs/variable-first-read').glob('*/issues/*')))
+
+    def test_recon25_registered_cmp_v1_without_old_flag_and_unregistered(self):
+        form=self.form();form['EXTRA_BUILD_PARAMETER']='--threads 32'
+        vals={'PACKAGE_LIST':{'value':BASE},'EXTRA_BUILD_PARAMETER':{'value':'--threads 32 \r\n'}}
+        prop=self.config.raw['submit']['property_map']['EXTRA_BUILD_PARAMETER']
+        self.assertEqual(bm_pages.compare({'form':form},vals,self.config)['fields']['EXTRA_BUILD_PARAMETER'],'未核验')
+        prop.update(variable='EXTRA_BUILD_PARAMETER',encoding=None)
+        self.assertEqual(bm_pages.compare({'form':form},vals,self.config)['fields']['EXTRA_BUILD_PARAMETER'],'未核验')
+        prop['encoding']='text'
+        for legacy_flag in (False,True):
+            prop['request_text_verified']=legacy_flag
+            self.assertEqual(bm_pages.compare({'form':form},vals,self.config)['fields']['EXTRA_BUILD_PARAMETER'],'一致')
+        for changed in ('--threads=32',' --threads 32','--threads  32','--threads\n\n32'):
+            vals['EXTRA_BUILD_PARAMETER']['value']=changed
+            result=bm_pages.compare({'form':form},vals,self.config)
+            self.assertEqual(result['fields']['EXTRA_BUILD_PARAMETER'],'不一致')
+            self.assertFalse(result['matches'])
+        prop['variable']='not_listed'
+        self.assertEqual(bm_pages.compare({'form':form},vals,self.config)['fields']['EXTRA_BUILD_PARAMETER'],'未核验')
 
     def test_other_report_fixed_schema_rejects_added_display_column(self):
         html=report_html('armv7l',[pkg('foo')])
@@ -179,3 +216,18 @@ class RerunChainTests(B1Case):
         prepared=submit_claim.prepare_attest(self.config,r['request_id'],'901',reader)
         chosen=submit_claim.attest(self.config,r['request_id'],prepared,HUMAN,prepared['required_words'],'FatTank explicitly chose 901',reader)
         self.assertEqual(chosen['binding']['build_id'],'901')
+
+    def test_recon26_same_hub_two_real_ids_and_start_times_no_auto_selection(self):
+        # IDs/times from recon26; statuses and package contents are synthetic.
+        ids=('19238877','19241462');times=('2026-11-05 12:05:41','2026-11-05 15:42:50')
+        data=pages(b=ids[0],h='37432138',begin=times[0])
+        data['/history/4362']=history(list(reversed(ids)),begin=times[1])
+        data['/build/'+ids[1]]=detail(ids[1],'37432138',begin=times[1])
+        data['/build/'+ids[1]+'/variables']=detail(ids[1],'37432138',begin=times[1],variables={'PACKAGE_LIST':BASE,'SHELVE_LIST':''})
+        result=self.reader(data).lookup('37432138')
+        self.assertEqual(result['result'],'重跑链')
+        self.assertEqual(result['conflicts'],[])
+        self.assertIsNone(result['auto_selected'])
+        builds=result['rerun_chains'][0]['builds']
+        self.assertEqual([b['build_id'] for b in builds],list(ids))
+        self.assertEqual([b['start_time'] for b in builds],[bm_pages.page_time(t,'Asia/Seoul') for t in times])

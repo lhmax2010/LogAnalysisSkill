@@ -101,3 +101,21 @@ class ArchivePrecheckTests(unittest.TestCase):
             self.assertEqual(caught.exception.code,4)
         self.assertEqual(self.config.raw,before)
         self.assertFalse((self.config.data_root/'export/archive').exists())
+
+    def test_recon24_25_26_archives_exact_scope_and_runtime_still_blocks(self):
+        for name in ('recon25.py','recon26.py'):
+            relative='docs/enhance/evidence/scripts/'+name
+            original=(REPO/relative).read_bytes();path=self.root/relative;path.write_bytes(original)
+            result=self.check(path)
+            self.assertTrue(result['allowed'])
+            self.assertEqual([(e['line'],e['pattern_index']) for e in result['archive_exemptions']],[(38,2)])
+            self.assertFalse(check_content(original,self.config)['allowed'])
+            path.write_bytes(original+b' ')
+            self.assertEqual(self.check(path)['archive_error'],'archive_hash_mismatch')
+            path.write_bytes(original)
+            clone=path.with_name('unregistered-'+name);clone.write_bytes(original)
+            self.assertFalse(self.check(clone)['allowed'])
+        relative='docs/enhance/evidence/scripts/recon24.py'
+        self.assertNotIn(relative,[e['path'] for e in self.registry['entries']])
+        result=check_file(REPO/relative,self.config)
+        self.assertTrue(result['allowed']);self.assertEqual(result['archive_exemptions'],[])

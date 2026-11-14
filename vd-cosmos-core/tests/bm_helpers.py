@@ -1,4 +1,4 @@
-"""Synthetic pages reproducing recon15/16/17/18/21/22 structure, never live data."""
+"""Synthetic pages reproducing recon15/16/17/18/21/22/25 structure, never live data."""
 from html import escape
 import copy
 import time
@@ -23,9 +23,10 @@ def detail(b='900', h='500', *, state='failed', config='4362', hub_host='hub.exa
     return page.encode()
 
 
-def variable_table(values):
+def variable_table(values, *, display_name=""):
+    # recon25: Name | Display Name | Value; Display Name is empty.
     return ('<table><thead><tr><th>Name</th><th>Display Name</th><th>Value</th></tr></thead><tbody>' +
-            ''.join(f'<tr><td>{escape(k)}</td><td>Display label only</td><td><pre>{escape(v)}</pre></td></tr>'
+            ''.join(f'<tr><td>{escape(k)}</td><td>{escape(display_name)}</td><td><pre>{escape(v)}</pre></td></tr>'
                     for k, v in values.items()) + '</tbody></table>')
 
 

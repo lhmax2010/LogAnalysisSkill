@@ -1,0 +1,174 @@
+nohup: ignoring input
+== recon25 start 2026-11-14 18:00:08 python 3.10.12
+== D variables (one line per name; fields per build a=19206687 b=19270912)
+   format: NAME | display name | listed a/b | value lines a/b | value cmpv1 digest a/b | same | shape a/b | value(if vocab)
+-- 19206687: status 200; header ['Name', 'Display Name', 'Value']; variables 145; duplicate names []
+-- 19270912: status 200; header ['Name', 'Display Name', 'Value']; variables 134; duplicate names []
+-- 19091860: status 200; header ['Name', 'Display Name', 'Value']; variables 130; duplicate names []
+-- 19287341: status 200; header ['Name', 'Display Name', 'Value']; variables 145; duplicate names []
+AMEND_BUILD |  | y/y | 0/0 | e3b0c44298fc1c14/e3b0c44298fc1c14 | True | L1T0W0/L1T0W0 | ''
+ARCH |  | y/y | 1/1 | 8a3f6cb1b8a37c2f/8a3f6cb1b8a37c2f | True | L0T0W0/L0T0W0 | 'armv7l'
+ARCHS |  | y/y | 1/1 | 4b31bab49e66ffb0/4b31bab49e66ffb0 | True | L0T0W0/L0T0W0 | 
+ARTIFACTS_PREFIX |  | y/y | 1/1 | 2b693c187c66b322/2b693c187c66b322 | True | L0T0W0/L0T0W0 | 
+ARTIFACT_DIR |  | y/y | 1/1 | b6b18a86c6c409e8/5534f08b87deff1a | False | L0T0W0/L0T0W0 | 
+ARTIFACT_NAME |  | y/y | 1/1 | be22a340937412c7/f640cfe3a5baeffc | False | L0T0W0/L0T0W0 | 
+BART_ID |  | y/y | 1/1 | 963bfa70d376c2d6/963bfa70d376c2d6 | True | L0T0W0/L0T0W0 | 
+BART_PASSWD |  | y/y | 1/1 | */* | - | L0T0W0/L0T0W0 | 
+BASE_REPOS |  | y/y | 1/1 | b8696f73240379bf/b8696f73240379bf | True | L0T0W0/L0T0W0 | 
+BASE_REPO_LINE_IN_KS |  | y/n | 1/- | 74cbec5e873b32d6/- | - | L0T0W0/- | 
+BM_DOMAIN |  | y/y | 1/1 | 67d1a6805e239152/67d1a6805e239152 | True | L0T0W0/L0T0W0 | 
+BRANCH_TYPE |  | y/y | 1/1 | 32a89c99cf5411fb/32a89c99cf5411fb | True | L0T0W0/L0T0W0 | 
+BUILD_ARGS_armv7l |  | y/y | 1/1 | fa7ff8d3b7a65279/9f2d4df52474b618 | False | L0T0W0/L0T0W0 | 
+BUILD_ARGS_x86_64 |  | y/y | 1/1 | 19119d2c70588b91/ec20d51aa83e7515 | False | L0T0W0/L0T0W0 | 
+BUILD_CATEGORY |  | y/y | 1/1 | fc457e7f7a6a03f3/fc457e7f7a6a03f3 | True | L0T0W0/L0T0W0 | 
+BUILD_CONF |  | y/y | 1/1 | 7f50bb0b56e0fac7/7f50bb0b56e0fac7 | True | L0T0W0/L0T0W0 | 
+BUILD_CONTINUOUS |  | y/y | 1/1 | 8a798890fe938171/8a798890fe938171 | True | L0T0W0/L0T0W0 | 'yes'
+BUILD_FINISHED |  | y/y | 1/1 | f9171164593756e5/f9171164593756e5 | True | L0T0W0/L0T0W0 | 'YES'
+BUILD_FLAG_armv7l |  | y/y | 1/1 | 18f5384d58bcb1bb/8ce86a6ae65d3692 | False | L0T0W0/L0T0W0 | 
+BUILD_FLAG_x86_64 |  | y/y | 1/1 | 18f5384d58bcb1bb/8ce86a6ae65d3692 | False | L0T0W0/L0T0W0 | 
+BUILD_ID |  | y/y | 1/1 | c1f6e12314142032/339c663ad0bec6da | False | L0T0W0/L0T0W0 | 
+BUILD_PRIORITY |  | y/y | 1/1 | ef2d127de37b942b/ef2d127de37b942b | True | L0T0W0/L0T0W0 | 
+BUILD_REPORT_SUMMARY_armv7l |  | y/y | 1/1 | 07065eb8a68e85e5/6e9529f406a106f5 | False | L0T0W0/L0T0W0 | 
+BUILD_REPORT_SUMMARY_x86_64 |  | y/y | 1/1 | 552a8ac7bfd25767/986c77b671334568 | False | L0T0W0/L0T0W0 | 
+BUILD_REPO_ADDRESS |  | y/y | 1/1 | 253df9426001e8f5/09bc7b26059a749e | False | L0T0W0/L0T0W0 | 
+BUILD_REPO_ADDRESS_ALT |  | y/y | 1/1 | 70dec92290a07e12/bd148f866b552b82 | False | L0T0W0/L0T0W0 | 
+BUILD_TYPE |  | y/y | 1/1 | 008dacb6d1e85bd8/008dacb6d1e85bd8 | True | L0T0W0/L0T0W0 | 'Full'
+CCACHE_MODE |  | y/y | 1/1 | b3c2ed23b44e753d/b3c2ed23b44e753d | True | L0T0W0/L0T0W0 | 
+CHECK_RPM_DUPLICATION |  | y/y | 1/1 | f9171164593756e5/f9171164593756e5 | True | L0T0W0/L0T0W0 | 'YES'
+CHIP_NAME |  | y/y | 1/1 | 00535212e83d29be/00535212e83d29be | True | L0T0W0/L0T0W0 | 
+CLOUD_ERR_PATTERN |  | y/n | 1/- | 423f57cf6c3a4dfc/- | - | L0T0W0/- | 
+CONNECTION_ERR_MSG_LIST |  | y/y | 6/6 | 3a747ef45b1c9835/3a747ef45b1c9835 | True | L0T0W0/L0T0W0 | 
+CONTAINER_CMD_PREFIX |  | y/y | 1/1 | 1317b42108e87b8f/1317b42108e87b8f | True | L0T0W0/L0T0W0 | 
+CONTAINER_ID |  | y/y | 1/1 | 26b59e6676982e71/a8cf312f634dcd1c | False | L0T0W0/L0T0W0 | 
+CONTAINER_IMAGE_MAP |  | y/y | 9/9 | 96e671c995bf9fb6/96e671c995bf9fb6 | True | L0T0W7/L0T0W7 | 
+CONTAINER_NAME |  | y/y | 1/1 | 3c2d5a35199ad220/3c2d5a35199ad220 | True | L0T0W0/L0T0W0 | 
+CONTAINER_VERSION |  | y/y | 1/1 | bba88c0640a1fa78/bba88c0640a1fa78 | True | L0T0W0/L0T0W0 | 
+COSMOS_STORAGE_ADDRESS |  | y/y | 1/1 | 997950c3006d3dc0/997950c3006d3dc0 | True | L0T0W0/L0T0W0 | 
+CPUSET_UPDATE |  | y/y | 1/1 | 23794d91c53ae875/23794d91c53ae875 | True | L0T0W0/L0T0W0 | 'NO'
+DELETE_PACKAGE_LIST |  | y/y | 0/0 | e3b0c44298fc1c14/e3b0c44298fc1c14 | True | L1T0W0/L1T0W0 | ''
+DELETE_PACKAGE_LIST_armv7l |  | y/y | 0/0 | e3b0c44298fc1c14/e3b0c44298fc1c14 | True | L1T0W0/L1T0W0 | ''
+DELETE_PACKAGE_LIST_x86_64 |  | y/y | 0/0 | e3b0c44298fc1c14/e3b0c44298fc1c14 | True | L1T0W0/L1T0W0 | ''
+DISK_SPACE_CRITERION |  | y/y | 1/1 | 48449a14a4ff7d79/48449a14a4ff7d79 | True | L0T0W0/L0T0W0 | 
+DO_NOT_CREATE_IMAGE |  | y/y | 1/1 | 9390298f3fb0c5b1/9390298f3fb0c5b1 | True | L0T0W0/L0T0W0 | 'no'
+DO_NOT_SUPPORT_IMAGE |  | y/y | 0/0 | e3b0c44298fc1c14/e3b0c44298fc1c14 | True | L1T0W0/L1T0W0 | ''
+DO_VERIFY |  | y/y | 1/1 | fcbcf165908dd18a/fcbcf165908dd18a | True | L0T0W0/L0T0W0 | 'false'
+EXTRA_BUILD_PARAMETER |  | y/y | 1/1 | c8d86e0c038db735/c8d86e0c038db735 | True | L0T0W0/L0T0W0 | 
+FROM_HUB_ID |  | y/y | 1/1 | 7b301478b92a8135/d9706c0d77195db7 | False | L0T0W0/L0T0W0 | 
+GIT_CLONE_ERR_MSG_LIST |  | y/y | 6/6 | 60fd21038ed018cf/60fd21038ed018cf | True | L0T0W0/L0T0W0 | 
+HARBOR_IP |  | y/y | 1/1 | 6ba7e27b48b53682/6ba7e27b48b53682 | True | L0T0W0/L0T0W0 | 
+HARBOR_PASSWD |  | y/y | 1/1 | */* | - | L0T0W0/L0T0W0 | 
+HARBOR_USER |  | y/y | 1/1 | 8c6976e5b5410415/8c6976e5b5410415 | True | L0T0W0/L0T0W0 | 
+HOST_NAME |  | y/y | 1/1 | 05830da15bf64666/b94ff8538e0ca3e5 | False | L0T0W0/L0T0W0 | 
+HOST_PORT |  | y/y | 1/1 | baac73fe7ac34ea9/baac73fe7ac34ea9 | True | L0T0W0/L0T0W0 | 
+HTML_CONTENTS |  | y/y | 122/122 | eefafdbdc830b571/ddf81c718a7cf0f1 | False | L1T1W78/L1T1W78 | 
+HUB_CONFIG_ID |  | y/y | 1/1 | 98b1a693ae8e7415/98b1a693ae8e7415 | True | L0T0W0/L0T0W0 | 
+HUB_CONFIG_PATH |  | y/y | 1/1 | 50d75378fd354972/50d75378fd354972 | True | L0T0W0/L0T0W0 | 
+HUB_DOMAIN |  | y/y | 1/1 | 9d0ace075f1716cd/9d0ace075f1716cd | True | L0T0W0/L0T0W0 | 
+ISMS_ERR_MSG_LIST |  | y/y | 9/9 | a5e3dfc1942c70fb/a5e3dfc1942c70fb | True | L0T0W0/L0T0W0 | 
+IS_LICENSING_BUILD |  | y/y | 1/1 | fcbcf165908dd18a/fcbcf165908dd18a | True | L0T0W0/L0T0W0 | 'false'
+IS_LOW_MEMORY_SERVER |  | y/y | 1/1 | 8a798890fe938171/8a798890fe938171 | True | L0T0W0/L0T0W0 | 'yes'
+IS_REMOTE_PUBLISH |  | y/y | 1/1 | fcbcf165908dd18a/fcbcf165908dd18a | True | L0T0W0/L0T0W0 | 'false'
+IX_ARCH |  | y/y | 1/1 | 7520b5a1b312efde/7520b5a1b312efde | True | L0T0W0/L0T0W0 | 
+KS_FILES |  | y/n | 3/- | 1fd7d60ec8a89d4e/- | - | L0T0W0/- | 
+KS_LIST |  | y/y | 1/1 | 4731ccf67d3a8a88/4731ccf67d3a8a88 | True | L0T0W0/L0T0W0 | 
+KS_PACKAGE_ADD |  | y/y | 0/0 | e3b0c44298fc1c14/e3b0c44298fc1c14 | True | L1T0W0/L1T0W0 | ''
+KS_PACKAGE_ADD_MAP |  | y/y | 0/0 | e3b0c44298fc1c14/e3b0c44298fc1c14 | True | L1T0W0/L1T0W0 | ''
+KS_PRODUCT_VERSION |  | y/y | 0/0 | e3b0c44298fc1c14/e3b0c44298fc1c14 | True | L1T0W0/L1T0W0 | ''
+LOCAL_BASE_SNAPSHOT_armv7l |  | y/y | 1/1 | 5c8c0ca57be0b88b/5c8c0ca57be0b88b | True | L0T0W0/L0T0W0 | 
+LOCAL_BASE_SNAPSHOT_x86_64 |  | y/y | 1/1 | 9cd3ddd0a926b4b1/9cd3ddd0a926b4b1 | True | L0T0W0/L0T0W0 | 
+LOCAL_DISK_SOURCE_DIR |  | y/y | 1/1 | f425e1d0c1d6d1e4/f425e1d0c1d6d1e4 | True | L0T0W0/L0T0W0 | 
+LOCAL_PRIMARY_XML_armv7l |  | y/n | 1/- | 95d23a119749e7fd/- | - | L0T0W0/- | 
+LOCAL_REPO_DIR_armv7l |  | y/y | 1/1 | 8ae51657f3d09f07/e37057c4a0671754 | False | L0T0W0/L0T0W0 | 
+LOCAL_REPO_DIR_x86_64 |  | y/y | 1/1 | b54af6d183f25675/51b31439e26f11e1 | False | L0T0W0/L0T0W0 | 
+LOCAL_SIGN_SNAPSHOT_armv7l |  | y/y | 1/1 | 918cf469babfbc70/918cf469babfbc70 | True | L0T0W0/L0T0W0 | 
+LOCAL_SIGN_SNAPSHOT_x86_64 |  | y/y | 1/1 | 53aa64a0812b1c31/53aa64a0812b1c31 | True | L0T0W0/L0T0W0 | 
+LOCAL_SNAPSHOT_armv7l |  | y/y | 1/1 | 15d808cfbac3c751/15d808cfbac3c751 | True | L0T0W0/L0T0W0 | 
+LOCAL_SNAPSHOT_x86_64 |  | y/y | 1/1 | 2b77949f29632e72/2b77949f29632e72 | True | L0T0W0/L0T0W0 | 
+LOCAL_VCS_armv7l |  | y/y | 1/1 | b0c3dd01de5766a3/bc02968db3e20c17 | False | L0T0W0/L0T0W0 | 
+LOCAL_VCS_x86_64 |  | y/y | 1/1 | 65bb2eaab713daf1/973ab171456a50d6 | False | L0T0W0/L0T0W0 | 
+MIC_ARCH_MAP |  | y/n | 1/- | 85f8ffd16c1e4e13/- | - | L0T0W0/- | 
+MIC_REPACK_TMP_DIR |  | y/n | 1/- | 5cbb5eb895ec49fa/- | - | L0T0W0/- | 
+MYSQL_CLASS |  | y/n | 1/- | c48e513e05cd4503/- | - | L0T0W0/- | 
+MYSQL_NAME |  | y/n | 1/- | b8c8183793a3d03d/- | - | L0T0W0/- | 
+MYSQL_PASSWD |  | y/n | 1/- | */- | - | L0T0W0/- | 
+MYSQL_USER |  | y/n | 1/- | 6601c5f55feb9be6/- | - | L0T0W0/- | 
+NUM_PROCESSOR |  | y/y | 1/1 | 8722616204217edd/8722616204217edd | True | L0T0W0/L0T0W0 | 
+OBS_ARCH_MAP |  | y/y | 1/1 | c5f23b8bcfe5b0ac/c5f23b8bcfe5b0ac | True | L0T0W0/L0T0W0 | 
+OBS_ARCH_armv7l |  | y/y | 1/1 | 0a256548b7c053c6/0a256548b7c053c6 | True | L0T0W0/L0T0W0 | 
+OBS_ARCH_x86_64 |  | y/y | 1/1 | 7520b5a1b312efde/7520b5a1b312efde | True | L0T0W0/L0T0W0 | 
+O_BUILD_REPO_ADDRESS |  | y/y | 1/1 | 70dec92290a07e12/bd148f866b552b82 | False | L0T0W0/L0T0W0 | 
+P4_CLIENT |  | y/y | 1/1 | e617abe9f129c946/6f350931f83887a6 | False | L0T0W0/L0T0W0 | 
+P4_DEBUG |  | y/y | 1/1 | b5bea41b6c623f7c/b5bea41b6c623f7c | True | L0T0W0/L0T0W0 | 'true'
+P4_PASSWD |  | y/y | 1/1 | */* | - | L0T0W0/L0T0W0 | 
+P4_PORT |  | y/y | 1/1 | 93f073ba6598fc1f/93f073ba6598fc1f | True | L0T0W0/L0T0W0 | 
+P4_PROXY_SERVER |  | y/y | 1/1 | 50f259677300ed79/50f259677300ed79 | True | L0T0W0/L0T0W0 | 
+P4_PROXY_SERVER_LIST |  | y/y | 3/3 | f9f2b6d839be22ac/f9f2b6d839be22ac | True | L0T0W0/L0T0W0 | 
+P4_USER |  | y/y | 1/1 | 03e10749e51009bf/03e10749e51009bf | True | L0T0W0/L0T0W0 | 
+PACKAGE_BUILD_TIME |  | y/y | 2244/0 | 41b219c05515b107/e3b0c44298fc1c14 | False | L0T0W0/L1T0W0 | 
+PACKAGE_LIST |  | y/y | 2245/2245 | b4831e2ede7a38d9/b4831e2ede7a38d9 | True | L0T0W0/L0T0W0 | 
+PACKAGE_LIST_armv7l |  | y/y | 2244/2244 | 1458af4ccd714d23/1458af4ccd714d23 | True | L0T0W0/L0T0W0 | 
+PACKAGE_LIST_armv7l_TAG |  | y/y | 2244/2244 | 1458af4ccd714d23/1458af4ccd714d23 | True | L0T0W0/L0T0W0 | 
+PACKAGE_LIST_x86_64 |  | y/y | 43/43 | bffe470dea14f792/bffe470dea14f792 | True | L0T0W0/L0T0W0 | 
+PACKAGE_LIST_x86_64_TAG |  | y/y | 43/43 | 683ac2bcd3db12ca/683ac2bcd3db12ca | True | L0T0W0/L0T0W0 | 
+PERSONAL_SCHEDULE |  | y/y | 0/0 | e3b0c44298fc1c14/e3b0c44298fc1c14 | True | L1T0W0/L1T0W0 | ''
+PKGINFO_LIST_armv7l |  | y/y | 2244/2244 | 1458af4ccd714d23/1458af4ccd714d23 | True | L0T0W0/L0T0W0 | 
+PKGINFO_LIST_x86_64 |  | y/y | 43/43 | bffe470dea14f792/bffe470dea14f792 | True | L0T0W0/L0T0W0 | 
+PRODUCT_REPOS |  | y/y | 1/1 | f7abd4777ae2857b/f7abd4777ae2857b | True | L0T0W0/L0T0W0 | 
+PRODUCT_REPO_NAME_IN_KS |  | y/n | 1/- | d8c3196135f82a56/- | - | L0T0W0/- | 
+PROFILE_NAME |  | y/y | 1/1 | 0e5081e28517985e/13be29be48cd30a2 | False | L0T0W0/L0T0W0 | 
+PUBLISH_DIR |  | y/y | 1/1 | c6c0a4eae66659af/dcdf63d91e156bf1 | False | L0T0W0/L0T0W0 | 
+PUBLISH_SERVER_ID |  | y/y | 1/1 | 4cbe19716b1aa73a/4cbe19716b1aa73a | True | L0T0W0/L0T0W0 | 
+PUBLISH_SERVER_IP |  | y/y | 1/1 | a12a378622131525/a12a378622131525 | True | L0T0W0/L0T0W0 | 
+PUBLISH_SERVER_KEY_PATH |  | y/y | 1/1 | */* | - | L0T0W0/L0T0W0 | 
+PUBLISH_SERVER_PASSWD |  | y/y | 1/1 | */* | - | L0T0W0/L0T0W0 | 
+RAMDISK_SYNC_CRITERION |  | y/y | 1/1 | deeeb5df3f2cee6b/deeeb5df3f2cee6b | True | L0T0W0/L0T0W0 | 
+RELEASE_SCRIPT_EXISTENCE |  | y/y | 1/1 | 23794d91c53ae875/23794d91c53ae875 | True | L0T0W0/L0T0W0 | 'NO'
+REPOS_SERVER_URL |  | y/y | 1/1 | d7ab71d0e4c75c07/d7ab71d0e4c75c07 | True | L0T0W0/L0T0W0 | 
+REPO_NAME |  | y/y | 1/1 | 00535212e83d29be/00535212e83d29be | True | L0T0W0/L0T0W0 | 
+RPM_ARCH_MAP |  | y/y | 1/1 | 217fe3a7f60b78b8/217fe3a7f60b78b8 | True | L0T0W0/L0T0W0 | 
+RPM_ARCH_armv7l |  | y/y | 1/1 | 8a3f6cb1b8a37c2f/8a3f6cb1b8a37c2f | True | L0T0W0/L0T0W0 | 'armv7l'
+RPM_ARCH_x86_64 |  | y/y | 1/1 | 7520b5a1b312efde/7520b5a1b312efde | True | L0T0W0/L0T0W0 | 
+SERVER_TYPE |  | y/y | 1/1 | 8e1251dd004b3dfd/8e1251dd004b3dfd | True | L0T0W0/L0T0W0 | 
+SHELVE_LIST |  | y/y | 893/0 | */* | - | L0T0W0/L1T0W0 | 
+SHELVE_LIST_armv7l |  | y/y | 892/0 | 3ea1d500be3dd961/e3b0c44298fc1c14 | False | L0T0W0/L1T0W0 | 
+SHELVE_LIST_x86_64 |  | y/y | 13/0 | 0019d76ee1cf7ac1/e3b0c44298fc1c14 | False | L0T0W0/L1T0W0 | 
+SIGN_REPOS |  | y/y | 1/1 | cab2a8b3ba910aa9/cab2a8b3ba910aa9 | True | L0T0W0/L0T0W0 | 
+SSH_CIPHER |  | y/y | 1/1 | 5b414b9e55bf3805/5b414b9e55bf3805 | True | L0T0W0/L0T0W0 | 
+SSH_COMMON_OPTION |  | y/y | 1/1 | f4494e1916272eb1/f4494e1916272eb1 | True | L0T0W0/L0T0W0 | 
+STRANGE_SYNC_ERR_MSG_LIST |  | y/y | 1/1 | 341b7910feb36679/341b7910feb36679 | True | L0T0W0/L0T0W0 | 
+S_PACKAGE_LIST |  | y/y | 2244/2244 | 1458af4ccd714d23/1458af4ccd714d23 | True | L0T0W0/L0T0W0 | 
+T-KSU2EJAKUC-0101-PERF.ks |  | y/n | 1/- | 47a21d8969e21820/- | - | L0T0W0/- | 
+T-KSU2EJAKUC-0101-REL.ks |  | y/n | 1/- | dd9677b7019356b0/- | - | L0T0W0/- | 
+T-KSU2EJAKUC-0101.ks |  | y/n | 1/- | 0a2554c0fbf15711/- | - | L0T0W0/- | 
+TIZEN_SOURCE_DIR_armv7l |  | y/y | 1/1 | 9772135add6fe019/9772135add6fe019 | True | L0T0W0/L0T0W0 | 
+TIZEN_SOURCE_DIR_x86_64 |  | y/y | 1/1 | 9aaf4cddfb1dbb43/9aaf4cddfb1dbb43 | True | L0T0W0/L0T0W0 | 
+TIZEN_VERSION |  | y/y | 1/1 | d5222ad171c33195/d5222ad171c33195 | True | L0T0W0/L0T0W0 | 
+TIZEN_VERSION_MAJOR |  | y/y | 1/1 | 4a44dc15364204a8/4a44dc15364204a8 | True | L0T0W0/L0T0W0 | 
+TIZEN_VERSION_MINOR |  | y/y | 1/1 | 6b86b273ff34fce1/6b86b273ff34fce1 | True | L0T0W0/L0T0W0 | 
+TIZEN_VERSION_PATCH |  | y/y | 1/1 | 5feceb66ffc86f38/5feceb66ffc86f38 | True | L0T0W0/L0T0W0 | 
+TMPFS_PATH |  | y/y | 1/1 | 3d666a7bf8cb876e/3d666a7bf8cb876e | True | L0T0W0/L0T0W0 | 
+TMP_DIR |  | y/y | 1/1 | 2416de1834565282/2416de1834565282 | True | L0T0W0/L0T0W0 | 
+TOTAL_BUILD_TIME |  | y/n | 1/- | 2575eaf3b748efc2/- | - | L0T0W0/- | 
+USER_EMAIL |  | y/y | 1/1 | 295418eb2d0388ff/295418eb2d0388ff | True | L0T0W0/L0T0W0 | 
+stepRetried |  | y/y | 1/1 | 5feceb66ffc86f38/5feceb66ffc86f38 | True | L0T0W0/L0T0W0 | 
+BUILD_ERR_DEP_armv7l |  | n/y | -/1998 | -/9309cb9ab22c42b5 | - | -/L0T0W0 | 
+BUILD_ERR_DEP_x86_64 |  | n/y | -/22 | -/5d301075ea0b636c | - | -/L0T0W0 | 
+BUILD_ERR_PKG_armv7l |  | n/y | -/801 | -/d8f89028e4b04545 | - | -/L0T0W0 | 
+BUILD_ERR_PKG_x86_64 |  | n/y | -/41 | -/634656b342413342 | - | -/L0T0W0 | 
+== D2 exact checks on the Value column (cmp-v1)
+   19206687: BUILD_TYPE==Full True; ARCH==armv7l True; EXTRA_BUILD_PARAMETER==--threads 32 True
+   19270912: BUILD_TYPE==Full True; ARCH==armv7l True; EXTRA_BUILD_PARAMETER==--threads 32 True
+   19206687: BUILD_CONF==recon21 value True
+== D3 PACKAGE_LIST / SHELVE_LIST vs recon22 (recon22 digest = Display Name + Value joined, recon21 normalization)
+   19206687 PACKAGE_LIST: value lines 2245; display-name empty True; recon21-style digest b4831e2ede7a38d9; recon22 b4831e2ede7a38d9; same True
+   19206687 SHELVE_LIST: value lines 893; display-name empty True; recon21-style digest 249832d7df09e0f2; recon22 249832d7df09e0f2; same True
+   19270912 PACKAGE_LIST: value lines 2245; display-name empty True; recon21-style digest b4831e2ede7a38d9; recon22 b4831e2ede7a38d9; same True
+   19270912 SHELVE_LIST: value lines 0; display-name empty True; recon21-style digest e3b0c44298fc1c14; recon22 e3b0c44298fc1c14; same True
+   19091860 PACKAGE_LIST: value lines 2245; display-name empty True; recon21-style digest e9f45cd93502f4cf
+   19091860 SHELVE_LIST: value lines 545; display-name empty True; recon21-style digest ae27e3bfd2ee67d2
+   19287341 PACKAGE_LIST: value lines 2245; display-name empty True; recon21-style digest 8b1b19fed8d77859; recon22 8b1b19fed8d77859; same True
+   19287341 SHELVE_LIST: value lines 907; display-name empty True; recon21-style digest 13b21f95bac54941; recon22 13b21f95bac54941; same True
+== E 37432138 rerun check
+   stop no_next_link; pages 1; builds 30; oldest 2026-11-14 15:10:17; in window 0
+   builds whose Hub Link list contains 37432138: []
+== recon25 end 2026-11-14 18:00:14

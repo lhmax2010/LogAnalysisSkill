@@ -1,0 +1,179 @@
+{
+  "allowed": true,
+  "scope": "all changed files; result file separately scanned after creation",
+  "pattern_count": 8,
+  "runtime_patterns_unchanged": true,
+  "checks": [
+    {
+      "path": "docs/enhance/batch3a-1.1/DELIVERY.md",
+      "sha256": "c9c7b08f9cffe1615cfa65e386c394785e3a3bf8e20cdda82749cc360123b434",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/FATTANK-B1-MANUAL.md",
+      "sha256": "2f4e86687b677ce7443a67a28d4e2bcf39ce0043a2e73f8c2ad8857f5c15f7bc",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11-followup/archive-verification.json",
+      "sha256": "77e6e235ea374da28480a718bf6b0d110aa54583c012894ca8263294d2bf4d11",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11-followup/config-load-check.json",
+      "sha256": "19df09f43bc7eed2ff7f3d6c6a438f87539a778796d2ccd0ed8abbca77e50570",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11-followup/source-manifest.json",
+      "sha256": "510cf5d5bc1687bbca80b0b172254a5e7f28786fa5a73f36047f4465facb4464",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11-followup/test-output-python310.txt",
+      "sha256": "28b4f074092f038aeaad1d38f765513962e3b1ebc6fb8e5c59ad9a43e4bfc6b9",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11-followup/test-output-python312.txt",
+      "sha256": "2d528b1a6092a2f545bd5da3314bab5a739b164bc89b89005cc3fc99d9590964",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11-followup/validation.json",
+      "sha256": "807ff6f49300dffdbd2acfca5d46628a55b1b80581387211d491ac50ccf93d9c",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "sha256": "ab4d9306aeea1fc3c8edc03122634971bccccc44dd7a0e95ee1a86eacb21b3b4",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/archive-exemptions.json",
+      "sha256": "655e950c1784a6e70aaea84f9bb9489431e3d7be982a00427cf960581c41a5b0",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/recon25.txt",
+      "sha256": "a7e8145af95c6b7ab29ca2be63ebbb8eb4555c5f04eaa0eb6c4a7ec99a6e9929",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/recon26.txt",
+      "sha256": "ebaaa9c526dbf9261b1e79799ec936b35711b7c25f3ed0114a810cab8f8712c9",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/recon24.py",
+      "sha256": "b9d17e547354f1050c136b56a98333c87ed5e093a9ab5a3a69b27e46975bf128",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [],
+      "archive_exemptions": []
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/recon25.py",
+      "sha256": "6fd9ccd174dae8a1bb264213fe460b812387d9d9742b06a3aaf173573777202d",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [],
+      "archive_exemptions": [
+        {
+          "path": "docs/enhance/evidence/scripts/recon25.py",
+          "sha256": "6fd9ccd174dae8a1bb264213fe460b812387d9d9742b06a3aaf173573777202d",
+          "line": 38,
+          "pattern_index": 2
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/recon26.py",
+      "sha256": "e8b6a8be6de243b5c82b4a3928664fdf7c7d24021afe4c916f87e3ac1de61cf4",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [],
+      "archive_exemptions": [
+        {
+          "path": "docs/enhance/evidence/scripts/recon26.py",
+          "sha256": "e8b6a8be6de243b5c82b4a3928664fdf7c7d24021afe4c916f87e3ac1de61cf4",
+          "line": 38,
+          "pattern_index": 2
+        }
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/README.md",
+      "sha256": "ec0a656add44111c61f39b3cf1655ad83b3a794619809380d1fad8ba26a7fbba",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/bm_pages.py",
+      "sha256": "711b30c1fc753b51d1bd9d0a657b73e2eb4599ac59afb3c6edb89eee1eb947f5",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/bm_helpers.py",
+      "sha256": "09be1d739f17fdd97f2222db6931e48e4277b04291f51112bbc1142c2e6dd893",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_archive_precheck.py",
+      "sha256": "8cd1a46b61a0d9157809cfa2ba5ca42a75c233394c856f2eb74393ddf1209656",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b1.py",
+      "sha256": "85619a97a4755d8b7636ad419b75d8e78e853b8bc49761475214918ef3b842b1",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b11.py",
+      "sha256": "192732cd9bead80289b5b4ae556181e6f293826f66050729a9ba9e926edda312",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-submit/README.md",
+      "sha256": "3d0477a3cb4628adfd60e43c79072f10b79982b51201e420b9e9eac4aa0ca8c3",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    }
+  ]
+}

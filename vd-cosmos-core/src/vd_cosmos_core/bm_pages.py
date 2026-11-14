@@ -9,7 +9,7 @@ from .errors import FlowError
 from .export import check_content
 from .files import digest, json_bytes
 from .report import Document, Node, cells, normalize
-from .submit_config import PROPERTIES, SECRET_NAME, TEXT_PROPERTIES
+from .submit_config import PROPERTIES, SECRET_NAME
 from .variable_pages import parse as parse_variables, remember
 
 
@@ -265,8 +265,8 @@ def compare(request, values, config):
         if name == 'PACKAGE_LIST':
             try: equal = base_digest(expected, config) == base_digest(actual, config)
             except FlowError: equal = False
-        elif entry['encoding'] is None or name in TEXT_PROPERTIES:
-            result[name] = '未核验（比较规则未确认）'; continue
+        elif entry['encoding'] is None:
+            result[name] = '未核验'; continue
         elif entry['encoding'] in {'enum', 'boolean', 'ks'} and str(expected) not in entry['observed_values']:
             result[name] = '未核验'; continue
         else:

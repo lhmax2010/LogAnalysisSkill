@@ -181,7 +181,7 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT"
 | 变量变化 | 后续读取按值摘要比较，拒绝覆盖，退出 3；“变量页已变化”待办只记字段/摘要，写 inputs/variable-first-read/<构建摘要>/issues/；lookup 返回 todo，watch 合并待办；原值仍权威，不自动继续使用新值 | test_lookup_and_watch_propagate_changed_variable_todo |
 | A 读取器真实 Hub Link 兼容 | build_inputs.py：原 A 身份检查会把已登记 Hub Link 当外域自身链接；失败时只允许 B1 严格关系解析器验证强身份/配置/合格 Hub Link，任意其它异域链接仍拒绝 | test_three_columns_nonempty_display_pre_shared_callers_exact_value（同时通过真实 Hub Link 头部）；原身份拒绝测试保留 |
 | 同 H 多 B | bm_reader.py / submit_claim.py：关系证据一致时“重跑链”，列每个 B/开始时间/状态，auto_selected=null；认领不同 H 的多个候选写“多个候选”，不谎称关系冲突；Hub/推广块/overview 真正不一致仍“冲突”；无自动绑定 | test_same_hub_multiple_consistent_builds_chain_never_select_or_bind；test_genuine_inconsistency_still_conflict_and_claim_chain_is_manual |
-| 文本比较 / 配置 | bm_pages.compare 按本次裁定固定“未核验（比较规则未确认）”，旧 request_text_verified=true 也不能提前开启；PACKAGE_LIST 仍按解析结果；样例和默认 18 项仍未登记 | test_text_stays_unverified_and_shipped_map_unregistered |
+| 文本比较 / 配置 | 初次 C3 限制已由下方 recon25 追补裁定替代：已登记 variable/encoding 使用 cmp-v1，未登记仍未核验；PACKAGE_LIST 按解析结果，默认 18 项仍未登记 | test_registered_text_compares_and_shipped_map_stays_unregistered；test_recon25_registered_cmp_v1_without_old_flag_and_unregistered |
 | 读取器保密 | 修改原 TLS 集成测试：允许安全首读值制品，仍逐文件断言没有 HTML、匿名 cookie、密码变量或错误响应片段 | test_anonymous_in_memory_session_redirects_and_no_body_artifacts |
 
 新增测试位于 vd-cosmos-core/tests/test_batch3a11b11.py。变量记录跨调用方共享，既用于本轮 base/shelve，也用于认领比较；B2 的 --base-from-hub 源值应走同一 Reader.variables/remember 接口。本次没有实现 once 或浏览器路径。已有 c9d8eb5 以前的运行目录没有“当时首次读取”的证据，不能追溯虚构；升级后第一次通过新读取器时才建立记录。构建机验收使用全新根。
@@ -205,7 +205,7 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT"
 
 ### B：脚本归档与证据等级
 
-B3a11-Q02 已闭合（设计方 2026-11-14）：原件独立保存为 docs/enhance/evidence/scripts/recon23.py，SHA256 为 b8781bd49d91512f0d2c0b6b8a4e92a0900658aa04487f54b1bca7152232ff81，字节与 Downloads 原件完全相同。recon_scripts.txt 保持本批基线原样，不追加。脚本未执行；recon23.txt 未读取、未复制、未用作证据，等待 recon25 已核实结果。三列表事实只归因于设计方对 recon24 的答复。
+B3a11-Q02 已闭合（设计方 2026-11-14）：原件独立保存为 docs/enhance/evidence/scripts/recon23.py，SHA256 为 b8781bd49d91512f0d2c0b6b8a4e92a0900658aa04487f54b1bca7152232ff81，字节与 Downloads 原件完全相同。recon_scripts.txt 保持本批基线原样，不追加。脚本未执行；recon23.txt 未读取、未复制、未用作证据；现已有下方 recon25/recon26 经核验追补证据。初次三列表事实来自设计方对 recon24 的答复，现以 recon25 四构建记录补证。
 
 登记文件 docs/enhance/evidence/archive-exemptions.json 保存路径、完整文件摘要、第 45 行、精确命中文本/规则、原因、日期和批准人。仅仓库 prepush 的 archive_precheck.py 读取登记：必须位于 evidence/scripts/、路径规范且非符号链接、全文件摘要/行/文本/规则均相同才排除此命中。任何字节变化均阻断，不能通过添加行内样例标记绕过。JSON 内等号用 Unicode 转义存储，解码后仍是精确命中文本，避免登记元数据本身重复触发扫描；没有放宽凭据模式。运行时 check_content、export、verifiers、配置及其它预检保持原规则。
 
@@ -222,7 +222,7 @@ B3a11-Q02 已闭合（设计方 2026-11-14）：原件独立保存为 docs/enhan
 
 ### C：18 项映射提案（proposed, awaiting FatTank confirmation）
 
-依据：HLD §8.8 3a 的字段名单及 recon20.txt 98.6 秒的 18 控件（行 373–392）。recon20 证明表单标签/控件，不证明变量页 Name；Display Name 尚未取得可采信输出。因此下表是建议检索/核对的配对，不是登记事实，尤其带推测的字段名不能直接写进配置。确认需 recon25 的 Name / Display Name / Value 形状与对照结果。所有 shipped variable/encoding 保持 null。
+依据：HLD §8.8 3a 的字段名单及 recon20.txt 98.6 秒的 18 控件（行 373–392）。recon20 证明表单标签/控件，不证明变量页 Name；recon25 现已确认三列表头且 Display Name 全为空。因此下表仍是建议检索/核对的配对，不是已批准的控件映射，尤其带推测的字段名不能直接写进配置；EMAIL_CC 已据变量清单更正为“变量页不列出”。其它配对仍待 FatTank 确认。所有 shipped variable/encoding 保持 null。
 
 | 序号 | 表单属性 | 建议变量 Name | 依据/待核 |
 |---|---|---|---|
@@ -242,8 +242,8 @@ B3a11-Q02 已闭合（设计方 2026-11-14）：原件独立保存为 docs/enhan
 | 13 | Ignore package build failure? | IGNORE_PACKAGE_BUILD_FAILURE | 推测，复选框布尔编码待核 |
 | 14 | Keep 'Full' build type | KEEP_FULL_BUILD_TYPE | 推测，复选框布尔编码待核 |
 | 15 | Image Skip? | IMAGE_SKIP | 推测，yes/no 与变量编码待核 |
-| 16 | EMAIL_CC | EMAIL_CC | 同名提案；不影响构建比较 |
-| 17 | EXTRA_BUILD_PARAMETER | EXTRA_BUILD_PARAMETER | 同名提案；文本比较继续未核验 |
+| 16 | EMAIL_CC | 变量页不列出 | recon25 变量名单；不影响构建比较 |
+| 17 | EXTRA_BUILD_PARAMETER | EXTRA_BUILD_PARAMETER | recon25 D2 确认词表值；登记后启用 cmp-v1，映射仍待确认 |
 
 ### D：同一会话 A + B1 构建机验收
 
@@ -269,3 +269,39 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT"
 源码清单 source-manifest.json 含 103 个本线源码/脚本/配置/夹具文件，最终运行后字节不变；validation.json 记录结论。本机构建机配置仅本地加载 PASS（config-load-check.json），不输出值、不移动、不改配置、不联网。未进行真实 A/B1 构建机验收。旧运行根的 build-lists 不会迁移或覆盖；历史归一化值与新原样 Value 不同也会停止，需人工核对，不能虚构升级前的首次原值。
 
 Q02 前的 226 项日志保留为 evidence-b11/before-q02-python310.txt 与 before-q02-python312.txt；prepush-before-q02.json 仅是当时阻塞的历史记录，已由裁定和 prepush-final.json 取代。本次最终验证以上表 232 项日志为准。recon23-archive.json 记录脚本及登记摘要；全部变更文件的仓库凭据预检通过。
+
+## B1.1 追补：recon25 / recon26 已核实证据（设计方 2026-11-14）
+
+基线 b6cb3724c4348e89cdd54112e698310fd7f0360f。本节替代初次 B1.1 C3 的临时限制；HLD 原件不改。五份材料均从 Downloads 逐字节归档，归档前后摘要相同；本机没有运行侦察脚本或访问真实服务。原 recon_scripts.txt 不动。
+
+| 归档路径（相对 docs/enhance/evidence/） | SHA256 |
+|---|---|
+| recon25.txt | a7e8145af95c6b7ab29ca2be63ebbb8eb4555c5f04eaa0eb6c4a7ec99a6e9929 |
+| recon26.txt | ebaaa9c526dbf9261b1e79799ec936b35711b7c25f3ed0114a810cab8f8712c9 |
+| scripts/recon24.py | b9d17e547354f1050c136b56a98333c87ed5e093a9ab5a3a69b27e46975bf128 |
+| scripts/recon25.py | 6fd9ccd174dae8a1bb264213fe460b812387d9d9742b06a3aaf173573777202d |
+| scripts/recon26.py | e8b6a8be6de243b5c82b4a3928664fdf7c7d24021afe4c916f87e3ac1de61cf4 |
+
+archive-exemptions.json 按 B3a11-Q02 为 recon25.py / recon26.py 的第 38 行增加精确登记，recon24.py 无豁免。旧 recon23 登记保留；运行时凭据检查及配置不变。
+
+| 追补裁定 / 证据 | 实现或处置 | 回归测试 |
+|---|---|---|
+| 撤回“变量页改变”判断：recon25 D3 的 19206687、19270912、19287341 的 PACKAGE_LIST/SHELVE_LIST 与 recon22 相同 | 首读冻结仅保留为防御设计，不再把历史变化作为事实；原 immutable 实现不改 | 原首读相同/变化/并发/篡改测试保留；test_recon25_empty_display_column_four_builds_and_exact_shapes |
+| recon25 D：四构建表头 Name/Display Name/Value，显示名全空 | bm_helpers.variable_table 默认空显示名，Value 放 pre；单独保留非空显示名防错用例；内容用合成占位值 | test_recon25_empty_display_column_four_builds_and_exact_shapes；test_three_columns_nonempty_display_pre_shared_callers_exact_value |
+| recon25 D/D2：精确检查 True，单行形状 L0T0W0；解除初次 C3 限制 | bm_pages.compare 对已登记 variable/encoding 使用 cmp-v1；旧 request_text_verified 标志不再阻挡文本；未登记/未列出/缺失仍未核验；枚举 observed_values 限制保留，PACKAGE_LIST 按解析结果 | test_recon25_registered_cmp_v1_without_old_flag_and_unregistered；test_cmp_v1_and_unregistered_text_and_parsed_base；test_enum_unobserved_and_variable_whitelist_never_returns_secret |
+| recon26：完整窗口内 105 构建，37432138 对应 19238877（12:05:41）和 19241462（15:42:50），日期 2026-11-05 | 已实现重跑链逻辑沿用，不自动选择；补真实编号/时间回放（状态与包内容为合成，未伪称真实） | test_recon26_same_hub_two_real_ids_and_start_times_no_auto_selection；原真实证据冲突/人工选链测试 |
+| EMAIL_CC 不在变量名单 | 上方映射提案改为“变量页不列出”；默认 shipped map 仍未登记，未擅自登记其余配对 | test_registered_text_compares_and_shipped_map_stays_unregistered |
+| 两份脚本第 38 行正则归档豁免 | 仅登记原字节/原路径/原行/精确文本与规则；不执行脚本 | test_recon24_25_26_archives_exact_scope_and_runtime_still_blocks；原 Q02 六项测试 |
+
+recon25 E 当时未覆盖窗口（in window 0），不能用作重跑否定证据；本次重跑事实依据 recon26（162 页、4860 条读取，窗口内 105 构建）。首读防御与“本次证据未发现变化”不矛盾。18 项映射提案仍须 FatTank 确认，此次确认比较规则不等于确认全部控件配对或浏览器编码。真实 A+B1 构建机验收仍待执行，命令仍是本节之前 D 的两条命令，EXPECTED_COMMIT 换成本次交付完整 hash。
+
+追补全量测试（import-linter==2.3、三条约束、76 文件标准库/3.10 语法及 B1 静态边界均通过；nice 19 串行，临时目录沿用 tmpfs，未调整超时）：
+
+| 解释器 | 完整输出 | SHA256 | 结果 |
+|---|---|---|---|
+| Python 3.10.12 | `evidence-b11-followup/test-output-python310.txt` | `28b4f074092f038aeaad1d38f765513962e3b1ebc6fb8e5c59ad9a43e4bfc6b9` | 236 PASS / 42.88 秒 |
+| Python 3.12.3 | `evidence-b11-followup/test-output-python312.txt` | `2d528b1a6092a2f545bd5da3314bab5a739b164bc89b89005cc3fc99d9590964` | 236 PASS / 43.014 秒 |
+
+本次新增四项回归，原测试按新裁定更新；validation.json、source-manifest.json 和 archive-verification.json 位于 evidence-b11-followup/，保留上一批日志不覆盖。原真实 config.json 仅本地加载，未更改或提交；加载留证 config-load-check.json。凭据预检记录 prepush-final.json。无未闭合阻塞问题；本机未执行构建机验收，FatTank 仍需按 D 的两条命令验收本次完整提交。
+
+归档保真说明：git diff --check 仅对 recon25.txt 原件的 126 行报行尾空格；为保持指定 SHA256 原样保留，未修改 Git 配置。其余文件空白检查通过。这是原证据格式，不是凭据豁免。

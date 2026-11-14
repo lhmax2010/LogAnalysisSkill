@@ -1,0 +1,65 @@
+{
+  "files": [
+    {
+      "path": "docs/enhance/evidence/recon25.txt",
+      "sha256": "a7e8145af95c6b7ab29ca2be63ebbb8eb4555c5f04eaa0eb6c4a7ec99a6e9929",
+      "original_bytes_identical": true,
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/recon26.txt",
+      "sha256": "ebaaa9c526dbf9261b1e79799ec936b35711b7c25f3ed0114a810cab8f8712c9",
+      "original_bytes_identical": true,
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/recon24.py",
+      "sha256": "b9d17e547354f1050c136b56a98333c87ed5e093a9ab5a3a69b27e46975bf128",
+      "original_bytes_identical": true,
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [],
+      "archive_exemptions": []
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/recon25.py",
+      "sha256": "6fd9ccd174dae8a1bb264213fe460b812387d9d9742b06a3aaf173573777202d",
+      "original_bytes_identical": true,
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [],
+      "archive_exemptions": [
+        {
+          "path": "docs/enhance/evidence/scripts/recon25.py",
+          "sha256": "6fd9ccd174dae8a1bb264213fe460b812387d9d9742b06a3aaf173573777202d",
+          "line": 38,
+          "pattern_index": 2
+        }
+      ]
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/recon26.py",
+      "sha256": "e8b6a8be6de243b5c82b4a3928664fdf7c7d24021afe4c916f87e3ac1de61cf4",
+      "original_bytes_identical": true,
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": [],
+      "archive_exemptions": [
+        {
+          "path": "docs/enhance/evidence/scripts/recon26.py",
+          "sha256": "e8b6a8be6de243b5c82b4a3928664fdf7c7d24021afe4c916f87e3ac1de61cf4",
+          "line": 38,
+          "pattern_index": 2
+        }
+      ]
+    }
+  ],
+  "scripts_executed": false,
+  "real_network_access": false,
+  "legacy_archive_unchanged": true,
+  "approval": "designer 2026-11-14; recon25/recon26 follow-up under B3a11-Q02"
+}
