@@ -1,0 +1,33 @@
+{
+  "base": "1b090b17b4029f3cccf3e2c1447b253b4a12c11d",
+  "worktree": "/home/toolchain/development/LogAnalysisSkill-vdcosmos",
+  "hld_sha256": "2d489e8227b1bfdc113247b21b57de74a4cb0f1bec1359f721accb613a9734a4",
+  "scope_check": "PASS",
+  "tracked_changes": [
+    "docs/enhance/batch3a-1/DELIVERY.md",
+    "docs/enhance/dev_memory/STATUS.md",
+    "vd-cosmos-core/README.md",
+    "vd-cosmos-core/config.sample.json",
+    "vd-cosmos-core/fixtures/p4/fake_p4.py",
+    "vd-cosmos-core/scripts/run_tests.sh",
+    "vd-cosmos-core/src/vd_cosmos_core/backends.py",
+    "vd-cosmos-core/src/vd_cosmos_core/build_inputs.py",
+    "vd-cosmos-core/src/vd_cosmos_core/defaults.py",
+    "vd-cosmos-core/src/vd_cosmos_core/journal.py",
+    "vd-cosmos-core/src/vd_cosmos_core/p4.py",
+    "vd-cosmos-core/src/vd_cosmos_core/stability.py",
+    "vd-cosmos-core/src/vd_cosmos_core/versions.py",
+    "vd-cosmos-core/tests/helpers.py",
+    "vd-cosmos-core/tests/http_helpers.py",
+    "vd-cosmos-core/tests/test_batch21.py",
+    "vd-cosmos-core/tests/test_batch3a1.py",
+    "vd-cosmos-core/tests/test_batch3a1_extra.py",
+    "vd-cosmos-core/tests/test_http_workflow.py",
+    "vd-fix-analyze/src/vd_fix_analyze/api.py",
+    "vd-fix-analyze/src/vd_fix_analyze/snapshot.py"
+  ],
+  "main_worktree_entered": false,
+  "real_cosmos_access": false,
+  "real_p4_executed": false,
+  "browser_used": false
+}

@@ -70,6 +70,7 @@ class FixtureServer:
         for arch in ['armv7l', 'x86_64']:
             self.routes[self.report_path(arch)] = (200, (self.fixture / ('report_' + arch + '.html')).read_bytes(), {}, 0)
         config = json.loads((CORE / 'config.sample.json').read_text())
+        config['p4']['min_root_depth'] = 3
         config['data_root'] = str(self.root / 'owned')
         config['cosmos']['report_root'] = self.url + '/reports/'
         config['cosmos']['status_source']['url_template'] = self.url + '/build/{build_id}'

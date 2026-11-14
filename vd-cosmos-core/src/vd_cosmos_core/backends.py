@@ -1,4 +1,5 @@
 """Abstract capabilities and local saved-page/fixture readers."""
+from .dates import parse_datetime
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
@@ -53,7 +54,7 @@ class Submitter(Capabilities, ABC):
 
 def timestamp(value):
     try:
-        date = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        date = parse_datetime(value)
         if date.tzinfo is None:
             raise ValueError()
         return date.timestamp()

@@ -131,7 +131,8 @@
     },
     "min_ticket_minutes": 60,
     "unclassified_retry_limit": 3,
-    "timeout_s": 120
+    "timeout_s": 120,
+    "min_root_depth": 5
   },
   "budget": {
     "disk_warning_bytes": 1073741824
@@ -164,6 +165,21 @@
   "analyzer": {
     "snapshot_max_files": 20,
     "snapshot_max_file_bytes": 2097152,
-    "snapshot_max_total_bytes": 20971520
+    "snapshot_max_total_bytes": 20971520,
+    "root_list_max_files": 20000,
+    "log_line_prefix_regex": "^\\[\\s*\\d+s\\] ",
+    "ambiguity_candidates_max": 50,
+    "clang_tabstop": 8,
+    "line_mapped_exts": [
+      ".y",
+      ".yy",
+      ".ypp",
+      ".l",
+      ".ll",
+      ".lex",
+      ".re",
+      ".rl",
+      ".gperf"
+    ]
   }
 }

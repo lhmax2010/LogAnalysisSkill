@@ -1,4 +1,5 @@
-"""Read-side defaults for HLD v0.9.5; no connection is made during loading."""
+"""Read-side defaults for HLD v0.9.18; no connection is made during loading."""
+import re
 from pathlib import Path
 from string import Formatter
 from urllib.parse import urlsplit
@@ -55,9 +56,9 @@ def configure(raw):
         raise ValueError()
     if p4['read_config_name'] is not None and (not isinstance(p4['read_config_name'], str) or '/' in p4['read_config_name'] or p4['read_config_name'] in {'', '.', '..'}):
         raise ValueError()
-    for key, value in [('min_ticket_minutes', 60), ('unclassified_retry_limit', 3), ('timeout_s', 120)]:
+    for key, value in [('min_ticket_minutes', 60), ('unclassified_retry_limit', 3), ('timeout_s', 120), ('min_root_depth', 5)]:
         positive(p4, key, value)
-    if type(p4['unclassified_retry_limit']) is not int:
+    if type(p4['unclassified_retry_limit']) is not int or type(p4['min_root_depth']) is not int:
         raise ValueError()
     snapshot = raw.setdefault('snapshot', {})
     if snapshot.setdefault('merge_tool', 'git-merge-file') != 'git-merge-file' or 'merge_command' in snapshot:
@@ -65,10 +66,16 @@ def configure(raw):
     positive(snapshot, 'clock_margin_s', 300)
     positive(snapshot, 'merge_timeout_s', 60)
     analyzer = raw.setdefault('analyzer', {})
-    for key, value in [('snapshot_max_files', 20), ('snapshot_max_file_bytes', 2097152), ('snapshot_max_total_bytes', 20971520)]:
+    for key, value in [('root_list_max_files', 20000), ('ambiguity_candidates_max', 50), ('clang_tabstop', 8), ('snapshot_max_files', 20), ('snapshot_max_file_bytes', 2097152), ('snapshot_max_total_bytes', 20971520)]:
         positive(analyzer, key, value)
         if type(analyzer[key]) is not int:
             raise ValueError()
+    pattern = analyzer.setdefault('log_line_prefix_regex', r'^\[\s*\d+s\] ')
+    if not isinstance(pattern, str) or not pattern.startswith('^') or re.compile(pattern).match(''):
+        raise ValueError('invalid log prefix regex')
+    analyzer.setdefault('line_mapped_exts', ['.y', '.yy', '.ypp', '.l', '.ll', '.lex', '.re', '.rl', '.gperf'])
+    if not isinstance(analyzer['line_mapped_exts'], list) or not all(isinstance(x, str) and x.startswith('.') for x in analyzer['line_mapped_exts']):
+        raise ValueError('invalid line mapped extensions')
     # An old generated default is migrated; custom user agents stay explicit.
     agent = raw.setdefault('fetch', {}).get('user_agent', '')
     if not agent or agent.startswith('VD-Cosmos-LogAnalyzer/'):

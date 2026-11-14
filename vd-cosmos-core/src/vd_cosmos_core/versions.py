@@ -2,7 +2,7 @@
 from .files import digest, json_bytes
 from pathlib import Path
 
-PARSER_VERSION = '0.9.5'
+PARSER_VERSION = '0.9.18-a'
 
 def parser_digest():
     return digest(json_bytes({p.name: digest(p.read_bytes()) for p in sorted(Path(__file__).parent.glob('*.py'))}))

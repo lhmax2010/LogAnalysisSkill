@@ -1,0 +1,36 @@
+{
+  "full_runs": {
+    "310": {
+      "interpreter": "Python 3.10.12",
+      "tests": 172,
+      "seconds": 426.175,
+      "import_contracts_kept": 3,
+      "import_contracts_broken": 0,
+      "exit_code": 0,
+      "output": "docs/enhance/batch3a-1.1/evidence/test-output-python310.txt",
+      "sha256": "121768277e3837cf6bc252151d8aa741744844f2db371c4ca765d8029205973e"
+    },
+    "312": {
+      "interpreter": "Python 3.12.3",
+      "tests": 172,
+      "seconds": 380.018,
+      "import_contracts_kept": 3,
+      "import_contracts_broken": 0,
+      "exit_code": 0,
+      "output": "docs/enhance/batch3a-1.1/evidence/test-output-python312.txt",
+      "sha256": "355cfe292d94f7a0a08553c1917c1a4ff5d75928457f25ce0bf91f75468940ee"
+    }
+  },
+  "source_after_full_runs": "Only credential-definition comment annotation, AST identical; see credential-definition-annotation.json.",
+  "real_build_machine_verification": "NOT RUN: offline-only task; script provided",
+  "annotation_regression": {
+    "interpreters": [
+      "3.10.12",
+      "3.12.3"
+    ],
+    "tests_each": 6,
+    "exit_code": 0,
+    "output": "docs/enhance/batch3a-1.1/evidence/test-output-annotation-regression.txt",
+    "sha256": "9e86a95fb497f77aa3174fe94c290f154b17482a07c9427a5c8d6006a1470a80"
+  }
+}

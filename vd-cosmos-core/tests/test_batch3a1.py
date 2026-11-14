@@ -215,9 +215,9 @@ class Inputs3a1Tests(unittest.TestCase):
         self.config.raw['cosmos']['status_source']=load_json(CORE/'config.sample.json')['cosmos']['status_source']
 
     def test_appendix_i_2245_base_545_shelve_and_credential_variable_never_written(self):
-        base=['//example/[INT]/packages/p%04d/...@100'%i for i in range(2245)]
-        shelves=['//example/[INT]/packages/p%04d/...@=200'%i for i in range(545)]
-        rows=[{'path':'//example/[INT]/packages/p%04d/...'%i,'cl':'200' if i<545 else '100','shelve':i<545} for i in range(2244)]
+        base=['//example/project/[INT]/packages/p%04d/...@100'%i for i in range(2245)]
+        shelves=['//example/project/[INT]/packages/p%04d/...@200'%i for i in range(545)]
+        rows=[{'path':'//example/project/[INT]/packages/p%04d/...'%i,'cl':'200' if i<545 else '100','shelve':i<545} for i in range(2244)]
         values={'PACKAGE_LIST':'\n'.join(base),'SHELVE_LIST':'\n'.join(shelves),'BASE_REPOS':'https://u:secret@example.invalid/base','BUILD_CONF':'//example/build.conf@1','PRODUCT_REPOS':'https://example.invalid/product'}
         html=header()+'<table>'+''.join('<tr><td>'+k+'</td><td><pre>'+v+'</pre></td></tr>' for k,v in values.items())+'<tr><td>BART_PASSWD</td><td>fixture-do-not-retain-value</td></tr></table>' # credential-test-sample
         safe,note=variables(html.encode(),self.config,'19091860','https://example.invalid/build/19091860/variables')
@@ -229,7 +229,7 @@ class Inputs3a1Tests(unittest.TestCase):
                 self.assertNotIn(b'BART_PASSWD',path.read_bytes());self.assertNotIn(b'fixture-do-not-retain-value',path.read_bytes()) # credential-test-sample
                 self.assertNotIn(b'u:secret@',path.read_bytes())
         with self.assertRaises(FlowError):variables(html.replace('</table>','<tr><td>BUILD_CONF</td><td>other</td></tr></table>').encode(),self.config,'19091860','https://example.invalid/build/19091860/variables')
-        safe['PACKAGE_LIST']+='\n//example/new/...@1'
+        safe['PACKAGE_LIST']+='\n//example/project/[INT]/packages/new/...@1'
         with self.assertRaises(FlowError) as e:freeze(self.config,'fixture',safe,{'armv7l':{'input_rows':rows}},source='variables_page')
         self.assertEqual(e.exception.reason,'immutable_build_inputs_changed')
 
@@ -252,7 +252,7 @@ class Snapshot3a1Tests(unittest.TestCase):
         self.base=Path(self.tmp.name);cp,mp,_=bundle(self.base)
         self.config=load_config(cp);self.config.data_root.mkdir()
         self.config.raw['p4']['executable']=str(CORE/'fixtures/p4/fake_p4.py')
-        self.root='//example/[INT]/pkg';self.path=self.root+'/src/main.c'
+        self.root='//example/project/[INT]/packages/pkg';self.path=self.root+'/src/main.c'
         self.package={'key':{'arch':'armv7l','name':'pkg','path':self.root+'/...'},'cl':'200','shelve':True}
         self.lists={'base':{package_key(self.root,self.config.raw['cosmos']['branch_markers']):{'root':self.root,'cl':'100'}}}
         self.source=b'int value;\nint other;\nint middle;\nint fourth;\nint last;\n'

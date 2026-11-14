@@ -19,6 +19,14 @@ def package_root(path):
     return path.rstrip('/')
 
 
+def validate_root(root, minimum):
+    if (not root.startswith('//') or len([p for p in root[2:].split('/') if p]) < minimum
+            or any(x in root for x in ('...', '*', '%%', '@', '#', '\0', '\r', '\n'))
+            or any(p in {'.', '..'} for p in root[2:].split('/'))):
+        raise FlowError(4, 'invalid_package_root')
+    return root
+
+
 def package_key(path, markers):
     return '/' + '/'.join(p for p in package_root(path).split('/') if p and p not in markers)
 
@@ -29,7 +37,7 @@ def parse_list(text, markers, *, shelved=False):
         line = raw.strip()
         if not line:
             continue
-        match = re.fullmatch(r'(//.+)@' + ('=' if shelved else '') + r'([0-9]+)', line)
+        match = re.fullmatch(r'(//.+)@' + ('=?' if shelved else '') + r'([0-9]+)', line)
         if not match:
             raise mismatch('invalid_line', line_number=number)
         path, cl = match.groups()
@@ -37,7 +45,8 @@ def parse_list(text, markers, *, shelved=False):
         if key in entries:
             raise mismatch('duplicate_package_key', line_number=number)
         entries[key] = {'package_key': key, 'path': path, 'root': package_root(path),
-                        'cl': cl, 'shelve': shelved, 'line_number': number, 'raw': line}
+                        'cl': cl, 'shelve': shelved, 'line_number': number, 'raw': line,
+                        'notation': '@=' if '@=' in line else '@'}
     if not entries and not shelved:
         raise mismatch('empty_base_list')
     return entries
@@ -127,6 +136,12 @@ def freeze(config, key, values, reports, *, source, note=None):
         if text is not None and not check_content(text.encode(), config)['allowed']:
             raise FlowError(4, 'build_input_credential_blocked')
     compared = compare_lists(values['PACKAGE_LIST'], values.get('SHELVE_LIST'), reports, markers)
+    for entries in (compared['base'], compared['shelve'] or {}):
+        for entry in entries.values():
+            try:
+                validate_root(entry['root'], config.raw['p4']['min_root_depth'])
+            except FlowError:
+                raise mismatch('invalid_package_root', line_number=entry['line_number']) from None
     folder = 'rounds/' + key + '/inputs/build-lists'
     identity = {k: digest(v.encode()) for k, v in values.items() if v is not None}
     destination = config.output(folder + '/manifest.json')

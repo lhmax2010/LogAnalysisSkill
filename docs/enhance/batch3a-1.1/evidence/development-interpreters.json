@@ -1,0 +1,25 @@
+{
+  "py310": {
+    "python": "3.10.12 (main, Mar 30 2026, 13:47:47) [GCC 13.3.0]",
+    "executable": "/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/.devtools/py310/bin/python",
+    "packages": {
+      "tomli": "2.5.0",
+      "typing_extensions": "4.16.0",
+      "grimp": "3.18",
+      "click": "8.5.1",
+      "pip": "23.0.1",
+      "setuptools": "65.5.0",
+      "import-linter": "2.3"
+    }
+  },
+  "py312": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "executable": "/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/.devtools/py312/bin/python",
+    "packages": {
+      "typing_extensions": "4.16.0",
+      "grimp": "3.20",
+      "click": "8.5.1",
+      "import-linter": "2.3"
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "scope": "all vd-* src/scripts/tests/fixtures Python files; no venv/runtime files",
+  "file_count": 70,
+  "python310_syntax": "PASS",
+  "files": {
+    "vd-cosmos-core/fixtures/p4/fake_p4.py": "787933a8ceb5d2e4248ee977b02d9a79ee9a9ffda7939e846f1a271b074dbac2",
+    "vd-cosmos-core/scripts/check_imports.py": "f3d796dd0c18905f3c46062a41710811bd34f129d4644716d1bef82025fb218e",
+    "vd-cosmos-core/scripts/run.py": "e990b40ecf7ec3ed9749aa329447759a57a319dfacf6c4abf7d92eb1704fa8da",
+    "vd-cosmos-core/scripts/verify_b1_real.py": "3a2e27553f6b93c7eaaaffa2327c2432fe1b07f3fcb2ff36658fd0845f7fe33f",
+    "vd-cosmos-core/scripts/verify_b2_real.py": "280cc05c56f38bf4786b8596f44f221241487180d47a13bb2ae2df37054cb752",
+    "vd-cosmos-core/scripts/verify_b3a11_real.py": "80d324e87e4f92acc5f2b6f3b43ae4055ee331fe23a5b6ed18c1b3085c69c57b",
+    "vd-cosmos-core/src/vd_cosmos_core/__init__.py": "323d9ec59a47bf8cb35d42d0d2239d7b0b19ebb978b7bdc5443626f3fe6c9092",
+    "vd-cosmos-core/src/vd_cosmos_core/backends.py": "e2d1d69a929dc19bdf5b8ecbb1d528beae381c1449d1e782dae37f0b51bc3772",
+    "vd-cosmos-core/src/vd_cosmos_core/baselines.py": "e1837c968201ed552ef9e3d7e8eda7216f295c836f33e1e48c38d6854bf1d77a",
+    "vd-cosmos-core/src/vd_cosmos_core/build_inputs.py": "b63cb1367e7783e82a2338e96fe767603eac6951e9447eefcd91a9861059205a",
+    "vd-cosmos-core/src/vd_cosmos_core/cli.py": "e4bc968a638e2aa9620cfcfa4c790255b596f705e2e78e3a501bce038a05a2de",
+    "vd-cosmos-core/src/vd_cosmos_core/commands.py": "69a7c986c9d04210fcfe76ee24ada5534e43aab5873f581aa03ad13f625a5d60",
+    "vd-cosmos-core/src/vd_cosmos_core/config.py": "1870f6209176cfc28905381832d9ef1bec467845d44f9fd3560ba02ac415f352",
+    "vd-cosmos-core/src/vd_cosmos_core/dates.py": "0dbc43c6f8a331d0d829944ace8df107dee7183a64c80ab348bbfd398f1939df",
+    "vd-cosmos-core/src/vd_cosmos_core/defaults.py": "a3805f22eaf9902657dc21b3d8d2ba27e47d0e4af44ccef40adcc846f3536f8c",
+    "vd-cosmos-core/src/vd_cosmos_core/errors.py": "fe80c7bb50f2ef68c86387390623640bc1796928cc4431a69176831ca43c44e6",
+    "vd-cosmos-core/src/vd_cosmos_core/export.py": "56a55f1f0a17ec1b155142abb1e27346ba80c7e5bbb84c29802afd2ac4a9fcbe",
+    "vd-cosmos-core/src/vd_cosmos_core/fake_browser.py": "be2a5fa71c908816299033f6daf135715995c9cb5738d0cc0eda81554a804c74",
+    "vd-cosmos-core/src/vd_cosmos_core/files.py": "9489b1849367f794af10b359804b302f123648b4fc5d6de725d6be5777c08103",
+    "vd-cosmos-core/src/vd_cosmos_core/groups.py": "b6e0392c823ffcd518e7fecf5b054ffa258262027f601abd3429f76d79a74f57",
+    "vd-cosmos-core/src/vd_cosmos_core/http_reader.py": "4afbf6bb6b8dc8940f2e3c2ec3cc0f9f4ca84d241fe476e8067ac549cdfc304b",
+    "vd-cosmos-core/src/vd_cosmos_core/journal.py": "ea5890124000dc383c34d3e773633ed2ce5ce3085edbddf61d0549c1d469f873",
+    "vd-cosmos-core/src/vd_cosmos_core/locks.py": "eb97702ad36a8907a531acfca36e3bd19d5c7dcaf50d1342f4d6b5c5af447f1d",
+    "vd-cosmos-core/src/vd_cosmos_core/models.py": "8baf6cc15a482aef5b85042f406a62b0716bedb1426d3014e22bf47c53c51466",
+    "vd-cosmos-core/src/vd_cosmos_core/network_proof.py": "24f3ead9b8f994486b0af97502e139930da66d89cda0ba065b5027e700e34c1d",
+    "vd-cosmos-core/src/vd_cosmos_core/observation.py": "4e58ecfc6f40fc8d94678f27a9818e58df5c86e93115d8fc22f3f599ac4e773e",
+    "vd-cosmos-core/src/vd_cosmos_core/p4.py": "5628f0d3d03c9f4582eca98e3d21eb7174071d75805a159bd74058d68a946b9f",
+    "vd-cosmos-core/src/vd_cosmos_core/read_ops.py": "33854de7e9d8eb14bbd11c766cf342e9840a97ce94346ad278a9554e0db147e1",
+    "vd-cosmos-core/src/vd_cosmos_core/receipts.py": "243641047f24d4ccba1c3e703540e21e4a02bd209cf4e6f6bf4d64b8f9859f53",
+    "vd-cosmos-core/src/vd_cosmos_core/report.py": "16dd457b0d02c20939d4aee73dfece999b1a2694286d9d7b74d0eb401ac5dca9",
+    "vd-cosmos-core/src/vd_cosmos_core/stability.py": "13a5578e900722609bad7c8ff40606798d9f2e1e922d038e04e1cd2714b20912",
+    "vd-cosmos-core/src/vd_cosmos_core/state.py": "566c1f7eba12c2608f90b00c04d7dbe987e30afb4bda94bda219089828d969d3",
+    "vd-cosmos-core/src/vd_cosmos_core/transport.py": "adbbe2f646fec1ac0439fd4c1d03c022b195cb7d46e9de1c6e4946b3dba1f9f9",
+    "vd-cosmos-core/src/vd_cosmos_core/verify.py": "bde7eb742dee3915a067d1f038f7a1edf9492ace77f69f7411e58cf3f8909bc9",
+    "vd-cosmos-core/src/vd_cosmos_core/verify_b2.py": "b4b152cfd1d32ee2d8d5be2a3c6a3d60d2ecbb8e5f33bbb171e0a1b5fe0f8bf8",
+    "vd-cosmos-core/src/vd_cosmos_core/verify_b3a11.py": "4390f162198c9041a3a621b49b4117d24547729eae2f0fb47aeddc1a6637d881",
+    "vd-cosmos-core/src/vd_cosmos_core/versions.py": "5e5ac2853c14b2fec64e56cca19d86b713977e7d370908e2bddbe6d9eeb5b366",
+    "vd-cosmos-core/tests/helpers.py": "4e2dae88138fd0207bf9c420b504fe0b4ceda3603ce81647957ad8aa89a6bce8",
+    "vd-cosmos-core/tests/http_helpers.py": "11d6f8a994ab65f376d5a9b24337d1e9c96e61ba02b3b6e7ea3a77c8d7530a4d",
+    "vd-cosmos-core/tests/test_batch21.py": "17eccdc9664b5295251df7f14596cd8ee8d9f1a67ef0e2951afc0ef64270c45b",
+    "vd-cosmos-core/tests/test_batch3a1.py": "272fdbf0218536fcfbc57f516232b046de9afc94ac2faaa847108e11785a10a5",
+    "vd-cosmos-core/tests/test_batch3a11.py": "cc6db473f6fe56228900af5b7366283d9a87a90e24dad4f24f6d7393c906475a",
+    "vd-cosmos-core/tests/test_batch3a1_extra.py": "2aaa95e82016fee83a56bdea3e6465948193cecb6fcbc1e30e7ddbe77163ea24",
+    "vd-cosmos-core/tests/test_cli.py": "de4d5b28608c7c2cf2ea1ca016402b33a5ab0e1c0d6167ee8d2a7c47cd2185f1",
+    "vd-cosmos-core/tests/test_foundation.py": "c288c52eef3f7607534336058354f0a7b203c9989ba70c514d6a2a00b6909736",
+    "vd-cosmos-core/tests/test_http_workflow.py": "d9fc19e1a24fb06a48f13f507ec88a5995f17ab0e27623ce72d7059cf6730dca",
+    "vd-cosmos-core/tests/test_real_format.py": "92f2eb778c5b22d14da0a1b84ecaa8921300e2817ad110bcf17ec2c64da0305f",
+    "vd-cosmos-core/tests/test_reports.py": "e5e53d020e3ea0f087b02babee543d838a4df904a2bd5d93b3ec02a13173910a",
+    "vd-cosmos-fetch/scripts/run.py": "80a5c98405dfb8af36133418623f5b4f1a4a6bc19630ab7bbc833deb8e1bfd31",
+    "vd-cosmos-fetch/src/vd_cosmos_fetch/__init__.py": "0cf1866fdfbed79b213302ec4ad3df2709c85e7a03283a1b1cf1e2c1b17a01ef",
+    "vd-cosmos-fetch/src/vd_cosmos_fetch/api.py": "cbb138347b1e0a69ee64696b1d61a9af9d415d383cec5eab7aeefcf5b982fff8",
+    "vd-cosmos-fetch/src/vd_cosmos_fetch/cli.py": "825ff6e49561f5d1adbbae52399a47ca1f344bde7877e05788bc785bc9c86a8a",
+    "vd-cosmos-watch/scripts/run.py": "caa42a026cb3535bfda1ccf042a7dbfd2cb2d9b28cba713a67365093f524568b",
+    "vd-cosmos-watch/src/vd_cosmos_watch/__init__.py": "a0a30ba23015312f0da6dc5c09c5151cb79708b8b4bfc8330412ce7f0c954cda",
+    "vd-cosmos-watch/src/vd_cosmos_watch/api.py": "cca3909f1130e3b69cdfb2e1df476f4684cdf246897f1c8d6a5aa9db2b2a9bef",
+    "vd-cosmos-watch/src/vd_cosmos_watch/cli.py": "b8a80fcf329087bcba8134f11ceff71d12797911078789cd9ef2d926e200bfbf",
+    "vd-cosmos-workflow/scripts/run.py": "fdb4d0e63dcfaa3dd639dd007caf2d5de4a3ec0fb8d02f32cec78eaa3371098d",
+    "vd-cosmos-workflow/src/vd_cosmos_workflow/__init__.py": "6628f32f846ff57c0fd444110ce02a2fcaa951bc7caaa5c82b723a464e4a372c",
+    "vd-cosmos-workflow/src/vd_cosmos_workflow/api.py": "1bc59a2b0b763d5784b64eb4bbcec75fff60e14c939858cb800a68285de44452",
+    "vd-cosmos-workflow/src/vd_cosmos_workflow/cli.py": "52c823008bfe0f501636c8aa420d881a795afde7fe17ba4f19128f5ce21cf8ca",
+    "vd-fix-analyze/scripts/run.py": "c9f986509b118a0ae8ada1a1d0ad16fe49668d1ccc2f571f89a7f1baca4a3836",
+    "vd-fix-analyze/src/vd_fix_analyze/__init__.py": "bff1f28e9abc086befa6d98426e8ce77328632374bacb50fb1a5f5e84e60f6e1",
+    "vd-fix-analyze/src/vd_fix_analyze/api.py": "799b4d7102f25a25d81595381b53a6e6c5c74ae5b086ed8972fbd9cbd4de828c",
+    "vd-fix-analyze/src/vd_fix_analyze/cli.py": "10f5f9b036e83dc9f1839e083345b81cf466056eca8fb329647ee46ba21793f8",
+    "vd-fix-analyze/src/vd_fix_analyze/snapshot.py": "886f97e8ec35cfd07da746f03bbe46e193e830dabc80922ce719cf3977d4b38e",
+    "vd-fix-analyze/src/vd_fix_analyze/source_check.py": "117cb72992abaaa85fc3bf0dc77391d6bb8da678acbff47d01cab05edb94dd19",
+    "vd-fix-register/scripts/run.py": "c23dcd4a27076bf95d8bb418f5da038714a361250ad8fa5261aa958a798ce86e",
+    "vd-fix-register/src/vd_fix_register/__init__.py": "894131b6871d86f0060346325fbc1c606e5c101b4925d4d9e28018363bfd0898",
+    "vd-fix-register/src/vd_fix_register/api.py": "97a3546b0050c4d832d7b503a56d8110d27f72819bf63bf7ea2b1266f17ed8aa",
+    "vd-fix-register/src/vd_fix_register/cli.py": "0ca9c846bdb0655618bf2db6f16dd36527a4f8a591cc336f4e271cc296ff932d"
+  },
+  "api_review": [
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/dates.py",
+      "line": 15,
+      "names": [
+        "fromisoformat"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/transport.py",
+      "line": 47,
+      "names": [
+        "strict="
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/transport.py",
+      "line": 52,
+      "names": [
+        "removeprefix"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 111,
+      "names": [
+        "fromisoformat"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11.py",
+      "line": 297,
+      "names": [
+        "is_relative_to"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 68,
+      "names": [
+        "removesuffix"
+      ]
+    }
+  ],
+  "note": "Static inventory, not a runtime claim. See the two full interpreter outputs and DELIVERY.md.",
+  "searched_api_names": [
+    "fromisoformat",
+    "datetime.UTC",
+    "tomllib",
+    "ExceptionGroup",
+    "except*",
+    "TaskGroup",
+    "typing.Self",
+    "TypeAliasType",
+    "TypeVarTuple",
+    "Unpack",
+    "StrEnum",
+    "add_note",
+    "is_junction",
+    "walk_up=",
+    "case_sensitive=",
+    "is_relative_to",
+    "removeprefix",
+    "removesuffix",
+    "batched",
+    "file_digest",
+    "isdevdrive",
+    "process_group",
+    "strict="
+  ]
+}

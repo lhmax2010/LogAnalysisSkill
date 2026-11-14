@@ -4,6 +4,7 @@ import multiprocessing
 import os
 from pathlib import Path
 import signal
+import select
 import socket
 import ssl
 import subprocess
@@ -320,17 +321,37 @@ class WorkflowTests(HTTPTests):
         self.assertEqual(tick(self.config,lambda:self.reader())['action'],'observe')
 
     def test_sigterm_and_sigint_clean_exit_release_instance_lock(self):
+        # Notify through a pipe only once loop has installed its handlers,
+        # finished a tick, and entered its sleep phase. No timing window.
+        code = """import json, os, sys
+from vd_cosmos_core.config import load_config
+from vd_cosmos_core.http_reader import HTTPReportReader
+from vd_cosmos_workflow.api import loop
+config=load_config(sys.argv[1])
+notified=[]
+def ready():
+    if not notified:
+        os.write(int(sys.argv[2]), b'R'); notified.append(True)
+print(json.dumps(loop(config,lambda:HTTPReportReader(config,'19091861'),max_ticks=100,on_sleep=ready)))
+"""
         for sig in [signal.SIGTERM,signal.SIGINT]:
-            self.server.requests.clear()
-            self.config.raw['poll']['interval_s']=.5;self.server.config_path.write_text(json.dumps(self.config.raw))
-            proc=subprocess.Popen([sys.executable,str(REPO/'vd-cosmos-workflow/scripts/run.py'),'loop','--config',str(self.server.config_path),
-                                   '--build-id','19091861','--max-ticks','100'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-            deadline=time.monotonic()+5
-            while time.monotonic()<deadline:
-                if any(r['path'].startswith('/reports/b861/') for r in self.server.requests):break
-                time.sleep(.01)
-            time.sleep(.04);proc.send_signal(sig);out,err=proc.communicate(timeout=3)
-            self.assertEqual(err,'');self.assertEqual(proc.returncode,0,out);self.assertTrue(json.loads(out)['interrupted'])
+            self.config.raw['poll']['interval_s']=60
+            self.server.config_path.write_text(json.dumps(self.config.raw))
+            read_fd,write_fd=os.pipe()
+            proc=subprocess.Popen([sys.executable,'-c',code,str(self.server.config_path),str(write_fd)],
+                pass_fds=(write_fd,),stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            os.close(write_fd)
+            try:
+                self.assertTrue(select.select([read_fd],[],[],15)[0], 'loop did not signal readiness')
+                self.assertEqual(os.read(read_fd,1),b'R')
+                proc.send_signal(sig)
+                out,err=proc.communicate(timeout=10)
+                self.assertEqual(err,'');self.assertEqual(proc.returncode,0,out)
+                self.assertTrue(json.loads(out)['interrupted'])
+            finally:
+                os.close(read_fd)
+                if proc.poll() is None:
+                    proc.kill();proc.communicate()
             self.assertEqual(loop(self.config,lambda:HTTPReportReader(self.config,'19091861'),max_ticks=1)['exit_code'],0)
 
     def test_b2_script_A_to_E_and_summary_size(self):

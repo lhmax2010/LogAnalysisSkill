@@ -97,3 +97,25 @@ bash --noprofile --norc vd-cosmos-core/scripts/verify_b2_real.sh EXPECTED_COMMIT
 ```
 
 EXPECTED_COMMIT 必须由设计方审核，不能动态拿当前 HEAD 代填。保存目录含 report_armv7l.html、report_x86_64.html、probe_3bed7e8c.html。离线模拟增加 `--mode fixture --fixture-counts FILE`，在干净的临时源码快照验证；来源记录明确标注 http-fixture，不能冒充实机验收。所有结果均在数据根目录，导出前仍执行凭据检查。完整分组成员只留本地，外传摘要目标不超过两块。
+
+
+### 第 3a-1.1 批 Checkpoint A
+
+冻结设计 HLD v0.9.18；仅读取、快照与验收，不实现提交端命令。
+
+新增配置均有默认值：
+
+| 配置 | 默认 | 含义 |
+|---|---|---|
+| `p4.min_root_depth` | 5 | 清单包根最少目录层数；去掉 `/...` 后检查，拒绝外来通配符和版本符号 |
+| `analyzer.root_list_max_files` | 20000 | 单次 `p4 files -m N <root>/...@CL` 的结果上限；达到上限即快照失败 |
+| `analyzer.log_line_prefix_regex` | `^\[\s*\d+s\] ` | 每行只去掉一层 GBS 时间前缀，其后空白保留 |
+| `analyzer.clang_tabstop` | 8 | 日志没有明确 `-ftabstop=N` 时使用；按原始字节计数展开 |
+| `analyzer.ambiguity_candidates_max` | 50 | 受限源码行归属判断的候选上限；缺内容或超限记未核对 |
+| `analyzer.line_mapped_exts` | `.y .yy .ypp .l .ll .lex .re .rl .gperf` | 可能由 #line 改写位置的文件，源码行记未核对 |
+
+`SHELVE_LIST` 同时接受 `@SCL` 和 `@=SCL`，manifest 的 `notation` 保留写法。P4 返回的 depotFile 不再二次转义。来源依据 `版本确定（base 清单）` 的 `basis` 为 `list_cl_equals_build_time` 或 `vd_practice`；后者在报告标“依据 VD 线做法”，源码不符或 scope 变化记录待复核并禁止 edits。接收器与人工复核结论的完整流程仍留后续批次。
+
+开发测试：用真实 Python 3.10 / 3.12 分别创建本线 `.devtools/` 下的开发 venv，安装 `import-linter==2.3`，将对应 venv/bin 放在 PATH 首位执行 `bash vd-cosmos-core/scripts/run_tests.sh`。运行时不依赖这些开发包。`VD_COSMOS_TEST_TMPDIR` 可指定测试临时目录，构建机验收器将它设在本次新数据根内，不往源码目录写缓存。
+
+构建机只读验收：`verify_b3a11_real.sh` 先核对经审核的完整提交与 HEAD、六个本线目录干净；然后入口契约、同解释器完整测试、原 A–F、变量页 base 清单和 19091860 的 7 个失败包快照。每次创建 `data_root/verification/b3a11-<随机串>/`，旧数据不复用、不修改。stderr 打印版本、HEAD、汇总表和必要的登录命令；stdout 是单个 JSON 对象。输出过凭据模式检查；未登录只提示、不执行登录。完整操作命令及验收限制见本批 DELIVERY.md。

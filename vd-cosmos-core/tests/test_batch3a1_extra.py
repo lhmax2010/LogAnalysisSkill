@@ -31,19 +31,37 @@ class SnapshotEdgeTests(unittest.TestCase):
     def setUp(self):
         self.f=fixture.Snapshot3a1Tests();self.f.setUp();self.addCleanup(self.f.doCleanups)
 
-    def test_appendix_i_three_shelve_samples_2_1_32_edits_overlay_without_archive(self):
+    def test_appendix_i_real_timelines_plusplayer_requires_current_digest_confirmation(self):
         f=self.f
-        for count in [2,1,32]:
-            shelf=f.fixture['shelves']['200'];shelf['files']=[]
-            for index in range(count):
-                path=f.path if index==0 else f.root+'/file%d.spec'%index
-                f.fixture['files'][path]={'@100':f.item(f.source,2)}
-                shelf['files'].append({'path':path,'rev':2,'action':'edit','type':'text','content':f.enc(f.source)})
-            result,_=f.snap()
-            self.assertFalse(result['cross_branch']);self.assertEqual(result['cross_package_files'],[])
-            self.assertEqual(len(result['files']),count)
-            self.assertTrue(all(r['snapshot_provenance']=='原样叠加' for r in result['files']))
-            f.fixture['files']={f.path:{'@100':f.item(f.source,2)}}
+        cases = [('AT-HUB', '14288393', '14288668', 2, '2026/09/28 17:47:00'),
+                 ('aria-engine', '14288396', '13372612', 1, '2026/09/28 17:47:00'),
+                 ('plusplayer', '14329096', '14274649', 32, '2026/10/23 20:28:00')]
+        for name, scl, cl, count, updated in cases:
+            with self.subTest(package=name):
+                f.package['cl'] = scl
+                f.fixture['files'] = {}
+                shelf = {'updated': updated, 'files': []}
+                f.fixture['shelves'] = {scl: shelf}
+                for entry in f.lists['base'].values(): entry['cl'] = cl
+                for index in range(count):
+                    path=f.path if index==0 else f.root+'/file%d.spec'%index
+                    f.fixture['files'][path]={'@'+cl:f.item(f.source,2)}
+                    shelf['files'].append({'path':path,'rev':2,'action':'edit','type':'text','content':f.enc(f.source)})
+                def run(confirmations=()):
+                    with redirect_stderr(io.StringIO()):
+                        return snapshot(f.config,f.adapter(),f.package,{'start_time':'2026-10-22 13:26 +0900'},
+                            b'[  123s] /x/rpmbuild/BUILD/pkg/src/main.c:1:1: error: fixture\n[  123s] 1 | int value;\n[  123s]   | ^\n',
+                            'timeline-'+name,build_id='19091860',lists=f.lists,input_confirmations=confirmations)
+                result=run()
+                self.assertFalse(result['cross_branch']);self.assertEqual(result['cross_package_files'],[])
+                self.assertEqual(len(result['files']),count)
+                if name == 'plusplayer':
+                    self.assertEqual(result['mode'],'仅诊断')
+                    self.assertTrue(result['historical_input_unrecoverable'])
+                    self.assertEqual(run(['old-digest'])['mode'],'仅诊断')
+                    result=run([f.adapter().describe(scl)['digest']])
+                self.assertEqual(result['mode'],'可分析')
+                self.assertTrue(all(r['snapshot_provenance']=='原样叠加' for r in result['files']))
 
     def test_move_pair_other_actions_cross_package_and_mid_snapshot_mutation(self):
         f=self.f;shelf=f.fixture['shelves']['200'];new=f.root+'/src/moved.c'

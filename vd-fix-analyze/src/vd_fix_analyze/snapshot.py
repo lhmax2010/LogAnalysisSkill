@@ -9,25 +9,16 @@ import sys
 from urllib.parse import urlsplit
 from vd_cosmos_core.build_inputs import package_root, package_key
 from vd_cosmos_core.errors import FlowError
+from vd_cosmos_core.dates import parse_datetime
+from vd_cosmos_core.p4 import depot_path
+from .source_check import diagnostics, compare_source, clang_display, normalized_lines
 from vd_cosmos_core.files import atomic_write, digest, json_bytes
 
-RELIABLE = {'版本确定（报告行）', '请求 base（shelve 包同步方式待确认）', '原样叠加', '已合并'}
-ANSI = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
-
-
-def diagnostics(log):
-    lines = ANSI.sub('', log.decode('utf-8', errors='surrogateescape')).splitlines()
-    found = []
-    for i, text in enumerate(lines):
-        match = re.match(r'(.+?):([0-9]+):(?:[0-9]+:)?\s*(fatal error|error|warning):', text)
-        if not match:
-            continue
-        source = lines[i+1] if i+2 < len(lines) and '^' in lines[i+2] else None
-        found.append({'path': match[1], 'line': int(match[2]), 'level': match[3], 'source_line': source})
-    return sorted(found, key=lambda d: d['level'] == 'warning')
-
+RELIABLE = {'版本确定（报告行）', '版本确定（base 清单）', '原样叠加', '已合并'}
 
 def classify_path(path, name, log=''):
+    if not path.startswith('/'):
+        return {'kind': '无法定位（相对路径）', 'relative': None}
     if '\0' in path or '..' in path.split('/'):
         return {'kind': '外部路径', 'relative': None}
     buildroot = re.search(r'/BUILDROOT/([^/]+)/(.+)$', path)
@@ -52,53 +43,17 @@ def locate(classification, root, inventory):
     relative = classification.get('relative')
     if relative is None:
         return None, classification['kind']
-    target = root + '/' + relative
+    target = root + '/' + depot_path('//' + relative)[2:]
     if classification['kind'] == '源码' and target in inventory:
         return target, '直接定位'
     if classification['kind'] == '源码' and generated(relative):
         return None, '生成文件'
-    parts = relative.split('/')
+    parts = depot_path('//' + relative)[2:].split('/')
     if len(parts) < 3:
         return None, '无法定位'
     suffix = '/' + '/'.join(parts[-3:])
     candidates = [p for p in inventory if p.startswith(root + '/') and p.endswith(suffix)]
     return (candidates[0], '回退候选') if len(candidates) == 1 else (None, '无法定位')
-
-
-def clang_display(raw):
-    text = raw.decode('utf-8', errors='surrogateescape')
-    output = []
-    for char in text:
-        code = ord(char)
-        if 0xdc80 <= code <= 0xdcff:
-            output.append('<%02X>' % (code - 0xdc00))
-        elif char == '\t' or char.isprintable():
-            output.append(char)
-        else:
-            output.append('<U+%04X>' % code)
-    return ''.join(output).expandtabs(8)
-
-
-def compare_source(content, diagnostic, *, merged=False, transcoded=False):
-    source = diagnostic.get('source_line')
-    if source is None:
-        return '未核对'
-    if transcoded:
-        return '无法核对'
-    lines = content.split(b'\n')
-    number = diagnostic['line']
-    if not 0 < number <= len(lines):
-        return '不一致'
-    raw = lines[number-1].rstrip(b'\r')
-    if merged and re.search(rb'\$(?:Id|Header|Revision|Date|DateTime|Author|File|Change)(?::[^$]*)?\$', raw):
-        return '无法核对'
-    shown = ANSI.sub('', source).rstrip('\r')
-    prefix = re.match(r'^\s*([0-9]+) \| ', shown)
-    if prefix:
-        if int(prefix[1]) != number:
-            return '不一致'
-        shown = shown[prefix.end():]
-    return '源码行一致' if clang_display(raw) == shown else '不一致'
 
 
 def merge(config, folder, current, ancestor, shelf):
@@ -123,7 +78,7 @@ def after_start(update, start, server_date):
         if str(value).isdigit():
             return datetime.fromtimestamp(int(value), tz)
         value = value.replace('/', '-')
-        stamp = datetime.fromisoformat(value)
+        stamp = parse_datetime(value)
         return stamp.replace(tzinfo=tz) if stamp.tzinfo is None else stamp
     return date(update) >= date(start).replace(second=0, microsecond=0)
 
@@ -140,10 +95,10 @@ def archive_sources(adapter, inventory, root, revision, limit):
     for path in inventory:
         if not path.endswith('.spec'):
             continue
-        size = adapter.file_size(path, revision)
+        size = adapter.file_size(path, revision, encoded=True)
         if size is None or size > limit:
             continue
-        spec = adapter.print_file(path, revision).decode('utf-8', errors='replace')
+        spec = adapter.print_file(path, revision, encoded=True).decode('utf-8', errors='replace')
         macros = {m[1].lower(): m[2].strip() for m in re.finditer(r'(?im)^(Name|Version):\s*(.+)$', spec)}
         for match in re.finditer(r'(?im)^Source[0-9]*:\s*(.+)$', spec):
             source = match[1].strip()
@@ -177,17 +132,20 @@ def snapshot(config, adapter, package, headers, log, folder, *, build_id, lists=
     history_lost = bool(desc and desc['historical_missing'])
     if change and change['category'] == 'ok' and desc['digest'] not in input_confirmations:
         history_lost |= after_start(change['records'][0]['shelveUpdate'], headers['start_time'], info['serverDate'])
+    row_root, root = depot_path(row_root), depot_path(root)
     own = {f['depotFile']: f for f in (desc or {}).get('files', []) if f['depotFile'].startswith(row_root + '/')}
     foreign = [f['depotFile'] for f in (desc or {}).get('files', []) if f['depotFile'] not in own]
     cross = shelved and base and row_root != root
     affected = {root + p[len(row_root):]: f for p, f in own.items()}
-    candidates = diagnostics(log)
+    candidates = diagnostics(log, config.raw['analyzer'])
     if not candidates:
         adapter.login_status(require_minimum=False)
         return {'mode': '仅诊断', 'reason': '未取得错误位置', 'files': [], 'notices': [], 'known_effect': '读取 shelve 会更新 shelveAccess'}
     available = set(inventory) | set(affected)
     selected, locations = [], []
-    log_text = log.decode('utf-8', errors='replace')
+    log_text = '\n'.join(normalized_lines(log, config.raw['analyzer']['log_line_prefix_regex']))
+    tab_matches = re.findall(r'-ftabstop=([0-9]+)', log_text)
+    tabstop = int(tab_matches[-1]) if tab_matches and int(tab_matches[-1]) > 0 else config.raw['analyzer']['clang_tabstop']
     for diagnostic in candidates:
         classification = classify_path(diagnostic['path'], package['key']['name'], log_text)
         path, location = locate(classification, root, available)
@@ -200,6 +158,7 @@ def snapshot(config, adapter, package, headers, log, folder, *, build_id, lists=
             if path not in selected:
                 selected.append(path)
     result, notices, total = [], [], 0
+    contents = {}
     primary = locations[0]['depotFile']
     diagnostic_only = primary is None
     if primary is None and locations[0]['classification']['kind'] == '源码':
@@ -213,21 +172,47 @@ def snapshot(config, adapter, package, headers, log, folder, *, build_id, lists=
                  'type': (record or file or {}).get('type'), 'snapshot_provenance': '版本确定（报告行）',
                  'diagnostic_line_match': '未核对', 'content': None}
         content, merged, merge_inputs = None, False, []
-        estimates = [adapter.file_size(path, revision)] if record else []
+        if record and record['action'] in {'purge', 'archive'}:
+            entry.update(snapshot_provenance='历史输入不可还原', unavailable_reason=record['action'], edits_eligible=False)
+            result.append(entry)
+            diagnostic_only |= path == primary
+            continue
+        estimates = [adapter.file_size(path, revision, encoded=True)] if record else []
         if file and file.get('fileSize') is not None:
             estimates.append(int(file['fileSize']))
-        if any(size is not None and (size > config.raw['analyzer']['snapshot_max_file_bytes'] or total + size > config.raw['analyzer']['snapshot_max_total_bytes']) for size in estimates):
+        if any(size is not None and size > config.raw['analyzer']['snapshot_max_file_bytes'] for size in estimates):
             entry.update(unavailable_reason='超过大小上限', snapshot_provenance='尚未取得内容', edits_eligible=False)
             result.append(entry)
             diagnostic_only |= path == primary
             continue
-        provenance = '请求 base（shelve 包同步方式待确认）' if shelved else '版本确定（报告行）'
+        provenance = '版本确定（base 清单）' if shelved else '版本确定（报告行）'
+        if shelved and base and not file:
+            entry['basis'] = 'vd_practice'
+            entry['basis_scope'] = {k: headers.get(k) for k in ('profile', 'build_conf')}
+            upper = (log_metadata or {}).get('Last-Modified')
+            if upper and record:
+                try:
+                    end = parsedate_to_datetime(upper) if ',' in upper else parse_datetime(upper)
+                    offset = re.search(r'[+-][0-9]{4}', info['serverDate'])
+                    if not offset:
+                        raise FlowError(5, 'p4_server_timezone_missing')
+                    server_tz = datetime.strptime(offset[0], '%z').tzinfo
+                    end = end.replace(tzinfo=server_tz) if end.tzinfo is None else end.astimezone(server_tz)
+                    version = '@' + (end + timedelta(seconds=config.raw['snapshot']['clock_margin_s'])).strftime('%Y/%m/%d:%H:%M:%S')
+                    later = adapter.files(path, version, encoded=True)
+                    entry['basis_versions'] = [record['rev'], later['records'][0].get('rev') if later['category'] == 'ok' else None]
+                    if later['category'] == 'ok' and later['records'][0]['rev'] == record['rev']:
+                        entry['basis'] = 'list_cl_equals_build_time'
+                except (ValueError, TypeError):
+                    entry['basis_note'] = '日志时间无法解析，未证明版本相同'
+            if entry['basis'] == 'vd_practice':
+                entry['basis_note'] = '依据 VD 线做法'
         if shelved and not base:
             metadata = log_metadata or {}
             upper = metadata.get('Last-Modified') or metadata.get('first_failure_observed_at')
             if upper:
                 try:
-                    end = parsedate_to_datetime(upper) if ',' in upper else datetime.fromisoformat(upper.replace('Z', '+00:00'))
+                    end = parsedate_to_datetime(upper) if ',' in upper else parse_datetime(upper)
                     offset = re.search(r'[+-][0-9]{4}', info['serverDate'])
                     if not offset:
                         raise FlowError(5, 'p4_server_timezone_missing')
@@ -235,7 +220,7 @@ def snapshot(config, adapter, package, headers, log, folder, *, build_id, lists=
                     end = end.replace(tzinfo=server_tz) if end.tzinfo is None else end.astimezone(server_tz)
                     end += timedelta(seconds=config.raw['snapshot']['clock_margin_s'])
                     version = '@' + end.strftime('%Y/%m/%d:%H:%M:%S')
-                    latter = adapter.files(path, version)
+                    latter = adapter.files(path, version, encoded=True)
                     same = latter['category'] == 'ok' and record and latter['records'][0]['rev'] == record['rev']
                     provenance = '区间内一致' if same else '版本不确定'
                     entry['candidate_interval'] = [revision, version]
@@ -274,36 +259,37 @@ def snapshot(config, adapter, package, headers, log, folder, *, build_id, lists=
                     if action in {'delete', 'move/delete'}:
                         entry['deleted'] = True
                     else:
-                        raw = adapter.print_file(file['depotFile'], '@=' + scl)
+                        raw = adapter.print_file(file['depotFile'], '@=' + scl, encoded=True)
                         if hashlib.md5(raw).hexdigest().casefold() != file['digest'].casefold():
                             raise FlowError(5, 'shelve_print_digest_mismatch')
-                        content = adapter.print_file(file['depotFile'], '@=' + scl, keywords=True)
+                        content = adapter.print_file(file['depotFile'], '@=' + scl, keywords=True, encoded=True)
                 elif action == 'edit' and current_rev is not None and base_rev < current_rev and file['type'].split('+')[0] in {'text', 'unicode', 'utf8', 'utf16'}:
-                    current = adapter.print_file(path, revision)
-                    ancestor_size = adapter.file_size(path, '#' + str(base_rev))
+                    current = adapter.print_file(path, revision, encoded=True)
+                    ancestor_size = adapter.file_size(path, '#' + str(base_rev), encoded=True)
                     if ancestor_size is None or ancestor_size > config.raw['analyzer']['snapshot_max_file_bytes']:
                         raise FlowError(5, 'merge_input_size_limit')
-                    ancestor = adapter.print_file(path, '#' + str(base_rev))
-                    raw = adapter.print_file(file['depotFile'], '@=' + scl)
+                    ancestor = adapter.print_file(path, '#' + str(base_rev), encoded=True)
+                    raw = adapter.print_file(file['depotFile'], '@=' + scl, encoded=True)
                     if hashlib.md5(raw).hexdigest().casefold() != file['digest'].casefold():
                         raise FlowError(5, 'shelve_print_digest_mismatch')
-                    if total + len(current) + len(ancestor) + len(raw) > config.raw['analyzer']['snapshot_max_total_bytes']:
-                        combined = {'kind': '超过大小上限', 'content': None, 'inputs': []}
-                        entry['unavailable_reason'] = '超过大小上限'
-                    else:
-                        combined = merge(config, folder + '/merge-' + str(index), current, ancestor, raw)
-                        total += sum(i['size'] for i in combined['inputs'])
+                    if any(len(v) > config.raw['analyzer']['snapshot_max_file_bytes'] for v in (current, ancestor, raw)):
+                        raise FlowError(5, 'merge_input_size_limit')
+                    combined = merge(config, folder + '/merge-' + str(index), current, ancestor, raw)
                     merge_inputs = combined['inputs']
                     content, merged = combined['content'], combined['kind'] == '无冲突'
                     provenance = '已合并' if merged else '合并失败'
-                    entry.update(merge_result=combined['kind'], keywords='关键字未展开', merge_inputs=merge_inputs)
+                    entry.update(merge_returncode=combined.get('returncode'), merge_result=combined['kind'], keywords='关键字未展开', merge_inputs=merge_inputs)
                 else:
                     provenance = 'shelve 基础版本超前' if action == 'edit' and current_rev is not None and base_rev > current_rev else '合并失败'
         if content is None and record and not entry.get('deleted') and not entry.get('unavailable_reason'):
-            content = adapter.print_file(path, revision, keywords=True)
+            content = adapter.print_file(path, revision, keywords=True, encoded=True)
         entry['snapshot_provenance'] = provenance
         if file and provenance != '原样叠加':
-            message = notice(build_id, package['key']['name'], path, scl, file['rev'], entry['rev'], entry.get('merge_result', provenance))
+            outcome = entry.get('merge_result', provenance)
+            code = entry.get('merge_returncode')
+            if code is not None and 1 <= code <= 127:
+                outcome = f'内容冲突：冲突 {code} 处' + ('（达到计数上限）' if code == 127 else '')
+            message = notice(build_id, package['key']['name'], path, scl, file['rev'], entry['rev'], outcome)
             identity = digest(json_bytes({'build': build_id, 'package': package['key'], 'path': path,
                 'inputs': [i['sha256'] for i in merge_inputs] or [desc.get('digest'), digest(content or b'')]}))
             notices.append({'reason': 'snapshot_notice', 'basis_version': identity, 'hint': True, 'message': message})
@@ -320,13 +306,41 @@ def snapshot(config, adapter, package, headers, log, folder, *, build_id, lists=
             else:
                 entry['content'] = atomic_write(config.data_root, folder + '/files/' + str(index), content)
                 total += len(content)
-                matches = [compare_source(content, d['diagnostic'], merged=merged) for d in locations if d['depotFile']==path]
-                entry['diagnostic_line_match'] = ('不一致' if '不一致' in matches else '无法核对' if '无法核对' in matches
-                    else '源码行一致' if '源码行一致' in matches else '未核对')
-        if path == primary and (not entry['content'] or provenance not in RELIABLE or entry['diagnostic_line_match'] in {'不一致', '无法核对'}):
+                contents[path] = (content, merged)
+        if path == primary and (not entry['content'] or provenance not in RELIABLE):
             diagnostic_only = True
         entry['edits_eligible'] = bool(entry['content'] and provenance in RELIABLE)
         result.append(entry)
+    candidate_contents = contents
+    for location in locations:
+        diagnostic = location['diagnostic']
+        diagnostic['canonical_path'] = location['depotFile'] or diagnostic['path']
+        normalized = []
+        for candidate in diagnostic['candidate_paths']:
+            candidate_path, _ = locate(classify_path(candidate, package['key']['name'], log_text), root, available)
+            normalized.append(candidate_path or candidate)
+        diagnostic['candidate_paths'] = sorted(set(normalized))
+    for entry in result:
+        path = entry['depotFile']
+        if path not in contents:
+            continue
+        content, merged = contents[path]
+        matches = []
+        for location in locations:
+            if location['depotFile'] != path:
+                continue
+            verdict = compare_source(content, location['diagnostic'], merged=merged, tabstop=tabstop,
+                candidates=candidate_contents, max_candidates=config.raw['analyzer']['ambiguity_candidates_max'])
+            location['diagnostic_line_match'] = verdict
+            matches.append(verdict)
+        entry['diagnostic_line_match'] = next((v for v in ['不一致', '无法核对', '源码行一致'] if v in matches), '未核对')
+        if entry['diagnostic_line_match'] in {'不一致', '无法核对'}:
+            entry['edits_eligible'] = False
+            diagnostic_only = True
+        if entry.get('basis') == 'vd_practice' and entry['diagnostic_line_match'] == '不一致':
+            entry['basis_review'] = '待复核'
+            notices.append({'reason': 'vd_practice_review_required', 'basis_version': entry['sha256'],
+                            'package': package['key'], 'depotFile': path, 'scope': entry['basis_scope']})
     if shelved and adapter.describe(scl) != desc:
         raise FlowError(5, 'shelve_changed_during_snapshot')
     remaining = adapter.login_status(require_minimum=False)

@@ -368,15 +368,30 @@ class Workflow21Tests(Batch21Tests):
         finally:release.set();process.join(3)
         with EventStore(self.config.data_root) as store:
             self.assertEqual(sum(e['payload']['todo']['reason']=='loop_contention' for e in store.events(kinds=['inbox_opened'])),1)
-        self.server.routes['/build/19091860']=(200,detail_html().encode(),{},.15)
+        # The server signals after the first tick owns the round lock. Hold
+        # its response until the competing process has returned, not for 150ms.
+        import threading
+        entered, unblock = threading.Event(), threading.Event()
+        def held_response():
+            entered.set()
+            if not unblock.wait(30):
+                raise RuntimeError('test synchronization timed out')
+            return (200, detail_html().encode(), {}, 0)
+        self.server.routes['/build/19091860'] = held_response
+        raw = load_json(self.server.config_path)
+        raw['fetch'].update(timeout_s=30, deadline_s=45)
+        self.server.config_path.write_text(json.dumps(raw))
         command=[sys.executable,str(REPO/'vd-cosmos-workflow/scripts/run.py'),'tick','--config',str(self.server.config_path),'--build-id','19091860']
         first=subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-        deadline=time.monotonic()+3
-        while not any(r['path']=='/build/19091860' for r in self.server.requests) and time.monotonic()<deadline:time.sleep(.005)
-        second=subprocess.run(command,capture_output=True,text=True)
-        out,err=first.communicate(timeout=4)
-        self.assertEqual(first.returncode,0,out+err);self.assertEqual(second.returncode,6,second.stdout)
-        self.assertEqual(second.stderr,'')
+        try:
+            self.assertTrue(entered.wait(10))
+            second=subprocess.run(command,capture_output=True,text=True,timeout=10)
+            self.assertEqual(second.returncode,6,second.stdout)
+            self.assertEqual(second.stderr,'')
+        finally:
+            unblock.set()
+            out,err=first.communicate(timeout=15)
+        self.assertEqual(first.returncode,0,out+err)
 
     def test_wal_reader_error_wrapping_and_other_build_history_not_loaded(self):
         factory=self.fast();key=build_key(factory())

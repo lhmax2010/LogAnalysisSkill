@@ -39,11 +39,32 @@ def write_round_report(config, store, key):
             raise FlowError(4, 'immutable_snapshot_digest_mismatch')
         data = load_json(artifact['path'])
         fields = sorted({f['snapshot_provenance'] for f in data.get('files', [])})
+        fields += [f.get('basis_note', '') for f in data.get('files', []) if f.get('basis') == 'vd_practice']
         fields += [n.get('message', n['reason']) for n in data.get('notices', [])]
         cell = '；'.join(fields).replace('|', '\\|').replace('\n', ' ')
         package = payload['package']
         lines.append(f"| {package['name']} | {package['arch']} | {data['mode']} | {cell} |")
     return atomic_write(config.data_root, f'rounds/{key}/reports/source-snapshots.md', ('\n'.join(lines)+'\n').encode())
+
+
+def review_basis(data, previous):
+    """Keep disputed VD-practice provenance ineligible; retain old artifacts."""
+    old = {f['depotFile']: f for f in (previous or {}).get('files', [])}
+    for entry in data.get('files', []):
+        if entry.get('basis') != 'vd_practice':
+            continue
+        prior = old.get(entry['depotFile'], {})
+        changed_scope = bool(prior.get('basis_scope') and prior['basis_scope'] != entry['basis_scope'])
+        if changed_scope or prior.get('basis_review') == '待复核' or entry.get('basis_review') == '待复核':
+            entry.update(basis_review='待复核', edits_eligible=False)
+            data['mode'] = '仅诊断'
+            identity = digest(json_bytes({'file': entry['depotFile'], 'scope': entry['basis_scope'],
+                                        'sha256': entry.get('sha256')}))
+            data['notices'].append({'reason': 'vd_practice_review_required', 'basis_version': identity,
+                'depotFile': entry['depotFile'], 'scope': entry['basis_scope'],
+                'message': '依据 VD 线做法的输入待复核；已有产物保留'})
+    data['basis_review_interface'] = {'scope': 'profile + build_conf',
+        'pending': [f['depotFile'] for f in data.get('files', []) if f.get('basis_review') == '待复核']}
 
 
 def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None, tickets_override=None):
@@ -78,7 +99,7 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
                         raise FlowError(4, 'immutable_input_digest_mismatch')
             confirmations = [e['payload']['shelve_digest'] for e in store.events(key, kinds=['input_confirmed']) if e['payload'].get('package')==package['key']]
             binding = digest(json_bytes({'log': digest(path.read_bytes()), 'lists': (lists or {}).get('digests'),
-                'confirmations': confirmations, 'snapshot_code': digest((Path(__file__).parent / 'snapshot.py').read_bytes())}))
+                'confirmations': confirmations, 'snapshot_code': digest(json_bytes({p.name: digest(p.read_bytes()) for p in Path(__file__).parent.glob('*.py')}))}))
             prior = store.events(key, kinds=['snapshot_completed'])
             for event in reversed(prior):
                 if event['payload'].get('package') != package['key']:
@@ -98,6 +119,14 @@ def create_snapshot(config, reader, name, arch, log_path, *, expected_event=None
                 build_id=reader.build_ref.run_id, lists=lists, input_confirmations=confirmations,
                 log_metadata={**metadata.get('response', {}), 'first_failure_observed_at': metadata.get('first_failure_observed_at'), 'known_sync_cls': metadata.get('known_sync_cls', [])},
                 notice_seen=[e['payload']['todo'].get('basis_version') for e in store.events(key, kinds=['inbox_opened']) if e['payload']['todo']['reason']=='snapshot_notice'])
+            previous = None
+            for old_event in reversed(store.events(kinds=['snapshot_completed'])):
+                if old_event['payload'].get('package') == package['key']:
+                    saved = old_event['payload'].get('artifact')
+                    if saved and digest(config.output(saved['path']).read_bytes()) == saved['sha256']:
+                        previous = load_json(saved['path'])
+                    break
+            review_basis(data, previous)
             data['input_binding'] = binding
             artifact = atomic_write(config.data_root, folder + '/manifest.json', json_bytes(data))
             current = store.append(context, 'snapshot_completed', {'build': key, 'package': package['key'],

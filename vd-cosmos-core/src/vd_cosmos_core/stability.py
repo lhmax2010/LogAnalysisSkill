@@ -1,9 +1,10 @@
 """Continuous content and execution windows, independent of bounded audit history."""
+from .dates import parse_datetime
 from datetime import datetime
 
 
 def seconds(value):
-    return datetime.fromisoformat(value.replace('Z', '+00:00')).timestamp()
+    return parse_datetime(value).timestamp()
 
 
 def effective_state(execution):
@@ -51,9 +52,9 @@ def maturity(record, poll, execution, manual=None):
     candidates = []
     if manual:
         candidates.append(('manual_terminal', manual['confirmed_at'], poll['interval_s'], record['observations']))
-    if execution.get('effective_state') == '已结束' and execution.get('terminal_epoch'):
+    elif execution.get('effective_state') == '已结束' and execution.get('terminal_epoch'):
         candidates.append(('trusted_terminal', execution['terminal_epoch'], poll['interval_s'], record['observations']))
-    if execution.get('effective_state') == '未知' and execution.get('unknown_since'):
+    elif execution.get('effective_state') == '未知' and execution.get('unknown_since'):
         candidates.append(('elapsed_window', execution['unknown_since'], poll['settle_s'], record['unknown_observations']))
     for basis, epoch, required, samples in candidates:
         beginning = max(start, seconds(epoch))

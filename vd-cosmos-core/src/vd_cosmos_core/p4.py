@@ -10,6 +10,8 @@ import subprocess
 import uuid
 from .errors import FlowError
 from .files import digest, json_bytes
+from .build_inputs import validate_root
+from .export import check_content
 
 
 @dataclass
@@ -38,8 +40,9 @@ class P4Adapter:
         self.executable = str(Path(__file__).resolve().parents[2] / "fixtures/p4/fake_p4.py") if fixture else self.p4["executable"]
         self.config_name = self.p4.get('read_config_name') or '.vd-cosmos-noconfig-' + uuid.uuid4().hex
         self.audit = []
+        self.returned_paths = set()
 
-    def plan(self, args):
+    def plan(self, args, *, _listing=False):
         if not args or not isinstance(args, list) or not all(isinstance(x, str) and '\0' not in x for x in args):
             raise FlowError(2, 'invalid_p4_arguments')
         if args[0].startswith('-'):
@@ -53,7 +56,12 @@ class P4Adapter:
         if any(a in {'-p', '-u', '-c', '-i', '-d'} for a in args[1:]):
             raise FlowError(4, 'p4_connection_options_forbidden')
         if any('...' in a for a in args[1:]):
-            raise FlowError(4, 'unsafe_depot_path')
+            valid_listing = (_listing and len(args) == 4 and args[:2] == ['files', '-m']
+                and args[2] == str(self.config.raw['analyzer']['root_list_max_files'])
+                and re.fullmatch(r'//[^*#@]+/\.\.\.@[0-9]+', args[3])
+                and args[3].count('...') == 1)
+            if not valid_listing:
+                raise FlowError(4, 'unsafe_depot_path')
         root = self.config.data_root
         for parent in (root, *root.parents):
             if (parent / self.config_name).exists() or (parent / self.config_name).is_symlink():
@@ -73,10 +81,13 @@ class P4Adapter:
         prefix = ''
         if Path(self.p4['tickets_file']).expanduser() != Path.home() / '.p4tickets':
             prefix = 'P4TICKETS=' + shlex.quote(str(Path(self.p4['tickets_file']).expanduser())) + ' '
-        return {'reason': 'p4_login_required', 'message': '登录后继续', 'command': prefix + shlex.join(command)}
+        rendered = prefix + shlex.join(command)
+        if not check_content(rendered.encode(), self.config)['allowed']:
+            raise FlowError(4, 'p4_login_command_credential_blocked')
+        return {'reason': 'p4_login_required', 'message': '登录后继续', 'command': rendered}
 
-    def execute(self, args):
-        plan = self.plan(args)
+    def execute(self, args, *, _listing=False):
+        plan = self.plan(args, _listing=_listing)
         for path in (self.config.data_root, self.config.output('tmp/p4'), self.config.output('tmp/p4-cache')):
             path.mkdir(parents=True, exist_ok=True)
         try:
@@ -119,10 +130,14 @@ class P4Adapter:
             raise FlowError(3, 'p4_not_logged_in', todo=self.login_todo())
         if category not in {'ok', 'file_missing', 'history_missing'}:
             raise FlowError(5, 'p4_' + category)
+        for record in records:
+            for name, value in record.items():
+                if re.fullmatch(r'(?:depotFile|movedFile)[0-9]*', name) and isinstance(value, str):
+                    self.returned_paths.add(value)
         return {'category': category, 'records': records}
 
-    def stat(self, args, required):
-        result = self.execute(args)
+    def stat(self, args, required, *, _listing=False):
+        result = self.execute(args, _listing=_listing)
         if result['category'] != 'ok':
             return result
         records = [r for r in result['records'] if r['code'] == 'stat']
@@ -147,29 +162,33 @@ class P4Adapter:
             raise FlowError(3, 'p4_ticket_expiring', todo=self.login_todo())
         return remaining
 
-    def files(self, path, revision):
-        return self.stat(['files', depot_path(path) + revision], ['depotFile', 'rev', 'type', 'action'])
+    def files(self, path, revision, *, encoded=False):
+        return self.stat(['files', self.path_argument(path, encoded=encoded) + revision], ['depotFile', 'rev', 'type', 'action'])
 
     def list_files(self, root, revision):
-        # Generated single-level wildcards are separate from literal filenames.
-        # No recursive ellipsis or caller-supplied wildcard is passed to P4.
-        pending, found = [root.rstrip('/')], []
-        while pending:
-            directory = pending.pop()
-            query = depot_path(directory) + '/*' + revision
-            result = self.stat(['files', query], ['depotFile', 'rev', 'type', 'action'])
-            if result['category'] == 'ok':
-                found.extend(r for r in result['records'] if r['action'] not in {'delete', 'move/delete'})
-            children = self.execute(['dirs', query])
-            if children['category'] == 'ok':
-                for record in children['records']:
-                    child = record.get('dir')
-                    if not child or not child.startswith(directory + '/') or '/' in child[len(directory)+1:]:
-                        raise FlowError(5, 'p4_incomplete_output')
-                    pending.append(child)
-            if len(found) + len(pending) > 100000:
-                raise FlowError(5, 'p4_listing_limit')
-        return found
+        validate_root(root, self.p4['min_root_depth'])
+        if not re.fullmatch(r'@[0-9]+', revision):
+            raise FlowError(4, 'invalid_listing_revision')
+        limit = self.config.raw['analyzer']['root_list_max_files']
+        query = depot_path(root) + '/...' + revision
+        result = self.stat(['files', '-m', str(limit), query],
+                           ['depotFile', 'rev', 'type', 'action'], _listing=True)
+        if result['category'] != 'ok':
+            return []
+        records = result['records']
+        if len(records) >= limit:
+            raise FlowError(5, 'p4_listing_limit')
+        if any(not r['depotFile'].startswith(depot_path(root) + '/') for r in records):
+            raise FlowError(5, 'p4_listing_outside_package')
+        return [r for r in records if r['action'] not in {'delete', 'move/delete'}]
+
+    def path_argument(self, path, *, encoded=False):
+        # Origin is explicit: a literal external name may itself contain %40.
+        if encoded:
+            if path not in self.returned_paths:
+                raise FlowError(4, 'unrecognized_p4_returned_path')
+            return path
+        return depot_path(path)
 
     def describe(self, scl):
         if not str(scl).isdigit():
@@ -197,8 +216,8 @@ class P4Adapter:
     def change(self, scl):
         return self.stat(['change', '-o', str(scl)], ['Change', 'shelveUpdate'])
 
-    def file_size(self, path, revision):
-        result = self.stat(['fstat', '-Ol', depot_path(path) + revision], ['depotFile', 'fileSize'])
+    def file_size(self, path, revision, *, encoded=False):
+        result = self.stat(['fstat', '-Ol', self.path_argument(path, encoded=encoded) + revision], ['depotFile', 'fileSize'])
         if result['category'] != 'ok':
             return None
         try:
@@ -209,8 +228,8 @@ class P4Adapter:
         except (ValueError, TypeError):
             raise FlowError(5, 'p4_incomplete_output') from None
 
-    def print_file(self, path, revision, *, keywords=False):
-        result = self.execute(['print', *([] if keywords else ['-k']), '-q', depot_path(path) + revision])
+    def print_file(self, path, revision, *, keywords=False, encoded=False):
+        result = self.execute(['print', *([] if keywords else ['-k']), '-q', self.path_argument(path, encoded=encoded) + revision])
         if result['category'] != 'ok':
             raise FlowError(5, 'p4_' + result['category'])
         pieces = [r.get('data') for r in result['records'] if r['code'] in {'text', 'binary'}]

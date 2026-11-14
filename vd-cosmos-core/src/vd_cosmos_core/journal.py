@@ -1,4 +1,5 @@
 """Deduplicated, versioned read-side inbox and live monitoring."""
+from .dates import parse_datetime
 from datetime import datetime, timezone
 import json
 import os
@@ -92,15 +93,17 @@ def monitor_todos(config, store, build_key, data, *, step='observe'):
             from datetime import timedelta
             for report in published:
                 try:
-                    start = datetime.fromisoformat(report['headers']['start_time'])
+                    start = parse_datetime(report['headers']['start_time'])
                     if start.tzinfo is None:
                         start = start.replace(tzinfo=timezone(timedelta(hours=9)))
                     if timestamp(data['observed_at']) - start.timestamp() > config.raw['poll'].get('expected_hours', 24) * 5400:
                         todos.append({'reason': 'running_but_stable', 'basis_version': fingerprint(data),
                                       'message': '可信来源仍为运行/排队；核实后可 confirm-terminal --override-running 或放弃本轮'})
                         break
-                except (KeyError, ValueError):
-                    pass
+                except (KeyError, ValueError, TypeError):
+                    todos.append({'reason': 'report_start_time_invalid',
+                                  'basis_version': digest(json_bytes(report.get('headers', {}))),
+                                  'message': '报告开始时间无法解析，无法判定运行停滞'})
     stats = os.statvfs(config.data_root)
     available = stats.f_bavail * stats.f_frsize
     if available < config.raw.get('budget', {}).get('disk_warning_bytes', 0):

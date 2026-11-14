@@ -11,6 +11,9 @@ import signal
 import sys
 from urllib.parse import unquote
 
+def escape_path(path):
+    return ''.join({'@': '%40', '#': '%23', '%': '%25', '*': '%2A'}.get(c, c) for c in path)
+
 config = json.loads(Path('fake-p4.json').read_text())
 args = sys.argv[1:]
 if args[:1] != ['-G'] or args[1:2] != ['-p'] or args[3:4] != ['-u'] or args[5:6] != ['-c']:
@@ -52,9 +55,9 @@ elif command[0] in {'describe', 'change'}:
         if shelf.get('status', 'pending') == 'pending' and shelf.get('shelved', True): record['shelved'] = ''
         for i, item in enumerate(shelf.get('files', [])):
             raw = base64.b64decode(item.get('content', ''))
-            fields = {'depotFile': item['path'], 'action': item.get('action', 'edit'), 'type': item.get('type', 'text'),
+            fields = {'depotFile': escape_path(item['path']), 'action': item.get('action', 'edit'), 'type': item.get('type', 'text'),
                       'rev': str(item.get('rev', 1)), 'digest': hashlib.md5(raw).hexdigest().upper(), 'fileSize': str(len(raw))}
-            if item.get('movedFile'): fields['movedFile'] = item['movedFile']
+            if item.get('movedFile'): fields['movedFile'] = escape_path(item['movedFile'])
             record.update({k+str(i): v for k, v in fields.items()})
         emit(record)
 else:
@@ -70,11 +73,13 @@ else:
     elif command[0] in {'files', 'fstat'}:
         selected = []
         for p, versions in files.items():
-            if (p == path or (path.endswith('/*') and p.startswith(path[:-1]) and '/' not in p[len(path)-1:])) and revision in versions:
+            if (p == path or (path.endswith('/...') and p.startswith(path[:-3])) or (path.endswith('/*') and p.startswith(path[:-1]) and '/' not in p[len(path)-1:])) and revision in versions:
                 selected.append((p, versions[revision]))
         if not selected: error(554768759, 2, 0)
+        if '-m' in command:
+            selected = selected[:int(command[command.index('-m')+1])]
         for p, item in selected:
-            emit({'code': 'stat', 'depotFile': p, 'rev': str(item.get('rev', 1)), 'type': item.get('type', 'text'),
+            emit({'code': 'stat', 'depotFile': escape_path(p), 'rev': str(item.get('rev', 1)), 'type': item.get('type', 'text'),
                   'action': item.get('action', 'edit'), 'fileSize': str(len(base64.b64decode(item.get('content',''))))})
     elif command[0] == 'print':
         item = files.get(path, {}).get(revision)
