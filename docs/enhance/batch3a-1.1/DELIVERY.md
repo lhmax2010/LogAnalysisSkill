@@ -376,3 +376,42 @@ B3a11-Q09 — assumed: 未登记 checkbox/KS 编码的演练可以回读并输�
 其余负向检查：test_password_autofill_flag_and_rehearsal_never_arms；test_fixed_script_registered_digest_and_exception_redaction；test_browser_settings_env_and_static_negatives；test_second_process_profile_lock_never_starts_session。两进程锁测试用父进程持锁期间同步等待子进程结果，不依赖竞争时间窗。固定脚本摘要改为代码中显式登记常量，源码改动不再自动更新登记。提交结果仅接收同一 Fetch requestId 的响应，避免其它回调覆盖结果。
 
 完整输出与 SHA256：evidence-b2c/python310.txt、python312.txt、validation.json。
+
+## Checkpoint B2d — 构建机离线验收与交付边界
+
+文件：vd-cosmos-core/scripts/verify_b3a11b2_real.sh / .py，vd-cosmos-core/src/vd_cosmos_core/verify_b3a11b2.py。
+
+- 完整 HEAD 必须等于审定值；本线源码有未提交改动即拒绝。显示解释器与 HEAD。
+- 只创建配置 data_root 下新的 verification/b3a11b2-* 目录；执行 --help contract、静态检查、完整离线套件。VD_REQUIRE_HEADLESS=1；Chrome/Playwright 缺失导致 FAIL，不会跳过后给 PASS。
+- 不调用在线 doctor、lookup、真实 P4、once 或 live rehearse。验收输出先过运行时凭据检查再落盘。
+- test_batch3a11b2_verifier：test_wrong_head_never_reads_config_or_creates_output、test_requires_real_browser_tests_in_fresh_root_no_live_calls、test_missing_browser_suite_fails_and_preserves_safe_reason、test_config_auth_or_static_cannot_whitelist_business_endpoints。
+- 复核 recon20 后将 18 个控件名与 6 个已观察文本回调显式加入种子；均保持未确认。KS 控件必须恰为 recorder/choices/selection 三件；浏览器启动器兼容已由 Playwright 建立进程组的情形，监视子进程不持有浏览器通信管道。
+
+构建机准确命令（现有 run/venv 已在 PATH；EXPECTED_COMMIT 使用本次最终回报的完整 hash，VD_CONFIG 与 VD_CHROME 指向构建机现有文件）：
+
+```bash
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" --chrome "$VD_CHROME"
+```
+
+稍后 FatTank 亲自做的真实演练，不属于本次实现者执行范围：
+
+```bash
+nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --backend real --base-from-hub 37376237 --bm-build 19206687 --reason "FatTank B2 live rehearsal" --rehearse
+```
+
+前提与恢复命令见 FATTANK-B2-MANUAL.md；没有写进任何 SKILL.md。实际配置需登记认证/资源路径与完整表单值，否则保守拒绝。真实 config.json 只读加载通过、原字节不变：evidence-b2d/config-load-check.json。
+
+**未验证/保守拒绝项**：本机未执行真实浏览器请求计数（8 SKIP）；未执行构建机验收或 live rehearsal；跨源 MFA iframe、非 GET/未识别的 Run、未知表单目标节点、未知错误面板、未登记编码均拒绝或 uncertain；lookup --via-hub 仍未开放。正式提交映射仍为 proposed, awaiting FatTank confirmation，默认退出 4。没有把这些限制描述为已完成生产验证。Q04–Q09 均为周末 assumed 决策，待设计方复核。
+
+全量测试文件与 SHA256 见本节后表及各 evidence-b2*/validation.json；每份输出第一行均为实际解释器版本。B2a/B2b/B2c 已分阶段普通推送，B2d 在同一提交更新本状态说明。
+
+| 阶段 | Python | 总数 / 结果 | 完整输出 | SHA256 |
+|---|---|---|---|---|
+| b2a | Python 3.10.12 | 256 / 256 PASS | `evidence-b2a/python310.txt` | `d0e2e34a88b26c7e446b9c1484cd198796af55cc4ffc7def10b1faf69b21ee70` |
+| b2a | Python 3.12.3 | 256 / 256 PASS | `evidence-b2a/python312.txt` | `d2d3168ff206fe313d0f05d69afa8f1fb8967062e84a227b90d4e7efb95c0507` |
+| b2b | Python 3.10.12 | 271 / 271 PASS | `evidence-b2b/python310.txt` | `eb2fcd1c66993520922bd082b2fc29b5a750d2c1b0e0ae3b736b0b6c86dcb18f` |
+| b2b | Python 3.12.3 | 271 / 271 PASS | `evidence-b2b/python312.txt` | `65d4d2f73eebb7994b74a6f87e6210e915ee53b5319732ce28b78b4cc48ebdfb` |
+| b2c | Python 3.10.12 | 282 / 274 PASS + 8 SKIP | `evidence-b2c/python310.txt` | `db77d150b62ebb42fbb6308969a98188d7934aa1180399497ad7bf7777bbbe64` |
+| b2c | Python 3.12.3 | 282 / 274 PASS + 8 SKIP | `evidence-b2c/python312.txt` | `55d84e6a2498461665868da7b1894c428c76856ef3e48c47840b95475e0801c1` |
+| b2d | Python 3.10.12 | 286 / 278 PASS + 8 SKIP | `evidence-b2d/python310.txt` | `2626a856f7c84a3ba83a6e2b816ee14c706124c99a5b6f84c0f5a489a15da601` |
+| b2d | Python 3.12.3 | 286 / 278 PASS + 8 SKIP | `evidence-b2d/python312.txt` | `6a1ab9ced0c3b5fefa57462564545f02d73f6103596ef79f7e95554395fb2ff1` |

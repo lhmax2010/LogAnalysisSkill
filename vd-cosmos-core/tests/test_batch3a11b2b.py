@@ -21,7 +21,7 @@ class FakeDriver:
         self.case=case;self.status=status;self.closed=False;self.clicks=0;self.bad_last=False;self.reads=0
         self.snap={'target':case.config.raw['submit']['target_config'],'hidden':'id1_hf_0','controls':[]}
         for seed in SEED:
-            c=dict(seed,name='editor:content:basicProperties:'+str(seed['index'])+':property:editor:editor:input',value=case.form()[seed['label']])
+            c=dict(seed,value=case.form()[seed['label']])
             self.snap['controls'].append(c)
     def open(self,expose,confirm):expose()
     def snapshot(self):

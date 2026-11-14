@@ -10,7 +10,8 @@ from . import submit_model as model
 
 KINDS = ['select','text','text','text','select','textarea','select','textarea','ks',
          'textarea','textarea','textarea','textarea','checkbox','checkbox','select','textarea','text']
-SEED = [{'index':i,'label':name,'kind':KINDS[i]} for i,name in enumerate(PROPERTIES)]
+SEED = [{'index':i,'label':name,'kind':KINDS[i], 'name':'editor:content:basicProperties:'+str(i)+':property:editor:editor:'+('palette:recorder' if i==8 else 'checkbox' if i in (13,14) else 'wrapper:select' if KINDS[i]=='select' else 'wrapper:input')} for i,name in enumerate(PROPERTIES)]
+CALLBACK_SEED=[{'method':'POST','path':'/wicket/page','listener':'IBehaviorListener','behavior':'0','component':'form-editor-content-basicProperties-'+str(i)+'-property-editor-editor-wrapper-input'} for i in (1,2,3,5,7,17)]
 
 def normalized(value):
     return '\n'.join(line.rstrip() for line in value.replace('\r\n','\n').replace('\r','\n').split('\n')).rstrip()

@@ -16,7 +16,7 @@ SCRIPT = r"""({operation,index,value,target}) => {
  const kinds=['select','text','text','text','select','textarea','select','textarea','ks','textarea','textarea','textarea','textarea','checkbox','checkbox','select','textarea','text'];
  const controls=groups.map((g,i)=>{
   const e=i===8?g.find(x=>x.type==='hidden'):g[0];
-  if(!e || (i!==8 && g.length!==1))throw Error('control');
+  if(!e || (i!==8 && g.length!==1) || (i===8 && (g.length!==3 || !g.some(x=>x.name.endsWith(':palette:choices')) || !g.some(x=>x.name.endsWith(':palette:selection')))))throw Error('control');
   if(i!==8 && (e.tagName==='SELECT'?'select':e.tagName==='TEXTAREA'?'textarea':e.type)!==kinds[i])throw Error('type');
   const row=e.closest('tr');const text=row?row.innerText:'';
   if(!text.includes(labels[i]))throw Error('label');
@@ -42,7 +42,7 @@ SCRIPT = r"""({operation,index,value,target}) => {
  }
  throw Error('operation');
 }"""
-DIGEST='12ef12005658d4be7c66fbc8d3441a0a3822d8f5de6f71062be35eebd9467025'
+DIGEST='58bd72a1d941e5676932dff9e2c027675a8d69f7fb6ae99dbc6b8b7ec191382e'
 
 def arguments(operation,*,index=None,value=None,target=None,**unexpected):
     if unexpected or operation not in {'snapshot','serialize','fill'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')

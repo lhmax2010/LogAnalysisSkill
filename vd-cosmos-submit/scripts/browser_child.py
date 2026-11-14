@@ -14,10 +14,12 @@ def identity(pid):
 def main():
     owner=int(os.environ.pop('VD_BROWSER_OWNER'));start=os.environ.pop('VD_BROWSER_START');exe=os.environ.pop('VD_BROWSER_EXECUTABLE')
     if not Path(exe).is_file() or identity(owner)!=start:return 6
-    os.setsid();group=os.getpid()
+    if os.getpgrp()!=os.getpid():os.setsid()
+    group=os.getpid()
     libc=ctypes.CDLL(None);libc.prctl(1,signal.SIGTERM)
     child=os.fork()
     if child==0:
+        os.closerange(3,65536)
         while identity(owner)==start and identity(group) is not None:time.sleep(.2)
         try:os.killpg(group,signal.SIGTERM)
         except ProcessLookupError:pass

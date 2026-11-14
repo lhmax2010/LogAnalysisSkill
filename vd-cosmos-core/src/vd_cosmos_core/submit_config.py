@@ -65,10 +65,25 @@ def configure(raw):
     submit.setdefault('property_map_confirmed', False)
     submit.setdefault('copy_from_source_vars', ['PACKAGE_LIST','BASE_REPOS','BUILD_CONF','PRODUCT_REPOS','ARCH','BUILD_TYPE','KS_LIST','EXTRA_BUILD_PARAMETER'])
     raw.setdefault('analyzer', {}).setdefault('source_compare_vars', ['BASE_REPOS','PRODUCT_REPOS','BUILD_CONF'])
-    from .submit_browser_contract import SEED
-    for key,value in [('browser_executable','/usr/bin/google-chrome'),('login_wait_s',600),('auth_paths',[]),('static_paths',[]),('gate_patterns',[]),('gate_patterns_confirmed',False),('form_fingerprint',{'confirmed':False,'controls':SEED}),('submit_pattern',{'method':'POST','path':'/wicket/page','listener':'IFormSubmitListener','behavior':None,'component':'form'})]:
+    from .submit_browser_contract import SEED, CALLBACK_SEED
+    for key,value in [('browser_executable','/usr/bin/google-chrome'),('login_wait_s',600),('auth_paths',[]),('static_paths',[]),('gate_patterns',CALLBACK_SEED),('gate_patterns_confirmed',False),('form_fingerprint',{'confirmed':False,'controls':SEED}),('submit_pattern',{'method':'POST','path':'/wicket/page','listener':'IFormSubmitListener','behavior':None,'component':'form'})]:
         submit.setdefault(key,value)
     if type(submit['login_wait_s']) not in (int,float) or not 0<submit['login_wait_s']<float('inf'):raise FlowError(2,'invalid_login_wait')
+    for key in ('property_map_confirmed','gate_patterns_confirmed'):
+        if type(submit[key]) is not bool:raise FlowError(2,'invalid_browser_confirmation')
+    if not isinstance(submit['auth_paths'],list) or not isinstance(submit['static_paths'],list):raise FlowError(2,'invalid_browser_paths')
+    for entry in submit['auth_paths']:
+        if not isinstance(entry,dict) or set(entry)!={'host','path','method'} or not all(isinstance(v,str) for v in entry.values()):raise FlowError(2,'invalid_auth_path')
+        u=urlsplit('https://'+entry['host'])
+        if not u.hostname or u.username or u.password or u.path or u.query or u.fragment or entry['method'] not in {'GET','POST'}:raise FlowError(2,'invalid_auth_path')
+        path=entry['path']
+        if not path.startswith('/') or any(x in path for x in ('?','#','%','..')) or path.startswith(('/wicket','/overview','/dashboard','/build')):raise FlowError(2,'auth_business_path_forbidden')
+    for path in submit['static_paths']:
+        if not isinstance(path,str) or not path.startswith('/') or any(x in path for x in ('?','#','*','%','..')) or path.startswith(('/wicket','/overview','/dashboard','/build')):raise FlowError(2,'invalid_static_path')
+    if not isinstance(submit['gate_patterns'],list):raise FlowError(2,'invalid_gate_patterns')
+    for entry in submit['gate_patterns']:
+        if not isinstance(entry,dict) or set(entry)!={'method','path','listener','behavior','component'} or entry['method']!='POST' or entry['path']!='/wicket/page' or entry['listener']!='IBehaviorListener' or not isinstance(entry['behavior'],str) or not entry['behavior'].isdecimal() or not re.fullmatch(r'form-editor-content-basicProperties-(?:[0-9]|1[0-7])-property-editor-editor-[A-Za-z0-9_-]+',entry['component']):raise FlowError(2,'invalid_callback_pattern')
+    if not isinstance(submit['form_fingerprint'],dict) or len(submit['form_fingerprint'].get('controls',[]))!=18:raise FlowError(2,'invalid_form_fingerprint')
     props = submit.setdefault('property_map', {})
     if set(props) - set(PROPERTIES):
         raise FlowError(2, 'unknown_submit_property')
