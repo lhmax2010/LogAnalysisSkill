@@ -393,6 +393,114 @@
       "BUILD_TYPE",
       "KS_LIST",
       "EXTRA_BUILD_PARAMETER"
-    ]
+    ],
+    "browser_executable": "/usr/bin/google-chrome",
+    "login_wait_s": 600,
+    "auth_paths": [],
+    "static_paths": [],
+    "gate_patterns": [],
+    "gate_patterns_confirmed": false,
+    "form_fingerprint": {
+      "confirmed": false,
+      "controls": [
+        {
+          "index": 0,
+          "label": "BUILD_TYPE",
+          "kind": "select"
+        },
+        {
+          "index": 1,
+          "label": "BASE_REPOS",
+          "kind": "text"
+        },
+        {
+          "index": 2,
+          "label": "BUILD_CONF",
+          "kind": "text"
+        },
+        {
+          "index": 3,
+          "label": "PRODUCT_REPOS",
+          "kind": "text"
+        },
+        {
+          "index": 4,
+          "label": "ARCH",
+          "kind": "select"
+        },
+        {
+          "index": 5,
+          "label": "PACKAGE_LIST",
+          "kind": "textarea"
+        },
+        {
+          "index": 6,
+          "label": "GITURL",
+          "kind": "select"
+        },
+        {
+          "index": 7,
+          "label": "SHELVE_LIST",
+          "kind": "textarea"
+        },
+        {
+          "index": 8,
+          "label": "KS_LIST",
+          "kind": "ks"
+        },
+        {
+          "index": 9,
+          "label": "Product Version (ks)",
+          "kind": "textarea"
+        },
+        {
+          "index": 10,
+          "label": "rpm Add & Delete",
+          "kind": "textarea"
+        },
+        {
+          "index": 11,
+          "label": "PACKAGE_LIST (DELETE)",
+          "kind": "textarea"
+        },
+        {
+          "index": 12,
+          "label": "PACKAGE_LIST (x86 arch)",
+          "kind": "textarea"
+        },
+        {
+          "index": 13,
+          "label": "Ignore package build failure?",
+          "kind": "checkbox"
+        },
+        {
+          "index": 14,
+          "label": "Keep 'Full' build type",
+          "kind": "checkbox"
+        },
+        {
+          "index": 15,
+          "label": "Image Skip?",
+          "kind": "select"
+        },
+        {
+          "index": 16,
+          "label": "EMAIL_CC",
+          "kind": "textarea"
+        },
+        {
+          "index": 17,
+          "label": "EXTRA_BUILD_PARAMETER",
+          "kind": "text"
+        }
+      ]
+    },
+    "submit_pattern": {
+      "method": "POST",
+      "path": "/wicket/page",
+      "listener": "IFormSubmitListener",
+      "behavior": null,
+      "component": "form"
+    }
   }
 }

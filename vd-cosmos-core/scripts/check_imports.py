@@ -20,7 +20,7 @@ for directory in ("vd-cosmos-core", "vd-cosmos-watch", "vd-cosmos-fetch", "vd-co
                 elif isinstance(node, ast.ImportFrom) and not node.level:
                     names = [node.module or ""]
                 for name in names:
-                    if name.split(".")[0] not in allowed:
+                    if name.split(".")[0] not in allowed and not (path.relative_to(repo).as_posix()=="vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py" and name=="playwright.sync_api"):
                         failures.append(f"{path.relative_to(repo)}:{node.lineno}: forbidden import {name}")
                 if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in {"__import__", "eval", "exec"}:
                     failures.append(f"{path.relative_to(repo)}:{node.lineno}: dynamic loading forbidden")

@@ -7,6 +7,8 @@ import time
 import sys
 from zoneinfo import ZoneInfo
 
+from .playwright_driver import Driver
+from .fixture_driver import FixtureDriver
 from vd_cosmos_core.cli import Parser
 from vd_cosmos_core.config import load_config
 from vd_cosmos_core.commands import Category
@@ -26,7 +28,7 @@ def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     try:
         if '--help' in argv:
-            result = {'commands': COMMANDS, 'exit_code': 0, 'checkpoint': 'B2a preparation; browser driver pending'}
+            result = {'commands': COMMANDS, 'exit_code': 0, 'checkpoint': 'B2 guarded single operation'}
         else:
             parser = Parser(add_help=False)
             parser.add_argument('command', choices=COMMANDS)
@@ -35,7 +37,7 @@ def main(argv=None):
             parser.add_argument('--fixture')
             for name in ('hub-id', 'build-id', 'request', 'session', 'reason', 'checked-at', 'since', 'base-list', 'base-from-hub', 'bm-build', 'shelve-list', 'resubmit-of'):
                 parser.add_argument('--' + name)
-            for name in ('via-hub', 'online', 'read-only', 'manual-submit', 'manual-rerun', 'not-submitted', 'no-manual-submit', 'rehearse', 'holder-gone'):
+            for name in ('via-hub', 'online', 'read-only', 'manual-submit', 'manual-rerun', 'not-submitted', 'no-manual-submit', 'no-manual-action', 'rehearse', 'holder-gone'):
                 parser.add_argument('--' + name, action='store_true')
             parser.add_argument('--max-scans', type=int)
             args = parser.parse_args(argv)
@@ -55,7 +57,7 @@ def main(argv=None):
             reader = None
             try:
                 if args.command == 'once':
-                    result=submit_once.run(config,args,context,factory,lambda value:submit_terminal.ask(json.dumps(value,ensure_ascii=False)+'\n确认：'))
+                    result=submit_once.run(config,args,context,factory,lambda value:submit_terminal.ask(json.dumps(value,ensure_ascii=False)+'\n确认：'),driver_factory=(lambda c,s:FixtureDriver(c,s,args.fixture)) if args.backend=='fixture' else Driver)
                 elif args.command == 'recover':
                     if not args.session or not args.reason:raise FlowError(2,'recovery_arguments_required')
                     with submit_sessions.target_lock(config):
@@ -85,7 +87,7 @@ def main(argv=None):
                 elif args.command == 'abandon':
                     result = submit_claim.abandon(config, args.request, context, args.reason or '')
                 elif args.command == 'resolve':
-                    flags = [mode for mode in ('manual-submit', 'manual-rerun', 'not-submitted', 'no-manual-submit') if getattr(args, mode.replace('-', '_'))]
+                    flags = [mode for mode in ('manual-submit', 'manual-rerun', 'not-submitted', 'no-manual-submit', 'no-manual-action') if getattr(args, mode.replace('-', '_'))]
                     if len(flags) > 1: raise FlowError(2, 'resolve_modes_exclusive')
                     mode = flags[0] if flags else 'build-id'
                     words = []

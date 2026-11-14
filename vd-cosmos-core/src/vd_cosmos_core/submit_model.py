@@ -165,6 +165,15 @@ def resolve(config, context, *, request_id=None, session=None, hub_id=None, mode
     if not reason.strip(): raise FlowError(2, 'reason_required')
     ensure_safe(config, {'reason': reason, 'checked_at': checked_at})
     now = time.time() if now is None else now
+    if mode == 'no-manual-action':
+        if not session or not checked_at:raise FlowError(2,'session_and_checked_at_required')
+        with OperationLock(config.data_root,'submit-target',digest(json_bytes(target(config)))):
+            with EventStore(config.data_root) as store:
+                events=store.events()
+                if not any(e['operation_id']==session and e['kind'] in {'manual_action_pending','hub_page_exposed'} and e['payload'].get('target')==target(config) for e in events):raise FlowError(6,'session_not_pending')
+                if any(e['operation_id']==session and e['kind']=='submit_rerun_resolved' for e in events):raise FlowError(6,'session_already_resolved')
+                store.append(context,'submit_rerun_resolved',{'target':target(config),'hub_id':None,'at':now,'reason':reason,'checked_at':checked_at,'pending':False},store.head(),operation_id=session)
+        return {'recorded':True,'read_queues_changed':False}
     if mode == 'manual-rerun':
         if not session or not hub_id or not str(hub_id).isdecimal(): raise FlowError(2, 'rerun_identity_required')
         with OperationLock(config.data_root, 'submit-target', digest(json_bytes(target(config)))):

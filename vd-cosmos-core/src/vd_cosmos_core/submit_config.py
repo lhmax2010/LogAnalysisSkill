@@ -65,6 +65,10 @@ def configure(raw):
     submit.setdefault('property_map_confirmed', False)
     submit.setdefault('copy_from_source_vars', ['PACKAGE_LIST','BASE_REPOS','BUILD_CONF','PRODUCT_REPOS','ARCH','BUILD_TYPE','KS_LIST','EXTRA_BUILD_PARAMETER'])
     raw.setdefault('analyzer', {}).setdefault('source_compare_vars', ['BASE_REPOS','PRODUCT_REPOS','BUILD_CONF'])
+    from .submit_browser_contract import SEED
+    for key,value in [('browser_executable','/usr/bin/google-chrome'),('login_wait_s',600),('auth_paths',[]),('static_paths',[]),('gate_patterns',[]),('gate_patterns_confirmed',False),('form_fingerprint',{'confirmed':False,'controls':SEED}),('submit_pattern',{'method':'POST','path':'/wicket/page','listener':'IFormSubmitListener','behavior':None,'component':'form'})]:
+        submit.setdefault(key,value)
+    if type(submit['login_wait_s']) not in (int,float) or not 0<submit['login_wait_s']<float('inf'):raise FlowError(2,'invalid_login_wait')
     props = submit.setdefault('property_map', {})
     if set(props) - set(PROPERTIES):
         raise FlowError(2, 'unknown_submit_property')

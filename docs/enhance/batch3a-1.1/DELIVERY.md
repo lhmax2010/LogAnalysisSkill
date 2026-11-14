@@ -347,3 +347,22 @@ B3a11-Q04 — assumed: 配置未显式给全 18 项表单值时拒绝准备，�
 B3a11-Q05 — assumed: 来源认定每次都重新回显并确认，暂不复用旧认定；这是比允许复用更保守的选择。来源读取仅取显式变量白名单和报告头，禁止把来源构建送入轮次/分析队列。
 
 测试证据：evidence-b2a/python310.txt、python312.txt；完整摘要见 evidence-b2a/validation.json。后续 B2b 接入浏览器，目前准备完成后明确返回 browser_driver_unavailable。
+
+## Checkpoint B2b — 窄浏览器适配器与单次协议
+
+| HLD | 文件 | 测试 |
+|---|---|---|
+| §8.8 3/3a/4/5 | submit_gate.py、submit_browser_contract.py、playwright_driver.py、browser_scripts.py | GateTests 全部；test_form_extra_control_wrong_target_and_sensitive_form_rejected；test_browser_settings_env_and_static_negatives |
+| §8.8 6/7 | submit_flow.py、submit_model.py | test_intent_rechecks_version_session_duplicate_and_foreign_exposure；test_result_crash_is_uncertain_no_second_click；test_accepted_records_mapping_task_and_final_readback_blocks_change |
+| 演练/恢复 | submit_flow.py、fixture_driver.py、browser_child.py | test_rehearsal_never_clicks_and_closes_profile；test_confirmation_refusal_and_last_readback_change_never_click；test_manual_action_resolution_preserves_history |
+
+Playwright 只允许在 submit 的单一适配器中延迟导入，核心保持标准库。浏览器使用配置指定的现有可执行文件，经父进程死亡监视启动器运行；不安装浏览器。profile 0700、禁用密码保存、清除调试环境、禁用 service worker / WebSocket / 弹窗，关闭确认后才清理本次 profile。外部异常只返回固定码。固定脚本 SHA256 在 browser_scripts.DIGEST；不接受选择器或脚本文本。Fetch 请求与响应逐跳暂停；普通 route 仅作弹窗/子框架第二道门，不能替代 Fetch。提交响应禁止跳转，accepted 落库后关窗。
+
+B3a11-Q06 — assumed: §8.8 的逐跳网络暂停优先于 §8.6 一般 CDP 禁令，仅允许适配器通过 Playwright 管道调用固定 Fetch、主框架识别和窗口状态方法；无远程调试端口、无任意 CDP/Runtime 方法。静态检查固定允许集合。跨源 MFA 子框架尚无可证明的独立逐跳拦截，全部拒绝；需要这种认证的站点当前不能完成登录，不能以放宽闸门绕过。
+B3a11-Q07 — assumed: 本机现有 Chrome 在 /opt/google/chrome/chrome，但两套开发解释器均缺 Playwright；不联网安装。真实浏览器测试保留并明确跳过，构建机 B2 验收强制执行且缺依赖即失败。这不构成真实浏览器验收已通过。
+B3a11-Q08 — assumed: 认证 host/path/method 与静态资源名单默认空，不猜实际链路；Run 只允许录制后确认的 GET Wicket listener 和一次数字页面跳转，无法识别的 Run 形状拒绝。首次表单目标路径只认固定 breadcrumb/breadcrumbs 节点；实页不匹配时拒绝、不得泛读页面。首次演练输出候选指纹/安全模式，由 FatTank 确认后人工登记配置，工具不自动修改配置。
+B3a11-Q09 — assumed: 未登记 checkbox/KS 编码的演练可以回读并输出离线序列化的字段长度/摘要，但 verified=false；正式提交必须确认映射、模式、指纹及所有编码。未知的 200 错误页保守记 uncertain，尚无已确认反馈面板规则，不猜 rejected。浏览器网络层自身可能重发的限制仍存在，闸门只保证一次应用层请求令牌。
+
+当前限制：lookup --via-hub 仍明确拒绝（requires_B2_browser）；没有将匿名查号替换成浏览器路径。固定脚本读取、真实请求计数、Chrome API 兼容性需 B2c/构建机证明，不能用本阶段假驱动结果代替。运行时凭据检查没有读取归档豁免。
+
+完整输出与 SHA256：evidence-b2b/python310.txt、python312.txt、validation.json。

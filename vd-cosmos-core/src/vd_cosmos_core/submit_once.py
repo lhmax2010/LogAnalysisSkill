@@ -14,6 +14,7 @@ def prepare(config, args, context, reader_factory, confirm, *, processes=None, h
         if config.source(args.shelve_list).read_text().strip():raise FlowError(4,'shelve_requires_batch4')
     if not args.rehearse and config.raw['submit'].get('property_map_confirmed') is not True:
         raise FlowError(4,'property_map_unconfirmed',todo={'reason':'property_map_unconfirmed','message':'属性对应表待 FatTank 确认；仅允许 --rehearse'})
+    if not args.rehearse and (not config.raw['submit'].get('gate_patterns_confirmed') or not config.raw['submit'].get('form_fingerprint',{}).get('confirmed')):raise FlowError(4,'browser_contract_unconfirmed')
     sessions.precheck(config,context,processes)
     basis=None
     if args.base_from_hub:
