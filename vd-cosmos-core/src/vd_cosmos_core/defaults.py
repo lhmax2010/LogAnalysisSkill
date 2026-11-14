@@ -16,6 +16,8 @@ CODE0_TABLE = {'2026.1': {
 
 
 def configure(raw):
+    from .submit_config import configure as configure_submit
+    configure_submit(raw)
     cosmos = raw['cosmos']
     source = cosmos.get('status_source')
     if source:

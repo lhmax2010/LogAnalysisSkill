@@ -1,0 +1,38 @@
+{
+  "base": "bf5acb49ee6947faa66de474a5d0af365341a6fc",
+  "checkpoint": "B1",
+  "tests": [
+    {
+      "version": "Python 3.10.12",
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/test-output-python310.txt",
+      "sha256": "4353a6af526515bee43feb54e233eb343d4c2599503dea398c57539f2884fe38",
+      "tests": 216,
+      "seconds": 45.596,
+      "result": "PASS",
+      "import_contracts": 3
+    },
+    {
+      "version": "Python 3.12.3",
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/test-output-python312.txt",
+      "sha256": "f50ad1a724a6b6664a6e41443c838570c63379991ea4226c7ba38b951c5ecb90",
+      "tests": 216,
+      "seconds": 43.701,
+      "result": "PASS",
+      "import_contracts": 3
+    }
+  ],
+  "source_manifest_sha256": "5f7d4e6f0dac069aac8826d18a595583a6f85b0fb5de546d295bcd1689e04b68",
+  "same_source_both_runs": true,
+  "source_changes_after_final_runs": false,
+  "focused_tests": 44,
+  "real_cosmos_access": false,
+  "real_p4_access": false,
+  "browser_opened": false,
+  "build_submitted": false,
+  "B2_implemented": false,
+  "open_design_questions": [],
+  "limitations": [
+    "Build-machine online verification pending",
+    "Final suites use tmpfs; ext4 deadline diagnostic retained"
+  ]
+}

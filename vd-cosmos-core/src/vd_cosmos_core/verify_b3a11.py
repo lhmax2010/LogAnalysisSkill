@@ -18,7 +18,7 @@ from .p4 import P4Adapter
 from . import verify_b2
 
 ROOTS = ['vd-cosmos-core', 'vd-cosmos-watch', 'vd-cosmos-fetch', 'vd-cosmos-workflow',
-         'vd-fix-analyze', 'vd-fix-register']
+         'vd-fix-analyze', 'vd-fix-register', 'vd-cosmos-submit']
 
 
 def safe_bytes(config, data):

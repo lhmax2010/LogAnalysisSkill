@@ -1,0 +1,296 @@
+{
+  "allowed": true,
+  "pattern_count": 8,
+  "patterns_equal_original_runtime_config": true,
+  "inline_fixture_exemptions": true,
+  "files": [
+    {
+      "path": "docs/enhance/batch3a-1.1/DELIVERY.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/FATTANK-B1-MANUAL.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/config-load-check.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/ext4-acceptance-diagnostic.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/pre-registry-fix-python310.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/python-api-audit.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/source-manifest.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/test-environment.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/test-output-python310.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/test-output-python312.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/tmpfs-acceptance-diagnostic.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b1/validation.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/.importlinter",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/README.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/config.sample.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/scripts/check_imports.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/scripts/check_submit_boundary.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/scripts/run_tests.sh",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/scripts/verify_b3a11b1_real.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/scripts/verify_b3a11b1_real.sh",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/bm_pages.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/bm_reader.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/bm_transport.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/commands.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/defaults.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/locks.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/observation.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/state.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_claim.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_config.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_doctor.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_model.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_projection.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_terminal.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_watch.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b3a11.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b3a11b1.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/versions.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/bm_helpers.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b1.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b1_transport.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-submit/README.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-submit/SKILL.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-submit/scripts/run.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-submit/src/vd_cosmos_submit/__init__.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-submit/src/vd_cosmos_submit/cli.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-workflow/src/vd_cosmos_workflow/api.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    }
+  ]
+}

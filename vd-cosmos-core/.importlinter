@@ -6,13 +6,14 @@ root_packages =
     vd_cosmos_fetch
     vd_fix_analyze
     vd_fix_register
+    vd_cosmos_submit
 
 [importlinter:contract:layers]
 name = skills depend on core only
 type = layers
 layers =
     vd_cosmos_workflow
-    vd_cosmos_watch | vd_cosmos_fetch | vd_fix_analyze | vd_fix_register
+    vd_cosmos_watch | vd_cosmos_fetch | vd_fix_analyze | vd_fix_register | vd_cosmos_submit
     vd_cosmos_core
 
 [importlinter:contract:independence]

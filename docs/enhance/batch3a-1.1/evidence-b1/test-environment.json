@@ -1,0 +1,11 @@
+{
+  "temporary_root": "/run/user/1000/vd-cosmos-b1-tests-sux7zgsm",
+  "filesystem": "tmpfs",
+  "source_changed_for_test": false,
+  "timeouts_changed": false,
+  "reason": "ext4 acceptance subprocess exceeded unchanged 20-second deadline; kernel wait observed in journal commits",
+  "diagnostic": "ext4-acceptance-diagnostic.txt",
+  "runner_option": "VD_COSMOS_TEST_TMPDIR",
+  "resource_policy": "nice -n 19; suites sequential",
+  "available_bytes": 3307122688
+}

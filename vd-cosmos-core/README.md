@@ -119,3 +119,13 @@ EXPECTED_COMMIT 必须由设计方审核，不能动态拿当前 HEAD 代填。�
 开发测试：用真实 Python 3.10 / 3.12 分别创建本线 `.devtools/` 下的开发 venv，安装 `import-linter==2.3`，将对应 venv/bin 放在 PATH 首位执行 `bash vd-cosmos-core/scripts/run_tests.sh`。运行时不依赖这些开发包。`VD_COSMOS_TEST_TMPDIR` 可指定测试临时目录，构建机验收器将它设在本次新数据根内，不往源码目录写缓存。
 
 构建机只读验收：`verify_b3a11_real.sh` 先核对经审核的完整提交与 HEAD、六个本线目录干净；然后入口契约、同解释器完整测试、原 A–F、变量页 base 清单和 19091860 的 7 个失败包快照。每次创建 `data_root/verification/b3a11-<随机串>/`，旧数据不复用、不修改。stderr 打印版本、HEAD、汇总表和必要的登录命令；stdout 是单个 JSON 对象。输出过凭据模式检查；未登录只提示、不执行登录。完整操作命令及验收限制见本批 DELIVERY.md。
+
+## Checkpoint B1 defaults and verification
+
+`vd-cosmos-submit` adds browser-free lookup, doctor and persisted request observation. Its runtime remains standard-library-only. `scripts/verify_b3a11b1_real.sh <reviewed-full-commit> --config <existing-config.json>` runs the full offline suite and then anonymous management checks under a fresh child data root. Human commands are documented only in `docs/enhance/batch3a-1.1/FATTANK-B1-MANUAL.md`.
+
+New configuration defaults: management/Hub hosts (`cosmos.bm_host`, `cosmos.hub_host`) use the configured status host / an explicit example placeholder; `bm_config_id=4362`, `bm_display_tz=Asia/Seoul`, `bm_scan_interval_s=0.2`, `bm_history_max_pages=400`, `bm_lookup_detail_max=1000`, `bm_pending_max=200`, `hub_id_slack=3000`. `bm_overview_headers` records the recon15 eleven-column queue table; `hub_link_rule=build-header-label-following-link-v1` selects the fixed header parser. Unknown structures fail closed.
+
+`poll.claim_margin_s=900`, `claim_wait_s=1800`, `lock_wait_s=120`, `watch_interval_s=300`, `rerun_watch_s=7200`, `expected_hours=30`. Existing report polling defaults are unchanged. Clock samples can enlarge the margin and invalidate coverage; they never invent a missing click-time sample or H_pre.
+
+`submit.target_instance`, `target_config`, `target_config_id`, `account`, `form` identify the future request target and all business fields. `hub_id_monotonic_confirmed=false` remains false until the designer registers server behavior. `submit.property_map` contains all 18 HLD properties with control index, variable, encoding, affects_build, comparison, request_text_verified and observed_values. A null variable/encoding means unregistered; `variable="not_listed"` explicitly records an absent variable. Comparisons use `cmp-v1`; request text remains unverified until its shape is confirmed, and enum values not observed during recon remain unverified. No browser field mapping is guessed.

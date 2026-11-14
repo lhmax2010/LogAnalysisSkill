@@ -14,6 +14,7 @@ from vd_cosmos_core.observation import stopped
 from vd_cosmos_core.state import EventStore, append_retry
 from vd_cosmos_core.versions import build_key, evaluation
 from vd_cosmos_core.receipts import logs_valid
+from vd_cosmos_core.submit_projection import apply as apply_binding
 from vd_cosmos_core.stability import seconds
 from vd_cosmos_watch.api import observe
 from vd_cosmos_fetch.api import fetch_logs
@@ -58,6 +59,8 @@ def projection(config, store, key):
             state['todos'].append({'reason': 'artifact_unavailable', 'arch': field,
                                    'basis_version': payload.get('artifact', {}).get('sha256', payload.get('attempt'))})
     state['superseded'] = any(e['payload'].get('previous_build') == key for e in store.events(kinds=['bind']))
+    state['observation'] = apply_binding(config, store, key, state['observation'])
+    state['result_caution'] = (state['observation'] or {}).get('result_caution')
     if not ready(state['observation']) or not logs_valid(config, state['logs'], state['observation']):
         state['phase'] = '构建中'
     return state
@@ -115,9 +118,9 @@ def tick(config, reader_factory, *, expected_event=None, after_intent=None, afte
             after_intent()
         try:
             if step == 'observe':
-                data = observe(reader)
+                data = apply_binding(config, store, key, observe(reader))
             elif step == 'logs':
-                fresh = observe(reader)
+                fresh = apply_binding(config, store, key, observe(reader))
                 if not ready(fresh) or fingerprint(fresh) != fingerprint(previous):
                     step, data = 'observe', fresh
                 else:

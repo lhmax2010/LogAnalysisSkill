@@ -1,0 +1,24 @@
+test_clean_snapshots_repeated_independent_A_to_F_and_unrelated_changes (test_batch21.Acceptance21Tests) ... ERROR
+
+======================================================================
+ERROR: test_clean_snapshots_repeated_independent_A_to_F_and_unrelated_changes (test_batch21.Acceptance21Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/tests/test_batch21.py", line 539, in test_clean_snapshots_repeated_independent_A_to_F_and_unrelated_changes
+    first,a=self.invoke();second,b=self.invoke()
+  File "/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/tests/test_batch21.py", line 528, in invoke
+    process=subprocess.run(self.command(**kwargs),capture_output=True,text=True,timeout=20)
+  File "/home/toolchain/.pyenv/versions/3.10.12/lib/python3.10/subprocess.py", line 505, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+  File "/home/toolchain/.pyenv/versions/3.10.12/lib/python3.10/subprocess.py", line 1154, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+  File "/home/toolchain/.pyenv/versions/3.10.12/lib/python3.10/subprocess.py", line 2022, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/home/toolchain/.pyenv/versions/3.10.12/lib/python3.10/subprocess.py", line 1198, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['bash', '--noprofile', '--norc', '/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/.runtime/tmpheox39y2/repo/vd-cosmos-core/scripts/verify_b2_real.sh', 'c55680b32e826e124760f5d21ebc3ff67535f14a', '--config', '/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/.runtime/tmp56dqeooz/config.json', '--build-id', '19091860', '--saved-dir', '/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/.runtime/tmp56dqeooz/saved', '--rows', '/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/.runtime/tmp56dqeooz/saved/rows.txt', '--links', '/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/.runtime/tmp56dqeooz/saved/links.txt', '--mode', 'fixture', '--fixture-counts', '/home/toolchain/development/LogAnalysisSkill-vdcosmos/vd-cosmos-core/.runtime/tmp56dqeooz/saved/expected-counts.json']' timed out after 20 seconds
+
+----------------------------------------------------------------------
+Ran 1 test in 22.545s
+
+FAILED (errors=1)

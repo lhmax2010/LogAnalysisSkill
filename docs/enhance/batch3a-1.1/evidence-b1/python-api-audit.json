@@ -1,0 +1,76 @@
+{
+  "python_files": 89,
+  "python310_syntax": "PASS",
+  "reviewed_names": [
+    "fromisoformat",
+    "datetime.UTC",
+    "tomllib",
+    "ExceptionGroup",
+    "TaskGroup",
+    "TypeAliasType",
+    "TypeVarTuple",
+    "StrEnum",
+    "add_note",
+    "is_junction",
+    "walk_up=",
+    "case_sensitive=",
+    "is_relative_to",
+    "removeprefix",
+    "removesuffix",
+    "batched",
+    "file_digest",
+    "process_group"
+  ],
+  "occurrences": [
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/bm_pages.py",
+      "line": 101,
+      "names": [
+        "removeprefix"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b1_transport.py",
+      "line": 208,
+      "names": [
+        "is_relative_to"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/dates.py",
+      "line": 15,
+      "names": [
+        "fromisoformat"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/transport.py",
+      "line": 52,
+      "names": [
+        "removeprefix"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "line": 111,
+      "names": [
+        "fromisoformat"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11.py",
+      "line": 297,
+      "names": [
+        "is_relative_to"
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_real_format.py",
+      "line": 68,
+      "names": [
+        "removesuffix"
+      ]
+    }
+  ],
+  "note": "fromisoformat uses the checkpoint A normalizer; zoneinfo is stdlib since 3.9; removeprefix/removesuffix/is_relative_to require 3.9. Actual execution evidence is in both complete suite outputs."
+}

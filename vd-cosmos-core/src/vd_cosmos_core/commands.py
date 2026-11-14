@@ -15,7 +15,7 @@ class Category(str, Enum):
 
 COMMANDS = {
     **{name: Category.OBSERVE for name in (
-        "watch.observe", "fetch.base-list", "fetch.packages", "fetch.inputs", "fetch.logs", "fetch.groups",
+        "submit.lookup", "submit.doctor", "submit.watch", "watch.observe", "fetch.base-list", "fetch.packages", "fetch.inputs", "fetch.logs", "fetch.groups",
         "core.export", "core.prepush", "core.status",
         "workflow.tick", "workflow.loop", "workflow.status", "workflow.inbox")},
     "analyze.snapshot": Category.GENERATE,
@@ -29,13 +29,13 @@ COMMANDS = {
 EVENTS = {
     Category.OBSERVE: {"observation_started", "observation_recorded", "observation_failed",
                        "artifact_recorded", "inbox_opened", "fetch_started", "fetch_completed",
-                       "workflow_intent", "workflow_result"},
+                       "workflow_intent", "workflow_result", "submit_observation", "submit_heartbeat"},
     Category.GENERATE: {"analysis_prepared", "snapshot_started", "snapshot_completed", "snapshot_failed", "inbox_opened"},
     Category.ACCEPT: {"analysis_received", "analysis_rejected"},
     Category.HUMAN: {"confirmed", "approved", "terminal_confirmed", "attested", "resolved",
-                     "terminal_withdrawn", "input_confirmed", "base_list_bound", "inbox_closed", "bind", "rebind", "parse_overridden", "round_abandoned"},
+                     "terminal_withdrawn", "input_confirmed", "base_list_bound", "inbox_closed", "bind", "rebind", "parse_overridden", "round_abandoned", "submit_decision", "submit_rerun_resolved"},
     Category.EXTERNAL: {"submit_session_started", "submit_session_finished", "click_intent",
-                        "submit_result", "p4_operation_started", "p4_operation_result"},
+                        "submit_form_exposed", "hub_page_exposed", "manual_action_pending", "submit_result", "submit_request", "submit_outcome", "p4_operation_started", "p4_operation_result"},
 }
 
 

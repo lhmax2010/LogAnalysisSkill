@@ -5,10 +5,11 @@ repo_dir="$(dirname "$core_dir")"
 mkdir -p "${VD_COSMOS_TEST_TMPDIR:-$core_dir/.runtime}"
 export TMPDIR="${VD_COSMOS_TEST_TMPDIR:-$core_dir/.runtime}"
 export PYTHONDONTWRITEBYTECODE=1
-export PYTHONPATH="$core_dir/src:$repo_dir/vd-cosmos-watch/src:$repo_dir/vd-cosmos-fetch/src:$repo_dir/vd-cosmos-workflow/src:$repo_dir/vd-fix-analyze/src:$repo_dir/vd-fix-register/src:$core_dir/tests:$core_dir/.devtools"
+export PYTHONPATH="$core_dir/src:$repo_dir/vd-cosmos-watch/src:$repo_dir/vd-cosmos-fetch/src:$repo_dir/vd-cosmos-workflow/src:$repo_dir/vd-fix-analyze/src:$repo_dir/vd-fix-register/src:$repo_dir/vd-cosmos-submit/src:$core_dir/tests:$core_dir/.devtools"
 cd "$core_dir"
 python3 --version
 python3 scripts/check_imports.py
+python3 scripts/check_submit_boundary.py
 if command -v lint-imports >/dev/null 2>&1; then
     lint_command="$(command -v lint-imports)"
 elif [[ -f "$core_dir/.devtools/bin/lint-imports" ]]; then

@@ -87,7 +87,7 @@ def report_todos(arch, report):
 
 
 def stopped(observation):
-    return (observation.get('report_state') in {'对账失败', '结构未知'}
+    return (observation.get('binding_input_check') == '绑定不一致' or observation.get('report_state') in {'对账失败', '结构未知'}
             or observation.get('header_consistency') == '不一致'
             or any(r.get('coverage_basis') in {'manual_file', 'request'} and r.get('package_coverage') == '不一致'
                    for r in observation.get('reports', {}).values()))

@@ -47,6 +47,12 @@ WHEN NEW.kind = 'submit_session_started' AND (
             WHERE e.request_id=s.request_id AND e.operation_id=s.operation_id
             AND e.kind='submit_session_finished')))
 BEGIN SELECT RAISE(ABORT, 'request_occupied'); END;
+CREATE TRIGGER IF NOT EXISTS one_active_target BEFORE INSERT ON events
+WHEN NEW.kind='submit_session_started' AND json_extract(NEW.payload,'$.target') IS NOT NULL
+AND EXISTS (SELECT 1 FROM events s WHERE s.kind='submit_session_started'
+    AND json_extract(s.payload,'$.target')=json_extract(NEW.payload,'$.target')
+    AND NOT EXISTS (SELECT 1 FROM events e WHERE e.kind='submit_session_finished' AND e.operation_id=s.operation_id))
+BEGIN SELECT RAISE(ABORT, 'target_occupied'); END;
 CREATE TRIGGER IF NOT EXISTS session_required BEFORE INSERT ON events
 WHEN NEW.kind IN ('submit_session_finished', 'click_intent') AND NOT EXISTS (
     SELECT 1 FROM events AS s WHERE s.kind='submit_session_started'
@@ -131,6 +137,29 @@ class EventStore:
                 raise FlowError(6, "corrupt") from None
             if isinstance(error, FlowError):
                 raise
+            raise FlowError(6, classify(error)) from None
+
+    def append_batch(self, context, entries, expected_previous):
+        """Append related events atomically, retaining the global expected-head guard."""
+        for entry in entries:
+            authorize_event(context, entry['kind'])
+        try:
+            self.connection.execute('BEGIN IMMEDIATE')
+            if self.head() != expected_previous:
+                raise FlowError(6, 'stale_head')
+            ids = []
+            for entry in entries:
+                cursor = self.connection.execute(
+                    'INSERT INTO events(previous_id,kind,command,request_id,operation_id,build_key,payload) VALUES(?,?,?,?,?,?,?)',
+                    (self.head(), entry['kind'], context.name, entry.get('request_id'), entry.get('operation_id'),
+                     entry.get('build_key'), json.dumps(entry['payload'], ensure_ascii=False, sort_keys=True)))
+                ids.append(cursor.lastrowid)
+            self.connection.execute('COMMIT')
+            return ids
+        except (sqlite3.Error, FlowError) as error:
+            if self.connection.in_transaction:
+                self.connection.execute('ROLLBACK')
+            if isinstance(error, FlowError): raise
             raise FlowError(6, classify(error)) from None
 
 

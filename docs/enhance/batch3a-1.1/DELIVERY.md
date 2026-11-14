@@ -96,3 +96,71 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11_real.sh "$EXPECTED_COMMIT" \
 
 
 验收器编排回归：`AcceptanceScriptTests.test_hash_gate_before_config_or_network_and_all_help_contracts`、`test_offline_suite_same_interpreter_owned_tmp_and_output_gate`、`test_seven_snapshots_login_failure_stops_without_login`、`test_acceptance_orchestration_fresh_roots_and_expanded_login_output`、`test_offline_failure_prevents_real_reads_and_p4`、`test_mid_snapshot_login_expiry_retains_completed_rows_and_secret_keys_block`。前者真实执行所有入口 help；编排部分用受控替身验证顺序、全新根、配置原件不变、停止边界与输出，P4 部分另有假可执行文件的协议测试。没有把编排替身称为真实构建机整体验收。
+
+## Checkpoint B1（HLD v0.9.18，无浏览器部分）
+
+基线 `bf5acb49ee6947faa66de474a5d0af365341a6fc`（Checkpoint A 已由设计方接受）。工作树仍为 `/home/toolchain/development/LogAnalysisSkill-vdcosmos`；不进入主工作树。B3a11-Q01 的冲突规则继续适用。新增 `vd-cosmos-submit`，运行依赖仅标准库；没有浏览器、点击、登录、提交或真实 P4 操作。
+
+### HLD → 实现 → 测试
+
+下表省略 `vd-cosmos-core/src/vd_cosmos_core/` 前缀；测试位于 `vd-cosmos-core/tests/test_batch3a11b1.py`、`test_batch3a11b1_transport.py`。
+
+| HLD 条目 | 文件与实现 | 测试名 |
+|---|---|---|
+| §8.9 1–2：主证据、旁证、三档结论 | bm_pages.py：唯一 build-header、强自身身份、紧邻 Hub Link、严格 https/主机/路径、推广块本页编号对/引用；bm_reader.py：overview 旁证冲突，不把唯一候选当身份保证 | test_hub_identity_and_side_evidence_closed_shapes；test_multiple_links_reference_and_overview_conflict；test_unique_conflict_missing_and_no_negative_cache |
+| §8.9 3：匿名读取、分页与覆盖 | bm_transport.py：内存匿名会话、只走管理端直连、历史同路径逐跳检查、固定错误；bm_reader.py：每页范围/总数/时间、首屏锚点、重叠/N 变化、补扫旧锚点、快照三遍详情读取、预算、已结束有 Hub Link 才缓存 | test_anonymous_in_memory_session_redirects_and_no_body_artifacts；test_page_shapes_from_evidence_and_error_no_snippet；test_history_overlap_topup_anchor_and_retention_wording；test_history_gap_repeated_page_reorder_anchor_lost_limits；test_locate_three_pass_snapshot_prioritizes_late_group_and_budget；test_cache_only_ended_hub_and_unread_pending_not_dropped；test_reader_budget_spans_pre_scan_and_transport_failure_is_error；test_candidates_filter_detail_reads_reruns_use_live_overview |
+| §8.9 3、§8.8 1：时间与 doctor | bm_pages.py / bm_transport.py / submit_doctor.py：ZoneInfo、Date 中点偏差/RTT、时钟跳变、时长解析、最短运行样本；默认不联网，只查询本机包/配置，不启动浏览器；php 包数未知或非零不报通过 | test_clock_skew_timezones_and_duration_samples；test_time_skew_margin_preserves_utc_and_clock_unknown；test_doctor_offline_cli_non_tty_and_via_hub_B2_error |
+| §8.9 4：lookup | vd-cosmos-submit/scripts/run.py、src/vd_cosmos_submit/cli.py：无登录查号、可选 since、输出清单行数/解析摘要，结果不改请求/绑定；--via-hub 明确 requires_B2_browser | test_lookup_readonly_does_not_resolve_uncertain；test_unique_conflict_missing_and_no_negative_cache；test_doctor_offline_cli_non_tty_and_via_hub_B2_error |
+| §8.8 2、7–8：请求、重复保护、resolve | submit_model.py / state.py：全表单摘要（base 按解析结果）、复用、无时限重复保护、最近请求、原始意图/暴露不确定保护、目标会话唯一约束、人工重跑挂起及归属后计数；已提交与观察任务同事件事务落库，不生成点击 | test_digest_reuse_duplicate_round_and_uncertainty_cross_request；test_target_session_unique_and_explicit_uncertainty；test_unresolved_raw_click_cannot_be_bypassed_and_config_invalid；test_resolve_atomic_tasks_manual_time_and_pending_rerun；test_not_submitted_no_observation_and_lookup_absence_refused；test_pre_click_snapshot_failure_and_abandon_not_duplicate_bypass |
+| §8.8 8、§8.7 5：绑定后的报告核对 | submit_projection.py / observation.py / vd-cosmos-workflow：使用 HTTPReportReader 的统一 build_ref；绑定变量页核对之后，完整报告逐行与冻结清单核对，不一致停止推进；重跑谨慎标记进入 workflow，旧绑定由 bind.previous_build 标过期 | test_binding_uses_reader_identity_report_mismatch_blocks_workflow；test_failed_build_later_new_hub_other_account_rerun_and_rebind |
+| §8.8 3a、§8.9 5、§14 23：属性与 cmp-v1 | submit_config.py / defaults.py / config.sample.json：18 项、未登记可保留；bm_pages.py：显式变量名单、原样取值形状、仓库 URL 去凭据、凭据拦截；cmp-v1 去行尾空白和末尾空行、不抹缩进和内部空行，文本未确认不与请求硬比，PACKAGE_LIST 始终按解析结果 | test_cmp_v1_and_unregistered_text_and_parsed_base；test_enum_unobserved_and_variable_whitelist_never_returns_secret；test_variable_raw_shape_preserves_template_layout；test_variable_two_cells_and_fixed_enum_original_case |
+| §8.9 5：人工认领 | submit_claim.py：候选而不自动绑定；H_pre 和点击前时钟取样接口、未知不补写；身份/配置/时间/归属硬检查；两个确认词独立；确认后只重读选定详情/变量并核对最新扫描依据 | test_candidate_only_and_both_words_hpre_unknown_and_hard_checks；test_attest_outside_candidates_hard_guards_and_words_independent；test_known_Hpre_confirmation_matrix_and_no_replacement；test_confirmation_basis_changes_but_not_anchor_and_version_race；test_candidate_membership_change_requires_new_confirmation；test_concurrent_attest_only_one_binding |
+| §8.9 5–6：锁、版本、观察任务 | locks.py / submit_model.py / submit_watch.py：观察锁跨扫描/睡眠，网络在请求锁外，合并核对版本；心跳单独追加操作事件，不伪装候选变化；任务、锚点、待核对集合、已见记录、补充观察起点持久化 | test_network_outside_lock_version_change_discards_scan；test_two_process_observation_lock_and_manual_request_lock；test_heartbeat_continues_while_scan_or_terminal_callback_waits；test_heartbeat_not_scan_duration_and_resume_gap；test_observation_cannot_authorize_and_task_persists_restart；test_watch_cli_readonly_fixture_and_no_click_events |
+| §8.9 6–7：重跑与不确定范围 | submit_claim.py / submit_watch.py：同 H / 同内容旁证、其它账号同 H、保留被清理记录、失败后观察、结束时间未知不提前完成、旧映射产物过期，不自动改绑 | test_rerun_pending_retention_and_supplementary_bound；test_failed_build_later_new_hub_other_account_rerun_and_rebind；test_manual_start_lower_bound_and_observation_deadline_running |
+| §0.5、§6.4：人工入口 | commands.py / submit_terminal.py / submit CLI：/dev/tty、yes、确认词、管道拒绝、祖先检查；SKILL.md 仅列只读调用，人工命令只列 FatTank 手册 | test_doctor_offline_cli_non_tty_and_via_hub_B2_error；test_watch_cli_readonly_fixture_and_no_click_events |
+| §3 12、构建机 B1 验收 | check_submit_boundary.py；verify_b3a11.py（共享 ROOTS 加入新 skill）；verify_b3a11b1_real.sh/.py；verify_b3a11b1.py：HEAD、完整离线套件、在线 doctor、两个只读查号，始终新根；无安装/P4/浏览器 | test_wrong_head_stops_before_config_and_shell_reports_version；test_acceptance_isolated_roots_order_and_lookup_pairs；test_offline_failure_prevents_online_and_php_unknown_not_pass；run_tests.sh 静态边界检查 |
+
+### 证据夹具与限制
+
+`tests/bm_helpers.py` 从 recon15 的 overview 表头、Summary/历史行与时长写法、recon16/17 的 Showing/下一页监听与匿名会话跳转、recon18/19 的 Hub Link 关系、recon21/22 的变量行重建 HTML。使用合成名字和内容，明确不是生产原页的无损副本。TLS 测试只监听 127.0.0.1，临时自签证书只用于本地服务；验证跳转/会话/正文无落盘，不访问真实管理端。构建机完整 HTML 结构和真实查号结果仍由专用脚本验收，不能用本地合成页替代实测结论。
+
+历史清理可能造成漏观测；按编号定位不能证明不存在更早/延迟的同 H 构建；别的账号重试并换了新 H 时不能由本账号同内容旁证发现；观察期过后出现的重跑不自动发现。所有否定措辞限定“在已读取的保留记录中”。绑定保持输入核对状态，不能拿候选确认当起轮授权。
+
+### B2 接口与有意未实施范围
+
+- `submit_model.create_request` / `record_outcome` 是状态层接口；B2 才接浏览器准备、提交响应。这里没有 `once` CLI、请求发送闸门、控件回调、点击路径、认证、profile 或 `--rehearse`。
+- `submit_claim.pre_click_evidence` 返回 H_pre 与 Date 样本；B2 在点击意图事务中冻结，不允许后补。`submit_outcome` 的 accepted 与观察任务一起追加；人工 resolve 同样建任务。
+- `submit.property_map` 先完整登记 18 个槽位，默认变量/编码为空；第二十三次侦察和 B2 演练后才能确认文本形状/控件编码。未登记不等于默认值可用。
+- `--via-hub` 返回退出 6、`requires_B2_browser`。§8.9 第 4 条涉及已登录浏览器的另一侧证据留 B2；本次主证据与两种旁证全部在无登录读取器里。
+- 遗留会话的浏览器进程识别/关闭/profile 清理由 B2 负责。本次状态检查拒绝未解决的意图/暴露，状态唯一约束提前就位；正常关闭记录的 `normal_close=true` 仅能在 B2 已确认关闭之后写入，不能由 lookup/watch 生成。
+- request 版本只随业务状态/扫描合并事件增长；独立 heartbeat 事件不改变候选依据，避免长扫描被自己的心跳持续作废。每次业务合并仍检查请求版本和全局 expected-head。
+- HLD 要求终端 watch 可人工确认，用户称其为“只读 continuation”：按 B3a11-Q01 采用 HLD，默认后台只读；控制终端可经人工能力门确认。SKILL 的命令固定带 `--read-only`。确认输入期间扫描/心跳继续，人工动作不包装网络锁。
+- B1 不启动浏览器取版本，doctor 如实报告配置登记版本/本地可用性，不声称实测浏览器版本；实际浏览器版本及启动验证留 B2。
+
+### B1 测试全文与 SHA256
+
+两套均完整运行 run_tests.sh：各 216 项 PASS（原 172 项 + 新 44 项），标准库/Python 3.10 语法检查 74 个实现入口文件、三条 import-linter==2.3 约束、B1 无浏览器/无 PHP 静态边界检查全部通过。输出第 1 行为实际解释器版本。最终两套执行的 99 文件源码摘要完全一致，见 source-manifest.json；验证摘要见 validation.json。
+
+| 解释器 | 完整输出 | SHA256 | 结果 |
+|---|---|---|---|
+| Python 3.10.12 | `evidence-b1/test-output-python310.txt` | `4353a6af526515bee43feb54e233eb343d4c2599503dea398c57539f2884fe38` | 216 PASS / 45.596 秒 |
+| Python 3.12.3 | `evidence-b1/test-output-python312.txt` | `f50ad1a724a6b6664a6e41443c838570c63379991ea4226c7ba38b951c5ecb90` | 216 PASS / 43.701 秒 |
+
+
+### B1 测试环境与一次未通过的诊断
+
+完整套件先在本机 ext4 的本线临时目录运行；旧 batch2.1 验收子进程超过原有 20 秒超时。独立重现见 `evidence-b1/ext4-acceptance-diagnostic.txt`（22.545 秒，TimeoutExpired），进程等待点观察到文件系统 journal commit。使用测试脚本原有 `VD_COSMOS_TEST_TMPDIR` 选项切换到用户运行目录下的全新 tmpfs 临时目录，同一个测试 1.086 秒 PASS，见 `tmpfs-acceptance-diagnostic.txt`。没有改实现、没有放宽超时或断言；先前未完成的试跑不作为 PASS 证据。最终两套测试均采用 tmpfs、顺序执行、nice 19；目录/环境记录见 `test-environment.json`，代码摘要见 `source-manifest.json`。这验证离线行为、进程锁与 SQLite 事务，不宣称验证磁盘掉电持久性。构建机脚本仍把所有临时数据放在配置 data_root 下的新根，不绕过其磁盘检查；若该机也触发原有验收超时，应保留失败输出再判断，不能把本机 tmpfs 通过当成构建机通过。
+
+首次完整 tmpfs 套件为 215/216 PASS：旧验收器的入口发现已找到新 skill，但共享 ROOTS 洁净检查名单尚未纳入它。已把 vd-cosmos-submit 纳入共享名单（同时覆盖 A/B1 验收器），未删除或放宽原测试；失败全文保留为 `pre-registry-fix-python310.txt`，最终完整结果见上表。
+
+### B1 构建机命令
+
+见 `docs/enhance/batch3a-1.1/FATTANK-B1-MANUAL.md`。使用 Python 3.10.12 的现有开发/验收 venv，PATH 指向该 venv；EXPECTED_COMMIT 为本批最终回报的完整提交号，VD_CONFIG 为构建机原配置绝对路径：
+
+```bash
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG"
+```
+
+顺序：HEAD/工作树检查 → 每个入口 help → 完整离线套件 → doctor --online → lookup 37491096 得 19270912 → lookup 37491058 得 19270877。任一步不通过就停止后续在线步骤；19270877 只用于误提交只读查号核验，不绑定、不分析、不作为输入。产物只写原 data_root 下的新目录；当前开发机不执行真实在线段。
+
+本批本地配置加载证据：`evidence-b1/config-load-check.json`（Python 3.10.12；原件 SHA256 `e774c86a9f90ec1841f906aae52f1d4e89d3ac7d721ec626966c3409fbcd7caf`；PASS，未移动/复制/修改，未联网）。本批 API/源码审计（新旧本线源码、脚本、夹具和测试）：`evidence-b1/python-api-audit.json`、`source-manifest.json`；新用 ZoneInfo（3.9）、removesuffix（3.9）、标准库 CookieJar/HTTP/TLS，未新增 3.11+ 运行 API。

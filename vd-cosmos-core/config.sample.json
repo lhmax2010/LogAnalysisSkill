@@ -58,7 +58,30 @@
       "[INT]",
       "[FET]",
       "[COSMOS]"
-    ]
+    ],
+    "bm_host": "example.invalid",
+    "hub_host": "hub.example.invalid",
+    "bm_config_id": "4362",
+    "bm_display_tz": "Asia/Seoul",
+    "bm_overview_headers": [
+      "Id",
+      "Next Build Version",
+      "Schedule",
+      "Requested By",
+      "Schedule Date",
+      "Priority",
+      "Process Status",
+      "Build Version",
+      "Configuration Path",
+      "Hub ID",
+      "Requester"
+    ],
+    "hub_link_rule": "build-header-label-following-link-v1",
+    "bm_history_max_pages": 400,
+    "bm_lookup_detail_max": 1000,
+    "bm_pending_max": 200,
+    "hub_id_slack": 3000,
+    "bm_scan_interval_s": 0.2
   },
   "poll": {
     "interval_s": 60,
@@ -68,7 +91,12 @@
     "stopped_interval_s": 600,
     "arch_lag_s": 14400,
     "post_terminal_watch_s": 7200,
-    "retry_after_event_s": 5
+    "retry_after_event_s": 5,
+    "claim_margin_s": 900,
+    "claim_wait_s": 1800,
+    "lock_wait_s": 120,
+    "watch_interval_s": 300,
+    "rerun_watch_s": 7200
   },
   "export": {
     "chunk_bytes": 55000,
@@ -181,5 +209,177 @@
       ".rl",
       ".gperf"
     ]
+  },
+  "submit": {
+    "target_instance": "hub.example.invalid",
+    "target_config": "configure-target",
+    "target_config_id": "configure-target-id",
+    "account": "configure-account",
+    "hub_id_monotonic_confirmed": false,
+    "form": {},
+    "property_map": {
+      "BUILD_TYPE": {
+        "control_index": 0,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "BASE_REPOS": {
+        "control_index": 1,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "BUILD_CONF": {
+        "control_index": 2,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "PRODUCT_REPOS": {
+        "control_index": 3,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "ARCH": {
+        "control_index": 4,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "PACKAGE_LIST": {
+        "control_index": 5,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "GITURL": {
+        "control_index": 6,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "SHELVE_LIST": {
+        "control_index": 7,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "KS_LIST": {
+        "control_index": 8,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "Product Version (ks)": {
+        "control_index": 9,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "rpm Add & Delete": {
+        "control_index": 10,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "PACKAGE_LIST (DELETE)": {
+        "control_index": 11,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "PACKAGE_LIST (x86 arch)": {
+        "control_index": 12,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "Ignore package build failure?": {
+        "control_index": 13,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "Keep 'Full' build type": {
+        "control_index": 14,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "Image Skip?": {
+        "control_index": 15,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "EMAIL_CC": {
+        "control_index": 16,
+        "variable": null,
+        "encoding": null,
+        "affects_build": false,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      },
+      "EXTRA_BUILD_PARAMETER": {
+        "control_index": 17,
+        "variable": null,
+        "encoding": null,
+        "affects_build": true,
+        "comparison": "cmp-v1",
+        "request_text_verified": false,
+        "observed_values": []
+      }
+    }
   }
 }
