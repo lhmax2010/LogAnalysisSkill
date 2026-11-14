@@ -11,6 +11,7 @@ import unittest
 from unittest.mock import patch
 from contextlib import redirect_stderr
 from helpers import CORE, REPO, bundle
+from bm_helpers import variable_table
 from http_helpers import FixtureServer
 from vd_cosmos_core.backends import FixtureReportReader
 from vd_cosmos_core.build_inputs import variables, compare_lists, freeze, package_key
@@ -219,7 +220,7 @@ class Inputs3a1Tests(unittest.TestCase):
         shelves=['//example/project/[INT]/packages/p%04d/...@200'%i for i in range(545)]
         rows=[{'path':'//example/project/[INT]/packages/p%04d/...'%i,'cl':'200' if i<545 else '100','shelve':i<545} for i in range(2244)]
         values={'PACKAGE_LIST':'\n'.join(base),'SHELVE_LIST':'\n'.join(shelves),'BASE_REPOS':'https://u:secret@example.invalid/base','BUILD_CONF':'//example/build.conf@1','PRODUCT_REPOS':'https://example.invalid/product'}
-        html=header()+'<table>'+''.join('<tr><td>'+k+'</td><td><pre>'+v+'</pre></td></tr>' for k,v in values.items())+'<tr><td>BART_PASSWD</td><td>fixture-do-not-retain-value</td></tr></table>' # credential-test-sample
+        html=header()+variable_table(dict(values, BART_PASSWD='fixture-do-not-retain-value')) # credential-test-sample
         safe,note=variables(html.encode(),self.config,'19091860','https://example.invalid/build/19091860/variables')
         result=freeze(self.config,'fixture',safe,{'armv7l':{'input_rows':rows}},source='variables_page',note=note)
         self.assertEqual(len(result['base']),2245);self.assertEqual(len(result['shelve']),545);self.assertEqual(len(result['extra_base_packages']),1)
@@ -228,7 +229,7 @@ class Inputs3a1Tests(unittest.TestCase):
             if path.is_file():
                 self.assertNotIn(b'BART_PASSWD',path.read_bytes());self.assertNotIn(b'fixture-do-not-retain-value',path.read_bytes()) # credential-test-sample
                 self.assertNotIn(b'u:secret@',path.read_bytes())
-        with self.assertRaises(FlowError):variables(html.replace('</table>','<tr><td>BUILD_CONF</td><td>other</td></tr></table>').encode(),self.config,'19091860','https://example.invalid/build/19091860/variables')
+        with self.assertRaises(FlowError):variables(html.replace('</tbody>','<tr><td>BUILD_CONF</td><td>display</td><td><pre>other</pre></td></tr></tbody>').encode(),self.config,'19091860','https://example.invalid/build/19091860/variables')
         safe['PACKAGE_LIST']+='\n//example/project/[INT]/packages/new/...@1'
         with self.assertRaises(FlowError) as e:freeze(self.config,'fixture',safe,{'armv7l':{'input_rows':rows}},source='variables_page')
         self.assertEqual(e.exception.reason,'immutable_build_inputs_changed')

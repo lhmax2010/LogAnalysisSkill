@@ -66,7 +66,8 @@ def collect(config, r, reader):
             info['comparison'] = bm_pages.compare(r, values, config)
         except FlowError as e:
             if e.code == 4: raise
-            scan['coverage'] = False; scan['issues'].append('candidate_variables_unreadable')
+            scan['coverage'] = False; scan['issues'].append(e.reason)
+            if e.details.get('todo'): scan.setdefault('todos', []).append(e.details['todo'])
         account_rows.append(info)
         if (info['comparison']['matches'] and d['hub_id'] and not d['conflict']
                 and (not r.get('hub_id') or d['hub_id'] == r['hub_id'])):
@@ -77,7 +78,13 @@ def collect(config, r, reader):
     if not (r.get('click_clock') or {}).get('valid') or r.get('click_time') is None:
         scan['issues'].append('click_clock_unverified')
     scan['claim_coverage'] = bool(scan['coverage'] and (r.get('click_clock') or {}).get('valid') and r.get('click_time') is not None)
-    scan['result'] = '冲突' if len(matches) > 1 or scan['conflicts'] else '唯一' if matches else '未定位'
+    groups = {}
+    for d in matches: groups.setdefault(d['hub_id'], []).append(d)
+    scan['rerun_chains'] = [{'hub_id': h, 'builds': [
+        {'build_id': d['build_id'], 'start_time': d['start_time'], 'status': d['state']} for d in group]}
+        for h, group in groups.items() if len(group) > 1]
+    scan['result'] = ('冲突' if scan['conflicts'] else '重跑链' if len(matches) > 1 and len(groups) == 1
+                      else '多个候选' if len(matches) > 1 else '唯一' if matches else '未定位')
     scan['reason'] = None if matches else '当前保留记录中尚未出现' if scan['coverage'] else '扫描覆盖不足'
     return scan
 
@@ -94,7 +101,9 @@ def merge_scan(config, r, scan, context, *, now=None):
     binding = r.get('binding')
     if not scan['coverage'] or pending or len(pending) > config.raw['cosmos']['bm_pending_max']:
         todo('重跑观察覆盖不足' if binding else '扫描覆盖不足')
-    if scan['conflicts'] or len(scan['candidates']) > 1: todo('候选冲突')
+    for issue in scan.get('todos', []): todo(issue['message'] if 'message' in issue else issue['reason'])
+    if scan['conflicts']: todo('证据冲突')
+    elif len(scan['candidates']) > 1: todo('重跑链待人工选择' if scan.get('rerun_chains') else '多个候选待人工确认')
     deadline = None; complete = False
     if binding:
         b, h = binding['build_id'], binding['hub_id']

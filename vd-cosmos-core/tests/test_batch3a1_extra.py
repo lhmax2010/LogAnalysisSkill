@@ -15,6 +15,7 @@ import test_batch3a1 as fixture
 from helpers import bundle, CORE, REPO, detail_html
 from vd_cosmos_core.backends import FixtureReportReader
 from vd_cosmos_core.build_inputs import fetch_build_inputs, variables, compare_lists
+from bm_helpers import variable_table
 from vd_cosmos_core.commands import Category, CommandContext, command_context
 from vd_cosmos_core.config import load_config
 from vd_cosmos_core.errors import FlowError
@@ -156,7 +157,7 @@ class ReadingEdgeTests(unittest.TestCase):
             raw['cosmos']['variables_url_template']=url;f.server.config_path.write_text(json.dumps(raw))
             with self.assertRaises(FlowError):load_config(f.server.config_path)
         values={'PACKAGE_LIST':'Cookie: synthetic-value','SHELVE_LIST':'','BASE_REPOS':'base','BUILD_CONF':'conf','PRODUCT_REPOS':'product'} # credential-test-sample
-        html=fixture.header()+'<table>'+''.join('<tr><td>'+k+'</td><td>'+v+'</td></tr>' for k,v in values.items())+'</table>'
+        html=fixture.header()+variable_table(values)
         with self.assertRaises(FlowError) as e:variables(html.encode(),f.config,'19091860',f.server.url+'/build/19091860/variables')
         self.assertEqual(e.exception.reason,'build_input_credential_blocked')
         self.assertFalse(any(p.name=='PACKAGE_LIST.txt' for p in f.config.data_root.rglob('*')))

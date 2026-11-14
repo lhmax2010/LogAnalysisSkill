@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "path": "docs/enhance/evidence/scripts/recon23.py",
+      "sha256": "b8781bd49d91512f0d2c0b6b8a4e92a0900658aa04487f54b1bca7152232ff81",
+      "line": 45,
+      "matched_text": "jsessionid\u003d",
+      "credential_rule": "jsessionid\\s*=",
+      "reason": "regex literal that strips session ids; no credential value",
+      "date": "2026-11-14",
+      "approved_by": "designer 2026-11-14"
+    }
+  ]
+}

@@ -10,6 +10,7 @@ from .export import check_content
 from .files import digest, json_bytes
 from .report import Document, Node, cells, normalize
 from .submit_config import PROPERTIES, SECRET_NAME, TEXT_PROPERTIES
+from .variable_pages import parse as parse_variables, remember
 
 
 def document(data):
@@ -215,12 +216,6 @@ def base_digest(text, config):
     return digest(json_bytes(sorted((r['package_key'], r['path'], r['cl']) for r in records.values())))
 
 
-def variable_text(node):
-    """Preserve the variable template's layout, including pre/li line breaks."""
-    value = ''.join(variable_text(c) if isinstance(c, Node) else c for c in node.children)
-    return value + ('\n' if node.tag in {'tr', 'p', 'div', 'li', 'pre', 'br'} else '')
-
-
 def value_shape(value):
     lines = value.replace('\r\n', '\n').replace('\r', '\n').split('\n')
     leading = next((i for i, line in enumerate(lines) if line.strip()), len(lines))
@@ -239,22 +234,19 @@ def variables(data, config, build_id, names):
     identity = detail(data, config, build_id, summary_required=False)
     if identity['config_id'] != config.raw['cosmos']['bm_config_id']:
         raise FlowError(4, 'bm_wrong_config')
-    doc = document(data); result = {}
-    for row in (n for n in doc.nodes if n.tag == 'tr'):
-        cs = cells(row)
-        if len(cs) < 2: continue
-        name = normalize(cs[0].text()).rstrip(':')
-        if name not in names: continue
-        if name in result: raise FlowError(5, 'variable_duplicate')
-        # Strip cell terminators only; never erase template indentation/blank lines.
-        value = ''.join(variable_text(c) for c in cs[1:])
+    result = {}
+    for name, entry in parse_variables(data, names).items():
+        value = entry['value']
         value, removed = sanitize_repositories(value)
         if not check_content(value.encode(), config)['allowed']:
             raise FlowError(4, 'credential_pattern_blocked')
         result[name] = {'value': value, 'sha256': digest(value.encode()), 'cmp_sha256': digest(cmp_v1(value).encode()),
-                        'credentials_removed': removed, 'cells': len(cs) - 1,
+                        'credentials_removed': removed, 'cells': entry['cells'],
+                        'value_column': entry['value_column'], 'table_columns': entry['table_columns'],
                         'enum_display': cmp_v1(value) if cmp_v1(value).casefold() in {'', 'true', 'false', 'yes', 'no', 'on', 'off', 'full', 'partial', 'armv7l'} else None,
                         **value_shape(value)}
+    remember(config, build_id, 'https://' + config.raw['cosmos']['bm_host'] + '/build/' + str(build_id) + '/variables',
+             {name: entry['value'] for name, entry in result.items()}, names)
     return result
 
 
@@ -273,7 +265,7 @@ def compare(request, values, config):
         if name == 'PACKAGE_LIST':
             try: equal = base_digest(expected, config) == base_digest(actual, config)
             except FlowError: equal = False
-        elif entry['encoding'] is None or (name in TEXT_PROPERTIES and not entry['request_text_verified']):
+        elif entry['encoding'] is None or name in TEXT_PROPERTIES:
             result[name] = '未核验（比较规则未确认）'; continue
         elif entry['encoding'] in {'enum', 'boolean', 'ks'} and str(expected) not in entry['observed_values']:
             result[name] = '未核验'; continue

@@ -39,3 +39,17 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT"
 ```
 
 使用现有 Python 3.10.12 验收 venv，已装开发工具 import-linter==2.3，并置于 PATH 首位。脚本先核对 HEAD/本线源码干净，所有写入位于原 data_root 下新建的 verification/b3a11b1-随机串目录；运行完整离线套件，然后 doctor --online 和两次无登录查号。37491096 应只得到 19270912；37491058 应只得到 19270877，后者只作误提交的只读查号核验，禁止绑定、分析或用作输入。没有自动安装、登录、浏览器、P4 或提交动作。
+
+
+## B1.1：同一会话验收 A + B1
+
+使用本次回报、经设计方审核的完整提交号填写 EXPECTED_COMMIT；将现有 Python 3.10.12 验收 venv 的 bin 放在 PATH 首位（import-linter==2.3）。VD_CONFIG 为构建机原配置绝对路径；B21_SAVED_DIR、B21_ROWS、B21_LINKS 为第 2.1 批已有独立基线的绝对路径（saved-dir 含 report_armv7l.html、report_x86_64.html、probe_3bed7e8c.html；links 为 arm-only）。同一干净检出、同一提交，依次执行：
+
+```bash
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11_real.sh "$EXPECTED_COMMIT"   --config "$VD_CONFIG" --saved-dir "$B21_SAVED_DIR"   --rows "$B21_ROWS" --links "$B21_LINKS" &&
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT"   --config "$VD_CONFIG"
+```
+
+A 非零退出就不运行 B1。两条命令各自核验完整 HEAD/本线源码洁净、执行同解释器完整离线套件，各自只写配置 data_root 下全新独立子目录。A 运行读取侧 A–F 和 19091860 七失败包的只读 P4 快照，未登录只打印登录命令并停止，不代登录；B1 做在线 doctor 和两次只读查号。两条均不打开浏览器、不提交构建、不安装软件。未取得构建机输出前，只能声称离线验证通过。
+
+B1.1 的三个操作含义：①变量页首次值已冻结，出现“变量页已变化”不能通过重试覆盖原值；保留原输入和变化待办交设计方处理，本批不提供覆盖开关。②“重跑链”不等于证据冲突，逐项列出各构建的编号、开始时间和状态，仍由 FatTank 选择，工具不取最早/最新。③18 项映射提案只在 DELIVERY 中，配置仍未登记，文本比较仍未核验。

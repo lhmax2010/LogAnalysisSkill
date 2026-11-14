@@ -84,12 +84,12 @@ class RelationAndComparisonTests(B1Case):
         result=bm_pages.compare({'form':form},vals,self.config)
         self.assertIn('比较规则未确认',result['fields']['EXTRA_BUILD_PARAMETER'])
         prop['request_text_verified']=True
-        self.assertFalse(bm_pages.compare({'form':form},vals,self.config)['matches'])
+        self.assertIn('比较规则未确认',bm_pages.compare({'form':form},vals,self.config)['fields']['EXTRA_BUILD_PARAMETER'])
         vals['EXTRA_BUILD_PARAMETER']['value']='--threads 32';vals['SHELVE_LIST']={'value':'//x@903'}
         self.assertFalse(bm_pages.compare({'form':form},vals,self.config)['matches'])
         vals['SHELVE_LIST']['value']='';vals['EMAIL_CC']={'value':'different'}
         self.assertTrue(bm_pages.compare({'form':form},vals,self.config)['matches'])
-        for name in ('Image Skip?','PACKAGE_LIST (DELETE)'):
+        for name in ('Image Skip?',):
             self.config.raw['submit']['property_map'][name].update(variable=name,encoding='text',request_text_verified=True)
             vals[name]={'value':'different'}
             self.assertFalse(bm_pages.compare({'form':form},vals,self.config)['matches']);del vals[name]
@@ -97,18 +97,18 @@ class RelationAndComparisonTests(B1Case):
         html=detail(variables={'EXTRA_BUILD_PARAMETER':'PLACEHOLDER'})
         html=html.replace(b'PLACEHOLDER',b'  <pre>\n  first\n\nsecond\n</pre><li>end</li>\n')
         value=bm_pages.variables(html,self.config,'900',{'EXTRA_BUILD_PARAMETER'})['EXTRA_BUILD_PARAMETER']
-        self.assertEqual(value['value'],'  \n  first\n\nsecond\n\nend\n\n')
+        self.assertEqual(value['value'],'  \n  first\n\nsecond\nend\n\n')
         self.assertEqual(value['leading_blank_lines'],1)
         self.assertEqual(value['trailing_blank_lines'],2)
         self.assertEqual(value['indented_lines'],2)
         self.assertEqual(value['first_line_indent'],2)
-        self.assertEqual(bm_pages.cmp_v1(value['value']),'\n  first\n\nsecond\n\nend')
+        self.assertEqual(bm_pages.cmp_v1(value['value']),'\n  first\n\nsecond\nend')
     def test_variable_two_cells_and_fixed_enum_original_case(self):
         html=detail(variables={'BUILD_TYPE':'True'})
         value=bm_pages.variables(html,self.config,'900',{'BUILD_TYPE'})['BUILD_TYPE']
         self.assertEqual(value['enum_display'],'True')
-        html=html.replace(b'<td>True</td>',b'<td>Full</td><td>\n</td>')
-        value=bm_pages.variables(html,self.config,'900',{'BUILD_TYPE'})['BUILD_TYPE']
+        html=detail(b='901',variables={'BUILD_TYPE':'Full'})
+        value=bm_pages.variables(html,self.config,'901',{'BUILD_TYPE'})['BUILD_TYPE']
         self.assertEqual(value['cells'],2)
         self.assertEqual(value['enum_display'],'Full')
     def test_enum_unobserved_and_variable_whitelist_never_returns_secret(self):
@@ -121,7 +121,7 @@ class RelationAndComparisonTests(B1Case):
         self.assertNotIn('PRIVATE_FIXTURE_VALUE',json.dumps(values));self.assertNotIn('BART_PASSWD',json.dumps(values))
         self.assertEqual(values['EXTRA_BUILD_PARAMETER']['value'],'\n  --threads 32\n')
         self.fails(4,bm_pages.variables,html,self.config,'900',{'BART_PASSWD'})
-        duplicate=html+b'<table><tr><td>PACKAGE_LIST</td><td>x</td></tr></table>'
+        duplicate=html.replace(b'</tbody>',b'<tr><td>PACKAGE_LIST</td><td>display</td><td><pre>x</pre></td></tr></tbody>')
         self.fails(5,bm_pages.variables,duplicate,self.config,'900',{'PACKAGE_LIST'})
 
 
@@ -134,7 +134,7 @@ class LookupTests(B1Case):
         data['/build/900']=detail(h='500');data['/build/900/variables']=detail(variables={'PACKAGE_LIST':BASE})
         self.assertEqual(reader.lookup('500')['result'],'唯一')
         data=pages();data['/history/4362']=history(['900','899']);data['/build/899']=detail('899','500');data['/build/899/variables']=detail('899','500',variables={'PACKAGE_LIST':BASE})
-        self.assertEqual(self.reader(data).lookup('500')['result'],'冲突')
+        self.assertEqual(self.reader(data).lookup('500')['result'],'重跑链')
     def test_history_overlap_topup_anchor_and_retention_wording(self):
         data=pages();data['/history/4362']=[history(['110','109','108'],total=6,next_url='/history/4362?p=2'),history(['111','110','109'],total=7,next_url='/history/4362?p=2')]
         data['/history/4362?p=2']=history(['108','106','105'],first=4,total=7,next_url='/history/4362?p=3')

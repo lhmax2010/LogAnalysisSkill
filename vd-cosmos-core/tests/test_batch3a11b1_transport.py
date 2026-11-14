@@ -87,14 +87,22 @@ class AnonymousTransportTests(B1Case):
         self.assertEqual(result['result'],'唯一')
         self.assertTrue(any('?0-1.' in p and value=='anon=fixture' for p,value in self.requests))
         self.assertEqual(list(transport.jar),[])
-        self.assertFalse(self.config.data_root.exists())
+        for path in self.config.data_root.rglob('*'):
+            if path.is_file():
+                for forbidden in (b'<html', b'<table', b'anon=fixture', b'PRIVATE_PASSWORD_MARKER', b'PRIVATE_RESPONSE_MARKER'):
+                    self.assertNotIn(forbidden, path.read_bytes())
+        self.assertTrue(list((self.config.data_root/'inputs/variable-first-read').rglob('*.json')))
         self.assertNotIn('PRIVATE_PASSWORD_MARKER',json.dumps(result))
         self.mode='redirect';transport=AnonymousTransport(self.config)
         self.fails(5,transport.read,url+'/history/4362',history=True)
         self.fails(4,transport.read,'https://other.invalid/history/4362',history=True)
         self.mode='failure';e=self.fails(5,transport.read,url+'/build/900')
         self.assertNotIn('PRIVATE_RESPONSE_MARKER',json.dumps(e.as_dict()))
-        self.assertFalse(self.config.data_root.exists())
+        for path in self.config.data_root.rglob('*'):
+            if path.is_file():
+                for forbidden in (b'<html', b'<table', b'anon=fixture', b'PRIVATE_PASSWORD_MARKER', b'PRIVATE_RESPONSE_MARKER'):
+                    self.assertNotIn(forbidden, path.read_bytes())
+        self.assertTrue(list((self.config.data_root/'inputs/variable-first-read').rglob('*.json')))
     def test_page_shapes_from_evidence_and_error_no_snippet(self):
         self.start_server();reader=Reader(self.config,sleep=lambda _:None)
         reader.overview();self.assertTrue(reader.samples[-1]['valid'])

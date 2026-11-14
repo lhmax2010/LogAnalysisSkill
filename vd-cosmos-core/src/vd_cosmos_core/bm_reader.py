@@ -197,7 +197,10 @@ class Reader:
         if len(pending) > self.c['bm_pending_max']: issues.append('pending_limit')
         relation_conflicts = [d['build_id'] for d in details.values() if d['conflict']]
         candidates = [d for d in details.values() if d.get('hub_id') == hub_id and d['config_id'] == self.c['bm_config_id'] and not d['conflict']] if hub_id else []
-        status = '冲突' if relation_conflicts or len(candidates) > 1 else '唯一' if candidates else '未定位'
+        status = '冲突' if relation_conflicts else '重跑链' if len(candidates) > 1 else '唯一' if candidates else '未定位'
+        chains = [{'hub_id': hub_id, 'builds': [
+            {'build_id': d['build_id'], 'start_time': d['start_time'], 'status': d['state']}
+            for d in sorted(candidates, key=lambda item: int(item['build_id']))]}] if len(candidates) > 1 else []
         coverage = bool(reached and not issues and not pending)
         if hub_id:
             result_reason = ('页面无法识别' if any(x in issues for x in ('bm_page_unrecognized', 'bm_identity_mismatch', 'bm_table_unrecognized', 'bm_summary_unrecognized')) else
@@ -206,7 +209,7 @@ class Reader:
             result_reason = '当前保留记录中尚未出现' if coverage else reason or '扫描覆盖不足'
         exit_code = (5 if 5 in failures else 6) if failures and not details else 0
         return self.safe({'exit_code': exit_code, 'result': status, 'reason': result_reason, 'candidates': candidates,
-            'candidate_only': True, 'coverage': coverage, 'coverage_scope': '当前保留记录中',
+            'candidate_only': True, 'rerun_chains': chains, 'auto_selected': None, 'coverage': coverage, 'coverage_scope': '当前保留记录中',
             'history_retention': '未核验', 'uniqueness_proven': False if hub_id else coverage,
             'uniqueness_note': '唯一性未覆盖' if hub_id or not coverage else '当前范围内',
             'anchor': anchor, 'rows': rows, 'details': details, 'pending': pending,
@@ -223,6 +226,11 @@ class Reader:
                 candidate.update(package_list_count=len(bm_pages.parse_list(text, self.c['branch_markers'])),
                                  package_list_sha256=bm_pages.base_digest(text, self.config),
                                  version=scan['rows'].get(candidate['build_id'], {}).get('version'))
-            except (FlowError, KeyError):
+            except (FlowError, KeyError) as error:
                 candidate['inputs'] = '未核验'; scan['coverage'] = False
+                if isinstance(error, FlowError):
+                    if error.code == 4: raise
+                    scan['exit_code'] = error.code
+                    scan['issues'].append(error.reason)
+                    if error.details.get('todo'): scan.setdefault('todos', []).append(error.details['todo'])
         return scan

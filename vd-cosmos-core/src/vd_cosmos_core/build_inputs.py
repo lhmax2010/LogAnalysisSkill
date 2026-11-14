@@ -6,7 +6,8 @@ from .errors import FlowError
 from .export import check_content
 from .files import atomic_write, digest, json_bytes, load_json
 from .observation import detail_state
-from .report import Document, cells, normalize
+from .report import normalize
+from .variable_pages import parse as parse_variables, remember
 from .versions import build_key
 
 
@@ -101,22 +102,19 @@ def sanitize_repositories(value):
 
 def variables(data, config, build_id, page_url):
     source = config.raw['cosmos'].get('status_source')
-    if not source or detail_state(data, source, build_id, page_url).get('identity') != 'strong':
+    strong = bool(source and detail_state(data, source, build_id, page_url).get('identity') == 'strong')
+    if not strong and source and urlsplit(page_url).netloc == config.raw['cosmos']['bm_host']:
+        # The strict B1 relation parser excludes only the registered Hub Link;
+        # all other foreign build links still fail the self-identity check.
+        from .bm_pages import detail
+        try:
+            relation = detail(data, config, str(build_id), summary_required=False)
+            strong = bool(relation['hub_id'] and relation['config_id'] == config.raw['cosmos']['bm_config_id'])
+        except FlowError:
+            pass
+    if not strong:
         raise FlowError(5, 'variables_identity_mismatch', todo={'reason': 'bind_base_list_required'})
-    document = Document(data.decode('utf-8'))
-    values = {}
-    # Only the name cell is inspected to choose a row. No value from a rejected
-    # row is read out or included in exceptions, logs, or evidence.
-    for row in (n for n in document.nodes if n.tag == 'tr'):
-        columns = cells(row)
-        if len(columns) < 2:
-            continue
-        name = columns[0].text().strip()
-        if name not in VARIABLES:
-            continue
-        if name in values:
-            raise mismatch('duplicate_whitelisted_variable')
-        values[name] = '\n'.join(line.strip() for line in columns[1].text().splitlines() if line.strip())
+    values = {name: entry['value'] for name, entry in parse_variables(data, set(VARIABLES)).items()}
     if set(values) != set(VARIABLES):
         raise FlowError(5, 'variables_missing', todo={'reason': 'bind_base_list_required'})
     stripped = []
@@ -127,6 +125,7 @@ def variables(data, config, build_id, page_url):
     for name, value in values.items():
         if not check_content(value.encode(), config)['allowed']:
             raise FlowError(4, 'build_input_credential_blocked', todo={'reason': 'build_input_credential_blocked'})
+    remember(config, build_id, page_url, values, set(VARIABLES))
     return values, {'credentials_removed': stripped, 'note': '已去除凭据' if stripped else None}
 
 

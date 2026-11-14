@@ -1,0 +1,8 @@
+{
+  "temporary_root": "/run/user/1000/vd-cosmos-b11-tests-uzch5imp",
+  "filesystem": "tmpfs",
+  "runner_option": "VD_COSMOS_TEST_TMPDIR",
+  "nice": 19,
+  "parallel_suites": false,
+  "note": "Same supported tmpfs option as B1; unchanged timeouts and assertions. Build-machine scripts use fresh roots under configured data_root."
+}

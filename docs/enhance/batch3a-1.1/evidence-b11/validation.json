@@ -1,0 +1,33 @@
+{
+  "base": "c9d8eb5bbb0e843eda002e13df7d948c16f19712",
+  "checkpoint": "B1.1",
+  "runs": [
+    {
+      "version": "Python 3.10.12",
+      "file": "docs/enhance/batch3a-1.1/evidence-b11/test-output-python310.txt",
+      "sha256": "7b4d98d12b33fe5a150ec2572a65c229de0dd5a2f6ba33be243fb39dc31c1f4d",
+      "tests": 232,
+      "seconds": 43.403,
+      "result": "PASS"
+    },
+    {
+      "version": "Python 3.12.3",
+      "file": "docs/enhance/batch3a-1.1/evidence-b11/test-output-python312.txt",
+      "sha256": "5529f26b3a0e163b95f1bad3d170f231aa9b519b99e8a3c601ad6418c54211d9",
+      "tests": 232,
+      "seconds": 42.485,
+      "result": "PASS"
+    }
+  ],
+  "source_manifest_sha256": "6ed89f27207f42b63b7bac2d052c662c6dc24473b0041b0d24c051f55ed4772e",
+  "source_changed_after_full_runs": false,
+  "new_regressions": 16,
+  "browser_opened": false,
+  "real_service_access": false,
+  "script_executed": false,
+  "closed_decisions": [
+    "B3a11-Q02"
+  ],
+  "pending_decisions": [],
+  "build_machine_verification": "pending FatTank A then B1; commands in DELIVERY.md"
+}

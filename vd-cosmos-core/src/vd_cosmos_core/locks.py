@@ -8,7 +8,7 @@ from .files import confined, digest
 
 class OperationLock:
     def __init__(self, root, kind, identity, *, wait_s=0):
-        if kind not in {"profile", "round", "loop", "request", "observation", "submit-target"}:
+        if kind not in {"profile", "round", "loop", "request", "observation", "submit-target", "variables"}:
             raise FlowError(2, "invalid_lock_kind")
         self.path = confined(root, "locks/" + kind + "-" + digest(str(identity).encode()) + ".lock")
         self.wait_s = wait_s

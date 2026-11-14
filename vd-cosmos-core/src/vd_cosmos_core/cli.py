@@ -3,12 +3,14 @@ import argparse
 import json
 import sys
 import uuid
+from pathlib import Path
 
 from .read_ops import make_reader, read_action
 from .commands import COMMANDS, Category, command_context
 from .config import load_config
 from .errors import FlowError, unsupported
-from .export import check_content, export_file
+from .export import export_file
+from .archive_precheck import check_file as repository_precheck
 from .files import atomic_write, digest, json_bytes
 from .locks import OperationLock
 from .journal import write_todos as _todos, monitor_todos, monitoring_fields
@@ -59,7 +61,9 @@ def execute(skill, args):
             checked = []
             for source in args.files:
                 path = config.source(source)
-                checks = check_content(path.read_bytes(), config, test_exemptions=True)
+                requested = Path(source).expanduser()
+                requested = requested if requested.is_absolute() else config.source_dir / requested
+                checks = repository_precheck(requested, config)
                 checked.append({"path": str(path), **checks})
             return {"files": checked, "exit_code": 0 if all(c["allowed"] for c in checked) else 4}
         if args.command == "export":

@@ -164,3 +164,108 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT"
 顺序：HEAD/工作树检查 → 每个入口 help → 完整离线套件 → doctor --online → lookup 37491096 得 19270912 → lookup 37491058 得 19270877。任一步不通过就停止后续在线步骤；19270877 只用于误提交只读查号核验，不绑定、不分析、不作为输入。产物只写原 data_root 下的新目录；当前开发机不执行真实在线段。
 
 本批本地配置加载证据：`evidence-b1/config-load-check.json`（Python 3.10.12；原件 SHA256 `e774c86a9f90ec1841f906aae52f1d4e89d3ac7d721ec626966c3409fbcd7caf`；PASS，未移动/复制/修改，未联网）。本批 API/源码审计（新旧本线源码、脚本、夹具和测试）：`evidence-b1/python-api-audit.json`、`source-manifest.json`；新用 ZoneInfo（3.9）、removesuffix（3.9）、标准库 CookieJar/HTTP/TLS，未新增 3.11+ 运行 API。
+
+
+## Checkpoint B1.1（设计方 2026-11-14 裁定）
+
+基线 c9d8eb5bbb0e843eda002e13df7d948c16f19712。HLD v0.9.18 原件不改；本节记录设计方将合入下一版的修正。recon24 的三列表头结论来自本次设计方答复（6 个构建含 19091860），本机没有访问构建机。
+
+### A / C：实现与测试
+
+| 要求 | 实现文件（core/src/vd_cosmos_core/ 前缀省略） | 回归测试 |
+|---|---|---|
+| Name / Display Name / Value 真实表 | variable_pages.py 的共享纯解析器；build_inputs.variables 与 bm_pages.variables 均按 Name/Value 表头映射，仅取 Value；pre 内容不人为补尾换行，Display Name 不拼接 | test_three_columns_nonempty_display_pre_shared_callers_exact_value；原 test_appendix_i_2245_base_545_shelve_and_credential_variable_never_written 改为真实三列 |
+| 缺失/异常/重复表头不猜列 | 表头唯一、Name/Value 必须唯一，Display Name 可选，允许列重排；拒绝未知额外表头、跨列、宽度不符、多个候选表、重复变量；FlowError 5 + todo | test_header_mapping_reorder_legacy_two_columns_and_bad_headers |
+| 两列历史兼容选择 | 只显式支持有 Name / Value 表头的两列；无表头的旧 fixture 不再支持。全部变量页生成器改三列（含非空 Display Name、pre），只保留一个正向两列兼容夹具及其负向变形 | 同上；bm_helpers.variable_table、test_batch3a1.py、test_batch3a1_extra.py、B1 两组测试 |
+| 第一次读取即冻结 | variable_pages.remember：按管理端主机/端口、B、变量名保存不可变值与完整 SHA256，变量未列出也记缺失；新增白名单字段在第一次实际读取时补记。只冻结凭据检查/仓库 URL 去凭据后的字段，不存 HTML、未选值或 Display Name；锁只包文件读写 | test_first_read_before_report_validation_and_changes_preserve_authority；test_claim_first_read_restart_absence_new_names_and_digest_tampering；test_simultaneous_first_reads_cannot_overwrite_and_secret_blocks_before_store |
+| 变量变化 | 后续读取按值摘要比较，拒绝覆盖，退出 3；“变量页已变化”待办只记字段/摘要，写 inputs/variable-first-read/<构建摘要>/issues/；lookup 返回 todo，watch 合并待办；原值仍权威，不自动继续使用新值 | test_lookup_and_watch_propagate_changed_variable_todo |
+| A 读取器真实 Hub Link 兼容 | build_inputs.py：原 A 身份检查会把已登记 Hub Link 当外域自身链接；失败时只允许 B1 严格关系解析器验证强身份/配置/合格 Hub Link，任意其它异域链接仍拒绝 | test_three_columns_nonempty_display_pre_shared_callers_exact_value（同时通过真实 Hub Link 头部）；原身份拒绝测试保留 |
+| 同 H 多 B | bm_reader.py / submit_claim.py：关系证据一致时“重跑链”，列每个 B/开始时间/状态，auto_selected=null；认领不同 H 的多个候选写“多个候选”，不谎称关系冲突；Hub/推广块/overview 真正不一致仍“冲突”；无自动绑定 | test_same_hub_multiple_consistent_builds_chain_never_select_or_bind；test_genuine_inconsistency_still_conflict_and_claim_chain_is_manual |
+| 文本比较 / 配置 | bm_pages.compare 按本次裁定固定“未核验（比较规则未确认）”，旧 request_text_verified=true 也不能提前开启；PACKAGE_LIST 仍按解析结果；样例和默认 18 项仍未登记 | test_text_stays_unverified_and_shipped_map_unregistered |
+| 读取器保密 | 修改原 TLS 集成测试：允许安全首读值制品，仍逐文件断言没有 HTML、匿名 cookie、密码变量或错误响应片段 | test_anonymous_in_memory_session_redirects_and_no_body_artifacts |
+
+新增测试位于 vd-cosmos-core/tests/test_batch3a11b11.py。变量记录跨调用方共享，既用于本轮 base/shelve，也用于认领比较；B2 的 --base-from-hub 源值应走同一 Reader.variables/remember 接口。本次没有实现 once 或浏览器路径。已有 c9d8eb5 以前的运行目录没有“当时首次读取”的证据，不能追溯虚构；升级后第一次通过新读取器时才建立记录。构建机验收使用全新根。
+
+### 所有 HTML 表读取器的列假设审计
+
+检索本线全部 vd-* 的 Python/HTML（排除开发 venv、运行目录），表解析实现集中在下列文件。其它 skill 调用它们，没有独立 HTML 表解析器。
+
+| 读取器 | 检查结果 |
+|---|---|
+| build_inputs.variables | 原固定第 2 列错误；已替换为共享 Name/Value 表头解析 |
+| bm_pages.variables | 原 Name 后所有列拼接错误；已替换为共享解析 |
+| bm_pages.columns / detail Summary | 按 Id/Status/Begin Date/Duration 表头建字典，非固定索引；重复必要表头拒绝，身份另核对 |
+| bm_pages.listing overview | 登记的完整 11 列表头必须一致，值按表头键取，不把新增列猜作旧列 |
+| bm_pages.listing history / doctor 时间样本 | 识别 Version/Begin Date/Duration，按名称映射；不是变量页，未套用三列表 |
+| report._header_and_counts | 报告头键值行要求恰好两格且左格是登记字段名；汇总支持严格两格键值或五个已知分类表头后的一行计数，五列按表头配对，不猜 Value |
+| report.parse_report 编译/扩展/Export 明细 | 已登记报告格式为包名/路径/状态三列，严格 len==3；没有通用变量表逻辑。多出 Display Name 列或路径不可解析会记结构未知，不接受为完整结果；新增 test_other_report_fixed_schema_rejects_added_display_column |
+| report.table_titles / table_rows / cells；variable_pages.own_rows | 辅助定位标题/直接单元格；共享变量解析明确不遍历嵌套 table 的数据行，避免外包装表重复命中 |
+
+没有声称任何未来未知列布局都可兼容；未登记结构应停止，而非猜测。报告明细仍是登记过的固定三列契约，不擅自扩大本次重构范围。
+
+### B：脚本归档与证据等级
+
+B3a11-Q02 已闭合（设计方 2026-11-14）：原件独立保存为 docs/enhance/evidence/scripts/recon23.py，SHA256 为 b8781bd49d91512f0d2c0b6b8a4e92a0900658aa04487f54b1bca7152232ff81，字节与 Downloads 原件完全相同。recon_scripts.txt 保持本批基线原样，不追加。脚本未执行；recon23.txt 未读取、未复制、未用作证据，等待 recon25 已核实结果。三列表事实只归因于设计方对 recon24 的答复。
+
+登记文件 docs/enhance/evidence/archive-exemptions.json 保存路径、完整文件摘要、第 45 行、精确命中文本/规则、原因、日期和批准人。仅仓库 prepush 的 archive_precheck.py 读取登记：必须位于 evidence/scripts/、路径规范且非符号链接、全文件摘要/行/文本/规则均相同才排除此命中。任何字节变化均阻断，不能通过添加行内样例标记绕过。JSON 内等号用 Unicode 转义存储，解码后仍是精确命中文本，避免登记元数据本身重复触发扫描；没有放宽凭据模式。运行时 check_content、export、verifiers、配置及其它预检保持原规则。
+
+新增 vd-cosmos-core/tests/test_archive_precheck.py：
+
+| 要求 | 测试 |
+|---|---|
+| 已登记原件及真实 prepush CLI 通过 | test_registered_original_hash_line_text_rule_passes_repository_cli |
+| 一字节修改、加样例标记、删命中文本均阻断 | test_one_byte_change_and_inline_marker_cannot_keep_exemption |
+| 同文本未登记文件、目录外、符号链接阻断 | test_same_text_in_unregistered_file_or_wrong_path_is_blocked |
+| 真正会话值继续阻断 | test_real_session_value_still_blocked_and_never_exempted |
+| 行/文本/规则必须一致，不能掩盖另一规则 | test_each_constraint_required_and_unapproved_other_match_not_hidden |
+| 运行时导出和验收检查不读取登记且仍阻断 | test_registry_never_changes_runtime_export_or_verifier |
+
+### C：18 项映射提案（proposed, awaiting FatTank confirmation）
+
+依据：HLD §8.8 3a 的字段名单及 recon20.txt 98.6 秒的 18 控件（行 373–392）。recon20 证明表单标签/控件，不证明变量页 Name；Display Name 尚未取得可采信输出。因此下表是建议检索/核对的配对，不是登记事实，尤其带推测的字段名不能直接写进配置。确认需 recon25 的 Name / Display Name / Value 形状与对照结果。所有 shipped variable/encoding 保持 null。
+
+| 序号 | 表单属性 | 建议变量 Name | 依据/待核 |
+|---|---|---|---|
+| 0 | BUILD_TYPE | BUILD_TYPE | 同名提案；枚举编码待核 |
+| 1 | BASE_REPOS | BASE_REPOS | 同名；已有五变量读取名单 |
+| 2 | BUILD_CONF | BUILD_CONF | 同名；已有五变量读取名单 |
+| 3 | PRODUCT_REPOS | PRODUCT_REPOS | 同名；已有五变量读取名单 |
+| 4 | ARCH | ARCH | 同名提案；枚举待核 |
+| 5 | PACKAGE_LIST | PACKAGE_LIST | 同名；按解析结果 |
+| 6 | GITURL | GITURL | 同名提案；显示标签与实际值待核 |
+| 7 | SHELVE_LIST | SHELVE_LIST | 同名；当前提交范围必须空 |
+| 8 | KS_LIST | KS_LIST | 同名提案；双列表/recorder 编码待核 |
+| 9 | Product Version (ks) | PRODUCT_VERSION | 推测，须用 Display Name/对照值确认 |
+| 10 | rpm Add & Delete | RPM_ADD_DELETE | 推测，含 ks/Image 标签语义待核 |
+| 11 | PACKAGE_LIST (DELETE) | PACKAGE_LIST_DELETE | 推测，后缀实际写法待核 |
+| 12 | PACKAGE_LIST (x86 arch) | PACKAGE_LIST_X86 | 推测，后缀实际写法待核 |
+| 13 | Ignore package build failure? | IGNORE_PACKAGE_BUILD_FAILURE | 推测，复选框布尔编码待核 |
+| 14 | Keep 'Full' build type | KEEP_FULL_BUILD_TYPE | 推测，复选框布尔编码待核 |
+| 15 | Image Skip? | IMAGE_SKIP | 推测，yes/no 与变量编码待核 |
+| 16 | EMAIL_CC | EMAIL_CC | 同名提案；不影响构建比较 |
+| 17 | EXTRA_BUILD_PARAMETER | EXTRA_BUILD_PARAMETER | 同名提案；文本比较继续未核验 |
+
+### D：同一会话 A + B1 构建机验收
+
+选择“准确两条命令”方案，不新增编排入口。命令见 FatTank 手册新增 B1.1 节；下列 && 确保 A 失败时不继续 B1。EXPECTED_COMMIT 必须用本次交付的完整提交号；VD_CONFIG、B21_SAVED_DIR、B21_ROWS、B21_LINKS 使用构建机已有原配置及独立基线绝对路径，不向仓库写真实配置。
+
+```bash
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11_real.sh "$EXPECTED_COMMIT"   --config "$VD_CONFIG" --saved-dir "$B21_SAVED_DIR"   --rows "$B21_ROWS" --links "$B21_LINKS" &&
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT"   --config "$VD_CONFIG"
+```
+
+两条均要求同一完整 HEAD、本线源码干净、同解释器离线套件全绿；只在各自新建 data_root 子目录写产物。A 只读报告与 P4（不代登录），B1 无登录 HTTP doctor/两次查号；均不打开浏览器/不提交。19270877 只作第二次只读查号，不取作输入。真实构建机结果仍待执行。
+
+### B1.1 完整测试与证据
+
+两种解释器完整套件各 232 项 PASS（B1 216 项 + B1.1 10 项 + Q02 6 项）；三条 import 约束、76 个源码/入口 Python 3.10 语法/标准库检查、B1 静态边界检查通过。输出第一行是实际解释器版本。继续使用 import-linter==2.3、nice 19、串行执行和支持的 tmpfs 临时目录选项；不改原超时。新证据统一放 evidence-b11/，不覆盖 B1/A 历史证据。
+
+
+| 解释器 | 全文 | SHA256 | 结果 |
+|---|---|---|---|
+| Python 3.10.12 | `evidence-b11/test-output-python310.txt` | `7b4d98d12b33fe5a150ec2572a65c229de0dd5a2f6ba33be243fb39dc31c1f4d` | 232 PASS / 43.403 秒 |
+| Python 3.12.3 | `evidence-b11/test-output-python312.txt` | `5529f26b3a0e163b95f1bad3d170f231aa9b519b99e8a3c601ad6418c54211d9` | 232 PASS / 42.485 秒 |
+
+源码清单 source-manifest.json 含 103 个本线源码/脚本/配置/夹具文件，最终运行后字节不变；validation.json 记录结论。本机构建机配置仅本地加载 PASS（config-load-check.json），不输出值、不移动、不改配置、不联网。未进行真实 A/B1 构建机验收。旧运行根的 build-lists 不会迁移或覆盖；历史归一化值与新原样 Value 不同也会停止，需人工核对，不能虚构升级前的首次原值。
+
+Q02 前的 226 项日志保留为 evidence-b11/before-q02-python310.txt 与 before-q02-python312.txt；prepush-before-q02.json 仅是当时阻塞的历史记录，已由裁定和 prepush-final.json 取代。本次最终验证以上表 232 项日志为准。recon23-archive.json 记录脚本及登记摘要；全部变更文件的仓库凭据预检通过。

@@ -1,0 +1,243 @@
+{
+  "allowed": false,
+  "blocking_decision": "B3a11-Q02",
+  "pattern_count": 8,
+  "runtime_patterns_unchanged": true,
+  "checks": [
+    {
+      "path": "docs/enhance/batch3a-1.1/DELIVERY.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/FATTANK-B1-MANUAL.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11/config-load-check.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11/recon23-archive.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11/source-manifest.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11/test-environment.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11/test-output-python310.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11/test-output-python312.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b11/validation.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/recon_scripts.txt",
+      "allowed": false,
+      "credential_hits": [
+        {
+          "pattern_index": 2,
+          "line": 18
+        },
+        {
+          "pattern_index": 2,
+          "line": 18
+        },
+        {
+          "pattern_index": 2,
+          "line": 23
+        },
+        {
+          "pattern_index": 2,
+          "line": 237
+        },
+        {
+          "pattern_index": 2,
+          "line": 237
+        },
+        {
+          "pattern_index": 2,
+          "line": 241
+        },
+        {
+          "pattern_index": 2,
+          "line": 381
+        },
+        {
+          "pattern_index": 2,
+          "line": 405
+        },
+        {
+          "pattern_index": 2,
+          "line": 504
+        },
+        {
+          "pattern_index": 2,
+          "line": 528
+        },
+        {
+          "pattern_index": 2,
+          "line": 631
+        },
+        {
+          "pattern_index": 2,
+          "line": 655
+        },
+        {
+          "pattern_index": 2,
+          "line": 769
+        },
+        {
+          "pattern_index": 2,
+          "line": 769
+        },
+        {
+          "pattern_index": 2,
+          "line": 1211
+        },
+        {
+          "pattern_index": 2,
+          "line": 1398
+        },
+        {
+          "pattern_index": 2,
+          "line": 1598
+        },
+        {
+          "pattern_index": 3,
+          "line": 15
+        },
+        {
+          "pattern_index": 3,
+          "line": 234
+        }
+      ],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/bm_pages.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/bm_reader.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/build_inputs.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/locks.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_claim.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/variable_pages.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/versions.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/bm_helpers.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a1.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b1.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b11.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b1_transport.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a1_extra.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-submit/README.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-submit/SKILL.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    }
+  ],
+  "historical_only": true,
+  "superseded_by": "B3a11-Q02 approval; separate archive and prepush-final.json"
+}

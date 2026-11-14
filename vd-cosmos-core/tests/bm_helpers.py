@@ -19,8 +19,14 @@ def detail(b='900', h='500', *, state='failed', config='4362', hub_host='hub.exa
             '<h2>Summary</h2><table><tr><th>Id</th><th>Status</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr>'
             f'<tr><td>{b}</td><td>{state}</td><td>{begin}</td><td>{duration}</td><td>Build_Runner</td></tr></table>')
     if variables is not None:
-        page += '<table>' + ''.join(f'<tr><td>{escape(k)}</td><td>{escape(v)}</td></tr>' for k,v in variables.items()) + '</table>'
+        page += variable_table(variables)
     return page.encode()
+
+
+def variable_table(values):
+    return ('<table><thead><tr><th>Name</th><th>Display Name</th><th>Value</th></tr></thead><tbody>' +
+            ''.join(f'<tr><td>{escape(k)}</td><td>Display label only</td><td><pre>{escape(v)}</pre></td></tr>'
+                    for k, v in values.items()) + '</tbody></table>')
 
 
 def history(ids, *, first=1, total=None, next_url=None, versions=None, begin=DATE, running=False):
