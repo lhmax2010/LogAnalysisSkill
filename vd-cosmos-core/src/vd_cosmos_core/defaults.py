@@ -44,14 +44,13 @@ def configure(raw):
         positive(raw['poll'], key, default)
     positive(raw.setdefault('loop', {}), 'max_uncounted_skip_s', 1800)
     p4 = raw.setdefault('p4', {})
-    values = {'port': 'example.invalid:1666', 'user': 'configure-user',
-              'expected_server_address': 'example.invalid:1666', 'no_client_name': 'vd-cosmos-noclient',
+    values = {'no_client_name': 'vd-cosmos-noclient',
               'unknown_client_marker': '*unknown*', 'read_config_name': None,
               'tickets_file': str(Path.home() / '.p4tickets'), 'executable': 'p4',
               'version': '2026.1', 'output_protocol': '-G', 'code0_table': CODE0_TABLE}
     for key, value in values.items():
         p4.setdefault(key, value)
-    for key in ('port', 'user', 'expected_server_address', 'no_client_name', 'unknown_client_marker', 'tickets_file', 'executable', 'version'):
+    for key in ('no_client_name', 'unknown_client_marker', 'tickets_file', 'executable', 'version'):
         if not isinstance(p4[key], str) or not p4[key] or any(c in p4[key] for c in '\r\n\0'):
             raise ValueError()
     if p4['output_protocol'] != '-G' or not isinstance(p4['code0_table'], dict):

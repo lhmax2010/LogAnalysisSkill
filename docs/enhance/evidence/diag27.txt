@@ -1,0 +1,50 @@
+== diag27 start 2026-11-14 19:44:45 python 3.10.12
+== P1 p4 config (keys present, non-secret values)
+   keys: ['config_file', 'env']
+   port: '<default>'
+   user: '<default>'
+   expected_server_address: '<default>'
+   no_client_name: '<default>'
+   unknown_client_marker: '<default>'
+   tickets_file: '<default>'
+   executable: '<default>'
+   version: '<default>'
+   output_protocol: '<default>'
+   read_config_name: '<default>'
+   code0_table versions: <default table>
+   data_root: /home1/chengkai/vd-cosmos/run
+== P2 p4 commands with the adapter environment (P4CONFIG=<nonexistent>, P4ENVIRO=/dev/null, P4TICKETS=<path>, no HOME)
+   [adapter env] ['info']: exit 1; stdout 0 bytes; stderr 141 bytes
+      stderr: Perforce client error: Connect to server failed; check $P4PORT. TCP connect to perforce:1666 failed. Temporary failure in name resolution
+      marshal records: 0 (parsed fully)
+   [adapter env] ['login', '-s']: exit 1; stdout 0 bytes; stderr 141 bytes
+      stderr: Perforce client error: Connect to server failed; check $P4PORT. TCP connect to perforce:1666 failed. Temporary failure in name resolution
+      marshal records: 0 (parsed fully)
+   [adapter env + HOME] ['info']: exit 1; stdout 0 bytes; stderr 141 bytes
+      stderr: Perforce client error: Connect to server failed; check $P4PORT. TCP connect to perforce:1666 failed. Temporary failure in name resolution
+      marshal records: 0 (parsed fully)
+   [adapter env + HOME] ['login', '-s']: exit 1; stdout 0 bytes; stderr 141 bytes
+      stderr: Perforce client error: Connect to server failed; check $P4PORT. TCP connect to perforce:1666 failed. Temporary failure in name resolution
+      marshal records: 0 (parsed fully)
+== T table structure of /overview/4362 and /history/4362 (anonymous, page 1)
+-- /overview/4362: status 200; bytes 80673
+   tables 3; "Showing x to y of N" matches 0
+   table 0: depth 0; own rows 2; class 'table table-sm'
+      header cells (3): ['Id', 'Next Build Version', 'Schedule']
+      header tags: ['th', 'th', 'th']
+   table 1: depth 0; own rows 29; class 'table table-sm datatable'
+      header cells (8): ['Requested By', 'Schedule Date', 'Priority', 'Process Status', 'Build Version', 'Configuration Path', 'Hub ID', 'Requester']
+      header tags: ['th', 'th', 'th', 'th', 'th', 'th', 'th', 'th']
+   table 2: depth 0; own rows 21; class 'table table-sm table-striped-even builds'
+      header cells (6): ['Id', 'Version', 'Begin Date', 'Duration', 'Triggered By', 'Discussions']
+      header tags: ['th', 'th', 'th', 'th', 'th', 'th']
+-- /history/4362: status 200; bytes 94745
+   tables 5; "Showing x to y of N" matches 1
+   table 0: depth 0; own rows 6; class 'table table-settings table-sm'
+   table 1: depth 1; own rows 1; class 'table table-bordered table-elements tabl…'
+   table 2: depth 1; own rows 1; class 'table table-bordered table-elements tabl…'
+   table 3: depth 0; own rows 0; class ''
+   table 4: depth 0; own rows 32; class 'table table-sm'
+      header cells (6): ['Id', 'Version', 'Master Node', 'Begin Date', 'Duration', 'Triggered By']
+      header tags: ['th', 'th', 'th', 'th', 'th', 'th']
+== diag27 end 2026-11-14 19:44:46

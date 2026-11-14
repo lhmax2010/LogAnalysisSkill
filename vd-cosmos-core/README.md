@@ -47,7 +47,7 @@ python3 vd-cosmos-workflow/scripts/run.py inbox --config CONFIG
 | network.ca_file | 可选，叠加系统信任库；始终校验证书与主机名，HTTPS 代理走 CONNECT |
 | export.allow_types / chunk_bytes | 必填；材料白名单与 UTF-8 分块字节上限（至少 4），超长单行也分块 |
 | prepush.words_file / credential_patterns | 词表可选且只告警；凭据正则必填，命中阻断导出。仅 prepush 接受已批准的行内样例豁免 |
-| p4.config_file / env | 配置文件必须在 data_root 内；连接环境只允许 P4PORT/P4USER/P4CLIENT/P4CHARSET。本批仍只生成调用计划 |
+| p4.fix_config_file | 原 config_file 的新名称；P4 读取连接不从此文件或 env 取得，读取使用显式 port/user/expected_server_address 与隔离环境 |
 | budget.disk_warning_bytes | 默认 0；每次实时 statvfs，低于阈值写待办 |
 
 新增配置都有默认值；构建机原配置可直接加载，见本批 real-config-load.json。
@@ -124,10 +124,14 @@ EXPECTED_COMMIT 必须由设计方审核，不能动态拿当前 HEAD 代填。�
 
 `vd-cosmos-submit` adds browser-free lookup, doctor and persisted request observation. Its runtime remains standard-library-only. `scripts/verify_b3a11b1_real.sh <reviewed-full-commit> --config <existing-config.json>` runs the full offline suite and then anonymous management checks under a fresh child data root. Human commands are documented only in `docs/enhance/batch3a-1.1/FATTANK-B1-MANUAL.md`.
 
-New configuration defaults: management/Hub hosts (`cosmos.bm_host`, `cosmos.hub_host`) use the configured status host / an explicit example placeholder; `bm_config_id=4362`, `bm_display_tz=Asia/Seoul`, `bm_scan_interval_s=0.2`, `bm_history_max_pages=400`, `bm_lookup_detail_max=1000`, `bm_pending_max=200`, `hub_id_slack=3000`. `bm_overview_headers` records the recon15 eleven-column queue table; `hub_link_rule=build-header-label-following-link-v1` selects the fixed header parser. Unknown structures fail closed.
+New configuration defaults: management/Hub hosts (`cosmos.bm_host`, `cosmos.hub_host`) use the configured status host / an explicit example placeholder; `bm_config_id=4362`, `bm_display_tz=Asia/Seoul`, `bm_scan_interval_s=0.2`, `bm_history_max_pages=400`, `bm_lookup_detail_max=1000`, `bm_pending_max=200`, `hub_id_slack=3000`. `bm_overview_headers` records the diag27 eight-column queue table (Requested By, Schedule Date, Priority, Process Status, Build Version, Configuration Path, Hub ID, Requester); `hub_link_rule=build-header-label-following-link-v1` selects the fixed header parser. Unknown structures fail closed.
 
 `poll.claim_margin_s=900`, `claim_wait_s=1800`, `lock_wait_s=120`, `watch_interval_s=300`, `rerun_watch_s=7200`, `expected_hours=30`. Existing report polling defaults are unchanged. Clock samples can enlarge the margin and invalidate coverage; they never invent a missing click-time sample or H_pre.
 
 `submit.target_instance`, `target_config`, `target_config_id`, `account`, `form` identify the future request target and all business fields. `hub_id_monotonic_confirmed=false` remains false until the designer registers server behavior. `submit.property_map` contains all 18 HLD properties with control index, variable, encoding, affects_build, comparison, request_text_verified and observed_values. A null variable/encoding means unregistered; `variable="not_listed"` explicitly records an absent variable. Comparisons use `cmp-v1`; recon25 and the designer follow-up confirm text shapes, so registered variable/encoding pairs now compare without the legacy `request_text_verified` gate. Unregistered/absent mappings and enum values not observed during recon remain unverified. No browser field mapping is guessed.
 
 仓库 `prepush` 支持设计方批准的归档登记 `docs/enhance/evidence/archive-exemptions.json`：仅 `docs/enhance/evidence/scripts/` 下精确路径、全文件 SHA256、行号、命中文本与规则全部匹配时排除对应命中；修改任何字节立即失效。归档文件不接受行内样例标记替代登记。运行时 `check_content`、导出、验收检查不读取此登记，仍按原凭据规则阻断。详见本批 DELIVERY 的 B3a11-Q02。
+
+B1.2：`p4.port`、`p4.user`、`p4.expected_server_address` 不再自动填占位默认值。样例仍标示占位值，使用 P4 前须填真实值；缺失、空值、`.invalid`、`configure-*`、`change-me`、`your-*` 或尖括号占位值在适配器/doctor/P4 验收使用点报退出 2、`p4_config_incomplete` 和缺失键名，不回显配置值。旧 `config_file/env` 且没有三个连接键的格式报 `p4_config_legacy_format`，提示添加 port/user/expected_server_address/tickets_file 并改名 fix_config_file。共享加载器及普通读取命令仍可使用旧配置；doctor 默认离线报告配置错误，不执行 P4 或联网。B1 验收保留 P4 配置用于 doctor 静态核对，不运行 P4。
+
+P4 非零退出且空 stdout/有 stderr 时，连接失败为 `p4_connect_failed`，其它文本错误为 `p4_text_error`，输出整段通过凭据检查后仅记录首行和 FatTank 待办；凭据命中直接阻断且不写原文。残缺/乱码 marshal 仍是 `p4_incomplete_output`。A 验收先执行一次 info → login -s，前置失败只记录一次原因，未登录保留登录提示；B1 验收 stdout 与 result.json 都记录失败阶段、lookup 的 Hub ID 和子命令错误。A+B1 shell 调用参数不变。

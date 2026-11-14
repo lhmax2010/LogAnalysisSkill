@@ -1,4 +1,4 @@
-"""Synthetic pages reproducing recon15/16/17/18/21/22/25 structure, never live data."""
+"""Synthetic pages reproducing recon15/16/17/18/21/22/25/diag27 structure, never live data."""
 from html import escape
 import copy
 import time
@@ -32,8 +32,12 @@ def variable_table(values, *, display_name=""):
 
 def history(ids, *, first=1, total=None, next_url=None, versions=None, begin=DATE, running=False):
     total = total if total is not None else len(ids)
-    text = f'<span>Showing {first} to {first + len(ids) - 1} of {total}</span>'
-    text += '<table><tr><th></th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr>'
+    # diag27: a settings table with two nested tables, an empty table, then the list.
+    text = '<table class="table table-settings table-sm">'
+    text += '<tr><td><table class="table table-bordered table-elements"><tr><td>setting</td></tr></table></td></tr>' * 2
+    text += '<tr><td>setting</td></tr>' * 4 + '</table><table></table>'
+    text += f'<span>Showing {first} to {first + len(ids) - 1} of {total}</span>'
+    text += '<table class="table table-sm"><tr><th>Id</th><th>Version</th><th>Master Node</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr>'
     for b in ids:
         version = (versions or {}).get(str(b), '[fixture-user] example-build')
         text += f'<tr><td><a href="/build/{b}">{b}</a></td><td>{version}{" 39%" if running else ""}</td><td>worker</td><td>{begin}</td><td>1 hour</td><td>Build_Runner</td></tr>'
@@ -43,13 +47,15 @@ def history(ids, *, first=1, total=None, next_url=None, versions=None, begin=DAT
 
 
 def overview(rows=(), *, sample=False):
-    text = '<table><tr>' + ''.join('<th>'+s+'</th>' for s in ('Id','Next Build Version','Schedule','Requested By','Schedule Date','Priority','Process Status','Build Version','Configuration Path','Hub ID','Requester')) + '</tr>'
+    # diag27: separate schedule, queue datatable and builds tables.
+    text = '<table class="table table-sm"><tr><th>Id</th><th>Next Build Version</th><th>Schedule</th></tr><tr><td>4362</td><td>next</td><td>schedule</td></tr></table>'
+    text += '<table class="table table-sm datatable"><tr>' + ''.join('<th>'+s+'</th>' for s in ('Requested By','Schedule Date','Priority','Process Status','Build Version','Configuration Path','Hub ID','Requester')) + '</tr>'
     for b,h in rows:
-        text += f'<tr><td><a href="/build/{b}">{b}</a></td><td></td><td></td><td>Build_Runner</td><td>{DATE}</td><td>7</td><td>RUNNING_BUILD</td><td>[fixture-user] build</td><td>PRODUCT/example/RELEASE</td><td>{h}</td><td>fixture-user</td></tr>'
-    text += '</table>'
+        text += f'<tr><td>Build_Runner</td><td>{DATE}</td><td>7</td><td>RUNNING_BUILD</td><td><a href="/build/{b}">[fixture-user] build</a></td><td>PRODUCT/example/RELEASE</td><td>{h}</td><td>fixture-user</td></tr>'
+    text += '</table><table class="table table-sm table-striped-even builds"><tr><th>Id</th><th>Version</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th><th>Discussions</th></tr>'
     if sample:
-        text += '<table><tr><th>Id</th><th>Version</th><th>Begin Date</th><th>Duration</th></tr>'
-        text += f'<tr><td>900</td><td>test 39%</td><td>{DATE}</td><td>1h:00m:00s</td></tr></table>'
+        text += f'<tr><td>900</td><td>test 39%</td><td>{DATE}</td><td>1h:00m:00s</td><td>Build_Runner</td><td></td></tr>'
+    text += '</table>'
     return text.encode()
 
 

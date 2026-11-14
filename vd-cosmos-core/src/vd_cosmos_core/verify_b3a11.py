@@ -72,7 +72,8 @@ def command(config, repo, directory, env, skill, args):
     if run.returncode or value.get('exit_code', 0):
         code = run.returncode if run.returncode in {2, 3, 4, 5, 6} else 5
         raise FlowError(code, 'acceptance_skill_failed', skill=skill,
-                        child_error=value.get('error'), todo=value.get('details', {}).get('todo'))
+                        child_error=value.get('error'), child_details=value.get('details', {}),
+                        todo=value.get('details', {}).get('todo'))
     return value
 
 
@@ -113,9 +114,12 @@ def snapshots(config, repo, directory, env, config_path, logs):
     if len(logs) != 7 or len({json.dumps(x['key'], sort_keys=True) for x in logs}) != 7:
         raise FlowError(6, 'expected_seven_failed_packages')
     # Check authentication before reading variables or attempting package work.
-    adapter = P4Adapter(config)
-    adapter.login_status()
-    adapter.info()
+    try:
+        adapter = P4Adapter(config)
+        adapter.info()
+        adapter.login_status()
+    except FlowError as error:
+        raise FlowError(error.code, error.reason, **error.details, stage='p4_preflight') from None
     common = ['--config', str(config_path), '--backend', 'real', '--build-id', '19091860']
     command(config, repo, directory, env, 'vd-cosmos-fetch', ['base-list', *common])
     rows = []
@@ -191,7 +195,7 @@ def execute(args, repo):
     except FlowError as error:
         result.update(error.as_dict(), verdict='FAIL')
         result['summary'] = result['details'].pop('summary_rows', result['summary'])
-        if not result['summary']:
+        if not result['summary'] and error.details.get('stage') != 'p4_preflight':
             result['summary'] = [{'package': log['key'], 'source_line_check': ['未核对'],
                 'path_class': [], 'shelve_handling': [], 'status': '未执行',
                 'error': error.reason, 'exit_code': error.code}
@@ -212,7 +216,8 @@ def execute(args, repo):
         print(todo['command'], file=sys.stderr)
     return {'commit': head, 'python': result['python'], 'exit_code': result['exit_code'],
             'verdict': result['verdict'], 'summary': result['summary'], 'result_file': artifact,
-            **({'todo': todo} if todo else {})}
+            **({'todo': todo} if todo else {}),
+            **({k: result[k] for k in ('error', 'details') if k in result})}
 
 
 def main(argv=None):

@@ -6,6 +6,7 @@ import shutil
 import subprocess
 
 from .errors import FlowError
+from .p4 import validate_config
 
 
 def php_packages():
@@ -31,6 +32,12 @@ def doctor(config, *, reader=None, package_probe=php_packages):
               'installations_performed': False, 'timezone_check': '未执行（离线默认）'}
     if not php['verified'] or php['count']:
         result.update(exit_code=6, php_constraint='需要人工检查；本工具不安装或卸载')
+    try:
+        validate_config(config)
+        result['p4_config'] = {'valid': True}
+    except FlowError as error:
+        result.update(error.as_dict(), p4_config={'valid': False, **error.as_dict()})
+        return result
     if reader is None: return result
     overview = reader.overview(); samples = overview['samples']
     if not samples:

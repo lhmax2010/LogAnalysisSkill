@@ -305,3 +305,31 @@ recon25 E 当时未覆盖窗口（in window 0），不能用作重跑否定证�
 本次新增四项回归，原测试按新裁定更新；validation.json、source-manifest.json 和 archive-verification.json 位于 evidence-b11-followup/，保留上一批日志不覆盖。原真实 config.json 仅本地加载，未更改或提交；加载留证 config-load-check.json。凭据预检记录 prepush-final.json。无未闭合阻塞问题；本机未执行构建机验收，FatTank 仍需按 D 的两条命令验收本次完整提交。
 
 归档保真说明：git diff --check 仅对 recon25.txt 原件的 126 行报行尾空格；为保持指定 SHA256 原样保留，未修改 Git 配置。其余文件空白检查通过。这是原证据格式，不是凭据豁免。
+
+## B1.2：首次构建机验收反馈修复（设计方 2026-11-14）
+
+基线 ba12cba3c58b9f600370db80b4b612d42316cd99。设计方反馈首次真实 A+B1 运行的是 b6cb372：A 退出 5，7 包均为 p4_incomplete_output；B1 退出 5，doctor/lookup 为 bm_table_unrecognized。真实机的离线套件、contracts、读取侧检查、变量页 base 清单均已通过。以上是设计方交付的真实运行结论，本机没有访问构建机。diag27 补充核实旧配置仅有 config_file/env，P4 失败为 exit 1 / 空 stdout / 文本 stderr，及真实页面多表布局。此反馈不等于 A/B1 整体通过；修复后仍须真实重验。
+
+证据原件：docs/enhance/evidence/diag27.txt，SHA256 1922925ca406a43936ed2590e6d86829b0c2286d8c411b6a0f84a017d00c831e；原脚本 docs/enhance/evidence/scripts/diag27.py，SHA256 f0ed943e308d21035d0b0ff7f7494edec5db84c9963356b5b5450b4015934a9b。均与 Downloads 原件逐字节相同、未执行脚本。第 11 行正则归档登记按 B3a11-Q02；第 7 行词表字面量（规则索引 3）由 B3a11-Q03 明确批准，同样精确登记；不改变原字节或凭据规则。原因：credential-name word list used for redaction; no credential value。登记 JSON 使用 Unicode 转义表示精确文本/规则，解码值不变，不对登记文件本身加豁免。
+
+| 要求 | 文件与行为 | 新回归测试（vd-cosmos-core/tests/test_batch3a11b12.py） |
+|---|---|---|
+| 1 overview 三表/队列八列 | submit_config.py 与 config.sample.json 改八列默认；listing 既有逻辑只校验匹配队列表，排除 schedule 与 builds 表；bm_helpers.py 重建三张顶层表和类名 | test_real_overview_three_tables_queue_eight_headers_only（旧 11 列配置必失败） |
+| 1 history 五表/嵌套 | bm_helpers.py 重建 6 行 settings（两嵌套 table）、空 table、6 列列表；已知类名使用 diag27 输出，嵌套类名只用记录中可见前缀，不猜被省略后缀 | test_real_history_five_tables_nested_settings_do_not_become_rows |
+| 2 P4 文本错误 | p4.py 非零/空 stdout/有 stderr 分 connect_failed 与 text_error；整段凭据检查后仅首行 message + FatTank todo；乱码/截断仍 incomplete；fake_p4.py 新模式 | test_p4_plain_stderr_connection_text_and_incomplete_protocol；test_p4_stderr_credentials_blocked_before_message_or_todo |
+| 3 使用点校验 | defaults.py 去除三个连接参数静默默认；p4.validate_config 在适配器构造和 doctor 调用，verifiers 通过这些使用点校验；旧配置仍能加载/读报告；sample config_file 改 fix_config_file | test_p4_missing_placeholder_validation_only_at_use_sites；test_p4_legacy_config_loads_read_side_and_doctor_gives_migration |
+| 4 A 前置只失败一次 | verify_b3a11.snapshots：info → login -s 在包循环之前；前置失败附 stage=p4_preflight，无重复 7 行错误；登录提示保留；每包快照自己的上下文核验不删 | test_preflight_info_failure_once_before_any_package_or_fetch；test_preflight_info_then_login_failure_with_command；test_a_preflight_failure_summary_has_single_reason_and_no_seven_errors |
+| 5 B1 子命令诊断 | verify_b3a11b1 保留经过凭据检查的原 P4 配置供 doctor；failed_command 记 doctor 或 lookup+hub_id、错误和子错误，stdout/result.json 相同；command helper 保留安全 child_details | test_b1_child_failure_keeps_doctor_or_lookup_hub_and_error_in_both_outputs；test_child_command_keeps_credential_checked_details |
+
+样例的占位连接参数仍必须替换；测试统一给假 P4 显式 127.0.0.1/fixture-user 参数，假程序绝不连接 socket。未改真实 config.json。原构建机配置应迁移后再验收，报错只列键名和固定说明，不回显敏感值。B2 未开始；A+B1 构建机命令及参数不变（本文件 D 节），EXPECTED_COMMIT 用本次交付完整提交号。
+
+B1.2 全量测试：Python 3.10 语法/标准库检查、三条 import 约束（import-linter==2.3）及 B1 静态边界均通过；nice 19 串行，tmpfs 临时目录，未调整超时。
+
+| 解释器 | 完整输出 | SHA256 | 结果 |
+|---|---|---|---|
+| Python 3.10.12 | `evidence-b12/test-output-python310.txt` | `cb7e5a219a9a700fb848b7fb923e02e0f7261cb376d8d4b2e7334419f993cc0f` | 247 PASS / 46.163 秒 |
+| Python 3.12.3 | `evidence-b12/test-output-python312.txt` | `e94de79163ab7d9a1e66a91596911f50fb7768a956d921fd5dcc802018859ea4` | 247 PASS / 43.849 秒 |
+
+新增 11 项回归。evidence-b12/config-load-check.json 证明真实旧配置共享加载 PASS、P4 使用点报预期 p4_config_legacy_format；未改原件、未执行 P4。validation.json/source-manifest.json 记录源码和运行结果。B3a11-Q03 已闭合：diag27.py 第 7 行词表字面量（规则索引 3）和第 11 行会话删除正则（规则索引 2）分别获批且精确登记，最终凭据预检通过；A+B1 命令仍不变。旧 prepush-before-q03.json 仅保存裁定前历史阻塞，最终以 prepush-final.json 为准。
+
+设计方常设授权（2026-11-14）：对设计方提供且声明 SHA256 的证据脚本，可直接登记用于检测、过滤或脱敏凭据的正则/词表字面量命中；严格沿用 Q02 精确约束，每条列入 DELIVERY，无需再次询问。命中像实际票据、口令、Cookie、token 或会话值，或脚本并非设计方提供且声明摘要时，必须停止询问。此授权不适用于运行时检查或其它文件。

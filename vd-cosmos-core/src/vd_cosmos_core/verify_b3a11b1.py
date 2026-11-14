@@ -20,7 +20,7 @@ def execute(args, repo):
     if subprocess.check_output(['git', '-C', str(repo), 'status', '--porcelain=v1', '--untracked-files=all', '--', *ROOTS]):
         raise FlowError(6, 'owned_source_tree_dirty')
     original = load_config(args.config)
-    raw = {k: deepcopy(original.raw[k]) for k in ('cosmos', 'fetch', 'network', 'poll', 'loop', 'budget', 'prepush', 'export', 'submit') if k in original.raw}
+    raw = {k: deepcopy(original.raw[k]) for k in ('cosmos', 'fetch', 'network', 'poll', 'loop', 'budget', 'prepush', 'export', 'submit', 'p4') if k in original.raw}
     reject_secret_settings(raw)
     inspected = deepcopy(raw); inspected['prepush'].pop('credential_patterns', None)
     safe_bytes(original, json_bytes(inspected))
@@ -34,12 +34,16 @@ def execute(args, repo):
     for name in ('tmp', 'cache'): (directory / name).mkdir()
     env = child_env(directory)
     result = {'commit': head, 'python': sys.version.split()[0], 'exit_code': 0, 'checks': [], 'data_root': str(directory)}
+    current = {'command': 'contracts'}
     try:
         result['contracts'] = contracts(config, repo, directory, env)
+        current = {'command': 'offline_tests'}
         result['offline_tests'] = offline_tests(config, repo, directory, env)
         base = ['--config', str(config_path), '--backend', 'real']
+        current = {'command': 'doctor'}
         result['doctor'] = command(config, repo, directory, env, 'vd-cosmos-submit', ['doctor', '--online', *base])
         for hub, expected in [('37491096', '19270912'), ('37491058', '19270877')]:
+            current = {'command': 'lookup', 'hub_id': hub}
             value = command(config, repo, directory, env, 'vd-cosmos-submit', ['lookup', '--hub-id', hub, *base])
             passed = value['result'] == '唯一' and [x['build_id'] for x in value['candidates']] == [expected]
             result['checks'].append({'hub_id': hub, 'expected': expected, 'result': value['result'],
@@ -47,11 +51,12 @@ def execute(args, repo):
                                      'coverage': value['coverage'], 'read_only': True, 'pass': passed})
             if not passed: raise FlowError(6, 'lookup_acceptance_mismatch')
     except FlowError as error:
-        result.update(error.as_dict())
+        result.update(error.as_dict(), failed_command={**current, **error.as_dict()})
     result['verdict'] = 'PASS' if result['exit_code'] == 0 else 'FAIL'
     path = atomic_write(original.data_root, directory / 'result.json', safe_bytes(config, json_bytes(result)))
     return {'commit': head, 'python': result['python'], 'exit_code': result['exit_code'], 'verdict': result['verdict'],
-            'result_file': path, 'checks': result['checks']}
+            'result_file': path, 'checks': result['checks'],
+            **({k: result[k] for k in ('error', 'details', 'failed_command') if k in result})}
 
 
 def main(argv=None):

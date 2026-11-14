@@ -33,8 +33,28 @@ def decode(record):
             for k, v in record.items()}
 
 
+def validate_config(config):
+    """Validate P4 only at its use sites; shared read-side loading stays usable."""
+    p4 = config.raw.get('p4', {})
+    required = ('port', 'user', 'expected_server_address')
+    if any(k in p4 for k in ('config_file', 'env')) and not any(k in p4 for k in required):
+        raise FlowError(2, 'p4_config_legacy_format',
+            message='P4 read side needs port, user, expected_server_address, tickets_file; rename config_file to fix_config_file.')
+    missing = []
+    for key in required:
+        value = p4.get(key)
+        if (not isinstance(value, str) or not value.strip() or value != value.strip()
+                or any(c in value for c in '\r\n\0')
+                or re.search(r'(?i)(?:\.invalid(?:[:/]|$)|^configure[-_]|^change[-_]?me$|^your[-_]|<[^>]*>)', value)):
+            missing.append(key)
+    if missing:
+        raise FlowError(2, 'p4_config_incomplete', missing=missing,
+                        message='Configure P4 port, user and expected_server_address before using P4.')
+
+
 class P4Adapter:
     def __init__(self, config, *, tickets_override=None, fixture=False):
+        validate_config(config)
         self.config, self.p4 = config, config.raw['p4']
         self.tickets_override = tickets_override
         self.executable = str(Path(__file__).resolve().parents[2] / "fixtures/p4/fake_p4.py") if fixture else self.p4["executable"]
@@ -98,6 +118,15 @@ class P4Adapter:
             raise FlowError(5, 'p4_process_start_failed') from None
         if process.returncode < 0:
             raise FlowError(5, 'p4_process_signal')
+        if process.returncode != 0 and not process.stdout and process.stderr:
+            text = process.stderr.decode('utf-8', errors='replace')
+            if not check_content(text.encode(), self.config)['allowed']:
+                raise FlowError(4, 'p4_stderr_credential_blocked')
+            reason = ('p4_connect_failed' if re.search(r'Connect to server failed', text, re.I)
+                      else 'p4_text_error')
+            first = text.splitlines()[0]
+            raise FlowError(5, reason, message=first,
+                            todo={'reason': reason, 'message': first, 'assignee': 'FatTank'})
         stream = io.BytesIO(process.stdout)
         records = []
         try:

@@ -1,0 +1,34 @@
+{
+  "base": "ba12cba3c58b9f600370db80b4b612d42316cd99",
+  "runs": [
+    {
+      "python": "Python 3.10.12",
+      "path": "docs/enhance/batch3a-1.1/evidence-b12/test-output-python310.txt",
+      "sha256": "cb7e5a219a9a700fb848b7fb923e02e0f7261cb376d8d4b2e7334419f993cc0f",
+      "tests": 247,
+      "seconds": 46.163,
+      "result": "PASS"
+    },
+    {
+      "python": "Python 3.12.3",
+      "path": "docs/enhance/batch3a-1.1/evidence-b12/test-output-python312.txt",
+      "sha256": "e94de79163ab7d9a1e66a91596911f50fb7768a956d921fd5dcc802018859ea4",
+      "tests": 247,
+      "seconds": 43.849,
+      "result": "PASS"
+    }
+  ],
+  "source_manifest_sha256": "d89769f02f1c43bb66f0e235b81ece44c210e5da432da850ee06a25b7db53699",
+  "source_files": 104,
+  "source_unchanged_after_full_runs": true,
+  "import_linter": "2.3",
+  "nice": 19,
+  "tests_serial": true,
+  "test_tmpdir_filesystem": "tmpfs",
+  "real_network_access": false,
+  "real_p4_executed": false,
+  "pending_decisions": [],
+  "closed_decisions": [
+    "B3a11-Q03"
+  ]
+}

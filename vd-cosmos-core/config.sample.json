@@ -64,9 +64,6 @@
     "bm_config_id": "4362",
     "bm_display_tz": "Asia/Seoul",
     "bm_overview_headers": [
-      "Id",
-      "Next Build Version",
-      "Schedule",
       "Requested By",
       "Schedule Date",
       "Priority",
@@ -122,7 +119,6 @@
     ]
   },
   "p4": {
-    "config_file": "settings/p4.conf",
     "port": "example.invalid:1666",
     "user": "configure-user",
     "expected_server_address": "example.invalid:1666",
@@ -160,7 +156,8 @@
     "min_ticket_minutes": 60,
     "unclassified_retry_limit": 3,
     "timeout_s": 120,
-    "min_root_depth": 5
+    "min_root_depth": 5,
+    "fix_config_file": "settings/p4.conf"
   },
   "budget": {
     "disk_warning_bytes": 1073741824

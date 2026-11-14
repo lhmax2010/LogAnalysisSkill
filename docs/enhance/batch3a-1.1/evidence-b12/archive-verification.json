@@ -1,0 +1,32 @@
+{
+  "decision": "B3a11-Q03 closed; designer 2026-11-14",
+  "script_sha256": "f0ed943e308d21035d0b0ff7f7494edec5db84c9963356b5b5450b4015934a9b",
+  "output_sha256": "1922925ca406a43936ed2590e6d86829b0c2286d8c411b6a0f84a017d00c831e",
+  "registry_sha256": "5c87742fbe879891b613f17d85cc8c0c3074aea71e48626fab269d3dca54e6ec",
+  "exemptions": [
+    {
+      "path": "docs/enhance/evidence/scripts/diag27.py",
+      "sha256": "f0ed943e308d21035d0b0ff7f7494edec5db84c9963356b5b5450b4015934a9b",
+      "line": 11,
+      "pattern_index": 2
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/diag27.py",
+      "sha256": "f0ed943e308d21035d0b0ff7f7494edec5db84c9963356b5b5450b4015934a9b",
+      "line": 7,
+      "pattern_index": 3
+    }
+  ],
+  "checks": {
+    "registered_original_passes": true,
+    "runtime_still_blocks": true,
+    "one_byte_change_blocks": true,
+    "unregistered_same_text_blocks": true,
+    "session_value_blocks": true,
+    "wrong_line_blocks": true,
+    "wrong_matched_text_blocks": true,
+    "wrong_credential_rule_blocks": true
+  },
+  "runtime_source_unchanged_since_full_suites": true,
+  "script_executed": false
+}

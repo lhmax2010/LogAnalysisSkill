@@ -185,8 +185,8 @@ class SnapshotFixTests(unittest.TestCase):
         data=run();self.assertEqual(data['files'][0]['basis_review'],'待复核')
 
     def test_expanded_login_command_checked_and_override_never_logs_in(self):
-        f=self.f;f.config.raw['p4'].update(port='p4.example.invalid:1666',user='fixture-user')
-        self.assertIn('-p p4.example.invalid:1666 -u fixture-user login',f.adapter().login_todo()['command'])
+        f=self.f;f.config.raw['p4'].update(port='127.0.0.1:1666',user='fixture-user')
+        self.assertIn('-p 127.0.0.1:1666 -u fixture-user login',f.adapter().login_todo()['command'])
         f.config.raw['p4']['tickets_file']='/fixture/nondefault tickets'
         self.assertTrue(f.adapter().login_todo()['command'].startswith("P4TICKETS='/fixture/nondefault tickets' "))
         f.config.raw['p4']['user']='Cookie: prohibited-fixture' # credential-test-sample

@@ -24,6 +24,13 @@ command = args[7:]
 with Path('fake-p4-calls.jsonl').open('a') as audit:
     audit.write(json.dumps({'args': args, 'p4_env': {k: v for k, v in os.environ.items() if k.startswith('P4')}})+'\n')
 mode = config.get('mode')
+if mode in {'connect_failed', 'text_error', 'text_secret', 'garbled'}:
+    if mode == 'garbled':
+        sys.stdout.buffer.write(b'not marshal')
+    else:
+        text = config.get('stderr', 'Perforce client error:\nConnect to server failed; fixture connection failure' if mode == 'connect_failed' else 'Perforce client error: fixture text failure')
+        print(text, file=sys.stderr)
+    raise SystemExit(1)
 if mode == 'killed':
     os.kill(os.getpid(), signal.SIGKILL)
 if mode == 'truncated':

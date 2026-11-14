@@ -1,0 +1,159 @@
+{
+  "allowed": false,
+  "pending_decision": "B3a11-Q03",
+  "checks": [
+    {
+      "path": "docs/enhance/batch3a-1.1/DELIVERY.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b12/config-load-check.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b12/source-manifest.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b12/test-output-python310.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b12/test-output-python312.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b12/validation.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/archive-exemptions.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/diag27.txt",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/diag27.py",
+      "allowed": false,
+      "credential_hits": [
+        {
+          "pattern_index": 3,
+          "line": 7
+        }
+      ],
+      "warnings": [],
+      "archive_exemptions": [
+        {
+          "path": "docs/enhance/evidence/scripts/diag27.py",
+          "sha256": "f0ed943e308d21035d0b0ff7f7494edec5db84c9963356b5b5450b4015934a9b",
+          "line": 11,
+          "pattern_index": 2
+        }
+      ]
+    },
+    {
+      "path": "vd-cosmos-core/README.md",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/config.sample.json",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/fixtures/p4/fake_p4.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/defaults.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/p4.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_config.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_doctor.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b3a11.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b3a11b1.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/bm_helpers.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/helpers.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b12.py",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    }
+  ],
+  "historical_only": true,
+  "superseded_by": "B3a11-Q03 approved; prepush-final.json"
+}

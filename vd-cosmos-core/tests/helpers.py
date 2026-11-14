@@ -10,6 +10,7 @@ REPO = CORE.parent
 def config_data(root):
     data = json.loads((CORE / "config.sample.json").read_text())
     data["p4"]["min_root_depth"] = 3
+    data["p4"].update(port="127.0.0.1:1666", user="fixture-user", expected_server_address="127.0.0.1:1666")
     data["data_root"] = str(root)
     data["cosmos"]["status_source"] = None
     data["poll"]["settle_s"] = 60

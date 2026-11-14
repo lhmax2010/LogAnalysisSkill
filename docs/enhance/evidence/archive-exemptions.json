@@ -30,6 +30,26 @@
       "reason": "regex literal that strips session ids; no credential value",
       "date": "2026-11-14",
       "approved_by": "designer 2026-11-14"
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/diag27.py",
+      "sha256": "f0ed943e308d21035d0b0ff7f7494edec5db84c9963356b5b5450b4015934a9b",
+      "line": 11,
+      "matched_text": "jsessionid\u003d",
+      "credential_rule": "jsessionid\\s*=",
+      "reason": "regex literal that strips session ids; no credential value",
+      "date": "2026-11-14",
+      "approved_by": "designer 2026-11-14"
+    },
+    {
+      "path": "docs/enhance/evidence/scripts/diag27.py",
+      "sha256": "f0ed943e308d21035d0b0ff7f7494edec5db84c9963356b5b5450b4015934a9b",
+      "line": 7,
+      "matched_text": "\u0072\u0065\u006c\u0061\u0079\u0073\u0074\u0061\u0074\u0065",
+      "credential_rule": "\u0053\u0041\u004d\u004c\u0028\u003f\u003a\u0052\u0065\u0071\u0075\u0065\u0073\u0074\u007c\u0052\u0065\u0073\u0070\u006f\u006e\u0073\u0065\u0029\u007c\u0052\u0065\u006c\u0061\u0079\u0028\u003f\u003a\u0053\u0074\u0061\u0074\u0065\u0029",
+      "reason": "credential-name word list used for redaction; no credential value",
+      "date": "2026-11-14",
+      "approved_by": "designer 2026-11-14"
     }
   ]
 }

@@ -13,6 +13,7 @@
 - 本分支只新增目录与 `docs/enhance/` 下的文件，不修改本线以外的仓库已有文件；第 3a-1 批只动 vd-cosmos-*、vd-fix-analyze、vd-fix-register 与 docs/enhance/；已有文档仅更新本文件。
 - 已有 skill 只通过命令行调用。
 - 公开仓库约束按 HLD 第 0.3 节执行：内部词表命中只告警，凭据模式命中拦截；本批代码和配置样例只用占位值。
+- 设计方常设授权（2026-11-14）：对设计方提供且声明 SHA256 的证据脚本，可直接登记用于检测、过滤或脱敏凭据的正则/词表字面量命中；严格沿用 Q02 精确约束，每条列入 DELIVERY，无需再次询问。命中像实际票据、口令、Cookie、token 或会话值，或脚本并非设计方提供且声明摘要时，必须停止询问。此授权不适用于运行时检查或其它文件。
 - 新 Session 开场先读本文件核对。
 - 每个任务收尾在同一个 commit 里更新本文件。
 - 第 2.1 批按 v0.5.4 与 B2-Q01 交付；第 3a-1 批已正式下发，只做指定读取与源码快照范围。3a-2、3a-3 等设计方后续任务，不提前实现。核心只用标准库；离线验证不访问真实服务、不执行真实 P4。提交作者/提交者 Hao Lin，普通 push，禁止强推。
@@ -36,6 +37,8 @@
 | 后续 | request/previous_report 来源留第 4 批；按后续任务实施 | P4/浏览器写操作与提交协议仍未实现 |
 
 ## 4. 当前进度
+
+- 2026-11-14 B1.2：首次真实运行 b6cb372 的离线/contract/读取/base 清单通过，A 与 B1 整体退出 5（设计方反馈）；按 diag27 修复八列队列/五表历史夹具、P4 文本错误和使用点配置校验、A 单次前置与 B1 失败命令定位。Python 3.10.12 / 3.12.3 全量各 247 项 PASS、import/静态检查通过（evidence-b12/）。原配置需迁移，修复后真实验收待重跑，A+B1 命令不变。详见 DELIVERY B1.2；B3a11-Q03 已闭合，diag27.py 第 7/11 行精确归档登记已通过凭据预检。
 
 - 2026-11-14 B1.1 追补：已核验 recon25/recon26 输出及 recon24/25/26 原脚本归档；变量页历史变化判断撤回，首读冻结仅为防御；三列表空 Display Name 夹具，已登记属性启用 cmp-v1、未登记仍未核验；同 Hub 重跑链由 recon26 补证，EMAIL_CC 提案改“变量页不列出”。第 38 行归档豁免按 B3a11-Q02 精确登记。Python 3.10.12 / 3.12.3 各 236 项 PASS、import/静态检查通过。详见 DELIVERY 的追补节与 evidence-b11-followup/；B2 未开工。
 
@@ -339,3 +342,7 @@ HLD v0.9.5 已按 mv 单独提交并普通推送，提交 `3616628442cd037e7c519
 ### B3a11-Q02（已闭合；设计方答复 2026-11-14）
 
 设计方批准原样归档到 docs/enhance/evidence/scripts/recon23.py（SHA256 b8781bd49d91512f0d2c0b6b8a4e92a0900658aa04487f54b1bca7152232ff81），recon_scripts.txt 不变；archive-exemptions.json 登记第 45 行的精确命中文本、规则、原因、日期及批准人。只有脚本目录内的原路径、全文件摘要、行号、文本及规则完全匹配才豁免；任何字节变化使豁免失效。仅仓库 prepush/archive 检查读取登记，运行时 check_content/export/verifiers、配置与其它预检不变。原件通过、字节变化、未登记文件、真实会话值及运行时隔离测试均通过。证据：docs/enhance/batch3a-1.1/evidence-b11/recon23-archive.json、DELIVERY.md 的 B1.1 节、vd-cosmos-core/tests/test_archive_precheck.py。
+
+### B3a11-Q03（已闭合；设计方答复 2026-11-14）
+
+设计方批准 diag27.py 第 7 行（规则索引 3）词表字面量归档豁免；整文件 SHA256 f0ed943e308d21035d0b0ff7f7494edec5db84c9963356b5b5450b4015934a9b。登记沿用 B3a11-Q02：限定 evidence/scripts/ 下原路径、整文件摘要、行号、精确命中文本和规则；原字节、配置和运行时凭据检查不变。原因：credential-name word list used for redaction; no credential value。证据：evidence-b12/archive-verification.json、prepush-final.json 与 DELIVERY B1.2。

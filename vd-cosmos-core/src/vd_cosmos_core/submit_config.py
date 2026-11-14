@@ -24,7 +24,7 @@ def configure(raw):
     c['bm_config_id'] = str(c['bm_config_id'])
     c.setdefault('bm_display_tz', 'Asia/Seoul')
     ZoneInfo(c['bm_display_tz'])
-    c.setdefault('bm_overview_headers', ['Id', 'Next Build Version', 'Schedule', 'Requested By', 'Schedule Date', 'Priority', 'Process Status', 'Build Version', 'Configuration Path', 'Hub ID', 'Requester'])
+    c.setdefault('bm_overview_headers', ['Requested By', 'Schedule Date', 'Priority', 'Process Status', 'Build Version', 'Configuration Path', 'Hub ID', 'Requester'])
     c.setdefault('hub_link_rule', 'build-header-label-following-link-v1')
     if c['hub_link_rule'] != 'build-header-label-following-link-v1':
         raise FlowError(2, 'unregistered_hub_link_rule')
