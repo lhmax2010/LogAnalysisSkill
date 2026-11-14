@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- 2026-11-14 Checkpoint B2c：补真实 Chrome＋127.0.0.1 请求计数测试 8 项；本机缺 Playwright，明确 SKIP，构建机必须执行。固定脚本摘要登记、提交响应归属与双进程锁测试已补；证据 evidence-b2c/，未宣称浏览器验收通过。
+
 - 2026-11-14 Checkpoint B2b：窄 Playwright 适配器、固定脚本、逐跳拒绝优先闸门、发送前 multipart 核验、确认/点击意图/结果与演练关窗协议；属性映射仍未确认。Q06–Q09 的保守限制见 DELIVERY，真实浏览器测试及构建机验收尚未通过。完整双解释器证据 evidence-b2b/。
 
 - 2026-11-14 Checkpoint B2a：once 浏览器前置、来源认定、请求保护与会话恢复已实现；完整双解释器结果见 batch3a-1.1/evidence-b2a/。B3a11-Q04/Q05 为周末保守假设，见 DELIVERY；本阶段未启动浏览器，后续 B2b–d 继续。

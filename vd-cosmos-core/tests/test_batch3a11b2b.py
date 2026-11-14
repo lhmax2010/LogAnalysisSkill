@@ -69,6 +69,26 @@ class B2bTests(B1Case):
         s=sessions.start(self.config,r,CTX,Processes());d=FakeDriver(self)
         with patch('vd_cosmos_core.submit_flow.wire_values',return_value={}):result=flow.execute(self.config,r,s,CTX,d,lambda _:r['digest'][:12],self.reader,rehearse=False)
         self.assertEqual(result['status'],'accepted');self.assertTrue(model.read(self.config,r['request_id'])['mapping_pending'])
+    def test_second_process_profile_lock_never_starts_session(self):
+        import subprocess,sys,os
+        code="from vd_cosmos_core.config import load_config;from vd_cosmos_core.submit_sessions import target_lock;from vd_cosmos_core.errors import FlowError;import sys;\ntry:\n with target_lock(load_config(sys.argv[1])): sys.exit(0)\nexcept FlowError as e: sys.exit(e.code)"
+        with sessions.target_lock(self.config):
+            child=subprocess.run([sys.executable,'-c',code,str(self.path)],capture_output=True,text=True,timeout=10)
+        self.assertEqual(child.returncode,6,child.stderr)
+        with EventStore(self.config.data_root) as store:self.assertFalse(store.events(kinds=['submit_session_started']))
+    def test_password_autofill_flag_and_rehearsal_never_arms(self):
+        r,s,d=self.setup_flow();self.fails(4,structure,self.config,dict(d.snap,password_autofill=True))
+        gate=Gate(self.config,rehearse=True);gate.recording=False;self.fails(4,gate.arm,{},'hf',intent_recorded=True)
+    def test_fixed_script_registered_digest_and_exception_redaction(self):
+        from vd_cosmos_submit import browser_scripts
+        from vd_cosmos_submit.playwright_driver import Driver
+        from hashlib import sha256
+        self.assertEqual(sha256(browser_scripts.SCRIPT.encode()).hexdigest(),browser_scripts.DIGEST)
+        r,s,d=self.setup_flow();driver=Driver(self.config,s)
+        with patch('vd_cosmos_submit.playwright_driver.submit_flow.execute',side_effect=RuntimeError('synthetic auth parameter')):
+            try:driver.operate(SimpleNamespace(rehearse=True),r,CTX,lambda _:None,self.reader)
+            except FlowError as e:self.assertEqual(e.reason,'browser_operation_failed');self.assertNotIn('synthetic',str(e.as_dict()))
+            else:self.fail('exception escaped')
     def test_browser_settings_env_and_static_negatives(self):
         self.config.raw['submit']['browser_executable']='/bin/true'
         with patch.dict('os.environ',{'DEBUG':'fixture','PWDEBUG':'fixture','DISPLAY':':9'}):

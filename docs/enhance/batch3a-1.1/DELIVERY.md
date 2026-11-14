@@ -366,3 +366,13 @@ B3a11-Q09 — assumed: 未登记 checkbox/KS 编码的演练可以回读并输�
 当前限制：lookup --via-hub 仍明确拒绝（requires_B2_browser）；没有将匿名查号替换成浏览器路径。固定脚本读取、真实请求计数、Chrome API 兼容性需 B2c/构建机证明，不能用本阶段假驱动结果代替。运行时凭据检查没有读取归档豁免。
 
 完整输出与 SHA256：evidence-b2b/python310.txt、python312.txt、validation.json。
+
+## Checkpoint B2c — 负向测试与真实浏览器计数入口
+
+新增 test_batch3a11b2_headless.HeadlessGateTests（只监听 127.0.0.1）：人工 GET/POST/弹窗/iframe 零请求；录制回调与提交零请求；精确回调最多两次；真实 FormData 单令牌只收到一次 POST 且不跟随结果跳转；错误正文零请求；同源登录/跨源 MFA 拒绝；认证回调到未登记业务页不跟随；WebSocket/service worker 零请求。计数来自服务端，而非驱动提供的人工/工具标签。
+
+本机这 8 项因 Playwright Python runtime unavailable 跳过（Chrome 已存在）。VD_REQUIRE_HEADLESS=1 时缺运行时改为测试失败；B2d 验收必须带此设置。当前不能声称逐跳拦截已获真实浏览器证明；也不能声称覆盖了 §8.8 9 的全部实际页面组合（完整 Run 双步导航、MFA 放行、Wicket 编码仍待实页演练）。
+
+其余负向检查：test_password_autofill_flag_and_rehearsal_never_arms；test_fixed_script_registered_digest_and_exception_redaction；test_browser_settings_env_and_static_negatives；test_second_process_profile_lock_never_starts_session。两进程锁测试用父进程持锁期间同步等待子进程结果，不依赖竞争时间窗。固定脚本摘要改为代码中显式登记常量，源码改动不再自动更新登记。提交结果仅接收同一 Fetch requestId 的响应，避免其它回调覆盖结果。
+
+完整输出与 SHA256：evidence-b2c/python310.txt、python312.txt、validation.json。

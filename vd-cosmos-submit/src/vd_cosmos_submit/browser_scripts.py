@@ -42,7 +42,7 @@ SCRIPT = r"""({operation,index,value,target}) => {
  }
  throw Error('operation');
 }"""
-DIGEST=sha256(SCRIPT.encode()).hexdigest()
+DIGEST='12ef12005658d4be7c66fbc8d3441a0a3822d8f5de6f71062be35eebd9467025'
 
 def arguments(operation,*,index=None,value=None,target=None,**unexpected):
     if unexpected or operation not in {'snapshot','serialize','fill'} or not isinstance(target,str):raise FlowError(4,'fixed_script_arguments_rejected')

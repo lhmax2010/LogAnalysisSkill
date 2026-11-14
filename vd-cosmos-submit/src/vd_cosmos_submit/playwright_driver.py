@@ -30,7 +30,7 @@ def settings(config,*,headless=False):
 class Driver:
     def __init__(self,config,session,*,headless=False,local_origin=None):
         self.config=config;self.session=session;self.headless=headless;self.local_origin=local_origin
-        self._pw=None;self._context=None;self._page=None;self._cdp=None;self.gate=None;self._result=None;self._fatal=None
+        self._pw=None;self._context=None;self._page=None;self._cdp=None;self.gate=None;self._result=None;self._fatal=None;self._submission_id=None
     def operate(self,args,request,context,confirm,reader_factory):
         self.gate=Gate(self.config,rehearse=args.rehearse,local_origin=self.local_origin)
         try:return submit_flow.execute(self.config,request,self.session,context,self,confirm,reader_factory,rehearse=args.rehearse)
@@ -76,7 +76,7 @@ class Driver:
             if 'responseStatusCode' in event:
                 status=event['responseStatusCode']
                 location=next((x['value'] for x in event.get('responseHeaders',[]) if x['name'].lower()=='location'),'')
-                if self.gate.sent:
+                if self.gate.sent and rid==self._submission_id:
                     self._result='accepted' if status==302 and accepted_location(self.config,url,location) else 'uncertain'
                     allow=False
                 else:allow=self.gate.response(url,status,location)
@@ -87,6 +87,7 @@ class Driver:
                 headers={k.lower():v for k,v in r.get('headers',{}).items() if k.lower() in {'content-type','wicket-ajax'}} if inspect else {}
                 body=r.get('postData','').encode() if inspect else b''
                 allow=self.gate.request(url,method,resource=event.get('resourceType',''),body=body,content_type=headers.get('content-type',''),ajax=headers.get('wicket-ajax','').lower()=='true',main_frame=event.get('frameId')==self._frame)
+                if allow and self.gate.sent and self._submission_id is None:self._submission_id=rid
             self._cdp.send('Fetch.continueRequest' if allow else 'Fetch.failRequest',{'requestId':rid} if allow else {'requestId':rid,'errorReason':'BlockedByClient'})
         except Exception:
             self._fatal='request_gate_failed'
