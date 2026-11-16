@@ -16,6 +16,7 @@ from .export import check_content
 from .files import atomic_write, digest, json_bytes, load_json
 from .p4 import P4Adapter
 from . import verify_b2
+from .verification_process import process
 
 ROOTS = ['vd-cosmos-core', 'vd-cosmos-watch', 'vd-cosmos-fetch', 'vd-cosmos-workflow',
          'vd-fix-analyze', 'vd-fix-register', 'vd-cosmos-submit']
@@ -50,17 +51,8 @@ def child_env(directory):
     return env
 
 
-def process(argv, directory, env, timeout=1800):
-    try:
-        return subprocess.run(argv, cwd=directory, env=env, capture_output=True, timeout=timeout)
-    except subprocess.TimeoutExpired:
-        raise FlowError(5, 'acceptance_process_timeout') from None
-    except OSError:
-        raise FlowError(5, 'acceptance_process_start_failed') from None
-
-
 def command(config, repo, directory, env, skill, args):
-    run = process([sys.executable, '-B', str(repo / skill / 'scripts/run.py'), *args], directory, env)
+    run = process([sys.executable, '-B', str(repo / skill / 'scripts/run.py'), *args], directory, env, config=config, artifact=directory / ('command-'+uuid.uuid4().hex+'.txt'))
     safe_bytes(config, run.stdout)
     safe_bytes(config, run.stderr)
     try:
@@ -89,10 +81,16 @@ def contracts(config, repo, directory, env):
 
 
 def offline_tests(config, repo, directory, env):
-    run = process(['bash', str(repo / 'vd-cosmos-core/scripts/run_tests.sh')], directory, env, timeout=3600)
+    try:
+        run = process(['bash', str(repo / 'vd-cosmos-core/scripts/run_tests.sh')], directory, env, timeout=3600, config=config, artifact=directory / 'offline-tests.txt')
+    except FlowError as error:
+        if error.reason=='acceptance_process_timeout':
+            raise FlowError(error.code,error.reason,**error.details,test_output=error.details.get('output_artifact')) from None
+        raise
     # Do not write raw failed-command output until it has passed the same gate.
     output = safe_bytes(config, run.stdout + run.stderr)
-    artifact = atomic_write(config.data_root, directory / 'offline-tests.txt', output)
+    path=directory / 'offline-tests.txt'
+    artifact = {'path':str(path),'size':path.stat().st_size,'sha256':digest(path.read_bytes())} if path.exists() else atomic_write(config.data_root,path,output)
     if run.returncode:
         raise FlowError(6, 'offline_suite_failed', test_output=artifact)
     return artifact
@@ -152,10 +150,10 @@ def snapshots(config, repo, directory, env, config_path, logs):
 
 
 def execute(args, repo):
-    head = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip()
+    head = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True,start_new_session=True).strip()
     if not re.fullmatch(r'[0-9a-f]{40}', args.verified_commit) or args.verified_commit != head:
         raise FlowError(6, 'expected_commit_mismatch')
-    dirty = subprocess.check_output(['git', '-C', str(repo), 'status', '--porcelain=v1', '--untracked-files=all', '--', *ROOTS])
+    dirty = subprocess.check_output(['git', '-C', str(repo), 'status', '--porcelain=v1', '--untracked-files=all', '--', *ROOTS],start_new_session=True)
     if dirty:
         raise FlowError(6, 'owned_source_tree_dirty')
     original = load_config(args.config)

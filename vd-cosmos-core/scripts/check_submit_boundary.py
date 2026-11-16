@@ -16,6 +16,10 @@ def validate(text,adapter=False):
             attr=node.func.attr
             if attr in BANNED:raise ValueError('forbidden browser API')
             if attr=='new_cdp_session' and not adapter:raise ValueError('CDP outside adapter')
+            if attr=='_defer' and len(node.args)>=2 and isinstance(node.args[1],ast.Constant) and node.args[1].value=='send':
+                if len(node.args)<3:raise ValueError('deferred CDP method')
+                first=node.args[2];values=[first.body,first.orelse] if isinstance(first,ast.IfExp) else [first]
+                if any(not isinstance(v,ast.Constant) or v.value not in CDP for v in values):raise ValueError('deferred CDP method')
             if attr=='evaluate' and (not adapter or not node.args or not isinstance(node.args[0],ast.Name) or node.args[0].id!='SCRIPT'):raise ValueError('unregistered script')
             if attr=='send' and isinstance(node.func.value,ast.Attribute) and node.func.value.attr=='_cdp':
                 if not node.args:raise ValueError('CDP method')

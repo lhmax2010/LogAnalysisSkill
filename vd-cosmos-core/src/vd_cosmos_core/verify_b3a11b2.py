@@ -13,9 +13,9 @@ from .files import atomic_write,json_bytes,digest
 from .verify_b3a11 import ROOTS,child_env,contracts,offline_tests,process,safe_bytes
 
 def execute(args,repo):
-    head=subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip()
+    head=subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True,start_new_session=True).strip()
     if not re.fullmatch('[0-9a-f]{40}',args.verified_commit) or head!=args.verified_commit:raise FlowError(6,'expected_commit_mismatch')
-    if subprocess.check_output(['git','-C',str(repo),'status','--porcelain=v1','--untracked-files=all','--',*ROOTS]):raise FlowError(6,'owned_source_tree_dirty')
+    if subprocess.check_output(['git','-C',str(repo),'status','--porcelain=v1','--untracked-files=all','--',*ROOTS],start_new_session=True):raise FlowError(6,'owned_source_tree_dirty')
     config=load_config(args.config)
     directory=config.output('verification/b3a11b2-'+uuid.uuid4().hex);directory.mkdir(parents=True,exist_ok=False)
     for name in ('tmp','cache'):(directory/name).mkdir()
@@ -28,7 +28,7 @@ def execute(args,repo):
     try:
         result['contracts']=contracts(config,repo,directory,env)
         stage='static_scan'
-        run=process([sys.executable,'-B',str(repo/'vd-cosmos-core/scripts/check_submit_boundary.py')],directory,env)
+        run=process([sys.executable,'-B',str(repo/'vd-cosmos-core/scripts/check_submit_boundary.py')],directory,env,config=config,artifact=directory/'static-scan.txt')
         path=atomic_write(config.data_root,directory/'static-scan.txt',safe_bytes(config,run.stdout+run.stderr));result['static_scan']=path
         if run.returncode:raise FlowError(4,'browser_static_scan_failed')
         stage='offline_suite_with_required_headless'

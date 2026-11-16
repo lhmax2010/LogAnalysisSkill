@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- 2026-11-17 B2.2：按 v6 反馈修复 Playwright 注册回调同步等待（WebSocket 不连接，其余动作在既有 loop 调度）；全部真实浏览器测试独立 90 秒 watchdog、失败线程栈；A/B1/B2 共用进程组 TERM→10 秒→KILL 与逃逸浏览器扫描，检查后流式写 transcript、超时保留 artifact；显式 Chromium sandbox，无降级，新增进程树参数核对。Python 3.10.12 / 3.12.3 各 323 项：313 PASS、10 SKIP（缺 Playwright；构建机强制执行），import/静态检查通过。详情/回调审计/命令/摘要见 batch3a-1.1/DELIVERY.md B2.2 与 evidence-b22/；真实回调与沙箱仍待构建机复验，无新增设计问题。
+
 - 2026-11-16 B2.1：按 v5 构建机长 TMPDIR 的 SingletonSocket 诊断，浏览器子进程改用独立 0700 短临时目录（XDG 合格则优先，否则 /tmp），close/finish/recover 均核验进程和目录身份后清理；六阶段安全启动诊断；测试与 verifier 共用 Chrome wrapper 选择；修正 verifier artifact 路径取值。Python 3.10.12 / 3.12.3 完整各 313 项：304 PASS、9 SKIP（本机缺 Playwright；原 8 项 + 长 TMPDIR 回归），import/静态检查通过；构建机 VD_REQUIRE_HEADLESS=1 强制这 9 项，真实复验待运行。详见 batch3a-1.1/DELIVERY.md 的 B2.1 与 evidence-b21/。无新增设计问题，未访问真实服务或执行提交。
 
 - 2026-11-16 B1.3：按 diag28–30b 真实页修复 tab/config/Hub h3 身份与共享 observe；按架构清单核对和快照，首读冻结与总提交输入保持分离；lookup 精简 stdout + 全量 artifact/page_errors；B1 子命令非零无 error 时保留结果/原因/产物。Q10 已闭合，七页仅定点主机脱敏，归档脚本按 Q03 登记。测试与证据见 batch3a-1.1/DELIVERY.md 的 B1.3 节及 evidence-b13/；A+B1+B2 真实验收仍需构建机执行。Python 3.10.12 / 3.12.3 各 300 项：292 PASS、8 SKIP（B2 真实浏览器测试缺 Playwright）；本批新增 14 项全部通过，import/静态检查通过。

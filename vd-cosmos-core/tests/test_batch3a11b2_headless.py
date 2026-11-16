@@ -7,6 +7,7 @@ import threading
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 from unittest.mock import patch
 from helpers import REPO
+from headless_watchdog import HeadlessWatchdog
 from test_batch3a11b1 import B1Case
 from test_batch3a11b2a import CTX,Processes
 from vd_cosmos_core import submit_model as model,submit_sessions as sessions
@@ -25,7 +26,7 @@ def browser_runtime(case):
     return exe
 
 
-class HeadlessTempTests(B1Case):
+class HeadlessTempTests(HeadlessWatchdog,B1Case):
     def test_long_inherited_tmpdir_starts_with_short_browser_only_temp(self):
         exe=browser_runtime(self)
         inherited=self.root/('long-'+('x'*130));inherited.mkdir()
@@ -66,7 +67,7 @@ class Handler(BaseHTTPRequestHandler):
         else:self.send_response(200)
         self.end_headers();self.wfile.write(b'ok')
 
-class HeadlessGateTests(B1Case):
+class HeadlessGateTests(HeadlessWatchdog,B1Case):
     def setUp(self):
         super().setUp();exe=browser_runtime(self)
         self.server=Server();self.addCleanup(self.server.close);self.config.raw['submit']['browser_executable']=exe
@@ -107,3 +108,24 @@ class HeadlessGateTests(B1Case):
     def test_service_worker_and_websocket_cannot_open_channels(self):
         self.page.evaluate("""base=>{try{new WebSocket(base.replace('http:','ws:')+'/socket')}catch(e){};navigator.serviceWorker.register('/worker.js').catch(()=>{});}""",self.server.origin)
         self.wait();self.assertEqual(self.server.calls,[])
+
+    def test_browser_process_tree_never_disables_sandbox(self):
+        from vd_cosmos_core.submit_sessions import Processes
+        profile=sessions.profile_path(self.config,self.session)
+        roots={pid for pid,_ in Processes().matching(profile)}
+        self.assertTrue(roots,'browser PID with this profile must exist')
+        processes={}
+        for item in Path('/proc').iterdir():
+            if not item.name.isdecimal():continue
+            try:
+                fields=(item/'stat').read_text().rsplit(')',1)[1].split()
+                processes[int(item.name)]=(int(fields[1]),(item/'cmdline').read_bytes().split(b'\0'))
+            except OSError:continue
+        selected=set(roots)
+        while True:
+            children={pid for pid,(parent,_) in processes.items() if parent in selected}
+            if children<=selected:break
+            selected|=children
+        self.assertTrue(selected)
+        for pid in selected:
+            if pid in processes:self.assertNotIn(b'--no-sandbox',processes[pid][1],'sandbox disabled in browser tree PID '+str(pid))

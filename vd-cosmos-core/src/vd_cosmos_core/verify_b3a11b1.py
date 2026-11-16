@@ -14,10 +14,10 @@ from .verify_b3a11 import ROOTS, child_env, command, contracts, offline_tests, r
 
 
 def execute(args, repo):
-    head = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip()
+    head = subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True,start_new_session=True).strip()
     if not re.fullmatch(r'[0-9a-f]{40}', args.verified_commit) or head != args.verified_commit:
         raise FlowError(6, 'expected_commit_mismatch')
-    if subprocess.check_output(['git', '-C', str(repo), 'status', '--porcelain=v1', '--untracked-files=all', '--', *ROOTS]):
+    if subprocess.check_output(['git', '-C', str(repo), 'status', '--porcelain=v1', '--untracked-files=all', '--', *ROOTS],start_new_session=True):
         raise FlowError(6, 'owned_source_tree_dirty')
     original = load_config(args.config)
     raw = {k: deepcopy(original.raw[k]) for k in ('cosmos', 'fetch', 'network', 'poll', 'loop', 'budget', 'prepush', 'export', 'submit', 'p4') if k in original.raw}

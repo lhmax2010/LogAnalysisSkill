@@ -1,4 +1,8 @@
 """The only optional Playwright adapter. No public page/context escape hatch."""
+# Callback rule: never call a sync Playwright method from a registered callback.
+# WebSockets remain unconnected. Other callbacks schedule coroutine work on the
+# adapter's existing loop and return immediately; only the main flow may wait.
+import inspect
 import os
 import re
 from pathlib import Path
@@ -74,7 +78,7 @@ class Driver:
             self._pw=sync_playwright().start()
             wrapper=Path(__file__).resolve().parents[2]/'scripts/browser_child.py'
             stage='launch_persistent_context'
-            self._context=self._pw.chromium.launch_persistent_context(str(profile),executable_path=str(wrapper),headless=self.headless,
+            self._context=self._pw.chromium.launch_persistent_context(str(profile),executable_path=str(wrapper),headless=self.headless,chromium_sandbox=True,
                 env=environment(self.config,profile,temp_dir),service_workers='block',accept_downloads=False,
                 ignore_default_args=['--password-store=basic','--use-mock-keychain'],
                 args=['--disable-save-password-bubble','--disable-background-networking','--disable-sync','--disable-default-apps','--disable-quic','--disable-http2','--disable-session-crashed-bubble'])
@@ -82,8 +86,8 @@ class Driver:
             self._page=self._context.pages[0] if self._context.pages else self._context.new_page()
             stage='route'
             self._context.route('**/*',self._route)
-            self._context.route_web_socket('**/*',lambda route:route.close())
-            self._context.on('page',lambda page:page.close() if page!=self._page else None)
+            self._context.route_web_socket('**/*',self._websocket)
+            self._context.on('page',self._new_page)
             stage='cdp'
             self._cdp=self._context.new_cdp_session(self._page)
             self._frame=self._cdp.send('Page.getFrameTree')['frameTree']['frame']['id']
@@ -94,13 +98,41 @@ class Driver:
             details=launch_diagnostic(self.config,error,stage)
             try:self.close()
             except FlowError:details['cleanup']='unverified; recovery required'
+            if stage=='launch_persistent_context' and re.search(r'(?i)sandbox|zygote_host_impl_linux|operation not permitted.*user.?namespace',str(error)):
+                raise FlowError(6,'browser_sandbox_unavailable',**details) from None
             raise FlowError(5,'browser_start_failed',**details) from None
+    def _defer(self, owner, method, *args):
+        """One guarded bridge to Playwright's coroutine implementation, no _sync.
+
+        The sync facade has no public non-waiting send. Fail closed if the
+        installed adapter lacks this bridge; never fall back to a blocking call.
+        """
+        coroutine=None
+        try:
+            if method not in {'abort','continue_','close','send'}:raise ValueError()
+            impl=owner._impl_obj;function=getattr(impl,method)
+            if not inspect.iscoroutinefunction(function) or not impl._loop.is_running():raise ValueError()
+            coroutine=function(*args)
+            task=impl._loop.create_task(coroutine)
+            task.add_done_callback(self._deferred_done)
+        except Exception:
+            if coroutine is not None:coroutine.close()
+            self._fatal='browser_callback_dispatch_failed'
+    def _deferred_done(self,task):
+        if task.cancelled():return
+        if task.exception() is not None:self._fatal='browser_callback_dispatch_failed'
+    def _websocket(self,route):
+        # Not connecting is the mock/block operation. Even close() can deadlock
+        # a sync callback; do not call it, connect_to_server(), or inspect frames.
+        return None
+    def _new_page(self,page):
+        if page!=self._page:self._defer(page,'close')
     def _route(self,route):
         try:
-            if route.request.frame!=self._page.main_frame:route.abort();return
-            route.continue_()
+            if route.request.frame!=self._page.main_frame:self._defer(route,'abort');return
+            self._defer(route,'continue_')
         except Exception:
-            try:route.abort()
+            try:self._defer(route,'abort')
             except Exception:pass
     def _paused(self,event):
         rid=event['requestId'];r=event['request'];url=r['url'];method=r['method'];allow=False
@@ -120,10 +152,10 @@ class Driver:
                 body=r.get('postData','').encode() if inspect else b''
                 allow=self.gate.request(url,method,resource=event.get('resourceType',''),body=body,content_type=headers.get('content-type',''),ajax=headers.get('wicket-ajax','').lower()=='true',main_frame=event.get('frameId')==self._frame)
                 if allow and self.gate.sent and self._submission_id is None:self._submission_id=rid
-            self._cdp.send('Fetch.continueRequest' if allow else 'Fetch.failRequest',{'requestId':rid} if allow else {'requestId':rid,'errorReason':'BlockedByClient'})
+            self._defer(self._cdp,'send','Fetch.continueRequest' if allow else 'Fetch.failRequest',{'requestId':rid} if allow else {'requestId':rid,'errorReason':'BlockedByClient'})
         except Exception:
             self._fatal='request_gate_failed'
-            try:self._cdp.send('Fetch.failRequest',{'requestId':rid,'errorReason':'BlockedByClient'})
+            try:self._defer(self._cdp,'send','Fetch.failRequest',{'requestId':rid,'errorReason':'BlockedByClient'})
             except Exception:pass
     def _check(self):
         if self._fatal or self.gate.fatal:raise FlowError(4,self._fatal or self.gate.fatal)

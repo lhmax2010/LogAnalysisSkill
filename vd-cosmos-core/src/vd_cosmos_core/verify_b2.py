@@ -4,6 +4,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 import ipaddress
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -13,6 +14,7 @@ from types import SimpleNamespace
 from urllib.parse import urlsplit
 import uuid
 from .config import load_config
+from .verification_process import process as checked_process
 from .network_proof import prove_remote, peer_is_remote
 from .transport import not_a_log
 from .errors import FlowError
@@ -151,11 +153,11 @@ def run(args, config, directory, result, repo, config_path):
     if result['A']['verdict'] == 'PASS' and result['B']['verdict'] == 'PASS':
         try:
             budget = required_budget
-            process = subprocess.run(command, cwd=config.data_root, capture_output=True, text=True, timeout=budget)
+            process = checked_process(command, directory, os.environ, timeout=budget, config=config, artifact=directory/'E-loop.txt')
             loop_result = json.loads(process.stdout)
-        except subprocess.TimeoutExpired:
-            process = SimpleNamespace(returncode=5)
-            loop_result = {'exit_code': 5, 'error': 'acceptance_loop_deadline'}
+        except FlowError as error:
+            process = SimpleNamespace(returncode=error.code)
+            loop_result = error.as_dict()
     else:
         process = SimpleNamespace(returncode=6)
         loop_result = {'exit_code': 6, 'error': 'acceptance_loop_prerequisite_failed'}

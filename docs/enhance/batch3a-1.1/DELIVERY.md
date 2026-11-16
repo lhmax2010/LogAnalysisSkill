@@ -521,3 +521,74 @@ nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT"
 ```
 
 该入口只跑 contract、静态检查和完整离线套件（强制 9 项真实 headless 本地测试），不连接真实 Cosmos/Hub/P4，也不调用 live once/rehearse。B2 属性映射未确认的既有限制保持。
+
+
+## Checkpoint B2.2 — 回调不等待、测试看门狗、验收进程清理与沙箱（2026-11-17）
+
+基线 `2d2fc7c7446999b58f77e4fd6fc7c6b04949ae37`。设计方 v6 构建机反馈：B2.1 已解决长 TMPDIR 启动问题；隔离运行时长 TMPDIR 测试通过，WebSocket 测试在同步回调里的 close() 卡住，A 完整套件达到 3600 秒。此前只杀 shell，留下 unittest/Chrome；Chrome 默认带 no-sandbox。此为设计方提供的实测结论，本机没有访问构建机或重新执行真实服务检查。
+
+### 回调审计与实现
+
+`vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py` 顶部明确：注册回调不得调用同步 Playwright 方法，主流程才允许等待。
+
+| 注册位置 / 回调 | 处理方式 |
+|---|---|
+| context.route / _route | 只读缓存的 request/frame 属性，调度 coroutine abort/continue 后立即返回 |
+| context.route_web_socket / _websocket | 不连接、不 close、不读帧；保持 mocked/unconnected。CDP Fetch 的拒绝规则仍保留 |
+| context.on('page') / _new_page | 非主页面只调度 coroutine close，不同步关闭 |
+| CDP Fetch.requestPaused / _paused | 原闸门计算与请求归属保持；CDP continue/fail 只调度，不在回调等待 |
+| asyncio Task done / _deferred_done | 仅检查已结束任务是否失败；失败记固定 browser_callback_dispatch_failed，不保存异常文本 |
+
+同步 API 没有公开的 fire-and-forget 入口，因此仅在适配器 `_defer` 中使用 Playwright coroutine implementation 的 `_impl_obj` / `_loop.create_task` 桥接；只允许 abort/continue_/close/send，要求实现方法为 coroutine 且循环运行中。不兼容时记固定失败、保持请求阻断，绝不退回同步回调调用。静态检查同时约束 deferred CDP 方法白名单。脚本化异步实现测试证明回调返回时没有调用 sync facade、调度动作随后执行；真实 Playwright 1.64.1 上的回调桥仍由构建机强制测试验证。
+
+所有 launch（headless/headed）显式 `chromium_sandbox=True`。明确 sandbox/zygote/namespace 启动错误映射为 `FlowError(6, browser_sandbox_unavailable)`，带 B2.1 凭据检查后的阶段诊断；其它启动错误保留 browser_start_failed。没有不带沙箱的重试或降级。新增真实测试从本 profile 的进程开始，沿 /proc 父子关系检查整棵浏览器树的 argv 不含 no-sandbox。
+
+### 有界测试和验收器
+
+`vd-cosmos-core/tests/headless_watchdog.py` 将每个真实浏览器测试（含 setUp、测试方法、tearDown/cleanups）放在独立解释器进程运行，90 秒硬限，85 秒先 faulthandler 打印全部 Python 线程栈；普通失败/异常也打印全部线程栈。正常失败仍执行 unittest 的 Driver.close 清理。卡住则外部父进程执行 TERM/KILL 清理整个组和逃出组的浏览器，失败消息明确 watchdog expired；不会再次在卡死的同步 API 中尝试关窗。超时后的 profile 临时目录登记也进入清理。依赖缺失仍可 SKIP；构建机 VD_REQUIRE_HEADLESS=1 时必须失败，不能跳过。
+
+`vd-cosmos-core/src/vd_cosmos_core/verification_process.py` 为 A/B1/B2 共用：
+
+- suite/skill CLI/static 子进程用 start_new_session=True；记录独立验证目录标记。超时 TERM 整个组，最多等 10 秒，再 KILL 整个组并回收直接子进程。
+- /proc 扫描限当前 UID，按环境或 argv 中验证目录、profile、登记的短 temp 路径边界匹配，发信号前再核对 PID start time；捕获浏览器 wrapper setsid 后脱离原组的进程。环境/argv 内容不落盘、不打印；无关进程不匹配。
+- stdout/stderr 用 selector 持续消费，按完整行、检查累计文本后才 flush 到 artifact；不完整行留在内存，EOF/超时时检查后再写。不会把拆成多个 read 的凭据先写一部分值到磁盘。超时仍返回 acceptance_process_timeout 与已检查 transcript 的路径/大小/SHA256。
+- offline-tests.txt 在运行期间可读，A/B1/B2 超时结果包含 output_artifact/test_output。普通 CLI 留 command-*.txt；B2 static 留 static-scan.txt。A 复用的 verify_b2 E-loop 也改为同一执行器，留 E-loop.txt/E-loop.json。Git 本地元数据读取同样独立 session。
+
+实现的运行时依赖仍仅标准库；浏览器 coroutine 桥留在唯一 optional adapter 内。未运行真实服务或 live once/rehearse，属性映射未确认限制不变，无新增设计问题或 B3a11-Q12 假设。
+
+### 测试对应
+
+新增普通测试均在 `vd-cosmos-core/tests/test_batch3a11b22.py`：
+
+| 要求 | 测试名 |
+|---|---|
+| 回调不用 sync facade，异步动作仍执行 | test_callbacks_never_invoke_sync_facade_and_coroutines_complete |
+| 桥缺失 / coroutine 错误拒绝继续 | test_missing_async_bridge_and_async_failure_fail_closed |
+| 注册回调不含同步调用或 WebSocket connect | test_registered_callbacks_have_no_sync_calls_or_websocket_connection |
+| 显式开启沙箱，无降级；sandbox 错误退出 6 | test_launch_enables_sandbox_and_known_sandbox_failure_is_exit_6 |
+| 普通孙进程 + setsid 孙进程忽略 TERM；KILL 清理；超时前输出可读 | test_timeout_kills_group_and_detached_browser_and_preserves_stream |
+| 分段凭据不写文件 | test_streaming_never_persists_split_credential |
+| 套件超时 artifact 传给验收结果 | test_timeout_artifact_propagates_through_offline_suite |
+| 只凭 profile argv 定位逃逸进程、不选无关进程 | test_detached_path_only_match_does_not_select_unrelated_process |
+| 故意卡住的测试有 deadline、栈输出、明确 failure | test_hung_test_has_deadline_stack_dump_and_failure |
+
+真实测试 `test_batch3a11b2_headless.HeadlessGateTests.test_service_worker_and_websocket_cannot_open_channels` 保留 server request count=0 判据；新增 `test_browser_process_tree_never_disables_sandbox`。该模块全部 10 项走同一 watchdog；本机缺 Playwright，因此这 10 项未实际运行。B2.1 的 12 个普通测试、三个 verifier 原有测试均包含在完整套件。
+
+### 完整套件与构建机命令
+
+串行 nice 19、tmpfs 测试目录，运行 run_tests.sh；每份输出首行为真实解释器版本，含 import-linter==2.3 三条约束和浏览器静态检查。子进程的单测试汇总也保留，最终统计看文件末尾 323 项汇总。
+
+| 解释器 | 结果 | 完整输出 | SHA256 |
+|---|---|---|---|
+| Python 3.10.12 | 323 项：313 PASS、10 SKIP | `evidence-b22/python310.txt` | `8fb2be519ecd35f68a68f73a1c4f4d58a50d63eec7a5aa6fc73dad4eefdf1b67` |
+| Python 3.12.3 | 323 项：313 PASS、10 SKIP | `evidence-b22/python312.txt` | `4728cdcbe71c35b16a41ba2e4a1ffc83312829456dc3ce923dd4ef2fba234795` |
+
+源码摘要 `evidence-b22/source-manifest.json`；结果索引 `validation.json`；最终凭据预检 `prepush-final.json`。10 项 SKIP 都因本机缺 Playwright，不声称真实 WebSocket 或沙箱检查通过。构建机使用现有 run/venv（已有 Playwright/Chrome），EXPECTED_COMMIT 替换为本次回报完整 hash；A/B1/B2 命令参数保持不变：
+
+```bash
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" --saved-dir "$B21_SAVED_DIR" --rows "$B21_ROWS" --links "$B21_LINKS" &&
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" &&
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" --chrome /opt/google/chrome/google-chrome
+```
+
+B2 会强制全部 10 项真实 headless 本地测试。这里只提供 FatTank 构建机执行命令，本机没有运行这些真实验收步骤。
