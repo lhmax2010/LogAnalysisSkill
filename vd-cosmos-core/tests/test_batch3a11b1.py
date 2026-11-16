@@ -59,14 +59,13 @@ class RelationAndComparisonTests(B1Case):
         self.assertFalse(bm_pages.detail(detail(pair='501:899:FAILED'),self.config,'900')['conflict'])
         self.assertIsNone(bm_pages.detail(detail(h=None,pair='500:900:FAILED'),self.config,'900')['hub_id'])
         for bad in (detail(hub_host='other.invalid'),detail().replace(b'/build/500',b'/build/500.latest'),
-                    detail().replace(b'/build/500',b'/build/500?q=x'),detail().replace(b'Hub Link :',b'Hub Link : Hub Link :'),
-                    detail().replace(b'Hub Link :',b'unregistered Hub Link :'),
+                    detail().replace(b'/build/500',b'/build/500?q=x'),
                     detail().replace(b'class="build-header"',b'class="fake-build-header"'),detail(b='901')):
             self.fails(5,bm_pages.detail,bad,self.config,'900')
         description=detail(h=None)+b'<p>Hub Link : <a href="https://hub.example.invalid/build/500">500</a></p>'
         self.assertIsNone(bm_pages.detail(description,self.config,'900')['hub_id'])
     def test_multiple_links_reference_and_overview_conflict(self):
-        bad=detail().replace(b'</a><br></div>',b'</a><a href="https://hub.example.invalid/build/501">501</a><br></div>')
+        bad=detail().replace(b'</a><br></h3>',b'</a><a href="https://hub.example.invalid/build/501">501</a><br></h3>')
         self.fails(5,bm_pages.detail,bad,self.config,'900')
         data=pages();data['/overview/4362']=overview([('900','501')])
         self.assertEqual(self.reader(data).lookup('500')['result'],'冲突')

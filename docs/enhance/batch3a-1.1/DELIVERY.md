@@ -415,3 +415,64 @@ nice -n 19 python3 vd-cosmos-submit/scripts/run.py once --config "$VD_CONFIG" --
 | b2c | Python 3.12.3 | 282 / 274 PASS + 8 SKIP | `evidence-b2c/python312.txt` | `55d84e6a2498461665868da7b1894c428c76856ef3e48c47840b95475e0801c1` |
 | b2d | Python 3.10.12 | 286 / 278 PASS + 8 SKIP | `evidence-b2d/python310.txt` | `2626a856f7c84a3ba83a6e2b816ee14c706124c99a5b6f84c0f5a489a15da601` |
 | b2d | Python 3.12.3 | 286 / 278 PASS + 8 SKIP | `evidence-b2d/python312.txt` | `6a1ab9ced0c3b5fefa57462564545f02d73f6103596ef79f7e95554395fb2ff1` |
+
+## B1.3 — v3 构建机反馈与 diag28–30b（2026-11-16）
+
+基线 13cf93f5d8c95a4dad20e0031f24dceb7d964169。仅独立工作树离线实施；不访问 Cosmos/Hub/P4，不打开浏览器，不执行诊断归档脚本。
+
+### 新设计裁定与实现
+
+1. 详情身份按本次设计方裁定替代 HLD §8.9 #1 / §5.4 #11：唯一 build-header 和其中排除 promotion 后唯一状态元素；历史导航不作自身链接；页面 nav-link 至少两条合法 build tab、编号都等于请求；页面配置 nav-link 恰好一个 distinct id。重复同一配置号仍是一个 distinct id，不拒绝；第二个不同号或缺失拒绝。Hub 主证据只认 build-dashboard 内 html-content.description 的唯一指定 h3/唯一合法链接；其它位置忽略；promotion 旁证冲突规则不变。Summary 允许额外列。observe 与管理端解析共享 tab_identity，旧单一头部自身链接不再构成强身份。
+2. 读取/快照按架构自己的 PACKAGE_LIST_<arch> / SHELVE_LIST_<arch>；缺项才回退，空/坏项不回退，记录“回退到总清单”。总 PACKAGE_LIST 的每个条目（包键、原样路径、CL）必须出现在至少一个所选架构清单。回退的总 shelve 清单按本架构报告包键配对，另一架构的条目不误报为本架构多余；所有报告中都不存在的总 shelve 条目仍拒绝。总 PACKAGE_LIST / SHELVE_LIST 保持原样冻结，仍用于 source/request 比较，绝不把各架构合并结果当提交输入。架构变量的首读值和缺失都冻结。快照通过 for_arch 选择 base 版本；旧人工绑定 manifest 沿用原总清单格式。
+3. lookup 完整结果写 artifact，stdout 只保留结果/原因/候选摘要/重跑链/覆盖/计数/首个失败页与产物路径；page_errors 逐次记录 kind/build_id/reason，保留所有无法识别的页面。
+4. 构建机 child 非零且没有 error 时，保留 child_result/child_reason/child_artifact，经既有 failed_command 路径进入 B1 result.json 与 stdout。
+
+| 要求 | 文件 | 测试（test_batch3a11b13） |
+|---|---|---|
+| 真实详情页、三种身份依据、运行状态 | bm_pages.py、detail_identity.py、observation.py、versions.py | test_real_details_states_hubs_configs_and_trusted_observation；test_hub_h3_missing_duplicate_wrong_host_and_outside_ignored；test_tab_and_config_identity_mutations_ignore_history_buttons |
+| 真实 overview/history 结构 | fixtures/real_pages/ 七 HTML、README、manifest | test_real_overview_history_rows_and_fixture_hash_manifest |
+| 架构变量白名单、首读冻结、清单核对 | build_inputs.py、bm_pages.py | test_diag28_arch_extras_reconcile_total_stays_submission_input；test_arch_specific_shelve_cl_does_not_cross_arch_and_total_coverage_required；test_missing_arch_list_fallback_but_empty_or_wrong_list_not_fallback；test_arch_whitelist_first_read_change_and_unselected_secret_not_stored |
+| 快照架构 base 版本 | vd-fix-analyze/src/vd_fix_analyze/snapshot.py | test_snapshot_selects_arch_base_revision_not_total_revision |
+| 精简 stdout、完整 artifact 与失败定位 | bm_reader.py、submit CLI | test_scan_page_errors_first_failure_and_summary_excludes_rows；test_lookup_cli_one_small_object_full_artifact |
+| 非零无 error 子结果 | verify_b3a11.py（A/B1 共用 command） | test_verifier_nonzero_without_error_keeps_result_reason_artifact；test_b1_verifier_persists_result_reason_artifact_without_error |
+| 归档与精确豁免 | evidence/scripts、archive-exemptions.json | test_archived_diag_hashes_and_exact_exemptions；原 test_archive_precheck 全套 |
+
+旧合成详情夹具相应改成新 tab 结构；不伪称历史测试是新实页证据。B1.1 首读个数测试从 5 调整到 9（增加两架构四项缺失记录）。真实回归结果：19270912→37491096 failed ended；19206687→37376237 successful ended；19238877→37432138 failed ended；19091860→37174546 failed ended；19344434→37619264 running、未结束；配置均为 4362。overview 39 行均含 Hub ID，history 30 行且有 next。
+
+### 证据、脱敏与 Q10
+
+七页入站去空白 SHA256 与任务值全部相同。GitHub issue 展开 tab 导致原件中的逐页字节 SHA256 注释失效，不能把它们用于现有 HTML。B3a11-Q10 已闭合（设计方 2026-11-16）：仅 whole-token 替换剩余两种真实主机，Hub 共 10 处、BM 共 2 处，其余字节完全不变。测试显式使用 bm.example.invalid/hub.example.invalid 及占位 URL 模板。每页入站去空白摘要、次数、提交字节摘要见 fixtures/real_pages/README.md 与 manifest.json；独立变换核验见 evidence-b13/fixture-verification.json。历史 HLD/证据中的主机不在本批清理范围。新的常设授权写入 STATUS，不改变凭据规则。
+
+归档原件（不执行、不改字节）：
+
+| 路径（docs/enhance/evidence/ 下） | SHA256 | Q03 豁免 |
+|---|---|---|
+| scripts/diag28.py | 9cb35b2540ddc193041871ff422f03158b6341f0ebd610538d7cd810a1a4e13d | 第 19 行检测/脱敏正则，规则 2 |
+| scripts/diag29.py | 0e20d3586acb12161c15485eedb78a1ec0eb089e7bf0bc115ce99f45434a9df0 | 第 14 行会话标识删除正则，规则 2 |
+| scripts/diag30b.py | 63f11711e972fd1b479e85f6dca1b911ca87af2fecc9239f8a238bd5ee4688be | 第 48 行会话标识检测正则，规则 2 |
+| diag29.txt | 357a32a2218401ffe7bd747b71d0fca6f1672eb29c3de20eed8ca5541b7b5a83 | 无 |
+
+归档 registry 继续限定原路径、完整字节摘要、行号、精确文本/规则；JSON Unicode 转义只避免登记内容重复触发检查，解码值不变。无实际凭据豁免，运行时检查不变。
+
+### 构建机命令
+
+A+B1+B2 的入口与参数保持不变；将 EXPECTED_COMMIT 改为本次最终回报的完整提交号。使用现有 run/venv；VD_CONFIG / B21_SAVED_DIR / B21_ROWS / B21_LINKS / VD_CHROME 填构建机现有绝对路径，不把配置放进仓库。
+
+```bash
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" --saved-dir "$B21_SAVED_DIR" --rows "$B21_ROWS" --links "$B21_LINKS" &&
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b1_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" &&
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" --chrome "$VD_CHROME"
+```
+
+本地没有执行真实验收；B2 原有 8 项真实浏览器测试仍因缺 Playwright 而跳过，构建机 B2 要求它们执行，不能当作已通过。B1.3 不扩大 B2 点击能力，属性映射仍未确认。development-python310.txt 是修复过程中旧测试预期失败的历史日志；最终验证以 python310.txt / python312.txt 和 validation.json 为准。
+
+B1.3 最终完整套件（import-linter 2.3、语法/标准库与静态边界全部通过；串行 nice 19，tmpfs 临时目录）：
+
+| 解释器 | 结果 | 完整输出 | SHA256 |
+|---|---|---|---|
+| Python 3.10.12 | 300 项：292 PASS，8 SKIP（本机缺 Playwright） | `evidence-b13/python310.txt` | `2c99ceac28889c0bf18a9bc45a6e00f1b5f23991be912730ef7964975ebd3d37` |
+| Python 3.12.3 | 300 项：292 PASS，8 SKIP（本机缺 Playwright） | `evidence-b13/python312.txt` | `fcac82d70d83ec0b06cc8cc6ed61d29b1def2e8b7927123c49c0a70932c0b370` |
+
+源码摘要 source-manifest.json；原始归档核对 archive-verification.json；实际配置只读加载 config-load-check.json；最终凭据预检 prepush-final.json，均位于 evidence-b13/。Q10 已闭合，无未答复设计问题。
+
+归档格式说明：git diff --cached --check 仅对七份原始 HTML 的末尾空行告警；按 Q10“其它字节不动”保留。其余变更无空白错误，不修改 Git 配置或文件摘要来消除此原件格式。

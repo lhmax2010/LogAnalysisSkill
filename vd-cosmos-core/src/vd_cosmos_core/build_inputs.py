@@ -88,6 +88,46 @@ def compare_lists(base_text, shelve_text, reports, markers):
             'note': '逐项核对通过' if shelves is not None else '人工绑定 base、未取得原始 shelve 清单'}
 
 
+def variable_names(config):
+    return set(VARIABLES)|{prefix+'_'+arch for arch in config.raw['cosmos']['archs'] for prefix in ('PACKAGE_LIST','SHELVE_LIST')}
+
+
+def compare_arch_lists(values,reports,markers):
+    total=parse_list(values['PACKAGE_LIST'],markers)
+    architecture={};union=set()
+    for arch,report in reports.items():
+        base_name='PACKAGE_LIST_'+arch;shelve_name='SHELVE_LIST_'+arch;fallback=[]
+        if base_name not in values:base_name='PACKAGE_LIST';fallback.append('PACKAGE_LIST')
+        if shelve_name not in values:shelve_name='SHELVE_LIST';fallback.append('SHELVE_LIST')
+        shelf_text=values.get(shelve_name)
+        if shelve_name=='SHELVE_LIST' and shelf_text is not None:
+            # The total fallback may include rows for other architectures.
+            keys={package_key(row['path'],markers) for row in report.get('input_rows',[])}
+            shelf_text='\n'.join(e['raw'] for k,e in parse_list(shelf_text,markers,shelved=True).items() if k in keys)
+        compared=compare_lists(values[base_name],shelf_text,{arch:report},markers)
+        union.update((key,entry['path'],entry['cl']) for key,entry in compared['base'].items())
+        architecture[arch]={**compared,'base_variable':base_name,'shelve_variable':shelve_name,
+            'fallback':fallback,'fallback_note':'回退到总清单' if fallback else None}
+    if any('SHELVE_LIST' in v['fallback'] for v in architecture.values()) and values.get('SHELVE_LIST') is not None:
+        known={package_key(row['path'],markers) for report in reports.values() for row in report.get('input_rows',[])}
+        extra=set(parse_list(values['SHELVE_LIST'],markers,shelved=True))-known
+        if extra:raise mismatch('shelve_list_differs',extra=sorted(extra))
+    missing=sorted((key,entry['path'],entry['cl']) for key,entry in total.items() if (key,entry['path'],entry['cl']) not in union)
+    if missing:raise mismatch('total_package_not_in_arch_lists',missing=missing)
+    # Total lists remain immutable submitted inputs, not merged architecture lists.
+    return {'base':total,'shelve':parse_list(values['SHELVE_LIST'],markers,shelved=True) if values.get('SHELVE_LIST') is not None else None,
+            'architectures':architecture,'extra_base_packages':sorted(set(total)-{package_key(row['path'],markers) for report in reports.values() for row in report.get('input_rows',[])}),
+            'shelve_list_verified':all(v['shelve_list_verified'] for v in architecture.values()),
+            'note':'按架构清单逐项核对通过'}
+
+
+def for_arch(lists,arch):
+    if lists is None:return None
+    if 'architectures' not in lists:return lists  # Historical manually-bound manifests.
+    if arch not in lists['architectures']:raise mismatch('architecture_list_missing',arch=arch)
+    return {**lists,**lists['architectures'][arch]}
+
+
 def sanitize_repositories(value):
     changed = False
     def strip(match):
@@ -114,8 +154,8 @@ def variables(data, config, build_id, page_url):
             pass
     if not strong:
         raise FlowError(5, 'variables_identity_mismatch', todo={'reason': 'bind_base_list_required'})
-    values = {name: entry['value'] for name, entry in parse_variables(data, set(VARIABLES)).items()}
-    if set(values) != set(VARIABLES):
+    values = {name: entry['value'] for name, entry in parse_variables(data, variable_names(config)).items()}
+    if not set(VARIABLES) <= set(values):
         raise FlowError(5, 'variables_missing', todo={'reason': 'bind_base_list_required'})
     stripped = []
     for name in ('BASE_REPOS', 'PRODUCT_REPOS'):
@@ -125,7 +165,7 @@ def variables(data, config, build_id, page_url):
     for name, value in values.items():
         if not check_content(value.encode(), config)['allowed']:
             raise FlowError(4, 'build_input_credential_blocked', todo={'reason': 'build_input_credential_blocked'})
-    remember(config, build_id, page_url, values, set(VARIABLES))
+    remember(config, build_id, page_url, values, variable_names(config))
     return values, {'credentials_removed': stripped, 'note': '已去除凭据' if stripped else None}
 
 
@@ -134,8 +174,8 @@ def freeze(config, key, values, reports, *, source, note=None):
     for text in values.values():
         if text is not None and not check_content(text.encode(), config)['allowed']:
             raise FlowError(4, 'build_input_credential_blocked')
-    compared = compare_lists(values['PACKAGE_LIST'], values.get('SHELVE_LIST'), reports, markers)
-    for entries in (compared['base'], compared['shelve'] or {}):
+    compared = compare_arch_lists(values, reports, markers)
+    for entries in [compared['base'], compared['shelve'] or {}, *[v[k] or {} for v in compared['architectures'].values() for k in ('base','shelve')]]:
         for entry in entries.values():
             try:
                 validate_root(entry['root'], config.raw['p4']['min_root_depth'])

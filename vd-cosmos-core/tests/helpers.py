@@ -92,5 +92,5 @@ def bundle(directory, packages_by_arch=None, *, write_config=True):
 
 def detail_html(word='failed', build='19091860'):
     return ('<div class="build-header"><span title="Build is '+word+'"></span>'
-            '<a href="/build/'+build+'">own</a><div title="Promoted to build 999">'
+            '<a class="nav-link" href="/build/'+build+'/overview">own</a><a class="nav-link" href="/build/'+build+'/variables">variables</a><div title="Promoted to build 999">'
             '<a href="/build/999" title="Build is successful">promotion</a></div></div>')

@@ -45,7 +45,7 @@ class VariablePageTests(B1Case):
                 for forbidden in (b'Display label only',b'BART_PASSWD',b'DO_NOT_STORE_THIS',b'<table',b'<pre'):
                     self.assertNotIn(forbidden,path.read_bytes())
         # Both callers have one shared first-read record per actual value.
-        self.assertEqual(len(self.stored()),5)
+        self.assertEqual(len(self.stored()),9)  # Includes immutable absence of four architecture lists.
 
     def test_header_mapping_reorder_legacy_two_columns_and_bad_headers(self):
         legacy=b'<table><tr><th>Name</th><th>Value</th></tr><tr><td>PACKAGE_LIST</td><td><pre>original</pre></td></tr></table>'

@@ -35,7 +35,7 @@ from vd_fix_register.api import decide
 
 
 def header(word='failed', build='19091860', link=True):
-    return '<div class="frame build-header"><div><div><i title="Build is '+word+'"></i></div></div>'+('<a href="/build/'+build+'?tab=x">own</a>' if link else '')+'<div title="Promoted to build 999"><a href="/build/999" title="Build is successful">1.2.3456789</a></div></div>'
+    return '<div class="frame build-header"><div><div><i title="Build is '+word+'"></i></div></div>'+('<a class="nav-link" href="/build/'+build+'/overview">own</a><a class="nav-link" href="/build/'+build+'/variables">variables</a>' if link else '')+'<div title="Promoted to build 999"><a href="/build/999" title="Build is successful">1.2.3456789</a></div></div>'
 
 
 class Reading3a1Tests(unittest.TestCase):
@@ -74,10 +74,10 @@ class Reading3a1Tests(unittest.TestCase):
         source=self.config.raw['cosmos']['status_source']
         run=lambda html:detail_state(html.encode(),source,'19091860',self.server.url+'/build/19091860')
         self.assertEqual(run(header())['identity'],'strong')
-        self.assertEqual(run(header(link=False))['identity'],'weak')
-        for html in [header().replace('build-header','build-header-other'),header()+header(),header(build='123'),header().replace('/build/19091860?tab=x','https://other.invalid/build/19091860'),header().replace('</i>','</i><i title="Build is running"></i>',1)]:
+        self.assertEqual(run(header(link=False))['identity'],'identity_mismatch')
+        for html in [header().replace('build-header','build-header-other'),header()+header(),header(build='123'),header().replace('/build/19091860/overview','https://other.invalid/build/19091860/overview'),header().replace('</i>','</i><i title="Build is running"></i>',1)]:
             self.assertEqual(run(html)['identity'],'identity_mismatch')
-        self.assertEqual(run(header().replace('/build/19091860?tab=x','19091860'))['identity'],'strong')
+        self.assertEqual(run(header().replace('/build/19091860/overview','19091860/overview'))['identity'],'strong')
         raw=load_json(self.server.config_path);raw['cosmos']['status_source']['header_rule']='ancestor-of-first-status'
         self.server.config_path.write_text(json.dumps(raw))
         with self.assertRaises(FlowError) as e:load_config(self.server.config_path)

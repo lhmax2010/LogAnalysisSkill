@@ -73,6 +73,7 @@ def command(config, repo, directory, env, skill, args):
         code = run.returncode if run.returncode in {2, 3, 4, 5, 6} else 5
         raise FlowError(code, 'acceptance_skill_failed', skill=skill,
                         child_error=value.get('error'), child_details=value.get('details', {}),
+                        child_result=value.get('result'), child_reason=value.get('reason'), child_artifact=value.get('artifact'),
                         todo=value.get('details', {}).get('todo'))
     return value
 

@@ -14,8 +14,8 @@ def detail(b='900', h='500', *, state='failed', config='4362', hub_host='hub.exa
            begin=DATE, duration='1 hour', variables=None):
     hub = '' if h is None else f'♦ Hub Link : <a href="https://{hub_host}/build/{h}">https://{hub_host}/build/{h}</a><br>'
     promotion = '' if pair is None else f'<span title="Promoted to build 700">UPDATE_BUILDINFO: [{pair}]</span>'
-    page = (f'<div class="build-header"><a href="/overview/{config}">configuration</a>'
-            f'<a href="/build/{b}" title="Build is {state}">{b}</a>{promotion}<br>{hub}</div>'
+    page = (f'<div id="configuration-header"><a class="nav-link" href="/overview/{config}">configuration</a></div><a class="nav-link" href="/build/{b}/overview">Overview</a><a class="nav-link" href="/build/{b}/variables">Variables</a><div class="build-header">'
+            f'<a href="/build/{b}" title="Build is {state}">{b}</a>{promotion}</div><div id="build-dashboard"><div class="html-content description"><h3>{hub}</h3></div></div>'
             '<h2>Summary</h2><table><tr><th>Id</th><th>Status</th><th>Begin Date</th><th>Duration</th><th>Triggered By</th></tr>'
             f'<tr><td>{b}</td><td>{state}</td><td>{begin}</td><td>{duration}</td><td>Build_Runner</td></tr></table>')
     if variables is not None:

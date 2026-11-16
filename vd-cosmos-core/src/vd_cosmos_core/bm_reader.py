@@ -80,11 +80,11 @@ class Reader:
         """All network I/O happens here, with no state-store lock held."""
         self.current_details = {}
         hub_id = str(hub_id) if hub_id is not None else None
-        issues = []; failures = []; details = {}; rows = {}; groups = []; reads = []; page_evidence = []
+        issues = []; failures = []; page_errors = []; details = {}; rows = {}; groups = []; reads = []; page_evidence = []
         try: overview = self.overview()
         except FlowError as e:
             if e.code == 4: raise
-            overview = {'rows': []}; issues.append(e.reason); failures.append(e.code)
+            overview = {'rows': []}; issues.append(e.reason); failures.append(e.code); page_errors.append({'kind':'overview','build_id':None,'reason':e.reason})
         overview_rows = {r['build_id']: r for r in overview['rows']}
         overview_hubs = {r['build_id']: r['hub_id'] for r in overview['rows'] if r.get('hub_id')}
         for r in overview['rows']: rows[r['build_id']] = r
@@ -109,7 +109,7 @@ class Reader:
                 return d
             except FlowError as e:
                 if e.code == 4: raise
-                issues.append(e.reason); failures.append(e.code)
+                issues.append(e.reason); failures.append(e.code); page_errors.append({'kind':'detail','build_id':b,'reason':e.reason})
                 return None
 
         def pages(stop_anchor=None):
@@ -119,7 +119,7 @@ class Reader:
                 try: page = bm_pages.listing(self.get(url, history=True), self.config, 'history')
                 except FlowError as e:
                     if e.code == 4: raise
-                    issues.append(e.reason); failures.append(e.code); reason = '扫描覆盖不足'; break
+                    issues.append(e.reason); failures.append(e.code); page_errors.append({'kind':'history','build_id':None,'reason':e.reason}); reason = '扫描覆盖不足'; break
                 page_evidence.append({'first': page['first'], 'last': page['last'], 'total': page['total'],
                                       'read_at': self.samples[-1]['received_at'], 'topup_to': stop_anchor})
                 ids = [r['build_id'] for r in page['rows']]
@@ -213,7 +213,7 @@ class Reader:
             'history_retention': '未核验', 'uniqueness_proven': False if hub_id else coverage,
             'uniqueness_note': '唯一性未覆盖' if hub_id or not coverage else '当前范围内',
             'anchor': anchor, 'rows': rows, 'details': details, 'pending': pending,
-            'issues': sorted(set(issues)), 'conflicts': relation_conflicts, 'detail_read_order': reads,
+            'page_errors':page_errors, 'issues': sorted(set(issues)), 'conflicts': relation_conflicts, 'detail_read_order': reads,
             'clock': self.samples[-1] if self.samples else None, 'cache': self.cache, 'pages': page_evidence,
             'limitation': '历史清理可能造成漏观测'} )
 
@@ -228,6 +228,7 @@ class Reader:
                                  version=scan['rows'].get(candidate['build_id'], {}).get('version'))
             except (FlowError, KeyError) as error:
                 candidate['inputs'] = '未核验'; scan['coverage'] = False
+                scan['page_errors'].append({'kind':'variables','build_id':candidate['build_id'],'reason':error.reason if isinstance(error,FlowError) else 'variables_missing'})
                 if isinstance(error, FlowError):
                     if error.code == 4: raise
                     scan['exit_code'] = error.code

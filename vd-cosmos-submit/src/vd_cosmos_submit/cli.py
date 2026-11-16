@@ -113,14 +113,24 @@ def main(argv=None):
             # Human-readable and full evidence go to a file; stdout remains one JSON object.
             output = 'submit/results/' + str(time.time_ns()) + '.json'
             atomic_write(config.data_root, output, json_bytes(result))
+            if args.command=='lookup':result=lookup_summary(result)
             result = dict(result, artifact=str(config.output(output)))
     except FlowError as error:
         result = error.as_dict()
     except (OSError, ValueError, TypeError, KeyError):
         result = {'exit_code': 5, 'error': 'submit_read_processing_failed'}
     code = result.get('exit_code', 0)
-    print(json.dumps({'ok': code == 0, **result}, ensure_ascii=False))
+    print(json.dumps({'ok': code == 0, **result}, ensure_ascii=False, separators=(',',':')))
     return code
+
+
+def lookup_summary(result):
+    fields=('build_id','hub_id','state','start_time','ended','config_id','identity','relation','package_list_count','package_list_sha256','inputs')
+    errors=result.get('page_errors',[])
+    return {**{k:result.get(k) for k in ('exit_code','result','reason','rerun_chains','coverage','coverage_scope','uniqueness_proven','uniqueness_note','candidate_only')},
+        'candidates':[{k:c[k] for k in fields if k in c} for c in result.get('candidates',[])],
+        'counts':{k:len(result.get(k,[])) for k in ('rows','details','pending','page_errors','candidates')},
+        'first_failing_page':errors[0] if errors else None}
 
 
 def watch(config, args, factory):

@@ -1,0 +1,231 @@
+{
+  "docs/enhance/batch3a-1.1/DELIVERY.md": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/batch3a-1.1/evidence-b13/archive-verification.json": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/batch3a-1.1/evidence-b13/config-load-check.json": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/batch3a-1.1/evidence-b13/development-python310.txt": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/batch3a-1.1/evidence-b13/fixture-verification.json": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/batch3a-1.1/evidence-b13/python310.txt": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/batch3a-1.1/evidence-b13/python312.txt": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/batch3a-1.1/evidence-b13/source-manifest.json": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/batch3a-1.1/evidence-b13/validation.json": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/dev_memory/STATUS.md": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/evidence/archive-exemptions.json": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/evidence/diag29.txt": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "docs/enhance/evidence/scripts/diag28.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": [],
+    "archive_exemptions": [
+      {
+        "path": "docs/enhance/evidence/scripts/diag28.py",
+        "sha256": "9cb35b2540ddc193041871ff422f03158b6341f0ebd610538d7cd810a1a4e13d",
+        "line": 19,
+        "pattern_index": 2
+      }
+    ]
+  },
+  "docs/enhance/evidence/scripts/diag29.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": [],
+    "archive_exemptions": [
+      {
+        "path": "docs/enhance/evidence/scripts/diag29.py",
+        "sha256": "0e20d3586acb12161c15485eedb78a1ec0eb089e7bf0bc115ce99f45434a9df0",
+        "line": 14,
+        "pattern_index": 2
+      }
+    ]
+  },
+  "docs/enhance/evidence/scripts/diag30b.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": [],
+    "archive_exemptions": [
+      {
+        "path": "docs/enhance/evidence/scripts/diag30b.py",
+        "sha256": "63f11711e972fd1b479e85f6dca1b911ca87af2fecc9239f8a238bd5ee4688be",
+        "line": 48,
+        "pattern_index": 2
+      }
+    ]
+  },
+  "vd-cosmos-core/fixtures/real_format/detail.html": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/fixtures/real_pages/README.md": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/fixtures/real_pages/detail_19091860.html": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/fixtures/real_pages/detail_19206687.html": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/fixtures/real_pages/detail_19238877.html": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/fixtures/real_pages/detail_19270912.html": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/fixtures/real_pages/detail_19344434.html": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/fixtures/real_pages/history_4362_p1.html": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/fixtures/real_pages/manifest.json": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/fixtures/real_pages/overview_4362.html": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/src/vd_cosmos_core/bm_pages.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/src/vd_cosmos_core/bm_reader.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/src/vd_cosmos_core/build_inputs.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/src/vd_cosmos_core/detail_identity.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/src/vd_cosmos_core/observation.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/src/vd_cosmos_core/verify_b3a11.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/src/vd_cosmos_core/versions.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/tests/bm_helpers.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/tests/helpers.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/tests/test_batch3a1.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/tests/test_batch3a11b1.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/tests/test_batch3a11b11.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/tests/test_batch3a11b13.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-core/tests/test_reports.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-cosmos-submit/src/vd_cosmos_submit/cli.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  },
+  "vd-fix-analyze/src/vd_fix_analyze/snapshot.py": {
+    "allowed": true,
+    "credential_hits": [],
+    "warnings": []
+  }
+}

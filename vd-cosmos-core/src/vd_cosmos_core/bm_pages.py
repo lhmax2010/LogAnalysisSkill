@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from urllib.parse import urljoin, urlsplit
 from zoneinfo import ZoneInfo
 
-from .build_inputs import parse_list, sanitize_repositories
+from .build_inputs import parse_list, sanitize_repositories, variable_names
 from .errors import FlowError
 from .export import check_content
 from .files import digest, json_bytes
@@ -84,46 +84,31 @@ def detail(data, config, build_id, *, summary_required=True):
     statuses = [n for n in nodes if re.fullmatch(r'Build is .+', normalize(n.attrs.get('title', '')), re.I)]
     if len(statuses) != 1:
         raise FlowError(5, 'bm_identity_mismatch')
-    # Read label position, not URLs found by whole-page searching. Promotions are excluded.
-    tokens = []
-    def tokens_of(n):
-        if normalize(n.attrs.get('title', '')).startswith('Promoted to build'):
-            return
-        if n.tag == 'a':
-            tokens.append(n); return
-        for child in n.children:
-            if isinstance(child, Node): tokens_of(child)
-            elif child.strip(): tokens.append(child)
-        if n.tag in {'br', 'div', 'p', 'li'}: tokens.append('\n')
-    tokens_of(head)
-    labels = []
-    for i, token in enumerate(tokens):
-        if isinstance(token, str) and re.search(r'\bHub\s+Link\s*:', token):
-            if normalize(token).removeprefix('♦').strip() != 'Hub Link :':
-                raise FlowError(5, 'bm_page_unrecognized')
-            labels.append(i)
-    if len(labels) > 1:
-        raise FlowError(5, 'bm_page_unrecognized')
-    hub_node = None; hub = None
+    # Page tabs, not history navigation buttons, prove the requested build.
+    from .detail_identity import tab_identity
+    tab_identity(doc, b, url)
+    configs = set()
+    for n in doc.nodes:
+        if n.tag != 'a' or 'nav-link' not in n.attrs.get('class','').split():continue
+        target=urlsplit(urljoin(url,n.attrs.get('href','')))
+        if re.fullmatch(r'/overview/[0-9]+',target.path):
+            value=link_number(n.attrs.get('href',''),c['bm_host'],url,'overview')
+            if value is None:raise FlowError(5,'bm_config_unrecognized')
+            configs.add(value)
+    if len(configs)!=1:raise FlowError(5,'bm_config_unrecognized')
+    labels=[]
+    for dashboard in (n for n in doc.nodes if n.attrs.get('id')=='build-dashboard'):
+        for description in dashboard.descendants({'div','section'}):
+            if {'html-content','description'} <= set(description.attrs.get('class','').split()):
+                labels.extend(n for n in description.descendants({'h3'}) if normalize(n.text()).startswith('♦ Hub Link :'))
+    labels=list({n.order:n for n in labels}.values())
+    if len(labels)>1:raise FlowError(5,'bm_page_unrecognized')
+    hub=None
     if labels:
-        i = labels[0] + 1
-        if i >= len(tokens) or not isinstance(tokens[i], Node):
-            raise FlowError(5, 'bm_page_unrecognized')
-        hub_node = tokens[i]
-        if i + 1 < len(tokens) and isinstance(tokens[i + 1], Node):
-            raise FlowError(5, 'bm_page_unrecognized')
-        hub = link_number(hub_node.attrs.get('href', ''), c['hub_host'], url)
-        if hub is None:
-            raise FlowError(5, 'bm_page_unrecognized')
-    links = [n for n in nodes if n.tag == 'a' and n is not hub_node]
-    own = [link_number(n.attrs.get('href', ''), c['bm_host'], url) for n in links
-           if re.match(r'^/build/[^/]+$', urlsplit(urljoin(url, n.attrs.get('href', ''))).path)]
-    if not own or any(x != b for x in own):
-        raise FlowError(5, 'bm_identity_mismatch')
-    configs = {link_number(n.attrs.get('href', ''), c['bm_host'], url, 'overview') for n in links
-               if '/overview/' in urlsplit(urljoin(url, n.attrs.get('href', ''))).path}
-    if len(configs) != 1 or None in configs:
-        raise FlowError(5, 'bm_config_unrecognized')
+        links=list(labels[0].descendants({'a'}))
+        if len(links)!=1:raise FlowError(5,'bm_page_unrecognized')
+        hub=link_number(links[0].attrs.get('href',''),c['hub_host'],url)
+        if hub is None:raise FlowError(5,'bm_page_unrecognized')
     pairs, references = [], []
     for n in head.descendants({'a', 'span', 'div'}):
         if not normalize(n.attrs.get('title', '')).startswith('Promoted to build'):
@@ -228,7 +213,7 @@ def value_shape(value):
 
 def variables(data, config, build_id, names):
     names = set(names)
-    if any(SECRET_NAME.search(n) for n in names) or not names <= set(PROPERTIES) | {
+    if any(SECRET_NAME.search(n) for n in names) or not names <= set(PROPERTIES) | variable_names(config) | {
             e['variable'] for e in config.raw['submit']['property_map'].values() if e['variable'] not in (None, 'not_listed')}:
         raise FlowError(4, 'variable_name_forbidden')
     identity = detail(data, config, build_id, summary_required=False)

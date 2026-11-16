@@ -118,6 +118,8 @@ def snapshot(config, adapter, package, headers, log, folder, *, build_id, lists=
     row_root = package_root(package['key']['path'])
     shelved, scl = package['shelve'], str(package['cl'])
     key = package_key(row_root, config.raw['cosmos']['branch_markers'])
+    from vd_cosmos_core.build_inputs import for_arch
+    lists = for_arch(lists, package['key']['arch'])
     base = lists.get('base', {}).get(key) if lists else None
     root = base['root'] if shelved and base else row_root
     revision = '@' + (base['cl'] if shelved and base else scl)

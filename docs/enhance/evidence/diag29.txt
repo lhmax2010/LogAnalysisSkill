@@ -1,0 +1,109 @@
+== diag29 start 2026-11-16 16:06:50 python 3.10.12
+   bm_host vdcosmos-bm.sec.samsung.net | hub_host hub.example.invalid | bm_config_id 4362 | bm_display_tz Asia/Seoul
+   history status 200 ; testing builds ['19270912', '19270877', '19241462', '19238877', '19206687', '19091860', '19343572', '19343464', '19343453', '19343442', '19343440', '19343336', '19343287', '19343281']
+-- 19270912: status 200; bytes 36570; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is failed', 'Promoted to build <span style="color:rgb(0, 0, 0)"…', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 17; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[hao.lin] TIZEN-RBS-KantSU2e-Full-261109…]', 'NL', 'A[|UPDATE_BUILDINFO:[3749109…]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19270912|]', 'A[/build/19270912|]', 'A[/build/19270912|]']
+   tables: 2
+     table class 'oddeven': rows 2; first row ['Repository', 'HQ URL', 'HQ URL Alternatives']
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19270877: status 200; bytes 35058; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is failed', 'Promoted to build <span style="color:rgb(0, 0, 0)"…', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 17; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[hao.lin] TIZEN-RBS-KantSU2e-Full-261109…]', 'NL', 'A[|UPDATE_BUILDINFO:[3749105…]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19270877|]', 'A[/build/19270877|]', 'A[/build/19270877|]']
+   tables: 2
+     table class 'oddeven': rows 2; first row ['Repository', 'HQ URL', 'HQ URL Alternatives']
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19241462: status 200; bytes 32103; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is successful', 'Promoted to build <span style="color:rgb(0, 0, 0)"…', 'Promoted to build [19241462] [OscarP_MLED] DataGen…', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 20; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[CRON_SCHEDULER] TIZEN-RBS-OscarP-MLED-P…]', 'NL', 'A[|UPDATE_BUILDINFO:[3743213…]', 'NL', 'NL', 'A[|GENERATE_LEARNING_DATA:[1…]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL']
+   tables: 2
+     table class 'oddeven': rows 2; first row ['Repository', 'HQ URL', 'HQ URL Alternatives']
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19238877: status 200; bytes 34693; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is failed', 'Promoted to build [19238877] 26-11-05 15:42 of con…', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 18; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[AUTO REPAIRED][ETC_ERROR]]', 'T[[CRON_SCHEDULER] TIZEN-RBS-OscarP-MLED-P…]', 'NL', 'A[|TRIGGER_RETRY_BUILD_REQUE…]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19238877|]', 'A[/build/19238877|]']
+   tables: 2
+     table class 'oddeven': rows 2; first row ['Repository', 'HQ URL', 'HQ URL Alternatives']
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19206687: status 200; bytes 31240; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is successful', 'Promoted to build <span style="color:rgb(0, 0, 0)"…', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 17; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[hao.lin] TIZEN-RBS-KantSU2e-Full-261103…]', 'NL', 'A[|UPDATE_BUILDINFO:[3737623…]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19206687|]', 'A[/build/19206687|]', 'A[/build/19206687|]']
+   tables: 2
+     table class 'oddeven': rows 2; first row ['Repository', 'HQ URL', 'HQ URL Alternatives']
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19091860: status 200; bytes 34810; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is failed', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 13; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[ss0217.liu] TIZEN-RBS-KantSU2e-Full-261…]', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19091860|]', 'A[/build/19091860|]', 'A[/build/19091860|]', 'A[/build/19091860|]', 'NL', 'NL']
+   tables: 2
+     table class 'oddeven': rows 2; first row ['Repository', 'HQ URL', 'HQ URL Alternatives']
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19343572: status 200; bytes 82951; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is running', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 16; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[rohit1.seh] TIZEN-RBS-SLF-FHD-LIC-Full-…]', 'NL', 'T[12%]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19343572|]', 'A[/build/19343572|]', 'A[|]', 'A[|]']
+   tables: 1
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19343464: status 200; bytes 108690; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is running', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 16; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[release.sec] TIZEN-RBS-SolaML-Partial-2…]', 'NL', 'T[32%]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19343464|]', 'A[/build/19343464|]', 'A[/build/19343464|]', 'A[/build/19343464|]']
+   tables: 1
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19343453: status 200; bytes 108689; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is running', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 16; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[mh1.kim] TIZEN-RBS-MT8532-Partial-26111…]', 'NL', 'T[34%]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19343453|]', 'A[/build/19343453|]', 'A[/build/19343453|]', 'A[/build/19343453|]']
+   tables: 1
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19343442: status 200; bytes 156287; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is running', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 16; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[mh1.kim] TIZEN-RBS-MT8532-Partial-26111…]', 'NL', 'T[35%]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19343442|]', 'A[/build/19343442|]', 'A[/build/19343442|]', 'A[/build/19343442|]']
+   tables: 1
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19343440: status 200; bytes 126231; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is running', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 16; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[release.sec] TIZEN-RBS-RoseP-SBOX-Parti…]', 'NL', 'T[35%]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19343440|]', 'A[/build/19343440|]', 'A[/build/19343440|]', 'A[/build/19343440|]']
+   tables: 1
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19343336: status 200; bytes 117418; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is running', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 16; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[rohit1.seh] TIZEN-RBS-SLF-FHD-LIC-Full-…]', 'NL', 'T[51%]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19343336|]', 'A[/build/19343336|]', 'A[/build/19343336|]', 'A[/build/19343336|]']
+   tables: 1
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19343287: status 200; bytes 108696; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is running', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 16; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[taehwan7.kim] TIZEN-RBS-MT8532-Partial-…]', 'NL', 'T[57%]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19343287|]', 'A[/build/19343287|]', 'A[/build/19343287|]', 'A[/build/19343287|]']
+   tables: 1
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+-- 19343281: status 200; bytes 34760; FAIL bm_identity_mismatch
+   build-header nodes: 1 (tags ['div'])
+   titles in header: ['Build is failed', 'Promoted to build <span style="color:rgb(0, 0, 0)"…', 'First build in history', 'Previous build in history', 'Next build in history', 'Last build in history']
+   header tokens: 17; tokens with "Hub": 0
+   first tokens: ['NL', 'T[[mh1.kim] TIZEN-RBS-MT8532-Partial-26111…]', 'NL', 'A[|UPDATE_BUILDINFO:[3761796…]', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'NL', 'A[/build/19343281|]', 'A[/build/19343281|]', 'A[/build/19343281|]']
+   tables: 2
+     table class 'oddeven': rows 2; first row ['Repository', 'HQ URL', 'HQ URL Alternatives']
+     table class 'table table-sm': rows 2; first row ['Id', 'Status', 'Begin Date', 'Duration', 'Triggered By', '#Dependents', '#Dependencies']
+== diag29 end 2026-11-16 16:07:00

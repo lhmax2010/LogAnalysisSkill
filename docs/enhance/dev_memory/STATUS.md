@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- 2026-11-16 B1.3：按 diag28–30b 真实页修复 tab/config/Hub h3 身份与共享 observe；按架构清单核对和快照，首读冻结与总提交输入保持分离；lookup 精简 stdout + 全量 artifact/page_errors；B1 子命令非零无 error 时保留结果/原因/产物。Q10 已闭合，七页仅定点主机脱敏，归档脚本按 Q03 登记。测试与证据见 batch3a-1.1/DELIVERY.md 的 B1.3 节及 evidence-b13/；A+B1+B2 真实验收仍需构建机执行。Python 3.10.12 / 3.12.3 各 300 项：292 PASS、8 SKIP（B2 真实浏览器测试缺 Playwright）；本批新增 14 项全部通过，import/静态检查通过。
+
 - 2026-11-14 Checkpoint B2d：新增只跑离线完整套件与静态扫描的构建机验收，强制真实无头浏览器测试；手册 FATTANK-B2-MANUAL.md。正式提交映射仍未确认，禁止默认发送。B2a–c 已分阶段推送；Q04–Q09 和未验证/拒绝项见 DELIVERY。真实服务/真实演练未执行；配置仅只读加载，证据 evidence-b2d/。
 
 - 2026-11-14 Checkpoint B2c：补真实 Chrome＋127.0.0.1 请求计数测试 8 项；本机缺 Playwright，明确 SKIP，构建机必须执行。固定脚本摘要登记、提交响应归属与双进程锁测试已补；证据 evidence-b2c/，未宣称浏览器验收通过。
@@ -354,3 +356,9 @@ HLD v0.9.5 已按 mv 单独提交并普通推送，提交 `3616628442cd037e7c519
 ### B3a11-Q03（已闭合；设计方答复 2026-11-14）
 
 设计方批准 diag27.py 第 7 行（规则索引 3）词表字面量归档豁免；整文件 SHA256 f0ed943e308d21035d0b0ff7f7494edec5db84c9963356b5b5450b4015934a9b。登记沿用 B3a11-Q02：限定 evidence/scripts/ 下原路径、整文件摘要、行号、精确命中文本和规则；原字节、配置和运行时凭据检查不变。原因：credential-name word list used for redaction; no credential value。证据：evidence-b12/archive-verification.json、prepush-final.json 与 DELIVERY B1.2。
+
+### B3a11-Q10（已闭合；设计方 2026-11-16）
+
+入站 pages30 七页去空白 SHA256 全部核验通过，但仍含两种真实 Hub/BM 主机。设计方批准仅 whole-token 替换为 hub.example.invalid / bm.example.invalid，所有出现位置同样替换，保留其它字节；测试显式使用占位主机和 URL 模板。每页原摘要、替换次数、提交摘要见 vd-cosmos-core/fixtures/real_pages/README.md、manifest.json 和 evidence-b13/fixture-verification.json。
+
+常设授权：提交设计方提供的真实页面证据时，可对真实内网主机、用户名、邮箱和 IP 做一致的整词占位替换，结构（标签、非替换属性、class、嵌套、标签文字）不变并记录次数/摘要；需要改结构才询问。既有 HLD/证据主机清理由 FatTank 另行决定，本批不动。

@@ -37,17 +37,14 @@ def detail_state(data, status_source, build_id=None, page_url=None):
     result.update(header={'tag': header.tag, 'class': header.attrs.get('class'), 'id': header.attrs.get('id'), 'source_line': header.line},
                   promotion_exclusions=promotions, selection_reason='unique_build_header')
     statuses = [n for n in nodes if re.fullmatch(r'Build is .+', normalize(n.attrs.get('title') or ''), re.I)]
-    links, mismatch = [], False
-    for node in nodes:
-        if node.tag != 'a' or not node.attrs.get('href'):
-            continue
-        target = urlsplit(urljoin(page_url, node.attrs['href']))
-        if re.fullmatch(r'/build/[^/]+', target.path):
-            links.append({'host': target.hostname, 'path': target.path})
-            mismatch |= target.hostname != urlsplit(page_url).hostname or target.path != '/build/' + str(build_id)
-    result['self_links'] = links
-    if len(statuses) != 1 or mismatch:
-        return {**result, 'basis': 'detail_fetch_failed', 'failure': 'identity_mismatch'}
+    from .detail_identity import tab_identity
+    from .errors import FlowError
+    try:links=tab_identity(document,build_id,page_url)
+    except FlowError:
+        return {**result,'basis':'detail_fetch_failed','failure':'identity_mismatch'}
+    result['self_links']=links
+    if len(statuses)!=1:
+        return {**result,'basis':'detail_fetch_failed','failure':'identity_mismatch'}
     node = statuses[0]
     title = normalize(node.attrs['title'])
     match = re.fullmatch(status_source['status_title_regex'], title, re.I)

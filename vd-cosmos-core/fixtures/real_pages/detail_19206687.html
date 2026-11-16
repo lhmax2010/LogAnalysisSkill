@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+        <head><script type="text/javascript" src="/wicket/resource/org.apache.wicket.resource.jqueryresourcereference/jquery/jquery-3.5.1.min-ver-1789916644250.js">/* removed */</script>
+<link rel="stylesheet" type="text/css" href="/jquery/ui/jquery-ui.min.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/jquery/ui/jquery-ui.theme.min.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/jquery/colorpicker/css/colorpicker.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/styles/webfonts.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/styles/base.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/codemirror/codemirror.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/codemirror/theme/eclipse.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/codemirror/theme/dracula.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/datetimepicker/flatpickr.min.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/styles/pages.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/styles/themes.css?v=1789916457350" />
+<link rel="stylesheet" type="text/css" href="/styles/misc.css?v=1789916457350" />
+<script type="text/javascript" src="/jquery/ui/jquery-ui.min.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/jquery/plugins/jquery.align.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/jquery/plugins/jquery.tooltip.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/jquery/plugins/jquery.popup.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/jquery/plugins/jquery.center.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/jquery/plugins/jquery.fancytip.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/jquery/plugins/jquery.ui.layout.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/jquery/colorpicker/js/colorpicker.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/datetimepicker/flatpickr.min.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/scripts/autosize.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/scripts/clipboard.min.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/scripts/main.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/codemirror/codemirror.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/codemirror/mode/groovy/groovy.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/codemirror/mode/css/css.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/codemirror/addon/edit/matchbrackets.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/codemirror/addon/display/placeholder.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/ckeditor/ckeditor.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/jquery/plugins/jquery.truncate.js?v=1789916457350">/* removed */</script>
+<script type="text/javascript" src="/wicket/resource/org.apache.wicket.ajax.abstractdefaultajaxbehavior/res/js/wicket-event-jquery-ver-1789916644250.js">/* removed */</script>
+<script type="text/javascript" src="/wicket/resource/org.apache.wicket.ajax.abstractdefaultajaxbehavior/res/js/wicket-ajax-jquery-ver-1789916644250.js">/* removed */</script>
+<script type="text/javascript" id="wicket-ajax-base-url">/* removed */</script>
+
+                <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                <title>Cosmos Build Main</title>
+
+
+                <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-114x114.png?v=3" />
+                <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png?v=3"/>
+                <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-144x144.png?v=3"/>
+                <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png?v=3" />
+                <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=3" />
+                <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=3"/>
+                <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png?v=3"/>
+        <script type="text/javascript" id="load-theme">/* removed */</script>
+<link rel="stylesheet" type="text/css" href="/wicket/resource/com.pmease.quickbuild.web.page.basepage/custom-ver-1789916457350.css" />
+<style type="text/css" id="qb-custom-css">/* removed */</style>
+<script type="text/javascript" >/* removed */</script>
+<script type="text/javascript" >/* removed */</script>
+<script type="text/javascript" >/* removed */</script>
+<script type="text/javascript" >/* removed */</script>
+<script type="text/javascript" >/* removed */</script>
+<script type="text/javascript" >/* removed */</script>
+</head>
+        <body id="build-page" class="">
+                <noscript>
+                        <div id="noscript-warning" class="w-full bg-red-800 text-white text-center px-5 py-2 font-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="svgicon mr-2 bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+                                  <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                                </svg>
+                                Please enable JavaScript in your browser.
+                        </div>
+                </noscript>
+                <div id="page-load-mask"></div>
+                <div id="page-load-msg"><div>Please Wait...</div></div>
+                <div id="global-ajax-indicator" style="display:none;">Loading...</div>
+                <div id="empty-ajax-indicator" style="display:none;"></div>
+                <div></div>
+            <script type="text/javascript">/* removed */</script>
+
+                <div id="global-feedback">
+
+</div>
+
+
+                <div id="confirm-dlg"></div>
+
+        <div class="custom-header format"><h2 style="background-color:#495055; padding:10.5px; margin-bottom:-8px;">
+        <div style="text-align:left;text-shadow:3px 3px 3px rgba(0,0,0,0.5);width:300px;">
+            <font size="4" color="white">Cosmos Build Main</font>
+        </div>
+</h2>
+
+<!-- Use this tag when you need to notice something! -->
+<!-- <h2 style="background-color:#495055; padding:11px; margin-bottom:-8px;">
+        <div style="float:left;text-align:left;text-shadow:3px 3px 3px rgba(0,0,0,0.5);width:300px;">
+            <font size="4" color="white">Cosmos Build Main</font>
+        </div>
+        <div style="text-align:left">
+            <font size="3" color="white">[Notice] Tizen 5.0 Build Main had an issue during 12:55 - 15:10, KST. Please retry your build.</font>
+        </div>
+</h2> --></div>
+        <div id="container">
+
+
+                <div id="header" class="flex pb-2">
+                        <div id="topnav" class="ml-auto piped-links text-xs">
+                                <span><span>Welcome! <span>Guest</span></span></span>
+                                <a href="/signin">Sign In</a>
+
+
+
+
+                                <a class="theme-toggler" id="id356" href="javascript:;">
+                                        <i class="bi bi-moon-stars-fill moon text-sm leading-none"></i>
+                                        <i class="bi bi-sun-fill sun text-sm leading-none"></i>
+                                </a>
+                        </div>
+                </div>
+
+                <div id="global-header" class="flex items-center">
+                        <h1>
+                                <a href="/" class="logo" title="Back to Dashboard">
+                                        <svg class="plain svgicon misc misc-quickbuild" style="width:56px;height:40px" version="1.1" aria-hidden="true" viewBox="0 0 1024 731">
+    <g>
+            <path class='qb-q' d="M64,0.368983957 L960,0.368983957 C995.346224,0.368983957 1024,29.02276 1024,64.368984 L1024,666.037433 C1024,701.383657 995.346224,730.037433 960,730.037433 L64,730.037433 C28.653776,730.037433 4.32866401e-15,701.383657 0,666.037433 L0,64.368984 C-4.32866401e-15,29.02276 28.653776,0.368983957 64,0.368983957 Z" fill="#3274D0"></path>
+            <path class='qb-b' d="M605.669434,0.368983957 L960,0.368983957 C995.346224,0.368983957 1024,29.02276 1024,64.368984 L1024,666.037433 C1024,701.383657 995.346224,730.037433 960,730.037433 L445.513184,730.037433 L445.513184,391.22522 L605.669434,311.366943 L605.669434,0.368983957 Z" fill="#7CBA0F"></path>
+            <path class='qb-bg' d="M487.358289,292.098679 L536.641711,278.761529 L536.641711,0 L658.481283,0 L658.481283,486.445633 C658.481283,553.331907 713.309091,608.057041 780.320856,608.057041 C847.33262,608.057041 902.160428,553.331907 902.160428,486.445633 C902.160428,419.559358 847.33262,364.834225 780.320856,364.834225 C752.906952,364.834225 727.77754,373.95508 707.217112,389.156506 L707.97861,253.863815 C730.823529,247.023173 755.191444,243.222816 780.320856,243.222816 C915.105882,243.222816 1024,351.913012 1024,486.445633 C1024,620.978253 915.105882,729.668449 780.320856,729.668449 C645.535829,729.668449 536.641711,620.978253 536.641711,486.445633 L536.641711,423.797472 L487.358289,437.134621 L487.358289,729.668449 L365.518717,729.668449 L365.518717,243.222816 C365.518717,176.336542 310.690909,121.611408 243.679144,121.611408 C176.66738,121.611408 121.839572,176.336542 121.839572,243.222816 C121.839572,310.109091 176.66738,364.834225 243.679144,364.834225 C271.093048,364.834225 296.22246,355.713369 316.782888,340.511943 L316.02139,475.804635 C293.176471,482.645276 268.808556,486.445633 243.679144,486.445633 C108.894118,486.445633 0,377.755437 0,243.222816 C0,108.690196 108.894118,0 243.679144,0 C378.464171,0 487.358289,108.690196 487.358289,243.222816 L487.358289,292.098679 Z" fill="#FFFFFF" fill-rule="nonzero"></path>
+        </g>
+
+
+</svg>
+                                        <span class="sr-only">QuickBuild</span>
+                                </a>
+                        </h1>
+
+                        <div class="navmenu flex-1 horizontal">
+        <ul class="tabs nav">
+                <li class="tab  tab-DashboardPage tab0  first  last tab">
+
+        <a class="nav-link" href="/dashboard"> <span>Dashboards</span></a>
+
+                </li>
+        </ul>
+</div>
+            <div class="flex-0">
+                <form class="flex items-center" id="id358" method="post" action="/build/19206687?5-1.IFormSubmitListener-quicksearch"><div style="width:0px;height:0px;position:absolute;left:-100px;top:-100px;overflow:hidden" class="hidden-fields"><!-- hidden input removed --></div>
+                    <div class="input-group input-group-xs">
+                                                <button type="button" class="btn btn-xs btn-outline-light btn-icon" id="id34b">
+                                                        <i class="fa fa-caret-down"></i>
+                                                </button>
+                        <input type="text" class="search-input form-control" value="" name="input" id="id34c" placeholder="search builds"></input>
+                        <button type="submit" class="btn btn-xs btn-icon"><i class="fa fa-search"></i></button>
+                    </div>
+                </form>
+            </div>
+
+                </div>
+
+        <div class="flex py-2 items-center">
+                <div class="text-xl leading-6 mr-3 text-primary" id="id359" title="Current configuration"><svg class="svgicon octicon octicon-repo-16" version="1.1" aria-hidden="true" viewBox="0 0 16 16">
+    <path xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 10.0.0.1 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"/>
+
+
+</svg></div>
+                <div id="breadcrumb" class="flex-auto flex items-center text-base">
+                        <span class="inline-flex items-center">
+                                <a class="mr-1"><span>root</span></a>
+                                <a class="children-chooser mr-1 text-light" id="id351" href="javascript:void(0);">
+                                        <i class="fa-solid"></i>
+                                </a>
+                        </span><span class="inline-flex items-center">
+                                <a class="mr-1" href="/build/4359.latest"><span>TIZEN</span></a>
+                                <a class="children-chooser mr-1 text-light" id="id352" href="javascript:void(0);">
+                                        <i class="fa-solid"></i>
+                                </a>
+                        </span><span class="inline-flex items-center">
+                                <a class="mr-1"><span>RBS</span></a>
+
+                        </span>
+                        <a class="ml-2 link-muted text-base leading-none" title="Copy configuration path to clipboard" id="id357"><svg class="svgicon cssgg-clipboard" version="1.1" aria-hidden="true" viewBox="0 0 24 24">
+    <path xmlns="http://www.w3.org/2000/svg" d="M8 11C7.44772 11 7 11.4477 7 12C7 12.5523 7.44772 13 8 13H15.9595C16.5118 13 16.9595 12.5523 16.9595 12C16.9595 11.4477 16.5118 11 15.9595 11H8Z" fill="currentColor"/><path xmlns="http://www.w3.org/2000/svg" d="M8.04053 15.0665C7.48824 15.0665 7.04053 15.5142 7.04053 16.0665C7.04053 16.6188 7.48824 17.0665 8.04053 17.0665H16C16.5523 17.0665 17 16.6188 17 16.0665C17 15.5142 16.5523 15.0665 16 15.0665H8.04053Z" fill="currentColor"/><path xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" d="M5 3C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3H5ZM7 5H5L5 19H19V5H17V6C17 7.65685 15.6569 9 14 9H10C8.34315 9 7 7.65685 7 6V5ZM9 5V6C9 6.55228 9.44772 7 10 7H14C14.5523 7 15 6.55228 15 6V5H9Z" fill="currentColor"/>
+
+
+</svg></a>
+
+                </div>
+                <div id="configuration-action" class="flex-0 flex items-center">
+
+
+
+                        <button class="btn btn-sm btn-ghost btn-square btn-secondary ml-2" title="Copy this configuration to be under specified configuration" id="id34d">
+                                <svg aria-label="Duplicate" viewBox="0 0 24 24" class="svgicon text-xs grommet-icon"><path fill="none" stroke="#000" stroke-width="2" d="M4.5 17H1V1h16v3.5M7 7h16v16H7V7zm8 4v8-8zm-4 4h8-8z"></path></svg>
+                        </button>
+
+                </div>
+        </div>
+        <div id="configuration-header" class="flex flex-wrap horizontal mb-4">
+                <div class="flex-1 menutabs">
+        <ul class="tabs nav">
+                <li class="tab  tab-ConfigurationOverview tab0  first tab">
+
+        <a class="nav-link" href="/overview/4362"> <span>Configuration Overview</span></a>
+
+                </li><li class="tab  tab-BuildPage tab1 selected tab">
+
+                <div class="inline-flex items-center links">
+                        <a class="nav-link maskable pr-0.5" id="id354" href="/build/19206687"><span>Build (id:19206687)</span></a>
+                        <a href="javascript:void(0);" class="nav-link icon-link text-sm px-0.5" id="id355">
+                                <svg aria-label="CaretDownFill" viewBox="0 0 24 24" class="svgicon grommet-icon"><path d="M18 9H6l6 6 6-6z" fill="#000"></path></svg>
+                        </a>
+                </div>
+
+                </li><li class="tab  tab-PipelinePage tab2 tab">
+
+        <a class="nav-link" href="/pipeline/4362"> <span>Pipelines</span></a>
+
+                </li><li class="tab  tab-ChildrenPage tab3  last tab">
+
+        <a class="nav-link" href="/children/4362"> <span>Children</span></a>
+
+                </li>
+        </ul>
+</div>
+                <div class="flex-0">
+
+                </div>
+        </div>
+
+    <div>
+        <div class="build-header flex items-start mb-4 pb-2" id="id35a">
+            <div class="flex flex-auto items-start flex-wrap">
+                        <div id="id35b" style="display:none"></div>
+                <div class="text-2xl flex items-center font-bold mr-2 leading-none mb-2">
+                    <span class="inline-flex mr-2" id="id35c" title="Build is successful"><svg id="id35d" class="svgicon octicon octicon-check-circle-fill-16 build-status successful" version="1.1" aria-hidden="true" viewBox="0 0 16 16">
+    <path xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" d="M8 16A8 8 0 108 0a8 8 0 000 16zm3.78-9.72a.75.75 0 00-1.06-1.06L6.75 9.19 5.28 7.72a.75.75 0 00-1.06 1.06l2 2a.75.75 0 001.06 0l4.5-4.5z"/>
+
+
+</svg></span>
+                    <span>
+        <span id="id35e">[hao.lin] TIZEN-RBS-KantSU2e-Full-261103.000733</span>
+</span>
+                </div>
+                <div>
+                        <svg class="text-xl text-light mr-1 leading-none svgicon plain-icon plain-icon-arrow-right-o" version="1.1" aria-hidden="true" viewBox="0 0 1024 1024">
+    <path d="M972.8 484.155077l-380.337231-382.306462A66.520615 66.520615 0 0 0 551.384615 78.769231a41.078154 41.078154 0 0 0-41.275077 39.384615v236.307692H83.259077a43.047385 43.047385 0 0 0-43.323077 39.384616v236.307692a43.047385 43.047385 0 0 0 43.323077 39.384616H510.030769v236.307692A41.078154 41.078154 0 0 0 551.384615 945.230769a63.015385 63.015385 0 0 0 40.251077-23.079384l380.849231-382.306462a39.384615 39.384615 0 0 0 0.315077-55.689846z m-384.512 326.616615V590.769231H118.153846v-157.538462h470.252308V213.228308L885.602462 512z" />
+
+
+</svg>
+                        <div class="inline-flex items-start promotion-build mb-2">
+                            <div class="btn btn-xs btn-outline">
+                                <svg id="id360" class="svgicon octicon octicon-check-circle-fill-16 build-status successful" version="1.1" aria-hidden="true" viewBox="0 0 16 16">
+    <path xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" d="M8 16A8 8 0 108 0a8 8 0 000 16zm3.78-9.72a.75.75 0 00-1.06-1.06L6.75 9.19 5.28 7.72a.75.75 0 00-1.06 1.06l2 2a.75.75 0 001.06 0l4.5-4.5z"/>
+
+
+</svg>
+                                <a class=" build-status successful" id="id361" title="Promoted to build &lt;span style=&quot;color:rgb(0, 0, 0)&quot;&gt;&lt;strong&gt;[37376237:19206687:BUILD_COMPLETE]&lt;/strong&gt;&lt;/span&gt; 1.0.9425586 of configuration root/UPDATE_BUILDINFO by Build_Runner">UPDATE_BUILDINFO:<span style="color:rgb(0, 0, 0)"><strong>[37376237:19206687:BUILD_COMPLETE]</strong></span> 1.0.9425586</a>
+                            </div>
+                        </div>
+                </div>
+                <div id="id362" style="display:none"></div>
+                <div class="ml-2 text-nowrap flex">
+                    <div class="btn-group btn-group-xs">
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                </div>
+            </div>
+
+            <div class="btn-group btn-group-xs ml-2">
+                <a class="btn btn-group-item maskable" title="First build in history" href="/build/19206687?5-1.ILinkListener-content-buildHead-first"><svg class="mr-0 text-sm svgicon cssgg-chevron_double_left" version="1.1" aria-hidden="true" viewBox="0 0 24 24">
+    <path xmlns="http://www.w3.org/2000/svg" d="M18.3639 7.75735L16.9497 6.34314L11.2929 12L16.9497 17.6568L18.3639 16.2426L14.1213 12L18.3639 7.75735Z" fill="currentColor"/><path xmlns="http://www.w3.org/2000/svg" d="M11.2929 6.34314L12.7071 7.75735L8.46447 12L12.7071 16.2426L11.2929 17.6568L5.63605 12L11.2929 6.34314Z" fill="currentColor"/>
+
+
+</svg></a>
+                <a class="btn btn-group-item maskable" title="Previous build in history" href="/build/19206687?5-1.ILinkListener-content-buildHead-prev"><svg class="mr-0 text-sm svgicon cssgg-chevron_left" version="1.1" aria-hidden="true" viewBox="0 0 24 24">
+    <path xmlns="http://www.w3.org/2000/svg" d="M16.2426 6.34317L14.8284 4.92896L7.75739 12L14.8285 19.0711L16.2427 17.6569L10.5858 12L16.2426 6.34317Z" fill="currentColor"/>
+
+
+</svg></a>
+                <a class="btn btn-group-item maskable" title="Next build in history" href="/build/19206687?5-1.ILinkListener-content-buildHead-next"><svg class="mr-0 text-sm svgicon cssgg-chevron_right" version="1.1" aria-hidden="true" viewBox="0 0 24 24">
+    <path xmlns="http://www.w3.org/2000/svg" d="M10.5858 6.34317L12 4.92896L19.0711 12L12 19.0711L10.5858 17.6569L16.2427 12L10.5858 6.34317Z" fill="currentColor"/>
+
+
+</svg></a>
+                <a class="btn btn-group-item maskable" title="Last build in history" href="/build/19206687?5-1.ILinkListener-content-buildHead-last"><svg class="mr-0 text-sm svgicon cssgg-chevron_double_right" version="1.1" aria-hidden="true" viewBox="0 0 24 24">
+    <path xmlns="http://www.w3.org/2000/svg" d="M5.63605 7.75735L7.05026 6.34314L12.7071 12L7.05029 17.6568L5.63608 16.2426L9.87869 12L5.63605 7.75735Z" fill="currentColor"/><path xmlns="http://www.w3.org/2000/svg" d="M12.7071 6.34314L11.2929 7.75735L15.5356 12L11.2929 16.2426L12.7072 17.6568L18.364 12L12.7071 6.34314Z" fill="currentColor"/>
+
+
+</svg></a>
+            </div>
+        </div>
+        <div class="vertical flex items-start condensed" id="id363">
+        <div class="tabs nav">
+
+                        <div class="selected tab">
+                                <a class="nav-link" href="/build/19206687/overview"><span>Overview</span></a>
+                        </div>
+
+
+                        <div class="tab">
+                                <a class="nav-link" href="/build/19206687/log"><span>Log</span></a>
+                        </div>
+
+
+                        <div class="tab">
+                                <a class="nav-link" href="/build/19206687/variables"><span>Variables</span></a>
+                        </div>
+
+
+                        <div class="tab">
+                                <a class="nav-link" href="/build/19206687/step_status"><span>Step Status</span></a>
+                        </div>
+
+
+                        <div class="tab">
+                                <a class="nav-link" href="/build/19206687/build_report_armv7l"><span>Build_Report_armv7l</span></a>
+                        </div>
+
+
+                        <div class="tab">
+                                <a class="nav-link" href="/build/19206687/build_report_x86_64"><span>Build_Report_x86_64</span></a>
+                        </div>
+
+
+                        <div class="tab">
+                                <a class="nav-link" href="/build/19206687/profiling_report_armv7l"><span>Profiling_Report_armv7l</span></a>
+                        </div>
+
+
+                        <div class="tab last">
+                                <a class="nav-link" href="/build/19206687/profiling_report_x86_64"><span>Profiling_Report_x86_64</span></a>
+                        </div>
+
+
+        </div>
+        <div class="panel" id="id364">
+        <div id="build-dashboard">
+                <div class="html-content description format" style="padding-bottom:10px;"><h3>♦ Hub Link : <a href='https://hub.example.invalid/build/37376237' target='_blank'>https://hub.example.invalid/build/37376237</a></h3><br><h3>♦ Artifacts<font color='red'> : will be deleted after 3 days from an end date of the build.</font></h3><body><table class='oddeven'><thead><tr><td>Repository</td><td>HQ URL</td><td>HQ URL Alternatives</td></tr></thead><tbody><tr><td>KantSU2e</td><td><a href='http://internal.example/priv/10.0.0.1:81/PRV/builds/b687/19206687/artifacts/TIZEN-ASAN-PUBLIC-KantSU2e-RELEASE_20261103.1/' target='_blank'>http://internal.example/priv/10.0.0.1:81/PRV/builds/b687/19206687/artifacts/TIZEN-ASAN-PUBLIC-KantSU2e-RELEASE_20261103.1/</a></td><td><a href='http://internal.example/priv/10.0.0.1:81/PRV/builds/b687/19206687/artifacts/TIZEN-ASAN-PUBLIC-KantSU2e-RELEASE_20261103.1/' target='_blank'>http://internal.example/priv/10.0.0.1:81/PRV/builds/b687/19206687/artifacts/TIZEN-ASAN-PUBLIC-KantSU2e-RELEASE_20261103.1/</a></td></tr></tbody></table></body></div>
+
+                <div class="build-summary box mb-5 box-success">
+                        <div class="box-head">Summary</div>
+                        <div class="box-body">
+                                <table class="table table-sm">
+                                        <thead>
+                                                <tr>
+                                                        <th>Id</th>
+                                                        <th>Status</th>
+
+                                                        <th>Begin Date</th>
+                                                        <th>Duration</th>
+                                                        <th>Triggered By</th>
+
+                                                        <th>#Dependents <i class="fa-regular fa-circle-question text-muted" title="Number of builds using this build as dependencies"></i></th>
+                                                        <th>#Dependencies <i class="fa-regular fa-circle-question text-muted" title="Number of dependency builds used by this build"></i></th>
+
+                                                </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>19206687</td>
+                                                        <td>Successful</td>
+
+                                                        <td>2026-11-03 00:07:33</td>
+                                                        <td>
+        <span id="id365">7 hours 52 minutes 28 seconds</span>
+</td>
+                                                        <td>
+        <a href="mysingleim://Build_Runner">Build_Runner</a>
+</td>
+
+                                                        <td >
+                                                                <a style="cursor:pointer;" id="id34f" href="javascript:void(0);"><span>0</span> builds</a>
+                                                        </td>
+                                                        <td class="text" >
+                                                                <a style="cursor:pointer;" id="id350" href="javascript:void(0);"><span>0</span> builds</a>
+                                                        </td>
+
+                                                </tr>
+                                        </tbody>
+                                </table>
+                        </div>
+                </div>
+
+
+
+        </div>
+</div>
+</div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                <div id="footer" class="flex text-xs pt-2 mt-4 border-t text-muted">
+                        <div class="flex-1">
+                                <a href="https://www.pmease.com/quickbuild">PMEase QuickBuild</a>, <span>15.0.51.260920</span>,
+                                <span>2026-09-20</span>,
+                                <span class="font-bold uppercase">Commercial License for Site &#039;Samsung Electronics-Suwon&#039;</span>
+                        </div>
+
+                </div>
+        </div>
+
+
+
+        </body>
+</html>
+
