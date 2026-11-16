@@ -1,0 +1,103 @@
+{
+  "allowed": true,
+  "checked_files": [
+    {
+      "path": "docs/enhance/batch3a-1.1/DELIVERY.md",
+      "sha256": "389e78227da14ead98f9b1d86994ac7a6ff4f16a18ff1749abab3143cb758452",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b21/python310.txt",
+      "sha256": "c5d6a10c396dcfbda1c127d6241b263af4a17d3afa6910deb1053d100a425822",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b21/python312.txt",
+      "sha256": "a036197fca98286afc419005a55a1a13e64d3966b3d534517e010bafa4d11520",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b21/source-manifest.json",
+      "sha256": "4d3f011bf5f35ec02cfb1019eeba0f071b11d232f14287d67332b760fc8a4071",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/batch3a-1.1/evidence-b21/validation.json",
+      "sha256": "c078cee5db455f648f45cc3f5cf0fd744e64e6aeff0bb4ac323368f83a62d9cb",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "docs/enhance/dev_memory/STATUS.md",
+      "sha256": "99a8f6e47e9235db6f5189d80bff827d63ac9a0856ae35832103c0a2cbeb0cb2",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/browser_executable.py",
+      "sha256": "acd133266d41fc2e03b8aaa2f5c951b64370a39f1deda7a105831297bcb94f21",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/browser_temp.py",
+      "sha256": "1b38a04faad5b16f11a71c0637d26dd01a524f1226d229aa10f24c1061833eb3",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/submit_sessions.py",
+      "sha256": "e895091a0eaa416a5c7adfda894866b2ec711a6f07f45f564c1ca2958714b706",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/src/vd_cosmos_core/verify_b3a11b2.py",
+      "sha256": "c76b67cf01150d0878f18bec90eb2b6ae14beb05aa515a247c12fa50382ba782",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b21.py",
+      "sha256": "bef3afa5a246e131c581a15482b47985536a6cb0b5a81939adec72449a658ad6",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b2_headless.py",
+      "sha256": "ec5ec274dc8924f6f00c6c7343baa10afbe5baec47f847415ff434d16fc093ce",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-core/tests/test_batch3a11b2_verifier.py",
+      "sha256": "4d704e3058934c9c3ba01ec15bd10fdc4551d61684b27b1695ad81ba6a885274",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    },
+    {
+      "path": "vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py",
+      "sha256": "5b8d70ebc7f3ebf926742ed9658cae9f52cfc3085770ef691a710558fd91e9e0",
+      "allowed": true,
+      "credential_hits": [],
+      "warnings": []
+    }
+  ]
+}

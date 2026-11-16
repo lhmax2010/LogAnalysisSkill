@@ -24,7 +24,7 @@ class B2VerifierTests(B1Case):
         seen=[]
         def suite(config,repo,directory,env):
             self.assertEqual(env['VD_REQUIRE_HEADLESS'],'1');self.assertEqual(env['VD_COSMOS_CHROME'],'/opt/google/chrome/chrome');seen.append(directory)
-            p=directory/'test.txt';p.write_text('Python 3.10.12\nlocal tests\n');return str(p)
+            p=directory/'test.txt';p.write_text('Python 3.10.12\nlocal tests\n');return {'path':str(p),'sha256':'fixture'}
         with patch.object(verify.subprocess,'check_output',side_effect=['a'*40,b'','a'*40,b'']),patch.object(verify,'contracts',return_value=[]),patch.object(verify,'process',return_value=SimpleNamespace(stdout=b'PASS',stderr=b'',returncode=0)),patch.object(verify,'offline_tests',side_effect=suite):
             first=verify.execute(self.args(),REPO);second=verify.execute(self.args(),REPO)
         self.assertEqual(first['exit_code'],0);self.assertFalse(first['live_operations']);self.assertNotEqual(first['data_root'],second['data_root']);self.assertEqual(len(seen),2)

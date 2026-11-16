@@ -476,3 +476,48 @@ B1.3 最终完整套件（import-linter 2.3、语法/标准库与静态边界全
 源码摘要 source-manifest.json；原始归档核对 archive-verification.json；实际配置只读加载 config-load-check.json；最终凭据预检 prepush-final.json，均位于 evidence-b13/。Q10 已闭合，无未答复设计问题。
 
 归档格式说明：git diff --cached --check 仅对七份原始 HTML 的末尾空行告警；按 Q10“其它字节不动”保留。其余变更无空白错误，不修改 Git 配置或文件摘要来消除此原件格式。
+
+
+## Checkpoint B2.1 — 浏览器短临时目录与启动诊断（2026-11-16）
+
+基线 `5f27d8a5f1ab967a1ff6d4898001462e77bba247`。设计方提供的 v5 构建机结果：Ubuntu 24.04、Chrome 156.0.8078.47、Playwright 1.64.1、Python 3.10.12；300 项中 292 PASS，8 个 headless 测试在 setUp 报 browser_start_failed。diag31（设计方本地诊断，未提供归档原件）表明默认 /tmp 下可启动，长验证目录 TMPDIR 导致 SingletonSocket 路径超限。本机未复现该真实环境，以下修复按设计方已定位的原因实施。
+
+### 实现与测试对应
+
+| 要求 | 实现文件 | 测试 |
+|---|---|---|
+| 独立短 TMPDIR；XDG 所有者、0700、字节长度检查；回退 /tmp；超限退出 6 | `vd-cosmos-core/src/vd_cosmos_core/browser_temp.py` | `test_batch3a11b21.BrowserTempTests.test_private_owned_xdg_preferred_and_environment_child_only`、`test_xdg_missing_public_long_relative_and_symlink_fall_back`、`test_xdg_wrong_owner_falls_back`、`test_socket_length_is_bytes_strictly_under_100_and_refuses_before_launch` |
+| 只改浏览器子进程 TMPDIR/TMP/TEMP，父环境保持；成功 close 清理 | `vd-cosmos-submit/src/vd_cosmos_submit/playwright_driver.py` | `test_successful_launch_passes_private_env_and_close_removes_temp` |
+| 崩溃恢复/finish；进程关闭核验先于删除；身份不一致保留供恢复 | `browser_temp.py`、`vd-cosmos-core/src/vd_cosmos_core/submit_sessions.py` | `test_finish_and_recovery_close_processes_before_removing_short_temp`、`test_failed_process_cleanup_keeps_marker_and_temp_for_recovery`、`test_cleanup_identity_mismatch_refuses_then_valid_cleanup_is_idempotent` |
+| 六个阶段、异常类型、最多三行；整段先检查凭据、命中不输出 | `playwright_driver.py` | `test_each_launch_stage_is_reported_and_failed_launch_cleans_temp`、`test_three_lines_only_with_full_message_credential_check`、`test_forced_launch_failure_with_credential_withholds_detail` |
+| 长于 120 字符的继承 TMPDIR 下启动真实 Chrome | `vd-cosmos-core/tests/test_batch3a11b2_headless.py` | `HeadlessTempTests.test_long_inherited_tmpdir_starts_with_short_browser_only_temp`（本机缺 Playwright，SKIP；构建机强制执行） |
+| 测试与验收器共用浏览器选择规则，记录 executable | `vd-cosmos-core/src/vd_cosmos_core/browser_executable.py`、`verify_b3a11b2.py`、headless 测试 | `test_executable_override_and_default_use_resolved_wrapper`；原 `test_requires_real_browser_tests_in_fresh_root_no_live_calls` |
+
+未写完整模块名的新增测试位于 `vd-cosmos-core/tests/test_batch3a11b21.py`。
+
+短目录创建前先检查 XDG_RUNTIME_DIR 为当前 UID 所有的规范目录且 mode=0700（符号链接/非规范路径保守回退）；创建后再次检查 `os.fsencode(<dir>/.org.chromium.Chromium.XXXXXX/SingletonSocket)` 长度严格小于 100。目录始终 mode=0700。恢复用的 `browser-temp.json` 位于既有私有 profile 下，在浏览器启动前原子记录目录路径/device/inode/uid；恢复不依赖新进程的 XDG 环境，先确认浏览器进程已关闭，再核对目录身份后删除。旧 profile 没有该记录时仍可按原流程清理。目录身份不符或进程未关闭则保留目录和记录、拒绝继续清理。
+
+异常细节仅来自 about:blank 启动阶段：start / launch_persistent_context / new_page / route / cdp / fetch_enable。保留 `FlowError(5, browser_start_failed)`，details 包含 exception_type、stage、detail。先对完整错误做运行时 check_content，再截前三行（每行最多 600 字符）并复检；查询/fragment URL、Cookie、密码等赋值和 profile JSON 诊断另作保守拦截。命中或检查失败统一 detail withheld；不读取 profile 内容，也不改任何运行时凭据配置或豁免。
+
+验收器与测试都优先显式 --chrome / VD_COSMOS_CHROME，否则解析已安装 google-chrome（含 google-chrome-stable）wrapper，最后才查已有 Chromium 路径；不再把 /opt/google/chrome/chrome 当默认。测试分别记录 selected 与真正成功 launched 的 executable，避免把选择当成启动成功。本机选择 `/home/toolchain/.local/bin/google-chrome`，因缺 Playwright 没有 launched 记录。构建机显式传 `/opt/google/chrome/google-chrome` 时整套测试使用其解析路径。
+
+附带修正验收汇总的一处既有类型错误：offline_tests 返回 artifact 字典，原代码把整个字典交给 Path；现从 artifact['path'] 计算摘要。原 verifier 测试改为模拟真实 artifact 返回类型，避免浏览器测试通过后汇总仍报错。无新增配置、无安装、无 PHP、无真实服务/提交/演练。无新增 B3a11-Q11 问题或假设。
+
+### 完整验证与构建机重跑
+
+两解释器串行运行 `vd-cosmos-core/scripts/run_tests.sh`，nice 19，临时测试目录在本机 tmpfs；每份输出第 1 行为真实解释器版本，包含 import-linter==2.3 三条约束与浏览器静态边界检查。共新增 12 个普通测试和 1 个真实浏览器测试。
+
+| 解释器 | 结果 | 完整输出 | SHA256 |
+|---|---|---|---|
+| Python 3.10.12 | 313 项：304 PASS、9 SKIP | `evidence-b21/python310.txt` | `c5d6a10c396dcfbda1c127d6241b263af4a17d3afa6910deb1053d100a425822` |
+| Python 3.12.3 | 313 项：304 PASS、9 SKIP | `evidence-b21/python312.txt` | `a036197fca98286afc419005a55a1a13e64d3966b3d534517e010bafa4d11520` |
+
+9 项 SKIP 为原有 8 个本地服务器 headless 闸门测试及新增长 TMPDIR 测试，均仅因当前两套解释器缺 Playwright。它们没有被声明为通过；`VD_REQUIRE_HEADLESS=1` 将缺依赖改为失败，构建机 B2 verifier 已强制该标志。源码清单见 `evidence-b21/source-manifest.json`，结果索引 `validation.json`，最终凭据检查 `prepush-final.json`。
+
+A/B1/B2 验收入口参数不变。使用构建机现有 run/venv，将 EXPECTED_COMMIT 填为本次回报的完整提交号，VD_CONFIG 为真实配置绝对路径；本次 B2 回归命令：
+
+```bash
+nice -n 19 bash vd-cosmos-core/scripts/verify_b3a11b2_real.sh "$EXPECTED_COMMIT" --config "$VD_CONFIG" --chrome /opt/google/chrome/google-chrome
+```
+
+该入口只跑 contract、静态检查和完整离线套件（强制 9 项真实 headless 本地测试），不连接真实 Cosmos/Hub/P4，也不调用 live once/rehearse。B2 属性映射未确认的既有限制保持。

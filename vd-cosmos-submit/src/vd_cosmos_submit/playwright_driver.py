@@ -1,21 +1,25 @@
 """The only optional Playwright adapter. No public page/context escape hatch."""
 import os
+import re
 from pathlib import Path
 import time
 from urllib.parse import urlsplit
 from vd_cosmos_core.errors import FlowError
-from vd_cosmos_core import submit_sessions, submit_flow, submit_model
+from vd_cosmos_core import submit_sessions, submit_flow, submit_model, browser_temp
+from vd_cosmos_core.export import check_content
 from vd_cosmos_core.submit_gate import Gate, pattern
 from vd_cosmos_core.submit_browser_contract import accepted_location, wire_values, verify_parts
 from vd_cosmos_core.files import digest, json_bytes
 from .browser_scripts import SCRIPT, DIGEST, arguments
 
 
-def environment(config,profile):
+def environment(config,profile,temp_dir=None):
     # DEBUG can cause protocol traffic to be printed by the driver itself.
     env={k:v for k,v in os.environ.items() if not any(x in k.upper() for x in ('DEBUG','TRACE','HAR','PLAYWRIGHT','PW_'))}
     env['VD_BROWSER_EXECUTABLE']=config.raw['submit']['browser_executable']
     env['VD_BROWSER_OWNER']=str(os.getpid());env['VD_BROWSER_START']=submit_sessions.Processes().identity(os.getpid())
+    if temp_dir is not None:
+        env.update(TMPDIR=str(temp_dir), TMP=str(temp_dir), TEMP=str(temp_dir))
     return env
 
 
@@ -25,6 +29,24 @@ def settings(config,*,headless=False):
     if not headless and not os.environ.get('DISPLAY'):raise FlowError(6,'display_required')
     if any(s.get(k) for k in ('record_har_path','record_video_dir','trace','tracing','storage_state','debug','screenshots')):raise FlowError(4,'browser_recording_forbidden')
     return exe
+
+
+def launch_diagnostic(config, error, stage):
+    """Pre-navigation errors only; check the whole message before truncation."""
+    kind=type(error).__name__
+    if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,79}',kind):kind='Exception'
+    try:
+        message=str(error)
+        allowed=check_content(message.encode('utf-8'),config)['allowed']
+        if not check_content(kind.encode('utf-8'),config)['allowed']:kind='Exception'
+        if re.search(r'(?i)(?:password|passwd|token|secret|authorization)\s*[=:]',message):allowed=False
+        # Even unregistered query parameters and cookie diagnostics are withheld.
+        if re.search(r'(?i)\bcookies?\b|(?:https?|wss?)://[^\s<>]+[?#]|["\'](?:profile|credentials_enable_service)["\']\s*:',message):allowed=False
+        detail='\n'.join(line[:600] for line in message.splitlines()[:3]) if allowed else 'detail withheld'
+        if not check_content(detail.encode('utf-8'),config)['allowed']:detail='detail withheld'
+    except Exception:
+        detail='detail withheld'
+    return {'exception_type':kind,'stage':stage,'detail':detail}
 
 
 class Driver:
@@ -46,23 +68,33 @@ class Driver:
             from playwright.sync_api import sync_playwright
         except ImportError:raise FlowError(6,'playwright_runtime_missing') from None
         self.gate=self.gate or Gate(self.config,rehearse=rehearse,local_origin=self.local_origin)
+        temp_dir=browser_temp.create(profile)
+        stage='start'
         try:
             self._pw=sync_playwright().start()
             wrapper=Path(__file__).resolve().parents[2]/'scripts/browser_child.py'
+            stage='launch_persistent_context'
             self._context=self._pw.chromium.launch_persistent_context(str(profile),executable_path=str(wrapper),headless=self.headless,
-                env=environment(self.config,profile),service_workers='block',accept_downloads=False,
+                env=environment(self.config,profile,temp_dir),service_workers='block',accept_downloads=False,
                 ignore_default_args=['--password-store=basic','--use-mock-keychain'],
                 args=['--disable-save-password-bubble','--disable-background-networking','--disable-sync','--disable-default-apps','--disable-quic','--disable-http2','--disable-session-crashed-bubble'])
+            stage='new_page'
             self._page=self._context.pages[0] if self._context.pages else self._context.new_page()
+            stage='route'
             self._context.route('**/*',self._route)
             self._context.route_web_socket('**/*',lambda route:route.close())
             self._context.on('page',lambda page:page.close() if page!=self._page else None)
+            stage='cdp'
             self._cdp=self._context.new_cdp_session(self._page)
             self._frame=self._cdp.send('Page.getFrameTree')['frameTree']['frame']['id']
             self._cdp.on('Fetch.requestPaused',self._paused)
+            stage='fetch_enable'
             self._cdp.send('Fetch.enable',{'patterns':[{'urlPattern':'*','requestStage':'Request'},{'urlPattern':'*','requestStage':'Response'}]})
-        except Exception:
-            self.close();raise FlowError(5,'browser_start_failed') from None
+        except Exception as error:
+            details=launch_diagnostic(self.config,error,stage)
+            try:self.close()
+            except FlowError:details['cleanup']='unverified; recovery required'
+            raise FlowError(5,'browser_start_failed',**details) from None
     def _route(self,route):
         try:
             if route.request.frame!=self._page.main_frame:route.abort();return
@@ -155,12 +187,19 @@ class Driver:
         while not self._result and not self.gate.fatal and time.monotonic()<deadline:self._page.wait_for_timeout(50)
         return 'blocked_before_send' if self.gate.fatal=='blocked_before_send' else self._result or 'uncertain'
     def close(self):
+        failed=False
         try:
             if self._context:self._context.close()
-        except Exception:raise FlowError(6,'browser_cleanup_unverified') from None
+        except Exception:
+            failed=True
         finally:
             self._context=None
             if self._pw:
                 try:self._pw.stop()
-                except Exception:pass
+                except Exception:failed=True
                 self._pw=None
+        profile=submit_sessions.profile_path(self.config,self.session)
+        # Process identity/shutdown must be checked before deleting socket files.
+        submit_sessions.Processes().close(profile)
+        browser_temp.cleanup(profile)
+        if failed:raise FlowError(6,'browser_cleanup_unverified')

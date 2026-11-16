@@ -38,6 +38,8 @@
 
 ## 4. 当前进度
 
+- 2026-11-16 B2.1：按 v5 构建机长 TMPDIR 的 SingletonSocket 诊断，浏览器子进程改用独立 0700 短临时目录（XDG 合格则优先，否则 /tmp），close/finish/recover 均核验进程和目录身份后清理；六阶段安全启动诊断；测试与 verifier 共用 Chrome wrapper 选择；修正 verifier artifact 路径取值。Python 3.10.12 / 3.12.3 完整各 313 项：304 PASS、9 SKIP（本机缺 Playwright；原 8 项 + 长 TMPDIR 回归），import/静态检查通过；构建机 VD_REQUIRE_HEADLESS=1 强制这 9 项，真实复验待运行。详见 batch3a-1.1/DELIVERY.md 的 B2.1 与 evidence-b21/。无新增设计问题，未访问真实服务或执行提交。
+
 - 2026-11-16 B1.3：按 diag28–30b 真实页修复 tab/config/Hub h3 身份与共享 observe；按架构清单核对和快照，首读冻结与总提交输入保持分离；lookup 精简 stdout + 全量 artifact/page_errors；B1 子命令非零无 error 时保留结果/原因/产物。Q10 已闭合，七页仅定点主机脱敏，归档脚本按 Q03 登记。测试与证据见 batch3a-1.1/DELIVERY.md 的 B1.3 节及 evidence-b13/；A+B1+B2 真实验收仍需构建机执行。Python 3.10.12 / 3.12.3 各 300 项：292 PASS、8 SKIP（B2 真实浏览器测试缺 Playwright）；本批新增 14 项全部通过，import/静态检查通过。
 
 - 2026-11-14 Checkpoint B2d：新增只跑离线完整套件与静态扫描的构建机验收，强制真实无头浏览器测试；手册 FATTANK-B2-MANUAL.md。正式提交映射仍未确认，禁止默认发送。B2a–c 已分阶段推送；Q04–Q09 和未验证/拒绝项见 DELIVERY。真实服务/真实演练未执行；配置仅只读加载，证据 evidence-b2d/。

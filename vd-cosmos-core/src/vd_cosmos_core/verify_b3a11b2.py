@@ -7,6 +7,7 @@ import sys
 import uuid
 from .cli import Parser
 from .config import load_config
+from .browser_executable import resolve as resolve_browser
 from .errors import FlowError
 from .files import atomic_write,json_bytes,digest
 from .verify_b3a11 import ROOTS,child_env,contracts,offline_tests,process,safe_bytes
@@ -19,8 +20,10 @@ def execute(args,repo):
     directory=config.output('verification/b3a11b2-'+uuid.uuid4().hex);directory.mkdir(parents=True,exist_ok=False)
     for name in ('tmp','cache'):(directory/name).mkdir()
     env=child_env(directory);env['VD_REQUIRE_HEADLESS']='1'
-    if args.chrome:env['VD_COSMOS_CHROME']=str(Path(args.chrome).resolve())
-    result={'commit':head,'python':sys.version.split()[0],'exit_code':0,'live_operations':False,'required_headless':True,'data_root':str(directory)}
+    executable=resolve_browser(args.chrome)
+    if executable:env['VD_COSMOS_CHROME']=executable
+    elif args.chrome:env['VD_COSMOS_CHROME']=str(Path(args.chrome).resolve())
+    result={'commit':head,'python':sys.version.split()[0],'exit_code':0,'live_operations':False,'required_headless':True,'browser_executable':executable,'data_root':str(directory)}
     stage='contracts'
     try:
         result['contracts']=contracts(config,repo,directory,env)
@@ -30,7 +33,7 @@ def execute(args,repo):
         if run.returncode:raise FlowError(4,'browser_static_scan_failed')
         stage='offline_suite_with_required_headless'
         result['test_output']=offline_tests(config,repo,directory,env)
-        result['test_sha256']=digest(Path(result['test_output']).read_bytes())
+        result['test_sha256']=digest(Path(result['test_output']['path']).read_bytes())
     except FlowError as e:result.update(e.as_dict(),failed_stage=stage)
     result['verdict']='PASS' if result['exit_code']==0 else 'FAIL'
     result_path=atomic_write(config.data_root,directory/'result.json',safe_bytes(config,json_bytes(result)))

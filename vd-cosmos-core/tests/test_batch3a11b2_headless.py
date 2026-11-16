@@ -11,7 +11,41 @@ from test_batch3a11b1 import B1Case
 from test_batch3a11b2a import CTX,Processes
 from vd_cosmos_core import submit_model as model,submit_sessions as sessions
 from vd_cosmos_core.submit_gate import pattern
+from vd_cosmos_core.browser_executable import resolve as resolve_browser
+from vd_cosmos_core import browser_temp
 from vd_cosmos_submit.playwright_driver import Driver
+
+def browser_runtime(case):
+    exe=resolve_browser()
+    print('Chrome executable (selected): '+str(exe),flush=True)
+    reason='Playwright Python runtime unavailable' if importlib.util.find_spec('playwright') is None else 'existing Chrome/Chromium unavailable' if not exe else None
+    if reason:
+        if os.environ.get('VD_REQUIRE_HEADLESS')=='1':case.fail('required real-browser test: '+reason)
+        case.skipTest(reason)
+    return exe
+
+
+class HeadlessTempTests(B1Case):
+    def test_long_inherited_tmpdir_starts_with_short_browser_only_temp(self):
+        exe=browser_runtime(self)
+        inherited=self.root/('long-'+('x'*130));inherited.mkdir()
+        self.config.raw['submit']['browser_executable']=exe
+        r=model.create_request(self.config,CTX,self.form(),'local temp verification')
+        session=sessions.start(self.config,r,CTX,Processes())
+        driver=Driver(self.config,session,headless=True);self.addCleanup(driver.close)
+        profile=sessions.profile_path(self.config,session)
+        with patch.dict(os.environ,dict.fromkeys(('TMPDIR','TMP','TEMP'),str(inherited))):
+            driver.launch(rehearse=True)
+            print('Chrome executable (launched): '+exe,flush=True)
+            import json
+            temp=Path(json.loads((profile/browser_temp.MARKER).read_text())['path'])
+            self.assertTrue(browser_temp.fits(temp));self.assertNotEqual(temp,inherited)
+            self.assertEqual(driver._page.url,'about:blank')
+            self.assertEqual(os.environ['TMPDIR'],str(inherited))
+            self.assertEqual(temp.stat().st_mode & 0o777,0o700)
+            driver.close();self.assertFalse(temp.exists())
+            self.assertEqual(os.environ['TMPDIR'],str(inherited))
+
 
 class Server(ThreadingHTTPServer):
     def __init__(self):
@@ -34,14 +68,11 @@ class Handler(BaseHTTPRequestHandler):
 
 class HeadlessGateTests(B1Case):
     def setUp(self):
-        super().setUp();exe=os.environ.get('VD_COSMOS_CHROME') or next((x for x in ('/opt/google/chrome/chrome','/usr/bin/google-chrome','/usr/bin/chromium') if Path(x).is_file()),None)
-        reason='Playwright Python runtime unavailable' if importlib.util.find_spec('playwright') is None else 'existing Chrome/Chromium unavailable' if not exe else None
-        if reason:
-            if os.environ.get('VD_REQUIRE_HEADLESS')=='1':self.fail('required real-browser test: '+reason)
-            self.skipTest(reason)
+        super().setUp();exe=browser_runtime(self)
         self.server=Server();self.addCleanup(self.server.close);self.config.raw['submit']['browser_executable']=exe
         r=model.create_request(self.config,CTX,self.form(),'local browser verification');self.session=sessions.start(self.config,r,CTX,Processes())
         self.driver=Driver(self.config,self.session,headless=True,local_origin=self.server.origin);self.addCleanup(self.driver.close);self.driver.launch(rehearse=True)
+        print('Chrome executable (launched): '+exe,flush=True)
         self.page=self.driver._page;url=self.server.origin+'/overview/'+self.config.raw['submit']['target_config_id'];self.driver.gate.navigation(url);self.page.goto(url);self.page.wait_for_timeout(100)
         self.assertEqual(self.driver.gate.phase,'business');self.server.calls.clear()
     def wait(self):self.page.wait_for_timeout(350)

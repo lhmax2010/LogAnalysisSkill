@@ -11,6 +11,7 @@ from .files import digest, json_bytes
 from .locks import OperationLock
 from .state import EventStore
 from . import submit_model as model
+from . import browser_temp
 
 
 class Processes:
@@ -86,6 +87,7 @@ def recover_locked(config, context, processes, *, session_id=None, holder_gone=F
                 store.append_batch(context,entries,head)
         # Recovery evidence is durable before touching the old processes/profile.
         path=profile_path(config,session);processes.close(path)
+        browser_temp.cleanup(path)
         if path.exists(): shutil.rmtree(path)
         with EventStore(config.data_root) as store:
             store.append(context,'submit_session_finished',{'target':model.target(config),'normal_close':False,'recovered':True},store.head(),request_id=rid,operation_id=sid)
@@ -122,6 +124,7 @@ def expose(config, session, context):
 
 def finish(config, session, context, processes=None):
     path=profile_path(config,session);(processes or Processes()).close(path)
+    browser_temp.cleanup(path)
     if path.exists():shutil.rmtree(path)
     with EventStore(config.data_root) as store:
         store.append(context,'submit_session_finished',{'target':model.target(config),'normal_close':True},store.head(),request_id=session['request_id'],operation_id=session['operation_id'])
